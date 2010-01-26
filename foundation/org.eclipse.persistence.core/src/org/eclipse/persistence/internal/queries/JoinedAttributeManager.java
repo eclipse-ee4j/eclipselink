@@ -34,7 +34,6 @@ import org.eclipse.persistence.internal.descriptors.ObjectBuilder;
 import org.eclipse.persistence.internal.expressions.ForUpdateOfClause;
 import org.eclipse.persistence.exceptions.QueryException;
 import org.eclipse.persistence.internal.helper.NonSynchronizedSubVector;
-import org.eclipse.persistence.internal.identitymaps.CacheKey;
 import org.eclipse.persistence.mappings.DatabaseMapping;
 import org.eclipse.persistence.queries.ObjectBuildingQuery;
 import org.eclipse.persistence.queries.ObjectLevelReadQuery;
@@ -80,7 +79,7 @@ public class JoinedAttributeManager implements Cloneable, Serializable {
     protected transient List<AbstractRecord> dataResults;
 
     /** Stored all row results to -m joining by cache key. */
-    protected transient Map<CacheKey, List> dataResultsByPrimaryKey;
+    protected transient Map<Object, List<AbstractRecord>> dataResultsByPrimaryKey;
     
     /** Stores the descriptor that these joins apply on */
     protected transient ClassDescriptor descriptor;
@@ -737,14 +736,14 @@ public class JoinedAttributeManager implements Cloneable, Serializable {
     /**
      * Return all of the rows fetched by the query by cache-key, used for 1-m joining.
      */
-    public Map<CacheKey, List> getDataResultsByPrimaryKey() {
+    public Map<Object, List<AbstractRecord>> getDataResultsByPrimaryKey() {
         return dataResultsByPrimaryKey;
     }
     
     /**
      * Set all of the rows fetched by the query by cache-key, used for 1-m joining.
      */
-    protected void setDataResultsByPrimaryKey(Map<CacheKey, List> dataResultsByPrimaryKey) {
+    protected void setDataResultsByPrimaryKey(Map<Object, List<AbstractRecord>> dataResultsByPrimaryKey) {
         this.dataResultsByPrimaryKey = dataResultsByPrimaryKey;
     }
     
@@ -763,8 +762,8 @@ public class JoinedAttributeManager implements Cloneable, Serializable {
     protected void processDataResults(AbstractSession session) {
         this.dataResultsByPrimaryKey = new HashMap();
         int size = this.dataResults.size();
-        CacheKey lastCacheKey = null;
-        List childRows = null;
+        Object lastKey = null;
+        List<AbstractRecord> childRows = null;
         ObjectBuilder builder = getDescriptor().getObjectBuilder();
         int parentIndex = getParentResultIndex();
         for (int dataResultsIndex = 0; dataResultsIndex < size; dataResultsIndex++) {
@@ -780,18 +779,17 @@ public class JoinedAttributeManager implements Cloneable, Serializable {
             Object sourceKey = builder.extractPrimaryKeyFromRow(parentRow, session);
             // May be any outer-join so ignore null.
             if (sourceKey != null) {
-                CacheKey sourceCacheKey = new CacheKey(sourceKey);
-                if ((lastCacheKey != null) && lastCacheKey.equals(sourceCacheKey)) {
+                if ((lastKey != null) && lastKey.equals(sourceKey)) {
                     childRows.add(row);
                     if (shouldFilterDuplicates()) {
                         // Also null out the row because it is a duplicate to avoid object building processing it.
                         this.dataResults.set(dataResultsIndex, null);
                     }
                 } else {
-                    childRows =  this.dataResultsByPrimaryKey.get(sourceCacheKey);
+                    childRows =  this.dataResultsByPrimaryKey.get(sourceKey);
                     if (childRows == null) {
                         childRows = new ArrayList();
-                        this.dataResultsByPrimaryKey.put(sourceCacheKey, childRows);
+                        this.dataResultsByPrimaryKey.put(sourceKey, childRows);
                     } else {
                         if (shouldFilterDuplicates()) {
                             // Also null out the row because it is a duplicate to avoid object building processing it.
@@ -799,7 +797,7 @@ public class JoinedAttributeManager implements Cloneable, Serializable {
                         }
                     }
                     childRows.add(row);
-                    lastCacheKey = sourceCacheKey;
+                    lastKey = sourceKey;
                 }
             }
         }

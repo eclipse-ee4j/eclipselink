@@ -334,6 +334,7 @@ public class DescriptorEvent extends EventObject {
         }
         if (eventChangeSet != null) {
             eventChangeSet.removeChange(attributeName);
+            // TODO: Can't see this working with attribute change tracking with no backup clone.
             eventChangeSet.addChange(mapping.compareForChange(clone, ((UnitOfWorkImpl)getSession()).getBackupClone(clone, getDescriptor()), eventChangeSet, getSession()));
             eventChangeSet.setShouldRecalculateAfterUpdateEvent(false);
         }

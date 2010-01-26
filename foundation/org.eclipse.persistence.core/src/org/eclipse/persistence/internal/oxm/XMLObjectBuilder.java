@@ -16,7 +16,6 @@ import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.List;
-import java.util.Vector;
 import java.util.Map.Entry;
 
 import javax.xml.namespace.QName;
@@ -28,6 +27,7 @@ import org.eclipse.persistence.expressions.Expression;
 import org.eclipse.persistence.internal.descriptors.Namespace;
 import org.eclipse.persistence.internal.descriptors.ObjectBuilder;
 import org.eclipse.persistence.internal.helper.DatabaseField;
+import org.eclipse.persistence.internal.identitymaps.CacheId;
 import org.eclipse.persistence.internal.identitymaps.CacheKey;
 import org.eclipse.persistence.internal.oxm.WeakObjectWrapper;
 import org.eclipse.persistence.internal.queries.JoinedAttributeManager;
@@ -84,9 +84,8 @@ public class XMLObjectBuilder extends ObjectBuilder {
     public AbstractRecord buildRow(Object object, AbstractSession session, DatabaseField xmlField, XMLRecord parentRecord, boolean addXsiType) {
         if (isXmlDescriptor() && ((XMLDescriptor)getDescriptor()).shouldPreserveDocument()) {
             Object pk = extractPrimaryKeyFromObject(object, session);
-            if ((pk == null) || (((Vector)pk).size() == 0)) {
-                pk = new Vector();
-                ((Vector)pk).add(new WeakObjectWrapper(object));
+            if ((pk == null) || (pk instanceof CacheId) && (((CacheId)pk).getPrimaryKey().length == 0)) {
+                pk = new CacheId(new Object[]{ new WeakObjectWrapper(object) });
             }
             CacheKey cacheKey = session.getIdentityMapAccessorInstance().getCacheKeyForObject(pk, getDescriptor().getJavaClass(), getDescriptor());
             if ((cacheKey != null) && (cacheKey.getRecord() != null)) {
@@ -294,9 +293,8 @@ public class XMLObjectBuilder extends ObjectBuilder {
         }
         concreteDescriptor.getObjectBuilder().buildAttributesIntoObject(domainObject, databaseRow, query, joinManager, false);
         if (isXmlDescriptor() && ((XMLDescriptor)concreteDescriptor).getPrimaryKeyFieldNames().size() > 0) {
-            if ((pk == null) || (((Vector)pk).size() == 0)) {
-                pk = new Vector();
-                ((Vector)pk).add(new WeakObjectWrapper(domainObject));
+            if ((pk == null) || (((CacheId)pk).getPrimaryKey().length == 0)) {
+                pk = new CacheId(new Object[]{ new WeakObjectWrapper(domainObject) });
             }
             CacheKey key = query.getSession().getIdentityMapAccessorInstance().acquireDeferredLock(pk, concreteDescriptor.getJavaClass(), concreteDescriptor);
             if (((XMLDescriptor)concreteDescriptor).shouldPreserveDocument()) {
@@ -374,9 +372,9 @@ public class XMLObjectBuilder extends ObjectBuilder {
     }
 
     public void writeOutMappings(XMLRecord row, Object object, AbstractSession session) {
-        Vector mappings = getDescriptor().getMappings();
+        List<DatabaseMapping> mappings = getDescriptor().getMappings();
         for (int index = 0; index < mappings.size(); index++) {
-            DatabaseMapping mapping = (DatabaseMapping)mappings.get(index);
+            DatabaseMapping mapping = mappings.get(index);
             mapping.writeFromObjectIntoRow(object, row, session);
         }
     }

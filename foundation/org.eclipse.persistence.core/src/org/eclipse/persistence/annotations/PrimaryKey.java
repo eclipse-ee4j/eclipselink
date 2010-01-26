@@ -35,7 +35,13 @@ public @interface PrimaryKey {
      * (Optional) Configures what id validation is done.
      * By default 0 is not a valid id value, this can be used to allow 0 id values.
      */
-    IdValidation validation() default IdValidation.ZERO; 
+    IdValidation validation() default IdValidation.ZERO;
+
+    /**
+     * (Optional) Configures what cache key type is used to store the object in the cache.
+     * By default the type is determined by what type is optimal for the class.
+     */
+    CacheKeyType cacheKeyType() default CacheKeyType.AUTO;
 
     /**
      * (Optional) Used to specify the primary key columns directly.

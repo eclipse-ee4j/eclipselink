@@ -23,15 +23,17 @@ import java.lang.reflect.Method;
 import java.security.AccessController;
 import java.security.PrivilegedActionException;
 import java.util.*;
+
+import org.eclipse.persistence.annotations.CacheKeyType;
 import org.eclipse.persistence.descriptors.*;
 import org.eclipse.persistence.internal.helper.ConversionManager;
-import org.eclipse.persistence.internal.helper.NonSynchronizedVector;
 import org.eclipse.persistence.internal.localization.ExceptionLocalization;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.mappings.DatabaseMapping;
 import org.eclipse.persistence.mappings.foundation.AbstractDirectMapping;
 import org.eclipse.persistence.exceptions.*;
 import org.eclipse.persistence.internal.helper.DatabaseField;
+import org.eclipse.persistence.internal.identitymaps.CacheId;
 import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
 import org.eclipse.persistence.internal.security.PrivilegedGetField;
 import org.eclipse.persistence.internal.security.PrivilegedClassForName;
@@ -182,20 +184,21 @@ public class CMP3Policy extends CMPPolicy {
     
     /**
      * INTERNAL:
-     * Use the key to create a EclipseLink primary key Vector.
+     * Use the key to create a EclipseLink primary key.
      * If the key is simple (direct mapped) then just add it to a vector,
      * otherwise must go through the inefficient process of copying the key into the bean
      * and extracting the key from the bean.
-     *
-     * @param key Object the primary key to use for creating the vector
-     * @return Vector
      */
-    public Vector createPkVectorFromKey(Object key, AbstractSession session) {
+    @Override
+    public Object createPrimaryKeyFromId(Object key, AbstractSession session) {
         // If the descriptor primary key is mapped through direct-to-field mappings,
         // then no elaborate conversion is required.
         // If key is compound, add each value to the vector.
         KeyElementAccessor[] pkElementArray = this.getKeyClassFields(key.getClass());
-        Vector pkVector = new NonSynchronizedVector(pkElementArray.length);
+        Object[] primaryKey = null;
+        if (getDescriptor().getCacheKeyType() != CacheKeyType.ID_VALUE) {
+            primaryKey = new Object[pkElementArray.length];
+        }
         for (int index = 0; index < pkElementArray.length; index++) {
             DatabaseMapping mapping = pkElementArray[index].getMapping();
             Object fieldValue = null;
@@ -216,9 +219,12 @@ public class CMP3Policy extends CMPPolicy {
                     }
                 }
             }
-            pkVector.add(fieldValue);
+            if (getDescriptor().getCacheKeyType() == CacheKeyType.ID_VALUE) {
+                return fieldValue;
+            }
+            primaryKey[index] = fieldValue;
         }
-        return pkVector;
+        return new CacheId(primaryKey);
     }
     
     /**

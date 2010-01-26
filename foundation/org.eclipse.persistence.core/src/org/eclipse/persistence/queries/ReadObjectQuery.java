@@ -15,6 +15,7 @@ package org.eclipse.persistence.queries;
 import java.util.*;
 import java.sql.*;
 import org.eclipse.persistence.internal.databaseaccess.*;
+import org.eclipse.persistence.internal.identitymaps.CacheId;
 import org.eclipse.persistence.internal.indirection.ProxyIndirectionPolicy;
 import org.eclipse.persistence.internal.descriptors.*;
 import org.eclipse.persistence.internal.queries.CallQueryMechanism;
@@ -46,7 +47,7 @@ public class ReadObjectQuery extends ObjectLevelReadQuery {
     protected transient Object selectionObject;
 
     /** Key that can be used in place of a selection criteria. */
-    protected Vector selectionKey;
+    protected Object selectionId;
 
     /** Can be used to refresh a specific non-cached instance from the database. */
     protected boolean shouldLoadResultIntoSelectionObject = false;    
@@ -293,7 +294,7 @@ public class ReadObjectQuery extends ObjectLevelReadQuery {
                         // PERF: the read-object query should always be static to ensure no regeneration of SQL.
                         if ((!hasJoining() || !getJoinedAttributeManager().hasJoinedAttributeExpressions()) && (!hasPartialAttributeExpressions()) && (!hasAsOfClause()) && (!hasNonDefaultFetchGroup()) && (getHintString() == null)
                                 && wasDefaultLockMode() && shouldIgnoreBindAllParameters() && (!hasFetchGroup()) && (getFetchGroupName() == null) && shouldUseDefaultFetchGroup()) {
-                            if ((getSelectionKey() != null) || (getSelectionObject() != null)) {// Must be primary key.
+                            if ((this.selectionId != null) || (this.selectionObject != null)) {// Must be primary key.
                                 setIsCustomQueryUsed(true);
                             } else {            
                                 if (getSelectionCriteria() != null) {
@@ -339,14 +340,14 @@ public class ReadObjectQuery extends ObjectLevelReadQuery {
                     this.descriptor.getObjectBuilder().unwrapObject(result, unitOfWork.getParent()),
                     null, unitOfWork, null, null);
         }
-
-        if ((getSelectionCriteria() != null) && (getSelectionKey() == null) && (getSelectionObject() == null)) {
-            ExpressionBuilder builder = getSelectionCriteria().getBuilder();
+        Expression selectionCriteria = getSelectionCriteria();
+        if ((selectionCriteria != null) && (this.selectionId == null) && (this.selectionObject == null)) {
+            ExpressionBuilder builder = selectionCriteria.getBuilder();
             builder.setSession(unitOfWork.getRootSession(null));
             builder.setQueryClass(getReferenceClass());
         }
 
-        clone = conformIndividualResult(clone, unitOfWork, databaseRow, getSelectionCriteria(), null);
+        clone = conformIndividualResult(clone, unitOfWork, databaseRow, selectionCriteria, null);
         if (clone == null) {
             return clone;
         }
@@ -446,8 +447,8 @@ public class ReadObjectQuery extends ObjectLevelReadQuery {
         }
         if ((result == null) && shouldRefreshIdentityMapResult()) {
             // bug5955326, should invalidate the shared cached if refreshed object no longer exists.
-            if (getSelectionKey() != null) {
-                session.getParentIdentityMapSession(this, true, true).getIdentityMapAccessor().invalidateObject(getSelectionKey(), getReferenceClass());
+            if (getSelectionId() != null) {
+                session.getParentIdentityMapSession(this, true, true).getIdentityMapAccessor().invalidateObject(getSelectionId(), getReferenceClass());
             } else if (getSelectionObject() != null) {
                 session.getParentIdentityMapSession(this, true, true).getIdentityMapAccessor().invalidateObject(getSelectionObject());
             }
@@ -544,7 +545,12 @@ public class ReadObjectQuery extends ObjectLevelReadQuery {
      */
     @Deprecated
     public Vector getSelectionKey() {
-        return selectionKey;
+        if (this.selectionId instanceof CacheId) {
+            return new Vector(Arrays.asList(((CacheId)this.selectionId).getPrimaryKey()));
+        }
+        Vector primaryKey = new Vector(1);
+        primaryKey.add(this.selectionId);
+        return (Vector)selectionId;
 
     }
 
@@ -574,7 +580,7 @@ public class ReadObjectQuery extends ObjectLevelReadQuery {
      * Return if the query is by primary key.
      */
     public boolean isPrimaryKeyQuery() {
-        return (this.selectionKey != null) || (this.selectionObject != null);
+        return (this.selectionId != null) || (this.selectionObject != null);
     }
 
     /**
@@ -600,7 +606,7 @@ public class ReadObjectQuery extends ObjectLevelReadQuery {
         super.copyFromQuery(query);
         if (query.isReadObjectQuery()) {
             ReadObjectQuery readQuery = (ReadObjectQuery)query;
-            this.selectionKey = readQuery.selectionKey;
+            this.selectionId = readQuery.selectionId;
             this.selectionObject = readQuery.selectionObject;
             this.shouldLoadResultIntoSelectionObject = readQuery.shouldLoadResultIntoSelectionObject;
         }
@@ -616,23 +622,23 @@ public class ReadObjectQuery extends ObjectLevelReadQuery {
         }
         super.prepare();
         
-        if ((getSelectionKey() != null) || (getSelectionObject() != null)) {
+        if ((this.selectionId != null) || (this.selectionObject != null)) {
             // The expression is set in the prepare as params.
-            setSelectionCriteria(getDescriptor().getObjectBuilder().getPrimaryKeyExpression());
+            setSelectionCriteria(this.descriptor.getObjectBuilder().getPrimaryKeyExpression());
             setExpressionBuilder(getSelectionCriteria().getBuilder());
             extendPessimisticLockScope();
             // For bug 2989998 the translation row is required to be set at this point.
             if (!shouldPrepare()) {
-                if (getSelectionKey() != null) {
+                if (this.selectionId != null) {
                     // Row must come from the key.
-                    setTranslationRow(getDescriptor().getObjectBuilder().buildRowFromPrimaryKeyValues(getSelectionKey(), getSession()));
+                    setTranslationRow(getDescriptor().getObjectBuilder().buildRowFromPrimaryKeyValues(this.selectionId, getSession()));
                 } else {//(getSelectionObject() != null)
-                    setTranslationRow(getDescriptor().getObjectBuilder().buildRowForTranslation(getSelectionObject(), getSession()));
+                    setTranslationRow(getDescriptor().getObjectBuilder().buildRowForTranslation(this.selectionObject, getSession()));
                 }
             }
         }
 
-        if (getDescriptor().isDescriptorForInterface()) {
+        if (this.descriptor.isDescriptorForInterface()) {
             return;
         }
         
@@ -665,8 +671,8 @@ public class ReadObjectQuery extends ObjectLevelReadQuery {
             // CR#... Must also set the selection object as may be loading into the object (refresh)
             customReadQuery.selectionObject = this.selectionObject;
             // The translation/primary key row will be set in prepareForExecution.
-        } else if (this.selectionKey != null) {
-            customReadQuery.selectionKey = this.selectionKey;
+        } else if (this.selectionId != null) {
+            customReadQuery.selectionId = this.selectionId;
         } else {
             // The primary key row must be used.
             primaryKeyRow = customQuery.getDescriptor().getObjectBuilder().extractPrimaryKeyRowFromExpression(getSelectionCriteria(), customQuery.getTranslationRow(), customReadQuery.getSession());
@@ -683,12 +689,12 @@ public class ReadObjectQuery extends ObjectLevelReadQuery {
 
         // For bug 2989998 the translation row now sometimes set earlier in prepare.
         if (shouldPrepare()) {
-            if (getSelectionKey() != null) {
+            if (this.selectionId != null) {
                 // Row must come from the key.
-                setTranslationRow(this.descriptor.getObjectBuilder().buildRowFromPrimaryKeyValues(getSelectionKey(), getSession()));
-            } else if (getSelectionObject() != null) {
+                this.translationRow = this.descriptor.getObjectBuilder().buildRowFromPrimaryKeyValues(this.selectionId, getSession());
+            } else if (this.selectionObject != null) {
                 // The expression is set in the prepare as params.
-                setTranslationRow(this.descriptor.getObjectBuilder().buildRowForTranslation(getSelectionObject(), getSession()));
+                this.translationRow = this.descriptor.getObjectBuilder().buildRowForTranslation(this.selectionObject, getSession());
             }
         }
     }
@@ -773,7 +779,7 @@ public class ReadObjectQuery extends ObjectLevelReadQuery {
      * Return Id of the object to be selected by the query.
      */
     public Object getSelectionId() {
-        return getSelectionKey();
+        return this.selectionId;
     }
 
     /**
@@ -782,31 +788,29 @@ public class ReadObjectQuery extends ObjectLevelReadQuery {
      * This will generate a query by primary key.
      * This can be used instead of an Expression, SQL, or JPQL, or example object.
      * The Id is the Id value for a singleton primary key,
-     * for a composite it is an instance of CacheKey.
-     * @see CacheKey
+     * for a composite it is an instance of CacheId.
+     * @see CacheId
      */
     public void setSelectionId(Object id) {
-        setSelectionKey((Vector)id);
+        this.selectionId = id;
     }
 
     /**
      * PUBLIC:
      * The primary key can be specified if used instead of an expression or selection object.
      * If composite the primary must be in the same order as defined in the descriptor.
-     * @Depreacted since EclipseLink 2.1, replaced by setSelectionId(Object)
+     * @depreacted since EclipseLink 2.1, replaced by setSelectionId(Object)
      * @see #setSelectionId(Object)
      */
     @Deprecated
     public void setSelectionKey(List selectionKey) {
         if (selectionKey == null) {
-            this.selectionKey = null;
-        } else if (selectionKey instanceof NonSynchronizedVector) {
-            this.selectionKey = (Vector)selectionKey;
+            this.selectionId = null;
+        } else if (selectionKey.size() == 1) {
+            this.selectionId = selectionKey.get(0);            
         } else {
-            this.selectionKey = new NonSynchronizedVector(selectionKey);            
+            this.selectionId = new CacheId(selectionKey.toArray());
         }
-        // setIsPrepared(false); PERF: This cause the findByPrimaryKey query to unprepare,
-        // Since this is an argument, and not a query modifier do not unprepare.
     }
 
     /**

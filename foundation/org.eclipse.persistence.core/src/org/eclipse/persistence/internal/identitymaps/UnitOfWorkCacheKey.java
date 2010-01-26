@@ -12,8 +12,6 @@
  ******************************************************************************/  
 package org.eclipse.persistence.internal.identitymaps;
 
-import java.util.Vector;
-
 /**
  * Cache key used in the unit of work identity map.
  * This cache avoid locking as the unit of work is single threaded.
@@ -22,15 +20,15 @@ import java.util.Vector;
  */
 public class UnitOfWorkCacheKey extends CacheKey {
 
-    public UnitOfWorkCacheKey(Vector primaryKeys) {
+    public UnitOfWorkCacheKey(Object primaryKeys) {
         super(primaryKeys);
     }
 
-    public UnitOfWorkCacheKey(Vector primaryKey, Object object, Object lockValue) {
+    public UnitOfWorkCacheKey(Object primaryKey, Object object, Object lockValue) {
         super(primaryKey, object, lockValue);
     }
 
-    public UnitOfWorkCacheKey(Vector primaryKey, Object object, Object lockValue, long readTime) {
+    public UnitOfWorkCacheKey(Object primaryKey, Object object, Object lockValue, long readTime) {
         super(primaryKey, object, lockValue, readTime);
     }
 

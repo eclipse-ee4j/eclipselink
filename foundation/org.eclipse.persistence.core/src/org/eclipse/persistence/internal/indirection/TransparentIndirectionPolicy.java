@@ -217,7 +217,8 @@ public class TransparentIndirectionPolicy extends IndirectionPolicy {
      * This key will be used by a RemoteValueHolder.
      * OneToOneMappings should not be using transparent direction.
      */
-    public Vector extractPrimaryKeyForReferenceObject(Object referenceObject, AbstractSession session) {
+    @Override
+    public Object extractPrimaryKeyForReferenceObject(Object referenceObject, AbstractSession session) {
         throw DescriptorException.invalidUseOfTransparentIndirection(this.getMapping());
     }
 

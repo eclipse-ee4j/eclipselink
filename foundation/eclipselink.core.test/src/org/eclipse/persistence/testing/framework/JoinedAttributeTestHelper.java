@@ -223,7 +223,6 @@ public class JoinedAttributeTestHelper {
             HashMap map1 = new HashMap(col1.size());
             HashMap map2 = new HashMap(col2.size());
             
-            boolean simplePk = desc.getPrimaryKeyFields().size()==1;
             ObjectBuilder builder = desc.getObjectBuilder();
             Iterator it1 = col1.iterator();
             Iterator it2 = col2.iterator();
@@ -232,10 +231,6 @@ public class JoinedAttributeTestHelper {
                 Object obj2 = it2.next();
                 Object pk1 = builder.extractPrimaryKeyFromObject(obj1, session);
                 Object pk2 = builder.extractPrimaryKeyFromObject(obj2, session);
-                if(simplePk) {
-                    pk1 = ((Vector)pk1).firstElement();
-                    pk2 = ((Vector)pk2).firstElement();
-                }
                 map1.put(pk1, obj1);
                 map2.put(pk2, obj2);
             }

@@ -53,9 +53,6 @@ public abstract class ObjectBuildingQuery extends ReadQuery {
     /** INTERNAL: for bug 2612601 allow ability not to register results in UOW. */
     protected boolean shouldRegisterResultsInUnitOfWork = true;
 
-    /** CMP only. Allow users to configure whether finder should be executed in a uow or not. */
-    protected boolean shouldProcessResultsInUnitOfWork = true;
-
     /** Used for pessimistic locking. */
     protected ForUpdateClause lockingClause;
     public static final short NO_LOCK = 0;
@@ -163,7 +160,6 @@ public abstract class ObjectBuildingQuery extends ReadQuery {
         if (query.isObjectBuildingQuery()) {
             ObjectBuildingQuery readQuery = (ObjectBuildingQuery)query;
             this.shouldBuildNullForNullPk = readQuery.shouldBuildNullForNullPk;
-            this.shouldProcessResultsInUnitOfWork = readQuery.shouldProcessResultsInUnitOfWork;
             this.shouldRefreshIdentityMapResult = readQuery.shouldRefreshIdentityMapResult;
             this.shouldRefreshRemoteIdentityMapResult = readQuery.shouldRefreshRemoteIdentityMapResult;
             this.shouldRegisterResultsInUnitOfWork = readQuery.shouldRegisterResultsInUnitOfWork;
@@ -622,48 +618,6 @@ public abstract class ObjectBuildingQuery extends ReadQuery {
      */
     public boolean shouldRefreshRemoteIdentityMapResult() {
         return shouldRefreshRemoteIdentityMapResult;
-    }
-
-    /**
-     * ADVANCED:
-     * Used for CMP only.  This allows users to indicate whether cmp finders executed
-     * at the beginning of a transaction should always be run against a UnitOfWork.
-     * Defaults to true.
-     * <p>
-     * If set to false, then UnitOfWork allocation will be deferred until a business
-     * method (including creates/removes) or finder with shouldProcessResultsInUnitOfWork == true
-     * is invoked.  Any finder executed before such a time, will do so against the
-     * underlying ServerSession.  Forcing finder execution to always go through a
-     * UnitOfWork means the results will be cloned and cached in the UnitOfWork up
-     * front.  This is desired when the results will be accessed in the same transaction.
-     * <p>
-     * Note that finders executed with an unspecified transaction context will never
-     * be executed against a UnitOfWork, even if this setting is true.  This case may happen
-     * with the NotSupported, Never, and Supports attributes.
-     */
-    public void setShouldProcessResultsInUnitOfWork(boolean processResultsInUnitOfWork) {
-        this.shouldProcessResultsInUnitOfWork = processResultsInUnitOfWork;
-    }
-
-    /**
-     * ADVANCED:
-     * Used for CMP only.  Indicates whether cmp finders executed at the beginning
-     * of a transaction should always be run against a UnitOfWork.
-     * Defaults to true.
-     * <p>
-     * If set to false, then UnitOfWork allocation will be deferred until a business
-     * method (including creates/removes) or finder with shouldProcessResultsInUnitOfWork == true
-     * is invoked.  Any finder executed before such a time, will do so against the
-     * underlying ServerSession.  Forcing finder execution to always go through a
-     * UnitOfWork means the results will be cloned and cached in the UnitOfWork up
-     * front.  This is desired when the results will be accessed in the same transaction.
-     * <p>
-     * Note that finders executed with an unspecified transaction context will never
-     * be executed against a UnitOfWork, even if this setting is true.  This case may happen
-     * with the NotSupported, Never, and Supports attributes.
-     */
-    public boolean shouldProcessResultsInUnitOfWork() {
-        return this.shouldProcessResultsInUnitOfWork;
     }
 
     /**

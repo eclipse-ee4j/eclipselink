@@ -13,7 +13,6 @@
 package org.eclipse.persistence.mappings;
 
 import java.util.Iterator;
-import java.util.List;
 import java.util.Vector;
 
 import org.eclipse.persistence.descriptors.ClassDescriptor;
@@ -24,6 +23,7 @@ import org.eclipse.persistence.exceptions.OptimisticLockException;
 import org.eclipse.persistence.internal.descriptors.CascadeLockingPolicy;
 import org.eclipse.persistence.internal.helper.ConversionManager;
 import org.eclipse.persistence.internal.helper.DatabaseField;
+import org.eclipse.persistence.internal.identitymaps.CacheId;
 import org.eclipse.persistence.internal.sessions.AbstractRecord;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.internal.sessions.ChangeRecord;
@@ -106,9 +106,9 @@ public class UnidirectionalOneToManyMapping extends OneToManyMapping {
      * Extract the primary key value from the source row.
      * Used for batch reading, most following same order and fields as in the mapping.
      */
-    protected Vector extractPrimaryKeyFromRow(AbstractRecord row, AbstractSession session) {
-        int size = sourceKeyFields.size();
-        Vector key = new Vector(size);
+    protected Object extractPrimaryKeyFromRow(AbstractRecord row, AbstractSession session) {            
+        int size = this.sourceKeyFields.size();
+        Object[] key = new Object[size];
         ConversionManager conversionManager = session.getDatasourcePlatform().getConversionManager();
 
         for (int index=0; index < size; index++) {
@@ -122,10 +122,10 @@ public class UnidirectionalOneToManyMapping extends OneToManyMapping {
                 throw ConversionException.couldNotBeConverted(this, getDescriptor(), e);
             }
 
-            key.addElement(value);
+            key[index] = value;
         }
-
-        return key;
+        
+        return new CacheId(key);
     }
 
     /**
@@ -180,7 +180,7 @@ public class UnidirectionalOneToManyMapping extends OneToManyMapping {
             if(shouldIncrementTargetLockValueOnAddOrRemoveTarget) {
                 descriptor.addMappingsPostCalculateChanges(this);
                 if (getDescriptor().hasInheritance()){
-                    for (ClassDescriptor descriptor: (List<ClassDescriptor>)getDescriptor().getInheritancePolicy().getAllChildDescriptors()){
+                    for (ClassDescriptor descriptor: getDescriptor().getInheritancePolicy().getAllChildDescriptors()) {
                         descriptor.addMappingsPostCalculateChanges(this);
                     }
                 }
@@ -188,7 +188,7 @@ public class UnidirectionalOneToManyMapping extends OneToManyMapping {
             if(shouldIncrementTargetLockValueOnDeleteSource && !isPrivateOwned) {
                 descriptor.addMappingsPostCalculateChangesOnDeleted(this);
                 if (getDescriptor().hasInheritance()){
-                    for (ClassDescriptor descriptor: (List<ClassDescriptor>)getDescriptor().getInheritancePolicy().getAllChildDescriptors()){
+                    for (ClassDescriptor descriptor: getDescriptor().getInheritancePolicy().getAllChildDescriptors()) {
                         descriptor.addMappingsPostCalculateChangesOnDeleted(this);
                     }
                 }

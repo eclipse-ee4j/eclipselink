@@ -19,6 +19,7 @@ import org.eclipse.persistence.expressions.*;
 import org.eclipse.persistence.history.*;
 import org.eclipse.persistence.internal.expressions.*;
 import org.eclipse.persistence.internal.helper.*;
+import org.eclipse.persistence.internal.identitymaps.CacheId;
 import org.eclipse.persistence.internal.queries.*;
 import org.eclipse.persistence.internal.sessions.*;
 import org.eclipse.persistence.mappings.foundation.MapComponentMapping;
@@ -176,10 +177,11 @@ public class ManyToManyMapping extends CollectionMapping implements RelationalMa
      * Extract the source primary key value from the relation row.
      * Used for batch reading, most following same order and fields as in the mapping.
      */
-    protected Vector extractKeyFromTargetRow(AbstractRecord row, AbstractSession session) {
-        Vector key = new Vector(getSourceRelationKeyFields().size());
+    protected Object extractKeyFromTargetRow(AbstractRecord row, AbstractSession session) {
+        int size = getSourceRelationKeyFields().size();
+        Object[] key = new Object[size];
 
-        for (int index = 0; index < getSourceRelationKeyFields().size(); index++) {
+        for (int index = 0; index < size; index++) {
             DatabaseField relationField = getSourceRelationKeyFields().elementAt(index);
             DatabaseField sourceField = getSourceKeyFields().elementAt(index);
             Object value = row.get(relationField);
@@ -191,10 +193,10 @@ public class ManyToManyMapping extends CollectionMapping implements RelationalMa
                 throw ConversionException.couldNotBeConverted(this, getDescriptor(), e);
             }
 
-            key.addElement(value);
+            key[index] = value;
         }
 
-        return key;
+        return new CacheId(key);
     }
 
     /**
@@ -202,24 +204,26 @@ public class ManyToManyMapping extends CollectionMapping implements RelationalMa
      * Extract the primary key value from the source row.
      * Used for batch reading, most following same order and fields as in the mapping.
      */
-    protected Vector extractPrimaryKeyFromRow(AbstractRecord row, AbstractSession session) {
-        Vector key = new Vector(getSourceKeyFields().size());
+    protected Object extractPrimaryKeyFromRow(AbstractRecord row, AbstractSession session) {
+        int size = getSourceKeyFields().size();
+        Object[] key = new Object[size];
+        ConversionManager conversionManager = session.getDatasourcePlatform().getConversionManager();
 
-        for (Enumeration fieldEnum = getSourceKeyFields().elements(); fieldEnum.hasMoreElements();) {
-            DatabaseField field = (DatabaseField)fieldEnum.nextElement();
+        for (int index = 0; index < size; index++) {
+            DatabaseField field = getSourceKeyFields().get(index);
             Object value = row.get(field);
 
             // Must ensure the classification gets a cache hit.
             try {
-                value = session.getDatasourcePlatform().getConversionManager().convertObject(value, getDescriptor().getObjectBuilder().getFieldClassification(field));
+                value = conversionManager.convertObject(value, this.descriptor.getObjectBuilder().getFieldClassification(field));
             } catch (ConversionException e) {
-                throw ConversionException.couldNotBeConverted(this, getDescriptor(), e);
+                throw ConversionException.couldNotBeConverted(this, this.descriptor, e);
             }
 
-            key.addElement(value);
+            key[index] = value;
         }
-
-        return key;
+        
+        return new CacheId(key);
     }
 
     /**

@@ -583,12 +583,8 @@ public class AggregateObjectMapping extends AggregateMapping implements Relation
         AbstractRecord result = getReferenceDescriptor().getObjectBuilder().buildTemplateInsertRow(session);
         List processedMappings = (List)getReferenceDescriptor().getMappings().clone();
         if (getReferenceDescriptor().hasInheritance()) {
-            Enumeration children = getReferenceDescriptor().getInheritancePolicy().getChildDescriptors().elements();
-            while (children.hasMoreElements()) {
-                Enumeration mappings = ((ClassDescriptor)children.nextElement()).getMappings().elements();
-                while (mappings.hasMoreElements()) {
-                    DatabaseMapping mapping = (DatabaseMapping)mappings.nextElement();
-
+            for (ClassDescriptor child : getReferenceDescriptor().getInheritancePolicy().getChildDescriptors()) {
+                for (DatabaseMapping mapping : child.getMappings()) {
                     // Only write mappings once.
                     if (!processedMappings.contains(mapping)) {
                         mapping.writeInsertFieldsIntoRow(result, session);
@@ -1067,16 +1063,16 @@ public class AggregateObjectMapping extends AggregateMapping implements Relation
         //recursive call to the further children descriptors
         if (parentDescriptor.getInheritancePolicy().hasChildren()) {
             //setFields(clonedChildDescriptor.getFields());		
-            Vector childDescriptors = parentDescriptor.getInheritancePolicy().getChildDescriptors();
-            Vector cloneChildDescriptors = org.eclipse.persistence.internal.helper.NonSynchronizedVector.newInstance();
-            for (Enumeration enumtr = childDescriptors.elements(); enumtr.hasMoreElements();) {
-                ClassDescriptor clonedChildDescriptor = (ClassDescriptor)((ClassDescriptor)enumtr.nextElement()).clone();
+            List<ClassDescriptor> childDescriptors = parentDescriptor.getInheritancePolicy().getChildDescriptors();
+            List<ClassDescriptor> cloneChildDescriptors = new ArrayList();
+            for (ClassDescriptor child : childDescriptors) {
+                ClassDescriptor clonedChildDescriptor = (ClassDescriptor)child.clone();
                 clonedChildDescriptor.getInheritancePolicy().setParentDescriptor(parentDescriptor);
                 initializeReferenceDescriptor(clonedChildDescriptor);
                 clonedChildDescriptor.preInitialize(session);
                 clonedChildDescriptor.initialize(session);
                 translateFields(clonedChildDescriptor, session);
-                cloneChildDescriptors.addElement(clonedChildDescriptor);
+                cloneChildDescriptors.add(clonedChildDescriptor);
                 initializeChildInheritance(clonedChildDescriptor, session);
             }
             parentDescriptor.getInheritancePolicy().setChildDescriptors(cloneChildDescriptors);

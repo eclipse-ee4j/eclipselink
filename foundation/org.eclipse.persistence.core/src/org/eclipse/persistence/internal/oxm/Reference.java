@@ -13,7 +13,6 @@
 package org.eclipse.persistence.internal.oxm;
 
 import java.util.HashMap;
-import java.util.Vector;
 import org.eclipse.persistence.oxm.mappings.XMLMapping;
 import org.eclipse.persistence.oxm.sequenced.Setting;
 
@@ -29,7 +28,7 @@ public class Reference {
 	protected XMLMapping mapping;		// mapping associated with this reference
 	protected Object sourceObject;		// the source object instance
 	protected Class targetClass;		// the reference class
-	protected Vector primaryKeys;		// primary key values for cache lookup - used in single case
+	protected Object primaryKey;		// primary key values for cache lookup - used in single case
 	protected HashMap primaryKeyMap;	// map of primary key values for cache lookup - used in collection case
 	private Setting setting;
 
@@ -54,11 +53,11 @@ public class Reference {
 	/**
 	 * Constructor typically used in the single case.
 	 */
-	public Reference(XMLMapping mapping, Object source, Class target, Vector primaryKeys) {
+	public Reference(XMLMapping mapping, Object source, Class target, Object primaryKey) {
 		this.mapping = mapping;
 		sourceObject = source;
 		targetClass = target;
-		this.primaryKeys = primaryKeys;
+		this.primaryKey = primaryKey;
 	}
 
 	/**
@@ -86,8 +85,8 @@ public class Reference {
 	 * 
 	 * @return
 	 */
-	public Vector getPrimaryKeys() {
-		return primaryKeys;
+	public Object getPrimaryKey() {
+		return primaryKey;
 	}
 
 	/**
@@ -109,12 +108,10 @@ public class Reference {
 	}
 	
 	/**
-	 * Set the list of primary key values required to lookup
+	 * Set the primary key value required to lookup
 	 * the reference class in the cache.
-	 * 
-	 * @param primaryKeys
 	 */
-	public void setPrimaryKeys(Vector primaryKeys) {
-		this.primaryKeys = primaryKeys;
+	public void setPrimaryKey(Object primaryKey) {
+		this.primaryKey = primaryKey;
 	}
 }

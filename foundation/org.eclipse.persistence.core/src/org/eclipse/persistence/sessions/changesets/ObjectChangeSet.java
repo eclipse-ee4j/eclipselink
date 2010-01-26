@@ -25,7 +25,7 @@ import org.eclipse.persistence.sessions.Session;
  * <p>
  */
 public interface ObjectChangeSet {
-    boolean equals(ObjectChangeSet objectChange);
+    boolean equals(Object objectChange);
 
     /**
      * ADVANCED:
@@ -67,9 +67,18 @@ public interface ObjectChangeSet {
 
     /**
      * ADVANCED:
-     * This method returns the primary keys for the object that this change set represents.
+     * This method returns the primary key for the object that this change set represents.
+     * @depreated since EclipseLink 2.1, replaced by getPrimaryKey()
+     * @see getPrimaryKey()
      */
+    @Deprecated
     Vector getPrimaryKeys();
+
+    /**
+     * ADVANCED:
+     * This method returns the primary key for the object that this change set represents.
+     */
+    Object getId();
 
     /**
      * ADVANCED:

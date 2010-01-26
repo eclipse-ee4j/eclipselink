@@ -101,7 +101,7 @@ public class DeferredChangeDetectionPolicy implements ObjectChangePolicy, java.i
             }
         }
         //Check if the user set the PK to null and throw an exception (bug# 4569755)
-        if (changes.getPrimaryKeys() == null && !isNew && !changes.isAggregate()) {
+        if (changes.getId() == null && !isNew && !changes.isAggregate()) {
             if(!(unitOfWork.isNestedUnitOfWork()) || (unitOfWork.isNestedUnitOfWork() && !((UnitOfWorkImpl)unitOfWork.getParent()).isObjectNew(backUp))) {
                 throw ValidationException.nullPrimaryKeyInUnitOfWorkClone(clone);
             }
@@ -145,7 +145,7 @@ public class DeferredChangeDetectionPolicy implements ObjectChangePolicy, java.i
         ObjectChangeSet changes = builder.createObjectChangeSet(clone, changeSet, isNew, true, session);
 
         // The following code deals with reads that force changes to the flag associated with optimistic locking.
-        if ((descriptor.usesOptimisticLocking()) && (changes.getPrimaryKeys() != null)) {
+        if ((descriptor.usesOptimisticLocking()) && (changes.getId() != null)) {
             changes.setOptimisticLockingPolicyAndInitialWriteLockValue(descriptor.getOptimisticLockingPolicy(), session);
         }
 

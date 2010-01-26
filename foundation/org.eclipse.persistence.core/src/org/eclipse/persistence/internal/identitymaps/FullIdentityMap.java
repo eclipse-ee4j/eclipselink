@@ -28,7 +28,7 @@ import org.eclipse.persistence.descriptors.ClassDescriptor;
 public class FullIdentityMap extends AbstractIdentityMap {
 
     /** Map of CacheKeys stored using their key. */
-    protected Map<CacheKey, CacheKey> cacheKeys;
+    protected Map<Object, CacheKey> cacheKeys;
 
     public FullIdentityMap() {}
     
@@ -49,11 +49,11 @@ public class FullIdentityMap extends AbstractIdentityMap {
     @Override
     public Object clone() {
         FullIdentityMap clone = (FullIdentityMap)super.clone();
-        clone.setCacheKeys(new ConcurrentHashMap(getCacheKeys().size()));
+        clone.setCacheKeys(new ConcurrentHashMap(this.cacheKeys.size()));
 
-        for (Iterator cacheKeysIterator = getCacheKeys().values().iterator(); cacheKeysIterator.hasNext();) {
+        for (Iterator cacheKeysIterator = this.cacheKeys.values().iterator(); cacheKeysIterator.hasNext();) {
             CacheKey key = (CacheKey)((CacheKey)cacheKeysIterator.next()).clone();
-            clone.getCacheKeys().put(key, key);
+            clone.getCacheKeys().put(key.getKey(), key);
         }
 
         return clone;
@@ -65,7 +65,7 @@ public class FullIdentityMap extends AbstractIdentityMap {
      */
     @Override
     public void collectLocks(HashMap threadList) {
-        Iterator cacheKeyIterator = getCacheKeys().values().iterator();
+        Iterator cacheKeyIterator = this.cacheKeys.values().iterator();
         while (cacheKeyIterator.hasNext()) {
             CacheKey cacheKey = (CacheKey)cacheKeyIterator.next();
             if (cacheKey.isAcquired()) {
@@ -93,8 +93,8 @@ public class FullIdentityMap extends AbstractIdentityMap {
      * If no object for the key exists, return null.
      */
     @Override
-    protected CacheKey getCacheKey(CacheKey searchKey) {
-        return getCacheKeys().get(searchKey);
+    public CacheKey getCacheKey(Object searchKey) {
+        return this.cacheKeys.get(searchKey);
     }    
         
     /**
@@ -103,20 +103,15 @@ public class FullIdentityMap extends AbstractIdentityMap {
      * The searchKey should have already been locked. 
      */
     @Override
-    protected CacheKey getCacheKeyIfAbsentPut(CacheKey searchKey) {
-        // PERF: First to a get, and get is non-locking, putIfAbsent locks.
-        CacheKey cacheKey = getCacheKeys().get(searchKey);
-        if (cacheKey == null) {
-            searchKey.setOwningMap(this);
-            cacheKey = (CacheKey)((ConcurrentMap)getCacheKeys()).putIfAbsent(searchKey, searchKey);
-        }
-        return cacheKey;
+    protected CacheKey putCacheKeyIfAbsent(CacheKey searchKey) {
+        searchKey.setOwningMap(this);
+        return (CacheKey)((ConcurrentMap)this.cacheKeys).putIfAbsent(searchKey.getKey(), searchKey);
     }
 
     /**
      * Return the cache keys.
      */
-    public Map<CacheKey, CacheKey> getCacheKeys() {
+    public Map<Object, CacheKey> getCacheKeys() {
         return cacheKeys;
     }
 
@@ -136,7 +131,7 @@ public class FullIdentityMap extends AbstractIdentityMap {
     @Override
     public int getSize(Class myClass, boolean recurse) {
         int count = 0;
-        Iterator keys = getCacheKeys().values().iterator();
+        Iterator keys = this.cacheKeys.values().iterator();
 
         while (keys.hasNext()) {
             CacheKey key = (CacheKey)keys.next();
@@ -184,7 +179,7 @@ public class FullIdentityMap extends AbstractIdentityMap {
     public CacheKey put(Object primaryKey, Object object, Object writeLockValue, long readTime) {
         CacheKey newCacheKey = createCacheKey(primaryKey, object, writeLockValue, readTime);
         // Find the cache key in the map, reset it, or put the new one.
-        CacheKey cacheKey = getCacheKeyIfAbsentPut(newCacheKey);
+        CacheKey cacheKey = putCacheKeyIfAbsent(newCacheKey);
         if (cacheKey != null) {
             // The cache key is locked inside resetCacheKey() to keep other threads from accessing the object.
             resetCacheKey(cacheKey, object, writeLockValue, readTime);
@@ -204,7 +199,7 @@ public class FullIdentityMap extends AbstractIdentityMap {
         if (cacheKey != null) {
             // Cache key needs to be locked when removing from the map.
             cacheKey.acquire();
-            getCacheKeys().remove(cacheKey);
+            this.cacheKeys.remove(cacheKey.getKey());
             // Cache key needs to be released after removing from the map.
             cacheKey.release();
             return cacheKey.getObject();
@@ -224,7 +219,7 @@ public class FullIdentityMap extends AbstractIdentityMap {
         key.release();
     }
 
-    protected void setCacheKeys(Map<CacheKey, CacheKey> cacheKeys) {
+    protected void setCacheKeys(Map<Object, CacheKey> cacheKeys) {
         this.cacheKeys = cacheKeys;
     }
 }

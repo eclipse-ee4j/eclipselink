@@ -22,7 +22,6 @@ package org.eclipse.persistence.internal.dynamic;
 import java.beans.PropertyChangeListener;
 import java.util.Collection;
 import java.util.Map;
-import java.util.Vector;
 
 //EclipseLink imports
 import org.eclipse.persistence.descriptors.changetracking.ChangeTracker;
@@ -33,7 +32,6 @@ import org.eclipse.persistence.indirection.IndirectContainer;
 import org.eclipse.persistence.indirection.ValueHolderInterface;
 import org.eclipse.persistence.internal.descriptors.PersistenceEntity;
 import org.eclipse.persistence.internal.helper.Helper;
-import org.eclipse.persistence.internal.identitymaps.CacheKey;
 import org.eclipse.persistence.mappings.CollectionMapping;
 import org.eclipse.persistence.mappings.DatabaseMapping;
 import org.eclipse.persistence.mappings.ForeignReferenceMapping;
@@ -175,29 +173,18 @@ public abstract class DynamicEntityImpl implements DynamicEntity, PersistenceEnt
 
     //PersistenceEntity API
     /**
-     * Cache the CacheKey within the entity
-     * 
-     * @see PersistenceEntity#_persistence_setCacheKey(CacheKey)
-     */
-    private CacheKey cacheKey;
-    /**
      * Cache the primary key within the entity
      * 
-     * @see PersistenceEntity#_persistence_setPKVector(Vector)
+     * @see PersistenceEntity#_persistence_setId(Object)
      */
-    private Vector<Object> primaryKey;
-    public CacheKey _persistence_getCacheKey() {
-        return this.cacheKey;
-    }
-    public void _persistence_setCacheKey(CacheKey key) {
-        this.cacheKey = key;
-    }
+    private Object primaryKey;
+    
     @SuppressWarnings("unchecked")
-    public Vector _persistence_getPKVector() {
+    public Object _persistence_getId() {
         return this.primaryKey;
     }
     @SuppressWarnings("unchecked")
-    public void _persistence_setPKVector(Vector pk) {
+    public void _persistence_setId(Object pk) {
         this.primaryKey = pk;
     }
     
@@ -271,13 +258,7 @@ public abstract class DynamicEntityImpl implements DynamicEntity, PersistenceEnt
         StringBuilder sb = new StringBuilder(20);
         sb.append('{');
         sb.append(getShortClassName(this.getClass()));
-        // use pk vector (directly) to avoid triggering indirection of 'regular' properties
-        if (primaryKey != null && primaryKey.size() > 0) {
-            for (int i = 0, len = primaryKey.size(); i < len; i++) {
-                sb.append(' ');
-                sb.append(primaryKey.elementAt(i));
-            }
-        }
+        sb.append(this.primaryKey);
         sb.append('}');
         return sb.toString();
     }

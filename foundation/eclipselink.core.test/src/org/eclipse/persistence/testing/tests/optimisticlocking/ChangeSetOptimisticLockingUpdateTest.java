@@ -54,7 +54,7 @@ public class ChangeSetOptimisticLockingUpdateTest extends TestCase {
         ObjectChangeSet changeSet = (ObjectChangeSet)uow.getUnitOfWorkChangeSet().getObjectChangeSetForClone(originalObject);
         Object lockValue = 
             getSession().getDescriptor(domainClass).getOptimisticLockingPolicy().getWriteLockValue(originalObject, 
-                                                                                                   changeSet.getPrimaryKeys(), 
+                                                                                                   changeSet.getId(), 
                                                                                                    (AbstractSession)getSession());
         if (lockValue instanceof Number){
             if (((Number)changeSet.getWriteLockValue()).longValue() !=((Number)lockValue).longValue()) {

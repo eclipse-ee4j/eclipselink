@@ -349,6 +349,9 @@ public class VersionLockingPolicy implements OptimisticLockingPolicy, Serializab
     public Object getWriteLockValue(Object domainObject, Object primaryKey, AbstractSession session) {
         Number writeLockFieldValue;
         if (isStoredInCache()) {
+            if (primaryKey == null) {
+                return null;
+            }
             writeLockFieldValue = (Number)session.getIdentityMapAccessorInstance().getWriteLockValue(primaryKey, domainObject.getClass(), getDescriptor());
         } else {
             writeLockFieldValue = (Number)lockValueFromObject(domainObject);

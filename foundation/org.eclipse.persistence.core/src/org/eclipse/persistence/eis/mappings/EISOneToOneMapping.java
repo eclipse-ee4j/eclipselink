@@ -17,13 +17,14 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.Vector;
-import org.eclipse.persistence.exceptions.ConversionException;
+
+import org.eclipse.persistence.annotations.CacheKeyType;
 import org.eclipse.persistence.exceptions.DatabaseException;
 import org.eclipse.persistence.exceptions.DescriptorException;
 import org.eclipse.persistence.expressions.Expression;
 import org.eclipse.persistence.expressions.ExpressionBuilder;
 import org.eclipse.persistence.internal.helper.DatabaseField;
+import org.eclipse.persistence.internal.identitymaps.CacheId;
 import org.eclipse.persistence.internal.queries.JoinedAttributeManager;
 import org.eclipse.persistence.internal.sessions.AbstractRecord;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
@@ -35,7 +36,7 @@ import org.eclipse.persistence.queries.*;
  * <p>An EIS one-to-one mapping is a reference mapping that represents the relationship between 
  * a single source object and a single mapped persistent Java object.  The source object usually 
  * contains a foreign key (pointer) to the target object (key on source); alternatively, the target 
- * object may contiain a foreign key to the source object (key on target).  Because both the source 
+ * object may contain a foreign key to the source object (key on target).  Because both the source 
  * and target objects use interactions, they must both be configured as root object types.  
  * 
  * <p><table border="1">
@@ -72,7 +73,7 @@ public class EISOneToOneMapping extends ObjectReferenceMapping implements EISMap
     protected Map sourceToTargetKeyFields;
 
     /** Maps the target primary/foreign key fields to the source foreign/primary key fields. */
-    protected Map targetToSourceKeyFields;
+    protected Map<DatabaseField, DatabaseField> targetToSourceKeyFields;
 
     /** These are used for non-unit of work modification to check if the value of the 1-1 was changed and a deletion is required. */
     protected boolean shouldVerifyDelete;
@@ -90,6 +91,7 @@ public class EISOneToOneMapping extends ObjectReferenceMapping implements EISMap
     /**
      * INTERNAL:
      */
+    @Override
     public boolean isEISMapping() {
         return true;
     }
@@ -97,23 +99,24 @@ public class EISOneToOneMapping extends ObjectReferenceMapping implements EISMap
     /**
      * INTERNAL:
      */
+    @Override
     public boolean isOneToOneMapping() {
         return true;
     }
 
     /**
-         * PUBLIC:
-         * Define the source foreign key relationship in the one-to-one mapping.
-         * This method is used to add foreign key relationships to the mapping.
-         * Both the source foreign key field name and the corresponding
-         * target primary key field name must be specified.
-         */
+     * PUBLIC:
+     * Define the source foreign key relationship in the one-to-one mapping.
+     * This method is used to add foreign key relationships to the mapping.
+     * Both the source foreign key field name and the corresponding
+     * target primary key field name must be specified.
+     */
     public void addForeignKeyField(DatabaseField sourceForeignKeyField, DatabaseField targetKeyField) {
-        this.getSourceToTargetKeyFields().put(sourceForeignKeyField, targetKeyField);
-        this.getTargetToSourceKeyFields().put(targetKeyField, sourceForeignKeyField);
+        getSourceToTargetKeyFields().put(sourceForeignKeyField, targetKeyField);
+        getTargetToSourceKeyFields().put(targetKeyField, sourceForeignKeyField);
 
-        this.getForeignKeyFields().add(sourceForeignKeyField);
-        this.setIsForeignKeyRelationship(true);
+        getForeignKeyFields().add(sourceForeignKeyField);
+        setIsForeignKeyRelationship(true);
     }
 
     /**
@@ -132,6 +135,7 @@ public class EISOneToOneMapping extends ObjectReferenceMapping implements EISMap
      * This methods clones all the fields and ensures that each collection refers to
      * the same clones.
      */
+    @Override
     public Object clone() {
         EISOneToOneMapping clone = (EISOneToOneMapping)super.clone();
         clone.setForeignKeyFields(org.eclipse.persistence.internal.helper.NonSynchronizedVector.newInstance(getForeignKeyFields().size()));
@@ -151,7 +155,7 @@ public class EISOneToOneMapping extends ObjectReferenceMapping implements EISMap
         Iterator sourceKeyIterator = getSourceToTargetKeyFields().keySet().iterator();
         while (sourceKeyIterator.hasNext()) {
             DatabaseField sourceField = (DatabaseField)sourceKeyIterator.next();
-            DatabaseField targetField = (DatabaseField)getSourceToTargetKeyFields().get(sourceField);
+            DatabaseField targetField = getSourceToTargetKeyFields().get(sourceField);
 
             DatabaseField targetClone = (DatabaseField)setOfFields.get(targetField);
             if (targetClone == null) {
@@ -171,7 +175,7 @@ public class EISOneToOneMapping extends ObjectReferenceMapping implements EISMap
         Iterator targetKeyIterator = getTargetToSourceKeyFields().keySet().iterator();
         while (targetKeyIterator.hasNext()) {
             DatabaseField targetField = (DatabaseField)targetKeyIterator.next();
-            DatabaseField sourceField = (DatabaseField)getTargetToSourceKeyFields().get(targetField);
+            DatabaseField sourceField = getTargetToSourceKeyFields().get(targetField);
 
             DatabaseField targetClone = (DatabaseField)setOfFields.get(targetField);
             if (targetClone == null) {
@@ -192,72 +196,33 @@ public class EISOneToOneMapping extends ObjectReferenceMapping implements EISMap
 
     /**
      * INTERNAL:
-     * Extract the foreign key value from the source row.
-     */
-    protected Vector extractForeignKeyFromRow(AbstractRecord row, AbstractSession session) {
-        Vector key = new Vector();
-
-        Iterator sourceKeyIterator = getSourceToTargetKeyFields().keySet().iterator();
-        while (sourceKeyIterator.hasNext()) {
-            DatabaseField field = (DatabaseField)sourceKeyIterator.next();
-            Object value = row.get(field);
-
-            // Must ensure the classification gets a cache hit.
-            try {
-                value = session.getDatasourcePlatform().getConversionManager().convertObject(value, getDescriptor().getObjectBuilder().getFieldClassification(field));
-            } catch (ConversionException e) {
-                throw ConversionException.couldNotBeConverted(this, getDescriptor(), e);
-            }
-
-            key.addElement(value);
-        }
-
-        return key;
-    }
-
-    /**
-     * INTERNAL:
-     * Extract the key value from the reference object.
-     */
-    protected Vector extractKeyFromReferenceObject(Object object, AbstractSession session) {
-        Vector key = new Vector();
-
-        Iterator sourceKeyIterator = getSourceToTargetKeyFields().keySet().iterator();
-        while (sourceKeyIterator.hasNext()) {
-            DatabaseField field = (DatabaseField)sourceKeyIterator.next();
-            if (object == null) {
-                key.addElement(null);
-            } else {
-                key.addElement(getReferenceDescriptor().getObjectBuilder().extractValueFromObjectForField(object, field, session));
-            }
-        }
-        return key;
-    }
-
-    /**
-     * INTERNAL:
      * Return the primary key for the reference object (i.e. the object
      * object referenced by domainObject and specified by mapping).
      * This key will be used by a RemoteValueHolder.
      */
-    public Vector extractPrimaryKeysForReferenceObjectFromRow(AbstractRecord row) {
+    @Override
+    public Object extractPrimaryKeysForReferenceObjectFromRow(AbstractRecord row) {
         List primaryKeyFields = getReferenceDescriptor().getPrimaryKeyFields();
-        Vector result = new Vector(primaryKeyFields.size());
+        Object[] result = new  Object[primaryKeyFields.size()];
         for (int index = 0; index < primaryKeyFields.size(); index++) {
             DatabaseField targetKeyField = (DatabaseField)primaryKeyFields.get(index);
-            DatabaseField sourceKeyField = (DatabaseField)getTargetToSourceKeyFields().get(targetKeyField);
+            DatabaseField sourceKeyField = getTargetToSourceKeyFields().get(targetKeyField);
             if (sourceKeyField == null) {
-                return new Vector(1);
+                return null;
             }
-            result.addElement(row.get(sourceKeyField));
+            result[index] = row.get(sourceKeyField);
+            if (getReferenceDescriptor().getCacheKeyType() == CacheKeyType.ID_VALUE) {
+                return result[index];
+            }
         }
-        return result;
+        return new CacheId(result);
     }
 
     /**
      * INTERNAL:
      * Initialize the mapping.
      */
+    @Override
     public void initialize(AbstractSession session) throws DescriptorException {
         super.initialize(session);
 
@@ -320,7 +285,7 @@ public class EISOneToOneMapping extends ObjectReferenceMapping implements EISMap
         Iterator keyIterator = getSourceToTargetKeyFields().keySet().iterator();
         while (keyIterator.hasNext()) {
             DatabaseField foreignKey = (DatabaseField)keyIterator.next();
-            DatabaseField targetKey = (DatabaseField)getSourceToTargetKeyFields().get(foreignKey);
+            DatabaseField targetKey = getSourceToTargetKeyFields().get(foreignKey);
 
             Expression expression = builder.getField(targetKey).equal(builder.getParameter(foreignKey));
             criteria = expression.and(getSelectionCriteria());
@@ -332,6 +297,7 @@ public class EISOneToOneMapping extends ObjectReferenceMapping implements EISMap
      * INTERNAL:
      * Reads the private owned object.
      */
+    @Override
     protected Object readPrivateOwnedForObject(ObjectLevelModifyQuery modifyQuery) throws DatabaseException {
         if (modifyQuery.getSession().isUnitOfWork()) {
             return getRealAttributeValueFromObject(modifyQuery.getBackupClone(), modifyQuery.getSession());
@@ -378,6 +344,7 @@ public class EISOneToOneMapping extends ObjectReferenceMapping implements EISMap
      * Return the value of the field from the row or a value holder on the query to obtain the object.
      * Check for batch + aggregation reading.
      */
+    @Override
     public Object valueFromRow(AbstractRecord row, JoinedAttributeManager joinManager, ObjectBuildingQuery query, AbstractSession session) throws DatabaseException {
         // If any field in the foreign key is null then it means there are no referenced objects
         // Skip for partial objects as fk may not be present.
@@ -415,6 +382,7 @@ public class EISOneToOneMapping extends ObjectReferenceMapping implements EISMap
      * INTERNAL:
      * Get a value from the object and set that in the respective field of the row.
      */
+    @Override
     public void writeFromObjectIntoRow(Object object, AbstractRecord Record, AbstractSession session) {
         if (isReadOnly() || (!isForeignKeyRelationship())) {
             return;
@@ -427,7 +395,7 @@ public class EISOneToOneMapping extends ObjectReferenceMapping implements EISMap
 
             for (int i = 0; i < getForeignKeyFields().size(); i++) {
                 DatabaseField sourceKey = getForeignKeyFields().get(i);
-                DatabaseField targetKey = (DatabaseField)getSourceToTargetKeyFields().get(sourceKey);
+                DatabaseField targetKey = getSourceToTargetKeyFields().get(sourceKey);
 
                 Object referenceValue = null;
 
@@ -450,8 +418,9 @@ public class EISOneToOneMapping extends ObjectReferenceMapping implements EISMap
      * Return the classifiction for the field contained in the mapping.
      * This is used to convert the row value to a consistent java value.
      */
+    @Override
     public Class getFieldClassification(DatabaseField fieldToClassify) throws DescriptorException {
-        DatabaseField fieldInTarget = (DatabaseField)getSourceToTargetKeyFields().get(fieldToClassify);
+        DatabaseField fieldInTarget = getSourceToTargetKeyFields().get(fieldToClassify);
         if (fieldInTarget == null) {
             return null;// Can be registered as multiple table secondary field mapping
         }
@@ -507,7 +476,7 @@ public class EISOneToOneMapping extends ObjectReferenceMapping implements EISMap
      * INTERNAL:
      * Gets the foreign key fields.
      */
-    public Map getSourceToTargetKeyFields() {
+    public Map<DatabaseField, DatabaseField> getSourceToTargetKeyFields() {
         return sourceToTargetKeyFields;
     }
 
@@ -515,7 +484,7 @@ public class EISOneToOneMapping extends ObjectReferenceMapping implements EISMap
      * INTERNAL:
      * Gets the target foreign key fields.
      */
-    public Map getTargetToSourceKeyFields() {
+    public Map<DatabaseField, DatabaseField> getTargetToSourceKeyFields() {
         return targetToSourceKeyFields;
     }
 
@@ -539,6 +508,7 @@ public class EISOneToOneMapping extends ObjectReferenceMapping implements EISMap
      * INTERNAL:
      * This method is not supported in an EIS environment.
      */
+    @Override
     public void setSelectionSQLString(String sqlString) {
         throw DescriptorException.invalidMappingOperation(this, "setSelectionSQLString");
     }
@@ -547,47 +517,19 @@ public class EISOneToOneMapping extends ObjectReferenceMapping implements EISMap
      * INTERNAL:
      * This method is not supported in an EIS environment.
      */
+    @Override
     public void setUsesBatchReading(boolean usesBatchReading) {
-        throw DescriptorException.invalidMappingOperation(this, "setUsesBatchReading");
+        if (usesBatchReading) {
+            throw DescriptorException.invalidMappingOperation(this, "setUsesBatchReading");
+        }
     }
 
     /**
      * INTERNAL:
      * This method is not supported in an EIS environment.
      */
-    public boolean shouldUseBatchReading() {
-        throw DescriptorException.invalidMappingOperation(this, "shouldUseBatchReading");
-    }
-
-    /**
-     * INTERNAL:
-     * This method is not supported in an EIS environment.
-     */
+    @Override
     public void useBatchReading() {
         throw DescriptorException.invalidMappingOperation(this, "useBatchReading");
-    }
-
-    /**
-     * INTERNAL:
-     * This method is not supported in an EIS environment.
-     */
-    public void dontUseBatchReading() {
-        throw DescriptorException.invalidMappingOperation(this, "dontUseBatchReading");
-    }
-
-    /**
-     * INTERNAL:
-     * This method is not supported in an EIS environment.
-     */
-    public void addAscendingOrdering(String queryKeyName) {
-        throw DescriptorException.invalidMappingOperation(this, "addAscendingOrdering");
-    }
-
-    /**
-     * INTERNAL:
-     * This method is not supported in an EIS environment.
-     */
-    public void addDescendingOrdering(String queryKeyName) {
-        throw DescriptorException.invalidMappingOperation(this, "addDescendingOrdering");
     }
 }

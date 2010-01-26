@@ -158,20 +158,20 @@ public class QueryKeyExpression extends ObjectExpression {
         Vector tables = getDescriptor().getTables();
         // skip the main table - start with i=1
         int tablesSize = tables.size();
-        if(shouldUseOuterJoin()) {
-            for( int i=1; i < tablesSize; i++) {
+        if (shouldUseOuterJoin()) {
+            for (int i=1; i < tablesSize; i++) {
                 DatabaseTable table = (DatabaseTable)tables.elementAt(i);
                 Expression joinExpression = (Expression)getDescriptor().getQueryManager().getTablesJoinExpressions().get(table);
                 joinExpression = getBaseExpression().twist(joinExpression, this);
                 tablesJoinExpressions.put(table, joinExpression);
             }
         }
-        if(isUsingOuterJoinForMultitableInheritance()) {
+        if (isUsingOuterJoinForMultitableInheritance()) {
             List childrenTables = getDescriptor().getInheritancePolicy().getChildrenTables();
             tablesSize = childrenTables.size();
-            for( int i=0; i < tablesSize; i++) {
+            for (int i=0; i < tablesSize; i++) {
                 DatabaseTable table = (DatabaseTable)childrenTables.get(i);
-                Expression joinExpression = (Expression)getDescriptor().getInheritancePolicy().getChildrenTablesJoinExpressions().get(table);
+                Expression joinExpression = getDescriptor().getInheritancePolicy().getChildrenTablesJoinExpressions().get(table);
                 joinExpression = getBaseExpression().twist(joinExpression, this);
                 tablesJoinExpressions.put(table, joinExpression);
             }

@@ -231,16 +231,12 @@ public class AdvancedJunitTest extends JUnitTestCase {
             PartnerLinkPK usedPk = new PartnerLinkPK(pLink3.getManId(), pLink3.getWomanId());
             assertTrue("PK's do not match.", usedPk.equals(createdPK));
 
-        } catch (RuntimeException e) {
+        } finally {
             if (isTransactionActive(em)) {
                 rollbackTransaction(em);
             }
-
             closeEntityManager(em);
-            fail("An exception was caught: [" + e.getMessage() + "]");
         }
-
-        closeEntityManager(em);
     }
 
     // GF1673, 2674 Java SE 6 classloading error for String[] field

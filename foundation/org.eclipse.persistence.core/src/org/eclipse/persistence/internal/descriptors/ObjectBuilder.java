@@ -20,6 +20,7 @@ import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 
+import org.eclipse.persistence.annotations.CacheKeyType;
 import org.eclipse.persistence.annotations.IdValidation;
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.descriptors.DescriptorEvent;
@@ -191,8 +192,7 @@ public class ObjectBuilder implements Cloneable, Serializable {
     public void clearPrimaryKey(Object object) {
         // PERF: If PersistenceEntity is caching the primary key this must be cleared as the primary key has changed.
         if (object instanceof PersistenceEntity) {
-            ((PersistenceEntity)object)._persistence_setPKVector(null);
-            ((PersistenceEntity)object)._persistence_setCacheKey(null);
+            ((PersistenceEntity)object)._persistence_setId(null);
         }
     }
 
@@ -704,8 +704,7 @@ public class ObjectBuilder implements Cloneable, Serializable {
                 }
                 // PERF: Cache the primary key and cache key if implements PersistenceEntity.
                 if (domainObject instanceof PersistenceEntity) {
-                    ((PersistenceEntity)domainObject)._persistence_setCacheKey(cacheKey);
-                    ((PersistenceEntity)domainObject)._persistence_setPKVector((Vector)primaryKey);
+                    ((PersistenceEntity)domainObject)._persistence_setId(primaryKey);
                 }
             } else {
                 if (query.isReadObjectQuery() && ((ReadObjectQuery)query).shouldLoadResultIntoSelectionObject()) {
@@ -921,16 +920,20 @@ public class ObjectBuilder implements Cloneable, Serializable {
      * Build the primary key expression from the specified primary key values.
      */
     public Expression buildPrimaryKeyExpressionFromKeys(Object primaryKey, AbstractSession session) {
-        Expression expression = null;
-        Expression subExpression;
         Expression builder = new ExpressionBuilder();
-        List primaryKeyFields = this.descriptor.getPrimaryKeyFields();
+        List<DatabaseField> primaryKeyFields = this.descriptor.getPrimaryKeyFields();
 
-        for (int index = 0; index < primaryKeyFields.size(); index++) {
-            Object value = ((Vector)primaryKey).get(index);
-            DatabaseField field = (DatabaseField)primaryKeyFields.get(index);
+        if (this.descriptor.getCacheKeyType() == CacheKeyType.ID_VALUE) {
+            return builder.getField(primaryKeyFields.get(0)).equal(primaryKey);
+        }
+        Expression expression = null;
+        int size = primaryKeyFields.size();
+        Object[] primaryKeyValues = ((CacheId)primaryKey).getPrimaryKey();
+        for (int index = 0; index < size; index++) {
+            Object value = primaryKeyValues[index];
+            DatabaseField field = primaryKeyFields.get(index);
             if (value != null) {
-                subExpression = builder.getField(field).equal(value);
+                Expression subExpression = builder.getField(field).equal(value);
                 expression = subExpression.and(expression);
             }
         }
@@ -1141,17 +1144,33 @@ public class ObjectBuilder implements Cloneable, Serializable {
     /**
      * Build the row from the primary key values.
      */
-    public AbstractRecord buildRowFromPrimaryKeyValues(Object key, AbstractSession session) {
-        AbstractRecord databaseRow = createRecord(((Vector)key).size(), session);
-        int keySize = ((Vector)key).size();
-        for (int index = 0; index < keySize; index++) {
-            DatabaseField field = this.descriptor.getPrimaryKeyFields().get(index);
-            Object value = ((Vector)key).get(index);
+    public AbstractRecord writeIntoRowFromPrimaryKeyValues(AbstractRecord row, Object primaryKey, AbstractSession session, boolean convert) {
+        List<DatabaseField> primaryKeyFields = this.descriptor.getPrimaryKeyFields();
+        if (this.descriptor.getCacheKeyType() == CacheKeyType.ID_VALUE) {
+            DatabaseField field = primaryKeyFields.get(0);
+            Object value = primaryKey;
             value = session.getPlatform(this.descriptor.getJavaClass()).getConversionManager().convertObject(value, field.getType());
-            databaseRow.put(field, value);
+            row.put(field, value);
+            return row;
+        }
+        int size = primaryKeyFields.size();
+        Object[] primaryKeyValues = ((CacheId)primaryKey).getPrimaryKey();
+        for (int index = 0; index < size; index++) {
+            DatabaseField field = primaryKeyFields.get(index);
+            Object value = primaryKeyValues[index];
+            value = session.getPlatform(this.descriptor.getJavaClass()).getConversionManager().convertObject(value, field.getType());
+            row.put(field, value);
         }
 
-        return databaseRow;
+        return row;
+    }
+
+    /**
+     * Build the row from the primary key values.
+     */
+    public AbstractRecord buildRowFromPrimaryKeyValues(Object key, AbstractSession session) {
+        AbstractRecord databaseRow = createRecord(this.descriptor.getPrimaryKeyFields().size(), session);
+        return writeIntoRowFromPrimaryKeyValues(databaseRow, key, session, true);
     }
 
     /**
@@ -1436,7 +1455,7 @@ public class ObjectBuilder implements Cloneable, Serializable {
             query.recordCloneForPessimisticLocking(workingClone, unitOfWork);
             // PERF: Cache the primary key if implements PersistenceEntity.
             if (workingClone instanceof PersistenceEntity) {
-                ((PersistenceEntity)workingClone)._persistence_setPKVector((Vector)primaryKey);
+                ((PersistenceEntity)workingClone)._persistence_setId(primaryKey);
             }
         } finally {
             unitOfWorkCacheKey.release();            
@@ -1456,9 +1475,7 @@ public class ObjectBuilder implements Cloneable, Serializable {
     public Object buildObjectFromResultSet(ObjectBuildingQuery query, JoinedAttributeManager joinManager, ResultSet resultSet, AbstractSession executionSession, DatabaseAccessor accessor, ResultSetMetaData metaData, DatabasePlatform platform) throws SQLException {
         ClassDescriptor descriptor = this.descriptor;
         DatabaseMapping primaryKeyMapping = this.primaryKeyMappings.get(0);
-        Object primaryKeyObject = primaryKeyMapping.valueFromResultSet(resultSet, query, executionSession, accessor, metaData, 1, platform);
-        Vector primaryKey = new NonSynchronizedVector(1);
-        primaryKey.add(primaryKeyObject);
+        Object primaryKey = primaryKeyMapping.valueFromResultSet(resultSet, query, executionSession, accessor, metaData, 1, platform);
 
         UnitOfWorkImpl unitOfWork = null;
         AbstractSession session = executionSession;
@@ -1495,7 +1512,7 @@ public class ObjectBuilder implements Cloneable, Serializable {
                     }
                 }
                 
-                primaryKeyMapping.setAttributeValueInObject(object, primaryKeyObject);
+                primaryKeyMapping.setAttributeValueInObject(object, primaryKey);
                 List mappings = descriptor.getMappings();            
                 int size = mappings.size();
                 for (int index = 1; index < size; index++) {
@@ -1503,7 +1520,7 @@ public class ObjectBuilder implements Cloneable, Serializable {
                     mapping.readFromResultSetIntoObject(resultSet, object, query, session, accessor, metaData, index + 1, platform);
                 }
                 
-                ((PersistenceEntity)object)._persistence_setPKVector(primaryKey);
+                ((PersistenceEntity)object)._persistence_setId(primaryKey);
                 if ((unitOfWork != null) && isolated) {
                     ObjectChangePolicy policy = descriptor.getObjectChangePolicy();
                     policy.setChangeListener(object, unitOfWork, descriptor);
@@ -1512,7 +1529,7 @@ public class ObjectBuilder implements Cloneable, Serializable {
             if ((unitOfWork != null) && !isolated) {
                 // Need to clone the object in the unit of work.
                 Object clone = instantiateWorkingCopyClone(object, unitOfWork);
-                ((PersistenceEntity)clone)._persistence_setPKVector(cacheKey.getKey());
+                ((PersistenceEntity)clone)._persistence_setId(cacheKey.getKey());
                 unitOfWork.getCloneMapping().put(clone, clone);
                 unitOfWork.getCloneToOriginals().put(clone, object);
                 cacheKey.setObject(clone);
@@ -1798,7 +1815,7 @@ public class ObjectBuilder implements Cloneable, Serializable {
         ObjectChangeSet changes = (ObjectChangeSet)uowChangeSet.getObjectChangeSetForClone(clone);
         if (changes == null) {
             if (this.descriptor.isAggregateDescriptor()) {
-                changes = new AggregateObjectChangeSet(new Vector(0), this.descriptor, clone, uowChangeSet, isNew);
+                changes = new AggregateObjectChangeSet(new CacheId(new Object[0]), this.descriptor, clone, uowChangeSet, isNew);
             } else {
                 changes = new ObjectChangeSet(extractPrimaryKeyFromObject(clone, session, true), this.descriptor, clone, uowChangeSet, isNew);
             }
@@ -1809,7 +1826,7 @@ public class ObjectBuilder implements Cloneable, Serializable {
                 // If creating a new change set for a new object, the original change set (from change tracking) may have not had the primary key.
                 Object primaryKey = extractPrimaryKeyFromObject(clone, session, true);
                 if (primaryKey != null) {
-                    changes.setCacheKey(new CacheKey(primaryKey));
+                    changes.setId(primaryKey);
                 }
             }
         }
@@ -1861,7 +1878,11 @@ public class ObjectBuilder implements Cloneable, Serializable {
             return null;
         }
 
-        return extractPrimaryKeyFromRow(primaryKeyRow, session);
+        Object primaryKey = extractPrimaryKeyFromRow(primaryKeyRow, session);
+        if ((primaryKey == null) && isValid) {
+            return InvalidObject.instance;
+        }
+        return primaryKey;
     }
 
     /**
@@ -1877,9 +1898,9 @@ public class ObjectBuilder implements Cloneable, Serializable {
     public Object extractPrimaryKeyFromObject(Object domainObject, AbstractSession session, boolean shouldReturnNullIfNull) {
         boolean isPersistenceEntity = domainObject instanceof PersistenceEntity;
         if (isPersistenceEntity) {
-            Vector key = ((PersistenceEntity)domainObject)._persistence_getPKVector();
-            if (key != null) {
-                return key;
+            Object primaryKey = ((PersistenceEntity)domainObject)._persistence_getId();
+            if (primaryKey != null) {
+                return primaryKey;
             }
         }
         ClassDescriptor descriptor = this.descriptor;
@@ -1887,60 +1908,80 @@ public class ObjectBuilder implements Cloneable, Serializable {
         // Allow for inheritance, the concrete descriptor must always be used.
         if (descriptor.hasInheritance() && (domainObject.getClass() != descriptor.getJavaClass()) && (!domainObject.getClass().getSuperclass().equals(descriptor.getJavaClass()))) {
             return session.getDescriptor(domainObject).getObjectBuilder().extractPrimaryKeyFromObject(domainObject, session, shouldReturnNullIfNull);
-        } else {
-            List primaryKeyFields = descriptor.getPrimaryKeyFields();
-            Vector primaryKeyValues = new NonSynchronizedVector(primaryKeyFields.size());
-
-            List mappings = getPrimaryKeyMappings();
-            int size = mappings.size();
-            // PERF: optimize simple case of direct mapped singleton primary key.
-            if (descriptor.hasSimplePrimaryKey()) {
-                // PERF: use index not enumeration.
-                for (int index = 0; index < size; index++) {
-                    AbstractDirectMapping mapping = (AbstractDirectMapping)mappings.get(index);
-                    Object keyValue = mapping.valueFromObject(domainObject, (DatabaseField)primaryKeyFields.get(index), session);
-                    if(isPrimaryKeyComponentInvalid(keyValue)) {
-                        if (shouldReturnNullIfNull) {
-                            return null;
-                        }
-                        isNull = true;
-                    }
-                    primaryKeyValues.add(keyValue);
-                }
-            } else {
-                AbstractRecord databaseRow = createRecordForPKExtraction(size, session);
-                // PERF: use index not enumeration			
-                for (int index = 0; index < size; index++) {
-                    DatabaseMapping mapping = (DatabaseMapping)mappings.get(index);
-                    // Primary key mapping may be null for aggregate collection.
-                    if (mapping != null) {
-                        mapping.writeFromObjectIntoRow(domainObject, databaseRow, session);
-                    }
-                }
-                List primaryKeyClassifications = getPrimaryKeyClassifications();
-                Platform platform = session.getPlatform(domainObject.getClass());
-                // PERF: use index not enumeration			
-                for (int index = 0; index < size; index++) {
-                    // Ensure that the type extracted from the object is the same type as in the descriptor,
-                    // the main reason for this is that 1-1 can optimize on vh by getting from the row as the row-type.
-                    Class classification = (Class)primaryKeyClassifications.get(index);
-                    Object value = databaseRow.get((DatabaseField)primaryKeyFields.get(index));
-                    // Only check for 0 for singleton primary keys.
-                    if(isPrimaryKeyComponentInvalid(value)) {
-                        if (shouldReturnNullIfNull) {
-                            return null;
-                        }
-                        isNull = true;
-                    }
-                    // CR2114 following line modified; domainObject.getClass() passed as an argument
-                    primaryKeyValues.add(platform.convertObject(value, classification));
-                }
-            }
-            if (isPersistenceEntity && (!isNull)) {
-                ((PersistenceEntity)domainObject)._persistence_setPKVector(primaryKeyValues);
-            }
-            return primaryKeyValues;
         }
+        
+        IdValidation idValidation = descriptor.getIdValidation();
+        CacheKeyType cacheKeyType = descriptor.getCacheKeyType();
+        List<DatabaseField> primaryKeyFields = descriptor.getPrimaryKeyFields();        
+        Object[] primaryKeyValues = null;
+        if (cacheKeyType != CacheKeyType.ID_VALUE) {
+            primaryKeyValues = new Object[primaryKeyFields.size()];
+        }
+        List<DatabaseMapping> mappings = getPrimaryKeyMappings();
+        int size = mappings.size();
+        // PERF: optimize simple case of direct mapped singleton primary key.
+        if (descriptor.hasSimplePrimaryKey()) {
+            // PERF: use index not enumeration.
+            for (int index = 0; index < size; index++) {
+                AbstractDirectMapping mapping = (AbstractDirectMapping)mappings.get(index);
+                Object keyValue = mapping.valueFromObject(domainObject, primaryKeyFields.get(index), session);
+                // Only check for 0 for singleton primary keys.
+                if (isPrimaryKeyComponentInvalid(keyValue)) {
+                    if (shouldReturnNullIfNull) {
+                        return null;
+                    }
+                    isNull = true;
+                }
+                if (cacheKeyType == CacheKeyType.ID_VALUE) {
+                    if (isPersistenceEntity && (!isNull)) {
+                        ((PersistenceEntity)domainObject)._persistence_setId(keyValue);
+                    }
+                    return keyValue;
+                } else {
+                    primaryKeyValues[index] = keyValue;
+                }
+            }
+        } else {
+            AbstractRecord databaseRow = createRecordForPKExtraction(size, session);
+            // PERF: use index not enumeration			
+            for (int index = 0; index < size; index++) {
+                DatabaseMapping mapping = mappings.get(index);
+                // Primary key mapping may be null for aggregate collection.
+                if (mapping != null) {
+                    mapping.writeFromObjectIntoRow(domainObject, databaseRow, session);
+                }
+            }
+            List<Class> primaryKeyClassifications = getPrimaryKeyClassifications();
+            Platform platform = session.getPlatform(domainObject.getClass());
+            // PERF: use index not enumeration
+            for (int index = 0; index < size; index++) {
+                // Ensure that the type extracted from the object is the same type as in the descriptor,
+                // the main reason for this is that 1-1 can optimize on vh by getting from the row as the row-type.
+                Class classification = primaryKeyClassifications.get(index);
+                Object value = databaseRow.get(primaryKeyFields.get(index));
+                // Only check for 0 for singleton primary keys.
+                if (isPrimaryKeyComponentInvalid(value)) {
+                    if (shouldReturnNullIfNull) {
+                        return null;
+                    }
+                    isNull = true;
+                }
+                value = platform.convertObject(value, classification);
+                if (cacheKeyType == CacheKeyType.ID_VALUE) {
+                    if (isPersistenceEntity && (!isNull)) {
+                        ((PersistenceEntity)domainObject)._persistence_setId(value);
+                    }
+                    return value;
+                } else {
+                    primaryKeyValues[index] = value;
+                }
+            }
+        }
+        CacheId id = new CacheId(primaryKeyValues);
+        if (isPersistenceEntity && (!isNull)) {
+            ((PersistenceEntity)domainObject)._persistence_setId(id);
+        }
+        return id;
     }
 
     /**
@@ -1948,29 +1989,36 @@ public class ObjectBuilder implements Cloneable, Serializable {
      * null is returned if the row does not contain the key.
      */
     public Object extractPrimaryKeyFromRow(AbstractRecord databaseRow, AbstractSession session) {
-        List primaryKeyFields = this.descriptor.getPrimaryKeyFields();
-        List primaryKeyClassifications = getPrimaryKeyClassifications();
+        List<DatabaseField> primaryKeyFields = this.descriptor.getPrimaryKeyFields();
+        List<Class> primaryKeyClassifications = getPrimaryKeyClassifications();
         int size = primaryKeyFields.size();
-        Vector primaryKeyValues = new NonSynchronizedVector(size);
+        Object[] primaryKeyValues = null;
+        CacheKeyType cacheKeyType = this.descriptor.getCacheKeyType();
+        if (cacheKeyType != CacheKeyType.ID_VALUE) {
+            primaryKeyValues = new Object[size];
+        }
         int numberOfNulls = 0;
 
         // PERF: use index not enumeration
         for (int index = 0; index < size; index++) {
-            DatabaseField field = (DatabaseField)primaryKeyFields.get(index);
+            DatabaseField field = primaryKeyFields.get(index);
 
             // Ensure that the type extracted from the row is the same type as in the object.
-            Class classification = (Class)primaryKeyClassifications.get(index);
+            Class classification = primaryKeyClassifications.get(index);
             Object value = databaseRow.get(field);
             if (value != null) {
                 if (value.getClass() != classification) {
                     value = session.getPlatform(this.descriptor.getJavaClass()).convertObject(value, classification);
                 }
-                primaryKeyValues.addElement(value);
+                if (cacheKeyType == CacheKeyType.ID_VALUE) {
+                    return value;
+                }
+                primaryKeyValues[index] = value;
             } else {
-                if(this.mayHaveNullInPrimaryKey) {
+                if (this.mayHaveNullInPrimaryKey) {
                     numberOfNulls++;
-                    if(numberOfNulls < size) {
-                        primaryKeyValues.addElement(null);
+                    if (numberOfNulls < size) {
+                        primaryKeyValues[index] = null;
                     } else {
                         // Must have some non null elements. If all elements are null return null.
                         return null;
@@ -1981,7 +2029,7 @@ public class ObjectBuilder implements Cloneable, Serializable {
             }
         }
 
-        return primaryKeyValues;
+        return new CacheId(primaryKeyValues);
     }
 
     /**

@@ -169,7 +169,7 @@ public class SessionBeanTestsRCM extends JUnitTestCase {
         empId = getEmployeeService(server1Url).insert(employee);	
 	
 	/* read Employee from cache and/or DB */
-	Employee jane1 = (Employee) getEmployeeService(server1Url).findById(empId);
+	Employee jane1 = getEmployeeService(server1Url).findById(empId);
 	/* update employee on Server1 */
         jane1.setLastName("LastNameUpdatedOnServer1");
         jane1.getAddress().setCity("newCity");

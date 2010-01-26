@@ -12,8 +12,6 @@
  ******************************************************************************/  
 package org.eclipse.persistence.internal.identitymaps;
 
-import java.util.*;
-
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.internal.helper.linkedlist.*;
 
@@ -46,7 +44,7 @@ public class HardCacheWeakIdentityMap extends WeakIdentityMap {
      */
     @Override
     public CacheKey createCacheKey(Object primaryKey, Object object, Object writeLockValue, long readTime) {
-        return new ReferenceCacheKey((Vector)primaryKey, object, writeLockValue, readTime);
+        return new ReferenceCacheKey(primaryKey, object, writeLockValue, readTime);
     }
 
     /**
@@ -119,7 +117,7 @@ public class HardCacheWeakIdentityMap extends WeakIdentityMap {
     public class ReferenceCacheKey extends WeakCacheKey {
         protected LinkedNode referenceNode;
 
-        public ReferenceCacheKey(Vector primaryKey, Object object, Object writeLockValue, long readTime) {
+        public ReferenceCacheKey(Object primaryKey, Object object, Object writeLockValue, long readTime) {
             super(primaryKey, object, writeLockValue, readTime);
         }
 

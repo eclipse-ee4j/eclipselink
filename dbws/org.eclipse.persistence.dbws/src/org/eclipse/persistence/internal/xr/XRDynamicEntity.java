@@ -14,9 +14,6 @@ package org.eclipse.persistence.internal.xr;
 
 //javase imports
 import java.beans.PropertyChangeListener;
-import java.util.Vector;
-
-//java extension imports
 
 //EclipseLink imports
 import org.eclipse.persistence.descriptors.changetracking.ChangeTracker;
@@ -112,19 +109,11 @@ public abstract class XRDynamicEntity implements DynamicEntity, PersistenceEntit
     }
 
     //PersistenceEntity API
-    protected CacheKey __cacheKey;
-    protected Vector __pk;
-    // perf. optimization - cache the __cacheKey and pkVector
-    public CacheKey _persistence_getCacheKey() {
-        return __cacheKey;
-    }
-    public void _persistence_setCacheKey(CacheKey cacheKey) {
-        this.__cacheKey = cacheKey;
-    }
-    public Vector _persistence_getPKVector() {
+    protected Object __pk;
+    public Object _persistence_getId() {
         return __pk;
     }
-    public void _persistence_setPKVector(Vector pk) {
+    public void _persistence_setId(Object pk) {
         this.__pk = pk;
     }
     
@@ -195,13 +184,7 @@ public abstract class XRDynamicEntity implements DynamicEntity, PersistenceEntit
         // this will print something like {Emp 10} or {Phone 234-5678 10}
         StringBuilder sb = new StringBuilder(20);
         sb.append('{');
-        sb.append(getShortClassName(this.getClass()));
-        if (__pk != null) {
-            for (int i = 0; i < __pk.size(); i++) {
-                sb.append(' ');
-                sb.append(__pk.elementAt(i));
-            }
-        }
+        sb.append(__pk);
         sb.append('}');
         return sb.toString();
     }

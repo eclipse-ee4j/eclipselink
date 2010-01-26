@@ -29,7 +29,6 @@ import org.eclipse.persistence.indirection.*;
 import org.eclipse.persistence.internal.descriptors.*;
 import org.eclipse.persistence.internal.expressions.*;
 import org.eclipse.persistence.internal.helper.*;
-import org.eclipse.persistence.internal.identitymaps.*;
 import org.eclipse.persistence.internal.indirection.*;
 import org.eclipse.persistence.internal.queries.*;
 import org.eclipse.persistence.internal.sessions.remote.*;
@@ -533,7 +532,7 @@ public abstract class CollectionMapping extends ForeignReferenceMapping implemen
                         containerPolicy.propogatePostUpdate(query, addedChangeSet.getNewKey());
                     }
                 }
-                if(listOrderField != null) {
+                if (listOrderField != null) {
                     List previousList = (List)previousObjects;
                     int previousSize = previousList.size();
                     List currentList = (List)currentObjects;
@@ -562,7 +561,7 @@ public abstract class CollectionMapping extends ForeignReferenceMapping implemen
                             }
                         }
                     } else {
-                        for(int i=0; i < previousSize; i++) {
+                        for (int i=0; i < previousSize; i++) {
                             // TODO: should we check for previousObject != null? 
                             Object prevObject = previousList.get(i);
                             Object currentObject = null;
@@ -578,7 +577,7 @@ public abstract class CollectionMapping extends ForeignReferenceMapping implemen
                             }
                         }
                     }
-                    if(shouldRepairOrder) {
+                    if (shouldRepairOrder) {
                         ((IndirectList)currentList).setIsListOrderBrokenInDb(false);
                         record.setOrderHasBeenRepaired(true);
                     }
@@ -587,17 +586,17 @@ public abstract class CollectionMapping extends ForeignReferenceMapping implemen
             return;
         }
         
-        if(this.listOrderField != null && this.isAggregateCollectionMapping()) {
+        if (this.listOrderField != null && this.isAggregateCollectionMapping()) {
             this.compareListsAndWrite((List)previousObjects, (List)currentObjects, query);
             return;
         }
         
         ContainerPolicy cp = this.containerPolicy;
 
-        Hashtable previousObjectsByKey = new Hashtable(cp.sizeFor(previousObjects) + 2); // Read from db or from backup in uow.
-        Hashtable currentObjectsByKey = new Hashtable(cp.sizeFor(currentObjects) + 2); // Current value of object's attribute (clone in uow).
+        Map previousObjectsByKey = new HashMap(cp.sizeFor(previousObjects)); // Read from db or from backup in uow.
+        Map currentObjectsByKey = new HashMap(cp.sizeFor(currentObjects)); // Current value of object's attribute (clone in uow).
 
-        Map cacheKeysOfCurrentObjects = new IdentityHashMap(cp.sizeFor(currentObjects) + 1);
+        Map keysOfCurrentObjects = new IdentityHashMap(cp.sizeFor(currentObjects) + 1);
 
         // First index the current objects by their primary key.
         for (Object currentObjectsIter = cp.iteratorFor(currentObjects);
@@ -605,9 +604,8 @@ public abstract class CollectionMapping extends ForeignReferenceMapping implemen
             Object currentObject = cp.next(currentObjectsIter, query.getSession());
             try {
                 Object primaryKey = getReferenceDescriptor().getObjectBuilder().extractPrimaryKeyFromObject(currentObject, query.getSession());
-                CacheKey key = new CacheKey(primaryKey);
-                currentObjectsByKey.put(key, currentObject);
-                cacheKeysOfCurrentObjects.put(currentObject, key);
+                currentObjectsByKey.put(primaryKey, currentObject);
+                keysOfCurrentObjects.put(currentObject, primaryKey);
             } catch (NullPointerException e) {
                 // For CR#2646 quietly discard nulls added to a collection mapping.
                 // This try-catch is essentially a null check on currentObject, for
@@ -626,11 +624,10 @@ public abstract class CollectionMapping extends ForeignReferenceMapping implemen
             Map mapKeyFields = containerPolicy.getKeyMappingDataForWriteQuery(wrappedObject, query.getSession());
             Object previousObject = containerPolicy.unwrapIteratorResult(wrappedObject);
             Object primaryKey = getReferenceDescriptor().getObjectBuilder().extractPrimaryKeyFromObject(previousObject, query.getSession());
-            CacheKey key = new CacheKey(primaryKey);
-            previousObjectsByKey.put(key, previousObject);
+            previousObjectsByKey.put(primaryKey, previousObject);
             // Delete must occur first, in case object with same pk is removed and added,
             // (technically should not happen, but same applies to unique constraints)
-            if (!currentObjectsByKey.containsKey(key)) {
+            if (!currentObjectsByKey.containsKey(primaryKey)) {
                 objectRemovedDuringUpdate(query, wrappedObject, mapKeyFields);
                 cp.propogatePostUpdate(query, wrappedObject);
             }
@@ -642,13 +639,13 @@ public abstract class CollectionMapping extends ForeignReferenceMapping implemen
             Object currentObject = containerPolicy.unwrapIteratorResult(wrappedObject);
             try {
                 Map mapKeyFields = containerPolicy.getKeyMappingDataForWriteQuery(wrappedObject, query.getSession());
-                CacheKey cacheKey = (CacheKey)cacheKeysOfCurrentObjects.get(currentObject);
+                Object primaryKey = keysOfCurrentObjects.get(currentObject);
 
-                if (!(previousObjectsByKey.containsKey(cacheKey))) {
+                if (!(previousObjectsByKey.containsKey(primaryKey))) {
                     objectAddedDuringUpdate(query, currentObject, null, mapKeyFields);
                     cp.propogatePostUpdate(query, wrappedObject);
                 } else {
-                    objectUnchangedDuringUpdate(query, currentObject, previousObjectsByKey, cacheKey);
+                    objectUnchangedDuringUpdate(query, currentObject, previousObjectsByKey, primaryKey);
                 }
             } catch (NullPointerException e) {
                 // For CR#2646 skip currentObject if it is null.
@@ -685,19 +682,19 @@ public abstract class CollectionMapping extends ForeignReferenceMapping implemen
         Object firstIter = cp.iteratorFor(firstCollection);
         Object secondIter = cp.iteratorFor(secondCollection);
 
-        Vector keyValue = new Vector();
+        Set keyValue = new HashSet();
 
         while (cp.hasNext(secondIter)) {
             Object secondObject = cp.next(secondIter, session);
             Object primaryKey = getReferenceDescriptor().getObjectBuilder().extractPrimaryKeyFromObject(secondObject, session);
-            keyValue.add(new CacheKey(primaryKey));
+            keyValue.add(primaryKey);
         }
 
         while (cp.hasNext(firstIter)) {
             Object firstObject = cp.next(firstIter, session);
             Object primaryKey = getReferenceDescriptor().getObjectBuilder().extractPrimaryKeyFromObject(firstObject, session);
 
-            if (!keyValue.contains(new CacheKey(primaryKey))) {
+            if (!keyValue.contains(primaryKey)) {
                 return false;
             }
         }
@@ -720,22 +717,20 @@ public abstract class CollectionMapping extends ForeignReferenceMapping implemen
         Object firstIter = cp.iteratorFor(firstCollection);
         Object secondIter = cp.iteratorFor(secondCollection);
 
-        Hashtable keyValueToObject = new Hashtable(cp.sizeFor(firstCollection) + 2);
-        CacheKey cacheKey;
+        Map keyValueToObject = new HashMap(cp.sizeFor(firstCollection));
 
         while (cp.hasNext(secondIter)) {
             Object secondObject = cp.next(secondIter, session);
             Object primaryKey = getReferenceDescriptor().getObjectBuilder().extractPrimaryKeyFromObject(secondObject, session);
-            keyValueToObject.put(new CacheKey(primaryKey), secondObject);
+            keyValueToObject.put(primaryKey, secondObject);
         }
 
         while (cp.hasNext(firstIter)) {
             Object firstObject = cp.next(firstIter, session);
             Object primaryKey = getReferenceDescriptor().getObjectBuilder().extractPrimaryKeyFromObject(firstObject, session);
-            cacheKey = new CacheKey(primaryKey);
-
-            if (keyValueToObject.containsKey(cacheKey)) {
-                Object object = keyValueToObject.get(cacheKey);
+            
+            if (keyValueToObject.containsKey(primaryKey)) {
+                Object object = keyValueToObject.get(primaryKey);
 
                 if (!session.compareObjects(firstObject, object)) {
                     return false;
@@ -766,9 +761,9 @@ public abstract class CollectionMapping extends ForeignReferenceMapping implemen
                     return false;
                 }
             } else {
-                CacheKey firstKey = new CacheKey(getReferenceDescriptor().getObjectBuilder().extractPrimaryKeyFromObject(firstObject, session));
-                CacheKey secondKey = new CacheKey(getReferenceDescriptor().getObjectBuilder().extractPrimaryKeyFromObject(secondObject, session));
-                if(!firstKey.equals(secondKey)) {
+                Object firstKey = getReferenceDescriptor().getObjectBuilder().extractPrimaryKeyFromObject(firstObject, session);
+                Object secondKey = getReferenceDescriptor().getObjectBuilder().extractPrimaryKeyFromObject(secondObject, session);
+                if (!firstKey.equals(secondKey)) {
                     return false;
                 }
             }
@@ -794,7 +789,7 @@ public abstract class CollectionMapping extends ForeignReferenceMapping implemen
      */
     public Object extractResultFromBatchQuery(DatabaseQuery query, AbstractRecord databaseRow, AbstractSession session, AbstractRecord argumentRow) {
         //this can be null, because either one exists in the query or it will be created
-        Hashtable referenceObjectsByKey = null;
+        Map<Object, Object> referenceObjectsByKey = null;
         synchronized (query) {
             referenceObjectsByKey = getBatchReadObjects(query, session);
             if (referenceObjectsByKey == null) {
@@ -802,17 +797,16 @@ public abstract class CollectionMapping extends ForeignReferenceMapping implemen
                 ComplexQueryResult complexResult = (ComplexQueryResult)session.executeQuery(batchQuery, argumentRow);
                 Object results = complexResult.getResult();
                 referenceObjectsByKey = new Hashtable();
-                Enumeration rowsEnum = ((Vector)complexResult.getData()).elements();
+                Iterator<AbstractRecord> rowsIterator = ((List<AbstractRecord>)complexResult.getData()).iterator();
                 ContainerPolicy queryContainerPolicy = batchQuery.getContainerPolicy();
-                if(this.containerPolicy.shouldAddAll()) {
-                    HashMap<CacheKey, List[]> referenceObjectsAndRowsByKey = new HashMap();
+                if (this.containerPolicy.shouldAddAll()) {
+                    Map<Object, List[]> referenceObjectsAndRowsByKey = new HashMap();
                     for (Object elementsIterator = queryContainerPolicy.iteratorFor(results); queryContainerPolicy.hasNext(elementsIterator);) {
                         Object eachReferenceObject = queryContainerPolicy.next(elementsIterator, session);
-                        AbstractRecord row = (AbstractRecord)rowsEnum.nextElement();
-                        CacheKey eachReferenceKey = new CacheKey(extractKeyFromTargetRow(row, session));
-                        
+                        AbstractRecord row = rowsIterator.next();
+                        Object eachReferenceKey = extractKeyFromTargetRow(row, session);                        
                         List[] objectsAndRows = referenceObjectsAndRowsByKey.get(eachReferenceKey);
-                        if(objectsAndRows == null) {
+                        if (objectsAndRows == null) {
                             objectsAndRows = new List[]{new ArrayList(), new ArrayList()};
                             referenceObjectsAndRowsByKey.put(eachReferenceKey, objectsAndRows);
                         }
@@ -820,10 +814,10 @@ public abstract class CollectionMapping extends ForeignReferenceMapping implemen
                         objectsAndRows[1].add(row);
                     }
 
-                    Iterator<Map.Entry<CacheKey, List[]>> it = referenceObjectsAndRowsByKey.entrySet().iterator();
-                    while(it.hasNext()) {
-                        Map.Entry<CacheKey, List[]> entry = it.next();
-                        CacheKey eachReferenceKey = entry.getKey(); 
+                    Iterator<Map.Entry<Object, List[]>> it = referenceObjectsAndRowsByKey.entrySet().iterator();
+                    while (it.hasNext()) {
+                        Map.Entry<Object, List[]> entry = it.next();
+                        Object eachReferenceKey = entry.getKey(); 
                         List objects = entry.getValue()[0];
                         List<AbstractRecord> rows = entry.getValue()[1];
                         Object container = this.containerPolicy.containerInstance(objects.size());
@@ -833,8 +827,8 @@ public abstract class CollectionMapping extends ForeignReferenceMapping implemen
                 } else {
                     for (Object elementsIterator = queryContainerPolicy.iteratorFor(results); queryContainerPolicy.hasNext(elementsIterator);) {
                         Object eachReferenceObject = queryContainerPolicy.next(elementsIterator, session);
-                        AbstractRecord row = (AbstractRecord)rowsEnum.nextElement();
-                        CacheKey eachReferenceKey = new CacheKey(extractKeyFromTargetRow(row, session));
+                        AbstractRecord row = rowsIterator.next();
+                        Object eachReferenceKey = extractKeyFromTargetRow(row, session);
                         
                         Object container = referenceObjectsByKey.get(eachReferenceKey);
                         if (container == null) {
@@ -848,7 +842,7 @@ public abstract class CollectionMapping extends ForeignReferenceMapping implemen
                 query.setSession(null);
             }
         }
-        Object result = referenceObjectsByKey.get(new CacheKey(extractPrimaryKeyFromRow(databaseRow, session)));
+        Object result = referenceObjectsByKey.get(extractPrimaryKeyFromRow(databaseRow, session));
 
         // The source object might not have any target objects
         if (result == null) {
@@ -868,8 +862,8 @@ public abstract class CollectionMapping extends ForeignReferenceMapping implemen
      * The method should be overridden by classes that use batch reading: 
      * for those classes extractResultFromBatchQuery method is called. 
      */
-    protected Vector extractKeyFromTargetRow(AbstractRecord row, AbstractSession session) {
-        return new Vector(0);
+    protected Object extractKeyFromTargetRow(AbstractRecord row, AbstractSession session) {
+        return null;
     }
 
         /**
@@ -882,8 +876,8 @@ public abstract class CollectionMapping extends ForeignReferenceMapping implemen
      * The method should be overridden by classes that use batch reading: 
      * for those classes extractResultFromBatchQuery method is called. 
      */
-    protected Vector extractPrimaryKeyFromRow(AbstractRecord row, AbstractSession session) {
-        return new Vector(0);
+    protected Object extractPrimaryKeyFromRow(AbstractRecord row, AbstractSession session) {
+        return null;
     }
     
     /**
@@ -1700,7 +1694,7 @@ public abstract class CollectionMapping extends ForeignReferenceMapping implemen
      * INTERNAL:
      * An object is still in the collection, update it as it may have changed.
      */
-    protected void objectUnchangedDuringUpdate(ObjectLevelModifyQuery query, Object object, Hashtable backupclones, CacheKey keys) throws DatabaseException, OptimisticLockException {
+    protected void objectUnchangedDuringUpdate(ObjectLevelModifyQuery query, Object object, Map backupclones, Object key) throws DatabaseException, OptimisticLockException {
         objectUnchangedDuringUpdate(query, object);
     }
 
@@ -2282,11 +2276,11 @@ public abstract class CollectionMapping extends ForeignReferenceMapping implemen
         ContainerPolicy cp = this.containerPolicy;
         Object result = cp.containerInstance(pks.length);
         for (int index = 0; index < pks.length; ++index){
-            Vector pk = null;
+            Object pk = null;
             if (getReferenceDescriptor().hasCMPPolicy()){
-                pk = getReferenceDescriptor().getCMPPolicy().createPkVectorFromKey(pks[index], session);
+                pk = getReferenceDescriptor().getCMPPolicy().createPrimaryKeyFromId(pks[index], session);
             }else{
-                pk = (Vector)pks[index];
+                pk = pks[index];
             }
             ReadObjectQuery query = new ReadObjectQuery();
             query.setReferenceClass(getReferenceClass());
@@ -2306,30 +2300,29 @@ public abstract class CollectionMapping extends ForeignReferenceMapping implemen
 
         Object value = this.containerPolicy.containerInstance();
         // Extract the primary key of the source object, to filter only the joined rows for that object.
-        Object sourceKey = getDescriptor().getObjectBuilder().extractPrimaryKeyFromRow(row, executionSession);
-        CacheKey sourceCacheKey = new CacheKey(sourceKey);
+        Object sourceKey = this.descriptor.getObjectBuilder().extractPrimaryKeyFromRow(row, executionSession);
         // If the query was using joining, all of the result rows by primary key will have been computed.
-        List rows = joinManager.getDataResultsByPrimaryKey().get(sourceCacheKey);
+        List<AbstractRecord> rows = joinManager.getDataResultsByPrimaryKey().get(sourceKey);
         int size = rows.size();
-        if(size > 0) {
+        if (size > 0) {
             // A nested query must be built to pass to the descriptor that looks like the real query execution would,
             // these should be cached on the query during prepare.
             ObjectLevelReadQuery nestedQuery = prepareNestedJoinQueryClone(row, rows, joinManager, sourceQuery, executionSession);
             
             // A set of target cache keys must be maintained to avoid duplicates from multiple 1-m joins.
-            Set targetCacheKeys = new HashSet();
+            Set targetPrimaryKeys = new HashSet();
             
             ArrayList targetObjects = null;
             ArrayList<AbstractRecord> targetRows = null;
             boolean shouldAddAll = this.containerPolicy.shouldAddAll();
-            if(shouldAddAll) {
+            if (shouldAddAll) {
                 targetObjects = new ArrayList(size);
                 targetRows = new ArrayList(size);
             }
             
             // For each rows, extract the target row and build the target object and add to the collection.
             for (int index = 0; index < size; index++) {
-                AbstractRecord sourceRow = (AbstractRecord)rows.get(index);
+                AbstractRecord sourceRow = rows.get(index);
                 AbstractRecord targetRow = sourceRow;
                 // The field for many objects may be in the row,
                 // so build the subpartion of the row through the computed values in the query,
@@ -2344,16 +2337,15 @@ public abstract class CollectionMapping extends ForeignReferenceMapping implemen
                     return this.indirectionPolicy.valueFromRow(value);
                 }
                 
-                CacheKey targetCacheKey = new CacheKey(targetKey);            
                 // Only build/add the target object once, skip duplicates from multiple 1-m joins.
-                if (!targetCacheKeys.contains(targetCacheKey)) {
+                if (!targetPrimaryKeys.contains(targetKey)) {
                     nestedQuery.setTranslationRow(targetRow);
-                    targetCacheKeys.add(targetCacheKey);
+                    targetPrimaryKeys.add(targetKey);
                     Object targetObject = getReferenceDescriptor().getObjectBuilder().buildObject(nestedQuery, targetRow);
                     Object targetMapKey = this.containerPolicy.buildKeyFromJoinedRow(targetRow, joinManager, nestedQuery, executionSession);
                     nestedQuery.setTranslationRow(null);
                     if (targetMapKey == null){
-                        if(shouldAddAll) {
+                        if (shouldAddAll) {
                             targetObjects.add(targetObject);
                             targetRows.add(targetRow);
                         } else {
@@ -2364,7 +2356,7 @@ public abstract class CollectionMapping extends ForeignReferenceMapping implemen
                     }
                 }
             }
-            if(shouldAddAll) {
+            if (shouldAddAll) {
                 this.containerPolicy.addAll(targetObjects, value, executionSession, targetRows, nestedQuery);
             }
         }

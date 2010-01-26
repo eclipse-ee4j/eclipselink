@@ -455,23 +455,23 @@ public class OrderedListContainerPolicy extends ListContainerPolicy {
                         
                         //if objectToRemove is null, we can't look it up in the collection. 
                         // This should not happen unless identity is lost.
-                        if (objectToRemove!=null){
+                        if (objectToRemove != null) {
                             Integer index = changeObject.getIndex();
                             if (index!=null){
                                 if (objectToRemove.equals(get(index, valueOfTarget, mergeManager.getSession()))) {
                                     removeFromAtIndex(index, valueOfTarget);
                                 } else {
-                                    //Object is in the cache, but the collection doesn't have it at the location we expect
+                                    // Object is in the cache, but the collection doesn't have it at the location we expect
                                     // Collection is invalid with respect to these changes, so invalidate the parent and abort 
-                                    Vector key = ((org.eclipse.persistence.internal.sessions.ObjectChangeSet)changeRecord.getOwner()).getPrimaryKeys();
+                                    Object key = changeRecord.getOwner().getId();
                                     parentSession.getIdentityMapAccessor().invalidateObject(key, changeRecord.getOwner().getClassType(parentSession));
                                     return;
                                 }
-                            } else{
+                            } else {
                                 removeFrom(objectToRemove, valueOfTarget, parentSession);
                             }
                             
-                            if ( (! mergeManager.shouldMergeChangesIntoDistributedCache()) && changeRecord.getMapping().isPrivateOwned()) {
+                            if ((! mergeManager.shouldMergeChangesIntoDistributedCache()) && changeRecord.getMapping().isPrivateOwned()) {
                                 // Check that the object was actually removed and not moved.
                                 if (objectRemoved) {
                                     mergeManager.registerRemovedNewObjectIfRequired(objectChanges.getUnitOfWorkClone());
@@ -480,7 +480,7 @@ public class OrderedListContainerPolicy extends ListContainerPolicy {
                         }
                         
                         
-                    } else {//getChangeType == add
+                    } else { //getChangeType == add
                         boolean objectAdded = changeRecord.getAddObjectList().containsKey(objectChanges);
                         Object object = null;
                         // The object was actually added and not moved.
@@ -538,7 +538,7 @@ public class OrderedListContainerPolicy extends ListContainerPolicy {
                         
                             //Object is either not in the cache, or not at the location we expect
                             // Collection is invalid with respect to these changes, so invalidate the parent and abort 
-                            Vector key = ((org.eclipse.persistence.internal.sessions.ObjectChangeSet)changeRecord.getOwner()).getPrimaryKeys();
+                            Object key = changeRecord.getOwner().getId();
                             parentSession.getIdentityMapAccessor().invalidateObject(key, changeRecord.getOwner().getClassType(parentSession));
                             return;
                         }

@@ -265,7 +265,7 @@ public class WriteLockManager {
                 for (Map<ObjectChangeSet, ObjectChangeSet> changeSets : changeSet.getObjectChanges().values()) {
                     ClassDescriptor descriptor = null;
                     for (ObjectChangeSet objectChangeSet : changeSets.values()) {
-                        if (objectChangeSet.getCacheKey() == null) {
+                        if (objectChangeSet.getId() == null) {
                             //skip this process as we will be unable to acquire the correct cachekey anyway
                             //this is a new object with identity after write sequencing
                             continue;
@@ -281,25 +281,25 @@ public class WriteLockManager {
                         if (descriptor.shouldIsolateObjectsInUnitOfWork()) {
                             break;
                         }
-                        CacheKey activeCacheKey = attemptToAcquireLock(descriptor, objectChangeSet.getCacheKey(), session);
+                        CacheKey activeCacheKey = attemptToAcquireLock(descriptor, objectChangeSet.getId(), session);
                         if (activeCacheKey == null) {
                             // if cacheKey is null then the lock was not available no need to synchronize this block,because if the
                             // check fails then this thread will just return to the queue until it gets woken up.
                             if (this.prevailingQueue.getFirst() == mergeManager) {
                                 // wait on this object until it is free,  or until wait time expires because
                                 // this thread is the prevailing thread
-                                activeCacheKey = waitOnObjectLock(descriptor, objectChangeSet.getCacheKey(), session, (int)Math.round((Math.random()*500)));
+                                activeCacheKey = waitOnObjectLock(descriptor, objectChangeSet.getId(), session, (int)Math.round((Math.random()*500)));
                             }
                             if (activeCacheKey == null) {
                                 // failed to acquire lock, release all acquired
                                 // locks and place thread on waiting list
                                 releaseAllAcquiredLocks(mergeManager);
                                 // get cacheKey
-                                activeCacheKey = session.getIdentityMapAccessorInstance().getCacheKeyForObjectForLock(objectChangeSet.getCacheKey().getKey(), descriptor.getJavaClass(), descriptor);
+                                activeCacheKey = session.getIdentityMapAccessorInstance().getCacheKeyForObjectForLock(objectChangeSet.getId(), descriptor.getJavaClass(), descriptor);
                                 if (session.shouldLog(SessionLog.FINER, SessionLog.CACHE)) {
                                     Object[] params = new Object[3];
                                     params[0] = descriptor.getJavaClass();
-                                    params[1] = objectChangeSet.getCacheKey() != null ? objectChangeSet.getCacheKey().getKey() : new Vector();
+                                    params[1] = objectChangeSet.getId();
                                     params[2] = Thread.currentThread().getName();
                                     session.log(SessionLog.FINER, SessionLog.CACHE, "dead_lock_encountered_on_write_no_cachekey", params, null, true);
                                 }
@@ -316,7 +316,7 @@ public class WriteLockManager {
 
                                 // set the cache key on the merge manager for
                                 // the object that could not be acquired
-                                mergeManager.setWriteLockQueued(objectChangeSet.getCacheKey());
+                                mergeManager.setWriteLockQueued(objectChangeSet.getId());
                                 try {
                                     if (activeCacheKey != null){
                                         //wait on the lock of the object that we couldn't get.
@@ -373,11 +373,11 @@ public class WriteLockManager {
      * a new object that was not locked previously.  Unlike the other methods
      * within this class this method will lock only this object.
      */
-    public Object appendLock(Vector primaryKeys, Object objectToLock, ClassDescriptor descriptor, MergeManager mergeManager, AbstractSession session) {
-        CacheKey lockedCacheKey = session.getIdentityMapAccessorInstance().acquireLockNoWait(primaryKeys, descriptor.getJavaClass(), true, descriptor);
+    public Object appendLock(Object primaryKey, Object objectToLock, ClassDescriptor descriptor, MergeManager mergeManager, AbstractSession session) {
+        CacheKey lockedCacheKey = session.getIdentityMapAccessorInstance().acquireLockNoWait(primaryKey, descriptor.getJavaClass(), true, descriptor);
         if (lockedCacheKey == null) {
             session.getIdentityMapAccessorInstance().getWriteLockManager().transitionToDeferredLocks(mergeManager);
-            lockedCacheKey = session.getIdentityMapAccessorInstance().acquireDeferredLock(primaryKeys, descriptor.getJavaClass(), descriptor);
+            lockedCacheKey = session.getIdentityMapAccessorInstance().acquireDeferredLock(primaryKey, descriptor.getJavaClass(), descriptor);
             Object cachedObject = lockedCacheKey.getObject();
             if (cachedObject == null) {
                 cachedObject = lockedCacheKey.waitForObject();
@@ -400,8 +400,8 @@ public class WriteLockManager {
      * This method performs the operations of finding the cacheKey and locking it if possible.
      * Returns True if the lock was acquired, false otherwise
      */
-    protected CacheKey attemptToAcquireLock(ClassDescriptor descriptor, CacheKey cacheKey, AbstractSession session) {
-        return session.getIdentityMapAccessorInstance().acquireLockNoWait(cacheKey.getKey(), descriptor.getJavaClass(), true, descriptor);
+    protected CacheKey attemptToAcquireLock(ClassDescriptor descriptor, Object primaryKey, AbstractSession session) {
+        return session.getIdentityMapAccessorInstance().acquireLockNoWait(primaryKey, descriptor.getJavaClass(), true, descriptor);
     }
 
     /**
@@ -477,7 +477,7 @@ public class WriteLockManager {
      * This method performs the operations of finding the cacheKey and locking it if possible.
      * Waits until the lock can be acquired
      */
-    protected CacheKey waitOnObjectLock(ClassDescriptor descriptor, CacheKey cacheKey, AbstractSession session, int waitTime) {
-        return session.getIdentityMapAccessorInstance().acquireLockWithWait(cacheKey.getKey(), descriptor.getJavaClass(), true, descriptor, waitTime);
+    protected CacheKey waitOnObjectLock(ClassDescriptor descriptor, Object primaryKey, AbstractSession session, int waitTime) {
+        return session.getIdentityMapAccessorInstance().acquireLockWithWait(primaryKey, descriptor.getJavaClass(), true, descriptor, waitTime);
     }
 }

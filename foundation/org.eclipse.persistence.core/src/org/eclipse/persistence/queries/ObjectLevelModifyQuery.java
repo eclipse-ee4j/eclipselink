@@ -212,7 +212,7 @@ public abstract class ObjectLevelModifyQuery extends ModifyQuery {
 
         if (this.primaryKey == null) {
             if (this.objectChangeSet != null) {
-                this.primaryKey = this.objectChangeSet.getPrimaryKeys();
+                this.primaryKey = this.objectChangeSet.getId();
             } else {
                 this.primaryKey = this.descriptor.getObjectBuilder().extractPrimaryKeyFromObject(this.object, this.session);
             }

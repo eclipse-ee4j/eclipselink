@@ -16,7 +16,6 @@ import java.util.*;
 import java.io.*;
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.internal.helper.CustomObjectInputStream;
-import org.eclipse.persistence.internal.identitymaps.CacheKey;
 
 /**
  * <p>
@@ -170,7 +169,7 @@ public class UnitOfWorkChangeSet implements Serializable, org.eclipse.persistenc
                         getAllChangeSets().put(objectChanges, objectChanges);
                     }
          
-                    if (objectChanges.getCacheKey() != null) {
+                    if (objectChanges.getId() != null) {
                         Map<ObjectChangeSet, ObjectChangeSet> map = getObjectChanges().get(objectChanges.getClassType());
 
                         if (map == null) {
@@ -235,7 +234,7 @@ public class UnitOfWorkChangeSet implements Serializable, org.eclipse.persistenc
         }
         ObjectChangeSet localChangeSet = this.findObjectChangeSet(tofind, mergeFromChangeSet);
         if (localChangeSet == null) {//not found locally then replace it with the one from the merging changeset
-            localChangeSet = new ObjectChangeSet(tofind.getPrimaryKeys(), tofind.getDescriptor(), tofind.getUnitOfWorkClone(), this, tofind.isNew());
+            localChangeSet = new ObjectChangeSet(tofind.getId(), tofind.getDescriptor(), tofind.getUnitOfWorkClone(), this, tofind.isNew());
             this.addObjectChangeSetForIdentity(localChangeSet, localChangeSet.getUnitOfWorkClone());
         }
         return localChangeSet;
@@ -520,10 +519,11 @@ public class UnitOfWorkChangeSet implements Serializable, org.eclipse.persistenc
      */
     public void putNewObjectInChangesList(ObjectChangeSet objectChangeSet, AbstractSession session) {
         // Must reset the cache key for new objects assigned in insert.
-        if (objectChangeSet.getCacheKey() == null) {
-            objectChangeSet.setCacheKey(new CacheKey(session.getDescriptor(objectChangeSet.getUnitOfWorkClone().getClass()).getObjectBuilder().extractPrimaryKeyFromObject(objectChangeSet.getUnitOfWorkClone(), session, false)));
+        if (objectChangeSet.getId() == null) {
+            Object clone = objectChangeSet.getUnitOfWorkClone();
+            objectChangeSet.setId(session.getDescriptor(clone.getClass()).getObjectBuilder().extractPrimaryKeyFromObject(clone, session, false));
         }
-        this.addObjectChangeSet(objectChangeSet, session, false);
+        addObjectChangeSet(objectChangeSet, session, false);
         removeObjectChangeSetFromNewList(objectChangeSet, session);
     }
 

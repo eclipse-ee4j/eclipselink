@@ -387,8 +387,8 @@ public class EISObjectPersistenceXMLProject extends NamespaceResolvableProject {
                     Iterator iterator = associations.iterator();
                     while (iterator.hasNext()) {
                         Association association = (Association)iterator.next();
-                        mapping.getSourceToTargetKeyFields().put(association.getKey(), association.getValue());
-                        mapping.getTargetToSourceKeyFields().put(association.getValue(), association.getKey());
+                        mapping.getSourceToTargetKeyFields().put((DatabaseField)association.getKey(), (DatabaseField)association.getValue());
+                        mapping.getTargetToSourceKeyFields().put((DatabaseField)association.getValue(), (DatabaseField)association.getKey());
                     }
                 }
             });

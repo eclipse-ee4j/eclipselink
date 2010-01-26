@@ -26,6 +26,7 @@ import org.eclipse.persistence.exceptions.DescriptorException;
 import org.eclipse.persistence.internal.descriptors.ObjectBuilder;
 import org.eclipse.persistence.internal.helper.DatabaseField;
 import org.eclipse.persistence.internal.helper.NonSynchronizedVector;
+import org.eclipse.persistence.internal.identitymaps.CacheId;
 import org.eclipse.persistence.internal.oxm.Reference;
 import org.eclipse.persistence.internal.oxm.ReferenceResolver;
 import org.eclipse.persistence.internal.oxm.XMLConversionManager;
@@ -129,7 +130,7 @@ public class XMLCollectionReferenceMapping extends XMLObjectReferenceMapping imp
         if (idx == -1) {
             return null;
         }
-        return ((Vector)pks).get(idx);
+        return ((CacheId)pks).getPrimaryKey()[idx];
     }
 
     /**
@@ -161,14 +162,13 @@ public class XMLCollectionReferenceMapping extends XMLObjectReferenceMapping imp
         XMLField tgtFld = (XMLField) getSourceToTargetKeyFieldAssociations().get(xmlField);
         String tgtXPath = tgtFld.getXPath();        
         HashMap primaryKeyMap = reference.getPrimaryKeyMap();
-        Vector pks = (Vector) primaryKeyMap.get(tgtXPath);
-        if(pks == null){
-            pks = new Vector();
+        CacheId pks = (CacheId) primaryKeyMap.get(tgtXPath);
+        ClassDescriptor descriptor = session.getClassDescriptor(getReferenceClass());
+        if (pks == null){
+            pks = new CacheId(new Object[0]);
             primaryKeyMap.put(tgtXPath, pks);
         }        
 
-        ClassDescriptor descriptor = session.getClassDescriptor(getReferenceClass());
-        DatabaseField typedField = descriptor.getTypedField(tgtFld);
         Class type = descriptor.getTypedField(tgtFld).getType();
         XMLConversionManager xmlConversionManager = (XMLConversionManager) session.getDatasourcePlatform().getConversionManager();
         for (StringTokenizer stok = new StringTokenizer((String) object); stok.hasMoreTokens();) {
@@ -227,10 +227,7 @@ public class XMLCollectionReferenceMapping extends XMLObjectReferenceMapping imp
      */
     public Object readFromRowIntoObject(AbstractRecord databaseRow, JoinedAttributeManager joinManager, Object targetObject, ObjectBuildingQuery sourceQuery, AbstractSession executionSession) throws DatabaseException {
         ClassDescriptor descriptor = sourceQuery.getSession().getClassDescriptor(getReferenceClass());
-        ContainerPolicy cp = this.getContainerPolicy();
-        Vector pkFieldNames = referenceDescriptor.getPrimaryKeyFieldNames();
-        Vector primaryKeyValues = new Vector();
-        primaryKeyValues.setSize(pkFieldNames.size());
+        ContainerPolicy cp = getContainerPolicy();
         HashMap primaryKeyMap = new HashMap();
         // for each source xmlField, get the value from the row and store
         for (Iterator fieldIt = getFields().iterator(); fieldIt.hasNext();) {
@@ -244,7 +241,7 @@ public class XMLCollectionReferenceMapping extends XMLObjectReferenceMapping imp
             // need to get the actual type of the target (i.e. int, String, etc.) 
             // and use the converted value when checking the cache.
             XMLConversionManager xmlConversionManager = (XMLConversionManager) executionSession.getDatasourcePlatform().getConversionManager();
-            Vector newValues = new Vector();
+            CacheId newValues = new CacheId(new Object[0]);
             for (Iterator valIt = ((Vector) fieldValue).iterator(); valIt.hasNext();) {
                 for (StringTokenizer stok = new StringTokenizer((String) valIt.next()); stok.hasMoreTokens();) {
                     Object value = xmlConversionManager.convertObject(stok.nextToken(), descriptor.getTypedField(tgtFld).getType());

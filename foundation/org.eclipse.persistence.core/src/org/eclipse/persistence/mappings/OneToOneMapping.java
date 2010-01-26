@@ -14,6 +14,7 @@ package org.eclipse.persistence.mappings;
 
 import java.util.*;
 
+import org.eclipse.persistence.annotations.CacheKeyType;
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.exceptions.*;
 import org.eclipse.persistence.expressions.*;
@@ -27,6 +28,7 @@ import org.eclipse.persistence.sessions.DatabaseRecord;
 import org.eclipse.persistence.queries.*;
 import org.eclipse.persistence.internal.descriptors.CascadeLockingPolicy;
 import org.eclipse.persistence.internal.descriptors.DescriptorIterator;
+import org.eclipse.persistence.internal.descriptors.ObjectBuilder;
 import org.eclipse.persistence.internal.expressions.ConstantExpression;
 import org.eclipse.persistence.internal.expressions.ObjectExpression;
 import org.eclipse.persistence.internal.expressions.SQLSelectStatement;
@@ -266,12 +268,10 @@ public class OneToOneMapping extends ObjectReferenceMapping implements Relationa
                     }
                 }
     
-                Enumeration keyEnum = extractKeyFromReferenceObject(value, session).elements();
-                for (Iterator sourceFieldsEnum = getSourceToTargetKeyFields().keySet().iterator();
-                         sourceFieldsEnum.hasNext();) {
-                    DatabaseField field = (DatabaseField)sourceFieldsEnum.next();
+                Iterator keyIterator = Arrays.asList(((CacheId)extractKeyFromReferenceObject(value, session)).getPrimaryKey()).iterator();
+                for (DatabaseField field : getSourceToTargetKeyFields().keySet()) {
                     Expression join = null;
-                    join = base.getField(field).equal(keyEnum.nextElement());
+                    join = base.getField(field).equal(keyIterator.next());
                     if (foreignKeyJoin == null) {
                         foreignKeyJoin = join;
                     } else {
@@ -281,8 +281,8 @@ public class OneToOneMapping extends ObjectReferenceMapping implements Relationa
             }
         } else {
             int size = this.mechanism.sourceKeyFields.size();
-            Vector keys = null;
-            if(value != null) {
+            Object key = null;
+            if (value != null) {
                 if (!getReferenceDescriptor().getJavaClass().isInstance(value)) {
                     // Bug 3894351 - ensure any proxys are triggered so we can do a proper class comparison
                     value = ProxyIndirectionPolicy.getValueFromProxy(value);
@@ -290,24 +290,24 @@ public class OneToOneMapping extends ObjectReferenceMapping implements Relationa
                         throw QueryException.incorrectClassForObjectComparison(base, value, this);
                     }
                 }
-                keys = extractKeyFromReferenceObject(value, session);
+                key = extractKeyFromReferenceObject(value, session);
                 boolean allNulls = true;
-                for(int i=0; i < size; i++) {
-                    if(keys.get(i) != null) {
+                for (int i=0; i < size; i++) {
+                    if (((CacheId)key).getPrimaryKey()[i] != null) {
                         allNulls = false;
                         break;
                     }
                 }
                 // the same case
-                if(allNulls) {
+                if (allNulls) {
                     value = null;
                 }
             }
-            if(value != null) {
+            if (value != null) {
                 for(int i=0; i < size; i++) {
                     DatabaseField field = this.mechanism.sourceKeyFields.get(i);
                     Expression join = null;
-                    join = base.getField(field).equal(keys.get(i));
+                    join = base.getField(field).equal(((CacheId)key).getPrimaryKey()[i]);
                     if (foreignKeyJoin == null) {
                         foreignKeyJoin = join;
                     } else {
@@ -547,44 +547,44 @@ public class OneToOneMapping extends ObjectReferenceMapping implements Relationa
      * INTERNAL:
      * Extract the foreign key value from the source row.
      */
-    protected Vector extractForeignKeyFromRow(AbstractRecord row, AbstractSession session) {
-        Vector key;
-
-        if(this.mechanism == null) {
-            key = new Vector();
-            for (Iterator fieldEnum = getSourceToTargetKeyFields().keySet().iterator();
-                     fieldEnum.hasNext();) {
-                DatabaseField field = (DatabaseField)fieldEnum.next();
-                Object value = row.get(field);
-    
+    protected Object extractForeignKeyFromRow(AbstractRecord row, AbstractSession session) {
+        Object[] key;
+        ConversionManager conversionManager = session.getDatasourcePlatform().getConversionManager();
+        ObjectBuilder builder = this.descriptor.getObjectBuilder();
+        if (this.mechanism == null) {
+            key = new Object[getSourceToTargetKeyFields().size()];
+            int index = 0;
+            for (DatabaseField field : getSourceToTargetKeyFields().keySet()) {
+                Object value = row.get(field);    
                 // Must ensure the classification gets a cache hit.
                 try {
-                    value = session.getDatasourcePlatform().getConversionManager().convertObject(value, getDescriptor().getObjectBuilder().getFieldClassification(field));
+                    value = conversionManager.convertObject(value, builder.getFieldClassification(field));
                 } catch (ConversionException e) {
                     throw ConversionException.couldNotBeConverted(this, getDescriptor(), e);
                 }
     
-                key.addElement(value);
+                key[index] = value;
+                index++;
             }
         } else {
-            int size = mechanism.sourceKeyFields.size();
-            key = new Vector(size);
-            for(int i=0; i < size; i++) {                
-                DatabaseField field = mechanism.sourceKeyFields.get(i);
-                Object value = row.get(field);
-                
+            List<DatabaseField> sourceKeyFields = this.mechanism.sourceKeyFields;
+            int size = sourceKeyFields.size();
+            key = new Object[size];
+            for (int i = 0; i < size; i++) {                
+                DatabaseField field = sourceKeyFields.get(i);
+                Object value = row.get(field);                
                 // Must ensure the classification gets a cache hit.
                 try {
-                    value = session.getDatasourcePlatform().getConversionManager().convertObject(value, getDescriptor().getObjectBuilder().getFieldClassification(field));
+                    value = conversionManager.convertObject(value, builder.getFieldClassification(field));
                 } catch (ConversionException e) {
                     throw ConversionException.couldNotBeConverted(this, getDescriptor(), e);
                 }
     
-                key.addElement(value);
+                key[i] = value;
             }            
         }
 
-        return key;
+        return new CacheId(key);
     }
 
     
@@ -608,54 +608,58 @@ public class OneToOneMapping extends ObjectReferenceMapping implements Relationa
      * INTERNAL:
      * Extract the key value from the reference object.
      */
-    protected Vector extractKeyFromReferenceObject(Object object, AbstractSession session) {
-        Vector key;
-
-        if(this.mechanism == null) {
-            key = new Vector();
-            for (Iterator fieldEnum = getSourceToTargetKeyFields().values().iterator();
-                     fieldEnum.hasNext();) {
+    protected Object extractKeyFromReferenceObject(Object object, AbstractSession session) {
+        ObjectBuilder objectBuilder = getReferenceDescriptor().getObjectBuilder();
+        Object[] key;
+        if (this.mechanism == null) {
+            key = new Object[getSourceToTargetKeyFields().size()];
+            int index = 0;
+            for (DatabaseField field : getSourceToTargetKeyFields().values()) {
                 if (object == null) {
-                    key.addElement(null);
+                    key[index] = null;
                 } else {
-                    DatabaseField field = (DatabaseField)fieldEnum.next();
-                    key.addElement(getReferenceDescriptor().getObjectBuilder().extractValueFromObjectForField(object, field, session));
+                    key[index] = objectBuilder.extractValueFromObjectForField(object, field, session);
                 }
+                index++;
             }
         } else {
-            int size = mechanism.targetKeyFields.size();
-            key = new Vector(size);
-            for(int i=0; i < size; i++) {                
+            int size = this.mechanism.targetKeyFields.size();
+            key = new Object[size];
+            for (int i = 0; i < size; i++) {
                 if (object == null) {
-                    key.addElement(null);
+                    key[i] = null;
                 } else {
-                    DatabaseField field = mechanism.targetKeyFields.get(i);
-                    key.addElement(getReferenceDescriptor().getObjectBuilder().extractValueFromObjectForField(object, field, session));
+                    DatabaseField field = this.mechanism.targetKeyFields.get(i);
+                    key[i] = objectBuilder.extractValueFromObjectForField(object, field, session);
                 }
             }            
         }
 
-        return key;
+        return new CacheId(key);
     }
 
     /**
      * INTERNAL:
-     *    Return the primary key for the reference object (i.e. the object
+     * Return the primary key for the reference object (i.e. the object
      * object referenced by domainObject and specified by mapping).
      * This key will be used by a RemoteValueHolder.
      */
-    public Vector extractPrimaryKeysForReferenceObjectFromRow(AbstractRecord row) {
+    @Override
+    public Object extractPrimaryKeysForReferenceObjectFromRow(AbstractRecord row) {
         List primaryKeyFields = getReferenceDescriptor().getPrimaryKeyFields();
-        Vector result = new Vector(primaryKeyFields.size());
+        Object[] result = new  Object[primaryKeyFields.size()];
         for (int index = 0; index < primaryKeyFields.size(); index++) {
             DatabaseField targetKeyField = (DatabaseField)primaryKeyFields.get(index);
             DatabaseField sourceKeyField = getTargetToSourceKeyFields().get(targetKeyField);
             if (sourceKeyField == null) {
-                return new Vector(1);
+                return null;
             }
-            result.addElement(row.get(sourceKeyField));
+            result[index] = row.get(sourceKeyField);
+            if (getReferenceDescriptor().getCacheKeyType() == CacheKeyType.ID_VALUE) {
+                return result[index];
+            }
         }
-        return result;
+        return new CacheId(result);
     }
 
     /**
@@ -682,39 +686,37 @@ public class OneToOneMapping extends ObjectReferenceMapping implements Relationa
      */
     public Object extractResultFromBatchQuery(DatabaseQuery query, AbstractRecord databaseRow, AbstractSession session, AbstractRecord argumentRow) {
         //this can be null, because either one exists in the query or it will be created
-        Hashtable referenceObjectsByKey = null;
+        Map<Object, Object> referenceObjectsByKey = null;
         synchronized (query) {
             referenceObjectsByKey = getBatchReadObjects(query, session);
             if (referenceObjectsByKey == null) {
-                Vector results;
+                List results;
                 referenceObjectsByKey = new Hashtable();
-                if(this.mechanism == null) {
-                    results = (Vector)session.executeQuery(query, argumentRow);
+                if (this.mechanism == null) {
+                    results = (List)session.executeQuery(query, argumentRow);
     
-                    for (Enumeration enumeration = results.elements(); enumeration.hasMoreElements();) {
-                        Object eachReferenceObject = enumeration.nextElement();
-                        CacheKey eachReferenceKey = new CacheKey(extractKeyFromReferenceObject(eachReferenceObject, session));
-    
+                    for (Object eachReferenceObject : results) {
+                        Object eachReferenceKey = extractKeyFromReferenceObject(eachReferenceObject, session);    
                         referenceObjectsByKey.put(eachReferenceKey, session.wrapObject(eachReferenceObject));
                     }
                 } else {
+                    ConversionManager conversionManager = session.getDatasourcePlatform().getConversionManager();
                     ComplexQueryResult complexResult = (ComplexQueryResult)session.executeQuery(query, argumentRow);
-                    results = (Vector)complexResult.getResult();
+                    results = (List)complexResult.getResult();
                     List<AbstractRecord> rows = (List)complexResult.getData();
                     int size = results.size();
-                    int sourceSize = this.mechanism.getSourceKeyFields().size();
-                    for(int i=0; i < size; i++) {
+                    List<DatabaseField> sourceKeyFields = this.mechanism.getSourceRelationKeyFields();
+                    int sourceSize = sourceKeyFields.size();
+                    for (int i=0; i < size; i++) {
                         AbstractRecord row = rows.get(i);
-                        Vector key = new Vector();
+                        Object[] key = new Object[sourceSize];
                         for (int k = 0; k < sourceSize; k++) {
-                            Object value = row.get(this.mechanism.getSourceRelationKeyFields().get(k));
+                            Object value = row.get(sourceKeyFields.get(k));
                             // must do the same conversion as extractForeignKeyFromRow does 
                             // so that CacheKey created here and in extractForeignKeyFromRow compare correctly. 
-                            key.add(session.getDatasourcePlatform().getConversionManager().convertObject(value, getDescriptor().getObjectBuilder().getFieldClassification(this.mechanism.getSourceKeyFields().get(k))));
+                            key[k] = conversionManager.convertObject(value, getDescriptor().getObjectBuilder().getFieldClassification(sourceKeyFields.get(k)));
                         }
-                        CacheKey eachReferenceKey = new CacheKey(key);
-                        
-                        referenceObjectsByKey.put(eachReferenceKey, session.wrapObject(results.get(i)));
+                        referenceObjectsByKey.put(new CacheId(key), session.wrapObject(results.get(i)));
                     }
                 }
                 setBatchReadObjects(referenceObjectsByKey, query, session);
@@ -722,7 +724,7 @@ public class OneToOneMapping extends ObjectReferenceMapping implements Relationa
             }
         }
 
-        return referenceObjectsByKey.get(new CacheKey(extractForeignKeyFromRow(databaseRow, session)));
+        return referenceObjectsByKey.get(extractForeignKeyFromRow(databaseRow, session));
     }
 
     

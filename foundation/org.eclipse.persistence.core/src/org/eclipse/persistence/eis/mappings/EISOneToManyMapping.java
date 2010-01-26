@@ -28,7 +28,6 @@ import org.eclipse.persistence.exceptions.OptimisticLockException;
 import org.eclipse.persistence.expressions.Expression;
 import org.eclipse.persistence.internal.descriptors.ObjectBuilder;
 import org.eclipse.persistence.internal.helper.DatabaseField;
-import org.eclipse.persistence.internal.identitymaps.CacheKey;
 import org.eclipse.persistence.internal.indirection.EISOneToManyQueryBasedValueHolder;
 import org.eclipse.persistence.oxm.XMLField;
 import org.eclipse.persistence.internal.oxm.XPathEngine;
@@ -709,10 +708,7 @@ public class EISOneToManyMapping extends CollectionMapping implements EISMapping
         Object primaryKey1 = getReferenceDescriptor().getObjectBuilder().extractPrimaryKeyFromObject(element1, session);
         Object primaryKey2 = getReferenceDescriptor().getObjectBuilder().extractPrimaryKeyFromObject(element2, session);
 
-        CacheKey cacheKey1 = new CacheKey(primaryKey1);
-        CacheKey cacheKey2 = new CacheKey(primaryKey2);
-
-        if (!cacheKey1.equals(cacheKey2)) {
+        if (!primaryKey1.equals(primaryKey2)) {
             return false;
         }
 

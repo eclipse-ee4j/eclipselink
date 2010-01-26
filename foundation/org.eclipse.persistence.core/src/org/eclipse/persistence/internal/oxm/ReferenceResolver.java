@@ -16,6 +16,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.Vector;
 
+import org.eclipse.persistence.internal.identitymaps.CacheId;
 import org.eclipse.persistence.internal.queries.ContainerPolicy;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.mappings.AttributeAccessor;
@@ -60,9 +61,9 @@ public class ReferenceResolver {
 
     /**
      * INTERNAL:
-     * Create vectors of primary key values to be used for cache lookup.  The map
-     * of vectors on the reference is keyed on the reference descriptors primary
-     * key field names.  Each of these vectors contains all of the values for a
+     * Create primary key values to be used for cache lookup.  The map
+     * of primary keys on the reference is keyed on the reference descriptors primary
+     * key field names.  Each of these primary keys contains all of the values for a
      * particular key - in the order that they we read in from the document.  For
      * example, if the key field names are A, B, and C, and there are three reference
      * object instances, then the hashmap would have the following:
@@ -81,31 +82,31 @@ public class ReferenceResolver {
     		return;
     	}
 
-    	Vector pkVals;
+    	CacheId pkVals;
     	boolean init = true;
 
     	// for each primary key field name
     	for (Iterator pkFieldNameIt = pkFields.iterator(); pkFieldNameIt.hasNext(); ) {
-    		pkVals = (Vector) reference.getPrimaryKeyMap().get(pkFieldNameIt.next());
+    		pkVals = (CacheId) reference.getPrimaryKeyMap().get(pkFieldNameIt.next());
 
     		if (pkVals == null) {
     			return;
     		}
     		// initialize the list of pk vectors once and only once
     		if (init) {
-    			for (int i=0; i<pkVals.size(); i++) {
-    				pks.add(new Vector());
+    			for (int i=0; i<pkVals.getPrimaryKey().length; i++) {
+    				pks.add(new CacheId(new Object[0]));
     			}
     			init = false;
     		}
 
     		// now add each value for the current target key to it's own vector
-        	for (int i=0; i<pkVals.size(); i++) {
-    			Object val = pkVals.get(i);
-				((Vector) pks.get(i)).add(val);
+        	for (int i=0; i<pkVals.getPrimaryKey().length; i++) {
+    			Object val = pkVals.getPrimaryKey()[i];
+                        ((CacheId)pks.get(i)).add(val);
     		}
     	}
-    	reference.primaryKeys = pks;
+    	reference.primaryKey = pks;
     }
 
     /**
@@ -145,9 +146,9 @@ public class ReferenceResolver {
                 // create vectors of primary key values - one vector per reference instance
                 createPKVectorsFromMap(reference);
                 // loop over each pk vector and get object from cache - then add to collection and set on object
-                for (Iterator pkIt = reference.getPrimaryKeys().iterator(); pkIt.hasNext();) {
-                    Vector pkVector = (Vector) pkIt.next();
-                    Object value = session.getIdentityMapAccessor().getFromIdentityMap(pkVector, reference.getTargetClass());
+                for (Iterator pkIt = ((Vector)reference.getPrimaryKey()).iterator(); pkIt.hasNext();) {
+                    Object primaryKey = pkIt.next();
+                    Object value = session.getIdentityMapAccessor().getFromIdentityMap(primaryKey, reference.getTargetClass());
 
                     if (value != null) {
                         cPolicy.addInto(value, container,  session);
@@ -173,7 +174,7 @@ public class ReferenceResolver {
                     }
                 }
             } else if (reference.getMapping() instanceof XMLObjectReferenceMapping) {
-                Object value = session.getIdentityMapAccessor().getFromIdentityMap(reference.getPrimaryKeys(), reference.getTargetClass());
+                Object value = session.getIdentityMapAccessor().getFromIdentityMap(reference.getPrimaryKey(), reference.getTargetClass());
                 XMLObjectReferenceMapping mapping = (XMLObjectReferenceMapping)reference.getMapping();
                 if (value != null) {
                     mapping.setAttributeValueInObject(reference.getSourceObject(), value);

@@ -22,6 +22,7 @@ import java.io.*;
 import java.lang.reflect.*;
 
 import org.eclipse.persistence.internal.descriptors.*;
+import org.eclipse.persistence.internal.oxm.XMLObjectBuilder;
 import org.eclipse.persistence.internal.sessions.AbstractRecord;
 import org.eclipse.persistence.sequencing.Sequence;
 import org.eclipse.persistence.sessions.Project;
@@ -39,6 +40,7 @@ import org.eclipse.persistence.expressions.*;
 import org.eclipse.persistence.internal.databaseaccess.*;
 import org.eclipse.persistence.exceptions.*;
 import org.eclipse.persistence.sessions.remote.*;
+import org.eclipse.persistence.annotations.CacheKeyType;
 import org.eclipse.persistence.annotations.IdValidation;
 import org.eclipse.persistence.descriptors.copying.*;
 import org.eclipse.persistence.descriptors.changetracking.*;
@@ -179,6 +181,9 @@ public class ClassDescriptor implements Cloneable, Serializable {
 
     /** Allow zero primary key validation to be configured. */
     protected IdValidation idValidation;
+    
+    /** Allow cache key type to be configured. */
+    protected CacheKeyType cacheKeyType;
     
     // JPA 2.0 Derived identities - map of mappings that act as derived ids
     protected Map<String, DatabaseMapping> derivesIdMappings;
@@ -847,10 +852,7 @@ public class ClassDescriptor implements Cloneable, Serializable {
         if (!this.isAggregateDescriptor()) {
             session.getIntegrityChecker().handleError(DescriptorException.referenceDescriptorIsNotAggregate(this.getJavaClass().getName(), mapping));
         }
-        for (Enumeration stream = this.getInheritancePolicy().getChildDescriptors().elements();
-                 stream.hasMoreElements();) {
-            ClassDescriptor childDescriptor = (ClassDescriptor)stream.nextElement();
-
+        for (ClassDescriptor childDescriptor : this.getInheritancePolicy().getChildDescriptors()) {
             // recurse down the inheritance tree to its leaves
             childDescriptor.checkInheritanceTreeAggregateSettingsForChildren(session, mapping);
         }
@@ -3186,16 +3188,13 @@ public class ClassDescriptor implements Cloneable, Serializable {
         // Make sure that child is post initialized,
         // this initialize bottom up, unlike the two other phases that to top down.
         if (hasInheritance()) {
-            for (Enumeration childEnum = getInheritancePolicy().getChildDescriptors().elements();
-                     childEnum.hasMoreElements();) {
-                ((ClassDescriptor)childEnum.nextElement()).postInitialize(session);
+            for (ClassDescriptor child : getInheritancePolicy().getChildDescriptors()) {
+                child.postInitialize(session);
             }
         }
 
         // Allow mapping to perform post initialization.
-        for (Enumeration mappingsEnum = getMappings().elements(); mappingsEnum.hasMoreElements();) {
-            DatabaseMapping mapping = (DatabaseMapping)mappingsEnum.nextElement();
-
+        for (DatabaseMapping mapping : getMappings()) {
             // This causes post init to be called multiple times in inheritance.
             mapping.postInitialize(session);
             // PERF: computed if deferred locking is required.
@@ -3238,6 +3237,21 @@ public class ClassDescriptor implements Cloneable, Serializable {
                 }
             }
             field.setIndex(index);
+        }        
+        // Set cache key type.
+        if (getCacheKeyType() == null) {
+            if ((getPrimaryKeyFields().size() > 1) || (getObjectBuilder() instanceof XMLObjectBuilder)) {
+                setCacheKeyType(CacheKeyType.CACHE_ID);
+            } else if (getPrimaryKeyFields().size() == 1) {
+                Class type = getObjectBuilder().getFieldClassification(getPrimaryKeyFields().get(0));
+                if ((type == null) || type.isArray()) {
+                    setCacheKeyType(CacheKeyType.CACHE_ID);
+                } else {
+                    setCacheKeyType(CacheKeyType.ID_VALUE);
+                }
+            } else {
+                setCacheKeyType(CacheKeyType.CACHE_ID);                
+            }
         }
         getObjectBuilder().postInitialize(session);
 
@@ -3314,9 +3328,8 @@ public class ClassDescriptor implements Cloneable, Serializable {
         }
         
         // Allow mapping pre init, must be done before validate.
-        for (Enumeration mappingsEnum = getMappings().elements(); mappingsEnum.hasMoreElements();) {
+        for (DatabaseMapping mapping : getMappings()) {
             try {
-                DatabaseMapping mapping = (DatabaseMapping)mappingsEnum.nextElement();
                 mapping.preInitialize(session);
             } catch (DescriptorException exception) {
                 session.getIntegrityChecker().handleError(exception);
@@ -3448,13 +3461,8 @@ public class ClassDescriptor implements Cloneable, Serializable {
         }
         getObjectBuilder().initializeJoinedAttributes();
         if (hasInheritance()) {
-			Vector children = getInheritancePolicy().getChildDescriptors(); 
-			// use indices to avoid synchronization problems. 
-            for (int i = 0; i < children.size(); i++) { 
-            	// Bug 6001198 - Child descriptors collection contains descriptors
-	            // also use 'i' indice, in order to correctly iterate
-    	        ClassDescriptor child = (ClassDescriptor)children.elementAt(i); 
-        	    child.reInitializeJoinedAttributes(); 
+            for (ClassDescriptor child : getInheritancePolicy().getChildDescriptors()) {
+                child.reInitializeJoinedAttributes(); 
             }
         }
     }
@@ -5427,6 +5435,22 @@ public class ClassDescriptor implements Cloneable, Serializable {
      */
     public IdValidation getIdValidation() {
         return idValidation;
+    }
+
+    /**
+     * ADVANCED:
+     * Set what cache key type to use to store the object in the cache.
+     */
+    public void setCacheKeyType(CacheKeyType cacheKeyType) {
+        this.cacheKeyType = cacheKeyType;
+    }
+
+    /**
+     * ADVANCED:
+     * Return what cache key type to use to store the object in the cache.
+     */
+    public CacheKeyType getCacheKeyType() {
+        return cacheKeyType;
     }
 
     /**

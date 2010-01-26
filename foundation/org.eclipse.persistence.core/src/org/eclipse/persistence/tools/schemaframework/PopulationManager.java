@@ -46,9 +46,8 @@ public class PopulationManager {
     public void addAllObjectsForAbstractClass(Class objectsClass, AbstractSession session, Vector allObjects) {
         ClassDescriptor descriptor = session.getDescriptor(objectsClass);
         addAllObjectsForClass(objectsClass, allObjects);
-        for (Enumeration enumeration = descriptor.getInheritancePolicy().getChildDescriptors().elements();
-                 enumeration.hasMoreElements();) {
-            addAllObjectsForAbstractClass(((ClassDescriptor)enumeration.nextElement()).getJavaClass(), session, allObjects);
+        for (ClassDescriptor child : descriptor.getInheritancePolicy().getChildDescriptors()) {
+            addAllObjectsForAbstractClass(child.getJavaClass(), session, allObjects);
         }
     }
 
@@ -136,9 +135,8 @@ public class PopulationManager {
         Vector allObjects = new Vector();
         addAllObjectsForClass(objectsClass, allObjects);
         if (descriptor.hasInheritance()) {
-            for (Enumeration enumeration = descriptor.getInheritancePolicy().getChildDescriptors().elements();
-                     enumeration.hasMoreElements();) {
-                addAllObjectsForClass(((ClassDescriptor)enumeration.nextElement()).getJavaClass(), allObjects);
+            for (ClassDescriptor child : descriptor.getInheritancePolicy().getChildDescriptors()) {
+                addAllObjectsForClass(child.getJavaClass(), allObjects);
             }
         }
 

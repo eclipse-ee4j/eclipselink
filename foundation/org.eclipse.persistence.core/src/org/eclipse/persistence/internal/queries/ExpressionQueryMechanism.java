@@ -712,6 +712,7 @@ public class ExpressionQueryMechanism extends StatementQueryMechanism {
      * This is only called from read object query.
      * The query has already checked that the cache should be checked.
      */
+    @Override
     public Object checkCacheForObject(AbstractRecord translationRow, AbstractSession session) {
         // For bug 2782991 a list of nearly 20 problems with this method have
         // been fixed.
@@ -760,10 +761,6 @@ public class ExpressionQueryMechanism extends StatementQueryMechanism {
             } else {
                 cachedObject = session.getIdentityMapAccessorInstance().getFromIdentityMap(selectionKey, query.getReferenceClass(), false, descriptor);
             }
-            // Also check if key is null, cannot exist.
-            if (((Vector)selectionKey).contains(null)) {
-                return InvalidObject.instance;
-            }
         } else {
             // 2: If selection criteria null, take any instance in cache.
             //
@@ -781,16 +778,16 @@ public class ExpressionQueryMechanism extends StatementQueryMechanism {
                 // primary key only this will become the final check.
                 if ((selectionKey != null) || query.shouldCheckCacheByExactPrimaryKey()) {
                     if (selectionKey != null) {
+                        // Check if key is invalid (null), cannot exist.
+                        if (selectionKey == InvalidObject.instance) {
+                            return selectionKey;
+                        }
                         if (descriptor.shouldAcquireCascadedLocks()) {
                             cachedObject = session.getIdentityMapAccessorInstance().getFromIdentityMapWithDeferredLock(selectionKey, query.getReferenceClass(), false, descriptor);
                         } else {
                             cachedObject = session.getIdentityMapAccessorInstance().getFromIdentityMap(selectionKey, query.getReferenceClass(), false, descriptor);
                         }
-                        // Because it was exact primary key if the lookup failed then it is not there.
-                        // Also check if key is null, cannot exist.
-                        if (((Vector)selectionKey).contains(null)) {
-                            return InvalidObject.instance;
-                        }
+                        // Because it was exact primary key if the lookup failed then it is not there.                        
                     }
                 } else {
                     // 4: If can extract inexact primary key, find one object by primary key and
@@ -798,6 +795,10 @@ public class ExpressionQueryMechanism extends StatementQueryMechanism {
                     // rule out a cache hit.
                     Object inexactSelectionKey = descriptor.getObjectBuilder().extractPrimaryKeyFromExpression(false, selectionCriteria, translationRow, session);// Check for any primary key in expression, may have other stuff.
                     if (inexactSelectionKey != null) {
+                        // Check if key is invalid (null), cannot exist.
+                        if (selectionKey == InvalidObject.instance) {
+                            return selectionKey;
+                        }
                         // PERF: Only use deferred lock when required.
                         if (descriptor.shouldAcquireCascadedLocks()) {
                             cachedObject = session.getIdentityMapAccessorInstance().getFromIdentityMapWithDeferredLock(inexactSelectionKey, query.getReferenceClass(), false, descriptor);

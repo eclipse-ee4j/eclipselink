@@ -23,6 +23,7 @@ import org.eclipse.persistence.exceptions.DescriptorException;
 import org.eclipse.persistence.internal.descriptors.ObjectBuilder;
 import org.eclipse.persistence.internal.helper.ClassConstants;
 import org.eclipse.persistence.internal.helper.DatabaseField;
+import org.eclipse.persistence.internal.identitymaps.CacheId;
 import org.eclipse.persistence.internal.oxm.Reference;
 import org.eclipse.persistence.internal.oxm.ReferenceListener;
 import org.eclipse.persistence.internal.oxm.ReferenceResolver;
@@ -103,7 +104,7 @@ public class XMLObjectReferenceMapping extends AggregateMapping implements XMLMa
         if (idx == -1) {
             return null;
         }
-        return ((Vector)pks).get(idx);
+        return ((CacheId)pks).getPrimaryKey()[idx];
     }
 
     /**
@@ -133,21 +134,20 @@ public class XMLObjectReferenceMapping extends AggregateMapping implements XMLMa
         // if reference is null, create a new instance and set it on the resolver
         Reference reference = resolver.getReference(this, srcObject);
         if (reference == null) {
-            Vector pks = new Vector();
-            pks.setSize(pkFieldNames.size());
+            CacheId pks = new CacheId(new Object[pkFieldNames.size()]);
             reference = new Reference(this, srcObject, getReferenceClass(), pks);
             resolver.addReference(reference);
             record.reference(reference);
         }
         XMLField tgtFld = (XMLField) getSourceToTargetKeyFieldAssociations().get(xmlField);
         int idx = pkFieldNames.indexOf(tgtFld.getXPath());
-        Vector primaryKeys = reference.getPrimaryKeys();
+        Object primaryKeys = reference.getPrimaryKey();
         // fix for bug# 5687430
         // need to get the actual type of the target (i.e. int, String, etc.) 
         // and use the converted value when checking the cache.
         Object value = session.getDatasourcePlatform().getConversionManager().convertObject(object, clsDescriptor.getTypedField(tgtFld).getType());
         if (value != null) {
-            primaryKeys.setElementAt(value, idx);
+            ((CacheId)primaryKeys).set(idx, value);
         }
     }
 
@@ -342,8 +342,7 @@ public class XMLObjectReferenceMapping extends AggregateMapping implements XMLMa
         // reference descriptor's primary key entries
         ClassDescriptor descriptor = sourceQuery.getSession().getClassDescriptor(getReferenceClass());
         Vector pkFieldNames = descriptor.getPrimaryKeyFieldNames();
-        Vector primaryKeys = new Vector();
-        primaryKeys.setSize(pkFieldNames.size());
+        CacheId primaryKeys = new CacheId(new Object[pkFieldNames.size()]);
         Iterator keyIt = sourceToTargetKeys.iterator();
         while (keyIt.hasNext()) {
             XMLField keyFld = (XMLField) keyIt.next();
@@ -357,7 +356,7 @@ public class XMLObjectReferenceMapping extends AggregateMapping implements XMLMa
             // and use the converted value when checking the cache.
             Object value = executionSession.getDatasourcePlatform().getConversionManager().convertObject(databaseRow.get(keyFld), descriptor.getTypedField(tgtFld).getType());
             if (value != null) {
-                primaryKeys.setElementAt(value, idx);
+                primaryKeys.set(idx, value);
             }
         }
         // store the Reference instance on the resolver for use during mapping

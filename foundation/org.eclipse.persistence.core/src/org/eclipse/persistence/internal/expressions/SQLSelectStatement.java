@@ -272,7 +272,7 @@ public class SQLSelectStatement extends SQLStatement {
                 }
             } else {
                 sourceTable = ((ClassDescriptor)getDescriptorsForMultitableInheritanceOnly().get(index)).getTables().firstElement();
-                targetTable = (DatabaseTable)((ClassDescriptor)getDescriptorsForMultitableInheritanceOnly().get(index)).getInheritancePolicy().getChildrenTables().get(0);
+                targetTable = ((ClassDescriptor)getDescriptorsForMultitableInheritanceOnly().get(index)).getInheritancePolicy().getChildrenTables().get(0);
                 Expression exp = (Expression)((Map)getOuterJoinedAdditionalJoinCriteria().elementAt(index)).get(targetTable);
                 sourceAlias = exp.aliasForTable(sourceTable);
                 targetAlias = exp.aliasForTable(targetTable);

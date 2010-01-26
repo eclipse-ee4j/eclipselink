@@ -1842,6 +1842,11 @@ public class XMLEntityMappingsMappingProject extends org.eclipse.persistence.ses
         validationMapping.setXPath("@validation");
         descriptor.addMapping(validationMapping);
         
+        XMLDirectMapping cacheKeyMapping = new XMLDirectMapping();
+        cacheKeyMapping.setAttributeName("m_cacheKeyType");
+        cacheKeyMapping.setXPath("@cache-key-type");
+        descriptor.addMapping(cacheKeyMapping);
+        
         XMLCompositeCollectionMapping columnsMapping = new XMLCompositeCollectionMapping();
         columnsMapping.setAttributeName("m_columns");
         columnsMapping.setReferenceClass(ColumnMetadata.class);

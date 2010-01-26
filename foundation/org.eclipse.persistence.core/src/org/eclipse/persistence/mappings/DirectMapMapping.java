@@ -25,7 +25,6 @@ import org.eclipse.persistence.internal.descriptors.DescriptorIterator;
 import org.eclipse.persistence.internal.descriptors.ObjectBuilder;
 import org.eclipse.persistence.internal.descriptors.changetracking.AttributeChangeListener;
 import org.eclipse.persistence.internal.descriptors.changetracking.ObjectChangeListener;
-import org.eclipse.persistence.internal.identitymaps.CacheKey;
 import org.eclipse.persistence.internal.expressions.*;
 import org.eclipse.persistence.internal.helper.*;
 import org.eclipse.persistence.internal.indirection.*;
@@ -391,7 +390,6 @@ public class DirectMapMapping extends DirectCollectionMapping implements MapComp
         ContainerPolicy cp = getContainerPolicy();
         for (Object iter = cp.iteratorFor(element); cp.hasNext(iter);) {
             Object wrappedObject = cp.nextEntry(iter, iterator.getSession());
-            Object object = cp.unwrapIteratorResult(wrappedObject);
             cp.iterateOnMapKey(iterator, wrappedObject);
         }
     }
@@ -945,18 +943,17 @@ public class DirectMapMapping extends DirectCollectionMapping implements MapComp
      */
     public Object extractResultFromBatchQuery(DatabaseQuery query, AbstractRecord databaseRow, AbstractSession session, AbstractRecord argumentRow) {
         //this can be null, because either one exists in the query or it will be created
-        Hashtable referenceDataByKey = null;
+        Map<Object, Object> referenceDataByKey = null;
         ContainerPolicy mappingContainerPolicy = getContainerPolicy();
         synchronized (query) {
-            referenceDataByKey = (Hashtable)query.getProperty("batched objects");
+            referenceDataByKey = (Map)query.getProperty("batched objects");
             mappingContainerPolicy = getContainerPolicy();
             if (referenceDataByKey == null) {
                 
-                Vector rows = (Vector)session.executeQuery(query, argumentRow);
+                List<AbstractRecord> rows = (List)session.executeQuery(query, argumentRow);
                 referenceDataByKey = new Hashtable();
 
-                for (Enumeration rowsEnum = rows.elements(); rowsEnum.hasMoreElements();) {
-                    AbstractRecord referenceRow = (AbstractRecord)rowsEnum.nextElement();
+                for (AbstractRecord referenceRow : rows) {
                     Object referenceKey = null;
                     if (query.isObjectBuildingQuery()){
                         referenceKey = getDirectMapUsableContainerPolicy().buildKey(databaseRow, (ObjectBuildingQuery)query, session);
@@ -964,7 +961,7 @@ public class DirectMapMapping extends DirectCollectionMapping implements MapComp
                         referenceKey = getDirectMapUsableContainerPolicy().buildKey(databaseRow, null, session);
                     }
                     Object referenceValue = referenceRow.get(getDirectField());
-                    CacheKey eachCacheKey = new CacheKey(extractKeyFromTargetRow(referenceRow, session));
+                    Object eachCacheKey = extractKeyFromTargetRow(referenceRow, session);
 
                     Object container = referenceDataByKey.get(eachCacheKey);
                     if (container == null) {
@@ -985,7 +982,7 @@ public class DirectMapMapping extends DirectCollectionMapping implements MapComp
                 
             }
         }
-        Object result = referenceDataByKey.get(new CacheKey(extractPrimaryKeyFromRow(databaseRow, session)));
+        Object result = referenceDataByKey.get(extractPrimaryKeyFromRow(databaseRow, session));
 
         // The source object might not have any target objects
         if (result == null) {
@@ -1006,18 +1003,17 @@ public class DirectMapMapping extends DirectCollectionMapping implements MapComp
         ObjectBuilder objectBuilder = getDescriptor().getObjectBuilder();
         // Extract the primary key of the source object, to filter only the joined rows for that object.
         Object sourceKey = objectBuilder.extractPrimaryKeyFromRow(row, executionSession);
-        CacheKey sourceCacheKey = new CacheKey(sourceKey);
         // If the query was using joining, all of the result rows by primary key will have been computed.
-        List rows = joinManager.getDataResultsByPrimaryKey().get(sourceCacheKey);
+        List<AbstractRecord> rows = joinManager.getDataResultsByPrimaryKey().get(sourceKey);
         
         // A set of direct values must be maintained to avoid duplicates from multiple 1-m joins.
         Set directValues = new HashSet();
 
-        Converter keyConverter = getKeyConverter();
         Converter valueConverter = getValueConverter();
         // For each rows, extract the target row and build the target object and add to the collection.
-        for (int index = 0; index < rows.size(); index++) {
-            AbstractRecord sourceRow = (AbstractRecord)rows.get(index);
+        int size = rows.size();
+        for (int index = 0; index < size; index++) {
+            AbstractRecord sourceRow = rows.get(index);
             AbstractRecord targetRow = sourceRow;            
             // The field for many objects may be in the row,
             // so build the subpartion of the row through the computed values in the query,
@@ -1025,7 +1021,7 @@ public class DirectMapMapping extends DirectCollectionMapping implements MapComp
             targetRow = trimRowForJoin(targetRow, joinManager, executionSession);
             // Partial object queries must select the primary key of the source and related objects.
             // If the target joined rows in null (outerjoin) means an empty collection.
-            Object directKey = getContainerPolicy().buildKeyFromJoinedRow(targetRow, joinManager, sourceQuery, executionSession);
+            Object directKey = this.containerPolicy.buildKeyFromJoinedRow(targetRow, joinManager, sourceQuery, executionSession);
             if (directKey == null) {
                 // A null direct value means an empty collection returned as nulls from an outerjoin.
                 return getIndirectionPolicy().valueFromRow(value);
@@ -1033,7 +1029,7 @@ public class DirectMapMapping extends DirectCollectionMapping implements MapComp
             // Only build/add the target object once, skip duplicates from multiple 1-m joins.
             if (!directValues.contains(directKey)) {
                 directValues.add(directKey);
-                Object directValue = targetRow.get(getDirectField());
+                Object directValue = targetRow.get(this.directField);
                 // Allow for value conversion.
                 if (valueConverter != null) {
                     directValue = valueConverter.convertDataValueToObjectValue(directValue, executionSession);

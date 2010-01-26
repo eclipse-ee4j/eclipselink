@@ -20,7 +20,6 @@ import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.exceptions.*;
 import org.eclipse.persistence.expressions.*;
 import org.eclipse.persistence.internal.helper.*;
-import org.eclipse.persistence.internal.identitymaps.CacheKey;
 import org.eclipse.persistence.internal.queries.JoinedAttributeManager;
 import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
 import org.eclipse.persistence.internal.security.PrivilegedClassForName;
@@ -533,13 +532,6 @@ public class VariableOneToOneMapping extends ObjectReferenceMapping implements R
     @Override
     public boolean isVariableOneToOneMapping() {
         return true;
-    }
-
-    /**
-     * INTERNAL:
-     */
-    protected boolean cacheKeysAreEqual(CacheKey cacheKey1, CacheKey cacheKey2) {
-        return (cacheKey1.equals(cacheKey2) && (cacheKey2.getClass().equals(cacheKey1.getClass())));
     }
 
     /**

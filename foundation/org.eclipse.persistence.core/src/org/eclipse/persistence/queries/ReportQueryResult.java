@@ -22,6 +22,7 @@ import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.exceptions.*;
 import org.eclipse.persistence.internal.expressions.MapEntryExpression;
 import org.eclipse.persistence.internal.helper.*;
+import org.eclipse.persistence.internal.identitymaps.CacheId;
 import org.eclipse.persistence.internal.queries.*;
 import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
 import org.eclipse.persistence.internal.security.PrivilegedInvokeConstructor;
@@ -221,10 +222,7 @@ public class ReportQueryResult implements Serializable, Map {
                 if (this.key != null) {
                     Object primaryKey = descriptor.getObjectBuilder().extractPrimaryKeyFromRow(subRow, query.getSession());
                     if (primaryKey != null){//GF3233 NPE is caused by processing the null PK being extracted from referenced target with null values in database.
-                        for (Iterator iterator = ((Vector)primaryKey).iterator(); iterator.hasNext();){
-                           this.key.append(iterator.next());
-                           this.key.append("-");
-                        }
+                        this.key.append(primaryKey);
                     }
                     this.key.append("_");
                 }
@@ -433,11 +431,11 @@ public class ReportQueryResult implements Serializable, Map {
         }
 
         // Compare PKs
-        if (getPrimaryKeyValues() != null) {
-            if (result.getPrimaryKeyValues() == null) {
+        if (getId() != null) {
+            if (result.getId() == null) {
                 return false;
             }
-            return Helper.compareOrderedVectors(getPrimaryKeyValues(), result.getPrimaryKeyValues());
+            return getId().equals(getId());
         }
 
         return true;
@@ -511,7 +509,12 @@ public class ReportQueryResult implements Serializable, Map {
      */
     @Deprecated
     public Vector<Object> getPrimaryKeyValues() {
-        return (Vector)primaryKey;
+        if (this.primaryKey instanceof CacheId) {
+            return new Vector(Arrays.asList(((CacheId)this.primaryKey).getPrimaryKey()));
+        }
+        Vector primaryKey = new Vector(1);
+        primaryKey.add(this.primaryKey);
+        return primaryKey;
     }
 
     /**
@@ -596,12 +599,12 @@ public class ReportQueryResult implements Serializable, Map {
      * If the PKs were retrieved with the attributes then this method can be used to read the real object from the database.
      */
     public Object readObject(Class javaClass, Session session) {
-        if (getPrimaryKeyValues() == null) {
+        if (getId() == null) {
             throw QueryException.reportQueryResultWithoutPKs(this);
         }
 
         ReadObjectQuery query = new ReadObjectQuery(javaClass);
-        query.setSelectionId(getPrimaryKeyValues());
+        query.setSelectionId(getId());
 
         return session.executeQuery(query);
     }

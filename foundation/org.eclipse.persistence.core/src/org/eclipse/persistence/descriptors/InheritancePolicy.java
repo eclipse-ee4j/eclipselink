@@ -50,7 +50,7 @@ public class InheritancePolicy implements Serializable, Cloneable {
     protected Class parentClass;
     protected String parentClassName;
     protected ClassDescriptor parentDescriptor;
-    protected Vector childDescriptors;
+    protected List<ClassDescriptor> childDescriptors;
     protected transient DatabaseField classIndicatorField;
     protected transient Map classIndicatorMapping;
     protected transient Map classNameIndicatorMapping;
@@ -58,15 +58,15 @@ public class InheritancePolicy implements Serializable, Cloneable {
     protected transient Boolean shouldReadSubclasses;
     protected transient boolean hasMultipleTableChild;
     protected transient DatabaseTable readAllSubclassesView;
-    protected transient Vector allChildClassIndicators;
+    protected transient List<Object> allChildClassIndicators;
     protected transient Expression onlyInstancesExpression;
     protected transient Expression withAllSubclassesExpression;
     // null if there are no childrenTables, otherwise all tables for reference class plus childrenTables
     protected transient Vector allTables;
     // all tables for all subclasses (subclasses of subclasses included), should be in sync with childrenTablesJoinExpressions.
-    protected transient List childrenTables;
+    protected transient List<DatabaseTable> childrenTables;
     // join expression for each child table, keyed by the table, should be in sync with childrenTables.
-    protected transient Map childrenTablesJoinExpressions;
+    protected transient Map<DatabaseTable, Expression> childrenTablesJoinExpressions;
     // all expressions from childrenTablesJoinExpressions ANDed together
     protected transient Expression childrenJoinExpression;
 
@@ -100,8 +100,8 @@ public class InheritancePolicy implements Serializable, Cloneable {
         this.classIndicatorMapping = new HashMap(10);
         this.classNameIndicatorMapping = new HashMap(10);
         this.shouldUseClassNameAsIndicator = false;
-        this.allChildClassIndicators = org.eclipse.persistence.internal.helper.NonSynchronizedVector.newInstance();
-        this.childDescriptors = org.eclipse.persistence.internal.helper.NonSynchronizedVector.newInstance(5);
+        this.allChildClassIndicators = new ArrayList(4);
+        this.childDescriptors = new ArrayList(4);
         this.setJoinedStrategy();
     }
 
@@ -120,7 +120,7 @@ public class InheritancePolicy implements Serializable, Cloneable {
      * Add child descriptor to the parent descriptor.
      */
     public void addChildDescriptor(ClassDescriptor childDescriptor) {
-        getChildDescriptors().addElement(childDescriptor);
+        getChildDescriptors().add(childDescriptor);
     }
 
     /**
@@ -129,17 +129,17 @@ public class InheritancePolicy implements Serializable, Cloneable {
      * are created simultaneously and kept in sync.
      */
     protected void addChildTableJoinExpression(DatabaseTable table, Expression expression) {
-        if(childrenTablesJoinExpressions == null) {
-           childrenTablesJoinExpressions = new HashMap();
+        if (this.childrenTablesJoinExpressions == null) {
+            this.childrenTablesJoinExpressions = new HashMap();
            // childrenTables should've been null, too
-           childrenTables = new ArrayList();
+            this.childrenTables = new ArrayList();
            // allTables should've been null, too
-           allTables = new Vector(getDescriptor().getTables());
+            this.allTables = new Vector(getDescriptor().getTables());
         }
-        childrenTables.add(table);
-        allTables.add(table);
-        childrenTablesJoinExpressions.put(table, expression);
-        childrenJoinExpression = expression.and(childrenJoinExpression);
+        this.childrenTables.add(table);
+        this.allTables.add(table);
+        this.childrenTablesJoinExpressions.put(table, expression);
+        this.childrenJoinExpression = expression.and(this.childrenJoinExpression);
     }
 
     /**
@@ -221,7 +221,7 @@ public class InheritancePolicy implements Serializable, Cloneable {
 
         if (parentDescriptor.getInheritancePolicy().isChildDescriptor()) {
             if (parentDescriptor.getInheritancePolicy().shouldReadSubclasses()) {
-                parentDescriptor.getInheritancePolicy().getAllChildClassIndicators().addElement(indicator);
+                parentDescriptor.getInheritancePolicy().getAllChildClassIndicators().add(indicator);
             }
             parentDescriptor.getInheritancePolicy().addClassIndicatorTypeToParent(indicator);
         }
@@ -481,7 +481,7 @@ public class InheritancePolicy implements Serializable, Cloneable {
      * Stores class indicators for all child and children's children.
      * Used for queries on branch classes only.
      */
-    protected Vector getAllChildClassIndicators() {
+    protected List<Object> getAllChildClassIndicators() {
         return allChildClassIndicators;
     }
 
@@ -491,9 +491,9 @@ public class InheritancePolicy implements Serializable, Cloneable {
      * subclasses.
      * Required for bug 3019934.
      */
-    public Vector getAllChildDescriptors() {
+    public List<ClassDescriptor> getAllChildDescriptors() {
         // Guess the number of child descriptors...
-        Vector allChildDescriptors = new Vector(this.getAllChildClassIndicators().size());
+        List<ClassDescriptor> allChildDescriptors = new ArrayList(this.getAllChildClassIndicators().size());
         return getAllChildDescriptors(allChildDescriptors);
     }
 
@@ -501,10 +501,9 @@ public class InheritancePolicy implements Serializable, Cloneable {
      * INTERNAL:
      * Recursive subroutine of getAllChildDescriptors.
      */
-    protected Vector getAllChildDescriptors(Vector allChildDescriptors) {
-        for (Enumeration enumtr = getChildDescriptors().elements(); enumtr.hasMoreElements();) {
-            ClassDescriptor childDescriptor = (ClassDescriptor)enumtr.nextElement();
-            allChildDescriptors.addElement(childDescriptor);
+    protected List<ClassDescriptor> getAllChildDescriptors(List<ClassDescriptor> allChildDescriptors) {
+        for (ClassDescriptor childDescriptor : getChildDescriptors()) {
+            allChildDescriptors.add(childDescriptor);
             childDescriptor.getInheritancePolicyOrNull().getAllChildDescriptors(allChildDescriptors);
         }
         return allChildDescriptors;
@@ -514,7 +513,7 @@ public class InheritancePolicy implements Serializable, Cloneable {
      * INTERNAL:
      * if reads subclasses, all tables for all read subclasses (indirect included).
      */
-    public List getChildrenTables() {
+    public List<DatabaseTable> getChildrenTables() {
         return childrenTables;
     }
     
@@ -522,7 +521,7 @@ public class InheritancePolicy implements Serializable, Cloneable {
      * INTERNAL:
      * join expression for each child table, keyed by the table
      */
-    public Map getChildrenTablesJoinExpressions() {
+    public Map<DatabaseTable, Expression> getChildrenTablesJoinExpressions() {
         return childrenTablesJoinExpressions;
     }
     
@@ -539,7 +538,7 @@ public class InheritancePolicy implements Serializable, Cloneable {
      * all tables for reference class plus childrenTables
      */
     public Vector getAllTables() {
-        if(allTables == null) {
+        if (allTables == null) {
             return this.getDescriptor().getTables();
         } else {
             return allTables;
@@ -551,7 +550,7 @@ public class InheritancePolicy implements Serializable, Cloneable {
      * Return all the immediate child descriptors.  Only descriptors from
      * direct subclasses are returned.
      */
-    public Vector getChildDescriptors() {
+    public List<ClassDescriptor> getChildDescriptors() {
         return childDescriptors;
     }
 
@@ -943,7 +942,7 @@ public class InheritancePolicy implements Serializable, Cloneable {
 
             if (getClassIndicatorValue() != null) {
                 if (shouldReadSubclasses()) {
-                    getAllChildClassIndicators().addElement(getClassIndicatorValue());
+                    getAllChildClassIndicators().add(getClassIndicatorValue());
                 }
                 addClassIndicatorTypeToParent(getClassIndicatorValue());
             }
@@ -1209,9 +1208,7 @@ public class InheritancePolicy implements Serializable, Cloneable {
         }
 
         Vector tempChildren = new Vector(getChildDescriptors().size());
-        Enumeration childEnum = getChildDescriptors().elements();
-        while (childEnum.hasMoreElements()) {
-            ClassDescriptor childDescriptor = (ClassDescriptor)childEnum.nextElement();
+        for (ClassDescriptor childDescriptor : getChildDescriptors()) {
             if (session.hasCorrespondingDescriptor(childDescriptor)) {
                 tempChildren.addElement(session.getDescriptor(childDescriptor.getJavaClass()));
             } else {
@@ -1254,9 +1251,7 @@ public class InheritancePolicy implements Serializable, Cloneable {
         }
 
         // Recursively collect all rows from all concrete children and their children.
-        for (Enumeration childrenEnum = getChildDescriptors().elements();
-                 childrenEnum.hasMoreElements();) {
-            ClassDescriptor concreteDescriptor = (ClassDescriptor)childrenEnum.nextElement();
+        for (ClassDescriptor concreteDescriptor : getChildDescriptors()) {
             Vector concreteRows = concreteDescriptor.getInheritancePolicy().selectAllRowUsingCustomMultipleTableSubclassRead(query);
             rows = Helper.concatenateVectors(rows, concreteRows);
         }
@@ -1281,7 +1276,7 @@ public class InheritancePolicy implements Serializable, Cloneable {
             AbstractRecord row = (AbstractRecord)rowsEnum.nextElement();
             Class concreteClass = classFromRow(row, query.getSession());
             if (!classes.contains(concreteClass)) {//Ensure unique ** we should do a distinct.. we do
-                classes.addElement(concreteClass);
+                classes.add(concreteClass);
             }
         }
 
@@ -1369,11 +1364,8 @@ public class InheritancePolicy implements Serializable, Cloneable {
         }
 
         // Recursively collect all rows from all concrete children and their children.
-        for (Enumeration childrenEnum = getChildDescriptors().elements();
-                 childrenEnum.hasMoreElements();) {
-            ClassDescriptor concreteDescriptor = (ClassDescriptor)childrenEnum.nextElement();
+        for (ClassDescriptor concreteDescriptor : getChildDescriptors()) {
             AbstractRecord row = concreteDescriptor.getInheritancePolicy().selectOneRowUsingCustomMultipleTableSubclassRead(query);
-
             if (row != null) {
                 return row;
             }
@@ -1434,8 +1426,8 @@ public class InheritancePolicy implements Serializable, Cloneable {
     /**
      * INTERNAL:
      */
-    public void setChildDescriptors(Vector theChildDescriptors) {
-        childDescriptors = theChildDescriptors;
+    public void setChildDescriptors(List<ClassDescriptor> childDescriptors) {
+        this.childDescriptors = childDescriptors;
     }
 
     /**

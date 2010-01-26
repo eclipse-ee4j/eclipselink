@@ -13,9 +13,11 @@
 package org.eclipse.persistence.descriptors;
 
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
-import java.util.Vector;
 
 import org.eclipse.persistence.exceptions.DescriptorException;
 import org.eclipse.persistence.mappings.DatabaseMapping;
@@ -25,6 +27,7 @@ import org.eclipse.persistence.mappings.converters.Converter;
 import org.eclipse.persistence.queries.UpdateObjectQuery;
 import org.eclipse.persistence.internal.descriptors.ObjectBuilder;
 import org.eclipse.persistence.internal.helper.DatabaseField;
+import org.eclipse.persistence.internal.identitymaps.CacheId;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 
 /**
@@ -295,19 +298,26 @@ public class CMPPolicy implements java.io.Serializable {
     public Object createPrimaryKeyInstanceFromId(Object key, AbstractSession session) {
         Object keyInstance = null;
         KeyElementAccessor[] pkElementArray = this.getKeyClassFields(getPKClass());
-        if (pkElementArray.length == 1 && pkElementArray[0] instanceof KeyIsElementAccessor) {
+        List primaryKeyValues;
+        if (key instanceof CacheId) {
+            primaryKeyValues = new ArrayList(Arrays.asList(((CacheId)key).getPrimaryKey()));
+        } else {
+            primaryKeyValues = new ArrayList(1);
+            primaryKeyValues.add(key);
+        }
+        if ((pkElementArray.length == 1) && (pkElementArray[0] instanceof KeyIsElementAccessor)) {
             DatabaseMapping mapping = getDescriptor().getObjectBuilder().getMappingForAttributeName(pkElementArray[0].getAttributeName());
             if (mapping.isDirectToFieldMapping()) {
                 Converter converter = ((DirectToFieldMapping) mapping).getConverter();
                 if (converter != null){
-                    return converter.convertDataValueToObjectValue(((Vector)key).get(0), session);
+                    return converter.convertDataValueToObjectValue(primaryKeyValues.get(0), session);
                 }
-                keyInstance = ((Vector)key).get(0);
+                keyInstance = primaryKeyValues.get(0);
             } else if (mapping.isObjectReferenceMapping()) { // what if mapping comes from derived ID.  need to get the derived mapping.
                 //get reference descriptor and extract pk from target cmp policy
                 keyInstance = mapping.getReferenceDescriptor().getCMPPolicy().createPrimaryKeyInstanceFromId(key, session);
             }
-            ((Vector)key).remove(0); // remove processed key incase keys are complex and derrived
+            primaryKeyValues.remove(0); // remove processed key incase keys are complex and derrived
         } else {
             keyInstance = getPKClassInstance();
             //get clone of Key so we can remove values.
@@ -316,12 +326,12 @@ public class CMPPolicy implements java.io.Serializable {
                 DatabaseMapping mapping = getDescriptor().getObjectBuilder().getMappingForAttributeName(accessor.getAttributeName());
                 Object fieldValue = null;
                 if (mapping.isDirectToFieldMapping()) {
-                    fieldValue = ((Vector)key).get(0);
+                    fieldValue = primaryKeyValues.get(0);
                     Converter converter = ((DirectToFieldMapping) mapping).getConverter();
                     if (converter != null){
                         fieldValue = converter.convertDataValueToObjectValue(fieldValue, session);
                     }
-                    ((Vector)key).remove(0);
+                    primaryKeyValues.remove(0);
                 } else if (mapping.isObjectReferenceMapping()) { // what if mapping comes from derived ID.  need to get the derived mapping.
                     //get reference descriptor and extract pk from target cmp policy
                     fieldValue = mapping.getReferenceDescriptor().getCMPPolicy().createPrimaryKeyInstanceFromId(key, session);
@@ -397,15 +407,12 @@ public class CMPPolicy implements java.io.Serializable {
 
     /**
      * INTERNAL:
-     * Use the key to create a EclipseLink primary key Vector.
+     * Use the key to create a EclipseLink primary key.
      * If the key is simple (direct mapped) then just add it to a vector,
      * otherwise must go through the inefficient process of copying the key into the bean
      * and extracting the key from the bean.
-     *
-     * @param key Object the primary key to use for creating the vector
-     * @return Vector
      */
-    public Vector createPkVectorFromKey(Object key, AbstractSession session) {
+    public Object createPrimaryKeyFromId(Object key, AbstractSession session) {
         // TODO fix this exception so that it is more descriptive
         // This method only works in CMP3Policy but was added here for separation
         // of components

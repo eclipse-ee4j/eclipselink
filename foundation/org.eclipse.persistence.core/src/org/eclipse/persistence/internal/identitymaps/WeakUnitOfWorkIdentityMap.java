@@ -1,7 +1,6 @@
 package org.eclipse.persistence.internal.identitymaps;
 
 import java.lang.ref.ReferenceQueue;
-import java.util.Vector;
 
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 
@@ -39,15 +38,15 @@ public class WeakUnitOfWorkIdentityMap extends UnitOfWorkIdentityMap {
 
     @Override
     public CacheKey createCacheKey(Object primaryKey, Object object, Object writeLockValue, long readTime) {
-        return new QueueableWeakCacheKey((Vector)primaryKey, object, writeLockValue, readTime, referenceQueue);
+        return new QueueableWeakCacheKey(primaryKey, object, writeLockValue, readTime, referenceQueue);
     }
 
     /**
      * Need to check for cleanup on put.
      */
     @Override
-    protected CacheKey getCacheKeyIfAbsentPut(CacheKey searchKey) {
-        CacheKey cacheKey = super.getCacheKeyIfAbsentPut(searchKey);
+    protected CacheKey putCacheKeyIfAbsent(CacheKey searchKey) {
+        CacheKey cacheKey = super.putCacheKeyIfAbsent(searchKey);
         if (cacheKey == null) {
             checkCleanup();
         }

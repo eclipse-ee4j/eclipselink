@@ -18,10 +18,8 @@
  ******************************************************************************/
 package org.eclipse.persistence.jpa.dynamic;
 
-//javase imports
-import java.util.Vector;
-
 //EclipseLink imports
+import org.eclipse.persistence.internal.identitymaps.CacheId;
 import org.eclipse.persistence.internal.jpa.CMP3Policy;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 
@@ -35,16 +33,11 @@ import org.eclipse.persistence.internal.sessions.AbstractSession;
 public class DynamicIdentityPolicy extends CMP3Policy {
 
     @Override
-    public Vector createPkVectorFromKey(Object key, AbstractSession session) {
-        if (Object[].class.isAssignableFrom(key.getClass())) {
-            Object[] values = (Object[]) key;
-            Vector pk = new Vector(values.length);
-            for (int index = 0; index < values.length; index++) {
-                pk.add(values[index]);
-            }
-            return pk;
+    public Object createPrimaryKeyFromId(Object key, AbstractSession session) {
+        if (key instanceof Object[]) {
+            return new CacheId((Object[])key);
         }
-        return super.createPkVectorFromKey(key, session);
+        return super.createPrimaryKeyFromId(key, session);
     }
 
     @Override

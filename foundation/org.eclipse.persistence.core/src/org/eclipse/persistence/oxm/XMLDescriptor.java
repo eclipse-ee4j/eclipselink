@@ -504,15 +504,13 @@ public class XMLDescriptor extends ClassDescriptor {
         // Make sure that child is post initialized,
         // this initialize bottom up, unlike the two other phases that to top down.
         if (hasInheritance()) {
-            for (Enumeration childEnum = getInheritancePolicy().getChildDescriptors().elements(); childEnum.hasMoreElements();) {
-                ((ClassDescriptor) childEnum.nextElement()).postInitialize(session);
+            for (ClassDescriptor child : getInheritancePolicy().getChildDescriptors()) {
+                child.postInitialize(session);
             }
         }
 
         // Allow mapping to perform post initialization.
-        for (Enumeration mappingsEnum = getMappings().elements(); mappingsEnum.hasMoreElements();) {
-            DatabaseMapping mapping = (DatabaseMapping) mappingsEnum.nextElement();
-
+        for (DatabaseMapping mapping : getMappings()) {
             // This causes post init to be called multiple times in inheritance.
             mapping.postInitialize(session);
         }

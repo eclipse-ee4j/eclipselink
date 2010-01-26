@@ -50,9 +50,9 @@ public class PostCommitEventPrimaryKeyTest extends AutoVerifyTestCase {
         UnitOfWorkChangeSet uowChangeSet = uow.getUnitOfWorkChangeSet();
         for (Iterator changes = uowChangeSet.getAllChangeSets().keySet().iterator(); changes.hasNext(); ) {
             ObjectChangeSet objChangeSet = (ObjectChangeSet)changes.next();
-            Vector objKey = objChangeSet.getPrimaryKeys();
+            Object objKey = objChangeSet.getId();
 
-            if (objKey == null || objKey.isEmpty()) {
+            if (objKey == null) {
                 emptyKey = true;
             }
         }

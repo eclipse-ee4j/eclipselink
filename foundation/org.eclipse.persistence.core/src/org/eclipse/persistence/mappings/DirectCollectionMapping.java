@@ -268,15 +268,13 @@ public class DirectCollectionMapping extends CollectionMapping implements Relati
      * Return the value of the field from the row or a value holder on the query to obtain the object.
      */
     protected Object valueFromRowInternalWithJoin(AbstractRecord row, JoinedAttributeManager joinManager, ObjectBuildingQuery sourceQuery, AbstractSession executionSession) throws DatabaseException {
-
         ContainerPolicy policy = getContainerPolicy();
         Object value = policy.containerInstance();
-        ObjectBuilder objectBuilder = getDescriptor().getObjectBuilder();
+        ObjectBuilder objectBuilder = this.descriptor.getObjectBuilder();
         // Extract the primary key of the source object, to filter only the joined rows for that object.
         Object sourceKey = objectBuilder.extractPrimaryKeyFromRow(row, executionSession);
-        CacheKey sourceCacheKey = new CacheKey(sourceKey);
         // If the query was using joining, all of the result rows by primary key will have been computed.
-        List rows = joinManager.getDataResultsByPrimaryKey().get(sourceCacheKey);
+        List<AbstractRecord> rows = joinManager.getDataResultsByPrimaryKey().get(sourceKey);
         int size = rows.size();
         
         if(size > 0) {
@@ -295,7 +293,7 @@ public class DirectCollectionMapping extends CollectionMapping implements Relati
             boolean containsNull = false;
             // For each rows, extract the target row and build the target object and add to the collection.
             for (int index = 0; index < size; index++) {
-                AbstractRecord sourceRow = (AbstractRecord)rows.get(index);
+                AbstractRecord sourceRow = rows.get(index);
                 AbstractRecord targetRow = sourceRow;            
                 // The field for many objects may be in the row,
                 // so build the subpartion of the row through the computed values in the query,
@@ -303,9 +301,9 @@ public class DirectCollectionMapping extends CollectionMapping implements Relati
                 targetRow = trimRowForJoin(targetRow, joinManager, executionSession);            
                 // Partial object queries must select the primary key of the source and related objects.
                 // If the target joined rows in null (outerjoin) means an empty collection.
-                Object directValue = targetRow.get(getDirectField());
+                Object directValue = targetRow.get(this.directField);
                 if (directValue == null) {
-                    if(size==1) {
+                    if (size == 1) {
                         // A null direct value means an empty collection returned as nulls from an outerjoin.
                         return getIndirectionPolicy().valueFromRow(value);
                     } else {
@@ -319,7 +317,7 @@ public class DirectCollectionMapping extends CollectionMapping implements Relati
                     if (valueConverter != null) {
                         directValue = valueConverter.convertDataValueToObjectValue(directValue, executionSession);
                     }
-                    if(shouldAddAll) {
+                    if (shouldAddAll) {
                         directValuesList.add(directValue);
                         targetRows.add(targetRow);
                     } else {
@@ -327,14 +325,14 @@ public class DirectCollectionMapping extends CollectionMapping implements Relati
                     }
                 }
             }
-            if(shouldAddAll) {
+            if (shouldAddAll) {
                 // if collection contains a single element which is null then return an empty collection
-                if(!(containsNull && targetRows.size()==1)) {
+                if (!(containsNull && targetRows.size() == 1)) {
                     policy.addAll(directValuesList, value, executionSession, targetRows, sourceQuery);
                 }
             } else {
                 // if collection contains a single element which is null then return an empty collection
-                if(containsNull && policy.sizeFor(value)==1) {
+                if (containsNull && policy.sizeFor(value) == 1) {
                     policy.clear(value);
                 }
             }
@@ -858,25 +856,26 @@ public class DirectCollectionMapping extends CollectionMapping implements Relati
      * Extract the source primary key value from the reference direct row.
      * Used for batch reading, most following same order and fields as in the mapping.
      */
-    protected Vector extractKeyFromTargetRow(AbstractRecord row, AbstractSession session) {
-        Vector key = new Vector(getReferenceKeyFields().size());
+    protected Object extractKeyFromTargetRow(AbstractRecord row, AbstractSession session) {
+        int size = this.referenceKeyFields.size();
+        Object[] key = new Object[size];
 
-        for (int index = 0; index < getReferenceKeyFields().size(); index++) {
-            DatabaseField relationField = getReferenceKeyFields().elementAt(index);
-            DatabaseField sourceField = getSourceKeyFields().elementAt(index);
+        for (int index = 0; index < size; index++) {
+            DatabaseField relationField = this.referenceKeyFields.get(index);
+            DatabaseField sourceField = this.sourceKeyFields.get(index);
             Object value = row.get(relationField);
 
             // Must ensure the classification gets a cache hit.
             try {
-                value = session.getDatasourcePlatform().getConversionManager().convertObject(value, getDescriptor().getObjectBuilder().getFieldClassification(sourceField));
+                value = session.getDatasourcePlatform().getConversionManager().convertObject(value, this.descriptor.getObjectBuilder().getFieldClassification(sourceField));
             } catch (ConversionException e) {
                 throw ConversionException.couldNotBeConverted(this, getDescriptor(), e);
             }
 
-            key.addElement(value);
+            key[index] = value;
         }
 
-        return key;
+        return new CacheId(key);
     }
 
     /**
@@ -884,24 +883,26 @@ public class DirectCollectionMapping extends CollectionMapping implements Relati
      * Extract the primary key value from the source row.
      * Used for batch reading, most following same order and fields as in the mapping.
      */
-    protected Vector extractPrimaryKeyFromRow(AbstractRecord row, AbstractSession session) {
-        Vector key = new Vector(getSourceKeyFields().size());
+    protected Object extractPrimaryKeyFromRow(AbstractRecord row, AbstractSession session) {
+        int size = this.sourceKeyFields.size();
+        Object[] key = new Object[size];
+        ConversionManager conversionManager = session.getDatasourcePlatform().getConversionManager();
 
-        for (Enumeration fieldEnum = getSourceKeyFields().elements(); fieldEnum.hasMoreElements();) {
-            DatabaseField field = (DatabaseField)fieldEnum.nextElement();
+        for (int index = 0; index < size; index++) {
+            DatabaseField field = this.sourceKeyFields.get(index);
             Object value = row.get(field);
 
             // Must ensure the classification to get a cache hit.
             try {
-                value = session.getDatasourcePlatform().getConversionManager().convertObject(value, getDescriptor().getObjectBuilder().getFieldClassification(field));
+                value = conversionManager.convertObject(value, this.descriptor.getObjectBuilder().getFieldClassification(field));
             } catch (ConversionException e) {
-                throw ConversionException.couldNotBeConverted(this, getDescriptor(), e);
+                throw ConversionException.couldNotBeConverted(this, this.descriptor, e);
             }
 
-            key.addElement(value);
+            key[index] = value;
         }
-
-        return key;
+        
+        return new CacheId(key);
     }
 
     /**
@@ -910,22 +911,22 @@ public class DirectCollectionMapping extends CollectionMapping implements Relati
      */
     public Object extractResultFromBatchQuery(DatabaseQuery query, AbstractRecord databaseRow, AbstractSession session, AbstractRecord argumentRow) {
         //this can be null, because either one exists in the query or it will be created
-        Hashtable referenceDataByKey = null;
+        Map<Object, Object> referenceDataByKey = null;
         ContainerPolicy mappingContainerPolicy = getContainerPolicy();
         synchronized (query) {
             referenceDataByKey = getBatchReadObjects(query, session);
             mappingContainerPolicy = getContainerPolicy();
             if (referenceDataByKey == null) {
-                Vector rows = (Vector)session.executeQuery(query, argumentRow);
+                List rows = (List)session.executeQuery(query, argumentRow);
                 int size = rows.size();
                 referenceDataByKey = new Hashtable();
-                if(mappingContainerPolicy.shouldAddAll()) {
-                    if(size > 0) {
-                        HashMap<CacheKey, List[]> referenceDataAndRowsByKey = new HashMap();
-                        for (int i=0; i < size; i++) {
+                if (mappingContainerPolicy.shouldAddAll()) {
+                    if (size > 0) {
+                        Map<Object, List[]> referenceDataAndRowsByKey = new HashMap();
+                        for (int i = 0; i < size; i++) {
                             AbstractRecord referenceRow = (AbstractRecord)rows.get(i);
                             Object referenceValue = referenceRow.get(getDirectField());
-                            CacheKey eachReferenceKey = new CacheKey(extractKeyFromTargetRow(referenceRow, session));
+                            Object eachReferenceKey = extractKeyFromTargetRow(referenceRow, session);
         
                             // Allow for value conversion.
                             if (getValueConverter() != null) {
@@ -940,10 +941,10 @@ public class DirectCollectionMapping extends CollectionMapping implements Relati
                             valuesAndRows[1].add(referenceRow);
                         }
 
-                        Iterator<Map.Entry<CacheKey, List[]>> it = referenceDataAndRowsByKey.entrySet().iterator();
+                        Iterator<Map.Entry<Object, List[]>> it = referenceDataAndRowsByKey.entrySet().iterator();
                         while(it.hasNext()) {
-                            Map.Entry<CacheKey, List[]> entry = it.next();
-                            CacheKey eachReferenceKey = entry.getKey();
+                            Map.Entry<Object, List[]> entry = it.next();
+                            Object eachReferenceKey = entry.getKey();
                             List referenceValues = entry.getValue()[0];
                             List<AbstractRecord> referenceRows = entry.getValue()[1];
                             Object container = mappingContainerPolicy.containerInstance(referenceValues.size());
@@ -955,7 +956,7 @@ public class DirectCollectionMapping extends CollectionMapping implements Relati
                     for (int i=0; i < size; i++) {
                         AbstractRecord referenceRow = (AbstractRecord)rows.get(i);
                         Object referenceValue = referenceRow.get(getDirectField());
-                        CacheKey eachReferenceKey = new CacheKey(extractKeyFromTargetRow(referenceRow, session));
+                        Object eachReferenceKey = extractKeyFromTargetRow(referenceRow, session);
     
                         Object container = referenceDataByKey.get(eachReferenceKey);
                         if (container == null) {
@@ -975,7 +976,7 @@ public class DirectCollectionMapping extends CollectionMapping implements Relati
                 query.setSession(null);
             }
         }
-        Object result = referenceDataByKey.get(new CacheKey(extractPrimaryKeyFromRow(databaseRow, session)));
+        Object result = referenceDataByKey.get(extractPrimaryKeyFromRow(databaseRow, session));
 
         // The source object might not have any target objects
         if (result == null) {

@@ -94,17 +94,17 @@ public class UnitOfWorkConformNewObjectTest  extends AutoVerifyTestCase {
         queryReadObject_1_ByObject.setReferenceClass(Employee.class);
         queryReadObject_1_ByObject.conformResultsInUnitOfWork();
         queryReadObject_1_ByObject.setSelectionObject(emp1);
-        if(emp1 != uow.executeQuery(queryReadObject_1_ByObject)) {
+        Employee result = (Employee)uow.executeQuery(queryReadObject_1_ByObject);
+        if (emp1 != result) {
             errorMsg += "queryReadObject_1_ByObject: emp1; ";
         }
 
         ReadObjectQuery queryReadObject_1_ByKey = new ReadObjectQuery();
         queryReadObject_1_ByKey.setReferenceClass(Employee.class);
         queryReadObject_1_ByKey.conformResultsInUnitOfWork();
-        Vector key = new Vector(1);
-        key.add(emp1.getId());
-        queryReadObject_1_ByKey.setSelectionId(key);
-        if(emp1 != uow.executeQuery(queryReadObject_1_ByKey)) {
+        queryReadObject_1_ByKey.setSelectionId(emp1.getId());
+        result = (Employee)uow.executeQuery(queryReadObject_1_ByKey);
+        if (emp1 != result) {
             errorMsg += "queryReadObject_1_ByKey: emp1; ";
         }
 

@@ -65,16 +65,19 @@ public abstract class AbstractIdentityMap implements IdentityMap, Serializable, 
      * Other threads will get deferred locks, all threads will wait until all other threads are complete before releasing their locks.
      */
     public CacheKey acquireDeferredLock(Object primaryKey) {
-        // Create and lock a new cacheKey.
-        CacheKey newCacheKey = createCacheKey(primaryKey, null, null);
-        newCacheKey.acquireDeferredLock();
-        // PERF: To avoid synchronization, getIfAbsentPut is used.
-        CacheKey cacheKey = getCacheKeyIfAbsentPut(newCacheKey);
-        // Return if the newCacheKey was put as it was already locked, otherwise must still lock it.
+        CacheKey cacheKey = getCacheKey(primaryKey);
         if (cacheKey == null) {
-            return newCacheKey;
-        } else {
-            newCacheKey.releaseDeferredLock();
+            // Create and lock a new cacheKey.
+            CacheKey newCacheKey = createCacheKey(primaryKey, null, null);
+            newCacheKey.acquireDeferredLock();
+            // PERF: To avoid synchronization, getIfAbsentPut is used.
+            cacheKey = putCacheKeyIfAbsent(newCacheKey);
+            // Return if the newCacheKey was put as it was already locked, otherwise must still lock it.
+            if (cacheKey == null) {
+                return newCacheKey;
+            } else {
+                newCacheKey.releaseDeferredLock();
+            }
         }
         // Acquire a lock on the cache key.
         cacheKey.acquireDeferredLock();
@@ -86,16 +89,19 @@ public abstract class AbstractIdentityMap implements IdentityMap, Serializable, 
      * This is used by reading (when using indirection or no relationships) and by merge.
      */
     public CacheKey acquireLock(Object primaryKey, boolean forMerge) {
-        // Create and lock a new cacheKey.
-        CacheKey newCacheKey = createCacheKey(primaryKey, null, null);
-        newCacheKey.acquire(forMerge);
-        // PERF: To avoid synchronization, getIfAbsentPut is used.
-        CacheKey cacheKey = getCacheKeyIfAbsentPut(newCacheKey);
-        // Return if the newCacheKey was put as it was already locked, otherwise must still lock it.
+        CacheKey cacheKey = getCacheKey(primaryKey);
         if (cacheKey == null) {
-            return newCacheKey;
-        } else {
-            newCacheKey.release();
+            // Create and lock a new cacheKey.
+            CacheKey newCacheKey = createCacheKey(primaryKey, null, null);
+            newCacheKey.acquire(forMerge);
+            // PERF: To avoid synchronization, getIfAbsentPut is used.
+            cacheKey = putCacheKeyIfAbsent(newCacheKey);
+            // Return if the newCacheKey was put as it was already locked, otherwise must still lock it.
+            if (cacheKey == null) {
+                return newCacheKey;
+            } else {
+                newCacheKey.release();
+            }
         }
         // Acquire a lock on the cache key.
         cacheKey.acquire();
@@ -107,16 +113,19 @@ public abstract class AbstractIdentityMap implements IdentityMap, Serializable, 
      * This is used by merge for missing existing objects.
      */
     public CacheKey acquireLockNoWait(Object primaryKey, boolean forMerge) {
-        // Create and lock a new cacheKey.
-        CacheKey newCacheKey = createCacheKey(primaryKey, null, null);
-        newCacheKey.acquire(forMerge);
-        // PERF: To avoid synchronization, getIfAbsentPut is used.
-        CacheKey cacheKey = getCacheKeyIfAbsentPut(newCacheKey);
-        // Return if the newCacheKey was put as already lock, otherwise must still lock.
+        CacheKey cacheKey = getCacheKey(primaryKey);
         if (cacheKey == null) {
-            return newCacheKey;
-        } else {
-            newCacheKey.release();
+            // Create and lock a new cacheKey.
+            CacheKey newCacheKey = createCacheKey(primaryKey, null, null);
+            newCacheKey.acquire(forMerge);
+            // PERF: To avoid synchronization, getIfAbsentPut is used.
+            cacheKey = putCacheKeyIfAbsent(newCacheKey);
+            // Return if the newCacheKey was put as already lock, otherwise must still lock.
+            if (cacheKey == null) {
+                return newCacheKey;
+            } else {
+                newCacheKey.release();
+            }
         }
         // Acquire a lock on the cache key.
         // Return null if already locked.
@@ -131,16 +140,19 @@ public abstract class AbstractIdentityMap implements IdentityMap, Serializable, 
      * This is used by merge for missing existing objects.
      */
     public CacheKey acquireLockWithWait(Object primaryKey, boolean forMerge, int wait) {
-        // Create and lock a new cacheKey.
-        CacheKey newCacheKey = createCacheKey(primaryKey, null, null);
-        newCacheKey.acquire(forMerge);
-        // PERF: To avoid synchronization, getIfAbsentPut is used.
-        CacheKey cacheKey = getCacheKeyIfAbsentPut(newCacheKey);
-        // Return if the newCacheKey was put as already lock, otherwise must still lock.
+        CacheKey cacheKey = getCacheKey(primaryKey);
         if (cacheKey == null) {
-            return newCacheKey;
-        } else {
-            newCacheKey.release();
+            // Create and lock a new cacheKey.
+            CacheKey newCacheKey = createCacheKey(primaryKey, null, null);
+            newCacheKey.acquire(forMerge);
+            // PERF: To avoid synchronization, getIfAbsentPut is used.
+            cacheKey = putCacheKeyIfAbsent(newCacheKey);
+            // Return if the newCacheKey was put as already lock, otherwise must still lock.
+            if (cacheKey == null) {
+                return newCacheKey;
+            } else {
+                newCacheKey.release();
+            }
         }
         // Acquire a lock on the cache key.
         // Return null if already locked.
@@ -156,9 +168,9 @@ public abstract class AbstractIdentityMap implements IdentityMap, Serializable, 
      * This will allow multiple users to read the same object but prevent writes to the object while the read lock is held.
      */
     public CacheKey acquireReadLockOnCacheKey(Object primaryKey) {
-        CacheKey newCacheKey = createCacheKey(primaryKey, null, null);
-        CacheKey cacheKey = getCacheKey(newCacheKey);
+        CacheKey cacheKey = getCacheKey(primaryKey);
         if (cacheKey == null) {
+            CacheKey newCacheKey = createCacheKey(primaryKey, null, null);
             // Lock new cacheKey.
             newCacheKey.acquireReadLock();
             // Create one but not put it in the cache, as we are only reading
@@ -177,9 +189,9 @@ public abstract class AbstractIdentityMap implements IdentityMap, Serializable, 
      * This will allow multiple users to read the same object but prevent writes to the object while the read lock is held.
      */
     public CacheKey acquireReadLockOnCacheKeyNoWait(Object primaryKey) {
-        CacheKey newCacheKey = createCacheKey(primaryKey, null, null);
-        CacheKey cacheKey = getCacheKey(newCacheKey);
+        CacheKey cacheKey = getCacheKey(primaryKey);
         if (cacheKey == null) {
+            CacheKey newCacheKey = createCacheKey(primaryKey, null, null);
             // Lock new cacheKey.
             newCacheKey.acquireReadLock();
             // Create one but not put it in the cache, as we are only reading
@@ -255,10 +267,7 @@ public abstract class AbstractIdentityMap implements IdentityMap, Serializable, 
     /**
      * Get the cache key (with object) for the primary key.
      */
-    public CacheKey getCacheKey(Object primaryKey) {
-        CacheKey searchKey = new CacheKey(primaryKey);
-        return getCacheKey(searchKey);
-    }
+    public abstract CacheKey getCacheKey(Object primaryKey);
 
     /**
      * Get the cache key (with object) for the primary key.
@@ -266,18 +275,13 @@ public abstract class AbstractIdentityMap implements IdentityMap, Serializable, 
     public CacheKey getCacheKeyForLock(Object primaryKey) {
         return getCacheKey(primaryKey);
     }
-
-    /**
-     * Return the cache key (with object) matching the searchKey.
-     */
-    protected abstract CacheKey getCacheKey(CacheKey searchKey);
     
     /**
      * Return the CacheKey (with object) matching the searchKey.
      * If the CacheKey is missing then put the searchKey in the map.
      * The searchKey should have already been locked. 
      */
-    protected abstract CacheKey getCacheKeyIfAbsentPut(CacheKey cacheKey);
+    protected abstract CacheKey putCacheKeyIfAbsent(CacheKey cacheKey);
 
     /**
      * Get the cache key (with object) for the primary key with read lock.

@@ -14,7 +14,6 @@ package org.eclipse.persistence.internal.sessions.remote;
 
 import java.rmi.server.ObjID;
 import java.io.*;
-import java.util.*;
 import org.eclipse.persistence.sessions.remote.*;
 import org.eclipse.persistence.queries.*;
 import org.eclipse.persistence.descriptors.ClassDescriptor;
@@ -57,7 +56,7 @@ public class RemoteValueHolder extends DatabaseValueHolder implements Externaliz
             return false;
         }
 
-        return (getTargetObjectPrimaryKeys() != null) && (!((Vector)getTargetObjectPrimaryKeys()).isEmpty()) && getMapping().isOneToOneMapping() && (!getQuery().shouldRefreshIdentityMapResult()) && (!getQuery().shouldRefreshRemoteIdentityMapResult()) && (getQuery().shouldMaintainCache());
+        return (getTargetObjectPrimaryKeys() != null) && getMapping().isOneToOneMapping() && (!getQuery().shouldRefreshIdentityMapResult()) && (!getQuery().shouldRefreshRemoteIdentityMapResult()) && (getQuery().shouldMaintainCache());
     }
 
     /**

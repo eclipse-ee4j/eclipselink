@@ -33,13 +33,14 @@ import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.metamodel.Metamodel;
 import javax.sql.DataSource;
 
+import org.eclipse.persistence.annotations.CacheKeyType;
 import org.eclipse.persistence.config.*;
 import org.eclipse.persistence.descriptors.*;
 import org.eclipse.persistence.exceptions.*;
 import org.eclipse.persistence.expressions.Expression;
 import org.eclipse.persistence.internal.descriptors.OptimisticLockingPolicy;
 import org.eclipse.persistence.internal.helper.BasicTypeHelperImpl;
-import org.eclipse.persistence.internal.helper.NonSynchronizedVector;
+import org.eclipse.persistence.internal.identitymaps.CacheId;
 import org.eclipse.persistence.internal.jpa.querydef.CriteriaQueryImpl;
 import org.eclipse.persistence.internal.jpa.transaction.*;
 import org.eclipse.persistence.internal.localization.ExceptionLocalization;
@@ -633,23 +634,31 @@ public class EntityManagerImpl implements org.eclipse.persistence.jpa.JpaEntityM
      *             second argument is not a valid type for that entity's primary
      *             key.
      */
-    protected Object findInternal(ClassDescriptor descriptor, AbstractSession session, Object primaryKey, LockModeType lockMode, Map<String, Object> properties) {
-        if (primaryKey == null) { // gf721 - check for null PK
+    protected Object findInternal(ClassDescriptor descriptor, AbstractSession session, Object id, LockModeType lockMode, Map<String, Object> properties) {
+        if (id == null) { // gf721 - check for null PK
             throw new IllegalArgumentException(ExceptionLocalization.buildMessage("null_pk"));
         }
 
-        List primaryKeyValues;
-        if (primaryKey instanceof Vector) {
-            primaryKeyValues = (Vector)primaryKey;
-        } else if (primaryKey instanceof List) {
-            primaryKeyValues = new NonSynchronizedVector((List)primaryKey);
+        Object primaryKey;
+        if (id instanceof List) {
+            if (descriptor.getCacheKeyType() == CacheKeyType.ID_VALUE) {
+                if (((List)id).isEmpty()) {
+                    primaryKey = null;
+                } else {
+                    primaryKey = ((List)id).get(0);
+                }
+            } else {
+                primaryKey = new CacheId(((List)id).toArray());
+            }
+        } else if (id instanceof CacheId) {
+            primaryKey = id;
         } else {
             CMPPolicy policy = descriptor.getCMPPolicy();
             Class pkClass = policy.getPKClass();
-            if ((pkClass != null) && (! BasicTypeHelperImpl.getInstance().isStrictlyAssignableFrom(pkClass, primaryKey.getClass())) ) {
-                throw new IllegalArgumentException(ExceptionLocalization.buildMessage("invalid_pk_class", new Object[] { descriptor.getCMPPolicy().getPKClass(), primaryKey.getClass() }));
+            if ((pkClass != null) && (pkClass != id.getClass()) && (!BasicTypeHelperImpl.getInstance().isStrictlyAssignableFrom(pkClass, id.getClass()))) {
+                throw new IllegalArgumentException(ExceptionLocalization.buildMessage("invalid_pk_class", new Object[] { descriptor.getCMPPolicy().getPKClass(), id.getClass() }));
             }
-            primaryKeyValues = policy.createPkVectorFromKey(primaryKey, session);
+            primaryKey = policy.createPrimaryKeyFromId(id, session);
         }
 
         // Get the read object query and apply the properties to it.
@@ -659,7 +668,7 @@ public class EntityManagerImpl implements org.eclipse.persistence.jpa.JpaEntityM
         if (query == null) {
             // The properties/query hints and setIsExecutionClone etc. is set
             // in the getReadObjectQuery.
-            query = getReadObjectQuery(descriptor.getJavaClass(), primaryKeyValues, properties);
+            query = getReadObjectQuery(descriptor.getJavaClass(), primaryKey, properties);
         } else {
             query.checkPrepare(session, null);
             query = (ReadObjectQuery) query.clone();
@@ -668,7 +677,7 @@ public class EntityManagerImpl implements org.eclipse.persistence.jpa.JpaEntityM
             QueryHintsHandler.apply(properties, query, session.getLoader(), session);
 
             query.setIsExecutionClone(true);
-            query.setSelectionId(primaryKeyValues);
+            query.setSelectionId(primaryKey);
         }
 
         // Apply any EclipseLink defaults if they haven't been set through
@@ -1135,10 +1144,10 @@ public class EntityManagerImpl implements org.eclipse.persistence.jpa.JpaEntityM
     /**
      * Build a selection query for the primary key values.
      */
-    protected ReadObjectQuery getReadObjectQuery(Class referenceClass, List primaryKeyValues, Map properties) {
+    protected ReadObjectQuery getReadObjectQuery(Class referenceClass, Object primaryKey, Map properties) {
         ReadObjectQuery query = getReadObjectQuery(properties);
         query.setReferenceClass(referenceClass);
-        query.setSelectionId(primaryKeyValues);
+        query.setSelectionId(primaryKey);
         return query;
     }
 

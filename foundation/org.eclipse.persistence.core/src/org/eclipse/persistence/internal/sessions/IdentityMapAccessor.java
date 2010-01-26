@@ -178,13 +178,26 @@ public class IdentityMapAccessor implements org.eclipse.persistence.sessions.Ide
     }
 
     /**
+     * Convert the primary key Vector into a primary key object.
+     * This is used to support the old deprecated Vector API.
+     */
+    public Object primaryKeyFromVector(Vector primaryKeyVector) {
+        if (primaryKeyVector == null) {
+            return null;
+        } else if (primaryKeyVector.size() == 1) {
+            return primaryKeyVector.get(0);            
+        } else {
+            return new CacheId(primaryKeyVector.toArray());
+        }
+    }
+    
+    /**
      * ADVANCED:
      * Return if their is an object for the primary key.
      */
     @Deprecated
     public boolean containsObjectInIdentityMap(Vector primaryKey, Class theClass) {
-        ClassDescriptor descriptor = getSession().getDescriptor(theClass);
-        return containsObjectInIdentityMap(primaryKey, theClass, descriptor);
+        return containsObjectInIdentityMap(primaryKeyFromVector(primaryKey), theClass);
     }
 
     /**
@@ -331,7 +344,7 @@ public class IdentityMapAccessor implements org.eclipse.persistence.sessions.Ide
      */
     @Deprecated
     public Object getFromIdentityMap(Vector primaryKey, Class theClass) {
-        return getFromIdentityMap(primaryKey, theClass, true);
+        return getFromIdentityMap(primaryKeyFromVector(primaryKey), theClass);
     }
 
     /**
@@ -357,7 +370,7 @@ public class IdentityMapAccessor implements org.eclipse.persistence.sessions.Ide
      */
     @Deprecated
     public Object getFromIdentityMap(Vector primaryKey, Class theClass, boolean shouldReturnInvalidatedObjects) {
-        return getFromIdentityMap(primaryKey, theClass, shouldReturnInvalidatedObjects, getSession().getDescriptor(theClass));
+        return getFromIdentityMap(primaryKeyFromVector(primaryKey), theClass, shouldReturnInvalidatedObjects);
     }
 
     /**
@@ -574,7 +587,7 @@ public class IdentityMapAccessor implements org.eclipse.persistence.sessions.Ide
      */
     @Deprecated
     public Object getWriteLockValue(Vector primaryKey, Class theClass) {
-        return getWriteLockValue(primaryKey, theClass, getSession().getDescriptor(theClass));
+        return getWriteLockValue(primaryKeyFromVector(primaryKey), theClass);
     }
 
     /**
@@ -662,7 +675,7 @@ public class IdentityMapAccessor implements org.eclipse.persistence.sessions.Ide
      */
     @Deprecated
     public void invalidateObject(Vector primaryKey, Class theClass, boolean invalidateCluster) {
-        invalidateObject((Object)primaryKey, theClass, invalidateCluster);
+        invalidateObject(primaryKeyFromVector(primaryKey), theClass, invalidateCluster);
     }
 
     /**
@@ -673,7 +686,7 @@ public class IdentityMapAccessor implements org.eclipse.persistence.sessions.Ide
      */
     @Deprecated
     public void invalidateObject(Vector primaryKey, Class theClass) {
-        invalidateObject(primaryKey, theClass, false);
+        invalidateObject(primaryKeyFromVector(primaryKey), theClass);
     }
 
     /**
@@ -692,9 +705,12 @@ public class IdentityMapAccessor implements org.eclipse.persistence.sessions.Ide
      * @param invalidateCluster if true the invalidation will be broadcast to each server in the cluster.
      */
     public void invalidateObject(Object primaryKey, Class theClass, boolean invalidateCluster) {
+        if (primaryKey == null) {
+            return;
+        }
         ClassDescriptor descriptor = getSession().getDescriptor(theClass);
         //forward the call to getCacheKeyForObject locally in case subclasses overload
-        CacheKey key = this.getCacheKeyForObjectForLock(primaryKey, theClass, descriptor);
+        CacheKey key = getCacheKeyForObjectForLock(primaryKey, theClass, descriptor);
         if (key != null) {
             key.setInvalidationState(CacheKey.CACHE_KEY_INVALID);
         }
@@ -840,7 +856,7 @@ public class IdentityMapAccessor implements org.eclipse.persistence.sessions.Ide
      */
     @Deprecated
     public boolean isValid(Vector primaryKey, Class theClass) {
-        return isValid((Object)primaryKey, theClass);
+        return isValid(primaryKeyFromVector(primaryKey), theClass);
     }
 
     /**
@@ -914,7 +930,7 @@ public class IdentityMapAccessor implements org.eclipse.persistence.sessions.Ide
      */
     @Deprecated
     public Object putInIdentityMap(Object object, Vector key) {
-        return putInIdentityMap(object, key, null);
+        return putInIdentityMap(object, primaryKeyFromVector(key));
     }
 
     /**
@@ -953,8 +969,7 @@ public class IdentityMapAccessor implements org.eclipse.persistence.sessions.Ide
      */
     @Deprecated
     public Object putInIdentityMap(Object object, Vector key, Object writeLockValue, long readTime) {
-        ClassDescriptor descriptor = getSession().getDescriptor(object);
-        return putInIdentityMap(object, key, writeLockValue, readTime, descriptor);
+        return putInIdentityMap(object, primaryKeyFromVector(key), writeLockValue, readTime);
     }
 
     /**
@@ -1030,8 +1045,7 @@ public class IdentityMapAccessor implements org.eclipse.persistence.sessions.Ide
      */
     @Deprecated
     public Object removeFromIdentityMap(Vector key, Class theClass) {
-        ClassDescriptor descriptor = getSession().getDescriptor(theClass);
-        return removeFromIdentityMap(key, theClass, descriptor, null);
+        return removeFromIdentityMap(primaryKeyFromVector(key), theClass);
     }
     
     /**
@@ -1082,7 +1096,7 @@ public class IdentityMapAccessor implements org.eclipse.persistence.sessions.Ide
      */
     @Deprecated
     public void updateWriteLockValue(Vector primaryKey, Class theClass, Object writeLockValue) {
-        updateWriteLockValue((Object)primaryKey, theClass, writeLockValue);
+        updateWriteLockValue(primaryKeyFromVector(primaryKey), theClass, writeLockValue);
     }
 
     /**

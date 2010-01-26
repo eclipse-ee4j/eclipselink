@@ -12,18 +12,16 @@
  ******************************************************************************/  
 package org.eclipse.persistence.internal.identitymaps;
 
-import java.util.*;
-
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 
 /**
  * <p><b>Purpose</b>: A fixed size LRU cache<p>
- * Using a linked list as well as the hashtable from the superclass a LRU cache is maintained.
+ * Using a linked list as well as the map from the superclass a LRU cache is maintained.
  * When a get is executed the LRU list is updated and when a new object is inserted the object
  * at the start of the list is deleted (provided the maxSize has been reached).
  * <p><b>Responsibilities</b>:<ul>
  *    <li> Guarantees identity through primary key values
- * <li> Keeps the LRU linked list updated.
+ *    <li> Keeps the LRU linked list updated.
  * </ul>
  * @since TOPLink/Java 1.0
  */
@@ -41,23 +39,23 @@ public class CacheIdentityMap extends FullIdentityMap {
      */
     public CacheIdentityMap(int size) {
         super(size);
-        this.first = new LinkedCacheKey(new Vector(0), null, null, 0);
-        this.last = new LinkedCacheKey(new Vector(0), null, null, 0);
+        this.first = new LinkedCacheKey(new CacheId(new Object[0]), null, null, 0);
+        this.last = new LinkedCacheKey(new CacheId(new Object[0]), null, null, 0);
         this.first.setNext(this.last);
         this.last.setPrevious(this.first);
     };
 
     public CacheIdentityMap(int size, ClassDescriptor descriptor) {
         super(size, descriptor);
-        this.first = new LinkedCacheKey(new Vector(0), null, null, 0);
-        this.last = new LinkedCacheKey(new Vector(0), null, null, 0);
+        this.first = new LinkedCacheKey(new CacheId(new Object[0]), null, null, 0);
+        this.last = new LinkedCacheKey(new CacheId(new Object[0]), null, null, 0);
         this.first.setNext(this.last);
         this.last.setPrevious(this.first);
     }
 
     @Override
     public CacheKey createCacheKey(Object primaryKey, Object object, Object writeLockValue, long readTime) {
-        return new LinkedCacheKey((Vector)primaryKey, object, writeLockValue, readTime);
+        return new LinkedCacheKey(primaryKey, object, writeLockValue, readTime);
     }
 
     /**
@@ -114,8 +112,8 @@ public class CacheIdentityMap extends FullIdentityMap {
     /**
      * Also insert the link if the cacheKey is put.
      */
-    protected CacheKey getCacheKeyIfAbsentPut(CacheKey searchKey) {
-        CacheKey cacheKey = super.getCacheKeyIfAbsentPut(searchKey);
+    protected CacheKey putCacheKeyIfAbsent(CacheKey searchKey) {
+        CacheKey cacheKey = super.putCacheKeyIfAbsent(searchKey);
         if (cacheKey == null) {
             insertLink((LinkedCacheKey)searchKey);
             ensureFixedSize();

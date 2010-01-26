@@ -26,7 +26,6 @@ import org.eclipse.persistence.internal.databaseaccess.*;
 import org.eclipse.persistence.internal.sessions.*;
 import org.eclipse.persistence.sessions.DatabaseRecord;
 import org.eclipse.persistence.tools.profiler.QueryMonitor;
-import org.eclipse.persistence.internal.identitymaps.CacheKey;
 import org.eclipse.persistence.expressions.*;
 import org.eclipse.persistence.queries.*;
 import org.eclipse.persistence.exceptions.*;
@@ -119,26 +118,22 @@ public abstract class DatabaseQueryMechanism implements Cloneable, Serializable 
         
         ClassDescriptor descriptor = getDescriptor();
         List<DatabaseField> primaryKeyFields = descriptor.getPrimaryKeyFields();
-        Vector primaryKeyValues = new Vector(primaryKeyFields.size());
         
+        // Check that the query is by primary key.
         for (DatabaseField primaryKeyField : primaryKeyFields) {
-            if (queryFields.contains(primaryKeyField)) {
-                Object value = translationRow.get(primaryKeyField);
-            
-                if (value == null) {
-                    return null;
-                } else {
-                    primaryKeyValues.add(value);    
-                }
-            } else {
+            if (!queryFields.contains(primaryKeyField)) {
                 return null;
             }
         }
+        Object primaryKey = descriptor.getObjectBuilder().extractPrimaryKeyFromRow(translationRow, session);
+        if (primaryKey == null) {
+            return null;
+        }
         
         if (descriptor.shouldAcquireCascadedLocks()) {
-            return session.getIdentityMapAccessorInstance().getFromIdentityMapWithDeferredLock(primaryKeyValues, getReadObjectQuery().getReferenceClass(), false, descriptor);
+            return session.getIdentityMapAccessorInstance().getFromIdentityMapWithDeferredLock(primaryKey, getReadObjectQuery().getReferenceClass(), false, descriptor);
         } else {
-            return session.getIdentityMapAccessorInstance().getFromIdentityMap(primaryKeyValues, getReadObjectQuery().getReferenceClass(), false, descriptor);
+            return session.getIdentityMapAccessorInstance().getFromIdentityMap(primaryKey, getReadObjectQuery().getReferenceClass(), false, descriptor);
         }        
     }
 
@@ -797,7 +792,7 @@ public abstract class DatabaseQueryMechanism implements Cloneable, Serializable 
             if (objectChangeSet != null) {
                 updateChangeSet(getDescriptor(), objectChangeSet, row, object);
                 if (primaryKey != null) {
-                    objectChangeSet.setCacheKey(new CacheKey(primaryKey));
+                    objectChangeSet.setId(primaryKey);
                 }
             }
         }
@@ -934,7 +929,7 @@ public abstract class DatabaseQueryMechanism implements Cloneable, Serializable 
             }
             if (objectChangeSet != null) {
                 updateChangeSet(descriptor, objectChangeSet, sequenceNumberField, object);
-                objectChangeSet.setCacheKey(new CacheKey(primaryKey));
+                objectChangeSet.setId(primaryKey);
             }
         }
     }

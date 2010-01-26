@@ -12,7 +12,6 @@
  ******************************************************************************/  
 package org.eclipse.persistence.queries;
 
-import java.util.*;
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.exceptions.*;
 import org.eclipse.persistence.internal.helper.*;
@@ -149,7 +148,7 @@ public class DoesExistQuery extends DatabaseQuery {
             }
                 
         }
-        if ((primaryKey == null) || (((Vector)primaryKey).contains(null))) {
+        if (primaryKey == null) {
             return Boolean.FALSE;
         }
         

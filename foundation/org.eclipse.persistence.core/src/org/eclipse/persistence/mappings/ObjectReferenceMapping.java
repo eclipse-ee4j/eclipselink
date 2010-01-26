@@ -21,7 +21,6 @@ import org.eclipse.persistence.expressions.*;
 import org.eclipse.persistence.indirection.ValueHolderInterface;
 import org.eclipse.persistence.internal.descriptors.*;
 import org.eclipse.persistence.internal.helper.*;
-import org.eclipse.persistence.internal.identitymaps.CacheKey;
 import org.eclipse.persistence.internal.indirection.*;
 import org.eclipse.persistence.internal.sessions.*;
 import org.eclipse.persistence.queries.*;
@@ -211,21 +210,14 @@ public abstract class ObjectReferenceMapping extends ForeignReferenceMapping {
         Object firstKey = getReferenceDescriptor().getObjectBuilder().extractPrimaryKeyFromObject(firstReferencedObject, session);
         Object secondKey = getReferenceDescriptor().getObjectBuilder().extractPrimaryKeyFromObject(secondReferencedObject, session);
 
-        for (int index = 0; index < ((Vector)firstKey).size(); index++) {
-            Object firstValue = ((Vector)firstKey).get(index);
-            Object secondValue = ((Vector)secondKey).get(index);
-
-            if (!((firstValue == null) && (secondValue == null))) {
-                if ((firstValue == null) || (secondValue == null)) {
-                    return false;
-                }
-                if (!firstValue.equals(secondValue)) {
-                    return false;
-                }
+        if (firstKey == null) {
+            if (secondKey == null) {
+                return true;
             }
+            return false;
         }
 
-        return true;
+        return firstKey.equals(secondKey);
     }
 
     /**
@@ -643,16 +635,14 @@ public abstract class ObjectReferenceMapping extends ForeignReferenceMapping {
     
             // delete the object in the database if it is no more a referenced object.						
             if (objectInDatabase != objectInMemory) {
-                CacheKey cacheKeyForObjectInDatabase = null;
-                CacheKey cacheKeyForObjectInMemory = new CacheKey(new Vector());
     
-                cacheKeyForObjectInDatabase = new CacheKey(getPrimaryKeyForObject(objectInDatabase, query.getSession()));
-    
+                Object keyForObjectInDatabase = getPrimaryKeyForObject(objectInDatabase, query.getSession());
+                Object keyForObjectInMemory = null;
                 if (objectInMemory != null) {
-                    cacheKeyForObjectInMemory = new CacheKey(getPrimaryKeyForObject(objectInMemory, query.getSession()));
+                    keyForObjectInMemory = getPrimaryKeyForObject(objectInMemory, query.getSession());
                 }
     
-                if (cacheKeysAreEqual(cacheKeyForObjectInDatabase, cacheKeyForObjectInMemory)) {
+                if ((keyForObjectInMemory != null) && keyForObjectInDatabase.equals(keyForObjectInMemory)) {
                     return;
                 }
             } else {
@@ -684,16 +674,14 @@ public abstract class ObjectReferenceMapping extends ForeignReferenceMapping {
 
         // If the value was changed, both values must be deleted (uow will have inserted the new one).
         if ((objectFromDatabase != null) && (objectFromDatabase != objectInMemory)) {
-            // Also check pk as may not be maintaining identity.			
-            CacheKey cacheKeyForObjectInDatabase = null;
-            CacheKey cacheKeyForObjectInMemory = new CacheKey(new Vector());
-
-            cacheKeyForObjectInDatabase = new CacheKey(getPrimaryKeyForObject(objectFromDatabase, query.getSession()));
+            // Also check pk as may not be maintaining identity.	
+            Object keyForObjectInMemory = null;
+            Object keyForObjectInDatabase = getPrimaryKeyForObject(objectFromDatabase, query.getSession());
 
             if (objectInMemory != null) {
-                cacheKeyForObjectInMemory = new CacheKey(getPrimaryKeyForObject(objectInMemory, query.getSession()));
+                keyForObjectInMemory = getPrimaryKeyForObject(objectInMemory, query.getSession());
             }
-            if (!cacheKeysAreEqual(cacheKeyForObjectInMemory, cacheKeyForObjectInDatabase)) {
+            if ((keyForObjectInMemory == null) || !keyForObjectInDatabase.equals(keyForObjectInMemory)) {
                 if (objectFromDatabase != null) {
                     DeleteObjectQuery deleteQuery = new DeleteObjectQuery();
                     deleteQuery.setIsExecutionClone(true);
@@ -836,13 +824,6 @@ public abstract class ObjectReferenceMapping extends ForeignReferenceMapping {
             }
         }
     }
-
-    /**
-     * INTERNAL:
-     */
-    protected boolean cacheKeysAreEqual(CacheKey cacheKey1, CacheKey cacheKey2) {
-        return cacheKey1.equals(cacheKey2);
-    }
     
     /**
      * INTERNAL:
@@ -911,12 +892,12 @@ public abstract class ObjectReferenceMapping extends ForeignReferenceMapping {
 
     /**
      * INTERNAL:
-     *    Return the primary key for the reference object (i.e. the object
+     * Return the primary key for the reference object (i.e. the object
      * object referenced by domainObject and specified by mapping).
      * This key will be used by a RemoteValueHolder.
      */
-    public Vector extractPrimaryKeysForReferenceObjectFromRow(AbstractRecord row) {
-        return new Vector(1);
+    public Object extractPrimaryKeysForReferenceObjectFromRow(AbstractRecord row) {
+        return null;
     }
 
     /**
@@ -925,7 +906,7 @@ public abstract class ObjectReferenceMapping extends ForeignReferenceMapping {
      */
     public Object extractPrimaryKeysFromRealReferenceObject(Object object, AbstractSession session) {
         if (object == null) {
-            return new Vector(1);
+            return null;
         } else {
             Object implementation = getReferenceDescriptor().getObjectBuilder().unwrapObject(object, session);
             return getReferenceDescriptor().getObjectBuilder().extractPrimaryKeyFromObject(implementation, session);
@@ -1176,12 +1157,12 @@ public abstract class ObjectReferenceMapping extends ForeignReferenceMapping {
      * This list may be available if the relationship has been cached.
      */
     public Object valueFromPKList(Object[] pks, AbstractSession session) {
-        Vector pk = null;
+        Object pk = null;
         if (pks[0] == null) return null;
         if (getReferenceDescriptor().hasCMPPolicy()) {
-            pk = getReferenceDescriptor().getCMPPolicy().createPkVectorFromKey(pks[0], session);
+            pk = getReferenceDescriptor().getCMPPolicy().createPrimaryKeyFromId(pks[0], session);
         } else {
-            pk = (Vector) pks[0];
+            pk = pks[0];
         }
         ReadObjectQuery query = new ReadObjectQuery();
         query.setReferenceClass(getReferenceClass());

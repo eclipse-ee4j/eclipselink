@@ -12,7 +12,6 @@
  ******************************************************************************/  
 package org.eclipse.persistence.testing.tests.queries;
 
-import java.util.*;
 import org.eclipse.persistence.descriptors.*;
 import org.eclipse.persistence.testing.models.employee.domain.*;
 import org.eclipse.persistence.exceptions.*;
@@ -84,9 +83,8 @@ public class EmployeeWrapperPolicy implements WrapperPolicy {
     public Object unwrapObject(Object proxy, AbstractSession session) {
         if (proxy instanceof WrappedEmployee) {
             timesUnwrapCalled++;
-            Vector primaryKey = new Vector(1);
-            primaryKey.add(((WrappedEmployee)proxy).getId());
-            return session.getIdentityMapAccessor().getFromIdentityMap((Object)primaryKey, Employee.class);
+            Object primaryKey = ((WrappedEmployee)proxy).getId();
+            return session.getIdentityMapAccessor().getFromIdentityMap(primaryKey, Employee.class);
         } else {
             return proxy;
         }

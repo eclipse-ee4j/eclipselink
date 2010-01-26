@@ -122,7 +122,7 @@ public class CacheKeyInterceptor extends CacheKey{
             return wrappedKey.getLastUpdatedQueryId();
         }
 
-        public Vector getKey() {
+        public Object getKey() {
             return wrappedKey.getKey();
         }
 

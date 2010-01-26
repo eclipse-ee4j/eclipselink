@@ -1731,16 +1731,6 @@ public abstract class ObjectLevelReadQuery extends ObjectBuildingQuery {
 
     /**
      * INTERNAL:
-     * Answers if we are executing through a UnitOfWork and registering results.
-     * This is only ever false if using the conforming without registering
-     * feature.
-     */
-    public boolean isRegisteringResults() {
-        return ((shouldRegisterResultsInUnitOfWork() && this.descriptor.shouldRegisterResultsInUnitOfWork()) || isLockQuery());
-    }
-
-    /**
-     * INTERNAL:
      * If changes are made to the query that affect the derived SQL or Call
      * parameters the query needs to be prepared again.
      * <p>
@@ -2384,38 +2374,6 @@ public abstract class ObjectLevelReadQuery extends ObjectBuildingQuery {
 
     /**
      * PUBLIC:
-     * Set if the attributes of the object(s) resulting from the query should be refreshed.
-     * If cascading is used the private parts of the objects will also be refreshed.
-     */
-    public void setShouldRefreshIdentityMapResult(boolean shouldRefreshIdentityMapResult) {
-        this.shouldRefreshIdentityMapResult = shouldRefreshIdentityMapResult;
-        if (shouldRefreshIdentityMapResult) {
-            setShouldRefreshRemoteIdentityMapResult(true);
-        }
-    }
-
-    /**
-     * PUBLIC:
-     * Set if the attributes of the object(s) resulting from the query should be refreshed.
-     * If cascading is used the private parts of the objects will also be refreshed.
-     */
-    public void setShouldRefreshRemoteIdentityMapResult(boolean shouldRefreshIdentityMapResult) {
-        this.shouldRefreshRemoteIdentityMapResult = shouldRefreshIdentityMapResult;
-    }
-
-    /**
-     * INTERNAL:
-     * Set to false to have queries conform to a UnitOfWork without registering
-     * any additional objects not already in that UnitOfWork.
-     * @see #shouldRegisterResultsInUnitOfWork
-     * @bug 2612601
-     */
-    public void setShouldRegisterResultsInUnitOfWork(boolean shouldRegisterResultsInUnitOfWork) {
-        this.shouldRegisterResultsInUnitOfWork = shouldRegisterResultsInUnitOfWork;
-    }
-
-    /**
-     * PUBLIC:
      * Return if cache should be checked.
      */
     public boolean shouldCheckCacheOnly() {
@@ -2479,25 +2437,6 @@ public abstract class ObjectLevelReadQuery extends ObjectBuildingQuery {
         this.shouldOuterJoinSubclasses = Boolean.valueOf(shouldOuterJoinSubclasses);
         setIsPrepared(false);
     }
-    
-    /**
-     * INTERNAL:
-     * Allows one to do conforming in a UnitOfWork without registering.
-     * Queries executed on a UnitOfWork will only return working copies for objects
-     * that have already been registered.
-     * <p>Extreme care should be taken in using this feature, for a user will
-     * get back a mix of registered and original (unregistered) objects.
-     * <p>Best used with a WrapperPolicy where invoking on an object will trigger
-     * its registration (CMP).  Without a WrapperPolicy {@link org.eclipse.persistence.sessions.UnitOfWork#registerExistingObject registerExistingObject}
-     * should be called on any object that you intend to change.
-     * @return true by default.
-     * @see #setShouldRegisterResultsInUnitOfWork(boolean)
-     * @see org.eclipse.persistence.descriptors.ClassDescriptor#shouldRegisterResultsInUnitOfWork()
-     * @bug 2612601
-     */
-    public boolean shouldRegisterResultsInUnitOfWork() {
-        return shouldRegisterResultsInUnitOfWork;
-    }
 
     /**
      * INTERNAL:
@@ -2524,66 +2463,6 @@ public abstract class ObjectLevelReadQuery extends ObjectBuildingQuery {
         }
 
         return isPartialAttribute(attrName);
-    }
-
-    /**
-     * PUBLIC:
-     * Set to a boolean. When set means refresh the instance
-     * variables of referenceObject from the database.
-     */
-    public boolean shouldRefreshIdentityMapResult() {
-        return shouldRefreshIdentityMapResult;
-    }
-
-    /**
-     * PUBLIC:
-     * Set to a boolean. When set means refresh the instance
-     * variables of referenceObject from the database.
-     */
-    public boolean shouldRefreshRemoteIdentityMapResult() {
-        return shouldRefreshRemoteIdentityMapResult;
-    }
-
-    /**
-     * ADVANCED:
-     * Used for CMP only.  This allows users to indicate whether cmp finders executed
-     * at the beginning of a transaction should always be run against a UnitOfWork.
-     * Defaults to true.
-     * <p>
-     * If set to false, then UnitOfWork allocation will be deferred until a business
-     * method (including creates/removes) or finder with shouldProcessResultsInUnitOfWork == true
-     * is invoked.  Any finder executed before such a time, will do so against the
-     * underlying ServerSession.  Forcing finder execution to always go through a
-     * UnitOfWork means the results will be cloned and cached in the UnitOfWork up
-     * front.  This is desired when the results will be accessed in the same transaction.
-     * <p>
-     * Note that finders executed with an unspecified transaction context will never
-     * be executed against a UnitOfWork, even if this setting is true.  This case may happen
-     * with the NotSupported, Never, and Supports attributes.
-     */
-    public void setShouldProcessResultsInUnitOfWork(boolean processResultsInUnitOfWork) {
-        this.shouldProcessResultsInUnitOfWork = processResultsInUnitOfWork;
-    }
-
-    /**
-     * ADVANCED:
-     * Used for CMP only.  Indicates whether cmp finders executed at the beginning
-     * of a transaction should always be run against a UnitOfWork.
-     * Defaults to true.
-     * <p>
-     * If set to false, then UnitOfWork allocation will be deferred until a business
-     * method (including creates/removes) or finder with shouldProcessResultsInUnitOfWork == true
-     * is invoked.  Any finder executed before such a time, will do so against the
-     * underlying ServerSession.  Forcing finder execution to always go through a
-     * UnitOfWork means the results will be cloned and cached in the UnitOfWork up
-     * front.  This is desired when the results will be accessed in the same transaction.
-     * <p>
-     * Note that finders executed with an unspecified transaction context will never
-     * be executed against a UnitOfWork, even if this setting is true.  This case may happen
-     * with the NotSupported, Never, and Supports attributes.
-     */
-    public boolean shouldProcessResultsInUnitOfWork() {
-        return this.shouldProcessResultsInUnitOfWork;
     }
 
     /**

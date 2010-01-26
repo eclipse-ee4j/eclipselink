@@ -15,6 +15,7 @@ package org.eclipse.persistence.internal.jpa.metadata;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.eclipse.persistence.annotations.CacheKeyType;
 import org.eclipse.persistence.annotations.IdValidation;
 import org.eclipse.persistence.annotations.PrimaryKey;
 import org.eclipse.persistence.exceptions.ValidationException;
@@ -33,6 +34,7 @@ import org.eclipse.persistence.internal.jpa.metadata.columns.ColumnMetadata;
  */
 public class PrimaryKeyMetadata extends ORMetadata {
     private String m_validation;
+    private String m_cacheKeyType;
     private List<ColumnMetadata> m_columns = new ArrayList<ColumnMetadata>();
 
     public PrimaryKeyMetadata() {
@@ -59,6 +61,9 @@ public class PrimaryKeyMetadata extends ORMetadata {
     public void process(MetadataDescriptor descriptor) {
         if (m_validation != null) {
             descriptor.getClassDescriptor().setIdValidation(IdValidation.valueOf(m_validation));
+        }
+        if (m_cacheKeyType != null) {
+            descriptor.getClassDescriptor().setCacheKeyType(CacheKeyType.valueOf(m_cacheKeyType));
         }
         if (hasColumns()) {
         	List fields = new ArrayList(m_columns.size());

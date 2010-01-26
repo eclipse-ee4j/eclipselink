@@ -18,7 +18,6 @@ import org.eclipse.persistence.mappings.*;
 import org.eclipse.persistence.mappings.foundation.AbstractDirectMapping;
 import org.eclipse.persistence.queries.*;
 import org.eclipse.persistence.internal.helper.*;
-import org.eclipse.persistence.internal.identitymaps.CacheKey;
 import org.eclipse.persistence.expressions.*;
 import org.eclipse.persistence.internal.sessions.AbstractRecord;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
@@ -191,10 +190,7 @@ public class RelationExpression extends CompoundExpression {
         Object leftPrimaryKey = descriptor.getObjectBuilder().extractPrimaryKeyFromObject(leftValue, session);
         Object rightPrimaryKey = descriptor.getObjectBuilder().extractPrimaryKeyFromObject(rightValue, session);
 
-        CacheKey rightCacheKey = new org.eclipse.persistence.internal.identitymaps.CacheKey(rightPrimaryKey);
-        CacheKey leftCacheKey = new org.eclipse.persistence.internal.identitymaps.CacheKey(leftPrimaryKey);
-
-        return performSelector(rightCacheKey.equals(leftCacheKey));
+        return performSelector(leftPrimaryKey.equals(rightPrimaryKey));
 
     }
 

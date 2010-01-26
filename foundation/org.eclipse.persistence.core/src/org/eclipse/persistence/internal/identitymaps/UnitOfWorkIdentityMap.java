@@ -34,7 +34,7 @@ public class UnitOfWorkIdentityMap extends FullIdentityMap {
 
     @Override
     public CacheKey createCacheKey(Object primaryKey, Object object, Object writeLockValue, long readTime) {
-        return new UnitOfWorkCacheKey((Vector)primaryKey, object, writeLockValue, readTime);
+        return new UnitOfWorkCacheKey(primaryKey, object, writeLockValue, readTime);
     }
 
     /**
@@ -42,10 +42,13 @@ public class UnitOfWorkIdentityMap extends FullIdentityMap {
      */
     @Override
     public CacheKey acquireDeferredLock(Object primaryKey) {
-        CacheKey newCacheKey = createCacheKey(primaryKey, null, null);
-        CacheKey cacheKey = getCacheKeyIfAbsentPut(newCacheKey);
+        CacheKey cacheKey = getCacheKey(primaryKey);
         if (cacheKey == null) {
-            return newCacheKey;
+            CacheKey newCacheKey = createCacheKey(primaryKey, null, null);
+            cacheKey = putCacheKeyIfAbsent(newCacheKey);
+            if (cacheKey == null) {
+                return newCacheKey;
+            }
         }
         return cacheKey;
     }
@@ -55,10 +58,13 @@ public class UnitOfWorkIdentityMap extends FullIdentityMap {
      */
     @Override
     public CacheKey acquireLock(Object primaryKey, boolean forMerge) {
-        CacheKey newCacheKey = createCacheKey(primaryKey, null, null);
-        CacheKey cacheKey = getCacheKeyIfAbsentPut(newCacheKey);
+        CacheKey cacheKey = getCacheKey(primaryKey);
         if (cacheKey == null) {
-            return newCacheKey;
+            CacheKey newCacheKey = createCacheKey(primaryKey, null, null);
+            cacheKey = putCacheKeyIfAbsent(newCacheKey);
+            if (cacheKey == null) {
+                return newCacheKey;
+            }
         }
         return cacheKey;
     }
@@ -68,10 +74,13 @@ public class UnitOfWorkIdentityMap extends FullIdentityMap {
      */
     @Override
     public CacheKey acquireLockNoWait(Object primaryKey, boolean forMerge) {
-        CacheKey newCacheKey = createCacheKey(primaryKey, null, null);
-        CacheKey cacheKey = getCacheKeyIfAbsentPut(newCacheKey);
+        CacheKey cacheKey = getCacheKey(primaryKey);
         if (cacheKey == null) {
-            return newCacheKey;
+            CacheKey newCacheKey = createCacheKey(primaryKey, null, null);
+            cacheKey = putCacheKeyIfAbsent(newCacheKey);
+            if (cacheKey == null) {
+                return newCacheKey;
+            }
         }
         return cacheKey;
     }
@@ -81,10 +90,13 @@ public class UnitOfWorkIdentityMap extends FullIdentityMap {
      */
     @Override
     public CacheKey acquireLockWithWait(Object primaryKey, boolean forMerge, int wait) {
-        CacheKey newCacheKey = createCacheKey(primaryKey, null, null);
-        CacheKey cacheKey = getCacheKeyIfAbsentPut(newCacheKey);
+        CacheKey cacheKey = getCacheKey(primaryKey);
         if (cacheKey == null) {
-            return newCacheKey;
+            CacheKey newCacheKey = createCacheKey(primaryKey, null, null);
+            cacheKey = putCacheKeyIfAbsent(newCacheKey);
+            if (cacheKey == null) {
+                return newCacheKey;
+            }
         }
         return cacheKey;
     }
@@ -119,17 +131,12 @@ public class UnitOfWorkIdentityMap extends FullIdentityMap {
     }
     
     /**
-     * Since a HashMap is used, must do a get and put.
-     * However HashMap is more efficient than a ConcurrentMap so is ok.
+     * Use hashmap put, as no concurrency in unit of work.
      */
-    protected CacheKey getCacheKeyIfAbsentPut(CacheKey searchKey) {
-        CacheKey cacheKey = getCacheKeys().get(searchKey);
-        if (cacheKey == null) {
-            searchKey.setOwningMap(this);
-            getCacheKeys().put(searchKey, searchKey);
-            return null;
-        }
-        return cacheKey;
+    protected CacheKey putCacheKeyIfAbsent(CacheKey searchKey) {
+        searchKey.setOwningMap(this);
+        this.cacheKeys.put(searchKey.getKey(), searchKey);
+        return null;
     }
 
     /**
@@ -138,7 +145,7 @@ public class UnitOfWorkIdentityMap extends FullIdentityMap {
     @Override
     public Object remove(CacheKey cacheKey) {
         if (cacheKey != null) {
-            getCacheKeys().remove(cacheKey);
+            this.cacheKeys.remove(cacheKey.getKey());
         } else {
             return null;
         }

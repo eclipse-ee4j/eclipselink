@@ -21,6 +21,7 @@ import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.descriptors.VersionLockingPolicy;
 import org.eclipse.persistence.descriptors.TimestampLockingPolicy;
 import org.eclipse.persistence.mappings.*;
+import org.eclipse.persistence.internal.identitymaps.CacheId;
 import org.eclipse.persistence.internal.identitymaps.CacheKey;
 import org.eclipse.persistence.mappings.foundation.AbstractDirectMapping;
 
@@ -38,7 +39,7 @@ public class ObjectChangeSet implements Serializable, org.eclipse.persistence.se
     protected List<org.eclipse.persistence.sessions.changesets.ChangeRecord> changes;
     protected transient Map<String, ChangeRecord> attributesToChanges;
     protected boolean shouldBeDeleted;
-    protected CacheKey cacheKey;
+    protected Object id;
     protected transient Class classType;
     protected String className;
     protected boolean isNew;
@@ -97,9 +98,7 @@ public class ObjectChangeSet implements Serializable, org.eclipse.persistence.se
         this.cloneObject = cloneObject;
         this.isNew = isNew;
         this.shouldBeDeleted = false;
-        if ((primaryKey != null) && !((Vector)primaryKey).contains(null)) {
-            this.cacheKey = new CacheKey(primaryKey);
-        }
+        this.id = primaryKey;
         this.classType = descriptor.getJavaClass();
         this.className = this.classType.getName();
         this.descriptor = descriptor;
@@ -192,15 +191,15 @@ public class ObjectChangeSet implements Serializable, org.eclipse.persistence.se
     /**
      * Ensure change sets with the same primary key are equal.
      */
-    public boolean equals(org.eclipse.persistence.sessions.changesets.ObjectChangeSet objectChange) {
+    public boolean equals(ObjectChangeSet objectChange) {
         if (this == objectChange) {
             return true;
-        } else if (getCacheKey() == null) {
+        } else if (this.id == null) {
             //new objects are compared based on identity
             return false;
         }
 
-        return (getCacheKey().equals(((ObjectChangeSet)objectChange).getCacheKey()));
+        return (this.id.equals(objectChange.id));
     }
 
     /**
@@ -220,15 +219,6 @@ public class ObjectChangeSet implements Serializable, org.eclipse.persistence.se
      */
     public org.eclipse.persistence.sessions.changesets.ChangeRecord getChangesForAttributeNamed(String attributeName) {
         return (ChangeRecord)this.getAttributesToChanges().get(attributeName);
-    }
-
-    /**
-     * Return the CacheKey for the object that this is a change set for.
-     */
-    public CacheKey getCacheKey() {
-        // this must not be lazy initialized as newness of the ObjectChangeSet and
-        //equality are determined by the existence of a cachekey - GY
-        return cacheKey;
     }
 
     /**
@@ -313,11 +303,22 @@ public class ObjectChangeSet implements Serializable, org.eclipse.persistence.se
      * ADVANCED:
      * This method returns the primary keys for the object that this change set represents.
      */
+    @Deprecated
     public Vector getPrimaryKeys() {
-        if (getCacheKey() == null) {
-            return null;
+        if (this.id instanceof CacheId) {
+            return new Vector(Arrays.asList(((CacheId)this.id).getPrimaryKey()));
         }
-        return getCacheKey().getKey();
+        Vector primaryKey = new Vector(1);
+        primaryKey.add(this.id);
+        return primaryKey;
+    }
+    
+    /**
+     * ADVANCED:
+     * This method returns the primary key for the object that this change set represents.
+     */
+    public Object getId() {
+        return this.id;
     }
 
     public int getSynchronizationType() {
@@ -362,7 +363,7 @@ public class ObjectChangeSet implements Serializable, org.eclipse.persistence.se
                 }
             } else {
                 // It is not a unitOfWork so we must be merging into a distributed cache.
-                attributeValue = session.getIdentityMapAccessorInstance().getIdentityMapManager().getFromIdentityMap(getPrimaryKeys(), getClassType(session), descriptor);
+                attributeValue = session.getIdentityMapAccessorInstance().getIdentityMapManager().getFromIdentityMap(getId(), getClassType(session), descriptor);
             }
         
             if ((attributeValue == null) && (shouldRead)) {
@@ -371,7 +372,7 @@ public class ObjectChangeSet implements Serializable, org.eclipse.persistence.se
                 ReadObjectQuery query = new ReadObjectQuery();
                 query.setShouldUseWrapperPolicy(false);
                 query.setReferenceClass(getClassType(session));
-                query.setSelectionId(getPrimaryKeys());
+                query.setSelectionId(getId());
                 attributeValue = session.executeQuery(query);
             }
         }
@@ -502,11 +503,11 @@ public class ObjectChangeSet implements Serializable, org.eclipse.persistence.se
      * cache key, otherwise return the identity hashcode of this object.
      */
     public int hashCode() {
-        if (getCacheKey() == null) {
+        if (getId() == null) {
             //new objects are compared based on identity
             return System.identityHashCode(this);
         }
-        return getCacheKey().hashCode();
+        return getId().hashCode();
     }
 
     /**
@@ -632,7 +633,7 @@ public class ObjectChangeSet implements Serializable, org.eclipse.persistence.se
      */
     public void readIdentityInformation(java.io.ObjectInputStream stream) throws java.io.IOException, ClassNotFoundException {
         // bug 3526981 - avoid side effects of setter methods by directly assigning variables
-        this.cacheKey = (CacheKey)stream.readObject();
+        this.id = stream.readObject();
         this.className = (String)stream.readObject();
         this.writeLockValue = stream.readObject();
         this.initialWriteLockValue = stream.readObject();
@@ -663,10 +664,10 @@ public class ObjectChangeSet implements Serializable, org.eclipse.persistence.se
     }
 
     /**
-     * Set the cache key.
+     * Set the id of the object for this change set.
      */
-    public void setCacheKey(CacheKey cacheKey) {
-        this.cacheKey = cacheKey;
+    public void setId(Object id) {
+        this.id = id;
     }
 
     /**
@@ -759,7 +760,7 @@ public class ObjectChangeSet implements Serializable, org.eclipse.persistence.se
         // ignore optimistic locking policy if it can't compare lock values (like FieldsLockingPolicy).
         if(optimisticLockingPolicy.supportsWriteLockValuesComparison()) {
             this.optimisticLockingPolicy = optimisticLockingPolicy;
-            this.initialWriteLockValue = optimisticLockingPolicy.getWriteLockValue(cloneObject, getPrimaryKeys(), session);
+            this.initialWriteLockValue = optimisticLockingPolicy.getWriteLockValue(cloneObject, getId(), session);
         }
     }
 
@@ -783,7 +784,7 @@ public class ObjectChangeSet implements Serializable, org.eclipse.persistence.se
      * This method is used to set the initial writeLock value for an ObjectChangeSet.
      * The initial value will only be set once, and can not be overwritten.
      */
-    public void setInitialWriteLockValue(java.lang.Object initialWriteLockValue) {
+    public void setInitialWriteLockValue(Object initialWriteLockValue) {
         if (this.initialWriteLockValue == null) {
             this.initialWriteLockValue = initialWriteLockValue;
         }
@@ -891,7 +892,7 @@ public class ObjectChangeSet implements Serializable, org.eclipse.persistence.se
      * ObjectChangeSet to the stream
      */
     public void writeIdentityInformation(java.io.ObjectOutputStream stream) throws java.io.IOException {
-        stream.writeObject(this.cacheKey);
+        stream.writeObject(this.id);
         stream.writeObject(this.className);
         stream.writeObject(this.writeLockValue);
         stream.writeObject(this.initialWriteLockValue);
@@ -918,20 +919,6 @@ public class ObjectChangeSet implements Serializable, org.eclipse.persistence.se
         stream.writeObject(this.changes);
         stream.writeObject(this.oldKey);
         stream.writeObject(this.newKey);
-    }
-
-    /**
-     * INTERNAL:
-     */
-    public void setPrimaryKeys(Vector key) {
-        if (key == null) {
-            return;
-        }
-        if (getCacheKey() == null) {
-            setCacheKey(new CacheKey(key));
-        } else {
-            getCacheKey().setKey(key);
-        }
     }
 
     /**
@@ -999,7 +986,7 @@ public class ObjectChangeSet implements Serializable, org.eclipse.persistence.se
      * Remove object represent this change set from identity map.  If change set is in XML format, rebuild pk to the correct class type from String
      */
     protected void removeFromIdentityMap(AbstractSession session) {
-        session.getIdentityMapAccessor().removeFromIdentityMap(getPrimaryKeys(), getClassType(session));
+        session.getIdentityMapAccessor().removeFromIdentityMap(getId(), getClassType(session));
     }
 
     /**
@@ -1026,7 +1013,7 @@ public class ObjectChangeSet implements Serializable, org.eclipse.persistence.se
             return true;
         }
         
-        Object originalWriteLockValue = optimisticLockingPolicy.getWriteLockValue(original, getPrimaryKeys(), session);
+        Object originalWriteLockValue = optimisticLockingPolicy.getWriteLockValue(original, getId(), session);
         
         // initialWriteLockValue and originalWriteLockValue are not equal.
         // Example: 

@@ -54,6 +54,7 @@ public class ClassWeaver extends ClassAdapter implements Constants {
     public static final String PERSISTENCE_OBJECT_SHORT_SIGNATURE = "org/eclipse/persistence/internal/descriptors/PersistenceObject";
     public static final String PERSISTENCE_OBJECT_SIGNATURE = "L" + PERSISTENCE_OBJECT_SHORT_SIGNATURE + ";";
     public static final String VECTOR_SIGNATURE = "Ljava/util/Vector;";
+    public static final String OBJECT_SIGNATURE = "Ljava/lang/Object;";
     public static final String CACHEKEY_SIGNATURE = "Lorg/eclipse/persistence/internal/identitymaps/CacheKey;";
     
     // Fetch groups
@@ -608,15 +609,13 @@ public class ClassWeaver extends ClassAdapter implements Constants {
     }
     
     /**
-     * Add a variable of type Vector, CacheKey to the class.
+     * Add a variable of type Object to the class.
      * When this method has been run, the class will contain a variable declarations similar to the following:
      *  
-     *  private Vector _persistence_primaryKey;
-     *  private Vector _persistence_cacheKey;
+     *  private Object _persistence_primaryKey;
      */
     public void addPersistenceEntityVariables() {
-        cv.visitField(ACC_PROTECTED + ACC_TRANSIENT, "_persistence_primaryKey", VECTOR_SIGNATURE, null, null);
-        cv.visitField(ACC_PROTECTED + ACC_TRANSIENT, "_persistence_cacheKey", CACHEKEY_SIGNATURE, null, null);
+        cv.visitField(ACC_PROTECTED + ACC_TRANSIENT, "_persistence_primaryKey", OBJECT_SIGNATURE, null, null);
     }
     
     /**
@@ -681,11 +680,7 @@ public class ClassWeaver extends ClassAdapter implements Constants {
 	        // clone._persistence_primaryKey = null;
 	        cv_clone.visitVarInsn(ALOAD, 0);
 	        cv_clone.visitInsn(ACONST_NULL);
-	        cv_clone.visitFieldInsn(PUTFIELD, classDetails.getClassName(), "_persistence_primaryKey", VECTOR_SIGNATURE);
-	        // clone._persistence_cacheKey = null;
-	        cv_clone.visitVarInsn(ALOAD, 0);
-	        cv_clone.visitInsn(ACONST_NULL);
-	        cv_clone.visitFieldInsn(PUTFIELD, classDetails.getClassName(), "_persistence_cacheKey", CACHEKEY_SIGNATURE);
+	        cv_clone.visitFieldInsn(PUTFIELD, classDetails.getClassName(), "_persistence_primaryKey", OBJECT_SIGNATURE);
         }
         
         // return clone;
@@ -874,45 +869,25 @@ public class ClassWeaver extends ClassAdapter implements Constants {
     /**
      * Adds get/set method for PersistenceEntity interface.
      * This adds the following methods:
-     * 
-     *  public CacheKey _persistence_getCacheKey() {
-     *      return _persistence_cacheKey;
-     *  }
-     *  public void _persistence_setCacheKey(CacheKey key) {
-     *      this._persistence_cacheKey = key;
-     *  }
      *   
-     *  public Vector _persistence_getPKVector() {
+     *  public Object _persistence_getId() {
      *      return _persistence_primaryKey;
      *  }
-     *  public void _persistence_setPKVector(Vector pk) {
-     *      this._persistence_primaryKey = pk;
+     *  public void _persistence_setId(Object primaryKey) {
+     *      this._persistence_primaryKey = primaryKey;
      *  }
      */
-    public void addPersistenceEntityMethods(ClassDetails classDetails) {
-        CodeVisitor cv_getCacheKey = cv.visitMethod(ACC_PUBLIC, "_persistence_getCacheKey", "()" + CACHEKEY_SIGNATURE, null, null);
-        cv_getCacheKey.visitVarInsn(ALOAD, 0);
-        cv_getCacheKey.visitFieldInsn(GETFIELD, classDetails.getClassName(), "_persistence_cacheKey", CACHEKEY_SIGNATURE);
-        cv_getCacheKey.visitInsn(ARETURN);
-        cv_getCacheKey.visitMaxs(0, 0);
-        
-        CodeVisitor cv_setCacheKey = cv.visitMethod(ACC_PUBLIC, "_persistence_setCacheKey", "(" + CACHEKEY_SIGNATURE + ")V", null, null);
-        cv_setCacheKey.visitVarInsn(ALOAD, 0);
-        cv_setCacheKey.visitVarInsn(ALOAD, 1);
-        cv_setCacheKey.visitFieldInsn(PUTFIELD, classDetails.getClassName(), "_persistence_cacheKey", CACHEKEY_SIGNATURE);
-        cv_setCacheKey.visitInsn(RETURN);
-        cv_setCacheKey.visitMaxs(0 ,0);
-        
-        CodeVisitor cv_getPKVector = cv.visitMethod(ACC_PUBLIC, "_persistence_getPKVector", "()" + VECTOR_SIGNATURE, null, null);
+    public void addPersistenceEntityMethods(ClassDetails classDetails) {        
+        CodeVisitor cv_getPKVector = cv.visitMethod(ACC_PUBLIC, "_persistence_getId", "()" + OBJECT_SIGNATURE, null, null);
         cv_getPKVector.visitVarInsn(ALOAD, 0);
-        cv_getPKVector.visitFieldInsn(GETFIELD, classDetails.getClassName(), "_persistence_primaryKey", VECTOR_SIGNATURE);
+        cv_getPKVector.visitFieldInsn(GETFIELD, classDetails.getClassName(), "_persistence_primaryKey", OBJECT_SIGNATURE);
         cv_getPKVector.visitInsn(ARETURN);
         cv_getPKVector.visitMaxs(0, 0);
         
-        CodeVisitor cv_setPKVector = cv.visitMethod(ACC_PUBLIC, "_persistence_setPKVector", "(" + VECTOR_SIGNATURE + ")V", null, null);
+        CodeVisitor cv_setPKVector = cv.visitMethod(ACC_PUBLIC, "_persistence_setId", "(" + OBJECT_SIGNATURE + ")V", null, null);
         cv_setPKVector.visitVarInsn(ALOAD, 0);
         cv_setPKVector.visitVarInsn(ALOAD, 1);
-        cv_setPKVector.visitFieldInsn(PUTFIELD, classDetails.getClassName(), "_persistence_primaryKey", VECTOR_SIGNATURE);
+        cv_setPKVector.visitFieldInsn(PUTFIELD, classDetails.getClassName(), "_persistence_primaryKey", OBJECT_SIGNATURE);
         cv_setPKVector.visitInsn(RETURN);
         cv_setPKVector.visitMaxs(0 ,0);
     }

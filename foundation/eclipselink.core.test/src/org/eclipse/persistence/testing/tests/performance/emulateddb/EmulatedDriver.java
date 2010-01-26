@@ -59,7 +59,7 @@ public class EmulatedDriver implements Driver {
             return null;
         }
         if (connection == null) {
-            connection = new EmulatedConnection(DriverManager.getConnection(url.substring("emulate:".length() + 1, url.length()), info));
+            connection = new EmulatedConnection(DriverManager.getConnection(url.substring("emulate:".length(), url.length()), info));
         }
         return connection;
     }

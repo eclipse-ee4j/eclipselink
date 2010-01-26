@@ -13,7 +13,6 @@
 package org.eclipse.persistence.internal.sessions;
 
 import org.eclipse.persistence.descriptors.ClassDescriptor;
-import org.eclipse.persistence.internal.identitymaps.CacheKey;
 
 public class AggregateObjectChangeSet extends ObjectChangeSet {
 
@@ -31,7 +30,8 @@ public class AggregateObjectChangeSet extends ObjectChangeSet {
         super(primaryKey, descriptor, cloneObject, parent, isNew);
     }
 
-    public CacheKey CacheKey() {
+    @Override
+    public Object getId() {
         return null;
     }
 

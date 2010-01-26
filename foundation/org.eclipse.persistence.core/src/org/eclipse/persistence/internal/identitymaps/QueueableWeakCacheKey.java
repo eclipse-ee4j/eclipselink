@@ -2,7 +2,6 @@ package org.eclipse.persistence.internal.identitymaps;
 
 import java.lang.ref.ReferenceQueue;
 import java.lang.ref.WeakReference;
-import java.util.Vector;
 
 public class QueueableWeakCacheKey extends WeakCacheKey {
     // This the reference queue from the owning map that
@@ -10,7 +9,7 @@ public class QueueableWeakCacheKey extends WeakCacheKey {
     // makes for easy cleanup
     protected ReferenceQueue referenceQueue;
 
-    public QueueableWeakCacheKey(Vector primaryKey, Object object, Object writeLockValue, long readTime, ReferenceQueue refQueue) {
+    public QueueableWeakCacheKey(Object primaryKey, Object object, Object writeLockValue, long readTime, ReferenceQueue refQueue) {
         super(primaryKey, object, writeLockValue, readTime);
         this.referenceQueue = refQueue;
     }

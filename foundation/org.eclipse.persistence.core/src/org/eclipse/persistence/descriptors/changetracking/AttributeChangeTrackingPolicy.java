@@ -87,7 +87,7 @@ public class AttributeChangeTrackingPolicy extends ObjectChangeTrackingPolicy {
         }
 
         // The following code deals with reads that force changes to the flag associated with optimistic locking.
-        if ((descriptor.usesOptimisticLocking()) && (changes.getPrimaryKeys() != null)) {
+        if ((descriptor.usesOptimisticLocking()) && (changes.getId() != null)) {
             changes.setOptimisticLockingPolicyAndInitialWriteLockValue(descriptor.getOptimisticLockingPolicy(), session);
         }
         

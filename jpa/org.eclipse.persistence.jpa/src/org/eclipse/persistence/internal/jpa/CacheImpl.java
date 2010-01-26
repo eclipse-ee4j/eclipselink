@@ -12,7 +12,6 @@
  ******************************************************************************/
 package org.eclipse.persistence.internal.jpa;
 
-import java.util.Vector;
 import javax.persistence.Cache;
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.internal.identitymaps.CacheKey;
@@ -37,16 +36,16 @@ public class CacheImpl implements Cache {
 
     public boolean contains(Class cls, Object primaryKey) {
         this.emf.verifyOpen();
-        Vector pk =  createPKVector(cls, primaryKey);
+        Object pk =  createPrimaryKeyFromId(cls, primaryKey);
         ClassDescriptor descriptor = this.serversession.getDescriptor(cls);
         CacheKey key = ((org.eclipse.persistence.internal.sessions.IdentityMapAccessor)this.accessor).getCacheKeyForObject(pk, cls, descriptor);
 
-        return key != null && !descriptor.getCacheInvalidationPolicy().isInvalidated(key); 
+        return (key != null) && (key.getObject() != null) && (!descriptor.getCacheInvalidationPolicy().isInvalidated(key)); 
     }
 
     public void evict(Class cls, Object primaryKey) {
         this.emf.verifyOpen();
-        this.accessor.invalidateObject(createPKVector(cls, primaryKey), cls);
+        this.accessor.invalidateObject(createPrimaryKeyFromId(cls, primaryKey), cls);
     }
 
     public void evict(Class cls) {
@@ -59,10 +58,10 @@ public class CacheImpl implements Cache {
         this.accessor.invalidateAll();
     }
 
-    private Vector createPKVector(Class cls, Object primaryKey){
+    private Object createPrimaryKeyFromId(Class cls, Object primaryKey){
         ClassDescriptor cdesc = this.serversession.getDescriptor(cls);
         CMP3Policy cmp = (CMP3Policy) (cdesc.getCMPPolicy());
-        Vector pk = cmp.createPkVectorFromKey(primaryKey, this.serversession);
+        Object pk = cmp.createPrimaryKeyFromId(primaryKey, this.serversession);
         return pk;
     }
 }

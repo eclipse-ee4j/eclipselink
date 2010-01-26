@@ -79,8 +79,8 @@ public class WeakIdentityMap extends FullIdentityMap {
      * Need to check for cleanup on put.
      */
     @Override
-    protected CacheKey getCacheKeyIfAbsentPut(CacheKey searchKey) {
-        CacheKey cacheKey = super.getCacheKeyIfAbsentPut(searchKey);
+    protected CacheKey putCacheKeyIfAbsent(CacheKey searchKey) {
+        CacheKey cacheKey = super.putCacheKeyIfAbsent(searchKey);
         if (cacheKey == null) {
             checkCleanup();
         }

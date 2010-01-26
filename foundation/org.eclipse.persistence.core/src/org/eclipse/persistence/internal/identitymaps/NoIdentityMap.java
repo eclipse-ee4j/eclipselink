@@ -60,7 +60,7 @@ public class NoIdentityMap extends AbstractIdentityMap {
      * Return null as no objects are cached.
      */
     @Override
-    protected CacheKey getCacheKey(CacheKey searchKey) {
+    public CacheKey getCacheKey(Object searchKey) {
         return null;
     }
     
@@ -68,7 +68,7 @@ public class NoIdentityMap extends AbstractIdentityMap {
      * Return null as no objects are cached.
      */
     @Override
-    protected CacheKey getCacheKeyIfAbsentPut(CacheKey cacheKey) {
+    protected CacheKey putCacheKeyIfAbsent(CacheKey cacheKey) {
         return null;
     }
 

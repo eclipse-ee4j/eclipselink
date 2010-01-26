@@ -13,8 +13,6 @@
 package org.eclipse.persistence.internal.identitymaps;
 
 import java.io.*;
-import java.util.Arrays;
-import java.util.Vector;
 
 import org.eclipse.persistence.exceptions.ConcurrencyException;
 import org.eclipse.persistence.internal.helper.*;
@@ -31,10 +29,8 @@ import org.eclipse.persistence.sessions.Record;
 public class CacheKey implements Serializable, Cloneable {
 
     /** The key holds the vector of primary key values for the object. */
-    protected Vector key;
+    protected Object key;
 
-    /** Calculated hash value for CacheKey from primary key values. */
-    protected int hash;
     protected Object object;
     
     //used to store a reference to the map this cachekey is in in cases where the
@@ -88,13 +84,11 @@ public class CacheKey implements Serializable, Cloneable {
     }
     
     public CacheKey(Object primaryKey) {
-        this.key = (Vector)primaryKey;
-        this.hash = computeHash((Vector)primaryKey);
+        this.key = primaryKey;
     }
 
     public CacheKey(Object primaryKey, Object object, Object lockValue) {
-        this.key = (Vector)primaryKey;
-        this.hash = computeHash((Vector)primaryKey);
+        this.key = primaryKey;
         this.writeLockValue = lockValue;
         //bug4649617  use setter instead of this.object = object to avoid hard reference on object in subclasses
         if (object != null) {
@@ -103,8 +97,7 @@ public class CacheKey implements Serializable, Cloneable {
     }
 
     public CacheKey(Object primaryKey, Object object, Object lockValue, long readTime) {
-        this.key = (Vector)primaryKey;
-        this.hash = computeHash((Vector)primaryKey);
+        this.key = primaryKey;
         this.writeLockValue = lockValue;
         //bug4649617  use setter instead of this.object = object to avoid hard reference on object in subclasses
         if (object != null) {
@@ -220,43 +213,6 @@ public class CacheKey implements Serializable, Cloneable {
     }
 
     /**
-     * Compute a hash value for the CacheKey dependent upon the values of the primary key
-     * instead of the identity of the receiver.
-     * This method is intended for use by constructors only.
-     */
-    protected int computeHash(Vector primaryKey) {
-        int computedHashValue = 0;
-        int size = primaryKey.size();
-        for (int index = 0; index < size; index++) {
-            Object value = primaryKey.get(index);
-            if (value != null) {
-            	//bug5709489, gf bug 1193: fix to handle array hashcodes properly
-            	if (value.getClass().isArray()) {
-            		computedHashValue = computedHashValue ^ computeArrayHashCode(value);
-            	} else {
-            		computedHashValue = computedHashValue ^ (value.hashCode());
-            	}
-            }
-        }
-        return computedHashValue;
-    }
-
-    /**
-     * Compute the hashcode for supported array types
-     * @param obj - an array
-     * @return hashCode value
-     */
-    private int computeArrayHashCode(Object obj) {
-        if (obj.getClass() == ClassConstants.APBYTE) {
-            return Arrays.hashCode((byte []) obj);
-        } else if (obj.getClass() == ClassConstants.APCHAR) {
-            return Arrays.hashCode((char []) obj);
-        } else {
-            return Arrays.hashCode((Object []) obj);
-        }
-    }
-
-    /**
      * Determine if the receiver is equal to anObject.
      * If anObject is a CacheKey, do further comparison, otherwise, return false.
      * @see CacheKey#equals(CacheKey)
@@ -277,41 +233,7 @@ public class CacheKey implements Serializable, Cloneable {
         if (this == key) {
             return true;
         }
-        // PERF: Using direct variable access.
-        int size = this.key.size();
-        if (size == key.key.size()) {
-            for (int index = 0; index < size; index++) {
-                Object myValue = this.key.get(index);
-                Object comparisionValue = key.key.get(index);
-
-                if (myValue == null) {
-                    if (comparisionValue != null) {
-                        return false;
-                    }
-                } else if (myValue.getClass().isArray()) {
-                    //gf bug 1193: fix array comparison logic to exit if they don't match, and continue the loop if they do
-                    if (((myValue.getClass() == ClassConstants.APBYTE) && (comparisionValue.getClass() == ClassConstants.APBYTE)) ) {
-                        if (!Helper.compareByteArrays((byte[])myValue, (byte[])comparisionValue)){
-                            return false;
-                        }
-                    } else if (((myValue.getClass() == ClassConstants.APCHAR) && (comparisionValue.getClass() == ClassConstants.APCHAR)) ) {
-                        if (!Helper.compareCharArrays((char[])myValue, (char[])comparisionValue)){
-                            return false;
-                        }
-                    } else {
-                        if (!Helper.compareArrays((Object[])myValue, (Object[])comparisionValue)) {
-                            return false;
-                        }
-                    }
-                } else {
-                    if (!(myValue.equals(comparisionValue))) {
-                        return false;
-                    }
-                }
-            }
-            return true;
-        }
-        return false;
+        return this.key.equals(key.key);
     }
 
     /**
@@ -325,7 +247,7 @@ public class CacheKey implements Serializable, Cloneable {
         return this.lastUpdatedQueryId;
     }
 
-    public Vector getKey() {
+    public Object getKey() {
         return key;
     }
 
@@ -383,7 +305,7 @@ public class CacheKey implements Serializable, Cloneable {
      * Overrides hashCode() in Object to use the primaryKey's hashCode for storage in data structures.
      */
     public int hashCode() {
-        return hash;
+        return this.key.hashCode();
     }
 
     /**
@@ -465,9 +387,8 @@ public class CacheKey implements Serializable, Cloneable {
         this.lastUpdatedQueryId = id;
     }
 
-    public void setKey(Vector key) {
+    public void setKey(Object key) {
         this.key = key;
-        this.hash = computeHash(key);
     }
 
     /**

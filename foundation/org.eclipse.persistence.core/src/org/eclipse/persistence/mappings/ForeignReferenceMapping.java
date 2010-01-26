@@ -24,7 +24,6 @@ import org.eclipse.persistence.indirection.*;
 import org.eclipse.persistence.internal.descriptors.*;
 import org.eclipse.persistence.internal.expressions.*;
 import org.eclipse.persistence.internal.helper.*;
-import org.eclipse.persistence.internal.identitymaps.CacheKey;
 import org.eclipse.persistence.internal.indirection.*;
 import org.eclipse.persistence.internal.queries.JoinedAttributeManager;
 import org.eclipse.persistence.internal.sessions.remote.*;
@@ -550,23 +549,23 @@ public abstract class ForeignReferenceMapping extends DatabaseMapping {
      * When a UnitOfWork is in transaction, it executes the batch query
      * on the UnitOfWork and stores the clones on the UnitOfWork.
      */
-    protected Hashtable getBatchReadObjects(DatabaseQuery query, AbstractSession session) {
+    protected Map getBatchReadObjects(DatabaseQuery query, AbstractSession session) {
         if (session.isUnitOfWork()) {
             UnitOfWorkImpl unitOfWork = (UnitOfWorkImpl)session;
-            return (Hashtable)unitOfWork.getBatchReadObjects().get(query);
+            return (Map)unitOfWork.getBatchReadObjects().get(query);
         } else {
-            return (Hashtable)query.getProperty("batched objects");
+            return (Map)query.getProperty("batched objects");
         }
     }
 
     /**
      * INTERNAL:
-     * The hashtable of batched objects resides in one of two places.
+     * The map of batched objects resides in one of two places.
      * In the normal case it is stored in a query property.
      * When a UnitOfWork is in transaction, it executes the batch query
      * on the UnitOfWork and stores the clones on the UnitOfWork.
      */
-    protected void setBatchReadObjects(Hashtable referenceObjectsByKey, DatabaseQuery query, AbstractSession session) {
+    protected void setBatchReadObjects(Map referenceObjectsByKey, DatabaseQuery query, AbstractSession session) {
         if (session.isUnitOfWork()) {
             UnitOfWorkImpl unitOfWork = (UnitOfWorkImpl)session;
             unitOfWork.getBatchReadObjects().put(query, referenceObjectsByKey);
@@ -832,7 +831,7 @@ public abstract class ForeignReferenceMapping extends DatabaseMapping {
         if (isPrivateOwned){
             getDescriptor().addMappingsPostCalculateChanges(this);
             if (getDescriptor().hasInheritance()){
-                for (ClassDescriptor descriptor: (List<ClassDescriptor>)getDescriptor().getInheritancePolicy().getAllChildDescriptors()){
+                for (ClassDescriptor descriptor: getDescriptor().getInheritancePolicy().getAllChildDescriptors()) {
                     descriptor.addMappingsPostCalculateChanges(this);
                 }
             }
@@ -1114,14 +1113,14 @@ public abstract class ForeignReferenceMapping extends DatabaseMapping {
             if (isPrivateOwned && !this.isPrivateOwned){
                 this.descriptor.addMappingsPostCalculateChanges(this);
                 if (getDescriptor().hasInheritance()){
-                    for (ClassDescriptor descriptor: (List<ClassDescriptor>)getDescriptor().getInheritancePolicy().getAllChildDescriptors()){
+                    for (ClassDescriptor descriptor: getDescriptor().getInheritancePolicy().getAllChildDescriptors()) {
                         descriptor.addMappingsPostCalculateChanges(this);
                     }
                 }
             }else if (!isPrivateOwned && this.isPrivateOwned){
                 this.descriptor.getMappingsPostCalculateChanges().remove(this);
                 if (getDescriptor().hasInheritance()){
-                    for (ClassDescriptor descriptor: (List<ClassDescriptor>)getDescriptor().getInheritancePolicy().getAllChildDescriptors()){
+                    for (ClassDescriptor descriptor: getDescriptor().getInheritancePolicy().getAllChildDescriptors()) {
                         descriptor.getMappingsPostCalculateChanges().remove(this);
                     }
                 }
@@ -1727,9 +1726,8 @@ public abstract class ForeignReferenceMapping extends DatabaseMapping {
             List nestedDataResults = dataResults;
             if (nestedDataResults == null) {
                 // Extract the primary key of the source object, to filter only the joined rows for that object.
-                Object sourceKey = getDescriptor().getObjectBuilder().extractPrimaryKeyFromRow(row, executionSession);
-                CacheKey sourceCacheKey = new CacheKey(sourceKey);
-                nestedDataResults = joinManager.getDataResultsByPrimaryKey().get(sourceCacheKey);
+                Object sourceKey = this.descriptor.getObjectBuilder().extractPrimaryKeyFromRow(row, executionSession);
+                nestedDataResults = joinManager.getDataResultsByPrimaryKey().get(sourceKey);
             }
             nestedDataResults = new ArrayList(nestedDataResults);
             Object indexObject = joinManager.getJoinedMappingIndexes_().get(this);

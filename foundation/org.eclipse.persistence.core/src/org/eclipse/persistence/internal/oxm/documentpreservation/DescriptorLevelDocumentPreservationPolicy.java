@@ -12,8 +12,6 @@
  ******************************************************************************/  
 package org.eclipse.persistence.internal.oxm.documentpreservation;
 
-import java.util.Vector;
-
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 
@@ -23,6 +21,7 @@ import org.eclipse.persistence.oxm.documentpreservation.AppendNewElementsOrderin
 import org.eclipse.persistence.oxm.documentpreservation.DocumentPreservationPolicy;
 import org.eclipse.persistence.oxm.mappings.XMLMapping;
 import org.eclipse.persistence.oxm.record.DOMRecord;
+import org.eclipse.persistence.internal.identitymaps.CacheId;
 import org.eclipse.persistence.internal.identitymaps.CacheKey;
 import org.eclipse.persistence.internal.oxm.WeakObjectWrapper;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
@@ -68,9 +67,8 @@ public class DescriptorLevelDocumentPreservationPolicy extends DocumentPreservat
         row.setSession(session);
         Object pk = xmlDescriptor.getObjectBuilder().extractPrimaryKeyFromRow(row, session);
         if (xmlDescriptor.shouldPreserveDocument() || xmlDescriptor.getPrimaryKeyFieldNames().size() > 0) {
-            if ((pk == null) || (((Vector)pk).size() == 0)) {
-                pk = new Vector();
-                ((Vector)pk).add(new WeakObjectWrapper(obj));
+            if ((pk == null) || (((CacheId)pk).getPrimaryKey().length == 0)) {
+                pk = new CacheId(new Object[]{ new WeakObjectWrapper(obj) });
             }
             CacheKey key = session.getIdentityMapAccessorInstance().acquireDeferredLock(pk, xmlDescriptor.getJavaClass(), xmlDescriptor);
             if ((xmlDescriptor).shouldPreserveDocument()) {
@@ -86,9 +84,8 @@ public class DescriptorLevelDocumentPreservationPolicy extends DocumentPreservat
         XMLDescriptor xmlDescriptor = (XMLDescriptor)session.getDescriptor(obj);
         if(xmlDescriptor.shouldPreserveDocument()) {
             Object pk = xmlDescriptor.getObjectBuilder().extractPrimaryKeyFromObject(obj, session);
-            if ((pk == null) || (((Vector)pk).size() == 0)) {
-                pk = new Vector();
-                ((Vector)pk).addElement(new WeakObjectWrapper(obj));
+            if ((pk == null) || (pk instanceof CacheId) && (((CacheId)pk).getPrimaryKey().length == 0)) {
+                pk = new CacheId(new Object[]{ new WeakObjectWrapper(obj) });
             }
             CacheKey cacheKey = session.getIdentityMapAccessorInstance().getCacheKeyForObject(pk, xmlDescriptor.getJavaClass(), xmlDescriptor);
             if(cacheKey != null && cacheKey.getRecord() != null) {

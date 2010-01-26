@@ -17,7 +17,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Vector;
 
 import javax.xml.namespace.QName;
 
@@ -28,6 +27,7 @@ import org.eclipse.persistence.exceptions.EclipseLinkException;
 import org.eclipse.persistence.exceptions.XMLMarshalException;
 import org.eclipse.persistence.internal.helper.DatabaseField;
 import org.eclipse.persistence.internal.helper.Helper;
+import org.eclipse.persistence.internal.identitymaps.CacheId;
 import org.eclipse.persistence.internal.identitymaps.CacheKey;
 import org.eclipse.persistence.internal.oxm.ContainerValue;
 import org.eclipse.persistence.internal.oxm.NodeValue;
@@ -526,12 +526,11 @@ public class UnmarshalRecord extends XMLRecord implements ContentHandler, Lexica
                 int primaryKeyFieldsSize = primaryKeyFields.size();
                 if (primaryKeyFieldsSize > 0) {
                     Object pk = treeObjectBuilder.extractPrimaryKeyFromObject(currentObject, session);
-                    if (((Vector)pk).contains(null)) {
-                        for (int x=0; x<primaryKeyFieldsSize; x++) {
-                            if (null == ((Vector)pk).get(x)) {
-                                XMLField pkField = (XMLField) xmlDescriptor.getPrimaryKeyFields().get(x);
-                                ((Vector)pk).set(x, getUnmarshaller().getXMLContext().getValueByXPath(currentObject, pkField.getXPath(), pkField.getNamespaceResolver(), Object.class));
-                            }
+                    for (int x=0; x<primaryKeyFieldsSize; x++) {
+                        Object value = ((CacheId)pk).getPrimaryKey()[x];
+                        if (null == value) {
+                            XMLField pkField = (XMLField) xmlDescriptor.getPrimaryKeyFields().get(x);
+                            ((CacheId)pk).set(x, getUnmarshaller().getXMLContext().getValueByXPath(currentObject, pkField.getXPath(), pkField.getNamespaceResolver(), Object.class));
                         }
                     }
                     CacheKey key = session.getIdentityMapAccessorInstance().acquireDeferredLock(pk, xmlDescriptor.getJavaClass(), xmlDescriptor);
