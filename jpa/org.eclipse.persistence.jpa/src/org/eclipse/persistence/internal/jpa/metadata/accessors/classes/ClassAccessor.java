@@ -41,6 +41,8 @@
  *       - 286317: UniqueConstraint xml element is changing (plus couple other fixes, see bug)
  *     01/22/2010-2.0.1 Guy Pelletier 
  *       - 294361: incorrect generated table for element collection attribute overrides
+ *     01/26/2010-2.0.1 Guy Pelletier 
+ *       - 299893: @MapKeyClass does not work with ElementCollection
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata.accessors.classes;
 
@@ -210,17 +212,12 @@ public abstract class ClassAccessor extends MetadataAccessor {
                 // If the map key class is not specified, we need to look it 
                 // up from the accessor type.
                 if (mapKeyClass == null || mapKeyClass.equals(void.class)) {
-                    mapKeyClass = accessor.getAccessibleObject().getMapKeyClass(getDescriptor());
+                	// Try to extract the map key class from a generic 
+                	// specification. This will throw an exception if it can't.
+                    mapKeyClass = accessor.getMapKeyReferenceClass();
                     
-                    if (mapKeyClass == null) {
-                        // The map key class has not been specified through 
-                        // either the map key class metadata or generics. Throw
-                        // an exception.
-                        throw ValidationException.unableToDetermineMapKeyClass(accessor.getAttributeName(), accessor.getJavaClass());
-                    } else {
-                        // Set the map key class (note, may still be null)
-                        mapAccessor.setMapKeyClass(mapKeyClass);
-                    }
+                	// Set the map key class.    
+                    mapAccessor.setMapKeyClass(mapKeyClass);
                 }
                 
                 // Add the embeddable accessor to the project. In the case of

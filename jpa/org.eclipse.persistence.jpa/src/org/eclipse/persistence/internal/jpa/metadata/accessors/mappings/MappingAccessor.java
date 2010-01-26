@@ -43,6 +43,8 @@
  *       - 286317: UniqueConstraint xml element is changing (plus couple other fixes, see bug)
  *     01/22/2010-2.0.1 Guy Pelletier 
  *       - 294361: incorrect generated table for element collection attribute overrides
+ *     01/26/2010-2.0.1 Guy Pelletier 
+ *       - 299893: @MapKeyClass does not work with ElementCollection
  ******************************************************************************/
 package org.eclipse.persistence.internal.jpa.metadata.accessors.mappings;
 
@@ -1255,7 +1257,7 @@ public abstract class MappingAccessor extends MetadataAccessor {
         // Process a convert key or jpa converter for the map key if specified.
         processMappingKeyConverter(keyMapping, mappedKeyMapAccessor.getMapKeyConvert(), mappedKeyMapAccessor.getMapKeyClass());
         
-        keyMapping.setAttributeClassificationName(getMapKeyReferenceClass().getName());
+        keyMapping.setAttributeClassificationName(mappedKeyMapAccessor.getMapKeyClass().getName());
         keyMapping.setDescriptor(getDescriptor().getClassDescriptor());
         
         return keyMapping;

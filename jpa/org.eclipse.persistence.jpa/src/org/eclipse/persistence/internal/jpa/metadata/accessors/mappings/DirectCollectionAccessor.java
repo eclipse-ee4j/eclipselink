@@ -335,7 +335,7 @@ public abstract class DirectCollectionAccessor extends DirectAccessor {
         // call to processConverter, since it may set a field classification)
         mapping.setDirectKeyField(getDatabaseField(getReferenceDatabaseTable(), MetadataLogger.MAP_KEY_COLUMN));
         
-        // Only process the key converter is this is a basic map accessor. The
+        // Only process the key converter if this is a basic map accessor. The
         // key converter for an element collection case will be taken care of
         // in the processContainerPolicyAndIndirection call above.
         if (isBasicMap()) {
