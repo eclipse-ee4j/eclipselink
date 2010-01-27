@@ -12,6 +12,7 @@
  ******************************************************************************/
 package org.eclipse.persistence.jaxb.compiler;
 
+import java.lang.reflect.GenericArrayType;
 import java.lang.reflect.Method;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
@@ -126,9 +127,7 @@ public class CompilerHelper {
     private static boolean areTypesEqual(java.lang.reflect.Type type, java.lang.reflect.Type type2) {
         // handle null
         if (type == null) {
-            if (type2 != null) {
-                return false;
-            }
+        	return type2 == null;       
         } else if (type instanceof Class) {
             if (type2 instanceof ParameterizedType) {
 
@@ -144,9 +143,9 @@ public class CompilerHelper {
                 }
 
             } else if (type2 instanceof Class) {
-                if (!type.equals(type2)) {
-                    return false;
-                }
+            	return type.equals(type2);                
+            } else {
+            	return false;
             }
         } else if (type instanceof ParameterizedType) {
             if (type2 instanceof Class) {
@@ -177,16 +176,25 @@ public class CompilerHelper {
                     return false;
                 }
                 for (int i = 0; i < ta1.length; i++) {
-                    if (!areTypesEqual(ta1[i], ta2[i])) {
+                	
+                	Type componentType1 = ta1[i];
+                	if(componentType1 instanceof GenericArrayType){
+                		componentType1 = ((GenericArrayType)componentType1).getGenericComponentType();
+                	}
+                	Type componentType2= ta2[i];
+                	if(componentType2 instanceof GenericArrayType){
+                		componentType2 = ((GenericArrayType)componentType2).getGenericComponentType();
+                	}
+                    if (!areTypesEqual(componentType1, componentType2)) {
                         return false;
                     }
                 }
+                return true;
             } else {
                 return false;
             }
         }
-
-        return true;
+        return false;
     }
 
     /**

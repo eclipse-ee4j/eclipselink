@@ -24,6 +24,7 @@ import javax.xml.namespace.QName;
 import org.eclipse.persistence.jaxb.JAXBContext;
 import org.eclipse.persistence.jaxb.JAXBContextFactory;
 import org.eclipse.persistence.jaxb.TypeMappingInfo;
+import org.eclipse.persistence.jaxb.TypeMappingInfo.ElementScope;
 import org.eclipse.persistence.oxm.XMLConstants;
 import org.eclipse.persistence.testing.oxm.OXTestCase;
 
@@ -206,5 +207,26 @@ public class JaxbTypeToSchemaTypeTestCases extends OXTestCase{
 		assertNotNull(types.get(tmi3));
 		assertNotNull(types.get(tmi4));
 		assertNotNull(types.get(tmi5));		
+	}
+	
+	public void testInnerClass() throws Exception{
+		TypeMappingInfo tmi1 = new TypeMappingInfo();
+		tmi1.setXmlTagName(new QName("test", "theRoot"));
+		tmi1.setElementScope(ElementScope.Global);		
+		tmi1.setType(MyInnerClass.class);		
+		
+		TypeMappingInfo[] typesToBeBound = new TypeMappingInfo[1];
+		typesToBeBound[0] = tmi1;
+		
+		JAXBContext ctx = (JAXBContext) JAXBContextFactory.createContext(typesToBeBound, null, Thread.currentThread().getContextClassLoader());
+		Map<TypeMappingInfo, QName> types = ctx.getTypeMappingInfoToSchemaType();
+		
+		assertEquals(1, types.size());
+		assertNotNull(types.get(tmi1));
+		
+	}
+	
+	public static class MyInnerClass{
+		public String someString;
 	}
 }

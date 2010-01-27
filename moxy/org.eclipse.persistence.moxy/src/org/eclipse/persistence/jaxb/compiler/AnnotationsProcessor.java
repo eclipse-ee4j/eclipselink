@@ -201,7 +201,9 @@ public class AnnotationsProcessor {
                     }                                       
                     
                     QName qname = null;
-                    String nextClassName = nextClass.getRawName();
+                                        
+                    String nextClassName = nextClass.getQualifiedName();
+                    
                                         
                     if(declJavaType != null){
                         nextClassName = declJavaType.getCanonicalName();                            
@@ -220,13 +222,13 @@ public class AnnotationsProcessor {
                     } else {
                         qname = getUserDefinedSchemaTypes().get(nextClassName);
                         if(qname == null){
-                            if (nextClassName.equals(ClassConstants.ABYTE.getCanonicalName()) || nextClassName.equals(ClassConstants.APBYTE.getCanonicalName()) || nextClassName.equals(Image.class.getCanonicalName()) || nextClassName.equals(Source.class.getCanonicalName()) || nextClassName.equals("javax.activation.DataHandler") ) {
+                           if (nextClassName.equals(ClassConstants.ABYTE.getName()) || nextClassName.equals(ClassConstants.APBYTE.getName()) || nextClassName.equals(Image.class.getName()) || nextClassName.equals(Source.class.getName()) || nextClassName.equals("javax.activation.DataHandler") ) {
                                 if(xmlAttachmentRef){
                                     qname = XMLConstants.SWA_REF_QNAME;
                                 }else{
                                     qname = XMLConstants.BASE_64_BINARY_QNAME;
                                 }
-                            } else if(nextClassName.equals(ClassConstants.OBJECT.getCanonicalName())){
+                            } else if(nextClassName.equals(ClassConstants.OBJECT.getName())){
                                qname = XMLConstants.ANY_TYPE_QNAME;
                            } else {
                                Class theClass = helper.getClassForJavaClass(nextClass);
@@ -1165,7 +1167,7 @@ public class AnnotationsProcessor {
             xja.setType(adapter.type().getName());
             property.setXmlJavaTypeAdapter(xja);
         } else {
-            TypeInfo ptypeInfo = typeInfo.get(ptype.getRawName());
+            TypeInfo ptypeInfo = typeInfo.get(ptype.getQualifiedName());
             if (ptypeInfo == null && shouldGenerateTypeInfo(ptype)) {
                 JavaClass[] jClassArray = new JavaClass[] { ptype };
                 buildNewTypeInfo(jClassArray);
@@ -2580,8 +2582,7 @@ public class AnnotationsProcessor {
 
         QName schemaQName = getSchemaTypeOrNullFor(ptype);
         if (schemaQName == null) {
-            String rawName = ptype.getRawName();
-            TypeInfo refInfo = typeInfo.get(rawName);
+            TypeInfo refInfo = typeInfo.get(ptype.getQualifiedName());
             if (refInfo != null) {
                 if (!refInfo.isPostBuilt()) {
                     postBuildTypeInfo(new JavaClass[] { ptype });
