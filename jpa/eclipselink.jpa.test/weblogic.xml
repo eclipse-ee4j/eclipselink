@@ -55,6 +55,7 @@
     <property file="${user.home}/weblogic.properties"/>
     <property file="./test.properties"/>
     <property file="./weblogic.properties"/>
+    <property name="eclipselink.lib" value="../../${eclipselink.jar}"/>
 
     <!-- WebLogic ant tasks -->
     <taskdef name="wlserver" classname="weblogic.ant.taskdefs.management.WLServer">
@@ -79,7 +80,7 @@
         <mkdir dir="${weblogic.domain}"/>
         <antcall target="weblogic-start-nosleep" inheritRefs="true"/>
         <copy file="${junit.lib}" todir="${weblogic.domain}/lib"/>
-        <copy file="${eclipselink.jar}" todir="${weblogic.domain}/lib"/>
+        <copy file="${eclipselink.lib}" todir="${weblogic.domain}/lib"/>
         <copy file="${jdbc.driver.jar}" todir="${weblogic.domain}/lib"/>
         <copy file="${oracle.extensions.depend.dir}/${oracle.xdb.lib}" todir="${weblogic.domain}/lib"/>
         <copy file="${oracle.extensions.depend.dir}/${oracle.spatial.lib}" todir="${weblogic.domain}/lib"/>

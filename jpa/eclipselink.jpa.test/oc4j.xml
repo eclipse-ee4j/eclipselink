@@ -47,6 +47,7 @@
     <!-- Allows a user to overide certain user specific properties. -->
     <property file="${user.home}/oc4j.properties"/>
     <property file="./oc4j.properties"/>
+    <property name="eclipselink.lib" value="../../${eclipselink.jar}"/>
 
     <!--
         This target is to install OC4J server at ${oc4j.home}. 
@@ -65,7 +66,7 @@
             <arg line="-oh ${oc4j.home} -realm jazn.com -user ${server.user} -oldpwd welcome -newpwd ${server.pwd} -clearpwd true"/>
         </java>
 
-        <copy file="../../${eclipselink.jar}" todir="${oc4j.home}/j2ee/home/applib"/>
+        <copy file="${eclipselink.lib}" todir="${oc4j.home}/j2ee/home/applib"/>
         <copy file="${junit.lib}" todir="${oc4j.home}/j2ee/home/applib"/>
         <copy file="${jdbc.driver.jar}" todir="${oc4j.home}/j2ee/home/applib"/>
         <copy file="${oracle.extensions.depend.dir}/${oracle.spatial.lib}" todir="${oc4j.home}/j2ee/home/applib"/>

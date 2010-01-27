@@ -51,6 +51,7 @@
     <!-- Allows a user to overide certain user specific properties. -->
     <property file="${user.home}/jboss.properties"/>
     <property file="./jboss.properties"/>
+    <property name="eclipselink.lib" value="../../${eclipselink.jar}"/>
 
     <!-- Set db name by check db.driver -->
     <condition property="db.name" value="oracle">
@@ -76,7 +77,7 @@
     <!-- Here will use default server configuration. -->
     <target name="jboss-install">
         <copy file="${junit.lib}" todir="${jboss.server}/lib"/>
-        <copy file="${eclipselink.jar}" todir="${jboss.server}/lib"/>
+        <copy file="${eclipselink.lib}" todir="${jboss.server}/lib"/>
         <copy file="${jdbc.driver.jar}" todir="${jboss.server}/lib"/>
     </target>
 
