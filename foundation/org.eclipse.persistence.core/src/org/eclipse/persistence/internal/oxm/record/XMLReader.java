@@ -176,31 +176,45 @@ public class XMLReader implements org.xml.sax.XMLReader {
         }
 
         public void comment(char[] ch, int start, int length) throws SAXException {
-            lexicalHandler.comment(ch, start, length);
+            if(null != lexicalHandler) {
+                lexicalHandler.comment(ch, start, length);
+            }
         }
 
         public void endCDATA() throws SAXException {
-            lexicalHandler.endCDATA();
+            if(null  != lexicalHandler) {
+                lexicalHandler.endCDATA();
+            }
         }
 
         public void endDTD() throws SAXException {
-            lexicalHandler.endDTD();
+            if(null != lexicalHandler) {
+                lexicalHandler.endDTD();
+            }
         }
 
         public void endEntity(String name) throws SAXException {
-            lexicalHandler.endEntity(name);
+            if(null != lexicalHandler) {
+                lexicalHandler.endEntity(name);
+            }
         }
 
         public void startCDATA() throws SAXException {
-            lexicalHandler.startCDATA();
+            if(null != lexicalHandler) {
+                lexicalHandler.startCDATA();
+            }
         }
 
         public void startDTD(String name, String publicId, String systemId) throws SAXException {
-            lexicalHandler.startCDATA();
+            if(null != lexicalHandler) {
+                lexicalHandler.startCDATA();
+            }
         }
 
         public void startEntity(String name) throws SAXException {
-            lexicalHandler.startEntity(name);
+            if(null != lexicalHandler) {
+                lexicalHandler.startEntity(name);
+            }
         }
 
     }
