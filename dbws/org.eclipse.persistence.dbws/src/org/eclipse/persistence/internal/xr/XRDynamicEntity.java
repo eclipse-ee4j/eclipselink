@@ -22,7 +22,6 @@ import org.eclipse.persistence.exceptions.DynamicException;
 import org.eclipse.persistence.indirection.IndirectContainer;
 import org.eclipse.persistence.indirection.ValueHolderInterface;
 import org.eclipse.persistence.internal.descriptors.PersistenceEntity;
-import org.eclipse.persistence.internal.identitymaps.CacheKey;
 import org.eclipse.persistence.queries.FetchGroup;
 import org.eclipse.persistence.queries.FetchGroupTracker;
 import org.eclipse.persistence.sessions.Session;
@@ -184,7 +183,11 @@ public abstract class XRDynamicEntity implements DynamicEntity, PersistenceEntit
         // this will print something like {Emp 10} or {Phone 234-5678 10}
         StringBuilder sb = new StringBuilder(20);
         sb.append('{');
-        sb.append(__pk);
+        sb.append(getShortClassName(this.getClass()));
+        if (__pk != null) {
+            sb.append(' ');
+            sb.append(__pk);
+        }
         sb.append('}');
         return sb.toString();
     }
