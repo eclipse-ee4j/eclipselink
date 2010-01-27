@@ -407,7 +407,7 @@ public class SchemaGenerator {
                     } else if (info != null && !info.isComplexType()) {
                         typeName = info.getSimpleType().getName();
                     } else {
-                    	typeName = getTypeName(next, javaType, schema);                    
+                        typeName = getTypeName(next, javaType, schema);                    
                     }
 
                     if (isCollectionType(next)) {
@@ -530,16 +530,16 @@ public class SchemaGenerator {
 
                         String prefix = this.getPrefixForNamespace(decl.getElementName().getNamespaceURI(), schema.getNamespaceResolver());
                         
-                    	if(decl.getScopeClass() == GLOBAL.class){
-                    		if (prefix == null || prefix.equals("")) {
-                    			element.setRef(localName);		
-                    		}else{
-                    			element.setRef(prefix + ":" + localName);
-                    		}
-                    	}else{
-                    		element.setType(getTypeName(next, decl.getJavaType(), schema));
-                    		element.setName(localName);
-                    	}
+                        if(decl.getScopeClass() == GLOBAL.class){
+                            if (prefix == null || prefix.equals("")) {
+                                element.setRef(localName);      
+                            }else{
+                                element.setRef(prefix + ":" + localName);
+                            }
+                        }else{
+                            element.setType(getTypeName(next, decl.getJavaType(), schema));
+                            element.setName(localName);
+                        }
                         
                         if (next.getGenericType() != null) {
                             element.setMinOccurs(Occurs.ZERO);
@@ -1014,7 +1014,12 @@ public class SchemaGenerator {
                                 //  check namespace of schemaType
                                 if (type.getClassNamespace().equals(namespaceURI)) {
                                     //no need to prefix here
-                                    element.setType(typeName);
+                                    String prefix = targetSchema.getNamespaceResolver().resolveNamespaceURI(namespaceURI);
+                                    if(prefix != null && !(prefix.equals(""))) {
+                                        element.setType(prefix + ":" + typeName);
+                                    } else {
+                                        element.setType(typeName);
+                                    }
                                 } else {
                                     Schema complexTypeSchema = getSchemaForNamespace(type.getClassNamespace());
 
@@ -1150,7 +1155,7 @@ public class SchemaGenerator {
                 return prefix + ":" + schemaType.getLocalPart();
             }
         } else {
-        	return XMLConstants.SCHEMA_PREFIX + ":anySimpleType";
+            return XMLConstants.SCHEMA_PREFIX + ":anySimpleType";
         }
     }
 }

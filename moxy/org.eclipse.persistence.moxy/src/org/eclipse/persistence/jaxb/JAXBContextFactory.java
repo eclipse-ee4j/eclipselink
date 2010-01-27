@@ -73,6 +73,7 @@ import org.eclipse.persistence.sessions.Project;
 public class JAXBContextFactory {
     public static final String ECLIPSELINK_OXM_XML_KEY = "eclipselink-oxm-xml";
 
+    public static final String DEFAULT_TARGET_NAMESPACE_KEY = "defaultTargetNamespace";
     public static javax.xml.bind.JAXBContext createContext(Class[] classesToBeBound, java.util.Map properties) throws JAXBException {
         ClassLoader loader = null;
         if (classesToBeBound.length > 0) {
@@ -85,8 +86,8 @@ public class JAXBContextFactory {
     }
 
     public static javax.xml.bind.JAXBContext createContext(Class[] classesToBeBound, java.util.Map properties, ClassLoader classLoader) throws JAXBException {
-    	Type[] types = new Type[classesToBeBound.length];
-    	System.arraycopy(classesToBeBound, 0, types, 0, classesToBeBound.length);                     
+        Type[] types = new Type[classesToBeBound.length];
+        System.arraycopy(classesToBeBound, 0, types, 0, classesToBeBound.length);                     
         return createContext(types, properties, classLoader);
     }
 
@@ -179,9 +180,13 @@ public class JAXBContextFactory {
         return context;     
     }
     
-    public static javax.xml.bind.JAXBContext createContext(TypeMappingInfo[] typesToBeBound, java.util.Map properties, ClassLoader classLoader) throws JAXBException {    	
-    	 // Check properties map for eclipselink-oxm.xml entries
+    public static javax.xml.bind.JAXBContext createContext(TypeMappingInfo[] typesToBeBound, java.util.Map properties, ClassLoader classLoader) throws JAXBException {
+         // Check properties map for eclipselink-oxm.xml entries
         Map<String, XmlBindings> xmlBindings = getXmlBindingsFromProperties(properties, classLoader);
+        String defaultTargetNamespace = null;
+        if(properties != null) {
+            defaultTargetNamespace = (String)properties.get(DEFAULT_TARGET_NAMESPACE_KEY);
+        }
         for (String key : xmlBindings.keySet()) {
             typesToBeBound = getXmlBindingsClasses(xmlBindings.get(key), classLoader, typesToBeBound);
         }
@@ -190,7 +195,7 @@ public class JAXBContextFactory {
         typesToBeBound = updateTypesWithObjectFactory(typesToBeBound, loader);
         JavaModelInputImpl inputImpl = new JavaModelInputImpl(typesToBeBound, new JavaModelImpl(loader));
         try {
-        	 Generator generator = new Generator(inputImpl, typesToBeBound, inputImpl.getJavaClasses(), null, xmlBindings, classLoader);
+             Generator generator = new Generator(inputImpl, typesToBeBound, inputImpl.getJavaClasses(), null, xmlBindings, classLoader, defaultTargetNamespace);
             return createContext(generator, properties, classLoader, loader, typesToBeBound);
         } catch (Exception ex) {
             throw new JAXBException(ex.getMessage(), ex);
@@ -203,9 +208,13 @@ public class JAXBContextFactory {
      * the binding layer for a Web Service provider.
      */
     private static javax.xml.bind.JAXBContext createContext(Class[] classesToBeBound, java.util.Map properties, ClassLoader classLoader, Map<String, XmlBindings> xmlBindings) throws JAXBException {
-        JaxbClassLoader loader = new JaxbClassLoader(classLoader, classesToBeBound);    	
+        JaxbClassLoader loader = new JaxbClassLoader(classLoader, classesToBeBound); 
+        String defaultTargetNamespace = null;
+        if(properties != null) {
+            defaultTargetNamespace = (String)properties.get(DEFAULT_TARGET_NAMESPACE_KEY);
+        }
         try {
-            Generator generator = new Generator(new JavaModelInputImpl(classesToBeBound, new JavaModelImpl(loader)), xmlBindings, loader);
+            Generator generator = new Generator(new JavaModelInputImpl(classesToBeBound, new JavaModelImpl(loader)), xmlBindings, loader, defaultTargetNamespace);
             return createContext(generator, properties, classLoader, loader, classesToBeBound);
         } catch (Exception ex) {
             throw new JAXBException(ex.getMessage(), ex);
@@ -242,7 +251,7 @@ public class JAXBContextFactory {
         xmlContext = new XMLContext(proj, loader, eventListener);
         
         if(generator.getAnnotationsProcessor().getPackageToNamespaceMappings().size() > 1){
-        	((XMLLogin)xmlContext.getSession(0).getDatasourceLogin()).setEqualNamespaceResolvers(false);
+            ((XMLLogin)xmlContext.getSession(0).getDatasourceLogin()).setEqualNamespaceResolvers(false);
         }
         
         jaxbContext = new org.eclipse.persistence.jaxb.JAXBContext(xmlContext, generator, typesToBeBound);
@@ -280,7 +289,7 @@ public class JAXBContextFactory {
         xmlContext = new XMLContext(proj, loader, eventListener);
         
         if(generator.getAnnotationsProcessor().getPackageToNamespaceMappings().size() > 1){
-        	((XMLLogin)xmlContext.getSession(0).getDatasourceLogin()).setEqualNamespaceResolvers(false);
+            ((XMLLogin)xmlContext.getSession(0).getDatasourceLogin()).setEqualNamespaceResolvers(false);
         }
         
         jaxbContext = new org.eclipse.persistence.jaxb.JAXBContext(xmlContext, generator, typesToBeBound);
@@ -371,7 +380,7 @@ public class JAXBContextFactory {
         } catch (JAXBException jaxbEx) {
             throw org.eclipse.persistence.exceptions.JAXBException.couldNotUnmarshalMetadata(jaxbEx);
         }
-       return xmlBindings;
+        return xmlBindings;
     }
 
      
@@ -388,26 +397,26 @@ public class JAXBContextFactory {
         
         JavaTypes jTypes = xmlBindings.getJavaTypes();
         if (jTypes != null) { 
-        	java.util.List<Class> existingClasses = new ArrayList<Class>(existingTypes.length);
-        	 for (TypeMappingInfo typeMappingInfo : existingTypes) {
-             	Type type  = typeMappingInfo.getType();
+            java.util.List<Class> existingClasses = new ArrayList<Class>(existingTypes.length);
+             for (TypeMappingInfo typeMappingInfo : existingTypes) {
+                Type type  = typeMappingInfo.getType();
                  // ignore ParameterizedTypes
                  if (type instanceof Class) {
                      Class cls = (Class) type;
                      existingClasses.add(cls);
                  }
              }
-        	 
-        	 java.util.List<TypeMappingInfo> additionalTypeMappingInfos = new ArrayList<TypeMappingInfo>(jTypes.getJavaType().size());
+             
+             java.util.List<TypeMappingInfo> additionalTypeMappingInfos = new ArrayList<TypeMappingInfo>(jTypes.getJavaType().size());
                 
              for (JavaType javaType : jTypes.getJavaType()) {
                 try {
                     Class nextClass = classLoader.loadClass(javaType.getName());
                     if(!(existingClasses.contains(nextClass))){
-                    	TypeMappingInfo typeMappingInfo = new TypeMappingInfo();
-                    	typeMappingInfo.setType(nextClass);
-                    	additionalTypeMappingInfos.add(typeMappingInfo);
-                    	existingClasses.add(nextClass);
+                        TypeMappingInfo typeMappingInfo = new TypeMappingInfo();
+                        typeMappingInfo.setType(nextClass);
+                        additionalTypeMappingInfos.add(typeMappingInfo);
+                        existingClasses.add(nextClass);
                     }
                 } catch (ClassNotFoundException e) {
                     throw org.eclipse.persistence.exceptions.JAXBException.couldNotLoadClassFromMetadata(javaType.getName());
@@ -420,7 +429,7 @@ public class JAXBContextFactory {
             System.arraycopy(additionalTypes, 0, allTypeMappingInfos, existingTypes.length, additionalTypes.length); 
             return allTypeMappingInfos;
         }else{
-        	return existingTypes;
+            return existingTypes;
         }
     }
     
@@ -484,8 +493,8 @@ public class JAXBContextFactory {
                     try {
                         Class objectFactoryClass = loader.loadClass(packageName + ".ObjectFactory");
                         if (!(updatedTypes.contains(objectFactoryClass))) {
-                        	TypeMappingInfo objectFactoryTypeMappingInfo = new TypeMappingInfo();
-                        	objectFactoryTypeMappingInfo.setType(objectFactoryClass);
+                            TypeMappingInfo objectFactoryTypeMappingInfo = new TypeMappingInfo();
+                            objectFactoryTypeMappingInfo.setType(objectFactoryClass);
                             updatedTypes.add(objectFactoryTypeMappingInfo);
                         }
                     } catch (Exception ex) {

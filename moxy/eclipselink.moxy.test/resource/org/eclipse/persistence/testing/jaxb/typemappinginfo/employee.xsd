@@ -6,5 +6,5 @@
          <xsd:element minOccurs="0" name="lastName" type="xsd:string"/>
       </xsd:sequence>
    </xsd:complexType>
-   <xsd:element name="testTagName" type="employee"/>
+   <xsd:element name="testTagName" type="ns0:employee"/>
 </xsd:schema>

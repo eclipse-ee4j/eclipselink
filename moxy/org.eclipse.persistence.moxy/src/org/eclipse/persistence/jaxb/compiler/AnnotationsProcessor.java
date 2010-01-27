@@ -146,11 +146,12 @@ public class AnnotationsProcessor {
 
     private NamespaceResolver namespaceResolver;
     private Helper helper;
+    private String defaultTargetNamespace;
 
     private JAXBMetadataLogger logger;
-    
+
     private boolean isDefaultNamespaceAllowed;
-    
+
     public AnnotationsProcessor(Helper helper) {
         this.helper = helper;
         isDefaultNamespaceAllowed = true;
@@ -167,7 +168,7 @@ public class AnnotationsProcessor {
         classes = postBuildTypeInfo(classes);
         processJavaClasses(classes);
         finalizeProperties();
-        createElementsForTypeMappingInfo();
+        createElementsForTypeMappingInfo();        
     }
     
     public void createElementsForTypeMappingInfo() {
@@ -182,7 +183,7 @@ public class AnnotationsProcessor {
                     Class adapterClass = this.typeMappingInfoToAdapterClasses.get(nextInfo);
                     Class declJavaType = null;
                     if(adapterClass != null){
-                    	declJavaType = CompilerHelper.getTypeFromAdapterClass(adapterClass);
+                        declJavaType = CompilerHelper.getTypeFromAdapterClass(adapterClass);
                     }
                     if (annotations != null) {
                         for (int j = 0; j < annotations.length; j++) {
@@ -211,7 +212,7 @@ public class AnnotationsProcessor {
                             nextClassName = generatedClass.getCanonicalName();
                         }
                     }
-    	    		
+                    
                     TypeInfo nextTypeInfo = typeInfo.get(nextClassName);
                     if(nextTypeInfo != null){
                         qname = new QName(nextTypeInfo.getClassNamespace(), nextTypeInfo.getSchemaTypeName());
@@ -232,7 +233,7 @@ public class AnnotationsProcessor {
                            }
                         }
                     }
-    	    	
+                
                     if(qname != null){
                         typeMappingInfoToSchemaType.put(nextInfo, qname);
                     }
@@ -1141,7 +1142,7 @@ public class AnnotationsProcessor {
      */
     private void processXmlJavaTypeAdapter(Property property, TypeInfo info) {
         JavaClass adapterClass = null;
-    	JavaClass ptype = property.getActualType();
+        JavaClass ptype = property.getActualType();
         if (helper.isAnnotationPresent(property.getElement(), XmlJavaTypeAdapter.class)) {
             XmlJavaTypeAdapter adapter = (XmlJavaTypeAdapter) helper.getAnnotation(property.getElement(), XmlJavaTypeAdapter.class);
             org.eclipse.persistence.jaxb.xmlmodel.XmlJavaTypeAdapter xja = new org.eclipse.persistence.jaxb.xmlmodel.XmlJavaTypeAdapter();
@@ -1156,7 +1157,7 @@ public class AnnotationsProcessor {
             }
             if (ptypeInfo!= null && ptypeInfo.getXmlJavaTypeAdapter() != null){
                 property.setXmlJavaTypeAdapter(ptypeInfo.getXmlJavaTypeAdapter() );
-        	
+
             } else if (info.getPackageLevelAdaptersByClass().get(ptype.getQualifiedName()) != null) {
                 adapterClass = info.getPackageLevelAdapterClass(ptype);
             
@@ -1179,7 +1180,7 @@ public class AnnotationsProcessor {
         String typeName = info.getSchemaTypeName();
         if (typeName != null && !("".equals(typeName))) {
             QName typeQName = new QName(info.getClassNamespace(), typeName);
-        	
+
             boolean containsQName = typeQNames.contains(typeQName);
             if (containsQName) {
                 throw JAXBException.nameCollision(typeQName.getNamespaceURI(), typeQName.getLocalPart());
@@ -1203,7 +1204,7 @@ public class AnnotationsProcessor {
             return false;
         }
         if (isCollectionType(javaClass) || isMapType(javaClass)){
-        	return false;
+            return false;
         }
         return true;
     }
@@ -1904,6 +1905,8 @@ public class AnnotationsProcessor {
             String namespaceMapping = xmlSchema.namespace();
             if (!(namespaceMapping.equals("") || namespaceMapping.equals("##default"))) {
                 packageNamespace = namespaceMapping;
+            } else if(namespaceMapping.equals("##default")) {
+                packageNamespace = this.defaultTargetNamespace;
             }
             info.setNamespace(packageNamespace);
             XmlNs[] xmlns = xmlSchema.xmlns();
@@ -1930,6 +1933,8 @@ public class AnnotationsProcessor {
             } catch (Exception ex) {
             }
 
+        } else {
+            info.setNamespace(defaultTargetNamespace);
         }
         if(!info.isElementFormQualified() || info.isAttributeFormQualified()){
             isDefaultNamespaceAllowed = false;            
@@ -3438,7 +3443,14 @@ public class AnnotationsProcessor {
     
     public Map<TypeMappingInfo, QName> getTypeMappingInfoToSchemaType(){
     	return this.typeMappingInfoToSchemaType;
-    	
+    }
+    
+    String getDefaultTargetNamespace() {
+        return this.defaultTargetNamespace;
+    }
+    
+    void setDefaultTargetNamespace(String defaultTargetNamespace) {
+        this.defaultTargetNamespace = defaultTargetNamespace;
     }
     
 }

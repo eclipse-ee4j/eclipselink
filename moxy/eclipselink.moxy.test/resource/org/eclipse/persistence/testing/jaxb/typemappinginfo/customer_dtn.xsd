@@ -1,0 +1,10 @@
+<xsd:schema targetNamespace="overridden/namespace" xmlns:ns0="overridden/namespace" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+   <xsd:complexType name="customer">
+      <xsd:sequence>
+         <xsd:element name="firstName" type="xsd:string" minOccurs="0"/>
+         <xsd:element name="lastName" type="xsd:string" minOccurs="0"/>
+         <xsd:element name="phoneNumber" type="xsd:string" minOccurs="0"/>
+      </xsd:sequence>
+   </xsd:complexType>
+   <xsd:element name="customer" type="ns0:customer"/>
+</xsd:schema>

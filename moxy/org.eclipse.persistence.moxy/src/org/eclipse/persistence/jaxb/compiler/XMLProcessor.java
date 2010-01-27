@@ -493,11 +493,11 @@ public class XMLProcessor {
                 oldProperty.setType(oldProperty.getOriginalType());
             }
         } else {
-        	if(xmlElement.getXmlMap() != null){
-                    getLogger().logWarning(JAXBMetadataLogger.INVALID_TYPE_ON_MAP, new Object[] { xmlElement.getName() });
-        	}else{
-                    oldProperty.setType(jModelInput.getJavaModel().getClass(xmlElement.getType()));
-        	}
+            if (xmlElement.getXmlMap() != null) {
+                getLogger().logWarning(JAXBMetadataLogger.INVALID_TYPE_ON_MAP, new Object[] { xmlElement.getName() });
+            } else {
+                oldProperty.setType(jModelInput.getJavaModel().getClass(xmlElement.getType()));
+            }
         }
 
         // handle XmlJavaTypeAdapter
@@ -609,7 +609,11 @@ public class XMLProcessor {
 
         // make sure defaults are set, not null
         nsInfo.setLocation(schema.getLocation() == null ? "##generate" : schema.getLocation());
-        nsInfo.setNamespace(schema.getNamespace() == null ? "" : schema.getNamespace());
+        String namespace = schema.getNamespace();
+        if(namespace == null) {
+            namespace = this.aProcessor.getDefaultTargetNamespace();
+        }
+        nsInfo.setNamespace(namespace == null ? "" : schema.getNamespace());
         NamespaceResolver nsr = new NamespaceResolver();
         // process XmlNs
         for (XmlNs xmlns : schema.getXmlNs()) {
