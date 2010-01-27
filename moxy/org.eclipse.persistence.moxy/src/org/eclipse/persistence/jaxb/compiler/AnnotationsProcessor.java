@@ -147,6 +147,7 @@ public class AnnotationsProcessor {
     
     private NamespaceResolver namespaceResolver;
     private Helper helper;
+    private String defaultTargetNamespace;
 
     private JAXBMetadataLogger logger;
 
@@ -182,7 +183,7 @@ public class AnnotationsProcessor {
                     Class adapterClass = this.typeMappingInfoToAdapterClasses.get(nextInfo);
                     Class declJavaType = null;
                     if(adapterClass != null){
-                    	declJavaType = CompilerHelper.getTypeFromAdapterClass(adapterClass);
+                        declJavaType = CompilerHelper.getTypeFromAdapterClass(adapterClass);
                     }
                     if (annotations != null) {
                         for (int j = 0; j < annotations.length; j++) {
@@ -200,9 +201,9 @@ public class AnnotationsProcessor {
                     
                     QName qname = null;
                     String nextClassName = nextClass.getRawName();
-            		                    
+                                        
                     if(declJavaType != null){
-                        nextClassName = declJavaType.getCanonicalName();    	    				
+                        nextClassName = declJavaType.getCanonicalName();                            
                     }
                     
                     if(typeMappingInfoToGeneratedClasses != null){
@@ -211,7 +212,7 @@ public class AnnotationsProcessor {
                             nextClassName = generatedClass.getCanonicalName();
                         }
                     }
-    	    		
+                    
                     TypeInfo nextTypeInfo = typeInfo.get(nextClassName);
                     if(nextTypeInfo != null){
                         qname = new QName(nextTypeInfo.getClassNamespace(), nextTypeInfo.getSchemaTypeName());
@@ -232,7 +233,7 @@ public class AnnotationsProcessor {
                            }
                         }
                     }
-    	    	
+                
                     if(qname != null){
                         typeMappingInfoToSchemaType.put(nextInfo, qname);
                     }
@@ -695,7 +696,7 @@ public class AnnotationsProcessor {
                     extraClasses.add(javaClass.getComponentType());
                 }
                 Class generatedClass = CompilerHelper.getExisitingGeneratedClass(tmi, typeMappingInfoToGeneratedClasses, typeMappingInfoToAdapterClasses,  helper.getClassLoader());                
-                if(generatedClass == null){                	               
+                if(generatedClass == null){                                
                     generatedClass = generateWrapperForArrayClass(javaClass, tmi, xmlElementType);
                     extraClasses.add(helper.getJavaClass(generatedClass));
                     arrayClassesToGeneratedClasses.put(javaClass.getRawName(), generatedClass);
@@ -2020,6 +2021,8 @@ public class AnnotationsProcessor {
             String namespaceMapping = xmlSchema.namespace();
             if (!(namespaceMapping.equals("") || namespaceMapping.equals("##default"))) {
                 packageNamespace = namespaceMapping;
+            } else if(namespaceMapping.equals("##default")) {
+                packageNamespace = this.defaultTargetNamespace;
             }
             info.setNamespace(packageNamespace);
             XmlNs[] xmlns = xmlSchema.xmlns();
@@ -2046,6 +2049,8 @@ public class AnnotationsProcessor {
             } catch (Exception ex) {
             }
 
+        } else {
+            info.setNamespace(defaultTargetNamespace);
         }
         if (!info.isElementFormQualified() || info.isAttributeFormQualified()) {
             isDefaultNamespaceAllowed = false;
@@ -2592,14 +2597,14 @@ public class AnnotationsProcessor {
         String keyName = keyClass.getName().substring(beginIndex);
         int dollarIndex = keyName.indexOf('$'); 
         if(dollarIndex > -1){
-        	keyName = keyName.substring(dollarIndex + 1);
+            keyName = keyName.substring(dollarIndex + 1);
         }
         
         beginIndex = valueClass.getName().lastIndexOf(".")+1;
         String valueName = valueClass.getName().substring(beginIndex);
         dollarIndex = valueName.indexOf('$'); 
         if(dollarIndex > -1){
-        	valueName = valueName.substring(dollarIndex + 1);
+            valueName = valueName.substring(dollarIndex + 1);
         }
         String collectionClassShortName = mapClass.getRawName().substring(mapClass.getRawName().lastIndexOf('.') + 1);
         String suggestedClassName = keyName + valueName + collectionClassShortName;
@@ -2775,7 +2780,7 @@ public class AnnotationsProcessor {
             if (annotations != null) {
                 for (int i = 0; i < annotations.length; i++) {
                     java.lang.annotation.Annotation nextAnnotation = annotations[i];
-                    if (nextAnnotation != null && !(nextAnnotation instanceof XmlElement) && !(nextAnnotation instanceof XmlJavaTypeAdapter)) {                    	
+                    if (nextAnnotation != null && !(nextAnnotation instanceof XmlElement) && !(nextAnnotation instanceof XmlJavaTypeAdapter)) {                     
                         String annotationClassName = nextAnnotation.getClass().getName();
                         Annotation fieldAttrs1ann0 = new Annotation("L" + annotationClassName + ";");
                         fieldAttrs1.annotations.add(fieldAttrs1ann0);
@@ -2943,7 +2948,7 @@ public class AnnotationsProcessor {
         String name = componentClass.getName();
         int dollarIndex = name.indexOf('$'); 
         if(dollarIndex > -1){
-        	name = name.substring(dollarIndex + 1);
+            name = name.substring(dollarIndex + 1);
         }
         int beginIndex = name.lastIndexOf(".") + 1;
         String suggestedClassName = name.substring(beginIndex) + "Array";
@@ -2968,7 +2973,7 @@ public class AnnotationsProcessor {
             if (annotations != null) {
                 for (int i = 0; i < annotations.length; i++) {
                     java.lang.annotation.Annotation nextAnnotation = annotations[i];
-                   	if (nextAnnotation != null && !(nextAnnotation instanceof XmlElement) && !(nextAnnotation instanceof XmlJavaTypeAdapter)) {                    	
+                    if (nextAnnotation != null && !(nextAnnotation instanceof XmlElement) && !(nextAnnotation instanceof XmlJavaTypeAdapter)) {                     
                         String annotationClassName = nextAnnotation.getClass().getName();
                         Annotation fieldAttrs1ann0 = new Annotation("L" + annotationClassName + ";");
                         fieldAttrs1.annotations.add(fieldAttrs1ann0);
@@ -3115,21 +3120,21 @@ public class AnnotationsProcessor {
 
         Type componentType = Type.getType("L" + componentClass.getName().replace('.', '/') + ";");
         String componentTypeInternalName = null;
-        if(name.equals("[B")){        	
-        	name = "byteArray";
-        	componentTypeInternalName = componentType.getInternalName();
-        }else if(name.equals("[Ljava.lang.Byte;")){        	
-        	name = "ByteArray";
-        	componentTypeInternalName = componentType.getInternalName() + ";";  
+        if(name.equals("[B")){          
+            name = "byteArray";
+            componentTypeInternalName = componentType.getInternalName();
+        }else if(name.equals("[Ljava.lang.Byte;")){         
+            name = "ByteArray";
+            componentTypeInternalName = componentType.getInternalName() + ";";  
         }else{
-        	componentTypeInternalName = "L" + componentType.getInternalName() + ";";  
+            componentTypeInternalName = "L" + componentType.getInternalName() + ";";  
         }
         
         int beginIndex = name.lastIndexOf('.') + 1;
         name = name.substring(beginIndex);
         int dollarIndex = name.indexOf('$'); 
         if(dollarIndex > -1){
-        	name = name.substring(dollarIndex + 1);
+            name = name.substring(dollarIndex + 1);
         }
         String collectionClassRawName = collectionClass.getRawName();
         
@@ -3552,8 +3557,16 @@ public class AnnotationsProcessor {
     
     
     public Map<TypeMappingInfo, QName> getTypeMappingInfoToSchemaType(){
-    	return this.typeMappingInfoToSchemaType;
-    	
+        return this.typeMappingInfoToSchemaType;
+        
+    }
+    
+    String getDefaultTargetNamespace() {
+        return this.defaultTargetNamespace;
+    }
+    
+    void setDefaultTargetNamespace(String defaultTargetNamespace) {
+        this.defaultTargetNamespace = defaultTargetNamespace;
     }
     
 }

@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ns0:customer xmlns:ns0="overridden/namespace">
+   <firstName>John</firstName>
+   <lastName>Doe</lastName>
+   <phoneNumber>123-456-7890</phoneNumber>
+</ns0:customer>

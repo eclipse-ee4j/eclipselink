@@ -105,7 +105,7 @@ public abstract class TypeMappingInfoTestCases extends OXTestCase {
 	        javax.xml.stream.XMLEventReader reader = XML_INPUT_FACTORY.createXMLEventReader(instream);
 	        Object obj = ((org.eclipse.persistence.jaxb.JAXBUnmarshaller)jaxbUnmarshaller).unmarshal(reader, getTypeMappingInfo());
 
-	        JAXBElement controlObj = (JAXBElement)getReadControlObject();            
+	        Object controlObj = getReadControlObject();            
 	        xmlToObjectTest(obj, controlObj);
 	    }
 	}   
@@ -117,7 +117,7 @@ public abstract class TypeMappingInfoTestCases extends OXTestCase {
             Object testObject = ((JAXBUnmarshaller)jaxbUnmarshaller).unmarshal(xmlStreamReader, getTypeMappingInfo());
             instream.close();
 
-            JAXBElement controlObj = (JAXBElement)getReadControlObject();
+            Object controlObj = getReadControlObject();
             xmlToObjectTest(testObject, controlObj);          
         } 
     } 

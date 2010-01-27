@@ -5,5 +5,5 @@
          <xsd:element name="item" type="xsd:int" minOccurs="0" maxOccurs="unbounded"/>
       </xsd:sequence>
    </xsd:complexType>
-   <xsd:element name="testTagName" type="integerArray"/>
+   <xsd:element name="testTagName" type="ns0:integerArray"/>
 </xsd:schema>

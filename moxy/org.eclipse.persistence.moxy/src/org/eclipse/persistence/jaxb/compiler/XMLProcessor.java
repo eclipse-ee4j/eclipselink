@@ -746,7 +746,11 @@ public class XMLProcessor {
 
         // make sure defaults are set, not null
         nsInfo.setLocation(schema.getLocation() == null ? "##generate" : schema.getLocation());
-        nsInfo.setNamespace(schema.getNamespace() == null ? "" : schema.getNamespace());
+        String namespace = schema.getNamespace();
+        if(namespace == null) {
+            namespace = this.aProcessor.getDefaultTargetNamespace();
+        }
+        nsInfo.setNamespace(namespace == null ? "" : schema.getNamespace());
         NamespaceResolver nsr = new NamespaceResolver();
         // process XmlNs
         for (XmlNs xmlns : schema.getXmlNs()) {
@@ -797,17 +801,17 @@ public class XMLProcessor {
             ArrayList<JavaClass> existingXmlBindingsClasses = xmlBindingsMap.get(pkg);
             ArrayList<JavaClass> allExistingClasses = theMap.get(pkg);
             if (existingXmlBindingsClasses != null) {
-            	if (!classExistsInArray(jClass, existingXmlBindingsClasses)) {
-            		allExistingClasses.add(jClass);
+                if (!classExistsInArray(jClass, existingXmlBindingsClasses)) {
+                    allExistingClasses.add(jClass);
                 }
             } else {
-            	if(allExistingClasses != null){
-            		allExistingClasses.add(jClass);
-            	}else{
+                if(allExistingClasses != null){
+                    allExistingClasses.add(jClass);
+                }else{
                     ArrayList classes = new ArrayList<JavaClass>();
                     classes.add(jClass);
                     theMap.put(pkg, classes);
-            	}
+                }
             }
         }
         

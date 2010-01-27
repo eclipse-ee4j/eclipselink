@@ -88,9 +88,10 @@ public class Generator {
      * @param xmlBindings map of XmlBindings keyed on package name
      * @param cLoader
      */
-    public Generator(JavaModelInput jModelInput, Map<String, XmlBindings> xmlBindings, ClassLoader cLoader) {
+    public Generator(JavaModelInput jModelInput, Map<String, XmlBindings> xmlBindings, ClassLoader cLoader, String defaultTargetNamespace) {
         helper = new Helper(jModelInput.getJavaModel());
         annotationsProcessor = new AnnotationsProcessor(helper);
+        annotationsProcessor.setDefaultTargetNamespace(defaultTargetNamespace);
         schemaGenerator = new SchemaGenerator(helper);
         mappingsGenerator = new MappingsGenerator(helper);
         if (xmlBindings != null && xmlBindings.size() > 0) {
@@ -107,9 +108,10 @@ public class Generator {
      * 
      * @param jModelInput
      */
-    public Generator(JavaModelInput jModelInput, TypeMappingInfo[] typeMappingInfos, JavaClass[] javaClasses, Map<Type, TypeMappingInfo> typeToTypeMappingInfo) {
+    public Generator(JavaModelInput jModelInput, TypeMappingInfo[] typeMappingInfos, JavaClass[] javaClasses, Map<Type, TypeMappingInfo> typeToTypeMappingInfo, String defaultTargetNamespace) {
         helper = new Helper(jModelInput.getJavaModel());
         annotationsProcessor = new AnnotationsProcessor(helper);
+        annotationsProcessor.setDefaultTargetNamespace(defaultTargetNamespace);
         schemaGenerator = new SchemaGenerator(helper);
         mappingsGenerator = new MappingsGenerator(helper);
         this.typeToTypeMappingInfo = typeToTypeMappingInfo;
@@ -128,9 +130,10 @@ public class Generator {
      * @param xmlBindings map of XmlBindings keyed on package name
      * @param cLoader
      */    
-    public Generator(JavaModelInput jModelInput, TypeMappingInfo[] typeMappingInfos, JavaClass[] javaClasses, Map<Type, TypeMappingInfo> typeToTypeMappingInfo, Map<String, XmlBindings> xmlBindings, ClassLoader cLoader) {
+    public Generator(JavaModelInput jModelInput, TypeMappingInfo[] typeMappingInfos, JavaClass[] javaClasses, Map<Type, TypeMappingInfo> typeToTypeMappingInfo, Map<String, XmlBindings> xmlBindings, ClassLoader cLoader, String defaultTargetNamespace) {
         helper = new Helper(jModelInput.getJavaModel());
         annotationsProcessor = new AnnotationsProcessor(helper);
+        annotationsProcessor.setDefaultTargetNamespace(defaultTargetNamespace);
         schemaGenerator = new SchemaGenerator(helper);
         mappingsGenerator = new MappingsGenerator(helper);
         this.typeToTypeMappingInfo = typeToTypeMappingInfo;
@@ -288,5 +291,4 @@ public class Generator {
     public void setTypeToTypeMappingInfo(Map<Type, TypeMappingInfo> typesToTypeMapping) {
         this.typeToTypeMappingInfo = typesToTypeMapping;
     }
-    
 }
