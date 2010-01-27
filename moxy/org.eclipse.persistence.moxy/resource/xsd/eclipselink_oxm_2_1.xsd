@@ -27,6 +27,13 @@
                 <xs:element ref="xml-schema-type" />
                 <xs:element ref="xml-schema-types" />
                 <xs:element ref="xml-java-type-adapters" />
+                <xs:element name="xml-registries">
+                    <xs:complexType>
+                        <xs:sequence>
+                            <xs:element ref="xml-registry" maxOccurs="unbounded" />
+                        </xs:sequence>
+                    </xs:complexType>
+                </xs:element>
                 <xs:element name="xml-enums">
                     <xs:complexType>
                         <xs:sequence>
@@ -44,6 +51,24 @@
             </xs:all>
             <xs:attribute name="xml-accessor-type" type="xml-access-type" default="PUBLIC_MEMBER" />
             <xs:attribute name="xml-accessor-order" type="xml-access-order" default="UNDEFINED" />
+        </xs:complexType>
+    </xs:element>
+    <xs:element name="xml-registry">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element name="xml-element-decl" maxOccurs="unbounded" >
+                    <xs:complexType>
+                        <xs:attribute name="java-method" type="xs:string" />
+                        <xs:attribute name="name" type="xs:string" />
+                        <xs:attribute name="defaultValue" type="xs:string" default="\u0000" />
+                        <xs:attribute name="namespace" type="xs:string" default="##default" />
+                        <xs:attribute name="scope" type="xs:string" default="javax.xml.bind.annotation.XmlElementDecl.GLOBAL" />
+                        <xs:attribute name="substitutionHeadName" type="xs:string" default="" />
+                        <xs:attribute name="substitutionHeadNamespace" type="xs:string" default="##default" />
+                    </xs:complexType>
+                </xs:element>
+            </xs:sequence>
+            <xs:attribute name="name" type="xs:string" />
         </xs:complexType>
     </xs:element>
     <xs:element name="java-type">

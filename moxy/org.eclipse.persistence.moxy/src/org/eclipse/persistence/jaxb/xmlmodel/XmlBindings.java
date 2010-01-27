@@ -35,6 +35,17 @@ import javax.xml.bind.annotation.XmlType;
  *         &lt;element ref="{http://www.eclipse.org/eclipselink/xsds/persistence/oxm}xml-schema-type"/>
  *         &lt;element ref="{http://www.eclipse.org/eclipselink/xsds/persistence/oxm}xml-schema-types"/>
  *         &lt;element ref="{http://www.eclipse.org/eclipselink/xsds/persistence/oxm}xml-java-type-adapters"/>
+ *         &lt;element name="xml-registries">
+ *           &lt;complexType>
+ *             &lt;complexContent>
+ *               &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType">
+ *                 &lt;sequence>
+ *                   &lt;element ref="{http://www.eclipse.org/eclipselink/xsds/persistence/oxm}xml-registry" maxOccurs="unbounded"/>
+ *                 &lt;/sequence>
+ *               &lt;/restriction>
+ *             &lt;/complexContent>
+ *           &lt;/complexType>
+ *         &lt;/element>
  *         &lt;element name="xml-enums">
  *           &lt;complexType>
  *             &lt;complexContent>
@@ -82,6 +93,8 @@ public class XmlBindings {
     protected XmlSchemaTypes xmlSchemaTypes;
     @XmlElement(name = "xml-java-type-adapters", required = true)
     protected XmlJavaTypeAdapters xmlJavaTypeAdapters;
+    @XmlElement(name = "xml-registries", required = true)
+    protected XmlBindings.XmlRegistries xmlRegistries;
     @XmlElement(name = "xml-enums", required = true)
     protected XmlBindings.XmlEnums xmlEnums;
     @XmlElement(name = "java-types", required = true)
@@ -185,6 +198,30 @@ public class XmlBindings {
      */
     public void setXmlJavaTypeAdapters(XmlJavaTypeAdapters value) {
         this.xmlJavaTypeAdapters = value;
+    }
+
+    /**
+     * Gets the value of the xmlRegistries property.
+     * 
+     * @return
+     *     possible object is
+     *     {@link XmlBindings.XmlRegistries }
+     *     
+     */
+    public XmlBindings.XmlRegistries getXmlRegistries() {
+        return xmlRegistries;
+    }
+
+    /**
+     * Sets the value of the xmlRegistries property.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link XmlBindings.XmlRegistries }
+     *     
+     */
+    public void setXmlRegistries(XmlBindings.XmlRegistries value) {
+        this.xmlRegistries = value;
     }
 
     /**
@@ -426,6 +463,66 @@ public class XmlBindings {
                 xmlEnum = new ArrayList<XmlEnum>();
             }
             return this.xmlEnum;
+        }
+
+    }
+
+
+    /**
+     * <p>Java class for anonymous complex type.
+     * 
+     * <p>The following schema fragment specifies the expected content contained within this class.
+     * 
+     * <pre>
+     * &lt;complexType>
+     *   &lt;complexContent>
+     *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType">
+     *       &lt;sequence>
+     *         &lt;element ref="{http://www.eclipse.org/eclipselink/xsds/persistence/oxm}xml-registry" maxOccurs="unbounded"/>
+     *       &lt;/sequence>
+     *     &lt;/restriction>
+     *   &lt;/complexContent>
+     * &lt;/complexType>
+     * </pre>
+     * 
+     * 
+     */
+    @XmlAccessorType(javax.xml.bind.annotation.XmlAccessType.FIELD)
+    @XmlType(name = "", propOrder = {
+        "xmlRegistry"
+    })
+    public static class XmlRegistries {
+
+        @XmlElement(name = "xml-registry", required = true)
+        protected List<XmlRegistry> xmlRegistry;
+
+        /**
+         * Gets the value of the xmlRegistry property.
+         * 
+         * <p>
+         * This accessor method returns a reference to the live list,
+         * not a snapshot. Therefore any modification you make to the
+         * returned list will be present inside the JAXB object.
+         * This is why there is not a <CODE>set</CODE> method for the xmlRegistry property.
+         * 
+         * <p>
+         * For example, to add a new item, do as follows:
+         * <pre>
+         *    getXmlRegistry().add(newItem);
+         * </pre>
+         * 
+         * 
+         * <p>
+         * Objects of the following type(s) are allowed in the list
+         * {@link XmlRegistry }
+         * 
+         * 
+         */
+        public List<XmlRegistry> getXmlRegistry() {
+            if (xmlRegistry == null) {
+                xmlRegistry = new ArrayList<XmlRegistry>();
+            }
+            return this.xmlRegistry;
         }
 
     }

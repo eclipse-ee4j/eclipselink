@@ -40,6 +40,7 @@ import org.eclipse.persistence.jaxb.xmlmodel.XmlEnumValue;
 import org.eclipse.persistence.jaxb.xmlmodel.XmlJavaTypeAdapter;
 import org.eclipse.persistence.jaxb.xmlmodel.XmlMap;
 import org.eclipse.persistence.jaxb.xmlmodel.XmlNsForm;
+import org.eclipse.persistence.jaxb.xmlmodel.XmlRegistry;
 import org.eclipse.persistence.jaxb.xmlmodel.XmlSchema;
 import org.eclipse.persistence.jaxb.xmlmodel.XmlSchemaType;
 import org.eclipse.persistence.jaxb.xmlmodel.XmlSchemaTypes;
@@ -47,6 +48,8 @@ import org.eclipse.persistence.jaxb.xmlmodel.XmlTransient;
 import org.eclipse.persistence.jaxb.xmlmodel.XmlValue;
 import org.eclipse.persistence.jaxb.xmlmodel.XmlBindings.JavaTypes;
 import org.eclipse.persistence.jaxb.xmlmodel.XmlBindings.XmlEnums;
+import org.eclipse.persistence.jaxb.xmlmodel.XmlBindings.XmlRegistries;
+import org.eclipse.persistence.jaxb.xmlmodel.XmlRegistry.XmlElementDecl;
 import org.eclipse.persistence.jaxb.xmlmodel.XmlSchema.XmlNs;
 import org.eclipse.persistence.oxm.NamespaceResolver;
 import org.eclipse.persistence.oxm.XMLConstants;
@@ -99,6 +102,15 @@ public class XMLProcessor {
             if (nsInfo != null) {
                 annotationsProcessor.addPackageToNamespaceMapping(packageName, nsInfo);
             }
+            
+            // handle xml-registries
+            // add an entry to the map of registries keyed on factory class name for each
+            XmlRegistries xmlRegs = xmlBindings.getXmlRegistries();  
+            if (xmlRegs != null) {
+                for (XmlRegistry xmlReg : xmlRegs.getXmlRegistry()) {
+                    aProcessor.addXmlRegistry(xmlReg.getName(), xmlReg);
+                }
+            }
 
             // build an array of JavaModel classes to process
             JavaClass[] javaClasses = (JavaClass[]) classesToProcess.toArray(new JavaClass[classesToProcess.size()]);
@@ -111,10 +123,10 @@ public class XMLProcessor {
                     xmlEnumMap.put(xmlEnum.getJavaEnum(), xmlEnum);
                 }
             }
-            
+
             // pre-build the TypeInfo objects
             Map<String, TypeInfo> typeInfoMap = annotationsProcessor.preBuildTypeInfo(javaClasses);
-            
+
             // handle package-level xml-schema-types
             List<XmlSchemaType> xmlSchemaTypes = null;
             XmlSchemaTypes sTypes = xmlBindings.getXmlSchemaTypes();
@@ -134,7 +146,7 @@ public class XMLProcessor {
                     aProcessor.processSchemaType(sType.getName(), sType.getNamespace(), jClass.getQualifiedName());
                 }
             }
-            
+
             nsInfo = annotationsProcessor.getPackageToNamespaceMappings().get(packageName);
 
             JavaTypes jTypes = xmlBindings.getJavaTypes();
@@ -183,7 +195,7 @@ public class XMLProcessor {
                     if (javaType.isSetXmlInlineBinaryData()) {
                         info.setInlineBinaryData(javaType.isXmlInlineBinaryData());
                     }
-                    
+
                     // handle @XmlTransient override
                     if (javaType.isSetXmlTransient()) {
                         info.setXmlTransient(javaType.isXmlTransient());
@@ -251,7 +263,7 @@ public class XMLProcessor {
                     }
                 }
             }
-            
+
             // update TypeInfo objects based on the JavaTypes
             jTypes = xmlBindings.getJavaTypes();
             if (jTypes != null) {
@@ -448,7 +460,7 @@ public class XMLProcessor {
 
         // set required
         oldProperty.setIsRequired(xmlAttribute.isRequired());
-        
+
         // set xml-inline-binary-data
         oldProperty.setisInlineBinaryData(xmlAttribute.isXmlInlineBinaryData());
 
@@ -781,7 +793,7 @@ public class XMLProcessor {
                     classes.add(jModelInput.getJavaModel().getClass(javaType.getName()));
                 }
             }
-            
+
             // add any enum types to the class list
             XmlEnums xmlEnums = xmlBindings.getXmlEnums();
             if (xmlEnums != null) {
@@ -789,14 +801,15 @@ public class XMLProcessor {
                     classes.add(jModelInput.getJavaModel().getClass(xmlEnum.getJavaEnum()));
                 }
             }
-            
+
             theMap.put(packageName, classes);
             xmlBindingsMap.put(packageName, new ArrayList(classes));
         }
 
         // add any other classes that aren't declared via external metadata
         for (JavaClass jClass : jModelInput.getJavaClasses()) {
-            // need to verify that the class isn't already in the bindings file list
+            // need to verify that the class isn't already in the bindings file
+            // list
             String pkg = jClass.getPackageName();
             ArrayList<JavaClass> existingXmlBindingsClasses = xmlBindingsMap.get(pkg);
             ArrayList<JavaClass> allExistingClasses = theMap.get(pkg);
@@ -805,16 +818,16 @@ public class XMLProcessor {
                     allExistingClasses.add(jClass);
                 }
             } else {
-                if(allExistingClasses != null){
+                if (allExistingClasses != null) {
                     allExistingClasses.add(jClass);
-                }else{
+                } else {
                     ArrayList classes = new ArrayList<JavaClass>();
                     classes.add(jClass);
                     theMap.put(pkg, classes);
                 }
             }
         }
-        
+
         return theMap;
     }
 

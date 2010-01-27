@@ -134,6 +134,7 @@ public class AnnotationsProcessor {
     private HashMap<String, ElementDeclaration> xmlRootElements;
     private List<ElementDeclaration> localElements;
     private HashMap<String, JavaMethod> factoryMethods;
+    private Map<String, org.eclipse.persistence.jaxb.xmlmodel.XmlRegistry> xmlRegistries;
 
     private Map<String, Class> arrayClassesToGeneratedClasses;
     private Map<Class, JavaClass> generatedClassesToArrayClasses;
@@ -331,6 +332,7 @@ public class AnnotationsProcessor {
             packageToNamespaceMappings = new HashMap<String, NamespaceInfo>();
         }
         this.factoryMethods = new HashMap<String, JavaMethod>();
+        this.xmlRegistries = new HashMap<String, org.eclipse.persistence.jaxb.xmlmodel.XmlRegistry>();
         this.namespaceResolver = new NamespaceResolver();
         this.xmlRootElements = new HashMap<String, ElementDeclaration>();
 
@@ -375,7 +377,7 @@ public class AnnotationsProcessor {
      */
     public Map<String, TypeInfo> preBuildTypeInfo(JavaClass[] javaClasses) {
         for (JavaClass javaClass : javaClasses) {
-            if (javaClass == null || !shouldGenerateTypeInfo(javaClass) || helper.isAnnotationPresent(javaClass, XmlRegistry.class)) {
+            if (javaClass == null || !shouldGenerateTypeInfo(javaClass) || isXmlRegistry(javaClass)) {
                 continue;
             }
 
@@ -766,7 +768,7 @@ public class AnnotationsProcessor {
      */
     private void processClass(JavaClass javaClass, ArrayList<JavaClass> classesToProcess) {
         if (shouldGenerateTypeInfo(javaClass)) {
-            if (helper.isAnnotationPresent(javaClass, XmlRegistry.class)) {
+            if (isXmlRegistry(javaClass)) {
                 this.processObjectFactory(javaClass, classesToProcess);
             } else {
                 classesToProcess.add(javaClass);
@@ -2268,8 +2270,20 @@ public class AnnotationsProcessor {
     public HashMap<String, UnmarshalCallback> getUnmarshalCallbacks() {
         return this.unmarshalCallbacks;
     }
-
+    
     public JavaClass[] processObjectFactory(JavaClass objectFactoryClass, ArrayList<JavaClass> classes) {
+        // if there is an xml-registry from XML for this JavaClass, create a map of method
+        // names to XmlElementDecl objects to simplify processing later on in this method
+        Map<String, org.eclipse.persistence.jaxb.xmlmodel.XmlRegistry.XmlElementDecl> elemDecls = new HashMap<String, org.eclipse.persistence.jaxb.xmlmodel.XmlRegistry.XmlElementDecl>();
+        org.eclipse.persistence.jaxb.xmlmodel.XmlRegistry xmlReg = xmlRegistries.get(objectFactoryClass.getQualifiedName());
+        if (xmlReg != null) {
+            // process xml-element-decl entries
+            for (org.eclipse.persistence.jaxb.xmlmodel.XmlRegistry.XmlElementDecl xmlElementDecl : xmlReg.getXmlElementDecl()) {
+                // key each element-decl on method name
+                elemDecls.put(xmlElementDecl.getJavaMethod(), xmlElementDecl);
+            }
+        }
+        
         Collection methods = objectFactoryClass.getDeclaredMethods();
         Iterator methodsIter = methods.iterator();
         NamespaceInfo namespaceInfo = getNamespaceInfoForPackage(objectFactoryClass);
@@ -2282,14 +2296,64 @@ public class AnnotationsProcessor {
                 } else {
                     this.factoryMethods.put(next.getReturnType().getRawName(), next);
                 }
-                if (helper.isAnnotationPresent(next, XmlElementDecl.class)) {
-                    XmlElementDecl elementDecl = (XmlElementDecl) helper.getAnnotation(next, XmlElementDecl.class);
-                    String url = elementDecl.namespace();
+                // if there's an XmlElementDecl for this method from XML, use it - otherwise look for an annotation
+                org.eclipse.persistence.jaxb.xmlmodel.XmlRegistry.XmlElementDecl xmlEltDecl = elemDecls.get(next.getName());
+                if (xmlEltDecl != null || helper.isAnnotationPresent(next, XmlElementDecl.class)) {
+                    QName qname;
+                    QName substitutionHead = null;
+                    String url;
+                    String localName;
+                    String defaultValue = null;
+                    Class scopeClass = javax.xml.bind.annotation.XmlElementDecl.GLOBAL.class;
+                    
+                    if (xmlEltDecl != null) {
+                        url = xmlEltDecl.getNamespace();
+                        localName = xmlEltDecl.getName();
+                        String scopeClassName = xmlEltDecl.getScope();
+                        if (!scopeClassName.equals("javax.xml.bind.annotation.XmlElementDecl.GLOBAL")) {
+                            JavaClass jScopeClass = helper.getJavaClass(scopeClassName);
+                            if (jScopeClass != null) {
+                                scopeClass = helper.getClassForJavaClass(jScopeClass);
+                                if (scopeClass == null) {
+                                    scopeClass = javax.xml.bind.annotation.XmlElementDecl.GLOBAL.class;
+                                }
+                            }
+                        }
+                        if (!xmlEltDecl.getSubstitutionHeadName().equals("")) {
+                            String subHeadLocal = xmlEltDecl.getSubstitutionHeadName();
+                            String subHeadNamespace = xmlEltDecl.getSubstitutionHeadNamespace();
+                            if (subHeadNamespace.equals("##default")) {
+                                subHeadNamespace = namespaceInfo.getNamespace();
+                            }
+                            substitutionHead = new QName(subHeadNamespace, subHeadLocal);
+                        }
+                        if (!(xmlEltDecl.getDefaultValue().length() == 1 && xmlEltDecl.getDefaultValue().startsWith("\u0000"))) {
+                            defaultValue = xmlEltDecl.getDefaultValue();
+                        }
+                    } else {
+                        // there was no xml-element-decl for this method in XML, so use the annotation
+                        XmlElementDecl elementDecl = (XmlElementDecl) helper.getAnnotation(next, XmlElementDecl.class);
+                        url = elementDecl.namespace();
+                        localName = elementDecl.name();
+                        scopeClass = elementDecl.scope(); 
+                        if (!elementDecl.substitutionHeadName().equals("")) {
+                            String subHeadLocal = elementDecl.substitutionHeadName();
+                            String subHeadNamespace = elementDecl.substitutionHeadNamespace();
+                            if (subHeadNamespace.equals("##default")) {
+                                subHeadNamespace = namespaceInfo.getNamespace();
+                            }
+                            
+                            substitutionHead = new QName(subHeadNamespace, subHeadLocal);
+                        }
+                        if (!(elementDecl.defaultValue().length() == 1 && elementDecl.defaultValue().startsWith("\u0000"))) {
+                            defaultValue = elementDecl.defaultValue();
+                        }
+                    }
+                    
                     if ("##default".equals(url)) {
                         url = namespaceInfo.getNamespace();
                     }
-                    String localName = elementDecl.name();
-                    QName qname = new QName(url, localName);
+                    qname = new QName(url, localName);
 
                     if (this.globalElements == null) {
                         globalElements = new HashMap<QName, ElementDeclaration>();
@@ -2303,19 +2367,14 @@ public class AnnotationsProcessor {
                         }
                     }
 
-                    ElementDeclaration declaration = new ElementDeclaration(qname, type, type.getQualifiedName(), isList, elementDecl.scope());
-                    if (!elementDecl.substitutionHeadName().equals("")) {
-                        String subHeadLocal = elementDecl.substitutionHeadName();
-                        String subHeadNamespace = elementDecl.substitutionHeadNamespace();
-                        if (subHeadNamespace.equals("##default")) {
-                            subHeadNamespace = namespaceInfo.getNamespace();
-                        }
-                        declaration.setSubstitutionHead(new QName(subHeadNamespace, subHeadLocal));
+                    ElementDeclaration declaration = new ElementDeclaration(qname, type, type.getQualifiedName(), isList, scopeClass);
+                    if (substitutionHead != null) {
+                        declaration.setSubstitutionHead(substitutionHead);
                     }
-                    if (!(elementDecl.defaultValue().length() == 1 && elementDecl.defaultValue().startsWith("\u0000"))) {
-                        declaration.setDefaultValue(elementDecl.defaultValue());
+                    if (defaultValue != null) {
+                        declaration.setDefaultValue(defaultValue);
                     }
-
+                    
                     if (helper.isAnnotationPresent(next, XmlJavaTypeAdapter.class)) {
                         XmlJavaTypeAdapter typeAdapter = (XmlJavaTypeAdapter) helper.getAnnotation(next, XmlJavaTypeAdapter.class);
                         Class typeAdapterClass = typeAdapter.value();
@@ -2335,7 +2394,6 @@ public class AnnotationsProcessor {
                         declaration.setJavaType(helper.getJavaClass(declJavaType));
                         declaration.setAdaptedJavaType(type);
                     }
-
                     globalElements.put(qname, declaration);
                 }
                 if (!helper.isBuiltInJavaType(type) && !classes.contains(type)) {
@@ -2343,6 +2401,7 @@ public class AnnotationsProcessor {
                 }
             }
         }
+        
         if (classes.size() > 0) {
             return classes.toArray(new JavaClass[classes.size()]);
         } else {
@@ -3555,12 +3614,32 @@ public class AnnotationsProcessor {
         return this.typeMappingInfoToAdapterClasses;
     }
     
+    /**
+     * Add an XmlRegistry to ObjectFactory class name pair to the map.
+     * 
+     * @param factoryClassName ObjectFactory class name
+     * @param xmlReg org.eclipse.persistence.jaxb.xmlmodel.XmlRegistry instance
+     */
+    public void addXmlRegistry(String factoryClassName, org.eclipse.persistence.jaxb.xmlmodel.XmlRegistry xmlReg) {
+        this.xmlRegistries.put(factoryClassName, xmlReg);
+    }
+
+    /**
+     * Convenience method for determining if a given JavaClass should be processed
+     * as an ObjectFactory class.
+     * 
+     * @param javaClass
+     * @return true if the JavaClass is annotated with @XmlRegistry  or the map of 
+     *         XmlRegistries contains a key equal to the JavaClass' qualified name
+     */
+    private boolean isXmlRegistry(JavaClass javaClass) {
+        return (helper.isAnnotationPresent(javaClass, XmlRegistry.class) || xmlRegistries.get(javaClass.getQualifiedName()) != null);
+    }
     
     public Map<TypeMappingInfo, QName> getTypeMappingInfoToSchemaType(){
         return this.typeMappingInfoToSchemaType;
-        
     }
-    
+
     String getDefaultTargetNamespace() {
         return this.defaultTargetNamespace;
     }
