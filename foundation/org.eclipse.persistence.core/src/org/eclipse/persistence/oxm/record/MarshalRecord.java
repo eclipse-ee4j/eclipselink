@@ -145,8 +145,8 @@ public abstract class MarshalRecord extends XMLRecord {
         }
         String namespaceURI = namespaceResolver.getDefaultNamespaceURI();
         if(null != namespaceURI) {
-            attribute(XMLConstants.XMLNS_URL, XMLConstants.XMLNS, XMLConstants.XMLNS, namespaceURI);            
-        }  
+            attribute(XMLConstants.XMLNS_URL, XMLConstants.XMLNS, XMLConstants.XMLNS, namespaceURI);
+        }
         for(Entry<String, String> entry: namespaceResolver.getPrefixesToNamespaces().entrySet()) {
             String namespacePrefix = entry.getKey();
             attribute(XMLConstants.XMLNS_URL, namespacePrefix, XMLConstants.XMLNS + XMLConstants.COLON + namespacePrefix, entry.getValue());
@@ -214,7 +214,7 @@ public abstract class MarshalRecord extends XMLRecord {
      * @param frag The XPathFragment of the element
      */
     public abstract void element(XPathFragment frag);
-    
+
     /**
      * Receive notification of an attribute.
      * @param xPathFragment The XPathFragment contains the name and prefix
@@ -306,7 +306,8 @@ public abstract class MarshalRecord extends XMLRecord {
 
     protected void addPositionalNodes(XPathFragment xPathFragment, NamespaceResolver namespaceResolver) {
         if (xPathFragment.containsIndex()) {
-            Integer index = (Integer)getPositionalNodes().get(xPathFragment.getShortName());
+            String shortName = xPathFragment.getShortName();
+            Integer index = (Integer)getPositionalNodes().get(shortName);
             int start;
             if (null == index) {
                 start = 1;
@@ -314,9 +315,10 @@ public abstract class MarshalRecord extends XMLRecord {
                 start = index.intValue();
             }
             for (int x = start; x < xPathFragment.getIndexValue(); x++) {
-            	element(xPathFragment);
+                element(xPathFragment);
             }
-            getPositionalNodes().put(xPathFragment.getShortName(), new Integer(xPathFragment.getIndexValue() + 1));
+            getPositionalNodes().put(shortName, xPathFragment.getIndexValue() + 1);
         }
     }
+
 }
