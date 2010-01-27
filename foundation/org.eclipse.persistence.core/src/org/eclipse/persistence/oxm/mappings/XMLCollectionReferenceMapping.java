@@ -124,13 +124,17 @@ public class XMLCollectionReferenceMapping extends XMLObjectReferenceMapping imp
         }
         ClassDescriptor descriptor = getReferenceDescriptor();
         ObjectBuilder objectBuilder = descriptor.getObjectBuilder();
-        Object pks = objectBuilder.extractPrimaryKeyFromObject(targetObject, session);
+        Object primaryKey = objectBuilder.extractPrimaryKeyFromObject(targetObject, session);
         XMLField tgtXMLField = (XMLField) getSourceToTargetKeyFieldAssociations().get(xmlFld);
         int idx = descriptor.getPrimaryKeyFields().indexOf(tgtXMLField);
         if (idx == -1) {
             return null;
         }
-        return ((CacheId)pks).getPrimaryKey()[idx];
+        if (primaryKey instanceof CacheId) {
+            return ((CacheId)primaryKey).getPrimaryKey()[idx];
+        } else {
+            return primaryKey;
+        }
     }
 
     /**
