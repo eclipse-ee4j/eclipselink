@@ -1896,7 +1896,8 @@ public class ObjectBuilder implements Cloneable, Serializable {
      * Extract primary key attribute values from the domainObject.
      */
     public Object extractPrimaryKeyFromObject(Object domainObject, AbstractSession session, boolean shouldReturnNullIfNull) {
-        boolean isPersistenceEntity = domainObject instanceof PersistenceEntity;
+        // Avoid using the cached id for XML, as the relational descriptor may be different than the xml one.
+        boolean isPersistenceEntity = (domainObject instanceof PersistenceEntity) && (!isXMLObjectBuilder());
         if (isPersistenceEntity) {
             Object primaryKey = ((PersistenceEntity)domainObject)._persistence_getId();
             if (primaryKey != null) {
@@ -1910,7 +1911,6 @@ public class ObjectBuilder implements Cloneable, Serializable {
             return session.getDescriptor(domainObject).getObjectBuilder().extractPrimaryKeyFromObject(domainObject, session, shouldReturnNullIfNull);
         }
         
-        IdValidation idValidation = descriptor.getIdValidation();
         CacheKeyType cacheKeyType = descriptor.getCacheKeyType();
         List<DatabaseField> primaryKeyFields = descriptor.getPrimaryKeyFields();        
         Object[] primaryKeyValues = null;
@@ -3067,5 +3067,9 @@ public class ObjectBuilder implements Cloneable, Serializable {
             }
         }
         return this.descriptor.getWrapperPolicy().wrapObject(implementation, session);
+    }
+    
+    public boolean isXMLObjectBuilder() {
+        return false;
     }
 }

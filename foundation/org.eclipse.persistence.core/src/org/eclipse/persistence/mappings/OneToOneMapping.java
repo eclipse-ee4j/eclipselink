@@ -705,13 +705,14 @@ public class OneToOneMapping extends ObjectReferenceMapping implements Relationa
                     results = (List)complexResult.getResult();
                     List<AbstractRecord> rows = (List)complexResult.getData();
                     int size = results.size();
-                    List<DatabaseField> sourceKeyFields = this.mechanism.getSourceRelationKeyFields();
-                    int sourceSize = sourceKeyFields.size();
+                    List<DatabaseField> sourceKeyRelationFields = this.mechanism.getSourceRelationKeyFields();
+                    List<DatabaseField> sourceKeyFields = this.mechanism.getSourceKeyFields();
+                    int sourceSize = sourceKeyRelationFields.size();
                     for (int i=0; i < size; i++) {
                         AbstractRecord row = rows.get(i);
                         Object[] key = new Object[sourceSize];
                         for (int k = 0; k < sourceSize; k++) {
-                            Object value = row.get(sourceKeyFields.get(k));
+                            Object value = row.get(sourceKeyRelationFields.get(k));
                             // must do the same conversion as extractForeignKeyFromRow does 
                             // so that CacheKey created here and in extractForeignKeyFromRow compare correctly. 
                             key[k] = conversionManager.convertObject(value, getDescriptor().getObjectBuilder().getFieldClassification(sourceKeyFields.get(k)));

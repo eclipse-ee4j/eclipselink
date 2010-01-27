@@ -12,8 +12,6 @@
  ******************************************************************************/  
 package org.eclipse.persistence.testing.tests.unitofwork;
 
-import java.util.Vector;
-
 import org.eclipse.persistence.descriptors.DescriptorEventAdapter;
 import org.eclipse.persistence.expressions.ExpressionBuilder;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
@@ -65,8 +63,7 @@ public class ConcurrentRefreshOnUpdateTest extends AutoVerifyTestCase {
 
     public void test() {
         ConcurrentRefreshOnUpdateTest.lock = (Employee)getSession().readObject(Employee.class);
-        Vector primaryKey = new Vector(1);
-        primaryKey.add(ConcurrentRefreshOnUpdateTest.lock.getId());
+        Object primaryKey = ConcurrentRefreshOnUpdateTest.lock.getId();
 
         ConcurrentRefreshOnUpdateTest.version = 
                 ((Number)getSession().getDescriptor(Employee.class).getOptimisticLockingPolicy().getWriteLockValue(ConcurrentRefreshOnUpdateTest.lock, 

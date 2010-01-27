@@ -22,7 +22,6 @@ import java.io.*;
 import java.lang.reflect.*;
 
 import org.eclipse.persistence.internal.descriptors.*;
-import org.eclipse.persistence.internal.oxm.XMLObjectBuilder;
 import org.eclipse.persistence.internal.sessions.AbstractRecord;
 import org.eclipse.persistence.sequencing.Sequence;
 import org.eclipse.persistence.sessions.Project;
@@ -3240,7 +3239,7 @@ public class ClassDescriptor implements Cloneable, Serializable {
         }        
         // Set cache key type.
         if (getCacheKeyType() == null) {
-            if ((getPrimaryKeyFields().size() > 1) || (getObjectBuilder() instanceof XMLObjectBuilder)) {
+            if ((getPrimaryKeyFields().size() > 1) || getObjectBuilder().isXMLObjectBuilder()) {
                 setCacheKeyType(CacheKeyType.CACHE_ID);
             } else if (getPrimaryKeyFields().size() == 1) {
                 Class type = getObjectBuilder().getFieldClassification(getPrimaryKeyFields().get(0));

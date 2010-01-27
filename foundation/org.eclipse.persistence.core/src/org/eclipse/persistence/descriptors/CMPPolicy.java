@@ -296,8 +296,6 @@ public class CMPPolicy implements java.io.Serializable {
      * Create an instance of the composite primary key class for the key object.
      */
     public Object createPrimaryKeyInstanceFromId(Object key, AbstractSession session) {
-        Object keyInstance = null;
-        KeyElementAccessor[] pkElementArray = this.getKeyClassFields(getPKClass());
         List primaryKeyValues;
         if (key instanceof CacheId) {
             primaryKeyValues = new ArrayList(Arrays.asList(((CacheId)key).getPrimaryKey()));
@@ -305,19 +303,30 @@ public class CMPPolicy implements java.io.Serializable {
             primaryKeyValues = new ArrayList(1);
             primaryKeyValues.add(key);
         }
+        // Need to pass in a list, as the method removes from the list as it goes to handle nested ids.
+        return createPrimaryKeyInstanceFromPrimaryKeyValues(primaryKeyValues, session);    
+    }
+    
+    /**
+     * INTERNAL:
+     * Create an instance of the composite primary key class for the key object.
+     */
+    public Object createPrimaryKeyInstanceFromPrimaryKeyValues(List key, AbstractSession session) {
+        Object keyInstance = null;
+        KeyElementAccessor[] pkElementArray = getKeyClassFields(getPKClass());
         if ((pkElementArray.length == 1) && (pkElementArray[0] instanceof KeyIsElementAccessor)) {
             DatabaseMapping mapping = getDescriptor().getObjectBuilder().getMappingForAttributeName(pkElementArray[0].getAttributeName());
             if (mapping.isDirectToFieldMapping()) {
                 Converter converter = ((DirectToFieldMapping) mapping).getConverter();
                 if (converter != null){
-                    return converter.convertDataValueToObjectValue(primaryKeyValues.get(0), session);
+                    return converter.convertDataValueToObjectValue(key.get(0), session);
                 }
-                keyInstance = primaryKeyValues.get(0);
+                keyInstance = key.get(0);
             } else if (mapping.isObjectReferenceMapping()) { // what if mapping comes from derived ID.  need to get the derived mapping.
                 //get reference descriptor and extract pk from target cmp policy
                 keyInstance = mapping.getReferenceDescriptor().getCMPPolicy().createPrimaryKeyInstanceFromId(key, session);
             }
-            primaryKeyValues.remove(0); // remove processed key incase keys are complex and derrived
+            key.remove(0); // remove processed key incase keys are complex and derrived
         } else {
             keyInstance = getPKClassInstance();
             //get clone of Key so we can remove values.
@@ -326,15 +335,15 @@ public class CMPPolicy implements java.io.Serializable {
                 DatabaseMapping mapping = getDescriptor().getObjectBuilder().getMappingForAttributeName(accessor.getAttributeName());
                 Object fieldValue = null;
                 if (mapping.isDirectToFieldMapping()) {
-                    fieldValue = primaryKeyValues.get(0);
+                    fieldValue = key.get(0);
                     Converter converter = ((DirectToFieldMapping) mapping).getConverter();
                     if (converter != null){
                         fieldValue = converter.convertDataValueToObjectValue(fieldValue, session);
                     }
-                    primaryKeyValues.remove(0);
+                    key.remove(0);
                 } else if (mapping.isObjectReferenceMapping()) { // what if mapping comes from derived ID.  need to get the derived mapping.
                     //get reference descriptor and extract pk from target cmp policy
-                    fieldValue = mapping.getReferenceDescriptor().getCMPPolicy().createPrimaryKeyInstanceFromId(key, session);
+                    fieldValue = mapping.getReferenceDescriptor().getCMPPolicy().createPrimaryKeyInstanceFromPrimaryKeyValues(key, session);
                 }
                 accessor.setValue(keyInstance, fieldValue);
             }

@@ -733,5 +733,9 @@ public class XMLObjectBuilder extends ObjectBuilder {
                 setSequenceMapping((AbstractDirectMapping)sequenceMapping);
             }
         }
-    }    
+    }
+    
+    public boolean isXMLObjectBuilder() {
+        return true;
+    }
 }
