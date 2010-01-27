@@ -56,7 +56,7 @@
         <copy file="${jdbc.driver.jar}" todir="${glassfish.home}/domains/domain1/lib/ext"/>
         <copy file="${oracle.extensions.depend.dir}/${oracle.spatial.lib}" todir="${glassfish.home}/domains/domain1/lib"/>
         <copy file="${oracle.extensions.depend.dir}/${oracle.xdb.lib}" todir="${glassfish.home}/domains/domain1/lib"/>
-        <copy file="${oracle.extensions.depend.dir}/${oracle.xmlparserv2.lib}" todir="${glassfish.home}/domains/domain1/lib"/>
+        <!--copy file="${oracle.extensions.depend.dir}/${oracle.xmlparserv2.lib}" todir="${glassfish.home}/domains/domain1/lib"/-->
     </target>
     
     <!-- Start the server. -->
