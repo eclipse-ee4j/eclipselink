@@ -12,9 +12,7 @@
  ******************************************************************************/  
 package org.eclipse.persistence.oxm.record;
 
-import java.io.IOException;
 import java.io.UnsupportedEncodingException;
-
 import org.eclipse.persistence.exceptions.XMLMarshalException;
 import org.eclipse.persistence.internal.oxm.XPathFragment;
 import org.eclipse.persistence.internal.oxm.record.XMLFragmentReader;
@@ -49,17 +47,9 @@ import org.xml.sax.SAXException;
  */
 public class FormattedOutputStreamRecord extends OutputStreamRecord {
 
-    private static byte[] TAB;
     private int numberOfTabs;
     private boolean complexType;
     private boolean isLastEventText;
-
-    static {
-        try {
-            TAB = "   ".getBytes(XMLConstants.DEFAULT_XML_ENCODING);
-        } catch (UnsupportedEncodingException e) {
-        }
-    }
 
     public FormattedOutputStreamRecord() {
         super();
@@ -72,11 +62,7 @@ public class FormattedOutputStreamRecord extends OutputStreamRecord {
      * INTERNAL:
      */
     public void endDocument() {
-        try {
-          outputStream.write(CR);
-        } catch (IOException e) {
-            throw XMLMarshalException.marshalException(e);
-        }
+        outputStreamWrite(CR);
     }
 
     /**
@@ -84,72 +70,55 @@ public class FormattedOutputStreamRecord extends OutputStreamRecord {
      */
     public void openStartElement(XPathFragment xPathFragment, NamespaceResolver namespaceResolver) {
         this.addPositionalNodes(xPathFragment, namespaceResolver);
-        try {
-            if (isStartElementOpen) {
-                outputStream.write(CLOSE_ELEMENT);
-            }
-            if (!isLastEventText) {
-                if (numberOfTabs > 0) {
-                    outputStream.write(CR);
-                }
-                for (int x = 0; x < numberOfTabs; x++) {
-                    outputStream.write(TAB);
-                }
-            }
-            isStartElementOpen = true;
-            outputStream.write(OPEN_START_ELEMENT);
-            outputStream.write(xPathFragment.getShortNameBytes());
-            numberOfTabs++;
-            isLastEventText = false;
-        } catch (IOException e) {
-            throw XMLMarshalException.marshalException(e);
+        if (isStartElementOpen) {
+            outputStreamWrite(CLOSE_ELEMENT);
         }
+        if (!isLastEventText) {
+            if (numberOfTabs > 0) {
+                outputStreamWrite(CR);
+            }
+            outputStreamWriteTab();
+        }
+        isStartElementOpen = true;
+        outputStreamWrite(OPEN_START_ELEMENT);
+        outputStreamWrite(xPathFragment.getShortNameBytes());
+        numberOfTabs++;
+        isLastEventText = false;
     }
 
     /**
      * INTERNAL:
      */
     public void element(XPathFragment frag) {
-        try {
-            isLastEventText = false;
-            if (isStartElementOpen) {
-                outputStream.write(CLOSE_ELEMENT);
-                isStartElementOpen = false;
-            }
-            outputStream.write(CR);
-            for (int x = 0; x < numberOfTabs; x++) {
-                outputStream.write(TAB);
-            }
-            super.element(frag);
-        } catch (IOException e) {
-            throw XMLMarshalException.marshalException(e);
+        isLastEventText = false;
+        if (isStartElementOpen) {
+            outputStreamWrite(CLOSE_ELEMENT);
+            isStartElementOpen = false;
         }
+        outputStreamWrite(CR);
+        outputStreamWriteTab();
+        super.element(frag);
     }
 
     /**
      * INTERNAL:
      */
     public void endElement(XPathFragment xPathFragment, NamespaceResolver namespaceResolver) {
-        try {
-            isLastEventText = false;
-            numberOfTabs--;
-            if (isStartElementOpen) {
-                outputStream.write(CLOSE_EMPTY_ELEMENT);
-                isStartElementOpen = false;
-                return;
-            }
-            if (complexType) {
-                outputStream.write(CR);
-                for (int x = 0; x < numberOfTabs; x++) {
-                    outputStream.write(TAB);
-                }
-            } else {
-                complexType = true;
-            }
-            super.endElement(xPathFragment, namespaceResolver);
-        } catch (IOException e) {
-            throw XMLMarshalException.marshalException(e);
+        isLastEventText = false;
+        numberOfTabs--;
+        if (isStartElementOpen) {
+            outputStreamWrite((byte) '/');
+            outputStreamWrite((byte) '>');
+            isStartElementOpen = false;
+            return;
         }
+        if (complexType) {
+            outputStreamWrite(CR);
+            outputStreamWriteTab();
+        } else {
+            complexType = true;
+        }
+        super.endElement(xPathFragment, namespaceResolver);
     }
 
     /**
@@ -166,20 +135,14 @@ public class FormattedOutputStreamRecord extends OutputStreamRecord {
      */
     public void cdata(String value) {
         //Format the CDATA on it's own line
-        try {
-            if(isStartElementOpen) {
-                outputStream.write(CLOSE_ELEMENT);
-                isStartElementOpen = false;
-            }
-            outputStream.write(CR);
-            for (int x = 0; x < numberOfTabs; x++) {
-                outputStream.write(TAB);
-            }
-            super.cdata(value);
-            complexType=true;
-        }catch(IOException ex) {
-            throw XMLMarshalException.marshalException(ex);
+        if(isStartElementOpen) {
+            outputStreamWrite(CLOSE_ELEMENT);
+            isStartElementOpen = false;
         }
+        outputStreamWrite(CR);
+        outputStreamWriteTab();
+        super.cdata(value);
+        complexType=true;
     }
 
     /**
@@ -233,16 +196,14 @@ public class FormattedOutputStreamRecord extends OutputStreamRecord {
         public void startElement(String namespaceURI, String localName, String qName, Attributes atts) throws SAXException {
             try {
                 if (isStartElementOpen) {
-                    outputStream.write(CLOSE_ELEMENT);
+                    outputStreamWrite(CLOSE_ELEMENT);
                 }
                 if (!isLastEventText) {
-                    outputStream.write(CR);
-                    for (int x = 0; x < numberOfTabs; x++) {
-                        outputStream.write(TAB);
-                    }
+                    outputStreamWrite(CR);
+                    outputStreamWriteTab();
                 }
-                outputStream.write(OPEN_START_ELEMENT);
-                outputStream.write(qName.getBytes(XMLConstants.DEFAULT_XML_ENCODING));
+                outputStreamWrite(OPEN_START_ELEMENT);
+                outputStreamWrite(qName.getBytes(XMLConstants.DEFAULT_XML_ENCODING));
                 numberOfTabs++;
                 isStartElementOpen = true;
                 isLastEventText = false;
@@ -250,33 +211,28 @@ public class FormattedOutputStreamRecord extends OutputStreamRecord {
                 handleAttributes(atts);
                 // Handle prefix mappings
                 writePrefixMappings();
-            } catch (IOException e) {
+            } catch (UnsupportedEncodingException e) {
                 throw XMLMarshalException.marshalException(e);
             }
         }
 
         public void endElement(String namespaceURI, String localName, String qName) throws SAXException {
-            try {
-                isLastEventText = false;
-                numberOfTabs--;
-                if (isStartElementOpen) {
-                    outputStream.write(CLOSE_EMPTY_ELEMENT);
-                    isStartElementOpen = false;
-                    complexType = true;
-                    return;
-                }
-                if (complexType) {
-                    outputStream.write(CR);
-                    for (int x = 0; x < numberOfTabs; x++) {
-                        outputStream.write(TAB);
-                    }
-                } else {
-                    complexType = true;
-                }
-                super.endElement(namespaceURI, localName, qName);
-            } catch (IOException e) {
-                throw XMLMarshalException.marshalException(e);
+            isLastEventText = false;
+            numberOfTabs--;
+            if (isStartElementOpen) {
+                outputStreamWrite((byte) '/');
+                outputStreamWrite((byte) '>');
+                isStartElementOpen = false;
+                complexType = true;
+                return;
             }
+            if (complexType) {
+                outputStreamWrite(CR);
+                outputStreamWriteTab();
+            } else {
+                complexType = true;
+            }
+            super.endElement(namespaceURI, localName, qName);
         }
 
         public void characters(char[] ch, int start, int length) throws SAXException {
@@ -293,18 +249,22 @@ public class FormattedOutputStreamRecord extends OutputStreamRecord {
         }
 
         // --------------------- LEXICALHANDLER METHODS --------------------- //
-    public void comment(char[] ch, int start, int length) throws SAXException {
-            try {
-                if (isStartElementOpen) {
-                    outputStream.write(CLOSE_ELEMENT);
-                    outputStream.write(CR);
-                    isStartElementOpen = false;
-                }
-                writeComment(ch, start, length);
-                complexType = false;
-            } catch (IOException e) {
-                throw XMLMarshalException.marshalException(e);
+        public void comment(char[] ch, int start, int length) throws SAXException {
+            if (isStartElementOpen) {
+                outputStreamWrite(CLOSE_ELEMENT);
+                outputStreamWrite(CR);
+                isStartElementOpen = false;
             }
+            writeComment(ch, start, length);
+            complexType = false;
+        }
+    }
+
+    private void outputStreamWriteTab() {
+        for (int x = 0; x < numberOfTabs; x++) {
+            outputStreamWrite(SPACE);
+            outputStreamWrite(SPACE);
+            outputStreamWrite(SPACE);
         }
     }
 

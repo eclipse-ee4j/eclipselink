@@ -486,11 +486,7 @@ public class XMLMarshaller {
                         throw XMLMarshalException.marshalException(e);
                     }
                 }
-                try {
-                    outputStream.flush();
-                } catch (IOException e) {
-                    throw XMLMarshalException.marshalException(e);
-                }
+                record.flush();
             }else{
             	OutputStreamWriter writer = new OutputStreamWriter(outputStream, encoding);
                 marshal(object, writer);
