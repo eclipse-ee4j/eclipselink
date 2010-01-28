@@ -31,7 +31,9 @@ import javax.xml.bind.annotation.adapters.XmlAdapter;
 import javax.xml.bind.attachment.AttachmentUnmarshaller;
 import javax.xml.bind.helpers.DefaultValidationEventHandler;
 import javax.xml.namespace.QName;
+import javax.xml.stream.FactoryConfigurationError;
 import javax.xml.stream.XMLEventReader;
+import javax.xml.stream.XMLInputFactory;
 import javax.xml.stream.XMLStreamReader;
 import javax.xml.transform.Source;
 import javax.xml.validation.Schema;
@@ -78,6 +80,7 @@ public class JAXBUnmarshaller implements Unmarshaller {
     private ValidationEventHandler validationEventHandler;
     private XMLUnmarshaller xmlUnmarshaller;
     private JAXBContext jaxbContext;
+    private XMLInputFactory xmlInputFactory;
     public static final String XML_JAVATYPE_ADAPTERS = "xml-javatype-adapters";
     public static final String STAX_SOURCE_CLASS_NAME = "javax.xml.transform.stax.StAXSource";
 
@@ -87,6 +90,10 @@ public class JAXBUnmarshaller implements Unmarshaller {
         xmlUnmarshaller = newXMLUnmarshaller;
         xmlUnmarshaller.setValidationMode(XMLUnmarshaller.NONVALIDATING);
         xmlUnmarshaller.setUnmarshalListener(new JAXBUnmarshalListener(this));
+        try {
+            xmlInputFactory = XMLInputFactory.newInstance();
+        } catch(FactoryConfigurationError e) {
+        }
     }
 
     public XMLUnmarshaller getXMLUnmarshaller() {
@@ -110,7 +117,14 @@ public class JAXBUnmarshaller implements Unmarshaller {
             throw new IllegalArgumentException();
         }
         try {
-            return createJAXBElementIfRequired(xmlUnmarshaller.unmarshal(inputStream));
+            if(null == xmlInputFactory || 
+                null != xmlUnmarshaller.getSchema() || 
+                XMLUnmarshaller.NONVALIDATING != xmlUnmarshaller.getValidationMode()) {
+                return createJAXBElementIfRequired(xmlUnmarshaller.unmarshal(inputStream));
+            } else {
+                XMLStreamReader xmlStreamReader = xmlInputFactory.createXMLStreamReader(inputStream);
+                return unmarshal(xmlStreamReader);
+            }
         } catch (Exception e) {
             throw new UnmarshalException(e);
         }
@@ -145,8 +159,14 @@ public class JAXBUnmarshaller implements Unmarshaller {
             throw new IllegalArgumentException();
         }
         try {
-            Object value = xmlUnmarshaller.unmarshal(reader);
-            return createJAXBElementIfRequired(value);
+            if(null == xmlInputFactory || 
+                null != xmlUnmarshaller.getSchema() || 
+                XMLUnmarshaller.NONVALIDATING != xmlUnmarshaller.getValidationMode()) {
+                return createJAXBElementIfRequired(xmlUnmarshaller.unmarshal(reader));
+            } else {
+                XMLStreamReader xmlStreamReader = xmlInputFactory.createXMLStreamReader(reader);
+                return unmarshal(xmlStreamReader);
+            }
         } catch(Exception ex) {
             throw new JAXBException(ex);
         }
