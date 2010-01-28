@@ -15,6 +15,7 @@ package org.eclipse.persistence.testing.tests.wdf.jpa1.query;
 
 import static javax.persistence.FlushModeType.AUTO;
 import static javax.persistence.FlushModeType.COMMIT;
+import static org.junit.Assert.assertEquals;
 
 import java.sql.SQLException;
 import java.util.HashSet;
@@ -29,6 +30,7 @@ import javax.persistence.NonUniqueResultException;
 import javax.persistence.PersistenceException;
 import javax.persistence.Query;
 
+import org.eclipse.persistence.testing.framework.wdf.Bugzilla;
 import org.eclipse.persistence.testing.framework.wdf.JPAEnvironment;
 import org.eclipse.persistence.testing.framework.wdf.ToBeInvestigated;
 import org.eclipse.persistence.testing.models.wdf.jpa1.employee.Department;
@@ -274,12 +276,14 @@ public class TestSimpleQuery extends JPA1Base {
         EntityManager em = getEnvironment().getEntityManager();
         try {
             try {
-                em.createNamedQuery("Hutzliputz");
+                Query query = em.createNamedQuery("Hutzliputz");
+                query.getResultList();
                 flop("undefined query created");
             } catch (IllegalArgumentException e) {
             }
             try {
-                em.createNamedQuery(null);
+                Query query = em.createNamedQuery(null);
+                query.getResultList();
                 flop("undefined query created");
             } catch (IllegalArgumentException e) {
             }
@@ -328,14 +332,47 @@ public class TestSimpleQuery extends JPA1Base {
             closeEntityManager(em);
         }
     }
-
+    
     @Test
-    @ToBeInvestigated
-    public void testCachedQuery() throws SQLException {
+    public void testCachedQueryWithClear() throws SQLException {
         init();
         EntityManager em = getEnvironment().getEntityManager();
         try {
             Query query = em.createNamedQuery("getDepartmentCached");
+            query.setParameter(1, "twenty");
+            List<Department> result = query.getResultList();
+            verify(result.size() == 1, "wrong result size");
+            em.clear();
+            result = query.getResultList();
+            verify(result.size() == 1, "wrong result size");
+        } finally {
+            closeEntityManager(em);
+        }
+    }
+
+    @Test
+    @Bugzilla(bugid=301063)
+    public void testCachedQueryWithoutClear() throws SQLException {
+        init();
+        EntityManager em = getEnvironment().getEntityManager();
+        try {
+            Query query = em.createNamedQuery("getDepartmentCached");
+            query.setParameter(1, "twenty");
+            List<Department> result = query.getResultList();
+            verify(result.size() == 1, "wrong result size");
+            result = query.getResultList();
+            verify(result.size() == 1, "wrong result size");
+        } finally {
+            closeEntityManager(em);
+        }
+    }
+
+    @Test
+    public void testUnCachedQuery() throws SQLException {
+        init();
+        EntityManager em = getEnvironment().getEntityManager();
+        try {
+            Query query = em.createNamedQuery("getDepartmentUnCached");
             query.setParameter(1, "twenty");
             List<Department> result = query.getResultList();
             verify(result.size() == 1, "wrong result size");
@@ -532,7 +569,6 @@ public class TestSimpleQuery extends JPA1Base {
     }
 
     @Test
-    @ToBeInvestigated
     public void testMaxResult() throws SQLException {
         clearAllTables();
         JPAEnvironment env = getEnvironment();
@@ -545,15 +581,15 @@ public class TestSimpleQuery extends JPA1Base {
             env.commitTransaction(em);
             em.clear();
             Query query = em.createQuery("select p from Project p");
-            verifyRowCount(query, 0, 0, 10);
+            verifyRowCount(query, Integer.MAX_VALUE, 0, 10);
             verifyRowCount(query, 5, 0, 5);
             verifyRowCount(query, 10, 0, 10);
             verifyRowCount(query, 15, 0, 10);
-            verifyRowCount(query, 0, 5, 5);
+            verifyRowCount(query, Integer.MAX_VALUE, 5, 5);
             verifyRowCount(query, 5, 5, 5);
             verifyRowCount(query, 10, 5, 5);
             verifyRowCount(query, 15, 5, 5);
-            verifyRowCount(query, 0, 7, 3);
+            verifyRowCount(query, Integer.MAX_VALUE, 7, 3);
             verifyRowCount(query, 5, 7, 3);
             verifyRowCount(query, 10, 7, 3);
             verifyRowCount(query, 15, 7, 3);

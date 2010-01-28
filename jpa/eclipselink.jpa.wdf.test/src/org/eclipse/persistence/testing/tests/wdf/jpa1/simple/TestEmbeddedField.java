@@ -16,22 +16,19 @@ package org.eclipse.persistence.testing.tests.wdf.jpa1.simple;
 import java.util.Date;
 
 import javax.persistence.EntityManager;
-import org.junit.Test;
 
+import org.eclipse.persistence.testing.framework.wdf.JPAEnvironment;
 import org.eclipse.persistence.testing.models.wdf.jpa1.employee.Department;
 import org.eclipse.persistence.testing.models.wdf.jpa1.employee.Employee;
 import org.eclipse.persistence.testing.models.wdf.jpa1.employee.EmploymentPeriod;
-
-import org.eclipse.persistence.testing.framework.wdf.JPAEnvironment;
-import org.eclipse.persistence.testing.framework.wdf.ToBeInvestigated;
 import org.eclipse.persistence.testing.tests.wdf.jpa1.JPA1Base;
+import org.junit.Test;
 
 public class TestEmbeddedField extends JPA1Base {
 
     private static final long MYSQL_TIMESTAMP_PRECISION = 1000;
 
     @Test
-    @ToBeInvestigated
     public void testSimple() {
         final JPAEnvironment env = getEnvironment();
         final EntityManager em = env.getEntityManager();
@@ -104,7 +101,6 @@ public class TestEmbeddedField extends JPA1Base {
     }
 
     @Test
-    @ToBeInvestigated
     public void testDirty() {
         final JPAEnvironment env = getEnvironment();
         final EntityManager em = env.getEntityManager();

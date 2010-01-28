@@ -21,9 +21,13 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import javax.persistence.AttributeOverride;
+import javax.persistence.AttributeOverrides;
 import javax.persistence.Basic;
 import javax.persistence.Cacheable;
 import javax.persistence.CascadeType;
+import javax.persistence.Column;
+import javax.persistence.Embedded;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.Id;
@@ -91,13 +95,8 @@ public class Employee implements Serializable {
     @ManyToMany(cascade = { CascadeType.PERSIST, CascadeType.MERGE }, mappedBy = "riders", fetch = FetchType.EAGER)
     protected Set<Bicycle> bicycles;
 
-    // @Embedded
-    // @AttributeOverrides( { @AttributeOverride(name = "startDate", column = @Column(name = "EMP_START",
-    // columnDefinition="`EMP_START` DATETIME")),
-    // @AttributeOverride(name = "endDate", column = @Column(name = "EMP_END")) })
-
-    @Transient
-    // ISSUE #7
+    @Embedded
+    @AttributeOverrides( { @AttributeOverride(name = "startDate", column = @Column(name = "EMP_START")), @AttributeOverride(name = "endDate", column = @Column(name = "EMP_END")) })
     protected EmploymentPeriod period;
 
     // <attribute name="cubicle">

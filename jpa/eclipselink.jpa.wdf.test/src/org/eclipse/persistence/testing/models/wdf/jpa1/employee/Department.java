@@ -38,8 +38,10 @@ import org.eclipse.persistence.config.QueryHints;
 @Entity
 @Table(name = "TMP_DEP")
 @NamedQueries( {
+        @NamedQuery(name = "getAllDepartmentsCached", query = "select d from Department d", hints = { @QueryHint(name = QueryHints.QUERY_RESULTS_CACHE, value = HintValues.TRUE) }) ,
         @NamedQuery(name = "getDepartmentByName", query = "select d from Department d where d.name = ?1"),
         @NamedQuery(name = "getDepartmentById", query = "select d from Department d where d.id = ?1"),
+        @NamedQuery(name = "getDepartmentUnCached", query = "select d from Department d where d.name = ?1", hints = { }),
         @NamedQuery(name = "getDepartmentCached", query = "select d from Department d where d.name = ?1", hints = { @QueryHint(name = QueryHints.QUERY_RESULTS_CACHE, value = HintValues.TRUE) }) })
 @NamedNativeQueries( {
         @NamedNativeQuery(name = "getDepartmentWithId10SQL_class", query = "select * from TMP_DEP D where D.ID = 10", resultClass = Department.class),

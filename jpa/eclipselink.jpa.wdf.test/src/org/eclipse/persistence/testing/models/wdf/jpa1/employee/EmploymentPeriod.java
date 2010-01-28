@@ -26,9 +26,9 @@ public class EmploymentPeriod implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
-    @Column(nullable = false)
     @Temporal(TemporalType.TIMESTAMP)
     protected Date startDate;
+    
     @Temporal(TemporalType.TIMESTAMP)
     protected Date endDate;
 
