@@ -34,7 +34,7 @@ import org.xml.sax.ext.LexicalHandler;
 
 /**
  * <p>Use this type of MarshalRecord when the marshal target is an OutputStream and the
- * XML should be not be formatted with carriage returns and indenting.  This type is only 
+ * XML should be not be formatted with carriage returns and indenting.  This type is only
  * used if the encoding of the OutputStream is UTF-8</p>
  * <p><code>
  * XMLContext xmlContext = new XMLContext("session-name");<br>
@@ -44,7 +44,7 @@ import org.xml.sax.ext.LexicalHandler;
  * xmlMarshaller.marshal(myObject, record);<br>
  * </code></p>
  * <p>If the marshal(OutputStream) and setFormattedOutput(false) method is called on
- * XMLMarshaller and the encoding is UTF-8, then the OutputStream is automatically wrapped 
+ * XMLMarshaller and the encoding is UTF-8, then the OutputStream is automatically wrapped
  * in an OutputStream.</p>
  * <p><code>
  * XMLContext xmlContext = new XMLContext("session-name");<br>
@@ -116,9 +116,9 @@ public class OutputStreamRecord extends MarshalRecord {
      * INTERNAL:
      * override so we don't iterate over namespaces when startPrefixMapping doesn't do anything
      */
-    public void startPrefixMappings(NamespaceResolver namespaceResolver) {        
+    public void startPrefixMappings(NamespaceResolver namespaceResolver) {
     }
-    
+
     /**
      * INTERNAL:
      */
@@ -160,7 +160,6 @@ public class OutputStreamRecord extends MarshalRecord {
     /**
      * INTERNAL:
      */
-    
     public void element(XPathFragment frag) {
         if (isStartElementOpen) {
             outputStreamWrite(CLOSE_ELEMENT);
@@ -227,7 +226,7 @@ public class OutputStreamRecord extends MarshalRecord {
         }
         writeValue(value, true);
     }
-    
+
     /**
      * INTERNAL:
      */
@@ -331,7 +330,7 @@ public class OutputStreamRecord extends MarshalRecord {
             characters(node.getNodeValue());
         } else {
             try {
-            	OutputStreamRecordContentHandler handler = new OutputStreamRecordContentHandler();
+                OutputStreamRecordContentHandler handler = new OutputStreamRecordContentHandler();
                 XMLFragmentReader xfragReader = new XMLFragmentReader(namespaceResolver);
                 xfragReader.setContentHandler(handler);
                 xfragReader.setProperty("http://xml.org/sax/properties/lexical-handler", handler);
@@ -341,29 +340,28 @@ public class OutputStreamRecord extends MarshalRecord {
             }
         }
     }
-    
+
     /**
      * This class will typically be used in conjunction with an XMLFragmentReader.
      * The XMLFragmentReader will walk a given XMLFragment node and report events
-     * to this class - the event's data is then written to the enclosing class' 
+     * to this class - the event's data is then written to the enclosing class'
      * writer.
-     * 
+     *
      * @see org.eclipse.persistence.internal.oxm.record.XMLFragmentReader
      */
     protected class OutputStreamRecordContentHandler implements ContentHandler, LexicalHandler {
         Map<String, String> prefixMappings;
-        
+
         OutputStreamRecordContentHandler() {
             prefixMappings = new HashMap<String, String>();
         }
-        
+
         // --------------------- CONTENTHANDLER METHODS --------------------- //
         public void startElement(String namespaceURI, String localName, String qName, Attributes atts) throws SAXException {
             try {
                 if (isStartElementOpen) {
                     outputStreamWrite(CLOSE_ELEMENT);
                 }
-
                 outputStreamWrite(OPEN_START_ELEMENT);
                 outputStreamWrite(qName.getBytes(XMLConstants.DEFAULT_XML_ENCODING));
                 isStartElementOpen = true;
@@ -392,7 +390,7 @@ public class OutputStreamRecord extends MarshalRecord {
                 throw XMLMarshalException.marshalException(e);
             }
         }
-        
+
         public void startPrefixMapping(String prefix, String uri) throws SAXException {
             String namespaceUri = getNamespaceResolver().resolveNamespacePrefix(prefix);
             if(namespaceUri == null || !namespaceUri.equals(uri)) {
@@ -410,7 +408,7 @@ public class OutputStreamRecord extends MarshalRecord {
                 outputStreamWrite(CLOSE_ELEMENT);
                 isStartElementOpen = false;
             }
-        	writeValue(new String(ch, start, length), true);
+            writeValue(new String(ch, start, length), true);
         }
 
         // --------------------- LEXICALHANDLER METHODS --------------------- //
@@ -422,14 +420,14 @@ public class OutputStreamRecord extends MarshalRecord {
             writeComment(ch, start, length);
         }
 
-		public void startCDATA() throws SAXException {
-			isProcessingCData = true;
-		}
-		
-		public void endCDATA() throws SAXException {
-			isProcessingCData = false;
-		}
-        
+        public void startCDATA() throws SAXException {
+            isProcessingCData = true;
+        }
+
+        public void endCDATA() throws SAXException {
+            isProcessingCData = false;
+        }
+
         // --------------------- CONVENIENCE METHODS --------------------- //
         protected void writePrefixMappings() {
             try {
@@ -453,17 +451,17 @@ public class OutputStreamRecord extends MarshalRecord {
                 throw XMLMarshalException.marshalException(e);
             }
         }
-        
+
         protected void handleAttributes(Attributes atts) {
             for (int i=0, attsLength = atts.getLength(); i<attsLength; i++) {
-            	String qName = atts.getQName(i);
+                String qName = atts.getQName(i);
                 if((qName != null && (qName.startsWith(XMLConstants.XMLNS + XMLConstants.COLON) || qName.equals(XMLConstants.XMLNS)))) {
                     continue;
                 }
                 attribute(atts.getURI(i), atts.getLocalName(i), qName, atts.getValue(i));
             }
         }
-        
+
         protected void writeComment(char[] chars, int start, int length) {
             outputStreamWrite(OPEN_COMMENT);
             writeValue(new String(chars, start, length), false);
@@ -484,9 +482,9 @@ public class OutputStreamRecord extends MarshalRecord {
 
         // --------------- SATISFY LEXICALHANDLER INTERFACE --------------- //
         public void startEntity(String name) throws SAXException {}
-		public void endEntity(String name) throws SAXException {}
-		public void startDTD(String name, String publicId, String systemId) throws SAXException {}
-		public void endDTD() throws SAXException {}
+        public void endEntity(String name) throws SAXException {}
+        public void startDTD(String name, String publicId, String systemId) throws SAXException {}
+        public void endDTD() throws SAXException {}
     }
 
     public void flush() {
