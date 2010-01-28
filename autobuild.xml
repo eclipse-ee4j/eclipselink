@@ -588,7 +588,7 @@
                 <include name="org.eclipse.persistence.*.jar"/>
                 <include name="*modelgen*.jar"/>
             </fileset>
-            <fileset dir="${temp.rebuild.path}/bundlezip">
+            <fileset dir="${temp.rebuild.dir}/bundlezip">
                 <include name="eclipselink-jpa-modelgen*.jar"/>
             </fileset>
       </copy>
