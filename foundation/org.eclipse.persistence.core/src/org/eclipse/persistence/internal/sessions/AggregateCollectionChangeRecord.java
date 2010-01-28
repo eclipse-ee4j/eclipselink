@@ -14,6 +14,9 @@ package org.eclipse.persistence.internal.sessions;
 
 import java.util.*;
 
+import org.eclipse.persistence.descriptors.ClassDescriptor;
+import org.eclipse.persistence.mappings.AggregateCollectionMapping;
+
 /**
  * This change record records the changes for AggregateCollectionMapping.
  */
@@ -47,6 +50,13 @@ public class AggregateCollectionChangeRecord extends CollectionChangeRecord impl
         return changedValues;
     }
 
+    /**
+     * Returns descriptor corresponding to the object.
+     */
+    ClassDescriptor getReferenceDescriptor(Object object, AbstractSession session) {
+        return ((AggregateCollectionMapping)this.mapping).getReferenceDescriptor(object.getClass(), session);
+    }
+    
     /**
      * INTERNAL:
      * This method will be used to merge one record into another

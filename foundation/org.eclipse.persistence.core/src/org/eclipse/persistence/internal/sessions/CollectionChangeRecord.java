@@ -157,10 +157,17 @@ public class CollectionChangeRecord extends DeferrableChangeRecord implements or
     public void addRemoveChange(Map objectChanges, ContainerPolicy cp, UnitOfWorkChangeSet changeSet, AbstractSession session) {
         // There is no need to keep track of removed new objects because it will not be in the backup,
         // It will not be in the backup because it is new.
+        if(objectChanges.isEmpty()) {
+            return;
+        }
+        ClassDescriptor descriptor = this.mapping.getReferenceDescriptor();
+        boolean hasChildren = descriptor.hasInheritance() && descriptor.getInheritancePolicy().hasChildren();
         Iterator enumtr = cp.getChangeValuesFrom(objectChanges);
         while (enumtr.hasNext()) {
             Object object = cp.unwrapElement(enumtr.next());
-            ClassDescriptor descriptor = this.mapping.getReferenceDescriptor();
+            if(hasChildren) {
+                descriptor = getReferenceDescriptor(object, session);
+            }
             ObjectChangeSet change = descriptor.getObjectBuilder().createObjectChangeSet(object, changeSet, session);
             if (change.hasKeys()) {
                 // if change set has keys this is a map comparison.  Maps are
@@ -201,7 +208,14 @@ public class CollectionChangeRecord extends DeferrableChangeRecord implements or
         return addOverFlow;
     }
 
-   /**
+    /**
+     * Returns descriptor corresponding to the object.
+     */
+    ClassDescriptor getReferenceDescriptor(Object object, AbstractSession session) {
+        return session.getClassDescriptor(object);
+    }
+    
+    /**
      * PUBLIC:
      * This method returns the Map that contains the removed values from the collection
      * and their corresponding ChangeSets.
