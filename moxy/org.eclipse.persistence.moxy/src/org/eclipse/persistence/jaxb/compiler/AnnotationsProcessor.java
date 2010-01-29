@@ -2470,7 +2470,11 @@ public class AnnotationsProcessor {
             }           
         }
         if(combinedNamespaceInfoNamespace == null){
-            combinedNamespaceInfoNamespace = "";
+            if(this.defaultTargetNamespace != null) {
+                combinedNamespaceInfoNamespace = this.defaultTargetNamespace;
+            } else {
+                combinedNamespaceInfoNamespace = "";
+            }
         }
         combinedNamespaceInfo.setNamespace(combinedNamespaceInfoNamespace);
     
