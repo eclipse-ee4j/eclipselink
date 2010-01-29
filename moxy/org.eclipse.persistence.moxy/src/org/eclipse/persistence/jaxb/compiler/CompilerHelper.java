@@ -16,6 +16,7 @@ import java.lang.reflect.GenericArrayType;
 import java.lang.reflect.Method;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
+import java.lang.reflect.WildcardType;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
@@ -135,13 +136,15 @@ public class CompilerHelper {
                 if (!areTypesEqual(type, rawType)) {
                     return false;
                 }
+                                
                 java.lang.reflect.Type[] args = ((ParameterizedType) type2).getActualTypeArguments();
                 for (int i = 0; i < args.length; i++) {
-                    if (!areTypesEqual(Object.class, args[i])) {
+                	Type argType = getActualArgumentType(args[i]);
+                    if (!areTypesEqual(Object.class, argType)) {
                         return false;
                     }
                 }
-
+                return true;
             } else if (type2 instanceof Class) {
             	return type.equals(type2);                
             } else {
@@ -157,11 +160,12 @@ public class CompilerHelper {
 
                 java.lang.reflect.Type[] args = ((ParameterizedType) type).getActualTypeArguments();
                 for (int i = 0; i < args.length; i++) {
-                    if (!areTypesEqual(Object.class, args[i])) {
+                	Type argType = getActualArgumentType(args[i]);
+                    if (!areTypesEqual(Object.class, argType)) {
                         return false;
                     }
                 }
-
+                return true;
             } else if (type2 instanceof ParameterizedType) {
                 // compare raw type
                 if (!areTypesEqual(((ParameterizedType) type).getRawType(),
@@ -175,28 +179,35 @@ public class CompilerHelper {
                 if (ta1.length != ta2.length) {
                     return false;
                 }
-                for (int i = 0; i < ta1.length; i++) {
-                	
-                	Type componentType1 = ta1[i];
-                	if(componentType1 instanceof GenericArrayType){
-                		componentType1 = ((GenericArrayType)componentType1).getGenericComponentType();
-                	}
-                	Type componentType2= ta2[i];
-                	if(componentType2 instanceof GenericArrayType){
-                		componentType2 = ((GenericArrayType)componentType2).getGenericComponentType();
-                	}
+                for (int i = 0; i < ta1.length; i++) {                
+                	Type componentType1 = getActualArgumentType(ta1[i]);
+                	Type componentType2 = getActualArgumentType(ta2[i]);
                     if (!areTypesEqual(componentType1, componentType2)) {
                         return false;
                     }
                 }
                 return true;
-            } else {
+            } else {                      
                 return false;
             }
-        }
+        } 
         return false;
     }
 
+    private static Type getActualArgumentType(Type argument){
+    	if(argument instanceof WildcardType){
+    		Type[] upperBounds = ((WildcardType)argument).getUpperBounds();
+        	if(upperBounds != null && upperBounds.length >0){
+        		return upperBounds[0];
+        	}else{
+        		return Object.class;
+        	}
+    	}else if (argument instanceof GenericArrayType){
+    		return ((GenericArrayType)argument).getGenericComponentType();
+    	}
+    	return argument;
+    }
+    
     /**
      * Convenience method for creating an XmlElement object based on a given
      * Element. The method will load the eclipselink metadata model and

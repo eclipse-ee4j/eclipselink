@@ -17,6 +17,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Vector;
 
 import javax.xml.bind.JAXBElement;
 import javax.xml.namespace.QName;
@@ -101,5 +102,17 @@ public class ConflictingListClassAndTypeTestCases extends TypeMappingInfoTestCas
 		return XML_RESOURCE;
 	}
 
+	public void testDescriptorsSize(){
+		Vector descriptors = ((org.eclipse.persistence.jaxb.JAXBContext)jaxbContext).getXMLContext().getSession(0).getProject().getOrderedDescriptors();
+		assertEquals(2, descriptors.size());
+	}
 
+	public void testTypeMappingInfoToSchemaTypeMapSize() throws Exception{
+		Map <TypeMappingInfo, QName> names = ((org.eclipse.persistence.jaxb.JAXBContext)jaxbContext).getTypeMappingInfoToSchemaType();
+		assertEquals(3, names.size());
+		assertNotNull(names.get(getTypeMappingInfos()[0]));
+		assertNotNull(names.get(getTypeMappingInfos()[1]));
+		assertNotNull(names.get(getTypeMappingInfos()[2]));
+		
+	}
 }

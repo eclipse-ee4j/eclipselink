@@ -5,7 +5,7 @@
          <xsd:element maxOccurs="unbounded" minOccurs="0" name="item" type="xsd:string"/>
       </xsd:sequence>
    </xsd:complexType>
-   <xsd:element name="testTagName3" type="stringArray"/>
-   <xsd:element name="testTagName2" type="stringArray"/>
-   <xsd:element name="testTagName1" type="stringArray"/>
+   <xsd:element name="testTagName3" type="ns0:stringArray"/>
+   <xsd:element name="testTagName2" type="ns0:stringArray"/>
+   <xsd:element name="testTagName1" type="ns0:stringArray"/>
 </xsd:schema>
