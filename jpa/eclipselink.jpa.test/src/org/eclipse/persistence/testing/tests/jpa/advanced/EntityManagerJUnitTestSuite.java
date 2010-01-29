@@ -9250,7 +9250,7 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
         emp.setFirstName("testPreupdateEmbeddable");
         emp.setLastName("testPreupdateEmbeddable");
         EmploymentPeriod period = new EmploymentPeriod();
-        period.setStartDate(Date.valueOf("2002-1-1"));
+        period.setStartDate(Date.valueOf("2002-01-01"));
         emp.setPeriod(period);
         em.persist(emp);
         commitTransaction(em);
