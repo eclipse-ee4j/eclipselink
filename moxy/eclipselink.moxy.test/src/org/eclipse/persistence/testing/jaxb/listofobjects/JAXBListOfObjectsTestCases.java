@@ -64,10 +64,6 @@ public abstract class JAXBListOfObjectsTestCases extends JAXBTestCases {
 		jaxbMarshaller = jaxbContext.createMarshaller();
 		jaxbUnmarshaller = jaxbContext.createUnmarshaller();
 	}
-	
-	protected Map getProperties() throws Exception{
-		return null;
-	}
 
 	protected Object getControlObject() {
 		return null;

@@ -16,7 +16,7 @@ import javax.xml.bind.annotation.*;
 import javax.xml.bind.*;
 import javax.xml.namespace.QName;
 @XmlRegistry
-public class ObjectFactory {
+public class TestObjectFactory {
 
 	@XmlElementDecl(name="root")
 	public JAXBElement<String> createRoot() {

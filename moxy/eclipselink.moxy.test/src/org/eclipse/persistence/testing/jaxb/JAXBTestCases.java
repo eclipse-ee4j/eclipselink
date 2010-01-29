@@ -19,10 +19,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.StringReader;
 import java.io.StringWriter;
-import java.lang.reflect.Array;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
@@ -46,38 +44,26 @@ import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 
-import org.eclipse.persistence.descriptors.ClassDescriptor;
-import org.eclipse.persistence.internal.helper.ConversionManager;
 import org.eclipse.persistence.oxm.XMLContext;
 import org.eclipse.persistence.oxm.XMLDescriptor;
-import org.eclipse.persistence.oxm.XMLLogin;
 import org.eclipse.persistence.oxm.XMLRoot;
-import org.eclipse.persistence.oxm.XMLUnmarshallerHandler;
-import org.eclipse.persistence.oxm.platform.SAXPlatform;
-import org.eclipse.persistence.oxm.platform.XMLPlatform;
-import org.eclipse.persistence.oxm.record.MarshalRecord;
 import org.eclipse.persistence.platform.xml.XMLPlatformFactory;
 import org.eclipse.persistence.platform.xml.SAXDocumentBuilder;
 import org.eclipse.persistence.jaxb.compiler.Generator;
-import org.eclipse.persistence.jaxb.javamodel.reflection.JavaModelImpl;
-import org.eclipse.persistence.jaxb.javamodel.reflection.JavaModelInputImpl;
 import org.eclipse.persistence.sessions.Project;
 import org.eclipse.persistence.testing.oxm.mappings.XMLMappingTestCases;
 import org.eclipse.persistence.jaxb.*;
-import org.eclipse.persistence.internal.jaxb.*;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 import org.xml.sax.InputSource;
 import org.xml.sax.XMLReader;
 
 public abstract class JAXBTestCases extends XMLMappingTestCases {
-    Class[] classes;
-
     protected JAXBContext jaxbContext;
     protected Marshaller jaxbMarshaller;
     protected Unmarshaller jaxbUnmarshaller;
     Generator generator;
-    protected JaxbClassLoader classLoader;
+    protected ClassLoader classLoader;
 
     public JAXBTestCases(String name) throws Exception {
         super(name);
@@ -104,65 +90,29 @@ public abstract class JAXBTestCases extends XMLMappingTestCases {
     }
 
     public void setClasses(Class[] newClasses) throws Exception {
-        this.classes = newClasses;
-        this.classLoader = new JaxbClassLoader(Thread.currentThread().getContextClassLoader());
-        generator = new Generator(new JavaModelInputImpl(classes, new JavaModelImpl(this.classLoader)));
-        Project proj = generator.generateProject();
-        proj.convertClassNamesToClasses(classLoader);
-        XMLPlatform platform = new SAXPlatform();
-        platform.getConversionManager().setLoader(classLoader);
-        XMLLogin login = new XMLLogin(platform);
-        login.setEqualNamespaceResolvers(false);
-        proj.setLogin(login);
-        setProject(proj);
-        xmlContext = getXMLContext(proj);
-        // need to make sure that the java class is set properly on each
-        // descriptor when using java classname - req'd for JOT api implementation
-        ConversionManager manager = new ConversionManager();
-        manager.setLoader(classLoader);
-        for (Iterator<ClassDescriptor> descriptorIt = proj.getOrderedDescriptors().iterator(); descriptorIt.hasNext(); ) {
-            ClassDescriptor descriptor = descriptorIt.next();
-            if (descriptor.getJavaClass() == null) {
-                descriptor.setJavaClass(manager.convertClassNameToClass(descriptor.getJavaClassName()));
-            }
-        }
-        setProject(proj);
-        jaxbContext = new org.eclipse.persistence.jaxb.JAXBContext(xmlContext, generator, newClasses);
+
+        classLoader = Thread.currentThread().getContextClassLoader();   		
+        jaxbContext = JAXBContextFactory.createContext(newClasses, null, classLoader);
+        xmlContext = ((org.eclipse.persistence.jaxb.JAXBContext)jaxbContext).getXMLContext();
+        setProject(xmlContext.getSession(0).getProject());
         jaxbMarshaller = jaxbContext.createMarshaller();
-        jaxbUnmarshaller = jaxbContext.createUnmarshaller();
+     	jaxbUnmarshaller = jaxbContext.createUnmarshaller();   	
 
     }
 
     public void setTypes(Type[] newTypes) throws Exception {
-       // this.classes = newClasses;
-        this.classLoader = new JaxbClassLoader(Thread.currentThread().getContextClassLoader());
-        generator = new Generator(new JavaModelInputImpl(newTypes, new JavaModelImpl(this.classLoader)));
-
-        Project proj = generator.generateProject();
-        proj.convertClassNamesToClasses(classLoader);
-        setProject(proj);
-        xmlContext = getXMLContext(proj);
-        // need to make sure that the java class is set properly on each
-        // descriptor when using java classname - req'd for JOT api implementation
-        ConversionManager manager = new ConversionManager();
-        manager.setLoader(classLoader);
-        for (Iterator<ClassDescriptor> descriptorIt = proj.getOrderedDescriptors().iterator(); descriptorIt.hasNext(); ) {
-            ClassDescriptor descriptor = descriptorIt.next();
-            if (descriptor.getJavaClass() == null) {
-                descriptor.setJavaClass(manager.convertClassNameToClass(descriptor.getJavaClassName()));
-            }
-        }
-        setProject(proj);
-        jaxbContext = new org.eclipse.persistence.jaxb.JAXBContext(xmlContext, generator, newTypes);
+       
+    	classLoader = Thread.currentThread().getContextClassLoader();
+        jaxbContext = JAXBContextFactory.createContext(newTypes, getProperties(), classLoader);
+	
+        xmlContext = ((org.eclipse.persistence.jaxb.JAXBContext)jaxbContext).getXMLContext();
+        setProject(xmlContext.getSession(0).getProject());
         jaxbMarshaller = jaxbContext.createMarshaller();
         jaxbUnmarshaller = jaxbContext.createUnmarshaller();
-
     }
 
-
-
-    public Class[] getClasses() {
-        return classes;
+    protected Map getProperties() throws Exception{		
+        return null;
     }
 
     public JAXBContext getJAXBContext() {

@@ -12,7 +12,6 @@
 ******************************************************************************/
 package org.eclipse.persistence.testing.jaxb.xmlelementref;
 
-import java.util.ArrayList;
 import javax.xml.bind.JAXBElement;
 import javax.xml.namespace.QName;
 import org.eclipse.persistence.testing.jaxb.JAXBTestCases;
@@ -25,7 +24,7 @@ public class EmployeeSingleTestCases  extends JAXBTestCases {
 		super(name);
         setControlDocument(XML_RESOURCE);        
         Class[] classes = new Class[1];
-        classes[0] = ObjectFactory.class;
+        classes[0] = TestObjectFactory.class;
         setClasses(classes);
     }
 

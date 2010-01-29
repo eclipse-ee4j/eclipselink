@@ -25,7 +25,7 @@ public class EmployeeCollectionTestCases  extends JAXBTestCases {
 		super(name);
         setControlDocument(XML_RESOURCE);        
         Class[] classes = new Class[1];
-        classes[0] = ObjectFactory.class;
+        classes[0] = TestObjectFactory.class;
         setClasses(classes);
     }
 
