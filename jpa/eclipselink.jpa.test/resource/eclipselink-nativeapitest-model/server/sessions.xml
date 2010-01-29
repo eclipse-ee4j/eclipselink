@@ -9,7 +9,7 @@
         </logging>
         <primary-project xsi:type="xml">META-INF/NativeAPITestProject.xml</primary-project>
         <login xsi:type="database-login">
-            <platform-class>org.eclipse.persistence.platform.database.OraclePlatform</platform-class>
+            <platform-class>%%database-platform%%</platform-class>
             <external-connection-pooling>true</external-connection-pooling>
             <external-transaction-controller>true</external-transaction-controller>
             <sequencing>
@@ -17,7 +17,7 @@
                     <name>Default</name>
                 </default-sequence>
             </sequencing> 
-            <datasource lookup="string">%%data-source-name%%</datasource>
+            <datasource lookup="string">%%session-data-source-name%%</datasource>
         </login>
     </session>
 </sessions>
