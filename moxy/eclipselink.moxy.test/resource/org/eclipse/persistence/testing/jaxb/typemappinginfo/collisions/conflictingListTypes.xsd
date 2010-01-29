@@ -12,10 +12,10 @@
          <xsd:element maxOccurs="unbounded" minOccurs="0" name="item" type="ns0:employee"/>
       </xsd:sequence>
    </xsd:complexType>
-   <xsd:element name="testTagName3" type="listOfEmployee"/>
+   <xsd:element name="testTagName3" type="ns0:listOfEmployee"/>
    <xsd:element name="testTagName4" type="listOfString"/>
    <xsd:element name="testTagName5" type="listOfString2"/>
    <xsd:element name="testTagName6" type="listOfString2"/>
-   <xsd:element name="testTagName2" type="listOfEmployee"/>
-   <xsd:element name="testTagName1" type="listOfEmployee"/>
+   <xsd:element name="testTagName2" type="ns0:listOfEmployee"/>
+   <xsd:element name="testTagName1" type="ns0:listOfEmployee"/>
 </xsd:schema>
