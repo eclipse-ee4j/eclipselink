@@ -30,6 +30,7 @@ import javax.persistence.NonUniqueResultException;
 import javax.persistence.PersistenceException;
 import javax.persistence.Query;
 
+import org.eclipse.persistence.platform.database.OraclePlatform;
 import org.eclipse.persistence.testing.framework.wdf.Bugzilla;
 import org.eclipse.persistence.testing.framework.wdf.JPAEnvironment;
 import org.eclipse.persistence.testing.framework.wdf.ToBeInvestigated;
@@ -581,18 +582,37 @@ public class TestSimpleQuery extends JPA1Base {
             env.commitTransaction(em);
             em.clear();
             Query query = em.createQuery("select p from Project p");
-            verifyRowCount(query, Integer.MAX_VALUE, 0, 10);
             verifyRowCount(query, 5, 0, 5);
             verifyRowCount(query, 10, 0, 10);
             verifyRowCount(query, 15, 0, 10);
-            verifyRowCount(query, Integer.MAX_VALUE, 5, 5);
             verifyRowCount(query, 5, 5, 5);
             verifyRowCount(query, 10, 5, 5);
             verifyRowCount(query, 15, 5, 5);
-            verifyRowCount(query, Integer.MAX_VALUE, 7, 3);
             verifyRowCount(query, 5, 7, 3);
             verifyRowCount(query, 10, 7, 3);
             verifyRowCount(query, 15, 7, 3);
+        } finally {
+            closeEntityManager(em);
+        }
+    }
+
+    @Test
+    @Bugzilla(bugid=301274, databases=OraclePlatform.class )
+    public void testMaxResultUnlimited() throws SQLException {
+        clearAllTables();
+        JPAEnvironment env = getEnvironment();
+        EntityManager em = env.getEntityManager();
+        try {
+            env.beginTransaction(em);
+            for (int i = 0; i < 10; i++) {
+                em.persist(new Project("P" + i));
+            }
+            env.commitTransaction(em);
+            em.clear();
+            Query query = em.createQuery("select p from Project p");
+            verifyRowCount(query, Integer.MAX_VALUE, 0, 10);
+            verifyRowCount(query, Integer.MAX_VALUE, 5, 5);
+            verifyRowCount(query, Integer.MAX_VALUE, 7, 3);
         } finally {
             closeEntityManager(em);
         }
