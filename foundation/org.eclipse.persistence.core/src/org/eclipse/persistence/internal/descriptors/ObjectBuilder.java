@@ -570,10 +570,11 @@ public class ObjectBuilder implements Cloneable, Serializable {
         CacheKey unitOfWorkCacheKey = unitOfWork.getIdentityMapAccessorInstance().acquireLock(primaryKey, concreteDescriptor.getJavaClass(), concreteDescriptor);
         Object clone = unitOfWorkCacheKey.getObject();
         boolean found = clone != null;
-        Object original = null; 
+        Object original = null;
         try {
             // Only check parent cache if not in unit of work, or if a refresh is required.
             if (!found || query.shouldRefreshIdentityMapResult()
+                    || query.shouldCacheQueryResults() // Need to build original to cache it.
                     || query.shouldRetrieveBypassCache()
                     || (concreteDescriptor.hasFetchGroupManager() && concreteDescriptor.getFetchGroupManager().isPartialObject(clone))) {
                 // This is normal case when we are not in transaction.

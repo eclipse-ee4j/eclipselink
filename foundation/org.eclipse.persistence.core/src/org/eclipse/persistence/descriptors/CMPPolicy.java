@@ -354,14 +354,14 @@ public class CMPPolicy implements java.io.Serializable {
 
     /**
      * INTERNAL:
-     * Create an instance of the composite primary key class for the key object.
+     * Create an instance of the Id class or value from the object.
      */
-    public Object createPrimaryKeyInstance(Object key, AbstractSession session) {
+    public Object createPrimaryKeyInstance(Object object, AbstractSession session) {
         KeyElementAccessor[] pkElementArray = this.getKeyClassFields(getPKClass());
         ObjectBuilder builder = getDescriptor().getObjectBuilder();
         if (pkElementArray.length == 1 && pkElementArray[0] instanceof KeyIsElementAccessor){
             DatabaseMapping mapping = builder.getMappingForAttributeName(pkElementArray[0].getAttributeName());
-            Object fieldValue = mapping.getRealAttributeValueFromObject(key, session);
+            Object fieldValue = mapping.getRealAttributeValueFromObject(object, session);
             if (mapping.isObjectReferenceMapping()){
                 fieldValue = mapping.getReferenceDescriptor().getCMPPolicy().createPrimaryKeyInstance(fieldValue, session);
             }
@@ -371,7 +371,7 @@ public class CMPPolicy implements java.io.Serializable {
         Object keyInstance = getPKClassInstance();
         Set<ObjectReferenceMapping> usedObjectReferenceMappings = new HashSet<ObjectReferenceMapping>();
         for (int index = 0; index < pkElementArray.length; index++) {
-            Object keyObj = key;
+            Object keyObj = object;
             KeyElementAccessor accessor = pkElementArray[index];
             DatabaseField field = accessor.getDatabaseField();
             DatabaseMapping mapping = builder.getMappingForField(field);

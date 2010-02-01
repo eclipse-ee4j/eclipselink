@@ -12,6 +12,7 @@
  ******************************************************************************/  
 package org.eclipse.persistence.queries;
 
+import java.util.List;
 import java.util.Vector;
 import org.eclipse.persistence.internal.helper.NonSynchronizedVector;
 import org.eclipse.persistence.internal.sessions.AbstractRecord;
@@ -107,8 +108,12 @@ public abstract class ReadQuery extends DatabaseQuery {
      */
     protected void clonedQueryExecutionComplete(DatabaseQuery query, AbstractSession session) {
         if (shouldCacheQueryResults()) {
-            // Cached query results must exist on the original query rather than the cloned one
-            setQueryResults(((ReadQuery)query).getTemporaryCachedQueryResults(), query.getTranslationRow(), query.getSession());
+            Object result = ((ReadQuery)query).getTemporaryCachedQueryResults();
+            // If the temporary results were never set, then don't cache null.
+            if (result != null) {
+                // Cached query results must exist on the original query rather than the cloned one.
+                setQueryResults(result, query.getTranslationRow(), query.getSession());
+            }
         }
     }
 
@@ -216,10 +221,8 @@ public abstract class ReadQuery extends DatabaseQuery {
      */
     protected Object getQueryResults(AbstractSession session, AbstractRecord row, boolean checkExpiry) {
         // Check for null translation row.
-        Vector arguments = null;
-        if (row == null) {
-            arguments =  new NonSynchronizedVector(1);
-        } else {
+        List arguments = null;
+        if (row != null) {
             arguments =  row.getValues();
         }
         return session.getIdentityMapAccessorInstance().getQueryResult(this, arguments, checkExpiry);

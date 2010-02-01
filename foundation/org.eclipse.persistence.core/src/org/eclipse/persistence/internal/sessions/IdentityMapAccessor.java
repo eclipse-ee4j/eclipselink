@@ -511,7 +511,7 @@ public class IdentityMapAccessor implements org.eclipse.persistence.sessions.Ide
         if (descriptor == null) {
             throw ValidationException.missingDescriptor(theClass.toString());
         }
-        return this.getIdentityMap(descriptor);
+        return getIdentityMap(descriptor);
     }
 
     /**
@@ -519,7 +519,15 @@ public class IdentityMapAccessor implements org.eclipse.persistence.sessions.Ide
      * Get the identity map for the given class from the IdentityMapManager
      */
     public IdentityMap getIdentityMap(ClassDescriptor descriptor) {
-        return getIdentityMapManager().getIdentityMap(descriptor);
+        return getIdentityMap(descriptor, false);
+    }
+
+    /**
+     * INTERNAL:
+     * Get the identity map for the given class from the IdentityMapManager
+     */
+    public IdentityMap getIdentityMap(ClassDescriptor descriptor, boolean returnNullIfMissing) {
+        return getIdentityMapManager().getIdentityMap(descriptor, returnNullIfMissing);
     }
 
     /**
@@ -528,7 +536,7 @@ public class IdentityMapAccessor implements org.eclipse.persistence.sessions.Ide
      * values of the parameters to the query so different parameters will have
      * different cached results.
      */
-    public Object getQueryResult(ReadQuery query, Vector parameters, boolean checkExpiry) {
+    public Object getQueryResult(ReadQuery query, List parameters, boolean checkExpiry) {
         return getIdentityMapManager().getQueryResult(query, parameters, checkExpiry);
     }
 
@@ -1003,7 +1011,7 @@ public class IdentityMapAccessor implements org.eclipse.persistence.sessions.Ide
      * Query results are cached based on the parameter values provided to the query
      * different parameter values access different caches.
      */
-    public void putQueryResult(ReadQuery query, Vector parameters, Object results) {
+    public void putQueryResult(ReadQuery query, List parameters, Object results) {
         getIdentityMapManager().putQueryResult(query, parameters, results);
     }
 
@@ -1131,9 +1139,11 @@ public class IdentityMapAccessor implements org.eclipse.persistence.sessions.Ide
         Iterator descriptors = getSession().getDescriptors().values().iterator();
         while (descriptors.hasNext()) {
             ClassDescriptor descriptor = (ClassDescriptor)descriptors.next();
-            for (Enumeration mapEnum = getIdentityMap(descriptor).elements();
-                     mapEnum.hasMoreElements();) {
-                iterator.startIterationOn(mapEnum.nextElement());
+            IdentityMap cache = getIdentityMap(descriptor, true);
+            if (cache != null) {
+                for (Enumeration mapEnum = cache.elements(); mapEnum.hasMoreElements();) {
+                    iterator.startIterationOn(mapEnum.nextElement());
+                }
             }
         }
     }

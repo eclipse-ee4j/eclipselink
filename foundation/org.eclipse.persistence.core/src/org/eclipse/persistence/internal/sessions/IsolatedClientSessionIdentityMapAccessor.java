@@ -289,11 +289,11 @@ public class IsolatedClientSessionIdentityMapAccessor extends org.eclipse.persis
      * Get the identity map for the given class from the IdentityMapManager
      */
     @Override
-    public IdentityMap getIdentityMap(ClassDescriptor descriptor) {
+    public IdentityMap getIdentityMap(ClassDescriptor descriptor, boolean returnNullIfMissing) {
         if (descriptor.isIsolated()) {
-            return getIdentityMapManager().getIdentityMap(descriptor);
+            return getIdentityMapManager().getIdentityMap(descriptor, returnNullIfMissing);
         } else {
-            return ((IsolatedClientSession)session).getParent().getIdentityMapAccessorInstance().getIdentityMap(descriptor);
+            return ((IsolatedClientSession)session).getParent().getIdentityMapAccessorInstance().getIdentityMap(descriptor, returnNullIfMissing);
         }
     }
 
@@ -304,7 +304,7 @@ public class IsolatedClientSessionIdentityMapAccessor extends org.eclipse.persis
      * different cached results.
      */
     @Override
-    public Object getQueryResult(ReadQuery query, Vector parameters, boolean checkExpiry) {
+    public Object getQueryResult(ReadQuery query, List parameters, boolean checkExpiry) {
         if (((IsolatedClientSession)session).isIsolatedQuery(query)) {
             return getIdentityMapManager().getQueryResult(query, parameters, checkExpiry);
         } else {
@@ -412,7 +412,7 @@ public class IsolatedClientSessionIdentityMapAccessor extends org.eclipse.persis
      * different parameter values access different caches.
      */
     @Override
-    public void putQueryResult(ReadQuery query, Vector parameters, Object results) {
+    public void putQueryResult(ReadQuery query, List parameters, Object results) {
         if (((IsolatedClientSession)session).isIsolatedQuery(query)) {
             getIdentityMapManager().putQueryResult(query, parameters, results);
         } else {

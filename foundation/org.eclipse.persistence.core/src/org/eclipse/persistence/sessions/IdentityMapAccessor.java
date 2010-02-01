@@ -273,7 +273,7 @@ public interface IdentityMapAccessor {
     /**
      * ADVANCED:
      * Returns the remaining life of the given Object.  This method is associated with use of
-     * TopLink's cache invalidation feature and returns the difference between the next expiry
+     * cache invalidation feature and returns the difference between the next expiry
      * time of the Object and its read time.  The method will return 0 for invalidated Objects.
      * @param object Object under consideration
      * @return long time in milliseconds

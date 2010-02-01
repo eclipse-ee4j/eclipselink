@@ -927,7 +927,7 @@ public class IdentityMapManager implements Serializable, Cloneable {
      * values of the parameters to the query so different parameters will have
      * different cached results.
      */
-    public Object getQueryResult(ReadQuery query, Vector parameters, boolean shouldCheckExpiry) {
+    public Object getQueryResult(ReadQuery query, List parameters, boolean shouldCheckExpiry) {
         if (query.getQueryResultsCachePolicy() == null) {
             return null;
         }
@@ -1226,7 +1226,12 @@ public class IdentityMapManager implements Serializable, Cloneable {
      * Query results are cached based on the parameter values provided to the query
      * different parameter values access different caches.
      */
-    public void putQueryResult(ReadQuery query, Vector parameters, Object results) {
+    public void putQueryResult(ReadQuery query, List parameters, Object results) {
+        if ((results == null) || (results == InvalidObject.instance())) {
+            if (query.getQueryResultsCachePolicy().isNullIgnored()) {
+                return;
+            }
+        }
         // PERF: use query name, unless no name.
         Object queryKey = query.getName();
         if ((queryKey == null) || ((String)queryKey).length() == 0) {
@@ -1257,9 +1262,6 @@ public class IdentityMapManager implements Serializable, Cloneable {
         }
         // Bug 6138532 - store InvalidObject for "no results", do not store null
         if (results == null) {
-            if (query.getQueryResultsCachePolicy().isNullIgnored()) {
-                return;
-            }
             results = InvalidObject.instance();
         }
         map.put(lookupParameters, results, null, queryTime);

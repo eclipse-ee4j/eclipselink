@@ -156,12 +156,16 @@ public class ReadObjectQuery extends ObjectLevelReadQuery {
      * It will cause the original to be cached in the query results if the query
      * is set to do so.
      */
-    public void cacheResult(Object unwrappedOriginal) {
-        Object cachableObject = unwrappedOriginal;
-        if (shouldUseWrapperPolicy()){
-            cachableObject = getSession().wrapObject(unwrappedOriginal);
+    public void cacheResult(Object object) {
+        Object cachableObject = object;
+        if (object == null) {
+            this.temporaryCachedQueryResults = InvalidObject.instance();
+        } else {
+            if (this.shouldUseWrapperPolicy) {
+                cachableObject = this.session.wrapObject(object);
+            }
+            this.temporaryCachedQueryResults = cachableObject;
         }
-        setTemporaryCachedQueryResults(cachableObject);
     }
 
 
@@ -417,7 +421,7 @@ public class ReadObjectQuery extends ObjectLevelReadQuery {
             if (this.descriptor.hasTablePerClassPolicy() && returnValue == null) {
                 // let it fall through to query the root.
             } else {
-                setExecutionTime(System.currentTimeMillis());
+                this.executionTime = System.currentTimeMillis();
                 return returnValue;
             }
         }
@@ -435,26 +439,28 @@ public class ReadObjectQuery extends ObjectLevelReadQuery {
             row = getQueryMechanism().selectOneRow();
         }
         
-        setExecutionTime(System.currentTimeMillis());
+        this.executionTime = System.currentTimeMillis();
         Object result = null;
-
-        if (session.isUnitOfWork()) {
-            result = registerResultInUnitOfWork(row, (UnitOfWorkImpl)session, getTranslationRow(), true);
-        } else {
-            if (row != null) {
+        if (row != null) {
+            if (session.isUnitOfWork()) {
+                result = registerResultInUnitOfWork(row, (UnitOfWorkImpl)session, this.translationRow, true);
+            } else {
                 result = buildObject(row);
             }
         }
-        if ((result == null) && shouldRefreshIdentityMapResult()) {
+        if ((result == null) && shouldCacheQueryResults()) {
+            cacheResult(null);
+        }
+        if ((result == null) && this.shouldRefreshIdentityMapResult) {
             // bug5955326, should invalidate the shared cached if refreshed object no longer exists.
-            if (getSelectionId() != null) {
-                session.getParentIdentityMapSession(this, true, true).getIdentityMapAccessor().invalidateObject(getSelectionId(), getReferenceClass());
-            } else if (getSelectionObject() != null) {
-                session.getParentIdentityMapSession(this, true, true).getIdentityMapAccessor().invalidateObject(getSelectionObject());
+            if (this.selectionId != null) {
+                session.getParentIdentityMapSession(this, true, true).getIdentityMapAccessor().invalidateObject(this.selectionId, this.referenceClass);
+            } else if (this.selectionObject != null) {
+                session.getParentIdentityMapSession(this, true, true).getIdentityMapAccessor().invalidateObject(this.selectionObject);
             }
         }                
 
-        if (shouldIncludeData()) {
+        if (this.shouldIncludeData) {
             ComplexQueryResult complexResult = new ComplexQueryResult();
             complexResult.setResult(result);
             complexResult.setData(row);

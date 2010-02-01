@@ -105,12 +105,6 @@ public abstract class ObjectLevelReadQuery extends ObjectBuildingQuery {
      */
     protected int inMemoryQueryIndirectionPolicy;
 
-    /**
-     * Used to set the read time on objects that use this query.
-     * Should be set to the time the query returned from the database.
-     */
-    protected long executionTime = 0;
-
     /** Allow for a query level fetch group to be set. */
     protected FetchGroup fetchGroup;
 
@@ -2115,14 +2109,6 @@ public abstract class ObjectLevelReadQuery extends ObjectBuildingQuery {
      */
     public void setDistinctState(short distinctState) {
         this.distinctState = distinctState;
-    }
-
-    /**
-     * INTERNAL:
-     * Set the the time this query went to the database.
-     */
-    public void setExecutionTime(long executionTime) {
-        this.executionTime = executionTime;
     }
 
     /**

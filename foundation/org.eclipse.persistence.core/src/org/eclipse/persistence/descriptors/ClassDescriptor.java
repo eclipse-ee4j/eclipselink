@@ -2619,18 +2619,17 @@ public class ClassDescriptor implements Cloneable, Serializable {
             Vector mappings = getMappings();
             Object[] mappingsArray = new Object[mappings.size()];
             for (int index = 0; index < mappings.size(); index++) {
-                mappingsArray[index] = mappings.elementAt(index);
+                mappingsArray[index] = mappings.get(index);
             }
             Arrays.sort(mappingsArray, new MappingCompare());
             mappings = NonSynchronizedVector.newInstance(mappingsArray.length);
             for (int index = 0; index < mappingsArray.length; index++) {
-                mappings.addElement(mappingsArray[index]);
+                mappings.add(mappingsArray[index]);
             }
             setMappings(mappings);
         }
 
-        for (Enumeration mappingsEnum = getMappings().elements(); mappingsEnum.hasMoreElements();) {
-            DatabaseMapping mapping = (DatabaseMapping)mappingsEnum.nextElement();
+        for (DatabaseMapping mapping : getMappings()) {
             validateMappingType(mapping);
             mapping.initialize(session);
             if (mapping.isLockableMapping()){
@@ -2650,14 +2649,14 @@ public class ClassDescriptor implements Cloneable, Serializable {
 
             // JPA 2.0 Derived identities - build a map of derived id mappings.
             if (mapping.derivesId()) {
-                derivesIdMappings.put(mapping.getAttributeName(), mapping);
+                this.derivesIdMappings.put(mapping.getAttributeName(), mapping);
             }
             
             // Add all the fields in the mapping to myself.
             Helper.addAllUniqueToVector(getFields(), mapping.getFields());
         }
         
-        if(hasMappingsPostCalculateChangesOnDeleted()) {
+        if (hasMappingsPostCalculateChangesOnDeleted()) {
             session.getProject().setHasMappingsPostCalculateChangesOnDeleted(true);
         }
 
@@ -2682,15 +2681,13 @@ public class ClassDescriptor implements Cloneable, Serializable {
         if (hasInheritance()) {
             getInheritancePolicy().initialize(session);
             if (getInheritancePolicy().isChildDescriptor()) {
-                for (Iterator iterator = getInheritancePolicy().getParentDescriptor().getMappings().iterator();
-                         iterator.hasNext();) {
-                    DatabaseMapping mapping = (DatabaseMapping)iterator.next();
+                for (DatabaseMapping mapping : getInheritancePolicy().getParentDescriptor().getMappings()) {
                     if (mapping.isAggregateObjectMapping() || ((mapping.isForeignReferenceMapping() && (!mapping.isDirectCollectionMapping())) && (!((ForeignReferenceMapping)mapping).usesIndirection()))) {
                         getLockableMappings().add(mapping);// add those mappings from the parent.
                     }
                     // JPA 2.0 Derived identities - build a map of derived id mappings.
                     if (mapping.derivesId()) {
-                        derivesIdMappings.put(mapping.getAttributeName(), mapping);
+                        this.derivesIdMappings.put(mapping.getAttributeName(), mapping);
                     }
                 }
             }
@@ -2705,12 +2702,12 @@ public class ClassDescriptor implements Cloneable, Serializable {
             Vector mappings = getMappings();
             Object[] mappingsArray = new Object[mappings.size()];
             for (int index = 0; index < mappings.size(); index++) {
-                mappingsArray[index] = mappings.elementAt(index);
+                mappingsArray[index] = mappings.get(index);
             }
             Arrays.sort(mappingsArray, new MappingCompare());
             mappings = NonSynchronizedVector.newInstance(mappingsArray.length);
             for (int index = 0; index < mappingsArray.length; index++) {
-                mappings.addElement(mappingsArray[index]);
+                mappings.add(mappingsArray[index]);
             }
             setMappings(mappings);
         }
@@ -3238,7 +3235,7 @@ public class ClassDescriptor implements Cloneable, Serializable {
             field.setIndex(index);
         }        
         // Set cache key type.
-        if (getCacheKeyType() == null) {
+        if (getCacheKeyType() == null || (getCacheKeyType() == CacheKeyType.AUTO)) {
             if ((getPrimaryKeyFields().size() > 1) || getObjectBuilder().isXMLObjectBuilder()) {
                 setCacheKeyType(CacheKeyType.CACHE_ID);
             } else if (getPrimaryKeyFields().size() == 1) {
@@ -3251,6 +3248,8 @@ public class ClassDescriptor implements Cloneable, Serializable {
             } else {
                 setCacheKeyType(CacheKeyType.CACHE_ID);                
             }
+        } else if ((getCacheKeyType() == CacheKeyType.ID_VALUE) && (getPrimaryKeyFields().size() > 1)) {
+            session.getIntegrityChecker().handleError(DescriptorException.cannotUseIdValueForCompositeId(this));
         }
         getObjectBuilder().postInitialize(session);
 
@@ -5255,8 +5254,8 @@ public class ClassDescriptor implements Cloneable, Serializable {
      */
     protected void validateAfterInitialization(AbstractSession session) {
         selfValidationAfterInitialization(session);
-        for (Enumeration mappings = getMappings().elements(); mappings.hasMoreElements();) {
-            ((DatabaseMapping)mappings.nextElement()).validateAfterInitialization(session);
+        for (DatabaseMapping mapping : getMappings()) {
+            mapping.validateAfterInitialization(session);
         }
     }
 
@@ -5266,8 +5265,8 @@ public class ClassDescriptor implements Cloneable, Serializable {
      */
     protected void validateBeforeInitialization(AbstractSession session) {
         selfValidationBeforeInitialization(session);
-        for (Enumeration mappings = getMappings().elements(); mappings.hasMoreElements();) {
-            ((DatabaseMapping)mappings.nextElement()).validateBeforeInitialization(session);
+        for (DatabaseMapping mapping : getMappings()) {
+            mapping.validateBeforeInitialization(session);
         }
     }
 
@@ -5276,17 +5275,12 @@ public class ClassDescriptor implements Cloneable, Serializable {
      * Check that the qualifier on the table names are properly set.
      */
     protected void verifyTableQualifiers(Platform platform) {
-        DatabaseTable table;
-        Enumeration tableEnumeration;
         String tableQualifier = platform.getTableQualifier();
-
         if (tableQualifier.length() == 0) {
             return;
         }
 
-        tableEnumeration = getTables().elements();
-        while (tableEnumeration.hasMoreElements()) {
-            table = (DatabaseTable)tableEnumeration.nextElement();
+        for (DatabaseTable table : getTables()) {
             if (table.getTableQualifier().length() == 0) {
                 table.setTableQualifier(tableQualifier);
             }

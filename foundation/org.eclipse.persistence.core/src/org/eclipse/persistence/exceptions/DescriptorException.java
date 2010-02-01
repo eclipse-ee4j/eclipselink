@@ -230,6 +230,7 @@ public class DescriptorException extends ValidationException {
     public final static int MULTIPLE_TARGET_FOREIGN_KEY_TABLES = 213;
     public final static int ONE_TO_ONE_MAPPING_CONFLICT = 214;
     public final static int NO_RELATION_TABLE_MECHANISM = 215;
+    public final static int CANNOT_USE_ID_VALUE_FOR_COMPOSITE_ID = 216;
 
     /**
      * INTERNAL:
@@ -1993,11 +1994,20 @@ public class DescriptorException extends ValidationException {
     }
 
     public static DescriptorException noRelationTableMechanism(DatabaseMapping mapping) {
-        Object[] args = {  };
+        Object[] args = { mapping };
 
         DescriptorException descriptorException = new DescriptorException(ExceptionMessageGenerator.buildMessage(DescriptorException.class, NO_RELATION_TABLE_MECHANISM, args), mapping);
         descriptorException.setErrorCode(NO_RELATION_TABLE_MECHANISM);
         return descriptorException;
     }
+
+
+    public static DescriptorException cannotUseIdValueForCompositeId(ClassDescriptor descriptor) {
+        Object[] args = {  };
+
+        DescriptorException descriptorException = new DescriptorException(ExceptionMessageGenerator.buildMessage(DescriptorException.class, CANNOT_USE_ID_VALUE_FOR_COMPOSITE_ID, args), descriptor);
+        descriptorException.setErrorCode(CANNOT_USE_ID_VALUE_FOR_COMPOSITE_ID);
+        return descriptorException;
+    }    
 
 }

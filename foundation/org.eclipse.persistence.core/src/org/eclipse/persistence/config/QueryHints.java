@@ -116,7 +116,7 @@ public class QueryHints {
      * <p>Configures a randomization on the expiry invalidation time.
      * This can be used to avoid bottlenecks from the cached values expiring at the same time.
      * By default expiry is not randomized.
-     * Valid values are number of milliseconds, Integer or Strings that can be parsed to int values.
+     * Valid values are "true" and "false", false is the default.
      * @see org.eclipse.persistence.descriptors.invalidation.TimeToLiveCacheInvalidationPolicy#setInvalidationRandomized(boolean)
      */
     public static final String QUERY_RESULTS_CACHE_RANDOMIZE_EXPIRY = "eclipselink.query-results-cache.randomize-expiry";
@@ -126,7 +126,7 @@ public class QueryHints {
      * <p>Configures null results to not be cached.
      * This can be used to use the query cache as a secondary key index, and allow inserts of new objects.
      * By default null results are cached.
-     * Valid values are number of milliseconds, Integer or Strings that can be parsed to int values.
+     * Valid values are "true" and "false", false is the default.
      * @see org.eclipse.persistence.queries.QueryResultsCachePolicy#setIsNullIgnored(boolean)
      */
     public static final String QUERY_RESULTS_CACHE_IGNORE_NULL = "eclipselink.query-results-cache.ignore-null";

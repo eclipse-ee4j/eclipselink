@@ -120,7 +120,7 @@ public class DataReadQuery extends ReadQuery {
                 Object results = getQueryResults(session, row, true);
                 // Bug6138532 - if results are "cached no results", return null immediately
                 if (results == InvalidObject.instance) {
-                    return null;
+                    return getContainerPolicy().containerInstance(0);
                 }
                 if (results != null) {
                     return results;

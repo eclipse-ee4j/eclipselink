@@ -224,6 +224,7 @@ public class DescriptorExceptionResource extends ListResourceBundle {
                                            { "213", "{0} requires all target foreign key fields to belong to the same table, but several were found: {1}." },
                                            { "214", "{0} specifies relation table, that is not compatible with addForeignKey(Name) method, or use addSourceRelationKeyField(Name) and addTargetRelationKeyFieldName methods instead."},
                                            { "215", "{0} must have non-null RelationTableMechanism."},
+                                           { "216", "CacheKeyType cannot be ID_VALUE for a composite primary key.."},
 
     };
 

@@ -444,18 +444,18 @@ public class ReadAllQuery extends ObjectLevelReadQuery {
     protected Object executeObjectLevelReadQuery() throws DatabaseException {
         Object result = null;
         
-        if (getContainerPolicy().overridesRead()) {
-            return getContainerPolicy().execute();
+        if (this.containerPolicy.overridesRead()) {
+            return this.containerPolicy.execute();
         }
 
         if (this.descriptor.isDescriptorForInterface()) {
             Object returnValue = this.descriptor.getInterfacePolicy().selectAllObjectsUsingMultipleTableSubclassRead(this);
-            setExecutionTime(System.currentTimeMillis());
+            this.executionTime = System.currentTimeMillis();
             return returnValue;
         }
 
         List rows = getQueryMechanism().selectAllRows();
-        setExecutionTime(System.currentTimeMillis());
+        this.executionTime = System.currentTimeMillis();
         
         // If using 1-m joins, must set all rows.
         if (hasJoining() && this.joinedAttributeManager.isToManyJoin()) {
@@ -465,7 +465,7 @@ public class ReadAllQuery extends ObjectLevelReadQuery {
         if (this.session.isUnitOfWork()) {
             result = registerResultInUnitOfWork(rows, (UnitOfWorkImpl)this.session, this.translationRow, true);// 
         } else {
-            result = getContainerPolicy().containerInstance(rows.size());
+            result = this.containerPolicy.containerInstance(rows.size());
             this.descriptor.getObjectBuilder().buildObjectsInto(this, rows, result);
         }
 
@@ -473,12 +473,17 @@ public class ReadAllQuery extends ObjectLevelReadQuery {
             ComplexQueryResult complexResult = new ComplexQueryResult();
             complexResult.setResult(result);
             complexResult.setData(rows);
-            return complexResult;
+            result = complexResult;
         }
 
         // Add the other (already registered) results and return them.
-        if (getDescriptor().hasTablePerClassPolicy()) {
-            result = containerPolicy.concatenateContainers(result, getDescriptor().getTablePerClassPolicy().selectAllObjectsUsingMultipleTableSubclassRead(this));
+        if (this.descriptor.hasTablePerClassPolicy()) {
+            result = this.containerPolicy.concatenateContainers(result, this.descriptor.getTablePerClassPolicy().selectAllObjectsUsingMultipleTableSubclassRead(this));
+        }
+
+        // If the results were empty, then ensure they get cached still.
+        if (shouldCacheQueryResults() && this.containerPolicy.isEmpty(result)) {
+            this.temporaryCachedQueryResults = InvalidObject.instance();
         }
         
         return result;

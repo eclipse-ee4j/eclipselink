@@ -115,11 +115,18 @@ import static org.eclipse.persistence.annotations.OptimisticLockingType.VERSION_
         query="SELECT e FROM Employee e",
         hints={
                 @QueryHint(name=QueryHints.QUERY_RESULTS_CACHE, value="true"),
-                @QueryHint(name=QueryHints.QUERY_RESULTS_CACHE_TYPE, value="SOFT"),
-                @QueryHint(name=QueryHints.QUERY_RESULTS_CACHE_IGNORE_NULL, value="true"),
+                @QueryHint(name=QueryHints.QUERY_RESULTS_CACHE_TYPE, value="FULL"),
+                @QueryHint(name=QueryHints.QUERY_RESULTS_CACHE_IGNORE_NULL, value="false"),
                 @QueryHint(name=QueryHints.QUERY_RESULTS_CACHE_RANDOMIZE_EXPIRY, value="true"),
                 @QueryHint(name=QueryHints.QUERY_RESULTS_CACHE_SIZE, value="200"),
-                @QueryHint(name=QueryHints.QUERY_RESULTS_CACHE_EXPIRY, value="5000")
+                @QueryHint(name=QueryHints.QUERY_RESULTS_CACHE_EXPIRY, value="50000")
+        }
+),
+@NamedQuery(
+        name="CachedNoEmployees",
+        query="SELECT e FROM Employee e where 1 <> 1",
+        hints={
+                @QueryHint(name=QueryHints.QUERY_RESULTS_CACHE, value="true")
         }
 ),
 @NamedQuery(

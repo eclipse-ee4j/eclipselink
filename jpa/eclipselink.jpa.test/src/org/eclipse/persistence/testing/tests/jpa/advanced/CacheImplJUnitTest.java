@@ -17,6 +17,7 @@ import junit.framework.Test;
 import junit.framework.TestSuite;
 import org.eclipse.persistence.testing.models.jpa.advanced.*;
 import org.eclipse.persistence.internal.jpa.EntityManagerFactoryImpl;
+import org.eclipse.persistence.jpa.JpaCache;
 import org.eclipse.persistence.testing.framework.junit.JUnitTestCase;
 
 /**
@@ -33,14 +34,7 @@ public class CacheImplJUnitTest extends JUnitTestCase {
         super(name);
     }
 
-    public static void setUpClass() throws Exception {
-    }
-
-    public static void tearDownClass() throws Exception {
-    }
-
     public void setUp() {
-
         super.setUp();
         clearCache();
     }
@@ -55,6 +49,7 @@ public class CacheImplJUnitTest extends JUnitTestCase {
         suite.addTest(new CacheImplJUnitTest("testEvictClass"));
         suite.addTest(new CacheImplJUnitTest("testEvictAll"));
         suite.addTest(new CacheImplJUnitTest("testEvictContains"));
+        suite.addTest(new CacheImplJUnitTest("testCacheAPI"));
         
         return suite;
     }
@@ -79,12 +74,40 @@ public class CacheImplJUnitTest extends JUnitTestCase {
         em1.persist(e1);
         commitTransaction(em1);
         closeEntityManager(em1);
-        try {
-            boolean result = getEntityManagerFactory("default1").getCache().contains(Employee.class, 101);
-            assertTrue("Assertion Error",result);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+        boolean result = getEntityManagerFactory("default1").getCache().contains(Employee.class, 101);
+        assertTrue("Employee not found in cache", result);
+    }
+    
+    /**
+     * Test cache API.
+     */
+    public void testCacheAPI() {
+        EntityManager em = createEntityManager("default1");
+        beginTransaction(em);
+        Employee employee = new Employee();
+        employee.setFirstName("testCacheAPI");
+        em.persist(employee);
+        commitTransaction(em);
+        closeEntityManager(em);
+        JpaCache cache = (JpaCache)getEntityManagerFactory("default1").getCache();
+        assertTrue("Employee not valid in cache", cache.isValid(employee));
+        assertTrue("Employee not valid in cache", cache.isValid(Employee.class, employee.getId()));
+        cache.timeToLive(employee);
+        assertTrue("Employee not found in cache", cache.getObject(Employee.class, employee.getId()) != null);
+        assertTrue("Employee not found in cache", cache.contains(employee));
+        cache.evict(employee);
+        cache.putObject(employee);
+        cache.removeObject(employee);
+        cache.removeObject(Employee.class, employee.getId());
+        cache.clear();
+        cache.clear(Employee.class);
+        cache.clearQueryCache();
+        cache.clearQueryCache("findAllEmployeesByIdAndFirstName");
+        assertTrue("Employee id not correct", employee.getId().equals(cache.getId(employee)));
+        cache.print();
+        cache.print(Employee.class);
+        cache.printLocks();
+        cache.validate();
     }
 
     /**
@@ -111,8 +134,6 @@ public class CacheImplJUnitTest extends JUnitTestCase {
             Employee e3 = em4.find(Employee.class, 121);
             afterCache = e3.getFirstName();
             assertNotSame("Assertion Error", beforeCache, afterCache);
-        } catch (Exception e) {
-            e.printStackTrace();
         } finally {
             closeEntityManager(em3);
             closeEntityManager(em4);
@@ -141,8 +162,6 @@ public class CacheImplJUnitTest extends JUnitTestCase {
             Employee e5 = em7.find(Employee.class, 131);
             String actual = e5.getFirstName();
             assertNotSame("Assertion Error", expected, actual);
-        } catch (Exception e) {
-            e.printStackTrace();
         } finally {
             closeEntityManager(em6);
             closeEntityManager(em7);
@@ -180,8 +199,6 @@ public class CacheImplJUnitTest extends JUnitTestCase {
             String actualDept = d2.getName();
             assertEquals("Assertion Error", expectedEmp, actualEmp);
             assertEquals("Assertion Error", expectedDept, actualDept);
-        } catch (Exception e) {
-            e.printStackTrace();
         } finally {
             closeEntityManager(em9);
         }
@@ -196,7 +213,7 @@ public class CacheImplJUnitTest extends JUnitTestCase {
         em.persist(emp);
         commitTransaction(em);
 
-        try{
+        try {
             assertTrue(em.getEntityManagerFactory().getCache().contains(Employee.class, emp.getId()));
     
             em.clear();
@@ -206,7 +223,7 @@ public class CacheImplJUnitTest extends JUnitTestCase {
             em.getEntityManagerFactory().getCache().evict(Employee.class, emp.getId());
             assertFalse(em.getEntityManagerFactory().getCache().contains(Employee.class, emp.getId()));
         } finally {
-            this.closeEntityManager(em);
+            closeEntityManager(em);
         }
 
     }

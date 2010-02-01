@@ -190,7 +190,7 @@ public class UnitOfWorkIdentityMapAccessor extends IdentityMapAccessor {
      * results are only cached in the parent session for UnitOfWorks
      */
     @Override
-    public Object getQueryResult(ReadQuery query, Vector parameters, boolean checkExpiry) {
+    public Object getQueryResult(ReadQuery query, List parameters, boolean checkExpiry) {
         return ((UnitOfWorkImpl)this.session).getParent().getIdentityMapAccessorInstance().getQueryResult(query, parameters, checkExpiry);
     }
 
@@ -203,7 +203,7 @@ public class UnitOfWorkIdentityMapAccessor extends IdentityMapAccessor {
      *  Results are only cached in the parent session for UnitOfWorks
      */
     @Override
-    public void putQueryResult(ReadQuery query, Vector parameters, Object results) {
+    public void putQueryResult(ReadQuery query, List parameters, Object results) {
         ((UnitOfWorkImpl)this.session).getParent().getIdentityMapAccessorInstance().putQueryResult(query, parameters, results);
     }
 

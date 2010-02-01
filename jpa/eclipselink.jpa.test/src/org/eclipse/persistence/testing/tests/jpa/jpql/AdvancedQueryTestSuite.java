@@ -26,7 +26,6 @@ import javax.persistence.Query;
 import javax.persistence.EntityManager;
 import javax.persistence.RollbackException;
 
-import junit.framework.Assert;
 import junit.framework.Test;
 import junit.framework.TestSuite;
 
@@ -39,6 +38,7 @@ import org.eclipse.persistence.config.ResultType;
 import org.eclipse.persistence.descriptors.invalidation.DailyCacheInvalidationPolicy;
 import org.eclipse.persistence.descriptors.invalidation.TimeToLiveCacheInvalidationPolicy;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
+import org.eclipse.persistence.jpa.JpaCache;
 import org.eclipse.persistence.jpa.JpaQuery;
 import org.eclipse.persistence.queries.Cursor;
 import org.eclipse.persistence.queries.ReadQuery;
@@ -49,6 +49,7 @@ import org.eclipse.persistence.sessions.server.ServerSession;
 import org.eclipse.persistence.testing.framework.junit.JUnitTestCase;
 import org.eclipse.persistence.testing.framework.QuerySQLTracker;
 import org.eclipse.persistence.testing.models.jpa.advanced.Employee;
+import org.eclipse.persistence.testing.models.jpa.advanced.Address;
 import org.eclipse.persistence.testing.models.jpa.advanced.EmployeePopulator;
 import org.eclipse.persistence.testing.models.jpa.advanced.AdvancedTableCreator;
 
@@ -745,7 +746,7 @@ public class AdvancedQueryTestSuite extends JUnitTestCase {
             if (!(readQuery.getQueryResultsCachePolicy().getCacheInvalidationPolicy() instanceof TimeToLiveCacheInvalidationPolicy)) {
                 fail("Query cache invalidation not set.");
             }
-            if (((TimeToLiveCacheInvalidationPolicy)readQuery.getQueryResultsCachePolicy().getCacheInvalidationPolicy()).getTimeToLive() != 5000) {
+            if (((TimeToLiveCacheInvalidationPolicy)readQuery.getQueryResultsCachePolicy().getCacheInvalidationPolicy()).getTimeToLive() != 50000) {
                 fail("Query cache invalidation time not set.");
             }
             
@@ -772,6 +773,35 @@ public class AdvancedQueryTestSuite extends JUnitTestCase {
             // Query by primary key.
             Query query = em.createNamedQuery("CachedAllEmployees");
             if (result.size() != query.getResultList().size()) {
+                fail("List result size is not correct on 2nd cached query.");
+            }
+            if (counter.getSqlStatements().size() > 0) {
+                fail("Query cache was not used: " + counter.getSqlStatements());
+            }
+            ((JpaCache)getEntityManagerFactory().getCache()).clearQueryCache();
+            // Preload uow to test query cache in uow.
+            em.createQuery("Select e from Employee e").getResultList();
+            query.getResultList();
+            if (result.size() != query.getResultList().size()) {
+                fail("List result size is not correct on cached query in unit of work.");
+            }
+            ((JpaCache)getEntityManagerFactory().getCache()).clearQueryCache();
+            // Also test query cache in early transaction.
+            em.persist(new Address());
+            em.flush();
+            query.getResultList();
+            if (result.size() != query.getResultList().size()) {
+                fail("List result size is not correct on cached query in transaction.");
+            }
+            // Query by primary key.
+            query = em.createNamedQuery("CachedNoEmployees");
+            if (!query.getResultList().isEmpty()) {
+                fail("List result size is not correct.");
+            }
+            // Also test empty query cache.
+            counter.remove();
+            counter = new QuerySQLTracker(getServerSession());
+            if (!query.getResultList().isEmpty()) {
                 fail("List result size is not correct.");
             }
             if (counter.getSqlStatements().size() > 0) {
@@ -1310,8 +1340,6 @@ public class AdvancedQueryTestSuite extends JUnitTestCase {
     }
 
     public void testLockWithSecondaryTable() {
-        ServerSession session = JUnitTestCase.getServerSession();
-
         // Cannot create parallel entity managers in the server.
         if (! isOnServer() && isSelectForUpateSupported()) {
             EntityManager em = createEntityManager();
@@ -1361,8 +1389,6 @@ public class AdvancedQueryTestSuite extends JUnitTestCase {
     }
 
     public void testVersionChangeWithReadLock() {
-        ServerSession session = JUnitTestCase.getServerSession();
-
         // It's a JPA2.0 feature.
         if (! isJPA10() && isSelectForUpateNoWaitSupported()){
             Employee employee = null;
@@ -1440,8 +1466,6 @@ public class AdvancedQueryTestSuite extends JUnitTestCase {
     }
 
     public void testVersionChangeWithWriteLock() {
-        ServerSession session = JUnitTestCase.getServerSession();
-
         // It's a JPA2.0 feature
         if (! isJPA10() && isSelectForUpateNoWaitSupported()) {
             Employee employee = null;
