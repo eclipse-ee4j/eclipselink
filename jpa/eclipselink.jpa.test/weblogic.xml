@@ -88,7 +88,7 @@
 
     <target name="weblogic-start-nosleep">
         <wlserver fork="true" spawn="true" weblogichome="${weblogic.home}"
-            dir="${weblogic.domain}" host="localhost" generateConfig="true" verbose="true"
+            dir="${weblogic.domain}" host="${weblogic.host}" generateConfig="true" verbose="true"
             username="${server.user}" password="${server.pwd}" action="start">
             <classpath>
                 <fileset dir="${server.lib}" includes="${server.depend}"/>
@@ -159,7 +159,7 @@
     <!-- Stop the server. -->
     <target name="weblogic-stop">
         <wlserver fork="true" failonerror="false" weblogichome="${weblogic.home}"
-            dir="${weblogic.domain}" host="localhost"
+            dir="${weblogic.domain}" host="${weblogic.host}"
             username="${server.user}" password="${server.pwd}" action="shutdown">
         </wlserver>
     </target>
