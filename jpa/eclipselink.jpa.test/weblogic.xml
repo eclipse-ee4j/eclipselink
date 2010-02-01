@@ -44,7 +44,7 @@
         Also weblogic may require using the JRockit JVM, which can be setup through the setEnv.sh.
         You may need to copy the /resouces/weblogic/jaxp.properties file to your JRockit JVM jre/lib directory to allow the ant junit task to work correctly,
         (this may cause issues with weblogic starting, so you may need to do this after you start your server).
-        To connect to the weblogic admin console use http://localhost:7001/console, this may be useful for debugging deployment failures.
+        To connect to the weblogic admin console use http://${weblogic.host}:7001/console, this may be useful for debugging deployment failures.
         Sometimes if a test or deployment fails, you server gets screwed up and you need to re-install your domain (ant server.install).
 -->
 
@@ -96,7 +96,7 @@
 
     <target name="weblogic-start-nosleep">
         <wlserver fork="true" spawn="true" weblogichome="${weblogic.home}"
-            dir="${weblogic.domain}" host="localhost" generateConfig="true" verbose="true"
+            dir="${weblogic.domain}" host="${weblogic.host}" generateConfig="true" verbose="true"
             username="${server.user}" password="${server.pwd}" action="start">
             <classpath>
                 <fileset dir="${server.lib}" includes="${server.depend}"/>
@@ -167,7 +167,7 @@
     <!-- Stop the server. -->
     <target name="weblogic-stop">
         <wlserver fork="true" failonerror="false" weblogichome="${weblogic.home}"
-            dir="${weblogic.domain}" host="localhost"
+            dir="${weblogic.domain}" host="${weblogic.host}"
             username="${server.user}" password="${server.pwd}" action="shutdown">
         </wlserver>
     </target>
