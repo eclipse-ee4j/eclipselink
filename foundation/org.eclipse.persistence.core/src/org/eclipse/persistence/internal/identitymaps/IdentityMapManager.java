@@ -1055,11 +1055,14 @@ public class IdentityMapManager implements Serializable, Cloneable {
         ClassDescriptor descriptor = this.session.getDescriptor(businessClass);
         int cacheCounter = 0;
         StringWriter writer = new StringWriter();
-        if (descriptor.isAggregateDescriptor()) {
-            return;//do nothing if descriptor is aggregate
+        if (descriptor.isAggregateDescriptor() || descriptor.isAggregateCollectionDescriptor()) {
+            return; //do nothing if descriptor is aggregate
         }
 
-        IdentityMap map = getIdentityMap(descriptor, false);
+        IdentityMap map = getIdentityMap(descriptor, true);
+        if (map == null) {
+            return;
+        }
         writer.write(LoggingLocalization.buildMessage("identitymap_for", new Object[] { cr, Helper.getShortClassName(map.getClass()), Helper.getShortClassName(businessClass) }));
         if (descriptor.hasInheritance()) {
             if (descriptor.getInheritancePolicy().isRootParentDescriptor()) {
