@@ -686,12 +686,10 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
         if (this.shouldDiscoverNewObjects) {
             // Third discover any new objects from the new or changed objects.
             Map newObjects = new IdentityHashMap();
-            Map existingObjects = new IdentityHashMap(2);
-    
+            // Bug 294259 -  Do not replace the existingObjects list
             // Iterate over the changed objects only.
-            discoverUnregisteredNewObjects(changedObjects, newObjects, existingObjects, visitedNodes);
+            discoverUnregisteredNewObjects(changedObjects, newObjects, getUnregisteredExistingObjects(), visitedNodes);
             
-            setUnregisteredExistingObjects(existingObjects);
             setUnregisteredNewObjects(newObjects);
             if (assignSequences) {
                 assignSequenceNumbers(newObjects);
@@ -1689,13 +1687,12 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
         // 2612538 - the default size of Map (32) is appropriate
         Map visitedNodes = new IdentityHashMap();
         Map newObjects = new IdentityHashMap();
-        Map existingObjects = new IdentityHashMap();
-
+        
+         // Bug 294259 -  Do not replace the existingObjects list
         // Iterate over the clones.
-        discoverUnregisteredNewObjects(new IdentityHashMap(getCloneMapping()), newObjects, existingObjects, visitedNodes);
-
+        discoverUnregisteredNewObjects(new IdentityHashMap(getCloneMapping()), newObjects, getUnregisteredExistingObjects(), visitedNodes);
         setUnregisteredNewObjects(newObjects);
-        setUnregisteredExistingObjects(existingObjects);
+
     }
 
     /**
@@ -1761,10 +1758,8 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
                 }
             }
         };
-
-        // Set the collection in the UnitofWork to be this list.
-        setUnregisteredExistingObjects(unregisteredExistingObjects);
-
+        // Bug 294259 -  Do not replace the existingObjects list
+        
         iterator.setVisitedObjects(visitedObjects);
         iterator.setResult(knownNewObjects);
         iterator.setSession(this);
