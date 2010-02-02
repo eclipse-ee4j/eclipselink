@@ -714,7 +714,7 @@
         </jar>
     </target>
 
-    <target name="clean" description="Clean the build">
+    <target name="clean" description="Clean the build" depends="cleanup_merge_inherited_ddl">
         <delete includeEmptyDirs="true" failonerror="false">
             <fileset dir="${eclipselink.jpa.test}/${classes.dir}"/>
             <fileset dir="${eclipselink.jpa.test}/${build.dir}"/>
@@ -737,7 +737,9 @@
             <fileset file="${eclipselink.jpa.test}/${eclipselink.delimited.model}.jar"/>
             <fileset file="${eclipselink.jpa.test}/${eclipselink.beanvalidation.model}.jar"/>
         </delete>
+        
     </target>
+    
 
     <!-- Testing -->
 
@@ -1907,7 +1909,7 @@
         </antcall>
     </target>
 
-    <target name="server-test-ddlgeneration">
+    <target name="server-test-ddlgeneration" depends="cleanup_merge_inherited_ddl">
         <antcall target="server-run-all" inheritRefs="true">
             <param name="PERSISTENCE_UNIT_NAME" value="ddlGeneration"/>
             <param name="MODEL_DIR" value="org/eclipse/persistence/testing/models/jpa/ddlgeneration"/>
@@ -2140,10 +2142,23 @@
             <param name="TEST_SUITE" value="org.eclipse.persistence.testing.tests.jpa.xml.merge.inherited.EntityMappingsMergeInheritedJUnitTestCase"/>
             <param name="eclipselink.jpa.test.dir" value="."/>
         </antcall>
-        <move file="${eclipselink.jpa.test}/resource/eclipselink-ddl-generation-model/server" tofile="${eclipselink.jpa.test}/resource/eclipselink-ddl-generation-model/server_merge-inherited"/>
-        <move file="${eclipselink.jpa.test}/resource/eclipselink-ddl-generation-model/server_ddl" tofile="${eclipselink.jpa.test}/resource/eclipselink-ddl-generation-model/server"/>
+        <antcall target="cleanup_merge_inherited_ddl"/>
     </target>
 
+    <target name="test_server_dll_existence">
+        <available file="${eclipselink.jpa.test}/resource/eclipselink-ddl-generation-model/server_ddl" property="server_ddl.exists" value="true" />
+    </target>
+    
+    <target name="cleanup_merge_inherited_ddl" depends="test_server_dll_existence" if="server_ddl.exists"> 
+        <move file="${eclipselink.jpa.test}/resource/eclipselink-ddl-generation-model/server" tofile="${eclipselink.jpa.test}/resource/eclipselink-ddl-generation-model/server_merge-inherited"/>        
+        <move file="${eclipselink.jpa.test}/resource/eclipselink-ddl-generation-model/server_ddl" tofile="${eclipselink.jpa.test}/resource/eclipselink-ddl-generation-model/server"/>
+        <delete>
+            <fileset dir="${eclipselink.jpa.test}/resource/eclipselink-ddl-generation-model/server_merge-inherited/">
+                <include name="merge-*.xml"/>
+            </fileset>
+        </delete>
+    </target>
+        
     <target name="server-test-xmltest">
         <copy todir="${eclipselink.jpa.test}/resource/eclipselink-xml-servertest-model/server/" overwrite="true" failonerror="false">
             <fileset dir="${eclipselink.jpa.test}/resource/eclipselink-xml-merge-model/">
