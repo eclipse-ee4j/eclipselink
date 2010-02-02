@@ -45,31 +45,12 @@
     <available file="../${ant.project.name}" type="dir" property="oracle_test.is.local"/>
     <fail message="Not running from '${ant.project.name}' directory" unless="oracle_test.is.local"/>
 
-    <!-- script to "cleanup" the value of a path property to replace any "\" with "/" -->
-    <scriptdef name="cleanPath" language="javascript" manager="javax">
-        <attribute name="input"/>
-        <attribute name="property"/>
-        <![CDATA[
-            // getting the value
-            input = attributes.get("input");
-            property = attributes.get("property");
-            if (input == null || property == null) {
-               self.fail("both 'input' and 'property' attributes must be set.");
-            }
-            if (input.startsWith("${") || input == "" ) {
-                // Set the result of an undefined (unexpanded) or "empty string" variable to 'NA'
-                project.setProperty(attributes.get("property"), "NA");
-            }
-            else {
-                convertedInput = input.replace("\\","/");
-                project.setProperty(attributes.get("property"), convertedInput);
-            }
-        ]]>
-    </scriptdef>
-
-    <dirname  property="oracle_test.build.location" file="${ant.file.eclipselink.extension.oracle.test}"/>
-    <echo message="oracle_test.build.location = '${oracle_test.build.location}'"/>
-    <cleanPath input="${oracle_test.build.location}" property="oracle_test.build.location"/>
+    <dirname  property="oracle_test.build.location_temp" file="${ant.file.eclipselink.extension.oracle.test}"/>
+    <pathconvert targetos="unix" property="oracle_test.build.location">
+        <path>
+            <pathelement location="${oracle_test.build.location_temp}"/>
+        </path>
+    </pathconvert>
     <echo message="oracle_test.build.location = '${oracle_test.build.location}'"/>
     <condition property="oracle_test.2.base.dir" value="../.." else="..">
         <contains string="${oracle_test.build.location}" substring="foundation"/>
