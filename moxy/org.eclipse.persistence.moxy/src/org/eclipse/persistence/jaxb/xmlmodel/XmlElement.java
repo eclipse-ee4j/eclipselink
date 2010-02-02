@@ -28,9 +28,10 @@ import javax.xml.bind.annotation.XmlType;
  *   &lt;complexContent>
  *     &lt;extension base="{http://www.eclipse.org/eclipselink/xsds/persistence/oxm}java-attribute">
  *       &lt;all>
- *         &lt;element ref="{http://www.eclipse.org/eclipselink/xsds/persistence/oxm}xml-schema-type"/>
  *         &lt;element ref="{http://www.eclipse.org/eclipselink/xsds/persistence/oxm}xml-element-wrapper"/>
  *         &lt;element ref="{http://www.eclipse.org/eclipselink/xsds/persistence/oxm}xml-java-type-adapter"/>
+ *         &lt;element ref="{http://www.eclipse.org/eclipselink/xsds/persistence/oxm}xml-map"/>
+ *         &lt;element ref="{http://www.eclipse.org/eclipselink/xsds/persistence/oxm}xml-schema-type"/>
  *       &lt;/all>
  *       &lt;attribute name="name" type="{http://www.w3.org/2001/XMLSchema}string" default="##default" />
  *       &lt;attribute name="namespace" type="{http://www.w3.org/2001/XMLSchema}string" default="##default" />
@@ -53,23 +54,23 @@ import javax.xml.bind.annotation.XmlType;
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "", propOrder = {
-    "xmlSchemaType",
     "xmlElementWrapper",
     "xmlJavaTypeAdapter",
-    "xmlMap"
+    "xmlMap",
+    "xmlSchemaType"
 })
 public class XmlElement
     extends JavaAttribute
 {
 
-    @javax.xml.bind.annotation.XmlElement(name = "xml-schema-type", required = true)
-    protected XmlSchemaType xmlSchemaType;
     @javax.xml.bind.annotation.XmlElement(name = "xml-element-wrapper", required = true)
     protected XmlElementWrapper xmlElementWrapper;
     @javax.xml.bind.annotation.XmlElement(name = "xml-java-type-adapter", required = true)
     protected XmlJavaTypeAdapter xmlJavaTypeAdapter;
     @javax.xml.bind.annotation.XmlElement(name = "xml-map", required = true)
     protected XmlMap xmlMap;
+    @javax.xml.bind.annotation.XmlElement(name = "xml-schema-type", required = true)
+    protected XmlSchemaType xmlSchemaType;
     @XmlAttribute
     protected String name;
     @XmlAttribute
@@ -94,30 +95,6 @@ public class XmlElement
     protected Boolean xmlAttachmentRef;
     @XmlAttribute(name = "xml-mime-type")
     protected String xmlMimeType;
-  
-    /**
-     * Gets the value of the xmlSchemaType property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link XmlSchemaType }
-     *     
-     */
-    public XmlSchemaType getXmlSchemaType() {
-        return xmlSchemaType;
-    }
-
-    /**
-     * Sets the value of the xmlSchemaType property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link XmlSchemaType }
-     *     
-     */
-    public void setXmlSchemaType(XmlSchemaType value) {
-        this.xmlSchemaType = value;
-    }
 
     /**
      * Gets the value of the xmlElementWrapper property.
@@ -189,6 +166,30 @@ public class XmlElement
      */
     public void setXmlMap(XmlMap value) {
         this.xmlMap = value;
+    }
+
+    /**
+     * Gets the value of the xmlSchemaType property.
+     * 
+     * @return
+     *     possible object is
+     *     {@link XmlSchemaType }
+     *     
+     */
+    public XmlSchemaType getXmlSchemaType() {
+        return xmlSchemaType;
+    }
+
+    /**
+     * Sets the value of the xmlSchemaType property.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link XmlSchemaType }
+     *     
+     */
+    public void setXmlSchemaType(XmlSchemaType value) {
+        this.xmlSchemaType = value;
     }
 
     /**
