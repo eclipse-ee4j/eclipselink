@@ -243,8 +243,18 @@
     </xs:element>
     <xs:element name="xml-map">
         <xs:complexType>
-            <xs:attribute name="key-type" type="xs:string"/>
-            <xs:attribute name="value-type" type="xs:string"/>                                                     
-        </xs:complexType>
+            <xs:all>
+                <xs:element name="key">
+                    <xs:complexType>
+                        <xs:attribute name="type" type="xs:string" />
+                    </xs:complexType>
+                </xs:element>
+                <xs:element name="value">
+                    <xs:complexType>
+                        <xs:attribute name="type" type="xs:string" />
+                    </xs:complexType>
+                </xs:element>
+            </xs:all>
+        </xs:complexType> 
     </xs:element>
 </xs:schema>
