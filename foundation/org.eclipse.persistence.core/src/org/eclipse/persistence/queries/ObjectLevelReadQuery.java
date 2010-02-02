@@ -1395,14 +1395,6 @@ public abstract class ObjectLevelReadQuery extends ObjectBuildingQuery {
     }
 
     /**
-     * INTERNAL:
-     * Return the time this query actually went to the database
-     */
-    public long getExecutionTime() {
-        return executionTime;
-    }
-
-    /**
      * PUBLIC:
      * When using Query By Example, an instance of QueryByExamplePolicy is used to customize the query.
      * The policy is useful when special operations are to be used for comparisons (notEqual, lessThan,

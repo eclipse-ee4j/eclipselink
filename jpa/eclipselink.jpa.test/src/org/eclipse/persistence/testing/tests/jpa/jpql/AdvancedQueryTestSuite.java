@@ -778,14 +778,14 @@ public class AdvancedQueryTestSuite extends JUnitTestCase {
             if (counter.getSqlStatements().size() > 0) {
                 fail("Query cache was not used: " + counter.getSqlStatements());
             }
-            ((JpaCache)getEntityManagerFactory().getCache()).clearQueryCache();
+            clearCache();
             // Preload uow to test query cache in uow.
             em.createQuery("Select e from Employee e").getResultList();
             query.getResultList();
             if (result.size() != query.getResultList().size()) {
                 fail("List result size is not correct on cached query in unit of work.");
             }
-            ((JpaCache)getEntityManagerFactory().getCache()).clearQueryCache();
+            clearCache();
             // Also test query cache in early transaction.
             em.persist(new Address());
             em.flush();

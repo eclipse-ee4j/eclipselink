@@ -113,14 +113,18 @@ public class DataReadQuery extends ReadQuery {
      */
     public Object execute(AbstractSession session, AbstractRecord row) throws DatabaseException {
         if (shouldCacheQueryResults()) {
-            if (getContainerPolicy().overridesRead()) {
+            if (this.containerPolicy.overridesRead()) {
                 throw QueryException.cannotCacheCursorResultsOnQuery(this);
             }
-            if (isPrepared()) {// only prepared queries can have cached results.
+            if (this.isPrepared) {// only prepared queries can have cached results.
                 Object results = getQueryResults(session, row, true);
-                // Bug6138532 - if results are "cached no results", return null immediately
+                // Bug6138532 - if results are "cached no results", return null or an empty collection.
                 if (results == InvalidObject.instance) {
-                    return getContainerPolicy().containerInstance(0);
+                    if (this.resultType == VALUE) {
+                        return null;
+                    } else {
+                        return this.containerPolicy.containerInstance(0);
+                    }
                 }
                 if (results != null) {
                     return results;
