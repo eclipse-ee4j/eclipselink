@@ -53,6 +53,8 @@ public class UnitOfWorkTestSuite extends TestSuite {
         addTest(new UnitOfWorkRevertWithNewObjectTest());
         //bug 4569755
         addTest(new UnitOfWorkNullPrimaryKeyTest());
+        //  Bug 294259 -  Duplicate existence checks in same UOW
+        addTest(new UnitOfWorkExistingObjectsListTest());
 
         // Revived these tests as they were commented out with no reason given.
         addTest(new MergeUnitOfWorkTest(PopulationManager.getDefaultManager().getObject(Employee.class, "0001")));
