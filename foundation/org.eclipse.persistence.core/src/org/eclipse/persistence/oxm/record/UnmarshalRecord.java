@@ -24,6 +24,7 @@ import javax.xml.namespace.QName;
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.descriptors.DescriptorEvent;
 import org.eclipse.persistence.descriptors.DescriptorEventManager;
+import org.eclipse.persistence.exceptions.DescriptorException;
 import org.eclipse.persistence.exceptions.EclipseLinkException;
 import org.eclipse.persistence.exceptions.XMLMarshalException;
 import org.eclipse.persistence.internal.helper.DatabaseField;
@@ -372,10 +373,40 @@ public class UnmarshalRecord extends XMLRecord implements ContentHandler, Lexica
     }
 
     public void startDocument() throws SAXException {
-        startDocument(null);
     }
+    
+    private void initializeRecord(Attributes attrs) throws SAXException{
+    	XMLDescriptor xmlDescriptor = (XMLDescriptor) treeObjectBuilder.getDescriptor();    	
+    	if(!xmlDescriptor.hasInheritance() || xmlDescriptor.getInheritancePolicy().getClassIndicatorField() == null){
+    		treeObjectBuilder = (TreeObjectBuilder)xmlDescriptor.getObjectBuilder();
+    		initializeRecord((XMLMapping)null);
+        	return;
+        }
+    	this.setAttributes(attrs);
+    	Class classValue = xmlDescriptor.getInheritancePolicy().classFromRow(this, session);
+    	 if (classValue == null) {
+             // no xsi:type attribute - look for type indicator on the default root element
+             QName leafElementType = xmlDescriptor.getDefaultRootElementType();
 
-    public void startDocument(XMLMapping selfRecordMapping) throws SAXException {
+             // if we have a user-set type, try to get the class from the inheritance policy
+             if (leafElementType != null) {
+                 Object indicator = xmlDescriptor.getInheritancePolicy().getClassIndicatorMapping().get(leafElementType);
+
+                 // if the inheritance policy does not contain the user-set type, throw an exception
+                 if (indicator == null) {
+                     throw DescriptorException.missingClassForIndicatorFieldValue(leafElementType, xmlDescriptor.getInheritancePolicy().getDescriptor());
+                 }
+                 classValue = (Class)indicator;
+             }
+         }
+         if (classValue != null) {
+             xmlDescriptor = (XMLDescriptor)session.getDescriptor(classValue);             
+         }    
+         treeObjectBuilder = (TreeObjectBuilder)xmlDescriptor.getObjectBuilder();
+         initializeRecord((XMLMapping)null);
+    }
+    
+    public void initializeRecord(XMLMapping selfRecordMapping) throws SAXException {
         try {
             XMLDescriptor xmlDescriptor = (XMLDescriptor) treeObjectBuilder.getDescriptor();
             if(xmlDescriptor.isSequencedObject()) {
@@ -550,6 +581,10 @@ public class UnmarshalRecord extends XMLRecord implements ContentHandler, Lexica
     }
 
     public void startElement(String namespaceURI, String localName, String qName, Attributes atts) throws SAXException {
+    	if(getCurrentObject() == null){
+    		initializeRecord(atts);
+    	}
+    	
         if(null != xPathNode.getXPathFragment() && xPathNode.getXPathFragment().nameIsText()) {
             if (null != xPathNode.getUnmarshalNodeValue()) {
                 xPathNode.getUnmarshalNodeValue().endElement(xPathFragment, this);

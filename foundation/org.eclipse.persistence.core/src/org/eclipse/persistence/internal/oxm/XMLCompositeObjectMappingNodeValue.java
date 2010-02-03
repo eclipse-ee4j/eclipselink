@@ -440,7 +440,8 @@ public class XMLCompositeObjectMappingNodeValue extends XMLRelationshipMappingNo
 	            childRecord.setSelfRecord(true);
 	            unmarshalRecord.setChildRecord(childRecord);
 	            childRecord.setXMLReader(unmarshalRecord.getXMLReader());
-	            childRecord.startDocument(this.xmlCompositeObjectMapping);
+	            childRecord.startDocument();
+	            childRecord.initializeRecord(this.xmlCompositeObjectMapping);
 
 	            return childRecord;
             } else{
