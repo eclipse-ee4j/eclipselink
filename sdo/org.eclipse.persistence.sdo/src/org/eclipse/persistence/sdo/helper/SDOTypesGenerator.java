@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2009 Oracle. All rights reserved.
+ * Copyright (c) 1998, 2010 Oracle. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -847,10 +847,8 @@ public class SDOTypesGenerator {
         if (complexContent != null) {
             if (complexContent.getExtension() != null) {
                 processExtension(targetNamespace, defaultNamespace, owningType, complexContent.getExtension(), false);
-            } else {
-                if (complexContent.getRestriction() != null) {
-                    processRestriction(targetNamespace, defaultNamespace, owningType, complexContent.getRestriction());
-                }
+            } else if (complexContent.getRestriction() != null) {
+                processRestriction(targetNamespace, defaultNamespace, owningType, complexContent.getRestriction());
             }
         }
     }
@@ -872,19 +870,22 @@ public class SDOTypesGenerator {
             String qualifiedType = extension.getBaseType();
             SDOType baseType = getSDOTypeForName(targetNamespace, defaultNamespace, qualifiedType);
             QName baseQName = getQNameForString(defaultNamespace, qualifiedType);
-            
-            if(baseType != null && !baseType.isFinalized() && baseQName.getNamespaceURI().equals(targetNamespace)) {
-                if(baseType.isDataType()) {
-                    SimpleType baseSimpleType = (SimpleType) rootSchema.getTopLevelSimpleTypes().get(baseQName.getLocalPart());
-                    if(baseSimpleType != null){
-                        processGlobalSimpleType(targetNamespace, defaultNamespace, baseSimpleType);
-                    }
-                } else {
-                    ComplexType baseComplexType = (ComplexType) rootSchema.getTopLevelComplexTypes().get(baseQName.getLocalPart());
-                    if(baseComplexType != null){
-                        processGlobalComplexType(targetNamespace, defaultNamespace, baseComplexType);
+
+            if(baseType != null) {
+                if(!baseType.isFinalized() && baseQName.getNamespaceURI().equals(targetNamespace)) {
+                    if(baseType.isDataType()) {
+                        SimpleType baseSimpleType = (SimpleType) rootSchema.getTopLevelSimpleTypes().get(baseQName.getLocalPart());
+                        if(baseSimpleType != null){
+                            processGlobalSimpleType(targetNamespace, defaultNamespace, baseSimpleType);
+                        }
+                    } else {
+                        ComplexType baseComplexType = (ComplexType) rootSchema.getTopLevelComplexTypes().get(baseQName.getLocalPart());
+                        if(baseComplexType != null){
+                            processGlobalComplexType(targetNamespace, defaultNamespace, baseComplexType);
+                        }
                     }
                 }
+                owningType.setOpen(owningType.isOpen() || baseType.isOpen());
             } 
             if (qualifiedType != null) {
                 processBaseType(baseType, targetNamespace, defaultNamespace, owningType, qualifiedType, simpleContent);
@@ -903,7 +904,7 @@ public class SDOTypesGenerator {
     private void processRestriction(String targetNamespace, String defaultNamespace, SDOType owningType, Restriction restriction) {
         if (restriction != null) {
             String qualifiedType = restriction.getBaseType();
-            processBaseType(targetNamespace, defaultNamespace, owningType, qualifiedType, false, restriction);
+            Type baseType = processBaseType(targetNamespace, defaultNamespace, owningType, qualifiedType, false, restriction);
             boolean alreadyIn = inRestriction;
             if (!alreadyIn) {
                 inRestriction = true;
@@ -921,6 +922,7 @@ public class SDOTypesGenerator {
             if (!alreadyIn) {
                 inRestriction = false;
             }
+            owningType.setOpen(owningType.isOpen() || baseType.isOpen());
         }
     }
 
@@ -987,9 +989,9 @@ public class SDOTypesGenerator {
         }
     }
 
-    private void processBaseType(String targetNamespace, String defaultNamespace, SDOType owningType, String qualifiedName, boolean simpleContentExtension, Restriction restriction) {
+    private Type processBaseType(String targetNamespace, String defaultNamespace, SDOType owningType, String qualifiedName, boolean simpleContentExtension, Restriction restriction) {
         if (qualifiedName == null) {
-            return;
+            return null;
         }
 
         SDOType baseType = getSDOTypeForName(targetNamespace, defaultNamespace, qualifiedName);
@@ -1036,6 +1038,7 @@ public class SDOTypesGenerator {
         }
 
         processBaseType(baseType, targetNamespace, defaultNamespace, owningType, qualifiedName, simpleContentExtension);
+        return baseType;
     }
 
     private void processBaseType(SDOType baseType, String targetNamespace, String defaultNamespace, SDOType owningType, String qualifiedName, boolean simpleContentExtension) {
