@@ -290,7 +290,9 @@ public class SAXUnmarshallerHandler implements ContentHandler {
 
             if(atts != null && null == atts.getValue(XMLConstants.SCHEMA_INSTANCE_URL, XMLConstants.SCHEMA_NIL_ATTRIBUTE)) {
                 unmarshalRecord.setUnmarshalNamespaceResolver(unmarshalNamespaceResolver);
+                
                 unmarshalRecord.startDocument();
+                unmarshalRecord.initializeRecord(null);
                 xmlReader.setContentHandler(unmarshalRecord);
                 unmarshalRecord.startElement(namespaceURI, localName, qName, atts);
                 try {

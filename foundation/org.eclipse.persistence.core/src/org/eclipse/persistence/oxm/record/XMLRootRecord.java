@@ -13,6 +13,7 @@
 package org.eclipse.persistence.oxm.record;
 
 import org.eclipse.persistence.oxm.XMLRoot;
+import org.eclipse.persistence.oxm.mappings.XMLMapping;
 import org.eclipse.persistence.internal.oxm.StrBuffer;
 import org.eclipse.persistence.internal.oxm.XMLConversionManager;
 
@@ -85,6 +86,11 @@ public class XMLRootRecord extends UnmarshalRecord {
     @Override
     public void startDocument() throws SAXException {
     }
+    
+    @Override
+    public void initializeRecord(XMLMapping selfRecordMapping) throws SAXException {
+    }
+   	
 
     @Override
     public void startElement(String namespaceURI, String localName, String qName, Attributes atts) throws SAXException {

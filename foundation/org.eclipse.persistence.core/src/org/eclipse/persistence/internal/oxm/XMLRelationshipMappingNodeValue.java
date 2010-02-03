@@ -90,6 +90,7 @@ public abstract class XMLRelationshipMappingNodeValue extends MappingNodeValue {
         unmarshalRecord.setChildRecord(childRecord);
         childRecord.setAttributes(atts);
         childRecord.startDocument();
+        childRecord.initializeRecord(null);
         childRecord.startElement(xPathFragment.getNamespaceURI(), xPathFragment.getLocalName(), xPathFragment.getShortName(), atts);
         unmarshalRecord.getXMLReader().setContentHandler(unmarshalRecord.getChildRecord());
         try {

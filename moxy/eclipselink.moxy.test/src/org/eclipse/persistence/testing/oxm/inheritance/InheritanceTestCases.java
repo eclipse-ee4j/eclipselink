@@ -13,11 +13,6 @@
 package org.eclipse.persistence.testing.oxm.inheritance;
 
 import java.io.InputStream;
-import java.io.FileOutputStream;
-import junit.framework.Test;
-import junit.framework.TestCase;
-import junit.framework.TestSuite;
-import org.eclipse.persistence.testing.oxm.mappings.XMLMappingTestCases;
 import org.w3c.dom.Attr;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -89,4 +84,19 @@ public class InheritanceTestCases extends OXTestCase {
         assertTrue("Wrong object returned for superclass", vehicle.getClass().equals(Vehicle.class));
 
     }
+    
+    public void testReadWithSubClassSpecified(){
+    	InputStream carStream = getClass().getClassLoader().getResourceAsStream("org/eclipse/persistence/testing/oxm/inheritance/car.xml");
+    	Object unmarshalledObject = unmarshaller.unmarshal(carStream, Car.class);
+
+    	assertTrue("Wrong object returned for subclass", unmarshalledObject instanceof Car);    	  
+    }
+    
+    public void testReadWithSuperClassSpecified(){
+    	InputStream carStream = getClass().getClassLoader().getResourceAsStream("org/eclipse/persistence/testing/oxm/inheritance/car.xml");
+    	Object unmarshalledObject = unmarshaller.unmarshal(carStream, Vehicle.class);
+
+    	assertTrue("Wrong object returned for subclass", unmarshalledObject instanceof Car);    	  
+    }
+    
 }
