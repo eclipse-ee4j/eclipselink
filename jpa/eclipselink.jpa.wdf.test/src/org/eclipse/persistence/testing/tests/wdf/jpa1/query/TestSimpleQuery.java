@@ -352,7 +352,6 @@ public class TestSimpleQuery extends JPA1Base {
     }
 
     @Test
-    @Bugzilla(bugid=301063)
     public void testCachedQueryWithoutClear() throws SQLException {
         init();
         EntityManager em = getEnvironment().getEntityManager();
@@ -565,11 +564,19 @@ public class TestSimpleQuery extends JPA1Base {
     private void verifyRowCount(Query query, int maxRows, int startPos, int expected) {
         query.setMaxResults(maxRows);
         query.setFirstResult(startPos);
+
+        assertEquals(query.getMaxResults(), maxRows);
+        assertEquals(query.getFirstResult(), startPos);
+
         int count = query.getResultList().size();
         verify(count == expected, "wrong row count: " + count);
+        
+        assertEquals(query.getMaxResults(), maxRows);
+        assertEquals(query.getFirstResult(), startPos);
     }
 
     @Test
+    @Bugzilla(bugid=301274)
     public void testMaxResult() throws SQLException {
         clearAllTables();
         JPAEnvironment env = getEnvironment();
@@ -597,7 +604,7 @@ public class TestSimpleQuery extends JPA1Base {
     }
 
     @Test
-    @Bugzilla(bugid=301274, databases=OraclePlatform.class )
+    @Bugzilla(bugid=301274)
     public void testMaxResultUnlimited() throws SQLException {
         clearAllTables();
         JPAEnvironment env = getEnvironment();
@@ -613,6 +620,20 @@ public class TestSimpleQuery extends JPA1Base {
             verifyRowCount(query, Integer.MAX_VALUE, 0, 10);
             verifyRowCount(query, Integer.MAX_VALUE, 5, 5);
             verifyRowCount(query, Integer.MAX_VALUE, 7, 3);
+        } finally {
+            closeEntityManager(em);
+        }
+    }
+    
+    @Test
+    @Bugzilla(bugid=301274)
+    public void testPagingDefaults() throws SQLException {
+        JPAEnvironment env = getEnvironment();
+        EntityManager em = env.getEntityManager();
+        try {
+            Query query = em.createQuery("select p from Project p");
+            assertEquals(0, query.getFirstResult());
+            assertEquals(Integer.MAX_VALUE, query.getMaxResults());
         } finally {
             closeEntityManager(em);
         }
