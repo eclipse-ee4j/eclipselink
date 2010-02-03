@@ -16,6 +16,7 @@ import junit.framework.Test;
 import junit.framework.TestSuite;
 
 public class SDOComplexTypeXSDTestSuite {
+
     public SDOComplexTypeXSDTestSuite() {
     }
 
@@ -24,12 +25,15 @@ public class SDOComplexTypeXSDTestSuite {
     }
 
     /**
-    *  Inherited suite mthod for generating all test cases.
+    *  Inherited suite method for generating all test cases.
     * @return
     */
     public static Test suite() {
         TestSuite suite = new TestSuite("All XSDComplexType Tests");
         suite.addTest(new TestSuite(XSDHelperComplexTypeTestCases.class));
+        suite.addTestSuite(AnyAttributeTestCases.class);
+        suite.addTestSuite(AnyTestCases.class);
         return suite;
     }
+
 }
