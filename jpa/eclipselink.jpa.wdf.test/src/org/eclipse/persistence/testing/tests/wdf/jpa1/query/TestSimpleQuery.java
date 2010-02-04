@@ -30,8 +30,6 @@ import javax.persistence.NonUniqueResultException;
 import javax.persistence.PersistenceException;
 import javax.persistence.Query;
 
-import org.eclipse.persistence.platform.database.OraclePlatform;
-import org.eclipse.persistence.testing.framework.wdf.Bugzilla;
 import org.eclipse.persistence.testing.framework.wdf.JPAEnvironment;
 import org.eclipse.persistence.testing.framework.wdf.ToBeInvestigated;
 import org.eclipse.persistence.testing.models.wdf.jpa1.employee.Department;
@@ -576,7 +574,6 @@ public class TestSimpleQuery extends JPA1Base {
     }
 
     @Test
-    @Bugzilla(bugid=301274)
     public void testMaxResult() throws SQLException {
         clearAllTables();
         JPAEnvironment env = getEnvironment();
@@ -604,7 +601,6 @@ public class TestSimpleQuery extends JPA1Base {
     }
 
     @Test
-    @Bugzilla(bugid=301274)
     public void testMaxResultUnlimited() throws SQLException {
         clearAllTables();
         JPAEnvironment env = getEnvironment();
@@ -626,7 +622,6 @@ public class TestSimpleQuery extends JPA1Base {
     }
     
     @Test
-    @Bugzilla(bugid=301274)
     public void testPagingDefaults() throws SQLException {
         JPAEnvironment env = getEnvironment();
         EntityManager em = env.getEntityManager();

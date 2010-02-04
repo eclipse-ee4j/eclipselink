@@ -69,6 +69,8 @@ import org.eclipse.persistence.sessions.Session;
  * executed.
  */
 public class EJBQueryImpl<X> implements JpaQuery<X> {
+    
+    private static final int UNDEFINED = -1;
 
     /**
      * Wrapped native query. The query may be {@link #isShared}
@@ -79,8 +81,8 @@ public class EJBQueryImpl<X> implements JpaQuery<X> {
     protected String queryName = null;
     protected Map<String, Object> parameterValues = null;
     protected Map<Parameter<?>, Parameter<?>> parameters;
-    protected int firstResultIndex = -1; // -1 indicates undefined
-    protected int maxResults = -1; // -1 indicates undefined
+    protected int firstResultIndex = UNDEFINED; 
+    protected int maxResults = UNDEFINED; 
 
     protected LockModeType lockMode = null;
 
@@ -807,6 +809,9 @@ public class EJBQueryImpl<X> implements JpaQuery<X> {
      * @since Java Persistence API 2.0
      */
     public int getFirstResult() {
+        if (this.firstResultIndex == UNDEFINED) {
+            return 0;
+        }
         return this.firstResultIndex;
     }
 
@@ -820,7 +825,11 @@ public class EJBQueryImpl<X> implements JpaQuery<X> {
         if (startPosition < 0) {
             throw new IllegalArgumentException(ExceptionLocalization.buildMessage("negative_start_position", (Object[]) null));
         }
-        firstResultIndex = startPosition;
+        if (startPosition == 0) {
+            firstResultIndex = UNDEFINED;
+        } else {
+            firstResultIndex = startPosition;
+        }
     }
 
     /**
@@ -1011,6 +1020,9 @@ public class EJBQueryImpl<X> implements JpaQuery<X> {
      * @since Java Persistence API 2.0
      */
     public int getMaxResults() {
+        if (this.maxResults == UNDEFINED) {
+            return Integer.MAX_VALUE;
+        }
         return this.maxResults;
     }
 
@@ -1023,7 +1035,11 @@ public class EJBQueryImpl<X> implements JpaQuery<X> {
         if (maxResult < 0) {
             throw new IllegalArgumentException(ExceptionLocalization.buildMessage("negative_max_result", (Object[]) null));
         }
-        this.maxResults = maxResult;
+        if (maxResult == Integer.MAX_VALUE) {
+            this.maxResults = UNDEFINED;
+        } else {
+            this.maxResults = maxResult;
+        }
     }
 
     /**
@@ -1128,13 +1144,11 @@ public class EJBQueryImpl<X> implements JpaQuery<X> {
                 readQuery = (ReadQuery) getDatabaseQueryInternal();
                 int maxRows = maxResults + ((firstResultIndex >= 0) ? firstResultIndex : 0);
                 readQuery.setMaxRows(maxRows);
-                maxResults = -1;
             }
             if (firstResultIndex > -1) {
                 cloneSharedQuery();
                 readQuery = (ReadQuery) getDatabaseQueryInternal();
                 readQuery.setFirstResult(firstResultIndex);
-                firstResultIndex = -1;
             }
         }
     }
