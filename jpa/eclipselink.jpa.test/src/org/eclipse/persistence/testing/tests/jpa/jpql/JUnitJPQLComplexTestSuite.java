@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2009 Oracle. All rights reserved.
+ * Copyright (c) 1998, 2010 Oracle. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -51,6 +51,7 @@ import org.eclipse.persistence.testing.models.jpa.advanced.EmployeePopulator;
 import org.eclipse.persistence.testing.models.jpa.advanced.Man;
 import org.eclipse.persistence.testing.models.jpa.advanced.PartnerLinkPopulator;
 import org.eclipse.persistence.testing.models.jpa.advanced.SmallProject;
+import org.eclipse.persistence.testing.models.jpa.advanced.Woman;
 
 import org.eclipse.persistence.testing.models.jpa.advanced.LargeProject;
 import org.eclipse.persistence.testing.models.jpa.advanced.Project;
@@ -201,6 +202,8 @@ public class JUnitJPQLComplexTestSuite extends JUnitTestCase
         suite.addTest(new JUnitJPQLComplexTestSuite("mathInSelectTest"));
         suite.addTest(new JUnitJPQLComplexTestSuite("paramNoVariableTest"));
         suite.addTest(new JUnitJPQLComplexTestSuite("mappedContainerPolicyCompoundMapKeyTest"));
+        suite.addTest(new JUnitJPQLComplexTestSuite("updateWhereExistsTest"));
+        suite.addTest(new JUnitJPQLComplexTestSuite("deleteWhereExistsTest"));
         
         return suite;
     }
@@ -2538,5 +2541,54 @@ public class JUnitJPQLComplexTestSuite extends JUnitTestCase
         closeEntityManager(em);
     }
     
-}
+    public void updateWhereExistsTest() {
+        whereExistsTest(true);
+    }
+    
+    public void deleteWhereExistsTest() {
+        whereExistsTest(false);
+    }
+    
+    void whereExistsTest(boolean shouldUpdate) {
+        String lastName = (shouldUpdate ? "update" : "delete") + "WhereExistsTest";
+        int nMen = 4;
+        int nWomen = 2;
+        Assert.assertTrue("Test setup problem: nMen should be greater than nWomen", nMen > nWomen);
+                
+        EntityManager em = createEntityManager();
+        String whereExists = " WHERE EXISTS (SELECT w FROM Woman w WHERE w.firstName = m.firstName AND w.lastName = m.lastName AND m.lastName = '"+lastName+"')";
+        String jpqlCount = "SELECT COUNT(m) FROM Man m" + whereExists;
+        Query countQuery = em.createQuery(jpqlCount);
+        String jpqlUpdateOrDelete = (shouldUpdate ? "UPDATE Man m SET m.firstName = 'New'" : "DELETE FROM Man m") + whereExists;
+        Query updateOrDeleteQuery = em.createQuery(jpqlUpdateOrDelete);
+        
+        beginTransaction(em);
+        try {
+            // setup
+            for(int i=0; i < nMen; i++) {
+                em.persist(new Man(Integer.toString(i), lastName));
+                if(i < nWomen) {
+                    em.persist(new Woman(Integer.toString(i), lastName));
+                }
+            }
+            em.flush();
+            em.clear();
+            long nMenRead = (Long)countQuery.getSingleResult();
+            Assert.assertTrue("Test setup problem: nMen should be equal to nWomen before update/delete", nWomen == nMenRead);
 
+            // test
+            int nMenUpdatedOrDeleted = updateOrDeleteQuery.executeUpdate();
+            em.flush();
+            em.clear();
+            nMenRead = (Long)countQuery.getSingleResult();
+            
+            // verify
+            Assert.assertTrue("nMenUpdatedOrDeleted should be equal to nWomen", nMenUpdatedOrDeleted == nWomen);
+            Assert.assertTrue("nMenRead should be 0 after deletion", nMenRead == 0);
+        } finally {
+            // clean-up
+            rollbackTransaction(em);
+            closeEntityManager(em);
+        }
+    }    
+}
