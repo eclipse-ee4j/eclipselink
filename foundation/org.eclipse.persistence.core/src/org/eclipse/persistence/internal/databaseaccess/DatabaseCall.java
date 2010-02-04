@@ -1032,6 +1032,14 @@ public abstract class DatabaseCall extends DatasourceCall {
     }
 
     /**
+     * INTERNAL
+     * Indicates whether usesBinding has been set.
+     */
+    public boolean isUsesBindingSet() {
+        return this.usesBinding != null;
+    }
+
+    /**
      * INTERNAL:
      * Return if the locator is required for the LOB (BLOB and CLOB) writing.
      */

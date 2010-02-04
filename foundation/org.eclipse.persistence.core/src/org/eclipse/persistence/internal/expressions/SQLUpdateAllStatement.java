@@ -106,6 +106,11 @@ public class SQLUpdateAllStatement extends SQLModifyStatement {
                     // closing bracket for EXISTS
                     writer.write(")");
                 }
+                // Bug 301888 - DB2: UpdateAll/DeleteAll using WHERE EXIST fail.
+                // If selectCallForExist has been explicitly set to not use binding then call should be set the same way. 
+                if(selectCallForExist.isUsesBindingSet() && !selectCallForExist.usesBinding(session)) {
+                    call.setUsesBinding(false);
+                }
             }
 
             call.setSQLString(writer.toString());

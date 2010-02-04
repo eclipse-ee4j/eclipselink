@@ -25,6 +25,12 @@ public class Man {
 
 	public Man() {}
     
+    public Man(String firstName, String lastName) {
+        this();
+        this.firstName = firstName;
+        this.lastName = lastName;
+    }
+    
     @Id
     @GeneratedValue(strategy=IDENTITY)
 	public int getId() { 

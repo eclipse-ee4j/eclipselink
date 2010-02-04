@@ -143,6 +143,11 @@ public class SQLDeleteAllStatement extends SQLDeleteStatement {
                     // The result is (target table is SALARY):
                     // "WHERE EXISTS(SELECT t0.EMP_ID FROM EMPLOYEE t0, SALARY t1 WHERE (((t0.F_NAME LIKE 'a') AND (t1.SALARY = 0)) AND (t1.EMP_ID = t0.EMP_ID)) AND t1.EMP_ID = SALARY.EMP_ID)"
                 }
+                // Bug 301888 - DB2: UpdateAll/DeleteAll using WHERE EXIST fail.
+                // If selectCallForExist has been explicitly set to not use binding then call should be set the same way. 
+                if(selectCallForExist.isUsesBindingSet() && !selectCallForExist.usesBinding(session)) {
+                    call.setUsesBinding(false);
+                }
             } else if (inheritanceExpression != null) {
                 writer.write(" WHERE ");
                 // Example: (PROJ_TYPE = 'L')
