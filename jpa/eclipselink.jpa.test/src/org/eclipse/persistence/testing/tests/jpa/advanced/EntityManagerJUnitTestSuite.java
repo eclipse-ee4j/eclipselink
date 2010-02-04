@@ -121,6 +121,7 @@ import org.eclipse.persistence.internal.sessions.UnitOfWorkImpl;
 import org.eclipse.persistence.internal.weaving.PersistenceWeaved;
 import org.eclipse.persistence.internal.weaving.PersistenceWeavedLazy;
 import org.eclipse.persistence.queries.FetchGroupTracker;
+import org.eclipse.persistence.platform.server.was.WebSphere_7_Platform;
 
 import org.eclipse.persistence.testing.framework.DriverWrapper;
 import org.eclipse.persistence.testing.framework.junit.JUnitTestCase;
@@ -5961,6 +5962,10 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
     
     //GlassFish Bug854  PU name doesn't exist or PU with the wrong name
     public void testCreateEntityManagerFactory2() {
+        if (getServerSession().getServerPlatform() != null && getServerSession().getServerPlatform() instanceof WebSphere_7_Platform){
+            warning("The test <testCreateEntityManagerFactory2> is not supported on WebSphere, because the ejb3.0 spec doesn't say that the PersistenceException must throw at this situation, just EclipseLink's implementation beyond the spec. So this test should not run on WebSphere 7.0.0.5");
+            return;
+        }
         EntityManagerFactory emf = null;
         PersistenceProvider provider = new PersistenceProvider();
         try{
