@@ -25,8 +25,9 @@ public class HockeyPlayer implements Serializable {
     private Vitals vitals;
     private String lastName;
     private String firstName;
-    
-	public HockeyPlayer () {}
+    private HockeyCoach coach;
+
+    public HockeyPlayer () {}
 
     @Column(name="FNAME")
 	public String getFirstName() { 
@@ -71,6 +72,15 @@ public class HockeyPlayer implements Serializable {
     
     public void setVitals(Vitals vitals) {
         this.vitals = vitals;
+    }
+
+    @ManyToOne
+    public HockeyCoach getCoach() {
+        return coach;
+    }
+
+    public void setCoach(HockeyCoach coach) {
+        this.coach = coach;
     }
     
     public String toString() {

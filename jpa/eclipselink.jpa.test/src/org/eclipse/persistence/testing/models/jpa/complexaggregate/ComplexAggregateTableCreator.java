@@ -377,6 +377,17 @@ public class ComplexAggregateTableCreator extends org.eclipse.persistence.tools.
         fieldTEAMID.setShouldAllowNull(true);
         fieldTEAMID.setForeignKeyFieldName("CMP3_HOCKEY_TEAM.ID");
         table.addField(fieldTEAMID);
+
+        FieldDefinition fieldHockeyCoach_ID = new FieldDefinition();
+        fieldHockeyCoach_ID.setName("COACH_ID");
+        fieldHockeyCoach_ID.setTypeName("NUMBER");
+        fieldHockeyCoach_ID.setSize(18);
+        fieldHockeyCoach_ID.setSubSize(0);
+        fieldHockeyCoach_ID.setIsPrimaryKey(false);
+        fieldHockeyCoach_ID.setIsIdentity(false);
+        fieldHockeyCoach_ID.setUnique(false);
+        fieldHockeyCoach_ID.setShouldAllowNull(true);
+        table.addField(fieldHockeyCoach_ID);
         
         return table;
     }

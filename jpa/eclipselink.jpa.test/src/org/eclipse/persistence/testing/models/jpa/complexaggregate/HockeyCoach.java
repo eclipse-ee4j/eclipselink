@@ -16,6 +16,9 @@ package org.eclipse.persistence.testing.models.jpa.complexaggregate;
 import javax.persistence.*;
 
 import java.io.Serializable;
+import java.util.HashMap;
+import java.util.Map;
+
 import static javax.persistence.GenerationType.*;
 
 @Entity
@@ -25,8 +28,11 @@ public class HockeyCoach implements Serializable {
     private CoachVitals vitals;
     private String lastName;
     private String firstName;
+    private Map<HockeyPlayerName, HockeyPlayer> favouritePlayers;
     
-    public HockeyCoach () {}
+    public HockeyCoach () {
+        favouritePlayers = new HashMap<HockeyPlayerName, HockeyPlayer>();
+    }
 
     @Column(name="FNAME")
     public String getFirstName() { 
@@ -71,6 +77,24 @@ public class HockeyCoach implements Serializable {
     
     public void setVitals(CoachVitals vitals) {
         this.vitals = vitals;
+    }
+
+    @OneToMany(mappedBy="coach")
+    public Map<HockeyPlayerName, HockeyPlayer> getFavouritePlayers() {
+        return favouritePlayers;
+    }
+
+    public void setFavouritePlayers(
+            Map<HockeyPlayerName, HockeyPlayer> favouritePlayers) {
+        this.favouritePlayers = favouritePlayers;
+    }
+    
+    public void addFavouritePlayer(HockeyPlayer player){
+        player.setCoach(this);
+        HockeyPlayerName name = new HockeyPlayerName();
+        name.setFirstName(player.getFirstName());
+        name.setLastName(player.getLastName());
+        favouritePlayers.put(name, player);
     }
     
     public String toString() {

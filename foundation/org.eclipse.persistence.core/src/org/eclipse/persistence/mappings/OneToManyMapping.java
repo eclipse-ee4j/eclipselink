@@ -121,7 +121,6 @@ public class OneToManyMapping extends CollectionMapping implements RelationalMap
         this.targetForeignKeyFields = org.eclipse.persistence.internal.helper.NonSynchronizedVector.newInstance(1);
 
         this.deleteAllQuery = new DeleteAllQuery();
-        this.addTargetQuery = new DataModifyQuery();
         this.removeTargetQuery = new DataModifyQuery();
         this.removeAllTargetsQuery = new DataModifyQuery();
         
@@ -245,7 +244,9 @@ public class OneToManyMapping extends CollectionMapping implements RelationalMap
         OneToManyMapping clone = (OneToManyMapping)super.clone();
         clone.setTargetForeignKeysToSourceKeys(new HashMap(getTargetForeignKeysToSourceKeys()));
         
-        clone.addTargetQuery = (DataModifyQuery) this.addTargetQuery.clone();
+        if (addTargetQuery != null){
+            clone.addTargetQuery = (DataModifyQuery) this.addTargetQuery.clone();
+        }
         clone.removeTargetQuery = (DataModifyQuery) this.removeTargetQuery.clone();
         clone.removeAllTargetsQuery = (DataModifyQuery) this.removeAllTargetsQuery.clone();
         
@@ -557,15 +558,16 @@ public class OneToManyMapping extends CollectionMapping implements RelationalMap
      * Initialize addTargetQuery.
      */
     protected void initializeAddTargetQuery(AbstractSession session) {
+        AbstractRecord modifyRow = createModifyRowForAddTargetQuery();
+        if(modifyRow.isEmpty()) {
+            return;
+        }
+        addTargetQuery = new DataModifyQuery();
+        
         if (!addTargetQuery.hasSessionName()) {
             addTargetQuery.setSessionName(session.getName());
         }
         if (hasCustomAddTargetQuery) {
-            return;
-        }
-
-        AbstractRecord modifyRow = createModifyRowForAddTargetQuery();
-        if(modifyRow.isEmpty()) {
             return;
         }
         
@@ -1156,7 +1158,9 @@ public class OneToManyMapping extends CollectionMapping implements RelationalMap
      */
     public void setSessionName(String name) {
         super.setSessionName(name);
-        addTargetQuery.setSessionName(name);
+        if (addTargetQuery != null){
+            addTargetQuery.setSessionName(name);
+        }
         removeTargetQuery.setSessionName(name);
         removeAllTargetsQuery.setSessionName(name);
     }
@@ -1272,7 +1276,7 @@ public class OneToManyMapping extends CollectionMapping implements RelationalMap
             return true;
         }
         
-        if (containerPolicy.isMappedKeyMapPolicy()){
+        if (containerPolicy.isMappedKeyMapPolicy() && containerPolicy.requiresDataModificationEvents()){
             return true;
         }
 
@@ -1308,7 +1312,7 @@ public class OneToManyMapping extends CollectionMapping implements RelationalMap
      * Update target foreign keys after a new source was inserted. This follows following steps.
      */
     public void updateTargetRowPostInsertSource(WriteObjectQuery query) throws DatabaseException {
-        if (isReadOnly()) {
+        if (isReadOnly() || addTargetQuery == null) {
             return;
         }
 
@@ -1356,7 +1360,7 @@ public class OneToManyMapping extends CollectionMapping implements RelationalMap
      * <p>- execute the statement.
      */
     public void updateTargetForeignKeyPostUpdateSource_ObjectAdded(ObjectLevelModifyQuery query, Object objectAdded, Map extraData) throws DatabaseException {
-        if (isReadOnly()) {
+        if (isReadOnly() || addTargetQuery == null) {
             return;
         }
 

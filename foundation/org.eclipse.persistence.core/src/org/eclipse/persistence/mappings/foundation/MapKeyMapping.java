@@ -222,6 +222,14 @@ public interface MapKeyMapping extends MapComponentMapping {
     
     /**
      * INTERNAL:
+     * Return whether this mapping requires extra queries to update the rows if it is
+     * used as a key in a map.  This will typically be true if there are any parts to this mapping
+     * that are not read-only.
+     */
+    public boolean requiresDataModificationEventsForMapKey();
+    
+    /**
+     * INTERNAL:
      * Allow the key mapping to unwrap the object
      * @param key
      * @param session
