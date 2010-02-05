@@ -2558,9 +2558,7 @@ public class JUnitJPQLComplexTestSuite extends JUnitTestCase
         EntityManager em = createEntityManager();
         String whereExists = " WHERE EXISTS (SELECT w FROM Woman w WHERE w.firstName = m.firstName AND w.lastName = m.lastName AND m.lastName = '"+lastName+"')";
         String jpqlCount = "SELECT COUNT(m) FROM Man m" + whereExists;
-        Query countQuery = em.createQuery(jpqlCount);
         String jpqlUpdateOrDelete = (shouldUpdate ? "UPDATE Man m SET m.firstName = 'New'" : "DELETE FROM Man m") + whereExists;
-        Query updateOrDeleteQuery = em.createQuery(jpqlUpdateOrDelete);
         
         beginTransaction(em);
         try {
@@ -2573,18 +2571,20 @@ public class JUnitJPQLComplexTestSuite extends JUnitTestCase
             }
             em.flush();
             em.clear();
+            Query countQuery = em.createQuery(jpqlCount);
             long nMenRead = (Long)countQuery.getSingleResult();
-            Assert.assertTrue("Test setup problem: nMen should be equal to nWomen before update/delete", nWomen == nMenRead);
+            Assert.assertTrue("Test setup problem: nMenRead should be equal to nWomen before update/delete, but nMenRead ="+nMenRead+"; nWomen ="+nWomen, nWomen == nMenRead);
 
             // test
+            Query updateOrDeleteQuery = em.createQuery(jpqlUpdateOrDelete);
             int nMenUpdatedOrDeleted = updateOrDeleteQuery.executeUpdate();
             em.flush();
             em.clear();
             nMenRead = (Long)countQuery.getSingleResult();
             
             // verify
-            Assert.assertTrue("nMenUpdatedOrDeleted should be equal to nWomen", nMenUpdatedOrDeleted == nWomen);
-            Assert.assertTrue("nMenRead should be 0 after deletion", nMenRead == 0);
+            Assert.assertTrue("nMenUpdatedOrDeleted should be equal to nWomen, but nMenUpdatedOrDeleted ="+nMenUpdatedOrDeleted+"; nWomen ="+nWomen, nMenUpdatedOrDeleted == nWomen);
+            Assert.assertTrue("nMenRead should be 0 after deletion, but nMenRead ="+nMenRead, nMenRead == 0);
         } finally {
             // clean-up
             rollbackTransaction(em);
