@@ -126,8 +126,12 @@ public abstract class AbstractDirectMapping extends DatabaseMapping  implements 
      * Used when initializing queries for mappings that use a Map
      * Called when the insert query is being initialized to ensure the fields for the map key are in the insert query
      */
-    public void addFieldsForMapKey(AbstractRecord joinRow){
-        joinRow.put(getField(), null);
+    public void addFieldsForMapKey(AbstractRecord joinRow) {
+        if (!isReadOnly()){
+            if (getField().isUpdatable()){
+                joinRow.put(getField(), null);
+            }
+        }
     }
 
     /**
@@ -1060,7 +1064,8 @@ public abstract class AbstractDirectMapping extends DatabaseMapping  implements 
     public void preinitializeMapKey(DatabaseTable table) throws DescriptorException {
         keyTableForMapKey = table;
     }
-
+    
+    /**
     /**
      * INTERNAL:
      * Allow the selectionQuery to be modified when this MapComponentMapping is used as the value in a Map
@@ -1069,6 +1074,16 @@ public abstract class AbstractDirectMapping extends DatabaseMapping  implements 
         ((SQLSelectStatement)((DataReadQuery)selectionQuery).getSQLStatement()).normalize(session, null);
     }
     
+    /**
+     * INTERNAL:
+     * Return whether this mapping requires extra queries to update the rows if it is
+     * used as a key in a map.  This will typically be true if there are any parts to this mapping
+     * that are not read-only.
+     */
+    public boolean requiresDataModificationEventsForMapKey(){
+        return !isReadOnly() && getField().isUpdatable();
+    }
+
     /**
      * PUBLIC:
      * Some databases do not properly support all of the base data types. For these databases,

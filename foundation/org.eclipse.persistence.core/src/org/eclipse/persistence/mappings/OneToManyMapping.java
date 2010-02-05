@@ -120,7 +120,6 @@ public class OneToManyMapping extends CollectionMapping implements RelationalMap
         this.targetForeignKeyFields = org.eclipse.persistence.internal.helper.NonSynchronizedVector.newInstance(1);
 
         this.deleteAllQuery = new DeleteAllQuery();
-        this.addTargetQuery = new DataModifyQuery();
         this.removeTargetQuery = new DataModifyQuery();
         this.removeAllTargetsQuery = new DataModifyQuery();
         
@@ -243,8 +242,10 @@ public class OneToManyMapping extends CollectionMapping implements RelationalMap
     public Object clone() {
         OneToManyMapping clone = (OneToManyMapping)super.clone();
         clone.setTargetForeignKeysToSourceKeys(new HashMap(getTargetForeignKeysToSourceKeys()));
-        
-        clone.addTargetQuery = (DataModifyQuery) this.addTargetQuery.clone();
+
+        if (addTargetQuery != null){
+            clone.addTargetQuery = (DataModifyQuery) this.addTargetQuery.clone();
+        }
         clone.removeTargetQuery = (DataModifyQuery) this.removeTargetQuery.clone();
         clone.removeAllTargetsQuery = (DataModifyQuery) this.removeAllTargetsQuery.clone();
         
@@ -552,15 +553,16 @@ public class OneToManyMapping extends CollectionMapping implements RelationalMap
      * Initialize addTargetQuery.
      */
     protected void initializeAddTargetQuery(AbstractSession session) {
+        AbstractRecord modifyRow = createModifyRowForAddTargetQuery();
+        if(modifyRow.isEmpty()) {
+            return;
+        }
+        addTargetQuery = new DataModifyQuery();
+        
         if (!addTargetQuery.hasSessionName()) {
             addTargetQuery.setSessionName(session.getName());
         }
         if (hasCustomAddTargetQuery) {
-            return;
-        }
-
-        AbstractRecord modifyRow = createModifyRowForAddTargetQuery();
-        if(modifyRow.isEmpty()) {
             return;
         }
         
@@ -1151,7 +1153,9 @@ public class OneToManyMapping extends CollectionMapping implements RelationalMap
      */
     public void setSessionName(String name) {
         super.setSessionName(name);
-        addTargetQuery.setSessionName(name);
+        if (addTargetQuery != null){
+            addTargetQuery.setSessionName(name);
+        }
         removeTargetQuery.setSessionName(name);
         removeAllTargetsQuery.setSessionName(name);
     }
@@ -1267,7 +1271,7 @@ public class OneToManyMapping extends CollectionMapping implements RelationalMap
             return true;
         }
         
-        if (containerPolicy.isMappedKeyMapPolicy()){
+        if (containerPolicy.isMappedKeyMapPolicy() && containerPolicy.requiresDataModificationEvents()){
             return true;
         }
 
@@ -1384,7 +1388,7 @@ public class OneToManyMapping extends CollectionMapping implements RelationalMap
      * <p>- execute the statement.
      */
     public void updateTargetForeignKeyPostUpdateSource_ObjectRemoved(ObjectLevelModifyQuery query, Object objectRemoved) throws DatabaseException {
-        if (this.isReadOnly) {
+        if (isReadOnly() || addTargetQuery == null) {
             return;
         }
         AbstractSession session = query.getSession();
@@ -1431,7 +1435,7 @@ public class OneToManyMapping extends CollectionMapping implements RelationalMap
      * <p>- execute the statement.
      */
     public void updateTargetRowPreDeleteSource(ObjectLevelModifyQuery query) throws DatabaseException {
-        if (this.isReadOnly) {
+        if (isReadOnly() || addTargetQuery == null) {
             return;
         }
 

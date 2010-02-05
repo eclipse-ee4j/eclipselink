@@ -134,9 +134,18 @@ public class AggregateObjectMapping extends AggregateMapping implements Relation
      * Called when the insert query is being initialized to ensure the fields for the map key are in the insert query
      */
     public void addFieldsForMapKey(AbstractRecord joinRow){
-        Iterator i = getReferenceDescriptor().getAllFields().iterator();
+        Iterator <DatabaseMapping> i = getReferenceDescriptor().getMappings().iterator();
         while (i.hasNext()){
-            joinRow.put((DatabaseField)i.next(), null);
+            DatabaseMapping mapping = i.next();
+            if (!mapping.isReadOnly()){
+                Iterator<DatabaseField> fields = mapping.getFields().iterator();
+                while (fields.hasNext()){
+                    DatabaseField field = fields.next();
+                    if (field.isUpdatable()){
+                        joinRow.put(field, null);
+                    }
+                }
+            }
         }
     }
     
@@ -777,17 +786,22 @@ public class AggregateObjectMapping extends AggregateMapping implements Relation
     public Map extractIdentityFieldsForQuery(Object object, AbstractSession session){
         Map keyFields = new HashMap();
         ClassDescriptor descriptor =getReferenceDescriptor();
-        Iterator i = null;
-        if (descriptor.getPrimaryKeyFields() != null && ! descriptor.getPrimaryKeyFields().isEmpty()){
-            i = descriptor.getPrimaryKeyFields().iterator();
-        } else {
-            i = descriptor.getAllFields().iterator();
-        }
+        boolean usePrimaryKeyFields = (descriptor.getPrimaryKeyFields() != null && ! descriptor.getPrimaryKeyFields().isEmpty()) ? true : false;
+        Iterator <DatabaseMapping> i = descriptor.getMappings().iterator();
         while (i.hasNext()){
-            DatabaseField field = (DatabaseField)i.next();
-            Object value = descriptor.getObjectBuilder().extractValueFromObjectForField(object, field, session);
-            keyFields.put(field, value);
+            DatabaseMapping mapping = i.next();
+            if (!mapping.isReadOnly() && (!usePrimaryKeyFields || (usePrimaryKeyFields && mapping.isPrimaryKeyMapping()))){
+                Iterator<DatabaseField> fields = mapping.getFields().iterator();
+                while (fields.hasNext()){
+                    DatabaseField field = fields.next();
+                    if (field.isUpdatable()){
+                        Object value = descriptor.getObjectBuilder().extractValueFromObjectForField(object, field, session);
+                        keyFields.put(field, value);
+                    }
+                }
+            }
         }
+        
         return keyFields;
     }
     
@@ -1332,6 +1346,32 @@ public class AggregateObjectMapping extends AggregateMapping implements Relation
         return aggregate;
     }
 
+    /**
+     * INTERNAL:
+     * Return whether this mapping requires extra queries to update the rows if it is
+     * used as a key in a map.  This will typically be true if there are any parts to this mapping
+     * that are not read-only.
+     */
+    public boolean requiresDataModificationEventsForMapKey(){
+        if (getReferenceDescriptor() != null){
+            Iterator<DatabaseMapping> i = getReferenceDescriptor().getMappings().iterator();
+            while (i.hasNext()){
+                DatabaseMapping mapping = i.next();
+                if (!mapping.isReadOnly()){
+                    Iterator<DatabaseField> fields = mapping.getFields().iterator();
+                    while (fields.hasNext()){
+                        DatabaseField field = fields.next();
+                        if (field.isUpdatable()){
+                            return true;
+                        }
+                    }
+                }
+            }
+            return false;
+        }
+        return true;
+    }
+    
     /**
      * INTERNAL:
      * Rehash any hashtables based on fields.

@@ -1260,6 +1260,17 @@ public class OneToOneMapping extends ObjectReferenceMapping implements Relationa
         setSourceToTargetKeyFields(Helper.rehashMap(getSourceToTargetKeyFields()));
     }
 
+    
+    /**
+     * INTERNAL:
+     * Return whether this mapping requires extra queries to update the rows if it is
+     * used as a key in a map.  This will typically be true if there are any parts to this mapping
+     * that are not read-only.
+     */
+    public boolean requiresDataModificationEventsForMapKey(){
+        return true;
+    }
+
     /**
      * INTERNAL:
      * Set whether this mapping was originally defined as a ManyToOne

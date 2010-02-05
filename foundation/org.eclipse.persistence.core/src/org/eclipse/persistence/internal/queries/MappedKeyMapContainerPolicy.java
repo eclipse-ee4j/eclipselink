@@ -697,7 +697,7 @@ public class MappedKeyMapContainerPolicy extends MapContainerPolicy implements D
      * @return
      */
     public boolean requiresDataModificationEvents(){
-        return true;
+        return keyMapping.requiresDataModificationEventsForMapKey();
     }
     
     /**

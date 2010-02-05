@@ -18,6 +18,9 @@ import javax.persistence.*;
 import java.io.Serializable;
 import static javax.persistence.GenerationType.*;
 
+import java.util.HashMap;
+import java.util.Map;
+
 @Entity
 @Table(name="CMP3_HOCKEY_COACH")
 public class HockeyCoach implements Serializable {
@@ -26,7 +29,11 @@ public class HockeyCoach implements Serializable {
     private String lastName;
     private String firstName;
     
-    public HockeyCoach () {}
+    private Map<HockeyPlayerName, HockeyPlayer> favouritePlayers;
+    
+    public HockeyCoach () {
+        favouritePlayers = new HashMap<HockeyPlayerName, HockeyPlayer>();
+    }
 
     @Column(name="FNAME")
     public String getFirstName() { 
@@ -71,6 +78,24 @@ public class HockeyCoach implements Serializable {
     
     public void setVitals(CoachVitals vitals) {
         this.vitals = vitals;
+    }
+    
+    @OneToMany(mappedBy="coach")
+    public Map<HockeyPlayerName, HockeyPlayer> getFavouritePlayers() {
+        return favouritePlayers;
+    }
+
+    public void setFavouritePlayers(
+            Map<HockeyPlayerName, HockeyPlayer> favouritePlayers) {
+        this.favouritePlayers = favouritePlayers;
+    }
+    
+    public void addFavouritePlayer(HockeyPlayer player){
+        player.setCoach(this);
+        HockeyPlayerName name = new HockeyPlayerName();
+        name.setFirstName(player.getFirstName());
+        name.setLastName(player.getLastName());
+        favouritePlayers.put(name, player);
     }
     
     public String toString() {
