@@ -13,6 +13,7 @@
  ******************************************************************************/  
 package org.eclipse.persistence.testing.models.jpa.inherited;
 
+import javax.persistence.PreUpdate;
 import javax.persistence.Table;
 import javax.persistence.Entity;
 
@@ -31,6 +32,11 @@ public class Heineken extends Beer<Integer, Double> implements Cloneable {
         }
         
         return (getId().equals(((Heineken)anotherHeineken).getId()));
+    }
+
+    // preupdate method required for test for bug 299847
+    @PreUpdate
+    public void preUpdate() {
     }
 }
 

@@ -1396,7 +1396,7 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
                              objects.hasNext();) {
                         org.eclipse.persistence.internal.sessions.ObjectChangeSet objectChangeSet = (org.eclipse.persistence.internal.sessions.ObjectChangeSet)this.unitOfWorkChangeSet.getObjectChangeSetForClone(objects.next());
                         if (objectChangeSet != null) {
-                            objectChangeSet.clear();
+                            objectChangeSet.clear(true);
                         }
                     }
                 }

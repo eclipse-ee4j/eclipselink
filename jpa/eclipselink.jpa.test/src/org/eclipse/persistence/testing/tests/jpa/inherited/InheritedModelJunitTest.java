@@ -127,6 +127,8 @@ public class InheritedModelJunitTest extends JUnitTestCase {
         
         suite.addTest(new InheritedModelJunitTest("testSerializedElementCollectionMap"));
         suite.addTest(new InheritedModelJunitTest("testVersionUpdateOnElementCollectionChange"));
+        
+        suite.addTest(new InheritedModelJunitTest("testAddToHeinekenBeerConsumerMap"));
         return suite;
     }
     
@@ -1400,4 +1402,63 @@ public class InheritedModelJunitTest extends JUnitTestCase {
             closeEntityManager(em);
         }
     }
+    
+    // this method is a test for the fix for bug 299847, prior to the fix, it fails when
+    // weaving is disabled
+    public void testAddToHeinekenBeerConsumerMap() {
+        EntityManager em = createEntityManager();
+        beginTransaction(em);
+        
+        int beerConsumerId = 0;
+        int heinekenId = 0;
+        Calendar cal = Calendar.getInstance();
+        cal.set(2008, 12, 12);
+        try {
+            BeerConsumer initialBC = new BeerConsumer();
+            initialBC.setName("Heineken Consumer");
+            em.persist(initialBC);
+            Heineken heineken1  = new Heineken();
+            heineken1.setAlcoholContent(5.0);
+            em.persist(heineken1);
+            commitTransaction(em);
+
+            beerConsumerId = initialBC.getId();
+            heinekenId = heineken1.getId();
+            
+            clearCache();
+            
+            beginTransaction(em);
+
+            initialBC = em.find(BeerConsumer.class, initialBC.getId());
+            heineken1 = em.find(Heineken.class, heineken1.getId());
+            initialBC.addHeinekenBeerToConsume(heineken1, cal.getTime());
+            commitTransaction(em);
+            
+            clearCache();
+            
+            initialBC = em.find(BeerConsumer.class, initialBC.getId());
+            heineken1 = em.find(Heineken.class, heineken1.getId());
+            assertTrue("The beer consumer is not appropriately associated with the heineken.", heineken1.getBeerConsumer().equals(initialBC));
+            assertTrue("The heineken is not appropriately associated with the beer consumer.", initialBC.getHeinekenBeersToConsume().get(cal.getTime()).equals(heineken1));
+        } catch (RuntimeException e) {
+            fail("An exception was caught during create operation: [" + e.getMessage() + "]");
+        } finally {
+            if (isTransactionActive(em)){
+                rollbackTransaction(em);
+            }
+            beginTransaction(em);
+            BeerConsumer consumer = em.find(BeerConsumer.class, beerConsumerId);
+            Heineken heineken = em.find(Heineken.class, heinekenId);
+            if (consumer != null){
+                em.remove(consumer);
+            }
+            if (heineken != null){
+                em.remove(heineken);
+            }
+            
+            commitTransaction(em);
+            closeEntityManager(em);
+        }
+    }
+    
 }
