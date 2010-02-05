@@ -14,17 +14,11 @@ package org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmlenum;
 
 import java.io.File;
 import java.io.InputStream;
-import java.util.HashMap;
-import java.util.Map;
 
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
 import javax.xml.bind.Unmarshaller;
-import javax.xml.transform.Source;
-import javax.xml.transform.stream.StreamSource;
 
-import org.eclipse.persistence.jaxb.JAXBContext;
-import org.eclipse.persistence.jaxb.JAXBContextFactory;
 import org.eclipse.persistence.testing.jaxb.externalizedmetadata.ExternalizedMetadataTestCases;
 import org.w3c.dom.Document;
 
@@ -53,12 +47,7 @@ public class XmlEnumTestCases extends ExternalizedMetadataTestCases {
      */
     public void testXmlEnumSchemaGen() {
         String metadataFile = PATH + "eclipselink-oxm-game.xml";
-        InputStream iStream = loader.getResourceAsStream(metadataFile);
-        if (iStream == null) {
-            fail("Couldn't load metadata file [" + metadataFile + "]");
-        }
-
-        MySchemaOutputResolver outputResolver = generateSchema(new Class[] { Game.class }, CONTEXT_PATH, iStream, 1);
+        MySchemaOutputResolver outputResolver = generateSchemaWithFileName(new Class[] { Game.class }, CONTEXT_PATH, metadataFile, 1);
         // validate schema
         String controlSchema = PATH + "game-schema.xsd";
         compareSchemas(outputResolver.schemaFiles.get(EMPTY_NAMESPACE), new File(controlSchema));
@@ -72,25 +61,10 @@ public class XmlEnumTestCases extends ExternalizedMetadataTestCases {
     public void testXmlEnumUnmarshalThenMarshal() {
         // load XML metadata
         String metadataFile = PATH + "eclipselink-oxm-game.xml";
-        InputStream iStream = loader.getResourceAsStream(metadataFile);
-        if (iStream == null) {
-            fail("Couldn't load metadata file [" + metadataFile + "]");
-        }
-
-        HashMap<String, Source> metadataSourceMap = new HashMap<String, Source>();
-        metadataSourceMap.put(CONTEXT_PATH, new StreamSource(iStream));
-        Map<String, Map<String, Source>> properties = new HashMap<String, Map<String, Source>>();
-        properties.put(JAXBContextFactory.ECLIPSELINK_OXM_XML_KEY, metadataSourceMap);
-
-        // create context
-        JAXBContext jCtx = null;
-        try {
-            jCtx = (JAXBContext) JAXBContextFactory.createContext(new Class[] { Game.class }, properties);
-        } catch (JAXBException e1) {
-            e1.printStackTrace();
-            fail("JAXBContext creation failed.");
-        }
         
+        Class[] classes = new Class[] { Game.class };
+        MySchemaOutputResolver outputResolver = generateSchemaWithFileName(classes, CONTEXT_PATH, metadataFile, 1);
+               
         // load instance doc
         String src = PATH + "game.xml";
         InputStream iDocStream = loader.getResourceAsStream(src);
@@ -105,7 +79,7 @@ public class XmlEnumTestCases extends ExternalizedMetadataTestCases {
         
         // unmarshal
         Game gameObj = null;
-        Unmarshaller unmarshaller = jCtx.createUnmarshaller();
+        Unmarshaller unmarshaller = jaxbContext.createUnmarshaller();
         try {
             gameObj = (Game) unmarshaller.unmarshal(iDocStream);
             assertFalse("Unmarshalled object is null.", gameObj == null);
@@ -125,7 +99,7 @@ public class XmlEnumTestCases extends ExternalizedMetadataTestCases {
         }
 
         // marshal
-        Marshaller marshaller = jCtx.createMarshaller();
+        Marshaller marshaller = jaxbContext.createMarshaller();
         try {
             marshaller.marshal(gameCtrl, testDoc);
             assertTrue("Document comparison failed unxepectedly: ", compareDocuments(ctrlDoc, testDoc));

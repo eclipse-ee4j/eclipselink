@@ -114,12 +114,7 @@ public class XmlListTestCases extends ExternalizedMetadataTestCases {
      */
     public void testXmlListNoStringData() {
         String metadataFile = PATH + "eclipselink-oxm-no-stringdata.xml";
-        InputStream iStream = loader.getResourceAsStream(metadataFile);
-        if (iStream == null) {
-            fail("Couldn't load metadata file [" + metadataFile + "]");
-        }
-
-        MySchemaOutputResolver msor = generateSchema(CONTEXT_PATH, iStream, 1);
+        MySchemaOutputResolver msor = generateSchemaWithFileName(CONTEXT_PATH, metadataFile, 1);
 
         // validate schema
         String controlSchema = PATH + "schema-no-stringdata.xsd";
@@ -205,12 +200,8 @@ public class XmlListTestCases extends ExternalizedMetadataTestCases {
      */
     public void testXmlListOnXmlAttribute() {
         String metadataFile = PATH + "eclipselink-oxm-data-attribute.xml";
-        InputStream iStream = loader.getResourceAsStream(metadataFile);
-        if (iStream == null) {
-            fail("Couldn't load metadata file [" + metadataFile + "]");
-        }
 
-        MySchemaOutputResolver msor = generateSchema(CONTEXT_PATH, iStream, 1);
+        MySchemaOutputResolver msor = generateSchemaWithFileName(CONTEXT_PATH, metadataFile, 1);
 
         /*
         HashMap<String, Source> metadataSourceMap = new HashMap<String, Source>();

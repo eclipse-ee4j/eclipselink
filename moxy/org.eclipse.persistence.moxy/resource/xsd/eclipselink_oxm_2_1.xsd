@@ -23,28 +23,28 @@
     <xs:element name="xml-bindings">
         <xs:complexType>
             <xs:all>
-                <xs:element ref="xml-schema" />
-                <xs:element ref="xml-schema-type" />
-                <xs:element ref="xml-schema-types" />
-                <xs:element ref="xml-java-type-adapters" />
-                <xs:element name="xml-registries">
+                <xs:element ref="xml-schema" minOccurs="0"/>
+                <xs:element ref="xml-schema-type" minOccurs="0"/>
+                <xs:element ref="xml-schema-types" minOccurs="0"/>
+                <xs:element ref="xml-java-type-adapters" minOccurs="0"/>
+                <xs:element name="xml-registries" minOccurs="0">
                     <xs:complexType>
                         <xs:sequence>
-                            <xs:element ref="xml-registry" maxOccurs="unbounded" />
+                            <xs:element ref="xml-registry" minOccurs="0" maxOccurs="unbounded" />
                         </xs:sequence>
                     </xs:complexType>
                 </xs:element>
-                <xs:element name="xml-enums">
+                <xs:element name="xml-enums" minOccurs="0">
                     <xs:complexType>
                         <xs:sequence>
-                            <xs:element ref="xml-enum" maxOccurs="unbounded" />
+                            <xs:element ref="xml-enum" minOccurs="0" maxOccurs="unbounded" />
                         </xs:sequence>
                     </xs:complexType>
                 </xs:element>
-                <xs:element name="java-types">
+                <xs:element name="java-types" minOccurs="0">
                     <xs:complexType>
                         <xs:sequence>
-                            <xs:element ref="java-type" maxOccurs="unbounded" />
+                            <xs:element ref="java-type" minOccurs="0" maxOccurs="unbounded" />
                         </xs:sequence>
                     </xs:complexType>
                 </xs:element>
@@ -74,14 +74,14 @@
     <xs:element name="java-type">
         <xs:complexType>
             <xs:all>
-                <xs:element ref="xml-type" />
-                <xs:element ref="xml-root-element" />
-                <xs:element ref="xml-see-also" />
-                <xs:element ref="xml-java-type-adapter" />
-                <xs:element name="java-attributes">
+                <xs:element ref="xml-type" minOccurs="0"/>
+                <xs:element ref="xml-root-element" minOccurs="0"/>
+                <xs:element ref="xml-see-also" minOccurs="0"/>
+                <xs:element ref="xml-java-type-adapter" minOccurs="0"/>
+                <xs:element name="java-attributes" minOccurs="0">
                     <xs:complexType>
                         <xs:sequence>
-                            <xs:element ref="java-attribute" maxOccurs="unbounded" />
+                            <xs:element ref="java-attribute" minOccurs="0" maxOccurs="unbounded" />
                         </xs:sequence>
                     </xs:complexType>
                 </xs:element>
@@ -142,14 +142,14 @@
     <xs:element name="xml-schema-types">
         <xs:complexType>
             <xs:sequence>
-                <xs:element ref="xml-schema-type" maxOccurs="unbounded" />
+                <xs:element ref="xml-schema-type" minOccurs="0" maxOccurs="unbounded" />
             </xs:sequence>
         </xs:complexType>
     </xs:element>
     <xs:element name="xml-java-type-adapters">
         <xs:complexType>
             <xs:sequence>
-                <xs:element ref="xml-java-type-adapter" maxOccurs="unbounded" />
+                <xs:element ref="xml-java-type-adapter" minOccurs="0" maxOccurs="unbounded" />
             </xs:sequence>
         </xs:complexType>
     </xs:element>
@@ -241,8 +241,8 @@
             <xs:complexContent>
                 <xs:extension base="java-attribute">
                     <xs:all>
-                        <xs:element ref="xml-java-type-adapter" />
-                        <xs:element ref="xml-schema-type" />
+                        <xs:element ref="xml-java-type-adapter" minOccurs="0"/>
+                        <xs:element ref="xml-schema-type" minOccurs="0"/>
                     </xs:all>
                     <xs:attribute name="name" type="xs:string" default="##default" />
                     <xs:attribute name="namespace" type="xs:string" default="##default" />
@@ -262,7 +262,7 @@
             <xs:complexContent>
                 <xs:extension base="java-attribute">
                     <xs:all>
-                        <xs:element ref="xml-java-type-adapter" />
+                        <xs:element ref="xml-java-type-adapter" minOccurs="0"/>
                     </xs:all>
                     <xs:attribute name="xml-mixed" type="xs:boolean" default="false" />
                     <xs:attribute name="lax" type="xs:boolean" default="false" />
@@ -275,11 +275,11 @@
         <xs:complexType>
             <xs:complexContent>
                 <xs:extension base="java-attribute">
-                    <xs:all>
-                        <xs:element ref="xml-element-wrapper" />
-                        <xs:element ref="xml-java-type-adapter" />
-                        <xs:element ref="xml-map" />
-                        <xs:element ref="xml-schema-type" />
+                   <xs:all>
+                        <xs:element ref="xml-element-wrapper" minOccurs="0"/>
+                        <xs:element ref="xml-java-type-adapter" minOccurs="0"/>
+                        <xs:element ref="xml-map" minOccurs="0"/>
+                        <xs:element ref="xml-schema-type" minOccurs="0" />
                     </xs:all>
                     <xs:attribute name="name" type="xs:string" default="##default" />
                     <xs:attribute name="namespace" type="xs:string" default="##default" />
@@ -302,8 +302,8 @@
             <xs:complexContent>
                 <xs:extension base="java-attribute">
                     <xs:sequence>
-                        <xs:element ref="xml-element" maxOccurs="unbounded" />
-                        <xs:element ref="xml-element-wrapper" minOccurs="0" />
+                        <xs:element ref="xml-element" maxOccurs="unbounded" minOccurs="0"/>
+                        <xs:element ref="xml-element-wrapper" minOccurs="0"/>
                     </xs:sequence>
                     <xs:attribute name="xml-idref" type="xs:boolean" default="false" />
                     <xs:attribute name="xml-list" type="xs:boolean" default="false" />
@@ -316,7 +316,7 @@
             <xs:complexContent>
                 <xs:extension base="java-attribute">
                     <xs:all>
-                        <xs:element ref="xml-element-wrapper" />
+                        <xs:element ref="xml-element-wrapper" minOccurs="0"/>
                     </xs:all>
                     <xs:attribute name="name" type="xs:string" default="##default" />
                     <xs:attribute name="namespace" type="xs:string" />
@@ -330,7 +330,7 @@
             <xs:complexContent>
                 <xs:extension base="java-attribute">
                     <xs:sequence>
-                        <xs:element ref="xml-element-ref" maxOccurs="unbounded" />
+                        <xs:element ref="xml-element-ref" minOccurs="0" maxOccurs="unbounded" />
                         <xs:element ref="xml-element-wrapper" minOccurs="0" />
                     </xs:sequence>
                 </xs:extension>
@@ -355,12 +355,12 @@
     <xs:element name="xml-map">
         <xs:complexType>
             <xs:all>
-                <xs:element name="key">
+                <xs:element name="key" minOccurs="0">
                     <xs:complexType>
                         <xs:attribute name="type" type="xs:string" />
                     </xs:complexType>
                 </xs:element>
-                <xs:element name="value">
+                <xs:element name="value" minOccurs="0">
                     <xs:complexType>
                         <xs:attribute name="type" type="xs:string" />
                     </xs:complexType>

@@ -14,14 +14,11 @@ package org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmlinlinebinar
 
 import java.io.File;
 import java.io.InputStream;
-import java.util.HashMap;
-import java.util.Map;
 
 import javax.activation.DataHandler;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
 import javax.xml.bind.Unmarshaller;
-import javax.xml.transform.Source;
 import javax.xml.transform.stream.StreamSource;
 
 import org.eclipse.persistence.jaxb.JAXBContext;
@@ -52,13 +49,7 @@ public class XmlInlineBinaryDataTestCases extends ExternalizedMetadataTestCases 
      * Positive test.
      */
     public void testXmlInlineBinaryDataSchemaGen() {
-        String metadataFile = PATH + "eclipselink-oxm.xml";
-        InputStream iStream = loader.getResourceAsStream(metadataFile);
-        if (iStream == null) {
-            fail("Couldn't load metadata file [" + metadataFile + "]");
-        }
-
-        MySchemaOutputResolver outputResolver = generateSchema(new Class[] { MyData.class }, CONTEXT_PATH, iStream, 1);
+        MySchemaOutputResolver outputResolver = generateSchema(new Class[] { MyData.class }, CONTEXT_PATH, PATH, 1);
         // validate schema
         String controlSchema = PATH + "schema.xsd";
         compareSchemas(outputResolver.schemaFiles.get(EMPTY_NAMESPACE), new File(controlSchema));
@@ -73,23 +64,10 @@ public class XmlInlineBinaryDataTestCases extends ExternalizedMetadataTestCases 
      */
     public void testClassLevelXmlInlineBinaryOverride() {
         String metadataFile = PATH + "eclipselink-oxm-class-override.xml";
-        InputStream iStream = loader.getResourceAsStream(metadataFile);
-        if (iStream == null) {
-            fail("Couldn't load metadata file [" + metadataFile + "]");
-        }
-        HashMap<String, Source> metadataSourceMap = new HashMap<String, Source>();
-        metadataSourceMap.put(CONTEXT_PATH, new StreamSource(iStream));
-        Map<String, Map<String, Source>> properties = new HashMap<String, Map<String, Source>>();
-        properties.put(JAXBContextFactory.ECLIPSELINK_OXM_XML_KEY, metadataSourceMap);
-
-        JAXBContext jaxbContext = null;
-        try {
-            jaxbContext = (JAXBContext) JAXBContextFactory.createContext(new Class[] { MyDataClassAnnotation.class }, properties);
-        } catch (JAXBException e1) {
-            e1.printStackTrace();
-            fail("JAXBContext creation failed");
-        }
-
+        
+        Class[] classes = new Class[] { MyDataClassAnnotation.class };
+        MySchemaOutputResolver outputResolver = generateSchemaWithFileName(classes, CONTEXT_PATH, metadataFile, 1);
+      
         // setup control object
         DataHandler data = new DataHandler("THISISATEXTSTRINGFORTHISDATAHANDLER", "text/xml");      
         MyDataClassAnnotation ctrlData = new MyDataClassAnnotation();
@@ -151,23 +129,10 @@ public class XmlInlineBinaryDataTestCases extends ExternalizedMetadataTestCases 
      */
     public void testPropertyLevelXmlInlineBinaryOverride() {
         String metadataFile = PATH + "eclipselink-oxm-property.xml";
-        InputStream iStream = loader.getResourceAsStream(metadataFile);
-        if (iStream == null) {
-            fail("Couldn't load metadata file [" + metadataFile + "]");
-        }
-        HashMap<String, Source> metadataSourceMap = new HashMap<String, Source>();
-        metadataSourceMap.put(CONTEXT_PATH, new StreamSource(iStream));
-        Map<String, Map<String, Source>> properties = new HashMap<String, Map<String, Source>>();
-        properties.put(JAXBContextFactory.ECLIPSELINK_OXM_XML_KEY, metadataSourceMap);
-
-        JAXBContext jaxbContext = null;
-        try {
-            jaxbContext = (JAXBContext) JAXBContextFactory.createContext(new Class[] { MyDataPropertyAnnotation.class }, properties);
-        } catch (JAXBException e1) {
-            e1.printStackTrace();
-            fail("JAXBContext creation failed");
-        }
-
+        
+        Class[] classes = new Class[] { MyDataPropertyAnnotation.class };
+        MySchemaOutputResolver outputResolver = generateSchemaWithFileName(classes, CONTEXT_PATH, metadataFile, 1);
+        
         // setup control object
         MyDataPropertyAnnotation ctrlData = new MyDataPropertyAnnotation();
         ctrlData.bytes = new byte[] { 0, 1, 2, 3 };
@@ -292,23 +257,10 @@ public class XmlInlineBinaryDataTestCases extends ExternalizedMetadataTestCases 
      */
     public void testPropertyLevelXmlInlineBinaryOverrideViaMetadata() {
         String metadataFile = PATH + "eclipselink-oxm-property-override.xml";
-        InputStream iStream = loader.getResourceAsStream(metadataFile);
-        if (iStream == null) {
-            fail("Couldn't load metadata file [" + metadataFile + "]");
-        }
-        HashMap<String, Source> metadataSourceMap = new HashMap<String, Source>();
-        metadataSourceMap.put(CONTEXT_PATH, new StreamSource(iStream));
-        Map<String, Map<String, Source>> properties = new HashMap<String, Map<String, Source>>();
-        properties.put(JAXBContextFactory.ECLIPSELINK_OXM_XML_KEY, metadataSourceMap);
-
-        JAXBContext jaxbContext = null;
-        try {
-            jaxbContext = (JAXBContext) JAXBContextFactory.createContext(new Class[] { MyDataPropertyAnnotation.class }, properties);
-        } catch (JAXBException e1) {
-            e1.printStackTrace();
-            fail("JAXBContext creation failed");
-        }
-
+        
+        Class[] classes = new Class[] { MyDataPropertyAnnotation.class };
+        MySchemaOutputResolver outputResolver = generateSchemaWithFileName(classes, CONTEXT_PATH, metadataFile, 1);
+       
         // setup control object
         DataHandler data = new DataHandler("THISISATEXTSTRINGFORTHISDATAHANDLER", "text/xml");      
         MyDataPropertyAnnotation ctrlData = new MyDataPropertyAnnotation();
@@ -368,23 +320,10 @@ public class XmlInlineBinaryDataTestCases extends ExternalizedMetadataTestCases 
      */
     public void testClassLevelXmlInlineBinaryViaMetadata() {
         String metadataFile = PATH + "eclipselink-oxm-class.xml";
-        InputStream iStream = loader.getResourceAsStream(metadataFile);
-        if (iStream == null) {
-            fail("Couldn't load metadata file [" + metadataFile + "]");
-        }
-        HashMap<String, Source> metadataSourceMap = new HashMap<String, Source>();
-        metadataSourceMap.put(CONTEXT_PATH, new StreamSource(iStream));
-        Map<String, Map<String, Source>> properties = new HashMap<String, Map<String, Source>>();
-        properties.put(JAXBContextFactory.ECLIPSELINK_OXM_XML_KEY, metadataSourceMap);
-
-        JAXBContext jaxbContext = null;
-        try {
-            jaxbContext = (JAXBContext) JAXBContextFactory.createContext(new Class[] { MyData.class }, properties);
-        } catch (JAXBException e1) {
-            e1.printStackTrace();
-            fail("JAXBContext creation failed");
-        }
-
+        
+        Class[] classes = new Class[] { MyData.class };
+        MySchemaOutputResolver outputResolver = generateSchemaWithFileName(classes, CONTEXT_PATH, metadataFile, 1);
+        
         // setup control object
         MyData ctrlData = new MyData();
         ctrlData.bytes = new byte[] { 0, 1, 2, 3 };
@@ -441,23 +380,10 @@ public class XmlInlineBinaryDataTestCases extends ExternalizedMetadataTestCases 
      */
     public void testPropertyLevelXmlInlineBinaryViaMetadata() {
         String metadataFile = PATH + "eclipselink-oxm.xml";
-        InputStream iStream = loader.getResourceAsStream(metadataFile);
-        if (iStream == null) {
-            fail("Couldn't load metadata file [" + metadataFile + "]");
-        }
-        HashMap<String, Source> metadataSourceMap = new HashMap<String, Source>();
-        metadataSourceMap.put(CONTEXT_PATH, new StreamSource(iStream));
-        Map<String, Map<String, Source>> properties = new HashMap<String, Map<String, Source>>();
-        properties.put(JAXBContextFactory.ECLIPSELINK_OXM_XML_KEY, metadataSourceMap);
-
-        JAXBContext jaxbContext = null;
-        try {
-            jaxbContext = (JAXBContext) JAXBContextFactory.createContext(new Class[] { MyData.class }, properties);
-        } catch (JAXBException e1) {
-            e1.printStackTrace();
-            fail("JAXBContext creation failed");
-        }
-
+        
+        Class[] classes = new Class[] { MyData.class };
+        MySchemaOutputResolver outputResolver = generateSchemaWithFileName(classes, CONTEXT_PATH, metadataFile, 1);
+       
         // setup control object
         DataHandler data = new DataHandler("THISISATEXTSTRINGFORTHISDATAHANDLER", "text/xml");      
         MyData ctrlData = new MyData();

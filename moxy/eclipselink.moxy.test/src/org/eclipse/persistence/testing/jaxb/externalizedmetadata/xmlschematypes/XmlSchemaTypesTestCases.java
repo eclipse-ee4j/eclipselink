@@ -15,21 +15,15 @@ package org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmlschematypes
 import java.io.File;
 import java.io.InputStream;
 import java.math.BigDecimal;
-import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
-import java.util.HashMap;
-import java.util.Map;
 
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
 import javax.xml.bind.Unmarshaller;
-import javax.xml.transform.Source;
-import javax.xml.transform.stream.StreamSource;
 
-import org.eclipse.persistence.jaxb.JAXBContext;
-import org.eclipse.persistence.jaxb.JAXBContextFactory;
 import org.eclipse.persistence.testing.jaxb.externalizedmetadata.ExternalizedMetadataTestCases;
+import org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmlschematypes.Employee;
 import org.w3c.dom.Document;
 
 /**
@@ -57,13 +51,7 @@ public class XmlSchemaTypesTestCases extends ExternalizedMetadataTestCases {
      * Positive test.
      */
     public void testXmlSchemaTypesSchemaGen() {
-        String metadataFile = PATH + "eclipselink-oxm.xml";
-        InputStream iStream = loader.getResourceAsStream(metadataFile);
-        if (iStream == null) {
-            fail("Couldn't load metadata file [" + metadataFile + "]");
-        }
-
-        MySchemaOutputResolver outputResolver = generateSchema(new Class[] { Employee.class }, CONTEXT_PATH, iStream, 1);
+        MySchemaOutputResolver outputResolver = generateSchema(new Class[] { Employee.class }, CONTEXT_PATH, PATH, 1);
         // validate schema
         String controlSchema = PATH + "schema.xsd";
         compareSchemas(outputResolver.schemaFiles.get(EMPTY_NAMESPACE), new File(controlSchema));
@@ -76,26 +64,8 @@ public class XmlSchemaTypesTestCases extends ExternalizedMetadataTestCases {
      */
     public void testXmlSchemaTypes() {
         // load XML metadata
-        String metadataFile = PATH + "eclipselink-oxm.xml";
-        InputStream iStream = loader.getResourceAsStream(metadataFile);
-        if (iStream == null) {
-            fail("Couldn't load metadata file [" + metadataFile + "]");
-        }
+        MySchemaOutputResolver outputResolver = generateSchema(new Class[] { Employee.class }, CONTEXT_PATH, PATH, 1);
 
-        HashMap<String, Source> metadataSourceMap = new HashMap<String, Source>();
-        metadataSourceMap.put(CONTEXT_PATH, new StreamSource(iStream));
-        Map<String, Map<String, Source>> properties = new HashMap<String, Map<String, Source>>();
-        properties.put(JAXBContextFactory.ECLIPSELINK_OXM_XML_KEY, metadataSourceMap);
-
-        // create context
-        JAXBContext jCtx = null;
-        try {
-            jCtx = (JAXBContext) JAXBContextFactory.createContext(new Class[] { Employee.class }, properties);
-        } catch (JAXBException e1) {
-            e1.printStackTrace();
-            fail("JAXBContext creation failed.");
-        }
-        
         // load instance doc
         String src = PATH + "employee.xml";
         InputStream iDocStream = loader.getResourceAsStream(src);
@@ -113,7 +83,7 @@ public class XmlSchemaTypesTestCases extends ExternalizedMetadataTestCases {
         
         // unmarshal
         Employee obj = null;
-        Unmarshaller unmarshaller = jCtx.createUnmarshaller();
+        Unmarshaller unmarshaller = jaxbContext.createUnmarshaller();
         try {
             obj = (Employee) unmarshaller.unmarshal(iDocStream);
             assertFalse("Unmarshalled object is null.", obj == null);
@@ -133,7 +103,7 @@ public class XmlSchemaTypesTestCases extends ExternalizedMetadataTestCases {
         }
 
         // marshal
-        Marshaller marshaller = jCtx.createMarshaller();
+        Marshaller marshaller = jaxbContext.createMarshaller();
         try {
             marshaller.marshal(emp, testDoc);
             assertTrue("Document comparison failed unxepectedly: ", compareDocuments(ctrlDoc, testDoc));

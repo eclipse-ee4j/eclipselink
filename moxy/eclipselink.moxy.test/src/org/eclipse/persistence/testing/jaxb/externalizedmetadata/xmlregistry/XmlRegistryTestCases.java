@@ -14,18 +14,12 @@ package org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmlregistry;
 
 import java.io.File;
 import java.io.InputStream;
-import java.util.HashMap;
-import java.util.Map;
 
 import javax.xml.bind.JAXBElement;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
 import javax.xml.bind.Unmarshaller;
-import javax.xml.transform.Source;
-import javax.xml.transform.stream.StreamSource;
 
-import org.eclipse.persistence.jaxb.JAXBContext;
-import org.eclipse.persistence.jaxb.JAXBContextFactory;
 import org.eclipse.persistence.testing.jaxb.externalizedmetadata.ExternalizedMetadataTestCases;
 import org.w3c.dom.Document;
 
@@ -54,13 +48,7 @@ public class XmlRegistryTestCases extends ExternalizedMetadataTestCases {
      */
     public void testXmlRegistrySchemaGen() {
         // load XML metadata
-        String metadataFile = PATH + "eclipselink-oxm.xml";
-        InputStream iStream = loader.getResourceAsStream(metadataFile);
-        if (iStream == null) {
-            fail("Couldn't load metadata file [" + metadataFile + "]");
-        }
-
-        MySchemaOutputResolver outputResolver = generateSchema(new Class[] { ObjectFactory1.class }, CONTEXT_PATH, iStream, 1);
+        MySchemaOutputResolver outputResolver = generateSchema(new Class[] { ObjectFactory1.class }, CONTEXT_PATH, PATH, 1);
         // validate schema
         String controlSchema = PATH + "schema.xsd";
         compareSchemas(outputResolver.schemaFiles.get(EMPTY_NAMESPACE), new File(controlSchema));
@@ -75,12 +63,7 @@ public class XmlRegistryTestCases extends ExternalizedMetadataTestCases {
     public void testXmlRegistrySchemaGenNonLocal() {
         // load XML metadata
         String metadataFile = PATH + "eclipselink-oxm-non-local.xml";
-        InputStream iStream = loader.getResourceAsStream(metadataFile);
-        if (iStream == null) {
-            fail("Couldn't load metadata file [" + metadataFile + "]");
-        }
-
-        MySchemaOutputResolver outputResolver = generateSchema(new Class[] { FooBar.class, ObjectFactory2.class }, CONTEXT_PATH, iStream, 1);
+        MySchemaOutputResolver outputResolver = generateSchemaWithFileName(new Class[] { FooBar.class, ObjectFactory2.class }, CONTEXT_PATH, metadataFile, 1);
         // validate schema
         String controlSchema = PATH + "schema-non-local.xsd";
         compareSchemas(outputResolver.schemaFiles.get(EMPTY_NAMESPACE), new File(controlSchema));
@@ -93,26 +76,10 @@ public class XmlRegistryTestCases extends ExternalizedMetadataTestCases {
      */
     public void testXmlRegistryUnmarshalThenMarshal() {
         // load XML metadata
-        String metadataFile = PATH + "eclipselink-oxm.xml";
-        InputStream iStream = loader.getResourceAsStream(metadataFile);
-        if (iStream == null) {
-            fail("Couldn't load metadata file [" + metadataFile + "]");
-        }
+    	
+    	Class[] classes = new Class[]{ObjectFactory1.class};
+    	MySchemaOutputResolver outputResolver = generateSchema(classes, CONTEXT_PATH, PATH, 1);
 
-        HashMap<String, Source> metadataSourceMap = new HashMap<String, Source>();
-        metadataSourceMap.put(CONTEXT_PATH, new StreamSource(iStream));
-        Map<String, Map<String, Source>> properties = new HashMap<String, Map<String, Source>>();
-        properties.put(JAXBContextFactory.ECLIPSELINK_OXM_XML_KEY, metadataSourceMap);
-
-        // create context
-        JAXBContext jCtx = null;
-        try {
-            jCtx = (JAXBContext) JAXBContextFactory.createContext(new Class[] { ObjectFactory1.class }, properties);
-        } catch (JAXBException e1) {
-            e1.printStackTrace();
-            fail("JAXBContext creation failed.");
-        }
-        
         // load instance doc
         String src = PATH + "foo.xml";
         InputStream iDocStream = loader.getResourceAsStream(src);
@@ -122,7 +89,7 @@ public class XmlRegistryTestCases extends ExternalizedMetadataTestCases {
 
         // unmarshal
         Object obj = null;
-        Unmarshaller unmarshaller = jCtx.createUnmarshaller();
+        Unmarshaller unmarshaller = jaxbContext.createUnmarshaller();
         try {
             obj = unmarshaller.unmarshal(iDocStream);
         } catch (JAXBException e) {
@@ -145,7 +112,7 @@ public class XmlRegistryTestCases extends ExternalizedMetadataTestCases {
         }
 
         // marshal
-        Marshaller marshaller = jCtx.createMarshaller();
+        Marshaller marshaller = jaxbContext.createMarshaller();
         try {
             ObjectFactory1 objFactory = new ObjectFactory1();
             JAXBElement<String> myJaxbElement = objFactory.createFoo(FOO);

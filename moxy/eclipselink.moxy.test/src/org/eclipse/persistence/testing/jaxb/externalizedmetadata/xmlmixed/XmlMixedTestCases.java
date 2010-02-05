@@ -13,20 +13,9 @@
 package org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmlmixed;
 
 import java.io.File;
-import java.io.InputStream;
-import java.util.HashMap;
-import java.util.Map;
-
-import javax.xml.bind.JAXBException;
-import javax.xml.bind.Marshaller;
 import javax.xml.bind.Unmarshaller;
-import javax.xml.transform.Source;
-import javax.xml.transform.stream.StreamSource;
 
-import org.eclipse.persistence.jaxb.JAXBContext;
-import org.eclipse.persistence.jaxb.JAXBContextFactory;
 import org.eclipse.persistence.testing.jaxb.externalizedmetadata.ExternalizedMetadataTestCases;
-import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
 /**
@@ -76,23 +65,9 @@ public class XmlMixedTestCases extends ExternalizedMetadataTestCases {
      * Positive test.
      */
     public void testXmlMixedUnmarshal() {
-        String metadataFile = PATH + "eclipselink-oxm.xml";
-        InputStream iStream = loader.getResourceAsStream(metadataFile);
-        if (iStream == null) {
-            fail("Couldn't load metadata file [" + metadataFile + "]");
-        }
-        HashMap<String, Source> metadataSourceMap = new HashMap<String, Source>();
-        metadataSourceMap.put(CONTEXT_PATH, new StreamSource(iStream));
-        Map<String, Map<String, Source>> properties = new HashMap<String, Map<String, Source>>();
-        properties.put(JAXBContextFactory.ECLIPSELINK_OXM_XML_KEY, metadataSourceMap);
-
-        JAXBContext jaxbContext = null;
-        try {
-            jaxbContext = (JAXBContext) JAXBContextFactory.createContext(new Class[] { Employee.class }, properties);
-        } catch (JAXBException e1) {
-            e1.printStackTrace();
-            fail("JAXBContext creation failed");
-        }
+    	
+    	Class[] classes = new Class[] { Employee.class };
+    	MySchemaOutputResolver outputResolver = generateSchema(classes, CONTEXT_PATH, PATH, 1);
 
         // test unmarshal
         Employee emp = null;

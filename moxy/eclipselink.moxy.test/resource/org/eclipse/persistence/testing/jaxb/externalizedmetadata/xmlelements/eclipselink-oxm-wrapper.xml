@@ -5,9 +5,9 @@
             <xml-root-element name="foo"/>
             <java-attributes>
                 <xml-elements java-attribute="items">
-                    <xml-element-wrapper name="items" />
                     <xml-element java-attribute="A" type="java.lang.Integer" />
                     <xml-element java-attribute="B" type="java.lang.Float" />
+                    <xml-element-wrapper name="items" />
                 </xml-elements>
             </java-attributes>
 		</java-type>

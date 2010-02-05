@@ -14,17 +14,11 @@ package org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmlelementref;
 
 import java.io.File;
 import java.io.InputStream;
-import java.util.HashMap;
-import java.util.Map;
 
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
 import javax.xml.bind.Unmarshaller;
-import javax.xml.transform.Source;
-import javax.xml.transform.stream.StreamSource;
 
-import org.eclipse.persistence.jaxb.JAXBContext;
-import org.eclipse.persistence.jaxb.JAXBContextFactory;
 import org.eclipse.persistence.testing.jaxb.externalizedmetadata.ExternalizedMetadataTestCases;
 import org.w3c.dom.Document;
 
@@ -65,12 +59,7 @@ public class XmlElementRefTestCases extends ExternalizedMetadataTestCases {
      */
     public void testXmlElementRefWithWrapperSchemaGen() {
         String metadataFile = PATH + "eclipselink-oxm-wrapper.xml";
-        InputStream iStream = loader.getResourceAsStream(metadataFile);
-        if (iStream == null) {
-            fail("Couldn't load metadata file [" + metadataFile + "]");
-        }
-
-        MySchemaOutputResolver outputResolver = generateSchema(new Class[] { Foos.class, Bar.class }, CONTEXT_PATH, iStream, 1);
+        MySchemaOutputResolver outputResolver = generateSchemaWithFileName(new Class[] { Foos.class, Bar.class }, CONTEXT_PATH, metadataFile, 1);
         
         // validate schema
         String controlSchema = PATH + "schema_wrapper.xsd";
@@ -84,26 +73,10 @@ public class XmlElementRefTestCases extends ExternalizedMetadataTestCases {
      */
     public void testXmlElementRef() {
         // load XML metadata
-        String metadataFile = PATH + "eclipselink-oxm.xml";
-        InputStream iStream = loader.getResourceAsStream(metadataFile);
-        if (iStream == null) {
-            fail("Couldn't load metadata file [" + metadataFile + "]");
-        }
-
-        HashMap<String, Source> metadataSourceMap = new HashMap<String, Source>();
-        metadataSourceMap.put(CONTEXT_PATH, new StreamSource(iStream));
-        Map<String, Map<String, Source>> properties = new HashMap<String, Map<String, Source>>();
-        properties.put(JAXBContextFactory.ECLIPSELINK_OXM_XML_KEY, metadataSourceMap);
-
-        // create context
-        JAXBContext jCtx = null;
-        try {
-            jCtx = (JAXBContext) JAXBContextFactory.createContext(new Class[] { Foo.class }, properties);
-        } catch (JAXBException e1) {
-            e1.printStackTrace();
-            fail("JAXBContext creation failed.");
-        }
-        
+    	
+    	Class[] classesToProcess = new Class[] { Foo.class };
+        MySchemaOutputResolver outputResolver = generateSchema(classesToProcess, CONTEXT_PATH , PATH, 1);
+    	        
         // load instance doc
         String src = PATH + "foo.xml";
         InputStream iDocStream = loader.getResourceAsStream(src);
@@ -113,7 +86,7 @@ public class XmlElementRefTestCases extends ExternalizedMetadataTestCases {
 
         // unmarshal
         Object obj = null;
-        Unmarshaller unmarshaller = jCtx.createUnmarshaller();
+        Unmarshaller unmarshaller = jaxbContext.createUnmarshaller();
         try {
             obj = unmarshaller.unmarshal(iDocStream);
             assertFalse("Unmarshalled object is null.", obj == null);
@@ -132,7 +105,7 @@ public class XmlElementRefTestCases extends ExternalizedMetadataTestCases {
         }
 
         // marshal
-        Marshaller marshaller = jCtx.createMarshaller();
+        Marshaller marshaller = jaxbContext.createMarshaller();
         try {
             marshaller.marshal(obj, testDoc);
             assertTrue("Document comparison failed unxepectedly: ", compareDocuments(ctrlDoc, testDoc));
@@ -150,24 +123,7 @@ public class XmlElementRefTestCases extends ExternalizedMetadataTestCases {
      */
     public void testXmlElementRefWithWrapper() {
         String metadataFile = PATH + "eclipselink-oxm-wrapper.xml";
-        InputStream iStream = loader.getResourceAsStream(metadataFile);
-        if (iStream == null) {
-            fail("Couldn't load metadata file [" + metadataFile + "]");
-        }
-
-        HashMap<String, Source> metadataSourceMap = new HashMap<String, Source>();
-        metadataSourceMap.put(CONTEXT_PATH, new StreamSource(iStream));
-        Map<String, Map<String, Source>> properties = new HashMap<String, Map<String, Source>>();
-        properties.put(JAXBContextFactory.ECLIPSELINK_OXM_XML_KEY, metadataSourceMap);
-
-        // create context
-        JAXBContext jCtx = null;
-        try {
-            jCtx = (JAXBContext) JAXBContextFactory.createContext(new Class[] { Foos.class }, properties);
-        } catch (JAXBException e1) {
-            e1.printStackTrace();
-            fail("JAXBContext creation failed.");
-        }
+        MySchemaOutputResolver outputResolver = generateSchemaWithFileName(new Class[] { Foos.class, Bar.class }, CONTEXT_PATH, metadataFile, 1);
         
         // load instance doc
         String src = PATH + "foo-wrapper.xml";
@@ -178,7 +134,7 @@ public class XmlElementRefTestCases extends ExternalizedMetadataTestCases {
 
         // unmarshal
         Object obj = null;
-        Unmarshaller unmarshaller = jCtx.createUnmarshaller();
+        Unmarshaller unmarshaller = jaxbContext.createUnmarshaller();
         try {
             obj = unmarshaller.unmarshal(iDocStream);
             assertFalse("Unmarshalled object is null.", obj == null);
@@ -197,7 +153,7 @@ public class XmlElementRefTestCases extends ExternalizedMetadataTestCases {
         }
 
         // marshal
-        Marshaller marshaller = jCtx.createMarshaller();
+        Marshaller marshaller = jaxbContext.createMarshaller();
         try {
             marshaller.marshal(obj, testDoc);
             assertTrue("Document comparison failed unxepectedly: ", compareDocuments(ctrlDoc, testDoc));

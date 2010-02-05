@@ -20,10 +20,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import javax.xml.bind.JAXBException;
-import javax.xml.bind.SchemaOutputResolver;
-import javax.xml.transform.Result;
 import javax.xml.transform.Source;
-import javax.xml.transform.stream.StreamResult;
 import javax.xml.transform.stream.StreamSource;
 
 import org.eclipse.persistence.jaxb.JAXBContext;
@@ -170,24 +167,8 @@ public class JAXBContextFactoryTestCases extends ExternalizedMetadataTestCases {
      * 
      */
     public void testBindingsFileWithNoTypes() {
-        ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
         String metadataFile = PATH + "eclipselink-oxm-no-types.xml";
-        InputStream iStream = classLoader.getResourceAsStream(metadataFile);
-        if (iStream == null) {
-            fail("Couldn't load metadata file [" + metadataFile + "]");
-        }
-        HashMap<String, Source> metadataSourceMap = new HashMap<String, Source>();
-        metadataSourceMap.put("org.eclipse.persistence.testing.jaxb.externalizedmetadata.jaxbcontextfactory", new StreamSource(iStream));
-        Map<String, Map<String, Source>> properties = new HashMap<String, Map<String, Source>>();
-        properties.put(JAXBContextFactory.ECLIPSELINK_OXM_XML_KEY, metadataSourceMap);
-        JAXBContext jaxbContext;
-        try {
-            jaxbContext = (JAXBContext) JAXBContextFactory.createContext(new Class[] {}, properties);
-            jaxbContext.generateSchema(outputResolver);
-        } catch (JAXBException e) {
-            e.printStackTrace();
-            fail(e.getMessage());
-        }
+        generateSchemaWithFileName(new Class[] {}, "org.eclipse.persistence.testing.jaxb.externalizedmetadata.jaxbcontextfactory", metadataFile, 0);               
     }
     
     /**

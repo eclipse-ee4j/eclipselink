@@ -5,9 +5,9 @@
             <xml-root-element name="bar"/>
             <java-attributes>
                 <xml-elements java-attribute="items" xml-idref="true">
-                    <xml-element-wrapper name="contact" />
                     <xml-element java-attribute="address" type="org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmlelements.Address"/>
                     <xml-element java-attribute="phone" type="org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmlelements.Phone" />
+                    <xml-element-wrapper name="contact" />
                 </xml-elements>
             </java-attributes>
         </java-type>

@@ -5,9 +5,9 @@
             <xml-root-element name="my-foos" />
             <java-attributes>
                 <xml-element-refs java-attribute="items" >
-                    <xml-element-wrapper name="items" />
                     <xml-element-ref name="integer-root" namespace="myns" />
                     <xml-element-ref name="root" />
+                    <xml-element-wrapper name="items" />
                 </xml-element-refs>
             </java-attributes>
 		</java-type>

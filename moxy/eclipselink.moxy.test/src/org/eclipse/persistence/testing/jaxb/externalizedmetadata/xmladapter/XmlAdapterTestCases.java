@@ -13,20 +13,14 @@
 package org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmladapter;
 
 import java.io.File;
-import java.io.InputStream;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
-import java.util.HashMap;
-import java.util.Map;
 
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
 import javax.xml.bind.Unmarshaller;
-import javax.xml.transform.Source;
 import javax.xml.transform.stream.StreamSource;
 
-import org.eclipse.persistence.jaxb.JAXBContext;
-import org.eclipse.persistence.jaxb.JAXBContextFactory;
 import org.eclipse.persistence.testing.jaxb.externalizedmetadata.ExternalizedMetadataTestCases;
 import org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmladapter.classlevel.MyCalendar;
 import org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmladapter.packagelevel.someotherpackage.SomeLameClass;
@@ -59,29 +53,9 @@ public class XmlAdapterTestCases extends ExternalizedMetadataTestCases {
      * Positive test.
      */
     public void testXmlJavaTypeAdapterOnProperty() {
-        String metadataFile = PATH + "/property/" + "eclipselink-oxm.xml";
-        
-        InputStream iStream = loader.getResourceAsStream(metadataFile);
-        if (iStream == null) {
-            fail("Couldn't load metadata file [" + metadataFile + "]");
-        }
-        HashMap<String, Source> metadataSourceMap = new HashMap<String, Source>();
-        metadataSourceMap.put(CONTEXT_PATH + ".property", new StreamSource(iStream));
-        Map<String, Map<String, Source>> properties = new HashMap<String, Map<String, Source>>();
-        properties.put(JAXBContextFactory.ECLIPSELINK_OXM_XML_KEY, metadataSourceMap);
-
+        String metadataFile = PATH + "property/" + "eclipselink-oxm.xml";
         Class[] classesToProcess = new Class[] { org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmladapter.property.MyClass.class };
-        MySchemaOutputResolver outputResolver = new MySchemaOutputResolver();
-
-        JAXBContext jaxbContext = null;
-        try {
-            jaxbContext = (JAXBContext) JAXBContextFactory.createContext(classesToProcess, properties);
-            jaxbContext.generateSchema(outputResolver);
-        } catch (JAXBException e) {
-            e.printStackTrace();
-            fail("An unexpected exception occurred");
-        }
-
+        MySchemaOutputResolver outputResolver = generateSchemaWithFileName(classesToProcess, CONTEXT_PATH+ ".property", metadataFile, 1);      
         String controlSchema = PATH + "schema.xsd";
 
         // validate schema
@@ -121,27 +95,9 @@ public class XmlAdapterTestCases extends ExternalizedMetadataTestCases {
     public void testXmlJavaTypeAdapterOnClass() {
         String metadataFile = PATH + "/classlevel/" + "eclipselink-oxm.xml";
         
-        InputStream iStream = loader.getResourceAsStream(metadataFile);
-        if (iStream == null) {
-            fail("Couldn't load metadata file [" + metadataFile + "]");
-        }
-        HashMap<String, Source> metadataSourceMap = new HashMap<String, Source>();
-        metadataSourceMap.put(CONTEXT_PATH + ".classlevel", new StreamSource(iStream));
-        Map<String, Map<String, Source>> properties = new HashMap<String, Map<String, Source>>();
-        properties.put(JAXBContextFactory.ECLIPSELINK_OXM_XML_KEY, metadataSourceMap);
-
         Class[] classesToProcess = new Class[] { org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmladapter.classlevel.MyClass.class };
-        MySchemaOutputResolver outputResolver = new MySchemaOutputResolver();
-
-        JAXBContext jaxbContext = null;
-        try {
-            jaxbContext = (JAXBContext) JAXBContextFactory.createContext(classesToProcess, properties);
-            jaxbContext.generateSchema(outputResolver);
-        } catch (JAXBException e) {
-            e.printStackTrace();
-            fail("An unexpected exception occurred");
-        }
-
+        MySchemaOutputResolver outputResolver = generateSchemaWithFileName(classesToProcess, CONTEXT_PATH+ ".classlevel", metadataFile, 1);
+         
         String controlSchema = PATH + "classlevel/schema.xsd";
 
         // validate schema
@@ -179,29 +135,10 @@ public class XmlAdapterTestCases extends ExternalizedMetadataTestCases {
      * Positive test.
      */
     public void testXmlJavaTypeAdapterOnPackage() {
-        String metadataFile = PATH + "/packagelevel/" + "eclipselink-oxm.xml";
-        
-        InputStream iStream = loader.getResourceAsStream(metadataFile);
-        if (iStream == null) {
-            fail("Couldn't load metadata file [" + metadataFile + "]");
-        }
-        HashMap<String, Source> metadataSourceMap = new HashMap<String, Source>();
-        metadataSourceMap.put(CONTEXT_PATH + ".packagelevel", new StreamSource(iStream));
-        Map<String, Map<String, Source>> properties = new HashMap<String, Map<String, Source>>();
-        properties.put(JAXBContextFactory.ECLIPSELINK_OXM_XML_KEY, metadataSourceMap);
-
+        String metadataFile = PATH + "/packagelevel/" + "eclipselink-oxm.xml";        
         Class[] classesToProcess = new Class[] { org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmladapter.packagelevel.MyClass.class, SomeLameClass.class };
-        MySchemaOutputResolver outputResolver = new MySchemaOutputResolver();
-
-        JAXBContext jaxbContext = null;
-        try {
-            jaxbContext = (JAXBContext) JAXBContextFactory.createContext(classesToProcess, properties);
-            jaxbContext.generateSchema(outputResolver);
-        } catch (JAXBException e) {
-            e.printStackTrace();
-            fail("An unexpected exception occurred");
-        }
-
+        MySchemaOutputResolver outputResolver = generateSchemaWithFileName(classesToProcess, CONTEXT_PATH+ ".packagelevel", metadataFile, 1);
+  
         String controlSchema = PATH + "packagelevel/schema.xsd";
 
         // validate schema

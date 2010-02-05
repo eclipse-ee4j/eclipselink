@@ -48,12 +48,8 @@ public class XmlValueTestCases extends ExternalizedMetadataTestCases {
      */
     public void testCDNPriceXmlValue() {
         String metadataFile = PATH + "eclipselink-oxm-cdnprice.xml";
-        InputStream iStream = loader.getResourceAsStream(metadataFile);
-        if (iStream == null) {
-            fail("Couldn't load metadata file [" + metadataFile + "]");
-        }
 
-        outputResolver = generateSchema(new Class[] { CDNPriceNoAnnotation.class }, CONTEXT_PATH, iStream, 1);
+        outputResolver = generateSchemaWithFileName(new Class[] { CDNPriceNoAnnotation.class }, CONTEXT_PATH, metadataFile, 1);
         
         // validate schema
         String controlSchema = PATH + "cdnprice_schema.xsd";
@@ -71,12 +67,7 @@ public class XmlValueTestCases extends ExternalizedMetadataTestCases {
      */
     public void testCDNPricesXmlValue() {
         String metadataFile = PATH + "eclipselink-oxm-cdnprices.xml";
-        InputStream iStream = loader.getResourceAsStream(metadataFile);
-        if (iStream == null) {
-            fail("Couldn't load metadata file [" + metadataFile + "]");
-        }
-
-        outputResolver = generateSchema(new Class[] { CDNPricesNoAnnotation.class }, CONTEXT_PATH, iStream, 1);
+        outputResolver = generateSchemaWithFileName(new Class[] { CDNPricesNoAnnotation.class }, CONTEXT_PATH, metadataFile, 1);
         
         // validate schema
         String controlSchema = PATH + "cdnprices_schema.xsd";
@@ -96,12 +87,7 @@ public class XmlValueTestCases extends ExternalizedMetadataTestCases {
      */
     public void testInternationalPriceXmlValue() {
         String metadataFile = PATH + "eclipselink-oxm-intprice.xml";
-        InputStream iStream = loader.getResourceAsStream(metadataFile);
-        if (iStream == null) {
-            fail("Couldn't load metadata file [" + metadataFile + "]");
-        }
-
-        outputResolver = generateSchema(new Class[] { InternationalPriceNoAnnotation.class }, CONTEXT_PATH, iStream, 1);
+        outputResolver = generateSchemaWithFileName(new Class[] { InternationalPriceNoAnnotation.class }, CONTEXT_PATH, metadataFile, 1);
         // validate schema
         String controlSchema = PATH + "intprice_schema.xsd";
         compareSchemas(outputResolver.schemaFiles.get(EMPTY_NAMESPACE), new File(controlSchema));
@@ -120,12 +106,7 @@ public class XmlValueTestCases extends ExternalizedMetadataTestCases {
      */
     public void testInternationalPricesXmlValue() {
         String metadataFile = PATH + "eclipselink-oxm-intprices.xml";
-        InputStream iStream = loader.getResourceAsStream(metadataFile);
-        if (iStream == null) {
-            fail("Couldn't load metadata file [" + metadataFile + "]");
-        }
-
-        outputResolver = generateSchema(new Class[] { InternationalPricesNoAnnotation.class }, CONTEXT_PATH, iStream, 1);
+        outputResolver = generateSchemaWithFileName(new Class[] { InternationalPricesNoAnnotation.class }, CONTEXT_PATH, metadataFile, 1);
         // validate schema
         String controlSchema = PATH + "intprices_schema.xsd";
         compareSchemas(outputResolver.schemaFiles.get(EMPTY_NAMESPACE), new File(controlSchema));

@@ -14,21 +14,15 @@ package org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmlmimetype;
 
 import java.io.File;
 import java.io.InputStream;
-import java.util.HashMap;
-import java.util.Map;
 
 import javax.activation.DataHandler;
-import javax.xml.bind.JAXBElement;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
 import javax.xml.bind.Unmarshaller;
-import javax.xml.transform.Source;
 import javax.xml.transform.stream.StreamSource;
 
-import org.eclipse.persistence.jaxb.JAXBContext;
-import org.eclipse.persistence.jaxb.JAXBContextFactory;
+
 import org.eclipse.persistence.testing.jaxb.externalizedmetadata.ExternalizedMetadataTestCases;
-import org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmlanyelement.Employee;
 import org.w3c.dom.Document;
 
 /**
@@ -64,24 +58,10 @@ public class XmlMimeTypeCases extends ExternalizedMetadataTestCases {
     }
     
     public void testXmlMimeTypeUnmarshalThenMarshal() {
-        String metadataFile = PATH + "eclipselink-oxm.xml";
-        InputStream iStream = loader.getResourceAsStream(metadataFile);
-        if (iStream == null) {
-            fail("Couldn't load metadata file [" + metadataFile + "]");
-        }
-        HashMap<String, Source> metadataSourceMap = new HashMap<String, Source>();
-        metadataSourceMap.put(CONTEXT_PATH, new StreamSource(iStream));
-        Map<String, Map<String, Source>> properties = new HashMap<String, Map<String, Source>>();
-        properties.put(JAXBContextFactory.ECLIPSELINK_OXM_XML_KEY, metadataSourceMap);
-
-        JAXBContext jaxbContext = null;
-        try {
-            jaxbContext = (JAXBContext) JAXBContextFactory.createContext(new Class[] { AttTypes.class }, properties);
-        } catch (JAXBException e1) {
-            e1.printStackTrace();
-            fail("JAXBContext creation failed");
-        }
-
+    	
+    	Class[] classes = new Class[] { AttTypes.class };
+    	MySchemaOutputResolver outputResolver = generateSchema(classes, CONTEXT_PATH, PATH, 1);
+    	
         // test unmarshal
         Unmarshaller unmarshaller = jaxbContext.createUnmarshaller();
         unmarshaller.setAttachmentUnmarshaller(new MyAttachmentUnmarshaller());

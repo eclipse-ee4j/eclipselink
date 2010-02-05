@@ -14,17 +14,11 @@ package org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmlschematype;
 
 import java.io.File;
 import java.io.InputStream;
-import java.util.HashMap;
-import java.util.Map;
 
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
 import javax.xml.bind.Unmarshaller;
-import javax.xml.transform.Source;
-import javax.xml.transform.stream.StreamSource;
 
-import org.eclipse.persistence.jaxb.JAXBContext;
-import org.eclipse.persistence.jaxb.JAXBContextFactory;
 import org.eclipse.persistence.testing.jaxb.externalizedmetadata.ExternalizedMetadataTestCases;
 import org.w3c.dom.Document;
 
@@ -54,12 +48,8 @@ public class XmlSchemaTypeTestCases extends ExternalizedMetadataTestCases {
      */
     public void testXmlSchemaTypePkgSchemaGen() {
         String metadataFile = PATH + "eclipselink-oxm-package.xml";
-        InputStream iStream = loader.getResourceAsStream(metadataFile);
-        if (iStream == null) {
-            fail("Couldn't load metadata file [" + metadataFile + "]");
-        }
 
-        MySchemaOutputResolver outputResolver = generateSchema(new Class[] { Employee.class }, CONTEXT_PATH, iStream, 1);
+        MySchemaOutputResolver outputResolver = generateSchemaWithFileName(new Class[] { Employee.class }, CONTEXT_PATH, metadataFile, 1);
         // validate schema
         String controlSchema = PATH + "schema.xsd";
         compareSchemas(outputResolver.schemaFiles.get(EMPTY_NAMESPACE), new File(controlSchema));
@@ -74,12 +64,7 @@ public class XmlSchemaTypeTestCases extends ExternalizedMetadataTestCases {
      */
     public void testXmlSchemaTypePropSchemaGen() {
         String metadataFile = PATH + "eclipselink-oxm-property.xml";
-        InputStream iStream = loader.getResourceAsStream(metadataFile);
-        if (iStream == null) {
-            fail("Couldn't load metadata file [" + metadataFile + "]");
-        }
-
-        MySchemaOutputResolver outputResolver = generateSchema(new Class[] { Employee.class }, CONTEXT_PATH, iStream, 1);
+        MySchemaOutputResolver outputResolver = generateSchemaWithFileName(new Class[] { Employee.class }, CONTEXT_PATH, metadataFile, 1);
         // validate schema
         String controlSchema = PATH + "schema.xsd";
         compareSchemas(outputResolver.schemaFiles.get(EMPTY_NAMESPACE), new File(controlSchema));
@@ -95,12 +80,7 @@ public class XmlSchemaTypeTestCases extends ExternalizedMetadataTestCases {
      */
     public void testXmlSchemaTypeOverrideSchemaGen() {
         String metadataFile = PATH + "eclipselink-oxm-override.xml";
-        InputStream iStream = loader.getResourceAsStream(metadataFile);
-        if (iStream == null) {
-            fail("Couldn't load metadata file [" + metadataFile + "]");
-        }
-
-        MySchemaOutputResolver outputResolver = generateSchema(new Class[] { Employee.class }, CONTEXT_PATH, iStream, 1);
+        MySchemaOutputResolver outputResolver = generateSchemaWithFileName(new Class[] { Employee.class }, CONTEXT_PATH, metadataFile, 1);
         // validate schema
         String controlSchema = PATH + "schema.xsd";
         compareSchemas(outputResolver.schemaFiles.get(EMPTY_NAMESPACE), new File(controlSchema));
@@ -116,12 +96,7 @@ public class XmlSchemaTypeTestCases extends ExternalizedMetadataTestCases {
      */
     public void testXmlSchemaTypeClassOverridesPackageSchemaGen() {
         String metadataFile = PATH + "eclipselink-oxm-class-overrides-package.xml";
-        InputStream iStream = loader.getResourceAsStream(metadataFile);
-        if (iStream == null) {
-            fail("Couldn't load metadata file [" + metadataFile + "]");
-        }
-
-        MySchemaOutputResolver outputResolver = generateSchema(new Class[] { EmployeeWithAnnotation.class }, CONTEXT_PATH, iStream, 1);
+        MySchemaOutputResolver outputResolver = generateSchemaWithFileName(new Class[] { EmployeeWithAnnotation.class }, CONTEXT_PATH, metadataFile, 1);
         // validate schema
         String controlSchema = PATH + "schema1.xsd";
         compareSchemas(outputResolver.schemaFiles.get(EMPTY_NAMESPACE), new File(controlSchema));
@@ -135,24 +110,8 @@ public class XmlSchemaTypeTestCases extends ExternalizedMetadataTestCases {
     public void testXmlSchemaType() {
         // load XML metadata
         String metadataFile = PATH + "eclipselink-oxm-property.xml";
-        InputStream iStream = loader.getResourceAsStream(metadataFile);
-        if (iStream == null) {
-            fail("Couldn't load metadata file [" + metadataFile + "]");
-        }
 
-        HashMap<String, Source> metadataSourceMap = new HashMap<String, Source>();
-        metadataSourceMap.put(CONTEXT_PATH, new StreamSource(iStream));
-        Map<String, Map<String, Source>> properties = new HashMap<String, Map<String, Source>>();
-        properties.put(JAXBContextFactory.ECLIPSELINK_OXM_XML_KEY, metadataSourceMap);
-
-        // create context
-        JAXBContext jCtx = null;
-        try {
-            jCtx = (JAXBContext) JAXBContextFactory.createContext(new Class[] { Employee.class }, properties);
-        } catch (JAXBException e1) {
-            e1.printStackTrace();
-            fail("JAXBContext creation failed.");
-        }
+        MySchemaOutputResolver outputResolver = generateSchemaWithFileName(new Class[] { Employee.class }, CONTEXT_PATH, metadataFile, 1);
         
         // load instance doc
         String src = PATH + "employee.xml";
@@ -163,7 +122,7 @@ public class XmlSchemaTypeTestCases extends ExternalizedMetadataTestCases {
 
         // unmarshal
         Object obj = null;
-        Unmarshaller unmarshaller = jCtx.createUnmarshaller();
+        Unmarshaller unmarshaller = jaxbContext.createUnmarshaller();
         try {
             obj = unmarshaller.unmarshal(iDocStream);
             assertFalse("Unmarshalled object is null.", obj == null);
@@ -182,7 +141,7 @@ public class XmlSchemaTypeTestCases extends ExternalizedMetadataTestCases {
         }
 
         // marshal
-        Marshaller marshaller = jCtx.createMarshaller();
+        Marshaller marshaller = jaxbContext.createMarshaller();
         try {
             marshaller.marshal(obj, testDoc);
             assertTrue("Document comparison failed unxepectedly: ", compareDocuments(ctrlDoc, testDoc));

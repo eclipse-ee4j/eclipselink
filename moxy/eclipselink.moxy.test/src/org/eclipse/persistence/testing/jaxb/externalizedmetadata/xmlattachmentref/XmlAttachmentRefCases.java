@@ -69,7 +69,7 @@ public class XmlAttachmentRefCases extends ExternalizedMetadataTestCases {
      * Positive test.
      */
     public void testXmlAttachmentRefUnmarshalThenMarshal() {
-        String metadataFile = PATH + "eclipselink-oxm.xml";
+      /*  String metadataFile = PATH + "eclipselink-oxm.xml";
         InputStream iStream = loader.getResourceAsStream(metadataFile);
         if (iStream == null) {
             fail("Couldn't load metadata file [" + metadataFile + "]");
@@ -86,7 +86,11 @@ public class XmlAttachmentRefCases extends ExternalizedMetadataTestCases {
             e1.printStackTrace();
             fail("JAXBContext creation failed");
         }
-
+*/
+    	
+    	Class[] classesToProcess = new Class[] { AttTypes.class };
+        MySchemaOutputResolver outputResolver = generateSchema(classesToProcess, CONTEXT_PATH , PATH, 1);
+    	
         // test unmarshal
         Unmarshaller unmarshaller = jaxbContext.createUnmarshaller();
         unmarshaller.setAttachmentUnmarshaller(new MyAttachmentUnmarshaller());
@@ -137,6 +141,19 @@ public class XmlAttachmentRefCases extends ExternalizedMetadataTestCases {
      */
     public void testInvalidXmlAttachmentRef() {
         String metadataFile = PATH + "eclipselink-oxm-invalid.xml";
+  /*      
+    	Class[] classesToProcess = new Class[] { AttTypes.class };
+        boolean exceptionOccurred = false;
+
+    	try{
+            MySchemaOutputResolver outputResolver = generateSchemaWithFileName(classesToProcess, CONTEXT_PATH , metadataFile, 1);
+    	}catch(JAXBException e1) {
+            exceptionOccurred = true;
+        }
+        
+        assertTrue("The expected exception did not occur.", exceptionOccurred);
+*/
+  
         InputStream iStream = loader.getResourceAsStream(metadataFile);
         if (iStream == null) {
             fail("Couldn't load metadata file [" + metadataFile + "]");
@@ -153,6 +170,7 @@ public class XmlAttachmentRefCases extends ExternalizedMetadataTestCases {
         } catch (JAXBException e1) {
             exceptionOccurred = true;
         }
+        
         assertTrue("The expected exception did not occur.", exceptionOccurred);
     }
 }

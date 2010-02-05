@@ -92,12 +92,8 @@ public class XmlElementWrapperTestCases extends ExternalizedMetadataTestCases {
      */
     public void testXmlElementWrapperNS() {
         String metadataFile = PATH + "eclipselink-oxm-ns.xml";
-        InputStream iStream = loader.getResourceAsStream(metadataFile);
-        if (iStream == null) {
-            fail("Couldn't load metadata file [" + metadataFile + "]");
-        }
-
-        outputResolver = generateSchema(CONTEXT_PATH, iStream, 1);
+        
+        outputResolver = generateSchemaWithFileName(CONTEXT_PATH, metadataFile, 1);
 
         // validate schema
         String controlSchema = PATH + "schema_ns.xsd";
@@ -129,12 +125,8 @@ public class XmlElementWrapperTestCases extends ExternalizedMetadataTestCases {
      */
     public void testXmlElementWrapperWithXmlElementOverride() {
         String metadataFile = PATH + "eclipselink-oxm-xmlelement.xml";
-        InputStream iStream = loader.getResourceAsStream(metadataFile);
-        if (iStream == null) {
-            fail("Couldn't load metadata file [" + metadataFile + "]");
-        }
 
-        outputResolver = generateSchema(CONTEXT_PATH, iStream, 1);
+        outputResolver = generateSchemaWithFileName(CONTEXT_PATH, metadataFile, 1);
 
         // validate schema
         String controlSchema = PATH + "schema_xmlelement.xsd";
