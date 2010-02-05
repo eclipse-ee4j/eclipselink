@@ -27,24 +27,27 @@ import org.eclipse.persistence.jaxb.javamodel.JavaConstructor;
  * </ul>
  * @author mmacivor
  *
- */public class JavaConstructorImpl implements JavaConstructor {
+ */
+public class JavaConstructorImpl implements JavaConstructor {
+
     protected Constructor jConstructor;
-    
+
     public JavaConstructorImpl(Constructor constructor) {
         this.jConstructor = constructor;
     }
-    
+
     public int getModifiers() {
         return jConstructor.getModifiers();
     }
+
     public String getName() {
         return jConstructor.getName();
     }
+
     public JavaClass getOwningClass() {
         return new JavaClassImpl(jConstructor.getDeclaringClass());
     }
-    
-    
+
     public JavaClass[] getParameterTypes() {
         Class[] params = jConstructor.getParameterTypes();
         JavaClass[] paramArray = new JavaClass[params.length];
@@ -53,6 +56,7 @@ import org.eclipse.persistence.jaxb.javamodel.JavaConstructor;
         }
         return paramArray;
     }
+
     public boolean isAbstract() {
         return Modifier.isAbstract(getModifiers());
     }
@@ -80,6 +84,5 @@ import org.eclipse.persistence.jaxb.javamodel.JavaConstructor;
     public boolean isSynthetic() {
         return jConstructor.isSynthetic();
     }
-
 
 }

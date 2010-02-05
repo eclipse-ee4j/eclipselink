@@ -34,6 +34,7 @@ import org.eclipse.persistence.jaxb.javamodel.JavaModel;
  * @see org.eclipse.persistence.jaxb.javamodel.JavaModel
  */
 public class JavaModelImpl implements JavaModel {
+
     private ClassLoader classLoader;
 
     public JavaModelImpl(ClassLoader classLoader) {
@@ -63,4 +64,5 @@ public class JavaModelImpl implements JavaModel {
     public Annotation getAnnotation(JavaAnnotation janno, Class jClass) {
         return ((JavaAnnotationImpl) janno).getJavaAnnotation();
     }
+
 }

@@ -42,6 +42,7 @@ import java.util.Collection;
  * @see java.lang.reflect.Method
  */
 public class JavaMethodImpl implements JavaMethod {
+
     protected Method jMethod;
 
     public JavaMethodImpl(Method javaMethod) {

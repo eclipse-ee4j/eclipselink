@@ -49,6 +49,7 @@ import java.util.Collection;
  * @see java.lang.Class
  */
 public class JavaClassImpl implements JavaClass {
+
     protected ParameterizedType jType;
     protected Class jClass;
 

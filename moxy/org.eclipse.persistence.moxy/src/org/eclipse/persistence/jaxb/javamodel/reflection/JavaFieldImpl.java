@@ -27,22 +27,22 @@ import java.util.Collection;
 /**
  * INTERNAL:
  * <p><b>Purpose:</b>A wrapper class for a JDK Field.  This implementation
- * of the TopLink JAXB 2.0 Java model simply makes reflective calls on the 
- * underlying JDK object. 
- * 
+ * of the TopLink JAXB 2.0 Java model simply makes reflective calls on the
+ * underlying JDK object.
+ *
  * <p><b>Responsibilities:</b>
  * <ul>
- * <li>Provide access to the underlying field's name, type, 
+ * <li>Provide access to the underlying field's name, type,
  * modifiers, annotations, etc.</li>
  * </ul>
- *  
+ *
  * @since Oracle TopLink 11.1.1.0.0
  * @see org.eclipse.persistence.jaxb.javamodel.JavaField
  * @see java.lang.reflect.Field
  */
 public class JavaFieldImpl implements JavaField {
     protected Field jField;
-    
+
     public JavaFieldImpl(Field javaField) {
         jField = javaField;
     }
@@ -81,7 +81,7 @@ public class JavaFieldImpl implements JavaField {
     public JavaClass getResolvedType() {
         Class fieldType = jField.getType();
         Type genericType = jField.getGenericType();
-        
+
         if (genericType instanceof ParameterizedType) {
             ParameterizedType pType = (ParameterizedType) genericType;
             return new JavaClassImpl(pType, (Class) pType.getRawType());
@@ -116,7 +116,7 @@ public class JavaFieldImpl implements JavaField {
     public boolean isStatic() {
         return Modifier.isStatic(getModifiers());
     }
-    
+
 //  ---------------- unimplemented methods ----------------//
     public boolean isEnumConstant() {
         return jField.isEnumConstant();
@@ -129,4 +129,5 @@ public class JavaFieldImpl implements JavaField {
     public Collection getDeclaredAnnotations() {
         return null;
     }
+
 }
