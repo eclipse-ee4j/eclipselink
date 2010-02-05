@@ -8,11 +8,11 @@
         <session>
             <ejb-name>TestRunner</ejb-name>
             <persistence-context-ref>
-                <persistence-context-ref-name>persistence/entity-manager</persistence-context-ref-name>
+                <persistence-context-ref-name>persistence/%%default%%/entity-manager</persistence-context-ref-name>
                 <persistence-unit-name>%%default%%</persistence-unit-name>
             </persistence-context-ref>
             <persistence-unit-ref>
-                <persistence-unit-ref-name>persistence/factory</persistence-unit-ref-name>
+                <persistence-unit-ref-name>persistence/%%default%%/factory</persistence-unit-ref-name>
                 <persistence-unit-name>%%default%%</persistence-unit-name>
             </persistence-unit-ref>
         </session>
