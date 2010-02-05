@@ -12,11 +12,17 @@
  ******************************************************************************/  
 package org.eclipse.persistence.platform.server.sunas;
 
+import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
 import org.eclipse.persistence.sessions.DatabaseSession;
 import org.eclipse.persistence.transaction.sunas.SunAS9TransactionController;
 import org.eclipse.persistence.platform.server.ServerPlatformBase;
 import org.eclipse.persistence.logging.SessionLog;
 import org.eclipse.persistence.logging.JavaLog;
+
+import java.lang.reflect.Method;
+import java.security.AccessController;
+import java.security.PrivilegedAction;
+import java.sql.Connection;
 
 /**
  * PUBLIC:
@@ -54,6 +60,48 @@ public class SunAS9ServerPlatform extends ServerPlatformBase {
     		externalTransactionControllerClass = SunAS9TransactionController.class;
     	}
         return externalTransactionControllerClass;
+    }
+
+
+    public java.sql.Connection unwrapConnection(final Connection connection)  {
+        Connection unwrappedConnection;
+
+        if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()) {
+            unwrappedConnection = AccessController.doPrivileged(new PrivilegedAction<Connection>() {
+                public Connection run() {
+                    return unwrapGlassFishConnectionHelper(connection);
+                }
+            });
+        } else {
+            unwrappedConnection = unwrapGlassFishConnectionHelper(connection);
+        }
+
+        if (unwrappedConnection == null) {
+            unwrappedConnection = super.unwrapConnection(connection);
+        }
+        return unwrappedConnection;
+    }
+
+    /**
+     * @return unwrapped GlassFish connection, null if connection can not be unwrapped.
+     */
+    private Connection unwrapGlassFishConnectionHelper(Connection connection) {
+        // Currently "GlassFish" creates a separate instance of jdbc connector classloader
+        // for each application. The connection wrapper passed here is created using this class loader. Hence caching
+        // the class will not help.
+        // If GlassFish behavior changes, both reflective call below should be cached. 
+        Connection unwrappedConnection = null;
+        try {
+            Class connectionWrapperClass = connection.getClass().getClassLoader().loadClass("com.sun.gjc.spi.base.ConnectionHolder");
+            if(connectionWrapperClass.isInstance(connection) ) {
+                Method unwrapMethod = connectionWrapperClass.getDeclaredMethod("getConnection");
+                unwrappedConnection = (Connection) unwrapMethod.invoke(connection);
+            }
+        } catch (Exception e) {
+            getDatabaseSession().getSessionLog().logThrowable(SessionLog.WARNING, e);
+        }
+
+        return unwrappedConnection;
     }
 
     public SessionLog getServerLog() {
