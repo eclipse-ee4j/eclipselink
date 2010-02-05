@@ -1083,7 +1083,10 @@ public abstract class DatabaseQueryMechanism implements Cloneable, Serializable 
                     // writeQuery.getObjectChangeSet() is mapped to object in uowChangeSet.
                     // It is first cleared then re-populated by calculateChanges method.
                     if (!descriptor.getObjectChangePolicy().isAttributeChangeTrackingPolicy() ){
-                        writeQuery.getObjectChangeSet().clear();
+                        // clear the change set without clearing the maps keys since they are not alterable by the event
+                        // if the map is changed, it will be changed in the owning object and the
+                        // change set will be changed there as well.
+                        writeQuery.getObjectChangeSet().clear(false);
                     }
                     if (descriptor.getObjectChangePolicy().calculateChangesForExistingObject(object, uowChangeSet, ((UnitOfWorkImpl)session), descriptor, false) == null) {
                         // calculateChanges returns null in case the changeSet doesn't have changes.

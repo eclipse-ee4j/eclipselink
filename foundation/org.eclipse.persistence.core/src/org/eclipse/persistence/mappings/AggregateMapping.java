@@ -900,7 +900,7 @@ public abstract class AggregateMapping extends DatabaseMapping {
                 //force comparison change detection to build changeset.
                 ObjectChangeSet aggregateChangeSet = (ObjectChangeSet)uowChangeSet.getObjectChangeSetForClone(newValue);
                 if (aggregateChangeSet != null) {
-                    aggregateChangeSet.clear(); // old differences must be thrown away because difference is between old value and new value
+                    aggregateChangeSet.clear(true); // old differences must be thrown away because difference is between old value and new value
                 }
                 //make sure the listener is initialized
                 if (referenceDescriptor.getObjectChangePolicy().isAttributeChangeTrackingPolicy()){

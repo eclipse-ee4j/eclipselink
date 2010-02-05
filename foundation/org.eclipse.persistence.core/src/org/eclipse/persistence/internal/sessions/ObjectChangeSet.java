@@ -120,12 +120,14 @@ public class ObjectChangeSet implements Serializable, org.eclipse.persistence.se
      * INTERNAL:
      * This method will clear the changerecords from a changeSet
      */
-    public void clear() {
+    public void clear(boolean clearKeys) {
         this.shouldBeDeleted = false;
-        this.setOldKey(null);
-        this.setNewKey(null);
         this.changes = null;
         this.attributesToChanges = null;
+        if (clearKeys){
+            this.setOldKey(null);
+            this.setNewKey(null);
+        }
     }
 
     /**
