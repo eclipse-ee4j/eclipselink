@@ -28,7 +28,7 @@ import java.net.InetAddress;
 
 /**
  * <p>
- * <b>Purpose</b>: Provide a CommandManager implementation for caceh coordination.
+ * <b>Purpose</b>: Provide a CommandManager implementation for cache coordination.
  * <p>
  * <b>Description</b>: A RemoteCommandManager (or RCM) instance is the primary component
  * of an RCM service instance. It manages the other components of the service, and

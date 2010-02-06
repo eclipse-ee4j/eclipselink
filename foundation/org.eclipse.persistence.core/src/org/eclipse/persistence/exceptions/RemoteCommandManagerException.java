@@ -9,6 +9,7 @@
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
+ *     cdelahun - Bug 214534: added message for JMSPublishingHelper error checking
  ******************************************************************************/  
 package org.eclipse.persistence.exceptions;
 
@@ -22,7 +23,7 @@ import org.eclipse.persistence.exceptions.i18n.ExceptionMessageGenerator;
  */
 public class RemoteCommandManagerException extends org.eclipse.persistence.exceptions.EclipseLinkException implements java.io.Serializable {
     // Exceptions for RCM are in range 22000 - 23000. 
-    // Leave the first 100 for DiscoveryManagerException subexception
+    // Leave the first 100 for DiscoveryManagerException sub exceptions
     public static final int ERROR_OBTAINING_CONTEXT_FOR_JNDI = 22101;
     public static final int ERROR_BINDING_CONNECTION = 22102;
     public static final int ERROR_LOOKING_UP_REMOTE_CONNECTION = 22103;
@@ -50,6 +51,8 @@ public class RemoteCommandManagerException extends org.eclipse.persistence.excep
     
     // JMS
     public static final int ERROR_RECEIVED_JMS_MESSAGE_IS_NULL = 22116;
+    //JMS PUBLISHING 
+    public static final int RCM_UNINITIALIZED_OR_CLOSED = 22117;
 
     public RemoteCommandManagerException() {
         super();
@@ -218,5 +221,12 @@ public class RemoteCommandManagerException extends org.eclipse.persistence.excep
         RemoteCommandManagerException ex = new RemoteCommandManagerException(ExceptionMessageGenerator.buildMessage(RemoteCommandManagerException.class, ERROR_RECEIVED_JMS_MESSAGE_IS_NULL, args));
         ex.setErrorCode(ERROR_RECEIVED_JMS_MESSAGE_IS_NULL);
         return ex;
+    }
+    
+    public static RemoteCommandManagerException remoteCommandManagerIsClosed() {  
+        Object[] args = { };  
+        RemoteCommandManagerException ex = new RemoteCommandManagerException(ExceptionMessageGenerator.buildMessage(RemoteCommandManagerException.class,RCM_UNINITIALIZED_OR_CLOSED,args));  
+        ex.setErrorCode(RCM_UNINITIALIZED_OR_CLOSED);
+        return ex;  
     }
 }

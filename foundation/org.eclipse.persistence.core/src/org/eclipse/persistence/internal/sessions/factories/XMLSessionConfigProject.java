@@ -13,6 +13,7 @@
  *       - 251005: The default JNDI InitialContextFactory is modified from
  *       OC4J: oracle.j2ee.rmi.RMIInitialContextFactory to
  *       WebLogic: weblogic.jndi.WLInitialContextFactory
+ *     cdelahun - Bug 214534: changes for JMSPublishingTransportManager configuration
  ******************************************************************************/  
 package org.eclipse.persistence.internal.sessions.factories;
 
@@ -70,6 +71,7 @@ import org.eclipse.persistence.internal.sessions.factories.model.session.Databas
 import org.eclipse.persistence.internal.sessions.factories.model.session.ServerSessionConfig;
 import org.eclipse.persistence.internal.sessions.factories.model.session.SessionBrokerConfig;
 import org.eclipse.persistence.internal.sessions.factories.model.session.SessionConfig;
+import org.eclipse.persistence.internal.sessions.factories.model.transport.JMSPublishingTransportManagerConfig;
 import org.eclipse.persistence.internal.sessions.factories.model.transport.JMSTopicTransportManagerConfig;
 import org.eclipse.persistence.internal.sessions.factories.model.transport.RMIIIOPTransportManagerConfig;
 import org.eclipse.persistence.internal.sessions.factories.model.transport.RMITransportManagerConfig;
@@ -185,6 +187,7 @@ public class XMLSessionConfigProject extends org.eclipse.persistence.sessions.Pr
         addDescriptor(buildSessionBrokerConfigDescriptor());
         addDescriptor(buildSessionConfigDescriptor());
         addDescriptor(buildJMSTopicTransportManagerConfigDescriptor());
+        addDescriptor(buildJMSPublishingTransportManagerConfigDescriptor());
         addDescriptor(buildRMIIIOPTransportManagerConfigDescriptor());
         addDescriptor(buildRMITransportManagerConfigDescriptor());
         addDescriptor(buildTransportManagerConfigDescriptor());
@@ -669,10 +672,10 @@ public class XMLSessionConfigProject extends org.eclipse.persistence.sessions.Pr
 
         return descriptor;
     }
-
-    public ClassDescriptor buildJMSTopicTransportManagerConfigDescriptor() {
+    
+    public ClassDescriptor buildJMSPublishingTransportManagerConfigDescriptor() {
         XMLDescriptor descriptor = new XMLDescriptor();
-        descriptor.setJavaClass(JMSTopicTransportManagerConfig.class);
+        descriptor.setJavaClass(JMSPublishingTransportManagerConfig.class);
         descriptor.getInheritancePolicy().setParentClass(TransportManagerConfig.class);
 
         XMLDirectMapping topicHostURLMapping = new XMLDirectMapping();
@@ -709,6 +712,13 @@ public class XMLSessionConfigProject extends org.eclipse.persistence.sessions.Pr
         return descriptor;
     }
 
+    public ClassDescriptor buildJMSTopicTransportManagerConfigDescriptor() {
+        XMLDescriptor descriptor = new XMLDescriptor();
+        descriptor.setJavaClass(JMSTopicTransportManagerConfig.class);
+        descriptor.getInheritancePolicy().setParentClass(JMSPublishingTransportManagerConfig.class);
+
+        return descriptor;
+    }
 
     public ClassDescriptor buildJNDINamingServiceConfigDescriptor() {
         XMLDescriptor descriptor = new XMLDescriptor();
@@ -1368,6 +1378,7 @@ public class XMLSessionConfigProject extends org.eclipse.persistence.sessions.Pr
         descriptor.getInheritancePolicy().setClassIndicatorField(new XMLField("@xsi:type"));
         descriptor.getInheritancePolicy().addClassIndicator(RMITransportManagerConfig.class, "rmi-transport");
         descriptor.getInheritancePolicy().addClassIndicator(RMIIIOPTransportManagerConfig.class, "rmi-iiop-transport");
+        descriptor.getInheritancePolicy().addClassIndicator(JMSPublishingTransportManagerConfig.class, "jms-publishing-transport");
         descriptor.getInheritancePolicy().addClassIndicator(JMSTopicTransportManagerConfig.class, "jms-topic-transport");
         descriptor.getInheritancePolicy().addClassIndicator(SunCORBATransportManagerConfig.class, "sun-corba-transport");
         descriptor.getInheritancePolicy().addClassIndicator(UserDefinedTransportManagerConfig.class, "user-defined-transport");

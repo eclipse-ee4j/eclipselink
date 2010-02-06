@@ -74,7 +74,7 @@ public abstract class BroadcastRemoteConnection extends RemoteConnection {
                 // This method catches CommunicationException and processes it in handleCommunicationException method.
                 // The latter method, in case shouldRemoveConnectionOnError==true, removes the connection;
                 // otherwise it wraps the CommunicationException into RemoteCommandManagerException
-                // (with erroCode RemoteCommandManagerException.ERROR_PROPAGATING_COMMAND)
+                // (with errorCode RemoteCommandManagerException.ERROR_PROPAGATING_COMMAND)
                 // and gives the use a chance to handle it - this is an opportunity for the user to
                 // stop remote command processing.
                 throw CommunicationException.errorSendingMessage(getServiceId().getId(), exception);

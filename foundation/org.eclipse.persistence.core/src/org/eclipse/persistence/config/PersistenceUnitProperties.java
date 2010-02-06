@@ -10,6 +10,7 @@
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
  *     dclarke - Bug 294985: update of comments and addition of connection logging property
+ *     cdelahun - Bug 214534: added COORDINATION_JMS_REUSE_PUBLISHER property to enable JMS rcm legacy behavior
  ******************************************************************************/
 package org.eclipse.persistence.config;
 
@@ -1428,6 +1429,17 @@ public class PersistenceUnitProperties {
      * @see org.eclipse.persistence.sessions.coordination.broadcast.BroadcastTransportManager#setTopicConnectionFactoryName(String)
      */
     public static final String COORDINATION_JMS_FACTORY = "eclipselink.cache.coordination.jms.factory";
+    
+    /**
+     * The <code>"eclipselink.cache.coordination.jms.reuse-topic-publisher"</code> property
+     * configures cache coordination for a clustered environment. Only used for
+     * JMS coordination. Sets the JSM transport manager to cache a TopicPubliser 
+     * and reuse it for all cache coordination publishing. Default value if unset is false.
+     *
+     * @see #COORDINATION_PROTOCOL
+     * @see org.eclipse.persistence.sessions.coordination.jms.JMSPublishingTransportManager#setShouldReuseJMSTopicPublisher(boolean)
+     */
+    public static final String COORDINATION_JMS_REUSE_PUBLISHER = "eclipselink.cache.coordination.jms.reuse-topic-publisher";
 
     /**
      * The <code>"eclipselink.cache.coordination.rmi.announcement-delay"</code>

@@ -23,6 +23,7 @@
  *        - 266912: add Metamodel instance field as part of the JPA 2.0 implementation
  *     10/21/2009-2.0 Guy Pelletier 
  *       - 290567: mappedbyid support incomplete
+ *     cdelahun - Bug 214534: changes to allow JMSPublishingTransportManager configuration through properties
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa;
 
@@ -73,6 +74,7 @@ import org.eclipse.persistence.internal.jpa.metamodel.MetamodelImpl;
 import org.eclipse.persistence.sessions.coordination.RemoteCommandManager;
 import org.eclipse.persistence.sessions.coordination.TransportManager;
 import org.eclipse.persistence.sessions.coordination.jms.JMSTopicTransportManager;
+import org.eclipse.persistence.sessions.coordination.jms.JMSPublishingTransportManager;
 import org.eclipse.persistence.sessions.factories.SessionManager;
 import org.eclipse.persistence.sessions.factories.XMLSessionConfigLoader;
 import org.eclipse.persistence.annotations.IdValidation;
@@ -384,9 +386,9 @@ public class EntityManagerSetupImpl {
             
             // 266912: Initialize the Metamodel
             try {
-            	this.getMetamodel();
+                this.getMetamodel();
             } catch (Exception e) {
-            	session.log(SessionLog.FINEST, SessionLog.METAMODEL, "metamodel_init_failed", new Object[]{e.getMessage()});
+                session.log(SessionLog.FINEST, SessionLog.METAMODEL, "metamodel_init_failed", new Object[]{e.getMessage()});
             }
             return session;
         } catch (Exception exception) {
@@ -1050,9 +1052,14 @@ public class EntityManagerSetupImpl {
         String protocol = getConfigPropertyAsStringLogDebug(PersistenceUnitProperties.COORDINATION_PROTOCOL, m, this.session);
         
         if (protocol != null) {
-            RemoteCommandManager rcm = new RemoteCommandManager(this.session);            
-            if (protocol.equalsIgnoreCase("jms")) {
-                JMSTopicTransportManager transport = new JMSTopicTransportManager(rcm);
+            RemoteCommandManager rcm = new RemoteCommandManager(this.session);        
+            if (protocol.equalsIgnoreCase("jms") || protocol.equalsIgnoreCase("jms-publishing")) {
+                JMSPublishingTransportManager transport = null;
+                if (protocol.equalsIgnoreCase("jms")){
+                     transport = new JMSTopicTransportManager(rcm);
+                } else {
+                    transport = new JMSPublishingTransportManager(rcm);
+                }
                 rcm.setTransportManager(transport);
                 
                 String host = getConfigPropertyAsStringLogDebug(PersistenceUnitProperties.COORDINATION_JMS_HOST, m, this.session);
@@ -1066,6 +1073,11 @@ public class EntityManagerSetupImpl {
                 String factory = getConfigPropertyAsStringLogDebug(PersistenceUnitProperties.COORDINATION_JMS_FACTORY, m, this.session);
                 if (factory != null) {
                     transport.setTopicConnectionFactoryName(factory);
+                }
+                
+                String reuse_publisher = getConfigPropertyAsStringLogDebug(PersistenceUnitProperties.COORDINATION_JMS_REUSE_PUBLISHER, m, this.session);
+                if (host != null) {
+                    transport.setShouldReuseJMSTopicPublisher(reuse_publisher.equalsIgnoreCase("true"));
                 }
                 
             } else if (protocol.equalsIgnoreCase("rmi")) {
@@ -1951,7 +1963,7 @@ public class EntityManagerSetupImpl {
      */
     public Metamodel getMetamodel() {
         // perform lazy initialisation
-    	Metamodel tempMetaModel = null;
+        Metamodel tempMetaModel = null;
         if(null == metaModel) {
             tempMetaModel = new MetamodelImpl(this);
             //If the canonical metamodel classes exist, initialize them

@@ -9,6 +9,7 @@
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
+ *     cdelahun - Bug 214534: changes for JMSPublishingTransportManager configuration via session.xml
  ******************************************************************************/  
 package org.eclipse.persistence.internal.sessions.factories;
 
@@ -26,6 +27,7 @@ import org.eclipse.persistence.logging.*;
 import org.eclipse.persistence.exceptions.*;
 import org.eclipse.persistence.sessions.coordination.*;
 import org.eclipse.persistence.sessions.coordination.rmi.RMITransportManager;
+import org.eclipse.persistence.sessions.coordination.jms.JMSPublishingTransportManager;
 import org.eclipse.persistence.sessions.coordination.jms.JMSTopicTransportManager;
 import org.eclipse.persistence.sessions.coordination.corba.sun.SunCORBATransportManager;
 import org.eclipse.persistence.sessions.server.*;
@@ -889,8 +891,10 @@ public class SessionsFactory {
             buildRMITransportManagerConfig((RMITransportManagerConfig)tmConfig, rcm);
         } else if (tmConfig instanceof RMIIIOPTransportManagerConfig) {
             buildRMIIIOPTransportManagerConfig((RMIIIOPTransportManagerConfig)tmConfig, rcm);
-        } else if (tmConfig instanceof JMSTopicTransportManagerConfig) {
+        }  else if (tmConfig instanceof JMSTopicTransportManagerConfig) {
             buildJMSTopicTransportManagerConfig((JMSTopicTransportManagerConfig)tmConfig, rcm);
+        } else if (tmConfig instanceof JMSPublishingTransportManagerConfig) {
+            buildJMSPublishingTransportManagerConfig((JMSPublishingTransportManagerConfig)tmConfig, rcm);
         } else if (tmConfig instanceof Oc4jJGroupsTransportManagerConfig) {
             buildOc4jJGroupsTransportManagerConfig((Oc4jJGroupsTransportManagerConfig)tmConfig, rcm);
         } else if (tmConfig instanceof SunCORBATransportManagerConfig) {
@@ -983,7 +987,26 @@ public class SessionsFactory {
 
         // Set the transport manager. This will initialize the DiscoveryManager
         rcm.setTransportManager(tm);
+        
+        processJMSTransportManagerConfig(tmConfig, tm);
+    }
+    
+    /**
+     * INTERNAL:
+     */
+    protected void buildJMSPublishingTransportManagerConfig(JMSPublishingTransportManagerConfig tmConfig, RemoteCommandManager rcm) {
+        JMSPublishingTransportManager tm = new JMSPublishingTransportManager(rcm);
 
+        // Set the transport manager. This will initialize the DiscoveryManager
+        rcm.setTransportManager(tm);
+        processJMSTransportManagerConfig(tmConfig, tm);
+    }
+    
+    /**
+     * INTERNAL:
+     * Common JMS configuration
+     */
+    protected void processJMSTransportManagerConfig(JMSPublishingTransportManagerConfig tmConfig, JMSPublishingTransportManager tm ){
         // JNDI naming service
         if (tmConfig.getJNDINamingServiceConfig() != null) {
             tm.setNamingServiceType(TransportManager.JNDI_NAMING_SERVICE);
