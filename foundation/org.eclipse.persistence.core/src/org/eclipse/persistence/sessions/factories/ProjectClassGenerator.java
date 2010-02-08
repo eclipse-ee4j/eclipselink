@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2009 Oracle. All rights reserved.
+ * Copyright (c) 1998, 2010 Oracle. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -338,7 +338,10 @@ public class ProjectClassGenerator {
     }
 
     protected void addDirectMapMappingLines(NonreflectiveMethodDefinition method, String mappingName, DirectMapMapping mapping) {
-        method.addLine(mappingName + ".setDirectKeyFieldName(\"" + mapping.getDirectKeyField().getQualifiedName() + "\");");
+        DatabaseField  directKeyField = mapping.getDirectKeyField();
+        if(directKeyField != null) {
+            method.addLine(mappingName + ".setDirectKeyFieldName(\"" + directKeyField.getQualifiedName() + "\");");
+        }
 
         Converter converter = mapping.getKeyConverter();
         if (converter != null) {
