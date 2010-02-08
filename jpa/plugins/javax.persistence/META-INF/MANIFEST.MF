@@ -31,6 +31,6 @@ Include-Resource: ../../../about.html,../../../readme.html,../../../li
  ./src/javax/persistence/persistence_2_0.xsd
 Import-Package: javax.sql;resolution:=optional,org.osgi.framework;reso
  lution:=optional,org.osgi.util.tracker;resolution:=optional
-Specification-Version: 2.0 PFD
+Specification-Version: 2.0
 Bundle-SymbolicName: javax.persistence
 
