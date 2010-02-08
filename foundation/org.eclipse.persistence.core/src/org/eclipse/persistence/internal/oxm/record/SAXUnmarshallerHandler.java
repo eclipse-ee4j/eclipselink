@@ -37,8 +37,6 @@ import org.xml.sax.Attributes;
 import org.xml.sax.ContentHandler;
 import org.xml.sax.Locator;
 import org.xml.sax.SAXException;
-import org.xml.sax.SAXNotRecognizedException;
-import org.xml.sax.SAXNotSupportedException;
 import org.xml.sax.SAXParseException;
 import org.xml.sax.ext.Locator2;
 import org.eclipse.persistence.internal.oxm.record.XMLReader;
@@ -294,13 +292,8 @@ public class SAXUnmarshallerHandler implements ContentHandler {
                 unmarshalRecord.startDocument();
                 unmarshalRecord.initializeRecord(null);
                 xmlReader.setContentHandler(unmarshalRecord);
+                xmlReader.setLexicalHandler(unmarshalRecord);
                 unmarshalRecord.startElement(namespaceURI, localName, qName, atts);
-                try {
-                    unmarshalRecord.getXMLReader().setProperty("http://xml.org/sax/properties/lexical-handler", unmarshalRecord);
-                } catch (SAXNotRecognizedException ex) {
-                } catch (SAXNotSupportedException ex) {
-                    //if lexical handling is not supported by this parser, just ignore. 
-                }
             } else {
                 unmarshalRecord.setRootElementName(qName);
                 unmarshalRecord.setLocalName(localName);

@@ -34,8 +34,6 @@ import org.eclipse.persistence.oxm.record.UnmarshalRecord;
 import org.eclipse.persistence.oxm.record.XMLRecord;
 import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
-import org.xml.sax.SAXNotRecognizedException;
-import org.xml.sax.SAXNotSupportedException;
 
 public abstract class XMLRelationshipMappingNodeValue extends MappingNodeValue {
 
@@ -92,13 +90,10 @@ public abstract class XMLRelationshipMappingNodeValue extends MappingNodeValue {
         childRecord.startDocument();
         childRecord.initializeRecord(null);
         childRecord.startElement(xPathFragment.getNamespaceURI(), xPathFragment.getLocalName(), xPathFragment.getShortName(), atts);
-        unmarshalRecord.getXMLReader().setContentHandler(unmarshalRecord.getChildRecord());
-        try {
-            unmarshalRecord.getXMLReader().setProperty("http://xml.org/sax/properties/lexical-handler", unmarshalRecord.getChildRecord());
-        } catch (SAXNotRecognizedException ex) {
-        } catch (SAXNotSupportedException ex) {
-            //if lexical handling is not supported by this parser, just ignore.
-        }
+
+        XMLReader xmlReader = unmarshalRecord.getXMLReader();
+        xmlReader.setContentHandler(childRecord);
+        xmlReader.setLexicalHandler(childRecord);
     }
 
     protected XMLDescriptor findReferenceDescriptor(XPathFragment xPathFragment, UnmarshalRecord unmarshalRecord, Attributes atts, DatabaseMapping mapping, UnmarshalKeepAsElementPolicy policy) {

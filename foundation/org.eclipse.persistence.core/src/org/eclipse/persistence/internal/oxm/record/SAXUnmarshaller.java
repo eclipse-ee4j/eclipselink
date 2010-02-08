@@ -54,8 +54,6 @@ import org.xml.sax.EntityResolver;
 import org.xml.sax.ErrorHandler;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
-import org.xml.sax.SAXNotRecognizedException;
-import org.xml.sax.SAXNotSupportedException;
 import org.eclipse.persistence.internal.oxm.record.XMLReader;
 
 /**
@@ -393,9 +391,8 @@ public class SAXUnmarshaller implements PlatformUnmarshaller {
             unmarshalRecord.setXMLReader(domReader);
             unmarshalRecord.setUnmarshaller(xmlUnmarshaller);
             domReader.setContentHandler(unmarshalRecord);
-            domReader.setProperty("http://xml.org/sax/properties/lexical-handler", unmarshalRecord);
+            domReader.setLexicalHandler(unmarshalRecord);
             domReader.parse(node);
-
         } catch (SAXException e) {
             throw convertSAXException(e);
         }
@@ -589,12 +586,7 @@ public class SAXUnmarshaller implements PlatformUnmarshaller {
             unmarshalRecord.setXMLReader(xmlReader);
             unmarshalRecord.setUnmarshaller(xmlUnmarshaller);
             xmlReader.setContentHandler(unmarshalRecord);
-            try {
-                unmarshalRecord.getXMLReader().setProperty("http://xml.org/sax/properties/lexical-handler", unmarshalRecord);
-            } catch (SAXNotRecognizedException ex) {
-            } catch (SAXNotSupportedException ex) {
-                //if lexical handling is not supported by this parser, just ignore. 
-            }
+            xmlReader.setLexicalHandler(unmarshalRecord);
             xmlReader.parse(systemId);
         } catch (IOException e) {
             throw XMLMarshalException.unmarshalException(e);
@@ -692,12 +684,7 @@ public class SAXUnmarshaller implements PlatformUnmarshaller {
             unmarshalRecord.setXMLReader(extendedXMLReader);
             unmarshalRecord.setUnmarshaller(xmlUnmarshaller);
             extendedXMLReader.setContentHandler(unmarshalRecord);
-            try {
-                extendedXMLReader.setProperty("http://xml.org/sax/properties/lexical-handler", unmarshalRecord);
-            } catch (SAXNotRecognizedException ex) {
-            } catch (SAXNotSupportedException ex) {
-                //if lexical handling is not supported by this parser, just ignore. 
-            }
+            extendedXMLReader.setLexicalHandler(unmarshalRecord);
             extendedXMLReader.parse(inputSource);
 
             // resolve mapping references
