@@ -1727,14 +1727,6 @@ public class XMLConversionManager extends ConversionManager implements TimeZoneH
         return returnString;
     }
 
-    private TimeZone convertStringToTimeZone(String string) {
-        if (GMT_SUFFIX.equals(string)) {
-            return TimeZone.getTimeZone(GMT_ID);
-        } else {
-            return TimeZone.getTimeZone(GMT_ID + string);
-        }
-    }
-
     public static HashMap getDefaultXMLTypes() {
         if (defaultXMLTypes == null) {
             defaultXMLTypes = buildXMLTypes();
