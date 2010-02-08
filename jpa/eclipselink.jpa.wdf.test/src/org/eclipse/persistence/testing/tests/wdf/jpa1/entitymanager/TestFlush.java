@@ -607,11 +607,11 @@ public class TestFlush extends JPA1Base {
             final int id = 302;
             Employee frank = new Employee(id, "Frank", "Schuster", null);
             env.beginTransaction(em);
-            Review r1 = new Review(101, Date.valueOf("2006-101-19"), "Performance");
+            Review r1 = new Review(101, Date.valueOf("2006-10-19"), "Performance");
             frank.addReview(r1);
-            Review r2 = new Review(102, Date.valueOf("2006-101-19"), "Passion");
+            Review r2 = new Review(102, Date.valueOf("2006-10-19"), "Passion");
             frank.addReview(r2);
-            Review r3 = new Review(103, Date.valueOf("2006-101-19"), "Six-Sigma");
+            Review r3 = new Review(103, Date.valueOf("2006-10-19"), "Six-Sigma");
             frank.addReview(r3);
             em.persist(frank);
             em.persist(r1);
