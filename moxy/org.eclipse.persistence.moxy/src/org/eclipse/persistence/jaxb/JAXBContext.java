@@ -124,11 +124,23 @@ public class JAXBContext extends javax.xml.bind.JAXBContext {
     }
     
     
-
+    /**
+     * Generate a Schema for this JAXBContext
+     *  
+     * @param outputResolver Class that decides where the schema file (of the given namespace URI) will be written
+     */
     public void generateSchema(SchemaOutputResolver outputResolver) {
         generateSchema(outputResolver, null);
     }
 
+    /**
+     * Generate a Schema for this JAXBContext
+     *  
+     * @param outputResolver Class that decides where the schema file (of the given namespace URI) will be written
+     * @param additonalGlobalElements Map of additional global elements to be added to the generated XSD.  
+     * Note that if any QName in this map conflicts with another global element (for example from a TypeMappingInfo object)
+     * then the element generated from this map will be the one that is present in the XSD.
+     */
     public void generateSchema(SchemaOutputResolver outputResolver, Map<QName, Type> additonalGlobalElements) {
         if (generator == null) {
             List<XMLDescriptor> descriptorsToProcess = new ArrayList<XMLDescriptor>();
@@ -162,7 +174,7 @@ public class JAXBContext extends javax.xml.bind.JAXBContext {
         marshaller.setJaxbContext(this);
         return marshaller;
     }
-
+    
     public JAXBUnmarshaller createUnmarshaller() {
         JAXBUnmarshaller unmarshaller = new JAXBUnmarshaller(xmlContext.createUnmarshaller(PARSER_FEATURES));
         if (generator != null && generator.hasUnmarshalCallbacks()) {
