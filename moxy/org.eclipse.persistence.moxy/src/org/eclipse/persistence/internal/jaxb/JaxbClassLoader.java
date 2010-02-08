@@ -1,5 +1,5 @@
 /*******************************************************************************
-* Copyright (c) 1998, 2009 Oracle. All rights reserved.
+* Copyright (c) 1998, 2010 Oracle. All rights reserved.
 * This program and the accompanying materials are made available under the
 * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
 * which accompanies this distribution.
@@ -36,11 +36,11 @@ import org.eclipse.persistence.jaxb.TypeMappingInfo;
 public class JaxbClassLoader extends ClassLoader {
 
 	private ClassLoader nestedClassLoader;
-	private Map generatedClasses;
+	private Map<String, Type> generatedClasses;
 	
 	public JaxbClassLoader(ClassLoader nestedClassLoader) {
 		this.nestedClassLoader = nestedClassLoader;
-		this.generatedClasses = new HashMap();
+		this.generatedClasses = new HashMap<String, Type>();
 	}
 	
 	public JaxbClassLoader(ClassLoader nestedClassLoader, Class[] classes) {
@@ -106,4 +106,9 @@ public class JaxbClassLoader extends ClassLoader {
     	generatedClasses.put(className, theClass);
     	return theClass;
     }
+
+    public void putClass(String className, Class clazz) {
+        generatedClasses.put(className, clazz);
+    }
+
 }

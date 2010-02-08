@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2009 Oracle. All rights reserved.
+ * Copyright (c) 1998, 2010 Oracle. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -12,6 +12,7 @@
  ******************************************************************************/  
 package org.eclipse.persistence.jaxb.javamodel.reflection;
 
+import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
 import org.eclipse.persistence.jaxb.javamodel.JavaAnnotation;
 import org.eclipse.persistence.jaxb.javamodel.JavaClass;
 import org.eclipse.persistence.jaxb.javamodel.JavaMethod;
@@ -27,7 +28,7 @@ import java.util.Collection;
 /**
  * INTERNAL:
  * <p><b>Purpose:</b>A wrapper for a JDK Method.  This implementation
- * of the TopLink JAXB 2.0 Java model simply makes reflective calls on the 
+ * of the EclipseLink JAXB 2.X Java model simply makes reflective calls on the 
  * underlying JDK object. 
  * 
  * <p><b>Responsibilities:</b>
@@ -41,21 +42,24 @@ import java.util.Collection;
  * @see java.lang.reflect.Method
  */
 public class JavaMethodImpl implements JavaMethod {
+
     protected Method jMethod;
-    
-    public JavaMethodImpl(Method javaMethod) {
-        jMethod = javaMethod;
+    private JavaModelImpl javaModelImpl;
+
+    public JavaMethodImpl(Method javaMethod, JavaModelImpl javaModelImpl) {
+        this.jMethod = javaMethod;
+        this.javaModelImpl = javaModelImpl;
     }
 
     public Collection getActualTypeArguments() {
-        ArrayList<JavaClassImpl> argCollection = new ArrayList<JavaClassImpl>();
+        ArrayList<JavaClass> argCollection = new ArrayList<JavaClass>();
         Type[] params = jMethod.getGenericParameterTypes();
         for (Type type : params) {
             if (type instanceof ParameterizedType) {
                 ParameterizedType pType = (ParameterizedType) type;
-                argCollection.add(new JavaClassImpl(pType, pType.getClass()));
+                argCollection.add(new JavaClassImpl(pType, pType.getClass(), javaModelImpl));
             } else if (type instanceof Class) {
-                argCollection.add(new JavaClassImpl((Class) type));
+                argCollection.add(javaModelImpl.getClass((Class) type));
             }
         }
         return argCollection;
@@ -85,25 +89,27 @@ public class JavaMethodImpl implements JavaMethod {
     }
 
     public JavaClass[] getParameterTypes() {
-        Class[] params = jMethod.getParameterTypes();
+        Class[] params = PrivilegedAccessHelper.getMethodParameterTypes(jMethod);
         JavaClass[] paramArray = new JavaClass[params.length];
         for (int i=0; i<params.length; i++) {
-            paramArray[i] = new JavaClassImpl(params[i]);
+            paramArray[i] = javaModelImpl.getClass(params[i]);
         }
         return paramArray;
     }
 
     public JavaClass getResolvedType() {
-        return new JavaClassImpl(jMethod.getReturnType());
+        Class returnType = PrivilegedAccessHelper.getMethodReturnType(jMethod);
+        return javaModelImpl.getClass(returnType);
     }
 
     public JavaClass getReturnType() {
         Type type = jMethod.getGenericReturnType();
+        Class returnType = PrivilegedAccessHelper.getMethodReturnType(jMethod);
         if (type instanceof ParameterizedType) {
             ParameterizedType pType = (ParameterizedType) type;
-            return new JavaClassImpl(pType, jMethod.getReturnType());
+            return new JavaClassImpl(pType, returnType, javaModelImpl);
         }
-        return new JavaClassImpl(jMethod.getReturnType());
+        return javaModelImpl.getClass(returnType);
     }
 
     public boolean hasActualTypeArguments() {
@@ -121,7 +127,7 @@ public class JavaMethodImpl implements JavaMethod {
     }
 
     public JavaClass getOwningClass() {
-        return new JavaClassImpl(jMethod.getDeclaringClass());
+        return javaModelImpl.getClass(jMethod.getDeclaringClass());
     }
 
     public boolean isAbstract() {
@@ -160,4 +166,5 @@ public class JavaMethodImpl implements JavaMethod {
     public Collection getDeclaredAnnotations() {
         return null;
     }
+
 }

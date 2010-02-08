@@ -1,5 +1,5 @@
 /*******************************************************************************
-* Copyright (c) 1998, 2009 Oracle. All rights reserved.
+* Copyright (c) 1998, 2010 Oracle. All rights reserved.
 * This program and the accompanying materials are made available under the
 * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
 * which accompanies this distribution.
@@ -27,32 +27,38 @@ import org.eclipse.persistence.jaxb.javamodel.JavaConstructor;
  * </ul>
  * @author mmacivor
  *
- */public class JavaConstructorImpl implements JavaConstructor {
+ */
+public class JavaConstructorImpl implements JavaConstructor {
+
+    private JavaModelImpl javaModelImpl;
     protected Constructor jConstructor;
-    
-    public JavaConstructorImpl(Constructor constructor) {
+
+    public JavaConstructorImpl(Constructor constructor, JavaModelImpl javaModelImpl) {
+        this.javaModelImpl = javaModelImpl;
         this.jConstructor = constructor;
     }
-    
+
     public int getModifiers() {
         return jConstructor.getModifiers();
     }
+
     public String getName() {
         return jConstructor.getName();
     }
+
     public JavaClass getOwningClass() {
-        return new JavaClassImpl(jConstructor.getDeclaringClass());
+        return javaModelImpl.getClass(jConstructor.getDeclaringClass());
     }
-    
-    
+
     public JavaClass[] getParameterTypes() {
         Class[] params = jConstructor.getParameterTypes();
         JavaClass[] paramArray = new JavaClass[params.length];
         for (int i=0; i<params.length; i++) {
-            paramArray[i] = new JavaClassImpl(params[i]);
+            paramArray[i] = javaModelImpl.getClass(params[i]);
         }
         return paramArray;
     }
+
     public boolean isAbstract() {
         return Modifier.isAbstract(getModifiers());
     }
@@ -80,6 +86,5 @@ import org.eclipse.persistence.jaxb.javamodel.JavaConstructor;
     public boolean isSynthetic() {
         return jConstructor.isSynthetic();
     }
-
 
 }

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2009 Oracle. All rights reserved.
+ * Copyright (c) 1998, 2010 Oracle. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -9,7 +9,7 @@
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.jaxb.javamodel.reflection;
 
 import java.lang.reflect.ParameterizedType;
@@ -22,84 +22,85 @@ import org.eclipse.persistence.jaxb.javamodel.JavaModelInput;
 
 /**
  * INTERNAL:
- * <p><b>Purpose:</b>Provide access to an array of JavaClass instances 
- * and their associated JavaModel.  This class will transform an array 
+ * <p><b>Purpose:</b>Provide access to an array of JavaClass instances
+ * and their associated JavaModel.  This class will transform an array
  * of Class objects to an array of JavaClasses.
- * 
+ *
  * <p><b>Responsibilities:</b>
  * <ul>
  * <li>Create an array of JavaClass instances from an array of Classes</li>
  * <li>Return an array of JavaClass objects to be used by the generator</li>
  * <li>Return the JavaModel to be used during generation</li>
  * </ul>
- * 
+ *
  * @since Oracle TopLink 11.1.1.0.0
- * @see org.eclipse.persistence.jaxb.javamodel.JavaClass 
- * @see org.eclipse.persistence.jaxb.javamodel.JavaModel 
- * @see org.eclipse.persistence.jaxb.javamodel.JavaModelInput 
+ * @see org.eclipse.persistence.jaxb.javamodel.JavaClass
+ * @see org.eclipse.persistence.jaxb.javamodel.JavaModel
+ * @see org.eclipse.persistence.jaxb.javamodel.JavaModelInput
  */
 public class JavaModelInputImpl implements JavaModelInput {
+
     private JavaClass[] jClasses;
     private JavaModel jModel;
-    
+
     /**
      * This constructor builds an array of JavaClass objects from an array
      * of Types.  The JavaModel instance to be used is also set here.
-     * 
-     * This constructor assumes that the a given type in the list will 
+     *
+     * This constructor assumes that the a given type in the list will
      * either be a Class or ParameterizedType.
-     * 
+     *
      * @param types
      * @param javaModel
      */
     public JavaModelInputImpl(Type[] types, JavaModel javaModel) {
-    	 jClasses = new JavaClass[types.length];
-         for (int i=0; i<types.length; i++) {
-        	 TypeMappingInfo typeMappingInfo = new TypeMappingInfo();
-        	 Type type = types[i];
-        	 typeMappingInfo.setType(type);
-             
-        	 jClasses[i] = buildJavaClassImpl(type);
-         }
          jModel = javaModel;
+         jClasses = new JavaClass[types.length];
+         for (int i=0; i<types.length; i++) {
+             TypeMappingInfo typeMappingInfo = new TypeMappingInfo();
+             Type type = types[i];
+             typeMappingInfo.setType(type);
+
+             jClasses[i] = buildJavaClassImpl(type);
+         }
     }
-    	  
+
     public JavaModelInputImpl(TypeMappingInfo[] types, JavaModel javaModel) {
-   	    jClasses = new JavaClass[types.length];
+        jModel = javaModel;
+        jClasses = new JavaClass[types.length];
         for (int i=0; i<types.length; i++) {
-        	TypeMappingInfo typeMappingInfo = types[i];
+            TypeMappingInfo typeMappingInfo = types[i];
             Type type = typeMappingInfo.getType();
 
-            jClasses[i] = buildJavaClassImpl(type);            
+            jClasses[i] = buildJavaClassImpl(type);
         }
-        jModel = javaModel;
    }
-        
+
     public JavaModelInputImpl(Class[] classes, JavaModel javaModel) {
+        jModel = javaModel;
         jClasses = new JavaClass[classes.length];
         for (int i=0; i<classes.length; i++) {
-            jClasses[i] = new JavaClassImpl(classes[i]);            
+            jClasses[i] = javaModel.getClass(classes[i]);
         }
-        jModel = javaModel;
     }
-    
-    
-	private JavaClassImpl buildJavaClassImpl(Type type){	 
+
+    private JavaClassImpl buildJavaClassImpl(Type type){
         // type should be a Class or ParameterizedType
         if (type instanceof Class) {
-            return new JavaClassImpl((Class) type);                 
+            return (JavaClassImpl) jModel.getClass((Class) type);
         } else {
             // assume parameterized type
             ParameterizedType pType = (ParameterizedType) type;
-            return new JavaClassImpl(pType, (Class) pType.getRawType());                 
-        }  
-	}
-    
+            return new JavaClassImpl(pType, (Class) pType.getRawType(), (JavaModelImpl) jModel);
+        }
+    }
+
     public JavaClass[] getJavaClasses() {
         return jClasses;
     }
-    
+
     public JavaModel getJavaModel() {
         return jModel;
     }
+
 }
