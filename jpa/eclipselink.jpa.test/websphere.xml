@@ -51,6 +51,8 @@
         <echo message="WebSphere Server is Starting......"/>
         <exec executable="${was.home}/bin/startServer.${suffix}">
             <arg value="server1"/>
+            <arg value="-Dis.JTA=${is.JTA}"/>
+            <arg value="-Dejb.lookup=${ejb.lookup}"/>
         </exec> 
         <echo message="Finish Starting WebSphere Server."/>
     </target>
@@ -67,12 +69,17 @@
         <replace file="${was.home}/bin/configWebSphere.py" token="%%dbUser%%" value="${db.user}"/>
         <replace file="${was.home}/bin/configWebSphere.py" token="%%dbPassword%%" value="${db.pwd}"/>
         <replace file="${was.home}/bin/configWebSphere.py" token="%%dbURL%%" value="${db.url}"/>
+        <antcall target="set-transaction-type-for-non-jta-ds" inheritRefs="true"/>
         <replace file="${was.home}/bin/configWebSphere.py" token="%%eclipselinkLibDir%%" value="${eclipselink.jar.dir}"/>
         <replace file="${was.home}/bin/configWebSphere.py" token="%%oracleExtensionLibDir%%" value="${oracle.extensions.jar.dir}"/>
         <sleep seconds="20"/>
         <exec executable="${was.home}/bin/wsadmin.${suffix}">
               <arg line="-lang jython -f ${was.home}/bin/configWebSphere.py"/>
         </exec>
+    </target>
+
+    <target name="set-transaction-type-for-non-jta-ds" if="is.nonjta.datasource">
+        <replace file="${was.home}/bin/configWebSphere.py" token="%%nonTransactionalDS%%" value="true"/>
     </target>
 
     <!-- websphere-setup removes and recreates datasource and shared library, so we don't need to do anything in websphere-reset. -->
