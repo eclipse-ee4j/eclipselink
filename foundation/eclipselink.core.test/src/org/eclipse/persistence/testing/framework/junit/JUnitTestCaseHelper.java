@@ -89,19 +89,19 @@ public class JUnitTestCaseHelper {
                     }
                 }
                 if (dbDriver == null) {
-                    dbDriver = (String) properties.get("db.driver");
+                    dbDriver = (String) properties.get(DB_DRIVER_KEY);
                 }
                 if (dbUrl == null) {
-                    dbUrl = (String) properties.get("db.url");
+                    dbUrl = (String) properties.get(DB_URL_KEY);
                 }
                 if (dbUser == null) {
-                    dbUser = (String) properties.get("db.user");
+                    dbUser = (String) properties.get(DB_USER_KEY);
                 }
                 if (dbPwd == null) {
-                    dbPwd = (String) properties.get("db.pwd");
+                    dbPwd = (String) properties.get(DB_PWD_KEY);
                 }
                 if (platform == null) {
-                    platform = (String) properties.get("db.platform");
+                    platform = (String) properties.get(DB_PLATFORM_KEY);
                 }
                 if (logLevel == null) {
                     logLevel = (String) properties.get(PersistenceUnitProperties.LOGGING_LEVEL);

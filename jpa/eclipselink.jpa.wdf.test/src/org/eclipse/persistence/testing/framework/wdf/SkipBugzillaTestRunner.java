@@ -13,16 +13,12 @@
 
 package org.eclipse.persistence.testing.framework.wdf;
 
-import java.io.File;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.util.Properties;
+import java.util.Map;
 
-import org.eclipse.persistence.internal.databaseaccess.Platform;
+import org.eclipse.persistence.config.PersistenceUnitProperties;
 import org.eclipse.persistence.platform.database.DatabasePlatform;
-import org.eclipse.persistence.testing.framework.junit.JUnitTestCase;
 import org.eclipse.persistence.testing.framework.junit.JUnitTestCaseHelper;
 import org.junit.runner.Description;
 import org.junit.runner.notification.RunNotifier;
@@ -37,13 +33,14 @@ public class SkipBugzillaTestRunner extends BlockJUnit4ClassRunner {
     final boolean runAllIssues;
     final boolean runAllUnknown;
     final Class<? extends DatabasePlatform> databasePlatformClass;
-
+    
+    @SuppressWarnings("unchecked")
     public SkipBugzillaTestRunner(Class<?> klass) throws Throwable {
         super(klass);
+        
+        Map<String, String> properties = JUnitTestCaseHelper.getDatabaseProperties();
 
-        Properties properties = loadProperties();
-
-        String databasePlatformClassName = properties.getProperty(JUnitTestCaseHelper.DB_PLATFORM_KEY);
+        String databasePlatformClassName = properties.get(PersistenceUnitProperties.TARGET_DATABASE);
 
         databasePlatformClass = (Class<? extends DatabasePlatform>) Class.forName(databasePlatformClassName);
 
@@ -126,35 +123,6 @@ public class SkipBugzillaTestRunner extends BlockJUnit4ClassRunner {
         }
 
         return;
-    }
-
-    private static Properties loadProperties() {
-        Properties properties = new Properties();
-        File testPropertiesFile = new File(System.getProperty(JUnitTestCaseHelper.TEST_PROPERTIES_FILE_KEY,
-                JUnitTestCaseHelper.TEST_PROPERTIES_FILE_DEFAULT));
-        URL url = null;
-        if (testPropertiesFile.exists()) {
-            try {
-                url = testPropertiesFile.toURI().toURL();
-            } catch (MalformedURLException exception) {
-                throw new RuntimeException("Error loading " + testPropertiesFile.getName() + ".", exception);
-            }
-        } else {
-            // Load as a resource if from a jar.
-            url = JUnitTestCaseHelper.class.getResource("/"
-                    + System.getProperty(JUnitTestCaseHelper.TEST_PROPERTIES_FILE_KEY,
-                            JUnitTestCaseHelper.TEST_PROPERTIES_FILE_DEFAULT));
-        }
-        if (url != null) {
-            try {
-                properties.load(url.openStream());
-            } catch (java.io.IOException exception) {
-                throw new RuntimeException("Error loading " + testPropertiesFile.getName() + ".", exception);
-            }
-        }
-
-        return properties;
-
     }
 
     private static class SkipException extends Exception {
@@ -267,12 +235,5 @@ public class SkipBugzillaTestRunner extends BlockJUnit4ClassRunner {
         Class<? extends DatabasePlatform>[] getDatabases(T t);
     }
 
-    private static DatabasePlatform getDatabasePlatform() {
-        Platform platform = JUnitTestCase.getDbPlatform();
-        if (platform instanceof DatabasePlatform) {
-            return (DatabasePlatform) platform;
-        }
-        throw new IllegalStateException("wrong instance: " + platform.getClass().getName());
-    }
 
 }
