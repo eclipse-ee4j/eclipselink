@@ -245,7 +245,7 @@ public class CallQueryMechanism extends DatasourceCallQueryMechanism {
                 call.returnManyRows();
                 if (isCallQueryMechanism()) {
                     call.setIsFieldMatchingRequired(true);
-                    // Set the fieldsincluding joined and partial fields and compute joined indexes,
+                    // Set the fields including joined and partial fields and compute joined indexes,
                     // this requires and assume that the custom SQL returns the fields in the correct order.
                     call.setFields(((ObjectLevelReadQuery)getQuery()).getSelectionFields());
                     prepareJoining((ObjectLevelReadQuery)getQuery());
@@ -256,7 +256,7 @@ public class CallQueryMechanism extends DatasourceCallQueryMechanism {
             if (isCallQueryMechanism()) {
                 DatabaseCall call = getDatabaseCall();
                 call.setIsFieldMatchingRequired(true);
-                // Set the fieldsincluding joined and partial fields and compute joined indexes,
+                // Set the fields including joined and partial fields and compute joined indexes,
                 // this requires and assume that the custom SQL returns the fields in the correct order.
                 call.setFields(((ObjectLevelReadQuery)getQuery()).getSelectionFields());
                 prepareJoining((ObjectLevelReadQuery)getQuery());
@@ -284,7 +284,7 @@ public class CallQueryMechanism extends DatasourceCallQueryMechanism {
                 call.returnOneRow();
                 if (isCallQueryMechanism()) {
                     call.setIsFieldMatchingRequired(true);
-                    // Set the fieldsincluding joined and partial fields and compute joined indexes,
+                    // Set the fields including joined and partial fields and compute joined indexes,
                     // this requires and assume that the custom SQL returns the fields in the correct order.
                     call.setFields(((ObjectLevelReadQuery)getQuery()).getSelectionFields());
                     prepareJoining((ObjectLevelReadQuery)getQuery());
@@ -295,7 +295,7 @@ public class CallQueryMechanism extends DatasourceCallQueryMechanism {
             if (isCallQueryMechanism()) {
                 DatabaseCall call = getDatabaseCall();
                 call.setIsFieldMatchingRequired(true);
-                // Set the fieldsincluding joined and partial fields and compute joined indexes,
+                // Set the fields including joined and partial fields and compute joined indexes,
                 // this requires and assume that the custom SQL returns the fields in the correct order.
                 call.setFields(((ObjectLevelReadQuery)getQuery()).getSelectionFields());
                 prepareJoining((ObjectLevelReadQuery)getQuery());

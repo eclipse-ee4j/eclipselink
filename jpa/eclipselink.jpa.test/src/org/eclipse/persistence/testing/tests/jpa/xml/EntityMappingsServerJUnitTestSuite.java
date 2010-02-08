@@ -43,7 +43,9 @@ public class EntityMappingsServerJUnitTestSuite extends TestCase {
             suite.addTest(EntityMappingsInheritanceJUnitTestCase.suite());
             suite.addTest(EntityMappingsInheritedJUnitTestCase.suite());
             suite.addTest(EntityMappingsMergeServerJUnitTestSuite.suite());
-        } else if (testing.equals(TestingProperties.ECLIPSELINK_ORM_TESTING)) {
+            // un-comment the following line to be able to test 260271 without the orm.testing property
+            //suite.addTest(EntityMappingsComplexAggregateJUnitTestCase.suite());
+        } else if (testing.equals(TestingProperties.ECLIPSELINK_ORM_TESTING)) { // In the testing browser use -Dorm.testing=eclipselink
             suite.addTest(EntityMappingsAdvancedJUnitTestCase.suite());
             suite.addTest(EntityMappingsRelationshipsJUnitTestCase.suite());
             suite.addTest(EntityMappingsComplexAggregateJUnitTestCase.suite());

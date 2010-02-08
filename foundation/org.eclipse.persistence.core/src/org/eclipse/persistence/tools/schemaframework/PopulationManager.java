@@ -19,13 +19,13 @@ import org.eclipse.persistence.internal.sessions.AbstractSession;
 
 /**
  * <p>
- * <b>Purpose</b>: This class is used to populate example data into the database, it allows for cirrcular references to be resolved.
+ * <b>Purpose</b>: This class is used to populate example data into the database, it allows for circular references to be resolved.
  * <p>
  * <b>Responsibilities</b>:
  * <ul>
  * <li> Allow objects to be registered.
  * <li> Allow objects to be looked up.
- * <li> Store a globally accessable default instance.
+ * <li> Store a globally accessible default instance.
  */
 public class PopulationManager {
 
@@ -74,14 +74,14 @@ public class PopulationManager {
     }
 
     /**
-     * Check if the object is registred given its name.
+     * Check if the object is registered given its name.
      */
     public boolean containsObject(Class objectsClass, String objectsName) {
         return ((getRegisteredObjects().containsKey(objectsClass)) && (((Hashtable)getRegisteredObjects().get(objectsClass)).containsKey(objectsName)));
     }
 
     /**
-     * Check if the object is registred given its name.
+     * Check if the object is registered given its name.
      */
     public boolean containsObject(Object objectToCheck, String objectsName) {
         return containsObject(objectToCheck.getClass(), objectsName);
@@ -166,7 +166,7 @@ public class PopulationManager {
     }
 
     /**
-     * Return the object registred given its name.
+     * Return the object registered given its name.
      */
     public Object getObject(Class objectsClass, String objectsName) {
         if (!(getRegisteredObjects().containsKey(objectsClass))) {

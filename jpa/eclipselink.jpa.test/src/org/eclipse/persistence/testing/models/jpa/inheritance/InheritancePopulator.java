@@ -24,9 +24,9 @@ import org.eclipse.persistence.tools.schemaframework.PopulationManager;
 /**
  * <p><b>Purpose</b>: To build and populate the database for example and testing purposes.
  * This population routine is fairly complex and makes use of the population manager to
- * resolve interrated objects as the employee objects are an interconnection graph of objects.
+ * resolve interrelated objects as the employee objects are an interconnection graph of objects.
  *
- * This is not the recomended way to create new objects in your application,
+ * This is not the recommended way to create new objects in your application,
  * this is just the easiest way to create interconnected new example objects from code.
  * Normally in your application the objects will be defined as part of a transactional and user interactive process.
  */
@@ -43,7 +43,7 @@ public class InheritancePopulator {
      * are registered in the population manager
      */
     public void buildExamples() {
-        // First ensure that no preivous examples are hanging around.
+        // First ensure that no previous examples are hanging around.
         PopulationManager.getDefaultManager().getRegisteredObjects().remove(Person.class);
 
         PopulationManager.getDefaultManager().registerObject(Person.class, InheritanceModelExamples.personExample1(), "e1");

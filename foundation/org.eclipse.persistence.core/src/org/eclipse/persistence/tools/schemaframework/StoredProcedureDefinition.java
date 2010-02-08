@@ -24,7 +24,7 @@ import org.eclipse.persistence.internal.databaseaccess.FieldTypeDefinition;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 
 /**
- * <b>Purpose</b>: Allow a semi-generic way of creating store procedures.
+ * <b>Purpose</b>: Allow a semi-generic way of creating stored procedures.
  */
 public class StoredProcedureDefinition extends DatabaseObjectDefinition {
     protected Vector variables;

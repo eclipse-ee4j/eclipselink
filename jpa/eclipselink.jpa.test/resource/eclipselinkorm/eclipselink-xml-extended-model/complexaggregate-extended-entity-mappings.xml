@@ -149,7 +149,7 @@
 			<id name="id">
 				<generated-value strategy="TABLE"
 					generator="OWNERSHIP_GROUP_TABLE_GENERATOR" />
-				<table-generator name="OWNERSHIP_GOUP_TABLE_GENERATOR"
+				<table-generator name="OWNERSHIP_GROUP_TABLE_GENERATOR"
 					table="XML_HOCKEY_SEQ" pk-column-name="SEQ_NAME"
 					value-column-name="SEQ_COUNT"
 					pk-column-value="OWNERSHIP_GROUP_SEQ" />

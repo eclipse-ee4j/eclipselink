@@ -322,7 +322,7 @@ public abstract class DatabaseQuery implements Cloneable, Serializable {
     }
 
     /**
-     * INTERNAL: Add an argument to the query, but do not resovle the class yet.
+     * INTERNAL: Add an argument to the query, but do not resolve the class yet.
      * This is useful for building a query without putting the domain classes on
      * the classpath for the Mapping Workbench.
      */
@@ -474,8 +474,7 @@ public abstract class DatabaseQuery implements Cloneable, Serializable {
      * repeated.
      */
     public void checkPrepare(AbstractSession session, AbstractRecord translationRow, boolean force) {
-        // This query is first prepared for global common state, this must be
-        // synced.
+        // This query is first prepared for global common state, this must be synced.
         if (!this.isPrepared) {// Avoid the monitor is already prepare, must
             // check again for concurrency.
             // Profile the query preparation time.
@@ -492,8 +491,7 @@ public abstract class DatabaseQuery implements Cloneable, Serializable {
                 if (!isPrepared()) {
                     // When custom SQL is used there is a possibility that the
                     // SQL contains the # token.
-                    // Avoid this by telling the call if this is custom SQL with
-                    // parameters.
+                    // Avoid this by telling the call if this is custom SQL with parameters.
                     // This must not be called for SDK calls.
                     if ((isReadQuery() || isDataModifyQuery()) && isCallQuery() && (getQueryMechanism() instanceof CallQueryMechanism) && ((translationRow == null) || translationRow.isEmpty())) {
                         // Must check for read object queries as the row will be
@@ -504,13 +502,11 @@ public abstract class DatabaseQuery implements Cloneable, Serializable {
                     } else if (isCallQuery() && (getQueryMechanism() instanceof CallQueryMechanism)) {
                         ((CallQueryMechanism) getQueryMechanism()).setCallHasCustomSQLArguments();
                     }
-                    setSession(session);// Session is required for some init
-                    // stuff.
+                    setSession(session);// Session is required for some init stuff.
                     prepare();
                     setSession(null);
                     setIsPrepared(true);// MUST not set prepare until done as
-                    // other thread may hit before finishing
-                    // the prepare.
+                    // other thread may hit before finishing the prepare.
                 }
             }
             // Profile the query preparation time.

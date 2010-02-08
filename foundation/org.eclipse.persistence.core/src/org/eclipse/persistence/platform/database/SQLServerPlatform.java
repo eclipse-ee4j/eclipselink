@@ -360,7 +360,7 @@ public class SQLServerPlatform extends org.eclipse.persistence.platform.database
                 result = tempResult;
             }
         } else {
-            // start the process of procesing the result set and the output params.  this is specific to Sybase JConnect 5.5
+            // start the process of processing the result set and the output params.  this is specific to Sybase JConnect 5.5
             // as we must process the result set before the output params.
             session.startOperationProfile(SessionProfiler.STATEMENT_EXECUTE, dbCall.getQuery(), SessionProfiler.ALL);
             try {

@@ -27,7 +27,7 @@ import org.eclipse.persistence.testing.models.employee.relational.EmployeeSystem
 /**
  * <b>Purpose</b>: To define system behavior.
  * <p><b>Responsibilities</b>:    <ul>
- * <li> Login and return an initialize database session.
+ * <li> Login and return an initialized database session.
  * <li> Create and populate the database.
  * </ul>
  */

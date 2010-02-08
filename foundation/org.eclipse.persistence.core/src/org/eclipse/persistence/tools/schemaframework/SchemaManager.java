@@ -862,7 +862,7 @@ public class SchemaManager {
     /**
      * Use the definition object to drop and recreate the schema entity on the database.
      * This is used for dropping tables, views, procedures ... etc ...
-     * This handles and ignore any database error while droping incase the object did not previously exist.
+     * This handles and ignore any database error while dropping in case the object did not previously exist.
      */
     public void replaceObject(DatabaseObjectDefinition databaseDefinition) throws EclipseLinkException {                
         // PERF: Allow a special "fast" flag to be set on the session causes a delete from the table instead of a replace.

@@ -13,7 +13,9 @@
  *     08/27/2008-1.1 Guy Pelletier 
  *       - 211329: Add sequencing on non-id attribute(s) support to the EclipseLink-ORM.XML Schema
  *     08/28/2008-1.1 Guy Pelletier 
- *       - 245120: unidir one-to-many within embeddable fails to deploy for missing primary key field       
+ *       - 245120: unidir one-to-many within embeddable fails to deploy for missing primary key field  
+ *     02/08/2010-2.1 Michael O'Brien
+ *       - 260271:  for the "NUMERIC" ID field - increase from 15 to 18 to match XML_OWNERSHIP_GROUP.ID as it is the default precision size     
  ******************************************************************************/  
 package org.eclipse.persistence.testing.models.jpa.xml.complexaggregate;
 
@@ -496,7 +498,7 @@ public class ComplexAggregateTableCreator extends org.eclipse.persistence.tools.
         FieldDefinition fieldID = new FieldDefinition();
         fieldID.setName("OWNER_ID");
         fieldID.setTypeName("NUMERIC");
-        fieldID.setSize(15);
+        fieldID.setSize(18); // 260271: increase from 15 to 18 to match XML_OWNERSHIP_GROUP.ID as it is the default precision for "NUMERIC" fields
         fieldID.setShouldAllowNull(false);
         fieldID.setIsPrimaryKey(false);
         fieldID.setUnique(false);

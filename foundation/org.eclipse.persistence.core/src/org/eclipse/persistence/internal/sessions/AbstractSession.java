@@ -1262,8 +1262,7 @@ public abstract class AbstractSession implements org.eclipse.persistence.session
                         if (this.getClass().isAssignableFrom(DatabaseSessionImpl.class)) {
                             while (retryCount < getLogin().getQueryRetryAttemptCount()) {
                                 try {
-                                    // if database session then re-establish
-                                    // connection
+                                    // if database session then re-establish connection
                                     // else the session will just get a new
                                     // connection from the pool
                                     databaseException.getAccessor().reestablishConnection(this);

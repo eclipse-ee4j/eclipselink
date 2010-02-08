@@ -232,6 +232,7 @@ public class MetamodelImpl implements Metamodel, Serializable {
         boolean isValid = true;
         // DI99: Check for an invalid key without reporting it (a non-Fail-Fast pattern)
         if(null == javaClassKey) {
+            // Use Case: doing an emf.getCriteriaBuilder() before an EM has been created
             isValid = false;
         }
         this.types.put(javaClassKey, typeValue);
@@ -362,7 +363,7 @@ public class MetamodelImpl implements Metamodel, Serializable {
              *    Since [Object] is not an Entity or MappedSuperclass - it fails this criteria - as it would be a BasicType
              *    because it has no @Entity or @MappedSuperclass annotation.<p> 
              * 2) Another object space reasoning issue behind this is to separate the Java and Metamodel object spaces.
-             * In Java all type inherit from Object, however in the JPA Metamodel all types DO NOT inherit from a common type.
+             * In Java all types inherit from Object, however in the JPA Metamodel all types DO NOT inherit from a common type.
              * Therefore in the metamodel top-level root types have a superType of null.
              * See design issue discussion:
              * http://wiki.eclipse.org/EclipseLink/Development/JPA_2.0/metamodel_api#DI_42:_20090709:_IdentifiableType.supertype_-_what_do_top-level_types_set_it_to

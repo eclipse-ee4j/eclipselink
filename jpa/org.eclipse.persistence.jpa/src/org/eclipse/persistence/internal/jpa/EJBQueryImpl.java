@@ -604,8 +604,7 @@ public class EJBQueryImpl<X> implements JpaQuery<X> {
                 throw QueryException.invalidContainerClass(containerClass, Cursor.class);
             }
         } else if (getDatabaseQueryInternal() instanceof ReadObjectQuery) {
-            // bug:4300879, no support for ReadObjectQuery if a collection is
-            // required
+            // bug:4300879, no support for ReadObjectQuery if a collection is required
             throw QueryException.incorrectQueryObjectFound(getDatabaseQueryInternal(), ReadAllQuery.class);
         } else if (!(getDatabaseQueryInternal() instanceof ReadQuery)) {
             throw new IllegalStateException(ExceptionLocalization.buildMessage("incorrect_query_for_get_result_collection"));
@@ -712,8 +711,7 @@ public class EJBQueryImpl<X> implements JpaQuery<X> {
             entityManager.verifyOpen();
             setAsSQLReadQuery();
             propagateResultProperties();
-            // This API is used to return non-List results, so no other
-            // validation is done.
+            // This API is used to return non-List results, so no other validation is done.
             // It could be Cursor or other Collection or Map type.
             if (!(getDatabaseQueryInternal() instanceof ReadQuery)) {
                 throw new IllegalStateException(ExceptionLocalization.buildMessage("incorrect_query_for_get_single_result"));
@@ -755,8 +753,7 @@ public class EJBQueryImpl<X> implements JpaQuery<X> {
         DatabaseQuery query = getDatabaseQueryInternal();
         List arguments = query.getArguments();
         if (arguments.isEmpty()) {
-            // This occurs for native queries, as the query does not know of its
-            // arguments.
+            // This occurs for native queries, as the query does not know of its arguments.
             // This may have issues, it is better if the query set its arguments
             // when parsing the SQL.
 
@@ -1166,9 +1163,7 @@ public class EJBQueryImpl<X> implements JpaQuery<X> {
     protected void setParameterInternal(String name, Object value, boolean isIndex) {
         DatabaseQuery query = getDatabaseQueryInternal();
         int index = query.getArguments().indexOf(name);
-        if (query.getQueryMechanism().isJPQLCallQueryMechanism()) { // only non
-                                                                    // native
-                                                                    // queries
+        if (query.getQueryMechanism().isJPQLCallQueryMechanism()) { // only non native queries
             if (index == -1) {
                 if (isIndex) {
                     throw new IllegalArgumentException(ExceptionLocalization.buildMessage("ejb30-wrong-argument-index", new Object[] { name, query.getEJBQLString() }));
@@ -1204,8 +1199,7 @@ public class EJBQueryImpl<X> implements JpaQuery<X> {
 
     protected Session getActiveSession() {
         DatabaseQuery query = getDatabaseQueryInternal();
-        // PERF: If read-only query, avoid creating unit of work and JTA
-        // transaction.
+        // PERF: If read-only query, avoid creating unit of work and JTA transaction.
         if (query.isObjectLevelReadQuery() && ((ObjectLevelReadQuery) query).isReadOnly()) {
             return this.entityManager.getReadOnlySession();
         }
