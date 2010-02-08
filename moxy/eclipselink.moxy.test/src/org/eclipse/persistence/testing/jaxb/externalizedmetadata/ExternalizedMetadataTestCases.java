@@ -12,8 +12,6 @@
  ******************************************************************************/
 package org.eclipse.persistence.testing.jaxb.externalizedmetadata;
 
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -425,17 +423,8 @@ public class ExternalizedMetadataTestCases extends TestCase {
         try {
             theSchema = sFact.newSchema(bindingsFileXSDSource);
             Validator validator = theSchema.newValidator();
-            
-            byte [] buffer;      
-            ByteArrayOutputStream baos = new ByteArrayOutputStream();
-            byte buf[] = new byte[1024];
-            int letti;
-            while ((letti=src.read(buf))>0){ 
-            	baos.write(buf,0,letti);
-            }
-            buffer = baos.toByteArray();
-            ByteArrayInputStream test = new ByteArrayInputStream(buffer);            
-            StreamSource ss = new StreamSource(test);             
+                   
+            StreamSource ss = new StreamSource(src);             
             validator.validate(ss);
         } catch (Exception e) {
             e.printStackTrace();

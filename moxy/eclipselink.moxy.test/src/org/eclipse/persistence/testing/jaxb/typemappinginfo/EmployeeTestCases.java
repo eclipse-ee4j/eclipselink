@@ -34,13 +34,13 @@ public class EmployeeTestCases extends TypeMappingInfoTestCases{
 	
 	public EmployeeTestCases(String name) throws Exception {
 		super(name);
-		setupParser();
-		init();
+		setControlDocument(XML_RESOURCE);
 	}
 	
-	public void init() throws Exception {
-		setControlDocument(XML_RESOURCE);	
-		setTypeMappingInfos(getTypeMappingInfos());	
+	
+	public void setUp() throws Exception{
+		super.setUp();
+		setTypeMappingInfos(getTypeMappingInfos());		
 	}
 	
 	protected TypeMappingInfo[] getTypeMappingInfos()throws Exception {

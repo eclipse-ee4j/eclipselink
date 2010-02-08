@@ -21,12 +21,14 @@ import java.io.StringWriter;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
 import javax.xml.bind.JAXBElement;
 import javax.xml.bind.Marshaller;
 import javax.xml.stream.XMLStreamReader;
+import javax.xml.transform.Source;
 import javax.xml.transform.stream.StreamSource;
 
 import org.eclipse.persistence.internal.jaxb.JaxbClassLoader;
@@ -60,7 +62,21 @@ public abstract class JAXBListOfObjectsTestCases extends JAXBTestCases {
 		classLoader = new JaxbClassLoader(Thread.currentThread()
 				.getContextClassLoader());
 		JAXBContextFactory factory = new JAXBContextFactory();
-		jaxbContext = factory.createContext(newTypes, getProperties(), classLoader);
+				
+	 	Map props = getProperties();
+                if(props != null){
+    		Map overrides = (Map) props.get(JAXBContextFactory.ECLIPSELINK_OXM_XML_KEY);
+    		if(overrides != null){
+    			Iterator valuesIter = overrides.values().iterator();
+    			while(valuesIter.hasNext()){
+    				Source theSource = (Source) valuesIter.next();
+    				validateBindingsFileAgainstSchema(theSource);
+    			}
+    		}
+    	}
+    	
+		
+		jaxbContext = factory.createContext(newTypes, props, classLoader);
 		jaxbMarshaller = jaxbContext.createMarshaller();
 		jaxbUnmarshaller = jaxbContext.createUnmarshaller();
 	}

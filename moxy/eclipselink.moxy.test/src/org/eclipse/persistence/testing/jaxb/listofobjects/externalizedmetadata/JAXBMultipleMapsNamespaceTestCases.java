@@ -41,11 +41,10 @@ public class JAXBMultipleMapsNamespaceTestCases extends JAXBListOfObjectsTestCas
 	
 	public JAXBMultipleMapsNamespaceTestCases(String name) throws Exception {
 		super(name);
-		init();
+		setControlDocument(XML_RESOURCE);
 	}
 
-	public void init() throws Exception {
-		setControlDocument(XML_RESOURCE);
+	public void init() throws Exception {		
 		types = new Type[5];
 		types[0] = getTypeToUnmarshalTo();
 				  
@@ -88,6 +87,7 @@ public class JAXBMultipleMapsNamespaceTestCases extends JAXBListOfObjectsTestCas
 	public void setUp() throws Exception{
 		super.setUp();
 		getXMLComparer().setIgnoreOrder(true);
+		init();
 	}
 	
 	public void tearDown(){

@@ -39,11 +39,17 @@ import javax.xml.stream.XMLOutputFactory;
 import javax.xml.stream.XMLStreamReader;
 import javax.xml.stream.XMLStreamWriter;
 import javax.xml.transform.Result;
+import javax.xml.transform.Source;
 import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
+import javax.xml.transform.stream.StreamSource;
+import javax.xml.validation.Schema;
+import javax.xml.validation.SchemaFactory;
+import javax.xml.validation.Validator;
 
+import org.eclipse.persistence.oxm.XMLConstants;
 import org.eclipse.persistence.oxm.XMLContext;
 import org.eclipse.persistence.oxm.XMLDescriptor;
 import org.eclipse.persistence.oxm.XMLRoot;
@@ -64,7 +70,8 @@ public abstract class JAXBTestCases extends XMLMappingTestCases {
     protected Unmarshaller jaxbUnmarshaller;
     Generator generator;
     protected ClassLoader classLoader;
-
+    protected Source bindingsFileXSDSource;
+    
     public JAXBTestCases(String name) throws Exception {
         super(name);
     }
@@ -76,6 +83,15 @@ public abstract class JAXBTestCases extends XMLMappingTestCases {
     public void setUp() throws Exception {    	
         setupParser();
         setupControlDocs();
+        
+        InputStream bindingsFileXSDInputStream = getClass().getClassLoader().getResourceAsStream("eclipselink_oxm_2_1.xsd");
+        if(bindingsFileXSDInputStream == null){
+        	bindingsFileXSDInputStream = getClass().getClassLoader().getResourceAsStream("xsd/eclipselink_oxm_2_1.xsd");
+        }
+        if(bindingsFileXSDInputStream == null){
+        	fail("ERROR LOADING eclipselink_oxm_2_1.xsd");
+        }
+        bindingsFileXSDSource = new StreamSource(bindingsFileXSDInputStream);
     }
 
     public void tearDown() {
@@ -102,8 +118,21 @@ public abstract class JAXBTestCases extends XMLMappingTestCases {
 
     public void setTypes(Type[] newTypes) throws Exception {
        
-    	classLoader = Thread.currentThread().getContextClassLoader();
-        jaxbContext = JAXBContextFactory.createContext(newTypes, getProperties(), classLoader);
+    	classLoader = Thread.currentThread().getContextClassLoader();    	   
+    	
+    	Map props = getProperties();
+    	if(props != null){
+    		Map overrides = (Map) props.get(JAXBContextFactory.ECLIPSELINK_OXM_XML_KEY);
+    		if(overrides != null){
+    			Iterator valuesIter = overrides.values().iterator();
+    			while(valuesIter.hasNext()){
+    				Source theSource = (Source) valuesIter.next();
+    				validateBindingsFileAgainstSchema(theSource);
+    			}
+    		}
+    	}
+    	
+        jaxbContext = JAXBContextFactory.createContext(newTypes, props, classLoader);
 	
         xmlContext = ((org.eclipse.persistence.jaxb.JAXBContext)jaxbContext).getXMLContext();
         setProject(xmlContext.getSession(0).getProject());
@@ -531,5 +560,37 @@ public abstract class JAXBTestCases extends XMLMappingTestCases {
               e.printStackTrace();
           }
    }
+    
+    /**
+     * Validates a given instance doc against the generated schema.
+     * 
+     * @param src
+     * @param schemaIndex index in output resolver's list of generated schemas
+     * @param outputResolver contains one or more schemas to validate against
+     */
+    protected void validateBindingsFileAgainstSchema(InputStream src) {
+    	StreamSource ss = new StreamSource(src);
+    	validateBindingsFileAgainstSchema(ss);
+    }
+
+    protected void validateBindingsFileAgainstSchema(Source src) {
+    	String result = null;
+        SchemaFactory sFact = SchemaFactory.newInstance(XMLConstants.SCHEMA_URL);
+        Schema theSchema;
+        try {
+            theSchema = sFact.newSchema(bindingsFileXSDSource);
+            Validator validator = theSchema.newValidator();
+                                  
+            validator.validate(src);
+        } catch (Exception e) {
+            e.printStackTrace();
+            if (e.getMessage() == null) {
+                result = "An unknown exception occurred.";
+            }
+            result = e.getMessage();
+        }
+        assertTrue("Schema validation failed unxepectedly: " + result, result == null);
+    }
+    
 }
 

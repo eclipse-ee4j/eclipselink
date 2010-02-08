@@ -36,14 +36,21 @@ import javax.xml.stream.XMLOutputFactory;
 import javax.xml.stream.XMLStreamReader;
 import javax.xml.stream.XMLStreamWriter;
 import javax.xml.transform.Result;
+import javax.xml.transform.Source;
 import javax.xml.transform.stream.StreamResult;
+import javax.xml.transform.stream.StreamSource;
+import javax.xml.validation.Schema;
+import javax.xml.validation.SchemaFactory;
+import javax.xml.validation.Validator;
 
 import org.eclipse.persistence.internal.helper.ClassConstants;
+import org.eclipse.persistence.jaxb.JAXBContextFactory;
 import org.eclipse.persistence.jaxb.JAXBMarshaller;
 import org.eclipse.persistence.jaxb.JAXBUnmarshaller;
 import org.eclipse.persistence.jaxb.TypeMappingInfo;
 
 import org.eclipse.persistence.oxm.NamespaceResolver;
+import org.eclipse.persistence.oxm.XMLConstants;
 import org.eclipse.persistence.oxm.XMLDescriptor;
 import org.eclipse.persistence.oxm.XMLRoot;
 import org.eclipse.persistence.testing.jaxb.JAXBXMLComparer;
@@ -62,7 +69,7 @@ public abstract class TypeMappingInfoTestCases extends OXTestCase {
     protected Document writeControlDocument;
     
     protected DocumentBuilder parser;
-    
+    protected Source bindingsFileXSDSource;
     protected String controlDocumentLocation;
     protected String writeControlDocumentLocation;
     
@@ -75,6 +82,15 @@ public abstract class TypeMappingInfoTestCases extends OXTestCase {
 	public void setUp() throws Exception {    	
 	    setupParser();
 	    setupControlDocs();
+	    
+	    InputStream bindingsFileXSDInputStream = getClass().getClassLoader().getResourceAsStream("eclipselink_oxm_2_1.xsd");
+        if(bindingsFileXSDInputStream == null){
+        	bindingsFileXSDInputStream = getClass().getClassLoader().getResourceAsStream("xsd/eclipselink_oxm_2_1.xsd");
+        }
+        if(bindingsFileXSDInputStream == null){
+        	fail("ERROR LOADING eclipselink_oxm_2_1.xsd");
+        }
+        bindingsFileXSDSource = new StreamSource(bindingsFileXSDInputStream);
 	}
 	
 	public void tearDown() throws Exception{
@@ -87,7 +103,20 @@ public abstract class TypeMappingInfoTestCases extends OXTestCase {
     
     public void setTypeMappingInfos(TypeMappingInfo[] newTypes) throws Exception {
     	typeMappingInfos = newTypes;
-    	jaxbContext  = new org.eclipse.persistence.jaxb.JAXBContextFactory().createContext(newTypes, getProperties(), Thread.currentThread().getContextClassLoader());
+    	
+    	Map props = getProperties();
+    	if(props != null){
+    		Map overrides = (Map) props.get(JAXBContextFactory.ECLIPSELINK_OXM_XML_KEY);
+    		if(overrides != null){
+    			Iterator valuesIter = overrides.values().iterator();
+    			while(valuesIter.hasNext()){
+    				Source theSource = (Source) valuesIter.next();
+    				validateBindingsFileAgainstSchema(theSource);
+    			}
+    		}
+    	}
+    	
+    	jaxbContext  = new org.eclipse.persistence.jaxb.JAXBContextFactory().createContext(newTypes, props, Thread.currentThread().getContextClassLoader());
     	jaxbMarshaller = jaxbContext.createMarshaller();
         jaxbUnmarshaller = jaxbContext.createUnmarshaller();
      } 
@@ -487,6 +516,25 @@ public abstract class TypeMappingInfoTestCases extends OXTestCase {
 		}
 		return true;
 	}    
+     
+    protected void validateBindingsFileAgainstSchema(Source src) {
+     	String result = null;
+         SchemaFactory sFact = SchemaFactory.newInstance(XMLConstants.SCHEMA_URL);
+         Schema theSchema;
+         try {
+             theSchema = sFact.newSchema(bindingsFileXSDSource);
+             Validator validator = theSchema.newValidator();
+                                   
+             validator.validate(src);
+         } catch (Exception e) {
+             e.printStackTrace();
+             if (e.getMessage() == null) {
+                 result = "An unknown exception occurred.";
+             }
+             result = e.getMessage();
+         }
+         assertTrue("Schema validation failed unxepectedly: " + result, result == null);
+     }
 }
 
 

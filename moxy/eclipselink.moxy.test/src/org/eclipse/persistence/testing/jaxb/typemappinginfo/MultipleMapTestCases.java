@@ -30,14 +30,13 @@ public class MultipleMapTestCases extends TypeMappingInfoTestCases{
 	public static Map<String, Integer> myMap = new HashMap<String, Integer>();
 
 	public MultipleMapTestCases(String name) throws Exception {
-		super(name);
-		setupParser();
-		init();
+		super(name);		
+		setControlDocument(XML_RESOURCE);	
 	}
 	
-	public void init() throws Exception {
-		setControlDocument(XML_RESOURCE);	
-		setTypeMappingInfos(getTypeMappingInfos());		
+	public void setUp() throws Exception{		
+		super.setUp();		
+		setTypeMappingInfos(getTypeMappingInfos());
 	}
 	
 	protected TypeMappingInfo[] getTypeMappingInfos()throws Exception {
