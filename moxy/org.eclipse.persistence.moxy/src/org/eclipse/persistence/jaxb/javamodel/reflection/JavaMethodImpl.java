@@ -44,20 +44,22 @@ import java.util.Collection;
 public class JavaMethodImpl implements JavaMethod {
 
     protected Method jMethod;
+    private JavaModelImpl javaModelImpl;
 
-    public JavaMethodImpl(Method javaMethod) {
-        jMethod = javaMethod;
+    public JavaMethodImpl(Method javaMethod, JavaModelImpl javaModelImpl) {
+        this.jMethod = javaMethod;
+        this.javaModelImpl = javaModelImpl;
     }
 
     public Collection getActualTypeArguments() {
-        ArrayList<JavaClassImpl> argCollection = new ArrayList<JavaClassImpl>();
+        ArrayList<JavaClass> argCollection = new ArrayList<JavaClass>();
         Type[] params = jMethod.getGenericParameterTypes();
         for (Type type : params) {
             if (type instanceof ParameterizedType) {
                 ParameterizedType pType = (ParameterizedType) type;
-                argCollection.add(new JavaClassImpl(pType, pType.getClass()));
+                argCollection.add(new JavaClassImpl(pType, pType.getClass(), javaModelImpl));
             } else if (type instanceof Class) {
-                argCollection.add(new JavaClassImpl((Class) type));
+                argCollection.add(javaModelImpl.getClass((Class) type));
             }
         }
         return argCollection;
@@ -90,14 +92,14 @@ public class JavaMethodImpl implements JavaMethod {
         Class[] params = PrivilegedAccessHelper.getMethodParameterTypes(jMethod);
         JavaClass[] paramArray = new JavaClass[params.length];
         for (int i=0; i<params.length; i++) {
-            paramArray[i] = new JavaClassImpl(params[i]);
+            paramArray[i] = javaModelImpl.getClass(params[i]);
         }
         return paramArray;
     }
 
     public JavaClass getResolvedType() {
         Class returnType = PrivilegedAccessHelper.getMethodReturnType(jMethod);
-        return new JavaClassImpl(returnType);
+        return javaModelImpl.getClass(returnType);
     }
 
     public JavaClass getReturnType() {
@@ -105,9 +107,9 @@ public class JavaMethodImpl implements JavaMethod {
         Class returnType = PrivilegedAccessHelper.getMethodReturnType(jMethod);
         if (type instanceof ParameterizedType) {
             ParameterizedType pType = (ParameterizedType) type;
-            return new JavaClassImpl(pType, returnType);
+            return new JavaClassImpl(pType, returnType, javaModelImpl);
         }
-        return new JavaClassImpl(returnType);
+        return javaModelImpl.getClass(returnType);
     }
 
     public boolean hasActualTypeArguments() {
@@ -125,7 +127,7 @@ public class JavaMethodImpl implements JavaMethod {
     }
 
     public JavaClass getOwningClass() {
-        return new JavaClassImpl(jMethod.getDeclaringClass());
+        return javaModelImpl.getClass(jMethod.getDeclaringClass());
     }
 
     public boolean isAbstract() {

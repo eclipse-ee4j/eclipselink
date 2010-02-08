@@ -30,9 +30,11 @@ import org.eclipse.persistence.jaxb.javamodel.JavaConstructor;
  */
 public class JavaConstructorImpl implements JavaConstructor {
 
+    private JavaModelImpl javaModelImpl;
     protected Constructor jConstructor;
 
-    public JavaConstructorImpl(Constructor constructor) {
+    public JavaConstructorImpl(Constructor constructor, JavaModelImpl javaModelImpl) {
+        this.javaModelImpl = javaModelImpl;
         this.jConstructor = constructor;
     }
 
@@ -45,14 +47,14 @@ public class JavaConstructorImpl implements JavaConstructor {
     }
 
     public JavaClass getOwningClass() {
-        return new JavaClassImpl(jConstructor.getDeclaringClass());
+        return javaModelImpl.getClass(jConstructor.getDeclaringClass());
     }
 
     public JavaClass[] getParameterTypes() {
         Class[] params = jConstructor.getParameterTypes();
         JavaClass[] paramArray = new JavaClass[params.length];
         for (int i=0; i<params.length; i++) {
-            paramArray[i] = new JavaClassImpl(params[i]);
+            paramArray[i] = javaModelImpl.getClass(params[i]);
         }
         return paramArray;
     }

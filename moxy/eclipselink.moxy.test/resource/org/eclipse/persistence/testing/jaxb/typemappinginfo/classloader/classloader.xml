@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<ns0:root xmlns:ns0="examplenamespace" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="employee">
+    <address>
+        <street>theStreet</street>
+        <city>theCity</city>
+    </address>
+   <phoneNumbers>
+        <areaCode>613</areaCode>
+        <number>1111111</number>
+    </phoneNumbers>
+    <phoneNumbers>
+        <areaCode>613</areaCode>
+        <number>2222222</number>
+    </phoneNumbers>
+</ns0:root>

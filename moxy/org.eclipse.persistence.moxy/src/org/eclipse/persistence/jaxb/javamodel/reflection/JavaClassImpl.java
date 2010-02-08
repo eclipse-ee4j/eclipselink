@@ -52,39 +52,43 @@ public class JavaClassImpl implements JavaClass {
 
     protected ParameterizedType jType;
     protected Class jClass;
+    private JavaModelImpl javaModelImpl;
 
-    public JavaClassImpl(Class javaClass) {
-        jClass = javaClass;
+    public JavaClassImpl(Class javaClass, JavaModelImpl javaModelImpl) {
+        this.jClass = javaClass;
+        this.javaModelImpl = javaModelImpl;
     }
 
-    public JavaClassImpl(ParameterizedType javaType, Class javaClass) {
-        jType = javaType;
-        jClass = javaClass;
+    public JavaClassImpl(ParameterizedType javaType, Class javaClass, JavaModelImpl javaModelImpl) {
+        this.jType = javaType;
+        this.jClass = javaClass;
+        this.javaModelImpl = javaModelImpl;
+        
     }
 
     public Collection getActualTypeArguments() {
-        ArrayList<JavaClassImpl> argCollection = new ArrayList<JavaClassImpl>();
+        ArrayList<JavaClass> argCollection = new ArrayList<JavaClass>();
         if (jType instanceof ParameterizedType) {
             ParameterizedType pType = (ParameterizedType) jType;
             Type[] params = pType.getActualTypeArguments();
             for (Type type : params) {
                 if (type instanceof ParameterizedType) {
                     ParameterizedType pt = (ParameterizedType) type;
-                    argCollection.add(new JavaClassImpl(pt, (Class) pt.getRawType()));
+                    argCollection.add(new JavaClassImpl(pt, (Class) pt.getRawType(), javaModelImpl));
                 } else if(type instanceof WildcardType){
                     Type[] upperTypes = ((WildcardType)type).getUpperBounds();
                     if(upperTypes.length >0){
                         Type upperType = upperTypes[0];
                         if(upperType instanceof Class){
-                            argCollection.add(new JavaClassImpl((Class) upperType));
+                            argCollection.add(javaModelImpl.getClass((Class) upperType));
                         }
                     }
                 } else if (type instanceof Class) {
-                    argCollection.add(new JavaClassImpl((Class) type));
+                    argCollection.add(javaModelImpl.getClass((Class) type));
                 } else if(type instanceof GenericArrayType) {
                     Class genericTypeClass = (Class)((GenericArrayType)type).getGenericComponentType();
                     genericTypeClass = java.lang.reflect.Array.newInstance(genericTypeClass, 0).getClass();
-                    argCollection.add(new JavaClassImpl(genericTypeClass));
+                    argCollection.add(javaModelImpl.getClass(genericTypeClass));
                 }
             }
         }
@@ -121,14 +125,14 @@ public class JavaClassImpl implements JavaClass {
         ArrayList<JavaClass> classCollection = new ArrayList<JavaClass>();
         Class[] classes = jClass.getDeclaredClasses();
         for (Class javaClass : classes) {
-            classCollection.add(new JavaClassImpl(javaClass));
+            classCollection.add(javaModelImpl.getClass(javaClass));
         }
         return classCollection;
     }
 
     public JavaField getDeclaredField(String arg0) {
         try {
-            return new JavaFieldImpl(jClass.getDeclaredField(arg0));
+            return new JavaFieldImpl(jClass.getDeclaredField(arg0), javaModelImpl);
         } catch (NoSuchFieldException nsfe) {
             return null;
         }
@@ -138,7 +142,7 @@ public class JavaClassImpl implements JavaClass {
         ArrayList<JavaField> fieldCollection = new ArrayList<JavaField>();
         Field[] fields = jClass.getDeclaredFields();
         for (Field field : fields) {
-            fieldCollection.add(new JavaFieldImpl(field));
+            fieldCollection.add(new JavaFieldImpl(field, javaModelImpl));
         }
         return fieldCollection;
     }
@@ -158,7 +162,7 @@ public class JavaClassImpl implements JavaClass {
             }
         }
         try {
-            return new JavaMethodImpl(jClass.getDeclaredMethod(arg0, params));
+            return new JavaMethodImpl(jClass.getDeclaredMethod(arg0, params), javaModelImpl);
         } catch (NoSuchMethodException nsme) {
             return null;
         }
@@ -168,7 +172,7 @@ public class JavaClassImpl implements JavaClass {
         ArrayList<JavaMethod> methodCollection = new ArrayList<JavaMethod>();
         Method[] methods = jClass.getDeclaredMethods();
         for (Method method : methods) {
-            methodCollection.add(new JavaMethodImpl(method));
+            methodCollection.add(new JavaMethodImpl(method, javaModelImpl));
         }
         return methodCollection;
     }
@@ -186,7 +190,7 @@ public class JavaClassImpl implements JavaClass {
         }
         try {
             Constructor constructor = PrivilegedAccessHelper.getConstructorFor(jClass, params, true);
-            return new JavaConstructorImpl(constructor);
+            return new JavaConstructorImpl(constructor, javaModelImpl);
         } catch (NoSuchMethodException nsme) {
             return null;
         }
@@ -204,7 +208,7 @@ public class JavaClassImpl implements JavaClass {
             }
         }
         try {
-            return new JavaConstructorImpl(jClass.getDeclaredConstructor(params));
+            return new JavaConstructorImpl(jClass.getDeclaredConstructor(params), javaModelImpl);
         } catch (NoSuchMethodException nsme) {
             return null;
         }
@@ -214,7 +218,7 @@ public class JavaClassImpl implements JavaClass {
         Constructor[] constructors = this.jClass.getConstructors();
         ArrayList<JavaConstructor> constructorCollection = new ArrayList(constructors.length);
         for(Constructor next:constructors) {
-            constructorCollection.add(new JavaConstructorImpl(next));
+            constructorCollection.add(new JavaConstructorImpl(next, javaModelImpl));
         }
         return constructorCollection;
     }
@@ -223,7 +227,7 @@ public class JavaClassImpl implements JavaClass {
         Constructor[] constructors = this.jClass.getDeclaredConstructors();
         ArrayList<JavaConstructor> constructorCollection = new ArrayList(constructors.length);
         for(Constructor next:constructors) {
-            constructorCollection.add(new JavaConstructorImpl(next));
+            constructorCollection.add(new JavaConstructorImpl(next, javaModelImpl));
         }
         return constructorCollection;
     }
@@ -231,7 +235,7 @@ public class JavaClassImpl implements JavaClass {
     public JavaField getField(String arg0) {
         try {
             Field field = PrivilegedAccessHelper.getField(jClass, arg0, true);
-            return new JavaFieldImpl(field);
+            return new JavaFieldImpl(field, javaModelImpl);
         } catch (NoSuchFieldException nsfe) {
             return null;
         }
@@ -241,7 +245,7 @@ public class JavaClassImpl implements JavaClass {
         ArrayList<JavaField> fieldCollection = new ArrayList<JavaField>();
         Field[] fields = PrivilegedAccessHelper.getFields(jClass);
         for (Field field : fields) {
-            fieldCollection.add(new JavaFieldImpl(field));
+            fieldCollection.add(new JavaFieldImpl(field, javaModelImpl));
         }
         return fieldCollection;
     }
@@ -266,7 +270,7 @@ public class JavaClassImpl implements JavaClass {
         }
         try {
             Method method = PrivilegedAccessHelper.getMethod(jClass, arg0, params, true);
-            return new JavaMethodImpl(method);
+            return new JavaMethodImpl(method, javaModelImpl);
         } catch (NoSuchMethodException nsme) {
             return null;
         }
@@ -276,7 +280,7 @@ public class JavaClassImpl implements JavaClass {
         ArrayList<JavaMethod> methodCollection = new ArrayList<JavaMethod>();
         Method[] methods = PrivilegedAccessHelper.getMethods(jClass);
         for (Method method : methods) {
-            methodCollection.add(new JavaMethodImpl(method));
+            methodCollection.add(new JavaMethodImpl(method, javaModelImpl));
         }
         return methodCollection;
     }
@@ -313,7 +317,7 @@ public class JavaClassImpl implements JavaClass {
     }
 
     public JavaClass getSuperclass() {
-        return new JavaClassImpl(jClass.getSuperclass());
+        return javaModelImpl.getClass(jClass.getSuperclass());
     }
 
     public boolean hasActualTypeArguments() {
@@ -327,7 +331,7 @@ public class JavaClassImpl implements JavaClass {
     }
 
     public JavaClass getOwningClass() {
-        return new JavaClassImpl(jClass.getEnclosingClass());
+        return javaModelImpl.getClass(jClass.getEnclosingClass());
     }
 
     public boolean isAnnotation() {
@@ -398,7 +402,7 @@ public class JavaClassImpl implements JavaClass {
         if(!isArray()) {
             return null;
         }
-        return new JavaClassImpl(this.jClass.getComponentType());
+        return javaModelImpl.getClass(this.jClass.getComponentType());
     }
 
     public JavaAnnotation getDeclaredAnnotation(JavaClass arg0) {

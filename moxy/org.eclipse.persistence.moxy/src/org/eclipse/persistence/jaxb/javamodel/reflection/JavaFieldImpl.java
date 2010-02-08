@@ -41,10 +41,13 @@ import java.util.Collection;
  * @see java.lang.reflect.Field
  */
 public class JavaFieldImpl implements JavaField {
-    protected Field jField;
 
-    public JavaFieldImpl(Field javaField) {
-        jField = javaField;
+    protected Field jField;
+    private JavaModelImpl javaModelImpl;
+
+    public JavaFieldImpl(Field javaField, JavaModelImpl javaModelImpl) {
+        this.jField = javaField;
+        this.javaModelImpl = javaModelImpl;
     }
 
     public JavaAnnotation getAnnotation(JavaClass arg0) {
@@ -75,7 +78,7 @@ public class JavaFieldImpl implements JavaField {
     }
 
     public JavaClass getOwningClass() {
-        return new JavaClassImpl(jField.getDeclaringClass());
+        return javaModelImpl.getClass(jField.getDeclaringClass());
     }
 
     public JavaClass getResolvedType() {
@@ -84,9 +87,9 @@ public class JavaFieldImpl implements JavaField {
 
         if (genericType instanceof ParameterizedType) {
             ParameterizedType pType = (ParameterizedType) genericType;
-            return new JavaClassImpl(pType, (Class) pType.getRawType());
+            return new JavaClassImpl(pType, (Class) pType.getRawType(), javaModelImpl);
         }
-        return new JavaClassImpl(fieldType);
+        return javaModelImpl.getClass(fieldType);
     }
 
     public boolean isFinal() {

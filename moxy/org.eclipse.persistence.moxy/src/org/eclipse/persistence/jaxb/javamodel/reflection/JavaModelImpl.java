@@ -14,6 +14,7 @@ package org.eclipse.persistence.jaxb.javamodel.reflection;
 
 import java.lang.annotation.Annotation;
 
+import org.eclipse.persistence.internal.jaxb.JaxbClassLoader;
 import org.eclipse.persistence.jaxb.javamodel.JavaAnnotation;
 import org.eclipse.persistence.jaxb.javamodel.JavaClass;
 import org.eclipse.persistence.jaxb.javamodel.JavaModel;
@@ -43,16 +44,21 @@ public class JavaModelImpl implements JavaModel {
 
     public JavaClass getClass(Class jClass) {
         try {
-            return new JavaClassImpl(jClass);
+            JavaClass javaClass = new JavaClassImpl(jClass, this);
+            if(classLoader instanceof JaxbClassLoader) {
+                ((JaxbClassLoader) classLoader).putClass(jClass.getCanonicalName(), jClass);
+            }
+            return javaClass;
         } catch (Exception x) {
             return null;
         }
     }
 
-    public JavaClass getClass(String classname) {
+    public JavaClass getClass(String className) {
         try {
-            return new JavaClassImpl(classLoader.loadClass(classname));
-        } catch (Exception x) {
+            Class clazz = classLoader.loadClass(className);
+            return getClass(clazz);
+        } catch(ClassNotFoundException e) {
             return null;
         }
     }

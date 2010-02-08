@@ -9,7 +9,7 @@
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.jaxb.javamodel.reflection;
 
 import java.lang.reflect.ParameterizedType;
@@ -54,6 +54,7 @@ public class JavaModelInputImpl implements JavaModelInput {
      * @param javaModel
      */
     public JavaModelInputImpl(Type[] types, JavaModel javaModel) {
+         jModel = javaModel;
          jClasses = new JavaClass[types.length];
          for (int i=0; i<types.length; i++) {
              TypeMappingInfo typeMappingInfo = new TypeMappingInfo();
@@ -62,10 +63,10 @@ public class JavaModelInputImpl implements JavaModelInput {
 
              jClasses[i] = buildJavaClassImpl(type);
          }
-         jModel = javaModel;
     }
 
     public JavaModelInputImpl(TypeMappingInfo[] types, JavaModel javaModel) {
+        jModel = javaModel;
         jClasses = new JavaClass[types.length];
         for (int i=0; i<types.length; i++) {
             TypeMappingInfo typeMappingInfo = types[i];
@@ -73,25 +74,24 @@ public class JavaModelInputImpl implements JavaModelInput {
 
             jClasses[i] = buildJavaClassImpl(type);
         }
-        jModel = javaModel;
    }
 
     public JavaModelInputImpl(Class[] classes, JavaModel javaModel) {
+        jModel = javaModel;
         jClasses = new JavaClass[classes.length];
         for (int i=0; i<classes.length; i++) {
-            jClasses[i] = new JavaClassImpl(classes[i]);
+            jClasses[i] = javaModel.getClass(classes[i]);
         }
-        jModel = javaModel;
     }
 
     private JavaClassImpl buildJavaClassImpl(Type type){
         // type should be a Class or ParameterizedType
         if (type instanceof Class) {
-            return new JavaClassImpl((Class) type);
+            return (JavaClassImpl) jModel.getClass((Class) type);
         } else {
             // assume parameterized type
             ParameterizedType pType = (ParameterizedType) type;
-            return new JavaClassImpl(pType, (Class) pType.getRawType());
+            return new JavaClassImpl(pType, (Class) pType.getRawType(), (JavaModelImpl) jModel);
         }
     }
 
