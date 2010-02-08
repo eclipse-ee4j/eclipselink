@@ -49,7 +49,6 @@ import org.eclipse.persistence.jaxb.xmlmodel.XmlValue;
 import org.eclipse.persistence.jaxb.xmlmodel.XmlBindings.JavaTypes;
 import org.eclipse.persistence.jaxb.xmlmodel.XmlBindings.XmlEnums;
 import org.eclipse.persistence.jaxb.xmlmodel.XmlBindings.XmlRegistries;
-import org.eclipse.persistence.jaxb.xmlmodel.XmlRegistry.XmlElementDecl;
 import org.eclipse.persistence.jaxb.xmlmodel.XmlSchema.XmlNs;
 import org.eclipse.persistence.oxm.NamespaceResolver;
 import org.eclipse.persistence.oxm.XMLConstants;
