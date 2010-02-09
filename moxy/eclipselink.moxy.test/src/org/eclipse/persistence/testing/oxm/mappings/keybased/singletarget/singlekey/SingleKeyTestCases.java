@@ -23,6 +23,7 @@ import org.eclipse.persistence.testing.oxm.mappings.keybased.singletarget.single
 import org.eclipse.persistence.testing.oxm.mappings.keybased.singletarget.singlekey.elementkey.SingleElementInvalidKeyTestCases;
 import org.eclipse.persistence.testing.oxm.mappings.keybased.singletarget.singlekey.elementkey.SingleElementNullKeyTestCases;
 import org.eclipse.persistence.testing.oxm.mappings.keybased.singletarget.singlekey.elementkey.SingleElementKeyTestCases;
+import org.eclipse.persistence.testing.oxm.mappings.keybased.singletarget.singlekey.elementkey.SingleElementNullReferenceClassTestCases;
 import org.eclipse.persistence.testing.oxm.mappings.keybased.singletarget.singlekey.multiplesource.MultipleSourceTestCases;
 import org.eclipse.persistence.testing.oxm.mappings.keybased.singletarget.singlekey.nonstringkeytype.NonStringKeyTypeTestCases;
 import org.eclipse.persistence.testing.oxm.mappings.keybased.singletarget.singlekey.nestedattributekey.NestedAttributeKeyTestCases;
@@ -43,6 +44,7 @@ public class SingleKeyTestCases extends TestCase {
         suite.addTestSuite(MultipleSourceTestCases.class);
         suite.addTestSuite(NestedAttributeKeyTestCases.class);
         suite.addTestSuite(MultithreadedTestCases.class);
+        suite.addTestSuite(SingleElementNullReferenceClassTestCases.class);
         return suite;
     }
 

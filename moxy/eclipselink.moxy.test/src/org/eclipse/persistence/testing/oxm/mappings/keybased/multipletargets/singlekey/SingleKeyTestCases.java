@@ -18,6 +18,7 @@ import junit.framework.TestSuite;
 import org.eclipse.persistence.testing.oxm.mappings.keybased.multipletargets.singlekey.attributekey.SingleAttributeKeyTestCases;
 import org.eclipse.persistence.testing.oxm.mappings.keybased.multipletargets.singlekey.elementkey.SingleElementKeyTestCases;
 import org.eclipse.persistence.testing.oxm.mappings.keybased.multipletargets.singlekey.elementkey.SingleElementKeyWithGroupingTestCases;
+import org.eclipse.persistence.testing.oxm.mappings.keybased.multipletargets.singlekey.elementkey.SingleElementNullReferenceClassTestCases;
 import org.eclipse.persistence.testing.oxm.mappings.keybased.multipletargets.singlekey.elementkey.maptests.SingleElementKeyUsingMapTestCases;
 import org.eclipse.persistence.testing.oxm.mappings.keybased.multipletargets.singlekey.nestedattributekey.NestedAttributeKeyTestCases;
 import org.eclipse.persistence.testing.oxm.mappings.keybased.multipletargets.singlekey.nonstringkeytype.NonStringKeyTypeTestCases;
@@ -31,6 +32,7 @@ public class SingleKeyTestCases extends TestCase {
         suite.addTestSuite(SingleElementKeyUsingMapTestCases.class);
         suite.addTestSuite(NonStringKeyTypeTestCases.class);
         suite.addTestSuite(NestedAttributeKeyTestCases.class);
+        suite.addTestSuite(SingleElementNullReferenceClassTestCases.class);
         return suite;
     }
 

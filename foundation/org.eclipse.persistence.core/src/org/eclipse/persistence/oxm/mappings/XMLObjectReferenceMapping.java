@@ -290,6 +290,9 @@ public class XMLObjectReferenceMapping extends AggregateMapping implements XMLMa
      */
     public void initialize(AbstractSession session) throws DescriptorException {
         if (getReferenceClass() == null) {
+            if(getReferenceClassName() == null){
+                throw DescriptorException.referenceClassNotSpecified(this);
+            }
             setReferenceClass(session.getDatasourcePlatform().getConversionManager().convertClassNameToClass(getReferenceClassName()));
         }
         super.initialize(session);
