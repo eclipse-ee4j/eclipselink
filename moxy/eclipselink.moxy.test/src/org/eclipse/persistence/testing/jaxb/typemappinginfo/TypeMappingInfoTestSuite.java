@@ -20,6 +20,7 @@ import org.eclipse.persistence.testing.jaxb.typemappinginfo.rootelement.RootFrom
 import org.eclipse.persistence.testing.jaxb.typemappinginfo.rootelement.RootFromNothingTestCases;
 import org.eclipse.persistence.testing.jaxb.typemappinginfo.rootelement.RootFromTypeMappingInfoTestCases;
 import org.eclipse.persistence.testing.jaxb.typemappinginfo.simple.EmptyClassTestCases;
+import org.eclipse.persistence.testing.jaxb.typemappinginfo.simple.TypeMappingInfoNullTypeTestCases;
 
 import junit.framework.Test;
 import junit.framework.TestCase;
@@ -67,6 +68,7 @@ public class TypeMappingInfoTestSuite extends TestCase {
         suite.addTest(TypeMappingInfoCollisionsTestSuite.suite());
         suite.addTestSuite(ClassLoaderTestCases.class);
         suite.addTestSuite(EmptyClassTestCases.class);
+        suite.addTestSuite(TypeMappingInfoNullTypeTestCases.class);
         return suite;
     }
 }

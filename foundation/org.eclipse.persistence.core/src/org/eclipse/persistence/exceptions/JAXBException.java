@@ -12,6 +12,8 @@
 ******************************************************************************/
 package org.eclipse.persistence.exceptions;
 
+import javax.xml.namespace.QName;
+
 import org.eclipse.persistence.exceptions.i18n.ExceptionMessageGenerator;
 
 /**
@@ -63,6 +65,7 @@ public class JAXBException extends EclipseLinkException {
     public static final int COULD_NOT_INITIALIZE_DOM_HANDLER_CONVERTER = 50033;
     public static final int INVALID_TYPE_FOR_XMLATTRIBUTEREF_PROPERTY = 50034;
     public static final int INVALID_XMLELEMENT_IN_XMLELEMENTS = 50035;
+    public static final int NULL_TYPE_ON_TYPEMAPPINGINFO = 50036;
 
     protected JAXBException(String message) {
         super(message);
@@ -449,8 +452,7 @@ public class JAXBException extends EclipseLinkException {
      * but one or more of the XmlElement entries in the list has a type that does not 
      * have an XmlID property.
      *   
-     * @param propertyName
-     * @param typeName
+     * @param propertyName 
      * @param elementName
      * @return
      */
@@ -458,6 +460,18 @@ public class JAXBException extends EclipseLinkException {
         Object[] args = { propertyName, elementName };
         JAXBException exception = new JAXBException(ExceptionMessageGenerator.buildMessage(JAXBException.class, INVALID_XMLELEMENT_IN_XMLELEMENTS, args));
         exception.setErrorCode(INVALID_XMLELEMENT_IN_XMLELEMENTS);
+        return exception;
+    }
+    
+    /**
+     * This exception should be used when a TypeMappingInfo is specified but the Type is not set on it.  
+     * @param tagName
+     * @return
+     */
+    public static JAXBException nullTypeOnTypeMappingInfo(QName tagName) {
+        Object[] args = { tagName };
+        JAXBException exception = new JAXBException(ExceptionMessageGenerator.buildMessage(JAXBException.class, NULL_TYPE_ON_TYPEMAPPINGINFO, args));
+        exception.setErrorCode(NULL_TYPE_ON_TYPEMAPPINGINFO);
         return exception;
     }
 }

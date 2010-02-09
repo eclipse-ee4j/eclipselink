@@ -400,6 +400,9 @@ public class JAXBContextFactory {
             java.util.List<Class> existingClasses = new ArrayList<Class>(existingTypes.length);
              for (TypeMappingInfo typeMappingInfo : existingTypes) {
                 Type type  = typeMappingInfo.getType();
+                if(type == null){
+                	throw org.eclipse.persistence.exceptions.JAXBException.nullTypeOnTypeMappingInfo(typeMappingInfo.getXmlTagName());
+                }
                  // ignore ParameterizedTypes
                  if (type instanceof Class) {
                      Class cls = (Class) type;
