@@ -77,6 +77,7 @@ public class SDOHelperContext implements HelperContext {
     
     private static String OC4J_CLASSLOADER_NAME = "oracle";
     private static String WLS_CLASSLOADER_NAME = "weblogic";
+    private static String WAS_CLASSLOADER_NAME = "com.ibm.ws";
     
     // For WebLogic
     private static MBeanServer wlsMBeanServer = null;
@@ -95,6 +96,12 @@ public class SDOHelperContext implements HelperContext {
     private static final String WLS_APPLICATION_NAME_GET_METHOD_NAME = "getApplicationName";
     private static final String WLS_ACTIVE_VERSION_STATE = "ActiveVersionState";
     private static final Class[] PARAMETER_TYPES = {};
+
+    // For WebSphere
+    private static final String WAS_NEWLINE = "\n";
+    private static final String WAS_APP_COLON = "[app:";    
+    private static final String WAS_CLOSE_BRACKET = "]";
+    private static final int WAS_COUNTER_LIMIT = 20;
 
     /**
      * Create a local HelperContext.  The current thread's context ClassLoader
@@ -285,8 +292,8 @@ public class SDOHelperContext implements HelperContext {
      *      6 - jre.extension:0.0.0
      *      7 - jre.bootstrap:1.5.0_07 (with various J2SE versions)
      * 
-     * @return Application classloader for OC4J, application name for WebLogic, 
-     *         otherwise Thread.currentThread().getContextClassLoader()
+     * @return Application classloader for OC4J, application name for WebLogic and
+     *         WebSphere, otherwise Thread.currentThread().getContextClassLoader()
      */
     private static Object getDelegateMapKey(ClassLoader classLoader) {
         String classLoaderName = classLoader.getClass().getName();
@@ -317,6 +324,13 @@ public class SDOHelperContext implements HelperContext {
                 } catch (Exception e) {
                     throw SDOException.errorInvokingWLSMethodReflectively(WLS_APPLICATION_NAME_GET_METHOD_NAME, WLS_EXECUTE_THREAD, e);
                 }
+            }
+        // Delegates in WebSphere server will be keyed on application name
+        } else if (classLoaderName.contains(WAS_CLASSLOADER_NAME)) {
+            delegateKey = getApplicationNameForWAS(classLoader);
+            // getApplicationNameForWAS returns null
+            if (delegateKey == null) {
+                delegateKey = classLoader;
             }
         }        
         return delegateKey;
@@ -457,5 +471,63 @@ public class SDOHelperContext implements HelperContext {
         Object key = getDelegateMapKey(contextClassLoader);
         helperContexts.put(key, this);
     }
-
+    
+    /**
+     * Attempt to return the WAS application name based on a given class loader
+     * hierarchy.  The loader hierarchy will be traversed until the application 
+     * name is successfully retrieved, or the top of the hierarchy is reached.
+     * 
+     * @param loader
+     * @return application name if successfully retrieved (i.e. loader exists in
+     *         the hierarchy with toString containing "[app:") or null
+     */
+    private static String getApplicationNameForWAS(ClassLoader loader) {
+        String applicationName = null;
+        // Safety counter to keep from taking too long or looping forever, 
+        // just in case of some unexpected circumstance.
+        int i = 0;
+        while ((applicationName == null) && (i < WAS_COUNTER_LIMIT)) {
+            applicationName = getApplicationNameFromWASClassLoader(loader);
+            i++;
+            final ClassLoader parent = loader.getParent();
+            if ((parent == null) || (parent == loader)) {
+                // We have hit the top, stop looking.
+                break;
+            } else {
+                // Move up and try again.
+                loader = parent;
+            }
+        }
+        return applicationName;
+    }
+    
+    /**
+     * Attempt to return the WAS application name based on a given class loader.
+     * For WAS, the application loader's toString will contain "[app:".
+     * 
+     * @param loader
+     * @return
+     */
+    private static String getApplicationNameFromWASClassLoader(final ClassLoader loader) {
+        String applicationName = null;
+        String loaderString = loader.toString().trim();
+        while ((loaderString.startsWith(WAS_NEWLINE)) && (loaderString.length() > 0)) {
+            loaderString = loaderString.substring(1).trim();
+        }
+        String loaderStringLines[] = loaderString.split(WAS_NEWLINE, 2);
+        if (loaderStringLines.length > 0) {
+            String firstLine = loaderStringLines[0].trim();
+            int appPos = firstLine.indexOf(WAS_APP_COLON);
+            if ((appPos >= 0) && (appPos + WAS_APP_COLON.length() < firstLine.length())) {
+                String appNameSegment = firstLine.substring(appPos + WAS_APP_COLON.length());
+                int closingBracketPosition = appNameSegment.indexOf(WAS_CLOSE_BRACKET);
+                if (closingBracketPosition > 0) {
+                    applicationName = appNameSegment.substring(0, closingBracketPosition);
+                } else {
+                    applicationName = appNameSegment;
+                }
+            }
+        }
+        return applicationName;
+    }
 }
