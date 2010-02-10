@@ -18,8 +18,12 @@ import javax.persistence.JoinColumn;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
+import org.eclipse.persistence.annotations.IdValidation;
+import org.eclipse.persistence.annotations.PrimaryKey;
+
 @Entity
 @Table(name="TPC_DIR_ELIMINATION")
+@PrimaryKey(validation=IdValidation.NULL)
 public class DirectElimination extends Elimination {
     @OneToOne
     @JoinColumn(name="WEAPON_ID")
