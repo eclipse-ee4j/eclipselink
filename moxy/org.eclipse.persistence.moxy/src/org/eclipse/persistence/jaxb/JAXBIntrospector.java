@@ -28,7 +28,7 @@ import org.eclipse.persistence.sessions.Session;
  * <li>Get an element QName for an object that has an associated global element</li>
  * </ul>
  * <p>This class is the TopLink implementation of JAXBIntrospector. An Introspector is created
- * by a JAXBContext and allows the user to access certain peices of meta-data about an instance
+ * by a JAXBContext and allows the user to access certain pieces of meta-data about an instance
  * of a JAXB bound class.
  * 
  * @see javax.xml.bind.JAXBIntrospector

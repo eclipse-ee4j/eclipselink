@@ -87,11 +87,19 @@ public class JAXBContext extends javax.xml.bind.JAXBContext {
     private Map<Type, TypeMappingInfo> typeToTypeMappingInfo;
     private Map<TypeMappingInfo, JAXBContext.RootLevelXmlAdapter> typeMappingInfoToJavaTypeAdapters;
 
+    /**
+     * Create a JAXBContext for a given XMLContext.  The XMLContext contains the 
+     * metadata about the Object to XML mappings.
+     */
     public JAXBContext(XMLContext context) {
         super();
         xmlContext = context;
     }
 
+    /**
+     * Create a JAXBContext. The XMLContext contains the metadata about the 
+     * Object to XML mappings.
+     */
     public JAXBContext(XMLContext context, Generator generator, Type[] boundTypes) {
 
         this(context);
@@ -107,6 +115,11 @@ public class JAXBContext extends javax.xml.bind.JAXBContext {
         }
     }
     
+
+    /**
+     * Create a JAXBContext.  The XMLContext contains the metadata about the 
+     * Object to XML mappings.
+     */
     public JAXBContext(XMLContext context, Generator generator, TypeMappingInfo[] boundTypes) {
 
         this(context);
@@ -119,11 +132,13 @@ public class JAXBContext extends javax.xml.bind.JAXBContext {
         this.boundTypes = boundTypes;
     }
 
+    /**
+     * Return the XMLContext associated with this JAXBContext. 
+     */
     public XMLContext getXMLContext() {
         return this.xmlContext;
     }
-    
-    
+        
     /**
      * Generate a Schema for this JAXBContext
      *  
@@ -158,6 +173,10 @@ public class JAXBContext extends javax.xml.bind.JAXBContext {
         }
     }
 
+    /** 
+     * Create a JAXBMarshaller.  The JAXBMarshaller is used to convert Java objects
+     * to XML.
+     */    
     public JAXBMarshaller createMarshaller() {
         // create a JAXBIntrospector and set it on the marshaller
         JAXBMarshaller marshaller = new JAXBMarshaller(xmlContext.createMarshaller(), new JAXBIntrospector(xmlContext));
@@ -174,7 +193,11 @@ public class JAXBContext extends javax.xml.bind.JAXBContext {
         marshaller.setJaxbContext(this);
         return marshaller;
     }
-    
+
+    /** 
+     * Create a JAXBUnmarshaller.  The JAXBUnmarshaller is used to convert XML into
+     * Java objects.    
+     */    
     public JAXBUnmarshaller createUnmarshaller() {
         JAXBUnmarshaller unmarshaller = new JAXBUnmarshaller(xmlContext.createUnmarshaller(PARSER_FEATURES));
         if (generator != null && generator.hasUnmarshalCallbacks()) {
@@ -189,14 +212,26 @@ public class JAXBContext extends javax.xml.bind.JAXBContext {
         return unmarshaller;
     }
 
+    /** 
+     * Create a JAXBValidator.  The JAXBValidator is used to validate Java objects against
+     * an XSD.   
+     */ 
     public JAXBValidator createValidator() {
         return new JAXBValidator(xmlContext.createValidator());
     }
 
+    /** 
+     * Create a JAXBBinder.  The JAXBBinder is used to preserve unmapped XML Data.     
+     */ 
     public JAXBBinder createBinder() {
         return new JAXBBinder(this.xmlContext);
-    }
+    }     
 
+    /** 
+     * Create a JAXBBinder.  The JAXBBinder is used to preserve unmapped XML Data.
+     *
+     * @param nodeClass The DOM Node class to use     
+     */ 
     public <T> JAXBBinder createBinder(Class<T> nodeClass) {
         if (nodeClass.getName().equals("org.w3c.dom.Node")) {
             return new JAXBBinder(this.xmlContext);
@@ -205,47 +240,86 @@ public class JAXBContext extends javax.xml.bind.JAXBContext {
         }
     }
 
+    /**
+     * Creates a JAXBIntrospector object.  The JAXBIntrospector allows the user to 
+     * access certain pieces of metadata about an instance of a JAXB bound class.
+     */
     public JAXBIntrospector createJAXBIntrospector() {
         return new JAXBIntrospector(xmlContext);
     }
 
+    /**
+     * INTERNAL:
+     * Set the map containing which QName corresponds to which generated class.
+     */
     public void setQNameToGeneratedClasses(HashMap<QName, Class> qNameToClass) {
         this.qNameToGeneratedClasses = qNameToClass;
     }
 
+    /**
+     * INTERNAL:
+     * Get the map containing which Class (by name) corresponds to which generated class.
+     */
     public HashMap<String, Class> getClassToGeneratedClasses() {
         return classToGeneratedClasses;
     }
 
+    /**
+     * INTERNAL:
+     * Set the map containing which Class (by name) corresponds to which generated class.
+     */
     public void setClassToGeneratedClasses(HashMap<String, Class> classToClass) {
         this.classToGeneratedClasses = classToClass;
     }
 
     /**
      * ADVANCED:
-     * Adjust the OXM metadata to take into accound ORM mapping metadata,
+     * Adjust the OXM metadata to take into accound ORM mapping metadata
      */
      public void applyORMMetadata(AbstractSession ormSession) {
         this.xmlContext.applyORMMetadata(ormSession);
      }
 
+     /**
+      * INTERNAL:
+      * Get the map of which QName corresponds to which declared class.
+      */
     public HashMap<QName, Class> getQNamesToDeclaredClasses() {
         return qNamesToDeclaredClasses;
     }
 
+    /**
+     *  INTERNAL:
+     *  Set the map of which QName corresponds to which declared class.
+     */
     public void setQNamesToDeclaredClasses(
             HashMap<QName, Class> nameToDeclaredClasses) {
         qNamesToDeclaredClasses = nameToDeclaredClasses;
     }
 
+    /**
+     * INTERNAL:
+     * Get the map for which array class (by name) corresponds to which generated class
+     */
     public Map<String, Class>getArrayClassesToGeneratedClasses(){
         return generator.getAnnotationsProcessor().getArrayClassesToGeneratedClasses();
     }
 
+    /**
+     * INTERNAL:
+     * Get the map for which collection class (by Type) corresponds to which generated class
+     */
     public Map<Type, Class>getCollectionClassesToGeneratedClasses(){
         return generator.getAnnotationsProcessor().getCollectionClassesToGeneratedClasses();
     }
     
+    /**
+     * INTERNAL:
+     * Populate the map of which Type corresponds to which QName.
+     * The keys should be all the boundTypes used to create the JAXBContext.
+     * If the JAXBContext was not created with the constructor that takes a Type[] then 
+     * this Map will be empty.
+     */
     public void initTypeToSchemaType() {
         this.typeToSchemaType = new HashMap<Type, QName>();
         
@@ -312,6 +386,13 @@ public class JAXBContext extends javax.xml.bind.JAXBContext {
         }
     }
     
+    /**
+     * INTERNAL:
+     * Get the QName which the given Type corresponds to.
+     * Valid types should be all the boundTypes used to create the JAXBContext.
+     * If the JAXBContext was not created with the construction that takes a Type[] then 
+     * this will be return null.
+     */
     private QName getSchemaTypeForTypeMappingInfo(Type type){    	
         QName name = null;
         //Check for annotation overrides
@@ -334,6 +415,14 @@ public class JAXBContext extends javax.xml.bind.JAXBContext {
     	return name;
     }
     
+    
+    /**
+     * INTERNAL:
+     * Get the map of which TypeMappingInfo corresponds to which QName.
+     * The keys should be all the boundTypes used to create the JAXBContext.
+     * If the JAXBContext was not created with the constructor that takes a TypeMappingInfo[]  
+     * this Map will be empty.
+     */    
     public Map<TypeMappingInfo, QName> getTypeMappingInfoToSchemaType() {
         if(typeToTypeMappingInfo != null && typeToTypeMappingInfo.size() >0){
         	return new HashMap<TypeMappingInfo, QName>();
@@ -341,7 +430,14 @@ public class JAXBContext extends javax.xml.bind.JAXBContext {
 
         return generator.getAnnotationsProcessor().getTypeMappingInfoToSchemaType();
     }
-    
+
+    /**
+     * INTERNAL:
+     * Get the map of which Type corresponds to which QName.
+     * The keys should be all the boundTypes used to create the JAXBContext.
+     * If the JAXBContext was not created with the constructor that takes a Type[] then 
+     * this Map will be empty.
+     */
     public HashMap<java.lang.reflect.Type, QName> getTypeToSchemaType() {
     	if(typeToSchemaType == null){
     		initTypeToSchemaType();
