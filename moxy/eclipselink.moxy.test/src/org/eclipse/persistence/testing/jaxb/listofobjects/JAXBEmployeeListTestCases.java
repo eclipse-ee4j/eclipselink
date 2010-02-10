@@ -55,9 +55,10 @@ public class JAXBEmployeeListTestCases extends JAXBEmployeeArrayTestCases {
     public  List<InputStream> getControlSchemaFiles(){
 		
 	    InputStream instream = ClassLoader.getSystemResourceAsStream("org/eclipse/persistence/testing/jaxb/listofobjects/listEmployee.xsd");
-			
+		InputStream instream2 = ClassLoader.getSystemResourceAsStream("org/eclipse/persistence/testing/jaxb/listofobjects/listEmployee2.xsd");
 	    List<InputStream> controlSchema = new ArrayList<InputStream>();
 		controlSchema.add(instream);
+		controlSchema.add(instream2);
 		return controlSchema;
 	}
 

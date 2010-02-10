@@ -24,6 +24,8 @@ import java.util.List;
 
 import javax.xml.bind.JAXBElement;
 import javax.xml.namespace.QName;
+
+import org.eclipse.persistence.jaxb.JAXBContextFactory;
 import org.eclipse.persistence.testing.jaxb.listofobjects.JAXBListOfObjectsTestCases;
 
 public class JAXBMultipleMapsTestCases extends JAXBListOfObjectsTestCases {
@@ -93,8 +95,8 @@ public class JAXBMultipleMapsTestCases extends JAXBListOfObjectsTestCases {
 		InputStream instream2 = ClassLoader.getSystemResourceAsStream("org/eclipse/persistence/testing/jaxb/listofobjects/multipleMaps2.xsd");
 
 		List<InputStream> controlSchema= new ArrayList<InputStream>();
+        controlSchema.add(instream1);
 		controlSchema.add(instream2);
-		controlSchema.add(instream1);
 		return controlSchema;
 		
 	}

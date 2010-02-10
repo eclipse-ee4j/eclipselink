@@ -24,6 +24,8 @@ import java.util.Map;
 import javax.xml.bind.JAXBElement;
 import javax.xml.namespace.QName;
 
+import org.eclipse.persistence.jaxb.JAXBContextFactory;
+
 public class JAXBListNameCollisionEmployeeTestCases extends
 		JAXBListOfObjectsTestCases {
 	protected final static String XML_RESOURCE = "org/eclipse/persistence/testing/jaxb/listofobjects/employeeListNameCollision.xml";
@@ -111,5 +113,11 @@ public class JAXBListNameCollisionEmployeeTestCases extends
 
 	protected String getNoXsiTypeControlResourceName() {
 		return XML_RESOURCE_NO_XSI_TYPE;
+	}
+	
+	public Map getProperties() {
+	    Map props = new HashMap();
+	    props.put(JAXBContextFactory.DEFAULT_TARGET_NAMESPACE_KEY, "listOfObjectsNamespace");
+	    return props;
 	}
 }

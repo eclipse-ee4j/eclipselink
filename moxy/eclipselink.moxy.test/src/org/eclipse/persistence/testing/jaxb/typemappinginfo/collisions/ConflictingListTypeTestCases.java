@@ -24,6 +24,7 @@ import javax.xml.bind.JAXBElement;
 import javax.xml.bind.annotation.XmlList;
 import javax.xml.namespace.QName;
 
+import org.eclipse.persistence.jaxb.JAXBContextFactory;
 import org.eclipse.persistence.jaxb.TypeMappingInfo;
 import org.eclipse.persistence.jaxb.TypeMappingInfo.ElementScope;
 import org.eclipse.persistence.testing.jaxb.typemappinginfo.Employee;
@@ -124,8 +125,8 @@ public class ConflictingListTypeTestCases extends TypeMappingInfoTestCases{
 		Map<String, InputStream> controlSchema = new HashMap<String, InputStream>();
 		controlSchema.put("someUri", instream);
 		
-		InputStream instream2 = ClassLoader.getSystemResourceAsStream("org/eclipse/persistence/testing/jaxb/typemappinginfo/collisions/conflictingListTypes2.xsd");
-		controlSchema.put("", instream2);
+		//InputStream instream2 = ClassLoader.getSystemResourceAsStream("org/eclipse/persistence/testing/jaxb/typemappinginfo/collisions/conflictingListTypes2.xsd");
+		//controlSchema.put("", instream2);
 		return controlSchema;
 	}
 
@@ -137,5 +138,11 @@ public class ConflictingListTypeTestCases extends TypeMappingInfoTestCases{
 		Vector descriptors = ((org.eclipse.persistence.jaxb.JAXBContext)jaxbContext).getXMLContext().getSession(0).getProject().getOrderedDescriptors();
 		assertEquals(4, descriptors.size());
 	}
+	
+    public Map getProperties() {
+        Map props = new HashMap();
+        props.put(JAXBContextFactory.DEFAULT_TARGET_NAMESPACE_KEY, "someUri");
+        return props;
+    }   	
 
 }

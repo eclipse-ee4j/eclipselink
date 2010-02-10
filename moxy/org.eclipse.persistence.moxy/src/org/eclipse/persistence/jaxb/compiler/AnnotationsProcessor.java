@@ -2603,59 +2603,53 @@ public class AnnotationsProcessor {
     }
 
     private Class generateWrapperForMapClass(JavaClass mapClass, JavaClass keyClass, JavaClass valueClass, TypeMappingInfo typeMappingInfo) {
-
-        NamespaceInfo combinedNamespaceInfo = null;
-        NamespaceResolver combinedNamespaceResolver = new NamespaceResolver();
-        String combinedNamespaceInfoNamespace = null;
-        NamespaceInfo nsForMapClass = packageToNamespaceMappings.get(mapClass.getPackageName());
-        if (nsForMapClass != null) {
-            combinedNamespaceInfo = nsForMapClass;
-            combinedNamespaceInfoNamespace = nsForMapClass.getNamespace();
-        } else {
-            combinedNamespaceInfo = new NamespaceInfo();
-        }
         String packageName = "jaxb.dev.java.net";
+        NamespaceResolver combinedNamespaceResolver = new NamespaceResolver();
         if (!helper.isBuiltInJavaType(keyClass)) {
-            NamespaceInfo keyNamespaceInfo = getNamespaceInfoForPackage(keyClass);
             String keyPackageName = keyClass.getPackageName();
             packageName = packageName + "." + keyPackageName;
-            if (combinedNamespaceInfoNamespace == null) {
-                TypeInfo keyTypeInfo = getTypeInfo().get(keyClass.getQualifiedName());
-                if (keyTypeInfo == null && shouldGenerateTypeInfo(keyClass)) {
-                    JavaClass[] jClassArray = new JavaClass[] { keyClass };
-                    buildNewTypeInfo(jClassArray);
-                    keyTypeInfo = getTypeInfo().get(keyClass.getQualifiedName());
-                }
-                combinedNamespaceInfoNamespace = keyTypeInfo.getClassNamespace();
+            NamespaceInfo keyNamespaceInfo = getNamespaceInfoForPackage(keyClass);
+            if(keyNamespaceInfo != null) {
+                java.util.Vector<Namespace> namespaces= keyNamespaceInfo.getNamespaceResolver().getNamespaces();
+                for(Namespace n:namespaces){
+                    combinedNamespaceResolver.put(n.getPrefix(), n.getNamespaceURI());  
+                }           
 
-            }
-            java.util.Vector<Namespace> namespaces = keyNamespaceInfo.getNamespaceResolver().getNamespaces();
-            for (Namespace n : namespaces) {
-                combinedNamespaceResolver.put(n.getPrefix(), n.getNamespaceURI());
             }
         }
 
         if (!helper.isBuiltInJavaType(valueClass)) {
-            NamespaceInfo valueNamespaceInfo = getNamespaceInfoForPackage(valueClass);
             String valuePackageName = valueClass.getPackageName();
             packageName = packageName + "." + valuePackageName;
-            java.util.Vector<Namespace> namespaces = valueNamespaceInfo.getNamespaceResolver().getNamespaces();
-            for (Namespace n : namespaces) {
-                combinedNamespaceResolver.put(n.getPrefix(), n.getNamespaceURI());
-            }
+            NamespaceInfo valueNamespaceInfo = getNamespaceInfoForPackage(valueClass);
+            if(valueNamespaceInfo != null) {
+                java.util.Vector<Namespace> namespaces= valueNamespaceInfo.getNamespaceResolver().getNamespaces();
+                for(Namespace n:namespaces){
+                    combinedNamespaceResolver.put(n.getPrefix(), n.getNamespaceURI());  
+                }           
+            }            
         }
-        if (combinedNamespaceInfoNamespace == null) {
-            if(this.defaultTargetNamespace != null) {
-                combinedNamespaceInfoNamespace = this.defaultTargetNamespace;
-            } else {
-                combinedNamespaceInfoNamespace = "";
+        String namespace = this.defaultTargetNamespace;
+        if(namespace == null) {
+            namespace = "";
+        }        
+        NamespaceInfo namespaceInfo = packageToNamespaceMappings.get(mapClass.getPackageName());
+        if(namespaceInfo == null) {
+            namespaceInfo = getPackageToNamespaceMappings().get(packageName);
+        } else {
+            if(namespaceInfo.getNamespace() != null) {
+                namespace = namespaceInfo.getNamespace();
             }
+            getPackageToNamespaceMappings().put(packageName, namespaceInfo);
         }
-        combinedNamespaceInfo.setNamespace(combinedNamespaceInfoNamespace);
+        if(namespaceInfo == null) {
+            namespaceInfo = new NamespaceInfo();
+            namespaceInfo.setNamespace(namespace);
+            namespaceInfo.setNamespaceResolver(combinedNamespaceResolver);
+            
+            getPackageToNamespaceMappings().put(packageName, namespaceInfo);
+        }
 
-        combinedNamespaceInfo.setNamespaceResolver(combinedNamespaceResolver);
-
-        getPackageToNamespaceMappings().put(packageName, combinedNamespaceInfo);
 
         int beginIndex = keyClass.getName().lastIndexOf(".") + 1;
         String keyName = keyClass.getName().substring(beginIndex);
@@ -2780,7 +2774,14 @@ public class AnnotationsProcessor {
         cv.visitInsn(Constants.RETURN);
         cv.visitMaxs(2, 2);
 
-        // CLASS ATRIBUTE
+        // CLASS ATTRIBUTE
+        RuntimeVisibleAnnotations annotationsAttr = new RuntimeVisibleAnnotations();
+        
+        Annotation attrann0 = new Annotation("Ljavax/xml/bind/annotation/XmlType;");
+        attrann0.add( "namespace", namespace);
+        annotationsAttr.annotations.add( attrann0);
+        cw.visitAttribute(annotationsAttr);
+        
         SignatureAttribute attr = new SignatureAttribute("Lorg/eclipse/persistence/internal/jaxb/many/MapValue<L"+ mapType.getInternalName()+ "<L" + internalKeyName + ";L" + internalValueName + ";>;>;");
         cw.visitAttribute(attr);
 
@@ -3153,33 +3154,33 @@ public class AnnotationsProcessor {
         }
        
         NamespaceInfo namespaceInfo = packageToNamespaceMappings.get(collectionClass.getPackageName());
-        NamespaceInfo componentNamespaceInfo = getNamespaceInfoForPackage(componentClass);
-        if (namespaceInfo == null) {
-            namespaceInfo = componentNamespaceInfo;
 
-            TypeInfo componentTypeInfo = getTypeInfo().get(componentClass.getQualifiedName());
-            if (componentTypeInfo == null && shouldGenerateTypeInfo(componentClass)) {
-                JavaClass[] jClassArray = new JavaClass[] { componentClass };
-                buildNewTypeInfo(jClassArray);
-                componentTypeInfo = getTypeInfo().get(componentClass.getQualifiedName());
-            }
-            if (componentTypeInfo != null) {
-                namespaceInfo.setNamespace(componentTypeInfo.getClassNamespace());
-            }
-
-        } else {
-            java.util.Vector<Namespace> namespaces = componentNamespaceInfo.getNamespaceResolver().getNamespaces();
-            for (Namespace n : namespaces) {
-                namespaceInfo.getNamespaceResolver().put(n.getPrefix(), n.getNamespaceURI());
-            }
-
+        String namespace = "";
+        if(this.defaultTargetNamespace != null) {
+            namespace = this.defaultTargetNamespace;
         }
+        
+        NamespaceInfo componentNamespaceInfo = getNamespaceInfoForPackage(componentClass);
         String packageName = componentClass.getPackageName();
         packageName = "jaxb.dev.java.net." + packageName;
-        if (namespaceInfo != null) {
+        if(namespaceInfo == null) {
+            namespaceInfo = getPackageToNamespaceMappings().get(packageName);
+        } else {
+            getPackageToNamespaceMappings().put(packageName, namespaceInfo);
+            if(namespaceInfo.getNamespace() != null) {
+                namespace = namespaceInfo.getNamespace();
+            }
+        }
+        if (namespaceInfo == null) {
+            if(componentNamespaceInfo != null) {
+                namespaceInfo = componentNamespaceInfo;
+            } else {
+                namespaceInfo = new NamespaceInfo();
+                namespaceInfo.setNamespaceResolver(new NamespaceResolver());
+            }
             getPackageToNamespaceMappings().put(packageName, namespaceInfo);
         }
-
+        
         String name = componentClass.getName();
 
         Type componentType = Type.getType("L" + componentClass.getName().replace('.', '/') + ";");
@@ -3275,7 +3276,7 @@ public class AnnotationsProcessor {
         Label l1 = new Label();
         cv.visitLabel(l1);
         // CODE ATTRIBUTE
-
+                
         LocalVariableTypeTableAttribute cvAttr = new LocalVariableTypeTableAttribute();
         cv.visitAttribute(cvAttr);
 
@@ -3310,6 +3311,15 @@ public class AnnotationsProcessor {
         cv.visitMaxs(2, 2);
 
         // CLASS ATRIBUTE
+
+        // CLASS ATTRIBUTE
+        RuntimeVisibleAnnotations annotationsAttr = new RuntimeVisibleAnnotations();
+        
+        Annotation attrann0 = new Annotation("Ljavax/xml/bind/annotation/XmlType;");
+        attrann0.add( "namespace", namespace);
+        annotationsAttr.annotations.add( attrann0);
+        cw.visitAttribute(annotationsAttr);
+        
         SignatureAttribute attr = new SignatureAttribute("Lorg/eclipse/persistence/internal/jaxb/many/CollectionValue<L"+collectionType.getInternalName()+"<" + componentTypeInternalName + ">;>;");
         cw.visitAttribute(attr);
 
