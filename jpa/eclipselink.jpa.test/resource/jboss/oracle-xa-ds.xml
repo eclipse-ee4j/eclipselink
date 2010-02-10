@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<datasources>
+    <xa-datasource>
+        <jndi-name>EclipseLinkDS</jndi-name>
+        <xa-datasource-class>oracle.jdbc.xa.client.OracleXADataSource</xa-datasource-class>
+        <xa-datasource-property name="URL">@url@</xa-datasource-property>
+        <xa-datasource-property name="User">@username@</xa-datasource-property>
+        <xa-datasource-property name="Password">@password@</xa-datasource-property>
+        <metadata>
+            <type-mapping>Oracle9i</type-mapping>
+        </metadata>
+    </xa-datasource>
+</datasources>
+

@@ -1,14 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <datasources>
     <local-tx-datasource>
-        <jndi-name>ELNonJTADS</jndi-name>
+       <jndi-name>EclipseLinkDS</jndi-name>
         <connection-url>@url@</connection-url>
         <driver-class>@driverclass@</driver-class>
         <user-name>@username@</user-name>
         <password>@password@</password>
         <metadata>
-            <type-mapping>mySQL</type-mapping>
+            <type-mapping>DB2</type-mapping>
         </metadata>
     </local-tx-datasource>
 </datasources>
-
