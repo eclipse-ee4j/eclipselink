@@ -89,30 +89,38 @@ public class XMLStreamReaderReader extends XMLReaderAdapter {
             case XMLStreamReader.START_ELEMENT: {
                 depth++;
                 String localName = xmlStreamReader.getLocalName();
+                String namespaceURI = xmlStreamReader.getNamespaceURI();
+                if(XMLConstants.EMPTY_STRING.equals(namespaceURI)) {
+                    namespaceURI = null;
+                }
                 if(qNameAware) {
                     String prefix = xmlStreamReader.getPrefix();
                     if(null == prefix || prefix.length() == 0) {
-                        contentHandler.startElement(xmlStreamReader.getNamespaceURI(), localName, localName, indexedAttributeList.reset());
+                        contentHandler.startElement(namespaceURI, localName, localName, indexedAttributeList.reset());
                     } else {
-                        contentHandler.startElement(xmlStreamReader.getNamespaceURI(), localName, prefix + XMLConstants.COLON + localName, indexedAttributeList.reset());
+                        contentHandler.startElement(namespaceURI, localName, prefix + XMLConstants.COLON + localName, indexedAttributeList.reset());
                     }
                 } else {
-                    contentHandler.startElement(xmlStreamReader.getNamespaceURI(), localName, null, indexedAttributeList.reset());
+                    contentHandler.startElement(namespaceURI, localName, null, indexedAttributeList.reset());
                 }
                 break;
             }
             case XMLStreamReader.END_ELEMENT: {
                 depth--;
                 String localName = xmlStreamReader.getLocalName();
+                String namespaceURI = xmlStreamReader.getNamespaceURI();
+                if(XMLConstants.EMPTY_STRING.equals(namespaceURI)) {
+                    namespaceURI = null;
+                }
                 if(qNameAware) {
                     String prefix = xmlStreamReader.getPrefix();
                     if(null == prefix || prefix.length() == 0) {
-                        contentHandler.endElement(xmlStreamReader.getNamespaceURI(), localName, localName);
+                        contentHandler.endElement(namespaceURI, localName, localName);
                     } else {
-                        contentHandler.endElement(xmlStreamReader.getNamespaceURI(), localName, prefix + XMLConstants.COLON + localName);
+                        contentHandler.endElement(namespaceURI, localName, prefix + XMLConstants.COLON + localName);
                     }
                 } else {
-                    contentHandler.endElement(xmlStreamReader.getNamespaceURI(), localName, null);
+                    contentHandler.endElement(namespaceURI, localName, null);
                 }
                 break;
             }
