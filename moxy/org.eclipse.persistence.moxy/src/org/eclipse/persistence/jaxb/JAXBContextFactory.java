@@ -19,6 +19,7 @@ import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import java.util.StringTokenizer;
 
@@ -49,8 +50,8 @@ import org.eclipse.persistence.sessions.Project;
 /**
  * INTERNAL:
  * <p>
- * <b>Purpose:</b>A TopLink specific JAXBContextFactory. This class can be specified in a
- * jaxb.properties file to make use of TopLink's JAXB 2.0 implementation.
+ * <b>Purpose:</b>An EclipseLink specific JAXBContextFactory. This class can be specified in a
+ * jaxb.properties file to make use of TopLink's JAXB 2.1 implementation.
  * <p>
  * <b>Responsibilities:</b>
  * <ul>
@@ -58,7 +59,7 @@ import org.eclipse.persistence.sessions.Project;
  * <li>Create a JAXBContext from a context path and a classloader</li>
  * </ul>
  * <p>
- * This class is the entry point into in TopLink's JAXB 2.0 Runtime. It provides the required
+ * This class is the entry point into in EclipseLink's JAXB 2.1 Runtime. It provides the required
  * factory methods and is invoked by javax.xml.bind.JAXBContext.newInstance() to create new
  * instances of JAXBContext. When creating a JAXBContext from a contextPath, the list of classes is
  * derived either from an ObjectFactory class (schema-to-java) or a jaxb.index file
@@ -73,9 +74,13 @@ import org.eclipse.persistence.sessions.Project;
 public class JAXBContextFactory {
 
     public static final String ECLIPSELINK_OXM_XML_KEY = "eclipselink-oxm-xml";
-
     public static final String DEFAULT_TARGET_NAMESPACE_KEY = "defaultTargetNamespace";
-    public static javax.xml.bind.JAXBContext createContext(Class[] classesToBeBound, java.util.Map properties) throws JAXBException {
+
+    /**
+     * Create a JAXBContext on the array of Class objects.  The JAXBContext will 
+     * also be aware of classes reachable from the classes in the array.
+     */
+    public static JAXBContext createContext(Class[] classesToBeBound, Map properties) throws JAXBException {
         ClassLoader loader = null;
         if (classesToBeBound.length > 0) {
             loader = classesToBeBound[0].getClassLoader();
@@ -86,17 +91,29 @@ public class JAXBContextFactory {
         return createContext(classesToBeBound, properties, loader);
     }
 
-    public static javax.xml.bind.JAXBContext createContext(Class[] classesToBeBound, java.util.Map properties, ClassLoader classLoader) throws JAXBException {
+    /**
+     * Create a JAXBContext on the array of Class objects.  The JAXBContext will 
+     * also be aware of classes reachable from the classes in the array.
+     */
+    public static JAXBContext createContext(Class[] classesToBeBound, Map properties, ClassLoader classLoader) throws JAXBException {
         Type[] types = new Type[classesToBeBound.length];
         System.arraycopy(classesToBeBound, 0, types, 0, classesToBeBound.length);
         return createContext(types, properties, classLoader);
     }
 
-    public static javax.xml.bind.JAXBContext createContext(String contextPath, ClassLoader classLoader) throws JAXBException {
+    /**
+     * Create a JAXBContext on context path.  The JAXBContext will 
+     * also be aware of classes reachable from the classes on the context path.
+     */
+    public static JAXBContext createContext(String contextPath, ClassLoader classLoader) throws JAXBException {
         return createContext(contextPath, classLoader, null);
     }
 
-    public static javax.xml.bind.JAXBContext createContext(String contextPath, ClassLoader classLoader, java.util.Map properties) throws JAXBException {
+    /**
+     * Create a JAXBContext on context path.  The JAXBContext will 
+     * also be aware of classes reachable from the classes on the context path.
+     */
+    public static JAXBContext createContext(String contextPath, ClassLoader classLoader, Map properties) throws JAXBException {
         if(null == classLoader) {
             classLoader = getDefaultClassLoader();
         }
@@ -168,7 +185,13 @@ public class JAXBContextFactory {
         return createContext(classArray, properties, classLoader, xmlBindingMap);
     }
 
-    public static javax.xml.bind.JAXBContext createContext(Type[] typesToBeBound, java.util.Map properties, ClassLoader classLoader) throws JAXBException {
+    /**
+     * Create a JAXBContext on the array of Type objects.  The JAXBContext will 
+     * also be aware of classes reachable from the types in the array.  The 
+     * preferred means of creating a Type aware JAXBContext is to create the
+     * JAXBContext with an array of TypeMappingInfo objects. 
+     */
+    public static JAXBContext createContext(Type[] typesToBeBound, Map properties, ClassLoader classLoader) throws JAXBException {
         Map<Type, TypeMappingInfo> typeToTypeMappingInfo = new HashMap<Type, TypeMappingInfo>();
         TypeMappingInfo[] typeMappingInfo = new TypeMappingInfo[typesToBeBound.length];
         for(int i = 0; i < typesToBeBound.length; i++) {
@@ -184,7 +207,12 @@ public class JAXBContextFactory {
         return context;
     }
 
-    public static javax.xml.bind.JAXBContext createContext(TypeMappingInfo[] typesToBeBound, java.util.Map properties, ClassLoader classLoader) throws JAXBException {
+    /**
+     * Create a JAXBContext on the array of TypeMappingInfo objects.  The 
+     * JAXBContext will also be aware of classes reachable from the types in the 
+     * array.  This is the preferred means of creating a Type aware JAXBContext.
+     */
+    public static JAXBContext createContext(TypeMappingInfo[] typesToBeBound, Map properties, ClassLoader classLoader) throws JAXBException {
         if(null == classLoader) {
             classLoader = getDefaultClassLoader();
         }
@@ -214,7 +242,7 @@ public class JAXBContextFactory {
      * based on method parameters.  This method is useful when JAXB is used as
      * the binding layer for a Web Service provider.
      */
-    private static javax.xml.bind.JAXBContext createContext(Class[] classesToBeBound, java.util.Map properties, ClassLoader classLoader, Map<String, XmlBindings> xmlBindings) throws JAXBException {
+    private static JAXBContext createContext(Class[] classesToBeBound, Map properties, ClassLoader classLoader, Map<String, XmlBindings> xmlBindings) throws JAXBException {
         JaxbClassLoader loader = new JaxbClassLoader(classLoader, classesToBeBound);
         String defaultTargetNamespace = null;
         if(properties != null) {
@@ -228,10 +256,7 @@ public class JAXBContextFactory {
         }
     }
 
-    private static javax.xml.bind.JAXBContext createContext(Generator generator, java.util.Map properties, ClassLoader classLoader, JaxbClassLoader loader, Type[] typesToBeBound) throws Exception {
-        javax.xml.bind.JAXBContext jaxbContext = null;
-        XMLContext xmlContext = null;
-
+    private static JAXBContext createContext(Generator generator, Map properties, ClassLoader classLoader, JaxbClassLoader loader, Type[] typesToBeBound) throws Exception {
         Project proj = generator.generateProject();
         ConversionManager conversionManager = null;
         if (classLoader != null) {
@@ -255,21 +280,16 @@ public class JAXBContextFactory {
         eventListener.setShouldValidateInstantiationPolicy(false);
         XMLPlatform platform = new SAXPlatform();
         platform.getConversionManager().setLoader(loader);
-        xmlContext = new XMLContext(proj, loader, eventListener);
+        XMLContext xmlContext = new XMLContext(proj, loader, eventListener);
 
         if(generator.getAnnotationsProcessor().getPackageToNamespaceMappings().size() > 1){
             ((XMLLogin)xmlContext.getSession(0).getDatasourceLogin()).setEqualNamespaceResolvers(false);
         }
 
-        jaxbContext = new org.eclipse.persistence.jaxb.JAXBContext(xmlContext, generator, typesToBeBound);
-
-        return jaxbContext;
+        return new JAXBContext(xmlContext, generator, typesToBeBound);
     }
 
-    private static javax.xml.bind.JAXBContext createContext(Generator generator, java.util.Map properties, ClassLoader classLoader, JaxbClassLoader loader, TypeMappingInfo[] typesToBeBound) throws Exception {
-        javax.xml.bind.JAXBContext jaxbContext = null;
-        XMLContext xmlContext = null;
-
+    private static JAXBContext createContext(Generator generator, Map properties, ClassLoader classLoader, JaxbClassLoader loader, TypeMappingInfo[] typesToBeBound) throws Exception {
         Project proj = generator.generateProject();
         ConversionManager conversionManager = null;
         if (classLoader != null) {
@@ -293,15 +313,13 @@ public class JAXBContextFactory {
         eventListener.setShouldValidateInstantiationPolicy(false);
         XMLPlatform platform = new SAXPlatform();
         platform.getConversionManager().setLoader(loader);
-        xmlContext = new XMLContext(proj, loader, eventListener);
+        XMLContext xmlContext = new XMLContext(proj, loader, eventListener);
 
         if(generator.getAnnotationsProcessor().getPackageToNamespaceMappings().size() > 1){
             ((XMLLogin)xmlContext.getSession(0).getDatasourceLogin()).setEqualNamespaceResolvers(false);
         }
 
-        jaxbContext = new org.eclipse.persistence.jaxb.JAXBContext(xmlContext, generator, typesToBeBound);
-
-        return jaxbContext;
+        return new JAXBContext(xmlContext, generator, typesToBeBound);
     }
 
     private static boolean isJAXB2ObjectFactory(Class objectFactoryClass) {
@@ -322,10 +340,6 @@ public class JAXBContextFactory {
      *
      * It is assumed that the given map's key will be ECLIPSELINK_OXM_XML_KEY, and the value will be
      * Map<String, Source>, where String = package, Source = metadata file
-     *
-     * @param properties
-     * @param classLoader
-     * @return
      */
     private static Map<String, XmlBindings> getXmlBindingsFromProperties(Map properties, ClassLoader classLoader) {
         Map<String, XmlBindings> bindings = new HashMap<String, XmlBindings>();
@@ -371,10 +385,6 @@ public class JAXBContextFactory {
      * Convenience method for creating an XmlBindings object based on a given Source. The method
      * will load the eclipselink metadata model and unmarshal the Source. This assumes that the
      * Source represents the eclipselink-oxm.xml metadata file to be unmarshalled.
-     *
-     * @param metadataSource
-     * @param classLoader
-     * @return
      */
     private static XmlBindings getXmlBindings(Source metadataSource, ClassLoader classLoader) {
         XmlBindings xmlBindings = null;
@@ -394,16 +404,11 @@ public class JAXBContextFactory {
     /**
      * Convenience method that returns an array of Types based on a given XmlBindings. The resulting
      * array will not contain duplicate entries.
-     *
-     * @param xmlBindings
-     * @param classLoader
-     * @param existingTypes
-     * @return
      */
     private static TypeMappingInfo[] getXmlBindingsClasses(XmlBindings xmlBindings, ClassLoader classLoader, TypeMappingInfo[] existingTypes) {
         JavaTypes jTypes = xmlBindings.getJavaTypes();
         if (jTypes != null) {
-            java.util.List<Class> existingClasses = new ArrayList<Class>(existingTypes.length);
+            List<Class> existingClasses = new ArrayList<Class>(existingTypes.length);
              for (TypeMappingInfo typeMappingInfo : existingTypes) {
                 Type type  = typeMappingInfo.getType();
                 if(type == null){
@@ -416,7 +421,7 @@ public class JAXBContextFactory {
                  }
              }
 
-             java.util.List<TypeMappingInfo> additionalTypeMappingInfos = new ArrayList<TypeMappingInfo>(jTypes.getJavaType().size());
+             List<TypeMappingInfo> additionalTypeMappingInfos = new ArrayList<TypeMappingInfo>(jTypes.getJavaType().size());
 
              for (JavaType javaType : jTypes.getJavaType()) {
                 try {
@@ -445,11 +450,6 @@ public class JAXBContextFactory {
     /**
      * Convenience method that returns a list of Classes based on a given XmlBindings and an array
      * of existing classes. The resulting array will not contain duplicate entries.
-     *
-     * @param xmlBindings
-     * @param classLoader
-     * @param existingClasses
-     * @return
      */
     private static ArrayList<Class> getXmlBindingsClasses(XmlBindings xmlBindings, ClassLoader classLoader, ArrayList<Class> existingClasses) {
         ArrayList<Class> additionalClasses = existingClasses;
@@ -472,11 +472,6 @@ public class JAXBContextFactory {
     /**
      * Convenience method that returns an array of Classes based on a map given XmlBindings and an
      * array of existing classes. The resulting array will not contain duplicate entries.
-     *
-     * @param xmlBindingMap
-     * @param classLoader
-     * @param existingClasses
-     * @return
      */
     private static ArrayList<Class> getXmlBindingsClassesFromMap(Map<String, XmlBindings> xmlBindingMap, ClassLoader classLoader, ArrayList<Class> existingClasses) {
         ArrayList<Class> additionalClasses = existingClasses;
