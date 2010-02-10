@@ -79,8 +79,8 @@ public class JAXBContextFactory {
         ClassLoader loader = null;
         if (classesToBeBound.length > 0) {
             loader = classesToBeBound[0].getClassLoader();
-            if (null == loader) {
-                loader = Thread.currentThread().getContextClassLoader();
+            if(null == loader) {
+                loader = getDefaultClassLoader();
             }
         }
         return createContext(classesToBeBound, properties, loader);
@@ -97,6 +97,9 @@ public class JAXBContextFactory {
     }
 
     public static javax.xml.bind.JAXBContext createContext(String contextPath, ClassLoader classLoader, java.util.Map properties) throws JAXBException {
+        if(null == classLoader) {
+            classLoader = getDefaultClassLoader();
+        }
         EclipseLinkException sessionLoadingException = null;
         try {
             XMLContext xmlContext = new XMLContext(contextPath, classLoader);
@@ -182,6 +185,9 @@ public class JAXBContextFactory {
     }
 
     public static javax.xml.bind.JAXBContext createContext(TypeMappingInfo[] typesToBeBound, java.util.Map properties, ClassLoader classLoader) throws JAXBException {
+        if(null == classLoader) {
+            classLoader = getDefaultClassLoader();
+        }
          // Check properties map for eclipselink-oxm.xml entries
         Map<String, XmlBindings> xmlBindings = getXmlBindingsFromProperties(properties, classLoader);
         String defaultTargetNamespace = null;
@@ -436,8 +442,6 @@ public class JAXBContextFactory {
         }
     }
 
-
-
     /**
      * Convenience method that returns a list of Classes based on a given XmlBindings and an array
      * of existing classes. The resulting array will not contain duplicate entries.
@@ -506,6 +510,10 @@ public class JAXBContextFactory {
             }
         }
         return updatedTypes.toArray(new TypeMappingInfo[updatedTypes.size()]);
+    }
+
+    private static ClassLoader getDefaultClassLoader() {
+        return Thread.currentThread().getContextClassLoader();
     }
 
 }
