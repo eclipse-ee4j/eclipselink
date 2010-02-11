@@ -528,7 +528,7 @@ public class SDOSchemaGenerator {
     }
     
     private String buildAliasNameString(List aliasNames) {
-        String aliasNamesString = new String();
+        String aliasNamesString = "";
         int size = aliasNames.size();
         for (int i = 0; i < size; i++) {
             String nextName = (String)aliasNames.get(i);

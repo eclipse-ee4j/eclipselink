@@ -209,7 +209,7 @@ public class JAXBMarshaller implements javax.xml.bind.Marshaller {
 		} else if (JAXB_NO_NAMESPACE_SCHEMA_LOCATION.equals(key)) {
 			return xmlMarshaller.getNoNamespaceSchemaLocation();
 		} else if (XMLConstants.JAXB_FRAGMENT.equals(key)) {
-			return new Boolean(xmlMarshaller.isFragment());
+			return xmlMarshaller.isFragment();
 		}
 		throw new PropertyException("Unsupported Property");
 	}

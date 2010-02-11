@@ -1713,7 +1713,7 @@ public class XMLConversionManager extends ConversionManager implements TimeZoneH
     }
 
     public String convertListToString(Object sourceObject) throws ConversionException {
-        String returnString = new String();
+        String returnString = "";
         if (sourceObject instanceof List) {
             List list = (List) sourceObject;
             for (int i = 0; i < list.size(); i++) {

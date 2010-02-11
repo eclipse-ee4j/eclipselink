@@ -366,7 +366,7 @@ public class UnmarshalXPathEngine {
                 String val = next.getNodeValue();
                 if (val != null) {
                     if (returnVal == null) {
-                        returnVal = new String();
+                        returnVal = "";
                     }
                     if(next.getNodeType() == Node.CDATA_SECTION_NODE) {
                         val = val.trim();

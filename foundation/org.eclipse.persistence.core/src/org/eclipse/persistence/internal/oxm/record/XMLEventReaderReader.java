@@ -166,7 +166,7 @@ public class XMLEventReaderReader extends XMLReaderAdapter {
                     declaredNs.add(next);
                 }
                 if(declaredNs != null) {
-                    this.namespaces.put(new Integer(depth), declaredNs);
+                    this.namespaces.put(depth, declaredNs);
                 }
                 QName qName = startElement.getName();
                 String prefix = qName.getPrefix();
