@@ -189,6 +189,7 @@ public class XMLBinaryDataMapping extends XMLDirectMapping {
                 String base64Value = ((XMLConversionManager) session.getDatasourcePlatform().getConversionManager()).buildBase64StringFromBytes(data.getData());
                 record.put(field, base64Value);
             }
+            return;
         }
         if (record.isXOPPackage() && !isSwaRef() && !shouldInlineBinaryData()) {
             //write as attachment
@@ -350,6 +351,8 @@ public class XMLBinaryDataMapping extends XMLDirectMapping {
                 byte[] bytes = ((XMLConversionManager) executionSession.getDatasourcePlatform().getConversionManager()).convertSchemaBase64ToByteArray(value);
                 fieldValue = bytes;
             }
+        } else if(value instanceof byte[] || value instanceof Byte[]){
+        	fieldValue = value;
         } else {
             //this was an element, so do the XOP/SWAREF/Inline binary cases for an element
             XMLRecord record = (XMLRecord) value;

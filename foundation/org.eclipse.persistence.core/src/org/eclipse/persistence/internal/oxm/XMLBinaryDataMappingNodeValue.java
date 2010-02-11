@@ -142,6 +142,9 @@ public class XMLBinaryDataMappingNodeValue extends NodeValue implements NullCapa
             // if the CID is null there's nothing to write out
             if (c_id != null) {
                 marshalRecord.attribute(xPathFragment, namespaceResolver, c_id);
+            }else {
+                String value = getValueToWrite(((XMLField) xmlBinaryDataMapping.getField()).getSchemaType(), objectValue, session);
+                marshalRecord.attribute(xPathFragment, namespaceResolver, value);
             }
             marshalRecord.closeStartGroupingElements(groupingFragment);
             return true;
