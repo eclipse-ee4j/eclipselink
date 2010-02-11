@@ -89,15 +89,13 @@ public class JAXBContextFactoryTestCases extends ExternalizedMetadataTestCases {
      * the context factory.  Various overrides will be performed to ensure 
      * the xml files were picked up properly.
      * 
-     * 2 x Positive tests, 1x Negative test
+     * 1 x Positive tests, 1x Negative test
      */
     public void testLoadMultipleXmlFilesViaDifferentPackage() {
         outputResolver = generateSchema(new Class[] { Employee.class, Address.class, }, CONTEXT_PATH, PATH, 1);
-        String src = PATH + "myotherclass.xml";
+ 
+        String src = PATH + "employee.xml";
         String result = validateAgainstSchema(src, EMPTY_NAMESPACE, outputResolver);
-        assertTrue("Schema validation failed unxepectedly: " + result, result == null);
-        src = PATH + "employee.xml";
-        result = validateAgainstSchema(src, EMPTY_NAMESPACE, outputResolver);
         assertTrue("Schema validation failed unxepectedly: " + result, result == null);
         src = PATH + "address.xml";
         result = validateAgainstSchema(src, null, outputResolver);

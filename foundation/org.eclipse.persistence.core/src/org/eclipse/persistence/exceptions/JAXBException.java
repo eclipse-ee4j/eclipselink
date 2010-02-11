@@ -66,6 +66,7 @@ public class JAXBException extends EclipseLinkException {
     public static final int INVALID_TYPE_FOR_XMLATTRIBUTEREF_PROPERTY = 50034;
     public static final int INVALID_XMLELEMENT_IN_XMLELEMENTS = 50035;
     public static final int NULL_TYPE_ON_TYPEMAPPINGINFO = 50036;
+    public static final int JAVATYPE_NOT_ALLOWED_IN_BINDINGS_FILE = 50037;
 
     protected JAXBException(String message) {
         super(message);
@@ -472,6 +473,18 @@ public class JAXBException extends EclipseLinkException {
         Object[] args = { tagName };
         JAXBException exception = new JAXBException(ExceptionMessageGenerator.buildMessage(JAXBException.class, NULL_TYPE_ON_TYPEMAPPINGINFO, args));
         exception.setErrorCode(NULL_TYPE_ON_TYPEMAPPINGINFO);
+        return exception;
+    }
+    
+    /**
+     * This exception should be used when a TypeMappingInfo is specified but the Type is not set on it.  
+     * @param tagName
+     * @return
+     */
+    public static JAXBException javaTypeNotAllowedInBindingsFile(String javaTypePackage, String bindingsPackage) {
+        Object[] args = { javaTypePackage, bindingsPackage };
+        JAXBException exception = new JAXBException(ExceptionMessageGenerator.buildMessage(JAXBException.class, JAVATYPE_NOT_ALLOWED_IN_BINDINGS_FILE, args));
+        exception.setErrorCode(JAVATYPE_NOT_ALLOWED_IN_BINDINGS_FILE);
         return exception;
     }
 }

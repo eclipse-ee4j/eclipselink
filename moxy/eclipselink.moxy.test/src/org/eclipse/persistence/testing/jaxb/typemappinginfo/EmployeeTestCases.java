@@ -87,7 +87,7 @@ public class EmployeeTestCases extends TypeMappingInfoTestCases{
 	        String pkg = "someUri";
 		        
 	        HashMap<String, Source> overrides = new HashMap<String, Source>();
-	        overrides.put(pkg, getXmlSchemaOxm(pkg));
+	        overrides.put("org.eclipse.persistence.testing.jaxb.typemappinginfo", getXmlSchemaOxm(pkg));
 	        Map<String, Object> properties = new HashMap<String, Object>();
 	        properties.put(JAXBContextFactory.ECLIPSELINK_OXM_XML_KEY, overrides);
 	        return properties;

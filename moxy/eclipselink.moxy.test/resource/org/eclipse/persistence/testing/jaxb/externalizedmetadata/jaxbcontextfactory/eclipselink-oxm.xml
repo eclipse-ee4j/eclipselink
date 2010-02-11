@@ -8,8 +8,5 @@
   			</java-attributes>
 		</java-type>
 		<java-type name="org.eclipse.persistence.testing.jaxb.externalizedmetadata.jaxbcontextfactory.Address" xml-transient="true"/>
-		<java-type name="org.eclipse.persistence.testing.jaxb.externalizedmetadata.jaxbcontextfactory.other.MyOtherClass">
-  			<xml-root-element name="my-other-class"/>
-		</java-type>
 	</java-types>
 </xml-bindings>

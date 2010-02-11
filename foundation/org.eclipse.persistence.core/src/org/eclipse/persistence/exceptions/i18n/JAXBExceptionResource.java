@@ -55,7 +55,8 @@ public class JAXBExceptionResource extends ListResourceBundle {
         {"50033", "The DomHandlerConverter for DomHandler [{0}] set on property [{1}] could not be initialized."},
         {"50034", "The property or field [{0}] can not be annotated with XmlAttachmentRef since it is not a DataHandler."},
         {"50035", "Since the property or field [{0}] is set as XmlIDREF, the target type of each XmlElement declared within the XmlElements list must have an XmlID property.  Please ensure the target type of XmlElement [{1}] contains an XmlID property."},
-        {"50036", "The TypeMappingInfo with XmlTagName QName [{0}] needs to have a non-null Type set on it."}
+        {"50036", "The TypeMappingInfo with XmlTagName QName [{0}] needs to have a non-null Type set on it."},
+        {"50037", "The java-type with package [{0}] is not allowed in the bindings file keyed on package [{1}]."}        
     };
     
     /**

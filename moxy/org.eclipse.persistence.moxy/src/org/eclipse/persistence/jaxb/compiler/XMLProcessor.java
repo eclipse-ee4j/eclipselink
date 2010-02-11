@@ -789,7 +789,12 @@ public class XMLProcessor {
             JavaTypes jTypes = xmlBindings.getJavaTypes();
             if (jTypes != null) {
                 for (JavaType javaType : jTypes.getJavaType()) {
-                    classes.add(jModelInput.getJavaModel().getClass(javaType.getName()));
+                    JavaClass nextClass = jModelInput.getJavaModel().getClass(javaType.getName());
+                    String nextPackageName = nextClass.getPackageName();
+                    if(nextPackageName == null || !nextPackageName.equals(packageName)){
+                        throw JAXBException.javaTypeNotAllowedInBindingsFile(nextPackageName, packageName);
+                    }
+                    classes.add(nextClass);
                 }
             }
 

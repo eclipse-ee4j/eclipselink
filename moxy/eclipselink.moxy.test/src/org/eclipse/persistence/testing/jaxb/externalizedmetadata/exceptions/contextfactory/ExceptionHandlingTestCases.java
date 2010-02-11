@@ -18,6 +18,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.xml.bind.JAXBContext;
 import javax.xml.transform.Source;
 import javax.xml.transform.stream.StreamSource;
 
@@ -193,6 +194,35 @@ public class ExceptionHandlingTestCases extends ExternalizedMetadataTestCases {
             return;
         } catch (Exception x) {
         }
+        fail("The expected JAXBException was not thrown.");
+    }
+    
+    /**
+     * Tests declaration of a non-existent package
+     * 
+     * Negative test.
+     */
+    public void testInvalidPackageAsKey() {
+    	String validPath = "org/eclipse/persistence/testing/jaxb/externalizedmetadata/jaxbcontextfactory/";
+    	String contextPath = "org.eclipse.persistence.testing.jaxb.externalizedmetadata.jaxbcontextfactory";
+    	String metadataFile = validPath + "eclipselink-oxm.xml";
+        InputStream iStream = loader.getResourceAsStream(metadataFile);
+        if (iStream == null) {
+            fail("Couldn't load metadata file [" + metadataFile + "]");
+        }
+        
+        HashMap<String, Source> metadataSourceMap = new HashMap<String, Source>();
+        metadataSourceMap.put("java.util", new StreamSource(iStream));
+        Map<String, Map<String, Source>> properties = new HashMap<String, Map<String, Source>>();
+        properties.put(JAXBContextFactory.ECLIPSELINK_OXM_XML_KEY, metadataSourceMap);
+
+        try {
+            JAXBContext ctx = JAXBContextFactory.createContext(contextPath, loader, properties);  
+        } catch (javax.xml.bind.JAXBException e) {
+        	assertTrue(e.getLinkedException() instanceof JAXBException);
+        	assertEquals(JAXBException.JAVATYPE_NOT_ALLOWED_IN_BINDINGS_FILE, ((JAXBException)e.getLinkedException()).getErrorCode());
+        	return;        	
+		}
         fail("The expected JAXBException was not thrown.");
     }
 }
