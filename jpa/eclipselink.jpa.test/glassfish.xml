@@ -72,11 +72,19 @@
         Note: SunAS9 server must be running.
     -->
     <target name="glassfish-setup">
+        <echo message="Removing the ${user.home}/.asadminpass"/>
+        <delete file="${user.home}/.asadminpass" verbose="true" failonerror="false"/>        
+        <echo message="Writing out the glassfish admin password to ${adminpassfile}"/>
+        <echo file="${adminpassfile}" append="false">AS_ADMIN_PASSWORD=${server.pwd}</echo>
         <exec executable="${glassfish.home}/bin/asadmin">
             <arg value="start-database"/>
         </exec>
         <exec executable="${glassfish.home}/bin/asadmin">
             <arg value="create-jdbc-connection-pool"/>
+            <arg value="--user"/>
+            <arg value="${server.user}"/>
+            <arg value="--passwordfile"/>
+            <arg value="${adminpassfile}"/>
             <arg value="--datasourceclassname"/>
             <arg value="org.apache.derby.jdbc.ClientDataSource"/>
 
@@ -86,6 +94,10 @@
         </exec> 
         <exec executable="${glassfish.home}/bin/asadmin">
             <arg value="create-jdbc-resource"/>
+            <arg value="--user"/>
+            <arg value="${server.user}"/>
+            <arg value="--passwordfile"/>
+            <arg value="${adminpassfile}"/>
             <arg value="--connectionpoolid"/>
             <arg value="jdbc-derby-pool"/>
             <arg value="jdbc/EclipseLinkDS"/>
@@ -100,10 +112,18 @@
     <target name="glassfish-reset">
         <exec executable="${glassfish.home}/bin/asadmin">
             <arg value="delete-jdbc-resource"/>
+            <arg value="--user"/>
+            <arg value="${server.user}"/>
+            <arg value="--passwordfile"/>
+            <arg value="${adminpassfile}"/>
             <arg value="jdbc/EclipseLinkDS"/>
         </exec> 
         <exec executable="${glassfish.home}/bin/asadmin">
             <arg value="delete-jdbc-connection-pool"/>
+            <arg value="--user"/>
+            <arg value="${server.user}"/>
+            <arg value="--passwordfile"/>
+            <arg value="${adminpassfile}"/>
             <arg value="jdbc-derby-pool"/>
         </exec>  
         <exec executable="${glassfish.home}/bin/asadmin">
@@ -126,6 +146,10 @@
     <target name="glassfish-deploy">
         <exec executable="${glassfish.home}/bin/asadmin">
             <arg value="deploy"/>
+            <arg value="--user"/>
+            <arg value="${server.user}"/>
+            <arg value="--passwordfile"/>
+            <arg value="${adminpassfile}"/>
             <arg value="--name"/>
             <arg value="${application.name}"/>
             <arg value="${ear.name}"/>
@@ -139,6 +163,10 @@
     <target name="glassfish-undeploy">
         <exec executable="${glassfish.home}/bin/asadmin">
             <arg value="undeploy"/>
+            <arg value="--user"/>
+            <arg value="${server.user}"/>
+            <arg value="--passwordfile"/>
+            <arg value="${adminpassfile}"/>
             <arg value="${application.name}"/> 
         </exec>
     </target>
