@@ -526,18 +526,16 @@ public class SDOSchemaGenerator {
         }
     	return false;
     }
-    
-    private String buildAliasNameString(List aliasNames) {
-        String aliasNamesString = "";
-        int size = aliasNames.size();
-        for (int i = 0; i < size; i++) {
-            String nextName = (String)aliasNames.get(i);
-            aliasNamesString += nextName;
+
+    private String buildAliasNameString(List<String> aliasNames) {
+        StringBuilder aliasNamesStringBuilder = new StringBuilder();
+        for (int i = 0, size = aliasNames.size(); i < size; i++) {
+            aliasNamesStringBuilder.append(aliasNames.get(i));
             if (i < (size - 1)) {
-                aliasNamesString += " ";
+                aliasNamesStringBuilder.append(' ');
             }
         }
-        return aliasNamesString;
+        return aliasNamesStringBuilder.toString();
     }
 
     private Element buildElement(Property property, NestedParticle nestedParticle) {

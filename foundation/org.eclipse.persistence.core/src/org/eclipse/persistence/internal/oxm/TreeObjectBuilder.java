@@ -267,16 +267,16 @@ public class TreeObjectBuilder extends XMLObjectBuilder {
                 }
                 if (xmlMapping.isAbstractDirectMapping() && xmlField.isTypedTextField()) {
                     XPathFragment nextFragment = xmlField.getXPathFragment();
-                    String typeXPath = XMLConstants.EMPTY_STRING;
+                    StringBuilder typeXPathStringBuilder = new StringBuilder();
                     while (nextFragment.getNextFragment() != null) {
-                        typeXPath += nextFragment.getXPath();
+                        typeXPathStringBuilder.append(nextFragment.getXPath());
                         nextFragment = nextFragment.getNextFragment();
                     }
-                    XMLField typeField = new XMLField();                    
-                    if(typeXPath.length() > 0) {
-                        typeXPath += "/";
+                    XMLField typeField = new XMLField();
+                    if(typeXPathStringBuilder.length() > 0) {
+                        typeXPathStringBuilder.append('/');
                     }
-                    typeField.setXPath(typeXPath + XMLConstants.ATTRIBUTE + xmlDescriptor.getNonNullNamespaceResolver().resolveNamespaceURI(XMLConstants.SCHEMA_INSTANCE_URL) + XMLConstants.COLON + XMLConstants.SCHEMA_TYPE_ATTRIBUTE);
+                    typeField.setXPath(typeXPathStringBuilder.toString() + XMLConstants.ATTRIBUTE + xmlDescriptor.getNonNullNamespaceResolver().resolveNamespaceURI(XMLConstants.SCHEMA_INSTANCE_URL) + XMLConstants.COLON + XMLConstants.SCHEMA_TYPE_ATTRIBUTE);
                     typeNodeValue = new TypeNodeValue();
                     typeNodeValue.setDirectMapping((AbstractDirectMapping)xmlMapping);
                     addChild(typeField.getXPathFragment(), typeNodeValue, xmlDescriptor.getNamespaceResolver());

@@ -37,7 +37,6 @@ import org.eclipse.persistence.internal.queries.MapContainerPolicy;
 import org.eclipse.persistence.internal.sessions.AbstractRecord;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.mappings.ContainerMapping;
-import org.eclipse.persistence.oxm.XMLConstants;
 import org.eclipse.persistence.oxm.XMLDescriptor;
 import org.eclipse.persistence.oxm.XMLField;
 import org.eclipse.persistence.oxm.record.UnmarshalRecord;
@@ -342,7 +341,7 @@ public class XMLCollectionReferenceMapping extends XMLObjectReferenceMapping imp
 
             Object fieldValue;
             Object objectValue;
-            String stringValue = XMLConstants.EMPTY_STRING;
+            StringBuilder stringValueBuilder = new StringBuilder();
             QName schemaType;
             Object iterator = cp.iteratorFor(collection);
             if (usesSingleNode()) {
@@ -353,15 +352,15 @@ public class XMLCollectionReferenceMapping extends XMLObjectReferenceMapping imp
                         schemaType = getSchemaType(xmlField, fieldValue, session);
                         String newValue = getValueToWrite(schemaType, fieldValue, session);
                         if (newValue != null) {
-                            stringValue += newValue;
+                            stringValueBuilder.append(newValue);
                             if (cp.hasNext(iterator)) {
-                                stringValue += SPACE;
+                                stringValueBuilder.append(SPACE);
                             }
                         }
                     }
                 }
-                if (stringValue.length() > 0) {
-                    row.put(xmlField, stringValue);
+                if (stringValueBuilder.length() > 0) {
+                    row.put(xmlField, stringValueBuilder.toString());
                 }
             } else {
                 ArrayList keyValues = new ArrayList();
@@ -370,7 +369,7 @@ public class XMLCollectionReferenceMapping extends XMLObjectReferenceMapping imp
                     fieldValue = buildFieldValue(objectValue, xmlField, session);
                     if (fieldValue != null) {
                         schemaType = getSchemaType(xmlField, fieldValue, session);
-                        stringValue = getValueToWrite(schemaType, fieldValue, session);
+                        String stringValue = getValueToWrite(schemaType, fieldValue, session);
                         //row.add(xmlField, stringValue);
                         keyValues.add(stringValue);
                     }

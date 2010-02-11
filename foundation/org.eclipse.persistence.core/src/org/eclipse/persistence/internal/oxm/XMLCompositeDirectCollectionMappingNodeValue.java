@@ -74,7 +74,7 @@ public class XMLCompositeDirectCollectionMappingNodeValue extends MappingNodeVal
             return false;
         }
         Object objectValue;
-        String stringValue = XMLConstants.EMPTY_STRING;
+        StringBuilder stringValueStringBuilder = new StringBuilder();
         String newValue;
         QName schemaType;
         if (xmlCompositeDirectCollectionMapping.usesSingleNode()) {
@@ -90,22 +90,22 @@ public class XMLCompositeDirectCollectionMappingNodeValue extends MappingNodeVal
                 schemaType = getSchemaType((XMLField) xmlCompositeDirectCollectionMapping.getField(), objectValue, session);
                 newValue = getValueToWrite(schemaType, objectValue, (XMLConversionManager) session.getDatasourcePlatform().getConversionManager(), namespaceResolver);
                 if (null != newValue) {
-                    stringValue += newValue;
+                    stringValueStringBuilder.append(newValue);
                     if (cp.hasNext(iterator)) {
-                        stringValue += SPACE;
+                        stringValueStringBuilder.append(SPACE);
                     }
                 }
             }
             XPathFragment groupingFragment = marshalRecord.openStartGroupingElements(namespaceResolver);
             if (xPathFragment.isAttribute()) {
-                marshalRecord.attribute(xPathFragment, namespaceResolver, stringValue);
+                marshalRecord.attribute(xPathFragment, namespaceResolver, stringValueStringBuilder.toString());
                 marshalRecord.closeStartGroupingElements(groupingFragment);
             } else {
                 marshalRecord.closeStartGroupingElements(groupingFragment);
                 if (xmlCompositeDirectCollectionMapping.isCDATA()) {
-                    marshalRecord.cdata(stringValue);
+                    marshalRecord.cdata(stringValueStringBuilder.toString());
                 } else {
-                    marshalRecord.characters(stringValue);
+                    marshalRecord.characters(stringValueStringBuilder.toString());
                 }
             }
         } else {

@@ -1713,18 +1713,18 @@ public class XMLConversionManager extends ConversionManager implements TimeZoneH
     }
 
     public String convertListToString(Object sourceObject) throws ConversionException {
-        String returnString = "";
+        StringBuilder returnStringBuilder = new StringBuilder();
         if (sourceObject instanceof List) {
             List list = (List) sourceObject;
-            for (int i = 0; i < list.size(); i++) {
+            for (int i = 0, listSize = list.size(); i < listSize; i++) {
                 Object next = list.get(i);
                     if (i > 0) {
-                        returnString += " ";
+                        returnStringBuilder.append(' ');
                     }
-                    returnString = returnString + convertObjectToString(next);
+                    returnStringBuilder.append(convertObjectToString(next));
             }
         }
-        return returnString;
+        return returnStringBuilder.toString();
     }
 
     public static HashMap getDefaultXMLTypes() {

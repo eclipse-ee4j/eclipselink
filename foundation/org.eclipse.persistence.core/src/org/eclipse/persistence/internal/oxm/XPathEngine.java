@@ -268,7 +268,7 @@ public class XPathEngine {
 
         if (value instanceof List) {
             if (xmlField.usesSingleNode()) {
-                String returnString = XMLConstants.EMPTY_STRING;
+                StringBuilder returnStringBuilder = new StringBuilder();
                 for (int i = 0; i < ((List)value).size(); i++) {
                     Object nextItem = ((List)value).get(i);
 
@@ -278,12 +278,12 @@ public class XPathEngine {
                     }else{
                     	nextConvertedItem = (String) ((XMLConversionManager)session.getDatasourcePlatform().getConversionManager()).convertObject(nextItem, ClassConstants.STRING, schemaType);
                     }
-                    returnString += nextConvertedItem;
+                    returnStringBuilder.append(nextConvertedItem);
                     if (i < (((List)value).size() - 1)) {
-                        returnString += " ";
+                        returnStringBuilder.append(' ');
                     }
                 }
-                return returnString;
+                return returnStringBuilder.toString();
             } else {
                 ArrayList items = new ArrayList(((List)value).size());
                 for (int index = 0; index < ((List)value).size(); index++) {
@@ -342,16 +342,16 @@ public class XPathEngine {
     private Object getValueToWriteForUnion(XMLUnionField xmlField, Object value, AbstractSession session) {
         if (value instanceof List) {
             if (xmlField.usesSingleNode()) {
-                String returnString = XMLConstants.EMPTY_STRING;
+                StringBuilder returnStringBuilder = new StringBuilder();
                 Object next = null;
                 for (int i = 0; i < ((List)value).size(); i++) {
                     next = ((List)value).get(i);
-                    returnString += getSingleValueToWriteForUnion(xmlField, next, session);
+                    returnStringBuilder.append(getSingleValueToWriteForUnion(xmlField, next, session));
                     if (i < (((List)value).size() - 1)) {
-                        returnString += " ";
+                        returnStringBuilder.append(' ');
                     }
                 }
-                return returnString;
+                return returnStringBuilder.toString();
             } else {
                 ArrayList items = new ArrayList(((List)value).size());
                 Object next = null;

@@ -21,7 +21,6 @@ import org.eclipse.persistence.internal.oxm.record.ObjectMarshalContext;
 import org.eclipse.persistence.internal.queries.ContainerPolicy;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.oxm.NamespaceResolver;
-import org.eclipse.persistence.oxm.XMLConstants;
 import org.eclipse.persistence.oxm.XMLField;
 import org.eclipse.persistence.oxm.mappings.XMLCollectionReferenceMapping;
 import org.eclipse.persistence.oxm.record.MarshalRecord;
@@ -170,7 +169,7 @@ public class XMLCollectionReferenceMappingNodeValue extends MappingNodeValue imp
         }
 
         Object objectValue;
-        String stringValue = XMLConstants.EMPTY_STRING;
+        StringBuilder stringValueStringBuilder = new StringBuilder();
         String newValue;
         QName schemaType;
 
@@ -190,13 +189,13 @@ public class XMLCollectionReferenceMappingNodeValue extends MappingNodeValue imp
                 schemaType = getSchemaType(xmlField, fieldValue, session);
                 newValue = getValueToWrite(schemaType, fieldValue, (XMLConversionManager) session.getDatasourcePlatform().getConversionManager(), namespaceResolver);
                 if (newValue != null) {
-                    stringValue += newValue;
+                    stringValueStringBuilder.append(newValue);
                     if (cp.hasNext(iterator)) {
-                        stringValue += SPACE;
+                        stringValueStringBuilder.append(SPACE);
                     }
                 }
             }
-            marshalSingleValue(xPathFragment, marshalRecord, object, stringValue, session, namespaceResolver, ObjectMarshalContext.getInstance());
+            marshalSingleValue(xPathFragment, marshalRecord, object, stringValueStringBuilder.toString(), session, namespaceResolver, ObjectMarshalContext.getInstance());
         } else {
             while (cp.hasNext(iterator)) {
                 objectValue = cp.next(iterator, session);
