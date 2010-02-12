@@ -311,7 +311,12 @@ public class XMLMarshaller {
                 } else {
                     try {
                         File f = new File(new URL(streamResult.getSystemId()).toURI());
-                        marshal(object, new FileWriter(f));
+                        writer = new FileWriter(f);
+                        try {
+                            marshal(object, writer);
+                        } finally {
+                            writer.close();
+                        }
                     } catch (Exception e) {
                         throw XMLMarshalException.marshalException(e);
                     }

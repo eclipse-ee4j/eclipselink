@@ -314,11 +314,16 @@ public class JAXBMarshaller implements javax.xml.bind.Marshaller {
     public void marshal(Object object, File file) throws JAXBException {
         try {
             java.io.FileWriter writer = new java.io.FileWriter(file);
-            marshal(object, writer);
+            try {
+                marshal(object, writer);
+            } finally {
+                writer.close();
+            }
         } catch(Exception ex) {
             throw new MarshalException(ex);
         }
     }
+
     public void marshal(Object object, Result result) throws JAXBException {
         if (object == null || result == null) {
             throw new IllegalArgumentException();

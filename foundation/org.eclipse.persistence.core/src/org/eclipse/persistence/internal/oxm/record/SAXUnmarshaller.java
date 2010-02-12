@@ -198,8 +198,14 @@ public class SAXUnmarshaller implements PlatformUnmarshaller {
                 return unmarshal(domElement);
             }
             FileInputStream inputStream = new FileInputStream(file);
-            return unmarshal(inputStream);
+            try {
+                return unmarshal(inputStream);
+            } finally {
+                inputStream.close();
+            }
         } catch (FileNotFoundException e) {
+            throw XMLMarshalException.unmarshalException(e);
+        } catch (IOException e) {
             throw XMLMarshalException.unmarshalException(e);
         }
     }
@@ -211,8 +217,14 @@ public class SAXUnmarshaller implements PlatformUnmarshaller {
                 return unmarshal(domElement, clazz);
             }
             FileInputStream inputStream = new FileInputStream(file);
-            return unmarshal(inputStream, clazz);
+            try {
+                return unmarshal(inputStream, clazz);
+            } finally {
+                inputStream.close();
+            }
         } catch (FileNotFoundException e) {
+            throw XMLMarshalException.unmarshalException(e);
+        } catch (IOException e) {
             throw XMLMarshalException.unmarshalException(e);
         }
     }
