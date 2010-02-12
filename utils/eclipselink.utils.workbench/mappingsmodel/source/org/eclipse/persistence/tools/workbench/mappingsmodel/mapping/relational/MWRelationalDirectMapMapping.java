@@ -210,12 +210,14 @@ public final class MWRelationalDirectMapMapping extends MWRelationalDirectContai
 
 	public DatabaseMapping runtimeMapping() {
 		DirectMapMapping runtimeMapping = (DirectMapMapping) super.runtimeMapping();
+
+		runtimeMapping.setContainerPolicy(this.containerPolicy.runtimeContainerPolicy());
+
+		runtimeMapping.setKeyConverter(getDirectKeyConverter().runtimeConverter(runtimeMapping));		
+
 		if (getDirectKeyColumn() != null) {
 			runtimeMapping.setDirectKeyFieldName(getDirectKeyColumn().qualifiedName());
 		}
-		runtimeMapping.setKeyConverter(getDirectKeyConverter().runtimeConverter(runtimeMapping));
-		
-        runtimeMapping.setContainerPolicy(this.containerPolicy.runtimeContainerPolicy());
 
         return runtimeMapping;
 	}
