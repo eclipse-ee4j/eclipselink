@@ -16,6 +16,7 @@ import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 
+import org.eclipse.persistence.oxm.XMLConstants;
 import org.eclipse.persistence.sdo.SDOConstants;
 import org.eclipse.persistence.sdo.SDODataObject;
 import org.eclipse.persistence.exceptions.ConversionException;
@@ -482,7 +483,7 @@ public class XPathEngine {
      * @throws ClassCastException
      */
     public Object convertObjectToValueByPath(String path, Class cls, DataObject caller) throws ClassCastException {
-        if ((null == path) || (path == "")) {
+        if (null == path || XMLConstants.EMPTY_STRING.equals(path)) {
             throw new ClassCastException("Attempting null value conversion.");
         }
         try {

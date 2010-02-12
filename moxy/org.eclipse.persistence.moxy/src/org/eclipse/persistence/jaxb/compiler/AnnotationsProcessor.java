@@ -3359,28 +3359,28 @@ public class AnnotationsProcessor {
         if (primitiveClassName == null) {
             return 0;
         }
-        if (primitiveClassName == "char") {
+        if ("char".equals(primitiveClassName)) {
             return Constants.T_CHAR;
         }
-        if (primitiveClassName == "int") {
+        if ("int".equals(primitiveClassName)) {
             return Constants.T_INT;
         }
-        if (primitiveClassName == "double") {
+        if ("double".equals(primitiveClassName)) {
             return Constants.T_DOUBLE;
         }
-        if (primitiveClassName == "float") {
+        if ("float".equals(primitiveClassName)) {
             return Constants.T_FLOAT;
         }
-        if (primitiveClassName == "long") {
-            return Constants.T_BOOLEAN;
-        }
-        if (primitiveClassName == "short") {
+        if ("long".equals(primitiveClassName)) {
             return Constants.T_LONG;
         }
-        if (primitiveClassName == "byte") {
+        if ("short".equals(primitiveClassName)) {
+            return Constants.T_SHORT;
+        }
+        if ("byte".equals(primitiveClassName)) {
             return Constants.T_BYTE;
         }
-        if (primitiveClassName == "boolean") {
+        if ("boolean".equals(primitiveClassName)) {
             return Constants.T_BOOLEAN;
         }
         return 0;
@@ -3413,28 +3413,28 @@ public class AnnotationsProcessor {
         if (javaClassName == null) {
             return null;
         }
-        if (javaClassName == "char") {
+        if ("char".equals(javaClassName)) {
             return "charValue";
         }
-        if (javaClassName == "int") {
+        if ("int".equals(javaClassName)) {
             return "intValue";
         }
-        if (javaClassName == "double") {
+        if ("double".equals(javaClassName)) {
             return "doubleValue";
         }
-        if (javaClassName == "float") {
+        if ("float".equals(javaClassName)) {
             return "floatValue";
         }
-        if (javaClassName == "long") {
+        if ("long".equals(javaClassName)) {
             return "longValue";
         }
-        if (javaClassName == "short") {
+        if ("short".equals(javaClassName)) {
             return "shortValue";
         }
-        if (javaClassName == "byte") {
+        if ("byte".equals(javaClassName)) {
             return "byteValue";
         }
-        if (javaClassName == "boolean") {
+        if ("boolean".equals(javaClassName)) {
             return "booleanValue";
         }
         return null;

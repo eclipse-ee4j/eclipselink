@@ -189,10 +189,6 @@ public class SDOSchemaGenerator {
             if ((nextType.getBaseTypes() != null) && (nextType.getBaseTypes().size() > 1)) {
                 //A schema can not be generated because the following type has more than 1 base type + type
             }
-            String nextUri = nextType.getURI();
-            if (nextUri != uri) {
-                //all types must have same uri
-            }
 
             if (!nextType.isDataType()) {
                 String fullName = nextType.getInstanceClassName();
