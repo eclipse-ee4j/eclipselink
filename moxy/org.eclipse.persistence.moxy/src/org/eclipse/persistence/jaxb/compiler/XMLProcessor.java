@@ -288,10 +288,9 @@ public class XMLProcessor {
         // TypeInfo objects built for them - SchemaGenerator will require a
         // descriptor for each
         Map<String, TypeInfo> typeInfos = (Map<String, TypeInfo>) aProcessor.getTypeInfo().clone();
-        for (String key : typeInfos.keySet()) {
+        for (Entry<String, TypeInfo> entry : typeInfos.entrySet()) {
             JavaClass[] jClassArray;
-            TypeInfo tInfo = typeInfos.get(key);
-            for (Property prop : tInfo.getPropertyList()) {
+            for (Property prop : entry.getValue().getPropertyList()) {
                 if (prop.isSetXmlJavaTypeAdapter()) {
                     jClassArray = new JavaClass[] { prop.getActualType() };
                     aProcessor.buildNewTypeInfo(jClassArray);
