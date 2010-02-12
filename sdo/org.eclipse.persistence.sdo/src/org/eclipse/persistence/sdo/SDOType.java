@@ -575,13 +575,6 @@ public class SDOType implements Type, Serializable {
         return declaredPropertiesMap;
     }
 
-    public boolean equals(Object object) {
-        if (object == this) {
-            return true;
-        }
-        return super.equals(object);
-    }
-
     /**
       * INTERNAL:
       * Sets the name of the Java class that this type represents.
