@@ -22,6 +22,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.StringTokenizer;
+import java.util.Map.Entry;
 
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Unmarshaller;
@@ -222,8 +223,8 @@ public class JAXBContextFactory {
         if(properties != null) {
             defaultTargetNamespace = (String)properties.get(DEFAULT_TARGET_NAMESPACE_KEY);
         }
-        for (String key : xmlBindings.keySet()) {
-            typesToBeBound = getXmlBindingsClasses(xmlBindings.get(key), classLoader, typesToBeBound);
+        for (Entry<String, XmlBindings> entry : xmlBindings.entrySet()) {
+            typesToBeBound = getXmlBindingsClasses(entry.getValue(), classLoader, typesToBeBound);
         }
 
         JaxbClassLoader loader = new JaxbClassLoader(classLoader, typesToBeBound);
@@ -351,29 +352,27 @@ public class JAXBContextFactory {
                 throw org.eclipse.persistence.exceptions.JAXBException.incorrectValueParameterTypeForOxmXmlKey();
             }
             if (metadataFiles != null) {
-                Iterator<String> keyIt = metadataFiles.keySet().iterator();
-                while (keyIt.hasNext()) {
+                for(Entry<String, Source> entry : metadataFiles.entrySet()) {
                     String key = null;
                     try {
-                        key = keyIt.next();
+                        key = entry.getKey();
+                        if (key == null) {
+                            throw org.eclipse.persistence.exceptions.JAXBException.nullMapKey();
+                        }
                     } catch (ClassCastException cce) {
                         throw org.eclipse.persistence.exceptions.JAXBException.incorrectKeyParameterType();
                     }
-                    if (key == null) {
-                        throw org.eclipse.persistence.exceptions.JAXBException.nullMapKey();
-                    }
-                    Source metadataSource = null;
                     try {
-                        metadataSource = metadataFiles.get(key);
+                        Source metadataSource = entry.getValue();
+                        if (metadataSource == null) {
+                            throw org.eclipse.persistence.exceptions.JAXBException.nullMetadataSource(key);
+                        }
+                        XmlBindings binding = getXmlBindings(metadataSource, classLoader);
+                        if (binding != null) {
+                            bindings.put(key, binding);
+                        }
                     } catch (ClassCastException cce) {
                         throw org.eclipse.persistence.exceptions.JAXBException.incorrectValueParameterType();
-                    }
-                    if (metadataSource == null) {
-                        throw org.eclipse.persistence.exceptions.JAXBException.nullMetadataSource(key);
-                    }
-                    XmlBindings binding = getXmlBindings(metadataSource, classLoader);
-                    if (binding != null) {
-                        bindings.put(key, binding);
                     }
                 }
             }
@@ -476,8 +475,8 @@ public class JAXBContextFactory {
     private static ArrayList<Class> getXmlBindingsClassesFromMap(Map<String, XmlBindings> xmlBindingMap, ClassLoader classLoader, ArrayList<Class> existingClasses) {
         ArrayList<Class> additionalClasses = existingClasses;
         // for each xmlBindings
-        for (String packageName : xmlBindingMap.keySet()) {
-            additionalClasses = getXmlBindingsClasses(xmlBindingMap.get(packageName), classLoader, additionalClasses);
+        for (Entry<String, XmlBindings> entry : xmlBindingMap.entrySet()) {
+            additionalClasses = getXmlBindingsClasses(entry.getValue(), classLoader, additionalClasses);
         }
         return additionalClasses;
     }

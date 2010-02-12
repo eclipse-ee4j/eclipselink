@@ -18,8 +18,8 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.lang.reflect.Type;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import javax.xml.bind.SchemaOutputResolver;
 import javax.xml.namespace.QName;
@@ -245,9 +245,9 @@ public class Generator {
     private void processAdditionalElements(Map<QName, Type> additionalGlobalElements, AnnotationsProcessor annotationsProcessor) {
         if (additionalGlobalElements != null) {
             ElementDeclaration declaration;
-            for (Iterator<QName> keyIt = additionalGlobalElements.keySet().iterator(); keyIt.hasNext(); ) {
-                QName key = keyIt.next();
-                Type type = additionalGlobalElements.get(key);
+            for(Entry<QName, Type> entry : additionalGlobalElements.entrySet()) {
+                QName key = entry.getKey();
+                Type type = entry.getValue();
                 TypeMappingInfo tmi = null;
                 if(this.typeToTypeMappingInfo != null) {
                     tmi = this.typeToTypeMappingInfo.get(type);

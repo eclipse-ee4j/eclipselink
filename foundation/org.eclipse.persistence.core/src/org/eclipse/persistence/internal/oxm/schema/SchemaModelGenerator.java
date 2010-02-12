@@ -23,6 +23,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 import java.util.Vector;
+import java.util.Map.Entry;
 
 import javax.xml.namespace.QName;
 
@@ -117,9 +118,9 @@ public class SchemaModelGenerator {
         Map<String, Schema> schemaForNamespace = generateSchemas(descriptorsToProcess, properties);
         // process any additional global elements
         if (additionalGlobalElements != null) {
-            for (Iterator<QName> keyIt = additionalGlobalElements.keySet().iterator(); keyIt.hasNext(); ) {
-                QName qname = keyIt.next();
-                Type type = additionalGlobalElements.get(qname);
+            for(Entry<QName, Type> entry : additionalGlobalElements.entrySet()) {
+                QName qname = entry.getKey();
+                Type type = entry.getValue();
                 if (type instanceof Class) {
                     Class tClass = (Class) type;
                     String nsKey = qname.getNamespaceURI();
@@ -228,8 +229,8 @@ public class SchemaModelGenerator {
         XMLMarshaller marshaller = context.createMarshaller();
         XMLDescriptor schemaDescriptor = (XMLDescriptor)proj.getDescriptor(Schema.class);
         int schemaCount = 0;
-        for (String key : schemas.keySet()) {
-            Schema schema = schemas.get(key);
+        for (Entry<String, Schema> entry : schemas.entrySet()) {
+            Schema schema = entry.getValue();
             try {
                 NamespaceResolver schemaNamespaces = schema.getNamespaceResolver();
                 schemaNamespaces.put(XMLConstants.SCHEMA_PREFIX, "http://www.w3.org/2001/XMLSchema");
@@ -932,8 +933,8 @@ public class SchemaModelGenerator {
         // get the target mapping(s) to determine the appropriate type(s)
         String schemaTypeString = null;
         Map<XMLField, XMLField> associations = mapping.getSourceToTargetKeyFieldAssociations();
-        for (XMLField srcField : associations.keySet()) {
-            XMLField tgtField = associations.get(srcField);
+        for (Entry<XMLField, XMLField> entry : associations.entrySet()) {
+            XMLField tgtField = entry.getValue();
             Vector mappings = tgtDesc.getMappings();
             // Until IDREF support is added, we want the source type to be that of the target
             //schemaTypeString = XMLConstants.SCHEMA_PREFIX + COLON + IDREF;
@@ -950,7 +951,7 @@ public class SchemaModelGenerator {
                 schemaTypeString = getSchemaTypeString(XMLConstants.STRING_QNAME, workingSchema);
             }
             
-            XPathFragment frag = srcField.getXPathFragment();
+            XPathFragment frag = entry.getKey().getXPathFragment();
             if (frag.isAttribute()) {
                 Attribute attr = buildAttribute(frag, schemaTypeString);
                 ct.getOrderedAttributes().add(attr);
@@ -1591,28 +1592,5 @@ public class SchemaModelGenerator {
         */
         return false;
     }
-    
-    /**
-     * Indicates if the javaType map contains a key equal to
-     * the provided Java class' name.
-     * 
-     * @param jClass
-     * @return
-     */
-    private boolean isBuiltInJavaType(Class jClass) {
-        return XMLConversionManager.getDefaultJavaTypes().containsKey(jClass.getName()) || jClass.getName().startsWith("java.") || jClass.getName().startsWith("javax.");
-    }
-    
-    /**
-     * Returns the built in Java type QName for a given Class
-     *  
-     * @param jClass
-     * @return
-     */
-    private QName getBuiltInJavaType(Class jClass) {
-        if (!isBuiltInJavaType(jClass)) {
-            return null;
-        }
-        return (QName) XMLConversionManager.getDefaultJavaTypes().get(jClass.getName());
-    }
+
 }

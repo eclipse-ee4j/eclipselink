@@ -19,6 +19,7 @@ import java.util.Collection;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.Map.Entry;
 
 import javax.xml.bind.annotation.XmlSchemaType;
 import javax.xml.bind.annotation.XmlTransient;
@@ -976,10 +977,10 @@ public class SchemaGenerator {
     }
 
     public void addGlobalElements(HashMap<QName, ElementDeclaration> additionalElements) {
-        for (QName next : additionalElements.keySet()) {
-            if (next != null) {
-
-                ElementDeclaration nextElement = additionalElements.get(next);
+        for (Entry<QName, ElementDeclaration> entry : additionalElements.entrySet()) {
+            QName next = entry.getKey();
+            if(next != null) {
+                ElementDeclaration nextElement = entry.getValue();
                 if (nextElement.getScopeClass() == GLOBAL.class) {
 
                     String namespaceURI = next.getNamespaceURI();

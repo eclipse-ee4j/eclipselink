@@ -18,6 +18,7 @@ import java.io.InputStream;
 import java.io.Reader;
 import java.net.URL;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -64,8 +65,8 @@ public class JAXPParser implements XMLParser {
         this();
         try {
             if(null != parserFeatures) {
-                for(String parserFeature : parserFeatures.keySet()) {
-                    documentBuilderFactory.setFeature(parserFeature, parserFeatures.get(parserFeature));
+                for(Entry<String, Boolean> entry : parserFeatures.entrySet()) {
+                    documentBuilderFactory.setFeature(entry.getKey(), entry.getValue());
                 }
             }
         } catch(Exception e) {

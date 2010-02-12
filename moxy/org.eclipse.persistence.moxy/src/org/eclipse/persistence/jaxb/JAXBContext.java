@@ -21,6 +21,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Vector;
+import java.util.Map.Entry;
 
 import javax.xml.bind.SchemaOutputResolver;
 import javax.xml.bind.annotation.adapters.XmlAdapter;
@@ -464,18 +465,17 @@ public class JAXBContext extends javax.xml.bind.JAXBContext {
     
     private Map<TypeMappingInfo, JAXBContext.RootLevelXmlAdapter> createAdaptersForAdapterClasses(Map<TypeMappingInfo, Class> typeMappingInfoToAdapterClasses) {
         Map<TypeMappingInfo, JAXBContext.RootLevelXmlAdapter> typeMappingInfoToAdapters = new HashMap<TypeMappingInfo, JAXBContext.RootLevelXmlAdapter>();
-        for(TypeMappingInfo tmi:typeMappingInfoToAdapterClasses.keySet()) {
-            Class adapterClass = typeMappingInfoToAdapterClasses.get(tmi);
+        for(Entry<TypeMappingInfo, Class> entry : typeMappingInfoToAdapterClasses.entrySet()) {
+            Class adapterClass = entry.getValue();
             if(adapterClass != null) {
                 try {
                     XmlAdapter adapter = (XmlAdapter)adapterClass.newInstance();
                     Class boundType = getBoundTypeForXmlAdapterClass(adapterClass);
                     RootLevelXmlAdapter rootLevelXmlAdapter = new RootLevelXmlAdapter(adapter, boundType);
                     
-                    typeMappingInfoToAdapters.put(tmi, rootLevelXmlAdapter);
+                    typeMappingInfoToAdapters.put(entry.getKey(), rootLevelXmlAdapter);
                 } catch(Exception ex) {}
             }
-            
         }
         return typeMappingInfoToAdapters;
     }

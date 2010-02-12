@@ -17,6 +17,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import javax.xml.bind.JAXBElement;
 import javax.xml.namespace.QName;
@@ -243,8 +244,8 @@ public class XMLProcessor {
             Map<String, TypeInfo> typeInfosForPackage = annotationsProcessor.getTypeInfosForPackage(packageName);
 
             // update xml-enum info if necessary
-            for (String key : typeInfosForPackage.keySet()) {
-                TypeInfo tInfo = typeInfosForPackage.get(key);
+            for (Entry<String, TypeInfo> entry : typeInfosForPackage.entrySet()) {
+                TypeInfo tInfo = entry.getValue();
                 if (tInfo.isEnumerationType()) {
                     EnumTypeInfo etInfo = (EnumTypeInfo) tInfo;
                     XmlEnum xmlEnum = xmlEnumMap.get(etInfo.getClassName());
