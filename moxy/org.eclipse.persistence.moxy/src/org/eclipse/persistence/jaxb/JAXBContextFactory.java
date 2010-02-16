@@ -81,7 +81,7 @@ public class JAXBContextFactory {
      * Create a JAXBContext on the array of Class objects.  The JAXBContext will 
      * also be aware of classes reachable from the classes in the array.
      */
-    public static JAXBContext createContext(Class[] classesToBeBound, Map properties) throws JAXBException {
+    public static javax.xml.bind.JAXBContext createContext(Class[] classesToBeBound, Map properties) throws JAXBException {
         ClassLoader loader = null;
         if (classesToBeBound.length > 0) {
             loader = classesToBeBound[0].getClassLoader();
@@ -96,7 +96,7 @@ public class JAXBContextFactory {
      * Create a JAXBContext on the array of Class objects.  The JAXBContext will 
      * also be aware of classes reachable from the classes in the array.
      */
-    public static JAXBContext createContext(Class[] classesToBeBound, Map properties, ClassLoader classLoader) throws JAXBException {
+    public static javax.xml.bind.JAXBContext createContext(Class[] classesToBeBound, Map properties, ClassLoader classLoader) throws JAXBException {
         Type[] types = new Type[classesToBeBound.length];
         System.arraycopy(classesToBeBound, 0, types, 0, classesToBeBound.length);
         return createContext(types, properties, classLoader);
@@ -106,7 +106,7 @@ public class JAXBContextFactory {
      * Create a JAXBContext on context path.  The JAXBContext will 
      * also be aware of classes reachable from the classes on the context path.
      */
-    public static JAXBContext createContext(String contextPath, ClassLoader classLoader) throws JAXBException {
+    public static javax.xml.bind.JAXBContext createContext(String contextPath, ClassLoader classLoader) throws JAXBException {
         return createContext(contextPath, classLoader, null);
     }
 
@@ -114,7 +114,7 @@ public class JAXBContextFactory {
      * Create a JAXBContext on context path.  The JAXBContext will 
      * also be aware of classes reachable from the classes on the context path.
      */
-    public static JAXBContext createContext(String contextPath, ClassLoader classLoader, Map properties) throws JAXBException {
+    public static javax.xml.bind.JAXBContext createContext(String contextPath, ClassLoader classLoader, Map properties) throws JAXBException {
         if(null == classLoader) {
             classLoader = getDefaultClassLoader();
         }
@@ -192,7 +192,7 @@ public class JAXBContextFactory {
      * preferred means of creating a Type aware JAXBContext is to create the
      * JAXBContext with an array of TypeMappingInfo objects. 
      */
-    public static JAXBContext createContext(Type[] typesToBeBound, Map properties, ClassLoader classLoader) throws JAXBException {
+    public static javax.xml.bind.JAXBContext createContext(Type[] typesToBeBound, Map properties, ClassLoader classLoader) throws JAXBException {
         Map<Type, TypeMappingInfo> typeToTypeMappingInfo = new HashMap<Type, TypeMappingInfo>();
         TypeMappingInfo[] typeMappingInfo = new TypeMappingInfo[typesToBeBound.length];
         for(int i = 0; i < typesToBeBound.length; i++) {
@@ -213,7 +213,7 @@ public class JAXBContextFactory {
      * JAXBContext will also be aware of classes reachable from the types in the 
      * array.  This is the preferred means of creating a Type aware JAXBContext.
      */
-    public static JAXBContext createContext(TypeMappingInfo[] typesToBeBound, Map properties, ClassLoader classLoader) throws JAXBException {
+    public static javax.xml.bind.JAXBContext createContext(TypeMappingInfo[] typesToBeBound, Map properties, ClassLoader classLoader) throws JAXBException {
         if(null == classLoader) {
             classLoader = getDefaultClassLoader();
         }
