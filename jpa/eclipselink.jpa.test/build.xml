@@ -2160,11 +2160,11 @@
         <antcall target="cleanup-merge-inherited-ddl"/>
     </target>
 
-    <target name="test-server-dll-existence">
+    <target name="server-test-dll-existence">
         <available file="${eclipselink.jpa.test}/resource/eclipselink-ddl-generation-model/server_ddl" property="server_ddl.exists" value="true" />
     </target>
     
-    <target name="cleanup-merge-inherited-ddl" depends="test-server-dll-existence" if="server_ddl.exists"> 
+    <target name="cleanup-merge-inherited-ddl" depends="server-test-dll-existence" if="server_ddl.exists"> 
         <move file="${eclipselink.jpa.test}/resource/eclipselink-ddl-generation-model/server" tofile="${eclipselink.jpa.test}/resource/eclipselink-ddl-generation-model/server_merge-inherited"/>        
         <move file="${eclipselink.jpa.test}/resource/eclipselink-ddl-generation-model/server_ddl" tofile="${eclipselink.jpa.test}/resource/eclipselink-ddl-generation-model/server"/>
         <delete>
