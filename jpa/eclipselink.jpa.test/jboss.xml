@@ -85,13 +85,17 @@
     <target name="jboss-setup">
         <copy todir="${jboss.server}/deploy">
             <fileset dir="./resource/jboss/">
-                <include name="${db.name}-ds.xml"/>
+                <include name="${db.name}-*.xml"/>
             </fileset>
-        </copy>        
+        </copy>
         <replace file="${jboss.server}/deploy/${db.name}-ds.xml" token="@username@" value="${db.user}"/>
         <replace file="${jboss.server}/deploy/${db.name}-ds.xml" token="@password@" value="${db.pwd}"/>
         <replace file="${jboss.server}/deploy/${db.name}-ds.xml" token="@url@" value="${db.url}"/>
         <replace file="${jboss.server}/deploy/${db.name}-ds.xml" token="@driverclass@" value="${db.driver}"/>
+        <replace file="${jboss.server}/deploy/${db.name}-xa-ds.xml" token="@username@" value="${db.user}"/>
+        <replace file="${jboss.server}/deploy/${db.name}-xa-ds.xml" token="@password@" value="${db.pwd}"/>
+        <replace file="${jboss.server}/deploy/${db.name}-xa-ds.xml" token="@url@" value="${db.url}"/>
+        <replace file="${jboss.server}/deploy/${db.name}-xa-ds.xml" token="@driverclass@" value="${db.driver}"/>
     </target>
 
     <!-- This target is to remove the datasource created by target "jboss-setup" -->
