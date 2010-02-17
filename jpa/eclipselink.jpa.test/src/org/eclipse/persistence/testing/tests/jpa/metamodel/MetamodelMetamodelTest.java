@@ -105,8 +105,8 @@ import org.eclipse.persistence.testing.models.jpa.metamodel.Processor;
  */
 public class MetamodelMetamodelTest extends MetamodelTest {
 
-    public static final int METAMODEL_ALL_ATTRIBUTES_SIZE = 121;//108;//102;//100;//94;
-    public static final int METAMODEL_ALL_TYPES = 43;//40;//37;
+    public static final int METAMODEL_ALL_ATTRIBUTES_SIZE = 121;
+    public static final int METAMODEL_ALL_TYPES = 43;
     public static final int METAMODEL_MANUFACTURER_DECLARED_TYPES = 28;    
     
     public MetamodelMetamodelTest() {
@@ -292,7 +292,12 @@ public class MetamodelMetamodelTest extends MetamodelTest {
     }
 
     
-/*    public void testValidation_relaxed_for_composite_pk_on_mappedSuperclass_chain() {
+    /**
+     * There is no simple way to test the predeploy() for this issue - however we can
+     * verify that the MS - MS - Entity chain is loaded correctly.
+     * 
+     */
+    public void testValidation_relaxed_for_composite_pk_on_mappedSuperclass_chain() {
         if(!this.isJPA10()) {
             EntityManager em = null;
             boolean exceptionThrown = false;
@@ -312,7 +317,7 @@ public class MetamodelMetamodelTest extends MetamodelTest {
                 assertFalse("An IAE exception should not occur here.", exceptionThrown);
             }
         }
-    }*/
+    }
     
     
     // http://wiki.eclipse.org/EclipseLink/Development/JPA_2.0/metamodel_api#DI_93:_20091014:_Single_PK_support_in_IdentifiableTypeImpl.getIdType.28.29_does_not_fully_handle_a_null_CMPPolicy_on_the_Descriptor
@@ -440,11 +445,10 @@ public class MetamodelMetamodelTest extends MetamodelTest {
                 // declared and valid
                 
                 //*********************************************/
-                // Require a version on a MappedSuperclass
-                
-                //assertNotNull(msPerson1_.getDeclaredId(Integer.class));
+                // FUTURE: Require a version on a MappedSuperclass                
+                //assertNotNull(msPerson1_.getDeclaredId(Integer.class)); - keep commented
             } catch (IllegalArgumentException iae) {
-                //iae.printStackTrace();
+                iae.printStackTrace();
                 exceptionThrown = true;
             } finally {
                 cleanup(em);
@@ -483,7 +487,7 @@ public class MetamodelMetamodelTest extends MetamodelTest {
                 assertEquals(int.class, anAttribute.getJavaType());
                 assertEquals(PersistentAttributeType.BASIC, anAttribute.getPersistentAttributeType());
             } catch (IllegalArgumentException iae) {
-                //iae.printStackTrace();
+                iae.printStackTrace();
                 exceptionThrown = true;
             } finally {
                 cleanup(em);
@@ -521,7 +525,7 @@ public class MetamodelMetamodelTest extends MetamodelTest {
                 assertEquals(GalacticPosition.class, anAttribute.getJavaType());                
                 assertEquals(PersistentAttributeType.ONE_TO_ONE, anAttribute.getPersistentAttributeType());
             } catch (IllegalArgumentException iae) {
-                //iae.printStackTrace();
+                iae.printStackTrace();
                 exceptionThrown = true;
             } finally {
                 cleanup(em);
@@ -560,7 +564,7 @@ public class MetamodelMetamodelTest extends MetamodelTest {
                 assertEquals(Computer.class, anAttribute.getJavaType());                
                 assertEquals(PersistentAttributeType.ONE_TO_MANY, anAttribute.getPersistentAttributeType());
             } catch (IllegalArgumentException iae) {
-                //iae.printStackTrace();
+                iae.printStackTrace();
                 exceptionThrown = true;
             } finally {
                 cleanup(em);
@@ -593,7 +597,7 @@ public class MetamodelMetamodelTest extends MetamodelTest {
                 // note: not implemented yet - need a manyToMany in the model
                 //assertEquals(PersistentAttributeType.MANY_TO_MANY, anAttribute.getPersistentAttributeType());
             } catch (IllegalArgumentException iae) {
-                //iae.printStackTrace();
+                iae.printStackTrace();
                 exceptionThrown = true;
             } finally {
                 cleanup(em);
@@ -633,7 +637,7 @@ public class MetamodelMetamodelTest extends MetamodelTest {
                 // Note: internally our MANY_TO_ONE is treated as a ONE_TO_ONE - although with a DB constraint 
                 assertEquals(PersistentAttributeType.MANY_TO_ONE, anAttribute.getPersistentAttributeType());
             } catch (IllegalArgumentException iae) {
-                //iae.printStackTrace();
+                iae.printStackTrace();
                 exceptionThrown = true;
             } finally {
                 cleanup(em);
@@ -668,12 +672,12 @@ public class MetamodelMetamodelTest extends MetamodelTest {
                 //PersistentAttributeType getPersistentAttributeType();
                 
                 Attribute anAttribute = entityManufacturer_.getAttribute("computers");
-                // Note: Not Implemented
+                // FUTURE: Not Implemented
                 //assertNotNull(anAttribute);
                 //assertEquals(Computer.class, anAttribute.getJavaType());                
                 //assertEquals(PersistentAttributeType.ELEMENT_COLLECTION, anAttribute.getPersistentAttributeType());
             } catch (IllegalArgumentException iae) {
-                //iae.printStackTrace();
+                iae.printStackTrace();
                 exceptionThrown = true;
             } finally {
                 cleanup(em);
@@ -712,7 +716,7 @@ public class MetamodelMetamodelTest extends MetamodelTest {
                 assertEquals(EmbeddedPK.class, anAttribute.getJavaType());                
                 assertEquals(PersistentAttributeType.EMBEDDED, anAttribute.getPersistentAttributeType());
             } catch (IllegalArgumentException iae) {
-                //iae.printStackTrace();
+                iae.printStackTrace();
                 exceptionThrown = true;
             } finally {
                 cleanup(em);
@@ -745,7 +749,7 @@ public class MetamodelMetamodelTest extends MetamodelTest {
                 assertEquals(Integer.class, idAttribute.getJavaType());
                 assertEquals("id", idAttribute.getName());
             } catch (IllegalArgumentException iae) {
-                //iae.printStackTrace();
+                iae.printStackTrace();
                 exceptionThrown = true;
             } finally {
                 cleanup(em);
@@ -782,7 +786,7 @@ public class MetamodelMetamodelTest extends MetamodelTest {
                 assertNotNull(anAttribute);
                 assertEquals(PersistentAttributeType.ONE_TO_MANY, anAttribute.getPersistentAttributeType());
             } catch (IllegalArgumentException iae) {
-                //iae.printStackTrace();
+                iae.printStackTrace();
                 exceptionThrown = true;
             } finally {
                 cleanup(em);
@@ -813,7 +817,7 @@ public class MetamodelMetamodelTest extends MetamodelTest {
                 assertNotNull(idAttribute);
                 assertEquals(Integer.class, idAttribute.getJavaType());
             } catch (IllegalArgumentException iae) {
-                //iae.printStackTrace();
+                iae.printStackTrace();
                 exceptionThrown = true;
             } finally {
                 cleanup(em);
@@ -844,7 +848,7 @@ public class MetamodelMetamodelTest extends MetamodelTest {
                 assertNotNull(anAttribute);
                 assertEquals(Computer.class, anAttribute.getJavaType());
             } catch (IllegalArgumentException iae) {
-                //iae.printStackTrace();
+                iae.printStackTrace();
                 exceptionThrown = true;
             } finally {
                 cleanup(em);
@@ -878,13 +882,13 @@ public class MetamodelMetamodelTest extends MetamodelTest {
                 // For primitive and basic types - we should not return null - the attributeAccessor on the MappedSuperclass is not initialized - see
                 // http://wiki.eclipse.org/EclipseLink/Development/JPA_2.0/metamodel_api#DI_95:_20091017:_Attribute.getJavaMember.28.29_returns_null_for_a_BasicType_on_a_MappedSuperclass_because_of_an_uninitialized_accessor
                 Member aMember = idAttribute.getJavaMember();
-                assertNotNull(aMember);
-                assertTrue(aMember instanceof Field);
+                assertNotNull("id java member is null", aMember);
+                assertTrue("id attribute java member is not an instance of Field", aMember instanceof Field);
                 assertEquals("id", aMember.getName());
                 assertNotNull(((Field)aMember).getType());
                 assertEquals(Integer.class.getName(), ((Field)aMember).getType().getName());
             } catch (IllegalArgumentException iae) {
-                //iae.printStackTrace();
+                iae.printStackTrace();
                 exceptionThrown = true;
             } finally {
                 cleanup(em);
@@ -918,13 +922,13 @@ public class MetamodelMetamodelTest extends MetamodelTest {
                 // For primitive and basic types - we should not return null - the attributeAccessor on the MappedSuperclass is not initialized - see
                 // http://wiki.eclipse.org/EclipseLink/Development/JPA_2.0/metamodel_api#DI_95:_20091017:_Attribute.getJavaMember.28.29_returns_null_for_a_BasicType_on_a_MappedSuperclass_because_of_an_uninitialized_accessor
                 Member aMember = anAttribute.getJavaMember();
-                assertNotNull(aMember);
-                assertTrue(aMember instanceof Field);
+                assertNotNull("anInt java member is null", aMember);
+                assertTrue("anInt attribute java member is not an instance of Field", aMember instanceof Field);
                 assertEquals("anInt", aMember.getName());
                 assertNotNull(((Field)aMember).getType());
                 assertEquals(int.class.getName(), ((Field)aMember).getType().getName());
             } catch (IllegalArgumentException iae) {
-                //iae.printStackTrace();
+                iae.printStackTrace();
                 exceptionThrown = true;
             } finally {
                 cleanup(em);
@@ -962,7 +966,7 @@ public class MetamodelMetamodelTest extends MetamodelTest {
                 assertNotNull(((Field)aMember).getType());
                 assertEquals(Set.class.getName(), ((Field)aMember).getType().getName());
             } catch (IllegalArgumentException iae) {
-                //iae.printStackTrace();
+                iae.printStackTrace();
                 exceptionThrown = true;
             } finally {
                 cleanup(em);
@@ -996,7 +1000,7 @@ public class MetamodelMetamodelTest extends MetamodelTest {
                 boolean isAssociation = anAttribute.isAssociation();
                 assertFalse(isAssociation);
             } catch (IllegalArgumentException iae) {
-                //iae.printStackTrace();
+                iae.printStackTrace();
                 exceptionThrown = true;
             } finally {
                 cleanup(em);
@@ -1032,7 +1036,7 @@ public class MetamodelMetamodelTest extends MetamodelTest {
                 // Only a ReferenceMapping that extends ObjectReferenceMapping returns true                
                 assertFalse(isAssociation);
             } catch (IllegalArgumentException iae) {
-                //iae.printStackTrace();
+                iae.printStackTrace();
                 exceptionThrown = true;
             } finally {
                 cleanup(em);
@@ -1078,7 +1082,7 @@ public class MetamodelMetamodelTest extends MetamodelTest {
                 assertNotNull(embeddableType);
                 assertNotSame(embeddableType, locationIdAttributeManagedType);
             } catch (IllegalArgumentException iae) {
-                //iae.printStackTrace();
+                iae.printStackTrace();
                 exceptionThrown = true;
             } finally {
                 cleanup(em);
@@ -1112,7 +1116,7 @@ public class MetamodelMetamodelTest extends MetamodelTest {
                 assertTrue(anAttribute.isCollection());
                 assertTrue(((AttributeImpl)anAttribute).isPlural()); // non-spec.
             } catch (IllegalArgumentException iae) {
-                //iae.printStackTrace();
+                iae.printStackTrace();
                 exceptionThrown = true;
             } finally {
                 cleanup(em);
@@ -1139,7 +1143,7 @@ public class MetamodelMetamodelTest extends MetamodelTest {
                 assertFalse(aRandomBasicType.isEntity());
                 assertFalse(aRandomBasicType.isMappedSuperclass());
             } catch (IllegalArgumentException iae) {
-                //iae.printStackTrace();
+                iae.printStackTrace();
                 exceptionThrown = true;
             } finally {
                 cleanup(em);
@@ -1182,7 +1186,7 @@ public class MetamodelMetamodelTest extends MetamodelTest {
                 assertNotNull(manufacturer_hardwareDesignersList);
                 assertEquals(Bindable.BindableType.PLURAL_ATTRIBUTE, manufacturer_hardwareDesignersList.getBindableType());
             } catch (IllegalArgumentException iae) {
-                //iae.printStackTrace();
+                iae.printStackTrace();
                 exceptionThrown = true;
             } finally {
                 cleanup(em);
@@ -1234,7 +1238,7 @@ public class MetamodelMetamodelTest extends MetamodelTest {
                 assertNotNull(manufacturer_hardwareDesignersType.getJavaType());
                 assertEquals(manufacturer_hardwareDesignersType.getJavaType(), manufacturer_hardwareDesignersList.getBindableJavaType());
             } catch (IllegalArgumentException iae) {
-                //iae.printStackTrace();
+                iae.printStackTrace();
                 exceptionThrown = true;
             } finally {
                 cleanup(em);
@@ -1262,7 +1266,7 @@ public class MetamodelMetamodelTest extends MetamodelTest {
                 assertEquals(PersistenceType.EMBEDDABLE, embeddableType_.getPersistenceType());
                 assertEquals(EmbeddedPK.class, embeddableType_.getJavaType());
             } catch (IllegalArgumentException iae) {
-                //iae.printStackTrace();
+                iae.printStackTrace();
                 exceptionThrown = true;
             } finally {
                 cleanup(em);
@@ -1311,7 +1315,7 @@ public class MetamodelMetamodelTest extends MetamodelTest {
                 Attribute employerAttribute = entityHardwareDesigner_.getAttribute("employer");
                 assertTrue(null != employerAttribute);                
             } catch (IllegalArgumentException iae) {
-                //iae.printStackTrace();
+                iae.printStackTrace();
                 exceptionThrown = true;
             } finally {
                 cleanup(em);
@@ -1353,7 +1357,7 @@ public class MetamodelMetamodelTest extends MetamodelTest {
                 MappedSuperclassTypeImpl<Person> msPerson1_ = (MappedSuperclassTypeImpl)metamodel.managedType(Person.class);
                 assertNotNull(msPerson1_.getId(Integer.class));
             } catch (IllegalArgumentException iae) {
-                //iae.printStackTrace();
+                iae.printStackTrace();
                 expectedIAExceptionThrown = true;
             } finally {
                 cleanup(em);
@@ -1395,10 +1399,10 @@ public class MetamodelMetamodelTest extends MetamodelTest {
                 // declared 
                 assertNotNull(entityManufacturer_.getVersion(int.class));
                 // declared and valid
-                // TODO : require MS version
-//                assertNotNull(msPerson1_.getVersion(Integer.class));
+                // FUTURE : require MS version
+                //assertNotNull(msPerson1_.getVersion(Integer.class)); - keep commented
             } catch (IllegalArgumentException iae) {
-                //iae.printStackTrace();
+                iae.printStackTrace();
                 expectedIAExceptionThrown = true;
             } finally {
                 cleanup(em);
@@ -1435,13 +1439,12 @@ public class MetamodelMetamodelTest extends MetamodelTest {
                  */
                 //<Y> SingularAttribute<X, Y> getDeclaredId(Class<Y> type);
                 // Not declared  - invalid
-//                assertNotNull(aManufacturerType.getDeclaredId(Integer.class));
+                // assertNotNull(aManufacturerType.getDeclaredId(Integer.class)); - keep commented
                 // declared and valid
                 
                 //*********************************************/
-                // Require a version on a MappedSuperclass
-                
-//                assertNotNull(msPerson1_.getDeclaredId(Integer.class));
+                // FUTURE: Require a version on a MappedSuperclass
+                //assertNotNull(msPerson1_.getDeclaredId(Integer.class));
             } catch (Exception e) {
                 //e.printStackTrace();
                 expectedIAExceptionThrown = true;
@@ -1492,7 +1495,7 @@ public class MetamodelMetamodelTest extends MetamodelTest {
                 assertFalse(anAttribute.isAssociation());
                 assertFalse(anAttribute.isCollection());                
             } catch (IllegalArgumentException iae) {
-                //iae.printStackTrace();
+                iae.printStackTrace();
                 expectedIAExceptionThrown = true;
             } finally {
                 cleanup(em);
@@ -1530,9 +1533,8 @@ public class MetamodelMetamodelTest extends MetamodelTest {
                 // Is declared
                 assertNotNull(entityManufacturer_.getDeclaredVersion(int.class));
                 
-                // TODO: need an undeclared subclass
-                // Is declared
-//                assertNotNull(msPerson1_.getDeclaredVersion(Integer.class));
+                // FUTURE: need an undeclared subclass
+                // Is declared for assertNotNull(msPerson1_.getDeclaredVersion(Integer.class));
             } catch (IllegalArgumentException iae) {
                 //iae.printStackTrace();
                 expectedIAExceptionThrown = true;
@@ -1572,11 +1574,10 @@ public class MetamodelMetamodelTest extends MetamodelTest {
                 // Is declared
                 assertNotNull(entityManufacturer_.getDeclaredVersion(int.class));
                 
-                // TODO: need an undeclared subclass
-                // Is declared
-//                assertNotNull(msPerson1_.getDeclaredVersion(Integer.class));
+                // FUTURE: need an undeclared subclass
+                // Is declared for assertNotNull(msPerson1_.getDeclaredVersion(Integer.class));
             } catch (IllegalArgumentException iae) {
-                //iae.printStackTrace();
+                iae.printStackTrace();
                 expectedIAExceptionThrown = true;
             } finally {
                 cleanup(em);
@@ -1616,7 +1617,7 @@ public class MetamodelMetamodelTest extends MetamodelTest {
                     superTypeManufacturer = entityManufacturer_.getSupertype();
                 } catch (IllegalArgumentException iae) {
                     // expecting no exception
-                    //iae.printStackTrace();
+                    iae.printStackTrace();
                     expectedIAExceptionThrown = true;            
                 }
                 assertFalse(expectedIAExceptionThrown);
@@ -1646,7 +1647,7 @@ public class MetamodelMetamodelTest extends MetamodelTest {
                     superTypeLocation = entityLocation_.getSupertype();
                 } catch (IllegalArgumentException iae) {
                     // expecting no exception
-                    //iae.printStackTrace();
+                    iae.printStackTrace();
                     expectedIAExceptionThrown = true;            
                 }
                 assertFalse(expectedIAExceptionThrown);
@@ -1694,7 +1695,7 @@ public class MetamodelMetamodelTest extends MetamodelTest {
                     EntityType<Manufacturer> aType = metamodel.entity(Manufacturer.class);
                     hasSingleIdAttribute = aType.hasSingleIdAttribute();
                 } catch (IllegalArgumentException iae) {
-                    //iae.printStackTrace();
+                    iae.printStackTrace();
                     expectedIAExceptionThrown = true;            
                 }
                 assertFalse(expectedIAExceptionThrown);            
@@ -1707,7 +1708,7 @@ public class MetamodelMetamodelTest extends MetamodelTest {
                     EntityType<GalacticPosition> aType = metamodel.entity(GalacticPosition.class);
                     hasSingleIdAttribute = aType.hasSingleIdAttribute();
                 } catch (IllegalArgumentException iae) {
-                    //iae.printStackTrace();
+                    iae.printStackTrace();
                     expectedIAExceptionThrown = true;            
                 }
                 assertFalse(expectedIAExceptionThrown);            
@@ -1720,13 +1721,13 @@ public class MetamodelMetamodelTest extends MetamodelTest {
                     EntityType<Enclosure> aType = metamodel.entity(Enclosure.class);
                     hasSingleIdAttribute = aType.hasSingleIdAttribute();
                 } catch (IllegalArgumentException iae) {
-                    //iae.printStackTrace();
+                    iae.printStackTrace();
                     expectedIAExceptionThrown = true;            
                 }
                 assertFalse(expectedIAExceptionThrown);            
                 assertFalse(hasSingleIdAttribute);
             } catch (IllegalArgumentException iae) {
-                //iae.printStackTrace();
+                iae.printStackTrace();
                 expectedIAExceptionThrown = true;
             } finally {
                 cleanup(em);
@@ -1758,7 +1759,7 @@ public class MetamodelMetamodelTest extends MetamodelTest {
                 assertFalse(anEnclosureType.hasVersionAttribute());
                 assertTrue(entityManufacturer_.hasVersionAttribute());
             } catch (IllegalArgumentException iae) {
-                //iae.printStackTrace();
+                iae.printStackTrace();
                 expectedIAExceptionThrown = true;
             } finally {
                 cleanup(em);
@@ -1847,7 +1848,7 @@ public class MetamodelMetamodelTest extends MetamodelTest {
                 hasSingleIdAttribute = aTypeRoot.hasSingleIdAttribute();
                 // We verify that an @IdClass exists - no single @Id or @EmbeddedId exists
                 assertFalse(hasSingleIdAttribute); // This tests the IdentifiableType part of the transaction for DI 78
-                //idClassAttributesLeaf = aTypeLeaf.getIdClassAttributes(); // expected IAE
+                //idClassAttributesLeaf = aTypeLeaf.getIdClassAttributes(); // expected IAE - leave commented
                 idClassAttributesCenter = aTypeCenter.getIdClassAttributes();
                 assertNotNull(idClassAttributesCenter);
                 assertEquals(1, idClassAttributesCenter.size());
@@ -1901,7 +1902,7 @@ public class MetamodelMetamodelTest extends MetamodelTest {
                     locationIdType = entityLocation_.getIdType();
                 } catch (IllegalArgumentException iae) {
                     // expecting no exception
-                    //iae.printStackTrace();
+                    iae.printStackTrace();
                     expectedIAExceptionThrown = true;            
                 }
                 assertFalse(expectedIAExceptionThrown);
@@ -1935,7 +1936,7 @@ public class MetamodelMetamodelTest extends MetamodelTest {
                     computerIdType = entityComputer_.getIdType();
                 } catch (IllegalArgumentException iae) {
                     // expecting no exception
-                    //iae.printStackTrace();
+                    iae.printStackTrace();
                     expectedIAExceptionThrown = true;            
                 }
                 assertFalse(expectedIAExceptionThrown);
@@ -1959,7 +1960,7 @@ public class MetamodelMetamodelTest extends MetamodelTest {
                 assertNotNull(typesMap);
                 assertEquals(METAMODEL_ALL_TYPES, typesMap.size());
             } catch (IllegalArgumentException iae) {
-                //iae.printStackTrace();
+                iae.printStackTrace();
                 expectedIAExceptionThrown = true;
             } finally {
                 cleanup(em);
@@ -1981,7 +1982,7 @@ public class MetamodelMetamodelTest extends MetamodelTest {
                 // Actual Test Case
                 
             } catch (IllegalArgumentException iae) {
-                //iae.printStackTrace();
+                iae.printStackTrace();
                 exceptionThrown = true;
             } finally {
                 cleanup(em);
@@ -2097,6 +2098,7 @@ public class MetamodelMetamodelTest extends MetamodelTest {
                 assertTrue(entityManufacturer_.getAttribute("aCharacterObject").getPersistentAttributeType().equals(PersistentAttributeType.BASIC));
                 assertEquals(Character.class, entityManufacturer_.getAttribute("aCharacterObject").getJavaType());
         //private Enum anEnum;
+                // FUTURE: the following 4 lines are not implemented yet
                 //assertTrue(attributeSet.contains(entityManufacturer.getAttribute("anEnum"))); //
                 //assertNotNull(entityManufacturer.getAttribute("anEnum"));
                 //assertTrue(entityManufacturer.getAttribute("anEnum").getPersistentAttributeType().equals(PersistentAttributeType.BASIC));
@@ -2244,8 +2246,7 @@ public class MetamodelMetamodelTest extends MetamodelTest {
                 try {
                     aManufacturer_DoubleAttribute = entityManufacturer_.getSingularAttribute("aDoubleObject", Double.class);                
                 } catch (IllegalArgumentException iae) {
-                    // expecting
-                    //iae.printStackTrace();
+                    iae.printStackTrace();
                     expectedIAExceptionThrown = true;            
                 }
                 assertFalse(expectedIAExceptionThrown);
@@ -2257,8 +2258,7 @@ public class MetamodelMetamodelTest extends MetamodelTest {
                 try {
                     aManufacturer_doubleAttribute = entityManufacturer_.getSingularAttribute("aDoubleObject", double.class);                
                 } catch (IllegalArgumentException iae) {
-                    // expecting
-                    //iae.printStackTrace();
+                    iae.printStackTrace();
                     expectedIAExceptionThrown = true;            
                 }
                 assertFalse(expectedIAExceptionThrown);
@@ -2272,7 +2272,6 @@ public class MetamodelMetamodelTest extends MetamodelTest {
                     aManufacturer_wrong_intAttribute = entityManufacturer_.getSingularAttribute("aDoubleObject", int.class);                
                 } catch (IllegalArgumentException iae) {
                     // expecting
-                    //iae.printStackTrace();
                     expectedIAExceptionThrown = true;            
                 }
                 assertTrue("Expected thrown IllegalArgumentException", expectedIAExceptionThrown);
@@ -2286,7 +2285,6 @@ public class MetamodelMetamodelTest extends MetamodelTest {
                     aManufacturer_wrong_IntegerAttribute = entityManufacturer_.getSingularAttribute("aDoubleObject", Integer.class);                
                 } catch (IllegalArgumentException iae) {
                     // expecting
-                    //iae.printStackTrace();
                     expectedIAExceptionThrown = true;            
                 }
                 assertTrue("Expected thrown IllegalArgumentException", expectedIAExceptionThrown);
@@ -2310,8 +2308,7 @@ public class MetamodelMetamodelTest extends MetamodelTest {
                 try {
                     aDeclaredManufacturer_DoubleAttribute = entityManufacturer_.getDeclaredSingularAttribute("aDoubleObject", Double.class);                
                 } catch (IllegalArgumentException iae) {
-                    // expecting
-                    //iae.printStackTrace();
+                    iae.printStackTrace();
                     expectedIAExceptionThrown = true;            
                 }
                 assertFalse(expectedIAExceptionThrown);
@@ -2323,8 +2320,7 @@ public class MetamodelMetamodelTest extends MetamodelTest {
                 try {
                     aDeclaredManufacturer_doubleAttribute = entityManufacturer_.getDeclaredSingularAttribute("aDoubleObject", double.class);                
                 } catch (IllegalArgumentException iae) {
-                    // expecting
-                    //iae.printStackTrace();
+                    iae.printStackTrace();
                     expectedIAExceptionThrown = true;            
                 }
                 assertFalse(expectedIAExceptionThrown);
@@ -2338,7 +2334,6 @@ public class MetamodelMetamodelTest extends MetamodelTest {
                     aDeclaredManufacturer_wrong_intAttribute = entityManufacturer_.getDeclaredSingularAttribute("aDoubleObject", int.class);                
                 } catch (IllegalArgumentException iae) {
                     // expecting
-                    //iae.printStackTrace();
                     expectedIAExceptionThrown = true;            
                 }
                 assertTrue("Expected thrown IllegalArgumentException", expectedIAExceptionThrown);
@@ -2352,7 +2347,6 @@ public class MetamodelMetamodelTest extends MetamodelTest {
                     aDeclaredManufacturer_wrong_IntegerAttribute = entityManufacturer_.getDeclaredSingularAttribute("aDoubleObject", Integer.class);                
                 } catch (IllegalArgumentException iae) {
                     // expecting
-                    //iae.printStackTrace();
                     expectedIAExceptionThrown = true;            
                 }
                 assertTrue("Expected thrown IllegalArgumentException", expectedIAExceptionThrown);
@@ -2442,7 +2436,6 @@ public class MetamodelMetamodelTest extends MetamodelTest {
                 } catch (IllegalArgumentException iae) {
                     // expecting
                     //java.lang.IllegalArgumentException: The attribute [locations] from the managed type [ManagedTypeImpl[RelationalDescriptor(org.eclipse.persistence.testing.models.jpa.metamodel.Manufacturer --> [DatabaseTable(CMP3_MM_MANUF)])]] is not present.
-                    //iae.printStackTrace();
                     expectedIAExceptionThrown = true;            
                 }
                 assertTrue("Expected thrown IllegalArgumentException", expectedIAExceptionThrown);
@@ -2458,13 +2451,12 @@ public class MetamodelMetamodelTest extends MetamodelTest {
                 } catch (IllegalArgumentException iae) {
                     // expecting
                     //java.lang.IllegalArgumentException: Expected attribute return type [COLLECTION] on the existing attribute [hardwareDesigners] on the managed type [ManagedTypeImpl[RelationalDescriptor(org.eclipse.persistence.testing.models.jpa.metamodel.Manufacturer --> [DatabaseTable(CMP3_MM_MANUF)])]] but found attribute return type [LIST].
-                    //iae.printStackTrace();
                     expectedIAExceptionThrown = true;            
                 }
                 assertTrue("Expected thrown IllegalArgumentException", expectedIAExceptionThrown);            
                 
                 
-                // TODO: We need a Collection (computers is a Set)
+                // FUTURE: We need a Collection (computers is a Set)
     /*            expectedIAExceptionThrown = false;            
                 try {
                     //<E> ListAttribute<X, E> getDeclaredList(String name, Class<E> elementType);
@@ -2478,7 +2470,7 @@ public class MetamodelMetamodelTest extends MetamodelTest {
                 assertFalse(expectedIAExceptionThrown);            
     */
                 
-    /*            // TODO: We need a Collection on a superclass (computers is a Set)            
+    /*            // FUTURE: We need a Collection on a superclass (computers is a Set)            
                 expectedIAExceptionThrown = false;            
                 try {
                     //<E> ListAttribute<X, E> getDeclaredList(String name, Class<E> elementType);
@@ -2506,7 +2498,6 @@ public class MetamodelMetamodelTest extends MetamodelTest {
                 } catch (IllegalArgumentException iae) {
                     // expecting
                     // java.lang.IllegalArgumentException: Expected attribute return type [COLLECTION] on the existing attribute [corporateComputers] on the managed type [ManagedTypeImpl[RelationalDescriptor(org.eclipse.persistence.testing.models.jpa.metamodel.Manufacturer --> [DatabaseTable(CMP3_MM_MANUF)])]] but found attribute return type [LIST].
-                    //iae.printStackTrace();
                     expectedIAExceptionThrown = true;            
                 }
                 assertTrue("Expected thrown IllegalArgumentException", expectedIAExceptionThrown);
@@ -2545,7 +2536,6 @@ public class MetamodelMetamodelTest extends MetamodelTest {
                 } catch (IllegalArgumentException iae) {
                     // expecting
                     //java.lang.IllegalArgumentException: The attribute [locations] from the managed type [ManagedTypeImpl[RelationalDescriptor(org.eclipse.persistence.testing.models.jpa.metamodel.Manufacturer --> [DatabaseTable(CMP3_MM_MANUF)])]] is not present.
-                    //iae.printStackTrace();
                     expectedIAExceptionThrown = true;            
                 }
                 assertTrue("Expected thrown IllegalArgumentException", expectedIAExceptionThrown);
@@ -2559,7 +2549,6 @@ public class MetamodelMetamodelTest extends MetamodelTest {
                 } catch (IllegalArgumentException iae) {
                     // expecting
                     //java.lang.IllegalArgumentException: Expected attribute type [class org.eclipse.persistence.testing.models.jpa.metamodel.Manufacturer] on the existing attribute [hardwareDesigners] on the managed type [ManagedTypeImpl[RelationalDescriptor(org.eclipse.persistence.testing.models.jpa.metamodel.Manufacturer --> [DatabaseTable(CMP3_MM_MANUF)])]] but found attribute type [class org.eclipse.persistence.testing.models.jpa.metamodel.HardwareDesigner].
-                    //iae.printStackTrace();
                     expectedIAExceptionThrown = true;            
                 }
                 assertTrue("Expected thrown IllegalArgumentException", expectedIAExceptionThrown);            
@@ -2588,7 +2577,6 @@ public class MetamodelMetamodelTest extends MetamodelTest {
                 } catch (IllegalArgumentException iae) {
                     // expecting
                     // java.lang.IllegalArgumentException: The declared attribute [corporateComputers] from the managed type [ManagedTypeImpl[RelationalDescriptor(org.eclipse.persistence.testing.models.jpa.metamodel.Manufacturer --> [DatabaseTable(CMP3_MM_MANUF)])]] is not present - however, it is declared on a superclass.
-                    //iae.printStackTrace();
                     expectedIAExceptionThrown = true;            
                 }
                 assertTrue("Expected thrown IllegalArgumentException", expectedIAExceptionThrown);
@@ -2650,7 +2638,6 @@ public class MetamodelMetamodelTest extends MetamodelTest {
                 } catch (IllegalArgumentException iae) {
                     // expecting
                     //java.lang.IllegalArgumentException: The attribute [locations] from the managed type [ManagedTypeImpl[RelationalDescriptor(org.eclipse.persistence.testing.models.jpa.metamodel.Manufacturer --> [DatabaseTable(CMP3_MM_MANUF)])]] is not present.
-                    //iae.printStackTrace();
                     expectedIAExceptionThrown = true;            
                 }
                 assertTrue("Expected thrown IllegalArgumentException", expectedIAExceptionThrown);
@@ -2677,7 +2664,6 @@ public class MetamodelMetamodelTest extends MetamodelTest {
                 } catch (IllegalArgumentException iae) {
                     // expecting
                     // java.lang.IllegalArgumentException: The declared attribute [corporateComputers] from the managed type [ManagedTypeImpl[RelationalDescriptor(org.eclipse.persistence.testing.models.jpa.metamodel.Manufacturer --> [DatabaseTable(CMP3_MM_MANUF)])]] is not present - however, it is declared on a superclass.
-                    //iae.printStackTrace();
                     expectedIAExceptionThrown = true;            
                 }
                 assertTrue("Expected thrown IllegalArgumentException", expectedIAExceptionThrown);
@@ -2719,7 +2705,6 @@ public class MetamodelMetamodelTest extends MetamodelTest {
                 // check element type
                 //assertEquals(entityManufacturer, aCollectionAttribute.getDeclaringType());
 
-
                 // positive: check one level down from the root
                 expectedIAExceptionThrown = false;            
                 Attribute<Corporation,?> aCollectionAttribute2 = null;
@@ -2730,9 +2715,7 @@ public class MetamodelMetamodelTest extends MetamodelTest {
                     // Note: internally EclipseLink treats a ONE_TO_MANY as a MANY_TO_MANY for the case of a unidirectional mapping on a MappedSuperclass                    
                     aCollectionAttribute2 = corporation.getDeclaredAttribute("corporateComputers");//, entityComputer.getJavaType());
                 } catch (IllegalArgumentException iae) {
-                    // expecting
-                    // java.lang.IllegalArgumentException: The declared attribute [corporateComputers] from the managed type [ManagedTypeImpl[RelationalDescriptor(org.eclipse.persistence.testing.models.jpa.metamodel.Manufacturer --> [DatabaseTable(CMP3_MM_MANUF)])]] is not present - however, it is declared on a superclass.
-                    //iae.printStackTrace();
+                    iae.printStackTrace();
                     expectedIAExceptionThrown = true;            
                 }
                 assertFalse(expectedIAExceptionThrown);
@@ -2749,7 +2732,6 @@ public class MetamodelMetamodelTest extends MetamodelTest {
                 } catch (IllegalArgumentException iae) {
                     // expecting
                     // java.lang.IllegalArgumentException: The declared attribute [corporateComputers] from the managed type [ManagedTypeImpl[RelationalDescriptor(org.eclipse.persistence.testing.models.jpa.metamodel.Manufacturer --> [DatabaseTable(CMP3_MM_MANUF)])]] is not present - however, it is declared on a superclass.
-                    //iae.printStackTrace();
                     expectedIAExceptionThrown = true;            
                 }
                 // we expect an IAE on getAttribute(name) if name does not exist
@@ -2836,7 +2818,6 @@ public class MetamodelMetamodelTest extends MetamodelTest {
                 } catch (IllegalArgumentException iae) {
                     // expecting
                     // java.lang.IllegalArgumentException: The declared attribute [corporateComputers] from the managed type [ManagedTypeImpl[RelationalDescriptor(org.eclipse.persistence.testing.models.jpa.metamodel.Manufacturer --> [DatabaseTable(CMP3_MM_MANUF)])]] is not present - however, it is declared on a superclass.
-                    //iae.printStackTrace();
                     expectedIAExceptionThrown = true;            
                 }
                 // IAE because the attribute is declared one level above
@@ -2848,9 +2829,7 @@ public class MetamodelMetamodelTest extends MetamodelTest {
                     CollectionAttribute<Corporation, ?> anAttribute = 
                         msCorporation_.getDeclaredCollection("corporateComputers");
                 } catch (IllegalArgumentException iae) {
-                    // expecting
-                    // java.lang.IllegalArgumentException: The declared attribute [corporateComputers] from the managed type [ManagedTypeImpl[RelationalDescriptor(org.eclipse.persistence.testing.models.jpa.metamodel.Manufacturer --> [DatabaseTable(CMP3_MM_MANUF)])]] is not present - however, it is declared on a superclass.
-                    //iae.printStackTrace();
+                    iae.printStackTrace();
                     expectedIAExceptionThrown = true;            
                 }
                 assertFalse(expectedIAExceptionThrown);
@@ -2865,7 +2844,6 @@ public class MetamodelMetamodelTest extends MetamodelTest {
                 } catch (IllegalArgumentException iae) {
                     // expecting
                     // java.lang.IllegalArgumentException: The declared attribute [corporateComputers] from the managed type [ManagedTypeImpl[RelationalDescriptor(org.eclipse.persistence.testing.models.jpa.metamodel.Manufacturer --> [DatabaseTable(CMP3_MM_MANUF)])]] is not present - however, it is declared on a superclass.
-                    //iae.printStackTrace();
                     expectedIAExceptionThrown = true;            
                 }
                 assertTrue("Expected thrown IllegalArgumentException", expectedIAExceptionThrown);
@@ -3458,7 +3436,6 @@ public class MetamodelMetamodelTest extends MetamodelTest {
                     expectedIAExceptionThrown = true;            
                 }
                 assertFalse(expectedIAExceptionThrown);            
-
             } catch (IllegalArgumentException iae) {
                 iae.printStackTrace();
                 expectedIAExceptionThrown = true;
@@ -3613,7 +3590,6 @@ public class MetamodelMetamodelTest extends MetamodelTest {
                 anAttribute = entityManufacturer_.getAttribute("does_not_exist");
             } catch (IllegalArgumentException iae) {
                 // We expect an exception
-                //iae.printStackTrace();
                 expectedIAExceptionThrown = true;
             } finally {
                 cleanup(em);
@@ -4190,7 +4166,6 @@ public class MetamodelMetamodelTest extends MetamodelTest {
                 } catch (Exception e) {
                     // This exception is expected here
                     expectedIAExceptionThrown = true;                
-                    //e.printStackTrace();
                 }
                 assertTrue("Expected thrown IllegalArgumentException", expectedIAExceptionThrown);
                 // reset exception flag

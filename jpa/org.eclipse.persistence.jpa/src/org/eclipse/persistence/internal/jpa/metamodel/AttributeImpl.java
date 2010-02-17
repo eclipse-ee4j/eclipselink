@@ -28,6 +28,8 @@ import javax.persistence.metamodel.ManagedType;
 import org.eclipse.persistence.descriptors.RelationalDescriptor;
 import org.eclipse.persistence.internal.descriptors.InstanceVariableAttributeAccessor;
 import org.eclipse.persistence.internal.descriptors.MethodAttributeAccessor;
+import org.eclipse.persistence.logging.AbstractSessionLog;
+import org.eclipse.persistence.logging.SessionLog;
 import org.eclipse.persistence.mappings.AttributeAccessor;
 import org.eclipse.persistence.mappings.DatabaseMapping;
 import org.eclipse.persistence.mappings.ManyToManyMapping;
@@ -115,6 +117,11 @@ public abstract class AttributeImpl<X, T> implements Attribute<X, T>, Serializab
                         .getAttributeAccessor()).getAttributeField();
             }
         }
+        // 303063: secondary check for attribute override case - this will show on code coverage
+        if(null == aMember) {
+            AbstractSessionLog.getLog().log(SessionLog.FINEST, "metamodel_attribute_getmember_is_null", this, this.getManagedTypeImpl(), this.getDescriptor());
+        }
+        
         return aMember;
     }
 

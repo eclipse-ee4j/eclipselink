@@ -77,6 +77,8 @@ import org.eclipse.persistence.internal.queries.ContainerPolicy;
 import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
 import org.eclipse.persistence.internal.security.PrivilegedGetDeclaredField;
 import org.eclipse.persistence.internal.security.PrivilegedGetDeclaredMethod;
+import org.eclipse.persistence.logging.AbstractSessionLog;
+import org.eclipse.persistence.logging.SessionLog;
 import org.eclipse.persistence.mappings.CollectionMapping;
 import org.eclipse.persistence.mappings.DatabaseMapping;
 
@@ -119,6 +121,10 @@ public abstract class ManagedTypeImpl<X> extends TypeImpl<X> implements ManagedT
         this.descriptor = descriptor;
         // the metamodel field must be instantiated prior to any *AttributeImpl instantiation which will use the metamodel
         this.metamodel = metamodel;
+        // 303063: secondary check for case where descriptor has no java class set - should never happen but this will show on code coverage
+        if(null == this.getJavaType()) {
+            AbstractSessionLog.getLog().log(SessionLog.FINEST, "metamodel_relationaldescriptor_javaclass_null_on_managedType", descriptor, this);
+        }
         // Cache the ManagedType on the descriptor 
         descriptor.setProperty(getClass().getName(), this);
         // Note: Full initialization of the ManagedType occurs during MetamodelImpl.initialize() after all types are instantiated
@@ -1334,7 +1340,7 @@ public abstract class ManagedTypeImpl<X> extends TypeImpl<X> implements ManagedT
         
         // 2) based on access type get the element type
         // 3) If field level access - perform a getDeclaredField call
-        if(null == aField) {
+        if(null == aField && this.getJavaType() != null) {
             // Field level access
             // Check declaredFields in the case where we have no getMethod or getMethodName
             try {
@@ -1357,7 +1363,7 @@ public abstract class ManagedTypeImpl<X> extends TypeImpl<X> implements ManagedT
          * using reflection.
          * In all failure cases we default to the List type.
          */
-        if(null == aField) {
+        if(null == aField && this.getJavaType() != null) {
             Method aMethod = null;
             try {
                 if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()) {
@@ -1391,10 +1397,17 @@ public abstract class ManagedTypeImpl<X> extends TypeImpl<X> implements ManagedT
             aType = aField.getType();
         }
         
+        
         // 7) catch unsupported element type
         if(null == aType) {        
             aType = MetamodelImpl.DEFAULT_ELEMENT_TYPE_FOR_UNSUPPORTED_MAPPINGS;
         }
+        
+        // 303063: secondary check for case where descriptor has no java class set - should never happen but this will show on code coverage
+        if(null == this.getJavaType()) {
+            AbstractSessionLog.getLog().log(SessionLog.FINEST, "metamodel_relationaldescriptor_javaclass_null_on_managedType", descriptor, this);
+        }
+        
         return aType;
     }
     
