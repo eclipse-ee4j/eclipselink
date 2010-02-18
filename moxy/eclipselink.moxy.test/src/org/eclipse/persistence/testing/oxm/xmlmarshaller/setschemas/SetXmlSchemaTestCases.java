@@ -71,9 +71,14 @@ public class SetXmlSchemaTestCases extends OXTestCase {
     }
 
     public void testValidateValidFile() {
-        xmlUnmarshaller.setSchema(schema);
-        URL url = ClassLoader.getSystemResource(VALID_XML_RESOURCE);
-        xmlUnmarshaller.unmarshal(url);
+        try {
+            xmlUnmarshaller.setSchema(schema);
+            URL url = ClassLoader.getSystemResource(VALID_XML_RESOURCE);
+            xmlUnmarshaller.unmarshal(url);
+        } catch(UnsupportedOperationException ex) {
+            //if the parser doesn't support the setSchema API, this is a valid outcome
+            //for the test.
+        }
     }
     
     /**

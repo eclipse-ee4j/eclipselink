@@ -190,7 +190,13 @@ public class SAXUnmarshaller implements PlatformUnmarshaller {
     }
     
     public Schema getSchema() {
-        return saxParserFactory.getSchema();
+        Schema schema = null;
+        try {
+            schema = saxParserFactory.getSchema();
+        } catch(UnsupportedOperationException ex) {
+            //if this parser doesn't support the setSchema/getSchema API, just return null;
+        }
+        return schema;
     }
     
     public Object unmarshal(File file) {
