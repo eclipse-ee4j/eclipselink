@@ -93,8 +93,8 @@ public class JAXBMultipleMapsTestCases extends JAXBListOfObjectsTestCases {
 		InputStream instream2 = ClassLoader.getSystemResourceAsStream("org/eclipse/persistence/testing/jaxb/listofobjects/multipleMaps2.xsd");
 
 		List<InputStream> controlSchema= new ArrayList<InputStream>();
+        controlSchema.add(instream1);
 		controlSchema.add(instream2);
-		controlSchema.add(instream1);
 		return controlSchema;
 		
 	}

@@ -1,5 +1,5 @@
 <?xml version = '1.0' encoding = 'UTF-8'?>
-<ns0:root xmlns:ns0="rootNamespace" xmlns:x="listOfObjectsNamespace" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="x:listOfEmployee">
+<ns0:root xmlns:ns0="rootNamespace" xmlns:x="listOfObjectsNamespace" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="listOfEmployee">
    <item id="10">
       <firstName>Bob</firstName>
       <lastName>Smith</lastName>

@@ -1,10 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <xsd:schema targetNamespace="listOfObjectsNamespace" xmlns:x="listOfObjectsNamespace" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
-   <xsd:complexType name="listOfEmployee">
-      <xsd:sequence>
-         <xsd:element name="item" type="x:employee" minOccurs="0" maxOccurs="unbounded"/>
-      </xsd:sequence>
-   </xsd:complexType>
    <xsd:complexType name="employee">
       <xsd:sequence>
          <xsd:element name="firstName" type="xsd:string" minOccurs="0"/>

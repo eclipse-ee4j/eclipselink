@@ -15,10 +15,14 @@ package org.eclipse.persistence.testing.jaxb.listofobjects;
 import java.io.InputStream;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.xml.bind.JAXBElement;
 import javax.xml.namespace.QName;
+
+import org.eclipse.persistence.jaxb.JAXBContextFactory;
 import org.eclipse.persistence.testing.jaxb.listofobjects.ClassWithInnerClass.MyInner;
 
 public class JAXBListOfInnerClassTestCases extends JAXBListOfObjectsTestCases {
@@ -70,4 +74,10 @@ public class JAXBListOfInnerClassTestCases extends JAXBListOfObjectsTestCases {
 	protected String getNoXsiTypeControlResourceName() {
 		return XML_RESOURCE_NO_XSI_TYPE;
 	}
+	
+    public Map getProperties() {
+        Map props = new HashMap();
+        props.put(JAXBContextFactory.DEFAULT_TARGET_NAMESPACE_KEY, "listOfObjectsNamespace");
+        return props;
+    }	
 }

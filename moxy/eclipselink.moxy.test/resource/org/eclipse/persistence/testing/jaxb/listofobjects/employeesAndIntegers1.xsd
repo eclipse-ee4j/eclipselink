@@ -20,10 +20,5 @@
       </xsd:sequence>
       <xsd:attribute name="id" type="xsd:int" use="required"/>
    </xsd:complexType>
-   <xsd:complexType name="listOfEmployee">
-      <xsd:sequence>
-         <xsd:element name="item" type="x:employee" minOccurs="0" maxOccurs="unbounded"/>
-      </xsd:sequence>
-   </xsd:complexType>
    <xsd:element name="employee-data" type="x:employee"/>
 </xsd:schema>
