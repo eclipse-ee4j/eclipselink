@@ -106,7 +106,7 @@ public class FullRegressionTestSuite extends TestSuite {
         suite.addTest(AdvancedJunitTest.suite());
         suite.addTest(AdvancedCompositePKJunitTest.suite());
         suite.addTest(AdvancedFetchGroupJunitTest.suite());
-        suite.addTest(PessimisticLockingExtendedScopeTestSuite.suite());
+        //suite.addTest(PessimisticLockingExtendedScopeTestSuite.suite());
         fullSuite.addTest(suite);
 
         // FieldAccess advanced model
