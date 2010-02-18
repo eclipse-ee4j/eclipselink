@@ -315,7 +315,7 @@ public class TraceLocalizationResource extends ListResourceBundle {
                                             { "metamodel_descriptor_type_eis_or_xml_is_unsupported", "Metamodel processing: EIS or XML ClassDescriptor instances [{0}] are currently not supported." },
                                             { "connect_drivermanager_fail", "DriverManager connect failed, trying direct connect."},
                                             { "metamodel_unable_to_determine_element_type_in_absence_of_generic_parameters", "Metamodel processing: Unable to get the element type for the mapping [{0}] in the absence of generic parameters on mapping declaration." },
-                                            { "metamodel_init_failed", "Initialization of the medamodel failed during deployment.  Ignoring exception: [{0}] " },
+                                            { "metamodel_init_failed", "Initialization of the metamodel failed during deployment.  Ignoring exception: [{0}] " },
                                             { "metamodel_canonical_model_class_not_found", "Canonical Metamodel class [{0}] not found during initialization."},  
                                             { "metamodel_canonical_model_class_found", "Canonical Metamodel class [{0}] found and instantiated during initialization."},
                                             { "metamodel_relationaldescriptor_javaclass_null_on_managedType", "Metamodel processing: The javaClass field is null for the relationalDescriptor [{0}] for the managedType [{1}]." },                                            
