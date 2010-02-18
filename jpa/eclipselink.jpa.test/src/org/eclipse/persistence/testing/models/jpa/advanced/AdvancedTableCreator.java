@@ -51,7 +51,13 @@ public class AdvancedTableCreator extends TableCreator {
         addTableDefinition(buildCONCURRENCYBTable());
         addTableDefinition(buildCONCURRENCYCTable());
         addTableDefinition(buildREADONLYISOLATED());
-        
+        addTableDefinition(buildENTITYBTable());
+        addTableDefinition(buildENTITYCTable());
+        addTableDefinition(buildENTITYATable());
+        addTableDefinition(buildENTITYDTable());
+        addTableDefinition(buildADVENTITYAENTITYDTable());
+        addTableDefinition(buildENTITYETable());
+        addTableDefinition(buildADVENTITYAENTITYETable());
     }
     
     public static TableDefinition buildADDRESSTable() {
@@ -1486,6 +1492,233 @@ public class AdvancedTableCreator extends TableCreator {
         fieldCODE.setShouldAllowNull(false);
         table.addField(fieldCODE);
 
+        return table;
+    }
+
+    public static TableDefinition buildENTITYBTable() {
+         TableDefinition table = new TableDefinition();
+         table.setName("ADV_ENTYB");
+
+         FieldDefinition fieldID = new FieldDefinition();
+         fieldID.setName("ID");
+         fieldID.setTypeName("NUMERIC");
+         fieldID.setSize(15);
+         fieldID.setSubSize(0);
+         fieldID.setIsPrimaryKey(true);
+         fieldID.setIsIdentity(true);
+         fieldID.setUnique(false);
+         fieldID.setShouldAllowNull(false);
+         table.addField(fieldID);
+
+         FieldDefinition fieldNAME = new FieldDefinition();
+         fieldNAME.setName("NAME");
+         fieldNAME.setTypeName("VARCHAR2");
+         fieldNAME.setSize(60);
+         fieldNAME.setSubSize(0);
+         fieldNAME.setIsPrimaryKey(false);
+         fieldNAME.setIsIdentity(false);
+         fieldNAME.setUnique(false);
+         fieldNAME.setShouldAllowNull(true);
+         table.addField(fieldNAME);
+         
+         return table;
+     }
+
+    public static TableDefinition buildENTITYATable() {
+         TableDefinition table = new TableDefinition();
+         table.setName("ADV_ENTYA");
+
+         FieldDefinition fieldID = new FieldDefinition();
+         fieldID.setName("ID");
+         fieldID.setTypeName("NUMERIC");
+         fieldID.setSize(15);
+         fieldID.setSubSize(0);
+         fieldID.setIsPrimaryKey(true);
+         fieldID.setIsIdentity(true);
+         fieldID.setUnique(false);
+         fieldID.setShouldAllowNull(false);
+         table.addField(fieldID);
+
+         FieldDefinition fieldNAME = new FieldDefinition();
+         fieldNAME.setName("NAME");
+         fieldNAME.setTypeName("VARCHAR2");
+         fieldNAME.setSize(60);
+         fieldNAME.setSubSize(0);
+         fieldNAME.setIsPrimaryKey(false);
+         fieldNAME.setIsIdentity(false);
+         fieldNAME.setUnique(false);
+         fieldNAME.setShouldAllowNull(true);
+         table.addField(fieldNAME);
+
+         FieldDefinition fieldEntyB = new FieldDefinition();
+         fieldEntyB.setName("ENTYB_ID");
+         fieldEntyB.setTypeName("NUMERIC");
+         fieldEntyB.setSize(15);
+         fieldEntyB.setSubSize(0);
+         fieldEntyB.setIsPrimaryKey(false);
+         fieldEntyB.setIsIdentity(false);
+         fieldEntyB.setUnique(false);
+         fieldEntyB.setForeignKeyFieldName("ADV_ENTYB.ID");
+         table.addField(fieldEntyB);
+
+         FieldDefinition fieldEntyC = new FieldDefinition();
+         fieldEntyC.setName("ENTYC_ID");
+         fieldEntyC.setTypeName("NUMERIC");
+         fieldEntyC.setSize(15);
+         fieldEntyC.setSubSize(0);
+         fieldEntyC.setIsPrimaryKey(false);
+         fieldEntyC.setIsIdentity(false);
+         fieldEntyC.setUnique(false);
+         fieldEntyC.setForeignKeyFieldName("ADV_ENTYC.ID");
+         table.addField(fieldEntyC);
+         
+         return table;
+     }
+
+    public static TableDefinition buildENTITYDTable() {
+         TableDefinition table = new TableDefinition();
+         table.setName("ADV_ENTYD");
+
+         FieldDefinition fieldID = new FieldDefinition();
+         fieldID.setName("ID");
+         fieldID.setTypeName("NUMERIC");
+         fieldID.setSize(15);
+         fieldID.setSubSize(0);
+         fieldID.setIsPrimaryKey(true);
+         fieldID.setIsIdentity(true);
+         fieldID.setUnique(false);
+         fieldID.setShouldAllowNull(false);
+         table.addField(fieldID);
+
+         FieldDefinition fieldNAME = new FieldDefinition();
+         fieldNAME.setName("NAME");
+         fieldNAME.setTypeName("VARCHAR2");
+         fieldNAME.setSize(60);
+         fieldNAME.setSubSize(0);
+         fieldNAME.setIsPrimaryKey(false);
+         fieldNAME.setIsIdentity(false);
+         fieldNAME.setUnique(false);
+         fieldNAME.setShouldAllowNull(true);
+         table.addField(fieldNAME);
+         
+         return table;
+     }
+
+    public static TableDefinition buildENTITYCTable() {
+         TableDefinition table = new TableDefinition();
+         table.setName("ADV_ENTYC");
+
+         FieldDefinition fieldID = new FieldDefinition();
+         fieldID.setName("ID");
+         fieldID.setTypeName("NUMERIC");
+         fieldID.setSize(15);
+         fieldID.setSubSize(0);
+         fieldID.setIsPrimaryKey(true);
+         fieldID.setIsIdentity(true);
+         fieldID.setUnique(false);
+         fieldID.setShouldAllowNull(false);
+         table.addField(fieldID);
+
+         FieldDefinition fieldNAME = new FieldDefinition();
+         fieldNAME.setName("NAME");
+         fieldNAME.setTypeName("VARCHAR2");
+         fieldNAME.setSize(60);
+         fieldNAME.setSubSize(0);
+         fieldNAME.setIsPrimaryKey(false);
+         fieldNAME.setIsIdentity(false);
+         fieldNAME.setUnique(false);
+         fieldNAME.setShouldAllowNull(true);
+         table.addField(fieldNAME);
+
+         return table;
+     }
+
+     public static TableDefinition buildADVENTITYAENTITYDTable() {
+        TableDefinition table = new TableDefinition();
+
+        table.setName("ADV_ENTYA_ADV_ENTYD");
+
+        FieldDefinition fieldORDERID = new FieldDefinition();
+        fieldORDERID.setName("EntyA_ID");
+        fieldORDERID.setTypeName("NUMERIC");
+        fieldORDERID.setSize(15);
+        fieldORDERID.setShouldAllowNull(false);
+        fieldORDERID.setIsPrimaryKey(false);
+        fieldORDERID.setUnique(false);
+        fieldORDERID.setIsIdentity(false);
+        fieldORDERID.setForeignKeyFieldName("ADV_ENTYA.ID");
+        table.addField(fieldORDERID);
+        
+        FieldDefinition fieldAUDITORID = new FieldDefinition();
+        fieldAUDITORID.setName("entyDs_ID");
+        fieldAUDITORID.setTypeName("NUMERIC");
+        fieldAUDITORID.setSize(15);
+        fieldAUDITORID.setShouldAllowNull(false);
+        fieldAUDITORID.setIsPrimaryKey(false);
+        fieldAUDITORID.setUnique(true);
+        fieldAUDITORID.setIsIdentity(false);
+        fieldAUDITORID.setForeignKeyFieldName("ADV_ENTYD.ID");
+        table.addField(fieldAUDITORID);
+    
+        return table;
+    }
+
+     public static TableDefinition buildENTITYETable() {
+         TableDefinition table = new TableDefinition();
+         table.setName("ADV_ENTYE");
+
+         FieldDefinition fieldID = new FieldDefinition();
+         fieldID.setName("ID");
+         fieldID.setTypeName("NUMERIC");
+         fieldID.setSize(15);
+         fieldID.setSubSize(0);
+         fieldID.setIsPrimaryKey(true);
+         fieldID.setIsIdentity(true);
+         fieldID.setUnique(false);
+         fieldID.setShouldAllowNull(false);
+         table.addField(fieldID);
+
+         FieldDefinition fieldNAME = new FieldDefinition();
+         fieldNAME.setName("NAME");
+         fieldNAME.setTypeName("VARCHAR2");
+         fieldNAME.setSize(60);
+         fieldNAME.setSubSize(0);
+         fieldNAME.setIsPrimaryKey(false);
+         fieldNAME.setIsIdentity(false);
+         fieldNAME.setUnique(false);
+         fieldNAME.setShouldAllowNull(true);
+         table.addField(fieldNAME);
+         
+         return table;
+     }
+
+     public static TableDefinition buildADVENTITYAENTITYETable() {
+        TableDefinition table = new TableDefinition();
+
+        table.setName("ADV_ENTYA_ADV_ENTYE");
+
+        FieldDefinition fieldORDERID = new FieldDefinition();
+        fieldORDERID.setName("EntyA_ID");
+        fieldORDERID.setTypeName("NUMERIC");
+        fieldORDERID.setSize(15);
+        fieldORDERID.setShouldAllowNull(false);
+        fieldORDERID.setIsPrimaryKey(false);
+        fieldORDERID.setUnique(false);
+        fieldORDERID.setIsIdentity(false);
+        fieldORDERID.setForeignKeyFieldName("ADV_ENTYA.ID");
+        table.addField(fieldORDERID);
+        
+        FieldDefinition fieldAUDITORID = new FieldDefinition();
+        fieldAUDITORID.setName("entyEs_ID");
+        fieldAUDITORID.setTypeName("NUMERIC");
+        fieldAUDITORID.setSize(15);
+        fieldAUDITORID.setShouldAllowNull(false);
+        fieldAUDITORID.setIsPrimaryKey(false);
+        fieldAUDITORID.setUnique(true);
+        fieldAUDITORID.setIsIdentity(false);
+        fieldAUDITORID.setForeignKeyFieldName("ADV_ENTYE.ID");
+        table.addField(fieldAUDITORID);
+    
         return table;
     }
 }
