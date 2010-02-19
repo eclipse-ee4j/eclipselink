@@ -49,6 +49,10 @@
     <property file="./test.properties"/>
     <property file="./weblogic.properties"/>
 
+    <condition property="is.v1030">
+        <contains string="${server.version}" substring="10.3.0"/>
+    </condition>
+
     <!-- WebLogic ant tasks -->
     <taskdef name="wlserver" classname="weblogic.ant.taskdefs.management.WLServer">
         <classpath>
@@ -72,12 +76,16 @@
         <mkdir dir="${weblogic.domain}"/>
         <antcall target="weblogic-start-nosleep" inheritRefs="true"/>
         <copy file="${junit.lib}" todir="${weblogic.domain}/lib"/>
-        <copy file="${eclipselink.jar.name}" todir="${weblogic.domain}/lib"/>
+        <antcall target="copy-eclipselink-jar-to-domain-lib" inheritRefs="true"/>
         <copy file="${jdbc.driver.jar}" todir="${weblogic.domain}/lib"/>
         <copy file="${oracle.extensions.depend.dir}/${oracle.xdb.lib}" todir="${weblogic.domain}/lib"/>
         <copy file="${oracle.extensions.depend.dir}/${oracle.spatial.lib}" todir="${weblogic.domain}/lib"/>
         <copy file="${oracle.extensions.depend.dir}/${oracle.xmlparserv2.lib}" todir="${weblogic.domain}/lib"/>
         <antcall target="weblogic-stop" inheritRefs="true"/>
+    </target>
+
+    <target name="copy-eclipselink-jar-to-domain-lib" if="is.v1030">
+        <copy file="${eclipselink.lib}" todir="${weblogic.domain}/lib"/>
     </target>
 
     <!-- Start the server. -->
