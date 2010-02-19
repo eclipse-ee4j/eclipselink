@@ -56,7 +56,8 @@ import org.eclipse.persistence.sessions.Project;
  * @since TOPLink/Java 1.0
  */
 public abstract class DatabaseMapping implements Cloneable, Serializable {
-
+    public enum WriteType { INSERT, UPDATE, UNDEFINED } 
+    
     /** Used to reduce memory for mappings with no fields. */
     protected static final Vector NO_FIELDS = org.eclipse.persistence.internal.helper.NonSynchronizedVector.newInstance(0);
 
@@ -1608,7 +1609,7 @@ public abstract class DatabaseMapping implements Cloneable, Serializable {
      * A subclass should implement this method if it wants different behavior.
      * Write the attribute value from the object to the row.
      */
-    public void writeFromObjectIntoRow(Object object, AbstractRecord row, AbstractSession session) {
+    public void writeFromObjectIntoRow(Object object, AbstractRecord row, AbstractSession session, WriteType writeType) {
         // Do nothing by default.
     }
 
@@ -1617,15 +1618,15 @@ public abstract class DatabaseMapping implements Cloneable, Serializable {
      * This row is built for shallow insert which happens in case of bidirectional inserts.
      */
     public void writeFromObjectIntoRowForShallowInsert(Object object, AbstractRecord row, AbstractSession session) {
-        writeFromObjectIntoRow(object, row, session);
+        writeFromObjectIntoRow(object, row, session, WriteType.INSERT);
     }
-
+    
     /**
      * INTERNAL:
      * A subclass should implement this method if it wants different behavior.
      * Write the attribute value from the object to the row.
      */
-    public void writeFromObjectIntoRowWithChangeRecord(ChangeRecord changeRecord, AbstractRecord row, AbstractSession session) {
+    public void writeFromObjectIntoRowWithChangeRecord(ChangeRecord changeRecord, AbstractRecord row, AbstractSession session, WriteType writeType) {
         // Do nothing by default.
     }
 
@@ -1634,15 +1635,15 @@ public abstract class DatabaseMapping implements Cloneable, Serializable {
      * This row is built for shallow insert which happens in case of bidirectional inserts.
      */
     public void writeFromObjectIntoRowForShallowInsertWithChangeRecord(ChangeRecord changeRecord, AbstractRecord row, AbstractSession session) {
-        writeFromObjectIntoRowWithChangeRecord(changeRecord, row, session);
+        writeFromObjectIntoRowWithChangeRecord(changeRecord, row, session, WriteType.INSERT);
     }
-
+    
     /**
      * INTERNAL:
      * Write the attribute value from the object to the row for update.
      */
     public void writeFromObjectIntoRowForUpdate(WriteObjectQuery query, AbstractRecord row) {
-        writeFromObjectIntoRow(query.getObject(), row, query.getSession());
+        writeFromObjectIntoRow(query.getObject(), row, query.getSession(), WriteType.UPDATE);
     }
 
     /**
@@ -1657,7 +1658,7 @@ public abstract class DatabaseMapping implements Cloneable, Serializable {
         } else {
             object = query.getBackupClone();
         }
-        writeFromObjectIntoRow(object, row, query.getSession());
+        writeFromObjectIntoRow(object, row, query.getSession(), WriteType.UNDEFINED);
     }
 
     /**

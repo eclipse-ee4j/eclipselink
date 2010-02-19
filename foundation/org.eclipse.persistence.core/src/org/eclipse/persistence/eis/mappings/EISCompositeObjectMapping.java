@@ -104,12 +104,13 @@ public class EISCompositeObjectMapping extends AbstractCompositeObjectMapping im
         this.setField(new DatabaseField(fieldName));
     }
 
-    protected Object buildCompositeRow(Object attributeValue, AbstractSession session, AbstractRecord record) {
+    @Override
+    protected Object buildCompositeRow(Object attributeValue, AbstractSession session, AbstractRecord record, WriteType writeType) {
         if (((EISDescriptor)getDescriptor()).getDataFormat() == EISDescriptor.XML) {
             XMLObjectBuilder objectBuilder = (XMLObjectBuilder)getReferenceDescriptor(attributeValue, session).getObjectBuilder();
             return objectBuilder.buildRow(attributeValue, session, getField(), (XMLRecord)record);
         } else {
-        	AbstractRecord nestedRow = this.getObjectBuilder(attributeValue, session).buildRow(attributeValue, session);
+        	AbstractRecord nestedRow = this.getObjectBuilder(attributeValue, session).buildRow(attributeValue, session, writeType);
             return this.getReferenceDescriptor(attributeValue, session).buildFieldValueFromNestedRow(nestedRow, session);
         }
     }
@@ -130,7 +131,8 @@ public class EISCompositeObjectMapping extends AbstractCompositeObjectMapping im
      * Build the value for the database field and put it in the
      * specified database row.
      */
-    public void writeFromObjectIntoRow(Object object, AbstractRecord record, AbstractSession session) throws DescriptorException {
+    @Override
+    public void writeFromObjectIntoRow(Object object, AbstractRecord record, AbstractSession session, WriteType writeType) throws DescriptorException {
         if (this.isReadOnly()) {
             return;
         }
@@ -145,7 +147,7 @@ public class EISCompositeObjectMapping extends AbstractCompositeObjectMapping im
             Object fieldValue = null;
 
             if (attributeValue != null) {
-                fieldValue = buildCompositeRow(attributeValue, session, record);
+                fieldValue = buildCompositeRow(attributeValue, session, record, writeType);
             }
 
             record.put(this.getField(), fieldValue);

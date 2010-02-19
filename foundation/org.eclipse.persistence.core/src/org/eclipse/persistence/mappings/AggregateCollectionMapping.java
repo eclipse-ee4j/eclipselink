@@ -1070,7 +1070,7 @@ public class AggregateCollectionMapping extends CollectionMapping implements Rel
         for (int keyIndex = 0; keyIndex < keys.size(); keyIndex++) {
             aggregateRow.put(keys.elementAt(keyIndex), referenceObjectKeys.elementAt(keyIndex));
         }
-        getReferenceDescriptor(object.getClass(), query.getSession()).getObjectBuilder().buildRow(aggregateRow, object, query.getSession());
+        getReferenceDescriptor(object.getClass(), query.getSession()).getObjectBuilder().buildRow(aggregateRow, object, query.getSession(), WriteType.UNDEFINED);
 
         return aggregateRow;
     }

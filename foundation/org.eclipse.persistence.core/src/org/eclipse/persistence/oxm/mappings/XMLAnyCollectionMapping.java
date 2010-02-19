@@ -428,7 +428,8 @@ public class XMLAnyCollectionMapping extends XMLAbstractAnyMapping implements XM
         return container;
     }
 
-    public void writeFromObjectIntoRow(Object object, AbstractRecord row, AbstractSession session) throws DescriptorException {
+    @Override
+    public void writeFromObjectIntoRow(Object object, AbstractRecord row, AbstractSession session, WriteType writeType) throws DescriptorException {
         if (this.isReadOnly()) {
             return;
         }

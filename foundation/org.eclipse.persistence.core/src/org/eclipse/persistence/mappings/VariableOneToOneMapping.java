@@ -780,7 +780,8 @@ public class VariableOneToOneMapping extends ObjectReferenceMapping implements R
      * If the mapping id targetforeign key, you must only write the type into the roe, the rest will be updated
      * when the object itself is written
      */
-    public void writeFromObjectIntoRow(Object object, AbstractRecord record, AbstractSession session) {
+    @Override
+    public void writeFromObjectIntoRow(Object object, AbstractRecord record, AbstractSession session, WriteType writeType) {
         if (isReadOnly()) {
             return;
         }
@@ -816,7 +817,8 @@ public class VariableOneToOneMapping extends ObjectReferenceMapping implements R
      * If the mapping id targetforeign key, you must only write the type into the roe, the rest will be updated
      * when the object itself is written
      */
-    public void writeFromObjectIntoRowWithChangeRecord(ChangeRecord changeRecord, AbstractRecord record, AbstractSession session) {
+    @Override
+    public void writeFromObjectIntoRowWithChangeRecord(ChangeRecord changeRecord, AbstractRecord record, AbstractSession session, WriteType writeType) {
         if (isReadOnly()) {
             return;
         }
@@ -851,6 +853,7 @@ public class VariableOneToOneMapping extends ObjectReferenceMapping implements R
      * This row is built for shallow insert which happens in case of bidirectional inserts.
      * The foreign keys must be set to null to avoid constraints.
      */
+    @Override
     public void writeFromObjectIntoRowForShallowInsert(Object object, AbstractRecord record, AbstractSession session) {
         writeFromNullObjectIntoRow(record);
     }
@@ -860,6 +863,7 @@ public class VariableOneToOneMapping extends ObjectReferenceMapping implements R
      * This row is built for shallow insert which happens in case of bidirectional inserts.
      * The foreign keys must be set to null to avoid constraints.
      */
+    @Override
     public void writeFromObjectIntoRowForShallowInsertWithChangeRecord(ChangeRecord changeRecord, AbstractRecord record, AbstractSession session) {
         writeFromNullObjectIntoRow(record);
     }
@@ -868,6 +872,7 @@ public class VariableOneToOneMapping extends ObjectReferenceMapping implements R
      * INTERNAL:
      * Get a value from the object and set that in the respective field of the row.
      */
+    @Override
     public void writeFromObjectIntoRowForWhereClause(ObjectLevelModifyQuery query, AbstractRecord record) {
         if (isReadOnly()) {
             return;
@@ -907,6 +912,7 @@ public class VariableOneToOneMapping extends ObjectReferenceMapping implements R
      * INTERNAL:
      * Write fields needed for insert into the template for with null values.
      */
+    @Override
     public void writeInsertFieldsIntoRow(AbstractRecord record, AbstractSession session) {
         writeFromNullObjectIntoRow(record);
     }

@@ -303,7 +303,8 @@ public class NestedTableMapping extends CollectionMapping {
      * INTERNAL:
      * Get a value from the object and set that in the respective field of the row.
      */
-    public void writeFromObjectIntoRow(Object object, AbstractRecord record, AbstractSession session) {
+    @Override
+    public void writeFromObjectIntoRow(Object object, AbstractRecord record, AbstractSession session, WriteType writeType) {
         if (isReadOnly()) {
             return;
         }
@@ -335,7 +336,8 @@ public class NestedTableMapping extends CollectionMapping {
      * INTERNAL:
      * Get a value from the object and set that in the respective field of the row.
      */
-    public void writeFromObjectIntoRowWithChangeRecord(ChangeRecord changeRecord, AbstractRecord record, AbstractSession session) {
+    @Override
+    public void writeFromObjectIntoRowWithChangeRecord(ChangeRecord changeRecord, AbstractRecord record, AbstractSession session, WriteType writeType) {
         if (isReadOnly()) {
             return;
         }
@@ -411,7 +413,7 @@ public class NestedTableMapping extends CollectionMapping {
             }
         }
 
-        writeFromObjectIntoRow(writeQuery.getObject(), record, writeQuery.getSession());
+        writeFromObjectIntoRow(writeQuery.getObject(), record, writeQuery.getSession(), WriteType.UPDATE);
     }
 
     /**

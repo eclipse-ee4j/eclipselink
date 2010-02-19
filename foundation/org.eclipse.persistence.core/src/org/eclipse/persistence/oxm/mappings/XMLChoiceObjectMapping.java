@@ -229,7 +229,8 @@ public class XMLChoiceObjectMapping extends DatabaseMapping implements XMLMappin
         return null;
     }
 
-    public void writeFromObjectIntoRow(Object object, AbstractRecord row, AbstractSession session) throws DescriptorException {
+    @Override
+    public void writeFromObjectIntoRow(Object object, AbstractRecord row, AbstractSession session, WriteType writeType) throws DescriptorException {
         Object value = getAttributeValueFromObject(object);
         Class valueClass = value.getClass();
         if(valueClass == XMLRoot.class) {

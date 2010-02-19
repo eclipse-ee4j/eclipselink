@@ -26,6 +26,7 @@ import org.eclipse.persistence.internal.oxm.record.SequencedMarshalContext;
 import org.eclipse.persistence.internal.sessions.AbstractRecord;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.mappings.DatabaseMapping;
+import org.eclipse.persistence.mappings.DatabaseMapping.WriteType;
 import org.eclipse.persistence.mappings.foundation.AbstractDirectMapping;
 import org.eclipse.persistence.mappings.foundation.AbstractTransformationMapping;
 import org.eclipse.persistence.mappings.transformers.FieldTransformer;
@@ -304,15 +305,16 @@ public class TreeObjectBuilder extends XMLObjectBuilder {
         return getRootXPathNode().addChild(xPathFragment, nodeValue, namespaceResolver);
     }
 
-    public AbstractRecord buildRow(AbstractRecord record, Object object, org.eclipse.persistence.internal.sessions.AbstractSession session) {
-        return buildRow(record, object, session, null);
+    @Override
+    public AbstractRecord buildRow(AbstractRecord record, Object object, org.eclipse.persistence.internal.sessions.AbstractSession session, WriteType writeType) {
+        return buildRow(record, object, session, null, writeType);
     }
 
-    public AbstractRecord buildRow(AbstractRecord record, Object object, org.eclipse.persistence.internal.sessions.AbstractSession session, XMLMarshaller marshaller) {
-        return buildRow(record, object, session, marshaller, null);
+    public AbstractRecord buildRow(AbstractRecord record, Object object, org.eclipse.persistence.internal.sessions.AbstractSession session, XMLMarshaller marshaller, WriteType writeType) {
+        return buildRow(record, object, session, marshaller, null, writeType);
     }
 
-    public AbstractRecord buildRow(AbstractRecord record, Object object, org.eclipse.persistence.internal.sessions.AbstractSession session, XMLMarshaller marshaller, XPathFragment rootFragment) {
+    public AbstractRecord buildRow(AbstractRecord record, Object object, org.eclipse.persistence.internal.sessions.AbstractSession session, XMLMarshaller marshaller, XPathFragment rootFragment, WriteType writeType) {
         if (null == getRootXPathNode().getNonAttributeChildren()) {
             return record;
         }

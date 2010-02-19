@@ -145,7 +145,7 @@ import org.eclipse.persistence.mappings.transformers.FieldTransformer;
         this.addFieldTransformation(new XMLField(fieldName), methodName);
     }
     public void writeSingleValue(Object value, Object parent, XMLRecord row, AbstractSession session) {
-        this.writeFromObjectIntoRow(parent, row, session);
+        this.writeFromObjectIntoRow(parent, row, session, WriteType.UNDEFINED);
     }
     
     public void setIsWriteOnly(boolean b) {

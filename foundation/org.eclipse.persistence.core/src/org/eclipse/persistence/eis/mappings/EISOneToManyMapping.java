@@ -947,7 +947,8 @@ public class EISOneToManyMapping extends CollectionMapping implements EISMapping
      * Loop through the reference objects and extract the
      * primary keys and put them in the vector of "nested" rows.
      */
-    public void writeFromObjectIntoRow(Object object, AbstractRecord row, AbstractSession session) {
+    @Override
+    public void writeFromObjectIntoRow(Object object, AbstractRecord row, AbstractSession session, WriteType writeType) {
         if (!isForeignKeyRelationship) {
             return;
         }
@@ -1048,7 +1049,7 @@ public class EISOneToManyMapping extends CollectionMapping implements EISMapping
                 return;// nothing has changed - don't put anything in the row
             }
         }
-        this.writeFromObjectIntoRow(writeQuery.getObject(), row, session);
+        this.writeFromObjectIntoRow(writeQuery.getObject(), row, session, WriteType.UPDATE);
 
     }
 
@@ -1059,12 +1060,13 @@ public class EISOneToManyMapping extends CollectionMapping implements EISMapping
      * Loop through the reference objects and extract the
      * primary keys and put them in the vector of "nested" rows.
      */
-    public void writeFromObjectIntoRowWithChangeRecord(ChangeRecord changeRecord, AbstractRecord row, AbstractSession session) {
+    @Override
+    public void writeFromObjectIntoRowWithChangeRecord(ChangeRecord changeRecord, AbstractRecord row, AbstractSession session, WriteType writeType) {
         if (isForeignKeyRelationship()) {
             Object object = ((ObjectChangeSet)changeRecord.getOwner()).getUnitOfWorkClone();
-            this.writeFromObjectIntoRow(object, row, session);
+            this.writeFromObjectIntoRow(object, row, session, writeType);
         } else {
-            super.writeFromObjectIntoRowWithChangeRecord(changeRecord, row, session);
+            super.writeFromObjectIntoRowWithChangeRecord(changeRecord, row, session, writeType);
         }
     }
 

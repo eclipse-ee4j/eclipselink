@@ -24,6 +24,7 @@ import org.eclipse.persistence.internal.queries.ContainerPolicy;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.logging.AbstractSessionLog;
 import org.eclipse.persistence.logging.SessionLog;
+import org.eclipse.persistence.mappings.DatabaseMapping.WriteType;
 import org.eclipse.persistence.oxm.NamespaceResolver;
 import org.eclipse.persistence.oxm.XMLConstants;
 import org.eclipse.persistence.oxm.XMLContext;
@@ -309,7 +310,7 @@ public class XMLAnyCollectionMappingNodeValue extends XMLRelationshipMappingNode
                     addTypeAttribute(descriptor, marshalRecord, typeValue);
                 }
 
-                objectBuilder.buildRow(marshalRecord, value, session, marshaller);
+                objectBuilder.buildRow(marshalRecord, value, session, marshaller, WriteType.UNDEFINED);
 
                 objectBuilder.removeExtraNamespacesFromNamespaceResolver(marshalRecord, extraNamespaces, session);
 

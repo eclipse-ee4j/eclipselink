@@ -1567,7 +1567,8 @@ public class OneToOneMapping extends ObjectReferenceMapping implements Relationa
      * INTERNAL:
      * Get a value from the object and set that in the respective field of the row.
      */
-    public void writeFromObjectIntoRow(Object object, AbstractRecord databaseRow, AbstractSession session) {
+    @Override
+    public void writeFromObjectIntoRow(Object object, AbstractRecord databaseRow, AbstractSession session, WriteType writeType) {
         if (this.isReadOnly || (!this.isForeignKeyRelationship)) {
             return;
         }
@@ -1621,7 +1622,8 @@ public class OneToOneMapping extends ObjectReferenceMapping implements Relationa
      * Get a value from the object and set that in the respective field of the row.
      * Validation preventing primary key updates is implemented here.
      */
-    public void writeFromObjectIntoRowWithChangeRecord(ChangeRecord changeRecord, AbstractRecord databaseRow, AbstractSession session) {
+    @Override
+    public void writeFromObjectIntoRowWithChangeRecord(ChangeRecord changeRecord, AbstractRecord databaseRow, AbstractSession session, WriteType writeType) {
         if ((!this.isReadOnly) && this.isPrimaryKeyMapping && (!changeRecord.getOwner().isNew())) {
            throw ValidationException.primaryKeyUpdateDisallowed(changeRecord.getOwner().getClassName(), changeRecord.getAttribute());
         }
@@ -1629,7 +1631,7 @@ public class OneToOneMapping extends ObjectReferenceMapping implements Relationa
         // The object must be used here as the foreign key may include more than just the
         // primary key of the referenced object and the changeSet may not have the required information.
         Object object = ((ObjectChangeSet)changeRecord.getOwner()).getUnitOfWorkClone();
-        writeFromObjectIntoRow(object, databaseRow, session);
+        writeFromObjectIntoRow(object, databaseRow, session, writeType);
     }
 
     /**

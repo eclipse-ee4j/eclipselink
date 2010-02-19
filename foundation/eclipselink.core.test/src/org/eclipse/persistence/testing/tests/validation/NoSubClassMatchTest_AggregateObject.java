@@ -21,6 +21,7 @@ import org.eclipse.persistence.exceptions.EclipseLinkException;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.internal.sessions.ObjectChangeSet;
 import org.eclipse.persistence.mappings.AggregateObjectMapping;
+import org.eclipse.persistence.mappings.DatabaseMapping.WriteType;
 import org.eclipse.persistence.sessions.DatabaseSession;
 
 //import org.eclipse.persistence.mappings.*;
@@ -66,7 +67,7 @@ public class NoSubClassMatchTest_AggregateObject extends ExceptionTest {
 
     public void test() {
         try {
-            mapping.writeFromObjectIntoRowWithChangeRecord(changeRecord, new org.eclipse.persistence.sessions.DatabaseRecord(), (AbstractSession)getSession());
+            mapping.writeFromObjectIntoRowWithChangeRecord(changeRecord, new org.eclipse.persistence.sessions.DatabaseRecord(), (AbstractSession)getSession(), WriteType.UNDEFINED);
         } catch (EclipseLinkException exception) {
             caughtException = exception;
         }

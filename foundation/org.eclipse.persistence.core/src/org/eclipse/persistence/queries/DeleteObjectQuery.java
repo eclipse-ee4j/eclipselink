@@ -16,6 +16,7 @@ import org.eclipse.persistence.internal.sessions.AbstractRecord;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.internal.sessions.CommitManager;
 import org.eclipse.persistence.internal.sessions.UnitOfWorkImpl;
+import org.eclipse.persistence.mappings.DatabaseMapping.WriteType;
 import org.eclipse.persistence.exceptions.*;
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.descriptors.DescriptorEvent;
@@ -259,7 +260,7 @@ public class DeleteObjectQuery extends ObjectLevelModifyQuery {
         // Set the translation row
         if ((this.translationRow == null) || this.translationRow.isEmpty()) {
             if (this.isFullRowRequired) {
-                this.translationRow = this.descriptor.getObjectBuilder().buildRow(this.object, this.session);
+                this.translationRow = this.descriptor.getObjectBuilder().buildRow(this.object, this.session, WriteType.UNDEFINED);
             } else {
                 this.translationRow = this.descriptor.getObjectBuilder().buildRowForTranslation(this.object, this.session);
             }

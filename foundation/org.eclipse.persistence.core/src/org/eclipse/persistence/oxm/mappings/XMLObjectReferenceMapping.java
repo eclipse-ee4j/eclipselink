@@ -393,7 +393,8 @@ public class XMLObjectReferenceMapping extends AggregateMapping implements XMLMa
      * INTERNAL:
      * Write the attribute value from the object to the row.
      */
-    public void writeFromObjectIntoRow(Object object, AbstractRecord row, AbstractSession session) {
+    @Override
+    public void writeFromObjectIntoRow(Object object, AbstractRecord row, AbstractSession session, WriteType writeType) {
         // for each xmlField on this mapping
         Object targetObject = getAttributeValueFromObject(object);
         writeSingleValue(targetObject, object, (XMLRecord) row, session);

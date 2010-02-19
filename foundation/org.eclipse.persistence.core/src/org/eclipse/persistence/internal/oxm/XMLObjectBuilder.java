@@ -36,6 +36,7 @@ import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.mappings.AggregateObjectMapping;
 import org.eclipse.persistence.mappings.DatabaseMapping;
 import org.eclipse.persistence.mappings.ForeignReferenceMapping;
+import org.eclipse.persistence.mappings.DatabaseMapping.WriteType;
 import org.eclipse.persistence.mappings.foundation.AbstractDirectMapping;
 import org.eclipse.persistence.oxm.NamespaceResolver;
 import org.eclipse.persistence.oxm.XMLConstants;
@@ -376,7 +377,7 @@ public class XMLObjectBuilder extends ObjectBuilder {
         Vector mappings = getDescriptor().getMappings();
         for (int index = 0; index < mappings.size(); index++) {
             DatabaseMapping mapping = (DatabaseMapping)mappings.get(index);
-            mapping.writeFromObjectIntoRow(object, row, session);
+            mapping.writeFromObjectIntoRow(object, row, session, WriteType.UNDEFINED);
         }
     }
     public void addNamespaceDeclarations(Document document) {

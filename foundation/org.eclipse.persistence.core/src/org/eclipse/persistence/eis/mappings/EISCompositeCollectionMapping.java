@@ -128,12 +128,13 @@ public class EISCompositeCollectionMapping extends AbstractCompositeCollectionMa
         }
     }
 
-    protected AbstractRecord buildCompositeRow(Object attributeValue, AbstractSession session, AbstractRecord parentRow) {
+    @Override
+    protected AbstractRecord buildCompositeRow(Object attributeValue, AbstractSession session, AbstractRecord parentRow, WriteType writeType) {
         if (((EISDescriptor)getDescriptor()).getDataFormat() == EISDescriptor.XML) {
             XMLObjectBuilder objectBuilder = (XMLObjectBuilder)getReferenceDescriptor(attributeValue, session).getObjectBuilder();
             return objectBuilder.buildRow(attributeValue, session, getField(), (XMLRecord)parentRow);
         } else {
-            return this.getObjectBuilder(attributeValue, session).buildRow(attributeValue, session);
+            return this.getObjectBuilder(attributeValue, session).buildRow(attributeValue, session, writeType);
         }
     }
 }

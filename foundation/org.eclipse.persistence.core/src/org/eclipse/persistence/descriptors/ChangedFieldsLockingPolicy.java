@@ -14,6 +14,7 @@ package org.eclipse.persistence.descriptors;
 
 import java.util.*;
 import org.eclipse.persistence.mappings.*;
+import org.eclipse.persistence.mappings.DatabaseMapping.WriteType;
 import org.eclipse.persistence.internal.helper.*;
 import org.eclipse.persistence.internal.sessions.AbstractRecord;
 import org.eclipse.persistence.queries.*;
@@ -61,7 +62,7 @@ public class ChangedFieldsLockingPolicy extends FieldsLockingPolicy {
         for (Enumeration enumtr = query.getModifyRow().keys(); enumtr.hasMoreElements();) {
             DatabaseField field = (DatabaseField)enumtr.nextElement();
             DatabaseMapping mapping = descriptor.getObjectBuilder().getMappingForField(field);
-            mapping.writeFromObjectIntoRow(object, query.getTranslationRow(), query.getSession());
+            mapping.writeFromObjectIntoRow(object, query.getTranslationRow(), query.getSession(), WriteType.UNDEFINED);
         }
     }
 

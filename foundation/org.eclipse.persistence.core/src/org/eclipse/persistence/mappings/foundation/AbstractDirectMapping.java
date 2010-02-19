@@ -1258,8 +1258,11 @@ public abstract class AbstractDirectMapping extends DatabaseMapping  implements 
      * INTERNAL:
      * Get a value from the object and set that in the respective field of the row.
      */
-    public void writeFromObjectIntoRow(Object object, AbstractRecord row, AbstractSession session) {
-        if (this.isReadOnly) {
+    @Override
+    public void writeFromObjectIntoRow(Object object, AbstractRecord row, AbstractSession session, WriteType writeType) {
+        if (this.isReadOnly || 
+            (writeType.equals(WriteType.INSERT) && ! field.isInsertable()) ||
+            (writeType.equals(WriteType.UPDATE) && ! field.isUpdatable())) {
             return;
         }
 
@@ -1277,9 +1280,12 @@ public abstract class AbstractDirectMapping extends DatabaseMapping  implements 
      * Get a value from the object and set that in the respective field of the row.
      * Validation preventing primary key updates is implemented here.
      */
-    public void writeFromObjectIntoRowWithChangeRecord(ChangeRecord changeRecord, AbstractRecord row, AbstractSession session) {
-        if (this.isReadOnly) {
-            return;
+    @Override
+    public void writeFromObjectIntoRowWithChangeRecord(ChangeRecord changeRecord, AbstractRecord row, AbstractSession session, WriteType writeType) {
+        if (this.isReadOnly || 
+           (writeType.equals(WriteType.INSERT) && ! field.isInsertable()) ||
+           (writeType.equals(WriteType.UPDATE) && ! field.isUpdatable())) {
+           return;
         }
 
         if (this.isPrimaryKeyMapping && !changeRecord.getOwner().isNew()) {
@@ -1296,6 +1302,7 @@ public abstract class AbstractDirectMapping extends DatabaseMapping  implements 
      * INTERNAL:
      * Write the attribute value from the object to the row for update.
      */
+    @Override
     public void writeFromObjectIntoRowForUpdate(WriteObjectQuery query, AbstractRecord databaseRow) {
         if (query.getSession().isUnitOfWork()) {
             if (compareObjects(query.getBackupClone(), query.getObject(), query.getSession())) {
@@ -1305,16 +1312,35 @@ public abstract class AbstractDirectMapping extends DatabaseMapping  implements 
 
         super.writeFromObjectIntoRowForUpdate(query, databaseRow);
     }
-
+    
     /**
      * INTERNAL:
      * Write fields needed for insert into the template for with null values.
      */
+    @Override
     public void writeInsertFieldsIntoRow(AbstractRecord databaseRow, AbstractSession session) {
         if (isReadOnly()) {
             return;
         }
-
-        databaseRow.add(getField(), null);
+        
+        if (getField().isInsertable()) {
+            databaseRow.add(getField(), null);
+        }
+    }
+    
+    /**
+     * INTERNAL:
+     * Write fields needed for update into the template for with null values.
+     * By default inserted fields are used.
+     */
+    @Override
+    public void writeUpdateFieldsIntoRow(AbstractRecord databaseRow, AbstractSession session) {
+        if (isReadOnly()) {
+            return;
+        }
+        
+        if (getField().isUpdatable()) {
+            databaseRow.add(getField(), null);    
+        }
     }
 }

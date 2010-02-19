@@ -73,11 +73,13 @@ public class StructureMapping extends AbstractCompositeObjectMapping {
         this.setField(new ObjectRelationalDatabaseField(fieldName));
     }
     
-    protected Object buildCompositeRow(Object attributeValue, AbstractSession session, AbstractRecord Record) {
-        AbstractRecord nestedRow = this.getObjectBuilder(attributeValue, session).buildRow(attributeValue, session);
+    @Override
+    protected Object buildCompositeRow(Object attributeValue, AbstractSession session, AbstractRecord Record, WriteType writeType) {
+        AbstractRecord nestedRow = this.getObjectBuilder(attributeValue, session).buildRow(attributeValue, session, writeType);
         return this.getReferenceDescriptor(attributeValue, session).buildFieldValueFromNestedRow(nestedRow, session);
     }
     
+    @Override
     protected Object buildCompositeObject(ObjectBuilder objectBuilder, AbstractRecord nestedRow, ObjectBuildingQuery query, JoinedAttributeManager joinManager) {
         Object aggregateObject = objectBuilder.buildNewInstance();
         objectBuilder.buildAttributesIntoObject(aggregateObject, nestedRow, query, joinManager, false);

@@ -378,6 +378,7 @@ public class EISOneToOneMapping extends ObjectReferenceMapping implements EISMap
      * Return the value of the field from the row or a value holder on the query to obtain the object.
      * Check for batch + aggregation reading.
      */
+    @Override
     public Object valueFromRow(AbstractRecord row, JoinedAttributeManager joinManager, ObjectBuildingQuery query, AbstractSession session) throws DatabaseException {
         // If any field in the foreign key is null then it means there are no referenced objects
         // Skip for partial objects as fk may not be present.
@@ -415,7 +416,8 @@ public class EISOneToOneMapping extends ObjectReferenceMapping implements EISMap
      * INTERNAL:
      * Get a value from the object and set that in the respective field of the row.
      */
-    public void writeFromObjectIntoRow(Object object, AbstractRecord Record, AbstractSession session) {
+    @Override
+    public void writeFromObjectIntoRow(Object object, AbstractRecord Record, AbstractSession session, WriteType writeType) {
         if (isReadOnly() || (!isForeignKeyRelationship())) {
             return;
         }

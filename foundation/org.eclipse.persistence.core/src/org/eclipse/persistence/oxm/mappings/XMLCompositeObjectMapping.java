@@ -397,7 +397,8 @@ public class XMLCompositeObjectMapping extends AbstractCompositeObjectMapping im
         this.setField(new XMLField(xpathString));
     }
 
-    protected Object buildCompositeRow(Object attributeValue, AbstractSession session, AbstractRecord databaseRow) {
+    @Override
+    protected Object buildCompositeRow(Object attributeValue, AbstractSession session, AbstractRecord databaseRow, WriteType writeType) {
         XMLDescriptor xmlReferenceDescriptor = null;
         try{
             xmlReferenceDescriptor = (XMLDescriptor) getReferenceDescriptor(attributeValue, session);
@@ -598,7 +599,8 @@ public class XMLCompositeObjectMapping extends AbstractCompositeObjectMapping im
     /**
      * INTERNAL:
      */
-    public void writeFromObjectIntoRow(Object object, AbstractRecord databaseRow, AbstractSession session) throws DescriptorException {
+    @Override
+    public void writeFromObjectIntoRow(Object object, AbstractRecord databaseRow, AbstractSession session, WriteType writeType) throws DescriptorException {
         if (this.isReadOnly()) {
             return;
         }
@@ -640,7 +642,7 @@ public class XMLCompositeObjectMapping extends AbstractCompositeObjectMapping im
         } else {
             Object fieldValue = null;
             if (attributeValue != null) {                               
-                fieldValue = buildCompositeRow(attributeValue, session, record);
+                fieldValue = buildCompositeRow(attributeValue, session, record, WriteType.UNDEFINED);
             } else if (getNullPolicy().compositeObjectMarshal(record, parent, (XMLField) getField(), session)) {
                 // If the null policy marshal method returns true (i.e. marshalled something)
                 // don't add/put null in the record

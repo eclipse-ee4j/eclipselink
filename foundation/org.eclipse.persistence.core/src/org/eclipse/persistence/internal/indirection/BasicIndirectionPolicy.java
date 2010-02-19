@@ -13,6 +13,8 @@
 package org.eclipse.persistence.internal.indirection;
 
 import java.util.*;
+
+import org.eclipse.persistence.mappings.DatabaseMapping.WriteType;
 import org.eclipse.persistence.queries.*;
 import org.eclipse.persistence.sessions.remote.RemoteSession;
 import org.eclipse.persistence.indirection.*;
@@ -218,7 +220,7 @@ public class BasicIndirectionPolicy extends IndirectionPolicy {
                 if (id == null) {
                     // Must build a new value holder.
                     Object object = ((UnitOfWorkValueHolder) unitOfWorkIndirectionObject).getSourceObject();
-                    AbstractRecord row = getMapping().getDescriptor().getObjectBuilder().buildRow(object, session);
+                    AbstractRecord row = getMapping().getDescriptor().getObjectBuilder().buildRow(object, session, WriteType.UNDEFINED);
                     ReadObjectQuery query = new ReadObjectQuery();
                     query.setSession(((RemoteUnitOfWork) session).getParent());
                     valueHolder = (ValueHolderInterface) getMapping().valueFromRow(row, null, query);

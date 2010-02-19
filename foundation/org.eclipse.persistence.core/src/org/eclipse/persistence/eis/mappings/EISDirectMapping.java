@@ -102,10 +102,11 @@ public class EISDirectMapping extends AbstractDirectMapping implements EISMappin
      * 
      * Get a value from the object and set that in the respective field of the row.
      */
-    public void writeFromObjectIntoRow(Object object, AbstractRecord row, AbstractSession session) {
+    @Override
+    public void writeFromObjectIntoRow(Object object, AbstractRecord row, AbstractSession session, WriteType writeType) {
         if (((EISDescriptor) this.getDescriptor()).getDataFormat() == EISDescriptor.XML) {
             ((XMLRecord) row).setSession(session);
         }
-        super.writeFromObjectIntoRow(object, row, session);
+        super.writeFromObjectIntoRow(object, row, session, writeType);
     }
 }

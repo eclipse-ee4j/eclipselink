@@ -669,6 +669,7 @@ public abstract class AbstractCompositeDirectCollectionMapping extends DatabaseM
      * INTERNAL:
      * Build the nested collection from the database row.
      */
+    @Override
     public Object valueFromRow(AbstractRecord row, JoinedAttributeManager joinManager, ObjectBuildingQuery sourceQuery, AbstractSession executionSession) throws DatabaseException {
         ContainerPolicy cp = this.getContainerPolicy();
 
@@ -698,7 +699,8 @@ public abstract class AbstractCompositeDirectCollectionMapping extends DatabaseM
      * Get the attribute value from the object and
      * store it in the appropriate field of the row.
      */
-    public void writeFromObjectIntoRow(Object object, AbstractRecord row, AbstractSession session) {
+    @Override
+    public void writeFromObjectIntoRow(Object object, AbstractRecord row, AbstractSession session, WriteType writeType) {
         if (this.isReadOnly()) {
             return;
         }
@@ -733,6 +735,7 @@ public abstract class AbstractCompositeDirectCollectionMapping extends DatabaseM
      * INTERNAL:
      * If any part of the nested collection has changed, the whole thing is written.
      */
+    @Override
     public void writeFromObjectIntoRowForUpdate(WriteObjectQuery writeQuery, AbstractRecord row) throws DescriptorException {
         AbstractSession session = writeQuery.getSession();
 
@@ -741,7 +744,7 @@ public abstract class AbstractCompositeDirectCollectionMapping extends DatabaseM
                 return;// nothing is changed, no work required
             }
         }
-        this.writeFromObjectIntoRow(writeQuery.getObject(), row, session);
+        this.writeFromObjectIntoRow(writeQuery.getObject(), row, session, WriteType.UPDATE);
     }
 
     /**
@@ -751,9 +754,10 @@ public abstract class AbstractCompositeDirectCollectionMapping extends DatabaseM
      * Loop through the reference objects and extract the
      * primary keys and put them in the vector of "nested" rows.
      */
-    public void writeFromObjectIntoRowWithChangeRecord(ChangeRecord changeRecord, AbstractRecord row, AbstractSession session) {
+    @Override
+    public void writeFromObjectIntoRowWithChangeRecord(ChangeRecord changeRecord, AbstractRecord row, AbstractSession session, WriteType writeType) {
         Object object = ((ObjectChangeSet)changeRecord.getOwner()).getUnitOfWorkClone();
-        this.writeFromObjectIntoRow(object, row, session);
+        this.writeFromObjectIntoRow(object, row, session, writeType);
     }
 
     /**

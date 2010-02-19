@@ -339,7 +339,8 @@ public class XMLCompositeDirectCollectionMapping extends AbstractCompositeDirect
     /**
      * INTERNAL:
      */
-    public void writeFromObjectIntoRow(Object object, AbstractRecord row, AbstractSession session) {
+    @Override
+    public void writeFromObjectIntoRow(Object object, AbstractRecord row, AbstractSession session, WriteType writeType) {
         if (this.isReadOnly()) {
             return;
         }

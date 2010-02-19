@@ -350,14 +350,28 @@
         </attributes>
     </entity>
     <entity name="XML_OFFICIAL" class="Official" access="PROPERTY">
+        <secondary-table name="XML_OFFICIAL_COMPENSATION"/>
+        <named-query name="UpdateXMLOfficalName">
+            <query>UPDATE XML_OFFICIAL o set o.name = :name where o.id = :id</query>
+        </named-query>
         <attributes>
             <id name="id">
                 <column name="ID"/>
                 <generated-value strategy="TABLE" generator="XML_OFFICIAL_TABLE_GENERATOR"/>
             </id>
             <basic name="name">
-                <column name="NAME"/>
+                <column name="NAME" updatable="false"/>
             </basic>
+            <basic name="age">
+                <column name="AGE" insertable="false" updatable="true"/>
+            </basic>
+            <basic name="salary">
+                <column table="XML_OFFICIAL_COMPENSATION" insertable="true" updatable="false"/>
+            </basic>
+            <basic name="bonus">
+                <column table="XML_OFFICIAL_COMPENSATION" insertable="false" updatable="true"/>
+            </basic>
+            <embedded name="serviceTime"/>
         </attributes>
     </entity>
     <entity name="XML_WITNESS" class="Witness" access="PROPERTY">
@@ -442,6 +456,16 @@
                     <cascade-merge/>
                 </cascade>
             </many-to-many>
+        </attributes>
+    </embeddable>
+    <embeddable class="ServiceTime">
+        <attributes>
+            <basic name="endDate">
+                <column name="END_DATE" insertable="false" updatable="true"/>
+            </basic>
+            <basic name="startDate">
+                <column name="START_DATE" updatable="false"/>
+            </basic>
         </attributes>
     </embeddable>
 </entity-mappings>
