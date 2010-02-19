@@ -1319,7 +1319,8 @@ public abstract class AbstractTransformationMapping extends DatabaseMapping {
      * INTERNAL:
      * Get a value from the object and set that in the respective field of the row.
      */
-    public void writeFromObjectIntoRow(Object object, AbstractRecord row, AbstractSession session) {
+    @Override
+    public void writeFromObjectIntoRow(Object object, AbstractRecord row, AbstractSession session, WriteType writeType) {
         if (isReadOnly()) {
             return;
         }
@@ -1337,7 +1338,8 @@ public abstract class AbstractTransformationMapping extends DatabaseMapping {
      * INTERNAL:
      * Get a value from the object and set that in the respective field of the row.
      */
-    public void writeFromObjectIntoRowWithChangeRecord(ChangeRecord changeRecord, AbstractRecord row, AbstractSession session) {
+    @Override
+    public void writeFromObjectIntoRowWithChangeRecord(ChangeRecord changeRecord, AbstractRecord row, AbstractSession session, WriteType writeType) {
         if (isReadOnly()) {
             return;
         }
@@ -1366,7 +1368,7 @@ public abstract class AbstractTransformationMapping extends DatabaseMapping {
             }
         }
  
-        writeFromObjectIntoRow(query.getObject(), record, query.getSession());
+        writeFromObjectIntoRow(query.getObject(), record, query.getSession(), WriteType.UPDATE);
     }
  
     /**

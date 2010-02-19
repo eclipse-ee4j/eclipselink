@@ -29,6 +29,8 @@
  *       - 249037: JPA 2.0 persisting list item index
  *     01/26/2010-2.0.1 Guy Pelletier 
  *       - 299893: @MapKeyClass does not work with ElementCollection
+ *     02/18/2010-2.0.2 Guy Pelletier 
+ *       - 294803: @Column(updatable=false) has no effect on @Basic mappings
  ******************************************************************************/  
 package org.eclipse.persistence.testing.models.jpa.inherited;
 
@@ -77,6 +79,7 @@ public class InheritedTableManager extends TableCreator {
         addTableDefinition(build_HEINEKEN_Table());
         
         addTableDefinition(build_OFFICIAL_Table());
+        addTableDefinition(build_OFFICIAL_COMPENSATIONTable());
         addTableDefinition(build_WITNESS_Table());
         addTableDefinition(build_CERTIFICATION_Table());
         addTableDefinition(build_COMMITTEE_Table());
@@ -1547,6 +1550,36 @@ public class InheritedTableManager extends TableCreator {
         DESCRIPTION_field.setIsIdentity(false);
         table.addField(DESCRIPTION_field);
         
+        FieldDefinition AGE_field = new FieldDefinition();
+        AGE_field.setName("AGE");
+        AGE_field.setTypeName("NUMERIC");
+        AGE_field.setSize(15);
+        AGE_field.setIsPrimaryKey(false);
+        AGE_field.setUnique(false);
+        AGE_field.setIsIdentity(false);
+        AGE_field.setShouldAllowNull(true);
+        table.addField(AGE_field);
+        
+        FieldDefinition fieldSTARTDATE = new FieldDefinition();
+        fieldSTARTDATE.setName("START_DATE");
+        fieldSTARTDATE.setTypeName("VARCHAR");
+        fieldSTARTDATE.setSize(40);
+        fieldSTARTDATE.setShouldAllowNull(true);
+        fieldSTARTDATE.setIsPrimaryKey(false);
+        fieldSTARTDATE.setUnique(false);
+        fieldSTARTDATE.setIsIdentity(false);
+        table.addField(fieldSTARTDATE);
+    
+        FieldDefinition fieldENDDATE = new FieldDefinition();
+        fieldENDDATE.setName("END_DATE");
+        fieldENDDATE.setTypeName("VARCHAR");
+        fieldENDDATE.setSize(40);
+        fieldENDDATE.setShouldAllowNull(true);
+        fieldENDDATE.setIsPrimaryKey(false);
+        fieldENDDATE.setUnique(false);
+        fieldENDDATE.setIsIdentity(false);
+        table.addField(fieldENDDATE);
+        
         FieldDefinition EBC_ID_field = new FieldDefinition();
         EBC_ID_field.setName("FK_EBC_ID");
         EBC_ID_field.setTypeName("NUMERIC");
@@ -1556,7 +1589,6 @@ public class InheritedTableManager extends TableCreator {
         EBC_ID_field.setUnique(false);
         EBC_ID_field.setIsIdentity(false);
         EBC_ID_field.setForeignKeyFieldName("EXPERT_CONSUMER.ID");
-        //EBC_ID_field.setForeignKeyFieldName("CMP3_CONSUMER.ID");
         table.addField(EBC_ID_field);
         
         FieldDefinition NBC_ID_field = new FieldDefinition();
@@ -1569,7 +1601,45 @@ public class InheritedTableManager extends TableCreator {
         NBC_ID_field.setIsIdentity(false);
         NBC_ID_field.setForeignKeyFieldName("NOVICE_CONSUMER.ID");
         table.addField(NBC_ID_field);
+        
+        return table;
+    }
+    
+    public static TableDefinition build_OFFICIAL_COMPENSATIONTable() {
+        TableDefinition table = new TableDefinition();
+        table.setName("JPA_OFFICIAL_COMPENSATION");
+    
+        FieldDefinition ID_field = new FieldDefinition();
+        ID_field.setName("ID");
+        ID_field.setTypeName("NUMERIC");
+        ID_field.setSize(15);
+        ID_field.setIsPrimaryKey(true);
+        ID_field.setUnique(false);
+        ID_field.setIsIdentity(false);
+        ID_field.setShouldAllowNull(false);
+        ID_field.setForeignKeyFieldName("JPA_OFFICIAL.ID");
+        table.addField(ID_field);
 
+        FieldDefinition SALARY_field = new FieldDefinition();
+        SALARY_field.setName("SALARY");
+        SALARY_field.setTypeName("NUMERIC");
+        SALARY_field.setSize(15);
+        SALARY_field.setIsPrimaryKey(false);
+        SALARY_field.setUnique(false);
+        SALARY_field.setIsIdentity(false);
+        SALARY_field.setShouldAllowNull(true);
+        table.addField(SALARY_field);
+        
+        FieldDefinition BONUS_field = new FieldDefinition();
+        BONUS_field.setName("BONUS");
+        BONUS_field.setTypeName("NUMERIC");
+        BONUS_field.setSize(15);
+        BONUS_field.setIsPrimaryKey(false);
+        BONUS_field.setUnique(false);
+        BONUS_field.setIsIdentity(false);
+        BONUS_field.setShouldAllowNull(true);
+        table.addField(BONUS_field);
+        
         return table;
     }
     

@@ -146,7 +146,8 @@ public class XMLBinaryDataMapping extends XMLDirectMapping {
         setField(new XMLField(xpathString));
     }
 
-    public void writeFromObjectIntoRow(Object object, AbstractRecord row, AbstractSession session) {
+    @Override
+    public void writeFromObjectIntoRow(Object object, AbstractRecord row, AbstractSession session, WriteType writeType) {
         Object attributeValue = getAttributeValueFromObject(object);
         if (attributeValue == null) {
             return;

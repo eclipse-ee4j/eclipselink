@@ -22,6 +22,7 @@ import java.util.Collection;
 import java.util.Iterator;
 
 import org.eclipse.persistence.internal.helper.DatabaseField;
+import org.eclipse.persistence.mappings.DatabaseMapping.WriteType;
 import org.eclipse.persistence.mappings.structures.ObjectRelationalDatabaseField;
 import org.eclipse.persistence.mappings.structures.ObjectRelationalDataTypeDescriptor;
 import org.eclipse.persistence.descriptors.ClassDescriptor;
@@ -110,7 +111,7 @@ public class BindCallCustomParameter {
                 if ((descriptor!=null) && (descriptor.isObjectRelationalDataTypeDescriptor())){
                     //this is used to convert non-null objects passed through stored procedures and custom SQL to structs 
                     ObjectRelationalDataTypeDescriptor ord=(ObjectRelationalDataTypeDescriptor)descriptor;
-                    AbstractRecord nestedRow = ord.getObjectBuilder().buildRow(parameter, session);
+                    AbstractRecord nestedRow = ord.getObjectBuilder().buildRow(parameter, session, WriteType.UNDEFINED);
                     return ord.buildStructureFromRow(nestedRow, session, connection);
                 }
             }

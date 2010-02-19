@@ -853,7 +853,8 @@ public abstract class AbstractCompositeCollectionMapping extends AggregateMappin
      * Get the attribute value from the object and add the appropriate
      * values to the specified database row.
      */
-    public void writeFromObjectIntoRow(Object object, AbstractRecord row, AbstractSession session) throws DescriptorException {
+    @Override
+    public void writeFromObjectIntoRow(Object object, AbstractRecord row, AbstractSession session, WriteType writeType) throws DescriptorException {
         if (this.isReadOnly()) {
             return;
         }
@@ -873,7 +874,7 @@ public abstract class AbstractCompositeCollectionMapping extends AggregateMappin
             if (hasConverter()) {
                 element = getConverter().convertObjectValueToDataValue(element, session);
             }
-            nestedRows.addElement(buildCompositeRow(element, session, row));
+            nestedRows.addElement(buildCompositeRow(element, session, row, writeType));
         }
 
         Object fieldValue = null;
@@ -883,7 +884,7 @@ public abstract class AbstractCompositeCollectionMapping extends AggregateMappin
         row.put(this.getField(), fieldValue);
     }
 
-    protected abstract AbstractRecord buildCompositeRow(Object attributeValue, AbstractSession session, AbstractRecord record);
+    protected abstract AbstractRecord buildCompositeRow(Object attributeValue, AbstractSession session, AbstractRecord record, WriteType writeType);
 
     /**
      * INTERNAL:
@@ -903,7 +904,7 @@ public abstract class AbstractCompositeCollectionMapping extends AggregateMappin
                 return;// nothing has changed - don't put anything in the row
             }
         }
-        this.writeFromObjectIntoRow(writeQuery.getObject(), row, session);
+        this.writeFromObjectIntoRow(writeQuery.getObject(), row, session, WriteType.UPDATE);
     }
 
     /**
@@ -911,9 +912,10 @@ public abstract class AbstractCompositeCollectionMapping extends AggregateMappin
      * Get the attribute value from the object and add the appropriate
      * values to the specified database row.
      */
-    public void writeFromObjectIntoRowWithChangeRecord(ChangeRecord changeRecord, AbstractRecord row, AbstractSession session) throws DescriptorException {
+    @Override
+    public void writeFromObjectIntoRowWithChangeRecord(ChangeRecord changeRecord, AbstractRecord row, AbstractSession session, WriteType writeType) throws DescriptorException {
         Object object = ((ObjectChangeSet)changeRecord.getOwner()).getUnitOfWorkClone();
-        this.writeFromObjectIntoRow(object, row, session);
+        this.writeFromObjectIntoRow(object, row, session, writeType);
     }
 
     /**

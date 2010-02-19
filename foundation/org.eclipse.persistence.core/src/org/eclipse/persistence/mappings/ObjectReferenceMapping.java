@@ -878,7 +878,7 @@ public abstract class ObjectReferenceMapping extends ForeignReferenceMapping {
      */
     public AbstractRecord extractPrimaryKeyRowForSourceObject(Object domainObject, AbstractSession session) {
         AbstractRecord databaseRow = getDescriptor().getObjectBuilder().createRecord(session);
-        writeFromObjectIntoRow(domainObject, databaseRow, session);
+        writeFromObjectIntoRow(domainObject, databaseRow, session, WriteType.UNDEFINED);
         return databaseRow;
     }
 
@@ -1206,7 +1206,7 @@ public abstract class ObjectReferenceMapping extends ForeignReferenceMapping {
             }
         }
 
-        writeFromObjectIntoRow(object, databaseRow, session);
+        writeFromObjectIntoRow(object, databaseRow, session, WriteType.UPDATE);
     }
 
     /**
@@ -1219,14 +1219,14 @@ public abstract class ObjectReferenceMapping extends ForeignReferenceMapping {
         }
 
         if (query.isDeleteObjectQuery()) {
-            writeFromObjectIntoRow(query.getObject(), databaseRow, query.getSession());
+            writeFromObjectIntoRow(query.getObject(), databaseRow, query.getSession(), WriteType.UNDEFINED);
         } else {
             // If the original was never instantiated the backup clone has a ValueHolder of null 
             // so for this case we must extract from the original object.
             if (isAttributeValueInstantiated(query.getObject())) {
-                writeFromObjectIntoRow(query.getBackupClone(), databaseRow, query.getSession());
+                writeFromObjectIntoRow(query.getBackupClone(), databaseRow, query.getSession(), WriteType.UNDEFINED);
             } else {
-                writeFromObjectIntoRow(query.getObject(), databaseRow, query.getSession());
+                writeFromObjectIntoRow(query.getObject(), databaseRow, query.getSession(), WriteType.UNDEFINED);
             }
         }
     }

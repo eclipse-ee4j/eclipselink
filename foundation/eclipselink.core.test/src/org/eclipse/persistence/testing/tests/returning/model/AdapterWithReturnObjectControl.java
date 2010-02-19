@@ -18,6 +18,7 @@ import org.eclipse.persistence.sessions.*;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.queries.ReadObjectQuery;
 import org.eclipse.persistence.mappings.*;
+import org.eclipse.persistence.mappings.DatabaseMapping.WriteType;
 import org.eclipse.persistence.internal.helper.DatabaseField;
 import org.eclipse.persistence.sessions.DatabaseRecord;
 import org.eclipse.persistence.descriptors.ClassDescriptor;
@@ -35,7 +36,7 @@ public abstract class AdapterWithReturnObjectControl implements ProjectAndDataba
 
     public Object getObjectForInsert(Session session, Object objectToInsert) {
         ClassDescriptor desc = session.getClassDescriptor(objectToInsert);
-        Record rowToInsert = desc.getObjectBuilder().buildRow(objectToInsert, (AbstractSession)session);
+        Record rowToInsert = desc.getObjectBuilder().buildRow(objectToInsert, (AbstractSession)session, WriteType.INSERT);
         Record rowReturn = getRowForInsert(rowToInsert);
         if (rowReturn != null && !rowReturn.isEmpty()) {
             Record row = new DatabaseRecord(rowToInsert.size());
@@ -49,10 +50,10 @@ public abstract class AdapterWithReturnObjectControl implements ProjectAndDataba
 
     public Object getObjectForUpdate(Session session, Object objectToUpdateBeforeChange, Object objectToUpdateAfterChange, boolean useUOW) {
         ClassDescriptor desc = session.getClassDescriptor(objectToUpdateBeforeChange);
-        Record rowBeforeChange = desc.getObjectBuilder().buildRow(objectToUpdateBeforeChange, (AbstractSession)session);
-        Record rowAfterChange = desc.getObjectBuilder().buildRow(objectToUpdateAfterChange, (AbstractSession)session);
+        Record rowBeforeChange = desc.getObjectBuilder().buildRow(objectToUpdateBeforeChange, (AbstractSession)session, WriteType.UPDATE);
+        Record rowAfterChange = desc.getObjectBuilder().buildRow(objectToUpdateAfterChange, (AbstractSession)session, WriteType.UPDATE);
         Record rowChange = new DatabaseRecord();
-        getChange(rowChange, session, objectToUpdateBeforeChange, objectToUpdateAfterChange, desc, useUOW);
+        getChange(rowChange, session, objectToUpdateBeforeChange, objectToUpdateAfterChange, desc, useUOW, WriteType.UPDATE);
         Record rowReturn = getRowForUpdate(rowChange);
         if (rowReturn != null && !rowReturn.isEmpty()) {
             Record row = new DatabaseRecord(rowAfterChange.size());
@@ -64,34 +65,34 @@ public abstract class AdapterWithReturnObjectControl implements ProjectAndDataba
         }
     }
 
-    public void getChange(Record row, Session session, Object object1, Object object2, ClassDescriptor desc, boolean useUOW) {
+    public void getChange(Record row, Session session, Object object1, Object object2, ClassDescriptor desc, boolean useUOW, WriteType writeType) {
         for (Enumeration mappings = desc.getMappings().elements(); mappings.hasMoreElements(); ) {
             DatabaseMapping mapping = (DatabaseMapping)mappings.nextElement();
             if (!mapping.isReadOnly()) {
-                getChange(row, mapping, session, object1, object2, useUOW);
+                getChange(row, mapping, session, object1, object2, useUOW, writeType);
             }
         }
     }
 
-    public void getChange(Record row, DatabaseMapping mapping, Session session, Object object1, Object object2, boolean useUOW) {
+    public void getChange(Record row, DatabaseMapping mapping, Session session, Object object1, Object object2, boolean useUOW, WriteType writeType) {
         if (mapping.isAggregateObjectMapping()) {
             Object aggregate1 = mapping.getAttributeValueFromObject(object1);
             Object aggregate2 = mapping.getAttributeValueFromObject(object2);
             if (aggregate1 == null && aggregate2 == null) {
                 if (!useUOW) {
-                    mapping.writeFromObjectIntoRow(object2, (DatabaseRecord)row, (AbstractSession)session);
+                    mapping.writeFromObjectIntoRow(object2, (DatabaseRecord)row, (AbstractSession)session, writeType);
                 }
             } else if (aggregate1 != null && aggregate2 != null && aggregate1.getClass().equals(aggregate2.getClass())) {
                 ClassDescriptor desc = ((AggregateObjectMapping)mapping).getReferenceDescriptor();
-                getChange(row, session, aggregate1, aggregate2, desc, useUOW);
+                getChange(row, session, aggregate1, aggregate2, desc, useUOW, writeType);
             } else {
-                mapping.writeFromObjectIntoRow(object2, (DatabaseRecord)row, (AbstractSession)session);
+                mapping.writeFromObjectIntoRow(object2, (DatabaseRecord)row, (AbstractSession)session, writeType);
             }
         } else {
             Record row1 = new DatabaseRecord();
             Record row2 = new DatabaseRecord();
-            mapping.writeFromObjectIntoRow(object1, (DatabaseRecord)row1, (AbstractSession)session);
-            mapping.writeFromObjectIntoRow(object2, (DatabaseRecord)row2, (AbstractSession)session);
+            mapping.writeFromObjectIntoRow(object1, (DatabaseRecord)row1, (AbstractSession)session, writeType);
+            mapping.writeFromObjectIntoRow(object2, (DatabaseRecord)row2, (AbstractSession)session, writeType);
 
             for (int i = 0; i < row1.size(); i++) {
                 DatabaseField field = (DatabaseField)((DatabaseRecord)row1).getFields().elementAt(i);

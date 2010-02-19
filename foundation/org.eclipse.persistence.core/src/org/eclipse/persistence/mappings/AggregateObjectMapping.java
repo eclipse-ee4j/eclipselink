@@ -413,7 +413,7 @@ public class AggregateObjectMapping extends AggregateMapping implements Relation
      * INTERNAL:
      * Write the aggregate values into the parent row.
      */
-    protected void writeToRowFromAggregate(AbstractRecord record, Object object, Object attributeValue, AbstractSession session) throws DescriptorException {
+    protected void writeToRowFromAggregate(AbstractRecord record, Object object, Object attributeValue, AbstractSession session, WriteType writeType) throws DescriptorException {
         if (attributeValue == null) {
             if (this.isNullAllowed) {
                 writeNullReferenceRow(record);
@@ -422,7 +422,7 @@ public class AggregateObjectMapping extends AggregateMapping implements Relation
             }
         } else {
             if (!session.isClassReadOnly(attributeValue.getClass())) {
-                getObjectBuilder(attributeValue, session).buildRow(record, attributeValue, session);
+                getObjectBuilder(attributeValue, session).buildRow(record, attributeValue, session, writeType);
             }
         }
     }
@@ -432,7 +432,7 @@ public class AggregateObjectMapping extends AggregateMapping implements Relation
      * Build and return a database row built with the values from
      * the specified attribute value.
      */
-    protected void writeToRowFromAggregateWithChangeRecord(AbstractRecord record, ChangeRecord changeRecord, ObjectChangeSet objectChangeSet, AbstractSession session) throws DescriptorException {
+    protected void writeToRowFromAggregateWithChangeRecord(AbstractRecord record, ChangeRecord changeRecord, ObjectChangeSet objectChangeSet, AbstractSession session, WriteType writeType) throws DescriptorException {
         if (objectChangeSet == null) {
             if (this.isNullAllowed) {
                 writeNullReferenceRow(record);
@@ -442,7 +442,7 @@ public class AggregateObjectMapping extends AggregateMapping implements Relation
             }
         } else {
             if (!session.isClassReadOnly(objectChangeSet.getClassType(session))) {
-                getReferenceDescriptor(objectChangeSet.getClassType(session), session).getObjectBuilder().buildRowWithChangeSet(record, objectChangeSet, session);
+                getReferenceDescriptor(objectChangeSet.getClassType(session), session).getObjectBuilder().buildRowWithChangeSet(record, objectChangeSet, session, writeType);
             }
         }
     }
@@ -464,7 +464,7 @@ public class AggregateObjectMapping extends AggregateMapping implements Relation
                 throw DescriptorException.nullForNonNullAggregate(query.getObject(), this);
             }
         } else if ((query.getBackupClone() != null) && ((getMatchingBackupAttributeValue(query, attributeValue) == null) || !(attributeValue.getClass().equals(getMatchingBackupAttributeValue(query, attributeValue).getClass())))) {
-            getObjectBuilder(attributeValue, query.getSession()).buildRow(record, attributeValue, query.getSession());
+            getObjectBuilder(attributeValue, query.getSession()).buildRow(record, attributeValue, query.getSession(), WriteType.UPDATE);
         } else {
             if (!query.getSession().isClassReadOnly(attributeValue.getClass())) {
                 WriteObjectQuery clonedQuery = (WriteObjectQuery)query.clone();
@@ -1475,7 +1475,6 @@ public class AggregateObjectMapping extends AggregateMapping implements Relation
      * @param session
      * @return
      */
-    
     public Object wrapKey(Object key, AbstractSession session){
         return key;
     }
@@ -1485,13 +1484,16 @@ public class AggregateObjectMapping extends AggregateMapping implements Relation
      * A subclass should implement this method if it wants different behavior.
      * Write the foreign key values from the attribute to the row.
      */
+    @Override
     public void writeFromAttributeIntoRow(Object attribute, AbstractRecord row, AbstractSession session){
-        writeToRowFromAggregate(row, null, attribute, session);
+        writeToRowFromAggregate(row, null, attribute, session, WriteType.UNDEFINED);
     }
+    
     /**
      * INTERNAL:
      * Extract value of the field from the object
      */
+    @Override
     public Object valueFromObject(Object object, DatabaseField field, AbstractSession session) throws DescriptorException {
         Object attributeValue = getAttributeValueFromObject(object);
         if (attributeValue == null) {
@@ -1510,11 +1512,12 @@ public class AggregateObjectMapping extends AggregateMapping implements Relation
      * Get the attribute value from the object and add the appropriate
      * values to the specified database row.
      */
-    public void writeFromObjectIntoRow(Object object, AbstractRecord databaseRow, AbstractSession session) throws DescriptorException {
+    @Override
+    public void writeFromObjectIntoRow(Object object, AbstractRecord databaseRow, AbstractSession session, WriteType writeType) throws DescriptorException {
         if (isReadOnly()) {
             return;
         }
-        writeToRowFromAggregate(databaseRow, object, getAttributeValueFromObject(object), session);
+        writeToRowFromAggregate(databaseRow, object, getAttributeValueFromObject(object), session, writeType);
     }
 
     /**
@@ -1522,11 +1525,12 @@ public class AggregateObjectMapping extends AggregateMapping implements Relation
      * Get the attribute value from the object and add the appropriate
      * values to the specified database row.
      */
-    public void writeFromObjectIntoRowWithChangeRecord(ChangeRecord changeRecord, AbstractRecord databaseRow, AbstractSession session) throws DescriptorException {
+    @Override
+    public void writeFromObjectIntoRowWithChangeRecord(ChangeRecord changeRecord, AbstractRecord databaseRow, AbstractSession session, WriteType writeType) throws DescriptorException {
         if (isReadOnly()) {
             return;
         }
-        writeToRowFromAggregateWithChangeRecord(databaseRow, changeRecord, (ObjectChangeSet)((AggregateChangeRecord)changeRecord).getChangedObject(), session);
+        writeToRowFromAggregateWithChangeRecord(databaseRow, changeRecord, (ObjectChangeSet)((AggregateChangeRecord)changeRecord).getChangedObject(), session, writeType);
     }
 
     /**

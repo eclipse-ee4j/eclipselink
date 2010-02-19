@@ -153,7 +153,8 @@ public class XMLBinaryDataCollectionMapping extends XMLCompositeDirectCollection
         setField(new XMLField(xpathString));
     }
 
-    public void writeFromObjectIntoRow(Object object, AbstractRecord row, AbstractSession session) {
+    @Override
+    public void writeFromObjectIntoRow(Object object, AbstractRecord row, AbstractSession session, WriteType writeType) {
         XMLRecord record = (XMLRecord) row;
         XMLMarshaller marshaller = record.getMarshaller();
         Object attributeValue = getAttributeValueFromObject(object);

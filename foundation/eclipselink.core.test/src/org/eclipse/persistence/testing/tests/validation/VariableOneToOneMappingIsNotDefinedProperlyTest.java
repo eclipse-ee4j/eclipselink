@@ -23,6 +23,7 @@ import org.eclipse.persistence.internal.sessions.ObjectChangeSet;
 import org.eclipse.persistence.internal.sessions.ObjectReferenceChangeRecord;
 import org.eclipse.persistence.internal.sessions.UnitOfWorkChangeSet;
 import org.eclipse.persistence.mappings.VariableOneToOneMapping;
+import org.eclipse.persistence.mappings.DatabaseMapping.WriteType;
 import org.eclipse.persistence.queries.DeleteObjectQuery;
 import org.eclipse.persistence.sessions.DatabaseRecord;
 import org.eclipse.persistence.sessions.DatabaseSession;
@@ -92,9 +93,9 @@ public class VariableOneToOneMappingIsNotDefinedProperlyTest extends ExceptionTe
     public void test() {
         try {
             if (testMode == 0) {
-                mapping.writeFromObjectIntoRow(actor, databaseRow, (AbstractSession)getSession()); //test one
+                mapping.writeFromObjectIntoRow(actor, databaseRow, (AbstractSession)getSession(), WriteType.UNDEFINED); //test one
             } else if (testMode == 1) {
-                mapping.writeFromObjectIntoRowWithChangeRecord((org.eclipse.persistence.internal.sessions.ChangeRecord)changeRecord, databaseRow, (AbstractSession)getSession()); //test two
+                mapping.writeFromObjectIntoRowWithChangeRecord((org.eclipse.persistence.internal.sessions.ChangeRecord)changeRecord, databaseRow, (AbstractSession)getSession(), WriteType.UNDEFINED); //test two
             } else if (testMode == 2) {
                 mapping.writeFromObjectIntoRowForWhereClause(deleteObjectQuery, databaseRow); //test three           
             } else {

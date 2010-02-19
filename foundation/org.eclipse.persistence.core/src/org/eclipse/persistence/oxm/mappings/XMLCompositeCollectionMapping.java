@@ -346,7 +346,8 @@ public class XMLCompositeCollectionMapping extends AbstractCompositeCollectionMa
         return descriptor.getObjectBuilder().buildObject(query, nestedRow, joinManger);
     }
 
-    protected AbstractRecord buildCompositeRow(Object attributeValue, AbstractSession session, AbstractRecord parentRow) {
+    @Override
+    protected AbstractRecord buildCompositeRow(Object attributeValue, AbstractSession session, AbstractRecord parentRow, WriteType writeType) {
         ClassDescriptor classDesc = null;
         try{
             classDesc = getReferenceDescriptor(attributeValue, session);
@@ -382,7 +383,8 @@ public class XMLCompositeCollectionMapping extends AbstractCompositeCollectionMa
     /**
      * INTERNAL:
      */
-    public void writeFromObjectIntoRow(Object object, AbstractRecord row, AbstractSession session) throws DescriptorException {
+    @Override
+    public void writeFromObjectIntoRow(Object object, AbstractRecord row, AbstractSession session, WriteType writeType) throws DescriptorException {
         if (this.isReadOnly()) {
             return;
         }
@@ -406,7 +408,7 @@ public class XMLCompositeCollectionMapping extends AbstractCompositeCollectionMa
                     element = getConverter().convertObjectValueToDataValue(element, session);
                 }
             }
-            nestedRows.addElement(buildCompositeRow(element, session, row));
+            nestedRows.addElement(buildCompositeRow(element, session, row, writeType));
         }
 
         Object fieldValue = null;
@@ -660,7 +662,7 @@ public class XMLCompositeCollectionMapping extends AbstractCompositeCollectionMa
                 element = getConverter().convertObjectValueToDataValue(element, session);
             }
         }
-        XMLRecord nestedRow = (XMLRecord) buildCompositeRow(element, session, record);
+        XMLRecord nestedRow = (XMLRecord) buildCompositeRow(element, session, record, WriteType.UNDEFINED);
         record.add(getField(), nestedRow);
     }
 

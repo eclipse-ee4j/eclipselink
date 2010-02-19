@@ -14,6 +14,7 @@ package org.eclipse.persistence.descriptors;
 
 import java.util.*;
 import org.eclipse.persistence.mappings.DatabaseMapping;
+import org.eclipse.persistence.mappings.DatabaseMapping.WriteType;
 import org.eclipse.persistence.exceptions.ValidationException;
 import org.eclipse.persistence.exceptions.DescriptorException;
 import org.eclipse.persistence.queries.*;
@@ -118,7 +119,7 @@ public class DescriptorEvent extends EventObject {
             throw ValidationException.missingMappingForAttribute(descriptor, attributeName, this.toString());
         }
         if (getRecord() != null) {
-            mapping.writeFromObjectIntoRow(getSource(), (AbstractRecord)getRecord(), getSession());
+            mapping.writeFromObjectIntoRow(getSource(), (AbstractRecord)getRecord(), getSession(), WriteType.UNDEFINED);
         }
     }
 
@@ -329,7 +330,7 @@ public class DescriptorEvent extends EventObject {
             // pass in temp Row because most mappings use row.add() not row.put() for
             // perf reasons.  We are using writeFromObjectIntoRow in order to support
             // a large number of types.
-            mapping.writeFromObjectIntoRow(clone, tempRow, getSession());
+            mapping.writeFromObjectIntoRow(clone, tempRow, getSession(), WriteType.UNDEFINED);
             ((AbstractRecord)getRecord()).mergeFrom(tempRow);
         }
         if (eventChangeSet != null) {
@@ -398,7 +399,7 @@ public class DescriptorEvent extends EventObject {
             // pass in temp Row because most mappings use row.add() not row.put() for
             // perf reasons.  We are using writeFromObjectIntoRow in order to support
             // a large number of types.
-            mapping.writeFromObjectIntoRow(clone, tempRow, getSession());
+            mapping.writeFromObjectIntoRow(clone, tempRow, getSession(), WriteType.UNDEFINED);
             ((AbstractRecord)getRecord()).mergeFrom(tempRow);
         }
         if (eventChangeSet != null) {
@@ -463,7 +464,7 @@ public class DescriptorEvent extends EventObject {
             // pass in temp Row because most mappings use row.add() not row.put() for
             // perf reasons.  We are using writeFromObjectIntoRow in order to support
             // a large number of types.
-            mapping.writeFromObjectIntoRow(clone, tempRow, getSession());
+            mapping.writeFromObjectIntoRow(clone, tempRow, getSession(), WriteType.UNDEFINED);
             ((AbstractRecord)getRecord()).mergeFrom(tempRow);
         }
         if (eventChangeSet != null) {

@@ -353,7 +353,8 @@ public class XMLDirectMapping extends AbstractDirectMapping implements XMLMappin
      * INTERNAL:
      * Get a value from the object and set that in the respective field of the row.
      */
-    public void writeFromObjectIntoRow(Object object, AbstractRecord row, AbstractSession session) {
+    @Override
+    public void writeFromObjectIntoRow(Object object, AbstractRecord row, AbstractSession session, WriteType writeType) {
         if (isReadOnly()) {
             return;
         }

@@ -787,7 +787,7 @@ public class VariableOneToOneMapping extends ObjectReferenceMapping implements R
      * when the object itself is written
      */
     @Override
-    public void writeFromObjectIntoRow(Object object, AbstractRecord record, AbstractSession session) {
+    public void writeFromObjectIntoRow(Object object, AbstractRecord record, AbstractSession session, WriteType writeType) {
         if (isReadOnly()) {
             return;
         }
@@ -824,7 +824,7 @@ public class VariableOneToOneMapping extends ObjectReferenceMapping implements R
      * when the object itself is written
      */
     @Override
-    public void writeFromObjectIntoRowWithChangeRecord(ChangeRecord changeRecord, AbstractRecord record, AbstractSession session) {
+    public void writeFromObjectIntoRowWithChangeRecord(ChangeRecord changeRecord, AbstractRecord record, AbstractSession session, WriteType writeType) {
         if (isReadOnly()) {
             return;
         }

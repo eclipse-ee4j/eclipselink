@@ -19,6 +19,8 @@
  *       - 278768: JPA 2.0 Association Override Join Table
  *     06/09/2009-2.0 Guy Pelletier 
  *       - 249037: JPA 2.0 persisting list item index
+ *     02/18/2010-2.0.2 Guy Pelletier 
+ *       - 294803: @Column(updatable=false) has no effect on @Basic mappings
  ******************************************************************************/  
 package org.eclipse.persistence.testing.tests.jpa.xml.inherited;
 
@@ -29,6 +31,7 @@ import java.util.Iterator;
 import java.util.List;
 
 import javax.persistence.EntityManager;
+import javax.persistence.Query;
 
 import junit.framework.*;
 
@@ -54,6 +57,7 @@ import org.eclipse.persistence.testing.models.jpa.xml.inherited.Record;
 import org.eclipse.persistence.testing.models.jpa.xml.inherited.Canadian;
 import org.eclipse.persistence.testing.models.jpa.xml.inherited.Certification;
 import org.eclipse.persistence.testing.models.jpa.xml.inherited.InheritedTableManager;
+import org.eclipse.persistence.testing.models.jpa.xml.inherited.ServiceTime;
 import org.eclipse.persistence.testing.models.jpa.xml.inherited.TelephoneNumber;
 import org.eclipse.persistence.testing.models.jpa.xml.inherited.Witness;
  
@@ -100,6 +104,9 @@ public class EntityMappingsInheritedJUnitTestCase extends JUnitTestCase {
         suite.addTest(new EntityMappingsInheritedJUnitTestCase("testBecksBeerConsumer"));
         // 1-M map using embeddable key
         suite.addTest(new EntityMappingsInheritedJUnitTestCase("testCoronaBeerConsumer"));
+
+        suite.addTest(new EntityMappingsInheritedJUnitTestCase("testColumnUpdatableAndInsertable"));
+        suite.addTest(new EntityMappingsInheritedJUnitTestCase("testColumnUpdatableAndInsertableThroughQuery"));
         
         return suite;
     }
@@ -722,6 +729,120 @@ public class EntityMappingsInheritedJUnitTestCase extends JUnitTestCase {
                 rollbackTransaction(em);
             }
             throw e;
+        }
+    }
+
+    public void testColumnUpdatableAndInsertable() {
+        EntityManager em = createEntityManager();
+        
+        try {
+            // Create an official
+            beginTransaction(em);
+            Official initialOfficial = new Official();
+            initialOfficial.setName("Gui Pelletier"); // insertable=true, updatable=false
+            initialOfficial.setAge(25); // insertable=false, updatable=true
+            initialOfficial.setSalary(50000); // insertable=true, updatable=false
+            initialOfficial.setBonus(10000); // insertable=false, updatable=true
+            
+            ServiceTime service = new ServiceTime();
+            service.setStartDate("Jan 1, 2008"); // insertable=true, updatable=false 
+            service.setEndDate("Jul 1, 2010"); // insertable=false, updatable=true
+            initialOfficial.setServiceTime(service);
+            
+            em.persist(initialOfficial);
+            
+            commitTransaction(em);
+            
+            // Close the EM, clear cache and get new EM.
+            closeEntityManager(em);
+            clearCache();
+            em = createEntityManager();
+            
+            // Read the official and verify its content
+            beginTransaction(em);
+            Official official = em.find(Official.class, initialOfficial.getId());
+            assertTrue("The name was not inserted", official.getName().equals("Gui Pelletier"));
+            assertTrue("The age was inserted", official.getAge() == null);
+            assertTrue("The salary was not inserted", official.getSalary() == 50000);
+            assertTrue("The bonus was inserted", official.getBonus() == null);
+            assertTrue("The embeddable start date was not inserted", official.getServiceTime().getStartDate().equals("Jan 1, 2008"));
+            assertTrue("The embeddable end date was inserted", official.getServiceTime().getEndDate() == null);
+            
+            // Change the updatable=false fields:
+            official.setName("Guy Pelletier");
+            official.setSalary(100000);
+            official.getServiceTime().setStartDate("Jan 30, 2008"); 
+            
+            // Update the insertable=false fields: 
+            official.setAge(25);
+            official.setBonus(10000);
+            official.getServiceTime().setEndDate("Jul 1, 2010");
+            
+            commitTransaction(em);
+            
+            // Close the EM, clear cache and get new EM.
+            closeEntityManager(em);
+            clearCache();
+            em = createEntityManager();
+            
+            // The refreshed official at this point should not have had any
+            // update changes to name but age should now be updated.
+            Official refreshedOfficial = em.find(Official.class, initialOfficial.getId());       
+            assertTrue("The refreshedOfficial did not match the original", getServerSession().compareObjects(initialOfficial, refreshedOfficial));
+            
+        } catch (RuntimeException e) {
+            if (isTransactionActive(em)){
+                rollbackTransaction(em);
+            }
+            
+            fail("An exception was caught during create operation: [" + e.getMessage() + "]");
+        } finally {
+            closeEntityManager(em);
+        }
+    }
+    
+    public void testColumnUpdatableAndInsertableThroughQuery() {
+        EntityManager em = createEntityManager();
+        
+        try {
+            // Create an official
+            beginTransaction(em);
+            Official initialOfficial = new Official();
+            initialOfficial.setName("Gui Pelletier");
+            em.persist(initialOfficial);
+            commitTransaction(em);
+            
+            // Close the EM, clear cache and get new EM.
+            closeEntityManager(em);
+            clearCache();
+            em = createEntityManager();
+            
+            // Update the official using a named query.
+            beginTransaction(em);
+            Query query = em.createNamedQuery("UpdateXMLOfficalName");
+            query.setParameter("name", "Guy");
+            query.setParameter("id", initialOfficial.getId());
+            query.executeUpdate();
+            Official modifiedOfficial = em.find(Official.class, initialOfficial.getId());
+            assertTrue("The name was not updated after executing the named query", modifiedOfficial.getName().equals("Guy"));
+            commitTransaction(em);
+            
+            // Close the EM, clear cache and get new EM.
+            closeEntityManager(em);
+            clearCache();
+            em = createEntityManager();
+            
+            Official refreshedOfficial = em.find(Official.class, modifiedOfficial.getId());       
+            assertTrue("The refreshedOfficial did not match the modified", getServerSession().compareObjects(modifiedOfficial, refreshedOfficial));
+            
+        } catch (Exception e) {
+            if (isTransactionActive(em)){
+                rollbackTransaction(em);
+            }
+            
+            fail("Update query failed: " + e.getMessage());
+        } finally {
+            closeEntityManager(em);
         }
     }
 }

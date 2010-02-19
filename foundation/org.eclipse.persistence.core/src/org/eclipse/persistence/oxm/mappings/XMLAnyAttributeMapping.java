@@ -285,7 +285,8 @@ public class XMLAnyAttributeMapping extends DatabaseMapping implements XMLMappin
         return xmlDescriptor;
     }
 
-    public void writeFromObjectIntoRow(Object object, AbstractRecord row, AbstractSession session) throws DescriptorException {
+    @Override
+    public void writeFromObjectIntoRow(Object object, AbstractRecord row, AbstractSession session, WriteType writeType) throws DescriptorException {
         if (this.isReadOnly()) {
             return;
         }

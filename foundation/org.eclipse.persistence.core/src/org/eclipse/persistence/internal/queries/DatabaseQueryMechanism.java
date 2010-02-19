@@ -30,6 +30,7 @@ import org.eclipse.persistence.expressions.*;
 import org.eclipse.persistence.queries.*;
 import org.eclipse.persistence.exceptions.*;
 import org.eclipse.persistence.mappings.*;
+import org.eclipse.persistence.mappings.DatabaseMapping.WriteType;
 import org.eclipse.persistence.mappings.foundation.AbstractTransformationMapping;
 import org.eclipse.persistence.logging.SessionLog;
 import org.eclipse.persistence.internal.sessions.AbstractRecord;
@@ -418,13 +419,13 @@ public abstract class DatabaseQueryMechanism implements Cloneable, Serializable 
             AbstractRecord modifyRow = writeQuery.getModifyRow();
             if (modifyRow == null) {// Maybe have been passed in as in aggregate collection.
                 if (writeQuery.shouldCascadeParts()) {
-                    writeQuery.setModifyRow(descriptor.getObjectBuilder().buildRow(object, session));
+                    writeQuery.setModifyRow(descriptor.getObjectBuilder().buildRow(object, session, WriteType.INSERT));
                 } else {
                     writeQuery.setModifyRow(descriptor.getObjectBuilder().buildRowForShallowInsert(object, session));
                 }
             } else {
                 if (writeQuery.shouldCascadeParts()) {
-                    writeQuery.setModifyRow(descriptor.getObjectBuilder().buildRow(modifyRow, object, session));
+                    writeQuery.setModifyRow(descriptor.getObjectBuilder().buildRow(modifyRow, object, session, WriteType.INSERT));
                 } else {
                     writeQuery.setModifyRow(descriptor.getObjectBuilder().buildRowForShallowInsert(modifyRow, object, session));
                 }
@@ -972,7 +973,7 @@ public abstract class DatabaseQueryMechanism implements Cloneable, Serializable 
         // The row must not be built until after preUpdate in case the object reference has changed.
         // For a user defined update in the uow to row must be built twice to check if any update is required.
         if ((writeQuery.isUserDefined() || writeQuery.isCallQuery()) && (!getSession().isUnitOfWork())) {
-            writeQuery.setModifyRow(descriptor.getObjectBuilder().buildRow(object, getSession()));
+            writeQuery.setModifyRow(descriptor.getObjectBuilder().buildRow(object, getSession(), WriteType.UNDEFINED));
         } else {
             writeQuery.setModifyRow(descriptor.getObjectBuilder().buildRowForUpdate(writeQuery));
         }
@@ -986,7 +987,7 @@ public abstract class DatabaseQueryMechanism implements Cloneable, Serializable 
         if (!getModifyRow().isEmpty() || (shouldModifyVersionField != null) || ((descriptor.getCMPPolicy() != null) && (descriptor.getCMPPolicy().getForceUpdate()))) {
             // If user defined the entire row is required. Must not be built until change is known.
             if ((writeQuery.isUserDefined() || writeQuery.isCallQuery()) && getSession().isUnitOfWork()) {
-                writeQuery.setModifyRow(descriptor.getObjectBuilder().buildRow(object, getSession()));
+                writeQuery.setModifyRow(descriptor.getObjectBuilder().buildRow(object, getSession(), WriteType.UNDEFINED));
             }
 
             // Update the write lock field if required.
@@ -1105,7 +1106,7 @@ public abstract class DatabaseQueryMechanism implements Cloneable, Serializable 
         if (!getModifyRow().isEmpty() || (shouldModifyVersionField != null) || changeSet.hasCmpPolicyForcedUpdate()) {
             // If user defined the entire row is required. Must not be built until change is known.
             if (writeQuery.isUserDefined() || writeQuery.isCallQuery()) {
-                writeQuery.setModifyRow(descriptor.getObjectBuilder().buildRow(object, session));
+                writeQuery.setModifyRow(descriptor.getObjectBuilder().buildRow(object, session, WriteType.UNDEFINED));
             }
             OptimisticLockingPolicy lockingPolicy = descriptor.getOptimisticLockingPolicy();
 

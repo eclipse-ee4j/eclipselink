@@ -1257,8 +1257,10 @@ public abstract class AbstractDirectMapping extends DatabaseMapping  implements 
      * Get a value from the object and set that in the respective field of the row.
      */
     @Override
-    public void writeFromObjectIntoRow(Object object, AbstractRecord row, AbstractSession session) {
-        if (this.isReadOnly) {
+    public void writeFromObjectIntoRow(Object object, AbstractRecord row, AbstractSession session, WriteType writeType) {
+        if (this.isReadOnly || 
+            (writeType.equals(WriteType.INSERT) && ! field.isInsertable()) ||
+            (writeType.equals(WriteType.UPDATE) && ! field.isUpdatable())) {
             return;
         }
 
@@ -1277,9 +1279,11 @@ public abstract class AbstractDirectMapping extends DatabaseMapping  implements 
      * Validation preventing primary key updates is implemented here.
      */
     @Override
-    public void writeFromObjectIntoRowWithChangeRecord(ChangeRecord changeRecord, AbstractRecord row, AbstractSession session) {
-        if (this.isReadOnly) {
-            return;
+    public void writeFromObjectIntoRowWithChangeRecord(ChangeRecord changeRecord, AbstractRecord row, AbstractSession session, WriteType writeType) {
+        if (this.isReadOnly || 
+           (writeType.equals(WriteType.INSERT) && ! field.isInsertable()) ||
+           (writeType.equals(WriteType.UPDATE) && ! field.isUpdatable())) {
+           return;
         }
 
         if (this.isPrimaryKeyMapping && !changeRecord.getOwner().isNew()) {
@@ -1306,7 +1310,7 @@ public abstract class AbstractDirectMapping extends DatabaseMapping  implements 
 
         super.writeFromObjectIntoRowForUpdate(query, databaseRow);
     }
-
+    
     /**
      * INTERNAL:
      * Write fields needed for insert into the template for with null values.
@@ -1316,7 +1320,25 @@ public abstract class AbstractDirectMapping extends DatabaseMapping  implements 
         if (isReadOnly()) {
             return;
         }
-
-        databaseRow.add(getField(), null);
+        
+        if (getField().isInsertable()) {
+            databaseRow.add(getField(), null);
+        }
+    }
+    
+    /**
+     * INTERNAL:
+     * Write fields needed for update into the template for with null values.
+     * By default inserted fields are used.
+     */
+    @Override
+    public void writeUpdateFieldsIntoRow(AbstractRecord databaseRow, AbstractSession session) {
+        if (isReadOnly()) {
+            return;
+        }
+        
+        if (getField().isUpdatable()) {
+            databaseRow.add(getField(), null);    
+        }
     }
 }

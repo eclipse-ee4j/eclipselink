@@ -42,6 +42,7 @@ import org.eclipse.persistence.internal.queries.JoinedAttributeManager;
 import org.eclipse.persistence.internal.sessions.*;
 import org.eclipse.persistence.logging.SessionLog;
 import org.eclipse.persistence.mappings.*;
+import org.eclipse.persistence.mappings.DatabaseMapping.WriteType;
 import org.eclipse.persistence.mappings.foundation.*;
 import org.eclipse.persistence.queries.*;
 import org.eclipse.persistence.mappings.querykeys.*;
@@ -175,7 +176,7 @@ public class ObjectBuilder implements Cloneable, Serializable {
                             if (mapping == null) {
                                 throw DescriptorException.missingMappingForField(secondaryKeyField, this.descriptor);
                             }
-                            mapping.writeFromObjectIntoRow(object, databaseRow, session);
+                            mapping.writeFromObjectIntoRow(object, databaseRow, session, WriteType.UNDEFINED);
                         }
                         databaseRow.put(primaryKeyField, databaseRow.get(secondaryKeyField));
                     } else {
@@ -952,20 +953,20 @@ public class ObjectBuilder implements Cloneable, Serializable {
     /**
      * Build the row representation of an object.
      */
-    public AbstractRecord buildRow(Object object, AbstractSession session) {
-        return buildRow(createRecord(session), object, session);
+    public AbstractRecord buildRow(Object object, AbstractSession session, WriteType writeType) {
+        return buildRow(createRecord(session), object, session, writeType);
     }
 
     /**
      * Build the row representation of an object.
      */
-    public AbstractRecord buildRow(AbstractRecord databaseRow, Object object, AbstractSession session) {
+    public AbstractRecord buildRow(AbstractRecord databaseRow, Object object, AbstractSession session, WriteType writeType) {
         // PERF: Avoid synchronized enumerator as is concurrency bottleneck.
         List mappings = this.descriptor.getMappings();
         int mappingsSize = mappings.size();
         for (int index = 0; index < mappingsSize; index++) {
             DatabaseMapping mapping = (DatabaseMapping)mappings.get(index);
-            mapping.writeFromObjectIntoRow(object, databaseRow, session);
+            mapping.writeFromObjectIntoRow(object, databaseRow, session, writeType);
         }
 
         // If this descriptor is involved in inheritance add the class type.
@@ -1022,13 +1023,13 @@ public class ObjectBuilder implements Cloneable, Serializable {
      * Build the row representation of an object.
      * This is only used for aggregates.
      */
-    public AbstractRecord buildRowWithChangeSet(AbstractRecord databaseRow, ObjectChangeSet objectChangeSet, AbstractSession session) {
+    public AbstractRecord buildRowWithChangeSet(AbstractRecord databaseRow, ObjectChangeSet objectChangeSet, AbstractSession session, WriteType writeType) {
         List<ChangeRecord> changes = (List)objectChangeSet.getChanges();
         int size = changes.size();
         for (int index = 0; index < size; index++) {
             ChangeRecord changeRecord = changes.get(index);
             DatabaseMapping mapping = changeRecord.getMapping();
-            mapping.writeFromObjectIntoRowWithChangeRecord(changeRecord, databaseRow, session);
+            mapping.writeFromObjectIntoRowWithChangeRecord(changeRecord, databaseRow, session, writeType);
         }
 
         // If this descriptor is involved in inheritance add the class type.
@@ -1050,7 +1051,7 @@ public class ObjectBuilder implements Cloneable, Serializable {
         for (int index = 0; index < size; index++) {
             DatabaseMapping mapping = primaryKeyMappings.get(index);
             if (mapping != null) {
-                mapping.writeFromObjectIntoRow(object, databaseRow, session);
+                mapping.writeFromObjectIntoRow(object, databaseRow, session, WriteType.UNDEFINED);
             }
         }
 
@@ -1115,7 +1116,7 @@ public class ObjectBuilder implements Cloneable, Serializable {
         for (int index = 0; index < size; index++) {
             ChangeRecord changeRecord = (ChangeRecord)changes.get(index);
             DatabaseMapping mapping = changeRecord.getMapping();
-            mapping.writeFromObjectIntoRowWithChangeRecord(changeRecord, databaseRow, session);
+            mapping.writeFromObjectIntoRowWithChangeRecord(changeRecord, databaseRow, session, WriteType.UPDATE); 
         }
 
         return databaseRow;
@@ -1949,7 +1950,7 @@ public class ObjectBuilder implements Cloneable, Serializable {
                 DatabaseMapping mapping = mappings.get(index);
                 // Primary key mapping may be null for aggregate collection.
                 if (mapping != null) {
-                    mapping.writeFromObjectIntoRow(domainObject, databaseRow, session);
+                    mapping.writeFromObjectIntoRow(domainObject, databaseRow, session, WriteType.UNDEFINED);
                 }
             }
             List<Class> primaryKeyClassifications = getPrimaryKeyClassifications();
@@ -2062,7 +2063,7 @@ public class ObjectBuilder implements Cloneable, Serializable {
 
         // PERF: use index not enumeration.
         for (int index = 0; index < getPrimaryKeyMappings().size(); index++) {
-            getPrimaryKeyMappings().get(index).writeFromObjectIntoRow(domainObject, databaseRow, session);
+            getPrimaryKeyMappings().get(index).writeFromObjectIntoRow(domainObject, databaseRow, session, WriteType.UNDEFINED);
         }
 
         // PERF: optimize simple primary key case, no need to remap.

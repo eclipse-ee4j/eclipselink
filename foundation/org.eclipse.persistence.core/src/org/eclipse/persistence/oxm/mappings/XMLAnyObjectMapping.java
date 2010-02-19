@@ -390,7 +390,8 @@ public class XMLAnyObjectMapping extends XMLAbstractAnyMapping implements XMLMap
         return null;
     }
 
-    public void writeFromObjectIntoRow(Object object, AbstractRecord row, AbstractSession session) throws DescriptorException {
+    @Override
+    public void writeFromObjectIntoRow(Object object, AbstractRecord row, AbstractSession session, WriteType writeType) throws DescriptorException {
         if (this.isReadOnly()) {
             return;
         }

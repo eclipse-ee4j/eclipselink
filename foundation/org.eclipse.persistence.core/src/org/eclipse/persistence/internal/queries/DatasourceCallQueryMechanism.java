@@ -21,6 +21,7 @@ import org.eclipse.persistence.exceptions.*;
 import org.eclipse.persistence.queries.*;
 import org.eclipse.persistence.internal.sessions.AbstractRecord;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
+import org.eclipse.persistence.mappings.DatabaseMapping.WriteType;
 
 /**
  * <p><b>Purpose</b>:
@@ -826,7 +827,7 @@ public class DatasourceCallQueryMechanism extends DatabaseQueryMechanism {
      * This is rare to occur for non-relational, however if it does each of the calls must be re-executed.
      */
     protected void updateForeignKeyFieldAfterInsert(WriteObjectQuery writeQuery) {
-        writeQuery.setModifyRow(this.getDescriptor().getObjectBuilder().buildRow(writeQuery.getObject(), this.getSession()));
+        writeQuery.setModifyRow(this.getDescriptor().getObjectBuilder().buildRow(writeQuery.getObject(), this.getSession(), WriteType.INSERT));
 
         // For CR 2923 must move to session we will execute call on now
         // so correct DatasourcePlatform used by translate. 

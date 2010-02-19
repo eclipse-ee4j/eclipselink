@@ -14,6 +14,7 @@ package org.eclipse.persistence.descriptors;
 
 import java.util.*;
 import org.eclipse.persistence.mappings.*;
+import org.eclipse.persistence.mappings.DatabaseMapping.WriteType;
 import org.eclipse.persistence.exceptions.DatabaseException;
 import org.eclipse.persistence.internal.helper.*;
 import org.eclipse.persistence.internal.sessions.AbstractRecord;
@@ -80,7 +81,7 @@ public class SelectedFieldsLockingPolicy extends FieldsLockingPolicy {
                 if(mapping == null ){
                     throw DatabaseException.specifiedLockingFieldsNotFoundInDatabase(field.getQualifiedName());
                 }else{
-                    mapping.writeFromObjectIntoRow(object, query.getTranslationRow(), query.getSession());
+                    mapping.writeFromObjectIntoRow(object, query.getTranslationRow(), query.getSession(), WriteType.UNDEFINED);
                 }
             }
         }

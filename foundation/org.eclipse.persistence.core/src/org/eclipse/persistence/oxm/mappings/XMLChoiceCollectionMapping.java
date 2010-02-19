@@ -243,7 +243,8 @@ public class XMLChoiceCollectionMapping extends DatabaseMapping implements XMLMa
        return container;
     }
 
-    public void writeFromObjectIntoRow(Object object, AbstractRecord row, AbstractSession session) throws DescriptorException {
+    @Override
+    public void writeFromObjectIntoRow(Object object, AbstractRecord row, AbstractSession session, WriteType writeType) throws DescriptorException {
         Object attributeValue = getAttributeValueFromObject(object);
         List<XMLEntry> nestedRows = new ArrayList<XMLEntry>();
         XMLRecord record = (XMLRecord)row;
@@ -276,7 +277,7 @@ public class XMLChoiceCollectionMapping extends DatabaseMapping implements XMLMa
             }
             DatabaseMapping xmlMapping = (DatabaseMapping)this.choiceElementMappings.get(associatedField);
             if(xmlMapping.isAbstractCompositeCollectionMapping()) {
-                fieldValue = ((XMLCompositeCollectionMapping)xmlMapping).buildCompositeRow(fieldValue, session, row);
+                fieldValue = ((XMLCompositeCollectionMapping)xmlMapping).buildCompositeRow(fieldValue, session, row, writeType);
             }
             XMLEntry entry = new XMLEntry();
             entry.setValue(fieldValue);

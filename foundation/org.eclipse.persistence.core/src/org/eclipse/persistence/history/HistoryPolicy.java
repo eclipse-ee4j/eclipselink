@@ -25,6 +25,7 @@ import org.eclipse.persistence.internal.sessions.AbstractRecord;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.internal.sessions.UnitOfWorkImpl;
 import org.eclipse.persistence.mappings.*;
+import org.eclipse.persistence.mappings.DatabaseMapping.WriteType;
 import org.eclipse.persistence.sessions.DatabaseRecord;
 import org.eclipse.persistence.queries.*;
 
@@ -724,7 +725,7 @@ public class HistoryPolicy implements Cloneable, Serializable {
         AbstractRecord originalModifyRow = writeQuery.getModifyRow();
         Object currentTime = null;
         if (isUpdate) {
-            modifyRow = descriptor.getObjectBuilder().buildRow(writeQuery.getObject(), writeQuery.getSession());
+            modifyRow = descriptor.getObjectBuilder().buildRow(writeQuery.getObject(), writeQuery.getSession(), WriteType.INSERT);
             // If anyone added items to the modify row, then they should also be added here.
             modifyRow.putAll(originalModifyRow);
         } else {

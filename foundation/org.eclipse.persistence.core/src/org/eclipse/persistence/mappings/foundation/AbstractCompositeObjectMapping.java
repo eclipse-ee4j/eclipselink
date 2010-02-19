@@ -292,7 +292,8 @@ public abstract class AbstractCompositeObjectMapping extends AggregateMapping {
      * Build the value for the database field and put it in the
      * specified database row.
      */
-    public void writeFromObjectIntoRow(Object object, AbstractRecord record, AbstractSession session) throws DescriptorException {
+    @Override
+    public void writeFromObjectIntoRow(Object object, AbstractRecord record, AbstractSession session, WriteType writeType) throws DescriptorException {
         if (this.isReadOnly()) {
             return;
         }
@@ -303,12 +304,12 @@ public abstract class AbstractCompositeObjectMapping extends AggregateMapping {
         if (attributeValue == null) {
             record.put(this.getField(), null);
         } else {
-            Object fieldValue = buildCompositeRow(attributeValue, session, record);
+            Object fieldValue = buildCompositeRow(attributeValue, session, record, writeType);
             record.put(this.getField(), fieldValue);
         }
     }
 
-    protected abstract Object buildCompositeRow(Object attributeValue, AbstractSession session, AbstractRecord record);
+    protected abstract Object buildCompositeRow(Object attributeValue, AbstractSession session, AbstractRecord record, WriteType writeType);
 
     /**
      * INTERNAL:
@@ -317,13 +318,14 @@ public abstract class AbstractCompositeObjectMapping extends AggregateMapping {
      * If any part of the aggregate object has changed, the entire object is
      * written to the database row (i.e. partial updates are not supported).
      */
+    @Override
     public void writeFromObjectIntoRowForUpdate(WriteObjectQuery query, AbstractRecord row) throws DescriptorException {
         if (query.getSession().isUnitOfWork()) {
             if (this.compareObjects(query.getObject(), query.getBackupClone(), query.getSession())) {
                 return;// nothing has changed
             }
         }
-        this.writeFromObjectIntoRow(query.getObject(), row, query.getSession());
+        this.writeFromObjectIntoRow(query.getObject(), row, query.getSession(), WriteType.UPDATE);
     }
 
     /**
@@ -331,9 +333,10 @@ public abstract class AbstractCompositeObjectMapping extends AggregateMapping {
      * Get the attribute value from the object and add the appropriate
      * values to the specified database row.
      */
-    public void writeFromObjectIntoRowWithChangeRecord(ChangeRecord changeRecord, AbstractRecord row, AbstractSession session) throws DescriptorException {
+    @Override
+    public void writeFromObjectIntoRowWithChangeRecord(ChangeRecord changeRecord, AbstractRecord row, AbstractSession session, WriteType writeType) throws DescriptorException {
         Object object = ((ObjectChangeSet)changeRecord.getOwner()).getUnitOfWorkClone();
-        this.writeFromObjectIntoRow(object, row, session);
+        this.writeFromObjectIntoRow(object, row, session, writeType);
     }
 
     /**

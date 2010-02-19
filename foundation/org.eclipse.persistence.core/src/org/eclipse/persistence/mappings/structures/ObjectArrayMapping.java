@@ -91,8 +91,9 @@ public class ObjectArrayMapping extends AbstractCompositeCollectionMapping  impl
         return element;
     }
 
-    protected AbstractRecord buildCompositeRow(Object attributeValue, AbstractSession session, AbstractRecord parentRow) {
-        return this.getObjectBuilder(attributeValue, session).buildRow(attributeValue, session);
+    @Override
+    protected AbstractRecord buildCompositeRow(Object attributeValue, AbstractSession session, AbstractRecord parentRow, WriteType writeType) {
+        return this.getObjectBuilder(attributeValue, session).buildRow(attributeValue, session, writeType);
     }
     
     /**

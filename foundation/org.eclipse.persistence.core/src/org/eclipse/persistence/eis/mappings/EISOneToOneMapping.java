@@ -383,7 +383,7 @@ public class EISOneToOneMapping extends ObjectReferenceMapping implements EISMap
      * Get a value from the object and set that in the respective field of the row.
      */
     @Override
-    public void writeFromObjectIntoRow(Object object, AbstractRecord Record, AbstractSession session) {
+    public void writeFromObjectIntoRow(Object object, AbstractRecord Record, AbstractSession session, WriteType writeType) {
         if (isReadOnly() || (!isForeignKeyRelationship())) {
             return;
         }
