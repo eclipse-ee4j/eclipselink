@@ -837,7 +837,7 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
     // doRollback - rollbacks transaction that contains remove and the second persist.
     public void testPersistRemoved() {
         // create an Employee
-        String firstName = "testPesistRemoved";
+        String firstName = "testPersistRemoved";
         Employee emp = new Employee();
         emp.setFirstName(firstName);
 
@@ -890,9 +890,11 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
             String localErrorMsg = msg;
             boolean exceptionWasThrown = false;
             Integer empId = null;
-            beginTransaction(em);            
+            beginTransaction(em);
             try {
                 emp = new Employee();
+                //makes debugging SQL logs a bit easier
+                emp.setSalary(i*1000);
                 emp.setFirstName(firstName);
 
                 // persist the Employee
@@ -1017,6 +1019,7 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
         EntityManager em = createEntityManager("fieldaccess");
         beginTransaction(em);
         Employee emp = new Employee();
+        emp.setFirstName("testPersistManagedNoException");
         em.persist(emp);
         em.flush();
         Integer id = emp.getId();
@@ -4236,6 +4239,8 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
     }
     
     public void testDescriptorNamedQuery(){
+        //name needs to be unique to this test to ensure test cleanup errors do not cause extra results
+        String lastNameToUse = "testDescriptorNamedQuery";
         ReadAllQuery query = new ReadAllQuery(Employee.class);
         ExpressionBuilder builder = new ExpressionBuilder();
         Expression exp = builder.get("firstName").equal(builder.getParameter("fName"));
@@ -4253,18 +4258,18 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
         try {
             Employee emp = new Employee();
             emp.setFirstName("Melvin");
-            emp.setLastName("Malone");
+            emp.setLastName(lastNameToUse);
             em.persist(emp);
             em.flush();
             
             Query ejbQuery = ((JpaEntityManager)em.getDelegate()).createDescriptorNamedQuery("findByFNameLName", Employee.class);
             
-            List results = ejbQuery.setParameter("fName", "Melvin").setParameter("lName", "Malone").getResultList();
+            List results = ejbQuery.setParameter("fName", "Melvin").setParameter("lName", lastNameToUse).getResultList();
             
             assertTrue(results.size() == 1);
             emp = (Employee)results.get(0);
             assertTrue(emp.getFirstName().equals("Melvin"));
-            assertTrue(emp.getLastName().equals("Malone"));
+            assertTrue(emp.getLastName().equals(lastNameToUse));
         } finally {
             rollbackTransaction(em);
             closeEntityManager(em);
