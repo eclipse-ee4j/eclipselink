@@ -417,7 +417,7 @@
         <jar jarfile="${eclipselink.jpa.test}/${eclipselink.tests.jar}">
            <fileset dir="${eclipselink.jpa.test}/${classes.dir}"
                     includes="org/eclipse/persistence/testing/framework/**/*.class,
-                        org/eclipse/persistence/testing/tests/**/*.class"/>
+                              org/eclipse/persistence/testing/tests/**/*.class"/>
         </jar>
     </target>
 
@@ -698,7 +698,7 @@
         </jar>
     </target>
 
-    <target name="clean" description="Clean the build">
+    <target name="clean" description="Clean the build" depends="cleanup-non-jta-ds-servertest">
         <delete includeEmptyDirs="true" failonerror="false">
             <fileset dir="${eclipselink.jpa.test}/${classes.dir}"/>
             <fileset dir="${eclipselink.jpa.test}/${build.dir}"/>
@@ -1596,13 +1596,27 @@
         <!-- Replace datasource type, name and transaction type -->
         <antcall target="replace-datasource-type" inheritRefs="true"/>
         <!-- Copy the canonical metamodel and criteria api test -->
-        <antcall target="copy_criteria_api_canonical_model" inheritRefs="true"/>
+        <antcall target="copy-criteria-api-canonical-model" inheritRefs="true"/>
         <!-- Create ejb jar. -->
         <antcall target="create-ejb-jar" inheritRefs="true"/>
         <antcall target="create-ejb-stubs" inheritRefs="true"/>
         <delete dir="stage"/>
     </target>
-
+    
+    <target name="prepare-non-jta-ds-servertest" depends="cleanup-non-jta-ds-servertest" if="is.nonjta.datasource"> 
+        <move file="${eclipselink.jpa.test}/src/org/eclipse/persistence/testing/framework/server/TestRunnerBean.java" tofile="${eclipselink.jpa.test}/src/org/eclipse/persistence/testing/framework/server/TestRunnerBean.java_jtaDS"/>        
+        <move file="src/org/eclipse/persistence/testing/framework/server/TestRunnerBean.java_nonjtaDS" tofile="src/org/eclipse/persistence/testing/framework/server/TestRunnerBean.java"/>
+    </target>
+    
+    <target name="jta-ds-servertest-existence">
+        <available file="${eclipselink.jpa.test}/src/org/eclipse/persistence/testing/framework/server/TestRunnerBean.java_jtaDS" property="jta-ds-servertest.exists" value="true" />
+    </target>
+    
+    <target name="cleanup-non-jta-ds-servertest" depends="jta-ds-servertest-existence" if="jta-ds-servertest.exists"> 
+        <move file="${eclipselink.jpa.test}/src/org/eclipse/persistence/testing/framework/server/TestRunnerBean.java" tofile="${eclipselink.jpa.test}/src/org/eclipse/persistence/testing/framework/server/TestRunnerBean.java_nonjtaDS"/>        
+        <move file="src/org/eclipse/persistence/testing/framework/server/TestRunnerBean.java_jtaDS" tofile="src/org/eclipse/persistence/testing/framework/server/TestRunnerBean.java"/>
+    </target>
+    
     <target name="replace-datasource-type" depends="replace-jta-datasource,replace-nonjta-datasource"/>
     
     <target name="replace-jta-datasource" unless="is.nonjta.datasource">
@@ -1642,7 +1656,7 @@
         </antcall>
     </target>
 
-    <target name="copy_criteria_api_canonical_model" if="is.criteria.server.test">
+    <target name="copy-criteria-api-canonical-model" if="is.criteria.server.test">
         <!-- Coping the CriteriaServerTestSuite class -->
         <antcall target="compile"/>
         <copy todir="${eclipselink.jpa.test}/stage">
@@ -1673,11 +1687,12 @@
     </target>
 
     <!-- Build the client jar, ejb jar, and ear. -->
-    <target name="server-build" depends="server-build-client-jar,server-build-ejb-jar,server-build-ear"/>
+    <target name="server-build" depends="prepare-non-jta-ds-servertest,server-build-client-jar,server-build-ejb-jar,server-build-ear"/>
 
     <!-- Build, deploy and run a test suite on the server. -->
     <target name="server-run-all" depends="detect-os,set-app-name">
         <antcall target="server-build" inheritRefs="true"/>
+        <antcall target="cleanup-non-jta-ds-servertest" inheritRefs="true"/>
         <antcall target="server-deploy" inheritRefs="true">
             <param name="ear.name" value="${EAR_NAME}.ear"/>
             <param name="application.name" value="${EAR_NAME}"/>
