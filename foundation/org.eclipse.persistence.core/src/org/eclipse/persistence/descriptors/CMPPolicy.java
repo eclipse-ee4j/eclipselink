@@ -326,7 +326,7 @@ public class CMPPolicy implements java.io.Serializable {
                 //get reference descriptor and extract pk from target cmp policy
                 keyInstance = mapping.getReferenceDescriptor().getCMPPolicy().createPrimaryKeyInstanceFromPrimaryKeyValues(session, elementIndex, keyElements);
             }
-            elementIndex[0] = elementIndex[0]++; // remove processed key incase keys are complex and derrived
+            elementIndex[0] = elementIndex[0]+ 1; // remove processed key incase keys are complex and derrived
         } else {
             keyInstance = getPKClassInstance();
             //get clone of Key so we can remove values.
