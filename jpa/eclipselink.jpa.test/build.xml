@@ -1583,6 +1583,12 @@
                 <include name="*.xml"/>
             </fileset>
         </copy>
+        <!--Empty ejb-jar.xml is needed for GlassFish when run jpa tests against NonJTA datasource-->
+        <copy todir="${eclipselink.jpa.test}/stage/META-INF">
+            <fileset dir="${eclipselink.jpa.test}/resource/${server.name}">
+                <include name="ejb-jar.xml"/>
+            </fileset>
+        </copy>
 
         <copy todir="${eclipselink.jpa.test}/stage/" overwrite="true" failonerror="false">
             <fileset dir="${eclipselink.jpa.test}/resource/${MODEL_NAME}/server/">
