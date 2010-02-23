@@ -785,8 +785,9 @@ public class XMLConversionManager extends ConversionManager implements TimeZoneH
         }
 
         GregorianCalendar cal = xmlGregorianCalender.toGregorianCalendar();
-        cal.setTimeZone(getTimeZone());
-
+        if(xmlGregorianCalender.getTimezone() == DatatypeConstants.FIELD_UNDEFINED) {
+            cal.setTimeZone(getTimeZone());
+        }
         QName  calendarQName = xmlGregorianCalender.getXMLSchemaType();
         if(!calendarQName.equals(schemaType)){
             if (XMLConstants.DATE_QNAME.equals(schemaType)){
