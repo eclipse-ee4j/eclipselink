@@ -115,7 +115,6 @@
         <exec executable="${glassfish.home}/bin/asadmin${extension}" spawn="true">
             <arg value="start-domain"/>
             <arg value="domain1"/>
-            <arg value="-Dis.JTA=${is.JTA}"/>
         </exec>
         <echo message="I'm going to sleep 2 minutes waiting for glassfish domain1 to be started up ..."/>
         <sleep minutes="2"/>
