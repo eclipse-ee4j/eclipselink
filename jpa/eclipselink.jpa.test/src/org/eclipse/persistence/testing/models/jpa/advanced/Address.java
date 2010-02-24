@@ -22,6 +22,8 @@ import org.eclipse.persistence.annotations.NamedStoredProcedureQuery;
 import org.eclipse.persistence.annotations.NamedStoredProcedureQueries;
 import org.eclipse.persistence.annotations.StoredProcedureParameter;
 import org.eclipse.persistence.annotations.Convert;
+
+import static org.eclipse.persistence.annotations.Direction.IN;
 import static org.eclipse.persistence.annotations.Direction.OUT;
 import static org.eclipse.persistence.annotations.Direction.IN_OUT;
 
@@ -114,7 +116,22 @@ import static org.eclipse.persistence.annotations.Direction.IN_OUT;
         parameters={
                 @StoredProcedureParameter(direction=IN_OUT, name="address_id_v", queryParameter="ADDRESS_ID", type=Long.class),
                 @StoredProcedureParameter(direction=OUT, name="street_v", queryParameter="STREET")
-        })
+        }),
+        // This query is used to test metadata processing of array types.  The stored procedure is not availble on the database
+        // Loading of this persistence unit will fail if the processing is not working
+        @NamedStoredProcedureQuery(
+                name="TestSprocForArrayInput-not-on-database",
+                procedureName="SProc_Array_Test",
+                parameters={
+                        @StoredProcedureParameter(queryParameter="string1", direction=IN, type=String[].class),
+                        @StoredProcedureParameter(queryParameter="int1", direction=IN, type=int[].class),
+                        @StoredProcedureParameter(queryParameter="float1", direction=IN, type=float[].class),
+                        @StoredProcedureParameter(queryParameter="char1", direction=IN, type=char[].class),
+                        @StoredProcedureParameter(queryParameter="boolean1", direction=IN, type=boolean[].class),
+                        @StoredProcedureParameter(queryParameter="short1", direction=IN, type=short[].class),
+                        @StoredProcedureParameter(queryParameter="double1", direction=IN, type=double[].class),
+                        @StoredProcedureParameter(queryParameter="byte1", direction=IN, type=byte[].class)}
+       )
 })
 @SqlResultSetMappings({
     @SqlResultSetMapping(

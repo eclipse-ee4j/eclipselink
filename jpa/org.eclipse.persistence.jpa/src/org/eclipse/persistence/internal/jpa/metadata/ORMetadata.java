@@ -18,7 +18,9 @@
 package org.eclipse.persistence.internal.jpa.metadata;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.eclipse.persistence.exceptions.ValidationException;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.classes.EntityAccessor;
@@ -155,39 +157,23 @@ public abstract class ORMetadata {
      * The loader is the temp loader during predeploy, and the app loader during deploy.
      */
     public Class getJavaClass(String className) {
-        if (getEntityMappings() != null) {
-            return getEntityMappings().getClassForName(className);
+        Class primitiveClass = ORMetadata.getPrimitiveClassForName(className);
+        if (primitiveClass != null){
+            return primitiveClass;
+        }
+        String convertedClassName = className;
+        
+        // Array type names need to be converted so they can be used with Class.forName()
+        int index = className.indexOf('[');
+        if ((index > 0) && (className.charAt(index + 1) == ']')){
+            convertedClassName = "[L" + className.substring(0, index) + ";";
         }
         
-        if (className == null || className.equals("") || className.equals("void")) {
-            return void.class;
-        } else if (className.equals("boolean")) {
-            return boolean.class;
-        } else if (className.equals("byte")) {
-            return byte.class;
-        } else if (className.equals("char")) {
-            return char.class;
-        } else if (className.equals("double")) {
-            return double.class;
-        } else if (className.equals("float")) {
-            return float.class;
-        } else if (className.equals("int")) {
-            return int.class;
-        } else if (className.equals("long")) {
-            return long.class;
-        } else if (className.equals("short")) {
-            return short.class;
-        } else if (className.equals("byte[]")) {
-            return new byte[0].getClass();
-        } else if (className.equals("java.lang.Byte[]")) {
-            return new Byte[0].getClass();
-        } else if (className.equals("char[]")) {
-            return new char[0].getClass();
-        } else if (className.equals("java.lang.Character[]")) {
-            return new Character[0].getClass();
-        } else {
-            return MetadataHelper.getClassForName(className, getMetadataFactory().getLoader());
+        if (getEntityMappings() != null) {
+            return getEntityMappings().getClassForName(convertedClassName);
         }
+        
+        return MetadataHelper.getClassForName(convertedClassName, getMetadataFactory().getLoader());
     }
     
     /**
@@ -628,6 +614,48 @@ public abstract class ORMetadata {
             return m_value;
         }
     }
+        
+    // Lookup of classname to Class to resolve primitive classes
+    protected static Map<String, Class> primitiveClasses = null;
+    
+    protected static Class getPrimitiveClassForName(String className){
+        if (primitiveClasses == null){
+            primitiveClasses = new HashMap<String, Class>();
+            primitiveClasses.put("", void.class);
+            primitiveClasses.put("void", void.class);
+            primitiveClasses.put("Boolean", Boolean.class);
+            primitiveClasses.put("Byte", Byte.class);
+            primitiveClasses.put("Character", Character.class);
+            primitiveClasses.put("Double", Double.class);
+            primitiveClasses.put("Float", Float.class);
+            primitiveClasses.put("Integer", Integer.class);
+            primitiveClasses.put("Long", Long.class);
+            primitiveClasses.put("Number", Number.class);
+            primitiveClasses.put("Short", Short.class);
+            primitiveClasses.put("String", String.class);
+            primitiveClasses.put("boolean", boolean.class);
+            primitiveClasses.put("byte", byte.class);
+            primitiveClasses.put("char", char.class);
+            primitiveClasses.put("double", double.class);
+            primitiveClasses.put("float", float.class);
+            primitiveClasses.put("int", int.class);
+            primitiveClasses.put("long", long.class);
+            primitiveClasses.put("short", short.class);
+            primitiveClasses.put("byte[]", new byte[0].getClass());
+            primitiveClasses.put("char[]", new char[0].getClass());
+            primitiveClasses.put("boolean[]", new boolean[0].getClass());
+            primitiveClasses.put("double[]", new double[0].getClass());
+            primitiveClasses.put("float[]", new float[0].getClass());
+            primitiveClasses.put("int[]", new int[0].getClass());
+            primitiveClasses.put("long[]", new long[0].getClass());
+            primitiveClasses.put("short[]", new short[0].getClass());
+        }
+        if (className == null){
+            return void.class;
+        }
+        return primitiveClasses.get(className);
+    }
+
 }
 
 
