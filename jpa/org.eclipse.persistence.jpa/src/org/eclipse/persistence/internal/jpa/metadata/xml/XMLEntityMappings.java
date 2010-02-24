@@ -192,47 +192,7 @@ public class XMLEntityMappings extends ORMetadata {
      * will return void.class.
      */
     public Class getClassForName(String className) {
-        if (className == null || className.equals("") || className.equals("void")) {
-            return void.class;
-        } else if (className.equals("Boolean")) {
-            return Boolean.class;
-        } else if (className.equals("Byte")) {
-            return Byte.class;
-        } else if (className.equals("Character")) {
-            return Character.class;
-        } else if (className.equals("Double")) {
-            return Double.class;
-        } else if (className.equals("Float")) {
-            return Float.class;
-        } else if (className.equals("Integer")) {
-            return Integer.class;
-        } else if (className.equals("Long")) {
-            return Long.class;
-        } else if (className.equals("Number")) {
-            return Number.class;
-        } else if (className.equals("Short")) {
-            return Short.class;
-        } else if (className.equals("String")) {
-            return String.class;
-        } else if (className.equals("boolean")) {
-            return boolean.class;
-        } else if (className.equals("byte")) {
-            return byte.class;
-        } else if (className.equals("char")) {
-            return char.class;
-        } else if (className.equals("double")) {
-            return double.class;
-        } else if (className.equals("float")) {
-            return float.class;
-        } else if (className.equals("int")) {
-            return int.class;
-        } else if (className.equals("long")) {
-            return long.class;
-        } else if (className.equals("short")) {
-            return short.class;
-        } else {
-            return getClassForName(getFullyQualifiedClassName(className), m_loader);
-        }
+        return getClassForName(getFullyQualifiedClassName(className), m_loader);
     }
     
     /**

@@ -471,7 +471,7 @@ public class MetadataProcessor {
      */
     public void setClassLoader(ClassLoader loader) {
         m_loader = loader;
-        
+        m_factory.setLoader(loader);
         // Update the loader on all the entity mappings for this project.
         for (XMLEntityMappings entityMappings : m_project.getEntityMappings()) {
             entityMappings.setLoader(m_loader);
