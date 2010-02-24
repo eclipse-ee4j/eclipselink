@@ -144,6 +144,14 @@
         <contains string="${is.JTA}" substring="false"/>
     </condition>
 
+    <!-- This checks if testing on GlassFish with nonJTA DS  -->
+    <condition property="is.glassfish.nonjta.datasource">
+        <and>
+            <contains string="${is.JTA}" substring="false"/>
+            <contains string="${server.name}" substring="glassfish"/>
+        </and>
+    </condition>
+
     <!-- Define Spring jars needed for running JPA tests on Spring -->
     <path id="spring.path">
             <fileset dir="${spring.jlib.dir}" includes="${spring.jlib}"/>
@@ -1567,11 +1575,7 @@
         </copy>
 
         <!--Empty ejb-jar.xml is needed for GlassFish when run jpa tests against NonJTA datasource-->
-        <copy todir="${eclipselink.jpa.test}/stage/META-INF" overwrite="true">
-            <fileset dir="${eclipselink.jpa.test}/resource/${server.name}/">
-                <include name="ejb-jar.xml"/>
-            </fileset>
-        </copy>
+        <antcall target="overwrite-ejb-jar-xml-with-emptyone" inheritRefs="true"/>
 
         <copy todir="${eclipselink.jpa.test}/stage/" overwrite="true" failonerror="false">
             <fileset dir="${eclipselink.jpa.test}/resource/${MODEL_NAME}/server/">
@@ -1608,6 +1612,14 @@
         <antcall target="create-ejb-jar" inheritRefs="true"/>
         <antcall target="create-ejb-stubs" inheritRefs="true"/>
         <delete dir="stage"/>
+    </target>
+
+    <target name="overwrite-ejb-jar-xml-with-emptyone" if="is.glassfish.nonjta.datasource">
+        <copy todir="${eclipselink.jpa.test}/stage/META-INF" overwrite="true" failonerror="false">
+            <fileset dir="${eclipselink.jpa.test}/resource/${server.name}">
+                <include name="ejb-jar.xml"/>
+            </fileset>
+        </copy>
     </target>
     
     <target name="prepare-non-jta-ds-servertest" depends="cleanup-non-jta-ds-servertest" if="is.nonjta.datasource"> 
