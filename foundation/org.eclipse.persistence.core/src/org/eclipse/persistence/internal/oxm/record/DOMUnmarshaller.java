@@ -122,7 +122,13 @@ public class DOMUnmarshaller implements PlatformUnmarshaller {
     }
     
     public Schema getSchema() {
-        return parser.getXMLSchema();
+        Schema schema = null;
+        try {
+            schema = parser.getXMLSchema();
+        } catch(UnsupportedOperationException ex) {
+            //if this parser doesn't support this API, just return null for the schema
+        }
+        return schema;
     }
 
     public Object unmarshal(File file) {
