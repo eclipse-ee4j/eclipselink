@@ -1430,11 +1430,11 @@ TEXTCHAR
 
 HEX_LITERAL : '0' ('x'|'X') HEX_DIGIT+ ;
 
-INTEGER_LITERAL : ('0' | '1'..'9' '0'..'9'*) ;
+INTEGER_LITERAL : MINUS? ('0' | '1'..'9' '0'..'9'*) ;
 
 LONG_LITERAL : INTEGER_LITERAL INTEGER_SUFFIX;
 
-OCTAL_LITERAL : '0' ('0'..'7')+ ;
+OCTAL_LITERAL : MINUS? '0' ('0'..'7')+ ;
 
 // hexadecimal digit 
 fragment
@@ -1447,9 +1447,9 @@ INTEGER_SUFFIX : ('l'|'L') ;
 
 fragment
 NUMERIC_DIGITS
-    :   ('0'..'9')+ '.' ('0'..'9')*
-    |   '.' ('0'..'9')+
-    |   ('0'..'9')+
+    :   MINUS? ('0'..'9')+ '.' ('0'..'9')*
+    |   MINUS? '.' ('0'..'9')+
+    |   MINUS? ('0'..'9')+
     ;
 
 DOUBLE_LITERAL

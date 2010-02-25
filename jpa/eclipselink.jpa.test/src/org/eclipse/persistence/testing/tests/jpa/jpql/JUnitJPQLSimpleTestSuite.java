@@ -118,6 +118,7 @@ public class JUnitJPQLSimpleTestSuite extends JUnitTestCase {
         suite.addTest(new JUnitJPQLSimpleTestSuite("simpleInOneDotTest"));
         suite.addTest(new JUnitJPQLSimpleTestSuite("simpleInTest"));
         suite.addTest(new JUnitJPQLSimpleTestSuite("simpleInListTest"));
+        suite.addTest(new JUnitJPQLSimpleTestSuite("simpleInNegativeTest"));
         suite.addTest(new JUnitJPQLSimpleTestSuite("simpleLengthTest"));
         suite.addTest(new JUnitJPQLSimpleTestSuite("simpleLikeTest"));
         suite.addTest(new JUnitJPQLSimpleTestSuite("simpleLikeTestWithParameter"));
@@ -790,6 +791,32 @@ public class JUnitJPQLSimpleTestSuite extends JUnitTestCase {
         Assert.assertTrue("Simple In Test failed", comparer.compareObjects(result, expectedResult));
     }
 
+    /**
+     * Test for Bug 259974 - JPQL IN function doesn't work with negative literal values
+     * This test executes a JPQL statement with an IN function with a negative literal value
+     * and ensures it successfully returns the correct value.
+     */
+    public void simpleInNegativeTest() {
+        EntityManager em = createEntityManager();
+        em.getTransaction().begin();
+        try{
+            Employee expectedResult = new Employee();
+            expectedResult.setSalary(-12345);
+            em.persist(expectedResult);
+            em.flush();
+            
+            clearCache();
+    
+            String ejbqlString = "SELECT OBJECT(emp) FROM Employee emp WHERE emp.salary IN(-12345)";
+    
+            Employee result = (Employee)em.createQuery(ejbqlString).getSingleResult();
+    
+            Assert.assertTrue("Simple In Negative Test failed", comparer.compareObjects(result, expectedResult));
+        } finally{
+            em.getTransaction().rollback();
+        }
+    }
+    
     public void simpleLengthTest() {
         EntityManager em = createEntityManager();
 
