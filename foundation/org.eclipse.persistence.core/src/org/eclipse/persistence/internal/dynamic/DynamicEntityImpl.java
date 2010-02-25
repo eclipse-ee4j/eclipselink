@@ -8,17 +8,15 @@
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
- *     dclarke - Dynamic Persistence INCUBATION - Enhancement 200045
- *     			 http://wiki.eclipse.org/EclipseLink/Development/Dynamic
- *     
- * This code is being developed under INCUBATION and is not currently included 
- * in the automated EclipseLink build. The API in this code may change, or 
- * may never be included in the product. Please provide feedback through mailing 
- * lists or the bug database.
+ *     dclarke, mnorman - Dynamic Persistence
+ *       http://wiki.eclipse.org/EclipseLink/Development/Dynamic 
+ *       (https://bugs.eclipse.org/bugs/show_bug.cgi?id=200045)
+ *
  ******************************************************************************/
 package org.eclipse.persistence.internal.dynamic;
 
 //javase imports
+import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.util.Collection;
 import java.util.Map;
@@ -66,6 +64,8 @@ import static org.eclipse.persistence.internal.helper.Helper.getShortClassName;
 public abstract class DynamicEntityImpl implements DynamicEntity, PersistenceEntity,
     ChangeTracker, FetchGroupTracker {
 
+	static final Object UNKNOWN_VALUE = new Object();
+	
     /**
      * The persistent values indexed by the descriptor's mappings and the
      * EntityType's corresponding property list.
@@ -121,12 +121,22 @@ public abstract class DynamicEntityImpl implements DynamicEntity, PersistenceEnt
     public DynamicEntity set(String propertyName, Object value) {
         DatabaseMapping mapping = getType().getMapping(propertyName);
         checkSetType(mapping, value);
+        Object oldValue = UNKNOWN_VALUE;
         Object currentValue = mapping.getAttributeValueFromObject(this);
         if (currentValue instanceof ValueHolderInterface) {
-            ((ValueHolderInterface) currentValue).setValue(value);
+            ValueHolderInterface vh = (ValueHolderInterface)currentValue;
+            if (vh.isInstantiated()) {
+                oldValue = vh.getValue();
+            }
+            vh.setValue(value);
         }
         else {
+            oldValue = currentValue;
             mapping.setAttributeValueInObject(this, value);
+            PropertyChangeListener pcl = _persistence_getPropertyChangeListener();
+            if (pcl != null) {
+                pcl.propertyChange(new PropertyChangeEvent(this, propertyName, oldValue, value));
+            }
         }
         return this;
     }
@@ -261,7 +271,7 @@ public abstract class DynamicEntityImpl implements DynamicEntity, PersistenceEnt
     public void _persistence_setSession(Session session) {
         this.session = session;
     }
-    
+
     /**
      * String representation of the dynamic entity using the entity type name
      * and the primary key values - something like {Emp 10} or {Phone 234-5678 10}

@@ -8,15 +8,12 @@
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
- *     dclarke - Dynamic Persistence INCUBATION - Enhancement 200045
- *     			 http://wiki.eclipse.org/EclipseLink/Development/Dynamic
+ *     dclarke - Dynamic Persistence
+ *       http://wiki.eclipse.org/EclipseLink/Development/Dynamic 
+ *       (https://bugs.eclipse.org/bugs/show_bug.cgi?id=200045)
  *     mnorman - tweaks to work from Ant command-line,
- *               et database properties from System, etc.
- *     
- * This code is being developed under INCUBATION and is not currently included 
- * in the automated EclipseLink build. The API in this code may change, or 
- * may never be included in the product. Please provide feedback through mailing 
- * lists or the bug database.
+ *               get database properties from System, etc.
+ *
  ******************************************************************************/
 package org.eclipse.persistence.testing.tests.dynamic;
 

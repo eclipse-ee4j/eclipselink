@@ -1,6 +1,7 @@
 package org.eclipse.persistence.internal.xr;
 
 import java.util.HashMap;
+import java.util.Map;
 
 import org.eclipse.persistence.exceptions.DynamicException;
 
@@ -26,6 +27,17 @@ public class XRFieldInfo {
             throw DynamicException.invalidPropertyName(null, fieldName);
         }
         return i.idx;
+    }
+    
+    public String getFieldName(int fieldIdx) {
+        String fieldName = null;
+        for (Map.Entry<String, Index> me : fieldInfo.entrySet()) {
+            if (me.getValue().idx == fieldIdx) {
+                fieldName = me.getKey();
+                break;
+            }
+        }
+        return fieldName;
     }
     
     class Index {
