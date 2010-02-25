@@ -13,6 +13,7 @@
 package org.eclipse.persistence.internal.xr;
 
 //javase imports
+import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 
 //EclipseLink imports
@@ -46,6 +47,7 @@ import static org.eclipse.persistence.internal.helper.Helper.getShortClassName;
 public abstract class XRDynamicEntity implements DynamicEntity, PersistenceEntity, ChangeTracker,
     FetchGroupTracker {
 
+    static final Object UNKNOWN_VALUE = new Object();
     public static final String XR_FIELD_INFO_STATIC = "XRFI";
     
     protected XRField[] _fields;
@@ -95,16 +97,28 @@ public abstract class XRDynamicEntity implements DynamicEntity, PersistenceEntit
         set(getFieldIdx(fieldName), value);
         return (DynamicEntity)this;
     }
+
     protected void set(int fieldIdx, Object value) {
         XRField df = _fields[fieldIdx];
+        Object oldValue = UNKNOWN_VALUE;
         Object currentValue = df.fieldValue;
         if (currentValue instanceof ValueHolderInterface) {
-            ((ValueHolderInterface)currentValue).setValue(value);
+            ValueHolderInterface vh = (ValueHolderInterface)currentValue;
+            if (vh.isInstantiated()) {
+                oldValue = vh.getValue();
+            }
+            vh.setValue(value);
         }
         else {
+            oldValue = currentValue;
             df.fieldValue = value;
         }
         df.isSet = true;
+        PropertyChangeListener pcl = _persistence_getPropertyChangeListener();
+        if (pcl != null) {
+            pcl.propertyChange(new PropertyChangeEvent(this, getFieldInfo().getFieldName(fieldIdx),
+                oldValue, value));
+        }
     }
 
     //PersistenceEntity API

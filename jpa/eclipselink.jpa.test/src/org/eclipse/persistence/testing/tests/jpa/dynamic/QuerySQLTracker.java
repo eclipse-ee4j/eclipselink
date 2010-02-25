@@ -29,7 +29,7 @@
  * Contributors:
  * 		dclarke 
  ******************************************************************************/
-package org.eclipse.persistence.testing.tests.dynamic;
+package org.eclipse.persistence.testing.tests.jpa.dynamic;
 
 //javase imports
 import java.io.StringWriter;
@@ -120,6 +120,17 @@ public class QuerySQLTracker extends SessionEventAdapter {
 		}
 
 		return totalSQLCalls;
+	}
+	
+	public int getTotalCalls(String startsWith) {
+        int calls = 0;
+        for (QueryResult result : getQueries()) {
+            String sub = result.resultString.substring(0, startsWith.length());
+            if (sub.equalsIgnoreCase(startsWith)) {
+                calls++;
+            }
+        }
+        return calls;
 	}
 
 	public int getTotalSQLCalls(String startsWith) {
