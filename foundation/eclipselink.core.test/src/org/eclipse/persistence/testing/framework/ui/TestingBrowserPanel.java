@@ -1029,6 +1029,8 @@ public class TestingBrowserPanel extends JPanel implements ItemListener, junit.f
             system.useSQLServerDataDirect();
         } else if (platform.equals("MS Access (JDBCODBC)")) {
             system.useAccessJDBCODBC();
+        } else if (platform.equals("Symfoware (RDB2_TCP)")) {
+            system.useSymfowareRDB2_TCP();
         }
 
         DatabaseLogin login = system.getLogin();
@@ -1167,6 +1169,7 @@ public class TestingBrowserPanel extends JPanel implements ItemListener, junit.f
         getLoginChoice().addItem("SQLServer (DataDirect)");
         getLoginChoice().addItem("SQLServer (MS JDBC)");
         getLoginChoice().addItem("SQLServer (Weblogic Thin)");
+        getLoginChoice().addItem("Symfoware (RDB2_TCP)");
 
         loginChanged();
     }

@@ -31,6 +31,10 @@ import org.eclipse.persistence.testing.tests.failover.emulateddriver.EmulatedDri
 
     protected void setup()
     {
+        if (getSession().getPlatform().isSymfoware()) {
+            throwWarning("Test FullDatabaseFailureTest is not supported on Symfoware, "
+                    + "failover has not been implemented on this platform.");
+        }
         Project project = (Project)getSession().getProject().clone();
         DatabaseLogin login = (DatabaseLogin)project.getLogin().clone();
         login.useDirectDriverConnect();

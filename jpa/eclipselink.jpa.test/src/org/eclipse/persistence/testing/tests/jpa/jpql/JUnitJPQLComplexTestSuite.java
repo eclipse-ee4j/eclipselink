@@ -114,6 +114,7 @@ public class JUnitJPQLComplexTestSuite extends JUnitTestCase
         suite.setName("JUnitJPQLComplexTestSuite");
         suite.addTest(new JUnitJPQLComplexTestSuite("testSetup"));
         
+        suite.addTest(new JUnitJPQLComplexTestSuite("compexInTest2"));
         suite.addTest(new JUnitJPQLComplexTestSuite("complexABSTest"));
         suite.addTest(new JUnitJPQLComplexTestSuite("complexABSWithParameterTest"));
         suite.addTest(new JUnitJPQLComplexTestSuite("compexInTest"));
@@ -291,6 +292,18 @@ public class JUnitJPQLComplexTestSuite extends JUnitTestCase
             rollbackTransaction(em);
             closeEntityManager(em);
         }
+    }
+    
+    public void compexInTest2()
+    {
+        EntityManager em = createEntityManager();
+        String ejbqlString = "SELECT OBJECT(emp) FROM Employee emp WHERE emp.id IN :param";
+        
+        List params = new ArrayList();
+        params.add(-1);
+        params.add(0);
+        params.add(1);
+        List result = em.createQuery(ejbqlString).setParameter("param", params)/*.setParameter("param2", 0).setParameter("param3", 1)*/.getResultList();
     }
     
     public void compexInTest()
@@ -1315,7 +1328,10 @@ public class JUnitJPQLComplexTestSuite extends JUnitTestCase
         query.setMaxResults(maxResults);
         result = query.getResultList();
         expectedResult = allEmps.subList(firstResult, nrOfEmps - 1);
-        Assert.assertTrue("Query.setFirstResult and Query.setMaxResults Test Case Failed", result.equals(expectedResult));
+        Assert.assertTrue(
+                "Query.setFirstResult and Query.setMaxResults Test Case Failed (result="
+                        + result + "; expected=" + expectedResult + ")", result
+                        .equals(expectedResult));
         rollbackTransaction(em);
         closeEntityManager(em);
     }
@@ -1342,7 +1358,10 @@ public class JUnitJPQLComplexTestSuite extends JUnitTestCase
         query1.setMaxResults(nrOfEmps - 1);
         result1 = query1.getResultList();
         expectedResult1 = allEmps.subList(firstResult, nrOfEmps);
-        Assert.assertTrue("Query1 set FirstResult and MaxResults Test Case Failed", result1.equals(expectedResult1));
+        Assert.assertTrue(
+                "Query1 set FirstResult and MaxResults Test Case Failed (result="
+                        + result1 + "; expected=" + expectedResult1 + ")", result1
+                        .equals(expectedResult1));
 
         // Test case 2. The expected result should be exactly same as test case 1 
         // since the firstResult and maxresults setting keep unchange.
@@ -2424,6 +2443,11 @@ public class JUnitJPQLComplexTestSuite extends JUnitTestCase
     }
     
     public void complexConditionCaseInUpdateTest(){
+        if ((JUnitTestCase.getServerSession()).getPlatform().isSymfoware()) {
+            getServerSession().logMessage("Test complexConditionCaseInUpdateTest skipped for this platform, "
+                    + "Symfoware doesn't support UpdateAll/DeleteAll on multi-table objects (see rfe 298193).");
+            return;
+        }
         EntityManager em = createEntityManager();
 
         beginTransaction(em);
@@ -2551,6 +2575,12 @@ public class JUnitJPQLComplexTestSuite extends JUnitTestCase
     
     void whereExistsTest(boolean shouldUpdate) {
         String lastName = (shouldUpdate ? "update" : "delete") + "WhereExistsTest";
+        if ((JUnitTestCase.getServerSession()).getPlatform().isSymfoware()) {
+            getServerSession().logMessage("Test " + lastName + " skipped for this platform, "
+                                    + "Symfoware doesn't support UpdateAll/DeleteAll queries that involve a subquery "
+                                    + "that includes a reference to a table in the outer query (see rfe 298193).");
+            return;
+        }
         int nMen = 4;
         int nWomen = 2;
         Assert.assertTrue("Test setup problem: nMen should be greater than nWomen", nMen > nWomen);

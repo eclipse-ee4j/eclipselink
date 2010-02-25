@@ -678,9 +678,14 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
             beginTransaction(em);
             emp = em.find(Employee.class, emp.getId());
             
-            // delete the Employee from the db
-            em.createQuery("DELETE FROM Employee e WHERE e.firstName = '"+firstName+"'").executeUpdate();
-
+            if (!getServerSession().getPlatform().isSymfoware()){
+                // Symfoware does not support delete all queries on multi-table entities
+                // use a native query to delete instead 
+                em.createQuery("DELETE FROM Employee e WHERE e.firstName = '"+firstName+"'").executeUpdate();
+            } else {
+                // delete the Employee from the db
+                em.createNativeQuery("DELETE FROM CMP3_EMPLOYEE WHERE F_NAME = '"+firstName+"'").executeUpdate();
+            }
             // refresh the Employee - should fail with EntityNotFoundException
             em.refresh(emp);
             fail("entityManager.refresh(removedObject) didn't throw exception");
@@ -851,7 +856,10 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
         EntityManager em = createEntityManager();
         try{
             beginTransaction(em);
-            em.createQuery("DELETE FROM Employee e WHERE e.firstName = '"+firstName+"'").executeUpdate();
+            Query q = em.createQuery("SELECT e FROM Employee e WHERE e.firstName = '"+firstName+"'");
+            for (Object oldData : q.getResultList()) {
+                em.remove(oldData);
+            }
             commitTransaction(em);
         }catch (RuntimeException ex){
             if (isTransactionActive(em)){
@@ -914,10 +922,21 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
             try{
                 beginTransaction(em);
                 Query readQuery = em.createQuery("SELECT OBJECT(e) FROM Employee e WHERE e.phoneNumbers IS EMPTY and e.firstName like '"+firstName+"'");
-                Query updateQuery = em.createQuery("UPDATE Employee e set e.salary = 100 where e.firstName like '" + firstName + "'");
+                Query updateQuery = null;
+                
+                if (getServerSession().getPlatform().isSymfoware()){
+                    updateQuery = em.createNativeQuery("UPDATE CMP3_EMPLOYEE SET VERSION = (VERSION + 1) WHERE F_NAME LIKE '" + firstName + "' AND EMP_ID in (SELECT EMP_ID FROM CMP3_SALARY)");
+                } else {
+                    updateQuery = em.createQuery("UPDATE Employee e set e.salary = 100 where e.firstName like '" + firstName + "'");
+                }
                 updateQuery.setFlushMode(FlushModeType.AUTO);
                 em.persist(emp);
                 updateQuery.executeUpdate();
+                if (getServerSession().getPlatform().isSymfoware()){
+                    updateQuery = em.createNativeQuery("UPDATE CMP3_SALARY SET SALARY = 100 WHERE EMP_ID IN (SELECT EMP_ID FROM CMP3_EMPLOYEE WHERE F_NAME LIKE '" + firstName + "')");
+                    updateQuery.setFlushMode(FlushModeType.AUTO);
+                    updateQuery.executeUpdate();
+                }
                 Employee result = (Employee) readQuery.getSingleResult();
                 result.toString();
             }catch (javax.persistence.EntityNotFoundException ex){
@@ -937,6 +956,11 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
     }
     
     public void testAnnotationDefaultLockModeNONEOnUpdateQuery() {
+        if ((JUnitTestCase.getServerSession()).getPlatform().isSymfoware()) {
+            getServerSession().logMessage("Test testAnnotationDefaultLockModeNONEOnUpdateQuery skipped for this platform, "
+                    + "Symfoware doesn't support UpdateAll/DeleteAll on multi-table objects (see rfe 298193).");
+            return;
+        }
         EntityManager em = createEntityManager();
         
         try {
@@ -1025,6 +1049,12 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
     }
     
     public void testSubString() {
+        if ((JUnitTestCase.getServerSession()).getPlatform().isSymfoware()) {
+            getServerSession().logMessage("Test testSubString skipped for this platform, "
+                    + "Symfoware doesn't allow dynamic parameter as first argument of SUBSTRING.");
+            return;
+        }
+
         // find an existing or create a new Employee
         String firstName = "testSubString";
         Employee emp;
@@ -2269,7 +2299,10 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
         EntityManager em = createEntityManager();
         beginTransaction(em);
         try{
-            em.createQuery("DELETE FROM Employee e WHERE e.firstName = '"+firstName+"'").executeUpdate();
+            Query q = em.createQuery("SELECT e FROM Employee e WHERE e.firstName = '"+firstName+"'");
+            for (Object oldData : q.getResultList()) {
+                em.remove(oldData);
+            }
             commitTransaction(em);
         }catch (RuntimeException ex){
             if (isTransactionActive(em)){
@@ -2396,7 +2429,10 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
                 em = createEntityManager();
                 beginTransaction(em);
                 try{
-                    em.createQuery("DELETE FROM Employee e WHERE e.firstName = '"+firstName+"'").executeUpdate();
+                    Query q = em.createQuery("SELECT e FROM Employee e WHERE e.firstName = '"+firstName+"'");
+                    for (Object oldData : q.getResultList()) {
+                        em.remove(oldData);
+                    }
                     commitTransaction(em);
                 }catch (RuntimeException ex){
                     rollbackTransaction(em);
@@ -2526,7 +2562,10 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
         EntityManager em = createEntityManager();
         beginTransaction(em);
         try{
-            em.createQuery("DELETE FROM Employee e WHERE e.firstName = '"+firstName+"'").executeUpdate();
+            Query q = em.createQuery("SELECT e FROM Employee e WHERE e.firstName = '"+firstName+"'");
+            for (Object oldData : q.getResultList()) {
+                em.remove(oldData);
+            }
             commitTransaction(em);
         }catch (RuntimeException ex){
             if (isTransactionActive(em)){
@@ -2569,7 +2608,8 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
         // clean up
         beginTransaction(em);
         try{
-            em.createQuery("DELETE FROM Employee e WHERE e.firstName = '"+firstName+"'").executeUpdate();
+            emp = em.find(Employee.class, emp.getId());
+            em.remove(emp); 
             commitTransaction(em);
         }catch (RuntimeException ex){
             if (isTransactionActive(em)){
@@ -2594,7 +2634,10 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
         EntityManager em = createEntityManager();
         beginTransaction(em);
         try{
-            em.createQuery("DELETE FROM Employee e WHERE e.firstName = '"+firstName+"'").executeUpdate();
+            Query q = em.createQuery("SELECT e FROM Employee e WHERE e.firstName = '"+firstName+"'");
+            for (Object oldData : q.getResultList()) {
+                em.remove(oldData);
+            }
             commitTransaction(em);
         }catch (RuntimeException ex){
             if (isTransactionActive(em)){
@@ -2641,7 +2684,10 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
         // clean up
         beginTransaction(em);
         try{
-            em.createQuery("DELETE FROM Employee e WHERE e.firstName = '"+firstName+"'").executeUpdate();
+            Query q = em.createQuery("SELECT e FROM Employee e WHERE e.firstName = '"+firstName+"'");
+            for (Object oldData : q.getResultList()) {
+                em.remove(oldData);
+            }
             commitTransaction(em);
         }catch (RuntimeException ex){
             if (isTransactionActive(em)){
@@ -3638,7 +3684,10 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
         EntityManager em = createEntityManager();
         beginTransaction(em);
         try{
-            em.createQuery("DELETE FROM Employee e WHERE e.firstName = '"+firstName+"'").executeUpdate();
+            Query q = em.createQuery("SELECT e FROM Employee e WHERE e.firstName = '"+firstName+"'");
+            for (Object oldData : q.getResultList()) {
+                em.remove(oldData);
+            }
             commitTransaction(em);
             beginTransaction(em);
             em.persist(empToBeRemoved);
@@ -3930,6 +3979,12 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
     }
     
     protected void internalTestReadTransactionIsolation(boolean shouldOriginalBeInParentCache, boolean shouldUpdateAll, boolean shouldRefresh, boolean shouldFlush) {
+        if (shouldUpdateAll && (JUnitTestCase.getServerSession()).getPlatform().isSymfoware()) {
+            getServerSession().logMessage("A testReadTransactionIsolation test skipped for this platform, "
+                    + "Symfoware doesn't support UpdateAll/DeleteAll on multi-table objects (see rfe 298193).");
+            return;
+        }
+
         //setup
         String firstName = "testReadTransactionIsolation";
         
@@ -3937,7 +3992,10 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
         EntityManager em = createEntityManager();
         beginTransaction(em);
         try{
-            em.createQuery("DELETE FROM Employee e WHERE e.firstName = '"+firstName+"'").executeUpdate();
+            Query q = em.createQuery("SELECT e FROM Employee e WHERE e.firstName = '"+firstName+"'");
+            for (Object oldData : q.getResultList()) {
+                em.remove(oldData);
+            }
             commitTransaction(em);
         }catch (RuntimeException ex){
             if (isTransactionActive(em)){
@@ -4045,7 +4103,10 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
         // clean up
         beginTransaction(em);
         try{
-            em.createQuery("DELETE FROM Employee e WHERE e.firstName = '"+firstName+"'").executeUpdate();
+            Query q = em.createQuery("SELECT e FROM Employee e WHERE e.firstName = '"+firstName+"'");
+            for (Object oldData : q.getResultList()) {
+                em.remove(oldData);
+            }
             commitTransaction(em);
         }catch (RuntimeException ex){
             if (isTransactionActive(em)){
@@ -4061,6 +4122,11 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
     // test for bug 4755392: 
     // AFTER DELETEALL OBJECT STILL DEEMED EXISTING
     public void testFindDeleteAllPersist() {
+        if ((JUnitTestCase.getServerSession()).getPlatform().isSymfoware()) {
+            getServerSession().logMessage("Test testFindDeleteAllPersist skipped for this platform, "
+                    + "Symfoware doesn't support UpdateAll/DeleteAll on multi-table objects (see rfe 298193).");
+            return;
+        }
         String firstName = "testFindDeleteAllPersist";
 
         // create Employees        
@@ -4379,7 +4445,10 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
 
         // make sure there is no employees with this firstName
         beginTransaction(em);
-        em.createQuery("DELETE FROM Employee e WHERE e.firstName = '"+firstName+"'").executeUpdate();
+        Query q = em.createQuery("SELECT e FROM Employee e WHERE e.firstName = '"+firstName+"'");
+        for (Object oldData : q.getResultList()) {
+            em.remove(oldData);
+        }
         commitTransaction(em);
         
         // create a new Employee
@@ -4410,8 +4479,9 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
         // verify that the employee has been persisted
         em = createEntityManager();
         RuntimeException exception = null;
+        Employee persistedEmployee = null;
         try {
-            Employee persistedEmployee = (Employee)em.createQuery("SELECT OBJECT(e) FROM Employee e WHERE e.firstName = '"+firstName+"'").getSingleResult();
+            persistedEmployee = (Employee)em.createQuery("SELECT OBJECT(e) FROM Employee e WHERE e.firstName = '"+firstName+"'").getSingleResult();
             persistedEmployee.toString();
         } catch (RuntimeException runtimeException) {
             exception = runtimeException;
@@ -4419,7 +4489,7 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
 
         // clean up
         beginTransaction(em);
-        em.createQuery("DELETE FROM Employee e WHERE e.firstName = '"+firstName+"'").executeUpdate();
+        em.remove(persistedEmployee);
         commitTransaction(em);
         
         if(exception != null) {
@@ -4598,6 +4668,11 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
     }
 
     public void testGetLockModeType() {
+        if ((JUnitTestCase.getServerSession()).getPlatform().isSymfoware()) {
+            getServerSession().logMessage("Test testGetLockModeType skipped for this platform, "
+                    + "Symfoware doesn't support UpdateAll/DeleteAll on multi-table objects (see rfe 298193).");
+            return;
+        }
         // getLockModeType not supported on 1.0
         if ((! isJPA10()) && isSelectForUpateSupported()) {
             EntityManager em = createEntityManager();
@@ -5352,6 +5427,11 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
     }
     
     public void testNullifyAddressIn() {
+        if ((JUnitTestCase.getServerSession()).getPlatform().isSymfoware()) {
+            getServerSession().logMessage("Test testNullifyAddressIn skipped for this platform, " +
+                     "Symfoware doesn't support UpdateAll/DeleteAll on multi-table objects (see rfe 298193).");
+            return;
+        }
         EntityManager em = createEntityManager();
         beginTransaction(em);
         try {
@@ -5580,8 +5660,8 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
             // first param is preallocationSize, second is startValue
             // both should be positive
             internalTestSequenceObjectDefinition(10, 1, seqName, em, ss);
-            internalTestSequenceObjectDefinition(10, 5, seqName, em, ss);
-            internalTestSequenceObjectDefinition(10, 15, seqName, em, ss);
+            internalTestSequenceObjectDefinition(10, 5, seqName + "1", em, ss);
+            internalTestSequenceObjectDefinition(10, 15, seqName + "2", em, ss);
         } finally {
             closeEntityManager(em);
         }
@@ -5591,12 +5671,13 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
         NativeSequence sequence = new NativeSequence(seqName, preallocationSize, startValue, false);
         sequence.onConnect(ss.getPlatform());
         SequenceObjectDefinition def = new SequenceObjectDefinition(sequence);
-        // create sequence
-        String createStr = def.buildCreationWriter(ss, new StringWriter()).toString();
-        beginTransaction(em);
-        em.createNativeQuery(createStr).executeUpdate();
-        commitTransaction(em);
         try {
+            // create sequence
+            String createStr = def.buildCreationWriter(ss, new StringWriter()).toString();
+            beginTransaction(em);
+            em.createNativeQuery(createStr).executeUpdate();
+            commitTransaction(em);
+
             // sequence value preallocated
             Vector seqValues = sequence.getGeneratedVector(null, ss);
             int firstSequenceValue = ((Number)seqValues.elementAt(0)).intValue();
@@ -5605,6 +5686,9 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
             }
         } finally {
             sequence.onDisconnect(ss.getPlatform());
+            // Symfoware doesn't allow drop while connections that performed
+            // CREATE and DML on the sequence are still open.
+            if (JUnitTestCase.getServerSession().getPlatform().isSymfoware()) return;
             // drop sequence
             String dropStr = def.buildDeletionWriter(ss, new StringWriter()).toString();
             beginTransaction(em);
@@ -6591,12 +6675,22 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
     }
      
      public void testDeleteAllProjectsWithNullTeamLeader() {
+         if ((JUnitTestCase.getServerSession()).getPlatform().isSymfoware()) {
+             getServerSession().logMessage("Test testDeleteAllProjectsWithNullTeamLeader skipped for this platform, "
+                     + "Symfoware doesn't support UpdateAll/DeleteAll on multi-table objects (see rfe 298193).");
+             return;
+         }
          internalDeleteAllProjectsWithNullTeamLeader("Project");
      }
      public void testDeleteAllSmallProjectsWithNullTeamLeader() {
          internalDeleteAllProjectsWithNullTeamLeader("SmallProject");
      }
      public void testDeleteAllLargeProjectsWithNullTeamLeader() {
+         if ((JUnitTestCase.getServerSession()).getPlatform().isSymfoware()) {
+             getServerSession().logMessage("Test testDeleteAllLargeProjectsWithNullTeamLeader skipped for this platform, "
+                     + "Symfoware doesn't support UpdateAll/DeleteAll on multi-table objects (see rfe 298193).");
+             return;
+         }
          internalDeleteAllProjectsWithNullTeamLeader("LargeProject");
      }
      protected void internalDeleteAllProjectsWithNullTeamLeader(String className) {
@@ -6690,6 +6784,12 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
         internalUpdateUsingTempStorage(true);
     }
     protected void internalUpdateUsingTempStorage(boolean useParameter) {
+        if ((JUnitTestCase.getServerSession()).getPlatform().isSymfoware()) {
+            getServerSession().logMessage("Test testUpdateUsingTempStorage* skipped for this platform, "
+                    + "Symfoware doesn't support UpdateAll/DeleteAll on multi-table objects (see rfe 298193).");
+            return;
+        }
+
         String firstName = "testUpdateUsingTempStorage";
         int n = 3;
         
@@ -6858,6 +6958,12 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
         internalTestUpdateAllProjects(Project.class);
     }
     protected void internalTestUpdateAllProjects(Class cls) {
+        if ((JUnitTestCase.getServerSession()).getPlatform().isSymfoware()) {
+            getServerSession().logMessage("Test testUpdateAll*Projects skipped for this platform, "
+                    + "Symfoware doesn't support UpdateAll/DeleteAll on multi-table objects (see rfe 298193).");
+            return;
+        }
+
         String className = Helper.getShortClassName(cls);
         String name = "testUpdateAllProjects";
         String newName = "testUpdateAllProjectsNEW";
@@ -6960,6 +7066,11 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
         internalTestUpdateAllProjectsWithName(Project.class);
     }
     protected void internalTestUpdateAllProjectsWithName(Class cls) {
+        if ((JUnitTestCase.getServerSession()).getPlatform().isSymfoware()) {
+            getServerSession().logMessage("Test testUpdateAll*ProjectsWithName skipped for this platform, "
+                    + "Symfoware doesn't support UpdateAll/DeleteAll on multi-table objects (see rfe 298193).");
+            return;
+        }
         String className = Helper.getShortClassName(cls);
         String name = "testUpdateAllProjects";
         String newName = "testUpdateAllProjectsNEW";
@@ -7037,6 +7148,11 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
         internalTestUpdateAllProjectsWithNullTeamLeader(Project.class);
     }
     protected void internalTestUpdateAllProjectsWithNullTeamLeader(Class cls) {
+        if ((JUnitTestCase.getServerSession()).getPlatform().isSymfoware()) {
+            getServerSession().logMessage("Test testUpdateAll*ProjectsWithNullTeamLeader skipped for this platform, "
+                    + "Symfoware doesn't support UpdateAll/DeleteAll on multi-table objects (see rfe 298193).");
+            return;
+        }
         String className = Helper.getShortClassName(cls);
         String name = "testUpdateAllProjects";
         String newName = "testUpdateAllProjectsNEW";
@@ -7674,6 +7790,11 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
 
     // bug 6006423: BULK DELETE QUERY FOLLOWED BY A MERGE RETURNS DELETED OBJECT
     public void testBulkDeleteThenMerge() {
+        if ((JUnitTestCase.getServerSession()).getPlatform().isSymfoware()) {
+            getServerSession().logMessage("Test testBulkDeleteThenMerge skipped for this platform, "
+                    + "Symfoware doesn't support UpdateAll/DeleteAll on multi-table objects (see rfe 298193).");
+            return;
+        }
         if (isOnServer()) {
             // Got transaction timeout on server.
             return;
@@ -8409,6 +8530,11 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
     }
     public void testEMCloseAndOpen(){
         Assert.assertFalse("Warning Sybase Driver does not work with DriverWrapper, testEMCloseAndOpen can't run on this platform.",  JUnitTestCase.getServerSession().getPlatform().isSybase());
+        if ((JUnitTestCase.getServerSession()).getPlatform().isSymfoware()) {
+            getServerSession().logMessage("Test testEMCloseAndOpen skipped for this platform, "
+                            + "Symfoware platform doesn't support failover.");
+            return;
+        }
 
         if (isOnServer()) {
             // Uses DefaultConnector.

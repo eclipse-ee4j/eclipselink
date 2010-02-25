@@ -39,7 +39,7 @@ BatchCommitTransactionExceptionTest extends ExceptionTest {
     public void test() {
         Session session = getSession();
         DatabasePlatform plat = session.getPlatform();
-        if (plat.isOracle() || plat.isSQLServer() || plat.isSybase() || plat.isSQLAnywhere() || plat.isMySQL()) {
+        if (plat.isOracle() || plat.isSQLServer() || plat.isSybase() || plat.isSQLAnywhere() || plat.isMySQL() || plat.isSymfoware()) {
             DatabaseLogin login = session.getLogin();
             login.useBatchWriting();
             try {

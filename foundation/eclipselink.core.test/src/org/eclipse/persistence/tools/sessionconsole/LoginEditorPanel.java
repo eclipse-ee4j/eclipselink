@@ -175,6 +175,10 @@ public class LoginEditorPanel extends JPanel implements javax.swing.event.CaretL
             login.useSQLServer();
             login.setDriverClassName("com.microsoft.jdbc.sqlserver.SQLServerDriver");
             login.setDriverURLHeader("jdbc:microsoft:sqlserver://");
+        } else if (driver.equals("Symfoware (RDB2_TCP)")) {
+            login.useSymfoware();
+            login.setDriverClassName("com.fujitsu.symfoware.jdbc.SYMDriver");
+            login.setDriverURLHeader("jdbc:symford://");
         }
         login.setDatabaseURL("");
         login.setUserName("");
@@ -3027,6 +3031,7 @@ public class LoginEditorPanel extends JPanel implements javax.swing.event.CaretL
         getDriverChoice().addItem("weblogic.jdbc.mssqlserver4.Driver");
         getDriverChoice().addItem("com.mysql.jdbc.Driver");
         getDriverChoice().addItem("sun.jdbc.odbc.JdbcOdbcDriver");
+        getDriverChoice().addItem("com.fujitsu.symfoware.jdbc.SYMDriver");
 
         getPlatformChoice().removeAllItems();
         getPlatformChoice().addItem("org.eclipse.persistence.platform.database.OraclePlatform");
@@ -3046,6 +3051,7 @@ public class LoginEditorPanel extends JPanel implements javax.swing.event.CaretL
         getPlatformChoice().addItem("org.eclipse.persistence.platform.database.AccessPlatform");
         getPlatformChoice().addItem("org.eclipse.persistence.platform.database.MySQLPlatform");
         getPlatformChoice().addItem("org.eclipse.persistence.platform.database.DatabasePlatform");
+        getPlatformChoice().addItem("org.eclipse.persistence.platform.database.SymfowarePlatform");
 
         getBridgeChoice().removeAllItems();
         getBridgeChoice().addItem("Oracle thin");
@@ -3060,6 +3066,7 @@ public class LoginEditorPanel extends JPanel implements javax.swing.event.CaretL
         getBridgeChoice().addItem("MS JDBC");
         getBridgeChoice().addItem("Weblogic Thin for SQLServer");
         getBridgeChoice().addItem("Sun JDBC-ODBC");
+        getBridgeChoice().addItem("Symfoware (RDB2_TCP)");
 
         getBridgeChoice().setSelectedItem(bridge);
         getPasswordText().setText(password);

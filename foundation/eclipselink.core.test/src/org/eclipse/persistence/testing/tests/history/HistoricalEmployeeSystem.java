@@ -16,6 +16,7 @@ import org.eclipse.persistence.testing.models.employee.relational.*;
 import org.eclipse.persistence.sessions.*;
 import org.eclipse.persistence.queries.*;
 import org.eclipse.persistence.tools.history.*;
+import org.eclipse.persistence.tools.schemaframework.SchemaManager;
 import org.eclipse.persistence.testing.tests.workbenchintegration.*;
 
 /**
@@ -63,29 +64,34 @@ public class HistoricalEmployeeSystem extends EmployeeSystem {
 	}
 
 	public void createTables(DatabaseSession session) {
-		if (session.getPlatform().isOracle()) {
-            
-			executeCall(session, "drop table PHONE CASCADE CONSTRAINTS");
-			executeCall(session, "drop table RESPONS CASCADE CONSTRAINTS");
-			executeCall(session, "drop table SALARY CASCADE CONSTRAINTS");
-			executeCall(session, "drop table PROJ_EMP CASCADE CONSTRAINTS");
-			executeCall(session, "drop table LPROJECT CASCADE CONSTRAINTS");
-			executeCall(session, "drop table PROJECT CASCADE CONSTRAINTS");
-			executeCall(session, "drop table EMPLOYEE CASCADE CONSTRAINTS");
-			executeCall(session, "drop table ADDRESS CASCADE CONSTRAINTS");
-		} else {
-			executeCall(session, "drop table PHONE");
-			executeCall(session, "drop table RESPONS");
-			executeCall(session, "drop table SALARY");
-			executeCall(session, "drop table PROJ_EMP");
-			executeCall(session, "drop table LPROJECT");
-			executeCall(session, "drop table PROJECT");
-			executeCall(session, "drop table EMPLOYEE");
-			executeCall(session, "drop table ADDRESS");
+		if (!SchemaManager.FAST_TABLE_CREATOR) {
+    	    if (session.getPlatform().isOracle()) {
+                
+    			executeCall(session, "drop table PHONE CASCADE CONSTRAINTS");
+    			executeCall(session, "drop table RESPONS CASCADE CONSTRAINTS");
+    			executeCall(session, "drop table SALARY CASCADE CONSTRAINTS");
+    			executeCall(session, "drop table PROJ_EMP CASCADE CONSTRAINTS");
+    			executeCall(session, "drop table LPROJECT CASCADE CONSTRAINTS");
+    			executeCall(session, "drop table PROJECT CASCADE CONSTRAINTS");
+    			executeCall(session, "drop table EMPLOYEE CASCADE CONSTRAINTS");
+    			executeCall(session, "drop table ADDRESS CASCADE CONSTRAINTS");
+    		} else {
+    			executeCall(session, "drop table PHONE");
+    			executeCall(session, "drop table RESPONS");
+    			executeCall(session, "drop table SALARY");
+    			executeCall(session, "drop table PROJ_EMP");
+    			executeCall(session, "drop table LPROJECT");
+    			executeCall(session, "drop table PROJECT");
+    			executeCall(session, "drop table EMPLOYEE");
+    			executeCall(session, "drop table ADDRESS");
+    		}
 		}
-        
+
 		EmployeeTableCreator creator = new EmployeeTableCreator();
 		HistoryFacade.generateHistoricalTableDefinitions(creator, session);
+		// reset creator as it might have been set by tests that used
+		// the non-historical table definitions
+		creator.resetFastTableCreator();
 		creator.replaceTables(session);
 	}
     

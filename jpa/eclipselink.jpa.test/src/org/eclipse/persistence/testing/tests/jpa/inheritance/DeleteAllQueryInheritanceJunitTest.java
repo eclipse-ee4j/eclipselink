@@ -178,6 +178,11 @@ public class DeleteAllQueryInheritanceJunitTest extends JUnitTestCase {
     // Example: for Vehicle.class  9 DeleteAllQueries will be tested.
     // shouldHandleChildren==false means the test will be executed with the specified class only.
     protected static void deleteAllQueryInternal(Class referenceClass, Expression selectionExpression, boolean shouldDeferExecutionInUOW, boolean handleChildren) {
+        if (getServerSession().getDatasourcePlatform().isSymfoware()) {
+            getServerSession().logMessage("DeleteAllQueryInheritanceJunitTest test skipped for this platform, "
+                                    + "Symfoware doesn't support UpdateAll/DeleteAll on multi-table objects (see rfe 298193).");
+            return;
+        }
         String errorMsg = DeleteAllQueryTestHelper.execute(getDbSession(), referenceClass, selectionExpression, shouldDeferExecutionInUOW, handleChildren);
         if(errorMsg != null) {
             fail(errorMsg);

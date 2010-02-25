@@ -46,6 +46,10 @@ public class QueryTimeoutConnectionReleasedTest extends TestCase {
     }
     
     public void test() {
+        if (getSession().getPlatform().isSymfoware()) {
+            throwWarning("Test QueryTimeoutConnectionReleasedTest skipped for this platform, "
+                    + "the driver does not support query timeout.");
+        }
         preConnectionsAvailable = serverSession.getReadConnectionPool().getConnectionsAvailable().size();
         try {
             DataReadQuery query = new DataReadQuery();

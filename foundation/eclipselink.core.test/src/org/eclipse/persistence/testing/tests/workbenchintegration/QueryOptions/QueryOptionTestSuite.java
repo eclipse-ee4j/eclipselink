@@ -69,6 +69,10 @@ public class QueryOptionTestSuite extends TestSuite {
     public TestCase buildJoinSubclassesTest() {
         TestCase test = new TestCase() {
                 public void test() {
+                    if (getSession().getPlatform().isSymfoware()) {
+                        throwWarning("Test joinSubclassesQuery skipped on this platform, "
+                                + "Symfoware supports scrollable cursors, but not in the way expected by this test.");
+                    }
                     UnitOfWork uow = getSession().acquireUnitOfWork();
                     Cursor cursor = (Cursor)uow.executeQuery("joinSubclassesQuery", Project.class);
                     cursor.close();

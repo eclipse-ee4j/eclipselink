@@ -34,6 +34,7 @@ public  class AAA {
     
     @Id
     @GeneratedValue(strategy=GenerationType.TABLE, generator="CMP3_AAA_GENERATOR")
+    @TableGenerator(name = "CMP3_AAA_GENERATOR", table = "CMP3_AAA_SEQ")
     @Convert("stringToInt")
     @TypeConverter(name="stringToInt", dataType=Integer.class, objectType=String.class)
     public String getId() { 

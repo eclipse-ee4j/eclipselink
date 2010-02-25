@@ -37,15 +37,15 @@ public class Image implements Serializable {
     }
 
     @Lob
-    @Column(table="CMP3_CLIP")
+    @Column(table="CMP3_CLIP", length=4800)
     @Basic(fetch=FetchType.LAZY)
     public byte[] getAudio(){
         return audio;
     }
 
     @Lob
-    @Column(table="CMP3_CLIP")
-    public char[] getCommentary()    {
+    @Column(table="CMP3_CLIP", length=4500)
+    public char[] getCommentary() {
         return commentary;
     }
   
@@ -66,11 +66,13 @@ public class Image implements Serializable {
     }
 
     @Lob
+    @Column(length=4800)
     public Byte[] getPicture(){
         return picture;
     }
 
     @Lob
+    @Column(length=4500)
     public String getScript()    {
         return script;
     }

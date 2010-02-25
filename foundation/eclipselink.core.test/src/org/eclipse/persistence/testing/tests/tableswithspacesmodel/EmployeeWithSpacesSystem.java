@@ -44,6 +44,9 @@ public class EmployeeWithSpacesSystem extends TestSystem {
     }
 
     public void createTables(DatabaseSession session) {
+        if (session.getPlatform().isSymfoware()) {
+            return; // Symfoware does not allow spaces in tables or columns.");
+        }
         String quoteChar = session.getPlatform().getIdentifierQuoteCharacter();
         new EmployeeWithSpacesTableCreator(quoteChar).replaceTables(session);
     }
@@ -88,6 +91,10 @@ public class EmployeeWithSpacesSystem extends TestSystem {
      * using the given session.
      */
     public void populate(DatabaseSession session) {
+        if (session.getPlatform().isSymfoware()) {
+            throw new TestWarningException("Test system EmployeeWithSpacesSystem is not supported on Symfoware, "
+                    + "it does not allow spaces in tables or columns.");
+        }
         EmployeePopulator system = new EmployeePopulator();
         UnitOfWork unitOfWork = session.acquireUnitOfWork();
 

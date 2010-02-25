@@ -1590,6 +1590,20 @@ public class DatabaseLogin extends DatasourceLogin {
 
     /**
      * PUBLIC:
+     * Set the database platform to be Symfoware.
+     */
+    public void useSymfoware() {
+        if (getPlatform().isSymfoware()) {
+            return;
+        }
+
+        DatabasePlatform newPlatform = new SymfowarePlatform();
+        getPlatform().copyInto(newPlatform);
+        setPlatform(newPlatform);
+    }
+
+    /**
+     * PUBLIC:
      * EclipseLink can be configured to use streams to store large binary data.
      */
     public void useStreamsForBinding() {

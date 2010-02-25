@@ -359,14 +359,17 @@ public class OrphanRemovalModelTableCreator extends TableCreator {
      */
     @Override
     public void replaceTables(DatabaseSession session) {
-        try {
-            session.executeNonSelectingSQL("Alter table JPA_OR_SPARK_PLUG drop constraint JPA_OR_SPARK_PLUG_ENGINE_ID");
-            session.executeNonSelectingSQL("Alter table JPA_OR_VEHICLE drop constraint FK_JPA_OR_VEHICLE_ENGINE_ID");
-            session.executeNonSelectingSQL("Alter table JPA_OR_VEHICLE drop constraint FK_JPA_OR_VEHICLE_CHASSIS_ID");
-            session.executeNonSelectingSQL("Alter table JPA_OR_WHEEL drop constraint FK_JPA_OR_WHEEL_WHEELRIM_ID");
-            session.executeNonSelectingSQL("Alter table JPA_OR_WHEEL drop constraint FK_JPA_OR_WHEEL_CHASSIS_ID");
-            session.executeNonSelectingSQL("Alter table JPA_OR_WHEEL_NUT drop constraint FK_JPA_OR_WHEEL_NUT_WHEEL_ID");
-        } catch (Exception ignore) {}
+        if (session.getPlatform().supportsUniqueKeyConstraints()
+                && !session.getPlatform().requiresUniqueConstraintCreationOnTableCreate()) {
+            try {
+                session.executeNonSelectingSQL("Alter table JPA_OR_SPARK_PLUG drop constraint JPA_OR_SPARK_PLUG_ENGINE_ID");
+                session.executeNonSelectingSQL("Alter table JPA_OR_VEHICLE drop constraint FK_JPA_OR_VEHICLE_ENGINE_ID");
+                session.executeNonSelectingSQL("Alter table JPA_OR_VEHICLE drop constraint FK_JPA_OR_VEHICLE_CHASSIS_ID");
+                session.executeNonSelectingSQL("Alter table JPA_OR_WHEEL drop constraint FK_JPA_OR_WHEEL_WHEELRIM_ID");
+                session.executeNonSelectingSQL("Alter table JPA_OR_WHEEL drop constraint FK_JPA_OR_WHEEL_CHASSIS_ID");
+                session.executeNonSelectingSQL("Alter table JPA_OR_WHEEL_NUT drop constraint FK_JPA_OR_WHEEL_NUT_WHEEL_ID");
+            } catch (Exception ignore) {}
+        }
         super.replaceTables(session);
     }
     

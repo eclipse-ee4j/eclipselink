@@ -45,6 +45,7 @@ public class TargetDatabase {
     public static final String  SQLAnywhere = "SQLAnywhere";
     public static final String  SQLServer = "SQLServer";
     public static final String  Sybase = "Sybase";
+    public static final String  Symfoware = "Symfoware";
     public static final String  TimesTen = "TimesTen";
  
     public static final String DEFAULT = Auto;

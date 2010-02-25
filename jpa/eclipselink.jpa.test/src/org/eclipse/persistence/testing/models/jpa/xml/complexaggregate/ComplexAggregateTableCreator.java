@@ -272,7 +272,7 @@ public class ComplexAggregateTableCreator extends org.eclipse.persistence.tools.
         table.addField(fieldJERSEYNUMBER);
         
         FieldDefinition fieldPOSITION = new FieldDefinition();
-        fieldPOSITION.setName("POSITION");
+        fieldPOSITION.setName("POS");
         fieldPOSITION.setTypeName("VARCHAR2");
         fieldPOSITION.setSize(20);
         fieldPOSITION.setSubSize(0);
@@ -285,7 +285,7 @@ public class ComplexAggregateTableCreator extends org.eclipse.persistence.tools.
         FieldDefinition fieldTEAMID = new FieldDefinition();
         fieldTEAMID.setName("TEAM_ID");
         fieldTEAMID.setTypeName("NUMBER");
-        fieldTEAMID.setSize(30);
+        fieldTEAMID.setSize(18);
         fieldTEAMID.setSubSize(0);
         fieldTEAMID.setIsPrimaryKey(false);
         fieldTEAMID.setIsIdentity(false);
@@ -314,7 +314,7 @@ public class ComplexAggregateTableCreator extends org.eclipse.persistence.tools.
         FieldDefinition fieldID = new FieldDefinition();
         fieldID.setName("ID");
         fieldID.setTypeName("NUMBER");
-        fieldID.setSize(30);
+        fieldID.setSize(18);
         fieldID.setSubSize(0);
         fieldID.setIsPrimaryKey(true);
         fieldID.setIsIdentity(false);

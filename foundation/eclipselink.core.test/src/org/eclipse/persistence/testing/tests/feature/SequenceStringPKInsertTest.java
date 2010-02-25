@@ -43,7 +43,7 @@ public class SequenceStringPKInsertTest extends org.eclipse.persistence.testing.
     }
 
     protected void setup() {
-        if (!(getSession().getPlatform().isOracle() || getSession().getPlatform().isMySQL())) {
+        if (!(getSession().getPlatform().isOracle() || getSession().getPlatform().isMySQL() || getSession().getPlatform().isSymfoware())) {
             throw new TestWarningException("Database does do not support inserting a numeric value into a String column.");
         }
 

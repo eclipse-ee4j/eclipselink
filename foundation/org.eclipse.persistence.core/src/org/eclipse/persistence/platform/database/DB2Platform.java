@@ -752,7 +752,8 @@ public class DB2Platform extends org.eclipse.persistence.platform.database.Datab
             printer.printString(") AS EL_TEMP) AS EL_TEMP2 WHERE EL_ROWNM > ");
             printer.printParameter(DatabaseCall.FIRSTRESULT_FIELD);
         }
-        call.setIgnoreFirstRowMaxResultsSettings(true);
+        call.setIgnoreFirstRowSetting(true);
+        call.setIgnoreMaxResultsSetting(true);
     }
     
 }

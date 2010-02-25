@@ -80,7 +80,7 @@ public class Computer implements Serializable {
         if (session.getLogin().getPlatform().isAccess() || session.getLogin().getPlatform().isSQLServer() ||
                 session.getLogin().getPlatform().isOracle() || session.getLogin().getPlatform().isSybase() || session.getLogin().getPlatform().isSQLAnywhere() ||
                 session.getLogin().getPlatform().isAttunity() || session.getLogin().getPlatform().isMySQL() || 
-                session.getLogin().getPlatform().isTimesTen()) {
+                session.getLogin().getPlatform().isTimesTen() || session.getLogin().getPlatform().isSymfoware()) {
             // Oracle does not support millis, Sybase stores them only within 1-2 millis...
             //MySQL does not support millis as of 5.0
             this.creationTimestampMillis = this.creationTimestamp.getNanos();
@@ -88,6 +88,10 @@ public class Computer implements Serializable {
         }
         try {
             Thread.sleep(50);
+            // Symfoware does not support nanos and millis.
+            // Need to wait at least a second to prevent unique key constraint
+            // violation at next insert
+            if (session.getLogin().getPlatform().isSymfoware()) Thread.sleep(1000);
         } catch (InterruptedException exception) {
         }
     }

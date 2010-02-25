@@ -27,7 +27,7 @@ public class CacheHitTest extends org.eclipse.persistence.testing.tests.queries.
     }
 
     protected void setup() {
-        if (!((getSession().getLogin().getPlatform().isOracle()) || (getSession().getLogin().getPlatform().isSQLServer()) || (getSession().getLogin().getPlatform().isSybase()) || (getSession().getLogin().getPlatform().isSQLAnywhere()) || (getSession().getLogin().getPlatform().isMySQL()))) {
+        if (!((getSession().getLogin().getPlatform().isOracle()) || (getSession().getLogin().getPlatform().isSQLServer()) || (getSession().getLogin().getPlatform().isSybase()) || (getSession().getLogin().getPlatform().isSQLAnywhere()) || (getSession().getLogin().getPlatform().isMySQL()) || (getSession().getLogin().getPlatform().isSymfoware()))) {
             throw new TestWarningException("This test is only valid for Database Systems supporting StoredProcedures");
         }
         super.setup();

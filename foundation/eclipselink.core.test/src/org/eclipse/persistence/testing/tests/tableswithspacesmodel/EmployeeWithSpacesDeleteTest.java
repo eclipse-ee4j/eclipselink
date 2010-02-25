@@ -52,6 +52,10 @@ public class EmployeeWithSpacesDeleteTest extends DeleteObjectTest {
     }
 
     protected void setup() {
+        if (getSession().getPlatform().isSymfoware()) {
+            throwWarning("Test system EmployeeWithSpacesSystem is not supported on Symfoware, "
+                    + "it does not allow spaces in tables or columns.");
+        }
         super.setup();
         deleteDependencies(getSession(), (Employee)getOriginalObject());
     }

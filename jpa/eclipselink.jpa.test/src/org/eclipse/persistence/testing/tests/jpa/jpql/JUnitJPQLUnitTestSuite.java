@@ -375,7 +375,7 @@ public class JUnitJPQLUnitTestSuite extends JUnitTestCase
             logThrowable(exception);
             exception = e;
         }
-        Assert.assertNull("Exception was caught.", exception);
+        Assert.assertNull("Exception was caught: " + exception, exception);
         Assert.assertTrue("Incorrect number of results returned.  Expected 1, returned "+resultList.size(), resultList.size()==1);
     }
     

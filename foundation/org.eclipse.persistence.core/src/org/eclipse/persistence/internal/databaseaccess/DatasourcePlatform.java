@@ -487,6 +487,10 @@ public class DatasourcePlatform implements Platform {
         return false;
     }
 
+    public boolean isSymfoware() {
+        return false;
+    }
+
     public boolean isTimesTen() {
         return false;
     }

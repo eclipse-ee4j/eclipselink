@@ -220,11 +220,11 @@
     </entity>
     <entity name="XMLBecksTag" class="org.eclipse.persistence.testing.models.jpa.xml.inherited.BecksTag" access="PROPERTY">
         <table name="CMP3_XML_BECKS_TAG"/>
-        <table-generator name="XML_BECKS_TAG_TABLE_GENERATOR" table="CMP3_XML_BECKS_TAG_SEQ" pk-column-name="SEQ_NAME" value-column-name="SEQ_COUNT" pk-column-value="XML_BECKS_TAG_SEQ">
+        <table-generator name="XML_BECKS_TAG_TABLE_GENERATOR" table="CMP3_XML_BECKS_TAG_SEQ" pk-column-name="SEQ_NAME" value-column-name="SEQ_COUNT" pk-column-value="BECKS_TAG_SEQ">
         </table-generator>
         <attributes>
             <id name="id">
-                <generated-value strategy="TABLE" generator="BECKS_TAG_TABLE_GENERATOR"/>
+                <generated-value strategy="TABLE" generator="XML_BECKS_TAG_TABLE_GENERATOR"/>
             </id>
             <basic name="callNumber">
                 <column name="CALL_NUMBER"/>

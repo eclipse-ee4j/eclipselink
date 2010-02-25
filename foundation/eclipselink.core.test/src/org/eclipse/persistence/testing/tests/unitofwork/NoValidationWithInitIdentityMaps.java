@@ -23,8 +23,8 @@ import org.eclipse.persistence.testing.models.employee.domain.Employee;
 public class NoValidationWithInitIdentityMaps extends TransactionalTestCase {
     protected String existenceCheck;
     protected Employee objectToBeWritten;
-    // On some platforms (Sybase) if conn1 updates a row but hasn't yet committed transaction then
-    // reading the row through conn2 may hang.
+    // On some platforms (Sybase, Symfoware) if conn1 updates a row but hasn't yet committed
+    // the transaction then reading the row through conn2 may hang.
     // To avoid this problem the listener would decrement transaction isolation level,
     // then reading through conn2 no longer hangs, however may result (results on Sybase)
     // in reading of uncommitted data.

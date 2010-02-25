@@ -1800,7 +1800,10 @@ public class AdvancedJPAJunitTest extends JUnitTestCase {
         try {
             em.createQuery("DELETE FROM AdvancedCustomer c WHERE c.lastName = '"+lastName+"'").executeUpdate();
             em.createQuery("DELETE FROM Dealer d WHERE d.lastName = '"+lastName+"'").executeUpdate();
-            em.createQuery("DELETE FROM Employee e WHERE e.lastName = '"+lastName+"'").executeUpdate();
+            Query q = em.createQuery("SELECT e FROM Employee e WHERE e.lastName = '"+lastName+"'");
+            for (Object oldData : q.getResultList()) {
+                em.remove(oldData);
+            }
             commitTransaction(em);
         } finally {
             if(this.isTransactionActive(em)) {

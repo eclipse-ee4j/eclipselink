@@ -25,6 +25,10 @@ public class QueryTimeOutTest extends AutoVerifyTestCase {
     }
 
     public void test() {
+        if (getSession().getPlatform().isSymfoware()) {
+            throwWarning("workbenchintegration.QueryOptions' QueryTimeoutTest skipped for this platform, "
+                    + "the driver does not support query time-out.");
+        }
         try {
             getSession().executeQuery("queryTimeOutQuery", 
                                       org.eclipse.persistence.testing.models.employee.domain.Employee.class);

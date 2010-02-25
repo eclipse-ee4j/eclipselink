@@ -12,10 +12,12 @@
  ******************************************************************************/  
 package org.eclipse.persistence.testing.models.jpa.datetime;
 
+import org.eclipse.persistence.testing.framework.TogglingFastTableCreator;
 import org.eclipse.persistence.tools.schemaframework.FieldDefinition;
 import org.eclipse.persistence.tools.schemaframework.TableDefinition;
 
-public class DateTimeTableCreator extends org.eclipse.persistence.tools.schemaframework.TableCreator {
+public class DateTimeTableCreator extends TogglingFastTableCreator {
+
     public DateTimeTableCreator() {
         setName("EJB3DateTimeProject");
 

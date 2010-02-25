@@ -29,6 +29,9 @@ import org.eclipse.persistence.testing.framework.TestSystem;
  * </ul>
  */
 public class EmployeeSystem extends TestSystem {
+    protected static boolean useFastTableCreatorAfterInitialCreate = Boolean
+    .getBoolean("eclipselink.test.toggle-fast-table-creator");
+
     public org.eclipse.persistence.sessions.Project project;
 
     /**
@@ -47,7 +50,7 @@ public class EmployeeSystem extends TestSystem {
      * Drop table constraints
      */
     public void dropTableConstraints(Session session) {
-        if (!SchemaManager.FAST_TABLE_CREATOR) {
+        if (!SchemaManager.FAST_TABLE_CREATOR && !useFastTableCreatorAfterInitialCreate) {
             if (session.getLogin().getPlatform().isOracle()) {
                 try {
                     session.executeNonSelectingCall(new SQLCall("drop table PHONE CASCADE CONSTRAINTS"));

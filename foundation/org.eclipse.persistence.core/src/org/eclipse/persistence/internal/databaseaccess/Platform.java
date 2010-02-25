@@ -110,6 +110,8 @@ public interface Platform extends Serializable, Cloneable {
 
     public boolean isSybase();
 
+    public boolean isSymfoware();
+
     public boolean isTimesTen();
     
     public boolean isTimesTen7();

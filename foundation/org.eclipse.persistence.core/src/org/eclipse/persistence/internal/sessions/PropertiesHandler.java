@@ -518,6 +518,7 @@ public class PropertiesHandler {
                 {TargetDatabase.SQLAnywhere,  pcg + "SQLAnywherePlatform"},
                 {TargetDatabase.SQLServer,  pcg + "SQLServerPlatform"},
                 {TargetDatabase.Sybase,  pcg + "SybasePlatform"},
+                {TargetDatabase.Symfoware,  pcg + "SymfowarePlatform"},
                 {TargetDatabase.TimesTen,  pcg + "TimesTenPlatform"}
             };
         }

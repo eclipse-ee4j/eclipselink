@@ -119,7 +119,9 @@
 	</embeddable>
 	<embeddable class="TeamVitals">
 		<attributes>
-			<basic name="position" />
+			<basic name="position">
+				<column name="POS" />
+			</basic>
 			<basic name="jerseyNumber">
 				<column name="JERSEY_NUMBER" />
 			</basic>

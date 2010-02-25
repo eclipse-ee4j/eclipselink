@@ -39,7 +39,7 @@ public class Role implements Serializable {
     @Id
     @GeneratedValue(strategy=TABLE, generator="ROLE_TABLE_GENERATOR")
     @TableGenerator(
-        name="ROLL_TABLE_GENERATOR", 
+        name="ROLE_TABLE_GENERATOR", 
         table="CMP3_HOCKEY_SEQ", 
         pkColumnName="SEQ_NAME", 
         valueColumnName="SEQ_COUNT",

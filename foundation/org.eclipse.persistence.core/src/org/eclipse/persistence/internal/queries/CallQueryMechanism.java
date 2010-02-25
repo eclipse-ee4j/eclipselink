@@ -86,7 +86,7 @@ public class CallQueryMechanism extends DatasourceCallQueryMechanism {
                 }
                 if (query.isReadQuery()) {
                     ReadQuery readQuery = (ReadQuery)query;
-                    if (!call.shouldIgnoreFirstRowMaxResultsSettings()){
+                    if (!call.shouldIgnoreMaxResultsSetting()){
                         call.setMaxRows(readQuery.getMaxRows());
                         if (readQuery.getFirstResult() != 0) {
                             call.setFirstResult(readQuery.getFirstResult());
@@ -118,7 +118,7 @@ public class CallQueryMechanism extends DatasourceCallQueryMechanism {
             }
             if (query.isReadQuery()) {
                 ReadQuery readQuery = (ReadQuery)query;
-                if (!call.shouldIgnoreFirstRowMaxResultsSettings()){
+                if (!call.shouldIgnoreMaxResultsSetting()){
                     call.setMaxRows(readQuery.getMaxRows());
                     if (readQuery.getFirstResult() != 0) {
                         call.setFirstResult(readQuery.getFirstResult());

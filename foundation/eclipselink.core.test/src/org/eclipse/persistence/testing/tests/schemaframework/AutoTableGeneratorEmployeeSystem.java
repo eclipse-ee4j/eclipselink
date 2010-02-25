@@ -29,8 +29,19 @@ public class AutoTableGeneratorEmployeeSystem extends EmployeeSystem {
      * manager
      */
     public void createTables(DatabaseSession session) {
-        dropTableConstraints(session);
-        //drop tables and then create 'default' tables.
-        new SchemaManager(session).replaceDefaultTables();
+        boolean orig_FAST_TABLE_CREATOR = SchemaManager.FAST_TABLE_CREATOR;
+        // on Symfoware, to avoid table locking issues, don't drop old tables
+        if (useFastTableCreatorAfterInitialCreate) {
+            SchemaManager.FAST_TABLE_CREATOR = true;
+        }
+        try {
+            dropTableConstraints(session);
+            //drop tables and then create 'default' tables.
+            new SchemaManager(session).replaceDefaultTables();
+        } finally {
+            if (useFastTableCreatorAfterInitialCreate) {
+                SchemaManager.FAST_TABLE_CREATOR = orig_FAST_TABLE_CREATOR;
+            }
+        }
     }
 }

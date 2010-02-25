@@ -178,6 +178,10 @@ public class ClearQueryOptionsOnStatementTest extends AutoVerifyTestCase {
     }
     
     public void testQueryTimeoutReset(Session session) {
+        if (getSession().getPlatform().isSymfoware()) {
+            throwWarning("Test testQueryTimeoutReset skipped for this platform, "
+                    + "the driver does not support query timeout.");
+        }
         boolean query1TimedOut = false;
         boolean query2TimedOut = false;
         // H2 sets the query timeout on the connection, and does not clear it, so this will fail.

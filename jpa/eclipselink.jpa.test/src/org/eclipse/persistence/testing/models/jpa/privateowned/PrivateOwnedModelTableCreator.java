@@ -370,14 +370,17 @@ public class PrivateOwnedModelTableCreator extends TableCreator {
      */
     @Override
     public void replaceTables(DatabaseSession session) {
-        try {
-            session.executeNonSelectingSQL("Alter table CMP3_PO_SPARK_PLUG drop constraint CMP3_PO_SPARK_PLUG_ENGINE_ID");
-            session.executeNonSelectingSQL("Alter table CMP3_PO_VEHICLE drop constraint FK_CMP3_PO_VEHICLE_ENGINE_ID");
-            session.executeNonSelectingSQL("Alter table CMP3_PO_VEHICLE drop constraint FK_CMP3_PO_VEHICLE_CHASSIS_ID");
-            session.executeNonSelectingSQL("Alter table CMP3_PO_WHEEL drop constraint FK_CMP3_PO_WHEEL_WHEELRIM_ID");
-            session.executeNonSelectingSQL("Alter table CMP3_PO_WHEEL drop constraint FK_CMP3_PO_WHEEL_CHASSIS_ID");
-            session.executeNonSelectingSQL("Alter table CMP3_PO_WHEEL_NUT drop constraint FK_CMP3_PO_WHEEL_NUT_WHEEL_ID");
-        } catch (Exception ignore) {}
+        if (session.getPlatform().supportsUniqueKeyConstraints()
+                && !session.getPlatform().requiresUniqueConstraintCreationOnTableCreate()) {
+            try {
+                session.executeNonSelectingSQL("Alter table CMP3_PO_SPARK_PLUG drop constraint CMP3_PO_SPARK_PLUG_ENGINE_ID");
+                session.executeNonSelectingSQL("Alter table CMP3_PO_VEHICLE drop constraint FK_CMP3_PO_VEHICLE_ENGINE_ID");
+                session.executeNonSelectingSQL("Alter table CMP3_PO_VEHICLE drop constraint FK_CMP3_PO_VEHICLE_CHASSIS_ID");
+                session.executeNonSelectingSQL("Alter table CMP3_PO_WHEEL drop constraint FK_CMP3_PO_WHEEL_WHEELRIM_ID");
+                session.executeNonSelectingSQL("Alter table CMP3_PO_WHEEL drop constraint FK_CMP3_PO_WHEEL_CHASSIS_ID");
+                session.executeNonSelectingSQL("Alter table CMP3_PO_WHEEL_NUT drop constraint FK_CMP3_PO_WHEEL_NUT_WHEEL_ID");
+            } catch (Exception ignore) {}
+        }
         super.replaceTables(session);
     }
     

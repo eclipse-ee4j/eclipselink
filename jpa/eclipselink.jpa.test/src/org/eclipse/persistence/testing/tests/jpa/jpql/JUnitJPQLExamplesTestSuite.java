@@ -26,6 +26,7 @@ import junit.framework.TestSuite;
 import org.eclipse.persistence.expressions.Expression;
 import org.eclipse.persistence.expressions.ExpressionBuilder;
 import org.eclipse.persistence.jpa.JpaEntityManager;
+import org.eclipse.persistence.internal.expressions.ConstantExpression;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.queries.ReadAllQuery;
 import org.eclipse.persistence.queries.ReportQuery;
@@ -404,7 +405,7 @@ public class JUnitJPQLExamplesTestSuite extends JUnitTestCase {
 
         subQuery.setReferenceClass(Employee.class);
         Expression managerExpression = employeeBuilder.get("manager").get("id").equal(managerBuilder.get("id"));
-        subQuery.addAttribute("id");
+        subQuery.addAttribute("one", new ConstantExpression(new Integer(1), subQuery.getExpressionBuilder())); 
         subQuery.setSelectionCriteria(managerExpression);
         Expression employeeExpression = employeeBuilder.exists(subQuery);
 
@@ -678,6 +679,11 @@ public class JUnitJPQLExamplesTestSuite extends JUnitTestCase {
             // Not work on server.
             return;
         }
+        if ((JUnitTestCase.getServerSession()).getPlatform().isSymfoware()) {
+            getServerSession().logMessage("Test testDeleteExpression skipped for this platform, "
+                    + "Symfoware doesn't support UpdateAll/DeleteAll on multi-table objects (see rfe 298193).");
+            return;
+        }
         
         JpaEntityManager em = (org.eclipse.persistence.jpa.JpaEntityManager)createEntityManager();
         try {
@@ -713,6 +719,11 @@ public class JUnitJPQLExamplesTestSuite extends JUnitTestCase {
             // Not work on server.
             return;
         }
+        if ((JUnitTestCase.getServerSession()).getPlatform().isSymfoware()) {
+            getServerSession().logMessage("Test testComplexDeleteExpression skipped for this platform, "
+                    + "Symfoware doesn't support UpdateAll/DeleteAll on multi-table objects (see rfe 298193).");
+            return;
+        }
         
         JpaEntityManager em = (org.eclipse.persistence.jpa.JpaEntityManager)createEntityManager();
         try {
@@ -740,6 +751,11 @@ public class JUnitJPQLExamplesTestSuite extends JUnitTestCase {
     //bug 5159164, 5159198   
 
     public void testUpdateExpression() {
+        if ((JUnitTestCase.getServerSession()).getPlatform().isSymfoware()) {
+            getServerSession().logMessage("Test testUpdateExpression skipped for this platform, "
+                    + "Symfoware doesn't support UpdateAll/DeleteAll on multi-table objects (see rfe 298193).");
+            return;
+        }
         EntityManager em = createEntityManager();
         Number result = null;
         beginTransaction(em);
@@ -759,6 +775,11 @@ public class JUnitJPQLExamplesTestSuite extends JUnitTestCase {
     //Bug5097278 Test case for updating the manager of ALL employees that have a certain address 
 
     public void updateAllTest() {
+        if ((JUnitTestCase.getServerSession()).getPlatform().isSymfoware()) {
+            getServerSession().logMessage("Test updateAllTest skipped for this platform, "
+                    + "Symfoware doesn't support UpdateAll/DeleteAll on multi-table objects (see rfe 298193).");
+            return;
+        }
         EntityManager em = createEntityManager();
 
         String empName = "Saunders";
@@ -786,6 +807,11 @@ public class JUnitJPQLExamplesTestSuite extends JUnitTestCase {
     }
 
     public void updateEmbeddedFieldTest() {
+        if ((JUnitTestCase.getServerSession()).getPlatform().isSymfoware()) {
+            getServerSession().logMessage("Test updateEmbeddedFieldTest skipped for this platform, "
+                    + "Symfoware doesn't support UpdateAll/DeleteAll on multi-table objects (see rfe 298193).");
+            return;
+        }
 
         EntityManager em = createEntityManager();
         Calendar startCalendar = Calendar.getInstance();

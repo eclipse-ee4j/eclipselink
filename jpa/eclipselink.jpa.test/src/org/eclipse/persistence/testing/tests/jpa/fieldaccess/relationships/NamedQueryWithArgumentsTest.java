@@ -49,7 +49,7 @@ public class NamedQueryWithArgumentsTest extends EntityContainerTestBase {
         getEntityManager().persist(order1);        
         commitTransaction();
       } catch (Exception ex) {
-        throw new TestException("Unable to setup Test" + ex);
+        throw new TestException("Unable to setup Test: " + ex, ex);
       }          
       cusIDs[0] = cusClone1.getCustomerId();
       orderIDs[0] = order1.getOrderId();
@@ -69,7 +69,7 @@ public class NamedQueryWithArgumentsTest extends EntityContainerTestBase {
           getEntityManager().remove(it1);
           commitTransaction();
         } catch (Exception ex) {
-          throw new TestException("Unable to reset Test" + ex);
+          throw new TestException("Unable to reset Test: " + ex, ex);
         }
       }
     

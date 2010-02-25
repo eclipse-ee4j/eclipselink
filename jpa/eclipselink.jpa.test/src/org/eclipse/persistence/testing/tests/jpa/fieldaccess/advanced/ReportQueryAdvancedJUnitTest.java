@@ -14,6 +14,7 @@
 
 package org.eclipse.persistence.testing.tests.jpa.fieldaccess.advanced;
 
+import java.util.Iterator;
 import java.util.Vector;
 
 import org.eclipse.persistence.descriptors.ClassDescriptor;
@@ -67,18 +68,30 @@ public class ReportQueryAdvancedJUnitTest  extends JUnitTestCase {
     protected static void clear() {
         UnitOfWork uow = acquireUnitOfWork();
 
-        UpdateAllQuery updateEmployees = new UpdateAllQuery(Employee.class);
-        updateEmployees.addUpdate("manager", null);
-        updateEmployees.addUpdate("address", null);
-        uow.executeQuery(updateEmployees);
-    
+        // use alternate way for Symfoware as it doesn't support UpdateAll/DeleteAll on multi-table objects (see rfe 298193)
+        if (!(JUnitTestCase.getServerSession()).getPlatform().isSymfoware()) {
+            UpdateAllQuery updateEmployees = new UpdateAllQuery(Employee.class);
+            updateEmployees.addUpdate("manager", null);
+            updateEmployees.addUpdate("address", null);
+            uow.executeQuery(updateEmployees);
+        
+            uow.executeQuery(new DeleteAllQuery(Employee.class));
+        } else {
+            Iterator<Employee> emps = uow.readAllObjects(Employee.class).iterator();
+            while (emps.hasNext()){
+              Employee emp = emps.next();
+              emp.setManager(null);
+              emp.setAddress(null);
+              uow.deleteObject(emp);
+            }; 
+        }
+
         UpdateAllQuery updateProjects = new UpdateAllQuery(Project.class);
         updateProjects.addUpdate("teamLeader", null);
         uow.executeQuery(updateProjects);
-    
+
         uow.executeQuery(new DeleteAllQuery(PhoneNumber.class));
         uow.executeQuery(new DeleteAllQuery(Address.class));
-        uow.executeQuery(new DeleteAllQuery(Employee.class));
         uow.executeQuery(new DeleteAllQuery(Project.class));
 
         uow.commit();

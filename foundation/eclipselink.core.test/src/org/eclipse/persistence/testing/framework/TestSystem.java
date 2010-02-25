@@ -628,4 +628,24 @@ public class TestSystem {
         login.useByteArrayBinding();
         setLogin(login);
     }
+
+    /**
+     * You must have the Symfoware JDBC driver loaded.
+     */
+    public void useSymfowareRDB2_TCP() {
+        DatabaseLogin login = new DatabaseLogin();
+        try {
+            login.usePlatform((org.eclipse.persistence.internal.databaseaccess.DatabasePlatform)Class.forName("org.eclipse.persistence.platform.database.SymfowarePlatform").newInstance());
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        login.setDriverClassName("com.fujitsu.symfoware.jdbc.SYMDriver");
+        login.setDriverURLHeader("jdbc:symford:");
+        // codeselect setting reduces garbled characters when DB and client's
+        // character encoding settings do not match
+        login.setDatabaseURL("TESTDB");
+        //set the encrypted password will enable toplink to use the plain text password as is
+        login.setEncryptedPassword("password");
+        setLogin(login);
+    }
 }

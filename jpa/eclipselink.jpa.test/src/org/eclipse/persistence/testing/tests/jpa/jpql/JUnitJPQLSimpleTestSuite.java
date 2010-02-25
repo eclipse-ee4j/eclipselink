@@ -204,6 +204,12 @@ public class JUnitJPQLSimpleTestSuite extends JUnitTestCase {
      * Tests 1=1 returns correct result.
      */
     public void testOneEqualsOne() throws Exception {
+        if ((JUnitTestCase.getServerSession()).getPlatform().isSymfoware()) {
+            getServerSession().logMessage("Test testOneEqualsOne skipped for this platform, "
+                    + "Symfoware doesn't allow dynamic parameters on both sides of the equals operator at the same time.");
+            return;
+        }
+
     	EntityManager em = createEntityManager();
     	beginTransaction(em);
     	try {
@@ -425,6 +431,11 @@ public class JUnitJPQLSimpleTestSuite extends JUnitTestCase {
     //Test case for concat function in EJBQL taking parameters
 
     public void simpleConcatTestWithParameters() {
+        if ((JUnitTestCase.getServerSession()).getPlatform().isSymfoware()) {
+            getServerSession().logMessage("Test simpleConcatTestWithParameters skipped for this platform, "
+                    + "Symfoware doesn't allow dynamic parameters in both arguments to CONCAT at the same time.");
+            return;
+        }
         EntityManager em = createEntityManager();
 
         Employee expectedResult = (Employee)(getServerSession().readAllObjects(Employee.class).firstElement());

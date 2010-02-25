@@ -108,12 +108,16 @@ public class Shipment implements Serializable, Cloneable {
             try {
                 // Sleep to ensure milliseconds is ok.
                 Thread.sleep(1);
+                // Symfoware does not support nanos and millis.
+                // Need to wait at least a second to prevent unique key
+                // constraint violation at next insert
+                if (session.getLogin().getPlatform().isSymfoware()) Thread.sleep(1000);
             } catch (InterruptedException exception) {
             }
             this.creationTimestamp = new Timestamp(System.currentTimeMillis());
         }
         lastCreationTimestamp = (Timestamp)this.creationTimestamp.clone();
-        if (session.getLogin().getPlatform().isDB2() || session.getLogin().getPlatform().isAccess() || session.getLogin().getPlatform().isSQLServer() || session.getLogin().getPlatform().isOracle() || session.getLogin().getPlatform().isSybase() || session.getLogin().getPlatform().isSQLAnywhere() || session.getLogin().getPlatform().isMySQL()) {
+        if (session.getLogin().getPlatform().isDB2() || session.getLogin().getPlatform().isAccess() || session.getLogin().getPlatform().isSQLServer() || session.getLogin().getPlatform().isOracle() || session.getLogin().getPlatform().isSybase() || session.getLogin().getPlatform().isSQLAnywhere() || session.getLogin().getPlatform().isMySQL() || session.getLogin().getPlatform().isSymfoware()) {
             // Oracle does not support millis, Sybase stores them only within 1-2 millis...
             //MySQL does not support millis as of 5.0
             this.creationTimestampMillis = creationTimestamp.getNanos();

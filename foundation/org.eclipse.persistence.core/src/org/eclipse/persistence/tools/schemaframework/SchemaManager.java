@@ -869,6 +869,8 @@ public class SchemaManager {
         boolean fast = FAST_TABLE_CREATOR;
         if (fast && (databaseDefinition instanceof TableDefinition)) {
             session.executeNonSelectingSQL("DELETE FROM " + databaseDefinition.getName()); 
+        } else if (fast && (databaseDefinition instanceof StoredProcedureDefinition)) {
+            // do nothing
         } else {
             // CR 3870467, do not log stack
             boolean shouldLogExceptionStackTrace = getSession().getSessionLog().shouldLogExceptionStackTrace();

@@ -637,11 +637,11 @@ public abstract class TestCase extends junit.framework.TestCase implements TestE
      * Currently testing supports select for update on Oracle, MySQL, SQLServer, TimesTen.
      * Some of the other platforms may have some support for select for update, but the databases we test with
      * for these do not have sufficient support to pass the tests.
-     * Derby, Firebird have some support, but does not work with joins (2008-12-01).
+     * Derby, Firebird and Symfoware have some support, but does not work with joins (2008-12-01).
      */
     public void checkSelectForUpateSupported() {
         DatabasePlatform platform = getSession().getPlatform();
-        if (platform.isFirebird() || platform.isAccess() || platform.isSybase() || platform.isSQLAnywhere() || platform.isDerby() || platform.isHSQL()) {
+        if (platform.isFirebird() || platform.isAccess() || platform.isSybase() || platform.isSQLAnywhere() || platform.isDerby() || platform.isHSQL() || platform.isSymfoware()) {
             throw new TestWarningException("This database does not support FOR UPDATE");
         }
     }
@@ -676,6 +676,9 @@ public abstract class TestCase extends junit.framework.TestCase implements TestE
             throw new TestWarningException("This test requires transaction isolation setup on SQLAnywhere database which is currently not set");
         } else if (platform.isDB2()) {
             throw new TestWarningException("This test requires transaction isolation setup on DB2 database which is currently not set");
+        } else if (platform.isSymfoware()) {
+            TransactionIsolationLevelSwitchListener listener = new TransactionIsolationLevelSwitchListener();
+            getAbstractSession().getParent().getEventManager().addListener(listener);
         }
     }
     
@@ -684,6 +687,6 @@ public abstract class TestCase extends junit.framework.TestCase implements TestE
      */
     public static boolean supportsStoredProcedures(Session session) {
         DatabasePlatform platform = session.getPlatform();
-        return platform.isOracle() || platform.isSybase() || platform.isMySQL() || platform.isSQLServer();
+        return platform.isOracle() || platform.isSybase() || platform.isMySQL() || platform.isSQLServer() || platform.isSymfoware();
     }
 }

@@ -344,7 +344,8 @@ public class FirebirdPlatform extends DatabasePlatform {
         printer.printParameter(DatabaseCall.FIRSTRESULT_FIELD);
         printer.printString(" + 1) TO ");
         printer.printParameter(DatabaseCall.MAXROW_FIELD);
-        call.setIgnoreFirstRowMaxResultsSettings(true);
+        call.setIgnoreFirstRowSetting(true);
+        call.setIgnoreMaxResultsSetting(true);
     }
 
     /**

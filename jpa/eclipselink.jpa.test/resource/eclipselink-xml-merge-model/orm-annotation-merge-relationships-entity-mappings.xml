@@ -61,7 +61,7 @@
             <basic name="name"/>
             <basic name="description" access="PROPERTY"/>
             <basic name="image" access="PROPERTY">
-                <column name="IMAGE"/>
+                <column name="IMAGE" length="1280"/>
                 <lob/>
             </basic>
             <version name="version">

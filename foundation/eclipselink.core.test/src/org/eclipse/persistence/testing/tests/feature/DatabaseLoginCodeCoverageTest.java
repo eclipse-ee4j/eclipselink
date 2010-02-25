@@ -358,6 +358,12 @@ public class DatabaseLoginCodeCoverageTest extends AutoVerifyTestCase {
         }
 
         ////////////////////////////////////////////////////
+        login.useSymfoware();
+        if (!login.getPlatform().isSymfoware()) {
+            addToTestFailures("useSymfoware");
+        }
+
+        ////////////////////////////////////////////////////
         login.useDirectDriverConnect("myDriverClassName", "myDriverURLHeader", "myDatabaseURL");
         DefaultConnector connector = (DefaultConnector)login.getConnector();
 

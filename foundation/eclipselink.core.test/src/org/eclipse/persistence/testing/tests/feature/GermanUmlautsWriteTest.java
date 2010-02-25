@@ -38,11 +38,11 @@ public class GermanUmlautsWriteTest extends InsertObjectTest {
         char[] umlautsCharCodes = { 246, 228, 252, 223 };
         employee.setFirstName(new String(umlautsCharCodes));
         this.originalObject = employee;
-        setDescription("Verifies that 'some german Umlat characters' are written correctly in case string binding is used");
+        setDescription("Verifies that 'some german Umlaut characters' are written correctly in case string binding is used");
     }
 
     protected void setup() {
-        if (getSession().getPlatform().isTimesTen()) {
+        if (getSession().getPlatform().isTimesTen() || getSession().getPlatform().isSymfoware()) {
             throw new TestWarningException("This test is not supported on this platform.");
         }
 

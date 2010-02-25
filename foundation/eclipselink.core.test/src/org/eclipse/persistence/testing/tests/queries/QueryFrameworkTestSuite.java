@@ -379,6 +379,13 @@ public class QueryFrameworkTestSuite extends TestSuite {
                     TYPE_SCROLL_INSENSITIVE_isSupported = false;
                     CONCUR_UPDATABLE_isSupported = false;
                 }
+                if(getSession().getPlatform().isSymfoware()) {
+                    // Symfoware supports updatable cursors, but not in this way. Also,
+                    // it considers SQL queries that select from multiple tables as
+                    // non-updatable, thus raising an exception for this test.
+                    TYPE_SCROLL_INSENSITIVE_isSupported = false;
+                    CONCUR_UPDATABLE_isSupported = false;
+                }
                 if(TYPE_SCROLL_INSENSITIVE_isSupported && CONCUR_UPDATABLE_isSupported) {
                     query.useScrollableCursor();
                 } else {

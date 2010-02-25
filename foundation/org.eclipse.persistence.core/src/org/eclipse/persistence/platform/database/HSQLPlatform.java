@@ -337,7 +337,8 @@ public class HSQLPlatform extends DatabasePlatform {
         String sql = printer.getWriter().toString();
         printer.setWriter(writer);
         printer.printString(sql.substring(6, sql.length()));
-        call.setIgnoreFirstRowMaxResultsSettings(true);
+        call.setIgnoreFirstRowSetting(true);
+        call.setIgnoreMaxResultsSetting(true);
     }
 
     @Override

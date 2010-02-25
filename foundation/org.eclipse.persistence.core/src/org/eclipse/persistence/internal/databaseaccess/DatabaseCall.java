@@ -39,13 +39,20 @@ public abstract class DatabaseCall extends DatasourceCall {
      */
     public static DatabaseField MAXROW_FIELD = new DatabaseField("EclipseLink-MaxResults");
     public static DatabaseField FIRSTRESULT_FIELD = new DatabaseField("EclipseLink-FirstRow");
-    
+
     /**
-     * Indicates if the FirstRow and MaxResults values in this
-     * call object are to be ignored.  If true, it should mean they have been
-     * built into the SQL statement directly ex: using Oracle Rownum support
+     * Indicates if the FirstRow value in this call object is to be ignored. If
+     * true, it should mean it has been built into the SQL statement directly
+     * ex: using Oracle Rownum support
      */
-    protected boolean ignoreFirstRowMaxResultsSettings;
+    protected boolean ignoreFirstRowSetting;
+
+    /**
+     * Indicates if the MaxResults value in this call object is to be ignored.
+     * If true, it should mean it has been built into the SQL statement directly
+     * ex: using Oracle Rownum support
+     */
+    protected boolean ignoreMaxResultsSetting;
 
     // The result and statement are cached for cursor selects.
     transient protected Statement statement;
@@ -648,7 +655,7 @@ public abstract class DatabaseCall extends DatasourceCall {
         if (this.queryTimeout > 0) { 
             statement.setQueryTimeout(this.queryTimeout); 
         } 
-        if (!this.ignoreFirstRowMaxResultsSettings && this.maxRows > 0) { 
+        if (!this.ignoreMaxResultsSetting && this.maxRows > 0) { 
             statement.setMaxRows(this.maxRows); 
         }
         if (this.resultSetFetchSize > 0) { 
@@ -687,16 +694,27 @@ public abstract class DatabaseCall extends DatasourceCall {
     public void setHasOptimisticLock(boolean hasOptimisticLock) {
         this.hasOptimisticLock = hasOptimisticLock;
     }
-    
+
     /**
-     *  INTERNAL:
-     *  Sets the ignoreFirstRowMaxResultsSettings flag.  If true, MaxRows and FirstResult 
-     *  options are assumed built into the SQL string and ignored if set in the call, and 
-     *  instead are added as query arguments.
-     *  Default is false.
+     * INTERNAL:
+     * Sets the ignoreFirstRowSetting flag. If true, FirstResult option are
+     * assumed built into the SQL string and ignored if set in the call, and
+     * instead are added as query arguments.
+     * Default is false.
      */
-    public void setIgnoreFirstRowMaxResultsSettings(boolean ignoreFirstRowMaxResultsSettings){
-        this.ignoreFirstRowMaxResultsSettings = ignoreFirstRowMaxResultsSettings;
+    public void setIgnoreFirstRowSetting(boolean ignoreFirstRowSetting){
+        this.ignoreFirstRowSetting = ignoreFirstRowSetting;
+    }
+
+    /**
+     * INTERNAL:
+     * Sets the ignoreMaxResultsSetting flag. If true, MaxRows option are
+     * assumed built into the SQL string and ignored if set in the call, and
+     * instead are added as query arguments.
+     * Default is false.
+     */
+    public void setIgnoreMaxResultsSetting(boolean ignoreMaxResultsSetting){
+        this.ignoreMaxResultsSetting = ignoreMaxResultsSetting;
     }
 
     /**
@@ -838,14 +856,23 @@ public abstract class DatabaseCall extends DatasourceCall {
             return this.shouldCacheStatement.booleanValue();
         }
     }
-    
+
     /**
-     *  INTERNAL:
-     *  Returns the ignoreFirstRowMaxResultsSettings flag.  If true, MaxRows and FirstResult 
-     *  options are assumed built into the SQL string and ignored if set in the call.  
+     * INTERNAL:
+     * Returns the ignoreFirstRowSetting flag. If true, FirstResult option is
+     * assumed built into the SQL string and ignored if set in the call.
      */
-    public boolean shouldIgnoreFirstRowMaxResultsSettings(){
-        return this.ignoreFirstRowMaxResultsSettings;
+    public boolean shouldIgnoreFirstRowSetting(){
+        return this.ignoreFirstRowSetting;
+    }
+
+    /**
+     * INTERNAL:
+     * Returns the ignoreMaxResultsSetting flag. If true, MaxRows option is
+     * assumed built into the SQL string and ignored if set in the call.
+     */
+    public boolean shouldIgnoreMaxResultsSetting(){
+        return this.ignoreMaxResultsSetting;
     }
 
     /**

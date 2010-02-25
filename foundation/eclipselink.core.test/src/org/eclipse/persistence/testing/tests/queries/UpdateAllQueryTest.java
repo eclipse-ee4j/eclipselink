@@ -34,6 +34,10 @@ public class UpdateAllQueryTest extends AutoVerifyTestCase {
 
     protected void setup() {
         m_session = getSession();
+        if (m_session.getDatasourcePlatform().isSymfoware()) {
+            throwWarning("Test UpdateAllQueryTest skipped for this platform, "
+                    + "Symfoware doesn't support UpdateAll/DeleteAll on multi-table objects (see rfe 298193).");
+        }
         beginTransaction();
         m_session.getIdentityMapAccessor().initializeIdentityMaps();
     }

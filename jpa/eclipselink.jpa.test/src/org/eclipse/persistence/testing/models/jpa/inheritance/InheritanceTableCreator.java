@@ -17,6 +17,7 @@
 package org.eclipse.persistence.testing.models.jpa.inheritance;
 
 import org.eclipse.persistence.sessions.DatabaseSession;
+import org.eclipse.persistence.testing.framework.TogglingFastTableCreator;
 import org.eclipse.persistence.tools.schemaframework.*;
 
 /**
@@ -24,7 +25,7 @@ import org.eclipse.persistence.tools.schemaframework.*;
  * It stores the meta-data (tables) that define the database schema.
  * @see org.eclipse.persistence.sessions.factories.TableCreatorClassGenerator
  */
-public class InheritanceTableCreator extends org.eclipse.persistence.tools.schemaframework.TableCreator {
+public class InheritanceTableCreator extends TogglingFastTableCreator {
     public InheritanceTableCreator() {
         setName("EJB3InheritanceProject");
 
@@ -111,7 +112,7 @@ public class InheritanceTableCreator extends org.eclipse.persistence.tools.schem
         
         FieldDefinition fieldRAM = new FieldDefinition();
         fieldRAM.setName("RAM");
-        fieldRAM.setTypeName("VARCHAR2");
+        fieldRAM.setTypeName("NUMBER");
         fieldRAM.setSize(10);
         fieldRAM.setSubSize(0);
         fieldRAM.setIsPrimaryKey(false);

@@ -40,6 +40,8 @@ public class Scenario2_2c extends ReportQueryTestCase {
                 result[1] = new java.math.BigDecimal(3);
             } else if (getSession().getPlatform().isMySQL()) {
                 result[1] = new java.lang.Long(3);
+            } else if (getSession().getPlatform().isSymfoware()) {
+                result[1] = new java.lang.Short((short)3);
             } else {
                 result[1] = new java.lang.Integer(3);
             }

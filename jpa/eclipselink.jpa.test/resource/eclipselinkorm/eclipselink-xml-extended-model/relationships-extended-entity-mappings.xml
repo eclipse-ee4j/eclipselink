@@ -131,7 +131,7 @@
             <basic name="name"/>
             <basic name="description"/>
             <basic name="image">
-                <column name="IMAGE"/>
+                <column name="IMAGE" length="1280"/>
                 <lob/>
             </basic>
             <version name="version">

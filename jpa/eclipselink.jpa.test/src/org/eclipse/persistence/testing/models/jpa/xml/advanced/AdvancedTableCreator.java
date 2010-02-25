@@ -18,9 +18,11 @@
  ******************************************************************************/  
 package org.eclipse.persistence.testing.models.jpa.xml.advanced;
 
+import org.eclipse.persistence.testing.framework.TogglingFastTableCreator;
 import org.eclipse.persistence.tools.schemaframework.*;
 
-public class AdvancedTableCreator extends org.eclipse.persistence.tools.schemaframework.TableCreator {
+public class AdvancedTableCreator extends TogglingFastTableCreator {
+
     public AdvancedTableCreator() {
         setName("EJB3EmployeeProject");
 

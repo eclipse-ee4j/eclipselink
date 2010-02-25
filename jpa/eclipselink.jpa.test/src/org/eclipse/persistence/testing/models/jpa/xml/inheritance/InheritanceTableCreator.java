@@ -79,7 +79,7 @@ public class InheritanceTableCreator extends org.eclipse.persistence.tools.schem
         
         FieldDefinition fieldRAM = new FieldDefinition();
         fieldRAM.setName("RAM");
-        fieldRAM.setTypeName("VARCHAR2");
+        fieldRAM.setTypeName("NUMBER");
         fieldRAM.setSize(10);
         fieldRAM.setSubSize(0);
         fieldRAM.setIsPrimaryKey(false);

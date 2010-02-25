@@ -140,7 +140,8 @@ public class EntityMappingsAdvancedJUnitTestCase extends JUnitTestCase {
      */
     public void testSetup() {
         DatabaseSession session = JUnitTestCase.getServerSession(m_persistenceUnit);   
-        new AdvancedTableCreator().replaceTables(session);
+        AdvancedTableCreator atc = new AdvancedTableCreator();
+        atc.replaceTables(session);
         // Populate the database with our examples.
         EmployeePopulator employeePopulator = new EmployeePopulator();
         employeePopulator.buildExamples();
@@ -623,8 +624,13 @@ public class EntityMappingsAdvancedJUnitTestCase extends JUnitTestCase {
         try{
             emp = em.find(Employee.class, emp.getId());
                 
-            // delete the Employee from the db
-            em.createQuery("DELETE FROM XMLEmployee e WHERE e.firstName = '"+firstName+"'").executeUpdate();
+            if (getServerSession(m_persistenceUnit).getPlatform().isSymfoware()){
+                // Symfoware does not support deleteall with multiple table
+                em.createNativeQuery("DELETE FROM CMP3_XML_EMPLOYEE WHERE F_NAME = '"+firstName+"'").executeUpdate();
+            } else {
+                // delete the Employee from the db
+                em.createQuery("DELETE FROM XMLEmployee e WHERE e.firstName = '"+firstName+"'").executeUpdate();
+            }
 
             // refresh the Employee - should fail with EntityNotFoundException
             em.refresh(emp);
@@ -1424,7 +1430,10 @@ public class EntityMappingsAdvancedJUnitTestCase extends JUnitTestCase {
         try {
             em.createQuery("DELETE FROM XMLAdvancedCustomer c WHERE c.lastName = '"+lastName+"'").executeUpdate();
             em.createQuery("DELETE FROM XMLDealer d WHERE d.lastName = '"+lastName+"'").executeUpdate();
-            em.createQuery("DELETE FROM XMLEmployee e WHERE e.lastName = '"+lastName+"'").executeUpdate();
+            Query q = em.createQuery("SELECT e FROM XMLEmployee e WHERE e.lastName = '"+lastName+"'");
+            for (Object oldData : q.getResultList()) {
+                em.remove(oldData);
+            }
             commitTransaction(em);
         } finally {
             if(this.isTransactionActive(em)) {

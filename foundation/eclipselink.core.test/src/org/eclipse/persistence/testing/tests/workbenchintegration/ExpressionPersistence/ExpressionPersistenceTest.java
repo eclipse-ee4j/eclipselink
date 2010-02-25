@@ -36,7 +36,7 @@ public class ExpressionPersistenceTest extends AutoVerifyTestCase {
     public void setup() {
         if ((queryName.startsWith("AddStandardDeviationReportQuery") || 
              queryName.startsWith("AddVarianceReportQuery")) && 
-            (getSession().getPlatform().isSybase() || getSession().getPlatform().isSQLAnywhere() || getSession().getPlatform().isSQLServer()) || getSession().getPlatform().isDB2() || getSession().getPlatform().isDerby()) {
+            (getSession().getPlatform().isSybase() || getSession().getPlatform().isSQLAnywhere() || getSession().getPlatform().isSQLServer()) || getSession().getPlatform().isDB2() || getSession().getPlatform().isDerby() || getSession().getPlatform().isSymfoware()) {
             throw new TestWarningException("The test is not supported on this database.");
         }
     }

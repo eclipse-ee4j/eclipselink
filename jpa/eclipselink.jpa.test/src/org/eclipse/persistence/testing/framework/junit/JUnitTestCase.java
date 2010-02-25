@@ -361,7 +361,7 @@ public abstract class JUnitTestCase extends TestCase {
         }      
     }
 
-    public static ServerSession getServerSession() {        
+    public static ServerSession getServerSession() {
         return ((org.eclipse.persistence.jpa.JpaEntityManager)getEntityManagerFactory().createEntityManager()).getServerSession();               
     }
     
@@ -545,10 +545,10 @@ public abstract class JUnitTestCase extends TestCase {
 
     public boolean isSelectForUpateSupported(String puName) {
         DatabasePlatform platform = getServerSession(puName).getPlatform();
-        // Both DB2, Derby and Firebird support pessimistic locking only for a single-table queries.
+        // DB2, Derby, Symfoware and Firebird support pessimistic locking only for a single-table queries.
         // PostgreSQL supports for update, but not on outerjoins, which the test uses.
         // H2 supports pessimistic locking, but has table lock issues with multiple connections used in the tests.
-        if (platform.isFirebird() || platform.isH2() || platform.isHSQL() || platform.isAccess() || platform.isSQLAnywhere() || platform.isDerby() || platform.isPostgreSQL()) {
+        if (platform.isFirebird() || platform.isH2() || platform.isHSQL() || platform.isAccess() || platform.isSQLAnywhere() || platform.isDerby() || platform.isPostgreSQL() || platform.isSymfoware()) {
             warning("This database does not support FOR UPDATE.");
             return false;
         }
@@ -597,7 +597,7 @@ public abstract class JUnitTestCase extends TestCase {
         DatabasePlatform platform = getServerSession(puName).getPlatform();
         // PostgreSQL has some level of support for "stored functions", but output parameters do not work as of 8.2.
         // TODO: DB2 should be in this list.
-        if (platform.isOracle() || platform.isSybase() || platform.isMySQL() || platform.isSQLServer()) {
+        if (platform.isOracle() || platform.isSybase() || platform.isMySQL() || platform.isSQLServer() || platform.isSymfoware()) {
             return true;
         }
         warning("This database does not support stored procedure creation.");

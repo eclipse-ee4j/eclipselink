@@ -52,6 +52,10 @@ public class UpdateAllQueryUOWTest extends AutoVerifyTestCase {
     }
 
     public void test() {
+        if (m_session.getDatasourcePlatform().isSymfoware()) {
+            throwWarning("Test UpdateAllQueryUOWTest skipped for this platform, "
+                    + "Symfoware doesn't support UpdateAll/DeleteAll on multi-table objects (see rfe 298193).");
+        }
         ExpressionBuilder eb = new ExpressionBuilder();
         UpdateAllQuery updateQuery = new UpdateAllQuery(Employee.class);
         updateQuery.addUpdate(eb.get("lastName"), "dummyLastName");

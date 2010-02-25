@@ -138,6 +138,7 @@ public class RelationshipsTableManager extends TableCreator {
         FieldDefinition fieldIMAGE = new FieldDefinition();
         fieldIMAGE.setName("IMAGE");
         fieldIMAGE.setTypeName("BLOB");
+        fieldIMAGE.setSize(1280);
         fieldIMAGE.setShouldAllowNull(true);
         table.addField(fieldIMAGE);
 

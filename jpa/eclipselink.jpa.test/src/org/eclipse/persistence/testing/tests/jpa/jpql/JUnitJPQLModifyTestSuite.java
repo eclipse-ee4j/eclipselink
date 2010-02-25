@@ -120,6 +120,11 @@ public class JUnitJPQLModifyTestSuite extends JUnitTestCase {
     
     public void simpleUpdate()
     {          
+        if ((JUnitTestCase.getServerSession()).getPlatform().isSymfoware()) {
+            getServerSession().logMessage("Test simpleUpdate skipped for this platform, "
+                    + "Symfoware doesn't support UpdateAll/DeleteAll on multi-table objects (see rfe 298193).");
+            return;
+        }
         EntityManager em = createEntityManager();
         int nrOfEmps = executeJPQLReturningInt(
             em, "SELECT COUNT(e) FROM Employee e");
@@ -148,6 +153,11 @@ public class JUnitJPQLModifyTestSuite extends JUnitTestCase {
 
     public void updateWithSubquery()
     {          
+        if ((JUnitTestCase.getServerSession()).getPlatform().isSymfoware()) {
+            getServerSession().logMessage("Test updateWithSubquery skipped for this platform, "
+                    + "Symfoware doesn't support UpdateAll/DeleteAll on multi-table objects (see rfe 298193).");
+            return;
+        }
         EntityManager em = createEntityManager();
         int nrOfEmps = executeJPQLReturningInt(
             em, "SELECT COUNT(e) FROM Employee e WHERE e.managedEmployees IS NOT EMPTY");
@@ -170,6 +180,11 @@ public class JUnitJPQLModifyTestSuite extends JUnitTestCase {
 
     public void updateEmbedded()
     {          
+        if ((JUnitTestCase.getServerSession()).getPlatform().isSymfoware()) {
+            getServerSession().logMessage("Test updateEmbedded skipped for this platform, "
+                    + "Symfoware doesn't support UpdateAll/DeleteAll on multi-table objects (see rfe 298193).");
+            return;
+        }
         EntityManager em = createEntityManager();
 
         int nrOfEmps = executeJPQLReturningInt(
@@ -199,6 +214,11 @@ public class JUnitJPQLModifyTestSuite extends JUnitTestCase {
 
     public void updateEmbeddedFieldTest()
     {
+        if ((JUnitTestCase.getServerSession()).getPlatform().isSymfoware()) {
+            getServerSession().logMessage("Test updateEmbeddedFieldTest skipped for this platform, "
+                    + "Symfoware doesn't support UpdateAll/DeleteAll on multi-table objects (see rfe 298193).");
+            return;
+        }
 
         EntityManager em = createEntityManager();
 
@@ -234,6 +254,11 @@ public class JUnitJPQLModifyTestSuite extends JUnitTestCase {
 
     public void updateUnqualifiedAttributeInSet()
     {          
+        if ((JUnitTestCase.getServerSession()).getPlatform().isSymfoware()) {
+            getServerSession().logMessage("Test updateUnqualifiedAttributeInSet skipped for this platform, "
+                    + "Symfoware doesn't support UpdateAll/DeleteAll on multi-table objects (see rfe 298193).");
+            return;
+        }
         EntityManager em = createEntityManager();
         int nrOfEmps = executeJPQLReturningInt(
             em, "SELECT COUNT(e) FROM Employee e");
@@ -283,6 +308,11 @@ public class JUnitJPQLModifyTestSuite extends JUnitTestCase {
 
     public void updateUnqualifiedAttributeInWhere()
     {          
+        if ((JUnitTestCase.getServerSession()).getPlatform().isSymfoware()) {
+            getServerSession().logMessage("Test updateUnqualifiedAttributeInWhere skipped for this platform, "
+                    + "Symfoware doesn't support UpdateAll/DeleteAll on multi-table objects (see rfe 298193).");
+            return;
+        }
         EntityManager em = createEntityManager();
         int nrOfEmps = executeJPQLReturningInt(
             em, "SELECT COUNT(e) FROM Employee e WHERE e.firstName = 'Bob'");

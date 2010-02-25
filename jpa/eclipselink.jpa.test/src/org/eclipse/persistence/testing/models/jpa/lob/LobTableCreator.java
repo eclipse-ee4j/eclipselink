@@ -31,7 +31,7 @@ public class LobTableCreator extends org.eclipse.persistence.tools.schemaframewo
         FieldDefinition fieldAUDIO = new FieldDefinition();
         fieldAUDIO.setName("AUDIO");
         fieldAUDIO.setTypeName("BLOB");
-        fieldAUDIO.setSize(0);
+        fieldAUDIO.setSize(4800);
         fieldAUDIO.setSubSize(0);
         fieldAUDIO.setIsPrimaryKey(false);
         fieldAUDIO.setIsIdentity(false);
@@ -42,7 +42,7 @@ public class LobTableCreator extends org.eclipse.persistence.tools.schemaframewo
         FieldDefinition fieldCOMMENTARY = new FieldDefinition();
         fieldCOMMENTARY.setName("COMMENTARY");
         fieldCOMMENTARY.setTypeName("CLOB");
-        fieldCOMMENTARY.setSize(0);
+        fieldCOMMENTARY.setSize(4500);
         fieldCOMMENTARY.setSubSize(0);
         fieldCOMMENTARY.setIsPrimaryKey(false);
         fieldCOMMENTARY.setIsIdentity(false);
@@ -82,7 +82,7 @@ public class LobTableCreator extends org.eclipse.persistence.tools.schemaframewo
         FieldDefinition fieldPICTURE = new FieldDefinition();
         fieldPICTURE.setName("PICTURE");
         fieldPICTURE.setTypeName("BLOB");
-        fieldPICTURE.setSize(0);
+        fieldPICTURE.setSize(4800);
         fieldPICTURE.setSubSize(0);
         fieldPICTURE.setIsPrimaryKey(false);
         fieldPICTURE.setIsIdentity(false);
@@ -93,7 +93,7 @@ public class LobTableCreator extends org.eclipse.persistence.tools.schemaframewo
         FieldDefinition fieldSCRIPT = new FieldDefinition();
         fieldSCRIPT.setName("SCRIPT");
         fieldSCRIPT.setTypeName("CLOB");
-        fieldSCRIPT.setSize(0);
+        fieldSCRIPT.setSize(4500);
         fieldSCRIPT.setSubSize(0);
         fieldSCRIPT.setIsPrimaryKey(false);
         fieldSCRIPT.setIsIdentity(false);

@@ -625,7 +625,8 @@ public class MySQLPlatform extends DatabasePlatform {
         printer.printParameter(DatabaseCall.FIRSTRESULT_FIELD);
         printer.printString(", ");
         printer.printParameter(DatabaseCall.MAXROW_FIELD);
-        call.setIgnoreFirstRowMaxResultsSettings(true);
+        call.setIgnoreFirstRowSetting(true);
+        call.setIgnoreMaxResultsSetting(true);
     }
     
 }

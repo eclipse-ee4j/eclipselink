@@ -21,6 +21,7 @@ import static javax.persistence.InheritanceType.*;
 import static javax.persistence.FetchType.*;
 
 import org.eclipse.persistence.annotations.BasicMap;
+import org.eclipse.persistence.annotations.CollectionTable;
 import org.eclipse.persistence.annotations.ConversionValue;
 import org.eclipse.persistence.annotations.Convert;
 import org.eclipse.persistence.annotations.Converter;
@@ -111,6 +112,7 @@ public class Buyer implements Serializable {
             @ConversionValue(dataValue="DI", objectValue=DINERS)
         }
     )
+    @CollectionTable(name="CMP3_FA_Buyer_CREDITCARDS")
     @PrivateOwned
     private Map<String, Long> creditCards;
     private static final String AMEX = "Amex";

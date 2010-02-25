@@ -128,6 +128,11 @@ public class JUnitJPQLParameterTestSuite extends JUnitTestCase {
            
     // Test for GF#1123 - UPDATE with JPQL does not handle enums correctly.
     public void updateEnumParameter() {
+        if ((JUnitTestCase.getServerSession()).getPlatform().isSymfoware()) {
+            getServerSession().logMessage("Test updateEnumParameter skipped for this platform, "
+                    + "Symfoware doesn't support UpdateAll/DeleteAll on multi-table objects (see rfe 298193).");
+            return;
+        }
         EntityManager em = createEntityManager();
 
         int nrOfEmps = executeJPQLReturningInt(

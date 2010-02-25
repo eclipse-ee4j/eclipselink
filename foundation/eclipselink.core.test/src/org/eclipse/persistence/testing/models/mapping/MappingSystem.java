@@ -22,11 +22,15 @@ import org.eclipse.persistence.expressions.*;
 import org.eclipse.persistence.mappings.*;
 
 public class MappingSystem extends TestSystem {
+    protected static boolean useFastTableCreatorAfterInitialCreate = Boolean
+            .getBoolean("eclipselink.test.toggle-fast-table-creator");
+    protected static boolean isFirstCreation = true;
+
     protected Project legacyProject;
     protected Project multipleTableProject;
     protected Project keyboardProject;
     protected Project bidirectionalProject;
-    
+
     public MappingSystem() {
         project = new MappingProject();
         legacyProject = new LegacyTestProject();
@@ -94,24 +98,38 @@ public class MappingSystem extends TestSystem {
             empDefinition.addField("JDESC", Byte[].class);
         }
 
-        schemaManager.replaceObject(empDefinition);
-        schemaManager.replaceObject(Employee.joinTableDefinition());
-        schemaManager.replaceObject(Employee.employeePhoneJoinTableDefinition());
-        schemaManager.replaceObject(Phone.tableDefinition());
+        boolean orig_FAST_TABLE_CREATOR = SchemaManager.FAST_TABLE_CREATOR;
+        // on Symfoware, to avoid table locking issues only the first invocation
+        // of an instance of this class (drops & re-)creates the tables.
+        if (useFastTableCreatorAfterInitialCreate && !isFirstCreation) {
+            SchemaManager.FAST_TABLE_CREATOR = true;
+        }
+        try {
+            schemaManager.replaceObject(empDefinition);
+            schemaManager.replaceObject(Employee.joinTableDefinition());
+            schemaManager.replaceObject(Employee.employeePhoneJoinTableDefinition());
+            schemaManager.replaceObject(Phone.tableDefinition());
 
-        schemaManager.replaceObject(CompanyCard.tableDefinition());
-        schemaManager.replaceObject(Computer.tableDefinition());
-        schemaManager.replaceObject(Cubicle.tableDefinition());
-        schemaManager.replaceObject(EmergencyExit.tableDefinition());
-        schemaManager.replaceObject(EmergencyExit.relationTableDefinition());
-        schemaManager.replaceObject(Shipment.tableDefinition());
-        schemaManager.replaceObject(getPolicyTableDefinition());
-        schemaManager.replaceObject(Address.tableDefinition());
-        schemaManager.replaceObject(Monitor.tableDefinition());
-        schemaManager.replaceObject(Hardware.tableDefinition());
-        schemaManager.replaceObject(SecureSystem.tableDefinition());
-        schemaManager.replaceObject(Identification.tableDefinition());
-        schemaManager.createSequences();
+            schemaManager.replaceObject(CompanyCard.tableDefinition());
+            schemaManager.replaceObject(Computer.tableDefinition());
+            schemaManager.replaceObject(Cubicle.tableDefinition());
+            schemaManager.replaceObject(EmergencyExit.tableDefinition());
+            schemaManager.replaceObject(EmergencyExit.relationTableDefinition());
+            schemaManager.replaceObject(Shipment.tableDefinition());
+            schemaManager.replaceObject(getPolicyTableDefinition());
+            schemaManager.replaceObject(Address.tableDefinition());
+            schemaManager.replaceObject(Monitor.tableDefinition());
+            schemaManager.replaceObject(Hardware.tableDefinition());
+            schemaManager.replaceObject(SecureSystem.tableDefinition());
+            schemaManager.replaceObject(Identification.tableDefinition());
+            schemaManager.createSequences();
+        } finally {
+            if (useFastTableCreatorAfterInitialCreate && !isFirstCreation) {
+                SchemaManager.FAST_TABLE_CREATOR = orig_FAST_TABLE_CREATOR;
+            }
+        }
+        // next time it deletes the rows instead.
+        isFirstCreation = false;
     }
 
     public static TableDefinition getPolicyTableDefinition() {

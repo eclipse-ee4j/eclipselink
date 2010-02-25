@@ -926,7 +926,7 @@ public class JUnitJPQLValidationTestSuite extends JUnitTestCase
             if (isKnownMySQLIssue(e.getCause())) {
                 warning("EOFException found on MySQL db.  This is a known problem with the MySQL Database");
             } else {         
-                Assert.assertTrue("Exception not instance of opt Lock exception", e.getCause() instanceof javax.persistence.OptimisticLockException);            
+                Assert.assertTrue("Exception not instance of opt Lock exception: " + e.getCause(), e.getCause() instanceof javax.persistence.OptimisticLockException);            
             }
             return;
         }    

@@ -301,7 +301,7 @@ public abstract class ReadQuery extends DatabaseQuery {
     public void prepareForExecution() throws QueryException {
         super.prepareForExecution();
         DatabaseCall databaseCall = this.getCall();
-        if ( databaseCall !=null && databaseCall.shouldIgnoreFirstRowMaxResultsSettings() ){
+        if ( databaseCall !=null && (databaseCall.shouldIgnoreFirstRowSetting() || databaseCall.shouldIgnoreMaxResultsSetting())){
             AbstractRecord parameters = this.getTranslationRow();
             if (parameters.isEmpty()){
                 parameters = new DatabaseRecord();
@@ -355,7 +355,7 @@ public abstract class ReadQuery extends DatabaseQuery {
      */
     public void setFirstResult(int firstResult) {
         if (isPrepared() && this.firstResult != firstResult) {
-            if (getCall()!=null && getCall().shouldIgnoreFirstRowMaxResultsSettings()) {
+            if (getCall()!=null && getCall().shouldIgnoreFirstRowSetting()) {
                 // Don't need to reprepare as firstResult is already built into the sql if ignoreFirstRowMaxResultsSettings is set,
                 // firstResult is just a query parameter.
             } else {
@@ -386,7 +386,7 @@ public abstract class ReadQuery extends DatabaseQuery {
     */
     public void setMaxRows(int maxRows) {
         if ( isPrepared() && this.maxRows != maxRows){
-            if ( this.getCall()!=null && this.getCall().shouldIgnoreFirstRowMaxResultsSettings() && this.maxRows>0 ){
+            if ( this.getCall()!=null && this.getCall().shouldIgnoreMaxResultsSetting() && this.maxRows>0 ){
             }else{
                 setIsPrepared(false);
             }

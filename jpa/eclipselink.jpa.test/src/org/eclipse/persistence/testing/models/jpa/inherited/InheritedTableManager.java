@@ -36,12 +36,13 @@ package org.eclipse.persistence.testing.models.jpa.inherited;
 
 import org.eclipse.persistence.sessions.Session;
 import org.eclipse.persistence.sessions.DatabaseSession;
+import org.eclipse.persistence.testing.framework.TogglingFastTableCreator;
 import org.eclipse.persistence.tools.schemaframework.SchemaManager;
 import org.eclipse.persistence.tools.schemaframework.TableCreator;
 import org.eclipse.persistence.tools.schemaframework.TableDefinition;
 import org.eclipse.persistence.tools.schemaframework.FieldDefinition;
 
-public class InheritedTableManager extends TableCreator {
+public class InheritedTableManager extends TogglingFastTableCreator {
     public static TableCreator tableCreator;
 
     public InheritedTableManager() {
@@ -1765,21 +1766,23 @@ public class InheritedTableManager extends TableCreator {
      * Drop tables manually because constraints changed.
      */
     public void replaceTables(DatabaseSession session, SchemaManager schemaManager) {
-        try {
-            session.executeNonSelectingSQL("drop table EXPERT_CONSUMER_ACCLAIMS");
-        } catch (Exception ignore) {}
-        try {
-            session.executeNonSelectingSQL("drop table EXPERT_CONSUMER_AUDIO");
-        } catch (Exception ignore) {}
-        try {
-            session.executeNonSelectingSQL("drop table EXPERT_CONSUMER_AWARDS");
-        } catch (Exception ignore) {}
-        try {
-            session.executeNonSelectingSQL("drop table EXPERT_CONSUMER_DESIGNATIONS");
-        } catch (Exception ignore) {}
-        try {
-            session.executeNonSelectingSQL("drop table EXPERT_CONSUMER_RECORDS");
-        } catch (Exception ignore) {}
+        if (!SchemaManager.FAST_TABLE_CREATOR && !useFastTableCreatorAfterInitialCreate) {
+            try {
+                session.executeNonSelectingSQL("drop table EXPERT_CONSUMER_ACCLAIMS");
+            } catch (Exception ignore) {}
+            try {
+                session.executeNonSelectingSQL("drop table EXPERT_CONSUMER_AUDIO");
+            } catch (Exception ignore) {}
+            try {
+                session.executeNonSelectingSQL("drop table EXPERT_CONSUMER_AWARDS");
+            } catch (Exception ignore) {}
+            try {
+                session.executeNonSelectingSQL("drop table EXPERT_CONSUMER_DESIGNATIONS");
+            } catch (Exception ignore) {}
+            try {
+                session.executeNonSelectingSQL("drop table EXPERT_CONSUMER_RECORDS");
+            } catch (Exception ignore) {}
+        }
         super.replaceTables(session, schemaManager);
     }
 }

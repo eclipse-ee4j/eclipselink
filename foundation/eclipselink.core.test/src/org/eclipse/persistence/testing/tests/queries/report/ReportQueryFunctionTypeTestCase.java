@@ -76,7 +76,7 @@ public class ReportQueryFunctionTypeTestCase extends AutoVerifyTestCase {
             }
             
             //Sybase and TimesTen doesn't support
-            if(!(getSession().getDatasourcePlatform().isSybase() || getSession().getDatasourcePlatform().isTimesTen() || getSession().getDatasourcePlatform().isDerby()))        
+            if(!(getSession().getDatasourcePlatform().isSybase() || getSession().getDatasourcePlatform().isTimesTen() || getSession().getDatasourcePlatform().isDerby() || getSession().getDatasourcePlatform().isSymfoware()))        
             {
               reportQuery .addStandardDeviation("salary-std", builder.get("salary")); 
             }

@@ -603,7 +603,7 @@ public class DatabaseAccessor extends DatasourceAccessor {
                 if (!isInBatchWritingMode(session)) {
                     readStatementsCount++;
                 }
-                if (!dbCall.shouldIgnoreFirstRowMaxResultsSettings() && dbCall.getFirstResult() != 0) {
+                if (!dbCall.shouldIgnoreFirstRowSetting() && dbCall.getFirstResult() != 0) {
                     resultSet.absolute(dbCall.getFirstResult());
                 }
                 ResultSetMetaData metaData = resultSet.getMetaData();

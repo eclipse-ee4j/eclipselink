@@ -47,7 +47,7 @@ public class ExpressionJUnitTestSuite extends JUnitTestCase {
      */
     public void testLeftTrimWithTrimChar() throws Exception {
         Platform dbPlatform = getDbPlatform();
-        if (!(dbPlatform.isOracle() || dbPlatform.isMySQL() || dbPlatform.isPostgreSQL())) {
+        if (!(dbPlatform.isOracle() || dbPlatform.isMySQL() || dbPlatform.isPostgreSQL() || dbPlatform.isSymfoware())) {
             getServerSession().logMessage("Test testLeftTrimWithTrimChar skipped for this platform");
             return;
         }
@@ -177,7 +177,7 @@ public class ExpressionJUnitTestSuite extends JUnitTestCase {
      */
     public void testRightTrimWithTrimChar() throws Exception {
         Platform dbPlatform = getDbPlatform();
-        if (!(dbPlatform.isOracle() || dbPlatform.isMySQL() || dbPlatform.isPostgreSQL())) {
+        if (!(dbPlatform.isOracle() || dbPlatform.isMySQL() || dbPlatform.isPostgreSQL() || dbPlatform.isSymfoware())) {
             getServerSession().logMessage("Test testRightTrimWithTrimChar skipped for this platform");
             return;
         }
@@ -304,7 +304,7 @@ public class ExpressionJUnitTestSuite extends JUnitTestCase {
      */
     public void testTrimWithTrimChar() throws Exception {
         Platform dbPlatform = getDbPlatform();
-        if (!(dbPlatform.isOracle() || dbPlatform.isMySQL() || dbPlatform.isPostgreSQL())) {
+        if (!(dbPlatform.isOracle() || dbPlatform.isMySQL() || dbPlatform.isPostgreSQL() || dbPlatform.isSymfoware() )) {
             getServerSession().logMessage("Test testTrimWithTrimChar skipped for this platform");
             return;
         }
@@ -370,7 +370,7 @@ public class ExpressionJUnitTestSuite extends JUnitTestCase {
     public void testTrimWithoutTrimChar() throws Exception {
         Platform dbPlatform = getDbPlatform();
         if (!(dbPlatform.isOracle() || dbPlatform.isMySQL() || dbPlatform.isPostgreSQL() 
-                || dbPlatform.isInformix() || dbPlatform.isSQLAnywhere() || dbPlatform.isHSQL())) {
+                || dbPlatform.isInformix() || dbPlatform.isSQLAnywhere() || dbPlatform.isHSQL() || dbPlatform.isSymfoware())) {
             getServerSession().logMessage("Test testTrimWithoutTrimChar skipped for this platform");
             return;
         }

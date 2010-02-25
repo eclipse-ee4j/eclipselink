@@ -47,7 +47,7 @@ public class ExpressionJUnitTestSuite extends JUnitTestCase {
      */
     public void testLeftTrimWithTrimChar() throws Exception {
         Platform dbPlatform = getDbPlatform();
-        if (!(dbPlatform.isOracle() || dbPlatform.isMySQL() || dbPlatform.isPostgreSQL())) {
+        if (!(dbPlatform.isOracle() || dbPlatform.isMySQL() || dbPlatform.isPostgreSQL() || dbPlatform.isSymfoware())) {
             getServerSession().logMessage("Test testLeftTrimWithTrimChar skipped for this platform");
             return;
         }
@@ -153,7 +153,7 @@ public class ExpressionJUnitTestSuite extends JUnitTestCase {
      */
     public void testRightTrimWithTrimChar() throws Exception {
         Platform dbPlatform = getDbPlatform();
-        if (!(dbPlatform.isOracle() || dbPlatform.isMySQL() || dbPlatform.isPostgreSQL())) {
+        if (!(dbPlatform.isOracle() || dbPlatform.isMySQL() || dbPlatform.isPostgreSQL() || dbPlatform.isSymfoware())) {
             getServerSession().logMessage("Test testRightTrimWithTrimChar skipped for this platform");
             return;
         }
@@ -258,7 +258,7 @@ public class ExpressionJUnitTestSuite extends JUnitTestCase {
      */
     public void testTrimWithTrimChar() throws Exception {
         Platform dbPlatform = getDbPlatform();
-        if (!(dbPlatform.isOracle() || dbPlatform.isMySQL() || dbPlatform.isPostgreSQL())) {
+        if (!(dbPlatform.isOracle() || dbPlatform.isMySQL() || dbPlatform.isPostgreSQL() || dbPlatform.isSymfoware())) {
             getServerSession().logMessage("Test testTrimWithTrimChar skipped for this platform");
             return;
         }
@@ -313,7 +313,7 @@ public class ExpressionJUnitTestSuite extends JUnitTestCase {
     public void testTrimWithoutTrimChar() throws Exception {
         Platform dbPlatform = getDbPlatform();
         if (!(dbPlatform.isOracle() || dbPlatform.isMySQL() || dbPlatform.isPostgreSQL() 
-                || dbPlatform.isInformix() || dbPlatform.isSQLAnywhere() || dbPlatform.isHSQL())) {
+                || dbPlatform.isInformix() || dbPlatform.isSQLAnywhere() || dbPlatform.isHSQL() || dbPlatform.isSymfoware())) {
             getServerSession().logMessage("Test testTrimWithoutTrimChar skipped for this platform");
             return;
         }
@@ -432,6 +432,55 @@ public class ExpressionJUnitTestSuite extends JUnitTestCase {
         try{
             ExpressionBuilder builder = new ExpressionBuilder();
             Expression expression = builder.get("name").locate("i", 2).equal(new Integer(5));
+            
+            ReadAllQuery r = new ReadAllQuery();
+            r.setReferenceClass(Item.class);
+            r.setSelectionCriteria(expression);
+            Vector v = (Vector)getServerSession().executeQuery(r);
+            assertTrue("Test error: No Items found", v.size()!=0 );
+            Item returned = (Item)v.firstElement();
+            assertTrue("Test error: IncorrectItem found","itemi".equals(returned.getName()) );
+            
+        }catch(Exception e){
+            em = createEntityManager();
+            try{
+                beginTransaction(em);
+                i = em.find(Item.class, i.getItemId());
+                em.remove(i);
+                commitTransaction(em);
+            }catch (Throwable t){
+                if (isTransactionActive(em)){
+                    rollbackTransaction(em);
+                }
+            }
+            closeEntityManager(em);
+            throw e;
+        }
+    }
+
+    /*
+     * locate(string, int) feature test
+     *   Negative case: tests that locate(string, int) works when the string is not included  (bug 299334)
+     */
+    public void testLocateWithDoubleArgument_Neg() throws Exception {
+        Item i = new Item();
+        i.setName("itemi");
+        i.setDescription("itemi description");
+        EntityManager em = createEntityManager();
+        try{
+            beginTransaction(em);
+            em.persist(i);
+            commitTransaction(em);
+        }catch (Exception e){
+            if (isTransactionActive(em)){
+                rollbackTransaction(em);
+            }
+            throw e;
+        }
+        closeEntityManager(em);
+        try{
+            ExpressionBuilder builder = new ExpressionBuilder();
+            Expression expression = builder.get("name").locate("t", 4).equal(new Integer(0));
             
             ReadAllQuery r = new ReadAllQuery();
             r.setReferenceClass(Item.class);

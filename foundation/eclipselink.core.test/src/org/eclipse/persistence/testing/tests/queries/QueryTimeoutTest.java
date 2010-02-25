@@ -29,6 +29,10 @@ public class QueryTimeoutTest extends TestCase {
     }
 
     public void test() {
+        if (getSession().getLogin().getPlatform().isSymfoware()) {
+            throwWarning("Test QueryTimeoutTest skipped for this platform, "
+                    + "the driver does not support query timeout.");
+        }
         try {
             DataReadQuery query = new DataReadQuery();
             query.setSQLString("SELECT SUM(e.EMP_ID) from EMPLOYEE e , EMPLOYEE b, EMPLOYEE c, EMPLOYEE d, EMPLOYEE f, EMPLOYEE g, EMPLOYEE h");

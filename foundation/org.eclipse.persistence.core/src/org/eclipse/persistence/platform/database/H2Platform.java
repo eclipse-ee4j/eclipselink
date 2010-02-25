@@ -56,7 +56,8 @@ public class H2Platform extends DatabasePlatform {
         printer.printParameter(DatabaseCall.MAXROW_FIELD);
         printer.printString(" OFFSET ");
         printer.printParameter(DatabaseCall.FIRSTRESULT_FIELD);
-        call.setIgnoreFirstRowMaxResultsSettings(true);
+        call.setIgnoreFirstRowSetting(true);
+        call.setIgnoreMaxResultsSetting(true);
     }
     
     /**

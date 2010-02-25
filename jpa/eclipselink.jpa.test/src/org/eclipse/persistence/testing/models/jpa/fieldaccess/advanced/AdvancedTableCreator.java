@@ -12,9 +12,11 @@
  ******************************************************************************/  
 package org.eclipse.persistence.testing.models.jpa.fieldaccess.advanced;
 
+import org.eclipse.persistence.testing.framework.TogglingFastTableCreator;
 import org.eclipse.persistence.tools.schemaframework.*;
 
-public class AdvancedTableCreator extends TableCreator {
+public class AdvancedTableCreator extends TogglingFastTableCreator {
+
     public AdvancedTableCreator() {
         setName("EJB3EmployeeProject");
 
@@ -255,7 +257,7 @@ public class AdvancedTableCreator extends TableCreator {
      
      public static TableDefinition buildCREDITCARDSTable() {
         TableDefinition table = new TableDefinition();
-        table.setName("Buyer_CREDITCARDS");
+        table.setName("CMP3_FA_Buyer_CREDITCARDS");
     
         FieldDefinition fieldID = new FieldDefinition();
         fieldID.setName("BUYER_ID");

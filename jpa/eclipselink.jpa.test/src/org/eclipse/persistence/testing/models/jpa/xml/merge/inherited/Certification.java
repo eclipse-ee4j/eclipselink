@@ -43,7 +43,7 @@ public class Certification  {
     
     // This annotation is used for the Id
     @Id
-    @GeneratedValue(strategy=TABLE, generator="CERTIFICATION_TABLE_GENERATOR")
+    @GeneratedValue(strategy=TABLE, generator="MERGE_CERTIFICATION_TABLE_GENERATOR")
 	@TableGenerator(
         name="MERGE_CERTIFICATION_TABLE_GENERATOR", 
         table="CMP3_MERGE_BEER_SEQ", 

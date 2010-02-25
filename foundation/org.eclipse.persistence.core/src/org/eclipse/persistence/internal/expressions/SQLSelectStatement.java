@@ -402,6 +402,13 @@ public class SQLSelectStatement extends SQLStatement {
                             printOnClause(sourceToRelationJoin, printer, platform);                            
                         }
                         
+                        if (!session.getPlatform().supportsANSIInnerJoinSyntax()) {
+                            // if the DB does not support 'JOIN', do a left outer
+                            // join instead. This will give the same result because
+                            // the left table is a join table and has therefore
+                            // no rows that are not in the right table.
+                            writer.write(" LEFT OUTER");
+                        }
                         writer.write(" JOIN ");
                         writer.write(targetTable.getQualifiedNameDelimited(printer.getPlatform()));
                         writer.write(" ");
@@ -474,6 +481,25 @@ public class SQLSelectStatement extends SQLStatement {
             if (onExpression != null) {
                 if(i < nDescriptorTables) {
                     // it's descriptor's own table
+                    if (!session.getPlatform().supportsANSIInnerJoinSyntax()) {
+                        // if the DB does not support 'JOIN', do a:
+                        if (desc.hasInheritance()) {
+                            // right outer join instead. This will give the same
+                            // result because the right table has no rows that
+                            // are not in the left table (left table maps to a
+                            // subclass, right table to the main class in an
+                            // inheritance mapping with a joined subclass
+                            // strategy).
+                            writer.write(" RIGHT OUTER");
+                        } else {
+                            // left outer join instead. This will give the same
+                            // result because the left table has no rows that
+                            // are not in the right table (left table is either
+                            // a join table or it is joining secondary tables to
+                            // a primary table).
+                            writer.write(" LEFT OUTER");
+                        }
+                    }
                     writer.write(" JOIN ");
                 } else {
                     // it's child's table

@@ -74,7 +74,7 @@ public class ScrollableCursorTest extends TestCase {
 
     protected void setup() {
         if (getSession().getPlatform().isDB2() || getSession().getPlatform().isAccess() || 
-            getSession().getPlatform().isTimesTen()) {
+            getSession().getPlatform().isTimesTen() || getSession().getPlatform().isSymfoware()) {
             throw new TestWarningException("ScrollableCursor is not supported on this platform.");
         }
         TYPE_SCROLL_INSENSITIVE_isSupported = true;

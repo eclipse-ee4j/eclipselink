@@ -104,7 +104,7 @@
         <table-generator name="XML_ORDER_CARD_TABLE_GENERATOR" table="XML_CUSTOMER_SEQ" pk-column-name="SEQ_NAME" value-column-name="SEQ_COUNT" pk-column-value="ORDER_CARD_SEQ"/>
         <attributes>
             <id name="id">
-                <generated-value strategy="TABLE" generator="XML_ORDER_LABEL_TABLE_GENERATOR"/>
+                <generated-value strategy="TABLE" generator="XML_ORDER_CARD_TABLE_GENERATOR"/>
             </id>
             <one-to-one name="order">
                 <!-- use the defaults for the join table -->
@@ -148,7 +148,7 @@
             <basic name="name"/>
             <basic name="description"/>
             <basic name="image">
-                <column name="IMAGE"/>
+                <column name="IMAGE" length="1280"/>
                 <lob/>
             </basic>
             <version name="version">

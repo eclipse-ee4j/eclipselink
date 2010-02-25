@@ -68,18 +68,30 @@ public class JoinedAttributeAdvancedJunitTest extends JUnitTestCase {
     protected void clear() {
         UnitOfWork uow = acquireUnitOfWork();
 
-        UpdateAllQuery updateEmployees = new UpdateAllQuery(Employee.class);
-        updateEmployees.addUpdate("manager", null);
-        updateEmployees.addUpdate("address", null);
-        uow.executeQuery(updateEmployees);
-    
+        // use alternate way for Symfoware as it doesn't support UpdateAll/DeleteAll on multi-table objects (see rfe 298193)
+        if (!(JUnitTestCase.getServerSession()).getPlatform().isSymfoware()) {
+            UpdateAllQuery updateEmployees = new UpdateAllQuery(Employee.class);
+            updateEmployees.addUpdate("manager", null);
+            updateEmployees.addUpdate("address", null);
+            uow.executeQuery(updateEmployees);
+
+            uow.executeQuery(new DeleteAllQuery(Employee.class));
+        } else {
+            Iterator<Employee> emps = uow.readAllObjects(Employee.class).iterator();
+            while (emps.hasNext()){
+              Employee emp = emps.next();
+              emp.setManager(null);
+              emp.setAddress(null);
+              uow.deleteObject(emp);
+            }; 
+        }
+
         UpdateAllQuery updateProjects = new UpdateAllQuery(Project.class);
         updateProjects.addUpdate("teamLeader", null);
         uow.executeQuery(updateProjects);
-    
+
         uow.executeQuery(new DeleteAllQuery(PhoneNumber.class));
         uow.executeQuery(new DeleteAllQuery(Address.class));
-        uow.executeQuery(new DeleteAllQuery(Employee.class));
         uow.executeQuery(new DeleteAllQuery(Project.class));
 
         uow.commit();
@@ -364,6 +376,11 @@ public void testEmployeeJoinManagerAddressOuterJoinManagerAddress() {
     }
     
     public void testTwoUnrelatedResultWithOneToManyJoins() {
+        if (getServerSession().getPlatform().isSymfoware()) {
+            getServerSession().logMessage("Test testTwoUnrelatedResultWithOneToManyJoins skipped for this platform, "
+                    + "Symfoware doesn't support UpdateAll/DeleteAll on multi-table objects (see rfe 298193).");
+            return;
+        }
         ReadAllQuery raq = new ReadAllQuery(Employee.class);
         raq.setSelectionCriteria(raq.getExpressionBuilder().get("lastName").equal("Way").or(raq.getExpressionBuilder().get("lastName").equal("Jones")));
         Employee emp = (Employee)((Vector)getDbSession().executeQuery(raq)).firstElement();
@@ -424,6 +441,11 @@ public void testEmployeeJoinManagerAddressOuterJoinManagerAddress() {
     }
     
     public void testMultipleUnrelatedResultWithOneToManyJoins() {
+        if (getServerSession().getPlatform().isSymfoware()) {
+            getServerSession().logMessage("Test testMultipleUnrelatedResultWithOneToManyJoins skipped for this platform, "
+                    + "Symfoware doesn't support UpdateAll/DeleteAll on multi-table objects (see rfe 298193).");
+            return;
+        }
         ReadAllQuery raq = new ReadAllQuery(Employee.class);
         raq.setSelectionCriteria(raq.getExpressionBuilder().notEmpty("phoneNumbers"));
         Employee emp = (Employee)((Vector)getDbSession().executeQuery(raq)).firstElement();
@@ -495,6 +517,11 @@ public void testEmployeeJoinManagerAddressOuterJoinManagerAddress() {
     }
     
     public void testTwoUnrelatedResultWithOneToOneJoins() {
+        if (getServerSession().getPlatform().isSymfoware()) {
+            getServerSession().logMessage("Test testTwoUnrelatedResultWithOneToOneJoins skipped for this platform, "
+                    + "Symfoware doesn't support UpdateAll/DeleteAll on multi-table objects (see rfe 298193).");
+            return;
+        }
         ReadAllQuery raq = new ReadAllQuery(Employee.class);
         raq.setSelectionCriteria(raq.getExpressionBuilder().get("lastName").equal("Way").or(raq.getExpressionBuilder().get("lastName").equal("Jones")));
         Employee emp = (Employee)((Vector)getDbSession().executeQuery(raq)).firstElement();
@@ -553,6 +580,11 @@ public void testEmployeeJoinManagerAddressOuterJoinManagerAddress() {
     }
     
     public void testTwoUnrelatedResultWithOneToOneJoinsWithExtraItem() {
+        if (getServerSession().getPlatform().isSymfoware()) {
+            getServerSession().logMessage("Test testTwoUnrelatedResultWithOneToOneJoinsWithExtraItem skipped for this platform, "
+                    + "Symfoware doesn't support UpdateAll/DeleteAll on multi-table objects (see rfe 298193).");
+            return;
+        }
         ReadAllQuery raq = new ReadAllQuery(Employee.class);
         raq.setSelectionCriteria(raq.getExpressionBuilder().get("lastName").equal("Way").or(raq.getExpressionBuilder().get("lastName").equal("Jones")));
         Employee emp = (Employee)((Vector)getDbSession().executeQuery(raq)).firstElement();

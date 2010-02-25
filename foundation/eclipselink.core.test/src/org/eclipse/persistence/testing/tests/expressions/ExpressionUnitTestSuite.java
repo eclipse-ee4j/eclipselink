@@ -199,6 +199,7 @@ public class ExpressionUnitTestSuite extends ExpressionTestSuite {
         test.setDescription("Test currentDate expression");
         test.addUnsupportedPlatform(DB2Platform.class);
         test.addUnsupportedPlatform(TimesTenPlatform.class);
+        test.addUnsupportedPlatform(SymfowarePlatform.class);
         addTest(test);
     }
 
@@ -1229,6 +1230,7 @@ public class ExpressionUnitTestSuite extends ExpressionTestSuite {
         test.addUnsupportedPlatform(SQLAnywherePlatform.class);
         test.addUnsupportedPlatform(TimesTenPlatform.class);
         test.addUnsupportedPlatform(DerbyPlatform.class);
+        test.addUnsupportedPlatform(SymfowarePlatform.class);
         test.setExpression(expression);
         test.setName("StandardDeviationTest");
         test.setDescription("Test StandardDeviation expression");
@@ -1357,6 +1359,7 @@ public class ExpressionUnitTestSuite extends ExpressionTestSuite {
         test.addUnsupportedPlatform(SQLServerPlatform.class);
         test.addUnsupportedPlatform(DerbyPlatform.class);
         test.addUnsupportedPlatform(TimesTenPlatform.class);
+        test.addUnsupportedPlatform(SymfowarePlatform.class);
         test.setExpression(expression);
         test.setName("VarianceTest");
         test.setDescription("Test Variance expression");

@@ -48,6 +48,11 @@ public class UpdateAllQueryAdvancedJunitTest extends JUnitTestCase {
     }
     
     public void setUp() {
+        if (getServerSession().getPlatform().isSymfoware()) {
+            warning("UpdateAllQueryAdvancedJunitTest skipped for this platform, "
+                    + "Symfoware doesn't support UpdateAll/DeleteAll on multi-table objects (see rfe 298193).");
+            return;
+        }
         clearCache();
         super.setUp();
         if(!compare()) {
@@ -211,6 +216,11 @@ public class UpdateAllQueryAdvancedJunitTest extends JUnitTestCase {
     }
     
     protected static void updateAllQueryInternal(Class referenceClass, HashMap updateClauses, Expression selectionExpression) {
+        if (getServerSession().getPlatform().isSymfoware()) {
+            getServerSession().logMessage("UpdateAllQueryAdvancedJunitTest skipped for this platform, "
+                    + "Symfoware doesn't support UpdateAll/DeleteAll on multi-table objects (see rfe 298193).");
+            return;
+        }
         String errorMsg = UpdateAllQueryTestHelper.execute(getDbSession(), referenceClass, updateClauses, selectionExpression);
         if(errorMsg != null) {
             fail(errorMsg);
@@ -218,6 +228,11 @@ public class UpdateAllQueryAdvancedJunitTest extends JUnitTestCase {
     }
     
     protected static void updateAllQueryInternal(UpdateAllQuery uq) {
+        if (getServerSession().getPlatform().isSymfoware()) {
+            getServerSession().logMessage("UpdateAllQueryAdvancedJunitTest skipped for this platform, "
+                    + "Symfoware doesn't support UpdateAll/DeleteAll on multi-table objects (see rfe 298193).");
+            return;
+        }
         String errorMsg = UpdateAllQueryTestHelper.execute(getDbSession(), uq);
         if(errorMsg != null) {
             fail(errorMsg);

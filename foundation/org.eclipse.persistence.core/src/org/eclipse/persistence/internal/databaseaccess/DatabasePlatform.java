@@ -1892,6 +1892,14 @@ public class DatabasePlatform extends DatasourcePlatform {
     }
     
     /**
+     * Indicates whether the ANSI syntax for inner joins (e.g. SELECT FROM t1
+     * JOIN t2 ON t1.pk = t2.fk) is supported by this platform.
+     */
+    public boolean supportsANSIInnerJoinSyntax() {
+        return true;
+    }
+
+    /**
      * supportsAutoCommit must sometimes be set to false for JDBC drivers which do not
      * support autocommit.  Used to determine how to handle transactions properly.
      */

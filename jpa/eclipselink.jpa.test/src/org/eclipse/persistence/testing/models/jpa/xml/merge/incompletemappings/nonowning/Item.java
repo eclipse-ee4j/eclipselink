@@ -95,6 +95,7 @@ public class Item implements java.io.Serializable {
         this.image = image;
     }
     
+    @Column(length=1280)
     public byte[] getImage() {
         return image;
     }

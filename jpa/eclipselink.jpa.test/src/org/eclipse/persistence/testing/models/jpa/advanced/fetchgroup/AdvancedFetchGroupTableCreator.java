@@ -41,7 +41,7 @@ public class AdvancedFetchGroupTableCreator extends TableCreator {
         FieldDefinition fieldMSRP = new FieldDefinition();
         fieldMSRP.setName("MSRP");
         fieldMSRP.setTypeName("DOUBLE PRECIS");
-        fieldMSRP.setSize(23);
+        fieldMSRP.setSize(18);
         fieldMSRP.setShouldAllowNull(true);
         fieldMSRP.setIsPrimaryKey(false);
         fieldMSRP.setUnique(false);

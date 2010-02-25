@@ -20,9 +20,10 @@
 package org.eclipse.persistence.testing.models.jpa.advanced.compositepk;
 
 import org.eclipse.persistence.sessions.DatabaseSession;
+import org.eclipse.persistence.testing.framework.TogglingFastTableCreator;
 import org.eclipse.persistence.tools.schemaframework.*;
 
-public class CompositePKTableCreator extends TableCreator {
+public class CompositePKTableCreator extends TogglingFastTableCreator {
     public CompositePKTableCreator() {
         setName("EJB3CompositePKProject");
 
@@ -955,9 +956,11 @@ public class CompositePKTableCreator extends TableCreator {
 
         return table;
     }
+
     /**
      * Dropping old foreign keys from schema change.
      */
+    @Override
     public void replaceTables(DatabaseSession session) {
         try {
             if (session.getPlatform().supportsUniqueKeyConstraints()

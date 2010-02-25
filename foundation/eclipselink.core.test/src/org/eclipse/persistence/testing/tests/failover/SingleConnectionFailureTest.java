@@ -31,6 +31,10 @@ public class SingleConnectionFailureTest extends TestCase {
     protected DatabaseSession databaseSession ;
 
     protected void setup() {
+        if (getSession().getPlatform().isSymfoware()) {
+            throwWarning("Test SingleConnectionFailureTest is not supported on Symfoware, "
+                    + "failover has not been implemented on this platform.");
+        }
         Project project = (Project)getSession().getProject().clone();
         DatabaseLogin login = (DatabaseLogin)project.getLogin().clone();
         login.useDirectDriverConnect();
@@ -59,7 +63,7 @@ public class SingleConnectionFailureTest extends TestCase {
         try{
             this.databaseSession.readObject(Address.class);
         }catch (DatabaseException ex){
-            throw new TestErrorException("Should have reconnected an not thrown exception.");
+            throw new TestErrorException("Should have reconnected and not thrown exception.");
         }
     }
 
