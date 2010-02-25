@@ -15,7 +15,6 @@
  ******************************************************************************/
 package javax.persistence;
 
-import java.util.Set;
 import java.util.Map;
 import javax.persistence.metamodel.Metamodel;
 import javax.persistence.criteria.CriteriaBuilder;
