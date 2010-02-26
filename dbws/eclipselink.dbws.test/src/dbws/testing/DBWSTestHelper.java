@@ -10,7 +10,6 @@
  * Contributors:
  *     Mike Norman - June 2008, created utils DBWS test package
  ******************************************************************************/
-
 package dbws.testing;
 
 //javase imports

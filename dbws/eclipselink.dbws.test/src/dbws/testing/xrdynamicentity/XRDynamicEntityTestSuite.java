@@ -1,3 +1,15 @@
+/*******************************************************************************
+ * Copyright (c) 1998, 2010 Oracle. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
+ * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
+ * and the Eclipse Distribution License is available at
+ * http://www.eclipse.org/org/documents/edl-v10.php.
+ *
+ * Contributors:
+ *     Mike Norman - May 2008, created DBWS test package
+ ******************************************************************************/
 package dbws.testing.xrdynamicentity;
 
 //javase imports
@@ -6,12 +18,12 @@ import java.lang.reflect.Field;
 //JUnit4 imports
 import org.junit.BeforeClass;
 import org.junit.Test;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertSame;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
+import static junit.framework.Assert.assertEquals;
+import static junit.framework.Assert.assertFalse;
+import static junit.framework.Assert.assertNotNull;
+import static junit.framework.Assert.assertNull;
+import static junit.framework.Assert.assertSame;
+import static junit.framework.Assert.assertTrue;
 
 //EclipseLink imports
 import org.eclipse.persistence.dynamic.DynamicEntity;
@@ -28,6 +40,8 @@ public class XRDynamicEntityTestSuite {
     static final String PACKAGE_PREFIX = 
         XRDynamicEntityTestSuite.class.getPackage().getName();
     static final String TEST_CLASSNAME = PACKAGE_PREFIX + ".TestClass";
+    static final String INCOMPATIBLE_CLASSNAME = Incompatible.class.getSimpleName();
+    static final String COMPATIBLE_CLASSNAME = XRCustomer.class.getSimpleName();
     static final String FIELD_1 = "field1";
     static final String FIELD_2 = "field2";
     static final String TEST_STRING = "this is a test";
@@ -45,7 +59,7 @@ public class XRDynamicEntityTestSuite {
     }
     
     @Test
-    public void nullParent() throws Exception {
+    public void noParentLoader() throws Exception {
         XRDynamicClassLoader xrdcl = new XRDynamicClassLoader(null);
         assertNull(xrdcl.getParent());
     }
@@ -55,12 +69,32 @@ public class XRDynamicEntityTestSuite {
         XRDynamicClassLoader xrdcl = new XRDynamicClassLoader(null);
         assertEquals(XRClassWriter.class, xrdcl.getDefaultWriter().getClass());
     }
+    
+    @Test(expected=NoClassDefFoundError.class)
+    public void createDynamicClassWithNoParentLoader() {
+        XRDynamicClassLoader dcl = new XRDynamicClassLoader(null);
+        dcl.createDynamicClass(TEST_CLASSNAME);
+    }
 
     @Test
-    public void coreClass() throws ClassNotFoundException {
+    public void loadCoreClass() throws ClassNotFoundException {
         XRDynamicClassLoader xrdcl = new XRDynamicClassLoader(null);
         Class<?> stringClass = xrdcl.loadClass("java.lang.String");
         assertTrue("core class java.lang.String not found", String.class == stringClass);
+    }
+    
+    @Test(expected=IllegalArgumentException.class)
+    public void createIncompatibleClass() {
+        XRDynamicClassLoader dcl = new XRDynamicClassLoader(XRDynamicEntityTestSuite.class.getClassLoader());
+        dcl.createDynamicClass(PACKAGE_PREFIX + "." + INCOMPATIBLE_CLASSNAME);
+    }
+
+    @Test
+    public void createCompatibleClass() {
+        XRDynamicClassLoader dcl = new XRDynamicClassLoader(XRDynamicEntityTestSuite.class.getClassLoader());
+        Class<?> dynamicClass = dcl.createDynamicClass(PACKAGE_PREFIX + "." + COMPATIBLE_CLASSNAME);
+        assertNotNull(dynamicClass);
+        assertSame(XRCustomer.class, dynamicClass);
     }
 
     @Test

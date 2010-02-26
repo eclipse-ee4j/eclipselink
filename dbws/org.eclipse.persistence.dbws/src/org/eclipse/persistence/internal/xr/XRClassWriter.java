@@ -53,9 +53,13 @@ public class XRClassWriter extends DynamicClassWriter {
         XRDynamicEntity_CollectionWrapper.class.getName().replace('.', '/');
     
 	public XRClassWriter() {
-		super();
+		super(XRDynamicEntity.class);
 	}
     
+    public XRClassWriter(Class<?> parentClass) {
+        super(parentClass);
+    }
+
     @Override
     public byte[] writeClass(DynamicClassLoader loader, String className) throws ClassNotFoundException {
 		/*

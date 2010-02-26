@@ -46,25 +46,41 @@ public class DynamicClassLoaderTestSuite {
 
     public static final String PACKAGE_PREFIX = 
         DynamicClassLoaderTestSuite.class.getPackage().getName();
+    static final String INCOMPATIBLE_CLASSNAME = Incompatible.class.getSimpleName();
+    static final String COMPATIBLE_CLASSNAME = Compatible.class.getSimpleName();
     static final String MY_CLASSNAME = PACKAGE_PREFIX + ".MyClass";
     
     @Test
-    public void nullParrent() throws Exception {
+    public void noParentLoader() throws Exception {
         DynamicClassLoader dcl = new DynamicClassLoader(null);
         assertNull(dcl.getParent());
     }
 
     @Test
-    public void coreClass() throws Exception {
+    public void loadCoreClass() throws Exception {
         DynamicClassLoader dcl = new DynamicClassLoader(null);
-        Class<?> stringClass = dcl.createDynamicClass("java.lang.String");
+        Class<?> stringClass = dcl.loadClass("java.lang.String");
         assertTrue("core class java.lang.String not found", String.class == stringClass);
     }
     
     @Test(expected=NoClassDefFoundError.class)
-    public void noClass() {
+    public void createDynamicClassWithNoParentLoader() {
         DynamicClassLoader dcl = new DynamicClassLoader(null);
         dcl.createDynamicClass(MY_CLASSNAME);
+    }
+    
+    @Test(expected=IllegalArgumentException.class)
+    public void createIncompatibleClass() {
+        DynamicClassLoader dcl = new DynamicClassLoader(DynamicClassLoaderTestSuite.class.getClassLoader());
+        dcl.createDynamicClass(PACKAGE_PREFIX + "." + INCOMPATIBLE_CLASSNAME);
+    }
+
+    @Test
+    public void createCompatibleClass() {
+        DynamicClassLoader dcl = new DynamicClassLoader(DynamicClassLoaderTestSuite.class.getClassLoader());
+        Class<?> dynamicClass = dcl.createDynamicClass(PACKAGE_PREFIX + "." + COMPATIBLE_CLASSNAME);
+        assertNotNull(dynamicClass);
+        assertSame(Compatible.class, dynamicClass);
     }
 
     @SuppressWarnings("unchecked")

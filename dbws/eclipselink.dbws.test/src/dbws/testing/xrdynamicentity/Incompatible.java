@@ -12,19 +12,10 @@
  ******************************************************************************/
 package dbws.testing.xrdynamicentity;
 
-import org.eclipse.persistence.internal.xr.XRFieldInfo;
-import org.eclipse.persistence.internal.xr.XRDynamicEntity;
-
-public class XRCustomer extends XRDynamicEntity {
-
-    public static XRFieldInfo XRFI = new XRFieldInfo();
-    
-    public XRCustomer() {
-        super();
-    }
-
-    @Override
-    public XRFieldInfo getFieldInfo() {
-        return XRFI;
-    }
+/**
+ * Test class - when created by a {@link XRDynamicClassLoader}, should throw {@link IllegalArgumentException}
+ * @author mnorman
+ *
+ */
+public class Incompatible {
 }
