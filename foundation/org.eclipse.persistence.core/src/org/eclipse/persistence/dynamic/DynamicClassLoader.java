@@ -135,14 +135,25 @@ public class DynamicClassLoader extends ClassLoader {
      * class name to be loaded.
      * 
      */
-    public Class<?> createDynamicClass(String className, DynamicClassWriter writer) throws DynamicException {
+    public Class<?> createDynamicClass(String className, DynamicClassWriter writer) {
         addClass(className, writer);
-
+        Class<?> newDynamicClass = null;
         try {
-            return loadClass(className);
-        } catch (ClassNotFoundException e) {
-            throw new IllegalArgumentException("DyanmicClassLoader could not create class: " + className);
+            newDynamicClass = loadClass(className);
         }
+        catch (ClassNotFoundException cnfe) {
+            throw new IllegalArgumentException("DyanmicClassLoader: could not create class " + className);
+        }
+        return checkAssignable(newDynamicClass);
+    }
+    
+    protected Class<?> checkAssignable(Class<?> clz) {
+        DynamicClassWriter assignedClassWriter = getClassWriters().get(clz.getName());
+        if (!assignedClassWriter.parentClass.isAssignableFrom(clz)) {
+            throw new IllegalArgumentException("DyanmicClassLoader: " + clz.getName() + 
+                " not compatible with parent class " + assignedClassWriter.parentClass.getName());
+        }
+        return clz;
     }
 
     /**
@@ -179,8 +190,12 @@ public class DynamicClassLoader extends ClassLoader {
             try {
                 byte[] bytes = writer.writeClass(this, className);
                 return defineClass(className, bytes, 0, bytes.length);
-            } catch (ClassFormatError cfe) {
+            }
+            catch (ClassFormatError cfe) {
                 throw new ClassNotFoundException(className, cfe);
+            }
+            catch (ClassCircularityError cce) {
+                throw new ClassNotFoundException(className, cce);
             }
         }
 

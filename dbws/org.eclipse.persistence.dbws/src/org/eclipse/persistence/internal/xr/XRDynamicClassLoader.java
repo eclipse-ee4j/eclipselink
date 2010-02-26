@@ -43,8 +43,12 @@ public class XRDynamicClassLoader extends DynamicClassLoader {
         try {
             byte[] data = defaultWriter.writeClass(this, className);
             return defineClass(className, data, 0, data.length);
-        } catch (ClassFormatError e) {
-            throw new ClassNotFoundException(className, e);
+        }
+        catch (ClassFormatError cfe) {
+            throw new ClassNotFoundException(className, cfe);
+        }
+        catch (ClassCircularityError cce) {
+            throw new ClassNotFoundException(className, cce);
         }
     }
 
