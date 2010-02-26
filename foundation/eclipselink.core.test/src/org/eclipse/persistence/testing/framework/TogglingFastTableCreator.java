@@ -68,19 +68,21 @@ public class TogglingFastTableCreator extends TableCreator {
     @Override
     public void replaceTables(DatabaseSession session) {
         // on Symfoware, to avoid table locking issues only the first invocation
-        // of an instance of this class (drops & re-)creates the tables.
+        // of an instance of this class (drops & re-)creates the tables
+        // if the system property is set.
+        session.getSessionLog().log(SessionLog.FINEST, "TogglingFastTableCreator: useFastTableCreatorAfterInitialCreate: "
+                + useFastTableCreatorAfterInitialCreate);
+
         boolean isFirstCreate = !isFastTableCreator();
         boolean orig_FAST_TABLE_CREATOR = SchemaManager.FAST_TABLE_CREATOR;
-        session.getSessionLog().log(SessionLog.FINEST, "DEBUG: " + this.getClass().getName()
+        session.getSessionLog().log(SessionLog.FINEST, "TogglingFastTableCreator: " + this.getClass().getName()
                 + " - isFirstCreate: " + isFirstCreate);
-        session.getSessionLog().log(SessionLog.FINEST, "DEBUG: Current fastTableCreators: "
+        session.getSessionLog().log(SessionLog.FINEST, "TogglingFastTableCreator: Current fastTableCreators: "
                 + fastTableCreators);
 
-        session.getSessionLog().log(SessionLog.FINEST, "DEBUG: useFastTableCreatorAfterInitialCreate: "
-                + useFastTableCreatorAfterInitialCreate);
         if (useFastTableCreatorAfterInitialCreate && !isFirstCreate) {
             SchemaManager.FAST_TABLE_CREATOR = true;
-            session.getSessionLog().log(SessionLog.FINEST, "DEBUG: " + this.getClass().getName()
+            session.getSessionLog().log(SessionLog.FINEST, "TogglingFastTableCreator: " + this.getClass().getName()
                     + " - toggling true");
         }
         try {
@@ -95,19 +97,19 @@ public class TogglingFastTableCreator extends TableCreator {
         // next time just delete the rows instead.
         if (useFastTableCreatorAfterInitialCreate) {
             setFastTableCreator();
-            session.getSessionLog().log(SessionLog.FINEST, "DEBUG: " + this.getClass().getName()
+            session.getSessionLog().log(SessionLog.FINEST, "TogglingFastTableCreator: " + this.getClass().getName()
                     + " added to fastTableCreators");
         }
     }
 
     public boolean resetFastTableCreator() {
-        AbstractSessionLog.getLog().log(SessionLog.FINEST, "DEBUG: removing table creator: "
+        AbstractSessionLog.getLog().log(SessionLog.FINEST, "TogglingFastTableCreator: removing table creator: "
                 + this.getClass().getName());
         return fastTableCreators.remove(this.getClass().getName());
     }
 
     public boolean setFastTableCreator() {
-        AbstractSessionLog.getLog().log(SessionLog.FINEST, "DEBUG: adding table creator: "
+        AbstractSessionLog.getLog().log(SessionLog.FINEST, "TogglingFastTableCreator: adding table creator: "
                 + this.getClass().getName());
         return fastTableCreators.add(this.getClass().getName());
     }

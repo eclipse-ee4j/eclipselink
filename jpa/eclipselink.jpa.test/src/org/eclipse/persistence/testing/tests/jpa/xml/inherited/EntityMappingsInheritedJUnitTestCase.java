@@ -802,6 +802,12 @@ public class EntityMappingsInheritedJUnitTestCase extends JUnitTestCase {
     }
     
     public void testColumnUpdatableAndInsertableThroughQuery() {
+        if ((JUnitTestCase.getServerSession()).getPlatform().isSymfoware()) {
+            getServerSession().logMessage("Test testColumnUpdatableAndInsertableThroughQuery skipped for this platform, "
+                    + "Symfoware doesn't support UpdateAll/DeleteAll on multi-table objects (see rfe 298193).");
+            return;
+        }
+
         EntityManager em = createEntityManager();
         
         try {
