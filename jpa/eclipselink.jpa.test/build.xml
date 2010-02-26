@@ -1162,7 +1162,7 @@
         <echo>Running test ${EAR_NAME} on ${server.name}</echo>
         <mkdir dir="${eclipselink.jpa.test}/${report.dir}"/>
         <junit printsummary="yes" haltonfailure="yes" failureproperty="junit.failed" fork="yes" showoutput="true" maxmemory="256m" dir="${run.dir}">
-            <sysproperty key="proxy.user.name" value="${proxy.user.name}"/>
+            <sysproperty key="proxy.user.name" value="${oracle.proxy.user}"/>
             <sysproperty key="server.platform" value="${server.platform}"/>
             <sysproperty key="server.user" value="${server.user}"/>
             <sysproperty key="server.password" value="${server.pwd}"/>
