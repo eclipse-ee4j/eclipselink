@@ -13,6 +13,7 @@
  ******************************************************************************/  
 package org.eclipse.persistence.sdo.helper;
 
+import java.io.File;
 import java.lang.ref.WeakReference;
 import java.lang.reflect.Method;
 import java.util.WeakHashMap;
@@ -74,11 +75,16 @@ public class SDOHelperContext implements HelperContext {
     // names/loaders are unique within each active server instance
     private static ConcurrentHashMap<Object, HelperContext> helperContexts = new ConcurrentHashMap<Object, HelperContext>();
     private static WeakHashMap<ClassLoader, WeakReference<HelperContext>> userSetHelperContexts = new WeakHashMap<ClassLoader, WeakReference<HelperContext>>();
-    
+
+    // Application server identifiers
     private static String OC4J_CLASSLOADER_NAME = "oracle";
     private static String WLS_CLASSLOADER_NAME = "weblogic";
     private static String WAS_CLASSLOADER_NAME = "com.ibm.ws";
+    private static String JBOSS_CLASSLOADER_NAME = "jboss";
     
+    // Common
+    private static final int COUNTER_LIMIT = 20;
+
     // For WebLogic
     private static MBeanServer wlsMBeanServer = null;
     private static ObjectName wlsThreadPoolRuntime = null;
@@ -95,13 +101,22 @@ public class SDOHelperContext implements HelperContext {
     private static final String WLS_APPLICATION_NAME = "ApplicationName";
     private static final String WLS_APPLICATION_NAME_GET_METHOD_NAME = "getApplicationName";
     private static final String WLS_ACTIVE_VERSION_STATE = "ActiveVersionState";
-    private static final Class[] PARAMETER_TYPES = {};
+    private static final Class[] WLS_PARAMETER_TYPES = {};
 
     // For WebSphere
     private static final String WAS_NEWLINE = "\n";
     private static final String WAS_APP_COLON = "[app:";    
     private static final String WAS_CLOSE_BRACKET = "]";
-    private static final int WAS_COUNTER_LIMIT = 20;
+    
+    // For JBoss
+    private static final String JBOSS_VFSZIP = "vfszip:";
+    private static final String JBOSS_VFSFILE = "vfsfile:";
+    private static final String JBOSS_EAR = ".ear";
+    private static final String JBOSS_WAR = ".war";
+    private static final int JBOSS_VFSZIP_OFFSET = JBOSS_VFSZIP.length();
+    private static final int JBOSS_VFSFILE_OFFSET = JBOSS_VFSFILE.length();
+    private static final int JBOSS_EAR_OFFSET = JBOSS_EAR.length();
+    private static final int JBOSS_TRIM_COUNT = 2;  // for stripping off the remaining '/}' chars
 
     /**
      * Create a local HelperContext.  The current thread's context ClassLoader
@@ -292,8 +307,8 @@ public class SDOHelperContext implements HelperContext {
      *      6 - jre.extension:0.0.0
      *      7 - jre.bootstrap:1.5.0_07 (with various J2SE versions)
      * 
-     * @return Application classloader for OC4J, application name for WebLogic and
-     *         WebSphere, otherwise Thread.currentThread().getContextClassLoader()
+     * @return Application classloader for OC4J, application name for WebLogic and WebSphere, archive
+     *         file name for JBoss, otherwise Thread.currentThread().getContextClassLoader()
      */
     private static Object getDelegateMapKey(ClassLoader classLoader) {
         String classLoaderName = classLoader.getClass().getName();
@@ -315,7 +330,7 @@ public class SDOHelperContext implements HelperContext {
             Object executeThread = getExecuteThread();
             if (executeThread != null) {
                 try {
-                    Method getMethod = PrivilegedAccessHelper.getPublicMethod(executeThread.getClass(), WLS_APPLICATION_NAME_GET_METHOD_NAME, PARAMETER_TYPES, false);
+                    Method getMethod = PrivilegedAccessHelper.getPublicMethod(executeThread.getClass(), WLS_APPLICATION_NAME_GET_METHOD_NAME, WLS_PARAMETER_TYPES, false);
                     delegateKey = PrivilegedAccessHelper.invokeMethod(getMethod, executeThread);
                     // ExecuteThread returns null
                     if (delegateKey == null) {
@@ -332,7 +347,14 @@ public class SDOHelperContext implements HelperContext {
             if (delegateKey == null) {
                 delegateKey = classLoader;
             }
-        }        
+        // Delegates in JBoss server will be keyed on archive file name
+        } else if (classLoaderName.contains(JBOSS_CLASSLOADER_NAME)) {
+            delegateKey = getApplicationNameForJBoss(classLoader);
+            // getApplicationNameForJBoss returns null
+            if (delegateKey == null) {
+                delegateKey = classLoader;
+            }
+        }
         return delegateKey;
     }
 
@@ -486,7 +508,7 @@ public class SDOHelperContext implements HelperContext {
         // Safety counter to keep from taking too long or looping forever, 
         // just in case of some unexpected circumstance.
         int i = 0;
-        while ((applicationName == null) && (i < WAS_COUNTER_LIMIT)) {
+        while ((applicationName == null) && (i < COUNTER_LIMIT)) {
             applicationName = getApplicationNameFromWASClassLoader(loader);
             i++;
             final ClassLoader parent = loader.getParent();
@@ -530,4 +552,78 @@ public class SDOHelperContext implements HelperContext {
         }
         return applicationName;
     }
+
+    /**
+     * Attempt to return the application name (archive file name) based on a given JBoss
+     * class loader.  The loader hierarchy will be traversed until the archive file name
+     * is successfully retrieved, or the top of the hierarchy is reached.
+     * 
+     * @param loader
+     * @return application name (archive file name) if successfully retrieved (i.e. loader 
+     *         exists in the hierarchy with toString containing "vfszip:" or "vfsfile:") 
+     *         or null
+     */
+    private static String getApplicationNameForJBoss(ClassLoader loader) {
+        String applicationName = null;
+        // safety counter to keep from taking too long or looping forever, just in case of some unexpected circumstance
+        int i = 0;
+        while (i < COUNTER_LIMIT) {
+            applicationName = getApplicationNameFromJBossClassLoader(loader);
+            if (applicationName != null) {
+                break;
+            }
+            final ClassLoader parent = loader.getParent();
+            if (parent == null || parent == loader) {
+                // we have hit the top, stop looking
+                break;
+            }
+            // move up and try again
+            loader = parent;
+            i++;
+        }
+        return applicationName;
+    }
+    
+    /**
+     * Attempt to get the application name (archive file name) based on a given JBoss classloader.
+     * 
+     * Here is an example toString result of the classloader which loaded the application in JBoss:   
+     * BaseClassLoader@1316dd{vfszip:/ade/xidu_j2eev5/oracle/work/utp/resultout/functional/jrf/
+     *       jboss-jrfServer/deploy/jrftestapp.jar/}
+     * or {vfsfile:/net/stott18.ca.oracle.com/scratch/xidu/view_storage/xidu_j2eev5/work/jboss/
+     *       server/default/deploy/testapp.ear/} in exploded deployment
+     * war: BaseClassLoader@bfe0e4{vfszip:/ade/xidu_j2eebug/oracle/work/utp/resultout/functional/
+     *       jrf/jboss-jrfServer/jrfServer/deploy/jrftestapp.ear/jrftestweb.war/}
+     * 
+     * Assumptions:
+     * 1 - A given toString will only contain one .ear, .jar, or .war EXCEPT in the servlet case, 
+     * where the string would have "{vfszip:/.../xxx.ear/.../xxx.war/}".  In this case we want to 
+     * return xxx.ear as the application name.
+     * 2 - A given toString will end in '/}'.
+     * 3 - A toString containing the application name will have one of "vfszip:" or "vfsfile:".
+     * 
+     * @param loader
+     * @return application name (archive file name) if successfully retrieved (i.e. loader 
+     *         exists in the hierarchy with toString containing "vfszip:" or "vfsfile:") 
+     *         or null
+     */                
+    private static String getApplicationNameFromJBossClassLoader(ClassLoader loader) {
+        String clStr = loader.toString();
+        String appNameSegment = null;
+        // handle "vfszip:<archive-file-name>"
+        if (clStr.indexOf(JBOSS_VFSZIP) != -1) {            
+            appNameSegment = clStr.substring(clStr.indexOf(JBOSS_VFSZIP) + JBOSS_VFSZIP_OFFSET, clStr.length() - JBOSS_TRIM_COUNT);
+            // handle case where the string contains both .ear and .war (remove the .war portion)
+            if ((appNameSegment.indexOf(JBOSS_WAR) != -1) && (appNameSegment.indexOf(JBOSS_EAR) != -1)) {
+                appNameSegment = appNameSegment.substring(0, appNameSegment.indexOf(JBOSS_EAR) + JBOSS_EAR_OFFSET);
+            }
+        // handle "vfsfile:<archive-file-name>"
+        } else if (clStr.indexOf(JBOSS_VFSFILE) != -1) {
+            appNameSegment = clStr.substring(clStr.indexOf(JBOSS_VFSFILE) + JBOSS_VFSFILE_OFFSET, clStr.length() - JBOSS_TRIM_COUNT);
+        }
+        if (appNameSegment != null) {
+            return new File(appNameSegment).getName();
+        }
+        return null;
+    }    
 }
