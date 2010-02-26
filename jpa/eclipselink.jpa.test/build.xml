@@ -1543,7 +1543,8 @@
                 org/eclipse/persistence/testing/framework/PerformanceRegressionTestCase.java,
                 org/eclipse/persistence/testing/framework/ConcurrencyTestAdapter.java,
                 org/eclipse/persistence/testing/framework/ConcurrentPerformanceComparisonTest.java,
-                org/eclipse/persistence/testing/framework/ConcurrentPerformanceRegressionTest.java">
+                org/eclipse/persistence/testing/framework/ConcurrentPerformanceRegressionTest.java,
+                org/eclipse/persistence/testing/framework/TogglingFastTableCreator.java">
             <classpath refid="compile.server.path"/>
         </javac>
         <javac
