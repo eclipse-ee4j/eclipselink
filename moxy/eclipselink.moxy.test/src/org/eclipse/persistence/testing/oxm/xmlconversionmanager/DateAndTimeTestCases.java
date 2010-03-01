@@ -17,6 +17,8 @@ import java.sql.Timestamp;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
 
+import javax.xml.datatype.DatatypeFactory;
+import javax.xml.datatype.XMLGregorianCalendar;
 import org.eclipse.persistence.exceptions.ConversionException;
 import org.eclipse.persistence.exceptions.XMLConversionException;
 import org.eclipse.persistence.internal.oxm.XMLConversionManager;
@@ -3461,6 +3463,15 @@ public class DateAndTimeTestCases extends OXTestCase {
             return;
         }
         fail(EXCEPTION_NOT_THROWN);
+    }
+    
+    public void testXMLGregorianCalendarToStringWithDateSchemaType() throws Exception{    	
+    	DatatypeFactory factory = DatatypeFactory.newInstance();
+         	
+    	XMLGregorianCalendar xgc = factory.newXMLGregorianCalendar("2005-11-05");
+    	String result = (String)xcm.convertObject(xgc, String.class, XMLConstants.DATE_QNAME);
+    	assertEquals("2005-11-05", result);
+    	
     }
 
 }
