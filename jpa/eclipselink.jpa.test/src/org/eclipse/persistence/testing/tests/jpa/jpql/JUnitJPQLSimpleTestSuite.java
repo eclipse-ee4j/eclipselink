@@ -809,7 +809,7 @@ public class JUnitJPQLSimpleTestSuite extends JUnitTestCase {
      */
     public void simpleInNegativeTest() {
         EntityManager em = createEntityManager();
-        em.getTransaction().begin();
+        beginTransaction(em);
         try{
             Employee expectedResult = new Employee();
             expectedResult.setSalary(-12345);
@@ -824,7 +824,8 @@ public class JUnitJPQLSimpleTestSuite extends JUnitTestCase {
     
             Assert.assertTrue("Simple In Negative Test failed", comparer.compareObjects(result, expectedResult));
         } finally{
-            em.getTransaction().rollback();
+            rollbackTransaction(em);
+            closeEntityManager(em);
         }
     }
     
