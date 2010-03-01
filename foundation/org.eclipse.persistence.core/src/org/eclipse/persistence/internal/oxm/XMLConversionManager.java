@@ -1605,10 +1605,14 @@ public class XMLConversionManager extends ConversionManager implements TimeZoneH
         return appendTimeZone(string);
     }
 
-    private String stringFromXMLGregorianCalendar(XMLGregorianCalendar cal, QName schemaTypeQName) {
-        return stringFromCalendar(cal.toGregorianCalendar(), schemaTypeQName);
+private String stringFromXMLGregorianCalendar(XMLGregorianCalendar 
+cal, QName schemaTypeQName) {
+        GregorianCalendar gCal = cal.toGregorianCalendar();
+        if(cal.getTimezone() == DatatypeConstants.FIELD_UNDEFINED) {
+            gCal.clear(Calendar.ZONE_OFFSET);
+        }
+        return stringFromCalendar(gCal, schemaTypeQName);
     }
-    
     private String stringFromXMLGregorianCalendar(XMLGregorianCalendar cal) {
         return cal.toXMLFormat();
     }
