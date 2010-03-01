@@ -12,8 +12,10 @@
  ******************************************************************************/  
 package org.eclipse.persistence.testing.jaxb.xmlattribute;
 
+import java.io.InputStream;
 import java.util.ArrayList;
-import java.util.Calendar;
+import java.util.List;
+
 import org.eclipse.persistence.testing.jaxb.JAXBTestCases;
 
 public class XmlAttributeNoNamespaceTestCases extends JAXBTestCases {
@@ -33,5 +35,12 @@ public class XmlAttributeNoNamespaceTestCases extends JAXBTestCases {
         EmployeeNoNamespace employee = new EmployeeNoNamespace();
 		employee.id = CONTROL_ID;
         return employee;
+    }
+    
+    public void testSchemaGen() throws Exception{
+    	List<InputStream> controlSchemas = new ArrayList<InputStream>();
+    	InputStream is = getClass().getClassLoader().getResourceAsStream("org/eclipse/persistence/testing/jaxb/xmlattribute/employee_nonamespace.xsd");
+    	controlSchemas.add(is);
+    	super.testSchemaGen(controlSchemas);
     }
 }

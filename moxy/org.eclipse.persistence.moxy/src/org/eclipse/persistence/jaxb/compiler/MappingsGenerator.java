@@ -771,7 +771,10 @@ public class MappingsGenerator {
     public XMLDirectMapping generateDirectMapping(Property property, XMLDescriptor descriptor, NamespaceInfo namespaceInfo) {
         XMLDirectMapping mapping = new XMLDirectMapping();
         mapping.setAttributeName(property.getPropertyName());
-
+        String fixedValue = property.getFixedValue();
+        if(fixedValue != null){
+            mapping.setIsWriteOnly(true);
+        }
         if (property.isMethodProperty()) {
             if (property.getGetMethodName() == null) {
                 // handle case of set with no get method 

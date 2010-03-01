@@ -90,6 +90,7 @@ import org.eclipse.persistence.jaxb.javamodel.JavaField;
 import org.eclipse.persistence.jaxb.javamodel.JavaHasAnnotations;
 import org.eclipse.persistence.jaxb.javamodel.JavaMethod;
 import org.eclipse.persistence.jaxb.javamodel.JavaPackage;
+import org.eclipse.persistence.jaxb.javamodel.reflection.JavaFieldImpl;
 import org.eclipse.persistence.jaxb.xmlmodel.XmlAccessOrder;
 import org.eclipse.persistence.jaxb.xmlmodel.XmlAccessType;
 
@@ -1249,9 +1250,24 @@ public class AnnotationsProcessor {
             JavaField nextField = fieldIt.next();
             if (!helper.isAnnotationPresent(nextField, XmlTransient.class)) {
                 int modifiers = nextField.getModifiers();
-                if (!Modifier.isStatic(modifiers) && !Modifier.isTransient(modifiers) && ((Modifier.isPublic(nextField.getModifiers()) && onlyPublic) || !onlyPublic)) {          
-                    Property property = buildNewProperty(info, cls, nextField, nextField.getName(), nextField.getResolvedType());                	               
-                    properties.add(property);
+                if (!Modifier.isTransient(modifiers) && ((Modifier.isPublic(nextField.getModifiers()) && onlyPublic) || !onlyPublic)) {
+                	if(!Modifier.isStatic(modifiers)){
+                            Property property = buildNewProperty(info, cls, nextField, nextField.getName(), nextField.getResolvedType());
+                            properties.add(property);	
+                	}else if(Modifier.isFinal(modifiers) && helper.isAnnotationPresent(nextField, XmlAttribute.class)){
+                           try{
+                               Property property = buildNewProperty(info, cls, nextField, nextField.getName(), nextField.getResolvedType());                            	  
+                               Object value =  ((JavaFieldImpl)nextField).get(null);
+                               String stringValue = (String)XMLConversionManager.getDefaultXMLManager().convertObject(value, String.class, property.getSchemaType());
+                               property.setFixedValue(stringValue);
+                               properties.add(property);
+                           }catch(ClassCastException e){
+                               //do Nothing
+                           }catch(IllegalAccessException e){
+                               //do Nothing
+                           }
+                	}
+                    
                 }
             } else {
                 // If a property is marked transient ensure it doesn't exist in the propOrder

@@ -392,6 +392,11 @@ public class SchemaGenerator {
                     if (next.isRequired()) {
                         attribute.setUse(Attribute.REQUIRED);
                     }
+	                    String fixedValue = next.getFixedValue();
+	                    if(fixedValue != null){
+	                        attribute.setFixed(fixedValue);
+	                    }
+	                    
                     //Check to see if it's a collection. 
                     //Should assume XmlList on any collection?
                     JavaClass javaType = next.getType();
