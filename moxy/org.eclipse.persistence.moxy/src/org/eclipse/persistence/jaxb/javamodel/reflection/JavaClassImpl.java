@@ -140,8 +140,10 @@ public class JavaClassImpl implements JavaClass {
 
     public Collection getDeclaredFields() {
         ArrayList<JavaField> fieldCollection = new ArrayList<JavaField>();
-        Field[] fields = jClass.getDeclaredFields();
-        for (Field field : fields) {
+        Field[] fields = PrivilegedAccessHelper.getDeclaredFields(jClass);
+               
+        for (Field field : fields) {        	
+            field.setAccessible(true);
             fieldCollection.add(new JavaFieldImpl(field, javaModelImpl));
         }
         return fieldCollection;

@@ -20,14 +20,22 @@ public class EmployeeNoNamespace
 	@XmlAttribute(name="id")
 	public int id;
 
+	@XmlAttribute
+	public static final String country = "CANADA"; 
 
 	public String toString()
 	{
-		return "EMPLOYEE: " + id;
+		return "EMPLOYEE: " + id + " " + country;
 	}
 
 	public boolean equals(Object object) {
 		EmployeeNoNamespace emp = ((EmployeeNoNamespace)object);
-		return emp.id == this.id;
+		if(emp.id != this.id){
+			return false;
+		}
+		if(!emp.country.equals(this.country)){
+			return false;
+		}
+		return true;
 	}
 }

@@ -12,6 +12,7 @@
  ******************************************************************************/  
 package org.eclipse.persistence.jaxb.javamodel.reflection;
 
+import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
 import org.eclipse.persistence.jaxb.javamodel.JavaAnnotation;
 import org.eclipse.persistence.jaxb.javamodel.JavaClass;
 import org.eclipse.persistence.jaxb.javamodel.JavaField;
@@ -98,6 +99,10 @@ public class JavaFieldImpl implements JavaField {
 
     public boolean isSynthetic() {
         return jField.isSynthetic();
+    }
+    
+    public Object get(Object obj) throws IllegalAccessException {    	
+    	return PrivilegedAccessHelper.getValueFromField(jField, obj);
     }
 
     public boolean isAbstract() {

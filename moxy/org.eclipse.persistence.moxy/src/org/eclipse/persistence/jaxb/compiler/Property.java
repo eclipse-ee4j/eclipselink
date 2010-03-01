@@ -71,6 +71,7 @@ public class Property {
     private boolean isMixedContent = false;
     private boolean xmlElementType = false;
     private JavaClass originalType;
+    private String fixedValue;
     
     private XmlJavaTypeAdapter xmlJavaTypeAdapter;
     private XmlElementWrapper xmlElementWrapper;
@@ -794,4 +795,13 @@ public class Property {
     public List<ElementDeclaration> getReferencedElements() {
         return referencedElements;
     }
+
+    public String getFixedValue() {
+        return fixedValue;
+    }
+
+    public void setFixedValue(String fixedValue) {
+        this.fixedValue = fixedValue;
+    }
+
 }
