@@ -112,10 +112,14 @@ public class XMLStreamReaderReader extends XMLReader {
                 depth++;
                 String prefix = xmlStreamReader.getPrefix();
                 String localName = xmlStreamReader.getLocalName();
+                String namespaceURI = xmlStreamReader.getNamespaceURI();
+                if(XMLConstants.EMPTY_STRING.equals(namespaceURI)) {
+                    namespaceURI = null;
+                }
                 if(null == prefix || prefix.length() == 0) {
-                    contentHandler.startElement(xmlStreamReader.getNamespaceURI(), localName, localName, new IndexedAttributeList(xmlStreamReader));
+                    contentHandler.startElement(namespaceURI, localName, localName, new IndexedAttributeList(xmlStreamReader));
                 } else {
-                    contentHandler.startElement(xmlStreamReader.getNamespaceURI(), localName, prefix + XMLConstants.COLON + localName, new IndexedAttributeList(xmlStreamReader));
+                    contentHandler.startElement(namespaceURI, localName, prefix + XMLConstants.COLON + localName, new IndexedAttributeList(xmlStreamReader));
                 }
                 break;
             }
@@ -123,10 +127,14 @@ public class XMLStreamReaderReader extends XMLReader {
                 depth--;
                 String prefix = xmlStreamReader.getPrefix();
                 String localName = xmlStreamReader.getLocalName();
+                String namespaceURI = xmlStreamReader.getNamespaceURI();
+                if(XMLConstants.EMPTY_STRING.equals(namespaceURI)) {
+                    namespaceURI = null;
+                }
                 if(null == prefix || prefix.length() == 0) {
-                    contentHandler.endElement(xmlStreamReader.getNamespaceURI(), localName, localName);
+                    contentHandler.endElement(namespaceURI, localName, localName);
                 } else {
-                    contentHandler.endElement(xmlStreamReader.getNamespaceURI(), localName, prefix + XMLConstants.COLON + localName);
+                    contentHandler.endElement(namespaceURI, localName, prefix + XMLConstants.COLON + localName);
                 }
                 break;
             }
