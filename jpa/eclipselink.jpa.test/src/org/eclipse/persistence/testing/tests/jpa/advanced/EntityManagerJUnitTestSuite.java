@@ -2453,6 +2453,7 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
         EntityManager em = createEntityManager();
         beginTransaction(em);
         Employee emp = new Employee();
+        emp.setFirstName("PersistManagedException");
         em.persist(emp);
         em.flush();
         Integer id = emp.getId();
@@ -2464,8 +2465,10 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
         } catch (EntityExistsException e){
             caughtException = true;
         }
-        emp = em.find(Employee.class, id);
-        em.remove(emp);
+        //bug240061: cannot operate on a closed/rolledback transaction in JBOSS - JBOSS's proxy throws away the old one and will
+        // attempt to get a new EM.  An exception is thrown when this new EM tries to register with the transaction
+        //emp = em.find(Employee.class, id);
+        //em.remove(emp);
         rollbackTransaction(em);
         assertTrue("EntityExistsException was not thrown for an existing Employee.", caughtException);
     }
