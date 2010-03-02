@@ -1301,10 +1301,6 @@ public class AnnotationsProcessor {
         } else{
             property = new Property(helper);
         }
-        if(isMapType(ptype)) {
-            property.setIsMap(true);     
-        }
-        
         property.setPropertyName(propertyName);
         property.setElement(javaHasAnnotations);
 
