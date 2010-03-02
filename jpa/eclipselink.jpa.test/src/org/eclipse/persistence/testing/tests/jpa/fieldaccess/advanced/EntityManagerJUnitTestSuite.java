@@ -2846,7 +2846,7 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
             sequence.onDisconnect(ss.getPlatform());
             // Symfoware doesn't allow drop while connections that performed
             // CREATE and DML on the sequence are still open.
-            if (JUnitTestCase.getServerSession().getPlatform().isSymfoware()) return;
+            if (JUnitTestCase.getServerSession("fieldaccess").getPlatform().isSymfoware()) return;
             // drop sequence
             String dropStr = def.buildDeletionWriter(ss, new StringWriter()).toString();
             beginTransaction(em);
