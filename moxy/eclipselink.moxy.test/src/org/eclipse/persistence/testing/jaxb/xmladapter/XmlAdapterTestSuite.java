@@ -21,6 +21,7 @@ import org.eclipse.persistence.testing.jaxb.xmladapter.composite.XmlAdapterCompo
 import org.eclipse.persistence.testing.jaxb.xmladapter.compositecollection.XmlAdapterCompositeCollectionTestCases;
 import org.eclipse.persistence.testing.jaxb.xmladapter.compositedirectcollection.XmlAdapterCompositeDirectCollectionTestCases;
 import org.eclipse.persistence.testing.jaxb.xmladapter.direct.XmlAdapterDirectTestCases;
+import org.eclipse.persistence.testing.jaxb.xmladapter.map.JAXBMapWithAdapterTestCases;
 import org.eclipse.persistence.testing.jaxb.xmladapter.packagelevel.PackageLevelAdapterTestCases;
 import org.eclipse.persistence.testing.jaxb.xmladapter.packagelevel.adapters.PackageLevelAdaptersTestCases;
 
@@ -42,6 +43,7 @@ public class XmlAdapterTestSuite extends TestCase {
         suite.addTestSuite(PackageLevelAdapterTestCases.class);
         suite.addTestSuite(PackageLevelAdaptersTestCases.class);
         suite.addTestSuite(ClassLevelAdapterTestCases.class);
+        suite.addTestSuite(JAXBMapWithAdapterTestCases.class);
         return suite;
     }
 }

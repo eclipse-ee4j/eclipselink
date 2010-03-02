@@ -192,6 +192,9 @@ public class Property {
             type = cls;
         }
         
+        boolean isNewTypeMap = helper.getJavaClass(java.util.Map.class).isAssignableFrom(type);
+        setIsMap(isNewTypeMap);
+        
         if(isMap()){
         	Object[] types = type.getActualTypeArguments().toArray();
         	
@@ -701,7 +704,7 @@ public class Property {
         return isMap;
     }
 	
-	public void setIsMap(boolean isMap) {
+	private void setIsMap(boolean isMap) {
 		this.isMap = isMap;
 	}
 
