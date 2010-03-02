@@ -128,7 +128,7 @@ public class RegisterNewObjectInIdentityMapNoSeqTest extends AutoVerifyTestCase 
         queryNeg.checkCacheOnly();
         Weather weatherNegClone = (Weather)uow.registerObject(weatherNeg);
         weatherNeg = (Weather)uow.executeQuery(queryNeg);
-        negativeFailed = weather == null;
+        negativeFailed = weatherNeg == null;
 
         if(keepSequencing) {
             uow.assignSequenceNumbers();
@@ -163,7 +163,7 @@ public class RegisterNewObjectInIdentityMapNoSeqTest extends AutoVerifyTestCase 
         if(zeroFailed != zeroFailedExpected) {
             errorMsg += " zeroFailed = " + zeroFailed + ";";
         }
-        if(negativeFailed != negativeFailed) {
+        if(negativeFailed != negativeFailedExpected) {
             errorMsg += " negativeFailed = " + negativeFailed + ";";
         }
         if(keepSequencing) {
