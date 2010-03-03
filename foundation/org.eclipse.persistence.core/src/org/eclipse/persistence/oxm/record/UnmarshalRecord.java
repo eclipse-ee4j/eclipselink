@@ -490,7 +490,7 @@ public class UnmarshalRecord extends XMLRecord implements ContentHandler, Lexica
             for (int x = 0; x < selfChildrenSize; x++) {
                 XPathNode selfNode = xPathNode.getSelfChildren().get(x);
                 if (null != selfNode.getNodeValue()) {
-                    selfNode.getNodeValue().endSelfNodeValue(this, attributes);
+                    selfNode.getNodeValue().endSelfNodeValue(this, selfRecords.get(x), attributes);
                 }
             }
         }

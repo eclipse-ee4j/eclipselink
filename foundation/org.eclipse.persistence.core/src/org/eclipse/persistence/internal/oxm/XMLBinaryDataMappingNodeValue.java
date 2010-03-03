@@ -293,7 +293,7 @@ public class XMLBinaryDataMappingNodeValue extends NodeValue implements NullCapa
         return newRecord;     	
     }
     
-    public void endSelfNodeValue(UnmarshalRecord unmarshalRecord, Attributes attributes) {
-    	unmarshalRecord.getStringBuffer().reset();    	
+    public void endSelfNodeValue(UnmarshalRecord unmarshalRecord, UnmarshalRecord selfRecord, Attributes attributes) {
+        unmarshalRecord.getStringBuffer().reset();
     }
 }

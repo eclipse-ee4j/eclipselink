@@ -51,6 +51,7 @@ import org.eclipse.persistence.testing.oxm.mappings.compositeobject.self.Attribu
 import org.eclipse.persistence.testing.oxm.mappings.compositeobject.self.AttributeOnTargetTestCases;
 import org.eclipse.persistence.testing.oxm.mappings.compositeobject.self.AttributesOnTargetTestCases;
 import org.eclipse.persistence.testing.oxm.mappings.compositeobject.self.CompositeObjectSelfTestCases;
+import org.eclipse.persistence.testing.oxm.mappings.compositeobject.self.SelfWithOtherCompositeTestCases;
 import org.eclipse.persistence.testing.oxm.mappings.compositeobject.self.defaultnamespace.SelfMappingTestCases;
 import org.eclipse.persistence.testing.oxm.mappings.compositeobject.self.norefclass.CompositeObjectSelfComplexXsiTypeTestCases;
 import org.eclipse.persistence.testing.oxm.mappings.compositeobject.self.norefclass.CompositeObjectSelfSimpleXsiTypeTestCases;
@@ -122,6 +123,7 @@ public class CompositeObjectMappingTestSuite extends TestCase {
         
         suite.addTestSuite(CompositeObjectSelfComplexXsiTypeTestCases.class);
         suite.addTestSuite(CompositeObjectSelfSimpleXsiTypeTestCases.class);
+        suite.addTestSuite(SelfWithOtherCompositeTestCases.class);
         
         return suite;
     }
