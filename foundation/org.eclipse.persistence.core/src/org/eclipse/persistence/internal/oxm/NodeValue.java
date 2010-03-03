@@ -191,7 +191,7 @@ public abstract class NodeValue {
         return null;
     }
     
-    public void endSelfNodeValue(UnmarshalRecord unmarshalRecord, Attributes atts) {        
+    public void endSelfNodeValue(UnmarshalRecord unmarshalRecord, UnmarshalRecord selfRecord, Attributes atts) {        
     }
 
     /**

@@ -331,7 +331,7 @@ public class XMLCompositeObjectMappingNodeValue extends XMLRelationshipMappingNo
         }
     }
 
-    public void endSelfNodeValue(UnmarshalRecord unmarshalRecord, Attributes attributes) {
+    public void endSelfNodeValue(UnmarshalRecord unmarshalRecord, UnmarshalRecord selfRecord, Attributes attributes) {
     	if(xmlCompositeObjectMapping.getNullPolicy().valueIsNull(attributes)){
     		xmlCompositeObjectMapping.setAttributeValueInObject(unmarshalRecord.getCurrentObject(), null);
     		return;
@@ -380,7 +380,7 @@ public class XMLCompositeObjectMappingNodeValue extends XMLRelationshipMappingNo
                 }
             }
         } else {
-            Object valueToSet = unmarshalRecord.getChildRecord().getCurrentObject();
+            Object valueToSet = selfRecord.getCurrentObject();
             if (xmlCompositeObjectMapping.getConverter() != null) {
                 Converter converter = xmlCompositeObjectMapping.getConverter();
                 if (converter instanceof XMLConverter) {
