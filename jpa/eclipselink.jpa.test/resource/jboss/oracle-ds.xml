@@ -1,14 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <datasources>
-  <no-tx-datasource>
-    <jndi-name>EclipseLinkDS</jndi-name>
-    <use-java-context>true</use-java-context>
-    <connection-url>@url@</connection-url>
-    <driver-class>@driverclass@</driver-class>
-    <user-name>@username@</user-name>
-    <password>@password@</password>
-    <metadata>
-       <type-mapping>Oracle9i</type-mapping>
-    </metadata>
-  </no-tx-datasource>
+    <local-tx-datasource>
+        <jndi-name>EclipseLinkDS</jndi-name>
+        <driver-class>@driverclass@</driver-class>
+        <connection-url>@url@</connection-url>
+        <user-name>@username@</user-name>
+        <password>@password@</password>
+        <metadata>
+            <type-mapping>Oracle9i</type-mapping>
+        </metadata>
+    </local-tx-datasource>
 </datasources>

@@ -54,6 +54,14 @@
         <contains string="${db.driver}" substring="mysql"/>
     </condition>
 
+    <condition property="db.name" value="mssql">
+        <contains string="${db.driver}" substring="sqlserver"/>
+    </condition>
+
+    <condition property="db.name" value="db2">
+        <contains string="${db.driver}" substring="db2"/>
+    </condition>
+
     <condition property="db.name" value="sybase">
         <contains string="${db.driver}" substring="sybase"/>
     </condition>
@@ -92,6 +100,7 @@
         <java classname="org.jboss.Main" 
             fork="true"
             failonerror="false" >
+            <jvmarg value="-XX:MaxPermSize=512m"/>
             <jvmarg value="-Xms512m"/>
             <jvmarg value="-Xmx960m"/>
             <sysproperty key="http.proxyHost" value="www-proxy.us.oracle.com"/>
