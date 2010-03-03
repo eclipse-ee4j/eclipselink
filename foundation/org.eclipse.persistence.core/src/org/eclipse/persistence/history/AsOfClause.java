@@ -144,7 +144,7 @@ public class AsOfClause implements Serializable {
         StringWriter writer = new StringWriter();
         writer.write(Helper.getShortClassName(getClass()));
         writer.write("(");
-        writer.write(getValue().toString());
+        writer.write(String.valueOf(getValue()));
         writer.write(")");
         return writer.toString();
     }

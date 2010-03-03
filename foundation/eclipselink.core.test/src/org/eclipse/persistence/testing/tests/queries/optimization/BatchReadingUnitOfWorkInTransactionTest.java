@@ -14,6 +14,7 @@ package org.eclipse.persistence.testing.tests.queries.optimization;
 
 import java.util.*;
 
+import org.eclipse.persistence.annotations.BatchFetchType;
 import org.eclipse.persistence.queries.*;
 
 import org.eclipse.persistence.testing.framework.*;
@@ -23,11 +24,13 @@ import org.eclipse.persistence.testing.models.employee.domain.*;
  *  This testcase verifies the bug fix about batch reading through a UnitOfWork while already in a transaction
  */
 public class BatchReadingUnitOfWorkInTransactionTest extends TestCase {
+    BatchFetchType batchType;
     public org.eclipse.persistence.sessions.UnitOfWork myUOW;
     private ReadAllQuery myQuery;
 
-    public BatchReadingUnitOfWorkInTransactionTest() {
+    public BatchReadingUnitOfWorkInTransactionTest(BatchFetchType batchType) {
         setDescription("This test verifies that batch reading works correctly in a unit of work while a transaction has already started");
+        this.batchType = batchType;
     }
 
     public ReadAllQuery getMyQuery() {
@@ -50,6 +53,7 @@ public class BatchReadingUnitOfWorkInTransactionTest extends TestCase {
         getSession().getIdentityMapAccessor().initializeIdentityMaps();
         setMyUOW(getSession().acquireUnitOfWork());
         setMyQuery(new ReadAllQuery());
+        getMyQuery().setBatchFetchType(batchType);
         getMyQuery().setReferenceClass(Employee.class);
         getMyQuery().addBatchReadAttribute("address");
     }

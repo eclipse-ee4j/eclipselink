@@ -370,13 +370,10 @@ public abstract class DatabaseMapping implements Cloneable, Serializable {
      * @param rootExpressionsAllowed true if newRoot itself can be one of the
      * expressions returned
      */
-    protected Vector extractNestedExpressions(List expressions, ExpressionBuilder newRoot, boolean rootExpressionsAllowed) {
-        Vector nestedExpressions = org.eclipse.persistence.internal.helper.NonSynchronizedVector.newInstance(expressions.size());
+    protected List<Expression> extractNestedExpressions(List<Expression> expressions, ExpressionBuilder newRoot, boolean rootExpressionsAllowed) {
+        List<Expression> nestedExpressions = new ArrayList(expressions.size());
 
-        for (Iterator expressionsEnum = expressions.iterator();
-                 expressionsEnum.hasNext();) {
-            Expression next = (Expression)expressionsEnum.next();
-
+        for (Expression next : expressions) {
             // The expressionBuilder can be one of the locked expressions in
             // the ForUpdateOfClause.
             if (!next.isQueryKeyExpression()) {
@@ -390,9 +387,9 @@ public abstract class DatabaseMapping implements Cloneable, Serializable {
                 base = (QueryKeyExpression)base.getBaseExpression();
             }
             if (afterBase && base.getName().equals(getAttributeName())) {
-                nestedExpressions.addElement(expression.rebuildOn(base, newRoot));
+                nestedExpressions.add(expression.rebuildOn(base, newRoot));
             } else if (rootExpressionsAllowed && expression.getBaseExpression().isExpressionBuilder() && expression.getName().equals(getAttributeName())) {
-                nestedExpressions.addElement(newRoot);
+                nestedExpressions.add(newRoot);
             }
         }
         return nestedExpressions;

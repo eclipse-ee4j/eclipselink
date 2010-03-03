@@ -999,6 +999,7 @@ public class OneToManyMapping extends CollectionMapping implements RelationalMap
      * INTERNAL:
      * Update the reference objects.
      */
+    @Override
     public void postUpdate(WriteObjectQuery query) throws DatabaseException, OptimisticLockException {
         if (isReadOnly()) {
             return;
@@ -1024,15 +1025,17 @@ public class OneToManyMapping extends CollectionMapping implements RelationalMap
      * INTERNAL:
      * Add additional fields
      */
-    protected void postPrepareNestedBatchQuery(ReadQuery batchQuery, ReadAllQuery query) {
+    @Override
+    protected void postPrepareNestedBatchQuery(ReadQuery batchQuery, ObjectLevelReadQuery query) {
         ReadAllQuery mappingBatchQuery = (ReadAllQuery)batchQuery;
-        mappingBatchQuery.setShouldIncludeData(this.getSelectionQueryContainerPolicy().shouldAddAll());
+        mappingBatchQuery.setShouldIncludeData(getSelectionQueryContainerPolicy().shouldAddAll());
     }
 
     /**
      * INTERNAL:
      * Delete the reference objects.
      */
+    @Override
     public void preDelete(DeleteObjectQuery query) throws DatabaseException, OptimisticLockException {
         if (!shouldObjectModifyCascadeToParts(query)) {
             if(this.listOrderField != null) {

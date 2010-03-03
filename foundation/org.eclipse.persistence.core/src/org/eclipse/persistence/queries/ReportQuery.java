@@ -685,7 +685,7 @@ public class ReportQuery extends ReadAllQuery {
         for (ReportItem item : this.items) {
             ReportItem newItem = (ReportItem)item.clone();
             if (item.getJoinedAttributeManagerInternal() != null){
-                JoinedAttributeManager manager = (JoinedAttributeManager)item.getJoinedAttributeManager().clone();
+                JoinedAttributeManager manager = item.getJoinedAttributeManager().clone();
                 manager.setBaseQuery(cloneQuery);
                 newItem.setJoinedAttributeManager(manager);
             }
@@ -1229,9 +1229,11 @@ public class ReportQuery extends ReadAllQuery {
                             // Putting a builder on the left is desirable to trigger an optimization.
                             if (getSelectionCriteria() != null) {
                                 outerBuilder = new ExpressionBuilder(newDescriptor.getJavaClass());
+                                setExpressionBuilder(outerBuilder);
                                 subSelect.setSelectionCriteria(baseExp.equal(outerBuilder).and(getSelectionCriteria()));
                             } else {
-                                outerBuilder = new ExpressionBuilder();
+                                outerBuilder = new ExpressionBuilder(newDescriptor.getJavaClass());
+                                setExpressionBuilder(outerBuilder);
                                 subSelect.setSelectionCriteria(baseExp.equal(outerBuilder));
                             }
                             setSelectionCriteria(outerBuilder.exists(subSelect));

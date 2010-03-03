@@ -161,7 +161,7 @@ public class JoinedAttributeManager implements Cloneable, Serializable {
     /**
      * Clones the Joined Attribute Manager.  Generally called from Query.clone().
      */
-    public Object clone(){
+    public JoinedAttributeManager clone(){
         JoinedAttributeManager joinManager = null;
         try {
             joinManager = (JoinedAttributeManager)super.clone();

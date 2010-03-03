@@ -697,16 +697,17 @@ public class OneToOneMapping extends ObjectReferenceMapping implements Relationa
      * INTERNAL:
      * Allow the mapping the do any further batch preparation.
      */
-    protected void postPrepareNestedBatchQuery(ReadQuery batchQuery, ReadAllQuery query) {
+    @Override
+    protected void postPrepareNestedBatchQuery(ReadQuery batchQuery, ObjectLevelReadQuery query) {
         // Force a distinct to filter out m-1 duplicates.
         if (!query.isDistinctComputed()) {
             ((ObjectLevelReadQuery)batchQuery).useDistinct();
         }
-        if(this.mechanism != null) {
+        if (this.mechanism != null) {
             ReadAllQuery mappingBatchQuery = (ReadAllQuery)batchQuery;
             mappingBatchQuery.setShouldIncludeData(true);
-            for (Enumeration relationFieldsEnum = this.mechanism.getSourceRelationKeyFields().elements(); relationFieldsEnum.hasMoreElements();) {
-                mappingBatchQuery.getAdditionalFields().add(mappingBatchQuery.getExpressionBuilder().getTable(this.mechanism.getRelationTable()).getField((DatabaseField)relationFieldsEnum.nextElement()));
+            for (DatabaseField relationField : this.mechanism.getSourceRelationKeyFields()) {
+                mappingBatchQuery.getAdditionalFields().add(mappingBatchQuery.getExpressionBuilder().getTable(this.mechanism.getRelationTable()).getField(relationField));
             }
         }
     }
@@ -715,6 +716,7 @@ public class OneToOneMapping extends ObjectReferenceMapping implements Relationa
      * INTERNAL:
      * Extract the value from the batch optimized query.
      */
+    @Override
     public Object extractResultFromBatchQuery(DatabaseQuery query, AbstractRecord databaseRow, AbstractSession session, AbstractRecord argumentRow) {
         //this can be null, because either one exists in the query or it will be created
         Map<Object, Object> referenceObjectsByKey = null;

@@ -14,16 +14,19 @@ package org.eclipse.persistence.testing.tests.queries.optimization;
 
 import java.util.Vector;
 
+import org.eclipse.persistence.annotations.BatchFetchType;
 import org.eclipse.persistence.queries.*;
 import org.eclipse.persistence.sessions.*;
 import org.eclipse.persistence.testing.framework.*;
 import org.eclipse.persistence.testing.models.legacy.*;
 
 public class OneToOneBatchReadingTest extends TestCase {
-    public Vector V;
+    public Vector v;
+    BatchFetchType batchType;
 
-    public OneToOneBatchReadingTest() {
+    public OneToOneBatchReadingTest(BatchFetchType batchType) {
         setDescription("Tests batch reading using 1 to 1 mapping and composite primary key");
+        this.batchType = batchType;
     }
 
     public void reset() {
@@ -37,6 +40,7 @@ public class OneToOneBatchReadingTest extends TestCase {
 
     public void test() {
         ReadAllQuery q = new ReadAllQuery();
+        q.setBatchFetchType(batchType);
         q.setReferenceClass(Shipment.class);
         q.addBatchReadAttribute("employee");
         q.setSelectionCriteria(q.getExpressionBuilder().get("employee").get("address").equal(q.getExpressionBuilder().getParameter("ADDRESS")));
@@ -44,12 +48,12 @@ public class OneToOneBatchReadingTest extends TestCase {
         Vector r = new Vector();
         r.addElement("885 Meadowlands Dr.");
         UnitOfWork uow = getSession().acquireUnitOfWork();
-        V = (java.util.Vector)uow.executeQuery(q, r);
+        v = (java.util.Vector)uow.executeQuery(q, r);
     }
 
     public void verify() {
-        Shipment S = (Shipment)V.firstElement();
-        if (S.employee == null) {
+        Shipment s = (Shipment)v.firstElement();
+        if (s.employee == null) {
             throw new TestWarningException("Test failed. Batched objects were not read");
         }
     }

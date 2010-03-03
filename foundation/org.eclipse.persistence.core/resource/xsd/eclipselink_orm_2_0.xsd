@@ -968,6 +968,7 @@
       </xsd:choice>
       <xsd:element name="collection-table" type="orm:eclipselink-collection-table" minOccurs="0"/>
       <xsd:element name="join-fetch" type="orm:join-fetch-type" minOccurs="0"/>
+      <xsd:element name="batch-fetch" type="orm:batch-fetch-type" minOccurs="0"/>
       <xsd:element name="property" type="orm:property" minOccurs="0" maxOccurs="unbounded"/>
       <xsd:element name="access-methods" type="orm:access-methods" minOccurs="0" maxOccurs="1"/>
     </xsd:sequence>
@@ -1038,6 +1039,7 @@
       </xsd:choice>    
       <xsd:element name="collection-table" type="orm:eclipselink-collection-table" minOccurs="0"/>
       <xsd:element name="join-fetch" type="orm:join-fetch-type" minOccurs="0"/>
+      <xsd:element name="batch-fetch" type="orm:batch-fetch-type" minOccurs="0"/>
       <xsd:element name="property" type="orm:property" minOccurs="0" maxOccurs="unbounded"/>
       <xsd:element name="access-methods" type="orm:access-methods" minOccurs="0" maxOccurs="1"/>
     </xsd:sequence>
@@ -2152,6 +2154,43 @@
     </xsd:restriction>
   </xsd:simpleType>
 
+<!-- **************************************************** -->
+
+  <xsd:simpleType name="batch-fetch-type">
+    <xsd:annotation>
+      <xsd:documentation>
+            public enum BatchFetchType {
+                /**
+                 * This is the default form of batch reading.
+                 * The original query's selection criteria is joined with the batch query.
+                 */
+                JOIN,
+            
+                /**
+                 * This uses an SQL EXISTS and a sub-select in the batch query instead of a join.
+                 * This has the advantage of not requiring an SQL DISTINCT which can have issues
+                 * with LOBs, or may be more efficient for some types of queries or on some databases.
+                 */
+                EXISTS,
+            
+                /**
+                 * This uses an SQL IN clause in the batch query passing in the source object Ids.
+                 * This has the advantage of only selecting the objects not already contained in the cache,
+                 * and can work better with cursors, or if joins cannot be used.
+                 * This may only work for singleton Ids on some databases.
+                 */
+                IN    
+            }
+
+      </xsd:documentation>
+    </xsd:annotation>
+    <xsd:restriction base="xsd:token">
+      <xsd:enumeration value="JOIN"/>
+      <xsd:enumeration value="EXISTS"/>
+      <xsd:enumeration value="IN"/>
+    </xsd:restriction>
+  </xsd:simpleType>
+  
   <!-- **************************************************** -->
 
   <xsd:complexType name="join-table">
@@ -2283,6 +2322,7 @@
       <xsd:element name="cascade" type="orm:cascade-type"
                    minOccurs="0"/>
       <xsd:element name="join-fetch" type="orm:join-fetch-type" minOccurs="0"/>
+      <xsd:element name="batch-fetch" type="orm:batch-fetch-type" minOccurs="0"/>
       <xsd:element name="property" type="orm:property" minOccurs="0" maxOccurs="unbounded"/>
       <xsd:element name="access-methods" type="orm:access-methods" minOccurs="0" maxOccurs="1"/>
     </xsd:sequence>
@@ -2319,6 +2359,7 @@
       <xsd:element name="cascade" type="orm:cascade-type" 
                    minOccurs="0"/>
       <xsd:element name="join-fetch" type="orm:join-fetch-type" minOccurs="0"/>
+      <xsd:element name="batch-fetch" type="orm:batch-fetch-type" minOccurs="0"/>
       <xsd:element name="property" type="orm:property" minOccurs="0" maxOccurs="unbounded"/>
       <xsd:element name="access-methods" type="orm:access-methods" minOccurs="0" maxOccurs="1"/>
     </xsd:sequence>
@@ -2747,6 +2788,7 @@
                    minOccurs="0"/>
      <xsd:element name="private-owned" type="orm:emptyType" minOccurs="0"/>
      <xsd:element name="join-fetch" type="orm:join-fetch-type" minOccurs="0"/>
+     <xsd:element name="batch-fetch" type="orm:batch-fetch-type" minOccurs="0"/>
      <xsd:element name="property" type="orm:property" minOccurs="0" maxOccurs="unbounded"/>
      <xsd:element name="access-methods" type="orm:access-methods" minOccurs="0" maxOccurs="1"/>
     </xsd:sequence>
@@ -2790,6 +2832,7 @@
                    minOccurs="0"/>
       <xsd:element name="private-owned" type="orm:emptyType" minOccurs="0"/>
       <xsd:element name="join-fetch" type="orm:join-fetch-type" minOccurs="0"/>
+      <xsd:element name="batch-fetch" type="orm:batch-fetch-type" minOccurs="0"/>
       <xsd:element name="property" type="orm:property" minOccurs="0" maxOccurs="unbounded"/>
       <xsd:element name="access-methods" type="orm:access-methods" minOccurs="0" maxOccurs="1"/>
     </xsd:sequence>

@@ -35,6 +35,7 @@ import org.eclipse.persistence.queries.DatabaseQuery;
 import org.eclipse.persistence.queries.ObjectLevelReadQuery;
 import org.eclipse.persistence.queries.ReadAllQuery;
 import org.eclipse.persistence.expressions.Expression;
+import org.eclipse.persistence.annotations.BatchFetchType;
 import org.eclipse.persistence.annotations.CacheType;
 import org.eclipse.persistence.config.*;
 import org.eclipse.persistence.descriptors.ClassDescriptor;
@@ -226,6 +227,8 @@ public class QueryHintsHandler {
             addHint(new RefreshHint());
             addHint(new CascadePolicyHint());
             addHint(new BatchHint());
+            addHint(new BatchTypeHint());
+            addHint(new BatchSizeHint());
             addHint(new FetchHint());
             addHint(new LeftFetchHint());
             addHint(new ReadOnlyHint());
@@ -1137,6 +1140,42 @@ public class QueryHintsHandler {
             } else {
                 throw new IllegalArgumentException(ExceptionLocalization.buildMessage("ejb30-wrong-type-for-query-hint",new Object[]{getQueryId(query), name, getPrintValue(valueToApply)}));
             }
+            return query;
+        }
+    }
+        
+    protected static class BatchTypeHint extends Hint {
+        BatchTypeHint() {
+            super(QueryHints.BATCH_TYPE, "");
+        }
+    
+        DatabaseQuery applyToDatabaseQuery(Object valueToApply, DatabaseQuery query, ClassLoader loader, AbstractSession activeSession) {
+            if (query.isObjectLevelReadQuery()) {
+                if (valueToApply instanceof BatchFetchType) {
+                    ((ObjectLevelReadQuery) query).setBatchFetchType((BatchFetchType)valueToApply);
+                } else {
+                    ((ObjectLevelReadQuery) query).setBatchFetchType(BatchFetchType.valueOf((String)valueToApply));                    
+                }
+            } else {
+                throw new IllegalArgumentException(ExceptionLocalization.buildMessage("ejb30-wrong-type-for-query-hint",new Object[]{getQueryId(query), name, getPrintValue(valueToApply)}));
+            }
+            
+            return query;
+        }
+    }
+        
+    protected static class BatchSizeHint extends Hint {
+        BatchSizeHint() {
+            super(QueryHints.BATCH_SIZE, "");
+        }
+    
+        DatabaseQuery applyToDatabaseQuery(Object valueToApply, DatabaseQuery query, ClassLoader loader, AbstractSession activeSession) {
+            if (query.isObjectLevelReadQuery()) {
+                ((ObjectLevelReadQuery) query).setBatchFetchSize(QueryHintsHandler.parseIntegerHint(valueToApply, QueryHints.BATCH_SIZE));
+            } else {
+                throw new IllegalArgumentException(ExceptionLocalization.buildMessage("ejb30-wrong-type-for-query-hint",new Object[]{getQueryId(query), name, getPrintValue(valueToApply)}));
+            }
+            
             return query;
         }
     }

@@ -12,6 +12,7 @@
  ******************************************************************************/  
 package org.eclipse.persistence.testing.tests.queries.optimization;
 
+import org.eclipse.persistence.annotations.BatchFetchType;
 import org.eclipse.persistence.expressions.*;
 import org.eclipse.persistence.queries.*;
 import org.eclipse.persistence.mappings.*;
@@ -20,6 +21,7 @@ import org.eclipse.persistence.testing.models.collections.*;
 
 public class BatchReadingBatchReadExpressionTest extends TestCase {
     public ReadAllQuery query;
+    BatchFetchType batchType;
 
     /**
      * BatchReadingBatchReadExpressionTest was added for CR#3238.
@@ -31,7 +33,8 @@ public class BatchReadingBatchReadExpressionTest extends TestCase {
      * Creation date: (6/9/00 9:48:06 AM)
      * @author Tom Ware
      */
-    public BatchReadingBatchReadExpressionTest() {
+    public BatchReadingBatchReadExpressionTest(BatchFetchType batchType) {
+        this.batchType = batchType;
     }
 
     public void reset() {
@@ -41,6 +44,7 @@ public class BatchReadingBatchReadExpressionTest extends TestCase {
     public void test() {
         query = new ReadAllQuery();
         query.setReferenceClass(Restaurant.class);
+        query.setBatchFetchType(batchType);
         ExpressionBuilder restaurant = new ExpressionBuilder();
         // The test is designed for a problem in which the batchExpression traverses
         // more than one mapping as below.

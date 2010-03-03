@@ -14,6 +14,7 @@ package org.eclipse.persistence.testing.tests.queries.optimization;
 
 import java.util.*;
 
+import org.eclipse.persistence.annotations.BatchFetchType;
 import org.eclipse.persistence.queries.*;
 import org.eclipse.persistence.sessions.*;
 import org.eclipse.persistence.testing.framework.*;
@@ -24,10 +25,12 @@ import org.eclipse.persistence.testing.models.legacy.*;
  * (that performs a batch read and does a join)
  */
 public class OneToManyBatchReadingCustomSelectionQueryTest extends TestCase {
+    BatchFetchType batchType;
     public java.util.Vector shipments;
 
-    public OneToManyBatchReadingCustomSelectionQueryTest() {
+    public OneToManyBatchReadingCustomSelectionQueryTest(BatchFetchType batchType) {
         setDescription("Tests a one to many mapping using a custom selction query to perform batch reading and a join ");
+        this.batchType = batchType;
     }
 
     public void reset() {
@@ -44,6 +47,7 @@ public class OneToManyBatchReadingCustomSelectionQueryTest extends TestCase {
     public void test() {
 
         ReadAllQuery q = new ReadAllQuery();
+        q.setBatchFetchType(batchType);
         q.setReferenceClass(Shipment.class);
         q.addBatchReadAttribute("orders");
         UnitOfWork uow = getSession().acquireUnitOfWork();

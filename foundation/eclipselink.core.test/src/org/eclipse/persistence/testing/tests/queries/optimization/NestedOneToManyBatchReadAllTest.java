@@ -29,7 +29,7 @@ public class NestedOneToManyBatchReadAllTest extends ReadAllTest {
     public void reset() {
         org.eclipse.persistence.mappings.OneToManyMapping mapping = 
             (OneToManyMapping)getSession().getDescriptor(Restaurant.class).getMappingForAttributeName("menus");
-        ((ReadAllQuery)mapping.getSelectionQuery()).getBatchReadAttributeExpressions().removeAllElements();
+        ((ReadAllQuery)mapping.getSelectionQuery()).getBatchReadAttributeExpressions().clear();
 
     }
 

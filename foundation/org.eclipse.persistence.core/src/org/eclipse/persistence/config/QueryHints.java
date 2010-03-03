@@ -14,6 +14,9 @@
  ******************************************************************************/  
 package org.eclipse.persistence.config;
 
+import org.eclipse.persistence.annotations.BatchFetch;
+import org.eclipse.persistence.annotations.BatchFetchType;
+
 /**
  * The class defines EclipseLink query hints.
  * These query hints allow a JPA Query to be customized or optimized beyond
@@ -224,10 +227,37 @@ public class QueryHints {
      * the related objects for all the resulting objects will be read in a single query (instead of n queries).
      * Batch reading is normally more efficient than join fetch, especially for collection relationships.
      * Valid values are strings that represent JPQL style navigations to a relationship.
-     * <p>e.g. e.manager.phoneNumbers
+     * <p>e.g. "e.manager.phoneNumbers"
+     * @see BatchFetch
+     * @see #BATCH_TYPE
+     * @see BatchFetchType
      * @see org.eclipse.persistence.queries.ReadAllQuery#addBatchReadAttribute(String)
      */
     public static final String BATCH = "eclipselink.batch";
+
+    /**
+     * "eclipselink.batch.type"
+     * <p>Configures the type of batch fetching to use for any batch fetched relationships on the query.
+     * Valid values are defined in BatchFetchType ("JOIN", "EXISTS", "IN").
+     * @see #BATCH
+     * @see BatchFetchType
+     * @see BatchFetch
+     * @see org.eclipse.persistence.queries.ObjectLevelReadQuery#setBatchFetchType(BatchFetchType)
+     */
+    public static final String BATCH_TYPE = "eclipselink.batch.type";
+
+    /**
+     * "eclipselink.batch.size"
+     * <p>Configures the batch size for batch fetching using the IN batch type.
+     * Valid values are integer values > 0.
+     * The default size is 256, or the cursor pageSize.
+     * @see #BATCH
+     * @see #BATCH_TYPE
+     * @see BatchFetchType
+     * @see BatchFetch
+     * @see org.eclipse.persistence.queries.ObjectLevelReadQuery#setBatchFetchSize(int)
+     */
+    public static final String BATCH_SIZE = "eclipselink.batch.size";
     
     /**
      * "eclipselink.join-fetch"

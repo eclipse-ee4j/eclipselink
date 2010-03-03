@@ -82,7 +82,7 @@ public class ExpressionBuilder extends ObjectExpression {
         if (this == expression) {
             return true;
         }
-        // Return false for parralel expressions, as equality is unknown.
+        // Return false for parallel expressions, as equality is unknown.
         return super.equals(expression) && ((getQueryClass() == null) && ((ExpressionBuilder)expression).getQueryClass() == null);
     }
     

@@ -186,7 +186,8 @@ public class DirectCollectionMapping extends CollectionMapping implements Relati
      * Clone and prepare the selection query as a nested batch read query.
      * This is used for nested batch reading.
      */
-    public ReadQuery prepareNestedBatchQuery(ReadAllQuery query) {
+    @Override
+    public ReadQuery prepareNestedBatchQuery(ObjectLevelReadQuery query) {
         DataReadQuery batchQuery = new DataReadQuery();
         // Join the query where clause with the mappings,
         // this will cause a join that should bring in all of the target objects.
@@ -209,10 +210,10 @@ public class DirectCollectionMapping extends CollectionMapping implements Relati
         }
 
         Expression twisted = null;
-        if (getSelectionQuery().isReadAllQuery()){
-            twisted = builder.twist(getSelectionQuery().getSelectionCriteria(), builder);
+        if (this.selectionQuery.isReadAllQuery()) {
+            twisted = builder.twist(this.selectionQuery.getSelectionCriteria(), builder);
         } else {
-            twisted = builder.twist(getSelectionQuery().getSQLStatement().getWhereClause(), builder);
+            twisted = builder.twist(this.selectionQuery.getSQLStatement().getWhereClause(), builder);
         }
 
         // For 2729729, rebuildOn is not needed as the base is still the same.	
@@ -223,33 +224,33 @@ public class DirectCollectionMapping extends CollectionMapping implements Relati
         if (query.getDescriptor().getQueryManager().getAdditionalJoinExpression() != null) {
             twisted = twisted.and(query.getDescriptor().getQueryManager().getAdditionalJoinExpression().rebuildOn(builder));
         }
-        if (getHistoryPolicy() != null) {
+        if (this.historyPolicy != null) {
             if (query.getSession().getAsOfClause() != null) {
                 builder.asOf(query.getSession().getAsOfClause());
             } else if (builder.getAsOfClause() == null) {
                 builder.asOf(AsOfClause.NO_CLAUSE);
             }
-            twisted = twisted.and(getHistoryPolicy().additionalHistoryExpression(builder));
+            twisted = twisted.and(this.historyPolicy.additionalHistoryExpression(builder));
         }
 
         SQLSelectStatement batchStatement = new SQLSelectStatement();
 
-        for (Enumeration enumtr = getReferenceKeyFields().elements(); enumtr.hasMoreElements();) {
-            batchStatement.addField(builder.getTable(getReferenceTable()).getField((DatabaseField)enumtr.nextElement()));
+        for (DatabaseField keyField : getReferenceKeyFields()) {
+            batchStatement.addField(builder.getTable(this.referenceTable).getField(keyField));
         }
 
-        batchStatement.addField(builder.getTable(getReferenceTable()).getField(getDirectField()));
+        batchStatement.addField(builder.getTable(this.referenceTable).getField(this.directField));
 
-        if(listOrderField != null) {
+        if (this.listOrderField != null) {
             Expression expField = getListOrderFieldExpression(builder);
             batchStatement.addField(expField);
         }
 
         batchStatement.setWhereClause(twisted);
         batchQuery.setSQLStatement(batchStatement);
-        getContainerPolicy().addAdditionalFieldsToQuery(batchQuery, builder);
+        this.containerPolicy.addAdditionalFieldsToQuery(batchQuery, builder);
 
-        batchStatement.normalize(query.getSession(), getDescriptor(), clonedExpressions);
+        batchStatement.normalize(query.getSession(), this.descriptor, clonedExpressions);
 
         return batchQuery;
     }
@@ -909,6 +910,7 @@ public class DirectCollectionMapping extends CollectionMapping implements Relati
      * INTERNAL:
      * Extract the value from the batch optimized query.
      */
+    @Override
     public Object extractResultFromBatchQuery(DatabaseQuery query, AbstractRecord databaseRow, AbstractSession session, AbstractRecord argumentRow) {
         //this can be null, because either one exists in the query or it will be created
         Map<Object, Object> referenceDataByKey = null;
@@ -2775,11 +2777,13 @@ public class DirectCollectionMapping extends CollectionMapping implements Relati
      * Check whether the mapping's attribute should be optimized through batch and joining.
      * Overridden to support flashback/historical queries.
      */
+    @Override
     public Object valueFromRow(AbstractRecord row, JoinedAttributeManager joinManager, ObjectBuildingQuery sourceQuery, AbstractSession session) throws DatabaseException {
         // if the query uses batch reading, return a special value holder
         // or retrieve the object from the query property.
-        if (sourceQuery.isReadAllQuery() && (((ReadAllQuery)sourceQuery).isAttributeBatchRead(getDescriptor(), getAttributeName()) || shouldUseBatchReading())) {
-            return batchedValueFromRow(row, (ReadAllQuery)sourceQuery);
+        if (sourceQuery.isObjectLevelReadQuery() && (((ObjectLevelReadQuery)sourceQuery).isAttributeBatchRead(this.descriptor, getAttributeName())
+                || (sourceQuery.isReadAllQuery() && shouldUseBatchReading()))) {
+            return batchedValueFromRow(row, (ObjectLevelReadQuery)sourceQuery);
         }
 
         if (shouldUseValueFromRowWithJoin(joinManager, sourceQuery)) {
@@ -2799,10 +2803,10 @@ public class DirectCollectionMapping extends CollectionMapping implements Relati
                 statement.addField((DatabaseField)((DirectMapMapping)this).getDirectKeyField().clone());
             }
             statement.setWhereClause((Expression)getSelectionCriteria().clone());
-            if(sourceQuery.isObjectLevelReadQuery()) {
+            if (sourceQuery.isObjectLevelReadQuery()) {
                 statement.getBuilder().asOf(((ObjectLevelReadQuery)sourceQuery).getAsOfClause());
             }
-            if(extendingPessimisticLockScope) {
+            if (extendingPessimisticLockScope) {
                 statement.setLockingClause(new ForUpdateClause(sourceQuery.getLockMode()));
             }
             if (getHistoryPolicy() != null) {

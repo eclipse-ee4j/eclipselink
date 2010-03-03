@@ -57,6 +57,7 @@ import javax.persistence.MapKeyTemporal;
 import javax.persistence.OrderBy;
 import javax.persistence.OrderColumn;
 
+import org.eclipse.persistence.annotations.BatchFetchType;
 import org.eclipse.persistence.annotations.MapKeyConvert;
 import org.eclipse.persistence.annotations.OrderCorrection;
 import org.eclipse.persistence.exceptions.ValidationException;
@@ -507,6 +508,9 @@ public abstract class CollectionAccessor extends RelationshipAccessor implements
         mapping.setIsReadOnly(false);
         mapping.setIsLazy(isLazy());
         mapping.setJoinFetch(getMappingJoinFetchType(getJoinFetch()));
+        if (getBatchFetch() != null) {
+            mapping.setBatchFetchType(BatchFetchType.valueOf(getBatchFetch()));
+        }
         mapping.setAttributeName(getAttributeName());
         mapping.setReferenceClassName(getReferenceClassName());
         

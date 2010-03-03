@@ -25,6 +25,7 @@ package org.eclipse.persistence.internal.jpa.metadata.accessors.mappings;
 
 import javax.persistence.FetchType;
 
+import org.eclipse.persistence.annotations.BatchFetchType;
 import org.eclipse.persistence.annotations.JoinFetch;
 import org.eclipse.persistence.internal.helper.DatabaseField;
 import org.eclipse.persistence.internal.helper.DatabaseTable;
@@ -51,6 +52,7 @@ import org.eclipse.persistence.mappings.DirectMapMapping;
  */
 public abstract class DirectCollectionAccessor extends DirectAccessor {
     private String m_joinFetch;
+    private String m_batchFetch;
     private CollectionTableMetadata m_collectionTable;
    
     /**
@@ -132,6 +134,14 @@ public abstract class DirectCollectionAccessor extends DirectAccessor {
      */
     public String getJoinFetch() {
         return m_joinFetch;
+    }
+    
+    public String getBatchFetch() {
+        return m_batchFetch;
+    }
+
+    public void setBatchFetch(String batchFetch) {
+        m_batchFetch = batchFetch;
     }
     
     /**
@@ -259,6 +269,9 @@ public abstract class DirectCollectionAccessor extends DirectAccessor {
         
         // Process join fetch type.
         mapping.setJoinFetch(getMappingJoinFetchType(m_joinFetch));
+        if (getBatchFetch() != null) {
+            mapping.setBatchFetchType(BatchFetchType.valueOf(getBatchFetch()));
+        }
         
         // Process the collection table.
         processCollectionTable(mapping);

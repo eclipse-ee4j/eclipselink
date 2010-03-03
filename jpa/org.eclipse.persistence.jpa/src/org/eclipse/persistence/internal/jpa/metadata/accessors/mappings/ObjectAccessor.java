@@ -45,6 +45,7 @@ import javax.persistence.MapsId;
 import javax.persistence.PrimaryKeyJoinColumn;
 import javax.persistence.PrimaryKeyJoinColumns;
 
+import org.eclipse.persistence.annotations.BatchFetchType;
 import org.eclipse.persistence.exceptions.ValidationException;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.classes.ClassAccessor;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataAccessibleObject;
@@ -239,6 +240,9 @@ public abstract class ObjectAccessor extends RelationshipAccessor {
         OneToOneMapping mapping = new OneToOneMapping();
         mapping.setIsReadOnly(false);
         mapping.setJoinFetch(getMappingJoinFetchType(getJoinFetch()));
+        if (getBatchFetch() != null) {
+            mapping.setBatchFetchType(BatchFetchType.valueOf(getBatchFetch()));
+        }
         mapping.setIsOptional(isOptional());
         mapping.setAttributeName(getAttributeName());
         mapping.setReferenceClassName(getReferenceClassName());

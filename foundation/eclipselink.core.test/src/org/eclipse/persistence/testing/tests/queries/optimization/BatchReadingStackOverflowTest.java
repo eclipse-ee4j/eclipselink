@@ -19,6 +19,7 @@ import org.eclipse.persistence.mappings.ForeignReferenceMapping;
 import org.eclipse.persistence.sessions.UnitOfWork;
 import org.eclipse.persistence.testing.models.mapping.Employee;
 import org.eclipse.persistence.testing.framework.TestCase;
+import org.eclipse.persistence.annotations.BatchFetchType;
 import org.eclipse.persistence.expressions.Expression;
 import org.eclipse.persistence.expressions.ExpressionBuilder;
 import org.eclipse.persistence.queries.ReadObjectQuery;
@@ -28,6 +29,11 @@ public class BatchReadingStackOverflowTest extends TestCase {
     String firstName = "StackOverflowTest";
     Employee emp_1;
     ForeignReferenceMapping mappingToDisableBatchReadInReset;
+    BatchFetchType batchType;
+    
+    public BatchReadingStackOverflowTest(BatchFetchType batchType) {
+        this.batchType = batchType;
+    }
     
     protected void setup() throws Throwable {
         // set readBatch to true on managedEmployees mapping
@@ -37,6 +43,7 @@ public class BatchReadingStackOverflowTest extends TestCase {
             mappingToDisableBatchReadInReset = null;
         } else {
             mappingToDisableBatchReadInReset.setUsesBatchReading(true);
+            mappingToDisableBatchReadInReset.setBatchFetchType(batchType);
         }
 
         // create objects to be used by the test:
@@ -103,6 +110,7 @@ public class BatchReadingStackOverflowTest extends TestCase {
         // executing the query used to cause StackOverflow
         Employee empRead = (Employee)getSession().executeQuery(query);
         // the following line is provided just in case you need to put a break point after query execution
+        empRead.getManagedEmployees().size();
         query = null;
     }
     

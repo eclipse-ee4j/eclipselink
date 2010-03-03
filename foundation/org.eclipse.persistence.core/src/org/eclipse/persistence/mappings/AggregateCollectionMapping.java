@@ -1044,11 +1044,12 @@ public class AggregateCollectionMapping extends CollectionMapping implements Rel
      * INTERNAL:
      * Allow the mapping the do any further batch preparation.
      */
-    protected void postPrepareNestedBatchQuery(ReadQuery batchQuery, ReadAllQuery query) {        
+    @Override
+    protected void postPrepareNestedBatchQuery(ReadQuery batchQuery, ObjectLevelReadQuery query) {        
         ReadAllQuery aggregateBatchQuery = (ReadAllQuery)batchQuery;
         aggregateBatchQuery.setShouldIncludeData(true);
-        for (Enumeration relationFieldsEnum = getTargetForeignKeyFields().elements(); relationFieldsEnum.hasMoreElements();) {
-            aggregateBatchQuery.getAdditionalFields().add(relationFieldsEnum.nextElement());
+        for (DatabaseField relationField : getTargetForeignKeyFields()) {
+            aggregateBatchQuery.getAdditionalFields().add(relationField);
         }
     }
 

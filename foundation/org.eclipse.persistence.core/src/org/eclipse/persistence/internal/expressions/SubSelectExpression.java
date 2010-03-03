@@ -150,7 +150,7 @@ public class SubSelectExpression extends BaseExpression {
                 // point the builder for the clonedQuery will already be aliased.  Replacing the builder with
                 // the builder for the query's new expression solves this issue.
                 if (clonedQuery.getExpressionBuilder() != null) {
-                    clonedQuery.setExpressionBuilder(clonedQuery.getSelectionCriteria().getBuilder());
+                    clonedQuery.setExpressionBuilder((ExpressionBuilder)clonedQuery.getExpressionBuilder().copiedVersionFrom(alreadyDone));
                 }
             } else if (clonedQuery.getExpressionBuilder() != null) {
                 // Must clone the expression builder.

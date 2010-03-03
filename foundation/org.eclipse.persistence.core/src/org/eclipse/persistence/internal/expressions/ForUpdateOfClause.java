@@ -13,6 +13,7 @@
 package org.eclipse.persistence.internal.expressions;
 
 import java.util.*;
+
 import org.eclipse.persistence.expressions.*;
 import org.eclipse.persistence.internal.helper.DatabaseTable;
 import org.eclipse.persistence.queries.ObjectBuildingQuery;
@@ -24,22 +25,22 @@ import org.eclipse.persistence.queries.ObjectBuildingQuery;
  *  @since   Oracle Toplink 10g AS
  */
 public class ForUpdateOfClause extends ForUpdateClause {
-    protected Vector lockedExpressions;
+    protected List<Expression> lockedExpressions;
 
     public ForUpdateOfClause() {
     }
 
     public void addLockedExpression(ObjectExpression expression) {
-        getLockedExpressions().addElement(expression);
+        getLockedExpressions().add(expression);
     }
 
     public void addLockedExpression(FieldExpression expression) {
-        getLockedExpressions().addElement(expression);
+        getLockedExpressions().add(expression);
     }
 
-    public Vector getLockedExpressions() {
+    public List<Expression> getLockedExpressions() {
         if (lockedExpressions == null) {
-            lockedExpressions = org.eclipse.persistence.internal.helper.NonSynchronizedVector.newInstance();
+            lockedExpressions = new ArrayList();
         }
         return lockedExpressions;
     }
@@ -49,22 +50,23 @@ public class ForUpdateOfClause extends ForUpdateClause {
     }
 
     public boolean isReferenceClassLocked() {
-        if (lockedExpressions == null) {
+        if (this.lockedExpressions == null) {
             return false;
         }
 
         // Normally the expressionBuilder is stored first but not necessarily 
         // when a child ForUpdateOfClause is built for a nested query, or if a 
         //user made this clause.
-        for (int i = 0; i < lockedExpressions.size(); i++) {
-            if (((Expression)lockedExpressions.elementAt(i)).isExpressionBuilder()) {
+        int size = this.lockedExpressions.size();
+        for (int i = 0; i < size; i++) {
+            if (this.lockedExpressions.get(i).isExpressionBuilder()) {
                 return true;
             }
         }
         return false;
     }
 
-    public void setLockedExpressions(Vector lockedExpressions) {
+    public void setLockedExpressions(List<Expression> lockedExpressions) {
         this.lockedExpressions = lockedExpressions;
     }
 
@@ -86,8 +88,7 @@ public class ForUpdateOfClause extends ForUpdateClause {
             printer.printString(printer.getSession().getPlatform().getSelectForUpdateOfString());
     
             printer.setIsFirstElementPrinted(false);
-            for (Enumeration enumtr = getLockedExpressions().elements(); enumtr.hasMoreElements();) {
-                Expression next = (Expression)enumtr.nextElement();
+            for (Expression next : getLockedExpressions()) {
                 // Necessary as this was determined in query framework.
                 next = next.rebuildOn(clonedBuilder);
                 if(next.isObjectExpression()) {
@@ -118,9 +119,9 @@ public class ForUpdateOfClause extends ForUpdateClause {
         int expected = statement.getTableAliases().size();
         HashSet aliases = new HashSet(expected);
         ExpressionBuilder clonedBuilder = statement.getBuilder();
-        Enumeration enumtr = getLockedExpressions().elements();
-        while (enumtr.hasMoreElements() && aliases.size() < expected) {
-            Expression next = (Expression)enumtr.nextElement();
+        Iterator<Expression> iterator = getLockedExpressions().iterator();
+        while (iterator.hasNext() && aliases.size() < expected) {
+            Expression next = iterator.next();
 
             // Necessary as this was determined in query framework.
             next = next.rebuildOn(clonedBuilder);
@@ -129,7 +130,7 @@ public class ForUpdateOfClause extends ForUpdateClause {
                 next = ((FieldExpression)next).getBaseExpression();
             }
             DatabaseTable[] expAliases = next.getTableAliases().keys();
-            for(int i=0; i<expAliases.length; i++) {
+            for (int i=0; i<expAliases.length; i++) {
                 aliases.add(expAliases[i]);
             }
         }

@@ -16,6 +16,7 @@ import java.security.AccessController;
 import java.security.PrivilegedActionException;
 import java.util.*;
 
+import org.eclipse.persistence.annotations.BatchFetchType;
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.exceptions.*;
 import org.eclipse.persistence.expressions.*;
@@ -55,8 +56,11 @@ public abstract class ForeignReferenceMapping extends DatabaseMapping {
     /** Indicates whether the referenced object is privately owned or not. */
     protected boolean isPrivateOwned;
 
-    /** Indicates whether the referenced object should always be batch read on read all queries. */
-    protected boolean usesBatchReading;
+    /**
+     * Indicates whether the referenced object should always be batch read on read all queries,
+     * and defines the type of batch fetch to use.
+     */
+    protected BatchFetchType batchFetchType;
 
     /** Implements indirection behavior */
     protected IndirectionPolicy indirectionPolicy;
@@ -110,7 +114,6 @@ public abstract class ForeignReferenceMapping extends DatabaseMapping {
     protected ForeignReferenceMapping() {
         this.isPrivateOwned = false;
         this.hasCustomSelectionQuery = false;
-        this.usesBatchReading = false;
         this.useBasicIndirection();
         this.cascadePersist = false;
         this.cascadeMerge = false;
@@ -127,11 +130,14 @@ public abstract class ForeignReferenceMapping extends DatabaseMapping {
      * This executes a single query to read the target for all of the objects and stores the
      * result of the batch query in the original query to allow the other objects to share the results.
      */
-    protected Object batchedValueFromRow(AbstractRecord row, ReadAllQuery query) {
+    protected Object batchedValueFromRow(AbstractRecord row, ObjectLevelReadQuery query) {
         ReadQuery batchQuery = (ReadQuery)query.getProperty(this);
         if (batchQuery == null) {
-            if (query.getBatchReadMappingQueries() != null) {
-                batchQuery = (ReadQuery)query.getBatchReadMappingQueries().get(this);
+            if (query.hasBatchReadAttributes()) {
+                Map<DatabaseMapping, ReadQuery> queries = query.getBatchFetchPolicy().getMappingQueries();
+                if (queries != null) {
+                    batchQuery = queries.get(this);
+                }
             }
             if (batchQuery == null) {
                 batchQuery = prepareNestedBatchQuery(query);
@@ -439,7 +445,7 @@ public abstract class ForeignReferenceMapping extends DatabaseMapping {
      * INTERNAL:
      * Allow the mapping the do any further batch preparation.
      */
-    protected void postPrepareNestedBatchQuery(ReadQuery batchQuery, ReadAllQuery query) {
+    protected void postPrepareNestedBatchQuery(ReadQuery batchQuery, ObjectLevelReadQuery query) {
         // Do nothing.
     }
     
@@ -448,9 +454,19 @@ public abstract class ForeignReferenceMapping extends DatabaseMapping {
      * Clone and prepare the selection query as a nested batch read query.
      * This is used for nested batch reading.
      */
-    public ReadQuery prepareNestedBatchQuery(ReadAllQuery query) {
-        ReadAllQuery batchQuery = new ReadAllQuery();
-        batchQuery.setReferenceClass(getReferenceClass());
+    public ReadQuery prepareNestedBatchQuery(ObjectLevelReadQuery query) {
+        // For CR#2646-S.M.  In case of inheritance the descriptor to use may not be that
+        // of the source query (the base class descriptor), but that of the subclass, if the
+        // attribute is only of the subclass.  Thus in this case use the descriptor from the mapping.
+        // Also: for Bug 5478648 - Do not switch the descriptor if the query's descriptor is an aggregate
+        ClassDescriptor descriptorToUse = query.getDescriptor();
+        if ((descriptorToUse != this.descriptor) && (!descriptorToUse.getMappings().contains(this)) && (!this.descriptor.isAggregateDescriptor())) { 
+            descriptorToUse = this.descriptor;
+        }
+        
+        ExpressionBuilder builder = new ExpressionBuilder(getReferenceClass());
+        builder.setQueryClassAndDescriptor(getReferenceClass(), getReferenceDescriptor());
+        ReadAllQuery batchQuery = new ReadAllQuery(getReferenceClass(), builder);
         batchQuery.setDescriptor(getReferenceDescriptor());
         batchQuery.setSession(query.getSession());
 
@@ -473,64 +489,92 @@ public abstract class ForeignReferenceMapping extends DatabaseMapping {
         //CR #4365
         batchQuery.setQueryId(query.getQueryId());
 
-        // For CR#2646-S.M.  In case of inheritance the descriptor to use may not be that
-        // of the source query (the base class descriptor), but that of the subclass, if the
-        // attribute is only of the subclass.  Thus in this case use the descriptor from the mapping.
-        // Also: for Bug 5478648 - Do not switch the descriptor if the query's descriptor is an aggregate
-        ClassDescriptor descriptorToUse = query.getDescriptor();
-        if ((descriptorToUse != getDescriptor()) && (!descriptorToUse.getMappings().contains(this)) && (!getDescriptor().isAggregateDescriptor())) { 
-            descriptorToUse = getDescriptor();
+        Expression batchSelectionCriteria = null;
+        // Build the batch query, either using joining, or an exist sub-select.
+        BatchFetchType batchType = query.getBatchFetchPolicy().getType();
+        if (this.batchFetchType != null) {
+            batchType = this.batchFetchType;
         }
-
-        // Join the query where clause with the mapping's,
-        // this will cause a join that should bring in all of the target objects.
-        ExpressionBuilder builder = batchQuery.getExpressionBuilder();
-        Expression backRef = builder.getManualQueryKey(getAttributeName() + "-back-ref", descriptorToUse);
-        Expression twisted = backRef.twist(getSelectionCriteria(), builder);
-        if (query.getSelectionCriteria() != null) {
-            // For bug 2612567, any query can have batch attributes, so the
-            // original selection criteria can be quite complex, with multiple
-            // builders (i.e. for parallel selects).
-            // Now uses cloneUsing(newBase) instead of rebuildOn(newBase).
-            twisted = twisted.and(query.getSelectionCriteria().cloneUsing(backRef));
-        }
-        // Since a manual query key expression does not really get normalized,
-        // it must get its additional expressions added in here.  Probably best
-        // to somehow keep all this code inside QueryKeyExpression.normalize.
-        if (descriptorToUse.getQueryManager().getAdditionalJoinExpression() != null) {
-            twisted = twisted.and(descriptorToUse.getQueryManager().getAdditionalJoinExpression().rebuildOn(backRef));
-        }
-        // Check for history and add history expression. 
-        if (descriptorToUse.getHistoryPolicy() != null) {
-            if (query.getSession().getAsOfClause() != null) {
-                backRef.asOf(query.getSession().getAsOfClause());
-            } else if (batchQuery.getAsOfClause() == null) {
-                backRef.asOf(AsOfClause.NO_CLAUSE);
-            } else {
-                backRef.asOf(batchQuery.getAsOfClause());
+        if (batchType == BatchFetchType.EXISTS) {
+            // Using a EXISTS sub-select (WHERE EXIST (<original-query> AND <mapping-join> AND <mapping-join>)
+            ExpressionBuilder subBuilder = new ExpressionBuilder(descriptorToUse.getJavaClass());
+            subBuilder.setQueryClassAndDescriptor(descriptorToUse.getJavaClass(), descriptorToUse);
+            ReportQuery subQuery = new ReportQuery(descriptorToUse.getJavaClass(), subBuilder);
+            subQuery.setDescriptor(descriptorToUse);
+            subQuery.setShouldRetrieveFirstPrimaryKey(true);
+            Expression subCriteria = subBuilder.twist(getSelectionCriteria(), builder);
+            if (query.getSelectionCriteria() != null) {
+                // For bug 2612567, any query can have batch attributes, so the
+                // original selection criteria can be quite complex, with multiple
+                // builders (i.e. for parallel selects).
+                // Now uses cloneUsing(newBase) instead of rebuildOn(newBase).
+                subCriteria = query.getSelectionCriteria().cloneUsing(subBuilder).and(subCriteria);
             }
-            twisted = twisted.and(descriptorToUse.getHistoryPolicy().additionalHistoryExpression((ObjectExpression)backRef));
+            // Check for history and set asOf. 
+            if (descriptorToUse.getHistoryPolicy() != null) {
+                if (query.getSession().getAsOfClause() != null) {
+                    subBuilder.asOf(query.getSession().getAsOfClause());
+                } else if (batchQuery.getAsOfClause() == null) {
+                    subBuilder.asOf(AsOfClause.NO_CLAUSE);
+                } else {
+                    subBuilder.asOf(batchQuery.getAsOfClause());
+                }
+            }
+            subQuery.setSelectionCriteria(subCriteria);
+            batchSelectionCriteria = builder.exists(subQuery);
+        } else {
+            // Using a join, (WHERE <orginal-query-criteria> AND <mapping-join>)
+            // Join the query where clause with the mapping's,
+            // this will cause a join that should bring in all of the target objects.
+            Expression backRef = builder.getManualQueryKey(getAttributeName() + "-back-ref", descriptorToUse);
+            batchSelectionCriteria = backRef.twist(getSelectionCriteria(), builder);
+            if (query.getSelectionCriteria() != null) {
+                // For bug 2612567, any query can have batch attributes, so the
+                // original selection criteria can be quite complex, with multiple
+                // builders (i.e. for parallel selects).
+                // Now uses cloneUsing(newBase) instead of rebuildOn(newBase).
+                batchSelectionCriteria = batchSelectionCriteria.and(query.getSelectionCriteria().cloneUsing(backRef));
+            }
+            // Since a manual query key expression does not really get normalized,
+            // it must get its additional expressions added in here.  Probably best
+            // to somehow keep all this code inside QueryKeyExpression.normalize.
+            if (descriptorToUse.getQueryManager().getAdditionalJoinExpression() != null) {
+                batchSelectionCriteria = batchSelectionCriteria.and(descriptorToUse.getQueryManager().getAdditionalJoinExpression().rebuildOn(backRef));
+            }
+            // Check for history and add history expression. 
+            if (descriptorToUse.getHistoryPolicy() != null) {
+                if (query.getSession().getAsOfClause() != null) {
+                    backRef.asOf(query.getSession().getAsOfClause());
+                } else if (batchQuery.getAsOfClause() == null) {
+                    backRef.asOf(AsOfClause.NO_CLAUSE);
+                } else {
+                    backRef.asOf(batchQuery.getAsOfClause());
+                }
+                batchSelectionCriteria = batchSelectionCriteria.and(descriptorToUse.getHistoryPolicy().additionalHistoryExpression((ObjectExpression)backRef));
+            }
         }
-        batchQuery.setSelectionCriteria(twisted);
+        batchQuery.setSelectionCriteria(batchSelectionCriteria);
+        
         if (query.isDistinctComputed()) {
             // Only recompute if it has not already been set by the user
             batchQuery.setDistinctState(query.getDistinctState());
         }
 
         // Add batch reading attributes contained in the mapping's query.
-        ReadQuery mappingQuery = this.getSelectionQuery();
+        ReadQuery mappingQuery = this.selectionQuery;
         if (mappingQuery.isReadAllQuery()) {
             // CR#3238 clone these vectors so they will not grow with each call to the query. -TW
             batchQuery.setOrderByExpressions(new ArrayList<Expression>(((ReadAllQuery)mappingQuery).getOrderByExpressions()));
-            for (Enumeration enumtr = ((ReadAllQuery)mappingQuery).getBatchReadAttributeExpressions().elements(); enumtr.hasMoreElements();) {
-                Expression expression = ((Expression)enumtr.nextElement()).rebuildOn(batchQuery.getExpressionBuilder());
+            for (Expression expression : ((ReadAllQuery)mappingQuery).getBatchReadAttributeExpressions()) {
                 batchQuery.addBatchReadAttribute(expression);
             }
         }
 
         // Computed nested batch attribute expressions.
-        Vector nestedExpressions = extractNestedExpressions(query.getBatchReadAttributeExpressions(), batchQuery.getExpressionBuilder(), false);
-        Helper.addAllToVector(batchQuery.getBatchReadAttributeExpressions(), nestedExpressions);
+        List<Expression> nestedExpressions = extractNestedExpressions(query.getBatchReadAttributeExpressions(), batchQuery.getExpressionBuilder(), false);
+        batchQuery.getBatchReadAttributeExpressions().addAll(nestedExpressions);
+        batchQuery.setBatchFetchType(query.getBatchFetchPolicy().getType());
+        batchQuery.setBatchFetchSize(query.getBatchFetchPolicy().getSize());
         // Allow subclasses to further prepare.
         postPrepareNestedBatchQuery(batchQuery, query);
         
@@ -1254,9 +1298,14 @@ public abstract class ForeignReferenceMapping extends DatabaseMapping {
      * Indicates whether the referenced object should always be batch read on read all queries.
      * Batch reading will read all of the related objects in a single query when accessed from an originating read all.
      * This should only be used if it is know that the related objects are always required with the source object, or indirection is not used.
+     * @see #setBatchFetchType(BatchFetchType)
      */
     public void setUsesBatchReading(boolean usesBatchReading) {
-        this.usesBatchReading = usesBatchReading;
+        if (usesBatchReading) {
+            setBatchFetchType(BatchFetchType.JOIN);
+        } else {
+            setBatchFetchType(null);            
+        }
     }
 
     /**
@@ -1368,7 +1417,7 @@ public abstract class ForeignReferenceMapping extends DatabaseMapping {
      * This should only be used if it is know that the related objects are always required with the source object, or indirection is not used.
      */
     public boolean shouldUseBatchReading() {
-        return usesBatchReading;
+        return this.batchFetchType != null;
     }
 
     /**
@@ -1388,7 +1437,7 @@ public abstract class ForeignReferenceMapping extends DatabaseMapping {
      * This should only be used if it is know that the related objects are always required with the source object, or indirection is not used.
      */
     public void useBatchReading() {
-        setUsesBatchReading(true);
+        setBatchFetchType(BatchFetchType.JOIN);
     }
 
     /**
@@ -1524,8 +1573,9 @@ public abstract class ForeignReferenceMapping extends DatabaseMapping {
         // PERF: Direct variable access.
         // If the query uses batch reading, return a special value holder
         // or retrieve the object from the query property.
-        if (sourceQuery.isReadAllQuery() && (((ReadAllQuery)sourceQuery).isAttributeBatchRead(this.descriptor, getAttributeName()) || this.usesBatchReading)) {
-            return batchedValueFromRow(row, (ReadAllQuery)sourceQuery);
+        if (sourceQuery.isObjectLevelReadQuery() && (((ObjectLevelReadQuery)sourceQuery).isAttributeBatchRead(this.descriptor, getAttributeName())
+                || (sourceQuery.isReadAllQuery() && shouldUseBatchReading()))) {
+            return batchedValueFromRow(row, (ObjectLevelReadQuery)sourceQuery);
         }
         if (shouldUseValueFromRowWithJoin(joinManager, sourceQuery)) {
             return valueFromRowInternalWithJoin(row, joinManager, sourceQuery, executionSession);
@@ -1739,5 +1789,21 @@ public abstract class ForeignReferenceMapping extends DatabaseMapping {
             nestedQuery.getJoinedAttributeManager().setDataResults(nestedDataResults, executionSession);
         }
         return nestedQuery;
+    }
+    
+    /**
+     * PUBLIC:
+     * Return the type of batch fetching to use for all queries for this class if configured.
+     */
+    public BatchFetchType getBatchFetchType() {
+        return batchFetchType;
+    }
+    
+    /**
+     * PUBLIC:
+     * Set the type of batch fetching to use for all queries for this class.
+     */
+    public void setBatchFetchType(BatchFetchType batchFetchType) {
+        this.batchFetchType = batchFetchType;
     }
 }

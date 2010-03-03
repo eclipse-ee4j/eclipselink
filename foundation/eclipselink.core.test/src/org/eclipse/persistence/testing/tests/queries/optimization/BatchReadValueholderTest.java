@@ -15,6 +15,7 @@ package org.eclipse.persistence.testing.tests.queries.optimization;
 import java.util.*;
 
 import org.eclipse.persistence.queries.*;
+import org.eclipse.persistence.annotations.BatchFetchType;
 import org.eclipse.persistence.expressions.*;
 
 import org.eclipse.persistence.testing.framework.*;
@@ -25,15 +26,18 @@ import org.eclipse.persistence.testing.models.employee.domain.*;
  */
 public class BatchReadValueholderTest extends TestCase {
     protected Vector employees = null;
+    BatchFetchType batchType;
 
-    public BatchReadValueholderTest() {
+    public BatchReadValueholderTest(BatchFetchType batchType) {
         setDescription("Ensure instantiated valueholders are not reset when a batch query runs.");
+        this.batchType = batchType;
     }
 
     public void setup() {
         getSession().getIdentityMapAccessor().initializeIdentityMaps();
 
         ReadAllQuery query = new ReadAllQuery(Employee.class);
+        query.setBatchFetchType(batchType);
         query.addBatchReadAttribute("manager");
         ExpressionBuilder employees = new ExpressionBuilder();
         Expression exp = employees.get("firstName").equal("Jim-bob");

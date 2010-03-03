@@ -22,11 +22,10 @@ import org.eclipse.persistence.tools.beans.*;
 import org.eclipse.persistence.sessions.SessionProfiler;
 
 /**
- * This panel allows for the browsing of TopLink performance profiles.
+ * This panel allows for the browsing of performance profiles.
  */
 public class ProfileBrowserPanel extends JPanel {
     private java.util.Vector fieldProfiles = new java.util.Vector();
-    private DefaultTableModel fieldProfilesModel = new DefaultTableModel();
     private JScrollPane ivjProfileScrollPane = null;
     private JTable ivjProfilesTable = null;
     private JComboBox ivjGroupByChoice = null;

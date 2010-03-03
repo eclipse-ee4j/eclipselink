@@ -953,8 +953,9 @@ public abstract class AbstractDirectMapping extends DatabaseMapping  implements 
                 setIsMutable(false);
             }
             // If mapping a temporal type, use the project mutable default.
-            if (ClassConstants.UTILDATE.isAssignableFrom(getAttributeClassification())
-                    || ClassConstants.CALENDAR.isAssignableFrom(getAttributeClassification())) {
+            if ((getAttributeClassification() != null)
+                    && (ClassConstants.UTILDATE.isAssignableFrom(getAttributeClassification())
+                            || ClassConstants.CALENDAR.isAssignableFrom(getAttributeClassification()))) {
                 setIsMutable(session.getProject().getDefaultTemporalMutable());
             }
         }

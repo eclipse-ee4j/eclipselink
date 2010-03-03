@@ -771,6 +771,7 @@ public abstract class CollectionMapping extends ForeignReferenceMapping implemen
      * INTERNAL:
      * Extract the value from the batch optimized query.
      */
+    @Override
     public Object extractResultFromBatchQuery(DatabaseQuery query, AbstractRecord databaseRow, AbstractSession session, AbstractRecord argumentRow) {
         //this can be null, because either one exists in the query or it will be created
         Map<Object, Object> referenceObjectsByKey = null;
@@ -1578,9 +1579,10 @@ public abstract class CollectionMapping extends ForeignReferenceMapping implemen
      * Clone and prepare the selection query as a nested batch read query.
      * This is used for nested batch reading.
      */
-    public ReadQuery prepareNestedBatchQuery(ReadAllQuery query) {
+    @Override
+    public ReadQuery prepareNestedBatchQuery(ObjectLevelReadQuery query) {
         ReadAllQuery batchQuery = (ReadAllQuery)super.prepareNestedBatchQuery(query);
-        if(this.listOrderField != null) {
+        if (this.listOrderField != null) {
             batchQuery.addAdditionalField(getListOrderFieldExpression(batchQuery.getExpressionBuilder()));
         }
         if (batchQuery.shouldPrepare()) {

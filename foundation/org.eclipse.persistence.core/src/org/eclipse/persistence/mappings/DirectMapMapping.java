@@ -941,12 +941,13 @@ public class DirectMapMapping extends DirectCollectionMapping implements MapComp
      * INTERNAL:
      * Overwrite super method.
      */
+    @Override
     public Object extractResultFromBatchQuery(DatabaseQuery query, AbstractRecord databaseRow, AbstractSession session, AbstractRecord argumentRow) {
         //this can be null, because either one exists in the query or it will be created
         Map<Object, Object> referenceDataByKey = null;
         ContainerPolicy mappingContainerPolicy = getContainerPolicy();
         synchronized (query) {
-            referenceDataByKey = (Map)query.getProperty("batched objects");
+            referenceDataByKey = getBatchReadObjects(query, session);
             mappingContainerPolicy = getContainerPolicy();
             if (referenceDataByKey == null) {
                 

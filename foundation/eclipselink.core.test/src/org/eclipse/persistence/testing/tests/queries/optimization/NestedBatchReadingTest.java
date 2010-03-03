@@ -14,15 +14,18 @@ package org.eclipse.persistence.testing.tests.queries.optimization;
 
 import java.util.*;
 
+import org.eclipse.persistence.annotations.BatchFetchType;
 import org.eclipse.persistence.queries.*;
 import org.eclipse.persistence.testing.framework.*;
 import org.eclipse.persistence.testing.models.insurance.*;
 
 public class NestedBatchReadingTest extends TestCase {
     public Vector result;
+    BatchFetchType batchType;
 
-    public NestedBatchReadingTest() {
+    public NestedBatchReadingTest(BatchFetchType batchType) {
         setDescription("Tests batch reading nesting across two 1-m mappings, polcies and claims");
+        this.batchType = batchType;
     }
 
     public void setup() {
@@ -31,6 +34,7 @@ public class NestedBatchReadingTest extends TestCase {
 
     public void test() {
         ReadAllQuery query = new ReadAllQuery();
+        query.setBatchFetchType(batchType);
         query.setReferenceClass(PolicyHolder.class);
         query.addBatchReadAttribute("policies");
         query.addBatchReadAttribute(query.getExpressionBuilder().get("policies").get("claims"));

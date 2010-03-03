@@ -12,8 +12,11 @@
  ******************************************************************************/  
 package org.eclipse.persistence.testing.tests.queries.optimization;
 
+import java.util.List;
+
 import org.eclipse.persistence.tools.schemaframework.PopulationManager;
 import org.eclipse.persistence.queries.*;
+import org.eclipse.persistence.annotations.BatchFetchType;
 import org.eclipse.persistence.expressions.*;
 
 import org.eclipse.persistence.testing.framework.*;
@@ -30,10 +33,17 @@ public class QueryOptimizationTestSuite extends TestSuite {
     }
 
     public void addBatchTests() {
+        addBatchTests(BatchFetchType.JOIN);
+        addBatchTests(BatchFetchType.EXISTS);
+        addBatchTests(BatchFetchType.IN);
+    }
+    
+    public void addBatchTests(BatchFetchType batchType) {
         // Batch reading
         ReadAllBatchReadingTest testbb1 = new ReadAllBatchReadingTest(12);
-        testbb1.setName("ReadAllBatchReadingTestAddressManager");
+        testbb1.setName("ReadAllBatchReadingTestAddressManager" + batchType);
         ReadAllQuery querybb1 = new ReadAllQuery();
+        querybb1.setBatchFetchType(batchType);
         querybb1.setReferenceClass(Employee.class);
         querybb1.addBatchReadAttribute("address");
         querybb1.addBatchReadAttribute("manager");
@@ -44,8 +54,9 @@ public class QueryOptimizationTestSuite extends TestSuite {
         addTest(testbb1);
 
         ReadAllBatchReadingTest testbb2 = new ReadAllBatchReadingTest(2);
-        testbb2.setName("ReadAllBatchReadingTestWhereAddressManager");
+        testbb2.setName("ReadAllBatchReadingTestWhereAddressManager" + batchType);
         ReadAllQuery querybb2 = new ReadAllQuery();
+        querybb2.setBatchFetchType(batchType);
         querybb2.setReferenceClass(Employee.class);
         querybb2.addBatchReadAttribute("address");
         querybb2.addBatchReadAttribute("manager");
@@ -56,24 +67,25 @@ public class QueryOptimizationTestSuite extends TestSuite {
         testbb2.setQuery(querybb2);
         addTest(testbb2);
         //add the BatchReadingUnitOfWorkTest and BatchReadingUnitOfWorkInTransactionTest
-        BatchReadingUnitOfWorkTest testbb3 = new BatchReadingUnitOfWorkTest();
+        BatchReadingUnitOfWorkTest testbb3 = new BatchReadingUnitOfWorkTest(batchType);
         addTest(testbb3);
 
-        BatchReadingUnitOfWorkInTransactionTest testbb4 = new BatchReadingUnitOfWorkInTransactionTest();
+        BatchReadingUnitOfWorkInTransactionTest testbb4 = new BatchReadingUnitOfWorkInTransactionTest(batchType);
         addTest(testbb4);
 
         //adding the OneToMany tests
-        OneToManyBatchReadingTest testbb5 = new OneToManyBatchReadingTest();
+        OneToManyBatchReadingTest testbb5 = new OneToManyBatchReadingTest(batchType);
         addTest(testbb5);
         
         addTest(new BatchReadingTest());
 
-        OneToManyBatchReadingCustomSelectionQueryTest testbb6 = new OneToManyBatchReadingCustomSelectionQueryTest();
+        OneToManyBatchReadingCustomSelectionQueryTest testbb6 = new OneToManyBatchReadingCustomSelectionQueryTest(batchType);
         addTest(testbb6);
 
         ReadAllBatchReadingTest test3 = new ReadAllBatchReadingTest(2);
-        test3.setName("ReadAllBatchReadingTestWhereAddressManager-cursor");
+        test3.setName("ReadAllBatchReadingTestWhereAddressManager-cursor" + batchType);
         ReadAllQuery query3 = new ReadAllQuery();
+        query3.setBatchFetchType(batchType);
         query3.setReferenceClass(Employee.class);
         query3.useCursoredStream();
         query3.addBatchReadAttribute("address");
@@ -88,6 +100,7 @@ public class QueryOptimizationTestSuite extends TestSuite {
         NestedOneToManyBatchReadAllTest test3_5 = new NestedOneToManyBatchReadAllTest(org.eclipse.persistence.testing.models.collections.Restaurant.class, 15);
         test3_5.setName("NestedOneToManyBatchReadAllTest");
         ReadAllQuery query3_5 = new ReadAllQuery();
+        query3_5.setBatchFetchType(batchType);
         query3_5.setReferenceClass(org.eclipse.persistence.testing.models.collections.Restaurant.class);
         query3_5.addBatchReadAttribute("menus");
         test3_5.setQuery(query3_5);
@@ -95,33 +108,35 @@ public class QueryOptimizationTestSuite extends TestSuite {
 
         //Batch testing on 1-1 mapping
         ReadAllTest test4 = new ReadAllTest(org.eclipse.persistence.testing.models.insurance.Policy.class, 3);
-        test4.setName("ReadAllBatchReadingTestPolicyHolder");
+        test4.setName("ReadAllBatchReadingTestPolicyHolder" + batchType);
         ReadAllQuery query4 = new ReadAllQuery();
+        query4.setBatchFetchType(batchType);
         query4.setReferenceClass(org.eclipse.persistence.testing.models.insurance.Policy.class);
         query4.addBatchReadAttribute("policyHolder");
         query4.setSelectionCriteria(new org.eclipse.persistence.expressions.ExpressionBuilder().get("maxCoverage").greaterThan(40000));
         test4.setQuery(query4);
         addTest(test4);
 
-        addTest(new OneToOneBatchReadingTest());
+        addTest(new OneToOneBatchReadingTest(batchType));
 
         // Batch testing on 1-M mapping.
         ReadAllTest test5 = new ReadAllTest(org.eclipse.persistence.testing.models.insurance.Policy.class, 4);
         test5.setName("ReadAllBatchReadingTestClaim");
         ReadAllQuery query5 = new ReadAllQuery();
+        query5.setBatchFetchType(batchType);
         query5.setReferenceClass(org.eclipse.persistence.testing.models.insurance.Policy.class);
         query5.addBatchReadAttribute("claims");
         query5.setSelectionCriteria(new org.eclipse.persistence.expressions.ExpressionBuilder().get("maxCoverage").greaterThan(30000));
         test5.setQuery(query5);
         addTest(test5);
-        addTest(new OneToManyBatchReadingTest());
+        addTest(new OneToManyBatchReadingTest(batchType));
 
-        addTest(new NestedBatchReadingTest());
-        addTest(new AggregateBatchReadingTest());
-        addTest(new BatchReadingBatchReadExpressionTest());
-        addTest(new BatchReadingWithInvalidQueryKeyTest());
-        addTest(new BatchReadValueholderTest());
-        addTest(new BatchReadingStackOverflowTest());
+        addTest(new NestedBatchReadingTest(batchType));
+        addTest(new AggregateBatchReadingTest(batchType));
+        addTest(new BatchReadingBatchReadExpressionTest(batchType));
+        addTest(new BatchReadingWithInvalidQueryKeyTest(batchType));
+        addTest(new BatchReadValueholderTest(batchType));
+        addTest(new BatchReadingStackOverflowTest(batchType));
     }
 
     public void addJoinTests() {
@@ -431,5 +446,47 @@ public class QueryOptimizationTestSuite extends TestSuite {
         addBatchTests();
         addPartialTests();
         addTest(new ReadAllBindAllParametersTest());
+        addTest(buildBatch1mTest());
+    }
+    
+    public TestCase buildBatch1mTest() {
+        TestCase test = new TestCase() {
+            public void test() {
+                getSession().getIdentityMapAccessor().initializeAllIdentityMaps();
+                
+                ReadAllQuery query = new ReadAllQuery();
+                query.setReferenceClass(Employee.class);
+        
+                Expression rootExpression = query.getExpressionBuilder();
+        
+                Expression filterPart1 =
+                 rootExpression.anyOfAllowingNone("phoneNumbers")
+                   .getAllowingNull("owner").get("firstName").like("%");
+        
+                Expression filterPart2 =
+                 rootExpression.anyOfAllowingNone("phoneNumbers")
+                   .get("number").like("%");
+        
+                query.setSelectionCriteria(filterPart1.and(filterPart2));
+        
+                Expression expression = rootExpression.getAllowingNull("address");
+                query.addBatchReadAttribute(expression);
+        
+                Expression expression2 = rootExpression.getAllowingNull("phoneNumbers");
+                query.addBatchReadAttribute(expression2);
+        
+                List<Employee> result = (List<Employee>) getSession().executeQuery(query);
+                result.get(0).getPhoneNumbers().size();
+
+                getSession().getIdentityMapAccessor().initializeAllIdentityMaps();
+                for (Employee employee : result) {
+                    if (!compareObjects(employee, getSession().readObject(employee))) {
+                        throwError("Employeee does not match:" + employee);
+                    }
+                }
+            }
+        };
+        test.setName("Batch1mTest");
+        return test;
     }
 }

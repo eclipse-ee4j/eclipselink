@@ -308,27 +308,31 @@ public class AggregateObjectMapping extends AggregateMapping implements Relation
         }
         
         ObjectBuildingQuery nestedQuery = sourceQuery;
-        if (sourceQuery.isObjectLevelReadQuery()){
-            if (((ObjectLevelReadQuery)nestedQuery).isPartialAttribute(getAttributeName()) || ((joinManager != null) && joinManager.isAttributeJoined(getDescriptor(), getAttributeName()))) {
+        if (sourceQuery.isObjectLevelReadQuery()) {
+            ObjectLevelReadQuery objectQuery = (ObjectLevelReadQuery)sourceQuery;
+            ObjectLevelReadQuery nestedObjectQuery = (ObjectLevelReadQuery)nestedQuery;
+            String attributeName = getAttributeName();
+            if ((objectQuery.isPartialAttribute(attributeName) || ((joinManager != null) && joinManager.isAttributeJoined(this.descriptor, attributeName)))) {
                 // A nested query must be built to pass to the descriptor that looks like the real query execution would.
-                nestedQuery = (ObjectLevelReadQuery)nestedQuery.deepClone();
+                nestedObjectQuery = (ObjectLevelReadQuery)objectQuery.deepClone();
                 // Must cascade the nested partial/join expression and filter the nested ones.
-                if (((ObjectLevelReadQuery)nestedQuery).hasPartialAttributeExpressions()) {
-                    ((ObjectLevelReadQuery)nestedQuery).setPartialAttributeExpressions(extractNestedExpressions(((ObjectLevelReadQuery)sourceQuery).getPartialAttributeExpressions(), ((ObjectLevelReadQuery)nestedQuery).getExpressionBuilder(), false));
+                if (objectQuery.hasPartialAttributeExpressions()) {
+                    nestedObjectQuery.setPartialAttributeExpressions(extractNestedExpressions(objectQuery.getPartialAttributeExpressions(), nestedObjectQuery.getExpressionBuilder(), false));
                 } else {
-                    ((ObjectLevelReadQuery)nestedQuery).getJoinedAttributeManager().setJoinedAttributeExpressions_(extractNestedExpressions(joinManager.getJoinedAttributeExpressions(), joinManager.getBaseExpressionBuilder(), false));
+                    nestedObjectQuery.getJoinedAttributeManager().setJoinedAttributeExpressions_(extractNestedExpressions(joinManager.getJoinedAttributeExpressions(), joinManager.getBaseExpressionBuilder(), false));
                 }
-                nestedQuery.setDescriptor(descriptor);
+                nestedObjectQuery.setDescriptor(descriptor);
             }
+            if (objectQuery.isAttributeBatchRead(this.descriptor, attributeName)) {
+                // A nested query must be built to pass to the descriptor that looks like the real query execution would.
+                nestedObjectQuery = (ObjectLevelReadQuery)nestedObjectQuery.clone();
+                // Must carry over properties for batching to work.
+                nestedObjectQuery.setProperties(objectQuery.getProperties());
+                // Computed nested batch attribute expressions.
+                nestedObjectQuery.getBatchFetchPolicy().setAttributeExpressions(extractNestedExpressions(objectQuery.getBatchReadAttributeExpressions(), nestedObjectQuery.getExpressionBuilder(), false));
+            }
+            nestedQuery = nestedObjectQuery;
         }
-        if (sourceQuery.isReadAllQuery() && ((ReadAllQuery)sourceQuery).isAttributeBatchRead(getDescriptor(), getAttributeName())) {
-            // A nested query must be built to pass to the descriptor that looks like the real query execution would.
-            nestedQuery = (ObjectLevelReadQuery)sourceQuery.clone();
-            // Must carry over properties for batching to work.
-            nestedQuery.setProperties(sourceQuery.getProperties());
-            // Computed nested batch attribute expressions.
-            ((ReadAllQuery)nestedQuery).setBatchReadAttributeExpressions(extractNestedExpressions(((ReadAllQuery)sourceQuery).getBatchReadAttributeExpressions(), ((ReadAllQuery)nestedQuery).getExpressionBuilder(), false));
-        }                               
 
         if (buildShallowOriginal) {
             descriptor.getObjectBuilder().buildAttributesIntoShallowObject(aggregate, databaseRow, nestedQuery);

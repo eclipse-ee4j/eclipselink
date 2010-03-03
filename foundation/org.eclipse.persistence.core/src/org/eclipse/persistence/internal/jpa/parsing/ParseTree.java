@@ -112,15 +112,15 @@ public class ParseTree {
             Node path = context.pathForVariable(variable);
             // Get the ExpressionBuilder of the range variable for the path
             Class baseClass = getBaseExpressionClass(path, generationContext);
-            // Use the base ExpressionBuilder as the default for the query
-            theQuery.setExpressionBuilder(new ExpressionBuilder(baseClass));
             // and change the reference class accordingly
             theQuery.setReferenceClass(baseClass);
             theQuery.changeDescriptor(generationContext.getSession());
             generationContext.setBaseQueryClass(baseClass);
             // Set the node expression as base expression
-            generationContext.setBaseExpression(
-                variable, path.generateExpression(generationContext));
+            Expression baseExpression = path.generateExpression(generationContext);
+            generationContext.setBaseExpression(variable, baseExpression);
+            // Use the base ExpressionBuilder as the default for the query
+            theQuery.setExpressionBuilder(baseExpression.getBuilder());
         }
     }
 

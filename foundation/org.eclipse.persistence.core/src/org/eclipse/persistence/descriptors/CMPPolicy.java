@@ -300,9 +300,7 @@ public class CMPPolicy implements java.io.Serializable {
         if (descriptor.getCacheKeyType() == CacheKeyType.CACHE_ID) {
             return createPrimaryKeyInstanceFromPrimaryKeyValues(session, new int[]{0}, ((CacheId)key).getPrimaryKey());
         } else {
-            List list = new ArrayList();
-            list.add(key);
-        return createPrimaryKeyInstanceFromPrimaryKeyValues(session, new int[]{0}, key);    
+            return createPrimaryKeyInstanceFromPrimaryKeyValues(session, new int[]{0}, key);    
         }
     }
     

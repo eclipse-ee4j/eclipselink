@@ -523,8 +523,6 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
     }       
     
     public void testRefreshPESSIMISTIC_READLock() {
-        ServerSession session = JUnitTestCase.getServerSession();
-
         // Cannot create parallel entity managers in the server.
         if (! isOnServer() && isSelectForUpateNoWaitSupported()) {
             EntityManager em = createEntityManager();
@@ -587,8 +585,6 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
     }
     
     public void testRefreshPESSIMISTIC_WRITELock() {
-        ServerSession session = JUnitTestCase.getServerSession();
-
         // Cannot create parallel entity managers in the server.
         if (! isOnServer() && isSelectForUpateNoWaitSupported()) {
             EntityManager em = createEntityManager();
@@ -1522,8 +1518,6 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
 
     // This test issues a LOCK and a LOCK NOWAIT.
     public void testPESSIMISTIC_READLock() {
-        ServerSession session = JUnitTestCase.getServerSession();
-
         // Cannot create parallel entity managers in the server.
         if (! isOnServer() && isSelectForUpateNoWaitSupported()) {
             EntityManager em = createEntityManager();
@@ -1588,8 +1582,6 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
     }
     
     public void testPESSIMISTIC_WRITELock() {
-        ServerSession session = JUnitTestCase.getServerSession();
-
         // Cannot create parallel entity managers in the server.
         if (! isOnServer() && isSelectForUpateNoWaitSupported()) {
             EntityManager em = createEntityManager();
@@ -1654,8 +1646,6 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
     }
     
     public void testPESSIMISTIC_FORCE_INCREMENTLock() {
-        ServerSession session = JUnitTestCase.getServerSession();
-
         // It's JPA2.0 feature.
         if (! isJPA10() && isSelectForUpateSupported()) {
             Employee employee = null;
@@ -1700,8 +1690,6 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
     }
     
     public void testPESSIMISTIC_READLockWithNoChanges() {
-        ServerSession session = JUnitTestCase.getServerSession();
-
         // Cannot create parallel entity managers in the server.
         if (! isOnServer() && isSelectForUpateSupported()) {             
             Employee employee = null;
@@ -1746,8 +1734,6 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
     }
     
     public void testPESSIMISTIC_WRITELockWithNoChanges() {
-        ServerSession session = JUnitTestCase.getServerSession();
-
         // Cannot create parallel entity managers in the server.
         if (! isOnServer() && isSelectForUpateSupported()) {
             Employee employee = null;
@@ -1898,8 +1884,6 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
     }
 
     public void testPESSIMISTIC_FORCE_INCREMENTLockOnNonVersionedEntity() {
-        ServerSession session = JUnitTestCase.getServerSession();
-
         // It's a JPA2.0 feature
         if (! isJPA10()) {
             Department dept = null;
@@ -1937,7 +1921,6 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
     }
 
     public void testLockWithJoinedInheritanceStrategy () {
-        ServerSession session = JUnitTestCase.getServerSession();
         // Cannot create parallel entity managers in the server.
         if (! isOnServer() && isSelectForUpateSupported()) {
             Employee emp = null;
@@ -5221,6 +5204,8 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
         org.eclipse.persistence.jpa.JpaQuery query = (org.eclipse.persistence.jpa.JpaQuery)getEntityManagerFactory().createEntityManager().createQuery("SELECT e FROM Employee e WHERE e.lastName = 'Malone' order by e.firstName");
         query.setHint(QueryHints.BATCH, "e.phoneNumbers");
         query.setHint(QueryHints.BATCH, "e.manager.phoneNumbers");
+        query.setHint(QueryHints.BATCH_TYPE, "IN");
+        query.setHint(QueryHints.BATCH_SIZE, "10");
         
         ReadAllQuery raq = (ReadAllQuery)query.getDatabaseQuery();
         List expressions = raq.getBatchReadAttributeExpressions();

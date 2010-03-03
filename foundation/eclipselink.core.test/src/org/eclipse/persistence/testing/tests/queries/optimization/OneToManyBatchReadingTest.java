@@ -14,16 +14,19 @@ package org.eclipse.persistence.testing.tests.queries.optimization;
 
 import java.util.*;
 
+import org.eclipse.persistence.annotations.BatchFetchType;
 import org.eclipse.persistence.queries.*;
 import org.eclipse.persistence.sessions.*;
 import org.eclipse.persistence.testing.models.legacy.*;
 import org.eclipse.persistence.testing.framework.*;
 
 public class OneToManyBatchReadingTest extends TestCase {
+    BatchFetchType batchType;
     public List result;
 
-    public OneToManyBatchReadingTest() {
+    public OneToManyBatchReadingTest(BatchFetchType batchType) {
         setDescription("Tests batch reading using 1 to 1 mapping and composite primary key");
+        this.batchType = batchType;
     }
 
     public void reset() {
@@ -37,6 +40,7 @@ public class OneToManyBatchReadingTest extends TestCase {
 
     public void test() {
         ReadAllQuery q = new ReadAllQuery();
+        q.setBatchFetchType(batchType);
         q.setReferenceClass(Shipment.class);
         q.addBatchReadAttribute("orders");
         UnitOfWork uow = getSession().acquireUnitOfWork();

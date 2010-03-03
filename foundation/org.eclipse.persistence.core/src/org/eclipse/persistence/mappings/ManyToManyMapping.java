@@ -230,13 +230,14 @@ public class ManyToManyMapping extends CollectionMapping implements RelationalMa
      * INTERNAL:
      * Add additional fields and check for history.
      */
-    protected void postPrepareNestedBatchQuery(ReadQuery batchQuery, ReadAllQuery query) {
+    @Override
+    protected void postPrepareNestedBatchQuery(ReadQuery batchQuery, ObjectLevelReadQuery query) {
         ReadAllQuery mappingBatchQuery = (ReadAllQuery)batchQuery;
         mappingBatchQuery.setShouldIncludeData(true);
-        for (Enumeration relationFieldsEnum = getSourceRelationKeyFields().elements(); relationFieldsEnum.hasMoreElements();) {
-            mappingBatchQuery.getAdditionalFields().add(mappingBatchQuery.getExpressionBuilder().getTable(getRelationTable()).getField((DatabaseField)relationFieldsEnum.nextElement()));
+        for (DatabaseField relationField : getSourceRelationKeyFields()) {
+            mappingBatchQuery.getAdditionalFields().add(mappingBatchQuery.getExpressionBuilder().getTable(getRelationTable()).getField(relationField));
         }        
-        if (getHistoryPolicy() != null) {
+        if (this.historyPolicy != null) {
             ExpressionBuilder builder = mappingBatchQuery.getExpressionBuilder();
             Expression twisted = batchQuery.getSelectionCriteria();
             if (query.getSession().getAsOfClause() != null) {
@@ -244,7 +245,7 @@ public class ManyToManyMapping extends CollectionMapping implements RelationalMa
             } else if (builder.getAsOfClause() == null) {
                 builder.asOf(AsOfClause.NO_CLAUSE);
             }
-            twisted = twisted.and(getHistoryPolicy().additionalHistoryExpression(builder));
+            twisted = twisted.and(this.historyPolicy.additionalHistoryExpression(builder));
             mappingBatchQuery.setSelectionCriteria(twisted);
         }
     }

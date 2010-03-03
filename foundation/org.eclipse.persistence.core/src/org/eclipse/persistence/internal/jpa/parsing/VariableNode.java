@@ -178,11 +178,7 @@ public class VariableNode extends Node {
     public Expression generateBaseBuilderExpression(GenerationContext context) {
         //create builder, and add it, and answer it
         //BUG 3106877: Need to create builder using the actual class (if using parallel expressions)
-        if (context.useParallelExpressions()) {
-            return new ExpressionBuilder(this.resolveClass(context));
-        } else {
-            return new ExpressionBuilder();
-        }
+        return new ExpressionBuilder(this.resolveClass(context));
     }
 
     public Expression generateExpression(GenerationContext generationContext) {

@@ -32,7 +32,7 @@ public class ProjectClassGeneratorInheritanceMappingTest extends ProjectClassGen
      * Setup what we want written out. 
      */
     public void setup() {
-        InheritancePolicy iPolicy = (InheritancePolicy )project.getDescriptor(org.eclipse.persistence.testing.models.employee.domain.Project.class).getInheritancePolicy();
+        InheritancePolicy iPolicy = project.getDescriptor(org.eclipse.persistence.testing.models.employee.domain.Project.class).getInheritancePolicy();
         
         // Inheritance Properties.
         iPolicy.addClassIndicator(org.eclipse.persistence.testing.models.employee.domain.SmallProject.class, new Byte("1"));

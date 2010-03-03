@@ -24,6 +24,7 @@ package org.eclipse.persistence.queries;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
+import org.eclipse.persistence.annotations.BatchFetchType;
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.descriptors.VersionLockingPolicy;
 import org.eclipse.persistence.exceptions.*;
@@ -126,6 +127,9 @@ public abstract class ObjectLevelReadQuery extends ObjectBuildingQuery {
     /** Stores the helper object for dealing with joined attributes */
     protected JoinedAttributeManager joinedAttributeManager;
     
+    /** Defines batch fetching configuration. */
+    protected BatchFetchPolicy batchFetchPolicy;
+
     /** PERF: Caches locking policy isReferenceClassLocked setting. */
     protected Boolean isReferenceClassLocked;
     
@@ -350,8 +354,11 @@ public abstract class ObjectLevelReadQuery extends ObjectBuildingQuery {
         // Must also clone the joined expressions as always joined attribute will be added
         // don't use setters as this will trigger unprepare.
         if (cloneQuery.hasJoining()) {
-            cloneQuery.joinedAttributeManager = (JoinedAttributeManager)cloneQuery.getJoinedAttributeManager().clone();
+            cloneQuery.joinedAttributeManager = cloneQuery.getJoinedAttributeManager().clone();
             cloneQuery.joinedAttributeManager.setBaseQuery(cloneQuery);
+        }
+        if (cloneQuery.hasBatchReadAttributes()) {
+            cloneQuery.batchFetchPolicy = cloneQuery.getBatchFetchPolicy().clone();
         }
         if (hasNonFetchJoinedAttributeExpressions()){
             cloneQuery.setNonFetchJoinAttributeExpressions(new ArrayList<Expression>(this.nonFetchJoinAttributeExpressions));
@@ -1180,7 +1187,7 @@ public abstract class ObjectLevelReadQuery extends ObjectBuildingQuery {
 
     /**
      * INTERNAL:
-     * Convience method for project mapping.
+     * Convenience method for project mapping.
      */
     public List getJoinedAttributeExpressions() {
         return getJoinedAttributeManager().getJoinedAttributeExpressions();
@@ -1188,7 +1195,7 @@ public abstract class ObjectLevelReadQuery extends ObjectBuildingQuery {
  
     /**
      * INTERNAL:
-     * Convience method for project mapping.
+     * Convenience method for project mapping.
      */
     public void setJoinedAttributeExpressions(List expressions) {
         if (((expressions != null) && !expressions.isEmpty()) || hasJoining()) {
@@ -1834,6 +1841,9 @@ public abstract class ObjectLevelReadQuery extends ObjectBuildingQuery {
                 thisManager.setJoinedMappingQueries_(queryManager.getJoinedMappingQueries_());
                 thisManager.setOrderByExpressions_(queryManager.getOrderByExpressions_());
                 thisManager.setAdditionalFieldExpressions_(queryManager.getAdditionalFieldExpressions_());
+            }
+            if (objectQuery.hasBatchReadAttributes()) {
+                this.batchFetchPolicy = objectQuery.getBatchFetchPolicy().clone();
             }
             this.nonFetchJoinAttributeExpressions = objectQuery.nonFetchJoinAttributeExpressions;
             this.defaultBuilder = objectQuery.defaultBuilder;
@@ -2702,5 +2712,179 @@ public abstract class ObjectLevelReadQuery extends ObjectBuildingQuery {
         if(!isFurtherExtensionRequired) {
             shouldExtendPessimisticLockScope = false;
         }
+    }
+    
+    /**
+     * Return the batch fetch policy for configuring batch fetching.
+     */
+    public BatchFetchPolicy getBatchFetchPolicy() {
+        if (batchFetchPolicy == null) {
+            batchFetchPolicy = new BatchFetchPolicy();
+        }
+        return batchFetchPolicy;
+    }
+    
+    /**
+     * Set the batch fetch policy for configuring batch fetching.
+     */
+    public void setBatchFetchPolicy(BatchFetchPolicy batchFetchPolicy) {
+        this.batchFetchPolicy = batchFetchPolicy;
+    }
+
+    /**
+     * INTERNAL:
+     * Return all attributes specified for batch reading.
+     */
+    public List<Expression> getBatchReadAttributeExpressions() {
+        return getBatchFetchPolicy().getAttributeExpressions();
+    }
+
+    /**
+     * INTERNAL:
+     * Set all attributes specified for batch reading.
+     */
+    public void setBatchReadAttributeExpressions(List<Expression> attributeExpressions) {
+        getBatchFetchPolicy().setAttributeExpressions(attributeExpressions);
+    }
+
+    /**
+     * INTERNAL:
+     * Return true is this query has batching
+     */
+    public boolean hasBatchReadAttributes() {
+        return (this.batchFetchPolicy != null) && (this.batchFetchPolicy.hasAttributes());
+    }
+        
+    /**
+     * INTERNAL:
+     * Return if the attribute is specified for batch reading.
+     */
+    public boolean isAttributeBatchRead(ClassDescriptor mappingDescriptor, String attributeName) {
+        if (this.batchFetchPolicy == null) {
+            return false;
+        }
+        // Since aggregates share the same query as their parent, must avoid the aggregate thinking
+        // the parents mappings is for it, (queries only share if the aggregate was not joined).
+        if (mappingDescriptor.isAggregateDescriptor() && (mappingDescriptor != this.descriptor)) {
+            return false;
+        }
+        return this.batchFetchPolicy.isAttributeBatchRead(mappingDescriptor, attributeName);
+    }
+        
+    /**
+     * INTERNAL:
+     * Used to optimize joining by pre-computing the nested join queries for the mappings.
+     */
+    public void computeBatchReadMappingQueries() {
+        // Cannot prepare the batch queries if using inheritance, as child descriptors can have different mappings.
+        if (hasBatchReadAttributes() && (!this.descriptor.hasInheritance())) {
+            List<Expression> batchReadAttributeExpressions = getBatchReadAttributeExpressions();
+            this.batchFetchPolicy.setAttributes(new ArrayList(batchReadAttributeExpressions.size()));
+            this.batchFetchPolicy.setMappingQueries(new HashMap(batchReadAttributeExpressions.size()));
+            computeNestedQueriesForBatchReadExpressions(batchReadAttributeExpressions);
+        }
+    }
+    
+    /**
+     * INTERNAL:
+     * This method is used when computing the nested queries for batch read mappings.
+     * It recurses computing the nested mapping queries.
+     */
+    protected void computeNestedQueriesForBatchReadExpressions(List<Expression> batchReadExpressions) {
+        int size = batchReadExpressions.size();
+        for (int index = 0; index < size; index++) {
+            ObjectExpression objectExpression = (ObjectExpression)batchReadExpressions.get(index);
+
+            // Expression may not have been initialized.
+            ExpressionBuilder builder = objectExpression.getBuilder();
+            builder.setSession(getSession().getRootSession(null));
+            builder.setQueryClass(getReferenceClass());            
+            
+            // PERF: Cache join attribute names.
+            ObjectExpression baseExpression = objectExpression;
+            while (!baseExpression.getBaseExpression().isExpressionBuilder()) {
+                baseExpression = (ObjectExpression)baseExpression.getBaseExpression();
+            }
+            this.batchFetchPolicy.getAttributes().add(baseExpression.getName());
+            
+            // Ignore nested
+            if (objectExpression.getBaseExpression().isExpressionBuilder()) {
+                DatabaseMapping mapping = objectExpression.getMapping();
+                if ((mapping != null) && mapping.isForeignReferenceMapping()) {
+                    // A nested query must be built to pass to the descriptor that looks like the real query execution would.
+                    ReadQuery nestedQuery = ((ForeignReferenceMapping)mapping).prepareNestedBatchQuery(this);    
+                    // Register the nested query to be used by the mapping for all the objects.
+                    this.batchFetchPolicy.getMappingQueries().put(mapping, nestedQuery);
+                }
+            }
+        }
+    }
+
+    /**
+     * PUBLIC:
+     * Specify the foreign-reference mapped attribute to be optimized in this query.
+     * The query will execute normally, however when any of the batched parts is accessed,
+     * the parts will all be read in a single query,
+     * this allows all of the data required for the parts to be read in a single query instead of (n) queries.
+     * This should be used when the application knows that it requires the part for all of the objects being read.
+     * This can be used for one-to-one, one-to-many, many-to-many and direct collection mappings.
+     *
+     * The use of the expression allows for nested batch reading to be expressed.
+     * <p>Example: query.addBatchReadAttribute("phoneNumbers")
+     *
+     * @see #addBatchReadAttribute(Expression)
+     * @see #setBatchFetchType(BatchFetchType)
+     * @see ObjectLevelReadQuery#addJoinedAttribute(String)
+     */
+    public void addBatchReadAttribute(String attributeName) {
+        addBatchReadAttribute(getExpressionBuilder().get(attributeName));
+    }
+
+    /**
+     * PUBLIC:
+     * Specify the foreign-reference mapped attribute to be optimized in this query.
+     * The query will execute normally, however when any of the batched parts is accessed,
+     * the parts will all be read in a single query,
+     * this allows all of the data required for the parts to be read in a single query instead of (n) queries.
+     * This should be used when the application knows that it requires the part for all of the objects being read.
+     * This can be used for one-to-one, one-to-many, many-to-many and direct collection mappings.
+     *
+     * The use of the expression allows for nested batch reading to be expressed.
+     * <p>Example: query.addBatchReadAttribute(query.getExpressionBuilder().get("policies").get("claims"))
+     *
+     * @see #setBatchFetchType(BatchFetchType)
+     * @see ObjectLevelReadQuery#addJoinedAttribute(String)
+     */
+    public void addBatchReadAttribute(Expression attributeExpression) {
+        if (! getQueryMechanism().isExpressionQueryMechanism()){
+            throw QueryException.batchReadingNotSupported(this);
+        }
+        getBatchReadAttributeExpressions().add(attributeExpression);
+    }
+    
+    /**
+     * PUBLIC:
+     * Set the batch fetch type for the query.
+     * This can be JOIN, EXISTS, or IN.
+     * This defines the type of batch reading to use with the query.
+     * The query must have defined batch read attributes to set its fetch type.
+     * 
+     * @see #addBatchReadAttribute(Expression)
+     */
+    public void setBatchFetchType(BatchFetchType type) {
+        getBatchFetchPolicy().setType(type);
+    }
+    
+    /**
+     * PUBLIC:
+     * Set the batch fetch size for the query.
+     * This is only relevant for the IN batch fetch type.
+     * This defines the max number of keys for the IN clause.
+     * 
+     * @see #setBatchFetchType(BatchFetchType)
+     * @see #addBatchReadAttribute(Expression)
+     */
+    public void setBatchFetchSize(int size) {
+        getBatchFetchPolicy().setSize(size);
     }
 }

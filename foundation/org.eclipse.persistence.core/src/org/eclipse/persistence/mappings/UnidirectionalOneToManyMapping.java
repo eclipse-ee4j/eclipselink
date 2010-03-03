@@ -33,6 +33,7 @@ import org.eclipse.persistence.internal.sessions.UnitOfWorkChangeSet;
 import org.eclipse.persistence.internal.sessions.UnitOfWorkImpl;
 import org.eclipse.persistence.queries.DeleteObjectQuery;
 import org.eclipse.persistence.queries.ObjectLevelModifyQuery;
+import org.eclipse.persistence.queries.ObjectLevelReadQuery;
 import org.eclipse.persistence.queries.ReadAllQuery;
 import org.eclipse.persistence.queries.ReadQuery;
 import org.eclipse.persistence.sessions.DatabaseRecord;
@@ -327,12 +328,13 @@ public class UnidirectionalOneToManyMapping extends OneToManyMapping {
      * INTERNAL:
      * Add additional fields
      */
-    protected void postPrepareNestedBatchQuery(ReadQuery batchQuery, ReadAllQuery query) {
+    @Override
+    protected void postPrepareNestedBatchQuery(ReadQuery batchQuery, ObjectLevelReadQuery query) {
         ReadAllQuery mappingBatchQuery = (ReadAllQuery)batchQuery;
         mappingBatchQuery.setShouldIncludeData(true);
-        int size = targetForeignKeyFields.size();
-        for(int i=0; i < size; i++) {
-            mappingBatchQuery.addAdditionalField(targetForeignKeyFields.get(i));
+        int size = this.targetForeignKeyFields.size();
+        for (int i=0; i < size; i++) {
+            mappingBatchQuery.addAdditionalField(this.targetForeignKeyFields.get(i));
         }        
     }
 
@@ -340,6 +342,7 @@ public class UnidirectionalOneToManyMapping extends OneToManyMapping {
      * INTERNAL:
      * The translation row may require additional fields than the primary key if the mapping in not on the primary key.
      */
+    @Override
     protected void prepareTranslationRow(AbstractRecord translationRow, Object object, AbstractSession session) {
         // Make sure that each source key field is in the translation row.
         int size = sourceKeyFields.size();

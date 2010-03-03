@@ -142,7 +142,7 @@ public class VariableOneToOneMapping extends ObjectReferenceMapping implements R
      * result of the batch query in the original query to allow the other objects to share the results.
      */
     @Override
-    protected Object batchedValueFromRow(AbstractRecord row, ReadAllQuery query) {
+    protected Object batchedValueFromRow(AbstractRecord row, ObjectLevelReadQuery query) {
         throw QueryException.batchReadingNotSupported(this, query);
     }
 
@@ -718,8 +718,7 @@ public class VariableOneToOneMapping extends ObjectReferenceMapping implements R
     @Override
     public Object valueFromRow(AbstractRecord row, JoinedAttributeManager joinManager, ObjectBuildingQuery sourceQuery, AbstractSession executionSession) throws DatabaseException {
         // If any field in the foreign key is null then it means there are no referenced objects
-        for (Enumeration enumeration = getFields().elements(); enumeration.hasMoreElements();) {
-            DatabaseField field = (DatabaseField)enumeration.nextElement();
+        for (DatabaseField field : getFields()) {
             if (row.get(field) == null) {
                 return getIndirectionPolicy().nullValueFromRow();
             }
@@ -728,8 +727,9 @@ public class VariableOneToOneMapping extends ObjectReferenceMapping implements R
         if (getTypeField() != null) {
             // If the query used batched reading, return a special value holder,
             // or retrieve the object from the query property.
-            if (sourceQuery.isReadAllQuery() && (((ReadAllQuery)sourceQuery).isAttributeBatchRead(getDescriptor(), getAttributeName()) || shouldUseBatchReading())) {
-                return batchedValueFromRow(row, ((ReadAllQuery)sourceQuery));
+            if (sourceQuery.isObjectLevelReadQuery() && (((ObjectLevelReadQuery)sourceQuery).isAttributeBatchRead(this.descriptor, getAttributeName())
+                    || (sourceQuery.isReadAllQuery() && shouldUseBatchReading()))) {
+                return batchedValueFromRow(row, ((ObjectLevelReadQuery)sourceQuery));
             }
 
             //If the field is empty we cannot load the object because we do not know what class it will be

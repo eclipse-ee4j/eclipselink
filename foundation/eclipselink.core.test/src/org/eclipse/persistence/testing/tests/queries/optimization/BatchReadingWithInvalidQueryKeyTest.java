@@ -13,6 +13,7 @@
 package org.eclipse.persistence.testing.tests.queries.optimization;
 
 import org.eclipse.persistence.queries.ReadAllQuery;
+import org.eclipse.persistence.annotations.BatchFetchType;
 import org.eclipse.persistence.exceptions.ValidationException;
 import org.eclipse.persistence.testing.models.collections.Restaurant;
 import org.eclipse.persistence.testing.framework.*;
@@ -28,9 +29,11 @@ import org.eclipse.persistence.testing.framework.*;
 public class BatchReadingWithInvalidQueryKeyTest extends TestCase {
     private ValidationException m_validationException;
     private int m_expectedErrorCode = ValidationException.MISSING_MAPPING;
+    BatchFetchType batchType;
 
-    public BatchReadingWithInvalidQueryKeyTest() {
+    public BatchReadingWithInvalidQueryKeyTest(BatchFetchType batchType) {
         setDescription("Tests an invalid batch attribute set on a query.");
+        this.batchType = batchType;
     }
 
     public void test() {
@@ -39,6 +42,7 @@ public class BatchReadingWithInvalidQueryKeyTest extends TestCase {
         getSession().readAllObjects(Restaurant.class);
 
         ReadAllQuery query = new ReadAllQuery();
+        query.setBatchFetchType(batchType);
         query.setReferenceClass(Restaurant.class);
         query.addBatchReadAttribute("I_must_surely_not_exist");
 

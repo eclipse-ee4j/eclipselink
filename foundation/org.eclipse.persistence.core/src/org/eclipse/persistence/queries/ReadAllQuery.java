@@ -19,14 +19,10 @@ import org.eclipse.persistence.internal.databaseaccess.*;
 import org.eclipse.persistence.internal.helper.*;
 import org.eclipse.persistence.internal.descriptors.ObjectBuilder;
 import org.eclipse.persistence.internal.queries.*;
-import org.eclipse.persistence.internal.expressions.*;
 import org.eclipse.persistence.internal.sessions.remote.*;
 import org.eclipse.persistence.internal.sessions.AbstractRecord;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.internal.sessions.UnitOfWorkImpl;
-import org.eclipse.persistence.mappings.DatabaseMapping;
-import org.eclipse.persistence.mappings.ForeignReferenceMapping;
-import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.exceptions.*;
 import org.eclipse.persistence.expressions.*;
 import org.eclipse.persistence.sessions.remote.*;
@@ -44,21 +40,13 @@ import org.eclipse.persistence.tools.profiler.QueryMonitor;
  * @since TOPLink/Java 1.0
  */
 public class ReadAllQuery extends ObjectLevelReadQuery {
-
-    /** Used for query optimization. */
-    protected Vector batchReadAttributeExpressions;
-    /** PERF: Used internally for batch reading. */
-    protected transient Map batchReadMappingQueries;
-    /** PERF: Cache the local batch read attribute names. */
-    protected List batchReadAttributes;
-
     /** Used for collection and stream support. */
     protected ContainerPolicy containerPolicy;
 
     /** Used for Oracle HierarchicalQuery support */
     protected Expression startWithExpression;
     protected Expression connectByExpression;
-    protected Vector orderSiblingsByExpressions;
+    protected List<Expression> orderSiblingsByExpressions;
 
     /**
      * PUBLIC:
@@ -152,46 +140,6 @@ public class ReadAllQuery extends ObjectLevelReadQuery {
     }
 
     /**
-     * PUBLIC:
-     * Specify the foreign-reference mapped attribute to be optimized in this query.
-     * The query will execute normally, however when any of the batched parts is accessed,
-     * the parts will all be read in a single query,
-     * this allows all of the data required for the parts to be read in a single query instead of (n) queries.
-     * This should be used when the application knows that it requires the part for all of the objects being read.
-     * This can be used for one-to-one, one-to-many, many-to-many and direct collection mappings.
-     *
-     * The use of the expression allows for nested batch reading to be expressed.
-     * <p>Example: query.addBatchReadAttribute("phoneNumbers")
-     *
-     * @see #addBatchReadAttribute(Expression)
-     * @see ObjectLevelReadQuery#addJoinedAttribute(String)
-     */
-    public void addBatchReadAttribute(String attributeName) {
-        if (! getQueryMechanism().isExpressionQueryMechanism()){
-            throw QueryException.batchReadingNotSupported(this);
-        }
-        getBatchReadAttributeExpressions().add(getExpressionBuilder().get(attributeName));
-    }
-
-    /**
-     * PUBLIC:
-     * Specify the foreign-reference mapped attribute to be optimized in this query.
-     * The query will execute normally, however when any of the batched parts is accessed,
-     * the parts will all be read in a single query,
-     * this allows all of the data required for the parts to be read in a single query instead of (n) queries.
-     * This should be used when the application knows that it requires the part for all of the objects being read.
-     * This can be used for one-to-one, one-to-many, many-to-many and direct collection mappings.
-     *
-     * The use of the expression allows for nested batch reading to be expressed.
-     * <p>Example: query.addBatchReadAttribute(query.getExpressionBuilder().get("policies").get("claims"))
-     *
-     * @see ObjectLevelReadQuery#addJoinedAttribute(String)
-     */
-    public void addBatchReadAttribute(Expression attributeExpression) {
-        getBatchReadAttributeExpressions().add(attributeExpression);
-    }
-
-    /**
      * INTERNAL:
      * <P> This method is called by the object builder when building an original.
      * It will cause the original to be cached in the query results if the query
@@ -267,7 +215,7 @@ public class ReadAllQuery extends ObjectLevelReadQuery {
         ReadAllQuery cloneQuery = (ReadAllQuery)super.clone();
 
         // Don't use setters as that will trigger unprepare
-        cloneQuery.containerPolicy = getContainerPolicy().clone(cloneQuery);
+        cloneQuery.containerPolicy = this.containerPolicy.clone(cloneQuery);
 
         return cloneQuery;
     }
@@ -556,17 +504,6 @@ public class ReadAllQuery extends ObjectLevelReadQuery {
 
     /**
      * INTERNAL:
-     * Return all attributes specified for batch reading.
-     */
-    public Vector getBatchReadAttributeExpressions() {
-        if (batchReadAttributeExpressions == null) {
-            batchReadAttributeExpressions = NonSynchronizedVector.newInstance();
-        }        
-        return batchReadAttributeExpressions;
-    }
-
-    /**
-     * INTERNAL:
      * Return the query's container policy.
      * @return org.eclipse.persistence.internal.queries.ContainerPolicy
      */
@@ -602,9 +539,9 @@ public class ReadAllQuery extends ObjectLevelReadQuery {
 
     /**
      * PUBLIC:
-     * @return Vector - the ordering expressions used to generate the hierarchical query clause in Oracle
+     * @return List<Expression> - the ordering expressions used to generate the hierarchical query clause in Oracle
      */
-    public Vector getOrderSiblingsByExpressions() {
+    public List<Expression> getOrderSiblingsByExpressions() {
         return orderSiblingsByExpressions;
     }
 
@@ -613,72 +550,7 @@ public class ReadAllQuery extends ObjectLevelReadQuery {
      * Verify that we have hierarchical query expressions
      */
     public boolean hasHierarchicalExpressions() {
-        return ((startWithExpression != null) || (connectByExpression != null) || (orderSiblingsByExpressions != null));
-    }
-
-    /**
-     * INTERNAL:
-     * Return true is this query has batching
-     */
-    public boolean hasBatchReadAttributes() {
-        return (batchReadAttributeExpressions != null) && (!batchReadAttributeExpressions.isEmpty());
-    }
-
-    /**
-     * INTERNAL:
-     * Return if the attribute is specified for batch reading.
-     */
-    public boolean isAttributeBatchRead(String attributeName) {
-        if (!hasBatchReadAttributes()) {
-            return false;
-        }
-        Vector batchReadAttributeExpressions = getBatchReadAttributeExpressions();
-        int size = batchReadAttributeExpressions.size();
-        for (int index = 0; index < size; index++) {
-            QueryKeyExpression expression = (QueryKeyExpression)batchReadAttributeExpressions.get(index);
-            while (!expression.getBaseExpression().isExpressionBuilder()) {
-                expression = (QueryKeyExpression)expression.getBaseExpression();
-            }
-            if (expression.getName().equals(attributeName)) {
-                return true;
-            }
-        }
-        return false;
-    }
-        
-    /**
-     * INTERNAL:
-     * Return if the attribute is specified for batch reading.
-     */
-    public boolean isAttributeBatchRead(ClassDescriptor mappingDescriptor, String attributeName) {
-        if (!hasBatchReadAttributes()) {
-            return false;
-        }
-        // Since aggregates share the same query as their parent, must avoid the aggregate thinking
-        // the parents mappings is for it, (queries only share if the aggregate was not joined).
-        if (mappingDescriptor.isAggregateDescriptor() && (mappingDescriptor != this.descriptor)) {
-            return false;
-        }
-        if (this.batchReadAttributes != null) {
-            return this.batchReadAttributes.contains(attributeName);
-        }
-        return isAttributeBatchRead(attributeName);
-    }
-    
-    /**
-     * INTERNAL:
-     * Return the batch read mapping queries, used to optimize batch reading, only compute the nested queries once.
-     */
-    public Map getBatchReadMappingQueries() {
-        return batchReadMappingQueries;
-    }
-
-    /**
-     * INTERNAL:
-     * Set the batch read mapping queries, used to optimize batch reading, only compute the nested queries once.
-     */
-    protected void setBatchReadMappingQueries(Map batchReadMappingQueries) {
-        this.batchReadMappingQueries = batchReadMappingQueries;
+        return ((this.startWithExpression != null) || (this.connectByExpression != null) || (this.orderSiblingsByExpressions != null));
     }
     
     /**
@@ -692,7 +564,7 @@ public class ReadAllQuery extends ObjectLevelReadQuery {
         return super.isDefaultPropertiesQuery()
             && (!hasBatchReadAttributes())
             && (!hasHierarchicalExpressions())
-            && (!getContainerPolicy().isCursorPolicy());
+            && (!this.containerPolicy.isCursorPolicy());
     }
     
     /**
@@ -708,7 +580,7 @@ public class ReadAllQuery extends ObjectLevelReadQuery {
             return false;
         }
         ReadAllQuery query = (ReadAllQuery) object;
-        if (!getContainerPolicy().equals(query.getContainerPolicy())) {
+        if (!this.containerPolicy.equals(query.containerPolicy)) {
             return false;
         }
         return true;
@@ -732,13 +604,13 @@ public class ReadAllQuery extends ObjectLevelReadQuery {
         }
         super.prepare();
 
-        getContainerPolicy().prepare(this, getSession());
+        this.containerPolicy.prepare(this, getSession());
 
-        if (getContainerPolicy().overridesRead()) {
+        if (this.containerPolicy.overridesRead()) {
             return;
         }
 
-        if (getDescriptor().isDescriptorForInterface()) {
+        if (this.descriptor.isDescriptorForInterface()) {
             return;
         }
         
@@ -760,14 +632,9 @@ public class ReadAllQuery extends ObjectLevelReadQuery {
             ReadAllQuery readQuery = (ReadAllQuery)query;
             this.containerPolicy = readQuery.containerPolicy;
             if (readQuery.hasHierarchicalExpressions()) {
-                this.orderSiblingsByExpressions = readQuery.getOrderSiblingsByExpressions();
-                this.connectByExpression = readQuery.getConnectByExpression();
-                this.startWithExpression = readQuery.getStartWithExpression();
-            }
-            if (readQuery.hasBatchReadAttributes()) {
-                this.batchReadAttributeExpressions = readQuery.batchReadAttributeExpressions;
-                this.batchReadMappingQueries = readQuery.batchReadMappingQueries;
-                this.batchReadAttributes = readQuery.batchReadAttributes;
+                this.orderSiblingsByExpressions = readQuery.orderSiblingsByExpressions;
+                this.connectByExpression = readQuery.connectByExpression;
+                this.startWithExpression = readQuery.startWithExpression;
             }
         }
     }
@@ -778,11 +645,11 @@ public class ReadAllQuery extends ObjectLevelReadQuery {
      */
     protected void prepareCustomQuery(DatabaseQuery customQuery) {
         ReadAllQuery customReadQuery = (ReadAllQuery)customQuery;
-        customReadQuery.setContainerPolicy(getContainerPolicy());
-        customReadQuery.setCascadePolicy(getCascadePolicy());
-        customReadQuery.setShouldRefreshIdentityMapResult(shouldRefreshIdentityMapResult());
-        customReadQuery.setShouldMaintainCache(shouldMaintainCache());
-        customReadQuery.setShouldUseWrapperPolicy(shouldUseWrapperPolicy());
+        customReadQuery.containerPolicy = this.containerPolicy;
+        customReadQuery.cascadePolicy = this.cascadePolicy;
+        customReadQuery.shouldRefreshIdentityMapResult = this.shouldRefreshIdentityMapResult;
+        customReadQuery.shouldMaintainCache = this.shouldMaintainCache;
+        customReadQuery.shouldUseWrapperPolicy = this.shouldUseWrapperPolicy;
     }
 
     /**
@@ -792,7 +659,7 @@ public class ReadAllQuery extends ObjectLevelReadQuery {
     public void prepareForExecution() throws QueryException {
         super.prepareForExecution();
 
-        getContainerPolicy().prepareForExecution();
+        this.containerPolicy.prepareForExecution();
 
     }
 
@@ -838,7 +705,7 @@ public class ReadAllQuery extends ObjectLevelReadQuery {
         // Also for cursors the initial connection is automatically registered.
         if (buildDirectlyFromRows) {
             List<AbstractRecord> rows = (List<AbstractRecord>)result;
-            ContainerPolicy cp = getContainerPolicy();
+            ContainerPolicy cp = this.containerPolicy;
             int size = rows.size();
             Object clones = cp.containerInstance(size);
             for (int index = 0; index < size; index++) {
@@ -861,7 +728,7 @@ public class ReadAllQuery extends ObjectLevelReadQuery {
         if (getRedirector() != null) {
             cp = ContainerPolicy.buildPolicyFor(result.getClass());
         } else {
-            cp = getContainerPolicy();
+            cp = this.containerPolicy;
         }
 
         // In the case of cursors just register the initially read collection.
@@ -893,11 +760,11 @@ public class ReadAllQuery extends ObjectLevelReadQuery {
      * Execute the query through remote session.
      */
     public Object remoteExecute() {
-        if (getContainerPolicy().overridesRead()) {
-            return getContainerPolicy().remoteExecute();
+        if (this.containerPolicy.overridesRead()) {
+            return this.containerPolicy.remoteExecute();
         }
 
-        Object cacheHit = checkEarlyReturn(getSession(), getTranslationRow());
+        Object cacheHit = checkEarlyReturn(this.session, this.translationRow);
         if (cacheHit != null) {
             return cacheHit;
         }
@@ -911,14 +778,6 @@ public class ReadAllQuery extends ObjectLevelReadQuery {
      */
     public Map replaceValueHoldersIn(Object object, RemoteSessionController controller) {
         return controller.replaceValueHoldersInAll(object, getContainerPolicy());
-    }
-
-    /**
-     * INTERNAL:
-     * Return all attributes specified for batch reading.
-     */
-    public void setBatchReadAttributeExpressions(Vector batchReadAttributeExpressions) {
-        this.batchReadAttributeExpressions = batchReadAttributeExpressions;
     }
 
     /**
@@ -953,7 +812,7 @@ public class ReadAllQuery extends ObjectLevelReadQuery {
      * @param connectBy This should be a query key expression which indicates an attribute who's mapping describes the hierarchy
      * @param orderSiblingsExpressions Contains expressions which indicate fields to be included in the ORDER SIBLINGS BY clause - null if not required
      */
-    public void setHierarchicalQueryClause(Expression startWith, Expression connectBy, Vector orderSiblingsExpressions) {
+    public void setHierarchicalQueryClause(Expression startWith, Expression connectBy, List<Expression> orderSiblingsExpressions) {
         this.startWithExpression = startWith;
         this.connectByExpression = connectBy;
         this.orderSiblingsByExpressions = orderSiblingsExpressions;
@@ -1057,52 +916,5 @@ public class ReadAllQuery extends ObjectLevelReadQuery {
     public void useScrollableCursor(ScrollableCursorPolicy policy) {
         policy.setQuery(this);
         setContainerPolicy(policy);
-    }
-        
-    /**
-     * INTERNAL:
-     * Used to optimize joining by pre-computing the nested join queries for the mappings.
-     */
-    public void computeBatchReadMappingQueries() {
-        // Cannot prepare the batch queries if using inheritance, as child descriptors can have different mappings.
-        if (hasBatchReadAttributes() && (!getDescriptor().hasInheritance())) {
-            this.batchReadAttributes = new ArrayList(getBatchReadAttributeExpressions().size());
-            setBatchReadMappingQueries(new HashMap(getBatchReadAttributeExpressions().size()));
-            computeNestedQueriesForBatchReadExpressions(getBatchReadAttributeExpressions());
-        }
-    }
-    
-    /**
-     * INTERNAL:
-     * This method is used when computing the nested queries for batch read mappings.
-     * It recurses computing the nested mapping queries.
-     */
-    protected void computeNestedQueriesForBatchReadExpressions(Vector batchReadExpressions) {
-        for (int index = 0; index < batchReadExpressions.size(); index++) {
-            ObjectExpression objectExpression = (ObjectExpression)batchReadExpressions.get(index);
-
-            // Expression may not have been initialized.
-            ExpressionBuilder builder = objectExpression.getBuilder();
-            builder.setSession(getSession().getRootSession(null));
-            builder.setQueryClass(getReferenceClass());            
-            
-            // PERF: Cache join attribute names.
-            ObjectExpression baseExpression = objectExpression;
-            while (!baseExpression.getBaseExpression().isExpressionBuilder()) {
-                baseExpression = (ObjectExpression)baseExpression.getBaseExpression();
-            }
-            this.batchReadAttributes.add(baseExpression.getName());
-            
-            // Ignore nested
-            if (objectExpression.getBaseExpression().isExpressionBuilder()) {
-                DatabaseMapping mapping = objectExpression.getMapping();
-                if ((mapping != null) && mapping.isForeignReferenceMapping()) {
-                    // A nested query must be built to pass to the descriptor that looks like the real query execution would.
-                    ReadQuery nestedQuery = ((ForeignReferenceMapping)mapping).prepareNestedBatchQuery(this);    
-                    // Register the nested query to be used by the mapping for all the objects.
-                    getBatchReadMappingQueries().put(mapping, nestedQuery);
-                }
-            }
-        }
     }
 }

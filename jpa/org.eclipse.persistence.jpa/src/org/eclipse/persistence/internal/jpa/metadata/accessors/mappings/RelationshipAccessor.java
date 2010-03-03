@@ -46,6 +46,7 @@ import org.eclipse.persistence.mappings.DatabaseMapping;
 import org.eclipse.persistence.mappings.ForeignReferenceMapping;
 import org.eclipse.persistence.mappings.RelationTableMechanism;
 
+import org.eclipse.persistence.annotations.BatchFetch;
 import org.eclipse.persistence.annotations.JoinFetch;
 import org.eclipse.persistence.annotations.PrivateOwned;
 import org.eclipse.persistence.exceptions.ValidationException;
@@ -82,7 +83,8 @@ public abstract class RelationshipAccessor extends MappingAccessor {
     
     private String m_fetch;
     private String m_joinFetch;
-   
+    private String m_batchFetch;
+
     private JoinTableMetadata m_joinTable;
     private List<JoinColumnMetadata> m_joinColumns = new ArrayList<JoinColumnMetadata>();
   
@@ -110,6 +112,13 @@ public abstract class RelationshipAccessor extends MappingAccessor {
         if (joinFetch != null) {
             // Get attribute string will return the default ""
             m_joinFetch = (String) joinFetch.getAttributeString("value");
+        }
+        
+        // Set the batch fetch if one is present.           
+        MetadataAnnotation batchFetch = getAnnotation(BatchFetch.class);            
+        if (batchFetch != null) {
+            // Get attribute string will return the default ""
+            m_batchFetch = (String) batchFetch.getAttributeString("value");
         }
         
         // Set the private owned if one is present.
@@ -661,5 +670,13 @@ public abstract class RelationshipAccessor extends MappingAccessor {
         }
         
         return isLazy();
+    }
+   
+    public String getBatchFetch() {
+        return m_batchFetch;
+    }
+
+    public void setBatchFetch(String batchFetch) {
+        m_batchFetch = batchFetch;
     }
 }

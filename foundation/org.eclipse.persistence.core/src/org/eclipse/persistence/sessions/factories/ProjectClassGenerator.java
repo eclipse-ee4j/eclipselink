@@ -1135,8 +1135,7 @@ public class ProjectClassGenerator {
                 buildExpressionString(builderString, method, queryIdentifier, orderbyExpression, ".addOrdering(");
             }
             //batchReadAttribute
-            for (Enumeration batchReadEnum = readAllQuery.getBatchReadAttributeExpressions().elements(); batchReadEnum.hasMoreElements();) {
-                Expression batchReadExp = (Expression)batchReadEnum.nextElement();
+            for (Expression batchReadExp : readAllQuery.getBatchReadAttributeExpressions()) {
                 builderString = buildBuilderString(builderString, method, iteration, queryIdentifier);
                 buildExpressionString(builderString, method, queryIdentifier, batchReadExp, ".addBatchReadAttribute(");
             }

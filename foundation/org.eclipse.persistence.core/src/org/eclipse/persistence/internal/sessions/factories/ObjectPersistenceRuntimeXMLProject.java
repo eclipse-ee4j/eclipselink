@@ -1705,6 +1705,8 @@ public class ObjectPersistenceRuntimeXMLProject extends NamespaceResolvableProje
         XMLCompositeCollectionMapping batchReadMapping = new XMLCompositeCollectionMapping();
         batchReadMapping.useCollectionClass(NonSynchronizedVector.class);
         batchReadMapping.setAttributeName("batchReadAttributeExpressions");
+        batchReadMapping.setGetMethodName("getBatchReadAttributeExpressions");
+        batchReadMapping.setSetMethodName("setBatchReadAttributeExpressions");
         batchReadMapping.setReferenceClass(Expression.class);
         batchReadMapping.setXPath(getPrimaryNamespaceXPath() + "batch-read-attribute-expressions/" + getPrimaryNamespaceXPath() + "expression");
         descriptor.addMapping(batchReadMapping);

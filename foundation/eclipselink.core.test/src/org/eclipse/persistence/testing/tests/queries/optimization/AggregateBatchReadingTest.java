@@ -14,6 +14,7 @@ package org.eclipse.persistence.testing.tests.queries.optimization;
 
 import java.util.*;
 
+import org.eclipse.persistence.annotations.BatchFetchType;
 import org.eclipse.persistence.queries.*;
 
 import org.eclipse.persistence.testing.framework.*;
@@ -21,9 +22,11 @@ import org.eclipse.persistence.testing.models.aggregate.*;
 
 public class AggregateBatchReadingTest extends TestCase {
     public Vector result;
+    BatchFetchType batchType;
 
-    public AggregateBatchReadingTest() {
+    public AggregateBatchReadingTest(BatchFetchType batchType) {
         setDescription("Tests batch reading nesting across an aggregate");
+        this.batchType = batchType;
     }
 
     public void setup() {
@@ -33,6 +36,7 @@ public class AggregateBatchReadingTest extends TestCase {
     public void test() {
         ReadAllQuery query = new ReadAllQuery();
         query.setReferenceClass(Employee.class);
+        query.setBatchFetchType(batchType);
         // changed attribute name from "addressDescription" to "address" to reproduce bug 3566341,
         // which requires the same name for attribute mapped as an aggregate and an attribute
         // on the aggregate mapped 1 to 1.
