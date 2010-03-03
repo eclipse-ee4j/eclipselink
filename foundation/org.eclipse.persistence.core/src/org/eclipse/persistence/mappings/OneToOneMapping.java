@@ -15,6 +15,7 @@ package org.eclipse.persistence.mappings;
 import java.util.*;
 
 import org.eclipse.persistence.annotations.CacheKeyType;
+import org.eclipse.persistence.descriptors.CMPPolicy;
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.exceptions.*;
 import org.eclipse.persistence.expressions.*;
@@ -472,6 +473,36 @@ public class OneToOneMapping extends ObjectReferenceMapping implements Relationa
      */
     public Object createMapComponentFromRow(AbstractRecord dbRow, ObjectBuildingQuery query, AbstractSession session){
         return session.executeQuery(getSelectionQuery(), dbRow);
+    }
+
+    /**
+     * INTERNAL:
+     * Creates the Array of simple types used to recreate this map.  
+     */
+    public Object createSerializableMapKeyInfo(Object key, AbstractSession session){
+            CMPPolicy policy = referenceDescriptor.getCMPPolicy();
+            if (policy != null && policy.isCMP3Policy()){
+                return policy.createPrimaryKeyInstance(key, session);
+            }else{
+                return referenceDescriptor.getObjectBuilder().extractPrimaryKeyFromObject(key, session);
+            }
+    }
+
+    /**
+     * INTERNAL:
+     * Create an instance of the Key object from the key information extracted from the map.  
+     * This may return the value directly in case of a simple key or will be used as the FK to load a related entity.
+     */
+    public Object createMapComponentFromSerializableKeyInfo(Object keyInfo, AbstractSession session){
+        ReadObjectQuery query = (ReadObjectQuery) this.getSelectionQuery();
+        query = (ReadObjectQuery) query.clone();
+        query.setIsExecutionClone(true);
+        if (referenceDescriptor.hasCMPPolicy()){
+            query.setSelectionId(referenceDescriptor.getCMPPolicy().createPrimaryKeyFromId(keyInfo, session));
+        }else{
+            query.setSelectionId(keyInfo);
+        }
+        return session.executeQuery(query);
     }
 
     /**

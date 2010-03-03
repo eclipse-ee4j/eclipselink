@@ -562,6 +562,23 @@ public abstract class AbstractDirectMapping extends DatabaseMapping  implements 
     }
     
     /**
+     * INTERNAL:
+     * Creates the Array of simple types used to recreate this map.  
+     */
+    public Object createSerializableMapKeyInfo(Object key, AbstractSession session){
+        return key; // DirectToFields are already simple types.
+    }
+
+    /**
+     * INTERNAL:
+     * Create an instance of the Key object from the key information extracted from the map.  
+     * This may return the value directly in case of a simple key or will be used as the FK to load a related entity.
+     */
+    public Object createMapComponentFromSerializableKeyInfo(Object keyInfo, AbstractSession session){
+        return keyInfo; // DirectToFields are already simple types.
+    }
+
+    /**
      * INTERNAL
      * Called when a DatabaseMapping is used to map the key in a collection.  Returns the key.
      */

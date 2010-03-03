@@ -244,29 +244,13 @@ public abstract class CollectionMapping extends ForeignReferenceMapping implemen
 
     /**
      * INTERNAL:
-     * This method will access the target relationship and create a list of PKs of the target entities.
+     * This method will access the target relationship and create a list of information to rebuild the relationship.
      * This method is used in combination with the CachedValueHolder to store references to PK's to be loaded
      * from a cache instead of a query.
      */
     public Object[] buildReferencesPKList(Object entity, Object attribute, AbstractSession session){
-        ClassDescriptor referenceDescriptor = getReferenceDescriptor();
-        Object collection = this.indirectionPolicy.getRealAttributeValueFromObject(entity, attribute);
-        Object[] result = new Object[this.containerPolicy.sizeFor(collection)];
-        Iterator iterator = (Iterator)this.containerPolicy.iteratorFor(collection);
-        int index = 0;
-        while(iterator.hasNext()){
-            Object target = iterator.next();
-            if (target != null){
-                CMPPolicy policy = referenceDescriptor.getCMPPolicy();
-                if (policy != null && policy.isCMP3Policy()){
-                    result[index] = policy.createPrimaryKeyInstance(target, session);
-                }else{
-                    result[index] = referenceDescriptor.getObjectBuilder().extractPrimaryKeyFromObject(target, session);
-                }
-                ++index;
-            }
-        }
-        return result;
+        Object container = indirectionPolicy.getRealAttributeValueFromObject(entity, attribute);
+        return containerPolicy.buildReferencesPKList(container, session);
     }
 
     /**
@@ -2274,21 +2258,7 @@ public abstract class CollectionMapping extends ForeignReferenceMapping implemen
      */
     public Object valueFromPKList(Object[] pks, AbstractSession session){
         ContainerPolicy cp = this.containerPolicy;
-        Object result = cp.containerInstance(pks.length);
-        for (int index = 0; index < pks.length; ++index){
-            Object pk = null;
-            if (getReferenceDescriptor().hasCMPPolicy()){
-                pk = getReferenceDescriptor().getCMPPolicy().createPrimaryKeyFromId(pks[index], session);
-            }else{
-                pk = pks[index];
-            }
-            ReadObjectQuery query = new ReadObjectQuery();
-            query.setReferenceClass(getReferenceClass());
-            query.setSelectionId(pk);
-            query.setIsExecutionClone(true);
-            cp.addInto(session.executeQuery(query), result, session);
-        }
-        return result;
+        return cp.valueFromPKList(pks, session);
     }
 
     /**

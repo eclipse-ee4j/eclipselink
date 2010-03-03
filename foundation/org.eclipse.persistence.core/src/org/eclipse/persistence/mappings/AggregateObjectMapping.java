@@ -727,6 +727,23 @@ public class AggregateObjectMapping extends AggregateMapping implements Relation
     }
     
     /**
+     * INTERNAL:
+     * Creates the Array of simple types used to recreate this map.  
+     */
+    public Object createSerializableMapKeyInfo(Object key, AbstractSession session){
+        return key; // Embeddables have no identity so they are not reduced to PK.
+    }
+
+    /**
+     * INTERNAL:
+     * Create an instance of the Key object from the key information extracted from the map.  
+     * This may return the value directly in case of a simple key or will be used as the FK to load a related entity.
+     */
+    public Object createMapComponentFromSerializableKeyInfo(Object keyInfo, AbstractSession session){
+        return keyInfo; // Embeddables have no identity so they are not reduced to PK.
+    }
+
+    /**
      * INTERNAL
      * Called when a DatabaseMapping is used to map the key in a collection and a join query is executed.  Returns the key.
      */

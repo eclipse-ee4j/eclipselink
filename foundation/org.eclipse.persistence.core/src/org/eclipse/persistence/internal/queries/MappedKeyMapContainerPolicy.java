@@ -18,7 +18,9 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Vector;
+import java.util.Map.Entry;
 
+import org.eclipse.persistence.descriptors.CMPPolicy;
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.exceptions.DescriptorException;
 import org.eclipse.persistence.exceptions.QueryException;
@@ -41,6 +43,7 @@ import org.eclipse.persistence.mappings.DatabaseMapping;
 import org.eclipse.persistence.mappings.DirectMapMapping;
 import org.eclipse.persistence.mappings.DirectToFieldMapping;
 import org.eclipse.persistence.mappings.ForeignReferenceMapping;
+import org.eclipse.persistence.mappings.ObjectReferenceMapping;
 import org.eclipse.persistence.mappings.converters.Converter;
 import org.eclipse.persistence.mappings.foundation.MapKeyMapping;
 import org.eclipse.persistence.mappings.foundation.MapComponentMapping;
@@ -49,6 +52,7 @@ import org.eclipse.persistence.queries.DatabaseQuery;
 import org.eclipse.persistence.queries.DeleteObjectQuery;
 import org.eclipse.persistence.queries.ObjectBuildingQuery;
 import org.eclipse.persistence.queries.ObjectLevelReadQuery;
+import org.eclipse.persistence.queries.ReadObjectQuery;
 import org.eclipse.persistence.queries.ReadQuery;
 import org.eclipse.persistence.queries.WriteObjectQuery;
 
@@ -294,6 +298,32 @@ public class MappedKeyMapContainerPolicy extends MapContainerPolicy implements D
          */
         public Object buildKeyFromJoinedRow(AbstractRecord row, JoinedAttributeManager joinManager, ObjectBuildingQuery query, AbstractSession session){
             return keyMapping.createMapComponentFromJoinedRow(row, joinManager, query, session);
+        }
+
+        /**
+         * INTERNAL:
+         * This method will access the target relationship and create a list of information to rebuild the collection.
+         * For the MapContainerPolicy this return will consist of an array with serial Map entry key and value elements.
+         */
+        public Object[] buildReferencesPKList(Object container, AbstractSession session){
+            Object[] result = new Object[this.sizeFor(container)*2];
+            Iterator iterator = (Iterator)this.iteratorFor(container);
+            int index = 0;
+            while(iterator.hasNext()){
+                Map.Entry entry = (Entry) iterator.next();
+                result[index] = keyMapping.createSerializableMapKeyInfo(entry.getKey(), session);
+                ++index;
+                CMPPolicy policy = elementDescriptor.getCMPPolicy();
+                Object pk = null;
+                if (policy != null && policy.isCMP3Policy()){
+                    result[index] = policy.createPrimaryKeyInstance(entry.getValue(), session);
+                }else{
+                    result[index] = elementDescriptor.getObjectBuilder().extractPrimaryKeyFromObject(entry.getValue(), session);
+                }
+                ++index;
+            }
+            return result;
+
         }
 
         /**
@@ -930,4 +960,30 @@ public class MappedKeyMapContainerPolicy extends MapContainerPolicy implements D
     public Object unwrapKey(Object key, AbstractSession session){
         return keyMapping.unwrapKey(key, session);
     }
+
+    /**
+     * INTERNAL:
+     * This method is used to load a relationship from a list of PKs. This list
+     * may be available if the relationship has been cached.
+     */
+    public Object valueFromPKList(Object[] pks, AbstractSession session){
+        Object result = containerInstance(pks.length);
+        for (int index = 0; index < pks.length; ++index){
+            Object key = keyMapping.createMapComponentFromSerializableKeyInfo(pks[index], session);
+            ++index;
+            Object pk = null;
+            if (elementDescriptor.hasCMPPolicy()){
+                pk = elementDescriptor.getCMPPolicy().createPrimaryKeyFromId(pks[index], session);
+            }else{
+                pk = pks[index];
+            }
+            ReadObjectQuery query = new ReadObjectQuery();
+            query.setReferenceClass(elementDescriptor.getJavaClass());
+            query.setSelectionId(pk);
+            query.setIsExecutionClone(true);
+            addInto(key, session.executeQuery(query), result, session);
+        }
+        return result;
+    }
+    
 }

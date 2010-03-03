@@ -125,6 +125,19 @@ public interface MapKeyMapping extends MapComponentMapping {
     
     /**
      * INTERNAL:
+     * Creates the Array of simple types used to recreate this map.  
+     */
+    public Object createSerializableMapKeyInfo(Object key, AbstractSession session);
+    
+    /**
+     * INTERNAL:
+     * Create an instance of the Key object from the key information extracted from the map.  
+     * This may return the value directly in case of a simple key or will be used as the FK to load a related entity.
+     */
+    public Object createMapComponentFromSerializableKeyInfo(Object keyInfo, AbstractSession session);
+    
+    /**
+     * INTERNAL:
      * For mappings used as MapKeys in MappedKeyContainerPolicy, Delete the passed object if necessary.
      * 
      * This method is used for removal of private owned relationships

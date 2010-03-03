@@ -24,6 +24,7 @@ import org.eclipse.persistence.internal.helper.DatabaseField;
 import org.eclipse.persistence.internal.helper.DatabaseTable;
 import org.eclipse.persistence.internal.helper.Helper;
 import org.eclipse.persistence.internal.helper.ClassConstants;
+import org.eclipse.persistence.internal.identitymaps.CacheId;
 import org.eclipse.persistence.internal.sessions.CollectionChangeRecord;
 import org.eclipse.persistence.internal.sessions.MergeManager;
 import org.eclipse.persistence.internal.sessions.ObjectChangeSet;
@@ -37,6 +38,8 @@ import org.eclipse.persistence.internal.security.PrivilegedInvokeConstructor;
 import org.eclipse.persistence.internal.security.PrivilegedGetConstructorFor;
 import org.eclipse.persistence.internal.sessions.UnitOfWorkImpl;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
+import org.eclipse.persistence.annotations.CacheKeyType;
+import org.eclipse.persistence.descriptors.CMPPolicy;
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.descriptors.changetracking.CollectionChangeEvent;
 import org.eclipse.persistence.indirection.IndirectCollection;
@@ -338,6 +341,32 @@ public abstract class ContainerPolicy implements Cloneable, Serializable {
         return null;
     }
     
+    /**
+     * INTERNAL:
+     * This method will access the target relationship and create a list of information to rebuild the collection.
+     * This method is used in combination with the CachedValueHolder to store references to PK's to be loaded
+     * from a cache instead of a query.
+     */
+    public Object[] buildReferencesPKList(Object container, AbstractSession session){
+        Object[] result = new Object[this.sizeFor(container)];
+        Iterator iterator = (Iterator)this.iteratorFor(container);
+        int index = 0;
+        while(iterator.hasNext()){
+            Object target = iterator.next();
+            if (target != null){
+                CMPPolicy policy = elementDescriptor.getCMPPolicy();
+                if (policy != null && policy.isCMP3Policy()){
+                    result[index] = policy.createPrimaryKeyInstance(target, session);
+                }else{
+                    result[index] = elementDescriptor.getObjectBuilder().extractPrimaryKeyFromObject(target, session);
+                }
+                ++index;
+            }
+        }
+        return result;
+
+    }
+
     /**
      * Extract the key for the map from the provided row
      * overridden by subclasses that deal with map keys
@@ -1604,6 +1633,30 @@ public abstract class ContainerPolicy implements Cloneable, Serializable {
         //do nothing
     }
 
+    /**
+     * INTERNAL:
+     * This method is used to load a relationship from a list of PKs. This list
+     * may be available if the relationship has been cached.
+     */
+    public Object valueFromPKList(Object[] pks, AbstractSession session){
+        Object result = containerInstance(pks.length);
+        for (int index = 0; index < pks.length; ++index){
+            Object pk = null;
+            if (elementDescriptor.hasCMPPolicy()){
+                pk = elementDescriptor.getCMPPolicy().createPrimaryKeyFromId(pks[index], session);
+            }else{
+                pk = pks[index];
+            }
+            ReadObjectQuery query = new ReadObjectQuery();
+            query.setReferenceClass(elementDescriptor.getJavaClass());
+            query.setSelectionId(pk);
+            query.setIsExecutionClone(true);
+            addInto(session.executeQuery(query), result, session);
+        }
+        return result;
+
+    }
+    
     /**
      * INTERNAL:
      * Return a Vector populated with the contents of container.

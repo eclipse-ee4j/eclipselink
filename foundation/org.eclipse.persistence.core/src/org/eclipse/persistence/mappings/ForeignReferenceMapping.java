@@ -221,9 +221,9 @@ public abstract class ForeignReferenceMapping extends DatabaseMapping {
     }
 
     /**
-     * INTERNAL: This method will access the target relationship and create a
-     * list of PKs of the target entities. This method is used in combination
-     * with the CachedValueHolder to store references to PK's to be loaded from
+     * INTERNAL:
+     * This method will access the target relationship and create a list of information to rebuild the relationship.
+     * This method is used in combination with the CachedValueHolder to store references to PK's to be loaded from
      * a cache instead of a query.
      */
     public abstract Object[] buildReferencesPKList(Object entity, Object attribute, AbstractSession session);
