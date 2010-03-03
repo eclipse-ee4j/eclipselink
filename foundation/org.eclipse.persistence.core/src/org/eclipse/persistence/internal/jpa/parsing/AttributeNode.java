@@ -80,8 +80,12 @@ public class AttributeNode extends Node {
             if (context.hasMemberOfNode()) {
                 return parentExpression.noneOf(name, new ExpressionBuilder().equal(context.getMemberOfNode().getLeftExpression()));
             }
-            return outerJoin ? parentExpression.anyOfAllowingNone(name) : 
-                parentExpression.anyOf(name);
+            //Bug246211: need to use an outer join if specified by the context
+            if (  isOuterJoin() || context.shouldUseOuterJoins() ) {
+                return parentExpression.anyOfAllowingNone(name);
+            } else {
+                return parentExpression.anyOf(name);
+            }
         } else {
             // check whether collection attribute is required
             if (requiresCollectionAttribute()) {
@@ -89,8 +93,9 @@ public class AttributeNode extends Node {
                     context.getParseTreeContext().getQueryInfo(), 
                     getLine(), getColumn(), name);
             }
-
-            if (context.shouldUseOuterJoins() || isOuterJoin()) {
+            //Bug246211: context changed to have shouldUseOuterJoins set more often. Need to check that it is a reference 
+            //  mapping before using the outer join 
+            if (  isOuterJoin() || (context.shouldUseOuterJoins()&& this.mapping!=null && this.mapping.isForeignReferenceMapping())) {
                 return parentExpression.getAllowingNull(name);
             } else {
                 return parentExpression.get(name);

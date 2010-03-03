@@ -164,6 +164,9 @@ public class JUnitJPQLComplexTestSuite extends JUnitTestCase
         suite.addTest(new JUnitJPQLComplexTestSuite("complexNavigatingTwoLevelOfEmbeddeds"));
         suite.addTest(new JUnitJPQLComplexTestSuite("complexNamedQueryResultPropertiesTest"));
         suite.addTest(new JUnitJPQLComplexTestSuite("complexOuterJoinQuery"));
+        suite.addTest(new JUnitJPQLComplexTestSuite("complexCountOuterJoinTest"));
+        suite.addTest(new JUnitJPQLComplexTestSuite("complexCountNestedOuterJoinTest"));
+        suite.addTest(new JUnitJPQLComplexTestSuite("complexOuterJoinGroupByTest"));
         
         suite.addTest(new JUnitJPQLComplexTestSuite("complexInheritanceTest"));
         suite.addTest(new JUnitJPQLComplexTestSuite("complexInheritanceUsingNamedQueryTest"));
@@ -1710,6 +1713,78 @@ public class JUnitJPQLComplexTestSuite extends JUnitTestCase
         Assert.assertNull  ("Complex outer join query (2): unexpected result value (1, 2):", result1[2]);
         Assert.assertNull  ("Complex outer join query (2): unexpected result value (1, 3):", result1[3]);
                 
+    }
+    
+    /**
+     * Test bug 246211: Inner join used outside of the where clause causes unintentional filtering of results.
+     * Ie "Select count(a.b) from A a" can never return 0 since all As with 0 Bs get filtered out if an inner join
+     * is used.  
+     */
+    public void complexCountOuterJoinTest()
+    {
+        EntityManager em = createEntityManager();
+        String jpql = "Select e.lastName, count(e.department) from Employee e group by e.lastName";
+        Query q = em.createQuery(jpql);
+        List results = q.getResultList();
+        boolean passed = false;
+        Iterator i = results.iterator();
+        //check all rows until a row with count=0 is found
+        while (!passed && i.hasNext() ){
+            Object[] row = (Object[])i.next();
+            if (((Number)row[1]).intValue() == 0) {
+                passed = true;
+            }
+        }
+        
+        this.assertTrue("complexCountOuterJoinTest did not return results rows with a count of 0", passed);      
+    }
+    
+    /**
+     * Test bug 246211: Inner join used outside of the where clause causes unintentional filtering of results.
+     * Ie "Select count(a.b.c) from A a" can never return 0 since all As with 0 Bs get filtered out if an inner join
+     * is used.  This test tests that an outer join is used from A->B as well as B->C
+     */
+    public void complexCountNestedOuterJoinTest()
+    {
+        EntityManager em = createEntityManager();
+        String jpql = "Select e.lastName, count(e.department.managers) from Employee e group by e.lastName";
+        Query q = em.createQuery(jpql);
+        List results = q.getResultList();
+        
+        boolean passed = false;
+        Iterator i = results.iterator();
+        //check all rows until a row with count=0 is found
+        while (!passed && i.hasNext() ){
+            Object[] row = (Object[])i.next();
+            if (((Number)row[1]).intValue() == 0) {
+                passed = true;
+            }
+        }
+        
+        this.assertTrue("complexCountNestedOuterJoinTest did not return results rows with a count of 0", passed);      
+    }
+    
+    /**
+     * Test bug 246211: Inner join used outside of the where clause causes unintentional filtering of results.
+     * This tests verifies that the group by statement uses an outer join
+     */
+    public void complexOuterJoinGroupByTest(){
+        EntityManager em = createEntityManager();
+        //Employee to department is a many to one relation.  
+        String jpql = "Select count(e), e.department from Employee e group by e.department";
+        Query q = em.createQuery(jpql);
+        List results = q.getResultList();Employee e;
+        boolean passed = false;
+        Iterator i = results.iterator();
+        //check all rows until a row with null departments is found
+        while (!passed && i.hasNext() ){
+            Object[] row = (Object[])i.next();
+            if ( row[1]  == null ){
+                //verify that employees with a null department are included in the results
+                passed = true;
+            }
+        }
+        this.assertTrue("complexOuterJoinGroupByTest did not include employees with a null department", passed);  
     }
 
     // Helper methods and classes for constructor query test cases

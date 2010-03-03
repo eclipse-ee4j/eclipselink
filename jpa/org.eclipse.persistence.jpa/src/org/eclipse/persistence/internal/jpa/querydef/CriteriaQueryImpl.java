@@ -394,7 +394,7 @@ public class CriteriaQueryImpl<T> extends AbstractQueryImpl<T> implements Criter
      * Throws IllegalArgumentException if a constructor taking arguments represented 
      * by the selections array doesn't exist for the given class.  
      * 
-     * , as well as set the query result to ResultType.CONSTRUCTOR
+     * Also sets the query result to ResultType.CONSTRUCTOR
      * 
      * @param class1
      * @param selections
@@ -426,7 +426,6 @@ public class CriteriaQueryImpl<T> extends AbstractQueryImpl<T> implements Criter
             params[0] = this.queryType;
             throw new IllegalArgumentException(ExceptionLocalization.buildMessage("criteria_no_constructor_found", params), e);
         }
-        
     }
 
     /**

@@ -143,10 +143,7 @@ public class TypeHelperImpl
     public boolean isRelationship(Object ownerClass, String attribute) {
         DatabaseMapping mapping = 
             resolveAttributeMapping(ownerClass, attribute);
-        return (mapping != null) && 
-               (mapping.isObjectReferenceMapping() || 
-                mapping.isOneToManyMapping() || 
-                mapping.isManyToManyMapping());
+        return (mapping != null) && mapping.isForeignReferenceMapping();
     }
 
     /** Returns true if the specified attribute denotes a single valued
