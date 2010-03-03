@@ -28,8 +28,8 @@
         - all (default) : compiles all JPA tests, packages test jars
         - compile : compiles all JPA tests
         - package : jars JPA persistent units and tests jars
-        - test : runs JPA LRG (FullRegressionTestSuite)
-        - test-lrg : runs JPA LRG (FullRegressionTestSuite, if database is Oracle, OracleJPATestSuite as well)
+        - test : runs JPA FullRegressionTestSuite - includes the full set of JUnit tests, but no legacy tests
+        - test-lrg : runs JPA LRG (AllCMP3TestRunModel, if database is Oracle, oracle specific tests as well)
         - oracle-test : runs JPA Oracle-specific tests (OracleJPATestSuite and OracleJPACustomfeaturesTestSuite)
         - oracle-proxy-test : runs JPA Oracle Proxy Authentication specific tests (ProxyAuthenticationServerTestSuite)
         - test-no-weave : runs JPA LRG using no weaving (no agent)
@@ -870,11 +870,19 @@
     <!-- Runs FullRegressionTestSuite with no agent. TEST_NO_WEAVING property informs tests that no weaving was done. -->
     <target name="test-no-weave" depends="clean-test,config-trunk, config-flat">
         <antcall target="run-test" inheritRefs="true">
-            <param name="TEST_CLASS" value="${test.class}"/>
+            <param name="TEST_CLASS" value="org.eclipse.persistence.testing.tests.jpa.AllCMP3TestRunModel"/>
             <param name="TEST_AGENT" value="-Dignore"/>
             <param name="TEST_WEAVING" value="-DTEST_NO_WEAVING=true"/>
             <param name="ORM_TESTING" value="-Dorm.testing=jpa"/>
             <param name="RUN_PATH" value="run.classpath"/>
+            <param name="DB_URL" value="${db.url}"/>
+        </antcall>
+        <antcall target="run-test" inheritRefs="true">
+            <param name="TEST_CLASS" value="org.eclipse.persistence.testing.tests.jpa.xml.EntityMappingsJUnitTestSuite"/>
+            <param name="TEST_AGENT" value="-Dignore"/>
+            <param name="TEST_WEAVING" value="-DTEST_NO_WEAVING=true"/>
+            <param name="ORM_TESTING" value="-Dorm.testing=eclipselink"/>
+            <param name="RUN_PATH" value="run.extended.classpath"/>
             <param name="DB_URL" value="${db.url}"/>
         </antcall>
         <antcall target="generate-report" inheritRefs="true"/>
@@ -910,7 +918,7 @@
             <path refid="compile.path"/>
         </path>
         <antcall target="run-test" inheritRefs="true">
-            <param name="TEST_CLASS" value="${test.class}"/>
+            <param name="TEST_CLASS" value="org.eclipse.persistence.testing.tests.jpa.AllCMP3TestRunModel"/>
             <param name="TEST_AGENT" value="-Dignore"/>
             <param name="TEST_WEAVING" value="-Dignore"/>
             <param name="ORM_TESTING" value="-Dorm.testing=jpa"/>
