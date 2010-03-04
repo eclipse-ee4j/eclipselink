@@ -38,4 +38,14 @@ public class Base64TestCases extends OXTestCase {
             assertTrue("The incorrect exception was thrown", e.getErrorCode() == ConversionException.COULD_NOT_BE_CONVERTED);
         }      
     }
+    
+    public void testBase64WithNewLines() {
+        try {
+            String base64 = "PD94bWwgdmVyc2lvbj0iMS4wIj8+PGZhbGw+PG5hbWU+TmlhZ2FyYSBGYWxsczwvbmFtZT48L2Zh\r\n" +
+            "bGw+";
+            xcm.convertObject(base64, ClassConstants.ABYTE, XMLConstants.BASE_64_BINARY_QNAME);
+        } catch(Exception ex) {
+            fail("an unexpected exception was thrown " + ex.getMessage());
+        }
+    }
 }
