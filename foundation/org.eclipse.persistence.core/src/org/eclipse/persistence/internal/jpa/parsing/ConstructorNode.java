@@ -51,13 +51,14 @@ public class ConstructorNode extends Node {
             ReportQuery reportQuery = (ReportQuery)theQuery;
             reportQuery.beginAddingConstructorArguments(
                 getConstructorClass(context.getParseTreeContext()));
-            //bug246211: use outer joins outside the where clause, as inner joins will filter out null results
-            selectContext.useOuterJoins();
             for (Iterator i = constructorItems.iterator(); i.hasNext();) {
                 Node node = (Node)i.next();
+                if (selectingRelationshipField(node, context)) {
+                    selectContext.useOuterJoins();
+                }
                 node.applyToQuery(reportQuery, context);
+                selectContext.dontUseOuterJoins();
             }
-            selectContext.dontUseOuterJoins();
             reportQuery.endAddingToConstructorItem();
         }
     }
@@ -131,6 +132,16 @@ public class ConstructorNode extends Node {
                 context.getQueryInfo(), getLine(), getColumn(), className);
         }
         return (Class)type;
+    }
+
+    /**
+     * INTERNAL
+     */
+    private boolean selectingRelationshipField(Node node, GenerationContext context) {
+        if ((node == null) || !node.isDotNode()) {
+            return false;
+        }
+        return !((DotNode)node).endsWithDirectToField(context);
     }
 
     /**

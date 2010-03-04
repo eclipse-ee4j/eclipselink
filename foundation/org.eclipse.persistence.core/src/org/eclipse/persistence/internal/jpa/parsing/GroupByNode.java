@@ -76,14 +76,10 @@ public class GroupByNode extends MajorNode {
     public void addGroupingToQuery(ObjectLevelReadQuery theQuery, GenerationContext context) {
         if (theQuery.isReportQuery()) {
             Iterator iter = getGroupByItems().iterator();
-            SelectGenerationContext selectContext = (SelectGenerationContext)context;
-            //bug246211: outer joins are used outside the where clause, as inner joins will filter null results
-            selectContext.useOuterJoins();
             while (iter.hasNext()) {
                 Node nextNode = (Node)iter.next();
                 ((ReportQuery)theQuery).addGrouping(nextNode.generateExpression(context));
             }
-            selectContext.dontUseOuterJoins();
         }
     }
 

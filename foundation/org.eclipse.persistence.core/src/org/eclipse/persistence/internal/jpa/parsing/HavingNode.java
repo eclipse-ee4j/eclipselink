@@ -52,12 +52,8 @@ public class HavingNode extends MajorNode {
      */
     public void addHavingToQuery(ObjectLevelReadQuery theQuery, GenerationContext context) {
         if (theQuery.isReportQuery()) {
-            //bug246211: outer joins are used outside the where clause, as inner joins will filter null results
-            SelectGenerationContext selectContext = (SelectGenerationContext)context;
-            selectContext.useOuterJoins();
             Expression havingExpression = getHaving().generateExpression(context);
             ((ReportQuery)theQuery).setHavingExpression(havingExpression);
-            selectContext.dontUseOuterJoins();
         }
     }
 

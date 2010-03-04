@@ -160,11 +160,11 @@ public class SelectNode extends QueryNode {
             }
         }
         SelectGenerationContext selectContext = (SelectGenerationContext)context;
-        //bug246211: outer joins are used on all nodes in the select, allowing nested DotNodes to each use an outer join 
-        selectContext.useOuterJoins();
         for (int i=0;i<selectExpressions.size();i++){
             Node node = (Node)selectExpressions.get(i);
-
+            if (selectingRelationshipField(node, context)) {
+                selectContext.useOuterJoins();
+            }
             if (node.isAliasableNode() && identifiers != null){
                 String alias = (String)identifiers.get(i);
                 if (alias != null){
@@ -172,8 +172,9 @@ public class SelectNode extends QueryNode {
                 }
             }
             node.applyToQuery(readQuery, context); 
+            selectContext.dontUseOuterJoins();
         }
-        selectContext.dontUseOuterJoins();
+
         //indicate on the query if "return null if primary key null"
         //This means we want nulls returned if we expect an outer join
         readQuery.setShouldBuildNullForNullPk(this.hasOneToOneSelected(context));
@@ -368,6 +369,17 @@ public class SelectNode extends QueryNode {
             }
         }
         return false;
+    }
+
+    private boolean selectingRelationshipField(Node node, GenerationContext context) {
+        if ((node == null) || !node.isDotNode()) {
+            return false;
+        }
+        TypeHelper typeHelper = context.getParseTreeContext().getTypeHelper();
+        Node path = node.getLeft();
+        AttributeNode attribute = (AttributeNode)node.getRight();
+        return typeHelper.isRelationship(path.getType(), 
+                                         attribute.getAttributeName());
     }
 
     /**
