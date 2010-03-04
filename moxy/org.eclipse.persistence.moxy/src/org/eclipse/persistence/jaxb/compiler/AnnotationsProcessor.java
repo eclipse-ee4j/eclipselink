@@ -3674,5 +3674,9 @@ public class AnnotationsProcessor {
     void setDefaultTargetNamespace(String defaultTargetNamespace) {
         this.defaultTargetNamespace = defaultTargetNamespace;
     }
+
+    public void setDefaultNamespaceAllowed(boolean isDefaultNamespaceAllowed) {
+        this.isDefaultNamespaceAllowed = isDefaultNamespaceAllowed;
+    }
     
 }

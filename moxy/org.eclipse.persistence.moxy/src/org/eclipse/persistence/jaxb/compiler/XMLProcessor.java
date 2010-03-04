@@ -755,6 +755,11 @@ public class XMLProcessor {
         form = schema.getElementFormDefault();
         nsInfo.setElementFormQualified(form.equals(form.QUALIFIED));
 
+        
+        if (!nsInfo.isElementFormQualified() || nsInfo.isAttributeFormQualified()) {
+            aProcessor.setDefaultNamespaceAllowed(false);
+        }
+        
         // make sure defaults are set, not null
         nsInfo.setLocation(schema.getLocation() == null ? "##generate" : schema.getLocation());
         String namespace = schema.getNamespace();
