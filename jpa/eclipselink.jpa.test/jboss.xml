@@ -138,7 +138,7 @@
         <java classname="org.jboss.Shutdown" 
             fork="true"
             failonerror="false">
-            <arg value="-S"/>
+            <arg line="-s ${server.url}"/>
             <classpath>
                 <fileset dir="${server.lib}" includes="${server.depend}"/>
                 <pathelement location="${jboss.home}/bin/shutdown.jar"/>
