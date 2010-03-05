@@ -664,15 +664,26 @@ public class AdvancedJPAJunitTest extends JUnitTestCase {
      * @param em
      */
     private void invalidateIdentityCache(EntityManager em) {
-        // 260263 and 302316: clear the cache or we will end up with a false positive when comparing the entity to itself later        
-        UnitOfWork aSession;
-        if (isOnServer()) {
-            aSession = (UnitOfWork)((JpaEntityManager)em.getDelegate()).getActiveSession();
-        } else {
-            aSession = (UnitOfWork)((EntityManagerImpl) em).getActiveSession();
+        // 260263 and 302316: clear the cache or we will end up with a false positive when comparing the entity to itself later
+        UnitOfWork aSession = null;
+        try {
+            if (isOnServer()) {
+                // This call works on JBoss and WebSphere but not on WebLogic
+                if(!getServerPlatform().isWeblogic()) {
+                    aSession = (UnitOfWork)((JpaEntityManager)em.getDelegate()).getActiveSession();
+                }
+            } else {
+                aSession = (UnitOfWork)((EntityManagerImpl) em).getActiveSession();
+            }
+            // clears all 3 identity maps for EntityManager, client(isolated) and server cache
+            // 20100305 just defer to an em.clear() detach when running on an app server
+            if(null != aSession && !isOnServer()) {
+                aSession.getIdentityMapAccessor().initializeAllIdentityMaps();
+            }
+        } catch (Exception e) {
+            // Skip cache invalidation if the specific server platform cannot handle it.
+            e.printStackTrace();
         }
-        // clears all 3 identity maps for EntityManager, client(isolated) and server cache
-        aSession.getIdentityMapAccessor().initializeAllIdentityMaps();
         // detaches the entity but leaves the identity map populated
         em.clear();
     }
