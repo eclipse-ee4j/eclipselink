@@ -194,6 +194,15 @@ public class DBWSTestHelper {
         ADVJDBC_BUILD_CRECORD_NAMESPACE + "Service";
     public static final String ADVJDBC_BUILD_CRECORD_PORT = ADVJDBC_BUILD_CRECORD_SERVICE + "Port";
     
+    public static final String LTBL_PACKAGE_NAME = "LTBL_PKG";
+    public static final String LTBL_PROCEDURE_NAME = "LTBL_QUERY";
+    public static final String LTBL_PROJECT = "localTable";
+    public static final String LTBL_PROJECT_TEST = LTBL_PROJECT + "Test";
+    public static final String LTBL_PROJECT_SERVICE = LTBL_PROJECT + "Service";
+    public static final String LTBL_PROJECT_NAMESPACE = "urn:" + LTBL_PROJECT;
+    public static final String LTBL_PROJECT_SERVICE_NAMESPACE = "urn:" + LTBL_PROJECT_SERVICE;
+    public static final String LTBL_PROJECT_PORT = LTBL_PROJECT_SERVICE + "Port";
+    
     public static String documentToString(Document doc) {
         DOMSource domSource = new DOMSource(doc);
         StringWriter stringWriter = new StringWriter();

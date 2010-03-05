@@ -364,6 +364,7 @@
     <RunTestsuite testsuite-name="TopLevelPLSQLStoredProcedureTest"/>
     <RunTestsuite testsuite-name="TopLevelStoredProcedureTest"/>
     <RunTestsuite testsuite-name="TypesTest"/>
+    <RunTestsuite testsuite-name="LocalTableTypeTest"/>
     <TeardownDatabase filename="alltests"/>
     <junitreport
       todir="${run.dir}"
