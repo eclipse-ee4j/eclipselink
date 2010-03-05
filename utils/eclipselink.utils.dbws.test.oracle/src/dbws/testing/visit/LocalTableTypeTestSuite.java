@@ -8,19 +8,20 @@
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
- *     Mike Norman - May 2008, created DBWS test package
+ *     Mike Norman - May 2008, created DBWS Oracle test package
  ******************************************************************************/
-package dbws.testing.optlock;
+package dbws.testing.visit;
 
 //javase imports
 import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.StringReader;
 import java.io.StringWriter;
+import java.sql.SQLException;
 import java.util.Iterator;
 import java.util.Vector;
+import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
@@ -31,28 +32,25 @@ import org.xml.sax.SAXException;
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 import javax.wsdl.WSDLException;
-import javax.xml.namespace.QName;
-import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.soap.MessageFactory;
 import javax.xml.soap.SOAPException;
 import javax.xml.soap.SOAPMessage;
 import javax.xml.soap.SOAPPart;
+import javax.xml.transform.Source;
 import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerException;
 import javax.xml.transform.TransformerFactory;
+import javax.xml.transform.dom.DOMResult;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 import javax.xml.transform.stream.StreamSource;
 import javax.xml.ws.Dispatch;
-import javax.xml.ws.Endpoint;
 import javax.xml.ws.Provider;
 import javax.xml.ws.Service;
 import javax.xml.ws.ServiceMode;
 import javax.xml.ws.WebServiceException;
 import javax.xml.ws.WebServiceProvider;
-import javax.xml.ws.soap.SOAPFaultException;
 import static javax.xml.ws.Service.Mode.MESSAGE;
-import static javax.xml.ws.soap.SOAPBinding.SOAP11HTTP_BINDING;
 
 //JUnit4 imports
 import org.junit.AfterClass;
@@ -66,19 +64,17 @@ import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.exceptions.XMLMarshalException;
 import org.eclipse.persistence.internal.databaseaccess.Platform;
 import org.eclipse.persistence.internal.dbws.DBWSAdapter;
-import org.eclipse.persistence.internal.dbws.ProviderHelper;
 import org.eclipse.persistence.internal.dbws.SOAPResponseWriter;
 import org.eclipse.persistence.internal.helper.ConversionManager;
 import org.eclipse.persistence.internal.oxm.schema.SchemaModelProject;
 import org.eclipse.persistence.internal.oxm.schema.model.Schema;
 import org.eclipse.persistence.internal.sessions.DatabaseSessionImpl;
-import org.eclipse.persistence.internal.xr.XRDynamicClassLoader;
 import org.eclipse.persistence.internal.xr.Invocation;
 import org.eclipse.persistence.internal.xr.Operation;
 import org.eclipse.persistence.internal.xr.Parameter;
 import org.eclipse.persistence.internal.xr.ProjectHelper;
+import org.eclipse.persistence.internal.xr.XRDynamicClassLoader;
 import org.eclipse.persistence.internal.xr.XRServiceModel;
-import org.eclipse.persistence.logging.SessionLog;
 import org.eclipse.persistence.mappings.AttributeAccessor;
 import org.eclipse.persistence.oxm.NamespaceResolver;
 import org.eclipse.persistence.oxm.XMLContext;
@@ -87,115 +83,68 @@ import org.eclipse.persistence.oxm.XMLLogin;
 import org.eclipse.persistence.oxm.XMLRoot;
 import org.eclipse.persistence.oxm.XMLUnmarshaller;
 import org.eclipse.persistence.oxm.mappings.XMLAnyCollectionMapping;
+import org.eclipse.persistence.oxm.schema.XMLSchemaReference;
+import org.eclipse.persistence.platform.database.oracle.publisher.PublisherException;
 import org.eclipse.persistence.platform.xml.XMLComparer;
 import org.eclipse.persistence.platform.xml.XMLParser;
 import org.eclipse.persistence.platform.xml.XMLPlatform;
 import org.eclipse.persistence.platform.xml.XMLPlatformFactory;
-import org.eclipse.persistence.platform.xml.XMLSchemaReference;
 import org.eclipse.persistence.sessions.DatabaseLogin;
 import org.eclipse.persistence.sessions.DatabaseSession;
 import org.eclipse.persistence.sessions.DatasourceLogin;
 import org.eclipse.persistence.sessions.Project;
 import org.eclipse.persistence.sessions.factories.XMLProjectReader;
-import org.eclipse.persistence.tools.dbws.DBWSBuilder;
-import org.eclipse.persistence.tools.dbws.TableOperationModel;
-import org.eclipse.persistence.tools.dbws.WebServicePackager;
+import org.eclipse.persistence.tools.dbws.PLSQLProcedureOperationModel;
 import static org.eclipse.persistence.internal.xr.Util.SERVICE_NAMESPACE_PREFIX;
 import static org.eclipse.persistence.oxm.mappings.UnmarshalKeepAsElementPolicy.KEEP_UNKNOWN_AS_ELEMENT;
-import static org.eclipse.persistence.tools.dbws.DBWSBuilder.NO_SESSIONS_FILENAME;
-import static org.eclipse.persistence.tools.dbws.DBWSBuilder.SESSIONS_FILENAME_KEY;
-import static org.eclipse.persistence.tools.dbws.DBWSPackager.ArchiveUse.noArchive;
-import static org.eclipse.persistence.tools.dbws.XRPackager.__nullStream;
 
-//domain-specific (test) imports
-import static dbws.testing.DBWSTestSuite.DATABASE_PASSWORD_KEY;
-import static dbws.testing.DBWSTestSuite.DATABASE_URL_KEY;
-import static dbws.testing.DBWSTestSuite.DATABASE_USERNAME_KEY;
-import static dbws.testing.DBWSTestSuite.DEFAULT_DATABASE_DRIVER;
-import static dbws.testing.DBWSTestSuite.DEFAULT_DATABASE_PASSWORD;
-import static dbws.testing.DBWSTestSuite.DEFAULT_DATABASE_PLATFORM;
-import static dbws.testing.DBWSTestSuite.DEFAULT_DATABASE_URL;
-import static dbws.testing.DBWSTestSuite.DEFAULT_DATABASE_USERNAME;
-import static dbws.testing.DBWSTestSuite.OPTLOCK;
-import static dbws.testing.DBWSTestSuite.OPTLOCK_NAMESPACE;
-import static dbws.testing.DBWSTestSuite.OPTLOCK_PORT;
-import static dbws.testing.DBWSTestSuite.OPTLOCK_SERVICE;
-import static dbws.testing.DBWSTestSuite.OPTLOCK_SERVICE_NAMESPACE;
-import static dbws.testing.DBWSTestSuite.OPTLOCK_TEST;
+//domain-specific (testing) imports
+import static dbws.testing.visit.DBWSTestHelper.LTBL_PACKAGE_NAME;
+import static dbws.testing.visit.DBWSTestHelper.LTBL_PROCEDURE_NAME;
+import static dbws.testing.visit.DBWSTestHelper.LTBL_PROJECT;
+import static dbws.testing.visit.DBWSTestHelper.LTBL_PROJECT_NAMESPACE;
+import static dbws.testing.visit.DBWSTestHelper.LTBL_PROJECT_PORT;
+import static dbws.testing.visit.DBWSTestHelper.LTBL_PROJECT_SERVICE;
+import static dbws.testing.visit.DBWSTestHelper.LTBL_PROJECT_SERVICE_NAMESPACE;
+import static dbws.testing.visit.DBWSTestHelper.LTBL_PROJECT_TEST;
 
 @WebServiceProvider(
-    targetNamespace = OPTLOCK_SERVICE_NAMESPACE,
-    serviceName = OPTLOCK_SERVICE,
-    portName = OPTLOCK_PORT
+    targetNamespace = LTBL_PROJECT_SERVICE_NAMESPACE,
+    serviceName = LTBL_PROJECT_SERVICE,
+    portName = LTBL_PROJECT_PORT
 )
 @ServiceMode(MESSAGE)
-public class OptLockTestSuite extends ProviderHelper implements Provider<SOAPMessage> {
+public class LocalTableTypeTestSuite extends WebServiceTestSuite implements Provider<SOAPMessage> {
 
-    static final String ENDPOINT_ADDRESS = "http://localhost:9999/" + OPTLOCK_TEST;
+    static final String ENDPOINT_ADDRESS = "http://localhost:9999/" + LTBL_PROJECT;
 
-    // JUnit test fixtures
-    public static ByteArrayOutputStream DBWS_SERVICE_STREAM = new ByteArrayOutputStream();
-    public static ByteArrayOutputStream DBWS_SCHEMA_STREAM = new ByteArrayOutputStream();
-    public static ByteArrayOutputStream DBWS_OR_STREAM = new ByteArrayOutputStream();
-    public static ByteArrayOutputStream DBWS_OX_STREAM = new ByteArrayOutputStream();
-    public static ByteArrayOutputStream DBWS_WSDL_STREAM = new ByteArrayOutputStream();
-    public static XMLComparer comparer = new XMLComparer();
-    public static XMLPlatform xmlPlatform = XMLPlatformFactory.getInstance().getXMLPlatform();
-    public static XMLParser xmlParser = xmlPlatform.newXMLParser();
-    public static Endpoint endpoint = null;
-    public static QName portQName = null;
-    public static Service testService = null;
-    public static DBWSBuilder builder = new DBWSBuilder();
-   
     @BeforeClass
-    public static void setUp() throws WSDLException {
-        String username = System.getProperty(DATABASE_USERNAME_KEY, DEFAULT_DATABASE_USERNAME);
-        String password = System.getProperty(DATABASE_PASSWORD_KEY, DEFAULT_DATABASE_PASSWORD);
-        String url = System.getProperty(DATABASE_URL_KEY, DEFAULT_DATABASE_URL);
-        builder.setProjectName(OPTLOCK_TEST);
-        builder.setTargetNamespace(OPTLOCK_NAMESPACE);
-        TableOperationModel tModel = new TableOperationModel();
-        tModel.setName(OPTLOCK);
-        tModel.setTablePattern(OPTLOCK);
-        builder.getOperations().add(tModel);
-        builder.quiet = true;
-        builder.setLogLevel(SessionLog.FINE_LABEL);
-        builder.setDriver(DEFAULT_DATABASE_DRIVER);
-        builder.setPlatformClassname(DEFAULT_DATABASE_PLATFORM);
-        builder.getProperties().put(SESSIONS_FILENAME_KEY, NO_SESSIONS_FILENAME);
-        builder.setUsername(username);
-        builder.setPassword(password);
-        builder.setUrl(url);
-        builder.setPackager(new WebServicePackager(null, "WebServiceTestPackager", noArchive) {
-            @Override
-            public void start() {
-            }
-        });
-        builder.build(DBWS_SCHEMA_STREAM, __nullStream, DBWS_SERVICE_STREAM, DBWS_OR_STREAM,
-            DBWS_OX_STREAM, __nullStream, __nullStream, DBWS_WSDL_STREAM, __nullStream,
-            __nullStream, null);
-        endpoint = Endpoint.create(new OptLockTestSuite());
-        endpoint.publish(ENDPOINT_ADDRESS);
-        QName serviceQName = new QName(OPTLOCK_SERVICE_NAMESPACE, OPTLOCK_SERVICE);
-        portQName = new QName(OPTLOCK_SERVICE_NAMESPACE, OPTLOCK_PORT);
-        testService = Service.create(serviceQName);
-        testService.addPort(portQName, SOAP11HTTP_BINDING, ENDPOINT_ADDRESS);
+    public static void setUp() throws SQLException, PublisherException, WSDLException {
+        builder.setProjectName(LTBL_PROJECT);
+        builder.setTargetNamespace(LTBL_PROJECT_NAMESPACE);
+        PLSQLProcedureOperationModel pModel = new PLSQLProcedureOperationModel();
+        pModel.setName(LTBL_PROJECT_TEST);
+        pModel.setCatalogPattern(LTBL_PACKAGE_NAME);
+        String username = System.getProperty(WebServiceTestSuite.DATABASE_USERNAME_KEY);
+        pModel.setSchemaPattern(username.toUpperCase());
+        pModel.setProcedurePattern(LTBL_PROCEDURE_NAME);
+        builder.getOperations().add(pModel);
+        serviceSetup(ENDPOINT_ADDRESS, new LocalTableTypeTestSuite());
     }
-   
+
     @AfterClass
     public static void teardown() {
         if (endpoint != null) {
             endpoint.stop();
         }
     }
-   
+
     @PreDestroy
     public void destroy() {
         super.destroy();
     }
-   
+
     @PostConstruct
-    @SuppressWarnings("serial")
     public void init() {
         parentClassLoader = new XRDynamicClassLoader(Thread.currentThread().getContextClassLoader());
         InputStream xrServiceStream = new ByteArrayInputStream(DBWS_SERVICE_STREAM.toByteArray());
@@ -236,7 +185,6 @@ public class OptLockTestSuite extends ProviderHelper implements Provider<SOAPMes
         catch (Exception e) {
             // that's Ok, WSDL may not contain inline schema
         }
-    
         String tns = dbwsAdapter.getExtendedSchema().getTargetNamespace();
         Project oxProject = dbwsAdapter.getOXSession().getProject();
         XMLDescriptor invocationDescriptor = new XMLDescriptor();
@@ -376,68 +324,94 @@ public class OptLockTestSuite extends ProviderHelper implements Provider<SOAPMes
         responseWriter = new SOAPResponseWriter(dbwsAdapter);
         responseWriter.initialize();
     }
-     
-     @Override
-     public void logoutSessions() {
-         if (xrService.getORSession() != null) {
-             ((DatabaseSession)xrService.getORSession()).logout();
-         }
-         if (xrService.getOXSession() != null) {
-             ((DatabaseSession)xrService.getOXSession()).logout();
-         }
-     }
-   
-     @Override
-     public void buildSessions() {
-         Project oxProject = XMLProjectReader.read(new StringReader(DBWS_OX_STREAM.toString()),
-             parentClassLoader);
-         ((XMLLogin)oxProject.getDatasourceLogin()).setEqualNamespaceResolvers(false);
-         Project orProject = XMLProjectReader.read(new StringReader(DBWS_OR_STREAM.toString()),
-             parentClassLoader);
-         DatasourceLogin login = orProject.getLogin();
-         login.setUserName(builder.getUsername());
-         login.setPassword(builder.getPassword());
-         ((DatabaseLogin)login).setConnectionString(builder.getUrl());
-         ((DatabaseLogin)login).setDriverClassName(DEFAULT_DATABASE_DRIVER);
-         Platform platform = builder.getDatabasePlatform();
-         ConversionManager cm = platform.getConversionManager();
-         cm.setLoader(parentClassLoader);
-         login.setDatasourcePlatform(platform);
-         ((DatabaseLogin)login).bindAllParameters();
-         orProject.setDatasourceLogin(login);
-         ProjectHelper.fixOROXAccessors(orProject, oxProject);
-         DatabaseSession databaseSession = orProject.createDatabaseSession();
-         databaseSession.dontLogMessages();
-         xrService.setORSession(databaseSession);
-         xrService.setXMLContext(new XMLContext(oxProject));
-         xrService.setOXSession(xrService.getXMLContext().getSession(0));
-     }
-
-  static final String THE_INSTANCE = 
-      "<optlockType>" +
-          "<id>1</id>" +
-          "<name>name</name>" +
-          "<descript>this is ver 2</descript>" +
-          "<version>1</version>" +
-      "</optlockType>";
-        
-    static final String REQUEST_MSG = 
-        "<env:Envelope xmlns:env=\"http://schemas.xmlsoap.org/soap/envelope/\" " +
-            "xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">" +
-          "<env:Header/>" +
-          "<env:Body>" +
-            "<srvc:update_optlockType xmlns:srvc=\"" + OPTLOCK_SERVICE_NAMESPACE +"\" " +
-            "xmlns=\"" + OPTLOCK_NAMESPACE + "\">" +
-              "<srvc:theInstance>" +
-                THE_INSTANCE +
-              "</srvc:theInstance>" +
-            "</srvc:update_optlockType>" + 
-          "</env:Body>" +
-        "</env:Envelope>";
     
+    @Override
+    public void logoutSessions() {
+        if (xrService.getORSession() != null) {
+            ((DatabaseSession)xrService.getORSession()).logout();
+        }
+        if (xrService.getOXSession() != null) {
+            ((DatabaseSession)xrService.getOXSession()).logout();
+        }
+    }
+
+    @Override
+    public void buildSessions() {
+        Project oxProject = XMLProjectReader.read(new StringReader(DBWS_OX_STREAM.toString()),
+            parentClassLoader);
+        ((XMLLogin)oxProject.getDatasourceLogin()).setEqualNamespaceResolvers(false);
+        Project orProject = XMLProjectReader.read(new StringReader(DBWS_OR_STREAM.toString()),
+            parentClassLoader);
+        DatasourceLogin login = orProject.getLogin();
+        login.setUserName(builder.getUsername());
+        login.setPassword(builder.getPassword());
+        ((DatabaseLogin)login).setConnectionString(builder.getUrl());
+        ((DatabaseLogin)login).setDriverClassName(DEFAULT_DATABASE_DRIVER);
+        Platform platform = builder.getDatabasePlatform();
+        ConversionManager cm = platform.getConversionManager();
+        cm.setLoader(parentClassLoader);
+        login.setDatasourcePlatform(platform);
+        ((DatabaseLogin)login).bindAllParameters();
+        orProject.setDatasourceLogin(login);
+        ProjectHelper.fixOROXAccessors(orProject, oxProject);
+        DatabaseSession databaseSession = orProject.createDatabaseSession();
+        databaseSession.dontLogMessages();
+        xrService.setORSession(databaseSession);
+        xrService.setXMLContext(new XMLContext(oxProject));
+        xrService.setOXSession(xrService.getXMLContext().getSession(0));
+    }
+
+    static final String REQUEST_MSG = 
+        "<SOAP-ENV:Envelope xmlns:SOAP-ENV=\"http://schemas.xmlsoap.org/soap/envelope/\">" +
+          "<SOAP-ENV:Header/>" +
+          "<SOAP-ENV:Body>" +
+            "<srvc:" + LTBL_PROJECT_TEST + " " +
+                    "xmlns=\"" + LTBL_PROJECT_NAMESPACE + "\" " +
+                    "xmlns:srvc=\"" + LTBL_PROJECT_SERVICE_NAMESPACE + "\" " +
+                    ">" +
+              "<BLOCK_DATA>" +
+                  "<item>" +
+                    "<empno>123</empno>" + 
+                    "<fname>Mike</fname>" + 
+                    "<lname>Norman</lname>" + 
+                  "</item>" +
+                  "<item>" +
+                    "<empno>456</empno>" + 
+                    "<fname>Blaise</fname>" + 
+                    "<lname>Doughan</lname>" + 
+                  "</item>" + 
+              "</BLOCK_DATA>" + 
+              "<P_EMPNO>10</P_EMPNO>" +
+            "</srvc:" + LTBL_PROJECT_TEST + ">" +
+          "</SOAP-ENV:Body>" +
+        "</SOAP-ENV:Envelope>";
+    static final String RESPONSE_MSG = 
+        "<SOAP-ENV:Envelope xmlns:SOAP-ENV=\"http://schemas.xmlsoap.org/soap/envelope/\">" +
+          "<SOAP-ENV:Header/>" +
+          "<SOAP-ENV:Body>" +
+            "<srvc:localTableTestResponse " + 
+                    "xmlns=\"" + LTBL_PROJECT_NAMESPACE + "\" " +
+                    "xmlns:srvc=\"" + LTBL_PROJECT_SERVICE_NAMESPACE + "\" " +
+            		">" +
+              "<srvc:result>" +
+                "<LTBL_PKG_LTBL_TAB>" +
+                  "<item xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">" +
+                    "<empno>123</empno>" +  
+                    "<fname>Mike</fname>" +  
+                    "<lname>Norman</lname>" + 
+                  "</item>" +
+                  "<item xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">" +
+                    "<empno>789</empno>" +  
+                    "<fname>John</fname>" +  
+                    "<lname>Blair</lname>" + 
+                  "</item>" + 
+                "</LTBL_PKG_LTBL_TAB>" + 
+              "</srvc:result>" +
+            "</srvc:localTableTestResponse>" +
+          "</SOAP-ENV:Body>" +
+        "</SOAP-ENV:Envelope>";
     @Test
-    public void updateinstanceTest() throws SOAPException, IOException, SAXException,
-        ParserConfigurationException, TransformerException {
+    public void localTableQuery() throws SOAPException, SAXException, IOException, TransformerException {
         MessageFactory factory = MessageFactory.newInstance();
         SOAPMessage request = factory.createMessage();
         SOAPPart part = request.getSOAPPart(); 
@@ -446,13 +420,21 @@ public class OptLockTestSuite extends ProviderHelper implements Provider<SOAPMes
         part.setContent(domSource);
         Dispatch<SOAPMessage> dispatch = testService.createDispatch(portQName, SOAPMessage.class,
             Service.Mode.MESSAGE);
+        SOAPMessage response = null;
         try {
-            dispatch.invoke(request);
+            response = dispatch.invoke(request);
         }
-        catch (SOAPFaultException sfe) {
-            assertTrue("incorrect SOAPFaultException",
-                sfe.getMessage().contains("EclipseLink-5010"));
+        catch (Exception e) {
+            e.printStackTrace();
         }
+        Source src = response.getSOAPPart().getContent();
+        DOMResult result = new DOMResult();
+        getTransformer().transform(src, result);
+        Document resultDoc = (Document)result.getNode();
+        XMLPlatform xmlPlatform = XMLPlatformFactory.getInstance().getXMLPlatform();
+        XMLParser xmlParser = xmlPlatform.newXMLParser();
+        Document controlDoc = xmlParser.parse(new StringReader(RESPONSE_MSG));
+        assertTrue("control document not same as instance document",
+            new XMLComparer().isNodeEqual(controlDoc, resultDoc));
     }
-
 }

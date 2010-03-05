@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2009 Oracle. All rights reserved.
+ * Copyright (c) 1998, 2010 Oracle. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -193,6 +193,15 @@ public class DBWSTestHelper {
     public static final String ADVJDBC_BUILD_CRECORD_SERVICE_NAMESPACE = 
         ADVJDBC_BUILD_CRECORD_NAMESPACE + "Service";
     public static final String ADVJDBC_BUILD_CRECORD_PORT = ADVJDBC_BUILD_CRECORD_SERVICE + "Port";
+    
+    public static final String LTBL_PACKAGE_NAME = "LTBL_PKG";
+    public static final String LTBL_PROCEDURE_NAME = "LTBL_QUERY";
+    public static final String LTBL_PROJECT = "localTable";
+    public static final String LTBL_PROJECT_TEST = LTBL_PROJECT + "Test";
+    public static final String LTBL_PROJECT_SERVICE = LTBL_PROJECT + "Service";
+    public static final String LTBL_PROJECT_NAMESPACE = "urn:" + LTBL_PROJECT;
+    public static final String LTBL_PROJECT_SERVICE_NAMESPACE = "urn:" + LTBL_PROJECT_SERVICE;
+    public static final String LTBL_PROJECT_PORT = LTBL_PROJECT_SERVICE + "Port";
     
     public static String documentToString(Document doc) {
         DOMSource domSource = new DOMSource(doc);

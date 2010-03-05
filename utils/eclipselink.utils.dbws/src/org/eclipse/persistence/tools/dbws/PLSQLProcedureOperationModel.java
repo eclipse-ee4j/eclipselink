@@ -34,6 +34,7 @@ import static org.eclipse.persistence.tools.dbws.Util.getXMLTypeFromJDBCType;
 import static org.eclipse.persistence.tools.dbws.Util.noOutArguments;
 import static org.eclipse.persistence.tools.dbws.Util.qNameFromString;
 import static org.eclipse.persistence.tools.dbws.Util.InOut.IN;
+import static org.eclipse.persistence.tools.dbws.Util.InOut.INOUT;
 
 public class PLSQLProcedureOperationModel extends ProcedureOperationModel {
 
@@ -155,6 +156,7 @@ public class PLSQLProcedureOperationModel extends ProcedureOperationModel {
                 String argName = arg.getName();
                 if (argName != null) {
                     ProcedureArgument pa = null;
+                    ProcedureArgument paShadow = null; // for INOUT's
                     Parameter parm = null;
                     InOut direction = arg.getInOut();
                     QName xmlType = null;
@@ -198,10 +200,26 @@ public class PLSQLProcedureOperationModel extends ProcedureOperationModel {
                                 }
                                 result.setType(xmlType);
                             }
+                            if (direction == INOUT) {
+                                parm = new Parameter();
+                                parm.setName(argName);
+                                // bug 303331 - set type in 'shadow' and 'regular' parameter 
+                                parm.setType(OracleHelper.getXMLTypeFromJDBCType(arg,
+                                    builder.getTargetNamespace()));
+                                result.setType(parm.getType());
+                                // use of INOUT precludes SimpleXMLFormat
+                                sxf = null;
+                                paShadow = new ProcedureArgument();
+                                paShadow.setName(argName);
+                                paShadow.setParameterName(argName);
+                            }
                         }
                     }
                     if (arg instanceof PLSQLStoredArgument) {
                         pa.setComplexTypeName(((PLSQLStoredArgument)arg).getPlSqlTypeName());
+                        if (paShadow != null) {
+                            paShadow.setComplexTypeName(pa.getComplexTypeName());
+                        }
                     }
                     if (parm != null) {
                         qo.getParameters().add(parm);
