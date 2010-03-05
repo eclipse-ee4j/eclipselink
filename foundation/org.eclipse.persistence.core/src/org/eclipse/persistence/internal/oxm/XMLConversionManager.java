@@ -1644,20 +1644,15 @@ cal, QName schemaTypeQName) {
      */
     public byte[] convertSchemaBase64ToByteArray(Object sourceObject) throws ConversionException {
         if (sourceObject instanceof String) {
-            try {
-                byte[] bytes = Base64.base64Decode(((String) sourceObject).getBytes());
-                return bytes;
-            } catch(ArrayIndexOutOfBoundsException ex) {
-                //the base64 string may have contained embedded whitespaces. Try again after
-                //Removing any whitespaces.
-                StringTokenizer tokenizer = new StringTokenizer((String)sourceObject);
-                StringBuilder builder = new StringBuilder();
-                while(tokenizer.hasMoreTokens()) {
-                    builder.append(tokenizer.nextToken());
-                }
-                byte[] bytes = Base64.base64Decode(builder.toString().getBytes());
-                return bytes;
+            //the base64 string may have contained embedded whitespaces. Try again after
+            //Removing any whitespaces.
+            StringTokenizer tokenizer = new StringTokenizer((String)sourceObject);
+            StringBuilder builder = new StringBuilder();
+            while(tokenizer.hasMoreTokens()) {
+                builder.append(tokenizer.nextToken());
             }
+            byte[] bytes = Base64.base64Decode(builder.toString().getBytes());
+            return bytes;
         }
         return convertObjectToByteArray(sourceObject);
     }
