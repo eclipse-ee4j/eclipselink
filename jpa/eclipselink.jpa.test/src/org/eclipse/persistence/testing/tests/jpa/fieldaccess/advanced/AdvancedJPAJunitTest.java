@@ -635,7 +635,7 @@ public class AdvancedJPAJunitTest extends JUnitTestCase {
             commitTransaction(em);
             
             // 260263 and 302316: clear the cache or we will end up with a false positive when comparing the entity to itself later
-            invalidateIdentityCache(em);
+            em.clear();
 
             Query aQuery = em.createNamedQuery("SProcAddress").setParameter("ADDRESS_ID", address1.getId());
             Address address2 = (Address) aQuery.getSingleResult();
@@ -659,34 +659,6 @@ public class AdvancedJPAJunitTest extends JUnitTestCase {
         closeEntityManager(em);
     }
     
-    /**
-     * Invalidate the entity cache on all 3 identity maps for EntityManager, client(isolated) and server cache
-     * @param em
-     */
-    private void invalidateIdentityCache(EntityManager em) {
-        // 260263 and 302316: clear the cache or we will end up with a false positive when comparing the entity to itself later
-        UnitOfWork aSession = null;
-        try {
-            if (isOnServer()) {
-                // This call works on JBoss and WebSphere but not on WebLogic
-                if(!getServerPlatform().isWeblogic()) {
-                    aSession = (UnitOfWork)((JpaEntityManager)em.getDelegate()).getActiveSession();
-                }
-            } else {
-                aSession = (UnitOfWork)((EntityManagerImpl) em).getActiveSession();
-            }
-            // clears all 3 identity maps for EntityManager, client(isolated) and server cache
-            // 20100305 just defer to an em.clear() detach when running on an app server
-            if(null != aSession && !isOnServer()) {
-                aSession.getIdentityMapAccessor().initializeAllIdentityMaps();
-            }
-        } catch (Exception e) {
-            // Skip cache invalidation if the specific server platform cannot handle it.
-            e.printStackTrace();
-        }
-        // detaches the entity but leaves the identity map populated
-        em.clear();
-    }
     
     /** 
      * Tests a @NamedStoredProcedureQuery.
@@ -711,7 +683,7 @@ public class AdvancedJPAJunitTest extends JUnitTestCase {
             commitTransaction(em);
 
             // 260263 and 302316: clear the cache or we will end up with a false positive when comparing the entity to itself later
-            invalidateIdentityCache(em);
+            em.clear();            
 
             Query aQuery = em.createNamedQuery("SProcInOut").setParameter("ADDRESS_ID", address1.getId());
             Address address2 = (Address) aQuery.getSingleResult();
