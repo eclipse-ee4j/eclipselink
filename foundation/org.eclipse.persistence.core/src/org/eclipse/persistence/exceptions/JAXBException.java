@@ -67,6 +67,7 @@ public class JAXBException extends EclipseLinkException {
     public static final int INVALID_XMLELEMENT_IN_XMLELEMENTS = 50035;
     public static final int NULL_TYPE_ON_TYPEMAPPINGINFO = 50036;
     public static final int JAVATYPE_NOT_ALLOWED_IN_BINDINGS_FILE = 50037;
+    public static final int CANNOT_CREATE_DYNAMIC_CONTEXT_FROM_CLASSES = 50038;
 
     protected JAXBException(String message) {
         super(message);
@@ -487,4 +488,16 @@ public class JAXBException extends EclipseLinkException {
         exception.setErrorCode(JAVATYPE_NOT_ALLOWED_IN_BINDINGS_FILE);
         return exception;
     }
+    
+    /**
+     * This exception is thrown if the user tries to create a new instance of DynamicJAXBContext using an
+     * array of actual classes.  
+     */
+    public static JAXBException cannotCreateDynamicContextFromClasses() {
+        Object[] args = { };
+        JAXBException exception = new JAXBException(ExceptionMessageGenerator.buildMessage(JAXBException.class, CANNOT_CREATE_DYNAMIC_CONTEXT_FROM_CLASSES, args));
+        exception.setErrorCode(CANNOT_CREATE_DYNAMIC_CONTEXT_FROM_CLASSES);
+        return exception;
+    }
+    
 }

@@ -39,6 +39,7 @@ import org.eclipse.persistence.jaxb.compiler.Generator;
 import org.eclipse.persistence.jaxb.compiler.MarshalCallback;
 import org.eclipse.persistence.jaxb.compiler.UnmarshalCallback;
 import org.eclipse.persistence.jaxb.javamodel.JavaClass;
+import org.eclipse.persistence.oxm.NamespaceResolver;
 import org.eclipse.persistence.oxm.XMLConstants;
 import org.eclipse.persistence.oxm.XMLContext;
 import org.eclipse.persistence.oxm.XMLDescriptor;
@@ -77,7 +78,7 @@ public class JAXBContext extends javax.xml.bind.JAXBContext {
         PARSER_FEATURES.put("http://apache.org/xml/features/validation/schema/element-default", false);
     }
 
-    private XMLContext xmlContext;
+    protected XMLContext xmlContext;
     private org.eclipse.persistence.jaxb.compiler.Generator generator;
     private HashMap<QName, Class> qNameToGeneratedClasses;
     private HashMap<String, Class> classToGeneratedClasses;
@@ -87,6 +88,10 @@ public class JAXBContext extends javax.xml.bind.JAXBContext {
     private Map<TypeMappingInfo, Class> typeMappingInfoToGeneratedType;
     private Map<Type, TypeMappingInfo> typeToTypeMappingInfo;
     private Map<TypeMappingInfo, JAXBContext.RootLevelXmlAdapter> typeMappingInfoToJavaTypeAdapters;
+
+    protected JAXBContext() {
+        super();
+    }
 
     /**
      * Create a JAXBContext for a given XMLContext.  The XMLContext contains the 
@@ -522,6 +527,43 @@ public class JAXBContext extends javax.xml.bind.JAXBContext {
     }
     Map<TypeMappingInfo, RootLevelXmlAdapter> getTypeMappingInfoToJavaTypeAdapters() {
         return this.typeMappingInfoToJavaTypeAdapters;
+    }
+    
+    /**
+     * Get a value from an object based on an XPath statement.
+     * 
+     * @param <T>
+     *      The return type of this method corresponds to the returnType parameter.
+     * @param object
+     *      The XPath will be executed relative to this object.
+     * @param xPath
+     *      The XPath statement.
+     * @param namespaceResolver
+     *      A <tt>NamespaceResolver</tt> containing the prefix/URI pairings from the XPath statement.
+     * @param returnType
+     *      The return type.
+     *      
+     * @return
+     *      The object corresponding to the XPath or null if no result was found.
+     */
+    public <T> T getValueByXPath(Object object, String xPath, NamespaceResolver namespaceResolver, Class<T> returnType) {
+        return this.xmlContext.getValueByXPath(object, xPath, namespaceResolver, returnType);
+    }
+
+    /**
+     * Set a value on an object based on an XPath statement.
+     * 
+     * @param object
+     *      The XPath will be executed relative to this object.
+     * @param xPath
+     *      The XPath statement.
+     * @param namespaceResolver
+     *      A <tt>NamespaceResolver</tt> containing the prefix/URI pairings from the XPath statement.
+     * @param value
+     *      The value to be set.
+     */
+    public void setValueByXPath(Object object, String xPath, NamespaceResolver namespaceResolver, Object value) {
+        this.xmlContext.setValueByXPath(object, xPath, namespaceResolver, value);
     }
 
 }
