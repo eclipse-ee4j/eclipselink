@@ -11,10 +11,17 @@
  *     Oracle - initial API and implementation from Oracle TopLink
  *     09/23/2008-1.1 Guy Pelletier 
  *       - 241651: JPA 2.0 Access Type support
+ *     03/03/2010 - 2.1 Michael O'Brien  
+ *       - 302316: clear the object cache when testing stored procedure returns on SQLServer 
+ *         to avoid false positives visible only when debugging in DatabaseCall.buildOutputRow()
+ *       - 260263: SQLServer 2005/2008 requires stored procedure creation select clause variable and column name matching
+ *       
  ******************************************************************************/
 package org.eclipse.persistence.testing.models.jpa.xml.advanced;
 
 import java.util.*;
+
+import org.eclipse.persistence.sessions.DatabaseSession;
 import org.eclipse.persistence.sessions.Session;
 import org.eclipse.persistence.sessions.UnitOfWork;
 import org.eclipse.persistence.testing.framework.TestCase;
@@ -25,9 +32,9 @@ import org.eclipse.persistence.tools.schemaframework.StoredProcedureDefinition;
 /**
  * <p><b>Purpose</b>: To build and populate the database for example and testing purposes.
  * This population routine is fairly complex and makes use of the population manager to
- * resolve interrated objects as the employee objects are an interconnection graph of objects.
+ * resolve interrelated objects as the employee objects are an interconnection graph of objects.
  *
- * This is not the recomended way to create new objects in your application,
+ * This is not the recommended way to create new objects in your application,
  * this is just the easiest way to create interconnected new example objects from code.
  * Normally in your application the objects will be defined as part of a transactional and user interactive process.
  */
@@ -45,7 +52,7 @@ public class EmployeePopulator {
 
     }
 
-    public StoredProcedureDefinition buildOracleStoredProcedureReadFromAddress() {
+    public StoredProcedureDefinition buildOracleStoredProcedureReadFromAddress(DatabaseSession session) {
         StoredProcedureDefinition proc = new StoredProcedureDefinition();
         proc.setName("SProc_Read_XMLAddress");
         
@@ -56,20 +63,38 @@ public class EmployeePopulator {
         proc.addOutputArgument("province_v", String.class);
         proc.addOutputArgument("p_code_v", String.class);
                 
-        String statement = "SELECT STREET, CITY, COUNTRY, PROVINCE, P_CODE INTO street_v, city_v, country_v, province_v, p_code_v FROM CMP3_XML_ADDRESS WHERE (ADDRESS_ID = address_id_v)";
+        /**
+         * SQLServer 2008 requires extra prefix and delimiting chars in select statements in stored procedures
+         */
+        String statement = null;
+        if(session.getPlatform().isSQLServer()) {
+            // 260263: SQLServer 2005/2008 requires parameter matching in the select clause for stored procedures
+            statement = "SELECT @street_v=STREET, @city_v=CITY, @country_v=COUNTRY, @province_v=PROVINCE, @p_code_v=P_CODE FROM CMP3_XML_ADDRESS WHERE (ADDRESS_ID = @address_id_v)";
+        } else {
+            statement = "SELECT STREET, CITY, COUNTRY, PROVINCE, P_CODE INTO street_v, city_v, country_v, province_v, p_code_v FROM CMP3_XML_ADDRESS WHERE (ADDRESS_ID = address_id_v)";
+        }
         
         proc.addStatement(statement);
         return proc;
     }
     
-    public StoredProcedureDefinition buildOracleStoredProcedureReadInOut() {
+    public StoredProcedureDefinition buildOracleStoredProcedureReadInOut(DatabaseSession session) {
         StoredProcedureDefinition proc = new StoredProcedureDefinition();
         proc.setName("SProc_Read_XMLInOut");
         
         proc.addInOutputArgument("address_id_v", Long.class);
         proc.addOutputArgument("street_v", String.class);
         
-        String statement = "SELECT ADDRESS_ID, STREET into address_id_v, street_v from CMP3_XML_ADDRESS where (ADDRESS_ID = address_id_v)";
+        /**
+         * SQLServer 2008 requires extra prefix and delimiting chars in select statements in stored procedures
+         */
+        String statement = null;
+        if(session.getPlatform().isSQLServer()) {
+            // 260263: SQLServer 2005/2008 requires parameter matching in the select clause for stored procedures
+            statement = "SELECT @address_id_v=ADDRESS_ID, @street_v=STREET from CMP3_XML_ADDRESS where (ADDRESS_ID = @address_id_v)";
+        } else {
+            statement = "SELECT ADDRESS_ID, STREET into address_id_v, street_v from CMP3_XML_ADDRESS where (ADDRESS_ID = address_id_v)";
+        }
         
         proc.addStatement(statement);
         return proc;
@@ -793,9 +818,9 @@ public class EmployeePopulator {
         unitOfWork.commit();
         
         if (TestCase.supportsStoredProcedures(session)) {
-            SchemaManager schema = new SchemaManager(((org.eclipse.persistence.sessions.DatabaseSession) session));
-            schema.replaceObject(buildOracleStoredProcedureReadFromAddress());
-            schema.replaceObject(buildOracleStoredProcedureReadInOut());
+            SchemaManager schema = new SchemaManager((DatabaseSession) session);
+            schema.replaceObject(buildOracleStoredProcedureReadFromAddress((DatabaseSession) session));
+            schema.replaceObject(buildOracleStoredProcedureReadInOut((DatabaseSession) session));
         }
     }
     

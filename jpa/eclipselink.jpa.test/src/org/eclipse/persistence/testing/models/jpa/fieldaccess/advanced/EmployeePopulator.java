@@ -25,9 +25,9 @@ import org.eclipse.persistence.tools.schemaframework.StoredProcedureDefinition;
 /**
  * <p><b>Purpose</b>: To build and populate the database for example and testing purposes.
  * This population routine is fairly complex and makes use of the population manager to
- * resolve interrated objects as the employee objects are an interconnection graph of objects.
+ * resolve interrelated objects as the employee objects are an interconnection graph of objects.
  *
- * This is not the recomended way to create new objects in your application,
+ * This is not the recommended way to create new objects in your application,
  * this is just the easiest way to create interconnected new example objects from code.
  * Normally in your application the objects will be defined as part of a transactional and user interactive process.
  * 
@@ -841,7 +841,7 @@ public class EmployeePopulator {
      * are registered in the population manager
      */
     public void buildExamples() {
-        // First ensure that no preivous examples are hanging around.
+        // First ensure that no previous examples are hanging around.
         PopulationManager.getDefaultManager().getRegisteredObjects().remove(Employee.class);
         PopulationManager.getDefaultManager().getRegisteredObjects().remove(SmallProject.class);
         PopulationManager.getDefaultManager().getRegisteredObjects().remove(LargeProject.class);
@@ -888,7 +888,7 @@ public class EmployeePopulator {
         equipmentCodeC();
     }
     
-    public StoredProcedureDefinition buildOracleStoredProcedureReadFromAddress() {
+    public StoredProcedureDefinition buildOracleStoredProcedureReadFromAddress(DatabaseSession session) {
         StoredProcedureDefinition proc = new StoredProcedureDefinition();
         proc.setName("SProc_Read_Address");
         
@@ -899,20 +899,32 @@ public class EmployeePopulator {
         proc.addOutputArgument("province_v", String.class);
         proc.addOutputArgument("p_code_v", String.class);
                 
-        String statement = "SELECT STREET, CITY, COUNTRY, PROVINCE, P_CODE INTO street_v, city_v, country_v, province_v, p_code_v FROM CMP3_FA_ADDRESS WHERE (ADDRESS_ID = address_id_v)";
-        
+        String statement = null;
+        if(session.getPlatform().isSQLServer()) {
+            // 260263: SQLServer 2005/2008 requires parameter matching in the select clause for stored procedures
+            statement = "SELECT @street_v=STREET, @city_v=CITY, @country_v=COUNTRY, @province_v=PROVINCE, @p_code_v=P_CODE FROM CMP3_FA_ADDRESS WHERE (ADDRESS_ID = @address_id_v)";
+        } else {
+            statement = "SELECT STREET, CITY, COUNTRY, PROVINCE, P_CODE INTO street_v, city_v, country_v, province_v, p_code_v FROM CMP3_FA_ADDRESS WHERE (ADDRESS_ID = address_id_v)";
+        }
+       
         proc.addStatement(statement);
         return proc;
     }
     
-    public StoredProcedureDefinition buildOracleStoredProcedureReadInOut() {
+    public StoredProcedureDefinition buildOracleStoredProcedureReadInOut(DatabaseSession session) {
         StoredProcedureDefinition proc = new StoredProcedureDefinition();
         proc.setName("SProc_Read_InOut");
         
         proc.addInOutputArgument("address_id_v", Long.class);
-        proc.addOutputArgument("street_v", String.class);
+        proc.addInOutputArgument("street_v", String.class);
         
-        String statement = "SELECT ADDRESS_ID, STREET into address_id_v, street_v from CMP3_FA_ADDRESS where (ADDRESS_ID = address_id_v)";
+        String statement = null;
+        if(session.getPlatform().isSQLServer()) {
+            // 260263: SQLServer 2005/2008 requires parameter matching in the select clause for stored procedures
+            statement = "SELECT @address_id_v=ADDRESS_ID, @street_v=STREET from CMP3_FA_ADDRESS where (ADDRESS_ID = @address_id_v)";
+        } else {
+            statement = "SELECT ADDRESS_ID, STREET into address_id_v, street_v from CMP3_FA_ADDRESS where (ADDRESS_ID = address_id_v)";
+        }
         
         proc.addStatement(statement);
         return proc;
@@ -922,7 +934,7 @@ public class EmployeePopulator {
     {        
         Vector allObjects = new Vector();        
         UnitOfWork unitOfWork = session.acquireUnitOfWork();
-        // Dissable the read-only classes for model population. Specifically,
+        // Disable the read-only classes for model population. Specifically,
         // in this case we want to be able to create EquipmentCode objects.
         unitOfWork.removeAllReadOnlyClasses();
                 
@@ -936,9 +948,9 @@ public class EmployeePopulator {
         unitOfWork.commit();
 
         if (TestCase.supportsStoredProcedures(session)) {
-            SchemaManager schema = new SchemaManager(((DatabaseSession) session));
-            schema.replaceObject(buildOracleStoredProcedureReadFromAddress());
-            schema.replaceObject(buildOracleStoredProcedureReadInOut());
+            SchemaManager schema = new SchemaManager((DatabaseSession) session);
+            schema.replaceObject(buildOracleStoredProcedureReadFromAddress((DatabaseSession) session));
+            schema.replaceObject(buildOracleStoredProcedureReadInOut((DatabaseSession) session));
         }
         // Force uppercase for Postgres.
         if (session.getPlatform().isPostgreSQL()) {

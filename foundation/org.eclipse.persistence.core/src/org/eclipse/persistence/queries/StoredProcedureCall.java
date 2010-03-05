@@ -300,7 +300,7 @@ public class StoredProcedureCall extends DatabaseCall {
         ObjectRelationalDatabaseField inField = new ObjectRelationalDatabaseField(inArgumentFieldName);
         inField.setSqlType(type);
         inField.setSqlTypeName(typeName);
-        inField.setType(javaType);//needed for out, less neccessary for in.  maybe use containerPolicy instead?
+        inField.setType(javaType);//needed for out, less necessary for in.  maybe use containerPolicy instead?
         inField.setNestedTypeField(nestedType);
         if (inArgumentFieldName.equals(outArgumentFieldName)) {
             appendInOut(inField);
@@ -308,7 +308,7 @@ public class StoredProcedureCall extends DatabaseCall {
             ObjectRelationalDatabaseField outField = new ObjectRelationalDatabaseField(outArgumentFieldName);
             outField.setSqlType(type);
             outField.setSqlTypeName(typeName);
-            outField.setType(javaType);//needed for out, less neccessary for in.  maybe use containerPolicy instead?
+            outField.setType(javaType);//needed for out, less necessary for in.  maybe use containerPolicy instead?
             outField.setNestedTypeField(nestedType);
             appendInOut(inField, outField);
         }

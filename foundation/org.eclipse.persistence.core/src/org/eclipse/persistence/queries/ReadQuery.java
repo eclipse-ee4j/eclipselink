@@ -103,7 +103,7 @@ public abstract class ReadQuery extends DatabaseQuery {
 
     /**
      * INTERNAL
-     * Used to give the subclasses oportunity to copy aspects of the cloned query
+     * Used to give the subclasses opportunity to copy aspects of the cloned query
      * to the original query.
      */
     protected void clonedQueryExecutionComplete(DatabaseQuery query, AbstractSession session) {

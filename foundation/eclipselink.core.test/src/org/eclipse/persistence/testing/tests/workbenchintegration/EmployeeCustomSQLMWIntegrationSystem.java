@@ -28,7 +28,7 @@ import org.eclipse.persistence.sessions.factories.XMLProjectWriter;
 /**
  *  This test system uses the Employee Custom SQL test system to test the integration between the
  *  Mapping Workbench and the Foundation Library.  in addition, it writes stored 
- *  procedured call into project XML on which stored procedure WM integeration test model runs.
+ *  procedure calls into project XML on which stored procedure WM integration test model runs.
  *  @author Kyle Chen
  */
 public class EmployeeCustomSQLMWIntegrationSystem extends EmployeeCustomSQLSystem {

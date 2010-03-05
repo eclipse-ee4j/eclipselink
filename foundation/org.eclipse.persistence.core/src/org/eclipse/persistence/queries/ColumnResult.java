@@ -44,7 +44,7 @@ public class ColumnResult extends SQLResult{
     
     /**
      * INTERNAL:
-     * This method is a convience method for extracting values from Results
+     * This method is a convenience method for extracting values from Results
      */
     public Object getValueFromRecord(DatabaseRecord record, ResultSetMappingQuery query){
         return record.get(this.columnName);

@@ -9,10 +9,14 @@
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
+ *     03/03/2010 - 2.1 Michael O'Brien  
+ *       - 260263: SQLServer 2005/2008 requires stored procedure creation select clause variable and column name matching
  ******************************************************************************/  
 package org.eclipse.persistence.testing.models.jpa.advanced;
 
 import java.util.*;
+
+import org.eclipse.persistence.sessions.DatabaseSession;
 import org.eclipse.persistence.sessions.Session;
 import org.eclipse.persistence.sessions.UnitOfWork;
 import org.eclipse.persistence.testing.framework.TestCase;
@@ -23,7 +27,7 @@ import org.eclipse.persistence.tools.schemaframework.StoredProcedureDefinition;
 /**
  * <p><b>Purpose</b>: To build and populate the database for example and testing purposes.
  * This population routine is fairly complex and makes use of the population manager to
- * resolve interrated objects as the employee objects are an interconnection graph of objects.
+ * resolve interrelated objects as the employee objects are an interconnection graph of objects.
  *
  * This is not the recommended way to create new objects in your application,
  * this is just the easiest way to create interconnected new example objects from code.
@@ -890,7 +894,7 @@ public class EmployeePopulator {
         equipmentCodeC();
     }
     
-    public StoredProcedureDefinition buildOracleStoredProcedureReadFromAddress() {
+    public StoredProcedureDefinition buildOracleStoredProcedureReadFromAddress(DatabaseSession session) {
         StoredProcedureDefinition proc = new StoredProcedureDefinition();
         proc.setName("SProc_Read_Address");
         
@@ -900,28 +904,39 @@ public class EmployeePopulator {
         proc.addOutputArgument("country_v", String.class);
         proc.addOutputArgument("province_v", String.class);
         proc.addOutputArgument("p_code_v", String.class);
-                
-        String statement = "SELECT STREET, CITY, COUNTRY, PROVINCE, P_CODE INTO street_v, city_v, country_v, province_v, p_code_v FROM CMP3_ADDRESS WHERE (ADDRESS_ID = address_id_v)";
+        
+        String statement = null;
+        if(session.getPlatform().isSQLServer()) {
+            // 260263: SQLServer 2005/2008 requires parameter matching in the select clause for stored procedures
+            statement = "SELECT @street_v=STREET, @city_v=CITY, @country_v=COUNTRY, @province_v=PROVINCE, @p_code_v=P_CODE FROM CMP3_ADDRESS WHERE ADDRESS_ID = @address_id_v";
+        } else {
+            statement = "SELECT STREET, CITY, COUNTRY, PROVINCE, P_CODE INTO street_v, city_v, country_v, province_v, p_code_v FROM CMP3_ADDRESS WHERE (ADDRESS_ID = address_id_v)";
+        }
         
         proc.addStatement(statement);
         return proc;
     }
     
-    public StoredProcedureDefinition buildOracleStoredProcedureReadInOut() {
+    public StoredProcedureDefinition buildOracleStoredProcedureReadInOut(DatabaseSession session) {
         StoredProcedureDefinition proc = new StoredProcedureDefinition();
         proc.setName("SProc_Read_InOut");
         
         proc.addInOutputArgument("address_id_v", Long.class);
         proc.addOutputArgument("street_v", String.class);
         
-        String statement = "SELECT ADDRESS_ID, STREET into address_id_v, street_v from CMP3_ADDRESS where (ADDRESS_ID = address_id_v)";
+        String statement = null;
+        if(session.getPlatform().isSQLServer()) {
+            // 260263: SQLServer 2005/2008 requires parameter matching in the select clause for stored procedures
+            statement = "SELECT @address_id_v=ADDRESS_ID, @street_v=STREET from CMP3_ADDRESS where (ADDRESS_ID = @address_id_v)";
+        } else {
+            statement = "SELECT ADDRESS_ID, STREET into address_id_v, street_v from CMP3_ADDRESS where (ADDRESS_ID = address_id_v)";
+        }
         
         proc.addStatement(statement);
         return proc;
     }
     
-    public void persistExample(Session session)
-    {        
+    public void persistExample(Session session) {        
         Vector allObjects = new Vector();        
         UnitOfWork unitOfWork = session.acquireUnitOfWork();
         // Disable the read-only classes for model population. Specifically,
@@ -945,9 +960,9 @@ public class EmployeePopulator {
                 SchemaManager.FAST_TABLE_CREATOR = true;
             }
             try {
-                SchemaManager schema = new SchemaManager(((org.eclipse.persistence.sessions.DatabaseSession) session));
-                schema.replaceObject(buildOracleStoredProcedureReadFromAddress());
-                schema.replaceObject(buildOracleStoredProcedureReadInOut());
+                SchemaManager schema = new SchemaManager((DatabaseSession) session);
+                schema.replaceObject(buildOracleStoredProcedureReadFromAddress((DatabaseSession) session));
+                schema.replaceObject(buildOracleStoredProcedureReadInOut((DatabaseSession) session));
             } finally {
                 if (useFastTableCreatorAfterInitialCreate && !isFirstCreation) {
                     SchemaManager.FAST_TABLE_CREATOR = orig_FAST_TABLE_CREATOR;

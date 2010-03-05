@@ -62,7 +62,7 @@ public @interface NamedStoredProcedureQuery {
     /**
      * (Optional) Whether the query should return a result set. You should only 
      * set this flag to true if you expect a raw JDBC ResultSet to be returned 
-     * from  your stored proceduce. Otherwise, you  should let the default apply.
+     * from  your stored procedure. Otherwise, you  should let the default apply.
      */
     boolean returnsResultSet() default false; 
 

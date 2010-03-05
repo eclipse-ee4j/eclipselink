@@ -37,10 +37,12 @@ import org.eclipse.persistence.internal.helper.ClassConstants;
 import org.eclipse.persistence.internal.helper.DatabaseField;
 import org.eclipse.persistence.internal.helper.Helper;
 import org.eclipse.persistence.internal.jpa.EntityManagerImpl;
+import org.eclipse.persistence.jpa.JpaEntityManager;
 import org.eclipse.persistence.mappings.DatabaseMapping;
 import org.eclipse.persistence.mappings.ForeignReferenceMapping;
 import org.eclipse.persistence.queries.DoesExistQuery;
 import org.eclipse.persistence.sessions.DatabaseSession;
+import org.eclipse.persistence.sessions.UnitOfWork;
 import org.eclipse.persistence.sessions.server.ServerSession;
 import org.eclipse.persistence.testing.models.jpa.xml.advanced.Bungalow;
 import org.eclipse.persistence.testing.models.jpa.xml.advanced.EmployeePopulator;
@@ -738,6 +740,24 @@ public class EntityMappingsAdvancedJUnitTestCase extends JUnitTestCase {
     }
     
     /**
+     * Invalidate the entity cache on all 3 identity maps for EntityManager, client(isolated) and server cache
+     * @param em
+     */
+    private void invalidateIdentityCache(EntityManager em) {
+        // 260263: clear the cache or we will end up with a false positive when comparing the entity to itself later
+        UnitOfWork aSession;
+        if (isOnServer()) {
+            aSession = (UnitOfWork)((JpaEntityManager)em.getDelegate()).getActiveSession();
+        } else {
+            aSession = (UnitOfWork)((EntityManagerImpl) em).getActiveSession();
+        }
+        // clears all 3 identity maps for EntityManager, client(isolated) and server cache
+        aSession.getIdentityMapAccessor().initializeAllIdentityMaps();
+        // detaches the entity but leaves the identity map populated
+        em.clear();
+    }
+    
+    /**
      * Tests a named-stored-procedure-query setting
      */
     public void testNamedStoredProcedureQuery() {
@@ -759,9 +779,17 @@ public class EntityMappingsAdvancedJUnitTestCase extends JUnitTestCase {
             em.persist(address1);
             commitTransaction(em);
             
-            Address address2 = (Address) em.createNamedQuery("SProcXMLAddress").setParameter("ADDRESS_ID", address1.getId()).getSingleResult();
-            assertTrue("Address not found using stored procedure", address2.equals(address1));
+            // 260263 and 302316: clear the cache or we will end up with a false positive when comparing the entity to itself later
+            invalidateIdentityCache(em);
+
+            Query aQuery = em.createNamedQuery("SProcXMLAddress").setParameter("ADDRESS_ID", address1.getId());
+            Address address2 = (Address) aQuery.getSingleResult();
             
+            assertNotNull("Address returned from stored procedure is null", address2);
+            assertFalse("Address returned is the same cached instance that was persisted - the cache must be disabled for this test", address1 == address2); // new 
+            // Integer address handled differently than int
+            assertTrue("Address not found using stored procedure", address1.getId().intValue() == address2.getId().intValue());
+            assertTrue("Address.street data returned doesn't match persisted address.street", address1.getStreet().equals(address2.getStreet()));
         } catch (RuntimeException e) {
             if (isTransactionActive(em)){
                 rollbackTransaction(em);
@@ -797,10 +825,17 @@ public class EntityMappingsAdvancedJUnitTestCase extends JUnitTestCase {
 
             em.persist(address1);
             commitTransaction(em);
+            // 260263 and 302316: clear the cache or we will end up with a false positive when comparing the entity to itself later
+            invalidateIdentityCache(em);
 
-            Address address2 = (Address)em.createNamedQuery("SProcXMLInOut").setParameter("ADDRESS_ID", address1.getId()).getSingleResult();
-        
-            assertTrue("Address not found using stored procedure", (address1.getId() == address2.getId()) && (address1.getStreet().equals(address2.getStreet())));
+            Query aQuery = em.createNamedQuery("SProcXMLInOut").setParameter("ADDRESS_ID", address1.getId());
+            Address address2 = (Address) aQuery.getSingleResult();
+            
+            assertNotNull("Address returned from stored procedure is null", address2);
+            assertFalse("Address returned is the same cached instance that was persisted - the cache must be disabled for this test", address1 == address2); // new 
+            // Integer address handled differently than int
+            assertTrue("Address not found using stored procedure", address1.getId().intValue() == address2.getId().intValue());
+            assertTrue("Address.street data returned doesn't match persisted address.street", address1.getStreet().equals(address2.getStreet()));
         } catch (RuntimeException e) {
             if (isTransactionActive(em)){
                 rollbackTransaction(em);
