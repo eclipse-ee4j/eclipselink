@@ -112,7 +112,7 @@
         <java classname="org.jboss.Main" 
             fork="true"
             failonerror="false" >
-            <jvmarg value="-XX:MaxPermSize=256m"/>
+            <jvmarg value="-XX:MaxPermSize=512m"/>
             <jvmarg value="-Xms512m"/>
             <jvmarg value="-Xmx960m"/>
             <sysproperty key="http.proxyHost" value="www-proxy.us.oracle.com"/>
@@ -140,13 +140,12 @@
         </java>
     </target>
 
-
     <!-- Stop the server. -->
     <target name="jboss-stop">
         <java classname="org.jboss.Shutdown" 
             fork="true"
             failonerror="false">
-            <arg value="-S"/>
+            <arg line="-s ${server.url}"/>
             <classpath>
                 <fileset dir="${server.lib}" includes="${server.depend}"/>
                 <pathelement location="${jboss.home}/bin/shutdown.jar"/>

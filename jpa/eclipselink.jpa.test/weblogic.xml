@@ -159,10 +159,13 @@
 
     <!--
         This target is to remove the connection pool and managed datasource created by target <weblogic-setup>
-        Note: WLS server must not be running.
+        Note: WLS server must be running.
     -->
     <target name="weblogic-reset">
         <wlconfig url="${server.admin.url}" username="${server.user}" password="${server.pwd}">
+            <query domain="mydomain" type="JDBCTxDataSource" name="ELNonJTADS">
+                <delete/>
+            </query>
             <query domain="mydomain" type="JDBCDataSource" name="EclipseLinkDS">
                 <delete/>
             </query>
