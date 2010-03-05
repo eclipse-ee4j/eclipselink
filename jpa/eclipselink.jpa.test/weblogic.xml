@@ -163,10 +163,10 @@
     -->
     <target name="weblogic-reset">
         <wlconfig url="${server.admin.url}" username="${server.user}" password="${server.pwd}">
-            <query domain="mydomain" type="JDBCTxDataSource" name="ELNonJTADS">
+            <query domain="mydomain" type="JDBCDataSource" name="ELNonJTADS">
                 <delete/>
             </query>
-            <query domain="mydomain" type="JDBCDataSource" name="EclipseLinkDS">
+            <query domain="mydomain" type="JDBCTxDataSource" name="EclipseLinkDS">
                 <delete/>
             </query>
             <query domain="mydomain" type="JDBCConnectionPool" name="ejbPool">
