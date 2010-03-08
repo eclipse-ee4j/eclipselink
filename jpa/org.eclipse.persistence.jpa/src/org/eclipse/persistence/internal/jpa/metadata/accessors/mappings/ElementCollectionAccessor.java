@@ -29,6 +29,8 @@
  *       - 282553: JPA 2.0 JoinTable support for OneToOne and ManyToOne
  *     11/06/2009-2.0 Guy Pelletier 
  *       - 286317: UniqueConstraint xml element is changing (plus couple other fixes, see bug)
+ *     03/08/2010-2.1 Guy Pelletier 
+ *       - 303632: Add attribute-type for mapping attributes to EclipseLink-ORM  
  ******************************************************************************/ 
 package org.eclipse.persistence.internal.jpa.metadata.accessors.mappings;
 
@@ -453,16 +455,17 @@ public class ElementCollectionAccessor extends DirectCollectionAccessor implemen
         if (m_referenceClass == null) {
             m_referenceClass = getTargetClass();
         
-            if ((m_referenceClass == null) || m_referenceClass.isVoid()) {
+            if (m_referenceClass == null || m_referenceClass.isVoid()) {
                 // This call will attempt to extract the reference class from generics.
                 m_referenceClass = getReferenceClassFromGeneric();
         
                 if (m_referenceClass == null) {
-                    // 266912: We do not currently handle resolution of parameterized generic types when 
-                    // the accessor is a MappedSuperclasses the validation exception is relaxed in this case.
-                   if (getClassAccessor().isMappedSuperclass()) {
-                        // default to Void
-                        return new MetadataClass(getMetadataFactory(), Void.class);
+                    // 266912: We do not handle the resolution of parameterized 
+                    // generic types when the accessor is a MappedSuperclasses.
+                    // the validation exception is relaxed in this case and
+                    // void metadata class is returned.
+                    if (getClassAccessor().isMappedSuperclass()) {
+                        return getMetadataClass(Void.class);
                     }
                     
                     // Throw an exception. An element collection accessor must 

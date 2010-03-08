@@ -13,7 +13,9 @@
  *     12/12/2008-1.1 Guy Pelletier 
  *       - 249860: Implement table per class inheritance support.
  *     03/27/2009-2.0 Guy Pelletier 
- *       - 241413: JPA 2.0 Add EclipseLink support for Map type attributes  
+ *       - 241413: JPA 2.0 Add EclipseLink support for Map type attributes
+ *     03/08/2010-2.1 Guy Pelletier 
+ *       - 303632: Add attribute-type for mapping attributes to EclipseLink-ORM
  ******************************************************************************/ 
 package org.eclipse.persistence.internal.jpa.metadata;
 
@@ -71,6 +73,9 @@ public abstract class ORMetadata {
     // The tag name of the XML element. Used in logging messages and validation
     // exceptions.
     private String m_xmlElement;
+    
+    // Lookup of classname to Class to resolve primitive classes
+    protected static Map<String, Class> primitiveClasses = null;
     
     /**
      * INTERNAL:
@@ -130,6 +135,25 @@ public abstract class ORMetadata {
     
     /**
      * INTERNAL:
+     * Return the fully qualified className using the package (if any) setting
+     * from XML.
+     */
+    protected String getFullyQualifiedClassName(String className) {
+        Class primitiveClass = getPrimitiveClassForName(className);
+        
+        if (primitiveClass == null) {
+            if (getEntityMappings() != null) {
+                return getEntityMappings().getPackageQualifiedClassName(className);
+            }
+            
+            return className;
+        } else {
+            return primitiveClass.getName();
+        }
+    }
+    
+    /**
+     * INTERNAL:
      * Sub classed must that can uniquely be identified must override this
      * message to allow the overriding and merging to uniquely identify objects.
      * It will also be used when logging messages (that is provide a more
@@ -148,32 +172,27 @@ public abstract class ORMetadata {
      * The loader is the temp loader during predeploy, and the app loader during deploy.
      */
     public Class getJavaClass(MetadataClass metadataClass) {
-        return getJavaClass(metadataClass.getName());
-    }
-    
-    /**
-     * INTERNAL:
-     * Return the Java class for the class name using the metadata loader.
-     * The loader is the temp loader during predeploy, and the app loader during deploy.
-     */
-    public Class getJavaClass(String className) {
-        Class primitiveClass = ORMetadata.getPrimitiveClassForName(className);
-        if (primitiveClass != null){
+        String className = metadataClass.getName();
+        
+        Class primitiveClass = getPrimitiveClassForName(className);
+        
+        if (primitiveClass == null) {
+            String convertedClassName = className;
+            
+            // Array type names need to be converted so they can be used with Class.forName()
+            int index = className.indexOf('[');
+            if ((index > 0) && (className.charAt(index + 1) == ']')){
+                convertedClassName = "[L" + className.substring(0, index) + ";";
+            }
+            
+            // If we have an entity mappings object we need to append the
+            // package specification if it is specified.
+            convertedClassName = getFullyQualifiedClassName(convertedClassName);
+            
+            return MetadataHelper.getClassForName(convertedClassName, getMetadataFactory().getLoader());
+        } else {
             return primitiveClass;
         }
-        String convertedClassName = className;
-        
-        // Array type names need to be converted so they can be used with Class.forName()
-        int index = className.indexOf('[');
-        if ((index > 0) && (className.charAt(index + 1) == ']')){
-            convertedClassName = "[L" + className.substring(0, index) + ";";
-        }
-        
-        if (getEntityMappings() != null) {
-            return getEntityMappings().getClassForName(convertedClassName);
-        }
-        
-        return MetadataHelper.getClassForName(convertedClassName, getMetadataFactory().getLoader());
     }
     
     /**
@@ -200,7 +219,7 @@ public abstract class ORMetadata {
      * Return the MetadataClass for the class name.
      */
     public MetadataClass getMetadataClass(String className) {
-        return getMetadataFactory().getMetadataClass(className);
+        return getMetadataFactory().getMetadataClass(getFullyQualifiedClassName(className));
     }
     
     /**
@@ -210,7 +229,47 @@ public abstract class ORMetadata {
         if (getAccessibleObject() != null) {
             return getAccessibleObject().getMetadataFactory();
         }
+        
         return getEntityMappings().getMetadataFactory();
+    }
+    
+    /**
+     * INTERNAL:
+     */
+    protected Class getPrimitiveClassForName(String className){
+        if (primitiveClasses == null){
+            primitiveClasses = new HashMap<String, Class>();
+            primitiveClasses.put("", void.class);
+            primitiveClasses.put("void", void.class);
+            primitiveClasses.put("Boolean", Boolean.class);
+            primitiveClasses.put("Byte", Byte.class);
+            primitiveClasses.put("Character", Character.class);
+            primitiveClasses.put("Double", Double.class);
+            primitiveClasses.put("Float", Float.class);
+            primitiveClasses.put("Integer", Integer.class);
+            primitiveClasses.put("Long", Long.class);
+            primitiveClasses.put("Number", Number.class);
+            primitiveClasses.put("Short", Short.class);
+            primitiveClasses.put("String", String.class);
+            primitiveClasses.put("boolean", boolean.class);
+            primitiveClasses.put("byte", byte.class);
+            primitiveClasses.put("char", char.class);
+            primitiveClasses.put("double", double.class);
+            primitiveClasses.put("float", float.class);
+            primitiveClasses.put("int", int.class);
+            primitiveClasses.put("long", long.class);
+            primitiveClasses.put("short", short.class);
+            primitiveClasses.put("byte[]", new byte[0].getClass());
+            primitiveClasses.put("char[]", new char[0].getClass());
+            primitiveClasses.put("boolean[]", new boolean[0].getClass());
+            primitiveClasses.put("double[]", new double[0].getClass());
+            primitiveClasses.put("float[]", new float[0].getClass());
+            primitiveClasses.put("int[]", new int[0].getClass());
+            primitiveClasses.put("long[]", new long[0].getClass());
+            primitiveClasses.put("short[]", new short[0].getClass());
+        }
+        
+        return (className == null) ? void.class : primitiveClasses.get(className); 
     }
     
     /**
@@ -236,7 +295,7 @@ public abstract class ORMetadata {
      * here is that an entity mappings object will be available. 
      */
     protected MetadataClass initXMLClassName(String className) {
-        return getMetadataFactory().getMetadataClass(getEntityMappings().getFullClassName(className));
+        return getMetadataClass(className);
     }
     
     /**
@@ -613,47 +672,6 @@ public abstract class ORMetadata {
         public Object getValue() {
             return m_value;
         }
-    }
-    
-    // Lookup of classname to Class to resolve primitive classes
-    protected static Map<String, Class> primitiveClasses = null;
-    
-    protected static Class getPrimitiveClassForName(String className){
-        if (primitiveClasses == null){
-            primitiveClasses = new HashMap<String, Class>();
-            primitiveClasses.put("", void.class);
-            primitiveClasses.put("void", void.class);
-            primitiveClasses.put("Boolean", Boolean.class);
-            primitiveClasses.put("Byte", Byte.class);
-            primitiveClasses.put("Character", Character.class);
-            primitiveClasses.put("Double", Double.class);
-            primitiveClasses.put("Float", Float.class);
-            primitiveClasses.put("Integer", Integer.class);
-            primitiveClasses.put("Long", Long.class);
-            primitiveClasses.put("Number", Number.class);
-            primitiveClasses.put("Short", Short.class);
-            primitiveClasses.put("String", String.class);
-            primitiveClasses.put("boolean", boolean.class);
-            primitiveClasses.put("byte", byte.class);
-            primitiveClasses.put("char", char.class);
-            primitiveClasses.put("double", double.class);
-            primitiveClasses.put("float", float.class);
-            primitiveClasses.put("int", int.class);
-            primitiveClasses.put("long", long.class);
-            primitiveClasses.put("short", short.class);
-            primitiveClasses.put("byte[]", new byte[0].getClass());
-            primitiveClasses.put("char[]", new char[0].getClass());
-            primitiveClasses.put("boolean[]", new boolean[0].getClass());
-            primitiveClasses.put("double[]", new double[0].getClass());
-            primitiveClasses.put("float[]", new float[0].getClass());
-            primitiveClasses.put("int[]", new int[0].getClass());
-            primitiveClasses.put("long[]", new long[0].getClass());
-            primitiveClasses.put("short[]", new short[0].getClass());
-        }
-        if (className == null){
-            return void.class;
-        }
-        return primitiveClasses.get(className);
     }
 }
 

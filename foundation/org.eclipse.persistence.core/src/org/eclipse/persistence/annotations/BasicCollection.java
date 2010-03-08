@@ -45,10 +45,14 @@ import static javax.persistence.FetchType.LAZY;
  * and Embeddable class.
  * 
  * @author Guy Pelletier
- * @since Oracle TopLink 11.1.1.0.0 
+ * @since Oracle TopLink 11.1.1.0.0
+ * 
+ * @deprecated
+ * @see javax.persistence.ElementCollection
  */ 
 @Target({METHOD, FIELD})
 @Retention(RUNTIME)
+@Deprecated
 public @interface BasicCollection {
     /**
      * (Optional) Defines whether the value of the field or property should

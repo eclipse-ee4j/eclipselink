@@ -27,6 +27,8 @@
  *       - 270011: JPA 2.0 MappedById support
  *     09/29/2009-2.0 Guy Pelletier 
  *       - 282553: JPA 2.0 JoinTable support for OneToOne and ManyToOne
+ *     03/08/2010-2.1 Guy Pelletier 
+ *       - 303632: Add attribute-type for mapping attributes to EclipseLink-ORM  
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata.accessors;
 
@@ -206,6 +208,25 @@ public abstract class MetadataAccessor extends ORMetadata {
         return m_descriptor;
     }
 
+    /**
+     * INTERNAL:
+     * Return the fully qualified className using the package (if any) setting
+     * from XML.
+     */
+    protected String getFullyQualifiedClassName(String className) {
+        Class primitiveClass = getPrimitiveClassForName(className);
+        
+        if (primitiveClass == null) {
+            if (loadedFromXML()) {
+                return getEntityMappings().getPackageQualifiedClassName(className);
+            }
+            
+            return className;
+        } else {
+            return primitiveClass.getName();
+        }
+    }
+    
     /**
      * INTERNAL:
      * To satisfy the abstract getIdentifier() method from ORMetadata.

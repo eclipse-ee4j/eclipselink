@@ -11,6 +11,8 @@
  *     Oracle - initial API and implementation from Oracle TopLink
  *     09/23/2008-1.1 Guy Pelletier 
  *       - 241651: JPA 2.0 Access Type support
+ *     03/08/2010-2.1 Guy Pelletier 
+ *       - 303632: Add attribute-type for mapping attributes to EclipseLink-ORM  
  ******************************************************************************/  
 package org.eclipse.persistence.testing.tests.jpa.xml.advanced;
 
@@ -45,6 +47,7 @@ import org.eclipse.persistence.sessions.DatabaseSession;
 import org.eclipse.persistence.sessions.UnitOfWork;
 import org.eclipse.persistence.sessions.server.ServerSession;
 import org.eclipse.persistence.testing.models.jpa.xml.advanced.Bungalow;
+import org.eclipse.persistence.testing.models.jpa.xml.advanced.Confidant;
 import org.eclipse.persistence.testing.models.jpa.xml.advanced.EmployeePopulator;
 import org.eclipse.persistence.testing.models.jpa.xml.advanced.Address;
 import org.eclipse.persistence.testing.models.jpa.xml.advanced.AdvancedTableCreator;
@@ -53,7 +56,9 @@ import org.eclipse.persistence.testing.models.jpa.xml.advanced.Dealer;
 import org.eclipse.persistence.testing.models.jpa.xml.advanced.Employee;
 import org.eclipse.persistence.testing.models.jpa.xml.advanced.EmploymentPeriod;
 import org.eclipse.persistence.testing.models.jpa.xml.advanced.LargeProject;
+import org.eclipse.persistence.testing.models.jpa.xml.advanced.Loner;
 import org.eclipse.persistence.testing.models.jpa.xml.advanced.ModelExamples;
+import org.eclipse.persistence.testing.models.jpa.xml.advanced.Name;
 import org.eclipse.persistence.testing.models.jpa.xml.advanced.PhoneNumber;
 import org.eclipse.persistence.testing.models.jpa.xml.advanced.Project;
 import org.eclipse.persistence.testing.models.jpa.xml.advanced.ReadOnlyClass;
@@ -132,6 +137,7 @@ public class EntityMappingsAdvancedJUnitTestCase extends JUnitTestCase {
             suite.addTest(new EntityMappingsAdvancedJUnitTestCase("testProperty", persistenceUnit));
             suite.addTest(new EntityMappingsAdvancedJUnitTestCase("testAccessorMethods", persistenceUnit));
             suite.addTest(new EntityMappingsAdvancedJUnitTestCase("testIfMultipleBasicCollectionMappingsExistForEmployeeResponsibilites", persistenceUnit));
+            suite.addTest(new EntityMappingsAdvancedJUnitTestCase("testAttributeTypeSpecifications", persistenceUnit));
         }
         
         return suite;
@@ -1461,4 +1467,45 @@ public class EntityMappingsAdvancedJUnitTestCase extends JUnitTestCase {
             clearCache(m_persistenceUnit);
         }
     }    
+    
+    /**
+     * Verifies that access-methods are correctly processed and used.
+     */
+    public void testAttributeTypeSpecifications() {
+        EntityManager em = createEntityManager(m_persistenceUnit);
+        
+        try {
+            beginTransaction(em);
+            
+            Loner loner = new Loner();
+            Name name = new Name();
+            name.firstName = "Joe";
+            name.lastName = "Schmo";
+            loner.setName(name);
+            
+            Confidant confidant = new Confidant();
+            loner.addConfidant(confidant);
+            
+            loner.addCharacteristic("Keeps to himself");
+            loner.addCharacteristic("Shy's away from conversation");
+            
+            em.persist(loner);
+            
+            Object lonerId = loner.getId();
+            commitTransaction(em);
+            
+            clearCache(m_persistenceUnit);
+            em.clear();
+            Loner refreshedLoner = em.find(Loner.class, lonerId);
+            assertTrue("Loner objects didn't match", getServerSession(m_persistenceUnit).compareObjects(loner, refreshedLoner));
+        } catch (RuntimeException e) {
+            if (isTransactionActive(em)){
+                rollbackTransaction(em);
+            }
+
+            throw e;
+        } finally {
+            closeEntityManager(em);
+        }
+    }
 }

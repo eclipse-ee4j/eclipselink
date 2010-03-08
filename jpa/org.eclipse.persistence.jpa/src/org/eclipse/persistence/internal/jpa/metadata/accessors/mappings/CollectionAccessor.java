@@ -35,6 +35,8 @@
  *       - 282553: JPA 2.0 JoinTable support for OneToOne and ManyToOne
  *     11/06/2009-2.0 Guy Pelletier 
  *       - 286317: UniqueConstraint xml element is changing (plus couple other fixes, see bug)
+ *     03/08/2010-2.1 Guy Pelletier 
+ *       - 303632: Add attribute-type for mapping attributes to EclipseLink-ORM  
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata.accessors.mappings;
 
@@ -492,8 +494,7 @@ public abstract class CollectionAccessor extends RelationshipAccessor implements
      */
     @Override
     public void process() {
-        // Validate the collection type.
-        if (! getAccessibleObject().isSupportedToManyCollectionClass(getDescriptor())) {
+        if (! getAccessibleObject().isSupportedToManyCollectionClass(getRawClass())) {
             throw ValidationException.invalidCollectionTypeForRelationship(getJavaClass(), getRawClass(), getAttributeName());
         }
     }

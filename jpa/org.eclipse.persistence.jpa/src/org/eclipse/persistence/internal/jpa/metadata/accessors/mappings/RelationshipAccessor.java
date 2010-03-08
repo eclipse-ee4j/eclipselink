@@ -29,6 +29,8 @@
  *       - 286317: UniqueConstraint xml element is changing (plus couple other fixes, see bug)
  *     11/25/2009-2.0 Guy Pelletier 
  *       - 288955: EclipseLink 2.0.0.v20090821-r4934 (M7) throws EclipseLink-80/41 exceptions if InheritanceType.TABLE_PER_CLASS is used
+ *     03/08/2010-2.1 Guy Pelletier 
+ *       - 303632: Add attribute-type for mapping attributes to EclipseLink-ORM  
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata.accessors.mappings;
 
@@ -194,6 +196,14 @@ public abstract class RelationshipAccessor extends MappingAccessor {
                 mechanism.addTargetRelationKeyField(fkField, pkField);
             }
         }
+    }
+    
+    /**
+     * INTERNAL:
+     * Used for OX mapping.
+     */
+    public String getBatchFetch() {
+        return m_batchFetch;
     }
     
     /**
@@ -570,6 +580,14 @@ public abstract class RelationshipAccessor extends MappingAccessor {
     
     /**
      * INTERNAL:
+     * Used for OX mapping.
+     */
+    public void setBatchFetch(String batchFetch) {
+        m_batchFetch = batchFetch;
+    }
+    
+    /**
+     * INTERNAL:
      * Set the cascade type on a mapping.
      */
     protected void setCascadeType(String type, ForeignReferenceMapping mapping) {
@@ -670,13 +688,5 @@ public abstract class RelationshipAccessor extends MappingAccessor {
         }
         
         return isLazy();
-    }
-   
-    public String getBatchFetch() {
-        return m_batchFetch;
-    }
-
-    public void setBatchFetch(String batchFetch) {
-        m_batchFetch = batchFetch;
     }
 }

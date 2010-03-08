@@ -26,7 +26,9 @@
  *       - 270011: JPA 2.0 MappedById support
  *     06/25/2009-2.0 Michael O'Brien 
  *       - 266912: change MappedSuperclass handling in stage2 to pre process accessors
- *          in support of the custom descriptors holding mappings required by the Metamodel 
+ *          in support of the custom descriptors holding mappings required by the Metamodel
+ *     03/08/2010-2.1 Guy Pelletier 
+ *       - 303632: Add attribute-type for mapping attributes to EclipseLink-ORM
  ******************************************************************************/
 package org.eclipse.persistence.internal.jpa.metadata.accessors.objects;
 
@@ -225,9 +227,9 @@ public class MetadataAnnotatedElement extends MetadataAccessibleObject {
             // The Map key may be a generic itself, or just the class value.
             String type = descriptor.getGenericType(m_genericType.get(2));
             if (type != null) {
-                return getMetadataFactory().getMetadataClass(type);
+                return getMetadataClass(type);
             }
-            return getMetadataFactory().getMetadataClass(m_genericType.get(1));
+            return getMetadataClass(m_genericType.get(1));
         } else {
             return null;
         }
@@ -268,11 +270,11 @@ public class MetadataAnnotatedElement extends MetadataAccessibleObject {
             if (isGenericType()) {
                 String type = descriptor.getGenericType(getGenericType().get(0));
                 if (type == null) {
-                    return getMetadataFactory().getMetadataClass("java.lang.String");
+                    return getMetadataClass("java.lang.String");
                 }
-                return getMetadataFactory().getMetadataClass(type);
+                return getMetadataClass(type);
             }
-            return getMetadataFactory().getMetadataClass(getType());
+            return getMetadataClass(getType());
         }
         
         return m_rawClass;    
@@ -315,7 +317,7 @@ public class MetadataAnnotatedElement extends MetadataAccessibleObject {
                 // Assume is a generic type variable, find real type.
                 elementClass = descriptor.getGenericType(elementClass);
             }            
-            MetadataClass metadataClass = getMetadataFactory().getMetadataClass(elementClass);
+            MetadataClass metadataClass = getMetadataClass(elementClass);
             // 266912: We do not currently handle resolution of the parameterized 
             // generic type when the accessor is a MappedSuperclass elementClass 
             // will be null in this case so a lookup of the metadataClass will 
@@ -532,7 +534,7 @@ public class MetadataAnnotatedElement extends MetadataAccessibleObject {
      */
     public boolean isOneToMany(MetadataDescriptor descriptor) {
         if (isAnnotationNotPresent(OneToMany.class) && ! descriptor.ignoreDefaultMappings()) {
-            if (isGenericCollectionType() && isSupportedToManyCollectionClass(descriptor) && descriptor.getProject().hasEntity(getReferenceClassFromGeneric(descriptor))) {
+            if (isGenericCollectionType() && isSupportedToManyCollectionClass(getRawClass(descriptor)) && descriptor.getProject().hasEntity(getReferenceClassFromGeneric(descriptor))) {
                 getLogger().logConfigMessage(MetadataLogger.ONE_TO_MANY_MAPPING, this);
                 return true;
             }
@@ -566,29 +568,27 @@ public class MetadataAnnotatedElement extends MetadataAccessibleObject {
     
     /**
      * INTERNAL:
-     * Method to return whether a class is a supported direct collection class.
+     * Method to return whether the given class is a supported collection class.
      */
-    public boolean isSupportedCollectionClass(MetadataDescriptor descriptor) {
-        return getRawClass(descriptor).isCollection();
+    public boolean isSupportedCollectionClass(MetadataClass metadataClass) {
+        return metadataClass.isCollection();
     }
     
     /**
      * INTERNAL:
-     * Method to return whether a class is a supported direct map collection
-     * class. Changed in 221577 to allow types assignable to Collection, Set, 
-     * List and Map rather than strict equality.
+     * Method to return whether the given class is a supported map class. 
      */
-    public boolean isSupportedMapClass(MetadataDescriptor descriptor) {
-        return getRawClass(descriptor).isMap(); 
+    public boolean isSupportedMapClass(MetadataClass metadataClass) {
+        return metadataClass.isMap(); 
     }
     
     /**
      * INTERNAL:
-     * Method to return whether a class is a supported one to many collection
-     * class.  
+     * Method to return whether the given class is a supported to many 
+     * collection class.  
      */
-    public boolean isSupportedToManyCollectionClass(MetadataDescriptor descriptor) {
-        return isSupportedCollectionClass(descriptor) || isSupportedMapClass(descriptor);
+    public boolean isSupportedToManyCollectionClass(MetadataClass metadataClass) {
+        return isSupportedCollectionClass(metadataClass) || isSupportedMapClass(metadataClass);
     }
 
     /**

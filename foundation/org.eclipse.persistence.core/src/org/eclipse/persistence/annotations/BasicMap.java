@@ -44,7 +44,10 @@ import static javax.persistence.FetchType.LAZY;
  * class.
  * 
  * @author Guy Pelletier
- * @since Oracle TopLink 11.1.1.0.0 
+ * @since Oracle TopLink 11.1.1.0.0
+ * 
+ * @deprecated
+ * @see javax.persistence.ElementCollection
  */ 
 @Target({METHOD, FIELD})
 @Retention(RUNTIME)
@@ -60,7 +63,7 @@ public @interface BasicMap {
 
     /**
      * (Optional) The name of the data column that holds the direct map 
-     * key. If the name on te key column is "", the name will default to:
+     * key. If the name on the key column is "", the name will default to:
      * the name of the property or field; "_KEY".
      */
     Column keyColumn() default @Column;

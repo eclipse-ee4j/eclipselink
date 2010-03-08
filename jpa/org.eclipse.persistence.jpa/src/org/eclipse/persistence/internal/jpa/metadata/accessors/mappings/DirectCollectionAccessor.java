@@ -20,21 +20,22 @@
  *       - 278768: JPA 2.0 Association Override Join Table
  *     11/06/2009-2.0 Guy Pelletier 
  *       - 286317: UniqueConstraint xml element is changing (plus couple other fixes, see bug)
+ *     03/08/2010-2.1 Guy Pelletier 
+ *       - 303632: Add attribute-type for mapping attributes to EclipseLink-ORM  
  ******************************************************************************/ 
 package org.eclipse.persistence.internal.jpa.metadata.accessors.mappings;
 
 import javax.persistence.FetchType;
 
+import org.eclipse.persistence.annotations.BatchFetch;
 import org.eclipse.persistence.annotations.BatchFetchType;
 import org.eclipse.persistence.annotations.JoinFetch;
-import org.eclipse.persistence.internal.helper.DatabaseField;
 import org.eclipse.persistence.internal.helper.DatabaseTable;
 import org.eclipse.persistence.internal.jpa.metadata.MetadataDescriptor;
 import org.eclipse.persistence.internal.jpa.metadata.MetadataLogger;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.classes.ClassAccessor;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataAccessibleObject;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataAnnotation;
-import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataClass;
 import org.eclipse.persistence.internal.jpa.metadata.tables.CollectionTableMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.xml.XMLEntityMappings;
 import org.eclipse.persistence.mappings.CollectionMapping;
@@ -79,6 +80,14 @@ public abstract class DirectCollectionAccessor extends DirectAccessor {
         if (joinFetch != null) {
             m_joinFetch = (String) joinFetch.getAttribute("value");
         }
+        
+        // Set the batch fetch if one is present.           
+        MetadataAnnotation batchFetch = getAnnotation(BatchFetch.class);            
+        if (batchFetch != null) {
+            // Get attribute string will return the default ""
+            m_batchFetch = (String) batchFetch.getAttributeString("value");
+        }
+        
         // Since BasicCollection and ElementCollection look for different
         // collection tables, we will not initialize/look for one here. Those
         // accessors will be responsible for loading their collection table.
@@ -88,29 +97,16 @@ public abstract class DirectCollectionAccessor extends DirectAccessor {
      * INTERNAL: 
      * Used for OX mapping.
      */
-    public CollectionTableMetadata getCollectionTable() {
-        return m_collectionTable;
+    public String getBatchFetch() {
+        return m_batchFetch;
     }
     
     /**
-     * INTERNAL:
-     * Process column metadata details and resolve any generic specifications.
+     * INTERNAL: 
+     * Used for OX mapping.
      */
-    @Override
-    protected DatabaseField getDatabaseField(DatabaseTable defaultTable, String loggingCtx) {
-        DatabaseField field = super.getDatabaseField(defaultTable, loggingCtx);
-        
-        // To correctly resolve the generics at runtime, we need to set the 
-        // field type.
-        if (getAccessibleObject().isGenericCollectionType()) {
-            if (loggingCtx.equals(MetadataLogger.MAP_KEY_COLUMN)) {
-                field.setType(getJavaClass(getMapKeyReferenceClass()));
-            } else {
-                field.setType(getJavaClass(getReferenceClass()));
-            }
-        }
-                    
-        return field;
+    public CollectionTableMetadata getCollectionTable() {
+        return m_collectionTable;
     }
     
     /**
@@ -136,34 +132,12 @@ public abstract class DirectCollectionAccessor extends DirectAccessor {
         return m_joinFetch;
     }
     
-    public String getBatchFetch() {
-        return m_batchFetch;
-    }
-
-    public void setBatchFetch(String batchFetch) {
-        m_batchFetch = batchFetch;
-    }
-    
     /**
      * INTERNAL: 
      * Used for OX mapping.
      */
     public String getPrivateOwned() {
         return null;
-    }
-    
-    /**
-     * INTERNAL:
-     * Return the reference class for this accessor. It will try to extract
-     * a reference class from a generic specification. If no generics are used,
-     * then it will return void.class. This avoids NPE's when processing
-     * JPA converters that can default (Enumerated and Temporal) based on the
-     * reference class.
-     */
-    @Override
-    public MetadataClass getReferenceClass() {
-        MetadataClass cls = getReferenceClassFromGeneric();
-        return (cls == null) ? getMetadataFactory().getMetadataClass(void.class.getName()) : cls;
     }
     
     /**
@@ -240,7 +214,7 @@ public abstract class DirectCollectionAccessor extends DirectAccessor {
      * Returns true if the given class is a valid basic collection type.
      */ 
     protected boolean isValidDirectCollectionType() {
-        return getAccessibleObject().isSupportedCollectionClass(getDescriptor());
+        return getAccessibleObject().isSupportedCollectionClass(getRawClass());
     }
     
     /**
@@ -248,7 +222,7 @@ public abstract class DirectCollectionAccessor extends DirectAccessor {
      * Returns true if the given class is a valid basic map type.
      */ 
     protected boolean isValidDirectMapType() {
-        return getAccessibleObject().isSupportedMapClass(getDescriptor());
+        return getAccessibleObject().isSupportedMapClass(getRawClass());
     }
     
     /**
@@ -260,7 +234,7 @@ public abstract class DirectCollectionAccessor extends DirectAccessor {
         
         // Set the reference class name.
         mapping.setReferenceClassName(getReferenceClassName());
-        
+
         // Set the attribute name.
         mapping.setAttributeName(getAttributeName());
         
@@ -269,6 +243,8 @@ public abstract class DirectCollectionAccessor extends DirectAccessor {
         
         // Process join fetch type.
         mapping.setJoinFetch(getMappingJoinFetchType(m_joinFetch));
+        
+        // Process the batch fetch type.
         if (getBatchFetch() != null) {
             mapping.setBatchFetchType(BatchFetchType.valueOf(getBatchFetch()));
         }
@@ -323,6 +299,13 @@ public abstract class DirectCollectionAccessor extends DirectAccessor {
         // Process the value column (we must process this field before the 
         // call to processConverter, since it may set a field classification)
         mapping.setDirectField(getDatabaseField(getReferenceDatabaseTable(), MetadataLogger.VALUE_COLUMN));
+
+        // To resolve any generic types (or respect an attribute type 
+        // specification) we need to set the attribute classification on the 
+        // mapping to ensure we do the right conversions.
+        if (hasAttributeType() || getAccessibleObject().isGenericCollectionType()) {
+            mapping.setDirectFieldClassification(getJavaClass(getReferenceClass()));
+        }
         
         // Process a converter for this mapping. We will look for a convert
         // value. If none is found then we'll look for a JPA converter, that 
@@ -352,6 +335,13 @@ public abstract class DirectCollectionAccessor extends DirectAccessor {
         // key converter for an element collection case will be taken care of
         // in the processContainerPolicyAndIndirection call above.
         if (isBasicMap()) {
+            // To resolve any generic types (or respect an attribute type 
+            // specification) we need to set the attribute classification on the 
+            // mapping to ensure we do the right conversions.
+            if (hasAttributeType() || getAccessibleObject().isGenericCollectionType()) {
+                mapping.setDirectKeyFieldClassification(getJavaClass(getMapKeyReferenceClass()));
+            }
+            
             // Process a converter for the key column of this mapping.
             processMappingKeyConverter(mapping, getKeyConverter(), getMapKeyReferenceClass());
         }
@@ -360,8 +350,23 @@ public abstract class DirectCollectionAccessor extends DirectAccessor {
         // to processConverter, since it may set a field classification)
         mapping.setDirectField(getDatabaseField(getReferenceDatabaseTable(), MetadataLogger.VALUE_COLUMN));
         
+        // To resolve any generic types (or respect an attribute type 
+        // specification) we need to set the attribute classification on the 
+        // mapping to ensure we do the right conversions.
+        if (hasAttributeType() || getAccessibleObject().isGenericCollectionType()) {
+            mapping.setDirectFieldClassification(getJavaClass(getReferenceClass()));
+        }
+        
         // Process a converter for value column of this mapping.
         processMappingValueConverter(mapping, getValueConverter(), getReferenceClass());    
+    }
+    
+    /**
+     * INTERNAL: 
+     * Used for OX mapping.
+     */
+    public void setBatchFetch(String batchFetch) {
+        m_batchFetch = batchFetch;
     }
     
     /**

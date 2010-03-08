@@ -308,13 +308,13 @@ public class TransformerFactory {
             if (method == null) {
                 return null;
             }
-            return method.getMetadataFactory().getMetadataClass(method.getReturnType());
+            return method.getMetadataClass(method.getReturnType());
         } else {
             MetadataField field = metadataClass.getField(attributeName, checkSuperclass);
             if (field == null) {
                 return null;
             }
-            return field.getMetadataFactory().getMetadataClass(field.getType());
+            return field.getMetadataClass(field.getType());
         }
     }
 

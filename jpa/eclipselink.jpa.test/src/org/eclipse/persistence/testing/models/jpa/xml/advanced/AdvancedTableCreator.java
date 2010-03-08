@@ -15,6 +15,8 @@
  *       - 265359: JPA 2.0 Element Collections - Metadata processing portions
  *     11/06/2009-2.0 Guy Pelletier 
  *       - 286317: UniqueConstraint xml element is changing (plus couple other fixes, see bug)
+ *     03/08/2010-2.1 Guy Pelletier 
+ *       - 303632: Add attribute-type for mapping attributes to EclipseLink-ORM  
  ******************************************************************************/  
 package org.eclipse.persistence.testing.models.jpa.xml.advanced;
 
@@ -42,8 +44,12 @@ public class AdvancedTableCreator extends TogglingFastTableCreator {
         addTableDefinition(buildRESPONSTable());
         addTableDefinition(buildSALARYTable());
         addTableDefinition(buildWOMANTable());
+        
+        // Tables used only in extended test model
+        addTableDefinition(buildLONERTable());
+        addTableDefinition(buildLONERCHARACTERISTICSTable());
+        addTableDefinition(buildCONFIDANTTable());
     }
-    
     
     public static TableDefinition buildREADONLYCLASSTable() {
         TableDefinition table = new TableDefinition();
@@ -147,6 +153,35 @@ public class AdvancedTableCreator extends TogglingFastTableCreator {
         return table;
     }
 
+    public static TableDefinition buildCONFIDANTTable() {
+        TableDefinition table = new TableDefinition();
+        table.setName("XML_CONFIDANT");
+
+        FieldDefinition fieldID = new FieldDefinition();
+        fieldID.setName("ID");
+        fieldID.setTypeName("NUMERIC");
+        fieldID.setSize(15);
+        fieldID.setSubSize(0);
+        fieldID.setIsPrimaryKey(true);
+        fieldID.setIsIdentity(true);
+        fieldID.setUnique(false);
+        fieldID.setShouldAllowNull(false);
+        table.addField(fieldID);
+        
+        FieldDefinition fieldLONERID = new FieldDefinition();
+        fieldLONERID.setName("LONER_ID");
+        fieldLONERID.setTypeName("NUMERIC");
+        fieldLONERID.setSize(15);
+        fieldLONERID.setShouldAllowNull(true);
+        fieldLONERID.setIsPrimaryKey(false);
+        fieldLONERID.setUnique(false);
+        fieldLONERID.setIsIdentity(false);
+        fieldLONERID.setForeignKeyFieldName("XML_LONER.ID");
+        table.addField(fieldLONERID);
+
+        return table;
+    }
+    
     public static TableDefinition buildCREDITCARDSTable() {
         TableDefinition table = new TableDefinition();
         table.setName("XMLEmployee_CREDITCARDS");
@@ -582,6 +617,82 @@ public class AdvancedTableCreator extends TogglingFastTableCreator {
         field1.setIsIdentity(false );
         table.addField(field1);
     
+        return table;
+    }
+    
+    public static TableDefinition buildLONERCHARACTERISTICSTable() {
+        TableDefinition table = new TableDefinition();
+        table.setName("XML_LONER_CHARACTERISTICS");
+    
+        FieldDefinition fieldID = new FieldDefinition();
+        fieldID.setName("LONER_ID");
+        fieldID.setTypeName("NUMERIC");
+        fieldID.setSize(15);
+        fieldID.setShouldAllowNull(false);
+        fieldID.setIsPrimaryKey(false);
+        fieldID.setUnique(false);
+        fieldID.setIsIdentity(false);
+        fieldID.setForeignKeyFieldName("XML_LONER.ID");
+        table.addField(fieldID);
+    
+        FieldDefinition fieldCHARACTERISTIC = new FieldDefinition();
+        fieldCHARACTERISTIC.setName("CHARACTERISTIC");
+        fieldCHARACTERISTIC.setTypeName("VARCHAR");
+        fieldCHARACTERISTIC.setSize(50);
+        fieldCHARACTERISTIC.setShouldAllowNull(false);
+        fieldCHARACTERISTIC.setIsPrimaryKey(false);
+        fieldCHARACTERISTIC.setUnique(false);
+        fieldCHARACTERISTIC.setIsIdentity(false);
+        table.addField(fieldCHARACTERISTIC);
+    
+        return table;
+    }
+    
+    public static TableDefinition buildLONERTable() {
+        TableDefinition table = new TableDefinition();
+        table.setName("XML_LONER");
+
+        FieldDefinition fieldID = new FieldDefinition();
+        fieldID.setName("ID");
+        fieldID.setTypeName("NUMERIC");
+        fieldID.setSize(15);
+        fieldID.setSubSize(0);
+        fieldID.setIsPrimaryKey(true);
+        fieldID.setIsIdentity(true);
+        fieldID.setUnique(false);
+        fieldID.setShouldAllowNull(false);
+        table.addField(fieldID);
+
+        FieldDefinition fieldVERSION = new FieldDefinition();
+        fieldVERSION.setName("VERSION");
+        fieldVERSION.setTypeName("NUMERIC");
+        fieldVERSION.setSize(15);
+        fieldVERSION.setShouldAllowNull(true);
+        fieldVERSION.setIsPrimaryKey(false);
+        fieldVERSION.setUnique(false);
+        fieldVERSION.setIsIdentity(false);
+        table.addField(fieldVERSION);
+
+        FieldDefinition fieldFIRSTNAME = new FieldDefinition();
+        fieldFIRSTNAME.setName("F_NAME");
+        fieldFIRSTNAME.setTypeName("VARCHAR");
+        fieldFIRSTNAME.setSize(40);
+        fieldFIRSTNAME.setShouldAllowNull(true);
+        fieldFIRSTNAME.setIsPrimaryKey(false);
+        fieldFIRSTNAME.setUnique(false);
+        fieldFIRSTNAME.setIsIdentity(false);
+        table.addField(fieldFIRSTNAME);
+        
+        FieldDefinition fieldLASTNAME = new FieldDefinition();
+        fieldLASTNAME.setName("L_NAME");
+        fieldLASTNAME.setTypeName("VARCHAR");
+        fieldLASTNAME.setSize(40);
+        fieldLASTNAME.setShouldAllowNull(true);
+        fieldLASTNAME.setIsPrimaryKey(false);
+        fieldLASTNAME.setUnique(false);
+        fieldLASTNAME.setIsIdentity(false);
+        table.addField(fieldLASTNAME);        
+
         return table;
     }
 

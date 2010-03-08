@@ -30,7 +30,10 @@ import javax.persistence.UniqueConstraint;
  * @see org.eclipse.persistence.annotations.BasicMap
  * @see org.eclipse.persistence.annotations.BasicCollection
  * @author Guy Pelletier
- * @since Oracle TopLink 11.1.1.0.0 
+ * @since Oracle TopLink 11.1.1.0.0
+ * 
+ * @deprecated
+ * @see javax.persistence.CollectionTable
  */ 
 @Target({METHOD, FIELD})
 @Retention(RUNTIME)

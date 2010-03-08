@@ -21,6 +21,8 @@
  *       - 278768: JPA 2.0 Association Override Join Table
  *     09/29/2009-2.0 Guy Pelletier 
  *       - 282553: JPA 2.0 JoinTable support for OneToOne and ManyToOne
+ *     03/08/2010-2.1 Guy Pelletier 
+ *       - 303632: Add attribute-type for mapping attributes to EclipseLink-ORM  
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata.accessors.mappings;
 
@@ -33,6 +35,7 @@ import org.eclipse.persistence.internal.jpa.metadata.MetadataLogger;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.classes.ClassAccessor;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataAccessibleObject;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataAnnotation;
+import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataClass;
 
 import org.eclipse.persistence.internal.jpa.metadata.columns.ColumnMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.columns.PrimaryKeyJoinColumnMetadata;
@@ -121,6 +124,20 @@ public class BasicCollectionAccessor extends DirectCollectionAccessor {
     @Override
     protected String getKeyConverter() {
         return null;
+    }
+    
+    /**
+     * INTERNAL:
+     * Return the reference class for this accessor. It will try to extract
+     * a reference class from a generic specification. If no generics are used,
+     * then it will return void.class. This avoids NPE's when processing
+     * JPA converters that can default (Enumerated and Temporal) based on the
+     * reference class.
+     */
+    @Override
+    public MetadataClass getReferenceClass() {
+        MetadataClass cls = getReferenceClassFromGeneric();
+        return (cls == null) ? getMetadataClass(void.class) : cls;
     }
     
     /**

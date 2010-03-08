@@ -29,6 +29,8 @@
  *       - 290567: mappedbyid support incomplete
  *     12/2/2009-2.1 Guy Pelletier 
  *       - 296612:  Add current annotation only metadata support of return insert/update to the EclipseLink-ORM.XML Schema
+ *     03/08/2010-2.1 Guy Pelletier 
+ *       - 303632: Add attribute-type for mapping attributes to EclipseLink-ORM  
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata.accessors.mappings;
 
@@ -48,7 +50,6 @@ import org.eclipse.persistence.annotations.ReturnUpdate;
 import org.eclipse.persistence.exceptions.ValidationException;
 
 import org.eclipse.persistence.internal.helper.DatabaseField;
-import org.eclipse.persistence.internal.helper.DatabaseTable;
 
 import org.eclipse.persistence.internal.jpa.metadata.MetadataDescriptor;
 import org.eclipse.persistence.internal.jpa.metadata.MetadataLogger;
@@ -164,24 +165,6 @@ public class BasicAccessor extends DirectAccessor {
      */
     protected ColumnMetadata getColumn(String loggingCtx) {
         return m_column == null ? super.getColumn(loggingCtx) : m_column;
-    }
-
-    /**
-     * INTERNAL:
-     * Process column metadata details and resolve any generic specifications.
-     */
-    @Override
-    protected DatabaseField getDatabaseField(DatabaseTable defaultTable, String loggingCtx) {
-        // Get the actual database field and apply any defaults.
-        DatabaseField field = super.getDatabaseField(defaultTable, loggingCtx);
-        
-        // To correctly resolve the generics at runtime, we need to set the 
-        // field type.
-        if (getAccessibleObject().isGenericType()) {
-            field.setType(getJavaClass(getReferenceClass()));
-        }
-                    
-        return field;
     }
     
     /**
@@ -316,11 +299,11 @@ public class BasicAccessor extends DirectAccessor {
         // initialized before any further processing can take place.
         m_field = getDatabaseField(getDescriptor().getPrimaryTable(), MetadataLogger.COLUMN);
         
-        // To resolve any generic types we need to set the attribute
-        // classification on the mapping to ensure we do the right 
-        // conversions.
-        if (getAccessibleObject().isGenericType()) {
-            mapping.setAttributeClassificationName(getReferenceClassName());
+        // To resolve any generic types (or respect an attribute type 
+        // specification) we need to set the attribute classification on the 
+        // mapping to ensure we do the right conversions.
+        if (hasAttributeType() || getAccessibleObject().isGenericType()) {
+            mapping.setAttributeClassification(getJavaClass(getReferenceClass()));
         }
         
         mapping.setField(m_field);
@@ -331,7 +314,7 @@ public class BasicAccessor extends DirectAccessor {
 
         // Will check for PROPERTY access.
         setAccessorMethods(mapping);
-
+        
         // Process a converter for this mapping. We will look for a convert
         // value first. If none is found then we'll look for a JPA converter, 
         // that is, Enumerated, Lob and Temporal. With everything falling into 

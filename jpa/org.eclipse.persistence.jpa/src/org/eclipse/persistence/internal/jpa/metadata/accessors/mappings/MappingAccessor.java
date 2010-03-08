@@ -45,6 +45,8 @@
  *       - 294361: incorrect generated table for element collection attribute overrides
  *     01/26/2010-2.0.1 Guy Pelletier 
  *       - 299893: @MapKeyClass does not work with ElementCollection
+ *     03/08/2010-2.1 Guy Pelletier 
+ *       - 303632: Add attribute-type for mapping attributes to EclipseLink-ORM  
  ******************************************************************************/
 package org.eclipse.persistence.internal.jpa.metadata.accessors.mappings;
 
@@ -132,6 +134,7 @@ public abstract class MappingAccessor extends MetadataAccessor {
     private ClassAccessor m_classAccessor;
     private DatabaseMapping m_mapping;
     private Map<String, PropertyMetadata> m_properties = new HashMap<String, PropertyMetadata>();
+    private String m_attributeType;
     
     /**
      * INTERNAL:
@@ -195,7 +198,7 @@ public abstract class MappingAccessor extends MetadataAccessor {
      * INTERNAL:
      * Used for OX mapping.
      */
-    public AccessMethodsMetadata getAccessMethods(){
+    public AccessMethodsMetadata getAccessMethods() {
         return m_accessMethods;
     }
     
@@ -338,6 +341,14 @@ public abstract class MappingAccessor extends MetadataAccessor {
         }
         
         return attributeOverridesMap;
+    }
+    
+    /**
+     * INTERNAL:
+     * Used for OX mapping.
+     */
+    public String getAttributeType() {
+        return m_attributeType;
     }
     
     /**
@@ -577,13 +588,24 @@ public abstract class MappingAccessor extends MetadataAccessor {
     /**
      * INTERNAL:
      * Return the map key reference class for this accessor if applicable. It 
-     * will try to extract a reference class from a generic specification.<p>
-     * Parameterized generic keys on a MappedSuperclass will return void.class.<p>  
+     * will try to extract a reference class from a generic specification.
+     * Parameterized generic keys on a MappedSuperclass will return void.class.  
      * If no generics are used, then it will return void.class. This avoids NPE's 
      * when processing JPA converters that can default (Enumerated and Temporal) 
      * based on the reference class.
      */
     public MetadataClass getMapKeyReferenceClass() {
+        // First check if we are a mapped key map accessor and return its map
+        // key class if specified. Otherwise continue on to extract it from
+        // a generic specification. We do this to avoid going to the class
+        // with is needed for dynamic persistence.
+        if (isMappedKeyMapAccessor()) {
+            MetadataClass mapKeyClass = ((MappedKeyMapAccessor) this).getMapKeyClass();
+            if (mapKeyClass != null && ! mapKeyClass.equals(void.class)) {
+                return mapKeyClass;
+            }
+        }
+        
         if (isMapAccessor()) {
             MetadataClass referenceClass = getAccessibleObject().getMapKeyClass(getDescriptor());
         
@@ -591,38 +613,55 @@ public abstract class MappingAccessor extends MetadataAccessor {
                 throw ValidationException.unableToDetermineMapKeyClass(getAttributeName(), getJavaClass());
             }            
         
-            /**
-             * 266912:  Use of parameterized generic types like Map<X,Y> inherits from class<T> in a MappedSuperclass field
-             * will cause referencing issues - as in we are unable to determine the correct type for T.
-             * A workaround for this is to detect when we are in this state and return a standard top level class.
-             * An invalid class will be of the form MetadataClass.m_name="T" 
-             */
+            // 266912:  Use of parameterized generic types like Map<X,Y> 
+            // inherits from class<T> in a MappedSuperclass field will cause 
+            // referencing issues - as in we are unable to determine the correct 
+            // type for T. A workaround for this is to detect when we are in 
+            // this state and return a standard top level class. An invalid 
+            // class will be of the form MetadataClass.m_name="T" 
             if (getClassAccessor().isMappedSuperclass()) {
-                // Determine whether we are directly referencing a class or using a parameterized generic reference
-                // by trying to load the class and catching any validationException.
-                // If we do not get an exception on getClass then the referenceClass.m_name is valid and should be directly returned
+                // Determine whether we are directly referencing a class or 
+                // using a parameterized generic reference by trying to load the 
+                // class and catching any validationException. If we do not get 
+                // an exception on getClass then the referenceClass.m_name is 
+                // valid and should be directly returned
                 try {
                     MetadataHelper.getClassForName(referenceClass.getName(), getMetadataFactory().getLoader());
                 } catch (ValidationException exception) {
                     // Default to Void for parameterized types
                     // Ideally we would need a MetadataClass.isParameterized() to inform us instead.
-                    return new MetadataClass(getMetadataFactory(), Void.class);
+                    return getMetadataClass(Void.class);
                 }                          
             }
+            
             return referenceClass;
         } else {
-            return getMetadataFactory().getMetadataClass(void.class.getName());
+            return getMetadataClass(void.class);
         }
     }
     
     /**
      * INTERNAL:
+     * Return the map key reference class name
+     */
+    public String getMapKeyReferenceClassName() {
+        return getMapKeyReferenceClass().getName();
+    }
+    
+    /**
+     * INTERNAL:
      * Return the raw class for this accessor. 
-     * Eg. For an accessor with a type of java.util.Collection<Employee>, this 
+     * E.g. For an accessor with a type of java.util.Collection<Employee>, this 
      * method will return java.util.Collection
      */
     public MetadataClass getRawClass() {
-        return getAccessibleObject().getRawClass(getDescriptor());   
+        if (m_attributeType == null) {
+            return getAccessibleObject().getRawClass(getDescriptor());
+        } else {
+            // If the class doesn't exist the factory we'll just return a
+            // generic MetadataClass
+            return getMetadataClass(m_attributeType);
+        }
     }
     
     /**
@@ -641,7 +680,7 @@ public abstract class MappingAccessor extends MetadataAccessor {
      * from generics.
      */
     public MetadataClass getReferenceClass() {
-        return getAccessibleObject().getRawClass(getDescriptor());
+        return getRawClass();
     }
     
     /**
@@ -724,6 +763,13 @@ public abstract class MappingAccessor extends MetadataAccessor {
         } 
             
         return getDescriptor().hasAttributeOverrideFor(getAttributeName());
+    }
+    
+    /**
+     * INTERNAL:
+     */
+    public boolean hasAttributeType() {
+        return m_attributeType != null;
     }
     
     /**
@@ -971,7 +1017,7 @@ public abstract class MappingAccessor extends MetadataAccessor {
      * Return true if this accessor uses a Map.
      */
     public boolean isMapAccessor() {
-        return getAccessibleObject().isSupportedMapClass(getDescriptor());
+        return getAccessibleObject().isSupportedMapClass(getRawClass());
     }
     
     /**
@@ -1253,12 +1299,11 @@ public abstract class MappingAccessor extends MetadataAccessor {
         DatabaseField mapKeyField = getDatabaseField(getReferenceDatabaseTable(), MetadataLogger.MAP_KEY_COLUMN);
         keyMapping.setField(mapKeyField);
         keyMapping.setIsReadOnly(mapKeyField.isReadOnly());
+        keyMapping.setAttributeClassificationName(mappedKeyMapAccessor.getMapKeyClass().getName());
+        keyMapping.setDescriptor(getDescriptor().getClassDescriptor());
         
         // Process a convert key or jpa converter for the map key if specified.
         processMappingKeyConverter(keyMapping, mappedKeyMapAccessor.getMapKeyConvert(), mappedKeyMapAccessor.getMapKeyClass());
-        
-        keyMapping.setAttributeClassificationName(mappedKeyMapAccessor.getMapKeyClass().getName());
-        keyMapping.setDescriptor(getDescriptor().getClassDescriptor());
         
         return keyMapping;
     }
@@ -1609,6 +1654,14 @@ public abstract class MappingAccessor extends MetadataAccessor {
             mapping.setGetMethodName(getGetMethodName());
             mapping.setSetMethodName(getSetMethodName());
         }
+    }
+    
+    /**
+     * INTERNAL:
+     * Used for OX mapping.
+     */
+    public void setAttributeType(String attributeType) {
+        m_attributeType = attributeType;
     }
     
     /**

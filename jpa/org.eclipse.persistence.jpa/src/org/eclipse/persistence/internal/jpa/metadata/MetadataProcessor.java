@@ -19,6 +19,8 @@
  *       - 248293: JPA 2.0 Element Collections (part 1)
  *     03/27/2009-2.0 Guy Pelletier 
  *       - 241413: JPA 2.0 Add EclipseLink support for Map type attributes
+ *     03/08/2010-2.1 Guy Pelletier 
+ *       - 303632: Add attribute-type for mapping attributes to EclipseLink-ORM
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata;
 
@@ -132,15 +134,15 @@ public class MetadataProcessor {
         
         for (XMLEntityMappings entityMappings : m_project.getEntityMappings()) {
             for (ClassAccessor entity : entityMappings.getEntities()) {
-                classSet.add(entityMappings.getFullyQualifiedClassName(entity.getClassName()));
+                classSet.add(entityMappings.getPackageQualifiedClassName(entity.getClassName()));
             }
             
             for (ClassAccessor embeddable : entityMappings.getEmbeddables()) {
-                classSet.add(entityMappings.getFullyQualifiedClassName(embeddable.getClassName()));
+                classSet.add(entityMappings.getPackageQualifiedClassName(embeddable.getClassName()));
             }
             
             for (ClassAccessor mappedSuperclass : entityMappings.getMappedSuperclasses()) {
-                classSet.add(entityMappings.getFullyQualifiedClassName(mappedSuperclass.getClassName()));
+                classSet.add(entityMappings.getPackageQualifiedClassName(mappedSuperclass.getClassName()));
             }
         }
         

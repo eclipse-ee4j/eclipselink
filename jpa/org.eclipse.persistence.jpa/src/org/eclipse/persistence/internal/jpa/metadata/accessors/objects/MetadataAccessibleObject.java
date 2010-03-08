@@ -11,6 +11,8 @@
  *     Oracle - initial API and implementation from Oracle TopLink
  *     05/16/2008-1.0M8 Guy Pelletier 
  *       - 218084: Implement metadata merging functionality between mapping files
+ *     03/08/2010-2.1 Guy Pelletier 
+ *       - 303632: Add attribute-type for mapping attributes to EclipseLink-ORM
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata.accessors.objects;
 
@@ -52,6 +54,13 @@ public abstract class MetadataAccessibleObject {
      */
     public MetadataFactory getMetadataFactory() {
         return m_factory;
+    }
+    
+    /**
+     * INTERNAL:
+     */
+    public MetadataClass getMetadataClass(String className) {
+        return m_factory.getMetadataClass(className);
     }
 
     /**

@@ -269,7 +269,7 @@
         </attributes>
     </entity>
     <entity name="XMLDealer" class="org.eclipse.persistence.testing.models.jpa.xml.advanced.Dealer" access="PROPERTY">
-      <table name="CMP3_XML_DEALER"/>
+        <table name="CMP3_XML_DEALER"/>
         <table-generator name="XML_DEALER_TABLE_GENERATOR" table="CMP3_XML_EMPLOYEE_SEQ" pk-column-name="SEQ_NAME" value-column-name="SEQ_COUNT" pk-column-value="XML_DEALER_SEQ"/>
         <exclude-default-listeners/>
         <exclude-superclass-listeners/>
@@ -315,6 +315,55 @@
             <attribute name="weight"/>
         </fetch-group>
     </entity>
+    <entity name="XMLLoner" class="Loner" access="PROPERTY">
+        <table name="XML_LONER"/>
+        <table-generator name="XML_LONER_TABLE_GENERATOR" table="CMP3_XML_EMPLOYEE_SEQ" pk-column-name="SEQ_NAME" value-column-name="SEQ_COUNT" pk-column-value="XML_LONER_SEQ"/>
+        <attributes>
+            <id name="id" attribute-type="Integer">
+                <column name="ID"/>
+                <generated-value strategy="TABLE" generator="XML_LONER_TABLE_GENERATOR"/>
+            </id>
+            <version name="version" attribute-type="java.lang.Integer">
+                <column name="VERSION"/>
+            </version>
+            <one-to-many name="confidants" attribute-type="java.util.Collection" target-entity="Confidant" fetch="LAZY" mapped-by="loner">
+                <cascade>
+                    <cascade-persist/>
+                </cascade>
+            </one-to-many>
+            <element-collection name="characteristics" attribute-type="java.util.List" target-class="String" fetch="LAZY">
+                <column name="CHARACTERISTIC"/>
+                <collection-table name="XML_LONER_CHARACTERISTICS">
+                    <join-column name="LONER_ID"/>
+                </collection-table>
+            </element-collection>
+            <embedded name="name" attribute-type="Name"/>
+        </attributes>
+    </entity>
+    <entity name="XMLConfidant" class="Confidant" access="FIELD">
+        <table name="XML_CONFIDANT"/>
+        <table-generator name="XML_CONFIDANT_TABLE_GENERATOR" table="CMP3_XML_EMPLOYEE_SEQ" pk-column-name="SEQ_NAME" value-column-name="SEQ_COUNT" pk-column-value="XML_CONFIDANT_SEQ"/>
+        <attributes>
+            <id name="id" attribute-type="Integer">
+                <column name="ID"/>
+                <generated-value strategy="TABLE" generator="XML_CONFIDANT_TABLE_GENERATOR"/>
+            </id>
+            <one-to-one name="loner" target-entity="org.eclipse.persistence.testing.models.jpa.xml.advanced.Loner">
+                <join-column name="LONER_ID"/>
+            </one-to-one>
+        </attributes>
+    </entity>
+    <embeddable class="Name" access="FIELD">
+        <attributes>
+            <basic name="firstName" attribute-type="java.lang.String">
+                <column name="F_NAME"/>
+            </basic>
+            <basic name="lastName" attribute-type="String">
+                <column name="L_NAME"/>
+            </basic>
+        </attributes>
+    </embeddable>
+
     <embeddable class="EmploymentPeriod">
         <property name="embeddableClassName" value="EmploymentPeriod"/>
         <property name="ToBeOverriddenByXml" value="true" value-type="Boolean"/>

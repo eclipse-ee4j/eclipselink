@@ -15,6 +15,8 @@
  *     06/25/2009-2.0 Michael O'Brien 
  *       - 266912: change MappedSuperclass handling in stage2 to pre process accessors
  *          in support of the custom descriptors holding mappings required by the Metamodel 
+ *     03/08/2010-2.1 Guy Pelletier 
+ *       - 303632: Add attribute-type for mapping attributes to EclipseLink-ORM
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata.converters;
 
@@ -68,7 +70,7 @@ public class SerializedMetadata extends MetadataConverter {
             setConverter(mapping, new SerializedObjectConverter(mapping), isForMapKey);
         } else {
             // 266912: relax validation for MappedSuperclass descriptors
-            if(!accessor.getClassAccessor().isMappedSuperclass()) {
+            if (!accessor.getClassAccessor().isMappedSuperclass()) {
                 throw ValidationException.invalidTypeForSerializedAttribute(mapping.getAttributeName(), accessor.getReferenceClass(), accessor.getJavaClass());
             }
         }

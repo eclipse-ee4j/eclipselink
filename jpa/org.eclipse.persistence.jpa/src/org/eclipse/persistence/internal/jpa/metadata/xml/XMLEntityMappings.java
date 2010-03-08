@@ -19,19 +19,18 @@
  *       - 249329: To remain JPA 1.0 compliant, any new JPA 2.0 annotations should be referenced by name
  *     12/12/2008-1.1 Guy Pelletier 
  *       - 249860: Implement table per class inheritance support.
+ *     03/08/2010-2.1 Guy Pelletier 
+ *       - 303632: Add attribute-type for mapping attributes to EclipseLink-ORM
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata.xml;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.StringReader;
-import java.security.AccessController;
-import java.security.PrivilegedActionException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
-import org.eclipse.persistence.exceptions.ValidationException;
 import org.eclipse.persistence.internal.jpa.metadata.MetadataDescriptor;
 import org.eclipse.persistence.internal.jpa.metadata.MetadataLogger;
 import org.eclipse.persistence.internal.jpa.metadata.MetadataProject;
@@ -59,8 +58,6 @@ import org.eclipse.persistence.internal.jpa.metadata.queries.SQLResultSetMapping
 
 import org.eclipse.persistence.internal.jpa.metadata.sequencing.SequenceGeneratorMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.sequencing.TableGeneratorMetadata;
-import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
-import org.eclipse.persistence.internal.security.PrivilegedClassForName;
 
 /**
  * Object to hold onto the XML entity mappings metadata.
@@ -123,70 +120,6 @@ public class XMLEntityMappings extends ORMetadata {
      */
     public String getCatalog() {
         return m_catalog;
-    }
-    
-    /**
-     * INTERNAL: XMLEntityMappings calls this one
-     * Load a class from a given class name.
-     */
-    protected Class getClassForName(String classname, ClassLoader loader) {
-        try {
-            if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()){
-                try {
-                    return (Class) AccessController.doPrivileged(new PrivilegedClassForName(classname, true, loader));
-                } catch (PrivilegedActionException exception) {
-                    throw ValidationException.unableToLoadClass(classname, exception.getException());
-                }
-            } else {
-                return PrivilegedAccessHelper.getClassForName(classname, true, loader);
-            }
-        } catch (Exception exception) {
-            throw ValidationException.unableToLoadClass(classname, exception);
-        }
-    }
-    
-    /**
-     * INTERNAL:
-     * This will initialize the given classname, and append the default
-     * package if necessary. If the className is null or blank, this method 
-     * will return "void".
-     */
-    public String getFullClassName(String className) {
-        if (className == null || className.equals("")) {
-            return "void";
-        } else if (className.equalsIgnoreCase("Boolean")) {
-            return "java.lang.Boolean";
-        } else if (className.equalsIgnoreCase("Byte")) {
-            return "java.lang.Byte";
-        } else if (className.equalsIgnoreCase("Character")) {
-            return "java.lang.Character";
-        } else if (className.equalsIgnoreCase("Double")) {
-            return "java.lang.Double";
-        } else if (className.equalsIgnoreCase("Float")) {
-            return "java.lang.Float";
-        } else if (className.equalsIgnoreCase("Integer")) {
-            return "java.lang.Integer";
-        } else if (className.equalsIgnoreCase("Long")) {
-            return "java.lang.Long";
-        } else if (className.equalsIgnoreCase("Number")) {
-            return "java.lang.Number";
-        } else if (className.equalsIgnoreCase("Short")) {
-            return "java.lang.Short";
-        } else if (className.equalsIgnoreCase("String")) {
-            return "java.lang.String";
-        } else {
-            return getFullyQualifiedClassName(className);
-        }
-    }
-    
-    /**
-     * INTERNAL:
-     * This will initialize the given classname, and append the default
-     * package if necessary. If the className is null or blank, this method 
-     * will return void.class.
-     */
-    public Class getClassForName(String className) {
-        return getClassForName(getFullyQualifiedClassName(className), m_loader);
     }
     
     /**
@@ -263,7 +196,7 @@ public class XMLEntityMappings extends ORMetadata {
      * Future: What about Enum support? Employee.Enum currently would not
      * qualify with the package since there is a dot.
      */
-    public String getFullyQualifiedClassName(String className) {
+    public String getPackageQualifiedClassName(String className) {
         // If there is no global package defined or the class name is qualified, 
         // return className
         if (m_package == null || m_package.equals("")) {
@@ -432,7 +365,7 @@ public class XMLEntityMappings extends ORMetadata {
         // Process the entities
         for (EntityAccessor entity : getEntities()) {
             // Initialize the class with the package from entity mappings.
-            MetadataClass entityClass = getMetadataClass(getFullClassName(entity.getClassName()));
+            MetadataClass entityClass = getMetadataClass(getPackageQualifiedClassName(entity.getClassName()));
             
             // Initialize the entity with its metadata descriptor and 
             // project.
@@ -450,7 +383,7 @@ public class XMLEntityMappings extends ORMetadata {
         // Process the embeddables.
         for (EmbeddableAccessor embeddable : getEmbeddables()) {
             // Initialize the class with the package from entity mappings.
-            MetadataClass embeddableClass = getMetadataClass(getFullClassName(embeddable.getClassName()));
+            MetadataClass embeddableClass = getMetadataClass(getPackageQualifiedClassName(embeddable.getClassName()));
             
             // Initialize the embeddable with its metadata descriptor and
             // project.
@@ -468,7 +401,7 @@ public class XMLEntityMappings extends ORMetadata {
         // Process the mapped superclasses
         for (MappedSuperclassAccessor mappedSuperclass : getMappedSuperclasses()) {
             // Initialize the class with the package from entity mappings.
-            MetadataClass mappedSuperclassClass = getMetadataClass(getFullClassName(mappedSuperclass.getClassName()));
+            MetadataClass mappedSuperclassClass = getMetadataClass(getPackageQualifiedClassName(mappedSuperclass.getClassName()));
             
             // Just set the accessible object on the mapped superclass for now.
             // Mapped superclasses are reloaded for each entity that inherits
@@ -658,7 +591,7 @@ public class XMLEntityMappings extends ORMetadata {
             
         // Initialize the newly loaded/built entity
         EntityAccessor entity = xmlEntityMappings.getEntities().get(0);
-        MetadataClass metadataClass = getMetadataFactory().getMetadataClass(getFullClassName(entity.getClassName()));
+        MetadataClass metadataClass = getMetadataFactory().getMetadataClass(getPackageQualifiedClassName(entity.getClassName()));
         entity.initXMLClassAccessor(metadataClass, descriptor, m_project, this);
         
         return entity;
@@ -682,7 +615,7 @@ public class XMLEntityMappings extends ORMetadata {
         
         // Initialize the newly loaded/built mapped superclass
         MappedSuperclassAccessor mappedSuperclass = xmlEntityMappings.getMappedSuperclasses().get(0);
-        MetadataClass metadataClass = getMetadataFactory().getMetadataClass(getFullClassName(mappedSuperclass.getClassName()));
+        MetadataClass metadataClass = getMetadataFactory().getMetadataClass(getPackageQualifiedClassName(mappedSuperclass.getClassName()));
         mappedSuperclass.initXMLClassAccessor(metadataClass, descriptor, m_project, this);
         
         return mappedSuperclass;

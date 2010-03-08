@@ -39,6 +39,8 @@
  *       - 211323: Add class extractor support to the EclipseLink-ORM.XML Schema
  *     01/19/2010-2.1 Guy Pelletier 
  *       - 211322: Add fetch-group(s) support to the EclipseLink-ORM.XML Schema
+ *     03/08/2010-2.1 Guy Pelletier 
+ *       - 303632: Add attribute-type for mapping attributes to EclipseLink-ORM
  *******************************************************************************/
 package org.eclipse.persistence.internal.jpa.metadata.xml;
 
@@ -511,6 +513,7 @@ public class XMLEntityMappingsMappingProject extends org.eclipse.persistence.ses
         descriptor.addMapping(getOptionalAttributeMapping());
         descriptor.addMapping(getAccessAttributeMapping());
         descriptor.addMapping(getMutableAttributeMapping());
+        descriptor.addMapping(getAttributeTypeAttributeMapping());
         
         return descriptor;
     }
@@ -959,6 +962,8 @@ public class XMLEntityMappingsMappingProject extends org.eclipse.persistence.ses
         descriptor.addMapping(getObjectTypeConverterMapping());
         descriptor.addMapping(getStructConverterMapping());
         descriptor.addMapping(getCollectionTableMapping());
+        descriptor.addMapping(getJoinFetchMapping());
+        descriptor.addMapping(getBatchFetchMapping());
         descriptor.addMapping(getPropertyMapping());
         descriptor.addMapping(getAccessMethodsMapping());
         
@@ -967,6 +972,7 @@ public class XMLEntityMappingsMappingProject extends org.eclipse.persistence.ses
         descriptor.addMapping(getTargetClassAttributeMapping());
         descriptor.addMapping(getFetchAttributeMapping());
         descriptor.addMapping(getAccessAttributeMapping());
+        descriptor.addMapping(getAttributeTypeAttributeMapping());
         
         return descriptor;
     }
@@ -1019,6 +1025,7 @@ public class XMLEntityMappingsMappingProject extends org.eclipse.persistence.ses
         // Attribute mappings.
         descriptor.addMapping(getNameAttributeMapping());
         descriptor.addMapping(getAccessAttributeMapping());
+        descriptor.addMapping(getAttributeTypeAttributeMapping());
         
         return descriptor;
     }
@@ -1040,6 +1047,7 @@ public class XMLEntityMappingsMappingProject extends org.eclipse.persistence.ses
         // Attribute mappings.
         descriptor.addMapping(getNameAttributeMapping());
         descriptor.addMapping(getAccessAttributeMapping());
+        descriptor.addMapping(getAttributeTypeAttributeMapping());
         
         return descriptor;
     }
@@ -1413,6 +1421,7 @@ public class XMLEntityMappingsMappingProject extends org.eclipse.persistence.ses
         descriptor.addMapping(getNameAttributeMapping());
         descriptor.addMapping(getAccessAttributeMapping());
         descriptor.addMapping(getMutableAttributeMapping());
+        descriptor.addMapping(getAttributeTypeAttributeMapping());
         
         return descriptor;
     }
@@ -1638,6 +1647,7 @@ public class XMLEntityMappingsMappingProject extends org.eclipse.persistence.ses
         descriptor.addMapping(getFetchAttributeMapping());
         descriptor.addMapping(getAccessAttributeMapping());
         descriptor.addMapping(getMappedByAttributeMapping());
+        descriptor.addMapping(getAttributeTypeAttributeMapping());
         
         return descriptor;
     }
@@ -1901,6 +1911,7 @@ public class XMLEntityMappingsMappingProject extends org.eclipse.persistence.ses
         descriptor.addMapping(getAccessAttributeMapping());
         descriptor.addMapping(getMappedByAttributeMapping());
         descriptor.addMapping(getOrphanRemovalAttributeMapping());
+        descriptor.addMapping(getAttributeTypeAttributeMapping());
         
         return descriptor;
     }
@@ -2546,6 +2557,7 @@ public class XMLEntityMappingsMappingProject extends org.eclipse.persistence.ses
         descriptor.addMapping(getNameAttributeMapping());
         descriptor.addMapping(getAccessAttributeMapping());
         descriptor.addMapping(getMutableAttributeMapping());
+        descriptor.addMapping(getAttributeTypeAttributeMapping());
         
         return descriptor;
     }
@@ -2651,6 +2663,30 @@ public class XMLEntityMappingsMappingProject extends org.eclipse.persistence.ses
         attributesMapping.setReferenceClass(XMLAttributes.class);
         attributesMapping.setXPath("orm:attributes");
         return attributesMapping;
+    }
+    
+    /**
+     * INTERNAL:
+     */
+    protected XMLDirectMapping getAttributeTypeAttributeMapping() {
+        XMLDirectMapping attributeTypeMapping = new XMLDirectMapping();
+        attributeTypeMapping.setAttributeName("m_attributeType");
+        attributeTypeMapping.setGetMethodName("getAttributeType");
+        attributeTypeMapping.setSetMethodName("setAttributeType");
+        attributeTypeMapping.setXPath("@attribute-type");
+        return attributeTypeMapping;
+    }
+    
+    /**
+     * INTERNAL:
+     */
+    protected XMLDirectMapping getBatchFetchMapping() {
+        XMLDirectMapping mapping = new XMLDirectMapping();
+        mapping.setAttributeName("m_batchFetch");
+        mapping.setGetMethodName("getBatchFetch");
+        mapping.setSetMethodName("setBatchFetch");
+        mapping.setXPath("orm:batch-fetch/text()");
+        return mapping;
     }
     
     /**
@@ -3156,18 +3192,6 @@ public class XMLEntityMappingsMappingProject extends org.eclipse.persistence.ses
         joinFetchMapping.setSetMethodName("setJoinFetch");
         joinFetchMapping.setXPath("orm:join-fetch/text()");
         return joinFetchMapping;
-    }
-    
-    /**
-     * INTERNAL:
-     */
-    protected XMLDirectMapping getBatchFetchMapping() {
-        XMLDirectMapping mapping = new XMLDirectMapping();
-        mapping.setAttributeName("m_batchFetch");
-        mapping.setGetMethodName("getBatchFetch");
-        mapping.setSetMethodName("setBatchFetch");
-        mapping.setXPath("orm:batch-fetch/text()");
-        return mapping;
     }
     
     /**

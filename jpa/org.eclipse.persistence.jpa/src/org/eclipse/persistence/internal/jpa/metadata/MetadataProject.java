@@ -41,6 +41,8 @@
  *       - 290567: mappedbyid support incomplete
  *     11/13/2009-2.0 Guy Pelletier 
  *       - 293629: An attribute referenced from orm.xml is not recognized correctly
+ *     03/08/2010-2.1 Guy Pelletier 
+ *       - 303632: Add attribute-type for mapping attributes to EclipseLink-ORM
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata;
 
@@ -561,7 +563,7 @@ public class MetadataProject {
      * Add a discovered metamodel class to the session.
      */
     public void addStaticMetamodelClass(MetadataAnnotation annotation, MetadataClass metamodelClass) {
-        MetadataClass modelClass = metamodelClass.getMetadataFactory().getMetadataClass((String) annotation.getAttributeString("value"));
+        MetadataClass modelClass = metamodelClass.getMetadataClass((String) annotation.getAttributeString("value"));
         
         m_session.addStaticMetamodelClass(modelClass.getName(), metamodelClass.getName());
     }

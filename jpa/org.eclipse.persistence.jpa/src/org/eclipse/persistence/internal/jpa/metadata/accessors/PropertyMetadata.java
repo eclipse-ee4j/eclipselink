@@ -12,6 +12,8 @@
  *        - New file introduced for bug 217168.
  *     05/16/2008-1.0M8 Guy Pelletier 
  *       - 218084: Implement metadata merging functionality between mapping files
+ *     03/08/2010-2.1 Guy Pelletier 
+ *       - 303632: Add attribute-type for mapping attributes to EclipseLink-ORM
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata.accessors;
 
@@ -98,7 +100,7 @@ public class PropertyMetadata extends ORMetadata {
      * INTERNAL:
      */
     public Object getConvertedValue() {
-        if(m_valueType.isVoid() || m_valueType.equals(String.class)) {
+        if (m_valueType.isVoid() || m_valueType.equals(String.class)) {
             return m_value;
         } else {
             return ConversionManager.getDefaultManager().convertObject(m_value, getJavaClass(m_valueType));
