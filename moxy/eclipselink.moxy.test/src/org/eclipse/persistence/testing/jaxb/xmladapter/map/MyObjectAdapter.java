@@ -12,6 +12,7 @@
  ******************************************************************************/
 package org.eclipse.persistence.testing.jaxb.xmladapter.map;
 
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -30,6 +31,8 @@ public class MyObjectAdapter extends XmlAdapter<MyObject, HashMap<Integer, Strin
 			myObject.getKeys().add(next.getKey().toString());
 			myObject.getValues().add(next.getValue());
 		}
+		Collections.sort(myObject.getKeys());
+		Collections.sort(myObject.getValues());
 		return myObject;
 	}
 
