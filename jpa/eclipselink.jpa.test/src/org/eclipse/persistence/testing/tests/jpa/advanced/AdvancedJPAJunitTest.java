@@ -903,6 +903,8 @@ public class AdvancedJPAJunitTest extends JUnitTestCase {
     
     /**
      * Tests a @NamedStoredProcedureQuery using a result-set mapping.
+     * 304400: Note: this test does not actually test a ResultSet return - it uses output parameters.
+     *              To enable ResultSet testing - set returnsResultSet=true via orm.xml, annotation or via program call like the the core tests. 
      */
     public void testNamedStoredProcedureQueryWithResultSetMapping() {
         if (!supportsStoredProcedures()) {
@@ -947,6 +949,8 @@ public class AdvancedJPAJunitTest extends JUnitTestCase {
     
     /**
      * Tests a @NamedStoredProcedureQuery using a result-set mapping.
+     * 304400: Note: this test does not actually test a ResultSet return - it uses output parameters.
+     *              To enable ResultSet testing - set returnsResultSet=true via orm.xml, annotation or via program call like the the core tests. 
      */
     public void testNamedStoredProcedureQueryWithResultSetFieldMapping() {
         if (!supportsStoredProcedures()) {

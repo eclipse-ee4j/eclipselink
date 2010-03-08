@@ -22,7 +22,7 @@ import org.eclipse.persistence.internal.libraries.asm.attrs.Annotation;
 
 /**
  * INTERNAL:
- * Weaves classes to allow them to support TopLink indirection.
+ * Weaves classes to allow them to support EclipseLink indirection.
  * Classes are weaved to add a variable of type ValueHolderInterface for each attribute
  * that uses indirection.  In addition, access methods are added for the new variable.
  * Also, triggers the process of weaving the methods of the class.  
@@ -503,7 +503,7 @@ public class ClassWeaver extends ClassAdapter implements Constants {
         cv_set.visitMethodInsn(INVOKEVIRTUAL, classDetails.getClassName(), "_persistence_get" + attribute, "()" + attributeDetails.getReferenceClassType().getDescriptor());
         
         if (classDetails.shouldWeaveChangeTracking()) {
-            // load the string attribute name as the first agument of the property change call
+            // load the string attribute name as the first argument of the property change call
             cv_set.visitVarInsn(ALOAD, 0);
             cv_set.visitLdcInsn(attribute);
             

@@ -20,6 +20,9 @@ import java.io.Serializable;
 
 import javax.persistence.metamodel.Type;
 
+import org.eclipse.persistence.logging.AbstractSessionLog;
+import org.eclipse.persistence.logging.SessionLog;
+
 /**
  * <p>
  * <b>Purpose</b>: Provides the implementation for the Type interface 
@@ -40,6 +43,10 @@ public abstract class TypeImpl<X> implements Type<X>, Serializable {
     private Class<X> javaClass;
     
     protected TypeImpl(Class<X> javaClass) {
+        // 303063: secondary check for case where descriptor has no java class set - should never happen but should be warned about
+        if(null == javaClass) {
+            AbstractSessionLog.getLog().log(SessionLog.FINEST, "metamodel_typeImpl_javaClass_should_not_be_null", this);
+        }        
         this.javaClass = javaClass;
     }
 
