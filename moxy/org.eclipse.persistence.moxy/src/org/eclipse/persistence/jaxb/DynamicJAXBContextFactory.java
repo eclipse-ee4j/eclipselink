@@ -74,7 +74,7 @@ public class DynamicJAXBContextFactory {
      * @throws JAXBException
      *      if an error was encountered while creating the <tt>DynamicJAXBContext</tt>.
      */
-    public static javax.xml.bind.JAXBContext createContext(String sessionNames, ClassLoader classLoader, Map<String, ?> props) throws JAXBException {
+    public static DynamicJAXBContext createContext(String sessionNames, ClassLoader classLoader, Map<String, ?> props) throws JAXBException {
         DynamicJAXBContext dContext = new DynamicJAXBContext();
         dContext.initializeFromSessionsXML(sessionNames, classLoader);
         return dContext;
@@ -86,7 +86,7 @@ public class DynamicJAXBContextFactory {
      * 
      * @see org.eclipse.persistence.jaxb.JAXBContext
      */
-    public static javax.xml.bind.JAXBContext createContext(Class[] classes, Map props) throws JAXBException {
+    public static DynamicJAXBContext createContext(Class[] classes, Map props) throws JAXBException {
         throw new JAXBException(org.eclipse.persistence.exceptions.JAXBException.cannotCreateDynamicContextFromClasses());
     }
     
