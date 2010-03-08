@@ -222,6 +222,15 @@ public class EntityManagerProperties {
     public static final String VALIDATE_EXISTENCE = PersistenceUnitProperties.VALIDATE_EXISTENCE;
     
     /**
+     * Configures if updates should be ordered by primary key.
+     * This can be used to avoid possible database deadlocks from concurrent threads
+     * updating the same objects in different order.
+     * If not set to true, the order of updates is not guaranteed.
+     * "false" by default.
+     */    
+    public static final String ORDER_UPDATES = PersistenceUnitProperties.ORDER_UPDATES;
+    
+    /**
      * Defines EntityManager cache behavior after a call to flush method
      * followed by a call to clear method.
      * This property could be specified while creating either EntityManagerFactory 
@@ -252,6 +261,7 @@ public class EntityManagerProperties {
             add(JDBC_PASSWORD);
             add(CONNECTION_POLICY);
             add(VALIDATE_EXISTENCE);
+            add(ORDER_UPDATES);
             add(FLUSH_CLEAR_CACHE);
         }
     };

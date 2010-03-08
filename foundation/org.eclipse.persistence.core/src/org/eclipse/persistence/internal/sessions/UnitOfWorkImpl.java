@@ -258,6 +258,9 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
     
     /** Determine if does-exist should be performed on persist. */
     protected boolean shouldValidateExistence;
+    
+    /** Allow updates to be ordered by id to avoid possible deadlocks. */
+    protected boolean shouldOrderUpdates;
 
     /** This stored the reference mode for this UOW.  If the reference mode is
      * weak then this unit of work will retain only weak references to non new, 
@@ -5909,5 +5912,21 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
         } else {
             return false;
         }
+    }
+
+    /**
+     * ADVANCED:
+     * Return if updates should be ordered by primary key to avoid possible database deadlocks.
+     */
+    public boolean shouldOrderUpdates() {
+        return shouldOrderUpdates;
+    }
+
+    /**
+     * ADVANCED:
+     * Set updates should be ordered by primary key to avoid possible database deadlocks.
+     */
+    public void setShouldOrderUpdates(boolean shouldOrderUpdates) {
+        this.shouldOrderUpdates = shouldOrderUpdates;
     }
 }

@@ -33,7 +33,7 @@ import org.eclipse.persistence.mappings.foundation.AbstractDirectMapping;
  * and the class.
  * <p>
  */
-public class ObjectChangeSet implements Serializable, org.eclipse.persistence.sessions.changesets.ObjectChangeSet {
+public class ObjectChangeSet implements Serializable, Comparable<ObjectChangeSet>, org.eclipse.persistence.sessions.changesets.ObjectChangeSet {
 
     /** This is the collection of changes */
     protected List<org.eclipse.persistence.sessions.changesets.ChangeRecord> changes;
@@ -202,6 +202,29 @@ public class ObjectChangeSet implements Serializable, org.eclipse.persistence.se
         }
 
         return (this.id.equals(objectChange.id));
+    }
+
+    /**
+     * Determine if the receiver is greater or less than the change set.
+     */
+    public int compareTo(ObjectChangeSet changeSet) {
+        if (this == changeSet) {
+            return 0;
+        }
+        if (this.id == null) {
+            if (changeSet.id != null) {
+                return -1;
+            } else {
+                return 1;
+            }
+        } else if (changeSet.id == null) {
+            return 1;
+        }
+        try {
+            return ((Comparable)this.id).compareTo(changeSet.id);
+        } catch (Exception exception) {
+            return -1;
+        }
     }
 
     /**
@@ -800,7 +823,7 @@ public class ObjectChangeSet implements Serializable, org.eclipse.persistence.se
     }
 
     public String toString() {
-        return this.getClass().getName() + "(" + this.getClassName() + ")" + getChanges().toString();
+        return this.getClass().getSimpleName() + "(" + hashCode() + ", " + this.getClassName() + ")" + getChanges().toString();
     }
 
     /**

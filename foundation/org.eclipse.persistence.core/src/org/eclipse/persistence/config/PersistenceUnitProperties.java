@@ -1204,6 +1204,15 @@ public class PersistenceUnitProperties {
     public static final String VALIDATE_EXISTENCE = "eclipselink.validate-existence";
 
     /**
+     * Configures if updates should be ordered by primary key.
+     * This can be used to avoid possible database deadlocks from concurrent threads
+     * updating the same objects in different order.
+     * If not set to true, the order of updates is not guaranteed.
+     * "false" by default.
+     */    
+    public static final String ORDER_UPDATES = "eclipselink.order-updates";
+    
+    /**
      * The <code>"eclipselink.profiler"</code>property configures the type of
      * profiler used to capture runtime statistics.
      * <p>
@@ -1239,7 +1248,7 @@ public class PersistenceUnitProperties {
      */
     public static final String JOIN_EXISTING_TRANSACTION = "eclipselink.transaction.join-existing";
 
-/**
+    /**
      * The <code>"eclipselink.persistence-context.reference-mode"</code>
      * property configures whether there should be hard or soft references used
      * within the Persistence Context. Default is "HARD". With soft references
@@ -1617,6 +1626,7 @@ public class PersistenceUnitProperties {
             add(PERSISTENCE_CONTEXT_PERSIST_ON_COMMIT);
             add(PERSISTENCE_CONTEXT_COMMIT_WITHOUT_PERSIST_RULES);
             add(VALIDATE_EXISTENCE);
+            add(ORDER_UPDATES);
             add(FLUSH_CLEAR_CACHE);
         }
     };

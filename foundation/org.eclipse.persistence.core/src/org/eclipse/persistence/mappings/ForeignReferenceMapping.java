@@ -460,7 +460,7 @@ public abstract class ForeignReferenceMapping extends DatabaseMapping {
         // attribute is only of the subclass.  Thus in this case use the descriptor from the mapping.
         // Also: for Bug 5478648 - Do not switch the descriptor if the query's descriptor is an aggregate
         ClassDescriptor descriptorToUse = query.getDescriptor();
-        if ((descriptorToUse != this.descriptor) && (!descriptorToUse.getMappings().contains(this)) && (!this.descriptor.isAggregateDescriptor())) { 
+        if ((descriptorToUse != this.descriptor) && (!descriptorToUse.getMappings().contains(this)) && (!this.descriptor.isDescriptorTypeAggregate())) { 
             descriptorToUse = this.descriptor;
         }
         

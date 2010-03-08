@@ -676,4 +676,16 @@ public interface UnitOfWork extends Session {
      * @param primaryKey - The primary key of the object, either as a List, singleton, IdClass or an instance of the object.
      */
     public Object getReference(Class theClass, Object primaryKey);
+
+    /**
+     * ADVANCED:
+     * Return if updates should be ordered by primary key to avoid possible database deadlocks.
+     */
+    public boolean shouldOrderUpdates();
+
+    /**
+     * ADVANCED:
+     * Set if updates should be ordered by primary key to avoid possible database deadlocks.
+     */
+    public void setShouldOrderUpdates(boolean shouldOrderUpdates);
 }

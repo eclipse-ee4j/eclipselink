@@ -144,6 +144,9 @@ public class EntityManagerImpl implements org.eclipse.persistence.jpa.JpaEntityM
     /** Determine if does-exist should be performed on persist. */
     protected boolean shouldValidateExistence;
 
+    /** Allow updates to be ordered by id to avoid possible deadlocks. */
+    protected boolean shouldOrderUpdates;
+    
     protected boolean commitWithoutPersistRules;
     
     abstract static class PropertyProcessor {
@@ -177,19 +180,25 @@ public class EntityManagerImpl implements org.eclipse.persistence.jpa.JpaEntityM
             }});
             put(EntityManagerProperties.PERSISTENCE_CONTEXT_COMMIT_WITHOUT_PERSIST_RULES, new PropertyProcessor() {void process(String name, Object value, EntityManagerImpl em) {
                 em.commitWithoutPersistRules = "true".equalsIgnoreCase(getPropertiesHandlerProperty(name, (String)value));
-                if(em.hasActivePersistenceContext()) {
+                if (em.hasActivePersistenceContext()) {
                     em.extendedPersistenceContext.setDiscoverUnregisteredNewObjectsWithoutPersist(em.commitWithoutPersistRules);
                 }
             }});
             put(EntityManagerProperties.VALIDATE_EXISTENCE, new PropertyProcessor() {void process(String name, Object value, EntityManagerImpl em) {
                 em.shouldValidateExistence = "true".equalsIgnoreCase(getPropertiesHandlerProperty(name, (String)value));
-                if(em.hasActivePersistenceContext()) {
+                if (em.hasActivePersistenceContext()) {
                     em.extendedPersistenceContext.setShouldValidateExistence(em.shouldValidateExistence);
+                }
+            }});
+            put(EntityManagerProperties.ORDER_UPDATES, new PropertyProcessor() {void process(String name, Object value, EntityManagerImpl em) {
+                em.shouldOrderUpdates = "true".equalsIgnoreCase(getPropertiesHandlerProperty(name, (String)value));
+                if (em.hasActivePersistenceContext()) {
+                    em.extendedPersistenceContext.setShouldOrderUpdates(em.shouldOrderUpdates);
                 }
             }});
             put(EntityManagerProperties.FLUSH_CLEAR_CACHE, new PropertyProcessor() {void process(String name, Object value, EntityManagerImpl em) {
                 em.flushClearCache = getPropertiesHandlerProperty(name, (String)value);
-                if(em.hasActivePersistenceContext()) {
+                if( em.hasActivePersistenceContext()) {
                     em.extendedPersistenceContext.setFlushClearCache(em.flushClearCache);
                 }
             }});
@@ -294,6 +303,7 @@ public class EntityManagerImpl implements org.eclipse.persistence.jpa.JpaEntityM
         this.referenceMode = factory.getReferenceMode();
         this.flushClearCache = factory.getFlushClearCache();
         this.shouldValidateExistence = factory.shouldValidateExistence();
+        this.shouldOrderUpdates = factory.shouldOrderUpdates();
         this.isOpen = true;
         this.cacheStoreBypass = false;
         initialize(properties);
@@ -1541,6 +1551,7 @@ public class EntityManagerImpl implements org.eclipse.persistence.jpa.JpaEntityM
             this.extendedPersistenceContext.setDiscoverUnregisteredNewObjectsWithoutPersist(this.commitWithoutPersistRules);
             this.extendedPersistenceContext.setFlushClearCache(this.flushClearCache);
             this.extendedPersistenceContext.setShouldValidateExistence(this.shouldValidateExistence);
+            this.extendedPersistenceContext.setShouldOrderUpdates(this.shouldOrderUpdates);
             this.extendedPersistenceContext.setShouldCascadeCloneToJoinedRelationship(true);
             this.extendedPersistenceContext.setShouldStoreByPassCache(this.cacheStoreBypass);
             if (txn != null) {

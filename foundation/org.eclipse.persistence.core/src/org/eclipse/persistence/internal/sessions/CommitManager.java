@@ -210,7 +210,12 @@ public class CommitManager {
         if (objectChangesList != null) {// may be no changes for that class type.				
             ClassDescriptor descriptor = null;
             AbstractSession session = getSession();
-            for (ObjectChangeSet changeSetToWrite : objectChangesList.values()) {
+            Collection<ObjectChangeSet> changes = objectChangesList.values();
+            if (((UnitOfWorkImpl)session).shouldOrderUpdates()) {
+                changes = new ArrayList(objectChangesList.values());
+                Collections.sort((List)changes);
+            }
+            for (ObjectChangeSet changeSetToWrite : changes) {
                 Object objectToWrite = changeSetToWrite.getUnitOfWorkClone();
                 if (descriptor == null) {
                     descriptor = session.getDescriptor(objectToWrite);

@@ -108,7 +108,11 @@ public class EntityManagerFactoryImpl implements EntityManagerFactory, Persisten
     protected String flushClearCache = FlushClearCache.DEFAULT;
 
     /** Default to determine if does-exist should be performed on persist. */
-    protected boolean shouldValidateExistence;
+    protected boolean shouldValidateExistence;    
+
+    /** Allow updates to be ordered by id to avoid possible deadlocks. */
+    protected boolean shouldOrderUpdates;
+    
     protected boolean commitWithoutPersistRules;
 
     /**
@@ -288,6 +292,10 @@ public class EntityManagerFactoryImpl implements EntityManagerFactory, Persisten
         String shouldValidateExistence = PropertiesHandler.getPropertyValueLogDebug(EntityManagerProperties.VALIDATE_EXISTENCE, properties, this.serverSession, true);
         if (shouldValidateExistence != null) {
             this.shouldValidateExistence = "true".equalsIgnoreCase(shouldValidateExistence);
+        }
+        String shouldOrderUpdates = PropertiesHandler.getPropertyValueLogDebug(EntityManagerProperties.ORDER_UPDATES, properties, this.serverSession, true);
+        if (shouldOrderUpdates != null) {
+            this.shouldOrderUpdates = "true".equalsIgnoreCase(shouldOrderUpdates);
         }
         String flushClearCache = PropertiesHandler.getPropertyValueLogDebug(EntityManagerProperties.FLUSH_CLEAR_CACHE, properties, this.serverSession, true);
         if (flushClearCache != null) {
@@ -650,4 +658,19 @@ public class EntityManagerFactoryImpl implements EntityManagerFactory, Persisten
         }
     }
 
+    /**
+     * ADVANCED:
+     * Return if updates should be ordered by primary key to avoid possible database deadlocks.
+     */
+    public boolean shouldOrderUpdates() {
+        return shouldOrderUpdates;
+    }
+
+    /**
+     * ADVANCED:
+     * Set updates should be ordered by primary key to avoid possible database deadlocks.
+     */
+    public void setShouldOrderUpdates(boolean shouldOrderUpdates) {
+        this.shouldOrderUpdates = shouldOrderUpdates;
+    }
 }

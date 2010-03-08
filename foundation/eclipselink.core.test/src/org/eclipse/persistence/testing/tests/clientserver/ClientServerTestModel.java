@@ -113,6 +113,8 @@ public class ClientServerTestModel extends TestModel {
         // Failover connection management EclipseLink bug 211100
         suite.addTest(new CommunicationFailureTest());
         
+        suite.addTest(new ClientServerUpdateDeadlockTest());
+        
         return suite;
     }
 

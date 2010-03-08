@@ -191,6 +191,7 @@ public class PropertiesHandler {
             addProp(new BooleanProp(PersistenceUnitProperties.PERSISTENCE_CONTEXT_PERSIST_ON_COMMIT, "true"));
             addProp(new BooleanProp(PersistenceUnitProperties.PERSISTENCE_CONTEXT_COMMIT_WITHOUT_PERSIST_RULES, "false"));
             addProp(new BooleanProp(PersistenceUnitProperties.VALIDATE_EXISTENCE, "false"));
+            addProp(new BooleanProp(PersistenceUnitProperties.ORDER_UPDATES, "false"));
             addProp(new BooleanProp(PersistenceUnitProperties.JOIN_EXISTING_TRANSACTION, "false"));
             addProp(new ExclusiveConnectionModeProp());
             addProp(new BooleanProp(PersistenceUnitProperties.EXCLUSIVE_CONNECTION_IS_LAZY, "true"));
