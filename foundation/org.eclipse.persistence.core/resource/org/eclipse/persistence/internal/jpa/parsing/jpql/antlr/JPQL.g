@@ -51,6 +51,7 @@ tokens {
     EXISTS='exists';
     FALSE='false';
     FETCH='fetch';
+    FUNC='func';
     FROM='from';
     GROUP='group';
     HAVING='having';
@@ -1079,6 +1080,7 @@ functionsReturningNumerics returns [Object node]
     | n = locate {$node = $n.node;}
     | n = size {$node = $n.node;}
     | n = index {$node = $n.node;}
+    | n = func {$node = $n.node;}
     ;
 
 functionsReturningDatetime returns [Object node]
@@ -1111,7 +1113,7 @@ scope {
 }
     : c=CONCAT 
         LEFT_ROUND_BRACKET 
-        firstArg = stringPrimary {$concat::items.add($firstArg.node);} (COMMA arg = stringPrimary {$concat::items.add($arg.node);})+
+        firstArg = scalarExpression {$concat::items.add($firstArg.node);} (COMMA arg = scalarExpression {$concat::items.add($arg.node);})+
         RIGHT_ROUND_BRACKET
         { $node = factory.newConcat($c.getLine(), $c.getCharPositionInLine(), $concat::items); }
     ;
@@ -1123,7 +1125,7 @@ substring returns [Object node]
 }
     : s=SUBSTRING   
         LEFT_ROUND_BRACKET
-        string = stringPrimary COMMA
+        string = scalarExpression COMMA
         start = simpleArithmeticExpression
         (COMMA lengthNode = simpleArithmeticExpression)?
         RIGHT_ROUND_BRACKET
@@ -1140,11 +1142,12 @@ substring returns [Object node]
 
 trim returns [Object node]
 @init { 
-    node = null; 
+    node = null;
+    trimSpecIndicator = TrimSpecification.BOTH;
 }
     : t=TRIM
         LEFT_ROUND_BRACKET 
-        ( ( trimSpec trimChar FROM )=> trimSpecIndicator = trimSpec trimCharNode = trimChar FROM )? 
+        (trimSpecIndicator = trimSpec trimCharNode = trimChar FROM)?
         n = stringPrimary
         RIGHT_ROUND_BRACKET
         {
@@ -1173,13 +1176,13 @@ trimChar returns [Object node]
 
 upper returns [Object node]
 @init { node = null; }
-    : u=UPPER LEFT_ROUND_BRACKET n = stringPrimary RIGHT_ROUND_BRACKET
+    : u=UPPER LEFT_ROUND_BRACKET n = scalarExpression RIGHT_ROUND_BRACKET
         { $node = factory.newUpper($u.getLine(), $u.getCharPositionInLine(), $n.node); }
     ;
 
 lower returns [Object node]
 @init { node = null; }
-    : l=LOWER LEFT_ROUND_BRACKET n = stringPrimary RIGHT_ROUND_BRACKET
+    : l=LOWER LEFT_ROUND_BRACKET n = scalarExpression RIGHT_ROUND_BRACKET
         { $node = factory.newLower($l.getLine(), $l.getCharPositionInLine(), $n.node); }
     ;
 
@@ -1192,7 +1195,7 @@ abs returns [Object node]
 
 length returns [Object node]
 @init { node = null; }
-    : l=LENGTH LEFT_ROUND_BRACKET n = stringPrimary RIGHT_ROUND_BRACKET
+    : l=LENGTH LEFT_ROUND_BRACKET n = scalarExpression RIGHT_ROUND_BRACKET
         { $node = factory.newLength($l.getLine(), $l.getCharPositionInLine(), $n.node); }
     ;
 
@@ -1202,7 +1205,7 @@ locate returns [Object node]
 }
     : l=LOCATE
         LEFT_ROUND_BRACKET 
-        pattern = stringPrimary COMMA n = stringPrimary
+        pattern = scalarExpression COMMA n = scalarExpression
         ( COMMA startPos = simpleArithmeticExpression )?
         RIGHT_ROUND_BRACKET
         { 
@@ -1241,6 +1244,26 @@ index returns [Object node]
     : s=INDEX LEFT_ROUND_BRACKET n = variableAccessOrTypeConstant RIGHT_ROUND_BRACKET
         { $node = factory.newIndex($s.getLine(), $s.getCharPositionInLine(), $n.node); }
     ;
+
+// custom function
+func returns [Object node]
+scope{
+    List exprs;
+}
+@init { 
+    node = null; 
+    $func::exprs = new ArrayList();
+}
+    : f=FUNC LEFT_ROUND_BRACKET
+      name = STRING_LITERAL_SINGLE_QUOTED
+      (COMMA n = newValue
+          {
+            $func::exprs.add($n.node);
+          }
+       )*
+        RIGHT_ROUND_BRACKET
+        {$node = factory.newFunc($f.getLine(), $f.getCharPositionInLine(), $name.getText(), $func::exprs);}
+	;
 
 subquery returns [Object node]
 @init { 

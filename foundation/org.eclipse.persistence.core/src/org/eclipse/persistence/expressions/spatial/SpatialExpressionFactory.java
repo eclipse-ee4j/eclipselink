@@ -12,6 +12,8 @@
  ******************************************************************************/  
 package org.eclipse.persistence.expressions.spatial;
 
+import java.util.Vector;
+
 import org.eclipse.persistence.expressions.Expression;
 import org.eclipse.persistence.expressions.ExpressionOperator;
 import org.eclipse.persistence.internal.expressions.FunctionExpression;
@@ -129,19 +131,18 @@ public class SpatialExpressionFactory {
      * @return
      */
     public static Expression getSpatialExpression(int operator, Expression geom1, Object geom2, String params) {
-        ExpressionOperator anOperator = geom1.getOperator(operator);
-        FunctionExpression expression = new FunctionExpression();
-        expression.setBaseExpression(geom1);
-        expression.addChild(Expression.from(geom1, geom1));
-        expression.addChild(Expression.from(geom2, geom1));
+        Vector vParameters = new Vector(2);
+        vParameters.add(geom2);
         //Bug 5885276, the empty string either like " " or "" needs to be substituted
         //by null prior to passing to Geometry call.
         if (params==null || params.trim().equals("")){
-            expression.addChild(Expression.from(null, geom1));
+            vParameters.add(null);
         }else{
-            expression.addChild(Expression.from(params, geom1));
+            vParameters.add(params);
         }
-        expression.setOperator(anOperator);
+        ExpressionOperator anOperator = geom1.getOperator(operator);
+        FunctionExpression expression = new FunctionExpression();
+        expression.create(geom1, vParameters, anOperator);
         Expression finalExpression = expression.equal("TRUE");
         return finalExpression;
     }

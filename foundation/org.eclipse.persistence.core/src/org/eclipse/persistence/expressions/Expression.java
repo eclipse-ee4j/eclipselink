@@ -3568,14 +3568,6 @@ public abstract class Expression implements Serializable, Cloneable {
 
     /**
      * INTERNAL:
-     * Print SQL, this is called from functions, so must not be converted through the mapping.
-     */
-    public void printSQLWithoutConversion(ExpressionSQLPrinter printer) {
-        printSQL(printer);
-    }
-
-    /**
-     * INTERNAL:
      * This expression is built on a different base than the one we want. Rebuild it and
      * return the root of the new tree
      * If receiver is a complex expression, use cloneUsing(newBase) instead.

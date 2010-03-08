@@ -17,11 +17,12 @@ import javax.persistence.*;
 import oracle.spatial.geometry.JGeometry;
 import org.eclipse.persistence.annotations.StructConverter;
 import org.eclipse.persistence.annotations.Convert;
+import org.eclipse.persistence.testing.models.spatial.jgeometry.wrapped.Spatial;
 
 @Entity
 @Table(name="JPA_JGEOMETRY")
 @StructConverter(name="DummyType", converter="org.eclipse.persistence.testing.models.jpa.structconverter.DummyStructConverter")
-public class SimpleSpatial {
+public class SimpleSpatial implements Spatial {
 
     private long id;   
     private JGeometry geometry;

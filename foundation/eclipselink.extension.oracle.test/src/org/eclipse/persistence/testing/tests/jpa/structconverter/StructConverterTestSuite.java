@@ -13,6 +13,7 @@
 package org.eclipse.persistence.testing.tests.jpa.structconverter;
 
 import javax.persistence.EntityManager;
+import javax.persistence.Query;
 
 import junit.framework.Test;
 import junit.framework.TestSuite;
@@ -67,8 +68,8 @@ public class StructConverterTestSuite extends JUnitTestCase {
     }
 
     public void testSetup() {
-        if (!getServerSession(STRUCT_CONVERTER_PU).getPlatform().isOracle()) {
-            supported = false;
+        supported = getServerSession(STRUCT_CONVERTER_PU).getPlatform().isOracle();
+        if(!supported) {
             return;
         }
         clearCache(STRUCT_CONVERTER_PU);
@@ -77,7 +78,7 @@ public class StructConverterTestSuite extends JUnitTestCase {
         getServerSession(STRUCT_CONVERTER_PU).executeNonSelectingSQL("INSERT INTO USER_SDO_GEOM_METADATA(TABLE_NAME, COLUMN_NAME, DIMINFO) VALUES('JPA_JGEOMETRY', 'JGEOMETRY'," +
                 " mdsys.sdo_dim_array(mdsys.sdo_dim_element('X', -100, 100, 0.005), mdsys.sdo_dim_element('Y', -100, 100, 0.005)))");
 
-        getServerSession(STRUCT_CONVERTER_PU).executeNonSelectingSQL("CREATE INDEX test_idx on JPA_JGEOMETRY(jgeometry) indextype is mdsys.spatial_index parameters ('sdo_level=5 sdo_numtiles=6')");
+        getServerSession(STRUCT_CONVERTER_PU).executeNonSelectingSQL("CREATE INDEX jpa_test_idx on JPA_JGEOMETRY(jgeometry) indextype is mdsys.spatial_index parameters ('sdo_level=5 sdo_numtiles=6')");
     }
     
     /**
@@ -197,6 +198,13 @@ public class StructConverterTestSuite extends JUnitTestCase {
             raq.setSelectionCriteria(selectionCriteria);
             raq.addAscendingOrdering("id");
             getServerSession(STRUCT_CONVERTER_PU).executeQuery(raq);
+            
+            // now read using jpql -  should generate the same sql as the ReadAllQuery above.
+            clearCache(STRUCT_CONVERTER_PU);
+            Query query = em.createQuery("SELECT ss FROM SimpleSpatial ss WHERE FUNC('MDSYS.SDO_RELATE', ss.jGeometry, :otherGeometry, :params) = 'TRUE' ORDER BY ss.id ASC");
+            query.setParameter("otherGeometry", newCircle);
+            query.setParameter("params", parameters.getParameterString());
+            query.getResultList();
         }
     }
     

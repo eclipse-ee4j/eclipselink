@@ -76,9 +76,9 @@ public class TrimNode extends StringFunctionNode {
         } else {
             if (trimChar != null) {
                 Expression trimCharExpr = trimChar.generateExpression(context);
-                whereClause = whereClause.leftTrim(trimCharExpr).rightTrim(trimCharExpr);
+                whereClause = whereClause.trim(trimCharExpr);
             } else {
-                whereClause = whereClause.leftTrim().rightTrim();
+                whereClause = whereClause.trim();
             }
         }
         return whereClause;

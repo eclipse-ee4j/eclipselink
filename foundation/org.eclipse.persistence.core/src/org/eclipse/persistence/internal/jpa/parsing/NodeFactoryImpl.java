@@ -799,6 +799,22 @@ public class NodeFactoryImpl implements NodeFactory {
     }
     
     // ------------------------------------------
+    // Custom function
+    // ------------------------------------------
+    
+    /** */
+    public Object newFunc(int line, int column, String name, List parameters) {
+        FuncNode node = new FuncNode();
+        if(name.startsWith("'") && name.endsWith("'")) {
+            name = name.substring(1, name.length()-1);
+        }
+        node.setName(name);
+        node.setParameters(parameters);
+        setPosition(node, line, column);
+        return node;
+    }
+
+    // ------------------------------------------
     // Subquery nodes
     // ------------------------------------------
 

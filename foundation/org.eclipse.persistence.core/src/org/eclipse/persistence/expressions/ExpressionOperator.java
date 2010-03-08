@@ -1891,8 +1891,6 @@ public class ExpressionOperator implements Serializable {
                 printer.printString(alias.getNameDelimited(printer.getPlatform()));
             } else if ((getSelector() == Count) && (item.isExpressionBuilder())) {
                 printer.printString("*");
-            } else if (getType() == FunctionOperator) {
-                item.printSQLWithoutConversion(printer);
             } else {
                 item.printSQL(printer);
             }

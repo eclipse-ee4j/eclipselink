@@ -46,7 +46,9 @@ public class ConcatNode extends StringFunctionNode {
         TypeHelper typeHelper = context.getTypeHelper();
         Iterator i = objects.iterator();
         while (i.hasNext()){
-            ((Node)i.next()).validateParameter(context, typeHelper.getStringType());
+            Node node = (Node)i.next(); 
+            node.validate(context);
+            node.validateParameter(context, typeHelper.getStringType());
         }
         setType(typeHelper.getStringType());
     }

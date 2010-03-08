@@ -469,7 +469,7 @@ public class ObjectBuilder implements Cloneable, Serializable {
             if (query.shouldBuildNullForNullPk()) {
                 return null;
             } else {
-                throw QueryException.nullPrimaryKeyInBuildingObject(query, databaseRow);
+                throw QueryException.nullPrimaryKeyInBuildingObject(query, databaseRow, descriptor.getIdValidation());
             }
         }
         ClassDescriptor concreteDescriptor = this.descriptor;
@@ -2012,9 +2012,14 @@ public class ObjectBuilder implements Cloneable, Serializable {
                 if (value.getClass() != classification) {
                     value = session.getPlatform(this.descriptor.getJavaClass()).convertObject(value, classification);
                 }
+                if(isPrimaryKeyComponentInvalid(value)) {
+                    value = null;
+                }
                 if (cacheKeyType == CacheKeyType.ID_VALUE) {
                     return value;
                 }
+            }
+            if(value != null) {
                 primaryKeyValues[index] = value;
             } else {
                 if (this.mayHaveNullInPrimaryKey) {

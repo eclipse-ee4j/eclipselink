@@ -32,27 +32,47 @@ import org.eclipse.persistence.testing.models.spatial.jgeometry.wrapped.WrappedS
 public class SQLReader {
     private String sql;
     private List<Spatial> results;
+    private List<String> argumentNames;
+    private List argumentValues;
 
     public SQLReader(Session session, String sql) {
         this.sql = sql;
         readResults(session);
     }
 
+    public SQLReader(Session session, String sql, List<String> argumentNames, List argumentValues) {
+        this.sql = sql;
+        this.argumentNames = argumentNames;
+        this.argumentValues = argumentValues;
+        readResults(session);
+    }
+
     private void readResults(Session session) {
         DataReadQuery query = new DataReadQuery(getSql());
         query.setIsNativeConnectionRequired(true);
-        List<Map> rawResults = (List)session.executeQuery(query);
+        List<Map> rawResults;
+        if(this.argumentNames == null) {
+            rawResults = (List)session.executeQuery(query);
+        } else {
+            for(String name : this.argumentNames) {
+                query.addArgument(name);
+            }
+            rawResults = (List)session.executeQuery(query, argumentValues);
+        }
         this.results = new ArrayList<Spatial>(rawResults.size());
 
         for (Map rawResult: rawResults) {
-            long gid = ((Number)rawResult.get("GID")).longValue();
-            Object geom = rawResult.get("GEOMETRY");
-
-            if (geom instanceof MyGeometry) {
-                this.results.add(new WrappedSpatial(gid, (MyGeometry)geom));
-            } else {
-                this.results.add(new SimpleSpatial(gid, (JGeometry)geom));
-            }
+            this.results.add(createSpatial(rawResult));
+        }
+    }
+    
+    protected Spatial createSpatial(Map rawResult) {
+        long gid = ((Number)rawResult.get("GID")).longValue();
+        Object geom = rawResult.get("GEOMETRY");            
+        if (geom instanceof MyGeometry) {
+            return new WrappedSpatial(gid, (MyGeometry)geom);
+        } else {
+            return new SimpleSpatial(gid, (JGeometry)geom);
         }
     }
 

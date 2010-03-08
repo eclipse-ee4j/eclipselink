@@ -80,7 +80,11 @@ public class LiteralExpression extends Expression {
      * null if there isn't one (shouldn't happen if we start from a root)
      */
     public ExpressionBuilder getBuilder() {
-        return getLocalBase().getBuilder();
+        if(this.localBase != null) {
+            return this.localBase.getBuilder();
+        } else {
+            return null;
+        }
     }
 
     protected Expression getLocalBase() {
@@ -110,14 +114,6 @@ public class LiteralExpression extends Expression {
      */
     public void printSQL(ExpressionSQLPrinter printer) {
         printer.printString(value);
-    }
-
-    /**
-     * INTERNAL:
-     * Print SQL, this is called from functions, so must not be converted through the mapping.
-     */
-    public void printSQLWithoutConversion(ExpressionSQLPrinter printer) {
-        printSQL(printer);
     }
 
     /**

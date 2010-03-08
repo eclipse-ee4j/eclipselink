@@ -320,6 +320,13 @@ public interface NodeFactory {
     
     /** */
     public Object newCurrentTimestamp(int line, int column);
+
+    // ------------------------------------------
+    // Custom function
+    // ------------------------------------------
+    
+    /** */
+    public Object newFunc(int line, int column, String name, List parameters);
     
     // ------------------------------------------
     // Subquery nodes

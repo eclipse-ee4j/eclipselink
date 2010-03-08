@@ -128,12 +128,19 @@ public class FunctionExpression extends BaseExpression {
     /**
      * INTERNAL:
      */
-    public Expression create(Expression base, Object singleArgument, ExpressionOperator operator) {
+    public Expression create(Expression base, Object singleArgument, ExpressionOperator anOperator) {
         baseExpression = base;
         addChild(base);
-        Expression arg = Expression.from(singleArgument, base);
+        Expression localBase = base;
+        if(anOperator.isFunctionOperator()) {
+            ExpressionBuilder builder = getBuilder();
+            if(builder != null) {
+                localBase = builder;
+            }
+        }
+        Expression arg = Expression.from(singleArgument, localBase);
         addChild(arg);
-        setOperator(operator);
+        setOperator(anOperator);
         return this;
     }
     
@@ -143,7 +150,14 @@ public class FunctionExpression extends BaseExpression {
      */
     public Expression createWithBaseLast(Expression base, Object singleArgument, ExpressionOperator anOperator) {
         baseExpression = base;
-        Expression arg = Expression.from(singleArgument, base);
+        Expression localBase = base;
+        if(anOperator.isFunctionOperator()) {
+            ExpressionBuilder builder = getBuilder();
+            if(builder != null) {
+                localBase = builder;
+            }
+        }
+        Expression arg = Expression.from(singleArgument, localBase);
         addChild(arg);
         addChild(base);
         setOperator(anOperator);
@@ -153,14 +167,21 @@ public class FunctionExpression extends BaseExpression {
     /**
      * INTERNAL:
      */
-    public Expression create(Expression base, Vector arguments, ExpressionOperator operator) {
+    public Expression create(Expression base, Vector arguments, ExpressionOperator anOperator) {
         baseExpression = base;
         addChild(base);
+        Expression localBase = base;
+        if(anOperator.isFunctionOperator()) {
+            ExpressionBuilder builder = getBuilder();
+            if(builder != null) {
+                localBase = builder;
+            }
+        }
         for (Enumeration e = arguments.elements(); e.hasMoreElements();) {
-            Expression arg = Expression.from(e.nextElement(), base);
+            Expression arg = Expression.from(e.nextElement(), localBase);
             addChild(arg);
         }
-        setOperator(operator);
+        setOperator(anOperator);
         return this;
     }
 

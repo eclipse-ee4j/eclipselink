@@ -206,6 +206,10 @@ public class JUnitJPQLComplexTestSuite extends JUnitTestCase
         suite.addTest(new JUnitJPQLComplexTestSuite("updateWhereExistsTest"));
         suite.addTest(new JUnitJPQLComplexTestSuite("deleteWhereExistsTest"));
         
+        suite.addTest(new JUnitJPQLComplexTestSuite("caseTypeTest"));
+        suite.addTest(new JUnitJPQLComplexTestSuite("variableReferencedOnlyInParameterTest"));
+        suite.addTest(new JUnitJPQLComplexTestSuite("standardFunctionCreateQueryTest"));
+        
         return suite;
     }
     
@@ -2621,4 +2625,136 @@ public class JUnitJPQLComplexTestSuite extends JUnitTestCase
             closeEntityManager(em);
         }
     }    
+    
+    // Bug 300512 - Add FUNCTION support to extended JPQL 
+    public void caseTypeTest() {
+        EntityManager em = createEntityManager();
+        
+        String jpqlString1 = "SELECT CONCAT(case e.firstName when 'Bob' then 'Robert' when 'Jill' then 'Gillian' else '' end, ' - full name') FROM Employee e";
+        em.createQuery(jpqlString1).getResultList();
+        
+        String jpqlString2 = "SELECT case e.firstName when 'Bob' then 1 when 'Jill' then 2 else 0 end + 1 FROM Employee e";
+        em.createQuery(jpqlString2).getResultList();
+        
+        closeEntityManager(em);
+    }
+
+    // Bug 303540 - JPQL: query fails to compile if variable found only in function parameters 
+    public void variableReferencedOnlyInParameterTest() {
+        EntityManager em = createEntityManager();
+        String[] jpqlString = {
+                "SELECT (e.id + 1) FROM Employee e",
+
+                "SELECT ABS(e.id) FROM Employee e",
+                "SELECT LENGTH(e.firstName) FROM Employee e",
+                "SELECT MOD(e.id, 2) FROM Employee e",
+                "SELECT SQRT(e.id) FROM Employee e",
+                "SELECT LOCATE(e.firstName, 'a') FROM Employee e",
+                "SELECT SIZE(e.firstName) FROM Employee e",
+                
+                "SELECT CONCAT(e.firstName, e.lastName) FROM Employee e", 
+                "SELECT CONCAT('a', e.lastName) FROM Employee e", 
+                "SELECT CONCAT(e.firstName, 'b') FROM Employee e", 
+                "SELECT SUBSTRING(e.firstName, 0, 2) FROM Employee e",
+                "SELECT TRIM(e.firstName) FROM Employee e",
+                "SELECT TRIM(LEADING FROM e.firstName) FROM Employee e",
+                "SELECT TRIM(TRAILING FROM e.firstName) FROM Employee e",
+                "SELECT TRIM(LEADING 'A' FROM e.firstName) FROM Employee e",
+                "SELECT TRIM(TRAILING 'A' FROM e.firstName) FROM Employee e",
+                "SELECT UPPER(e.firstName) FROM Employee e",
+                "SELECT LOWER(e.firstName) FROM Employee e",
+        };
+        
+        try {
+            for(int i=0; i < jpqlString.length; i++) {
+                String jpql = jpqlString[i];
+                Query query = em.createQuery(jpql);
+                query.getResultList();
+            }
+        } finally {
+            closeEntityManager(em);
+        }
+    }
+
+    // Bug 300512 - Add FUNCTION support to extended JPQL 
+    // Bug 246598 - Unable to parse TRIM in JPA NamedQuery 
+    public void standardFunctionCreateQueryTest() {
+        // for debug
+        boolean shouldPrintJpql = false;
+        boolean shouldPrintStackTrace = false;
+        EntityManager em = createEntityManager();
+        String[] jpqlString = {
+                "SELECT e.id FROM Employee e WHERE ABS(:param0) = e.id",
+                "SELECT e.id FROM Employee e WHERE ABS(e.id) = :param0",
+                "SELECT e.id FROM Employee e WHERE SQRT(:param0) = e.id",
+                "SELECT e.id FROM Employee e WHERE SQRT(e.id) = :param",
+                "SELECT e.id FROM Employee e WHERE LENGTH(:param0) = e.id",
+                "SELECT e.id FROM Employee e WHERE LENGTH(e.firstName) = :param0",
+                "SELECT e.id FROM Employee e WHERE MOD(e.id, :param0) = 1",
+                "SELECT e.id FROM Employee e WHERE MOD(:param0, :param1) = e.id",
+                "SELECT e.id FROM Employee e WHERE LOCATE(e.firstName, :param0, :param1) = :param2",
+                "SELECT e.id FROM Employee e WHERE CONCAT(:param0, e.firstName, :param1) = :param2",
+                "SELECT e.id FROM Employee e WHERE SUBSTRING(e.firstName, :param1, :param2) = :param3",
+                "SELECT e.id FROM Employee e WHERE SUBSTRING(e.firstName, :param1, :param2) = e.lastName",
+                "SELECT e.id FROM Employee e WHERE SUBSTRING(:param0, :param1, :param2) = e.firstName",
+                "SELECT e.id FROM Employee e WHERE TRIM(:param0) = e.firstName",
+                "SELECT e.id FROM Employee e WHERE TRIM(e.firstName) = :param0",
+                "SELECT e.id FROM Employee e WHERE TRIM(LEADING FROM e.firstName) = :param0",
+                "SELECT e.id FROM Employee e WHERE TRIM(BOTH FROM :param0) = e.firstName",
+                "SELECT e.id FROM Employee e WHERE TRIM(LEADING 'a' FROM e.firstName) = :param0",
+                "SELECT e.id FROM Employee e WHERE TRIM(TRAILING 'a' FROM e.firstName) = :param0",
+                "SELECT e.id FROM Employee e WHERE TRIM(' ' FROM e.firstName) = :param0",
+                "SELECT e.id FROM Employee e WHERE TRIM('a' FROM e.firstName) = :param0",
+                "SELECT e.id FROM Employee e WHERE TRIM(BOTH 'a' FROM e.firstName) = :param0",
+                "SELECT e.id FROM Employee e WHERE TRIM(LEADING :param0 FROM :param1) = e.firstName",
+                "SELECT e.id FROM Employee e WHERE LOWER(:param0) = e.firstName",
+                "SELECT e.id FROM Employee e WHERE UPPER(:param0) = e.lastName",
+
+                "SELECT ABS(e.id) FROM Employee e",
+                "SELECT SQRT(e.id) FROM Employee e",
+                "SELECT LENGTH(e.firstName) FROM Employee e",
+                "SELECT MOD(e.id, 2) FROM Employee e",
+                "SELECT LOCATE('abc', e.firstName, 2) FROM Employee e",
+                "SELECT LOCATE('abc', e.firstName) FROM Employee e",
+                "SELECT LOCATE(e.firstName, 'abc', 2) FROM Employee e",
+                "SELECT LOCATE(e.firstName, 'abc') FROM Employee e",
+                "SELECT CONCAT(e.firstName, 'A', 'Blah') FROM Employee e",
+                "SELECT SUBSTRING(e.firstName, 1, 2) FROM Employee e",
+                "SELECT TRIM(LEADING 'a' FROM e.firstName) FROM Employee e",
+                "SELECT TRIM(TRAILING 'a' FROM e.firstName) FROM Employee e",
+                "SELECT TRIM(e.firstName) FROM Employee e",
+                "SELECT TRIM(' ' FROM e.firstName) FROM Employee e",
+                "SELECT TRIM(BOTH 'a' FROM e.firstName) FROM Employee e",
+                "SELECT TRIM(LEADING FROM e.firstName) FROM Employee e",
+                "SELECT TRIM('a' FROM e.firstName) FROM Employee e",
+                "SELECT TRIM(e.firstName) FROM Employee e",
+                "SELECT LOWER(e.firstName) FROM Employee e",
+                "SELECT UPPER(e.firstName) FROM Employee e",
+        };
+        
+        String errorMsg = "";
+        String jpql = null;
+        Query query;
+        for(int i=0; i < jpqlString.length; i++) {
+            try {
+                jpql = jpqlString[i];
+                query = em.createQuery(jpql);
+            } catch (Exception ex) {
+                if(shouldPrintJpql) {
+                    System.out.println(jpql);
+                }
+                if(shouldPrintStackTrace) {
+                    ex.printStackTrace();
+                }
+                errorMsg += '\t' + jpql + " - "+ex+'\n';
+            }
+        }
+        
+        closeEntityManager(em);
+        
+        if(errorMsg.length() > 0) {
+            errorMsg = "Failed:\n" + errorMsg;
+            fail(errorMsg);
+        }
+    }
 }
