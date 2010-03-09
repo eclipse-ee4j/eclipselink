@@ -17,16 +17,23 @@
 package org.eclipse.persistence.testing.tests.jpa.fieldaccess.advanced;
 
 import java.util.Collection;
+import java.util.HashMap;
 
-import javax.persistence.Query;
+import javax.persistence.LockModeType;
 import javax.persistence.EntityManager;
+import javax.persistence.PersistenceException;
+import javax.persistence.Query;
 
 import junit.framework.*;
 
+import org.eclipse.persistence.config.QueryHints;
 import org.eclipse.persistence.descriptors.ClassDescriptor;
+import org.eclipse.persistence.sessions.UnitOfWork;
 import org.eclipse.persistence.sessions.server.ServerSession;
 import org.eclipse.persistence.mappings.ForeignReferenceMapping;
 import org.eclipse.persistence.internal.jpa.EJBQueryImpl;
+import org.eclipse.persistence.internal.jpa.EntityManagerImpl;
+import org.eclipse.persistence.jpa.JpaEntityManager;
 
 import org.eclipse.persistence.testing.framework.junit.JUnitTestCase;
 import org.eclipse.persistence.testing.models.jpa.fieldaccess.advanced.Address;
@@ -97,9 +104,7 @@ public class AdvancedJPAJunitTest extends JUnitTestCase {
         suite.addTest(new AdvancedJPAJunitTest("testNamedStoredProcedureQueryInOut"));
         suite.addTest(new AdvancedJPAJunitTest("testNamedStoredProcedureQueryWithRawData"));
         suite.addTest(new AdvancedJPAJunitTest("testTransientConstructorSetFields"));
-        
-        // Temporary removal of JPA 2.0 dependency
-        //suite.addTest(new AdvancedJPAJunitTest("testPessimisticLockingNamedQuery"));
+        suite.addTest(new AdvancedJPAJunitTest("testPessimisticLockingNamedQuery"));
 
         return suite;
     }
@@ -830,7 +835,6 @@ public class AdvancedJPAJunitTest extends JUnitTestCase {
      * 2 - That a default persistence unit lock timeout value is correctly
      * processed and utilized.
      */
-    /* // KERNEL_SRG_TEMP       
     public void testPessimisticLockingNamedQuery() {
         ServerSession session = JUnitTestCase.getServerSession("fieldaccess");
         
@@ -871,7 +875,7 @@ public class AdvancedJPAJunitTest extends JUnitTestCase {
                     // get deadlocked).
                     HashMap properties = new HashMap();
                     properties.put(QueryHints.JDBC_TIMEOUT, 10);
-                    Employee emp2 = em2.find(Employee.class, employee.getId(), LockModeType.PESSIMISTIC);
+                    Employee emp2 = em2.find(Employee.class, employee.getId(), LockModeType.PESSIMISTIC_READ);
                 } catch (PersistenceException ex) {
                     if (ex instanceof javax.persistence.LockTimeoutException) {
                         lockTimeoutException = ex;
@@ -896,5 +900,5 @@ public class AdvancedJPAJunitTest extends JUnitTestCase {
             assertFalse("A lock timeout exception was not thrown (likely because the persistence unit lock timeout default property was not processed).", lockTimeoutException == null);
         }
         
-    } */
+    } 
 }
