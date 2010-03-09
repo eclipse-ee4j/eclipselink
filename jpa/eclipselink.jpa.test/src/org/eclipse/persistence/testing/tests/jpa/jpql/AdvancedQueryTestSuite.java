@@ -38,7 +38,6 @@ import org.eclipse.persistence.config.ResultType;
 import org.eclipse.persistence.descriptors.invalidation.DailyCacheInvalidationPolicy;
 import org.eclipse.persistence.descriptors.invalidation.TimeToLiveCacheInvalidationPolicy;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
-import org.eclipse.persistence.jpa.JpaCache;
 import org.eclipse.persistence.jpa.JpaQuery;
 import org.eclipse.persistence.queries.Cursor;
 import org.eclipse.persistence.queries.ReadQuery;

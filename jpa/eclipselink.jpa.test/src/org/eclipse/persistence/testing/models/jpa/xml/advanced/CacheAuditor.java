@@ -1,7 +1,5 @@
 package org.eclipse.persistence.testing.models.jpa.xml.advanced;
 
-import org.eclipse.persistence.exceptions.OptimisticLockException;
-
 import org.eclipse.persistence.internal.identitymaps.CacheKey;
 import org.eclipse.persistence.internal.identitymaps.IdentityMap;
 import org.eclipse.persistence.internal.sessions.AbstractSession;

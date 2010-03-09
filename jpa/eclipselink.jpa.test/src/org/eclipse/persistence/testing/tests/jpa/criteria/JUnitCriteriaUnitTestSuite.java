@@ -33,7 +33,6 @@ import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.Root;
 import javax.persistence.criteria.Subquery;
 import javax.persistence.metamodel.EntityType;
-import javax.persistence.metamodel.Metamodel;
 
 import org.eclipse.persistence.expressions.Expression;
 import org.eclipse.persistence.expressions.ExpressionBuilder;

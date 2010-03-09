@@ -36,7 +36,6 @@ import org.eclipse.persistence.testing.tests.jpa.advanced.concurrency.Concurrenc
 import org.eclipse.persistence.testing.tests.jpa.advanced.concurrency.LifecycleJUnitTest;
 import org.eclipse.persistence.testing.tests.jpa.advanced.fetchgroup.AdvancedFetchGroupJunitTest;
 import org.eclipse.persistence.testing.tests.jpa.advanced.ReportQueryAdvancedJUnitTest;
-import org.eclipse.persistence.testing.tests.jpa.advanced.PessimisticLockingExtendedScopeTestSuite;
 
 import org.eclipse.persistence.testing.tests.jpa.inheritance.LifecycleCallbackJunitTest;
 import org.eclipse.persistence.testing.tests.jpa.inheritance.DeleteAllQueryInheritanceJunitTest;

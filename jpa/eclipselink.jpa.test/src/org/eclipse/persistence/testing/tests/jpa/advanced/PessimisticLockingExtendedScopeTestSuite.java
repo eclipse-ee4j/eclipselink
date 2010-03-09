@@ -26,8 +26,6 @@ import junit.framework.TestSuite;
 import javax.persistence.EntityManager;
 import javax.persistence.LockModeType;
 import javax.persistence.PessimisticLockScope;
-import javax.persistence.PersistenceException;
-import javax.persistence.Query;
 
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.config.QueryHints;

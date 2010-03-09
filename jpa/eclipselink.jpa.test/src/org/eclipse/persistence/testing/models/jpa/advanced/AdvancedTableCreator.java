@@ -14,7 +14,6 @@
  ******************************************************************************/  
 package org.eclipse.persistence.testing.models.jpa.advanced;
 
-import org.eclipse.persistence.sessions.DatabaseSession;
 import org.eclipse.persistence.testing.framework.TogglingFastTableCreator;
 import org.eclipse.persistence.tools.schemaframework.*;
 
