@@ -10,7 +10,7 @@
 		   <different:number-of-doors>2</different:number-of-doors>
 		   <different:miles-per-gallon>30</different:miles-per-gallon>
 		</different:vehicle>
-		<different:vehicle xsi:type="different:vehicle-type">
+		<different:vehicle>
 		   <different:model>Blah Blah</different:model>
 		   <different:manufacturer>Some Place</different:manufacturer>
 		   <different:top-speed>10000</different:top-speed>

@@ -22,6 +22,7 @@ import org.eclipse.persistence.testing.oxm.inheritance.typetests.compositecollec
 import org.eclipse.persistence.testing.oxm.inheritance.typetests.compositecollection.AddressesAsNestedWithCdnAddressNoDefaultRootTypeXsiTestsCases;
 import org.eclipse.persistence.testing.oxm.inheritance.typetests.compositecollection.AddressesAsNestedWithCdnAddressXsiNoRefClassTestCases;
 import org.eclipse.persistence.testing.oxm.inheritance.typetests.compositecollection.AddressesAsNestedWithCdnAddressXsiTestCases;
+import org.eclipse.persistence.testing.oxm.inheritance.typetests.compositecollection.CanadianAddressAsRefClassTestCases;
 import org.eclipse.persistence.testing.oxm.inheritance.typetests.compositecollection.CanadianAddressesAsNestedNoRefClassTestCases;
 import org.eclipse.persistence.testing.oxm.inheritance.typetests.compositecollection.CanadianAddressesAsNestedTestCases;
 import org.eclipse.persistence.testing.oxm.inheritance.typetests.compositecollection.ContactsAsNestedNoRefClassTestCases;
@@ -95,6 +96,8 @@ public class TypeTestSuite extends TestCase {
             suite.addTestSuite(ContactsAsNestedWithAddressXsiNoRefClassTestCases.class);
             suite.addTestSuite(ContactsAsNestedWithCdnAddressXsiNoRefClassTestCases.class);
 
+            suite.addTestSuite(CanadianAddressAsRefClassTestCases.class);
+            
         } catch (Exception e) {
             e.printStackTrace();
         }

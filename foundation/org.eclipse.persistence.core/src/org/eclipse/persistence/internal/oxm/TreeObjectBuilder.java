@@ -293,10 +293,6 @@ public class TreeObjectBuilder extends XMLObjectBuilder {
                 XMLField classIndicatorField = new XMLField(inheritancePolicy.getClassIndicatorFieldName());
                 classIndicatorField.setNamespaceResolver(xmlDescriptor.getNamespaceResolver());
                     
-                InheritanceNodeValue inheritanceNodeValue = new InheritanceNodeValue();
-                inheritanceNodeValue.setInheritancePolicy(inheritancePolicy);
-    
-                addChild(classIndicatorField.getXPathFragment(), inheritanceNodeValue, xmlDescriptor.getNamespaceResolver());
             }
         }
     }
@@ -309,7 +305,6 @@ public class TreeObjectBuilder extends XMLObjectBuilder {
     public AbstractRecord buildRow(AbstractRecord record, Object object, org.eclipse.persistence.internal.sessions.AbstractSession session, WriteType writeType) {
         return buildRow(record, object, session, null, writeType);
     }
-
     public AbstractRecord buildRow(AbstractRecord record, Object object, org.eclipse.persistence.internal.sessions.AbstractSession session, XMLMarshaller marshaller, WriteType writeType) {
         return buildRow(record, object, session, marshaller, null, writeType);
     }

@@ -2,7 +2,7 @@
    <ns2:companies>
       <ns2:company xmlns:aaa="http://www.example.com/aaa">
 	     <ns2:companyname>theCompany1</ns2:companyname>
-		 <ns2:manager xsi:type="ns2:manager-type" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:ns4="http://www.example.com/ns4" xmlns:ns3="http://www.example.com/ns3" xmlns:ns7="http://www.example.com/ns7">
+		 <ns2:manager xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:ns4="http://www.example.com/ns4" xmlns:ns3="http://www.example.com/ns3" xmlns:ns7="http://www.example.com/ns7">
 		 	<ns4:personal-info ns4:id="123">
 			   <ns4:name>Jane Doe</ns4:name>
      	    </ns4:personal-info>
@@ -15,7 +15,7 @@
    			      <ns4:team xmlns:ns5="http://www.example.com/ns5" xmlns:ns4="http://www.example.com/ns4" xmlns:ns6="http://www.example.com/ns6">
 	  			     <ns4:teamName>team1</ns4:teamName>
 					 <ns5:leader>
-						<ns4:employee xsi:type="ns4:emp-type" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+						<ns4:employee xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
    					       <ns4:personal-info ns4:id="111">
 	  			              <ns4:name>Sally Smith</ns4:name>
                   	       </ns4:personal-info>

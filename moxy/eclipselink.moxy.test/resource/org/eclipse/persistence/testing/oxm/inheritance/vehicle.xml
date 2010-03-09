@@ -1,5 +1,5 @@
 <?xml version = '1.0' encoding = 'UTF-8'?>
-<prefix:vehicle xsi:type="prefix:vehicle-type" xmlns:prefix="mynamespaceuri" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+<prefix:vehicle xmlns:prefix="mynamespaceuri" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
    <prefix:model>Blah Blah</prefix:model>
    <prefix:manufacturer>Some Place</prefix:manufacturer>
    <prefix:top-speed>10000</prefix:top-speed>

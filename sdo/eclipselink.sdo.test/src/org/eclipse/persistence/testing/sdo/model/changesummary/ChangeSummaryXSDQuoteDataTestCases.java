@@ -12,15 +12,19 @@
 ******************************************************************************/
 package org.eclipse.persistence.testing.sdo.model.changesummary;
 
+import java.io.ByteArrayInputStream;
 import java.io.FileInputStream;
 import java.io.InputStream;
 import java.util.List;
 import junit.textui.TestRunner;
 import org.eclipse.persistence.testing.sdo.SDOTestCase;
+
 import commonj.sdo.ChangeSummary;
 import commonj.sdo.DataObject;
 import commonj.sdo.helper.XMLDocument;
+
 import org.eclipse.persistence.sdo.helper.ListWrapper;
+import org.w3c.dom.Document;
 
 public class ChangeSummaryXSDQuoteDataTestCases extends SDOTestCase {
     private DataObject quoteDataDO;
@@ -93,13 +97,22 @@ public class ChangeSummaryXSDQuoteDataTestCases extends SDOTestCase {
         }
 
         String beforemovestr = xmlHelper.save(quoteDataDO, ROOT_ELEMENT_URI, ROOT_ELEMENT_NAME);
-        assertStringsEqual(writeDocumentBeforeMoveAsString, beforemovestr);        
 
+        Document doc1 = parser.parse(new ByteArrayInputStream(writeDocumentBeforeMoveAsString.getBytes()));
+        Document doc2 = parser.parse(new ByteArrayInputStream(beforemovestr.getBytes()));
+        
+        assertXMLIdentical(doc1, doc2);
+        
         // move the modified related quote items (should be a modified and a move entry in the CS)
         lineItemList.addAll(relatedQuoteItem);
 
         String aftermovestr = xmlHelper.save(quoteDataDO, ROOT_ELEMENT_URI, ROOT_ELEMENT_NAME);
-        assertStringsEqual(writeDocumentAfterMoveAsString, aftermovestr);
+        
+        doc1 = parser.parse(new ByteArrayInputStream(writeDocumentAfterMoveAsString.getBytes()));
+        doc2 = parser.parse(new ByteArrayInputStream(aftermovestr.getBytes()));
+        
+        assertXMLIdentical(doc1, doc2);
+        
     }
     
     /**

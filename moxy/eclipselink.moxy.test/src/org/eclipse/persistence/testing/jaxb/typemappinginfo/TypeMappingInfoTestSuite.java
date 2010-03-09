@@ -21,6 +21,8 @@ import org.eclipse.persistence.testing.jaxb.typemappinginfo.rootelement.RootFrom
 import org.eclipse.persistence.testing.jaxb.typemappinginfo.rootelement.RootFromTypeMappingInfoTestCases;
 import org.eclipse.persistence.testing.jaxb.typemappinginfo.simple.EmptyClassTestCases;
 import org.eclipse.persistence.testing.jaxb.typemappinginfo.simple.TypeMappingInfoNullTypeTestCases;
+import org.eclipse.persistence.testing.jaxb.typemappinginfo.xsitype.ListOfCustomerNoXmlXsiTypeTestCases;
+import org.eclipse.persistence.testing.jaxb.typemappinginfo.xsitype.ListOfCustomerXsiTypeTestCases;
 
 import junit.framework.Test;
 import junit.framework.TestCase;
@@ -69,6 +71,9 @@ public class TypeMappingInfoTestSuite extends TestCase {
         suite.addTestSuite(ClassLoaderTestCases.class);
         suite.addTestSuite(EmptyClassTestCases.class);
         suite.addTestSuite(TypeMappingInfoNullTypeTestCases.class);
+        suite.addTestSuite(ListOfCustomerXsiTypeTestCases.class);
+        suite.addTestSuite(ListOfCustomerNoXmlXsiTypeTestCases.class);
+ 
         return suite;
     }
 }

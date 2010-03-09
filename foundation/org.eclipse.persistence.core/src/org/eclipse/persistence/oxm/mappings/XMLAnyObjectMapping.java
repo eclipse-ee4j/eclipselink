@@ -41,7 +41,6 @@ import org.eclipse.persistence.oxm.XMLConstants;
 import org.eclipse.persistence.oxm.XMLContext;
 import org.eclipse.persistence.oxm.XMLDescriptor;
 import org.eclipse.persistence.oxm.XMLField;
-import org.eclipse.persistence.oxm.XMLMarshaller;
 import org.eclipse.persistence.oxm.XMLRoot;
 import org.eclipse.persistence.oxm.mappings.converters.XMLConverter;
 import org.eclipse.persistence.oxm.record.DOMRecord;
@@ -480,11 +479,10 @@ public class XMLAnyObjectMapping extends XMLAbstractAnyMapping implements XMLMap
         if ((field != null) && (referenceDescriptor != null)) {
             ((XMLRecord) parentRow).setLeafElementType(referenceDescriptor.getDefaultRootElementType());
             XMLObjectBuilder objectBuilder = (XMLObjectBuilder) referenceDescriptor.getObjectBuilder();
-            boolean addXsiType = shouldAddXsiType(((XMLRecord) parentRow).getMarshaller(), referenceDescriptor, originalObject, wasXMLRoot);
-
+            
             XMLRecord child = (XMLRecord) objectBuilder.createRecordFor(attributeValue, (XMLField) field, (XMLRecord) parentRow, this);
             child.setNamespaceResolver(((XMLRecord) parentRow).getNamespaceResolver());
-            objectBuilder.buildIntoNestedRow(child, attributeValue, session, addXsiType);
+            objectBuilder.buildIntoNestedRow(child, originalObject, attributeValue, session, referenceDescriptor, (XMLField) field, wasXMLRoot);
             return child;
         }
         return null;
@@ -515,15 +513,6 @@ public class XMLAnyObjectMapping extends XMLAbstractAnyMapping implements XMLMap
         return useXMLRoot;
     }
 
-    /**
-     * INTERNAL:
-     */
-    public boolean shouldAddXsiType(XMLMarshaller xmlMarshaller, XMLDescriptor xmlDescriptor, Object originalObject, boolean wasXMLRoot) {
-        if ((xmlDescriptor.getSchemaReference() != null) && xmlMarshaller.shouldWriteTypeAttribute(originalObject, xmlDescriptor, wasXMLRoot)) {
-            return true;
-        }
-        return false;
-    }
 
     private ArrayList getUnmappedChildNodes(NodeList nodes) {
         ArrayList unmappedNodes = new ArrayList();

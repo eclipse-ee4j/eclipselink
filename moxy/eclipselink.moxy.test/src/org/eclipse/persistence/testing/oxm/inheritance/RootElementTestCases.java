@@ -16,7 +16,6 @@ import javax.xml.namespace.QName;
 
 import org.eclipse.persistence.oxm.XMLRoot;
 import org.eclipse.persistence.testing.oxm.mappings.XMLMappingTestCases;
-import org.eclipse.persistence.testing.oxm.xmlmarshaller.setschemas.SetXmlSchemaTestCases;
 
 /**
  * This test case is to verify the fix for the following bug:
@@ -45,15 +44,6 @@ public class RootElementTestCases extends XMLMappingTestCases {
     @Override
     public Object getReadControlObject() {
         return new Car();
-    }
-
-    @Override
-    public Platform getPlatform() {
-        Platform platform = super.getPlatform();
-        if(Platform.DOC_PRES == platform) {
-            platform = Platform.SAX;
-        }
-        return platform;
     }
 
 }

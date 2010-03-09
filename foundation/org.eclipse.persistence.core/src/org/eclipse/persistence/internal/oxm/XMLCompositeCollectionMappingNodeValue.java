@@ -21,7 +21,6 @@ import org.eclipse.persistence.internal.oxm.record.MarshalContext;
 import org.eclipse.persistence.internal.oxm.record.ObjectMarshalContext;
 import org.eclipse.persistence.internal.queries.ContainerPolicy;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
-import org.eclipse.persistence.mappings.DatabaseMapping;
 import org.eclipse.persistence.mappings.DatabaseMapping.WriteType;
 import org.eclipse.persistence.mappings.converters.Converter;
 import org.eclipse.persistence.oxm.NamespaceResolver;
@@ -36,7 +35,6 @@ import org.eclipse.persistence.oxm.mappings.XMLMapping;
 import org.eclipse.persistence.oxm.mappings.converters.XMLConverter;
 import org.eclipse.persistence.oxm.record.MarshalRecord;
 import org.eclipse.persistence.oxm.record.UnmarshalRecord;
-import org.eclipse.persistence.oxm.schema.XMLSchemaReference;
 import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
 
@@ -216,13 +214,6 @@ public class XMLCompositeCollectionMappingNodeValue extends XMLRelationshipMappi
     public boolean isContainerValue() {
         return true;
     }
-
-    protected void addTypeAttributeIfNeeded(XMLDescriptor descriptor, DatabaseMapping mapping, MarshalRecord marshalRecord) {
-        XMLSchemaReference xmlRef = descriptor.getSchemaReference();
-        if (xmlCompositeCollectionMapping.shouldAddXsiType(marshalRecord, descriptor) && (xmlRef != null)) {
-            addTypeAttribute(descriptor, marshalRecord, xmlRef.getSchemaContext());
-        }
-    }
     
     public boolean marshalSingleValue(XPathFragment xPathFragment, MarshalRecord marshalRecord, Object object, Object value, AbstractSession session, NamespaceResolver namespaceResolver, MarshalContext marshalContext) {
         if (xPathFragment.hasLeafElementType()) {
@@ -261,12 +252,12 @@ public class XMLCompositeCollectionMappingNodeValue extends XMLRelationshipMappi
             TreeObjectBuilder objectBuilder = (TreeObjectBuilder)descriptor.getObjectBuilder();
             getXPathNode().startElement(marshalRecord, xPathFragment, object, session, namespaceResolver, objectBuilder, value);            
     
-            if ((xmlCompositeCollectionMapping.getReferenceDescriptor() == null) && (descriptor.getSchemaReference() != null)) {
-                addTypeAttributeIfNeeded(descriptor, xmlCompositeCollectionMapping, marshalRecord);
-            }
             
             List extraNamespaces = objectBuilder.addExtraNamespacesToNamespaceResolver(descriptor, marshalRecord, session);
             writeExtraNamespaces(extraNamespaces, marshalRecord, session);
+
+            objectBuilder.addXsiTypeAndClassIndicatorIfRequired(marshalRecord, descriptor, (XMLDescriptor) xmlCompositeCollectionMapping.getReferenceDescriptor(), (XMLField)xmlCompositeCollectionMapping.getField(), false);
+            
             objectBuilder.buildRow(marshalRecord, value, session, marshaller, xPathFragment, WriteType.UNDEFINED);
             marshalRecord.endElement(xPathFragment, namespaceResolver);
             objectBuilder.removeExtraNamespacesFromNamespaceResolver(marshalRecord, extraNamespaces, session);    

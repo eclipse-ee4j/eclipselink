@@ -43,7 +43,6 @@ import org.eclipse.persistence.oxm.mappings.nullpolicy.AbstractNullPolicy;
 import org.eclipse.persistence.oxm.mappings.nullpolicy.NullPolicy;
 import org.eclipse.persistence.oxm.record.DOMRecord;
 import org.eclipse.persistence.oxm.record.XMLRecord;
-import org.eclipse.persistence.oxm.schema.XMLSchemaReference;
 import org.eclipse.persistence.platform.xml.XMLPlatformFactory;
 import org.eclipse.persistence.queries.ObjectBuildingQuery;
 
@@ -415,11 +414,11 @@ public class XMLCompositeObjectMapping extends AbstractCompositeObjectMapping im
 
         if (xmlReferenceDescriptor != null) {
             XMLObjectBuilder objectBuilder = (XMLObjectBuilder) xmlReferenceDescriptor.getObjectBuilder();
-
-            boolean addXsiType = shouldAddXsiType((XMLRecord) databaseRow, xmlReferenceDescriptor);
-            XMLRecord child = (XMLRecord) objectBuilder.createRecordFor(attributeValue, (XMLField) getField(), parent, this);
+            
+            XMLRecord child = (XMLRecord) objectBuilder.createRecordFor(attributeValue, (XMLField) getField(), parent, this);            
             child.setNamespaceResolver(parent.getNamespaceResolver());
-            objectBuilder.buildIntoNestedRow(child, attributeValue, session, addXsiType);
+            child.setSession(session);
+            objectBuilder.buildIntoNestedRow(child, attributeValue, session, (XMLDescriptor)getReferenceDescriptor(), (XMLField) getField());
             return child;
         } else {
             if (attributeValue instanceof Element && getKeepAsElementPolicy() == UnmarshalKeepAsElementPolicy.KEEP_UNKNOWN_AS_ELEMENT) {
@@ -632,8 +631,7 @@ public class XMLCompositeObjectMapping extends AbstractCompositeObjectMapping im
             	 ClassDescriptor desc =  this.getReferenceDescriptor(attributeValue.getClass(), session);
             	 if(desc != null){
             		 XMLObjectBuilder objectBuilder = (XMLObjectBuilder)desc.getObjectBuilder();
-            		 boolean addXsiType = shouldAddXsiType(record, desc);
-            		 objectBuilder.buildIntoNestedRow(record, attributeValue, session, addXsiType);
+            		 objectBuilder.buildIntoNestedRow(record, attributeValue, session, (XMLDescriptor)getReferenceDescriptor(), (XMLField) getField());
             	 }else{
             		 //simple case
              		 record.put(this.getField(), attributeValue);
@@ -711,35 +709,7 @@ public class XMLCompositeObjectMapping extends AbstractCompositeObjectMapping im
             return subDescriptor;
         }
     }
-
-    /**
-     * INTERNAL:
-     */
-    public boolean shouldAddXsiType(XMLRecord record, ClassDescriptor aDescriptor) {
-        XMLDescriptor xmlDescriptor = (XMLDescriptor) aDescriptor;
-        if ((getReferenceDescriptor() == null) && (xmlDescriptor.getSchemaReference() != null)) {
-            if (aDescriptor.hasInheritance()) {
-                XMLField indicatorField = (XMLField) aDescriptor.getInheritancePolicy().getClassIndicatorField();
-                if ((indicatorField.getLastXPathFragment().getNamespaceURI() != null) //
-                        && indicatorField.getLastXPathFragment().getNamespaceURI().equals(XMLConstants.SCHEMA_INSTANCE_URL) //
-                        && indicatorField.getLastXPathFragment().getLocalName().equals(XMLConstants.SCHEMA_TYPE_ATTRIBUTE)) {
-                    return false;
-                }
-            }
-
-            XMLSchemaReference xmlRef = xmlDescriptor.getSchemaReference();
-            if ((xmlRef.getType() == XMLSchemaReference.COMPLEX_TYPE) && xmlRef.isGlobalDefinition()) {
-                QName ctxQName = xmlRef.getSchemaContextAsQName(xmlDescriptor.getNamespaceResolver());
-                QName leafType = ((XMLField) getField()).getLeafElementType();
-
-                if ((leafType == null) || (!ctxQName.equals(record.getLeafElementType()))) {
-                    return true;
-                }
-            }
-        }
-        return false;
-    }
-
+    
     public UnmarshalKeepAsElementPolicy getKeepAsElementPolicy() {
         return keepAsElementPolicy;
     }

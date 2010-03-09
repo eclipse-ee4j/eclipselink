@@ -681,14 +681,6 @@ public class SDOType implements Type, Serializable {
         }
         xdesc.getInheritancePolicy().addClassIndicator(pCls, parentIndicator);
         
-        // In some cases such as defining types via DataObject API (not by schema) we need 
-        // to add an inheritance node value to TreeObjectBuilder in order to have the class
-        // indicator (xsi:type) written out
-        if (isInheritanceRoot) {
-            InheritanceNodeValue inheritanceNodeValue = new InheritanceNodeValue();
-            inheritanceNodeValue.setInheritancePolicy(xdesc.getInheritancePolicy());
-            ((TreeObjectBuilder)xmlDescriptor.getObjectBuilder()).addChild(field.getXPathFragment(), inheritanceNodeValue, xmlDescriptor.getNamespaceResolver());
-        }
         
         // only add the @sdoRef attribute if necessary
         if (xdesc.getMappingForAttributeName(SDO_REF_MAPPING_ATTRIBUTE_NAME) == null) {

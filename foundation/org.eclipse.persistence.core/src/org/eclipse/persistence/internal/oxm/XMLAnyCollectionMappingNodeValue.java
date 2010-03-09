@@ -30,6 +30,7 @@ import org.eclipse.persistence.oxm.NamespaceResolver;
 import org.eclipse.persistence.oxm.XMLConstants;
 import org.eclipse.persistence.oxm.XMLContext;
 import org.eclipse.persistence.oxm.XMLDescriptor;
+import org.eclipse.persistence.oxm.XMLField;
 import org.eclipse.persistence.oxm.XMLMarshaller;
 import org.eclipse.persistence.oxm.XMLRoot;
 import org.eclipse.persistence.oxm.mappings.UnmarshalKeepAsElementPolicy;
@@ -308,13 +309,9 @@ public class XMLAnyCollectionMappingNodeValue extends XMLRelationshipMappingNode
                 getXPathNode().startElement(marshalRecord, rootFragment, object, childSession, marshalRecord.getNamespaceResolver(), objectBuilder, value);                
 
                 writeExtraNamespaces(extraNamespaces, marshalRecord, session);
-                if (xmlAnyCollectionMapping.shouldAddXsiType(marshaller, descriptor, originalValue, wasXMLRoot)) {
-                    String typeValue = descriptor.getSchemaReference().getSchemaContext();
-                    addTypeAttribute(descriptor, marshalRecord, typeValue);
-                }
 
-                objectBuilder.buildRow(marshalRecord, value, session, marshaller, WriteType.UNDEFINED);
-
+                objectBuilder.addXsiTypeAndClassIndicatorIfRequired(marshalRecord, descriptor, descriptor, (XMLField)xmlAnyCollectionMapping.getField(), originalValue, value, wasXMLRoot, false);               
+                objectBuilder.buildRow(marshalRecord, value, session, marshaller, WriteType.UNDEFINED);                
                 objectBuilder.removeExtraNamespacesFromNamespaceResolver(marshalRecord, extraNamespaces, session);
 
                 marshalRecord.endElement(rootFragment, namespaceResolver);

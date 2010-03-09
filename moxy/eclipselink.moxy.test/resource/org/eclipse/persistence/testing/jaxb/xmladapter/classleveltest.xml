@@ -12,7 +12,7 @@
    <classBObject>
       <theValue>singleValue</theValue>
    </classBObject>
-   <subClassObject xsi:type="classBSubClass">
+   <subClassObject>
       <someValue>subclassValue</someValue>
       <extraString>extra</extraString>
    </subClassObject>

@@ -24,7 +24,6 @@ import org.eclipse.persistence.internal.oxm.record.ObjectMarshalContext;
 import org.eclipse.persistence.internal.oxm.record.XMLReader;
 import org.eclipse.persistence.internal.oxm.record.deferred.CompositeObjectMappingContentHandler;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
-import org.eclipse.persistence.mappings.DatabaseMapping;
 import org.eclipse.persistence.mappings.DatabaseMapping.WriteType;
 import org.eclipse.persistence.mappings.converters.Converter;
 import org.eclipse.persistence.oxm.NamespaceResolver;
@@ -39,7 +38,6 @@ import org.eclipse.persistence.oxm.mappings.XMLMapping;
 import org.eclipse.persistence.oxm.mappings.converters.XMLConverter;
 import org.eclipse.persistence.oxm.record.MarshalRecord;
 import org.eclipse.persistence.oxm.record.UnmarshalRecord;
-import org.eclipse.persistence.oxm.schema.XMLSchemaReference;
 import org.eclipse.persistence.platform.xml.XMLPlatformFactory;
 import org.eclipse.persistence.sessions.Session;
 import org.w3c.dom.Element;
@@ -157,9 +155,7 @@ public class XMLCompositeObjectMappingNodeValue extends XMLRelationshipMappingNo
 
             List extraNamespaces = objectBuilder.addExtraNamespacesToNamespaceResolver(descriptor, marshalRecord, session);
             writeExtraNamespaces(extraNamespaces, marshalRecord, session);
-            if ((xmlCompositeObjectMapping.getReferenceDescriptor() == null) && (descriptor.getSchemaReference() != null)) {
-                addTypeAttributeIfNeeded(descriptor, xmlCompositeObjectMapping, marshalRecord);
-            }
+            objectBuilder.addXsiTypeAndClassIndicatorIfRequired(marshalRecord, descriptor, (XMLDescriptor) xmlCompositeObjectMapping.getReferenceDescriptor(), (XMLField)xmlCompositeObjectMapping.getField(), false);                
 
             objectBuilder.buildRow(marshalRecord, objectValue, session, marshaller, xPathFragment, WriteType.UNDEFINED);
 
@@ -466,13 +462,6 @@ public class XMLCompositeObjectMappingNodeValue extends XMLRelationshipMappingNo
             return false;
         }
         return xmlCompositeObjectMapping.getNullPolicy().getIsSetPerformedForAbsentNode();
-    }
-
-    protected void addTypeAttributeIfNeeded(XMLDescriptor descriptor, DatabaseMapping mapping, MarshalRecord marshalRecord) {
-        XMLSchemaReference xmlRef = descriptor.getSchemaReference();
-        if (xmlCompositeObjectMapping.shouldAddXsiType(marshalRecord, descriptor) && (xmlRef != null)) {
-            addTypeAttribute(descriptor, marshalRecord, xmlRef.getSchemaContext());
-        }
     }
 
     public XMLCompositeObjectMapping getMapping() {

@@ -42,7 +42,6 @@ import org.eclipse.persistence.oxm.XMLConstants;
 import org.eclipse.persistence.oxm.XMLContext;
 import org.eclipse.persistence.oxm.XMLDescriptor;
 import org.eclipse.persistence.oxm.XMLField;
-import org.eclipse.persistence.oxm.XMLMarshaller;
 import org.eclipse.persistence.oxm.XMLRoot;
 import org.eclipse.persistence.oxm.record.DOMRecord;
 import org.eclipse.persistence.oxm.record.XMLRecord;
@@ -645,11 +644,9 @@ public class XMLAnyCollectionMapping extends XMLAbstractAnyMapping implements XM
             ((XMLRecord) parentRow).setLeafElementType(referenceDescriptor.getDefaultRootElementType());
             XMLObjectBuilder objectBuilder = (XMLObjectBuilder) referenceDescriptor.getObjectBuilder();
 
-            boolean addXsiType = shouldAddXsiType(((XMLRecord) parentRow).getMarshaller(), referenceDescriptor, originalObject, wasXMLRoot);
-
             XMLRecord child = (XMLRecord) objectBuilder.createRecordFor(attributeValue, (XMLField) field, (XMLRecord) parentRow, this);
             child.setNamespaceResolver(((XMLRecord) parentRow).getNamespaceResolver());
-            objectBuilder.buildIntoNestedRow(child, attributeValue, session, addXsiType);
+            objectBuilder.buildIntoNestedRow(child, originalObject, attributeValue, session, referenceDescriptor, (XMLField) field, wasXMLRoot);
             return child;
         }
         return null;
@@ -694,15 +691,6 @@ public class XMLAnyCollectionMapping extends XMLAbstractAnyMapping implements XM
         mixedContent = mixed;
     }
 
-    /**
-     * INTERNAL:
-     */
-    public boolean shouldAddXsiType(XMLMarshaller xmlmarshaller, XMLDescriptor xmlDescriptor, Object originalObject, boolean wasXMLRoot) {
-        if ((xmlDescriptor.getSchemaReference() != null) && xmlmarshaller.shouldWriteTypeAttribute(originalObject, xmlDescriptor, wasXMLRoot)) {
-            return true;
-        }
-        return false;
-    }
 
     private boolean isUnmappedContent(Node node) {
         if (!areOtherMappingInThisContext) {

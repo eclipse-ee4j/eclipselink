@@ -66,7 +66,14 @@ public class XMLStreamWriterRecord extends MarshalRecord {
             String namespaceURI = xPathFragment.getNamespaceURI();
             if(namespaceURI == null) {
                 xmlStreamWriter.writeAttribute(xPathFragment.getLocalName(), value);
-            } else {
+                
+            } else if(XMLConstants.XMLNS_URL.equals(namespaceURI)) {
+                if(XMLConstants.XMLNS.equals(xPathFragment.getLocalName())) {
+                    xmlStreamWriter.writeDefaultNamespace(value);
+                }  else {
+                    xmlStreamWriter.writeNamespace(xPathFragment.getLocalName(), value);
+                }
+            }  else {
                 String prefix = xPathFragment.getPrefix();
                 if(prefix == null) {
                     xmlStreamWriter.writeAttribute(namespaceURI, xPathFragment.getLocalName(), value);
@@ -200,6 +207,7 @@ public class XMLStreamWriterRecord extends MarshalRecord {
                 }
                 for(Map.Entry<String, String> entry:this.namespaceResolver.getPrefixesToNamespaces().entrySet()) {
                     xmlStreamWriter.writeNamespace(entry.getKey(), entry.getValue());
+                //	namespaceDeclaration(entry.getValue(), entry.getKey());
                 }
                 namespaceResolver = null;
             }
@@ -213,7 +221,7 @@ public class XMLStreamWriterRecord extends MarshalRecord {
             throw XMLMarshalException.marshalException(e);
         }
     }
-
+    
     public void namespaceDeclarations(NamespaceResolver namespaceResolver) {
     }
 

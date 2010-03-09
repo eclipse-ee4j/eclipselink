@@ -7,7 +7,7 @@
 		   <prefix:number-of-doors>2</prefix:number-of-doors>
 		   <prefix:miles-per-gallon>30</prefix:miles-per-gallon>
 		</prefix:vehicle>
-		<prefix:vehicle xsi:type="prefix:vehicle-type">
+		<prefix:vehicle>
 		   <prefix:model>Blah Blah</prefix:model>
 		   <prefix:manufacturer>Some Place</prefix:manufacturer>
 		   <prefix:top-speed>10000</prefix:top-speed>

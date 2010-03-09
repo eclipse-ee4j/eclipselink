@@ -44,6 +44,7 @@ import org.eclipse.persistence.oxm.XMLDescriptor;
 import org.eclipse.persistence.oxm.XMLField;
 import org.eclipse.persistence.oxm.XMLLogin;
 import org.eclipse.persistence.oxm.XMLMarshaller;
+import org.eclipse.persistence.oxm.XMLRoot;
 import org.eclipse.persistence.oxm.XMLUnmarshaller;
 import org.eclipse.persistence.oxm.mappings.XMLMapping;
 import org.eclipse.persistence.oxm.record.DOMRecord;
@@ -76,13 +77,6 @@ public class XMLObjectBuilder extends ObjectBuilder {
      * Build the nested row into the parent dom.
      */
     public AbstractRecord buildRow(Object object, AbstractSession session, DatabaseField xmlField, XMLRecord parentRecord) {
-        return buildRow(object, session, xmlField, parentRecord, false);
-    }
-
-    /**
-     * Build the nested row into the parent dom.
-     */
-    public AbstractRecord buildRow(Object object, AbstractSession session, DatabaseField xmlField, XMLRecord parentRecord, boolean addXsiType) {
         if (isXmlDescriptor() && ((XMLDescriptor)getDescriptor()).shouldPreserveDocument()) {
             Object pk = extractPrimaryKeyFromObject(object, session);
             if ((pk == null) || (pk instanceof CacheId) && (((CacheId)pk).getPrimaryKey().length == 0)) {
@@ -94,7 +88,7 @@ public class XMLObjectBuilder extends ObjectBuilder {
                 nestedRecord.setMarshaller(parentRecord.getMarshaller());
                 nestedRecord.setLeafElementType(parentRecord.getLeafElementType());
                 parentRecord.setLeafElementType(null);
-                return buildIntoNestedRow(nestedRecord, object, session, addXsiType);
+                return buildIntoNestedRow(nestedRecord, object, session);
             }
         }
         Element newNode = XPathEngine.getInstance().createUnownedElement(parentRecord.getDOM(), (XMLField)xmlField);
@@ -103,7 +97,8 @@ public class XMLObjectBuilder extends ObjectBuilder {
         nestedRecord.setMarshaller(parentRecord.getMarshaller());
         nestedRecord.setLeafElementType(parentRecord.getLeafElementType());
         parentRecord.setLeafElementType(null);
-        return buildIntoNestedRow(nestedRecord, object, session, addXsiType);
+        return buildIntoNestedRow(nestedRecord, object, session);
+
     }
 
     /**
@@ -330,32 +325,7 @@ public class XMLObjectBuilder extends ObjectBuilder {
         }
 
         writeOutMappings(row, object, session);
-        // PERF: Avoid synchronized enumerator as is concurrency bottleneck.
-        // If this descriptor is involved in inheritance add the class type.
-        if (getDescriptor().hasInheritance()) {
-            boolean shouldAddClassIndicatorFieldToRow = true;
-            if (isXmlDescriptor() && !wasXMLRoot) {
-                XMLDescriptor xmlDescriptor = (XMLDescriptor)getDescriptor();
-                if ((xmlDescriptor.getDefaultRootElementType() != null) && (xmlDescriptor.getSchemaReference() != null)) {
-                    XMLSchemaReference xmlRef = xmlDescriptor.getSchemaReference();
-                    if ((xmlRef.getType() == 1) && xmlRef.isGlobalDefinition()) {
-                        QName ctx = xmlRef.getSchemaContextAsQName(xmlDescriptor.getNamespaceResolver());
-                        if (ctx != null) {
-                            // at this point we are either writing out the
-                            // schema context or nothing at all
-                            shouldAddClassIndicatorFieldToRow = false;
-                            if (!ctx.equals(xmlDescriptor.getDefaultRootElementType())) {
-                                // need to write out ctx
-                                row.add(xmlDescriptor.getInheritancePolicy().getClassIndicatorField(), xmlRef.getSchemaContext().substring(1));
-                            }
-                        }
-                    }
-                }
-            }
-            if (shouldAddClassIndicatorFieldToRow) {
-                getDescriptor().getInheritancePolicy().addClassIndicatorFieldToRow(row);
-            }
-        }
+        
 
         // If this descriptor has multiple tables then we need to append the
         // primary keys for
@@ -465,10 +435,13 @@ public class XMLObjectBuilder extends ObjectBuilder {
     }
 
     public AbstractRecord buildIntoNestedRow(AbstractRecord row, Object object, AbstractSession session) {
-        return buildIntoNestedRow(row, object, session, false);
+    	return buildIntoNestedRow(row, null, object, session, null, null, false);
     }
 
-    public AbstractRecord buildIntoNestedRow(AbstractRecord row, Object object, AbstractSession session, boolean shouldWriteXsiType) {
+    public AbstractRecord buildIntoNestedRow(AbstractRecord row, Object object, AbstractSession session, XMLDescriptor refDesc, XMLField xmlField) {
+    	return buildIntoNestedRow(row, null, object, session, refDesc, xmlField, false);
+    }
+   public AbstractRecord buildIntoNestedRow(AbstractRecord row, Object originalObject, Object object, AbstractSession session, XMLDescriptor refDesc, XMLField xmlField, boolean wasXMLRoot) {
         // PERF: Avoid synchronized enumerator as is concurrency bottleneck.
         XMLRecord record = (XMLRecord)row;
         record.setSession(session);
@@ -481,51 +454,15 @@ public class XMLObjectBuilder extends ObjectBuilder {
         List extraNamespaces = null;
         if (isXmlDescriptor()) {
             XMLDescriptor xmlDescriptor = (XMLDescriptor)getDescriptor();
-            extraNamespaces = addExtraNamespacesToNamespaceResolver(xmlDescriptor, record, session);
+            extraNamespaces = addExtraNamespacesToNamespaceResolver(xmlDescriptor, record, session);            
             writeExtraNamespaces(extraNamespaces, record);
-
+            addXsiTypeAndClassIndicatorIfRequired(record, xmlDescriptor, refDesc, xmlField, originalObject, object, wasXMLRoot, false);
         }
 
         writeOutMappings(record, object, session);
         // If this descriptor is involved in inheritance add the class type.
         if (isXmlDescriptor()) {
             XMLDescriptor xmlDescriptor = (XMLDescriptor)getDescriptor();
-
-            XMLSchemaReference xmlRef = xmlDescriptor.getSchemaReference();
-            if (shouldWriteXsiType) {
-                writeXsiTypeAttribute(xmlDescriptor, (DOMRecord)record, xmlRef.getSchemaContext().substring(1));
-            }
-            if (getDescriptor().hasInheritance()) {
-                if ((record.getLeafElementType() != null) && ((xmlRef.getType() == 1) && xmlRef.isGlobalDefinition())) {
-                    // only interested in global COMPLEX_TYPE
-                    QName ctxQName = xmlRef.getSchemaContextAsQName(xmlDescriptor.getNamespaceResolver());
-                    if (ctxQName.equals(record.getLeafElementType())) {
-                        // don't write out xsi:type attribute
-                    } else {
-                        // write out the target descriptor's schema context as xsi:type
-                        XMLField xmlField = (XMLField)xmlDescriptor.getInheritancePolicy().getClassIndicatorField();
-                        if (xmlField.getLastXPathFragment().isAttribute()) {
-                            writeXsiTypeAttribute(xmlDescriptor, (DOMRecord)record, xmlRef.getSchemaContext().substring(1));
-                        } else {
-                            writeXsiTypeAttribute(xmlDescriptor, (DOMRecord)record, xmlRef.getSchemaContext().substring(1));
-                        }
-                    }
-
-                    // if the user has set the element type, but the target descriptor's
-                    // schema context in not a global complex type or is null, delegate
-                    // the work to the inheritance policy
-                } else {
-                    // no user-set element type, so proceed via inheritance policy
-                    if (!xmlDescriptor.getInheritancePolicy().hasClassExtractor()) {
-                      XMLField xmlField = (XMLField)xmlDescriptor.getInheritancePolicy().getClassIndicatorField();
-                      if (xmlField.getLastXPathFragment().isAttribute()) {
-                          getDescriptor().getInheritancePolicy().addClassIndicatorFieldToRow(row);
-                      } else {
-                          getDescriptor().getInheritancePolicy().addClassIndicatorFieldToRow(row);
-                      }
-                    }
-                }
-            }
             removeExtraNamespacesFromNamespaceResolver(record, extraNamespaces, session);
         }
 
@@ -541,15 +478,15 @@ public class XMLObjectBuilder extends ObjectBuilder {
         return row;
     }
 
-    private void writeXsiTypeAttribute(XMLDescriptor xmlDescriptor, DOMRecord row, String typeValue) {
+    protected void writeXsiTypeAttribute(XMLDescriptor xmlDescriptor, XMLRecord row, String typeValue, boolean addToNamespaceResolver) {
         String xsiPrefix = null;
         boolean generated = false;
 
         xsiPrefix = row.getNamespaceResolver().resolveNamespaceURI(XMLConstants.SCHEMA_INSTANCE_URL);
         if (xsiPrefix == null) {
             xsiPrefix = xmlDescriptor.getNonNullNamespaceResolver().generatePrefix(XMLConstants.SCHEMA_INSTANCE_PREFIX);
-            generated = true;
-            writeXsiNamespace(row, xsiPrefix);
+            generated = true;            
+            writeNamespace(row, xsiPrefix, XMLConstants.SCHEMA_INSTANCE_URL, addToNamespaceResolver);
         }
         XMLField xmlField = (XMLField)xmlDescriptor.buildField(XMLConstants.ATTRIBUTE + xsiPrefix + XMLConstants.COLON + XMLConstants.SCHEMA_TYPE_ATTRIBUTE);
         if (generated) {
@@ -558,12 +495,17 @@ public class XMLObjectBuilder extends ObjectBuilder {
         xmlField.getLastXPathFragment().setNamespaceURI(XMLConstants.SCHEMA_INSTANCE_URL);
         row.add(xmlField, typeValue);
     }
-
-    private void writeXsiNamespace(DOMRecord nestedRecord, String xsiPrefix) {
-        if(nestedRecord.getDOM().getNodeType() == Node.ELEMENT_NODE) {
-            ((Element)nestedRecord.getDOM()).setAttributeNS(XMLConstants.XMLNS_URL, XMLConstants.XMLNS + XMLConstants.COLON + xsiPrefix, XMLConstants.SCHEMA_INSTANCE_URL);
-        }
+    protected XMLField writeNamespace(XMLRecord nestedRecord, String prefix, String url, boolean addToNamespaceResolver) {    	
+    	XMLField xmlField = new XMLField("@" + XMLConstants.XMLNS + XMLConstants.COLON + prefix);
+    	xmlField.setNamespaceResolver(nestedRecord.getNamespaceResolver());
+    	xmlField.getXPathFragment().setNamespaceURI(XMLConstants.XMLNS_URL);
+    	nestedRecord.add(xmlField, url);
+    	if(addToNamespaceResolver){
+    	    nestedRecord.getNamespaceResolver().put(prefix, url);
+    	}
+    	return xmlField;    
     }
+    
 
     public NamespaceResolver getNamespaceResolver() {
         NamespaceResolver namespaceResolver = null;
@@ -738,5 +680,190 @@ public class XMLObjectBuilder extends ObjectBuilder {
     
     public boolean isXMLObjectBuilder() {
         return true;
+    }
+    
+    /** 
+     * @param record The XMLRecord to write to
+     * @param xmlDescriptor The Descriptor of the object we are writing
+     * @param referenceDescriptor The known descriptor for this mapping (if it exisits)
+     * @param xmlField 
+     * @param originalObject Could be an XMLRoot otherwise the same as obj
+     * @param obj The object being marshalled
+     * @param wasXMLRoot boolean if the originalObject was an XMLRoot
+     * @param addToNamespaceResolver boolean if we should add generated namespaces to the NamespaceResolver
+     */
+    public boolean addXsiTypeAndClassIndicatorIfRequired(XMLRecord record, XMLDescriptor xmlDescriptor, XMLDescriptor referenceDescriptor, XMLField xmlField, Object originalObject, Object obj, boolean wasXMLRoot, boolean addToNamespaceResolver){
+    	if(wasXMLRoot){
+    		XMLSchemaReference xmlRef = xmlDescriptor.getSchemaReference();
+    		
+     	    if(descriptor != null){
+     	        XMLRoot xr = (XMLRoot) originalObject;
+     	        
+     	        if (xmlDescriptor.getSchemaReference() == null) {
+     	        	return false;
+     	        }
+
+     	        QName qName = new QName(xr.getNamespaceURI(),xr.getLocalName());
+     	        
+     	        XMLDescriptor xdesc = record.getMarshaller().getXMLContext().getDescriptor(qName);
+     	        if (xdesc != null) {
+     	        	boolean writeTypeAttribute = xdesc.getJavaClass() != descriptor.getJavaClass();
+     	        	if(writeTypeAttribute && xmlRef != null){
+	     	       	    String typeValue = xmlRef.getSchemaContext().substring(1);
+	    			    writeXsiTypeAttribute(xmlDescriptor, record, typeValue, addToNamespaceResolver);
+	    			    return true;
+     	        	}
+     	        	return false;     	       
+	    			
+     	        }
+
+     	        String xmlRootLocalName = xr.getLocalName();
+     	        String xmlRootUri = xr.getNamespaceURI();
+     	        boolean writeTypeAttribute = true;
+     	        for (int i = 0; i < descriptor.getTableNames().size(); i++) {
+     	            if (!writeTypeAttribute) {
+     	            	return false;
+     	            }
+     	            String defaultRootQualifiedName = (String) xmlDescriptor.getTableNames().get(i);
+     	            if (defaultRootQualifiedName != null) {
+     	                String defaultRootLocalName = null;
+                         String defaultRootUri = null;
+   	                    int colonIndex = defaultRootQualifiedName.indexOf(XMLConstants.COLON);
+     	                if (colonIndex > 0) {
+     	                    String defaultRootPrefix = defaultRootQualifiedName.substring(0, colonIndex);
+     	                    defaultRootLocalName = defaultRootQualifiedName.substring(colonIndex + 1);
+     	                    if (xmlDescriptor.getNamespaceResolver() != null) {
+     	                        defaultRootUri = xmlDescriptor.getNamespaceResolver().resolveNamespacePrefix(defaultRootPrefix);
+     	                    }
+     	                } else {
+     	                    defaultRootLocalName = defaultRootQualifiedName;
+     	                }
+
+   	                    if (xmlRootLocalName != null) {
+    	                        if ((((defaultRootLocalName == null) && (xmlRootLocalName == null)) || (defaultRootLocalName.equals(xmlRootLocalName)))
+    	                                && (((defaultRootUri == null) && (xmlRootUri == null)) || ((xmlRootUri != null) && (defaultRootUri != null) && (defaultRootUri.equals(xmlRootUri))))) {
+    	                            //if both local name and uris are equal then don't need to write type attribute
+    	                        	return false;
+    	                        }
+    	                    }
+    	                } else {
+    	                    // no default rootElement was set
+    	                    // if xmlRootName = null then writeTypeAttribute = false
+    	                    if (xmlRootLocalName == null) {
+    	                    	return false;
+    	                    }
+    	                }
+    	            }
+     	   	        if(writeTypeAttribute && xmlRef != null ){ 
+ 	       	            String typeValue = getTypeValueToWrite(record, xmlRef, addToNamespaceResolver); 	       	            
+			            writeXsiTypeAttribute(xmlDescriptor, record, typeValue, addToNamespaceResolver);
+			            return true;
+     	        	}
+    	        }    	        
+     	    return false;
+    	}else{
+    		return addXsiTypeAndClassIndicatorIfRequired(record, xmlDescriptor, referenceDescriptor, xmlField, addToNamespaceResolver);
+    	}
+    }
+    
+    public boolean addXsiTypeAndClassIndicatorIfRequired(XMLRecord record, XMLDescriptor xmlDescriptor, XMLDescriptor referenceDescriptor, XMLField xmlField, boolean addToNamespaceResolver){
+    	
+    	  boolean xsiTypeIndicatorField = false;   
+    	    	
+    	  if (xmlDescriptor.hasInheritance() ) {
+    		  XMLField indicatorField = (XMLField) xmlDescriptor.getInheritancePolicy().getClassIndicatorField();
+    		  if(indicatorField != null){
+    			 if (indicatorField.getLastXPathFragment().getNamespaceURI() != null && indicatorField.getLastXPathFragment().getNamespaceURI().equals(XMLConstants.SCHEMA_INSTANCE_URL)    		  
+        				  && indicatorField.getLastXPathFragment().getLocalName().equals(XMLConstants.SCHEMA_TYPE_ATTRIBUTE)){
+    			       xsiTypeIndicatorField = true;
+    			 }    			  
+    			 if(! xsiTypeIndicatorField){
+            	  xmlDescriptor.getInheritancePolicy().addClassIndicatorFieldToRow(record);
+                  }
+    		  }    		  
+    	  }
+    	
+    	  if(referenceDescriptor != null && referenceDescriptor == xmlDescriptor){
+          	return false;
+          }
+    	        
+          QName leafType = null;
+          if(xmlField != null){
+              leafType = xmlField.getLeafElementType();
+                           
+              XMLSchemaReference xmlRef = xmlDescriptor.getSchemaReference();
+              if (xmlRef != null) {        	 
+             	   String typeValue = getTypeValueToWrite(record, xmlRef, addToNamespaceResolver);
+                   if(leafType == null && referenceDescriptor == null){
+                	   writeXsiTypeAttribute(xmlDescriptor, record, typeValue, addToNamespaceResolver);
+                	   return true;
+                   }
+            	   
+                  if ((xmlRef.getType() == XMLSchemaReference.COMPLEX_TYPE) && xmlRef.isGlobalDefinition()) {
+                      QName ctxQName = xmlRef.getSchemaContextAsQName(xmlDescriptor.getNamespaceResolver());               
+                      if(leafType != null){
+      	                if (!ctxQName.equals(leafType)) {
+      	                   writeXsiTypeAttribute(xmlDescriptor, record, typeValue, addToNamespaceResolver);
+      	            	   return true;
+      	                }
+                      }
+                  }
+                  
+              }                                          
+          }
+          
+            if (xmlDescriptor.hasInheritance() && !xmlDescriptor.getInheritancePolicy().isRootParentDescriptor()) {          	
+                XMLField indicatorField = (XMLField) xmlDescriptor.getInheritancePolicy().getClassIndicatorField();
+                   if(indicatorField != null && xsiTypeIndicatorField){
+                   String classIndicatorValue = (String) xmlDescriptor.getInheritancePolicy().getClassIndicatorMapping().get(xmlDescriptor.getJavaClass());
+                   int nsindex = classIndicatorValue.indexOf(XMLConstants.COLON);
+                   String localName = null;
+                   String prefix = null;           	     
+                   if (nsindex != -1) {
+                       localName = classIndicatorValue.substring(nsindex + 1);
+                       prefix = classIndicatorValue.substring(0, nsindex);
+                   } else {
+                       localName = classIndicatorValue;
+                   }
+                   String namespaceURI = xmlDescriptor.getNonNullNamespaceResolver().resolveNamespacePrefix(prefix);
+                   QName classIndicatorQName  = new QName(namespaceURI, localName);
+              	 
+                   if(leafType == null || !classIndicatorQName.equals(leafType)){    
+                       xmlDescriptor.getInheritancePolicy().addClassIndicatorFieldToRow(record);
+                       return true;
+                   }            	 
+                   return false;
+               }
+              
+          }
+          return false;    	
+    }
+    
+    private String getTypeValueToWrite(XMLRecord record, XMLSchemaReference xmlRef, boolean addToNamespaceResolver){
+        String typeValue = xmlRef.getSchemaContext(); 
+                       
+        if (typeValue == null) {
+            QName contextAsQName = xmlRef.getSchemaContextAsQName();
+            if (contextAsQName != null) { 	                       
+                String uri = contextAsQName.getNamespaceURI();
+                String localPart = contextAsQName.getLocalPart();
+                String prefix = record.getNamespaceResolver().resolveNamespaceURI(uri);
+                if (prefix == null) {
+                    String defaultUri = record.getNamespaceResolver().getDefaultNamespaceURI();
+                    if (defaultUri != null && defaultUri.equals(uri)) {
+                    	return localPart;
+                    } else {
+                        prefix = record.getNamespaceResolver().generatePrefix();
+                        writeNamespace(record, prefix, uri, addToNamespaceResolver);
+                        return prefix + XMLConstants.COLON + localPart;
+                    }
+                } else {
+                	return prefix + XMLConstants.COLON + localPart;                     
+                }
+            } 
+            return null;
+        }else {
+            return typeValue.substring(1);
+        }
     }
 }

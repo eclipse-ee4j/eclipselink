@@ -59,8 +59,7 @@ public class InheritanceTestCases extends OXTestCase {
         Document vehicleDocument = marshaller.objectToXML(vehicle);
         root = (Element)vehicleDocument.getElementsByTagNameNS("mynamespaceuri", "vehicle").item(0);
         elem = root.getAttributeNodeNS("http://www.w3.org/2001/XMLSchema-instance", "type");
-        String vehicleType = elem.getNodeValue();
-        assertTrue("The type field was written incorrectly for the superclass", vehicleType.equals("prefix:vehicle-type"));
+        assertNull("A type attribute was written but should not have been for the superclass", elem);
     }
 
     public void testRead() throws Exception {

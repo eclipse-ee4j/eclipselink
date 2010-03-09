@@ -46,7 +46,6 @@ import org.eclipse.persistence.oxm.mappings.nullpolicy.AbstractNullPolicy;
 import org.eclipse.persistence.oxm.mappings.nullpolicy.NullPolicy;
 import org.eclipse.persistence.oxm.record.DOMRecord;
 import org.eclipse.persistence.oxm.record.XMLRecord;
-import org.eclipse.persistence.oxm.schema.XMLSchemaReference;
 import org.eclipse.persistence.platform.xml.XMLPlatformFactory;
 import org.eclipse.persistence.queries.ObjectBuildingQuery;
 
@@ -364,10 +363,11 @@ public class XMLCompositeCollectionMapping extends AbstractCompositeCollectionMa
         if (classDesc != null) {
             XMLObjectBuilder objectBuilder = (XMLObjectBuilder) classDesc.getObjectBuilder();
 
-            boolean addXsiType = shouldAddXsiType((XMLRecord) parentRow, classDesc);
+            
             XMLRecord child = (XMLRecord) objectBuilder.createRecordFor(attributeValue, (XMLField) getField(), parent, this);
             child.setNamespaceResolver(parent.getNamespaceResolver());
-            objectBuilder.buildIntoNestedRow(child, attributeValue, session, addXsiType);
+            child.setSession(session);
+            objectBuilder.buildIntoNestedRow(child, attributeValue, session, (XMLDescriptor)getReferenceDescriptor(), (XMLField) getField());
             return child;
         } else {
             if (attributeValue instanceof Element && getKeepAsElementPolicy() == UnmarshalKeepAsElementPolicy.KEEP_UNKNOWN_AS_ELEMENT) {
@@ -624,33 +624,6 @@ public class XMLCompositeCollectionMapping extends AbstractCompositeCollectionMa
         } else {
             return subDescriptor;
         }
-    }
-
-    /**
-     * INTERNAL:
-     */
-    public boolean shouldAddXsiType(XMLRecord record, ClassDescriptor descriptor) {
-        XMLDescriptor xmlDescriptor = (XMLDescriptor) descriptor;
-        if ((getReferenceDescriptor() == null) && (xmlDescriptor.getSchemaReference() != null)) {
-            if (descriptor.hasInheritance()) {
-                XMLField indicatorField = (XMLField) descriptor.getInheritancePolicy().getClassIndicatorField();
-                if ((indicatorField.getLastXPathFragment().getNamespaceURI() != null) && indicatorField.getLastXPathFragment().getNamespaceURI().equals(XMLConstants.SCHEMA_INSTANCE_URL)
-                        && indicatorField.getLastXPathFragment().getLocalName().equals(XMLConstants.SCHEMA_TYPE_ATTRIBUTE)) {
-                    return false;
-                }
-            }
-
-            XMLSchemaReference xmlRef = xmlDescriptor.getSchemaReference();
-            if ((xmlRef.getType() == XMLSchemaReference.COMPLEX_TYPE) && xmlRef.isGlobalDefinition()) {
-                QName ctxQName = xmlRef.getSchemaContextAsQName(xmlDescriptor.getNamespaceResolver());
-                QName leafType = ((XMLField) getField()).getLeafElementType();
-
-                if ((leafType == null) || (!ctxQName.equals(record.getLeafElementType()))) {
-                    return true;
-                }
-            }
-        }
-        return false;
     }
 
     public void writeSingleValue(Object value, Object parent, XMLRecord record, AbstractSession session) {

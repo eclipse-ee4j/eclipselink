@@ -853,9 +853,7 @@ public class XMLMarshaller {
             }
         }
         XPathFragment rootFragment = buildRootFragment(object, descriptor, isXMLRoot, marshalRecord);
-
-        boolean shouldWriteTypeAttribute = shouldWriteTypeAttribute(object, descriptor, isXMLRoot);
-
+        
         String schemaLocation = getSchemaLocation();
         String noNsSchemaLocation = getNoNamespaceSchemaLocation();
         if (isXMLRoot) {
@@ -868,26 +866,25 @@ public class XMLMarshaller {
             }
             marshalRecord.setLeafElementType(root.getSchemaType());
         }
-
+           
         String xsiPrefix = null;
-        if ((null != getSchemaLocation()) || (null != getNoNamespaceSchemaLocation()) || shouldWriteTypeAttribute) {
+        if ((null != getSchemaLocation()) || (null != getNoNamespaceSchemaLocation())) {
             xsiPrefix = nr.resolveNamespaceURI(XMLConstants.SCHEMA_INSTANCE_URL);
             if (null == xsiPrefix) {
                 xsiPrefix = XMLConstants.SCHEMA_INSTANCE_PREFIX;
                 nr.put(XMLConstants.SCHEMA_INSTANCE_PREFIX, XMLConstants.SCHEMA_INSTANCE_URL);
             }
-        }
+        }        
 
         TreeObjectBuilder treeObjectBuilder = null;
+        if (descriptor != null) {
+        	treeObjectBuilder = (TreeObjectBuilder) descriptor.getObjectBuilder();     
+        }
         if(session == null){
         	session = (AbstractSession) xmlContext.getSession(0);
         }
-        if(descriptor != null){
-        	treeObjectBuilder = (TreeObjectBuilder) descriptor.getObjectBuilder();
-        }
-        
         marshalRecord.setSession(session);
-
+        
         if (null != rootFragment) {
             marshalRecord.startPrefixMappings(nr);
             if (!isXMLRoot && descriptor.getNamespaceResolver() == null && rootFragment.hasNamespace()) {
@@ -904,14 +901,13 @@ public class XMLMarshaller {
                 marshalRecord.attribute(XMLConstants.SCHEMA_INSTANCE_URL, XMLConstants.NO_NS_SCHEMA_LOCATION, xsiPrefix + XMLConstants.COLON + XMLConstants.NO_NS_SCHEMA_LOCATION, noNsSchemaLocation);
             }
 
-            if (descriptor != null) {
-                if (shouldWriteTypeAttribute) {
-                    writeTypeAttribute(marshalRecord, descriptor, xsiPrefix);
-                }
+            marshalRecord.namespaceDeclarations(nr);
+            
+            if (descriptor != null) {            	   	        
+            	treeObjectBuilder.addXsiTypeAndClassIndicatorIfRequired(marshalRecord, descriptor, null, null, root, object, isXMLRoot, true);
                 treeObjectBuilder.marshalAttributes(marshalRecord, object, session);
             }
-
-            marshalRecord.namespaceDeclarations(nr);
+            
             marshalRecord.closeStartElement();
         }
         if (treeObjectBuilder != null) {
@@ -921,15 +917,21 @@ public class XMLMarshaller {
                 marshalRecord.attribute(XMLConstants.XMLNS_URL, XMLConstants.SCHEMA_INSTANCE_PREFIX, XMLConstants.XMLNS + XMLConstants.COLON + XMLConstants.SCHEMA_INSTANCE_PREFIX, XMLConstants.SCHEMA_INSTANCE_URL);
                 marshalRecord.attribute(XMLConstants.SCHEMA_INSTANCE_URL, XMLConstants.SCHEMA_NIL_ATTRIBUTE, XMLConstants.SCHEMA_INSTANCE_PREFIX + XMLConstants.COLON + XMLConstants.SCHEMA_NIL_ATTRIBUTE, "true");
             } else {
-                if(shouldWriteTypeAttribute) {
-                    //write type attribute for simple value
-                    //should be in xsd namespace
-                    QName type = (QName)XMLConversionManager.getDefaultJavaTypes().get(object.getClass());
-                    if(type != null) {
-                        marshalRecord.attribute(XMLConstants.XMLNS_URL, XMLConstants.SCHEMA_PREFIX, XMLConstants.XMLNS + ':' + XMLConstants.SCHEMA_PREFIX, XMLConstants.SCHEMA_URL);
-                        marshalRecord.attribute(XMLConstants.SCHEMA_INSTANCE_URL, XMLConstants.SCHEMA_TYPE_ATTRIBUTE, xsiPrefix + ":" + XMLConstants.SCHEMA_TYPE_ATTRIBUTE, "xsd:" + type.getLocalPart());
-                    }
-                }
+            	 if(root.getDeclaredType() != null && root.getObject() != null && root.getDeclaredType() != root.getObject().getClass()) {
+        	        	
+            		  QName type = (QName)XMLConversionManager.getDefaultJavaTypes().get(object.getClass());
+                      if(type != null) {
+                    	  xsiPrefix = nr.resolveNamespaceURI(XMLConstants.SCHEMA_INSTANCE_URL);
+                          if (null == xsiPrefix) {
+                              xsiPrefix = XMLConstants.SCHEMA_INSTANCE_PREFIX;
+                        	  marshalRecord.attribute(XMLConstants.XMLNS_URL, xsiPrefix, XMLConstants.XMLNS + ':' + xsiPrefix, XMLConstants.SCHEMA_INSTANCE_URL);
+                          }
+                    	  
+                          marshalRecord.attribute(XMLConstants.XMLNS_URL, XMLConstants.SCHEMA_PREFIX, XMLConstants.XMLNS + ':' + XMLConstants.SCHEMA_PREFIX, XMLConstants.SCHEMA_URL);
+                          marshalRecord.attribute(XMLConstants.SCHEMA_INSTANCE_URL, XMLConstants.SCHEMA_TYPE_ATTRIBUTE, xsiPrefix + ":" + XMLConstants.SCHEMA_TYPE_ATTRIBUTE, "xsd:" + type.getLocalPart());
+                      }
+            	 }
+            	
                 String value = (String) XMLConversionManager.getDefaultXMLManager().convertObject(object, String.class, root.getSchemaType());
                 marshalRecord.characters(value);
             }
@@ -979,42 +981,7 @@ public class XMLMarshaller {
         }
         return rootFragment;
     }
-
-    private void writeTypeAttribute(MarshalRecord marshalRecord, XMLDescriptor descriptor, String xsiPrefix) {
-        //xsi:type=schemacontext
-        if(descriptor.getSchemaReference() == null) {
-            return;
-        }
-        String typeValue = descriptor.getSchemaReference().getSchemaContext();
-
-        // handle case where the schema context is set as a QName
-        if (typeValue == null) {
-            QName contextAsQName = descriptor.getSchemaReference().getSchemaContextAsQName();
-            if (contextAsQName == null) {
-                return;
-            }
-            String uri = contextAsQName.getNamespaceURI();
-            String localPart = contextAsQName.getLocalPart();
-            String prefix = marshalRecord.getNamespaceResolver().resolveNamespaceURI(uri);
-            if (prefix == null) {
-                String defaultUri = marshalRecord.getNamespaceResolver().getDefaultNamespaceURI();
-                if (defaultUri != null && defaultUri.equals(uri)) {
-                    typeValue = localPart;
-                } else {
-                    prefix = marshalRecord.getNamespaceResolver().generatePrefix();
-                    marshalRecord.attribute(XMLConstants.XMLNS_URL, prefix, XMLConstants.XMLNS + XMLConstants.COLON + prefix, uri);
-                    typeValue = prefix + XMLConstants.COLON + localPart;
-                }
-            } else {
-                typeValue = prefix + XMLConstants.COLON + localPart;
-            }
-        } else {
-            typeValue = typeValue.substring(1);
-        }
-
-        marshalRecord.attribute(XMLConstants.SCHEMA_INSTANCE_URL, XMLConstants.SCHEMA_TYPE_ATTRIBUTE, xsiPrefix + XMLConstants.COLON + XMLConstants.SCHEMA_TYPE_ATTRIBUTE, typeValue);
-    }
-
+    
     private boolean isSimpleXMLRoot(XMLRoot xmlRoot) {
         Class xmlRootObjectClass = xmlRoot.getObject().getClass();
 
@@ -1203,6 +1170,7 @@ public class XMLMarshaller {
         if (xmlRow != null) {
             isRootDocumentFragment = (xmlRow.getDOM().getNodeType() == Node.DOCUMENT_FRAGMENT_NODE);
         }
+        Object originalObject = object;
         if (isXMLRoot) {
             String xmlRootUri = ((XMLRoot) object).getNamespaceURI();
             String xmlRootPrefix = null;
@@ -1237,25 +1205,16 @@ public class XMLMarshaller {
             copyNamespaces(resolver, xmlRow.getNamespaceResolver());
             document = xmlRow.getDocument();
             Element docElement = document.getDocumentElement();
-            xmlRow.getNamespaceResolver().put(XMLConstants.SCHEMA_INSTANCE_PREFIX, XMLConstants.SCHEMA_INSTANCE_URL);
-
-            boolean writeTypeAttribute = shouldWriteTypeAttribute(object, descriptor, isXMLRoot);
-            if (writeTypeAttribute && (descriptor.getSchemaReference() != null) && (descriptor.getSchemaReference().getSchemaContext() != null)) {
-                ((Element) xmlRow.getDOM()).setAttributeNS(XMLConstants.XMLNS_URL, XMLConstants.XMLNS + XMLConstants.COLON + XMLConstants.SCHEMA_INSTANCE_PREFIX, XMLConstants.SCHEMA_INSTANCE_URL);
-                String typeValue = descriptor.getSchemaReference().getSchemaContext();
-                typeValue = typeValue.substring(1);
-
-                // xsi:type="typevalue"
-                XMLField xsiTypefield = new XMLField("@xsi:type");
-                xsiTypefield.setNamespaceResolver(xmlRow.getNamespaceResolver());
-                XPathEngine.getInstance().create(xsiTypefield, docElement, typeValue, session);
-
-            }
             object = ((XMLRoot) object).getObject();
         }
 
         XMLObjectBuilder bldr = (XMLObjectBuilder) descriptor.getObjectBuilder();
-        xmlRow = (XMLRecord) bldr.buildRow(xmlRow, object, xmlContext.getSession(object), isXMLRoot);
+
+        AbstractSession objectSession = xmlContext.getSession(object);
+        xmlRow.setSession(objectSession);
+        bldr.addXsiTypeAndClassIndicatorIfRequired(xmlRow, descriptor, null, null, originalObject, object, isXMLRoot, true);
+        xmlRow = (XMLRecord) bldr.buildRow(xmlRow, object,  objectSession, isXMLRoot);
+                
         xmlRow.setMarshaller(this);
         if (shouldCallSetAttributeNS && !isRootDocumentFragment) {
             ((Element) xmlRow.getDOM()).setAttributeNS(XMLConstants.XMLNS_URL, XMLConstants.XMLNS + XMLConstants.COLON + XMLConstants.SCHEMA_INSTANCE_PREFIX, XMLConstants.SCHEMA_INSTANCE_URL);
@@ -1288,88 +1247,6 @@ public class XMLMarshaller {
             field.setNamespaceResolver(resolver);
             XPathEngine.getInstance().create(field, docElement, getNoNamespaceSchemaLocation(), session);
         }
-    }
-
-    /**
-     * INTERNAL:
-     * return if an xsi:type attribute should be added for the given XMLRootObject
-     */
-    public boolean shouldWriteTypeAttribute(Object object, XMLDescriptor descriptor, boolean isXMLRoot) {
-    	if(isXMLRoot){
-    	    boolean writeTypeAttribute = false;
-    	    if(descriptor == null) {
-    	        XMLRoot root = (XMLRoot)object;
-    	        if(root.declaredType != null && root.getObject() != null && root.declaredType != root.getObject().getClass()) {
-    	            return true;
-    	        }
-    	    }else{
-    	        XMLRoot xr = (XMLRoot) object;
-
-    	        if (descriptor.hasInheritance()) {
-    	            XMLField classIndicatorField = (XMLField) descriptor.getInheritancePolicy().getClassIndicatorField();
-    	            String classIndicatorUri = null;
-    	            String classIndicatorLocalName = classIndicatorField.getXPathFragment().getLocalName();
-    	            String classIndicatorPrefix = classIndicatorField.getXPathFragment().getPrefix();
-    	            if (classIndicatorPrefix != null) {
-    	                classIndicatorUri = descriptor.getNamespaceResolver().resolveNamespacePrefix(classIndicatorPrefix);
-    	            }
-
-    	            if ((classIndicatorLocalName != null) && classIndicatorLocalName.equals(XMLConstants.SCHEMA_TYPE_ATTRIBUTE) && (classIndicatorUri != null) && classIndicatorUri.equals(XMLConstants.SCHEMA_INSTANCE_URL)) {
-    	                return false;
-    	            }
-    	        }
-    	        
-    	        if (descriptor.getSchemaReference() == null) {
-    	            return false;
-    	        }
-
-    	        QName qName = new QName(xr.getNamespaceURI(),xr.getLocalName());
-    	        XMLDescriptor xdesc = xmlContext.getDescriptor(qName);    	     
-    	        if (xdesc != null) {
-    	            return xdesc.getJavaClass() != descriptor.getJavaClass();
-    	        }
-
-    	        String xmlRootLocalName = xr.getLocalName();
-    	        String xmlRootUri = xr.getNamespaceURI();
-    	        writeTypeAttribute = true;
-    	        for (int i = 0; i < descriptor.getTableNames().size(); i++) {
-    	            if (!writeTypeAttribute) {
-    	                break;
-    	            }
-    	            String defaultRootQualifiedName = (String) descriptor.getTableNames().get(i);
-    	            if (defaultRootQualifiedName != null) {
-    	                String defaultRootLocalName = null;
-                        String defaultRootUri = null;
-  	                    int colonIndex = defaultRootQualifiedName.indexOf(XMLConstants.COLON);
-    	                if (colonIndex > 0) {
-    	                    String defaultRootPrefix = defaultRootQualifiedName.substring(0, colonIndex);
-    	                    defaultRootLocalName = defaultRootQualifiedName.substring(colonIndex + 1);
-    	                    if (descriptor.getNamespaceResolver() != null) {
-    	                        defaultRootUri = descriptor.getNamespaceResolver().resolveNamespacePrefix(defaultRootPrefix);
-    	                    }
-    	                } else {
-    	                    defaultRootLocalName = defaultRootQualifiedName;
-    	                }
-
-  	                    if (xmlRootLocalName != null) {
-   	                        if ((((defaultRootLocalName == null) && (xmlRootLocalName == null)) || (defaultRootLocalName.equals(xmlRootLocalName)))
-   	                                && (((defaultRootUri == null) && (xmlRootUri == null)) || ((xmlRootUri != null) && (defaultRootUri != null) && (defaultRootUri.equals(xmlRootUri))))) {
-   	                            //if both local name and uris are equal then don't need to write type attribute
-   	                            writeTypeAttribute = false;
-   	                        }
-   	                    }
-   	                } else {
-   	                    // no default rootElement was set
-   	                    // if xmlRootName = null then writeTypeAttribute = false
-   	                    if (xmlRootLocalName == null) {
-   	                        writeTypeAttribute = false;
-   	                    }
-   	                }
-   	            }
-   	        }
-   	        return writeTypeAttribute;
-    	}
-    	return false;              
     }
 
     /**

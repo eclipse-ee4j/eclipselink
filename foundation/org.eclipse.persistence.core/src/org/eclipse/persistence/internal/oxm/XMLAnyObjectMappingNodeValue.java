@@ -30,6 +30,7 @@ import org.eclipse.persistence.oxm.NamespaceResolver;
 import org.eclipse.persistence.oxm.XMLConstants;
 import org.eclipse.persistence.oxm.XMLContext;
 import org.eclipse.persistence.oxm.XMLDescriptor;
+import org.eclipse.persistence.oxm.XMLField;
 import org.eclipse.persistence.oxm.XMLMarshaller;
 import org.eclipse.persistence.oxm.XMLRoot;
 import org.eclipse.persistence.oxm.mappings.UnmarshalKeepAsElementPolicy;
@@ -145,15 +146,11 @@ public class XMLAnyObjectMappingNodeValue extends XMLRelationshipMappingNodeValu
                     marshalRecord.setLeafElementType(descriptor.getDefaultRootElementType());
                 }
                 getXPathNode().startElement(marshalRecord, rootFragment, object, session, descriptor.getNonNullNamespaceResolver(), objectBuilder, objectValue);               
-
-                if (xmlAnyObjectMapping.shouldAddXsiType(marshaller, descriptor, originalValue, wasXMLRoot)) {
-                    String typeValue = descriptor.getSchemaReference().getSchemaContext();
-                    addTypeAttribute(descriptor, marshalRecord, typeValue);
-                }
-
+              
                 writeExtraNamespaces(extraNamespaces, marshalRecord, session);
-
+                objectBuilder.addXsiTypeAndClassIndicatorIfRequired(marshalRecord, descriptor, descriptor, (XMLField)xmlAnyObjectMapping.getField(), originalValue, objectValue, wasXMLRoot, false);
                 objectBuilder.buildRow(marshalRecord, objectValue, (org.eclipse.persistence.internal.sessions.AbstractSession) childSession, marshaller, WriteType.UNDEFINED);
+                
                 marshalRecord.endElement(rootFragment, namespaceResolver);
                 objectBuilder.removeExtraNamespacesFromNamespaceResolver(marshalRecord, extraNamespaces, session);
                 if ((marshaller != null) && (marshaller.getMarshalListener() != null)) {
