@@ -571,7 +571,7 @@
         <delete dir="${build.dir}/javax.xml.bind"/>
         <delete dir="${eclipselink.javadocs}"/>
         <unzip src="${eclipselink.sdo.plugins}/${commonj.sdo.src.zip}" dest="${build.dir}/commonj.sdo/src"/>
-        <unzip src="${eclipselink.plugins}/${jaxb-api.src.lib}" dest="${build.dir}/javax.xml.bind/src"/>
+        <unzip src="${eclipselink.plugins}/${jaxb-api.src.jar}" dest="${build.dir}/javax.xml.bind/src"/>
         <javadoc
             maxmemory="384m"
             Verbose="false"

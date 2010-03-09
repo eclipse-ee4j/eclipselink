@@ -266,11 +266,11 @@
         <bnd
             classpath="${moxy.2.common.plugins.dir}/${jaxb-api.jar}"
             eclipse="false"
-            sourcepath="${moxy.2.common.plugins.dir}/${jaxb-api.src.lib}"
+            sourcepath="${moxy.2.common.plugins.dir}/${jaxb-api.src.jar}"
             failok="false"
             exceptions="true"
             files="./javax.xml.bind.bnd"
             output="${moxy.2.common.plugins.dir}/javax.xml.bind_2.1.12.v${build.date}${build.time}.jar"/>
-        <copy file="${moxy.2.common.plugins.dir}/${jaxb-api.src.lib}" tofile="${moxy.2.common.plugins.dir}/javax.xml.bind.source_2.1.12.v${build.date}${build.time}.jar" failonerror="false"/>
+        <copy file="${moxy.2.common.plugins.dir}/${jaxb-api.src.jar}" tofile="${moxy.2.common.plugins.dir}/javax.xml.bind.source_2.1.12.v${build.date}${build.time}.jar" failonerror="false"/>
     </target>
 </project>
