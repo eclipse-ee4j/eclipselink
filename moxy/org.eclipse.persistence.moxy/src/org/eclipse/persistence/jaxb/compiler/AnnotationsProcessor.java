@@ -131,7 +131,7 @@ public class AnnotationsProcessor {
     private HashMap<String, TypeInfo> typeInfo;
     private ArrayList<QName> typeQNames;
     private HashMap<String, UnmarshalCallback> unmarshalCallbacks;
-    private HashMap<QName, ElementDeclaration> globalElements;
+    private HashMap<String, HashMap<QName, ElementDeclaration>> elementDeclarations;
     private HashMap<String, ElementDeclaration> xmlRootElements;
     private List<ElementDeclaration> localElements;
     private HashMap<String, JavaMethod> factoryMethods;
@@ -256,7 +256,7 @@ public class AnnotationsProcessor {
                             element.setJavaType(helper.getJavaClass(generatedClass));
                         }
                         if (nextInfo.getElementScope() == TypeMappingInfo.ElementScope.Global) {
-                            this.globalElements.put(element.getElementName(), element);
+                            this.getGlobalElements().put(element.getElementName(), element);
                         } else {
                             this.localElements.add(element);
                         }
@@ -345,7 +345,9 @@ public class AnnotationsProcessor {
         generatedClassesToCollectionClasses = new HashMap<Class, java.lang.reflect.Type>();
         typeMappingInfoToGeneratedClasses = new HashMap<TypeMappingInfo, Class>();
         typeMappingInfoToSchemaType = new HashMap<TypeMappingInfo, QName>();
-        globalElements = new HashMap<QName, ElementDeclaration>();
+        elementDeclarations = new HashMap<String, HashMap<QName, ElementDeclaration>>();
+        HashMap globalElements = new HashMap<QName, ElementDeclaration>();
+        elementDeclarations.put(XmlElementDecl.GLOBAL.class.getName(), globalElements);
         localElements = new ArrayList<ElementDeclaration>();
 
         javaClassToTypeMappingInfos = new HashMap<JavaClass, TypeMappingInfo>();
@@ -688,13 +690,10 @@ public class AnnotationsProcessor {
             }
 
             if (areEquals(javaClass, byte[].class) || areEquals(javaClass, Byte[].class) || areEquals(javaClass, JAVAX_ACTIVATION_DATAHANDLER) || areEquals(javaClass, Source.class) || areEquals(javaClass, Image.class) || areEquals(javaClass, JAVAX_MAIL_INTERNET_MIMEMULTIPART)) {
-                if (this.globalElements == null) {
-                    globalElements = new HashMap<QName, ElementDeclaration>();
-                }
                 if (tmi == null || tmi.getXmlTagName() == null) {
                     ElementDeclaration declaration = new ElementDeclaration(null, javaClass, javaClass.getQualifiedName(), false, XmlElementDecl.GLOBAL.class);
                     declaration.setTypeMappingInfo(tmi);
-                    globalElements.put(null, declaration);
+                    getGlobalElements().put(null, declaration);
                 }
             } else if (javaClass.isArray()) {
                 if (!helper.isBuiltInJavaType(javaClass.getComponentType())) {
@@ -1539,7 +1538,20 @@ public class AnnotationsProcessor {
                     namespace = "";
                 }
                 QName qname = new QName(namespace, name);
-                referencedElement = this.globalElements.get(qname);
+                JavaClass scopeClass = cls;
+                while(!(scopeClass.getName().equals("java.lang.Object"))) {
+                    HashMap<QName, ElementDeclaration> elements = getElementDeclarationsForScope(scopeClass.getName()); 
+                    if(elements != null) {
+                        referencedElement = elements.get(qname);
+                    }
+                    if(referencedElement != null) {
+                        break;
+                    }
+                    scopeClass = scopeClass.getSuperclass();
+                }
+                if(referencedElement == null) {
+                    referencedElement = this.getGlobalElements().get(qname);
+                }
                 if (referencedElement != null) {
                     addReferencedElement(property, referencedElement);
                 } else {
@@ -2369,9 +2381,6 @@ public class AnnotationsProcessor {
                     }
                     qname = new QName(url, localName);
 
-                    if (this.globalElements == null) {
-                        globalElements = new HashMap<QName, ElementDeclaration>();
-                    }
 
                     boolean isList = false;
                     if ("java.util.List".equals(type.getName())) {
@@ -2408,7 +2417,12 @@ public class AnnotationsProcessor {
                         declaration.setJavaType(helper.getJavaClass(declJavaType));
                         declaration.setAdaptedJavaType(type);
                     }
-                    globalElements.put(qname, declaration);
+                    HashMap<QName, ElementDeclaration> elements = getElementDeclarationsForScope(scopeClass.getName()); 
+                    if(elements == null) {
+                        elements = new HashMap<QName, ElementDeclaration>();
+                        this.elementDeclarations.put(scopeClass.getName(), elements);
+                    } 
+                    elements.put(qname, declaration);
                 }
                 if (!helper.isBuiltInJavaType(type) && !classes.contains(type)) {
                     classes.add(type);
@@ -2429,10 +2443,7 @@ public class AnnotationsProcessor {
      * @return
      */
     public HashMap<QName, ElementDeclaration> getGlobalElements() {
-        if (globalElements == null) {
-            globalElements = new HashMap<QName, ElementDeclaration>();
-        }
-        return globalElements;
+        return this.elementDeclarations.get(XmlElementDecl.GLOBAL.class.getName());
     }
 
     public void updateGlobalElements(JavaClass[] classesToProcess) {
@@ -2488,25 +2499,19 @@ public class AnnotationsProcessor {
                 }
                 ElementDeclaration declaration = new ElementDeclaration(rootElemName, javaClass, javaClass.getQualifiedName(), false);
                 declaration.setIsXmlRootElement(true);
-                if (this.globalElements == null) {
-                    globalElements = new HashMap<QName, ElementDeclaration>();
-                }
-                this.globalElements.put(rootElemName, declaration);
+                this.getGlobalElements().put(rootElemName, declaration);
                 this.xmlRootElements.put(javaClass.getQualifiedName(), declaration);
             }
         }
 
-        if (this.globalElements == null) {
-            return;
-        }
 
-        Iterator<QName> elementQnames = this.globalElements.keySet().iterator();
+        Iterator<QName> elementQnames = this.getGlobalElements().keySet().iterator();
         while (elementQnames.hasNext()) {
             QName next = elementQnames.next();
-            ElementDeclaration nextDeclaration = this.globalElements.get(next);
+            ElementDeclaration nextDeclaration = this.getGlobalElements().get(next);
             QName substitutionHead = nextDeclaration.getSubstitutionHead();
             while (substitutionHead != null) {
-                ElementDeclaration rootDeclaration = this.globalElements.get(substitutionHead);
+                ElementDeclaration rootDeclaration = this.getGlobalElements().get(substitutionHead);
                 rootDeclaration.addSubstitutableElement(nextDeclaration);
                 substitutionHead = rootDeclaration.getSubstitutionHead();
             }
@@ -3567,7 +3572,7 @@ public class AnnotationsProcessor {
             }
             schemaInfo.getGlobalElementDeclarations().add(rootElemName);
             ElementDeclaration declaration = new ElementDeclaration(rootElemName, javaClass, javaClass.getRawName(), false);
-            this.globalElements.put(rootElemName, declaration);
+            this.getGlobalElements().put(rootElemName, declaration);
         }
 
         return schemaInfo;
@@ -3679,4 +3684,7 @@ public class AnnotationsProcessor {
         this.isDefaultNamespaceAllowed = isDefaultNamespaceAllowed;
     }
     
+    HashMap<QName, ElementDeclaration> getElementDeclarationsForScope(String scopeClassName) {
+        return this.elementDeclarations.get(scopeClassName);
+    }
 }
