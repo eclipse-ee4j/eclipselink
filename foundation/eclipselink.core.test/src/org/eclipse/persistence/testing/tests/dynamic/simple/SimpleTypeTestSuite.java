@@ -139,7 +139,7 @@ public class SimpleTypeTestSuite {
 
     @Test
     public void verifyDefaultValuesFromDescriptor() throws Exception {
-        DynamicTypeImpl simpleType = (DynamicTypeImpl)dynamicHelper.getType("Simple");
+        DynamicType simpleType = (DynamicType)dynamicHelper.getType("Simple");
         assertNotNull(simpleType);
 
         DynamicEntity simpleInstance = (DynamicEntity) simpleType.getDescriptor().getObjectBuilder().buildNewInstance();
