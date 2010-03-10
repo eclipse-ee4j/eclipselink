@@ -209,6 +209,7 @@ public class JUnitJPQLComplexTestSuite extends JUnitTestCase
         suite.addTest(new JUnitJPQLComplexTestSuite("caseTypeTest"));
         suite.addTest(new JUnitJPQLComplexTestSuite("variableReferencedOnlyInParameterTest"));
         suite.addTest(new JUnitJPQLComplexTestSuite("standardFunctionCreateQueryTest"));
+        suite.addTest(new JUnitJPQLComplexTestSuite("customFunctionNVLTest"));
         
         return suite;
     }
@@ -2757,4 +2758,49 @@ public class JUnitJPQLComplexTestSuite extends JUnitTestCase
             fail(errorMsg);
         }
     }
+
+    // Bug 300512 - Add FUNCTION support to extended JPQL 
+    public void customFunctionNVLTest() {
+        // NVL is Oracle database function, therefore the test runs on Oracle only.
+        if(!getServerSession().getPlatform().isOracle()) {
+            return;
+        }
+        EntityManager em = createEntityManager();
+        String[] jpqlString = {
+                "SELECT FUNC('NVL', e.firstName, 'NoFirstName'), func('NVL', e.lastName, 'NoLastName') FROM Employee e",
+                "SELECT FUNC('NVL', e.firstName, :param0), func('NVL', :param1, e.lastName) FROM Employee e",
+                "SELECT FUNC('NVL', e.firstName, SUBSTRING(e.lastName, 1)), func('NVL', e.lastName, CONCAT(e.lastName, ' no name')) FROM Employee e",
+                "SELECT CONCAT(FUNC('NVL', e.firstName, 'NoFirstName'), func('NVL', e.lastName, 'NoLastName')) FROM Employee e",
+
+                "SELECT e.id FROM Employee e WHERE FUNC('NVL', e.firstName, 'NoFirstName') = func('NVL', e.lastName, 'NoLastName')",
+                "SELECT e.id FROM Employee e WHERE FUNC('NVL', e.firstName, :param0) = func('NVL', :param1, e.lastName)",
+                "SELECT e.id FROM Employee e WHERE FUNC('NVL', e.firstName, SUBSTRING(e.lastName, 1)) = func('NVL', e.lastName, CONCAT(e.lastName, ' no name'))",
+                "SELECT e.id FROM Employee e WHERE CONCAT(FUNC('NVL', e.firstName, 'NoFirstName'), func('NVL', e.lastName, 'NoLastName')) = 'NoFirstNameNoLastName'"
+        };
+        
+        String errorMsg = "";
+        String jpql = null;
+        Query query;
+        for(int i=0; i < jpqlString.length; i++) {
+            try {
+                jpql = jpqlString[i];
+                query = em.createQuery(jpql);
+                if(i == 1 || i == 5) {
+                    query.setParameter("param0", "Blah0");
+                    query.setParameter("param1", "Blah1");
+                }
+                query.getResultList();
+            } catch (Exception ex) {
+                ex.printStackTrace();
+                errorMsg += '\t' + jpql + " - "+ex+'\n';
+            }
+        }
+        
+        closeEntityManager(em);
+        
+        if(errorMsg.length() > 0) {
+            errorMsg = "Failed:\n" + errorMsg;
+            fail(errorMsg);
+        }
+    }   
 }
