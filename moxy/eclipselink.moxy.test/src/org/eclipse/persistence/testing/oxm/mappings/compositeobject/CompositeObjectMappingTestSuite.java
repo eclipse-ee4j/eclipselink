@@ -46,6 +46,7 @@ import org.eclipse.persistence.testing.oxm.mappings.compositeobject.nillable.Com
 import org.eclipse.persistence.testing.oxm.mappings.compositeobject.nillable.CompositeObjectNullPolicySetEmptyTrueIsSetTrueTestCases;
 import org.eclipse.persistence.testing.oxm.mappings.compositeobject.nillable.CompositeObjectNullPolicySetNonNullTestCases;
 import org.eclipse.persistence.testing.oxm.mappings.compositeobject.nillable.CompositeObjectOptionalNodeNullPolicyElementTestCases;
+import org.eclipse.persistence.testing.oxm.mappings.compositeobject.norefclass.DefaultNSTestCases;
 import org.eclipse.persistence.testing.oxm.mappings.compositeobject.nulltests.CompositeObjectNullTestCases;
 import org.eclipse.persistence.testing.oxm.mappings.compositeobject.self.AttributeListOnTargetTestCases;
 import org.eclipse.persistence.testing.oxm.mappings.compositeobject.self.AttributeOnTargetTestCases;
@@ -124,6 +125,7 @@ public class CompositeObjectMappingTestSuite extends TestCase {
         suite.addTestSuite(CompositeObjectSelfComplexXsiTypeTestCases.class);
         suite.addTestSuite(CompositeObjectSelfSimpleXsiTypeTestCases.class);
         suite.addTestSuite(SelfWithOtherCompositeTestCases.class);
+        suite.addTestSuite(DefaultNSTestCases.class);
         
         return suite;
     }

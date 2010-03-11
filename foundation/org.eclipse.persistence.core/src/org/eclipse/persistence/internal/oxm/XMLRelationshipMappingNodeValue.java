@@ -116,6 +116,14 @@ public abstract class XMLRelationshipMappingNodeValue extends MappingNodeValue {
 
                     qname = new QName(url, frag.getLocalName());
                     unmarshalRecord.setTypeQName(qname);
+                } else {
+                    String url = unmarshalRecord.resolveNamespacePrefix(XMLConstants.EMPTY_STRING);
+                    if(null != url) {
+                        frag.setNamespaceURI(url);
+
+                        qname = new QName(url, frag.getLocalName());
+                        unmarshalRecord.setTypeQName(qname);
+                    }
                 }
                 returnDescriptor = xmlContext.getDescriptorByGlobalType(frag);
                 if(returnDescriptor == null){
