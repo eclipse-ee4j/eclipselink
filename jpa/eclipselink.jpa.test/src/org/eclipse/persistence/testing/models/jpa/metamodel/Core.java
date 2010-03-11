@@ -39,7 +39,8 @@ import javax.persistence.Version;
 @Entity(name="CoreMetamodel")
 @Table(name="CMP3_MM_CORE")
 public class Core implements java.io.Serializable {
-    
+    private static final long serialVersionUID = 1168268798087713519L;
+
     private Integer id;
     
     private MultiCoreCPU cpu;

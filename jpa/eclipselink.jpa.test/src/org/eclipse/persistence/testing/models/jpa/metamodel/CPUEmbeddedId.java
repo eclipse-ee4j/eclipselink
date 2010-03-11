@@ -28,6 +28,8 @@ import javax.persistence.TableGenerator;
 
 @Embeddable
 public class CPUEmbeddedId implements Serializable {
+    private static final long serialVersionUID = 2162087921393149126L;
+
     private int pk_part1;
 
     // This class is embedded inside a CPU MappedSuperclass (MultiCoreCPU Entity)
