@@ -52,6 +52,12 @@
  *       - 211324: Add additional event(s) support to the EclipseLink-ORM.XML Schema
  *     01/22/2010-2.0.1 Guy Pelletier 
  *       - 294361: incorrect generated table for element collection attribute overrides
+ *     03/08/2010-2.1 Michael O'Brien 
+ *       - 300051: JPA 2.0 Metamodel processing requires EmbeddedId validation moved higher from
+ *                      EmbeddedIdAccessor.process() to MetadataDescriptor.addAccessor() so we
+ *                      can better determine when to add the MAPPED_SUPERCLASS_RESERVED_PK_NAME
+ *                      temporary PK field used to process MappedSuperclasses for the Metamodel API
+ *                      during MetadataProject.addMetamodelMappedSuperclass()
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata;
 
@@ -245,6 +251,17 @@ public class MetadataDescriptor {
         // Store IdAccessors in a separate map for use by hasIdAccessor()
         if (accessor.isId()) {
             m_idAccessors.put(accessor.getAttributeName(), (IdAccessor) accessor);
+        }
+        
+        // Check if we already processed an EmbeddedId for this Entity or MappedSuperclass.
+        if (accessor.isEmbeddedId() && this.hasEmbeddedId()) {
+            throw ValidationException.multipleEmbeddedIdAnnotationsFound(getJavaClass(), 
+                    accessor.getAttributeName(), this.getEmbeddedIdAttributeName());
+        } 
+        
+        // 300051: store the single EmbeddedIdAccessor for use by hasEmbeddedId in MetadataProject.addMetamodelMappedSuperclass()
+        if(accessor.isEmbeddedId()) {
+            this.setEmbeddedIdAccessor((EmbeddedIdAccessor)accessor); 
         }
     }
     

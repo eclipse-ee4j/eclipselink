@@ -43,6 +43,12 @@
  *       - 293629: An attribute referenced from orm.xml is not recognized correctly
  *     03/08/2010-2.1 Guy Pelletier 
  *       - 303632: Add attribute-type for mapping attributes to EclipseLink-ORM
+ *     03/08/2010-2.1 Michael O'Brien 
+ *       - 300051: JPA 2.0 Metamodel processing requires EmbeddedId validation moved higher from
+ *                      EmbeddedIdAccessor.process() to MetadataDescriptor.addAccessor() so we
+ *                      can better determine when to add the MAPPED_SUPERCLASS_RESERVED_PK_NAME
+ *                      temporary PK field used to process MappedSuperclasses for the Metamodel API
+ *                      during MetadataProject.addMetamodelMappedSuperclass()
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata;
 
@@ -423,6 +429,13 @@ public class MetadataProject {
      * MetadataProject.processStage2() - where the m_mappedSuperclassAccessors 
      * Map is required.
      * <p>
+     * We do not use the non-persisting MAPPED_SUPERCLASS_RESERVED_PK_NAME PK field.
+     * Normally when the MappedSuperclass is part of an inheritance hierarchy of the form MS->MS->E,
+     * where there is an PK Id on the root Entity E, we need to add the 
+     * MAPPED_SUPERCLASS_RESERVED_PK_NAME PK field solely for metadata processing to complete.
+     * Why? because even though we treat MappedSuperclass objects as a RelationalDescriptor - we only persist
+     * RelationalDescriptor objects that relate to concrete Entities.
+     * <p>
      *  This method is referenced by EntityAccessor.addPotentialMappedSuperclass()
      *  </p>
      * @param metadataClass - the wrapped java class that the MappedSuperclass represents
@@ -462,10 +475,16 @@ public class MetadataProject {
             // The descriptor is assumed never to be null
             metadataDescriptor.setPrimaryTable(new DatabaseTable(MetadataConstants.MAPPED_SUPERCLASS_RESERVED_TABLE_NAME));
             
-            // Add PK field to the relationalDescriptor only if there are none yet - or "will be none"
-            // Check accessor collection on the metadataDescriptor (note: getIdAttributeName() and getIdAttributeNames() are not populated yet - so are unavailable
-            // We will check for an IdAccessor instance as one of the accessors directly
-            if (!metadataDescriptor.hasIdAccessor()) {
+            /*
+             * We need to add a PK field to the temporary mappedsuperclass table above - in order to continue processing.
+             * Note: we add this field only if no IdClass or EmbeddedId attributes are set on or above the MappedSuperclass.
+             * Both the table name and PK name are not used to actual database writes.
+             * Check accessor collection on the metadataDescriptor (note: getIdAttributeName() and getIdAttributeNames() are not populated yet - so are unavailable
+             * 300051: The check for at least one IdAccessor or an EmbeddedIdAccessor requires that the map and field respectively
+             * are set previously in MetadataDescriptor.addAccessor().
+             * The checks below will also avoid a performance hit on searching the accessor map directly on the descriptor. 
+             */
+            if (!metadataDescriptor.hasIdAccessor() && !metadataDescriptor.hasEmbeddedId()) {
                 relationalDescriptor.addPrimaryKeyFieldName(MetadataConstants.MAPPED_SUPERCLASS_RESERVED_PK_NAME);
             }
             

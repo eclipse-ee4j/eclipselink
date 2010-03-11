@@ -36,7 +36,7 @@ import javax.persistence.Table;
 import javax.persistence.TableGenerator;
 import javax.persistence.Version;
 
-// Name attribute is requires so we do not have a collision with jpa.inheritance.Computer
+// Name attribute is required so we do not have a collision with jpa.inheritance.Computer
 @Entity(name="ComputerMetamodel")
 @Table(name="CMP3_MM_COMPUTER")
 public class Computer implements java.io.Serializable {

@@ -20,6 +20,12 @@ import javax.persistence.MappedSuperclass;
 @MappedSuperclass
 public class CoordinateMS extends GalacticPosition {
 
+    // Any reference to this embedded key requires a bidirectional relationship (not unidirectional)
+/*    @EmbeddedId
+    @Column(name="GALACTIC_ID")    
+    protected EmbeddedPK primaryKey;
+*/
+    
     private Integer longitude;
     private Integer Lattitude;
     private Integer elevation;
@@ -51,5 +57,14 @@ public class CoordinateMS extends GalacticPosition {
     public void setElevation(Integer elevation) {
         this.elevation = elevation;
     }
+    
+/*    public EmbeddedPK getPrimaryKey() {
+        return primaryKey;
+    }
+
+    public void setPrimaryKey(EmbeddedPK primaryKey) {
+        this.primaryKey = primaryKey;
+    }
+*/
     
 }

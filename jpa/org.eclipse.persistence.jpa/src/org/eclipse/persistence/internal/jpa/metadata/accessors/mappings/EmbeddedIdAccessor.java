@@ -25,6 +25,12 @@
  *       - 270011: JPA 2.0 MappedById support
  *     06/02/2009-2.0 Guy Pelletier 
  *       - 278768: JPA 2.0 Association Override Join Table
+ *     03/08/2010-2.1 Michael O'Brien 
+ *       - 300051: JPA 2.0 Metamodel processing requires EmbeddedId validation moved higher from
+ *                      EmbeddedIdAccessor.process() to MetadataDescriptor.addAccessor() so we
+ *                      can better determine when to add the MAPPED_SUPERCLASS_RESERVED_PK_NAME
+ *                      temporary PK field used to process MappedSuperclasses for the Metamodel API
+ *                      during MetadataProject.addMetamodelMappedSuperclass()
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata.accessors.mappings;
 
@@ -144,13 +150,10 @@ public class EmbeddedIdAccessor extends EmbeddedAccessor {
         
             // Set the embedded id metadata on all owning descriptors.
             for (MetadataDescriptor owningDescriptor : this.getOwningDescriptors()) {
-                // Check if we already processed an EmbeddedId for this entity.
-                if (owningDescriptor.hasEmbeddedId()) {
-                    throw ValidationException.multipleEmbeddedIdAnnotationsFound(getJavaClass(), getAttributeName(), owningDescriptor.getEmbeddedIdAttributeName());
-                } 
-            
+                // 300051: validation check moved up to MetadataDescriptor.addAccessor() 
+
                 // Check if we already processed an Id or IdClass.
-                if (owningDescriptor.hasPrimaryKeyFields()) {
+                if (owningDescriptor.hasPrimaryKeyFields()) { 
                     throw ValidationException.embeddedIdAndIdAnnotationFound(getJavaClass(), getAttributeName(), owningDescriptor.getIdAttributeName());
                 }
                 

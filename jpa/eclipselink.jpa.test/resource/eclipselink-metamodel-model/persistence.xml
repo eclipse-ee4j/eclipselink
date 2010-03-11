@@ -16,7 +16,10 @@
         <class>org.eclipse.persistence.testing.models.jpa.metamodel.ArrayProcessor</class>
         <!-- class>org.eclipse.persistence.testing.models.jpa.metamodel.ScalarProcessor</class-->                
         <class>org.eclipse.persistence.testing.models.jpa.metamodel.VectorProcessor</class>        
-        <class>org.eclipse.persistence.testing.models.jpa.metamodel.MS_MS_Entity_Leaf</class>        
+        <class>org.eclipse.persistence.testing.models.jpa.metamodel.MS_MS_Entity_Leaf</class>
+        <!-- 300051: added to test @EmbeddedId:CPUEmbeddedId directly on @MappedSuperclass:CPU -->
+        <class>org.eclipse.persistence.testing.models.jpa.metamodel.MultiCoreCPU</class>
+        <class>org.eclipse.persistence.testing.models.jpa.metamodel.Core</class>
         <exclude-unlisted-classes>false</exclude-unlisted-classes>
         <properties>
              <property name="eclipselink.session-name" value="metamodel"/>

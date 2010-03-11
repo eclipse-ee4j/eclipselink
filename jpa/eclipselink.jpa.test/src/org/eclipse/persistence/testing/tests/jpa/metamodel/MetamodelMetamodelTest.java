@@ -65,7 +65,10 @@ import org.eclipse.persistence.internal.jpa.metamodel.TypeImpl;
 import org.eclipse.persistence.mappings.DatabaseMapping;
 import org.eclipse.persistence.testing.models.jpa.metamodel.ArrayProcessor;
 import org.eclipse.persistence.testing.models.jpa.metamodel.Board;
+import org.eclipse.persistence.testing.models.jpa.metamodel.CPU;
+import org.eclipse.persistence.testing.models.jpa.metamodel.CPUEmbeddedId;
 import org.eclipse.persistence.testing.models.jpa.metamodel.Computer;
+import org.eclipse.persistence.testing.models.jpa.metamodel.Core;
 import org.eclipse.persistence.testing.models.jpa.metamodel.Corporation;
 import org.eclipse.persistence.testing.models.jpa.metamodel.EmbeddedPK;
 import org.eclipse.persistence.testing.models.jpa.metamodel.Enclosure;
@@ -77,6 +80,7 @@ import org.eclipse.persistence.testing.models.jpa.metamodel.MS_MS_Entity_Leaf;
 import org.eclipse.persistence.testing.models.jpa.metamodel.MS_MS_Entity_Root;
 import org.eclipse.persistence.testing.models.jpa.metamodel.Manufacturer;
 import org.eclipse.persistence.testing.models.jpa.metamodel.Memory;
+import org.eclipse.persistence.testing.models.jpa.metamodel.MultiCoreCPU;
 import org.eclipse.persistence.testing.models.jpa.metamodel.Person;
 import org.eclipse.persistence.testing.models.jpa.metamodel.Processor;
 
@@ -105,8 +109,8 @@ import org.eclipse.persistence.testing.models.jpa.metamodel.Processor;
  */
 public class MetamodelMetamodelTest extends MetamodelTest {
 
-    public static final int METAMODEL_ALL_ATTRIBUTES_SIZE = 121;
-    public static final int METAMODEL_ALL_TYPES = 43;
+    public static final int METAMODEL_ALL_ATTRIBUTES_SIZE = 130;
+    public static final int METAMODEL_ALL_TYPES = 47;
     public static final int METAMODEL_MANUFACTURER_DECLARED_TYPES = 28;    
     
     public MetamodelMetamodelTest() {
@@ -119,6 +123,17 @@ public class MetamodelMetamodelTest extends MetamodelTest {
 
     public static Test suite() {
         TestSuite suite = new TestSuite("MetamodelMetamodelTest");
+        /**
+         * 300051: EmbeddedId directly on MappedSuperclass
+         * In the following 2 tests we verify that when an EmbeddedId is on a MappedSuperclass - we do not
+         * use the non-persisting MAPPED_SUPERCLASS_RESERVED_PK_NAME PK field.
+         * Normally when the MappedSuperclass is part of an inheritance hierarchy of the form MS->MS->E,
+         * where there is an PK Id on the root Entity E, we need to add this key solely for metadata processing to complete.
+         * Why? because even though we treat MappedSuperclass objects as a RelationalDescriptor - we only persist
+         * RelationalDescriptor objects that relate to concrete Entities.
+         */
+        suite.addTest(new MetamodelMetamodelTest("testMetamodelEmbeddedIdDirectlyOnMappedSuperclassRootPassesValidation"));
+        
         suite.addTest(new MetamodelMetamodelTest("testAttribute_getPersistentAttributeType_BASIC_Method"));
         suite.addTest(new MetamodelMetamodelTest("testAttribute_getPersistentAttributeType_EMBEDDED_Method"));
         suite.addTest(new MetamodelMetamodelTest("testAttribute_getPersistentAttributeType_ONE_TO_ONE_Method"));
@@ -291,6 +306,42 @@ public class MetamodelMetamodelTest extends MetamodelTest {
     private void privateTestTeardown() {        
     }
 
+    // 300051: Test is that the class passes processing in the testing browser - verify that the model has loaded here as well
+    public void testMetamodelEmbeddedIdDirectlyOnMappedSuperclassRootPassesValidation() {
+        if(!this.isJPA10()) {
+            EntityManager em = null;
+            boolean exceptionThrown = false;
+            try {
+                em = privateTestSetup();
+                assertNotNull(em);
+                Metamodel metamodel = em.getMetamodel();
+                assertNotNull("The metamodel should never be null after an em.getMetamodel() call here.", metamodel);
+                // Verify our classes involved in an @EmbeddedId on a @MappedSuperclass loaded
+                ManagedType<CPU> msCPU = metamodel.managedType(CPU.class);                
+                assertNotNull(msCPU);
+                assertEquals(Type.PersistenceType.MAPPED_SUPERCLASS, msCPU.getPersistenceType());
+                
+                ManagedType<MultiCoreCPU> eMultiCoreCPU = metamodel.managedType(MultiCoreCPU.class);                
+                assertNotNull(eMultiCoreCPU);
+                assertEquals(Type.PersistenceType.ENTITY, eMultiCoreCPU.getPersistenceType());
+                
+                ManagedType<Core> eCore = metamodel.managedType(Core.class);                
+                assertNotNull(eCore);
+                assertEquals(Type.PersistenceType.ENTITY, eCore.getPersistenceType());
+
+                ManagedType<CPUEmbeddedId> embedCPUEmbeddedId = metamodel.managedType(CPUEmbeddedId.class);                
+                assertNotNull(embedCPUEmbeddedId);
+                assertEquals(Type.PersistenceType.EMBEDDABLE, embedCPUEmbeddedId.getPersistenceType());
+            } catch (IllegalArgumentException iae) {
+                iae.printStackTrace();
+                exceptionThrown = true;
+            } finally {
+                cleanup(em);
+                assertFalse("An IAE exception should not occur here.", exceptionThrown);
+            }
+        }
+    }
+    
     
     /**
      * There is no simple way to test the predeploy() for this issue - however we can
