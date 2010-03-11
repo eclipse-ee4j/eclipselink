@@ -26,6 +26,7 @@ import org.eclipse.persistence.eis.EISDescriptor;
 import org.eclipse.persistence.exceptions.DatabaseException;
 import org.eclipse.persistence.exceptions.ValidationException;
 import org.eclipse.persistence.internal.databaseaccess.DatabasePlatform;
+import org.eclipse.persistence.internal.databaseaccess.FieldTypeDefinition;
 import org.eclipse.persistence.internal.descriptors.FieldTransformation;
 import org.eclipse.persistence.internal.descriptors.MethodBasedFieldTransformation;
 import org.eclipse.persistence.internal.descriptors.TransformerBasedFieldTransformation;
@@ -677,25 +678,43 @@ public class DefaultTableGenerator {
                 fieldDef.setTypeDefinition(dbField.getColumnDefinition());
             } else {
                 Class fieldType = dbField.getType();
-
+                FieldTypeDefinition fieldTypeDef = (fieldType == null) ? null : databasePlatform.getFieldTypeDefinition(fieldType);
+                
                 // Check if the user field is a String and only then allow the length specified
                 // in the @Column annotation to be set on the field.
-                if ((fieldType != null)) {
+                if (fieldType != null) {
+                    // Column has three related attributes length, precision and 
+                    // scale. Length will be used in the case where size is 
+                    // allowed on the field. (String, Blob and Clob). Otherwise, 
+                    // check the precision and set the precision and scale for
+                    // numbers.
                     if (fieldType.equals(ClassConstants.STRING) ||
-                       fieldType.equals(ClassConstants.APCHAR)  ||
-                       fieldType.equals(ClassConstants.ACHAR)) {
-                        // The field size is defaulted to "255" or use the user supplied length
-                        fieldDef.setSize(dbField.getLength()); 
+                    		fieldType.equals(ClassConstants.BLOB) ||
+                    		fieldType.equals(ClassConstants.CLOB) ||
+                    		fieldType.equals(ClassConstants.APCHAR)  ||
+                    		fieldType.equals(ClassConstants.ACHAR) ||
+                    		fieldType.equals(ClassConstants.ABYTE) ||
+                    		fieldType.equals(ClassConstants.APBYTE)) {
+                    	
+                    	// We must still check if size is allowed on the database platform used.
+                    	// If we have no field type def, just set it anyway.
+                    	if (fieldTypeDef == null || fieldTypeDef.isSizeAllowed()) {
+                    		// The field size is defaulted to "255" or use the user supplied length
+                    		fieldDef.setSize(dbField.getLength());
+                    	}
                     } else {
-                        if (dbField.getPrecision() > 0) {
-                            fieldDef.setSize(dbField.getPrecision()); 
-                            fieldDef.setSubSize(dbField.getScale());
-                        }
+                    	if (dbField.getPrecision() > 0) {
+                    		// We must still check if size is allowed on the database platform used.
+                        	// If we have no field type def, just set it anyway.
+                    		if (fieldTypeDef == null || fieldTypeDef.isSizeAllowed()) {
+                    			fieldDef.setSize(dbField.getPrecision()); 
+                    			fieldDef.setSubSize(dbField.getScale());
+                    		}
+                         }
                     }
                 }
 
-                if ((fieldType == null) || (!fieldType.isPrimitive() && 
-                        (databasePlatform.getFieldTypeDefinition(fieldType) == null))) {
+                if ((fieldType == null) || (!fieldType.isPrimitive() && (fieldTypeDef  == null))) {
                     //TODO: log a warning for inaccessible type or not convertable type.
                     AbstractSessionLog.getLog().log(SessionLog.FINEST, "field_type_set_to_java_lang_string", dbField.getQualifiedName(), fieldType);
 
