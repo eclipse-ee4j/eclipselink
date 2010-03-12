@@ -64,4 +64,13 @@ public class Swan {
     public void setWeight(int weight) {
         this.weight = weight;
     }
+    
+    public static Swan getSwan1(){
+        Swan swan = new Swan();
+        swan.setAge(4);
+        swan.setCygnetCount(2);
+        swan.setName("Ace");
+        swan.setWeight(3);
+        return swan;
+    }
 }

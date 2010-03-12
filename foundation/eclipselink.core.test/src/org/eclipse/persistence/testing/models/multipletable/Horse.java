@@ -66,4 +66,13 @@ public class Horse {
     public void setWeight(int weight) {
         this.weight = weight;
     }
+    
+    public static Horse getHorse1(){
+        Horse horse = new Horse();
+        horse.setAge(1);
+        horse.setFoalCount(3);
+        horse.setName("Mr. Fred");
+        horse.setWeight(600);
+        return horse;
+    }
 }

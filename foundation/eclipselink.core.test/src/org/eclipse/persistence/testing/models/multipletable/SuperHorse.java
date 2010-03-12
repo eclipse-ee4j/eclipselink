@@ -26,4 +26,14 @@ public class SuperHorse extends Horse {
     public void setSpeed(int speed) {
         this.speed = speed;
     }
+    
+    public static SuperHorse getSuperHorse1(){
+        SuperHorse horse = new SuperHorse();
+        horse.setAge(1);
+        horse.setFoalCount(3);
+        horse.setName("Mr. Red");
+        horse.setWeight(600);
+        horse.setSpeed(50);
+        return horse;
+    }
  }

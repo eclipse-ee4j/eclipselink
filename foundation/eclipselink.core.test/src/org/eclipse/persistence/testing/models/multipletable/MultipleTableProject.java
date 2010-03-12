@@ -313,12 +313,14 @@ public class MultipleTableProject extends Project {
         RelationalDescriptor descriptor = new RelationalDescriptor();
         descriptor.setJavaClass(SuperSwan.class);
         descriptor.addTableName("MULTI_SUPER_SWAN");
+        descriptor.addTableName("MULTI_SWAN_WINGSPAN");
 
         // Inheritance Properties.
         descriptor.getInheritancePolicy().setParentClass(Swan.class);
         
         descriptor.addForeignKeyFieldNameForMultipleTable("MULTI_SUPER_SWAN.SS_ID", "MULTI_SWAN.ID");
-
+        descriptor.addForeignKeyFieldNameForMultipleTable("MULTI_SWAN_WINGSPAN.A_SWAN_ID", "MULTI_SUPER_SWAN.SS_ID");
+        
         // Descriptor Properties.
         descriptor.setAlias("SuperSwan");
 
@@ -330,6 +332,11 @@ public class MultipleTableProject extends Project {
         speedMapping.setAttributeName("speed");
         speedMapping.setFieldName("MULTI_SUPER_SWAN.SPEED");
         descriptor.addMapping(speedMapping);
+        
+        DirectToFieldMapping wingSpanMapping = new DirectToFieldMapping();
+        wingSpanMapping.setAttributeName("wingSpan");
+        wingSpanMapping.setFieldName("MULTI_SWAN_WINGSPAN.WING_SPAN");
+        descriptor.addMapping(wingSpanMapping);
 
         return descriptor;
     }
