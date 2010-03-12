@@ -3569,6 +3569,10 @@ public class ClassDescriptor implements Cloneable, Serializable {
         int nProcessedTables = 1;
         if (isChildDescriptor()) {
             nProcessedTables = getInheritancePolicy().getParentDescriptor().getTables().size();
+            // if this is multiple table inheritance, we should include the table for this child in the processed tables
+            if (getTables().size() > nProcessedTables){
+                nProcessedTables++;
+            }
         }
 
         // cache the original map in a new variable 

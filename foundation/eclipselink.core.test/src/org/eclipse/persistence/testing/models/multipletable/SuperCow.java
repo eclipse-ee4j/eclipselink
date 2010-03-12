@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2009 Oracle. All rights reserved.
+ * Copyright (c) 1998, 2010 Oracle. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -25,5 +25,18 @@ public class SuperCow extends Cow {
     
     public void setSpeed(int speed) {
         this.speed = speed;
+    }
+    
+    public static SuperCow getSuperCow1(){
+        SuperCow cow = new SuperCow();
+        cow.setAge(1);
+        cow.setAgeId(111);
+        cow.setCalfCount(2);
+        cow.setCalfCountId(222);
+        cow.setName("CudChewer");
+        cow.setWeight(432);
+        cow.setWeightId(444);
+        cow.setSpeed(10);
+        return cow;
     }
  }

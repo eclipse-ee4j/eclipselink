@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2009 Oracle. All rights reserved.
+ * Copyright (c) 1998, 2010 Oracle. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -45,6 +45,7 @@ public class MultipleTableTableCreator extends TableCreator {
         addTableDefinition(buildSWAN_AGETable());
         addTableDefinition(buildSWAN_WEIGHTTable());
         addTableDefinition(buildSUPER_SWANTable());
+        addTableDefinition(buildSWAN_WINGSPANTable());
     }
 
     protected TableDefinition buildCOWTable() {
@@ -577,6 +578,40 @@ public class MultipleTableTableCreator extends TableCreator {
         return table;
     }
     
+    protected TableDefinition buildSWAN_WINGSPANTable() {
+        TableDefinition table = new TableDefinition();
+        table.setName("MULTI_SWAN_WINGSPAN");
+
+        FieldDefinition field = new FieldDefinition();
+        field.setName("A_SWAN_ID");
+        field.setTypeName("NUMERIC");
+        field.setSize(15);
+        field.setShouldAllowNull(false);
+        field.setIsPrimaryKey(true);
+        field.setUnique(false);
+        field.setIsIdentity(false);
+        table.addField(field);
+
+        FieldDefinition field1 = new FieldDefinition();
+        field1.setName("WING_SPAN");
+        field1.setTypeName("NUMERIC");
+        field1.setSize(10);
+        field1.setShouldAllowNull(true);
+        field1.setIsPrimaryKey(false);
+        field1.setUnique(false);
+        field1.setIsIdentity(false);
+        table.addField(field1);
+
+        ForeignKeyConstraint foreignKeySWAN_WING_SPAN = new ForeignKeyConstraint();
+        foreignKeySWAN_WING_SPAN.setName("WING_SPAN");
+        foreignKeySWAN_WING_SPAN.setTargetTable("MULTI_SUPER_SWAN");
+        foreignKeySWAN_WING_SPAN.addSourceField("A_SWAN_ID");
+        foreignKeySWAN_WING_SPAN.addTargetField("SS_ID");
+        table.addForeignKeyConstraint(foreignKeySWAN_WING_SPAN);
+
+        return table;
+    }
+    
     protected TableDefinition buildSWAN_WEIGHTTable() {
         TableDefinition table = new TableDefinition();
         table.setName("MULTI_SWAN_WEIGHT");
@@ -635,7 +670,7 @@ public class MultipleTableTableCreator extends TableCreator {
         sppedField.setUnique(false);
         sppedField.setIsIdentity(false);
         table.addField(sppedField);
-
+        
         return table;
     }
 }
