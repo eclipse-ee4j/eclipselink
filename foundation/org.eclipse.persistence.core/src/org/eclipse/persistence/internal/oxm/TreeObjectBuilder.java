@@ -346,8 +346,23 @@ public class TreeObjectBuilder extends XMLObjectBuilder {
 
         List<XPathNode> selfChildren = rootXPathNode.getSelfChildren();
         if (null != selfChildren) {
-            for (int x = 0, selfChildrenSize=selfChildren.size(); x < selfChildrenSize; x++) {
-                selfChildren.get(x).marshalSelfAttributes(marshalRecord, object, session, namespaceResolver, marshalRecord.getMarshaller());
+            for (XPathNode selfXPathNode : selfChildren) {
+                NodeValue marshalNodeValue = selfXPathNode.getMarshalNodeValue();
+                if(marshalNodeValue instanceof MappingNodeValue) {
+                    DatabaseMapping selfMapping = ((MappingNodeValue) selfXPathNode.getMarshalNodeValue()).getMapping();
+                    Object value = selfMapping.getAttributeValueFromObject(object);
+                    XMLDescriptor referenceDescriptor = (XMLDescriptor)selfMapping.getReferenceDescriptor();
+                    XMLDescriptor valueDescriptor;
+                    if(value != null && (referenceDescriptor == null || referenceDescriptor.hasInheritance())){
+                        valueDescriptor = (XMLDescriptor)session.getDescriptor(value.getClass());
+                    } else {
+                        valueDescriptor = referenceDescriptor;
+                    }
+                    if(null != valueDescriptor) {
+                        this.addXsiTypeAndClassIndicatorIfRequired(marshalRecord, valueDescriptor, referenceDescriptor, (XMLField) selfMapping.getField(), false);
+                    }
+                }
+                selfXPathNode.marshalSelfAttributes(marshalRecord, object, session, namespaceResolver, marshalRecord.getMarshaller());
             }
         }
 

@@ -628,7 +628,12 @@ public class XMLCompositeObjectMapping extends AbstractCompositeObjectMapping im
                      root.appendChild(importedCopy);
                  }
              }else{
-            	 ClassDescriptor desc =  this.getReferenceDescriptor(attributeValue.getClass(), session);
+                 ClassDescriptor desc;
+                 if(null == attributeValue) {
+                     desc =  this.getReferenceDescriptor();
+                 } else {
+                     desc =  this.getReferenceDescriptor(attributeValue.getClass(), session);
+                 }
             	 if(desc != null){
             		 XMLObjectBuilder objectBuilder = (XMLObjectBuilder)desc.getObjectBuilder();
             		 objectBuilder.buildIntoNestedRow(record, attributeValue, session, (XMLDescriptor)getReferenceDescriptor(), (XMLField) getField());

@@ -31,6 +31,14 @@ public class Employee {
         this.id = id;
     }
 
+    public Address getAddress() {
+        return address;
+    }
+
+    public void setAddress(Address address) {
+        this.address = address;
+    }
+
     public Period getStartDateAndEndDate() {
         return _StartDateAndEndDate;
     }
@@ -47,7 +55,7 @@ public class Employee {
             }
             if (id != employee.getId()) {
                 return false;
-			}
+            }
             if (null == _StartDateAndEndDate) {
                 if (null != employee.getStartDateAndEndDate()) {
                     return false;
@@ -120,4 +128,5 @@ public class Employee {
             }
         }
     }
+
 }

@@ -52,6 +52,9 @@ import org.eclipse.persistence.testing.oxm.mappings.compositeobject.self.Attribu
 import org.eclipse.persistence.testing.oxm.mappings.compositeobject.self.AttributeOnTargetTestCases;
 import org.eclipse.persistence.testing.oxm.mappings.compositeobject.self.AttributesOnTargetTestCases;
 import org.eclipse.persistence.testing.oxm.mappings.compositeobject.self.CompositeObjectSelfTestCases;
+import org.eclipse.persistence.testing.oxm.mappings.compositeobject.self.InheritanceChildTestCases;
+import org.eclipse.persistence.testing.oxm.mappings.compositeobject.self.InheritanceNullTestCases;
+import org.eclipse.persistence.testing.oxm.mappings.compositeobject.self.InheritanceRootTestCases;
 import org.eclipse.persistence.testing.oxm.mappings.compositeobject.self.SelfWithOtherCompositeTestCases;
 import org.eclipse.persistence.testing.oxm.mappings.compositeobject.self.defaultnamespace.SelfMappingTestCases;
 import org.eclipse.persistence.testing.oxm.mappings.compositeobject.self.norefclass.CompositeObjectSelfComplexXsiTypeTestCases;
@@ -126,7 +129,11 @@ public class CompositeObjectMappingTestSuite extends TestCase {
         suite.addTestSuite(CompositeObjectSelfSimpleXsiTypeTestCases.class);
         suite.addTestSuite(SelfWithOtherCompositeTestCases.class);
         suite.addTestSuite(DefaultNSTestCases.class);
-        
+
+        suite.addTestSuite(InheritanceNullTestCases.class);
+        suite.addTestSuite(InheritanceRootTestCases.class);
+        suite.addTestSuite(InheritanceChildTestCases.class);
+
         return suite;
     }
 

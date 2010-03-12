@@ -155,7 +155,9 @@ public class XMLCompositeObjectMappingNodeValue extends XMLRelationshipMappingNo
 
             List extraNamespaces = objectBuilder.addExtraNamespacesToNamespaceResolver(descriptor, marshalRecord, session);
             writeExtraNamespaces(extraNamespaces, marshalRecord, session);
-            objectBuilder.addXsiTypeAndClassIndicatorIfRequired(marshalRecord, descriptor, (XMLDescriptor) xmlCompositeObjectMapping.getReferenceDescriptor(), (XMLField)xmlCompositeObjectMapping.getField(), false);                
+            if(!".".equals(this.xmlCompositeObjectMapping.getXPath())) {
+                objectBuilder.addXsiTypeAndClassIndicatorIfRequired(marshalRecord, descriptor, (XMLDescriptor) xmlCompositeObjectMapping.getReferenceDescriptor(), (XMLField)xmlCompositeObjectMapping.getField(), false);
+            }
 
             objectBuilder.buildRow(marshalRecord, objectValue, session, marshaller, xPathFragment, WriteType.UNDEFINED);
 

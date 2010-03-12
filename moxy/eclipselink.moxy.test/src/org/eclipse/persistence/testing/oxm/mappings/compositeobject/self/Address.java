@@ -22,6 +22,9 @@ public class Address {
 
     public boolean equals(Object object) {
         try {
+            if (null == object || getClass() != object.getClass()) {
+                return false;
+            }
             Address address = (Address)object;
             if (this == address) {
                 return true;
