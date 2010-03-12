@@ -26,4 +26,17 @@ public class SuperCow extends Cow {
     public void setSpeed(int speed) {
         this.speed = speed;
     }
+    
+    public static SuperCow getSuperCow1(){
+        SuperCow cow = new SuperCow();
+        cow.setAge(1);
+        cow.setAgeId(111);
+        cow.setCalfCount(2);
+        cow.setCalfCountId(222);
+        cow.setName("CudChewer");
+        cow.setWeight(432);
+        cow.setWeightId(444);
+        cow.setSpeed(10);
+        return cow;
+    }
  }
