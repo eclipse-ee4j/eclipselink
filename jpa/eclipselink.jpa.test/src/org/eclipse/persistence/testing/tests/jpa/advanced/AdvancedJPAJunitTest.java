@@ -36,6 +36,8 @@ import junit.framework.Test;
 import junit.framework.TestSuite;
 
 import org.eclipse.persistence.descriptors.ClassDescriptor;
+import org.eclipse.persistence.descriptors.DescriptorEvent;
+import org.eclipse.persistence.descriptors.DescriptorEventAdapter;
 import org.eclipse.persistence.descriptors.invalidation.CacheInvalidationPolicy;
 import org.eclipse.persistence.descriptors.invalidation.TimeToLiveCacheInvalidationPolicy;
 import org.eclipse.persistence.internal.helper.ClassConstants;
@@ -48,6 +50,7 @@ import org.eclipse.persistence.internal.jpa.metamodel.SingularAttributeImpl;
 import org.eclipse.persistence.mappings.DatabaseMapping;
 import org.eclipse.persistence.mappings.ForeignReferenceMapping;
 import org.eclipse.persistence.queries.DoesExistQuery;
+import org.eclipse.persistence.sessions.Session;
 import org.eclipse.persistence.sessions.server.ServerSession;
 import org.eclipse.persistence.testing.framework.JoinedAttributeTestHelper;
 import org.eclipse.persistence.testing.framework.junit.JUnitTestCase;
@@ -104,6 +107,7 @@ public class AdvancedJPAJunitTest extends JUnitTestCase {
         suite.setName("AdvancedJPAJunitTest");
 
         suite.addTest(new AdvancedJPAJunitTest("testSetup"));
+        suite.addTest(new AdvancedJPAJunitTest("testRelationshipReadDuringClone"));
         // This test runs only on a JEE6 / JPA 2.0 capable server
         suite.addTest(new AdvancedJPAJunitTest("testMetamodelMinimalSanityTest"));
         suite.addTest(new AdvancedJPAJunitTest("testExistenceCheckingSetting"));
@@ -1187,6 +1191,21 @@ public class AdvancedJPAJunitTest extends JUnitTestCase {
         }
         
         closeEntityManager(em);
+    }
+    
+    public void testRelationshipReadDuringClone(){
+        EntityManager em = createEntityManager();
+        Session session = em.unwrap(Session.class);
+        ClassDescriptor deparmentDesc = session.getDescriptor(Department.class);
+        DescriptorEventAdapter listener = new DescriptorEventAdapter(){
+            public void postClone(DescriptorEvent event) {
+                ((Department)event.getObject()).getEquipment().size();
+            }
+        };
+        deparmentDesc.getDescriptorEventManager().addListener(listener);
+        em.createQuery("SELECT e from Equipment e where e.department is not null").getResultList();
+        deparmentDesc.getDescriptorEventManager().removeListener(listener);
+        em.close();
     }
     
     /**
