@@ -1331,20 +1331,26 @@ public class ObjectBuilder implements Cloneable, Serializable {
             DescriptorEvent event = new DescriptorEvent(clone);
             event.setQuery(query);
             event.setSession(unitOfWork);
+            event.setDescriptor(this.descriptor);
             event.setRecord(databaseRow);
             if (forRefresh) {
                 event.setEventCode(DescriptorEventManager.PostRefreshEvent);
             } else {
                 event.setEventCode(DescriptorEventManager.PostBuildEvent);
                 //fire a postBuildEvent then the postCloneEvent
-                this.descriptor.getEventManager().executeEvent(event);
+                unitOfWork.deferEvent(event);
                
+                event = new DescriptorEvent(clone);
+                event.setQuery(query);
+                event.setSession(unitOfWork);
+                event.setDescriptor(this.descriptor);
+                event.setRecord(databaseRow);
                 //bug 259404: ensure postClone is called for objects built directly into the UnitOfWork
                 //in this case, the original is the clone
                 event.setOriginalObject(clone);
                 event.setEventCode(DescriptorEventManager.PostCloneEvent);
             }
-            this.descriptor.getEventManager().executeEvent(event);
+            unitOfWork.deferEvent(event);
             
             
         }
@@ -2840,8 +2846,9 @@ public class ObjectBuilder implements Cloneable, Serializable {
             DescriptorEvent event = new DescriptorEvent(clone);
             event.setSession(unitOfWork);
             event.setOriginalObject(original);
+            event.setDescriptor(descriptor);
             event.setEventCode(DescriptorEventManager.PostCloneEvent);
-            this.descriptor.getEventManager().executeEvent(event);
+            unitOfWork.deferEvent(event);
         }
     }
 

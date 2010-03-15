@@ -284,6 +284,14 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
 
     /** temporarily holds a reference to a merge manager that is calling this UnitOfWork during merge **/
     protected MergeManager mergeManagerForActiveMerge = null;
+    
+    /** temporarily holds a list of events that must be fired after the current operation completes. 
+     *  Initialy created for postClone events.
+     */
+    protected ArrayList<DescriptorEvent> deferredEvents;
+    
+    /** records that the UOW is executing deferred events.  Events could cause operations to occur that may attempt to restart the event execution.  This must be avoided*/
+    protected boolean isExecutingEvents = false;
 
     /**
      * INTERNAL:
@@ -324,6 +332,7 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
         }
         this.descriptors = parent.getDescriptors();
         incrementProfile(SessionProfiler.UowCreated);
+        this.deferredEvents = new ArrayList<DescriptorEvent>();
     }
 
     /**
@@ -1016,6 +1025,7 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
                         }
                         this.objectsLockedForClone = null;
                     }
+                    executeDeferredEvents();
                 }
             }
         }
@@ -1667,6 +1677,14 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
     public void deepUnregisterObject(Object clone) {
         unregisterObject(clone, DescriptorIterator.CascadeAllParts);
     }
+    
+    /**
+     * INTERNAL:
+     * Add an event to the deferred list.  Events will be fired after the operation completes
+     */
+    public void deferEvent(DescriptorEvent event){
+        this.deferredEvents.add(event);
+    }
 
     /**
      * PUBLIC:
@@ -1812,7 +1830,34 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
             }
         }
     }
+    
+    /**
+     * INTERNAL:
+     * Causes any deferred events to be fired.  Called after operation completes
+     */
+    public void executeDeferredEvents(){
+        if (!this.isExecutingEvents) {
+            this.isExecutingEvents = true;
+            try {
+                for (int i = 0; i < this.deferredEvents.size(); ++i) { 
+                    // the size is checked every time here because the list may grow
+                    DescriptorEvent event = this.deferredEvents.get(i);
+                    event.getDescriptor().getEventManager().executeEvent(event);
+                }
+                this.deferredEvents.clear();
+            } finally {
+                this.isExecutingEvents = false;
+            }
+        }
+    }
 
+    @Override
+    public Object executeQuery(DatabaseQuery query, AbstractRecord row){
+        Object result = super.executeQuery(query, row);
+        executeDeferredEvents();
+        return result;
+    }
+    
     /**
      * ADVANCED:
      * Set optimistic read lock on the object.  This feature is override by normal optimistic lock.

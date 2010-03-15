@@ -1005,9 +1005,16 @@ public class EmployeePopulator {
         return new GoldBuyer();
     }
     
+    public Equipment createEquipment(String desc){
+        Equipment equip = new Equipment();
+        equip.setDescription(desc);
+        return equip;
+    }
+    
     public Department departmentExample1() {
         Department department = new Department();
         department.setName("Department 1");
+        department.addEquipment(createEquipment("Equipment-Populator -1"));
         return department;
     }
     
