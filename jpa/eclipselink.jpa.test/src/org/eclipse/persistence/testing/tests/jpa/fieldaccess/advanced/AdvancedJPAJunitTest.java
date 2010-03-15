@@ -839,7 +839,7 @@ public class AdvancedJPAJunitTest extends JUnitTestCase {
         ServerSession session = JUnitTestCase.getServerSession("fieldaccess");
         
         // Cannot create parallel entity managers in the server.
-        if (! isOnServer() && ! session.getPlatform().isMySQL() && ! session.getPlatform().isTimesTen()) {
+        if (! isOnServer() && isSelectForUpateSupported()) {
             EntityManager em = createEntityManager("fieldaccess");
             Employee employee;
             
