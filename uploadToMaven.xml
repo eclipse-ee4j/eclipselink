@@ -117,7 +117,7 @@
         <property name="dep.moxy"          value="${dep.grp}org.eclipse.persistence${dep.art}org.eclipse.persistence.moxy${dep.ver}${maven.version}${dep.type}jar${dep.scope}compile${dep.opt}false${dep.foot}"/>
         <property name="dep.sdo"           value="${dep.grp}org.eclipse.persistence${dep.art}org.eclipse.persistence.sdo${dep.ver}${maven.version}${dep.type}jar${dep.scope}compile${dep.opt}false${dep.foot}"/>
         <property name="dep.eclipselink"   value="${dep.grp}org.eclipse.persistence${dep.art}eclipselink${dep.ver}${maven.version}${dep.type}jar${dep.scope}compile${dep.opt}false${dep.foot}"/>
-        <property name="dep.persistence2"  value="${dep.grp}org.eclipse.persistence${dep.art}javax.persistence${dep.ver}2.0.0.v200911271158${dep.type}jar${dep.scope}compile${dep.opt}false${dep.foot}"/>
+        <property name="dep.persistence2"  value="${dep.grp}org.eclipse.persistence${dep.art}javax.persistence${dep.ver}2.0.0.v201002051058${dep.type}jar${dep.scope}compile${dep.opt}false${dep.foot}"/>
         <property name="dep.persistence"   value="${dep.grp}org.eclipse.persistence${dep.art}javax.persistence${dep.ver}1.0.0.${dep.type}jar${dep.scope}compile${dep.opt}false${dep.foot}"/>
 
         <!-- These define the dependency block for a given artifact -->
