@@ -33,7 +33,7 @@
          id="javax.activation"
          download-size="0"
          install-size="0"
-         version="1.1.0.v200806101325"
+         version="1.1.0.v200906290531"
          unpack="false"/>
 
    <plugin
@@ -47,7 +47,7 @@
          id="javax.persistence"
          download-size="0"
          install-size="0"
-         version="2.0.0.v200911271158"
+         version="2.0.0.v201002051058"
          unpack="false"/>
 
    <plugin
@@ -61,7 +61,7 @@
          id="javax.xml.stream"
          download-size="0"
          install-size="0"
-         version="1.0.1.v200903100845"
+         version="1.0.1.v201001131653"
          unpack="false"/>
 
    <plugin
