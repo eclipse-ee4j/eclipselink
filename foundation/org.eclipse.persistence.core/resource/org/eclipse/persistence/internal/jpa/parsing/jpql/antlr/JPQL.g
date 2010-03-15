@@ -1126,8 +1126,8 @@ substring returns [Object node]
     : s=SUBSTRING   
         LEFT_ROUND_BRACKET
         string = scalarExpression COMMA
-        start = simpleArithmeticExpression
-        (COMMA lengthNode = simpleArithmeticExpression)?
+        start = scalarExpression
+        (COMMA lengthNode = scalarExpression)?
         RIGHT_ROUND_BRACKET
         { 
             if (lengthNode != null){
@@ -1206,7 +1206,7 @@ locate returns [Object node]
     : l=LOCATE
         LEFT_ROUND_BRACKET 
         pattern = scalarExpression COMMA n = scalarExpression
-        ( COMMA startPos = simpleArithmeticExpression )?
+        ( COMMA startPos = scalarExpression )?
         RIGHT_ROUND_BRACKET
         { 
             $node = factory.newLocate($l.getLine(), $l.getCharPositionInLine(), 
@@ -1226,8 +1226,8 @@ mod returns [Object node]
     node = null; 
 }
     : m=MOD LEFT_ROUND_BRACKET
-        left = simpleArithmeticExpression COMMA 
-        right = simpleArithmeticExpression
+        left = scalarExpression COMMA 
+        right = scalarExpression
         RIGHT_ROUND_BRACKET
         { $node = factory.newMod($m.getLine(), $m.getCharPositionInLine(), $left.node, $right.node); }
     ;
@@ -1235,7 +1235,7 @@ mod returns [Object node]
 sqrt returns [Object node]
 @init { node = null; }
     : s=SQRT 
-        LEFT_ROUND_BRACKET n = simpleArithmeticExpression RIGHT_ROUND_BRACKET
+        LEFT_ROUND_BRACKET n = scalarExpression RIGHT_ROUND_BRACKET
         { $node = factory.newSqrt($s.getLine(), $s.getCharPositionInLine(), $n.node); }
     ;
     

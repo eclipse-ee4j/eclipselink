@@ -1,4 +1,4 @@
-// $ANTLR 3.0 C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g 2010-03-03 14:13:44
+// $ANTLR 3.0 JPQL.g 2010-03-15 11:19:19
 
     package org.eclipse.persistence.internal.jpa.parsing.jpql.antlr;
 
@@ -156,7 +156,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
         
 
     public String[] getTokenNames() { return tokenNames; }
-    public String getGrammarFileName() { return "C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g"; }
+    public String getGrammarFileName() { return "JPQL.g"; }
 
     
         /** The root node of the parsed EJBQL query. */
@@ -237,13 +237,13 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
     
     // $ANTLR start document
-    // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:198:1: document : (root= selectStatement | root= updateStatement | root= deleteStatement );
+    // JPQL.g:198:1: document : (root= selectStatement | root= updateStatement | root= deleteStatement );
     public final void document() throws RecognitionException {
         Object root = null;
         
     
         try {
-            // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:199:7: (root= selectStatement | root= updateStatement | root= deleteStatement )
+            // JPQL.g:199:7: (root= selectStatement | root= updateStatement | root= deleteStatement )
             int alt1=3;
             switch ( input.LA(1) ) {
             case SELECT:
@@ -271,7 +271,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
             
             switch (alt1) {
                 case 1 :
-                    // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:199:7: root= selectStatement
+                    // JPQL.g:199:7: root= selectStatement
                     {
                     pushFollow(FOLLOW_selectStatement_in_document754);
                     root=selectStatement();
@@ -284,7 +284,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
                     }
                     break;
                 case 2 :
-                    // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:200:7: root= updateStatement
+                    // JPQL.g:200:7: root= updateStatement
                     {
                     pushFollow(FOLLOW_updateStatement_in_document768);
                     root=updateStatement();
@@ -297,7 +297,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
                     }
                     break;
                 case 3 :
-                    // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:201:7: root= deleteStatement
+                    // JPQL.g:201:7: root= deleteStatement
                     {
                     pushFollow(FOLLOW_deleteStatement_in_document782);
                     root=deleteStatement();
@@ -324,7 +324,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
     
     // $ANTLR start selectStatement
-    // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:204:1: selectStatement returns [Object node] : select= selectClause from= fromClause (where= whereClause )? (groupBy= groupByClause )? (having= havingClause )? (orderBy= orderByClause )? EOF ;
+    // JPQL.g:204:1: selectStatement returns [Object node] : select= selectClause from= fromClause (where= whereClause )? (groupBy= groupByClause )? (having= havingClause )? (orderBy= orderByClause )? EOF ;
     public final Object selectStatement() throws RecognitionException {
 
         Object node = null;
@@ -346,8 +346,8 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
             node = null;
     
         try {
-            // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:208:7: (select= selectClause from= fromClause (where= whereClause )? (groupBy= groupByClause )? (having= havingClause )? (orderBy= orderByClause )? EOF )
-            // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:208:7: select= selectClause from= fromClause (where= whereClause )? (groupBy= groupByClause )? (having= havingClause )? (orderBy= orderByClause )? EOF
+            // JPQL.g:208:7: (select= selectClause from= fromClause (where= whereClause )? (groupBy= groupByClause )? (having= havingClause )? (orderBy= orderByClause )? EOF )
+            // JPQL.g:208:7: select= selectClause from= fromClause (where= whereClause )? (groupBy= groupByClause )? (having= havingClause )? (orderBy= orderByClause )? EOF
             {
             pushFollow(FOLLOW_selectClause_in_selectStatement815);
             select=selectClause();
@@ -357,7 +357,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
             from=fromClause();
             _fsp--;
             if (failed) return node;
-            // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:210:7: (where= whereClause )?
+            // JPQL.g:210:7: (where= whereClause )?
             int alt2=2;
             int LA2_0 = input.LA(1);
             
@@ -366,7 +366,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
             }
             switch (alt2) {
                 case 1 :
-                    // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:210:8: where= whereClause
+                    // JPQL.g:210:8: where= whereClause
                     {
                     pushFollow(FOLLOW_whereClause_in_selectStatement845);
                     where=whereClause();
@@ -378,7 +378,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
             
             }
 
-            // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:211:7: (groupBy= groupByClause )?
+            // JPQL.g:211:7: (groupBy= groupByClause )?
             int alt3=2;
             int LA3_0 = input.LA(1);
             
@@ -387,7 +387,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
             }
             switch (alt3) {
                 case 1 :
-                    // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:211:8: groupBy= groupByClause
+                    // JPQL.g:211:8: groupBy= groupByClause
                     {
                     pushFollow(FOLLOW_groupByClause_in_selectStatement860);
                     groupBy=groupByClause();
@@ -399,7 +399,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
             
             }
 
-            // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:212:7: (having= havingClause )?
+            // JPQL.g:212:7: (having= havingClause )?
             int alt4=2;
             int LA4_0 = input.LA(1);
             
@@ -408,7 +408,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
             }
             switch (alt4) {
                 case 1 :
-                    // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:212:8: having= havingClause
+                    // JPQL.g:212:8: having= havingClause
                     {
                     pushFollow(FOLLOW_havingClause_in_selectStatement876);
                     having=havingClause();
@@ -420,7 +420,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
             
             }
 
-            // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:213:7: (orderBy= orderByClause )?
+            // JPQL.g:213:7: (orderBy= orderByClause )?
             int alt5=2;
             int LA5_0 = input.LA(1);
             
@@ -429,7 +429,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
             }
             switch (alt5) {
                 case 1 :
-                    // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:213:8: orderBy= orderByClause
+                    // JPQL.g:213:8: orderBy= orderByClause
                     {
                     pushFollow(FOLLOW_orderByClause_in_selectStatement891);
                     orderBy=orderByClause();
@@ -464,7 +464,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
     
     // $ANTLR start updateStatement
-    // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:223:1: updateStatement returns [Object node] : update= updateClause set= setClause (where= whereClause )? EOF ;
+    // JPQL.g:223:1: updateStatement returns [Object node] : update= updateClause set= setClause (where= whereClause )? EOF ;
     public final Object updateStatement() throws RecognitionException {
 
         Object node = null;
@@ -480,8 +480,8 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
             node = null; 
     
         try {
-            // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:227:7: (update= updateClause set= setClause (where= whereClause )? EOF )
-            // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:227:7: update= updateClause set= setClause (where= whereClause )? EOF
+            // JPQL.g:227:7: (update= updateClause set= setClause (where= whereClause )? EOF )
+            // JPQL.g:227:7: update= updateClause set= setClause (where= whereClause )? EOF
             {
             pushFollow(FOLLOW_updateClause_in_updateStatement944);
             update=updateClause();
@@ -491,7 +491,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
             set=setClause();
             _fsp--;
             if (failed) return node;
-            // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:229:7: (where= whereClause )?
+            // JPQL.g:229:7: (where= whereClause )?
             int alt6=2;
             int LA6_0 = input.LA(1);
             
@@ -500,7 +500,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
             }
             switch (alt6) {
                 case 1 :
-                    // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:229:8: where= whereClause
+                    // JPQL.g:229:8: where= whereClause
                     {
                     pushFollow(FOLLOW_whereClause_in_updateStatement973);
                     where=whereClause();
@@ -532,7 +532,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
     
     // $ANTLR start updateClause
-    // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:233:1: updateClause returns [Object node] : u= UPDATE schema= abstractSchemaName ( ( AS )? ident= IDENT )? ;
+    // JPQL.g:233:1: updateClause returns [Object node] : u= UPDATE schema= abstractSchemaName ( ( AS )? ident= IDENT )? ;
     public final Object updateClause() throws RecognitionException {
 
         Object node = null;
@@ -546,8 +546,8 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
             node = null; 
     
         try {
-            // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:237:7: (u= UPDATE schema= abstractSchemaName ( ( AS )? ident= IDENT )? )
-            // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:237:7: u= UPDATE schema= abstractSchemaName ( ( AS )? ident= IDENT )?
+            // JPQL.g:237:7: (u= UPDATE schema= abstractSchemaName ( ( AS )? ident= IDENT )? )
+            // JPQL.g:237:7: u= UPDATE schema= abstractSchemaName ( ( AS )? ident= IDENT )?
             {
             u=(Token)input.LT(1);
             match(input,UPDATE,FOLLOW_UPDATE_in_updateClause1015); if (failed) return node;
@@ -555,7 +555,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
             schema=abstractSchemaName();
             _fsp--;
             if (failed) return node;
-            // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:238:9: ( ( AS )? ident= IDENT )?
+            // JPQL.g:238:9: ( ( AS )? ident= IDENT )?
             int alt8=2;
             int LA8_0 = input.LA(1);
             
@@ -564,9 +564,9 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
             }
             switch (alt8) {
                 case 1 :
-                    // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:238:10: ( AS )? ident= IDENT
+                    // JPQL.g:238:10: ( AS )? ident= IDENT
                     {
-                    // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:238:10: ( AS )?
+                    // JPQL.g:238:10: ( AS )?
                     int alt7=2;
                     int LA7_0 = input.LA(1);
                     
@@ -575,7 +575,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
                     }
                     switch (alt7) {
                         case 1 :
-                            // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:238:11: AS
+                            // JPQL.g:238:11: AS
                             {
                             match(input,AS,FOLLOW_AS_in_updateClause1034); if (failed) return node;
                             
@@ -623,7 +623,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
     
     
     // $ANTLR start setClause
-    // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:249:1: setClause returns [Object node] : t= SET n= setAssignmentClause ( COMMA n= setAssignmentClause )* ;
+    // JPQL.g:249:1: setClause returns [Object node] : t= SET n= setAssignmentClause ( COMMA n= setAssignmentClause )* ;
     public final Object setClause() throws RecognitionException {
         setClause_stack.push(new setClause_scope());
 
@@ -638,8 +638,8 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
             ((setClause_scope)setClause_stack.peek()).assignments = new ArrayList();
     
         try {
-            // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:257:7: (t= SET n= setAssignmentClause ( COMMA n= setAssignmentClause )* )
-            // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:257:7: t= SET n= setAssignmentClause ( COMMA n= setAssignmentClause )*
+            // JPQL.g:257:7: (t= SET n= setAssignmentClause ( COMMA n= setAssignmentClause )* )
+            // JPQL.g:257:7: t= SET n= setAssignmentClause ( COMMA n= setAssignmentClause )*
             {
             t=(Token)input.LT(1);
             match(input,SET,FOLLOW_SET_in_setClause1091); if (failed) return node;
@@ -650,7 +650,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
             if ( backtracking==0 ) {
                ((setClause_scope)setClause_stack.peek()).assignments.add(n); 
             }
-            // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:258:9: ( COMMA n= setAssignmentClause )*
+            // JPQL.g:258:9: ( COMMA n= setAssignmentClause )*
             loop9:
             do {
                 int alt9=2;
@@ -663,7 +663,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
             
                 switch (alt9) {
             	case 1 :
-            	    // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:258:10: COMMA n= setAssignmentClause
+            	    // JPQL.g:258:10: COMMA n= setAssignmentClause
             	    {
             	    match(input,COMMA,FOLLOW_COMMA_in_setClause1110); if (failed) return node;
             	    pushFollow(FOLLOW_setAssignmentClause_in_setClause1116);
@@ -702,7 +702,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
     
     // $ANTLR start setAssignmentClause
-    // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:262:1: setAssignmentClause returns [Object node] : target= setAssignmentTarget t= EQUALS value= newValue ;
+    // JPQL.g:262:1: setAssignmentClause returns [Object node] : target= setAssignmentTarget t= EQUALS value= newValue ;
     public final Object setAssignmentClause() throws RecognitionException {
 
         Object node = null;
@@ -717,8 +717,8 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
             node = null;
     
         try {
-            // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:270:7: (target= setAssignmentTarget t= EQUALS value= newValue )
-            // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:270:7: target= setAssignmentTarget t= EQUALS value= newValue
+            // JPQL.g:270:7: (target= setAssignmentTarget t= EQUALS value= newValue )
+            // JPQL.g:270:7: target= setAssignmentTarget t= EQUALS value= newValue
             {
             pushFollow(FOLLOW_setAssignmentTarget_in_setAssignmentClause1174);
             target=setAssignmentTarget();
@@ -752,7 +752,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
     
     // $ANTLR start setAssignmentTarget
-    // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:273:1: setAssignmentTarget returns [Object node] : (n= attribute | n= pathExpression );
+    // JPQL.g:273:1: setAssignmentTarget returns [Object node] : (n= attribute | n= pathExpression );
     public final Object setAssignmentTarget() throws RecognitionException {
 
         Object node = null;
@@ -764,7 +764,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
             node = null;
     
         try {
-            // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:277:7: (n= attribute | n= pathExpression )
+            // JPQL.g:277:7: (n= attribute | n= pathExpression )
             int alt10=2;
             switch ( input.LA(1) ) {
             case IDENT:
@@ -950,7 +950,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
             
             switch (alt10) {
                 case 1 :
-                    // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:277:7: n= attribute
+                    // JPQL.g:277:7: n= attribute
                     {
                     pushFollow(FOLLOW_attribute_in_setAssignmentTarget1214);
                     n=attribute();
@@ -963,7 +963,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
                     }
                     break;
                 case 2 :
-                    // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:278:7: n= pathExpression
+                    // JPQL.g:278:7: n= pathExpression
                     {
                     pushFollow(FOLLOW_pathExpression_in_setAssignmentTarget1229);
                     n=pathExpression();
@@ -990,7 +990,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
     
     // $ANTLR start newValue
-    // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:281:1: newValue returns [Object node] : (n= scalarExpression | n1= NULL );
+    // JPQL.g:281:1: newValue returns [Object node] : (n= scalarExpression | n1= NULL );
     public final Object newValue() throws RecognitionException {
 
         Object node = null;
@@ -1001,7 +1001,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
     
          node = null; 
         try {
-            // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:283:7: (n= scalarExpression | n1= NULL )
+            // JPQL.g:283:7: (n= scalarExpression | n1= NULL )
             int alt11=2;
             int LA11_0 = input.LA(1);
             
@@ -1020,7 +1020,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
             }
             switch (alt11) {
                 case 1 :
-                    // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:283:7: n= scalarExpression
+                    // JPQL.g:283:7: n= scalarExpression
                     {
                     pushFollow(FOLLOW_scalarExpression_in_newValue1261);
                     n=scalarExpression();
@@ -1033,7 +1033,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
                     }
                     break;
                 case 2 :
-                    // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:284:7: n1= NULL
+                    // JPQL.g:284:7: n1= NULL
                     {
                     n1=(Token)input.LT(1);
                     match(input,NULL,FOLLOW_NULL_in_newValue1275); if (failed) return node;
@@ -1058,7 +1058,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
     
     // $ANTLR start deleteStatement
-    // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:290:1: deleteStatement returns [Object node] : delete= deleteClause (where= whereClause )? EOF ;
+    // JPQL.g:290:1: deleteStatement returns [Object node] : delete= deleteClause (where= whereClause )? EOF ;
     public final Object deleteStatement() throws RecognitionException {
 
         Object node = null;
@@ -1072,14 +1072,14 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
             node = null; 
     
         try {
-            // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:294:7: (delete= deleteClause (where= whereClause )? EOF )
-            // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:294:7: delete= deleteClause (where= whereClause )? EOF
+            // JPQL.g:294:7: (delete= deleteClause (where= whereClause )? EOF )
+            // JPQL.g:294:7: delete= deleteClause (where= whereClause )? EOF
             {
             pushFollow(FOLLOW_deleteClause_in_deleteStatement1319);
             delete=deleteClause();
             _fsp--;
             if (failed) return node;
-            // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:295:7: (where= whereClause )?
+            // JPQL.g:295:7: (where= whereClause )?
             int alt12=2;
             int LA12_0 = input.LA(1);
             
@@ -1088,7 +1088,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
             }
             switch (alt12) {
                 case 1 :
-                    // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:295:8: where= whereClause
+                    // JPQL.g:295:8: where= whereClause
                     {
                     pushFollow(FOLLOW_whereClause_in_deleteStatement1332);
                     where=whereClause();
@@ -1125,7 +1125,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
     
     
     // $ANTLR start deleteClause
-    // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:299:1: deleteClause returns [Object node] : t= DELETE FROM schema= abstractSchemaName ( ( AS )? ident= IDENT )? ;
+    // JPQL.g:299:1: deleteClause returns [Object node] : t= DELETE FROM schema= abstractSchemaName ( ( AS )? ident= IDENT )? ;
     public final Object deleteClause() throws RecognitionException {
         deleteClause_stack.push(new deleteClause_scope());
 
@@ -1141,8 +1141,8 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
             ((deleteClause_scope)deleteClause_stack.peek()).variable = null;
     
         try {
-            // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:307:7: (t= DELETE FROM schema= abstractSchemaName ( ( AS )? ident= IDENT )? )
-            // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:307:7: t= DELETE FROM schema= abstractSchemaName ( ( AS )? ident= IDENT )?
+            // JPQL.g:307:7: (t= DELETE FROM schema= abstractSchemaName ( ( AS )? ident= IDENT )? )
+            // JPQL.g:307:7: t= DELETE FROM schema= abstractSchemaName ( ( AS )? ident= IDENT )?
             {
             t=(Token)input.LT(1);
             match(input,DELETE,FOLLOW_DELETE_in_deleteClause1375); if (failed) return node;
@@ -1151,7 +1151,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
             schema=abstractSchemaName();
             _fsp--;
             if (failed) return node;
-            // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:308:9: ( ( AS )? ident= IDENT )?
+            // JPQL.g:308:9: ( ( AS )? ident= IDENT )?
             int alt14=2;
             int LA14_0 = input.LA(1);
             
@@ -1160,9 +1160,9 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
             }
             switch (alt14) {
                 case 1 :
-                    // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:308:10: ( AS )? ident= IDENT
+                    // JPQL.g:308:10: ( AS )? ident= IDENT
                     {
-                    // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:308:10: ( AS )?
+                    // JPQL.g:308:10: ( AS )?
                     int alt13=2;
                     int LA13_0 = input.LA(1);
                     
@@ -1171,7 +1171,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
                     }
                     switch (alt13) {
                         case 1 :
-                            // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:308:11: AS
+                            // JPQL.g:308:11: AS
                             {
                             match(input,AS,FOLLOW_AS_in_deleteClause1396); if (failed) return node;
                             
@@ -1221,7 +1221,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
     
     
     // $ANTLR start selectClause
-    // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:317:1: selectClause returns [Object node] : t= SELECT ( DISTINCT )? n= selectItem ( COMMA n= selectItem )* ;
+    // JPQL.g:317:1: selectClause returns [Object node] : t= SELECT ( DISTINCT )? n= selectItem ( COMMA n= selectItem )* ;
     public final Object selectClause() throws RecognitionException {
         selectClause_stack.push(new selectClause_scope());
 
@@ -1238,12 +1238,12 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
             ((selectClause_scope)selectClause_stack.peek()).idents = new ArrayList();
     
         try {
-            // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:329:7: (t= SELECT ( DISTINCT )? n= selectItem ( COMMA n= selectItem )* )
-            // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:329:7: t= SELECT ( DISTINCT )? n= selectItem ( COMMA n= selectItem )*
+            // JPQL.g:329:7: (t= SELECT ( DISTINCT )? n= selectItem ( COMMA n= selectItem )* )
+            // JPQL.g:329:7: t= SELECT ( DISTINCT )? n= selectItem ( COMMA n= selectItem )*
             {
             t=(Token)input.LT(1);
             match(input,SELECT,FOLLOW_SELECT_in_selectClause1449); if (failed) return node;
-            // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:329:16: ( DISTINCT )?
+            // JPQL.g:329:16: ( DISTINCT )?
             int alt15=2;
             int LA15_0 = input.LA(1);
             
@@ -1252,7 +1252,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
             }
             switch (alt15) {
                 case 1 :
-                    // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:329:17: DISTINCT
+                    // JPQL.g:329:17: DISTINCT
                     {
                     match(input,DISTINCT,FOLLOW_DISTINCT_in_selectClause1452); if (failed) return node;
                     if ( backtracking==0 ) {
@@ -1274,7 +1274,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
                             ((selectClause_scope)selectClause_stack.peek()).idents.add(n.ident);
                         
             }
-            // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:335:11: ( COMMA n= selectItem )*
+            // JPQL.g:335:11: ( COMMA n= selectItem )*
             loop16:
             do {
                 int alt16=2;
@@ -1287,7 +1287,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
             
                 switch (alt16) {
             	case 1 :
-            	    // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:335:13: COMMA n= selectItem
+            	    // JPQL.g:335:13: COMMA n= selectItem
             	    {
             	    match(input,COMMA,FOLLOW_COMMA_in_selectClause1496); if (failed) return node;
             	    pushFollow(FOLLOW_selectItem_in_selectClause1502);
@@ -1336,7 +1336,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
     };
     
     // $ANTLR start selectItem
-    // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:348:1: selectItem returns [Object expr, Object ident] : e= selectExpression ( ( AS )? identifier= IDENT )? ;
+    // JPQL.g:348:1: selectItem returns [Object expr, Object ident] : e= selectExpression ( ( AS )? identifier= IDENT )? ;
     public final selectItem_return selectItem() throws RecognitionException {
         selectItem_return retval = new selectItem_return();
         retval.start = input.LT(1);
@@ -1346,14 +1346,14 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
         
     
         try {
-            // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:349:7: (e= selectExpression ( ( AS )? identifier= IDENT )? )
-            // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:349:7: e= selectExpression ( ( AS )? identifier= IDENT )?
+            // JPQL.g:349:7: (e= selectExpression ( ( AS )? identifier= IDENT )? )
+            // JPQL.g:349:7: e= selectExpression ( ( AS )? identifier= IDENT )?
             {
             pushFollow(FOLLOW_selectExpression_in_selectItem1598);
             e=selectExpression();
             _fsp--;
             if (failed) return retval;
-            // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:349:28: ( ( AS )? identifier= IDENT )?
+            // JPQL.g:349:28: ( ( AS )? identifier= IDENT )?
             int alt18=2;
             int LA18_0 = input.LA(1);
             
@@ -1362,9 +1362,9 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
             }
             switch (alt18) {
                 case 1 :
-                    // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:349:29: ( AS )? identifier= IDENT
+                    // JPQL.g:349:29: ( AS )? identifier= IDENT
                     {
-                    // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:349:29: ( AS )?
+                    // JPQL.g:349:29: ( AS )?
                     int alt17=2;
                     int LA17_0 = input.LA(1);
                     
@@ -1373,7 +1373,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
                     }
                     switch (alt17) {
                         case 1 :
-                            // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:349:30: AS
+                            // JPQL.g:349:30: AS
                             {
                             match(input,AS,FOLLOW_AS_in_selectItem1602); if (failed) return retval;
                             
@@ -1419,7 +1419,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
     
     // $ANTLR start selectExpression
-    // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:362:1: selectExpression returns [Object node] : (n= aggregateExpression | n= scalarExpression | OBJECT LEFT_ROUND_BRACKET n= variableAccessOrTypeConstant RIGHT_ROUND_BRACKET | n= constructorExpression | n= mapEntryExpression );
+    // JPQL.g:362:1: selectExpression returns [Object node] : (n= aggregateExpression | n= scalarExpression | OBJECT LEFT_ROUND_BRACKET n= variableAccessOrTypeConstant RIGHT_ROUND_BRACKET | n= constructorExpression | n= mapEntryExpression );
     public final Object selectExpression() throws RecognitionException {
 
         Object node = null;
@@ -1429,7 +1429,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
     
          node = null; 
         try {
-            // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:364:7: (n= aggregateExpression | n= scalarExpression | OBJECT LEFT_ROUND_BRACKET n= variableAccessOrTypeConstant RIGHT_ROUND_BRACKET | n= constructorExpression | n= mapEntryExpression )
+            // JPQL.g:364:7: (n= aggregateExpression | n= scalarExpression | OBJECT LEFT_ROUND_BRACKET n= variableAccessOrTypeConstant RIGHT_ROUND_BRACKET | n= constructorExpression | n= mapEntryExpression )
             int alt19=5;
             switch ( input.LA(1) ) {
             case AVG:
@@ -2000,7 +2000,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
             
             switch (alt19) {
                 case 1 :
-                    // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:364:7: n= aggregateExpression
+                    // JPQL.g:364:7: n= aggregateExpression
                     {
                     pushFollow(FOLLOW_aggregateExpression_in_selectExpression1654);
                     n=aggregateExpression();
@@ -2013,7 +2013,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
                     }
                     break;
                 case 2 :
-                    // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:365:7: n= scalarExpression
+                    // JPQL.g:365:7: n= scalarExpression
                     {
                     pushFollow(FOLLOW_scalarExpression_in_selectExpression1668);
                     n=scalarExpression();
@@ -2026,7 +2026,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
                     }
                     break;
                 case 3 :
-                    // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:366:7: OBJECT LEFT_ROUND_BRACKET n= variableAccessOrTypeConstant RIGHT_ROUND_BRACKET
+                    // JPQL.g:366:7: OBJECT LEFT_ROUND_BRACKET n= variableAccessOrTypeConstant RIGHT_ROUND_BRACKET
                     {
                     match(input,OBJECT,FOLLOW_OBJECT_in_selectExpression1678); if (failed) return node;
                     match(input,LEFT_ROUND_BRACKET,FOLLOW_LEFT_ROUND_BRACKET_in_selectExpression1680); if (failed) return node;
@@ -2042,7 +2042,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
                     }
                     break;
                 case 4 :
-                    // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:367:7: n= constructorExpression
+                    // JPQL.g:367:7: n= constructorExpression
                     {
                     pushFollow(FOLLOW_constructorExpression_in_selectExpression1703);
                     n=constructorExpression();
@@ -2055,7 +2055,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
                     }
                     break;
                 case 5 :
-                    // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:368:7: n= mapEntryExpression
+                    // JPQL.g:368:7: n= mapEntryExpression
                     {
                     pushFollow(FOLLOW_mapEntryExpression_in_selectExpression1718);
                     n=mapEntryExpression();
@@ -2082,7 +2082,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
     
     // $ANTLR start mapEntryExpression
-    // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:371:1: mapEntryExpression returns [Object node] : l= ENTRY LEFT_ROUND_BRACKET n= variableAccessOrTypeConstant RIGHT_ROUND_BRACKET ;
+    // JPQL.g:371:1: mapEntryExpression returns [Object node] : l= ENTRY LEFT_ROUND_BRACKET n= variableAccessOrTypeConstant RIGHT_ROUND_BRACKET ;
     public final Object mapEntryExpression() throws RecognitionException {
 
         Object node = null;
@@ -2093,8 +2093,8 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
     
          node = null; 
         try {
-            // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:373:7: (l= ENTRY LEFT_ROUND_BRACKET n= variableAccessOrTypeConstant RIGHT_ROUND_BRACKET )
-            // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:373:7: l= ENTRY LEFT_ROUND_BRACKET n= variableAccessOrTypeConstant RIGHT_ROUND_BRACKET
+            // JPQL.g:373:7: (l= ENTRY LEFT_ROUND_BRACKET n= variableAccessOrTypeConstant RIGHT_ROUND_BRACKET )
+            // JPQL.g:373:7: l= ENTRY LEFT_ROUND_BRACKET n= variableAccessOrTypeConstant RIGHT_ROUND_BRACKET
             {
             l=(Token)input.LT(1);
             match(input,ENTRY,FOLLOW_ENTRY_in_mapEntryExpression1750); if (failed) return node;
@@ -2123,7 +2123,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
     
     // $ANTLR start pathExprOrVariableAccess
-    // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:376:1: pathExprOrVariableAccess returns [Object node] : n= qualifiedIdentificationVariable (d= DOT right= attribute )* ;
+    // JPQL.g:376:1: pathExprOrVariableAccess returns [Object node] : n= qualifiedIdentificationVariable (d= DOT right= attribute )* ;
     public final Object pathExprOrVariableAccess() throws RecognitionException {
 
         Object node = null;
@@ -2138,8 +2138,8 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
             node = null;
     
         try {
-            // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:380:7: (n= qualifiedIdentificationVariable (d= DOT right= attribute )* )
-            // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:380:7: n= qualifiedIdentificationVariable (d= DOT right= attribute )*
+            // JPQL.g:380:7: (n= qualifiedIdentificationVariable (d= DOT right= attribute )* )
+            // JPQL.g:380:7: n= qualifiedIdentificationVariable (d= DOT right= attribute )*
             {
             pushFollow(FOLLOW_qualifiedIdentificationVariable_in_pathExprOrVariableAccess1792);
             n=qualifiedIdentificationVariable();
@@ -2148,7 +2148,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
             if ( backtracking==0 ) {
               node = n;
             }
-            // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:381:9: (d= DOT right= attribute )*
+            // JPQL.g:381:9: (d= DOT right= attribute )*
             loop20:
             do {
                 int alt20=2;
@@ -2161,7 +2161,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
             
                 switch (alt20) {
             	case 1 :
-            	    // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:381:10: d= DOT right= attribute
+            	    // JPQL.g:381:10: d= DOT right= attribute
             	    {
             	    d=(Token)input.LT(1);
             	    match(input,DOT,FOLLOW_DOT_in_pathExprOrVariableAccess1807); if (failed) return node;
@@ -2197,7 +2197,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
     
     // $ANTLR start qualifiedIdentificationVariable
-    // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:386:1: qualifiedIdentificationVariable returns [Object node] : (n= variableAccessOrTypeConstant | l= KEY LEFT_ROUND_BRACKET n= variableAccessOrTypeConstant RIGHT_ROUND_BRACKET | l= VALUE LEFT_ROUND_BRACKET n= variableAccessOrTypeConstant RIGHT_ROUND_BRACKET );
+    // JPQL.g:386:1: qualifiedIdentificationVariable returns [Object node] : (n= variableAccessOrTypeConstant | l= KEY LEFT_ROUND_BRACKET n= variableAccessOrTypeConstant RIGHT_ROUND_BRACKET | l= VALUE LEFT_ROUND_BRACKET n= variableAccessOrTypeConstant RIGHT_ROUND_BRACKET );
     public final Object qualifiedIdentificationVariable() throws RecognitionException {
 
         Object node = null;
@@ -2208,7 +2208,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
     
          node = null; 
         try {
-            // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:388:7: (n= variableAccessOrTypeConstant | l= KEY LEFT_ROUND_BRACKET n= variableAccessOrTypeConstant RIGHT_ROUND_BRACKET | l= VALUE LEFT_ROUND_BRACKET n= variableAccessOrTypeConstant RIGHT_ROUND_BRACKET )
+            // JPQL.g:388:7: (n= variableAccessOrTypeConstant | l= KEY LEFT_ROUND_BRACKET n= variableAccessOrTypeConstant RIGHT_ROUND_BRACKET | l= VALUE LEFT_ROUND_BRACKET n= variableAccessOrTypeConstant RIGHT_ROUND_BRACKET )
             int alt21=3;
             switch ( input.LA(1) ) {
             case IDENT:
@@ -2236,7 +2236,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
             
             switch (alt21) {
                 case 1 :
-                    // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:388:7: n= variableAccessOrTypeConstant
+                    // JPQL.g:388:7: n= variableAccessOrTypeConstant
                     {
                     pushFollow(FOLLOW_variableAccessOrTypeConstant_in_qualifiedIdentificationVariable1869);
                     n=variableAccessOrTypeConstant();
@@ -2249,7 +2249,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
                     }
                     break;
                 case 2 :
-                    // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:389:7: l= KEY LEFT_ROUND_BRACKET n= variableAccessOrTypeConstant RIGHT_ROUND_BRACKET
+                    // JPQL.g:389:7: l= KEY LEFT_ROUND_BRACKET n= variableAccessOrTypeConstant RIGHT_ROUND_BRACKET
                     {
                     l=(Token)input.LT(1);
                     match(input,KEY,FOLLOW_KEY_in_qualifiedIdentificationVariable1883); if (failed) return node;
@@ -2266,7 +2266,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
                     }
                     break;
                 case 3 :
-                    // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:390:7: l= VALUE LEFT_ROUND_BRACKET n= variableAccessOrTypeConstant RIGHT_ROUND_BRACKET
+                    // JPQL.g:390:7: l= VALUE LEFT_ROUND_BRACKET n= variableAccessOrTypeConstant RIGHT_ROUND_BRACKET
                     {
                     l=(Token)input.LT(1);
                     match(input,VALUE,FOLLOW_VALUE_in_qualifiedIdentificationVariable1908); if (failed) return node;
@@ -2302,7 +2302,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
     
     
     // $ANTLR start aggregateExpression
-    // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:393:1: aggregateExpression returns [Object node] : (t1= AVG LEFT_ROUND_BRACKET ( DISTINCT )? n= stateFieldPathExpression RIGHT_ROUND_BRACKET | t2= MAX LEFT_ROUND_BRACKET ( DISTINCT )? n= stateFieldPathExpression RIGHT_ROUND_BRACKET | t3= MIN LEFT_ROUND_BRACKET ( DISTINCT )? n= stateFieldPathExpression RIGHT_ROUND_BRACKET | t4= SUM LEFT_ROUND_BRACKET ( DISTINCT )? n= stateFieldPathExpression RIGHT_ROUND_BRACKET | t5= COUNT LEFT_ROUND_BRACKET ( DISTINCT )? n= pathExprOrVariableAccess RIGHT_ROUND_BRACKET );
+    // JPQL.g:393:1: aggregateExpression returns [Object node] : (t1= AVG LEFT_ROUND_BRACKET ( DISTINCT )? n= stateFieldPathExpression RIGHT_ROUND_BRACKET | t2= MAX LEFT_ROUND_BRACKET ( DISTINCT )? n= stateFieldPathExpression RIGHT_ROUND_BRACKET | t3= MIN LEFT_ROUND_BRACKET ( DISTINCT )? n= stateFieldPathExpression RIGHT_ROUND_BRACKET | t4= SUM LEFT_ROUND_BRACKET ( DISTINCT )? n= stateFieldPathExpression RIGHT_ROUND_BRACKET | t5= COUNT LEFT_ROUND_BRACKET ( DISTINCT )? n= pathExprOrVariableAccess RIGHT_ROUND_BRACKET );
     public final Object aggregateExpression() throws RecognitionException {
         aggregateExpression_stack.push(new aggregateExpression_scope());
 
@@ -2321,7 +2321,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
             ((aggregateExpression_scope)aggregateExpression_stack.peek()).distinct = false;
     
         try {
-            // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:401:7: (t1= AVG LEFT_ROUND_BRACKET ( DISTINCT )? n= stateFieldPathExpression RIGHT_ROUND_BRACKET | t2= MAX LEFT_ROUND_BRACKET ( DISTINCT )? n= stateFieldPathExpression RIGHT_ROUND_BRACKET | t3= MIN LEFT_ROUND_BRACKET ( DISTINCT )? n= stateFieldPathExpression RIGHT_ROUND_BRACKET | t4= SUM LEFT_ROUND_BRACKET ( DISTINCT )? n= stateFieldPathExpression RIGHT_ROUND_BRACKET | t5= COUNT LEFT_ROUND_BRACKET ( DISTINCT )? n= pathExprOrVariableAccess RIGHT_ROUND_BRACKET )
+            // JPQL.g:401:7: (t1= AVG LEFT_ROUND_BRACKET ( DISTINCT )? n= stateFieldPathExpression RIGHT_ROUND_BRACKET | t2= MAX LEFT_ROUND_BRACKET ( DISTINCT )? n= stateFieldPathExpression RIGHT_ROUND_BRACKET | t3= MIN LEFT_ROUND_BRACKET ( DISTINCT )? n= stateFieldPathExpression RIGHT_ROUND_BRACKET | t4= SUM LEFT_ROUND_BRACKET ( DISTINCT )? n= stateFieldPathExpression RIGHT_ROUND_BRACKET | t5= COUNT LEFT_ROUND_BRACKET ( DISTINCT )? n= pathExprOrVariableAccess RIGHT_ROUND_BRACKET )
             int alt27=5;
             switch ( input.LA(1) ) {
             case AVG:
@@ -2359,12 +2359,12 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
             
             switch (alt27) {
                 case 1 :
-                    // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:401:7: t1= AVG LEFT_ROUND_BRACKET ( DISTINCT )? n= stateFieldPathExpression RIGHT_ROUND_BRACKET
+                    // JPQL.g:401:7: t1= AVG LEFT_ROUND_BRACKET ( DISTINCT )? n= stateFieldPathExpression RIGHT_ROUND_BRACKET
                     {
                     t1=(Token)input.LT(1);
                     match(input,AVG,FOLLOW_AVG_in_aggregateExpression1951); if (failed) return node;
                     match(input,LEFT_ROUND_BRACKET,FOLLOW_LEFT_ROUND_BRACKET_in_aggregateExpression1953); if (failed) return node;
-                    // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:401:33: ( DISTINCT )?
+                    // JPQL.g:401:33: ( DISTINCT )?
                     int alt22=2;
                     int LA22_0 = input.LA(1);
                     
@@ -2373,7 +2373,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
                     }
                     switch (alt22) {
                         case 1 :
-                            // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:401:34: DISTINCT
+                            // JPQL.g:401:34: DISTINCT
                             {
                             match(input,DISTINCT,FOLLOW_DISTINCT_in_aggregateExpression1956); if (failed) return node;
                             if ( backtracking==0 ) {
@@ -2397,12 +2397,12 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
                     }
                     break;
                 case 2 :
-                    // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:404:7: t2= MAX LEFT_ROUND_BRACKET ( DISTINCT )? n= stateFieldPathExpression RIGHT_ROUND_BRACKET
+                    // JPQL.g:404:7: t2= MAX LEFT_ROUND_BRACKET ( DISTINCT )? n= stateFieldPathExpression RIGHT_ROUND_BRACKET
                     {
                     t2=(Token)input.LT(1);
                     match(input,MAX,FOLLOW_MAX_in_aggregateExpression1997); if (failed) return node;
                     match(input,LEFT_ROUND_BRACKET,FOLLOW_LEFT_ROUND_BRACKET_in_aggregateExpression1999); if (failed) return node;
-                    // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:404:33: ( DISTINCT )?
+                    // JPQL.g:404:33: ( DISTINCT )?
                     int alt23=2;
                     int LA23_0 = input.LA(1);
                     
@@ -2411,7 +2411,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
                     }
                     switch (alt23) {
                         case 1 :
-                            // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:404:34: DISTINCT
+                            // JPQL.g:404:34: DISTINCT
                             {
                             match(input,DISTINCT,FOLLOW_DISTINCT_in_aggregateExpression2002); if (failed) return node;
                             if ( backtracking==0 ) {
@@ -2435,12 +2435,12 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
                     }
                     break;
                 case 3 :
-                    // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:407:7: t3= MIN LEFT_ROUND_BRACKET ( DISTINCT )? n= stateFieldPathExpression RIGHT_ROUND_BRACKET
+                    // JPQL.g:407:7: t3= MIN LEFT_ROUND_BRACKET ( DISTINCT )? n= stateFieldPathExpression RIGHT_ROUND_BRACKET
                     {
                     t3=(Token)input.LT(1);
                     match(input,MIN,FOLLOW_MIN_in_aggregateExpression2043); if (failed) return node;
                     match(input,LEFT_ROUND_BRACKET,FOLLOW_LEFT_ROUND_BRACKET_in_aggregateExpression2045); if (failed) return node;
-                    // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:407:33: ( DISTINCT )?
+                    // JPQL.g:407:33: ( DISTINCT )?
                     int alt24=2;
                     int LA24_0 = input.LA(1);
                     
@@ -2449,7 +2449,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
                     }
                     switch (alt24) {
                         case 1 :
-                            // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:407:34: DISTINCT
+                            // JPQL.g:407:34: DISTINCT
                             {
                             match(input,DISTINCT,FOLLOW_DISTINCT_in_aggregateExpression2048); if (failed) return node;
                             if ( backtracking==0 ) {
@@ -2473,12 +2473,12 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
                     }
                     break;
                 case 4 :
-                    // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:410:7: t4= SUM LEFT_ROUND_BRACKET ( DISTINCT )? n= stateFieldPathExpression RIGHT_ROUND_BRACKET
+                    // JPQL.g:410:7: t4= SUM LEFT_ROUND_BRACKET ( DISTINCT )? n= stateFieldPathExpression RIGHT_ROUND_BRACKET
                     {
                     t4=(Token)input.LT(1);
                     match(input,SUM,FOLLOW_SUM_in_aggregateExpression2088); if (failed) return node;
                     match(input,LEFT_ROUND_BRACKET,FOLLOW_LEFT_ROUND_BRACKET_in_aggregateExpression2090); if (failed) return node;
-                    // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:410:33: ( DISTINCT )?
+                    // JPQL.g:410:33: ( DISTINCT )?
                     int alt25=2;
                     int LA25_0 = input.LA(1);
                     
@@ -2487,7 +2487,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
                     }
                     switch (alt25) {
                         case 1 :
-                            // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:410:34: DISTINCT
+                            // JPQL.g:410:34: DISTINCT
                             {
                             match(input,DISTINCT,FOLLOW_DISTINCT_in_aggregateExpression2093); if (failed) return node;
                             if ( backtracking==0 ) {
@@ -2511,12 +2511,12 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
                     }
                     break;
                 case 5 :
-                    // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:413:7: t5= COUNT LEFT_ROUND_BRACKET ( DISTINCT )? n= pathExprOrVariableAccess RIGHT_ROUND_BRACKET
+                    // JPQL.g:413:7: t5= COUNT LEFT_ROUND_BRACKET ( DISTINCT )? n= pathExprOrVariableAccess RIGHT_ROUND_BRACKET
                     {
                     t5=(Token)input.LT(1);
                     match(input,COUNT,FOLLOW_COUNT_in_aggregateExpression2133); if (failed) return node;
                     match(input,LEFT_ROUND_BRACKET,FOLLOW_LEFT_ROUND_BRACKET_in_aggregateExpression2135); if (failed) return node;
-                    // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:413:35: ( DISTINCT )?
+                    // JPQL.g:413:35: ( DISTINCT )?
                     int alt26=2;
                     int LA26_0 = input.LA(1);
                     
@@ -2525,7 +2525,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
                     }
                     switch (alt26) {
                         case 1 :
-                            // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:413:36: DISTINCT
+                            // JPQL.g:413:36: DISTINCT
                             {
                             match(input,DISTINCT,FOLLOW_DISTINCT_in_aggregateExpression2138); if (failed) return node;
                             if ( backtracking==0 ) {
@@ -2569,7 +2569,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
     
     
     // $ANTLR start constructorExpression
-    // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:418:1: constructorExpression returns [Object node] : t= NEW className= constructorName LEFT_ROUND_BRACKET n= constructorItem ( COMMA n= constructorItem )* RIGHT_ROUND_BRACKET ;
+    // JPQL.g:418:1: constructorExpression returns [Object node] : t= NEW className= constructorName LEFT_ROUND_BRACKET n= constructorItem ( COMMA n= constructorItem )* RIGHT_ROUND_BRACKET ;
     public final Object constructorExpression() throws RecognitionException {
         constructorExpression_stack.push(new constructorExpression_scope());
 
@@ -2586,8 +2586,8 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
             ((constructorExpression_scope)constructorExpression_stack.peek()).args = new ArrayList();
     
         try {
-            // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:426:7: (t= NEW className= constructorName LEFT_ROUND_BRACKET n= constructorItem ( COMMA n= constructorItem )* RIGHT_ROUND_BRACKET )
-            // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:426:7: t= NEW className= constructorName LEFT_ROUND_BRACKET n= constructorItem ( COMMA n= constructorItem )* RIGHT_ROUND_BRACKET
+            // JPQL.g:426:7: (t= NEW className= constructorName LEFT_ROUND_BRACKET n= constructorItem ( COMMA n= constructorItem )* RIGHT_ROUND_BRACKET )
+            // JPQL.g:426:7: t= NEW className= constructorName LEFT_ROUND_BRACKET n= constructorItem ( COMMA n= constructorItem )* RIGHT_ROUND_BRACKET
             {
             t=(Token)input.LT(1);
             match(input,NEW,FOLLOW_NEW_in_constructorExpression2201); if (failed) return node;
@@ -2603,7 +2603,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
             if ( backtracking==0 ) {
               ((constructorExpression_scope)constructorExpression_stack.peek()).args.add(n); 
             }
-            // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:429:9: ( COMMA n= constructorItem )*
+            // JPQL.g:429:9: ( COMMA n= constructorItem )*
             loop28:
             do {
                 int alt28=2;
@@ -2616,7 +2616,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
             
                 switch (alt28) {
             	case 1 :
-            	    // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:429:11: COMMA n= constructorItem
+            	    // JPQL.g:429:11: COMMA n= constructorItem
             	    {
             	    match(input,COMMA,FOLLOW_COMMA_in_constructorExpression2247); if (failed) return node;
             	    pushFollow(FOLLOW_constructorItem_in_constructorExpression2253);
@@ -2664,7 +2664,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
     
     
     // $ANTLR start constructorName
-    // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:437:1: constructorName returns [String className] : i1= IDENT ( DOT i2= IDENT )* ;
+    // JPQL.g:437:1: constructorName returns [String className] : i1= IDENT ( DOT i2= IDENT )* ;
     public final String constructorName() throws RecognitionException {
         constructorName_stack.push(new constructorName_scope());
 
@@ -2678,15 +2678,15 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
             ((constructorName_scope)constructorName_stack.peek()).buf = new StringBuffer(); 
     
         try {
-            // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:445:7: (i1= IDENT ( DOT i2= IDENT )* )
-            // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:445:7: i1= IDENT ( DOT i2= IDENT )*
+            // JPQL.g:445:7: (i1= IDENT ( DOT i2= IDENT )* )
+            // JPQL.g:445:7: i1= IDENT ( DOT i2= IDENT )*
             {
             i1=(Token)input.LT(1);
             match(input,IDENT,FOLLOW_IDENT_in_constructorName2309); if (failed) return className;
             if ( backtracking==0 ) {
                ((constructorName_scope)constructorName_stack.peek()).buf.append(i1.getText()); 
             }
-            // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:446:9: ( DOT i2= IDENT )*
+            // JPQL.g:446:9: ( DOT i2= IDENT )*
             loop29:
             do {
                 int alt29=2;
@@ -2699,7 +2699,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
             
                 switch (alt29) {
             	case 1 :
-            	    // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:446:11: DOT i2= IDENT
+            	    // JPQL.g:446:11: DOT i2= IDENT
             	    {
             	    match(input,DOT,FOLLOW_DOT_in_constructorName2323); if (failed) return className;
             	    i2=(Token)input.LT(1);
@@ -2736,7 +2736,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
     
     // $ANTLR start constructorItem
-    // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:450:1: constructorItem returns [Object node] : (n= scalarExpression | n= aggregateExpression );
+    // JPQL.g:450:1: constructorItem returns [Object node] : (n= scalarExpression | n= aggregateExpression );
     public final Object constructorItem() throws RecognitionException {
 
         Object node = null;
@@ -2746,7 +2746,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
     
          node = null; 
         try {
-            // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:452:7: (n= scalarExpression | n= aggregateExpression )
+            // JPQL.g:452:7: (n= scalarExpression | n= aggregateExpression )
             int alt30=2;
             switch ( input.LA(1) ) {
             case ABS:
@@ -3302,7 +3302,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
             
             switch (alt30) {
                 case 1 :
-                    // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:452:7: n= scalarExpression
+                    // JPQL.g:452:7: n= scalarExpression
                     {
                     pushFollow(FOLLOW_scalarExpression_in_constructorItem2371);
                     n=scalarExpression();
@@ -3315,7 +3315,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
                     }
                     break;
                 case 2 :
-                    // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:453:7: n= aggregateExpression
+                    // JPQL.g:453:7: n= aggregateExpression
                     {
                     pushFollow(FOLLOW_aggregateExpression_in_constructorItem2385);
                     n=aggregateExpression();
@@ -3347,7 +3347,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
     
     
     // $ANTLR start fromClause
-    // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:457:1: fromClause returns [Object node] : t= FROM identificationVariableDeclaration[$fromClause::varDecls] ( COMMA ( identificationVariableDeclaration[$fromClause::varDecls] | n= collectionMemberDeclaration ) )* ;
+    // JPQL.g:457:1: fromClause returns [Object node] : t= FROM identificationVariableDeclaration[$fromClause::varDecls] ( COMMA ( identificationVariableDeclaration[$fromClause::varDecls] | n= collectionMemberDeclaration ) )* ;
     public final Object fromClause() throws RecognitionException {
         fromClause_stack.push(new fromClause_scope());
 
@@ -3362,8 +3362,8 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
             ((fromClause_scope)fromClause_stack.peek()).varDecls = new ArrayList();
     
         try {
-            // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:465:7: (t= FROM identificationVariableDeclaration[$fromClause::varDecls] ( COMMA ( identificationVariableDeclaration[$fromClause::varDecls] | n= collectionMemberDeclaration ) )* )
-            // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:465:7: t= FROM identificationVariableDeclaration[$fromClause::varDecls] ( COMMA ( identificationVariableDeclaration[$fromClause::varDecls] | n= collectionMemberDeclaration ) )*
+            // JPQL.g:465:7: (t= FROM identificationVariableDeclaration[$fromClause::varDecls] ( COMMA ( identificationVariableDeclaration[$fromClause::varDecls] | n= collectionMemberDeclaration ) )* )
+            // JPQL.g:465:7: t= FROM identificationVariableDeclaration[$fromClause::varDecls] ( COMMA ( identificationVariableDeclaration[$fromClause::varDecls] | n= collectionMemberDeclaration ) )*
             {
             t=(Token)input.LT(1);
             match(input,FROM,FOLLOW_FROM_in_fromClause2419); if (failed) return node;
@@ -3371,7 +3371,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
             identificationVariableDeclaration(((fromClause_scope)fromClause_stack.peek()).varDecls);
             _fsp--;
             if (failed) return node;
-            // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:466:9: ( COMMA ( identificationVariableDeclaration[$fromClause::varDecls] | n= collectionMemberDeclaration ) )*
+            // JPQL.g:466:9: ( COMMA ( identificationVariableDeclaration[$fromClause::varDecls] | n= collectionMemberDeclaration ) )*
             loop32:
             do {
                 int alt32=2;
@@ -3384,10 +3384,10 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
             
                 switch (alt32) {
             	case 1 :
-            	    // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:466:10: COMMA ( identificationVariableDeclaration[$fromClause::varDecls] | n= collectionMemberDeclaration )
+            	    // JPQL.g:466:10: COMMA ( identificationVariableDeclaration[$fromClause::varDecls] | n= collectionMemberDeclaration )
             	    {
             	    match(input,COMMA,FOLLOW_COMMA_in_fromClause2433); if (failed) return node;
-            	    // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:466:17: ( identificationVariableDeclaration[$fromClause::varDecls] | n= collectionMemberDeclaration )
+            	    // JPQL.g:466:17: ( identificationVariableDeclaration[$fromClause::varDecls] | n= collectionMemberDeclaration )
             	    int alt31=2;
             	    int LA31_0 = input.LA(1);
             	    
@@ -3420,7 +3420,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
             	    }
             	    switch (alt31) {
             	        case 1 :
-            	            // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:466:19: identificationVariableDeclaration[$fromClause::varDecls]
+            	            // JPQL.g:466:19: identificationVariableDeclaration[$fromClause::varDecls]
             	            {
             	            pushFollow(FOLLOW_identificationVariableDeclaration_in_fromClause2438);
             	            identificationVariableDeclaration(((fromClause_scope)fromClause_stack.peek()).varDecls);
@@ -3430,7 +3430,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
             	            }
             	            break;
             	        case 2 :
-            	            // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:467:19: n= collectionMemberDeclaration
+            	            // JPQL.g:467:19: n= collectionMemberDeclaration
             	            {
             	            pushFollow(FOLLOW_collectionMemberDeclaration_in_fromClause2463);
             	            n=collectionMemberDeclaration();
@@ -3474,14 +3474,14 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
     
     // $ANTLR start identificationVariableDeclaration
-    // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:473:1: identificationVariableDeclaration[List varDecls] : node= rangeVariableDeclaration (node= join )* ;
+    // JPQL.g:473:1: identificationVariableDeclaration[List varDecls] : node= rangeVariableDeclaration (node= join )* ;
     public final void identificationVariableDeclaration(List varDecls) throws RecognitionException {
         Object node = null;
         
     
         try {
-            // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:474:7: (node= rangeVariableDeclaration (node= join )* )
-            // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:474:7: node= rangeVariableDeclaration (node= join )*
+            // JPQL.g:474:7: (node= rangeVariableDeclaration (node= join )* )
+            // JPQL.g:474:7: node= rangeVariableDeclaration (node= join )*
             {
             pushFollow(FOLLOW_rangeVariableDeclaration_in_identificationVariableDeclaration2529);
             node=rangeVariableDeclaration();
@@ -3490,7 +3490,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
             if ( backtracking==0 ) {
                varDecls.add(node); 
             }
-            // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:475:9: (node= join )*
+            // JPQL.g:475:9: (node= join )*
             loop33:
             do {
                 int alt33=2;
@@ -3503,7 +3503,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
             
                 switch (alt33) {
             	case 1 :
-            	    // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:475:11: node= join
+            	    // JPQL.g:475:11: node= join
             	    {
             	    pushFollow(FOLLOW_join_in_identificationVariableDeclaration2548);
             	    node=join();
@@ -3537,7 +3537,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
     
     // $ANTLR start rangeVariableDeclaration
-    // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:478:1: rangeVariableDeclaration returns [Object node] : schema= abstractSchemaName ( AS )? i= IDENT ;
+    // JPQL.g:478:1: rangeVariableDeclaration returns [Object node] : schema= abstractSchemaName ( AS )? i= IDENT ;
     public final Object rangeVariableDeclaration() throws RecognitionException {
 
         Object node = null;
@@ -3550,14 +3550,14 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
             node = null; 
     
         try {
-            // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:482:7: (schema= abstractSchemaName ( AS )? i= IDENT )
-            // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:482:7: schema= abstractSchemaName ( AS )? i= IDENT
+            // JPQL.g:482:7: (schema= abstractSchemaName ( AS )? i= IDENT )
+            // JPQL.g:482:7: schema= abstractSchemaName ( AS )? i= IDENT
             {
             pushFollow(FOLLOW_abstractSchemaName_in_rangeVariableDeclaration2583);
             schema=abstractSchemaName();
             _fsp--;
             if (failed) return node;
-            // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:482:35: ( AS )?
+            // JPQL.g:482:35: ( AS )?
             int alt34=2;
             int LA34_0 = input.LA(1);
             
@@ -3566,7 +3566,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
             }
             switch (alt34) {
                 case 1 :
-                    // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:482:36: AS
+                    // JPQL.g:482:36: AS
                     {
                     match(input,AS,FOLLOW_AS_in_rangeVariableDeclaration2586); if (failed) return node;
                     
@@ -3599,7 +3599,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
     
     // $ANTLR start abstractSchemaName
-    // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:493:1: abstractSchemaName returns [String schema] : ident= . ;
+    // JPQL.g:493:1: abstractSchemaName returns [String schema] : ident= . ;
     public final String abstractSchemaName() throws RecognitionException {
 
         String schema = null;
@@ -3608,8 +3608,8 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
     
          schema = null; 
         try {
-            // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:495:7: (ident= . )
-            // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:495:7: ident= .
+            // JPQL.g:495:7: (ident= . )
+            // JPQL.g:495:7: ident= .
             {
             ident=(Token)input.LT(1);
             matchAny(input); if (failed) return schema;
@@ -3635,7 +3635,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
     
     // $ANTLR start join
-    // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:502:1: join returns [Object node] : outerJoin= joinSpec (n= joinAssociationPathExpression ( AS )? i= IDENT | t= FETCH n= joinAssociationPathExpression ) ;
+    // JPQL.g:502:1: join returns [Object node] : outerJoin= joinSpec (n= joinAssociationPathExpression ( AS )? i= IDENT | t= FETCH n= joinAssociationPathExpression ) ;
     public final Object join() throws RecognitionException {
 
         Object node = null;
@@ -3651,14 +3651,14 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
             node = null;
     
         try {
-            // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:506:7: (outerJoin= joinSpec (n= joinAssociationPathExpression ( AS )? i= IDENT | t= FETCH n= joinAssociationPathExpression ) )
-            // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:506:7: outerJoin= joinSpec (n= joinAssociationPathExpression ( AS )? i= IDENT | t= FETCH n= joinAssociationPathExpression )
+            // JPQL.g:506:7: (outerJoin= joinSpec (n= joinAssociationPathExpression ( AS )? i= IDENT | t= FETCH n= joinAssociationPathExpression ) )
+            // JPQL.g:506:7: outerJoin= joinSpec (n= joinAssociationPathExpression ( AS )? i= IDENT | t= FETCH n= joinAssociationPathExpression )
             {
             pushFollow(FOLLOW_joinSpec_in_join2675);
             outerJoin=joinSpec();
             _fsp--;
             if (failed) return node;
-            // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:507:7: (n= joinAssociationPathExpression ( AS )? i= IDENT | t= FETCH n= joinAssociationPathExpression )
+            // JPQL.g:507:7: (n= joinAssociationPathExpression ( AS )? i= IDENT | t= FETCH n= joinAssociationPathExpression )
             int alt36=2;
             int LA36_0 = input.LA(1);
             
@@ -3677,13 +3677,13 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
             }
             switch (alt36) {
                 case 1 :
-                    // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:507:9: n= joinAssociationPathExpression ( AS )? i= IDENT
+                    // JPQL.g:507:9: n= joinAssociationPathExpression ( AS )? i= IDENT
                     {
                     pushFollow(FOLLOW_joinAssociationPathExpression_in_join2689);
                     n=joinAssociationPathExpression();
                     _fsp--;
                     if (failed) return node;
-                    // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:507:43: ( AS )?
+                    // JPQL.g:507:43: ( AS )?
                     int alt35=2;
                     int LA35_0 = input.LA(1);
                     
@@ -3692,7 +3692,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
                     }
                     switch (alt35) {
                         case 1 :
-                            // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:507:44: AS
+                            // JPQL.g:507:44: AS
                             {
                             match(input,AS,FOLLOW_AS_in_join2692); if (failed) return node;
                             
@@ -3713,7 +3713,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
                     }
                     break;
                 case 2 :
-                    // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:512:9: t= FETCH n= joinAssociationPathExpression
+                    // JPQL.g:512:9: t= FETCH n= joinAssociationPathExpression
                     {
                     t=(Token)input.LT(1);
                     match(input,FETCH,FOLLOW_FETCH_in_join2720); if (failed) return node;
@@ -3748,17 +3748,17 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
     
     // $ANTLR start joinSpec
-    // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:519:1: joinSpec returns [boolean outer] : ( LEFT ( OUTER )? | INNER )? JOIN ;
+    // JPQL.g:519:1: joinSpec returns [boolean outer] : ( LEFT ( OUTER )? | INNER )? JOIN ;
     public final boolean joinSpec() throws RecognitionException {
 
         boolean outer = false;
     
          outer = false; 
         try {
-            // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:521:7: ( ( LEFT ( OUTER )? | INNER )? JOIN )
-            // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:521:7: ( LEFT ( OUTER )? | INNER )? JOIN
+            // JPQL.g:521:7: ( ( LEFT ( OUTER )? | INNER )? JOIN )
+            // JPQL.g:521:7: ( LEFT ( OUTER )? | INNER )? JOIN
             {
-            // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:521:7: ( LEFT ( OUTER )? | INNER )?
+            // JPQL.g:521:7: ( LEFT ( OUTER )? | INNER )?
             int alt38=3;
             int LA38_0 = input.LA(1);
             
@@ -3770,10 +3770,10 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
             }
             switch (alt38) {
                 case 1 :
-                    // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:521:8: LEFT ( OUTER )?
+                    // JPQL.g:521:8: LEFT ( OUTER )?
                     {
                     match(input,LEFT,FOLLOW_LEFT_in_joinSpec2772); if (failed) return outer;
-                    // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:521:13: ( OUTER )?
+                    // JPQL.g:521:13: ( OUTER )?
                     int alt37=2;
                     int LA37_0 = input.LA(1);
                     
@@ -3782,7 +3782,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
                     }
                     switch (alt37) {
                         case 1 :
-                            // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:521:14: OUTER
+                            // JPQL.g:521:14: OUTER
                             {
                             match(input,OUTER,FOLLOW_OUTER_in_joinSpec2775); if (failed) return outer;
                             
@@ -3798,7 +3798,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
                     }
                     break;
                 case 2 :
-                    // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:521:44: INNER
+                    // JPQL.g:521:44: INNER
                     {
                     match(input,INNER,FOLLOW_INNER_in_joinSpec2784); if (failed) return outer;
                     
@@ -3824,7 +3824,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
     
     // $ANTLR start collectionMemberDeclaration
-    // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:524:1: collectionMemberDeclaration returns [Object node] : t= IN LEFT_ROUND_BRACKET n= collectionValuedPathExpression RIGHT_ROUND_BRACKET ( AS )? i= IDENT ;
+    // JPQL.g:524:1: collectionMemberDeclaration returns [Object node] : t= IN LEFT_ROUND_BRACKET n= collectionValuedPathExpression RIGHT_ROUND_BRACKET ( AS )? i= IDENT ;
     public final Object collectionMemberDeclaration() throws RecognitionException {
 
         Object node = null;
@@ -3836,8 +3836,8 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
     
          node = null; 
         try {
-            // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:526:7: (t= IN LEFT_ROUND_BRACKET n= collectionValuedPathExpression RIGHT_ROUND_BRACKET ( AS )? i= IDENT )
-            // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:526:7: t= IN LEFT_ROUND_BRACKET n= collectionValuedPathExpression RIGHT_ROUND_BRACKET ( AS )? i= IDENT
+            // JPQL.g:526:7: (t= IN LEFT_ROUND_BRACKET n= collectionValuedPathExpression RIGHT_ROUND_BRACKET ( AS )? i= IDENT )
+            // JPQL.g:526:7: t= IN LEFT_ROUND_BRACKET n= collectionValuedPathExpression RIGHT_ROUND_BRACKET ( AS )? i= IDENT
             {
             t=(Token)input.LT(1);
             match(input,IN,FOLLOW_IN_in_collectionMemberDeclaration2818); if (failed) return node;
@@ -3847,7 +3847,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
             _fsp--;
             if (failed) return node;
             match(input,RIGHT_ROUND_BRACKET,FOLLOW_RIGHT_ROUND_BRACKET_in_collectionMemberDeclaration2828); if (failed) return node;
-            // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:527:7: ( AS )?
+            // JPQL.g:527:7: ( AS )?
             int alt39=2;
             int LA39_0 = input.LA(1);
             
@@ -3856,7 +3856,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
             }
             switch (alt39) {
                 case 1 :
-                    // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:527:8: AS
+                    // JPQL.g:527:8: AS
                     {
                     match(input,AS,FOLLOW_AS_in_collectionMemberDeclaration2838); if (failed) return node;
                     
@@ -3889,7 +3889,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
     
     // $ANTLR start collectionValuedPathExpression
-    // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:534:1: collectionValuedPathExpression returns [Object node] : n= pathExpression ;
+    // JPQL.g:534:1: collectionValuedPathExpression returns [Object node] : n= pathExpression ;
     public final Object collectionValuedPathExpression() throws RecognitionException {
 
         Object node = null;
@@ -3899,8 +3899,8 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
     
          node = null; 
         try {
-            // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:536:7: (n= pathExpression )
-            // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:536:7: n= pathExpression
+            // JPQL.g:536:7: (n= pathExpression )
+            // JPQL.g:536:7: n= pathExpression
             {
             pushFollow(FOLLOW_pathExpression_in_collectionValuedPathExpression2882);
             n=pathExpression();
@@ -3925,7 +3925,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
     
     // $ANTLR start associationPathExpression
-    // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:539:1: associationPathExpression returns [Object node] : n= pathExpression ;
+    // JPQL.g:539:1: associationPathExpression returns [Object node] : n= pathExpression ;
     public final Object associationPathExpression() throws RecognitionException {
 
         Object node = null;
@@ -3935,8 +3935,8 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
     
          node = null; 
         try {
-            // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:541:7: (n= pathExpression )
-            // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:541:7: n= pathExpression
+            // JPQL.g:541:7: (n= pathExpression )
+            // JPQL.g:541:7: n= pathExpression
             {
             pushFollow(FOLLOW_pathExpression_in_associationPathExpression2914);
             n=pathExpression();
@@ -3961,7 +3961,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
     
     // $ANTLR start joinAssociationPathExpression
-    // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:544:1: joinAssociationPathExpression returns [Object node] : n= qualifiedIdentificationVariable (d= DOT right= attribute )+ ;
+    // JPQL.g:544:1: joinAssociationPathExpression returns [Object node] : n= qualifiedIdentificationVariable (d= DOT right= attribute )+ ;
     public final Object joinAssociationPathExpression() throws RecognitionException {
 
         Object node = null;
@@ -3976,8 +3976,8 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
             node = null; 
     
         try {
-            // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:548:8: (n= qualifiedIdentificationVariable (d= DOT right= attribute )+ )
-            // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:548:8: n= qualifiedIdentificationVariable (d= DOT right= attribute )+
+            // JPQL.g:548:8: (n= qualifiedIdentificationVariable (d= DOT right= attribute )+ )
+            // JPQL.g:548:8: n= qualifiedIdentificationVariable (d= DOT right= attribute )+
             {
             pushFollow(FOLLOW_qualifiedIdentificationVariable_in_joinAssociationPathExpression2947);
             n=qualifiedIdentificationVariable();
@@ -3986,7 +3986,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
             if ( backtracking==0 ) {
               node = n;
             }
-            // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:549:9: (d= DOT right= attribute )+
+            // JPQL.g:549:9: (d= DOT right= attribute )+
             int cnt40=0;
             loop40:
             do {
@@ -4000,7 +4000,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
             
                 switch (alt40) {
             	case 1 :
-            	    // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:549:10: d= DOT right= attribute
+            	    // JPQL.g:549:10: d= DOT right= attribute
             	    {
             	    d=(Token)input.LT(1);
             	    match(input,DOT,FOLLOW_DOT_in_joinAssociationPathExpression2962); if (failed) return node;
@@ -4041,7 +4041,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
     
     // $ANTLR start singleValuedPathExpression
-    // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:554:1: singleValuedPathExpression returns [Object node] : n= pathExpression ;
+    // JPQL.g:554:1: singleValuedPathExpression returns [Object node] : n= pathExpression ;
     public final Object singleValuedPathExpression() throws RecognitionException {
 
         Object node = null;
@@ -4051,8 +4051,8 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
     
          node = null; 
         try {
-            // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:556:7: (n= pathExpression )
-            // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:556:7: n= pathExpression
+            // JPQL.g:556:7: (n= pathExpression )
+            // JPQL.g:556:7: n= pathExpression
             {
             pushFollow(FOLLOW_pathExpression_in_singleValuedPathExpression3024);
             n=pathExpression();
@@ -4077,7 +4077,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
     
     // $ANTLR start stateFieldPathExpression
-    // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:559:1: stateFieldPathExpression returns [Object node] : n= pathExpression ;
+    // JPQL.g:559:1: stateFieldPathExpression returns [Object node] : n= pathExpression ;
     public final Object stateFieldPathExpression() throws RecognitionException {
 
         Object node = null;
@@ -4087,8 +4087,8 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
     
          node = null; 
         try {
-            // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:561:7: (n= pathExpression )
-            // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:561:7: n= pathExpression
+            // JPQL.g:561:7: (n= pathExpression )
+            // JPQL.g:561:7: n= pathExpression
             {
             pushFollow(FOLLOW_pathExpression_in_stateFieldPathExpression3056);
             n=pathExpression();
@@ -4113,7 +4113,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
     
     // $ANTLR start pathExpression
-    // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:564:1: pathExpression returns [Object node] : n= qualifiedIdentificationVariable (d= DOT right= attribute )+ ;
+    // JPQL.g:564:1: pathExpression returns [Object node] : n= qualifiedIdentificationVariable (d= DOT right= attribute )+ ;
     public final Object pathExpression() throws RecognitionException {
 
         Object node = null;
@@ -4128,8 +4128,8 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
             node = null; 
     
         try {
-            // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:568:7: (n= qualifiedIdentificationVariable (d= DOT right= attribute )+ )
-            // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:568:7: n= qualifiedIdentificationVariable (d= DOT right= attribute )+
+            // JPQL.g:568:7: (n= qualifiedIdentificationVariable (d= DOT right= attribute )+ )
+            // JPQL.g:568:7: n= qualifiedIdentificationVariable (d= DOT right= attribute )+
             {
             pushFollow(FOLLOW_qualifiedIdentificationVariable_in_pathExpression3088);
             n=qualifiedIdentificationVariable();
@@ -4138,7 +4138,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
             if ( backtracking==0 ) {
               node = n;
             }
-            // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:569:9: (d= DOT right= attribute )+
+            // JPQL.g:569:9: (d= DOT right= attribute )+
             int cnt41=0;
             loop41:
             do {
@@ -4152,7 +4152,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
             
                 switch (alt41) {
             	case 1 :
-            	    // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:569:10: d= DOT right= attribute
+            	    // JPQL.g:569:10: d= DOT right= attribute
             	    {
             	    d=(Token)input.LT(1);
             	    match(input,DOT,FOLLOW_DOT_in_pathExpression3103); if (failed) return node;
@@ -4195,7 +4195,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
     
     // $ANTLR start attribute
-    // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:580:1: attribute returns [Object node] : i= . ;
+    // JPQL.g:580:1: attribute returns [Object node] : i= . ;
     public final Object attribute() throws RecognitionException {
 
         Object node = null;
@@ -4204,8 +4204,8 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
     
          node = null; 
         try {
-            // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:583:7: (i= . )
-            // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:583:7: i= .
+            // JPQL.g:583:7: (i= . )
+            // JPQL.g:583:7: i= .
             {
             i=(Token)input.LT(1);
             matchAny(input); if (failed) return node;
@@ -4231,7 +4231,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
     
     // $ANTLR start variableAccessOrTypeConstant
-    // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:590:1: variableAccessOrTypeConstant returns [Object node] : i= IDENT ;
+    // JPQL.g:590:1: variableAccessOrTypeConstant returns [Object node] : i= IDENT ;
     public final Object variableAccessOrTypeConstant() throws RecognitionException {
 
         Object node = null;
@@ -4240,8 +4240,8 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
     
          node = null; 
         try {
-            // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:592:7: (i= IDENT )
-            // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:592:7: i= IDENT
+            // JPQL.g:592:7: (i= IDENT )
+            // JPQL.g:592:7: i= IDENT
             {
             i=(Token)input.LT(1);
             match(input,IDENT,FOLLOW_IDENT_in_variableAccessOrTypeConstant3205); if (failed) return node;
@@ -4264,7 +4264,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
     
     // $ANTLR start whereClause
-    // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:596:1: whereClause returns [Object node] : t= WHERE n= conditionalExpression ;
+    // JPQL.g:596:1: whereClause returns [Object node] : t= WHERE n= conditionalExpression ;
     public final Object whereClause() throws RecognitionException {
 
         Object node = null;
@@ -4275,8 +4275,8 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
     
          node = null; 
         try {
-            // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:598:7: (t= WHERE n= conditionalExpression )
-            // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:598:7: t= WHERE n= conditionalExpression
+            // JPQL.g:598:7: (t= WHERE n= conditionalExpression )
+            // JPQL.g:598:7: t= WHERE n= conditionalExpression
             {
             t=(Token)input.LT(1);
             match(input,WHERE,FOLLOW_WHERE_in_whereClause3243); if (failed) return node;
@@ -4305,7 +4305,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
     
     // $ANTLR start conditionalExpression
-    // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:604:1: conditionalExpression returns [Object node] : n= conditionalTerm (t= OR right= conditionalTerm )* ;
+    // JPQL.g:604:1: conditionalExpression returns [Object node] : n= conditionalTerm (t= OR right= conditionalTerm )* ;
     public final Object conditionalExpression() throws RecognitionException {
 
         Object node = null;
@@ -4320,8 +4320,8 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
             node = null; 
     
         try {
-            // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:608:7: (n= conditionalTerm (t= OR right= conditionalTerm )* )
-            // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:608:7: n= conditionalTerm (t= OR right= conditionalTerm )*
+            // JPQL.g:608:7: (n= conditionalTerm (t= OR right= conditionalTerm )* )
+            // JPQL.g:608:7: n= conditionalTerm (t= OR right= conditionalTerm )*
             {
             pushFollow(FOLLOW_conditionalTerm_in_conditionalExpression3291);
             n=conditionalTerm();
@@ -4330,7 +4330,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
             if ( backtracking==0 ) {
               node = n;
             }
-            // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:609:9: (t= OR right= conditionalTerm )*
+            // JPQL.g:609:9: (t= OR right= conditionalTerm )*
             loop42:
             do {
                 int alt42=2;
@@ -4343,7 +4343,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
             
                 switch (alt42) {
             	case 1 :
-            	    // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:609:10: t= OR right= conditionalTerm
+            	    // JPQL.g:609:10: t= OR right= conditionalTerm
             	    {
             	    t=(Token)input.LT(1);
             	    match(input,OR,FOLLOW_OR_in_conditionalExpression3306); if (failed) return node;
@@ -4379,7 +4379,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
     
     // $ANTLR start conditionalTerm
-    // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:614:1: conditionalTerm returns [Object node] : n= conditionalFactor (t= AND right= conditionalFactor )* ;
+    // JPQL.g:614:1: conditionalTerm returns [Object node] : n= conditionalFactor (t= AND right= conditionalFactor )* ;
     public final Object conditionalTerm() throws RecognitionException {
 
         Object node = null;
@@ -4394,8 +4394,8 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
             node = null; 
     
         try {
-            // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:618:7: (n= conditionalFactor (t= AND right= conditionalFactor )* )
-            // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:618:7: n= conditionalFactor (t= AND right= conditionalFactor )*
+            // JPQL.g:618:7: (n= conditionalFactor (t= AND right= conditionalFactor )* )
+            // JPQL.g:618:7: n= conditionalFactor (t= AND right= conditionalFactor )*
             {
             pushFollow(FOLLOW_conditionalFactor_in_conditionalTerm3367);
             n=conditionalFactor();
@@ -4404,7 +4404,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
             if ( backtracking==0 ) {
               node = n;
             }
-            // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:619:9: (t= AND right= conditionalFactor )*
+            // JPQL.g:619:9: (t= AND right= conditionalFactor )*
             loop43:
             do {
                 int alt43=2;
@@ -4417,7 +4417,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
             
                 switch (alt43) {
             	case 1 :
-            	    // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:619:10: t= AND right= conditionalFactor
+            	    // JPQL.g:619:10: t= AND right= conditionalFactor
             	    {
             	    t=(Token)input.LT(1);
             	    match(input,AND,FOLLOW_AND_in_conditionalTerm3382); if (failed) return node;
@@ -4453,7 +4453,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
     
     // $ANTLR start conditionalFactor
-    // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:624:1: conditionalFactor returns [Object node] : (n= NOT )? (n1= conditionalPrimary | n1= existsExpression[(n!=null)] ) ;
+    // JPQL.g:624:1: conditionalFactor returns [Object node] : (n= NOT )? (n1= conditionalPrimary | n1= existsExpression[(n!=null)] ) ;
     public final Object conditionalFactor() throws RecognitionException {
 
         Object node = null;
@@ -4464,10 +4464,10 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
     
          node = null; 
         try {
-            // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:626:7: ( (n= NOT )? (n1= conditionalPrimary | n1= existsExpression[(n!=null)] ) )
-            // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:626:7: (n= NOT )? (n1= conditionalPrimary | n1= existsExpression[(n!=null)] )
+            // JPQL.g:626:7: ( (n= NOT )? (n1= conditionalPrimary | n1= existsExpression[(n!=null)] ) )
+            // JPQL.g:626:7: (n= NOT )? (n1= conditionalPrimary | n1= existsExpression[(n!=null)] )
             {
-            // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:626:7: (n= NOT )?
+            // JPQL.g:626:7: (n= NOT )?
             int alt44=2;
             int LA44_0 = input.LA(1);
             
@@ -4476,7 +4476,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
             }
             switch (alt44) {
                 case 1 :
-                    // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:626:8: n= NOT
+                    // JPQL.g:626:8: n= NOT
                     {
                     n=(Token)input.LT(1);
                     match(input,NOT,FOLLOW_NOT_in_conditionalFactor3443); if (failed) return node;
@@ -4486,7 +4486,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
             
             }
 
-            // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:627:9: (n1= conditionalPrimary | n1= existsExpression[(n!=null)] )
+            // JPQL.g:627:9: (n1= conditionalPrimary | n1= existsExpression[(n!=null)] )
             int alt45=2;
             int LA45_0 = input.LA(1);
             
@@ -4505,7 +4505,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
             }
             switch (alt45) {
                 case 1 :
-                    // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:627:11: n1= conditionalPrimary
+                    // JPQL.g:627:11: n1= conditionalPrimary
                     {
                     pushFollow(FOLLOW_conditionalPrimary_in_conditionalFactor3462);
                     n1=conditionalPrimary();
@@ -4523,7 +4523,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
                     }
                     break;
                 case 2 :
-                    // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:634:11: n1= existsExpression[(n!=null)]
+                    // JPQL.g:634:11: n1= existsExpression[(n!=null)]
                     {
                     pushFollow(FOLLOW_existsExpression_in_conditionalFactor3491);
                     n1=existsExpression((n!=null));
@@ -4554,7 +4554,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
     
     // $ANTLR start conditionalPrimary
-    // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:638:1: conditionalPrimary returns [Object node] : ( ( LEFT_ROUND_BRACKET conditionalExpression )=> LEFT_ROUND_BRACKET n= conditionalExpression RIGHT_ROUND_BRACKET | n= simpleConditionalExpression );
+    // JPQL.g:638:1: conditionalPrimary returns [Object node] : ( ( LEFT_ROUND_BRACKET conditionalExpression )=> LEFT_ROUND_BRACKET n= conditionalExpression RIGHT_ROUND_BRACKET | n= simpleConditionalExpression );
     public final Object conditionalPrimary() throws RecognitionException {
 
         Object node = null;
@@ -4564,7 +4564,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
     
          node = null; 
         try {
-            // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:640:7: ( ( LEFT_ROUND_BRACKET conditionalExpression )=> LEFT_ROUND_BRACKET n= conditionalExpression RIGHT_ROUND_BRACKET | n= simpleConditionalExpression )
+            // JPQL.g:640:7: ( ( LEFT_ROUND_BRACKET conditionalExpression )=> LEFT_ROUND_BRACKET n= conditionalExpression RIGHT_ROUND_BRACKET | n= simpleConditionalExpression )
             int alt46=2;
             int LA46_0 = input.LA(1);
             
@@ -7627,7 +7627,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
             }
             switch (alt46) {
                 case 1 :
-                    // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:640:7: ( LEFT_ROUND_BRACKET conditionalExpression )=> LEFT_ROUND_BRACKET n= conditionalExpression RIGHT_ROUND_BRACKET
+                    // JPQL.g:640:7: ( LEFT_ROUND_BRACKET conditionalExpression )=> LEFT_ROUND_BRACKET n= conditionalExpression RIGHT_ROUND_BRACKET
                     {
                     match(input,LEFT_ROUND_BRACKET,FOLLOW_LEFT_ROUND_BRACKET_in_conditionalPrimary3548); if (failed) return node;
                     pushFollow(FOLLOW_conditionalExpression_in_conditionalPrimary3554);
@@ -7642,7 +7642,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
                     }
                     break;
                 case 2 :
-                    // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:642:7: n= simpleConditionalExpression
+                    // JPQL.g:642:7: n= simpleConditionalExpression
                     {
                     pushFollow(FOLLOW_simpleConditionalExpression_in_conditionalPrimary3570);
                     n=simpleConditionalExpression();
@@ -7669,7 +7669,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
     
     // $ANTLR start simpleConditionalExpression
-    // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:645:1: simpleConditionalExpression returns [Object node] : (left= arithmeticExpression n= simpleConditionalExpressionRemainder[$left.node] | left= nonArithmeticScalarExpression n= simpleConditionalExpressionRemainder[$left.node] );
+    // JPQL.g:645:1: simpleConditionalExpression returns [Object node] : (left= arithmeticExpression n= simpleConditionalExpressionRemainder[$left.node] | left= nonArithmeticScalarExpression n= simpleConditionalExpressionRemainder[$left.node] );
     public final Object simpleConditionalExpression() throws RecognitionException {
 
         Object node = null;
@@ -7683,7 +7683,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
             node = null; 
     
         try {
-            // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:649:7: (left= arithmeticExpression n= simpleConditionalExpressionRemainder[$left.node] | left= nonArithmeticScalarExpression n= simpleConditionalExpressionRemainder[$left.node] )
+            // JPQL.g:649:7: (left= arithmeticExpression n= simpleConditionalExpressionRemainder[$left.node] | left= nonArithmeticScalarExpression n= simpleConditionalExpressionRemainder[$left.node] )
             int alt47=2;
             int LA47_0 = input.LA(1);
             
@@ -7702,7 +7702,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
             }
             switch (alt47) {
                 case 1 :
-                    // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:649:7: left= arithmeticExpression n= simpleConditionalExpressionRemainder[$left.node]
+                    // JPQL.g:649:7: left= arithmeticExpression n= simpleConditionalExpressionRemainder[$left.node]
                     {
                     pushFollow(FOLLOW_arithmeticExpression_in_simpleConditionalExpression3602);
                     left=arithmeticExpression();
@@ -7719,7 +7719,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
                     }
                     break;
                 case 2 :
-                    // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:650:7: left= nonArithmeticScalarExpression n= simpleConditionalExpressionRemainder[$left.node]
+                    // JPQL.g:650:7: left= nonArithmeticScalarExpression n= simpleConditionalExpressionRemainder[$left.node]
                     {
                     pushFollow(FOLLOW_nonArithmeticScalarExpression_in_simpleConditionalExpression3623);
                     left=nonArithmeticScalarExpression();
@@ -7750,7 +7750,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
     
     // $ANTLR start simpleConditionalExpressionRemainder
-    // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:653:1: simpleConditionalExpressionRemainder[Object left] returns [Object node] : (n= comparisonExpression[left] | (n1= NOT )? n= conditionWithNotExpression[(n1!=null), left] | IS (n2= NOT )? n= isExpression[(n2!=null), left] );
+    // JPQL.g:653:1: simpleConditionalExpressionRemainder[Object left] returns [Object node] : (n= comparisonExpression[left] | (n1= NOT )? n= conditionWithNotExpression[(n1!=null), left] | IS (n2= NOT )? n= isExpression[(n2!=null), left] );
     public final Object simpleConditionalExpressionRemainder(Object left) throws RecognitionException {
 
         Object node = null;
@@ -7762,7 +7762,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
     
          node = null; 
         try {
-            // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:655:7: (n= comparisonExpression[left] | (n1= NOT )? n= conditionWithNotExpression[(n1!=null), left] | IS (n2= NOT )? n= isExpression[(n2!=null), left] )
+            // JPQL.g:655:7: (n= comparisonExpression[left] | (n1= NOT )? n= conditionWithNotExpression[(n1!=null), left] | IS (n2= NOT )? n= isExpression[(n2!=null), left] )
             int alt50=3;
             switch ( input.LA(1) ) {
             case EQUALS:
@@ -7799,7 +7799,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
             
             switch (alt50) {
                 case 1 :
-                    // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:655:7: n= comparisonExpression[left]
+                    // JPQL.g:655:7: n= comparisonExpression[left]
                     {
                     pushFollow(FOLLOW_comparisonExpression_in_simpleConditionalExpressionRemainder3664);
                     n=comparisonExpression(left);
@@ -7812,9 +7812,9 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
                     }
                     break;
                 case 2 :
-                    // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:656:7: (n1= NOT )? n= conditionWithNotExpression[(n1!=null), left]
+                    // JPQL.g:656:7: (n1= NOT )? n= conditionWithNotExpression[(n1!=null), left]
                     {
-                    // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:656:7: (n1= NOT )?
+                    // JPQL.g:656:7: (n1= NOT )?
                     int alt48=2;
                     int LA48_0 = input.LA(1);
                     
@@ -7823,7 +7823,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
                     }
                     switch (alt48) {
                         case 1 :
-                            // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:656:8: n1= NOT
+                            // JPQL.g:656:8: n1= NOT
                             {
                             n1=(Token)input.LT(1);
                             match(input,NOT,FOLLOW_NOT_in_simpleConditionalExpressionRemainder3678); if (failed) return node;
@@ -7844,10 +7844,10 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
                     }
                     break;
                 case 3 :
-                    // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:657:7: IS (n2= NOT )? n= isExpression[(n2!=null), left]
+                    // JPQL.g:657:7: IS (n2= NOT )? n= isExpression[(n2!=null), left]
                     {
                     match(input,IS,FOLLOW_IS_in_simpleConditionalExpressionRemainder3697); if (failed) return node;
-                    // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:657:10: (n2= NOT )?
+                    // JPQL.g:657:10: (n2= NOT )?
                     int alt49=2;
                     int LA49_0 = input.LA(1);
                     
@@ -7856,7 +7856,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
                     }
                     switch (alt49) {
                         case 1 :
-                            // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:657:11: n2= NOT
+                            // JPQL.g:657:11: n2= NOT
                             {
                             n2=(Token)input.LT(1);
                             match(input,NOT,FOLLOW_NOT_in_simpleConditionalExpressionRemainder3702); if (failed) return node;
@@ -7891,7 +7891,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
     
     // $ANTLR start conditionWithNotExpression
-    // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:660:1: conditionWithNotExpression[boolean not, Object left] returns [Object node] : (n= betweenExpression[not, left] | n= likeExpression[not, left] | n= inExpression[not, left] | n= collectionMemberExpression[not, left] );
+    // JPQL.g:660:1: conditionWithNotExpression[boolean not, Object left] returns [Object node] : (n= betweenExpression[not, left] | n= likeExpression[not, left] | n= inExpression[not, left] | n= collectionMemberExpression[not, left] );
     public final Object conditionWithNotExpression(boolean not, Object left) throws RecognitionException {
 
         Object node = null;
@@ -7901,7 +7901,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
     
          node = null; 
         try {
-            // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:662:7: (n= betweenExpression[not, left] | n= likeExpression[not, left] | n= inExpression[not, left] | n= collectionMemberExpression[not, left] )
+            // JPQL.g:662:7: (n= betweenExpression[not, left] | n= likeExpression[not, left] | n= inExpression[not, left] | n= collectionMemberExpression[not, left] )
             int alt51=4;
             switch ( input.LA(1) ) {
             case BETWEEN:
@@ -7934,7 +7934,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
             
             switch (alt51) {
                 case 1 :
-                    // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:662:7: n= betweenExpression[not, left]
+                    // JPQL.g:662:7: n= betweenExpression[not, left]
                     {
                     pushFollow(FOLLOW_betweenExpression_in_conditionWithNotExpression3745);
                     n=betweenExpression(not,  left);
@@ -7947,7 +7947,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
                     }
                     break;
                 case 2 :
-                    // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:663:7: n= likeExpression[not, left]
+                    // JPQL.g:663:7: n= likeExpression[not, left]
                     {
                     pushFollow(FOLLOW_likeExpression_in_conditionWithNotExpression3760);
                     n=likeExpression(not,  left);
@@ -7960,7 +7960,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
                     }
                     break;
                 case 3 :
-                    // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:664:7: n= inExpression[not, left]
+                    // JPQL.g:664:7: n= inExpression[not, left]
                     {
                     pushFollow(FOLLOW_inExpression_in_conditionWithNotExpression3774);
                     n=inExpression(not,  left);
@@ -7973,7 +7973,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
                     }
                     break;
                 case 4 :
-                    // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:665:7: n= collectionMemberExpression[not, left]
+                    // JPQL.g:665:7: n= collectionMemberExpression[not, left]
                     {
                     pushFollow(FOLLOW_collectionMemberExpression_in_conditionWithNotExpression3788);
                     n=collectionMemberExpression(not,  left);
@@ -8000,7 +8000,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
     
     // $ANTLR start isExpression
-    // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:668:1: isExpression[boolean not, Object left] returns [Object node] : (n= nullComparisonExpression[not, left] | n= emptyCollectionComparisonExpression[not, left] );
+    // JPQL.g:668:1: isExpression[boolean not, Object left] returns [Object node] : (n= nullComparisonExpression[not, left] | n= emptyCollectionComparisonExpression[not, left] );
     public final Object isExpression(boolean not, Object left) throws RecognitionException {
 
         Object node = null;
@@ -8010,7 +8010,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
     
          node = null; 
         try {
-            // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:670:7: (n= nullComparisonExpression[not, left] | n= emptyCollectionComparisonExpression[not, left] )
+            // JPQL.g:670:7: (n= nullComparisonExpression[not, left] | n= emptyCollectionComparisonExpression[not, left] )
             int alt52=2;
             int LA52_0 = input.LA(1);
             
@@ -8029,7 +8029,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
             }
             switch (alt52) {
                 case 1 :
-                    // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:670:7: n= nullComparisonExpression[not, left]
+                    // JPQL.g:670:7: n= nullComparisonExpression[not, left]
                     {
                     pushFollow(FOLLOW_nullComparisonExpression_in_isExpression3823);
                     n=nullComparisonExpression(not,  left);
@@ -8042,7 +8042,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
                     }
                     break;
                 case 2 :
-                    // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:671:7: n= emptyCollectionComparisonExpression[not, left]
+                    // JPQL.g:671:7: n= emptyCollectionComparisonExpression[not, left]
                     {
                     pushFollow(FOLLOW_emptyCollectionComparisonExpression_in_isExpression3838);
                     n=emptyCollectionComparisonExpression(not,  left);
@@ -8069,7 +8069,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
     
     // $ANTLR start betweenExpression
-    // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:674:1: betweenExpression[boolean not, Object left] returns [Object node] : t= BETWEEN lowerBound= arithmeticExpression AND upperBound= arithmeticExpression ;
+    // JPQL.g:674:1: betweenExpression[boolean not, Object left] returns [Object node] : t= BETWEEN lowerBound= arithmeticExpression AND upperBound= arithmeticExpression ;
     public final Object betweenExpression(boolean not, Object left) throws RecognitionException {
 
         Object node = null;
@@ -8084,8 +8084,8 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
             node = null;
     
         try {
-            // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:678:7: (t= BETWEEN lowerBound= arithmeticExpression AND upperBound= arithmeticExpression )
-            // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:678:7: t= BETWEEN lowerBound= arithmeticExpression AND upperBound= arithmeticExpression
+            // JPQL.g:678:7: (t= BETWEEN lowerBound= arithmeticExpression AND upperBound= arithmeticExpression )
+            // JPQL.g:678:7: t= BETWEEN lowerBound= arithmeticExpression AND upperBound= arithmeticExpression
             {
             t=(Token)input.LT(1);
             match(input,BETWEEN,FOLLOW_BETWEEN_in_betweenExpression3871); if (failed) return node;
@@ -8125,7 +8125,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
     
     
     // $ANTLR start inExpression
-    // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:686:1: inExpression[boolean not, Object left] returns [Object node] : (t= IN n= inputParameter | t= IN LEFT_ROUND_BRACKET (itemNode= inItem ( COMMA itemNode= inItem )* | subqueryNode= subquery ) RIGHT_ROUND_BRACKET );
+    // JPQL.g:686:1: inExpression[boolean not, Object left] returns [Object node] : (t= IN n= inputParameter | t= IN LEFT_ROUND_BRACKET (itemNode= inItem ( COMMA itemNode= inItem )* | subqueryNode= subquery ) RIGHT_ROUND_BRACKET );
     public final Object inExpression(boolean not, Object left) throws RecognitionException {
         inExpression_stack.push(new inExpression_scope());
 
@@ -8144,7 +8144,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
             ((inExpression_scope)inExpression_stack.peek()).items = new ArrayList();
     
         try {
-            // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:694:8: (t= IN n= inputParameter | t= IN LEFT_ROUND_BRACKET (itemNode= inItem ( COMMA itemNode= inItem )* | subqueryNode= subquery ) RIGHT_ROUND_BRACKET )
+            // JPQL.g:694:8: (t= IN n= inputParameter | t= IN LEFT_ROUND_BRACKET (itemNode= inItem ( COMMA itemNode= inItem )* | subqueryNode= subquery ) RIGHT_ROUND_BRACKET )
             int alt55=2;
             int LA55_0 = input.LA(1);
             
@@ -8174,7 +8174,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
             }
             switch (alt55) {
                 case 1 :
-                    // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:694:8: t= IN n= inputParameter
+                    // JPQL.g:694:8: t= IN n= inputParameter
                     {
                     t=(Token)input.LT(1);
                     match(input,IN,FOLLOW_IN_in_inExpression3939); if (failed) return node;
@@ -8192,12 +8192,12 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
                     }
                     break;
                 case 2 :
-                    // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:699:9: t= IN LEFT_ROUND_BRACKET (itemNode= inItem ( COMMA itemNode= inItem )* | subqueryNode= subquery ) RIGHT_ROUND_BRACKET
+                    // JPQL.g:699:9: t= IN LEFT_ROUND_BRACKET (itemNode= inItem ( COMMA itemNode= inItem )* | subqueryNode= subquery ) RIGHT_ROUND_BRACKET
                     {
                     t=(Token)input.LT(1);
                     match(input,IN,FOLLOW_IN_in_inExpression3972); if (failed) return node;
                     match(input,LEFT_ROUND_BRACKET,FOLLOW_LEFT_ROUND_BRACKET_in_inExpression3982); if (failed) return node;
-                    // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:701:9: (itemNode= inItem ( COMMA itemNode= inItem )* | subqueryNode= subquery )
+                    // JPQL.g:701:9: (itemNode= inItem ( COMMA itemNode= inItem )* | subqueryNode= subquery )
                     int alt54=2;
                     int LA54_0 = input.LA(1);
                     
@@ -8216,7 +8216,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
                     }
                     switch (alt54) {
                         case 1 :
-                            // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:701:11: itemNode= inItem ( COMMA itemNode= inItem )*
+                            // JPQL.g:701:11: itemNode= inItem ( COMMA itemNode= inItem )*
                             {
                             pushFollow(FOLLOW_inItem_in_inExpression3998);
                             itemNode=inItem();
@@ -8225,7 +8225,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
                             if ( backtracking==0 ) {
                                ((inExpression_scope)inExpression_stack.peek()).items.add(itemNode); 
                             }
-                            // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:702:13: ( COMMA itemNode= inItem )*
+                            // JPQL.g:702:13: ( COMMA itemNode= inItem )*
                             loop53:
                             do {
                                 int alt53=2;
@@ -8238,7 +8238,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
                             
                                 switch (alt53) {
                             	case 1 :
-                            	    // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:702:15: COMMA itemNode= inItem
+                            	    // JPQL.g:702:15: COMMA itemNode= inItem
                             	    {
                             	    match(input,COMMA,FOLLOW_COMMA_in_inExpression4016); if (failed) return node;
                             	    pushFollow(FOLLOW_inItem_in_inExpression4022);
@@ -8267,7 +8267,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
                             }
                             break;
                         case 2 :
-                            // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:707:11: subqueryNode= subquery
+                            // JPQL.g:707:11: subqueryNode= subquery
                             {
                             pushFollow(FOLLOW_subquery_in_inExpression4057);
                             subqueryNode=subquery();
@@ -8305,7 +8305,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
     
     // $ANTLR start inItem
-    // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:716:1: inItem returns [Object node] : (n= literalString | n= literalNumeric | n= inputParameter | n= variableAccessOrTypeConstant );
+    // JPQL.g:716:1: inItem returns [Object node] : (n= literalString | n= literalNumeric | n= inputParameter | n= variableAccessOrTypeConstant );
     public final Object inItem() throws RecognitionException {
 
         Object node = null;
@@ -8315,7 +8315,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
     
          node = null; 
         try {
-            // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:718:7: (n= literalString | n= literalNumeric | n= inputParameter | n= variableAccessOrTypeConstant )
+            // JPQL.g:718:7: (n= literalString | n= literalNumeric | n= inputParameter | n= variableAccessOrTypeConstant )
             int alt56=4;
             switch ( input.LA(1) ) {
             case STRING_LITERAL_DOUBLE_QUOTED:
@@ -8353,7 +8353,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
             
             switch (alt56) {
                 case 1 :
-                    // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:718:7: n= literalString
+                    // JPQL.g:718:7: n= literalString
                     {
                     pushFollow(FOLLOW_literalString_in_inItem4121);
                     n=literalString();
@@ -8366,7 +8366,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
                     }
                     break;
                 case 2 :
-                    // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:719:7: n= literalNumeric
+                    // JPQL.g:719:7: n= literalNumeric
                     {
                     pushFollow(FOLLOW_literalNumeric_in_inItem4135);
                     n=literalNumeric();
@@ -8379,7 +8379,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
                     }
                     break;
                 case 3 :
-                    // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:720:7: n= inputParameter
+                    // JPQL.g:720:7: n= inputParameter
                     {
                     pushFollow(FOLLOW_inputParameter_in_inItem4149);
                     n=inputParameter();
@@ -8392,7 +8392,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
                     }
                     break;
                 case 4 :
-                    // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:721:7: n= variableAccessOrTypeConstant
+                    // JPQL.g:721:7: n= variableAccessOrTypeConstant
                     {
                     pushFollow(FOLLOW_variableAccessOrTypeConstant_in_inItem4163);
                     n=variableAccessOrTypeConstant();
@@ -8419,7 +8419,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
     
     // $ANTLR start likeExpression
-    // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:724:1: likeExpression[boolean not, Object left] returns [Object node] : t= LIKE pattern= likeValue (escapeChars= escape )? ;
+    // JPQL.g:724:1: likeExpression[boolean not, Object left] returns [Object node] : t= LIKE pattern= likeValue (escapeChars= escape )? ;
     public final Object likeExpression(boolean not, Object left) throws RecognitionException {
 
         Object node = null;
@@ -8434,8 +8434,8 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
             node = null;
     
         try {
-            // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:728:7: (t= LIKE pattern= likeValue (escapeChars= escape )? )
-            // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:728:7: t= LIKE pattern= likeValue (escapeChars= escape )?
+            // JPQL.g:728:7: (t= LIKE pattern= likeValue (escapeChars= escape )? )
+            // JPQL.g:728:7: t= LIKE pattern= likeValue (escapeChars= escape )?
             {
             t=(Token)input.LT(1);
             match(input,LIKE,FOLLOW_LIKE_in_likeExpression4195); if (failed) return node;
@@ -8443,7 +8443,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
             pattern=likeValue();
             _fsp--;
             if (failed) return node;
-            // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:729:9: (escapeChars= escape )?
+            // JPQL.g:729:9: (escapeChars= escape )?
             int alt57=2;
             int LA57_0 = input.LA(1);
             
@@ -8452,7 +8452,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
             }
             switch (alt57) {
                 case 1 :
-                    // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:729:10: escapeChars= escape
+                    // JPQL.g:729:10: escapeChars= escape
                     {
                     pushFollow(FOLLOW_escape_in_likeExpression4216);
                     escapeChars=escape();
@@ -8486,7 +8486,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
     
     // $ANTLR start escape
-    // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:736:1: escape returns [Object node] : t= ESCAPE escapeClause= likeValue ;
+    // JPQL.g:736:1: escape returns [Object node] : t= ESCAPE escapeClause= likeValue ;
     public final Object escape() throws RecognitionException {
 
         Object node = null;
@@ -8499,8 +8499,8 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
             node = null; 
     
         try {
-            // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:740:7: (t= ESCAPE escapeClause= likeValue )
-            // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:740:7: t= ESCAPE escapeClause= likeValue
+            // JPQL.g:740:7: (t= ESCAPE escapeClause= likeValue )
+            // JPQL.g:740:7: t= ESCAPE escapeClause= likeValue
             {
             t=(Token)input.LT(1);
             match(input,ESCAPE,FOLLOW_ESCAPE_in_escape4256); if (failed) return node;
@@ -8527,7 +8527,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
     
     // $ANTLR start likeValue
-    // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:744:1: likeValue returns [Object node] : (n= literalString | n= inputParameter );
+    // JPQL.g:744:1: likeValue returns [Object node] : (n= literalString | n= inputParameter );
     public final Object likeValue() throws RecognitionException {
 
         Object node = null;
@@ -8537,7 +8537,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
     
          node = null; 
         try {
-            // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:746:7: (n= literalString | n= inputParameter )
+            // JPQL.g:746:7: (n= literalString | n= inputParameter )
             int alt58=2;
             int LA58_0 = input.LA(1);
             
@@ -8556,7 +8556,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
             }
             switch (alt58) {
                 case 1 :
-                    // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:746:7: n= literalString
+                    // JPQL.g:746:7: n= literalString
                     {
                     pushFollow(FOLLOW_literalString_in_likeValue4302);
                     n=literalString();
@@ -8569,7 +8569,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
                     }
                     break;
                 case 2 :
-                    // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:747:7: n= inputParameter
+                    // JPQL.g:747:7: n= inputParameter
                     {
                     pushFollow(FOLLOW_inputParameter_in_likeValue4316);
                     n=inputParameter();
@@ -8596,7 +8596,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
     
     // $ANTLR start nullComparisonExpression
-    // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:750:1: nullComparisonExpression[boolean not, Object left] returns [Object node] : t= NULL ;
+    // JPQL.g:750:1: nullComparisonExpression[boolean not, Object left] returns [Object node] : t= NULL ;
     public final Object nullComparisonExpression(boolean not, Object left) throws RecognitionException {
 
         Object node = null;
@@ -8605,8 +8605,8 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
     
          node = null; 
         try {
-            // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:752:7: (t= NULL )
-            // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:752:7: t= NULL
+            // JPQL.g:752:7: (t= NULL )
+            // JPQL.g:752:7: t= NULL
             {
             t=(Token)input.LT(1);
             match(input,NULL,FOLLOW_NULL_in_nullComparisonExpression4349); if (failed) return node;
@@ -8629,7 +8629,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
     
     // $ANTLR start emptyCollectionComparisonExpression
-    // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:756:1: emptyCollectionComparisonExpression[boolean not, Object left] returns [Object node] : t= EMPTY ;
+    // JPQL.g:756:1: emptyCollectionComparisonExpression[boolean not, Object left] returns [Object node] : t= EMPTY ;
     public final Object emptyCollectionComparisonExpression(boolean not, Object left) throws RecognitionException {
 
         Object node = null;
@@ -8638,8 +8638,8 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
     
          node = null; 
         try {
-            // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:758:7: (t= EMPTY )
-            // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:758:7: t= EMPTY
+            // JPQL.g:758:7: (t= EMPTY )
+            // JPQL.g:758:7: t= EMPTY
             {
             t=(Token)input.LT(1);
             match(input,EMPTY,FOLLOW_EMPTY_in_emptyCollectionComparisonExpression4390); if (failed) return node;
@@ -8662,7 +8662,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
     
     // $ANTLR start collectionMemberExpression
-    // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:762:1: collectionMemberExpression[boolean not, Object left] returns [Object node] : t= MEMBER ( OF )? n= collectionValuedPathExpression ;
+    // JPQL.g:762:1: collectionMemberExpression[boolean not, Object left] returns [Object node] : t= MEMBER ( OF )? n= collectionValuedPathExpression ;
     public final Object collectionMemberExpression(boolean not, Object left) throws RecognitionException {
 
         Object node = null;
@@ -8673,12 +8673,12 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
     
          node = null; 
         try {
-            // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:764:7: (t= MEMBER ( OF )? n= collectionValuedPathExpression )
-            // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:764:7: t= MEMBER ( OF )? n= collectionValuedPathExpression
+            // JPQL.g:764:7: (t= MEMBER ( OF )? n= collectionValuedPathExpression )
+            // JPQL.g:764:7: t= MEMBER ( OF )? n= collectionValuedPathExpression
             {
             t=(Token)input.LT(1);
             match(input,MEMBER,FOLLOW_MEMBER_in_collectionMemberExpression4431); if (failed) return node;
-            // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:764:17: ( OF )?
+            // JPQL.g:764:17: ( OF )?
             int alt59=2;
             int LA59_0 = input.LA(1);
             
@@ -8687,7 +8687,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
             }
             switch (alt59) {
                 case 1 :
-                    // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:764:18: OF
+                    // JPQL.g:764:18: OF
                     {
                     match(input,OF,FOLLOW_OF_in_collectionMemberExpression4434); if (failed) return node;
                     
@@ -8722,7 +8722,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
     
     // $ANTLR start existsExpression
-    // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:771:1: existsExpression[boolean not] returns [Object node] : t= EXISTS LEFT_ROUND_BRACKET subqueryNode= subquery RIGHT_ROUND_BRACKET ;
+    // JPQL.g:771:1: existsExpression[boolean not] returns [Object node] : t= EXISTS LEFT_ROUND_BRACKET subqueryNode= subquery RIGHT_ROUND_BRACKET ;
     public final Object existsExpression(boolean not) throws RecognitionException {
 
         Object node = null;
@@ -8735,8 +8735,8 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
             node = null;
     
         try {
-            // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:775:7: (t= EXISTS LEFT_ROUND_BRACKET subqueryNode= subquery RIGHT_ROUND_BRACKET )
-            // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:775:7: t= EXISTS LEFT_ROUND_BRACKET subqueryNode= subquery RIGHT_ROUND_BRACKET
+            // JPQL.g:775:7: (t= EXISTS LEFT_ROUND_BRACKET subqueryNode= subquery RIGHT_ROUND_BRACKET )
+            // JPQL.g:775:7: t= EXISTS LEFT_ROUND_BRACKET subqueryNode= subquery RIGHT_ROUND_BRACKET
             {
             t=(Token)input.LT(1);
             match(input,EXISTS,FOLLOW_EXISTS_in_existsExpression4482); if (failed) return node;
@@ -8768,7 +8768,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
     
     // $ANTLR start comparisonExpression
-    // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:782:1: comparisonExpression[Object left] returns [Object node] : (t1= EQUALS n= comparisonExpressionRightOperand | t2= NOT_EQUAL_TO n= comparisonExpressionRightOperand | t3= GREATER_THAN n= comparisonExpressionRightOperand | t4= GREATER_THAN_EQUAL_TO n= comparisonExpressionRightOperand | t5= LESS_THAN n= comparisonExpressionRightOperand | t6= LESS_THAN_EQUAL_TO n= comparisonExpressionRightOperand );
+    // JPQL.g:782:1: comparisonExpression[Object left] returns [Object node] : (t1= EQUALS n= comparisonExpressionRightOperand | t2= NOT_EQUAL_TO n= comparisonExpressionRightOperand | t3= GREATER_THAN n= comparisonExpressionRightOperand | t4= GREATER_THAN_EQUAL_TO n= comparisonExpressionRightOperand | t5= LESS_THAN n= comparisonExpressionRightOperand | t6= LESS_THAN_EQUAL_TO n= comparisonExpressionRightOperand );
     public final Object comparisonExpression(Object left) throws RecognitionException {
 
         Object node = null;
@@ -8784,7 +8784,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
     
          node = null; 
         try {
-            // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:784:7: (t1= EQUALS n= comparisonExpressionRightOperand | t2= NOT_EQUAL_TO n= comparisonExpressionRightOperand | t3= GREATER_THAN n= comparisonExpressionRightOperand | t4= GREATER_THAN_EQUAL_TO n= comparisonExpressionRightOperand | t5= LESS_THAN n= comparisonExpressionRightOperand | t6= LESS_THAN_EQUAL_TO n= comparisonExpressionRightOperand )
+            // JPQL.g:784:7: (t1= EQUALS n= comparisonExpressionRightOperand | t2= NOT_EQUAL_TO n= comparisonExpressionRightOperand | t3= GREATER_THAN n= comparisonExpressionRightOperand | t4= GREATER_THAN_EQUAL_TO n= comparisonExpressionRightOperand | t5= LESS_THAN n= comparisonExpressionRightOperand | t6= LESS_THAN_EQUAL_TO n= comparisonExpressionRightOperand )
             int alt60=6;
             switch ( input.LA(1) ) {
             case EQUALS:
@@ -8827,7 +8827,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
             
             switch (alt60) {
                 case 1 :
-                    // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:784:7: t1= EQUALS n= comparisonExpressionRightOperand
+                    // JPQL.g:784:7: t1= EQUALS n= comparisonExpressionRightOperand
                     {
                     t1=(Token)input.LT(1);
                     match(input,EQUALS,FOLLOW_EQUALS_in_comparisonExpression4532); if (failed) return node;
@@ -8842,7 +8842,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
                     }
                     break;
                 case 2 :
-                    // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:786:7: t2= NOT_EQUAL_TO n= comparisonExpressionRightOperand
+                    // JPQL.g:786:7: t2= NOT_EQUAL_TO n= comparisonExpressionRightOperand
                     {
                     t2=(Token)input.LT(1);
                     match(input,NOT_EQUAL_TO,FOLLOW_NOT_EQUAL_TO_in_comparisonExpression4559); if (failed) return node;
@@ -8857,7 +8857,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
                     }
                     break;
                 case 3 :
-                    // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:788:7: t3= GREATER_THAN n= comparisonExpressionRightOperand
+                    // JPQL.g:788:7: t3= GREATER_THAN n= comparisonExpressionRightOperand
                     {
                     t3=(Token)input.LT(1);
                     match(input,GREATER_THAN,FOLLOW_GREATER_THAN_in_comparisonExpression4586); if (failed) return node;
@@ -8872,7 +8872,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
                     }
                     break;
                 case 4 :
-                    // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:790:7: t4= GREATER_THAN_EQUAL_TO n= comparisonExpressionRightOperand
+                    // JPQL.g:790:7: t4= GREATER_THAN_EQUAL_TO n= comparisonExpressionRightOperand
                     {
                     t4=(Token)input.LT(1);
                     match(input,GREATER_THAN_EQUAL_TO,FOLLOW_GREATER_THAN_EQUAL_TO_in_comparisonExpression4613); if (failed) return node;
@@ -8887,7 +8887,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
                     }
                     break;
                 case 5 :
-                    // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:792:7: t5= LESS_THAN n= comparisonExpressionRightOperand
+                    // JPQL.g:792:7: t5= LESS_THAN n= comparisonExpressionRightOperand
                     {
                     t5=(Token)input.LT(1);
                     match(input,LESS_THAN,FOLLOW_LESS_THAN_in_comparisonExpression4640); if (failed) return node;
@@ -8902,7 +8902,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
                     }
                     break;
                 case 6 :
-                    // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:794:7: t6= LESS_THAN_EQUAL_TO n= comparisonExpressionRightOperand
+                    // JPQL.g:794:7: t6= LESS_THAN_EQUAL_TO n= comparisonExpressionRightOperand
                     {
                     t6=(Token)input.LT(1);
                     match(input,LESS_THAN_EQUAL_TO,FOLLOW_LESS_THAN_EQUAL_TO_in_comparisonExpression4667); if (failed) return node;
@@ -8931,7 +8931,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
     
     // $ANTLR start comparisonExpressionRightOperand
-    // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:798:1: comparisonExpressionRightOperand returns [Object node] : (n= arithmeticExpression | n= nonArithmeticScalarExpression | n= anyOrAllExpression );
+    // JPQL.g:798:1: comparisonExpressionRightOperand returns [Object node] : (n= arithmeticExpression | n= nonArithmeticScalarExpression | n= anyOrAllExpression );
     public final Object comparisonExpressionRightOperand() throws RecognitionException {
 
         Object node = null;
@@ -8941,7 +8941,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
     
          node = null; 
         try {
-            // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:800:7: (n= arithmeticExpression | n= nonArithmeticScalarExpression | n= anyOrAllExpression )
+            // JPQL.g:800:7: (n= arithmeticExpression | n= nonArithmeticScalarExpression | n= anyOrAllExpression )
             int alt61=3;
             switch ( input.LA(1) ) {
             case ABS:
@@ -9013,7 +9013,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
             
             switch (alt61) {
                 case 1 :
-                    // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:800:7: n= arithmeticExpression
+                    // JPQL.g:800:7: n= arithmeticExpression
                     {
                     pushFollow(FOLLOW_arithmeticExpression_in_comparisonExpressionRightOperand4714);
                     n=arithmeticExpression();
@@ -9026,7 +9026,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
                     }
                     break;
                 case 2 :
-                    // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:801:7: n= nonArithmeticScalarExpression
+                    // JPQL.g:801:7: n= nonArithmeticScalarExpression
                     {
                     pushFollow(FOLLOW_nonArithmeticScalarExpression_in_comparisonExpressionRightOperand4728);
                     n=nonArithmeticScalarExpression();
@@ -9039,7 +9039,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
                     }
                     break;
                 case 3 :
-                    // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:802:7: n= anyOrAllExpression
+                    // JPQL.g:802:7: n= anyOrAllExpression
                     {
                     pushFollow(FOLLOW_anyOrAllExpression_in_comparisonExpressionRightOperand4742);
                     n=anyOrAllExpression();
@@ -9066,7 +9066,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
     
     // $ANTLR start arithmeticExpression
-    // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:805:1: arithmeticExpression returns [Object node] : (n= simpleArithmeticExpression | LEFT_ROUND_BRACKET n= subquery RIGHT_ROUND_BRACKET );
+    // JPQL.g:805:1: arithmeticExpression returns [Object node] : (n= simpleArithmeticExpression | LEFT_ROUND_BRACKET n= subquery RIGHT_ROUND_BRACKET );
     public final Object arithmeticExpression() throws RecognitionException {
 
         Object node = null;
@@ -9076,7 +9076,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
     
          node = null; 
         try {
-            // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:807:7: (n= simpleArithmeticExpression | LEFT_ROUND_BRACKET n= subquery RIGHT_ROUND_BRACKET )
+            // JPQL.g:807:7: (n= simpleArithmeticExpression | LEFT_ROUND_BRACKET n= subquery RIGHT_ROUND_BRACKET )
             int alt62=2;
             int LA62_0 = input.LA(1);
             
@@ -9109,7 +9109,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
             }
             switch (alt62) {
                 case 1 :
-                    // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:807:7: n= simpleArithmeticExpression
+                    // JPQL.g:807:7: n= simpleArithmeticExpression
                     {
                     pushFollow(FOLLOW_simpleArithmeticExpression_in_arithmeticExpression4774);
                     n=simpleArithmeticExpression();
@@ -9122,7 +9122,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
                     }
                     break;
                 case 2 :
-                    // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:808:7: LEFT_ROUND_BRACKET n= subquery RIGHT_ROUND_BRACKET
+                    // JPQL.g:808:7: LEFT_ROUND_BRACKET n= subquery RIGHT_ROUND_BRACKET
                     {
                     match(input,LEFT_ROUND_BRACKET,FOLLOW_LEFT_ROUND_BRACKET_in_arithmeticExpression4784); if (failed) return node;
                     pushFollow(FOLLOW_subquery_in_arithmeticExpression4790);
@@ -9151,7 +9151,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
     
     // $ANTLR start simpleArithmeticExpression
-    // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:811:1: simpleArithmeticExpression returns [Object node] : n= arithmeticTerm (p= PLUS right= arithmeticTerm | m= MINUS right= arithmeticTerm )* ;
+    // JPQL.g:811:1: simpleArithmeticExpression returns [Object node] : n= arithmeticTerm (p= PLUS right= arithmeticTerm | m= MINUS right= arithmeticTerm )* ;
     public final Object simpleArithmeticExpression() throws RecognitionException {
 
         Object node = null;
@@ -9167,8 +9167,8 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
             node = null; 
     
         try {
-            // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:815:7: (n= arithmeticTerm (p= PLUS right= arithmeticTerm | m= MINUS right= arithmeticTerm )* )
-            // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:815:7: n= arithmeticTerm (p= PLUS right= arithmeticTerm | m= MINUS right= arithmeticTerm )*
+            // JPQL.g:815:7: (n= arithmeticTerm (p= PLUS right= arithmeticTerm | m= MINUS right= arithmeticTerm )* )
+            // JPQL.g:815:7: n= arithmeticTerm (p= PLUS right= arithmeticTerm | m= MINUS right= arithmeticTerm )*
             {
             pushFollow(FOLLOW_arithmeticTerm_in_simpleArithmeticExpression4824);
             n=arithmeticTerm();
@@ -9177,7 +9177,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
             if ( backtracking==0 ) {
               node = n;
             }
-            // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:816:9: (p= PLUS right= arithmeticTerm | m= MINUS right= arithmeticTerm )*
+            // JPQL.g:816:9: (p= PLUS right= arithmeticTerm | m= MINUS right= arithmeticTerm )*
             loop63:
             do {
                 int alt63=3;
@@ -9193,7 +9193,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
             
                 switch (alt63) {
             	case 1 :
-            	    // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:816:11: p= PLUS right= arithmeticTerm
+            	    // JPQL.g:816:11: p= PLUS right= arithmeticTerm
             	    {
             	    p=(Token)input.LT(1);
             	    match(input,PLUS,FOLLOW_PLUS_in_simpleArithmeticExpression4840); if (failed) return node;
@@ -9208,7 +9208,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
             	    }
             	    break;
             	case 2 :
-            	    // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:818:11: m= MINUS right= arithmeticTerm
+            	    // JPQL.g:818:11: m= MINUS right= arithmeticTerm
             	    {
             	    m=(Token)input.LT(1);
             	    match(input,MINUS,FOLLOW_MINUS_in_simpleArithmeticExpression4875); if (failed) return node;
@@ -9244,7 +9244,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
     
     // $ANTLR start arithmeticTerm
-    // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:823:1: arithmeticTerm returns [Object node] : n= arithmeticFactor (m= MULTIPLY right= arithmeticFactor | d= DIVIDE right= arithmeticFactor )* ;
+    // JPQL.g:823:1: arithmeticTerm returns [Object node] : n= arithmeticFactor (m= MULTIPLY right= arithmeticFactor | d= DIVIDE right= arithmeticFactor )* ;
     public final Object arithmeticTerm() throws RecognitionException {
 
         Object node = null;
@@ -9260,8 +9260,8 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
             node = null; 
     
         try {
-            // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:827:7: (n= arithmeticFactor (m= MULTIPLY right= arithmeticFactor | d= DIVIDE right= arithmeticFactor )* )
-            // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:827:7: n= arithmeticFactor (m= MULTIPLY right= arithmeticFactor | d= DIVIDE right= arithmeticFactor )*
+            // JPQL.g:827:7: (n= arithmeticFactor (m= MULTIPLY right= arithmeticFactor | d= DIVIDE right= arithmeticFactor )* )
+            // JPQL.g:827:7: n= arithmeticFactor (m= MULTIPLY right= arithmeticFactor | d= DIVIDE right= arithmeticFactor )*
             {
             pushFollow(FOLLOW_arithmeticFactor_in_arithmeticTerm4938);
             n=arithmeticFactor();
@@ -9270,7 +9270,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
             if ( backtracking==0 ) {
               node = n;
             }
-            // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:828:9: (m= MULTIPLY right= arithmeticFactor | d= DIVIDE right= arithmeticFactor )*
+            // JPQL.g:828:9: (m= MULTIPLY right= arithmeticFactor | d= DIVIDE right= arithmeticFactor )*
             loop64:
             do {
                 int alt64=3;
@@ -9286,7 +9286,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
             
                 switch (alt64) {
             	case 1 :
-            	    // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:828:11: m= MULTIPLY right= arithmeticFactor
+            	    // JPQL.g:828:11: m= MULTIPLY right= arithmeticFactor
             	    {
             	    m=(Token)input.LT(1);
             	    match(input,MULTIPLY,FOLLOW_MULTIPLY_in_arithmeticTerm4954); if (failed) return node;
@@ -9301,7 +9301,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
             	    }
             	    break;
             	case 2 :
-            	    // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:830:11: d= DIVIDE right= arithmeticFactor
+            	    // JPQL.g:830:11: d= DIVIDE right= arithmeticFactor
             	    {
             	    d=(Token)input.LT(1);
             	    match(input,DIVIDE,FOLLOW_DIVIDE_in_arithmeticTerm4989); if (failed) return node;
@@ -9337,7 +9337,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
     
     // $ANTLR start arithmeticFactor
-    // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:835:1: arithmeticFactor returns [Object node] : (p= PLUS n= arithmeticPrimary | m= MINUS n= arithmeticPrimary | n= arithmeticPrimary );
+    // JPQL.g:835:1: arithmeticFactor returns [Object node] : (p= PLUS n= arithmeticPrimary | m= MINUS n= arithmeticPrimary | n= arithmeticPrimary );
     public final Object arithmeticFactor() throws RecognitionException {
 
         Object node = null;
@@ -9349,7 +9349,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
     
          node = null; 
         try {
-            // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:837:7: (p= PLUS n= arithmeticPrimary | m= MINUS n= arithmeticPrimary | n= arithmeticPrimary )
+            // JPQL.g:837:7: (p= PLUS n= arithmeticPrimary | m= MINUS n= arithmeticPrimary | n= arithmeticPrimary )
             int alt65=3;
             switch ( input.LA(1) ) {
             case PLUS:
@@ -9402,7 +9402,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
             
             switch (alt65) {
                 case 1 :
-                    // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:837:7: p= PLUS n= arithmeticPrimary
+                    // JPQL.g:837:7: p= PLUS n= arithmeticPrimary
                     {
                     p=(Token)input.LT(1);
                     match(input,PLUS,FOLLOW_PLUS_in_arithmeticFactor5049); if (failed) return node;
@@ -9417,7 +9417,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
                     }
                     break;
                 case 2 :
-                    // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:839:7: m= MINUS n= arithmeticPrimary
+                    // JPQL.g:839:7: m= MINUS n= arithmeticPrimary
                     {
                     m=(Token)input.LT(1);
                     match(input,MINUS,FOLLOW_MINUS_in_arithmeticFactor5078); if (failed) return node;
@@ -9432,7 +9432,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
                     }
                     break;
                 case 3 :
-                    // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:841:7: n= arithmeticPrimary
+                    // JPQL.g:841:7: n= arithmeticPrimary
                     {
                     pushFollow(FOLLOW_arithmeticPrimary_in_arithmeticFactor5108);
                     n=arithmeticPrimary();
@@ -9459,7 +9459,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
     
     // $ANTLR start arithmeticPrimary
-    // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:844:1: arithmeticPrimary returns [Object node] : ({...}?n= aggregateExpression | n= pathExprOrVariableAccess | n= inputParameter | n= caseExpression | n= functionsReturningNumerics | LEFT_ROUND_BRACKET n= simpleArithmeticExpression RIGHT_ROUND_BRACKET | n= literalNumeric );
+    // JPQL.g:844:1: arithmeticPrimary returns [Object node] : ({...}?n= aggregateExpression | n= pathExprOrVariableAccess | n= inputParameter | n= caseExpression | n= functionsReturningNumerics | LEFT_ROUND_BRACKET n= simpleArithmeticExpression RIGHT_ROUND_BRACKET | n= literalNumeric );
     public final Object arithmeticPrimary() throws RecognitionException {
 
         Object node = null;
@@ -9469,7 +9469,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
     
          node = null; 
         try {
-            // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:846:7: ({...}?n= aggregateExpression | n= pathExprOrVariableAccess | n= inputParameter | n= caseExpression | n= functionsReturningNumerics | LEFT_ROUND_BRACKET n= simpleArithmeticExpression RIGHT_ROUND_BRACKET | n= literalNumeric )
+            // JPQL.g:846:7: ({...}?n= aggregateExpression | n= pathExprOrVariableAccess | n= inputParameter | n= caseExpression | n= functionsReturningNumerics | LEFT_ROUND_BRACKET n= simpleArithmeticExpression RIGHT_ROUND_BRACKET | n= literalNumeric )
             int alt66=7;
             switch ( input.LA(1) ) {
             case AVG:
@@ -9536,7 +9536,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
             
             switch (alt66) {
                 case 1 :
-                    // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:846:7: {...}?n= aggregateExpression
+                    // JPQL.g:846:7: {...}?n= aggregateExpression
                     {
                     if ( !( aggregatesAllowed() ) ) {
                         if (backtracking>0) {failed=true; return node;}
@@ -9553,7 +9553,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
                     }
                     break;
                 case 2 :
-                    // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:847:7: n= pathExprOrVariableAccess
+                    // JPQL.g:847:7: n= pathExprOrVariableAccess
                     {
                     pushFollow(FOLLOW_pathExprOrVariableAccess_in_arithmeticPrimary5156);
                     n=pathExprOrVariableAccess();
@@ -9566,7 +9566,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
                     }
                     break;
                 case 3 :
-                    // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:848:7: n= inputParameter
+                    // JPQL.g:848:7: n= inputParameter
                     {
                     pushFollow(FOLLOW_inputParameter_in_arithmeticPrimary5170);
                     n=inputParameter();
@@ -9579,7 +9579,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
                     }
                     break;
                 case 4 :
-                    // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:849:7: n= caseExpression
+                    // JPQL.g:849:7: n= caseExpression
                     {
                     pushFollow(FOLLOW_caseExpression_in_arithmeticPrimary5184);
                     n=caseExpression();
@@ -9592,7 +9592,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
                     }
                     break;
                 case 5 :
-                    // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:850:7: n= functionsReturningNumerics
+                    // JPQL.g:850:7: n= functionsReturningNumerics
                     {
                     pushFollow(FOLLOW_functionsReturningNumerics_in_arithmeticPrimary5198);
                     n=functionsReturningNumerics();
@@ -9605,7 +9605,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
                     }
                     break;
                 case 6 :
-                    // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:851:7: LEFT_ROUND_BRACKET n= simpleArithmeticExpression RIGHT_ROUND_BRACKET
+                    // JPQL.g:851:7: LEFT_ROUND_BRACKET n= simpleArithmeticExpression RIGHT_ROUND_BRACKET
                     {
                     match(input,LEFT_ROUND_BRACKET,FOLLOW_LEFT_ROUND_BRACKET_in_arithmeticPrimary5208); if (failed) return node;
                     pushFollow(FOLLOW_simpleArithmeticExpression_in_arithmeticPrimary5214);
@@ -9620,7 +9620,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
                     }
                     break;
                 case 7 :
-                    // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:852:7: n= literalNumeric
+                    // JPQL.g:852:7: n= literalNumeric
                     {
                     pushFollow(FOLLOW_literalNumeric_in_arithmeticPrimary5230);
                     n=literalNumeric();
@@ -9647,7 +9647,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
     
     // $ANTLR start scalarExpression
-    // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:855:1: scalarExpression returns [Object node] : (n= simpleArithmeticExpression | n= nonArithmeticScalarExpression );
+    // JPQL.g:855:1: scalarExpression returns [Object node] : (n= simpleArithmeticExpression | n= nonArithmeticScalarExpression );
     public final Object scalarExpression() throws RecognitionException {
 
         Object node = null;
@@ -9657,7 +9657,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
     
         node = null; 
         try {
-            // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:857:7: (n= simpleArithmeticExpression | n= nonArithmeticScalarExpression )
+            // JPQL.g:857:7: (n= simpleArithmeticExpression | n= nonArithmeticScalarExpression )
             int alt67=2;
             int LA67_0 = input.LA(1);
             
@@ -9676,7 +9676,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
             }
             switch (alt67) {
                 case 1 :
-                    // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:857:7: n= simpleArithmeticExpression
+                    // JPQL.g:857:7: n= simpleArithmeticExpression
                     {
                     pushFollow(FOLLOW_simpleArithmeticExpression_in_scalarExpression5262);
                     n=simpleArithmeticExpression();
@@ -9689,7 +9689,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
                     }
                     break;
                 case 2 :
-                    // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:858:7: n= nonArithmeticScalarExpression
+                    // JPQL.g:858:7: n= nonArithmeticScalarExpression
                     {
                     pushFollow(FOLLOW_nonArithmeticScalarExpression_in_scalarExpression5277);
                     n=nonArithmeticScalarExpression();
@@ -9716,7 +9716,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
     
     // $ANTLR start nonArithmeticScalarExpression
-    // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:861:1: nonArithmeticScalarExpression returns [Object node] : (n= functionsReturningDatetime | n= functionsReturningStrings | n= literalString | n= literalBoolean | n= literalTemporal | n= entityTypeExpression );
+    // JPQL.g:861:1: nonArithmeticScalarExpression returns [Object node] : (n= functionsReturningDatetime | n= functionsReturningStrings | n= literalString | n= literalBoolean | n= literalTemporal | n= entityTypeExpression );
     public final Object nonArithmeticScalarExpression() throws RecognitionException {
 
         Object node = null;
@@ -9726,7 +9726,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
     
         node = null; 
         try {
-            // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:863:7: (n= functionsReturningDatetime | n= functionsReturningStrings | n= literalString | n= literalBoolean | n= literalTemporal | n= entityTypeExpression )
+            // JPQL.g:863:7: (n= functionsReturningDatetime | n= functionsReturningStrings | n= literalString | n= literalBoolean | n= literalTemporal | n= entityTypeExpression )
             int alt68=6;
             switch ( input.LA(1) ) {
             case CURRENT_DATE:
@@ -9779,7 +9779,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
             
             switch (alt68) {
                 case 1 :
-                    // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:863:7: n= functionsReturningDatetime
+                    // JPQL.g:863:7: n= functionsReturningDatetime
                     {
                     pushFollow(FOLLOW_functionsReturningDatetime_in_nonArithmeticScalarExpression5309);
                     n=functionsReturningDatetime();
@@ -9792,7 +9792,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
                     }
                     break;
                 case 2 :
-                    // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:864:7: n= functionsReturningStrings
+                    // JPQL.g:864:7: n= functionsReturningStrings
                     {
                     pushFollow(FOLLOW_functionsReturningStrings_in_nonArithmeticScalarExpression5323);
                     n=functionsReturningStrings();
@@ -9805,7 +9805,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
                     }
                     break;
                 case 3 :
-                    // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:865:7: n= literalString
+                    // JPQL.g:865:7: n= literalString
                     {
                     pushFollow(FOLLOW_literalString_in_nonArithmeticScalarExpression5337);
                     n=literalString();
@@ -9818,7 +9818,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
                     }
                     break;
                 case 4 :
-                    // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:866:7: n= literalBoolean
+                    // JPQL.g:866:7: n= literalBoolean
                     {
                     pushFollow(FOLLOW_literalBoolean_in_nonArithmeticScalarExpression5351);
                     n=literalBoolean();
@@ -9831,7 +9831,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
                     }
                     break;
                 case 5 :
-                    // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:867:7: n= literalTemporal
+                    // JPQL.g:867:7: n= literalTemporal
                     {
                     pushFollow(FOLLOW_literalTemporal_in_nonArithmeticScalarExpression5365);
                     n=literalTemporal();
@@ -9844,7 +9844,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
                     }
                     break;
                 case 6 :
-                    // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:868:7: n= entityTypeExpression
+                    // JPQL.g:868:7: n= entityTypeExpression
                     {
                     pushFollow(FOLLOW_entityTypeExpression_in_nonArithmeticScalarExpression5379);
                     n=entityTypeExpression();
@@ -9871,7 +9871,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
     
     // $ANTLR start anyOrAllExpression
-    // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:871:1: anyOrAllExpression returns [Object node] : (a= ALL LEFT_ROUND_BRACKET n= subquery RIGHT_ROUND_BRACKET | y= ANY LEFT_ROUND_BRACKET n= subquery RIGHT_ROUND_BRACKET | s= SOME LEFT_ROUND_BRACKET n= subquery RIGHT_ROUND_BRACKET );
+    // JPQL.g:871:1: anyOrAllExpression returns [Object node] : (a= ALL LEFT_ROUND_BRACKET n= subquery RIGHT_ROUND_BRACKET | y= ANY LEFT_ROUND_BRACKET n= subquery RIGHT_ROUND_BRACKET | s= SOME LEFT_ROUND_BRACKET n= subquery RIGHT_ROUND_BRACKET );
     public final Object anyOrAllExpression() throws RecognitionException {
 
         Object node = null;
@@ -9884,7 +9884,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
     
          node = null; 
         try {
-            // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:873:7: (a= ALL LEFT_ROUND_BRACKET n= subquery RIGHT_ROUND_BRACKET | y= ANY LEFT_ROUND_BRACKET n= subquery RIGHT_ROUND_BRACKET | s= SOME LEFT_ROUND_BRACKET n= subquery RIGHT_ROUND_BRACKET )
+            // JPQL.g:873:7: (a= ALL LEFT_ROUND_BRACKET n= subquery RIGHT_ROUND_BRACKET | y= ANY LEFT_ROUND_BRACKET n= subquery RIGHT_ROUND_BRACKET | s= SOME LEFT_ROUND_BRACKET n= subquery RIGHT_ROUND_BRACKET )
             int alt69=3;
             switch ( input.LA(1) ) {
             case ALL:
@@ -9912,7 +9912,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
             
             switch (alt69) {
                 case 1 :
-                    // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:873:7: a= ALL LEFT_ROUND_BRACKET n= subquery RIGHT_ROUND_BRACKET
+                    // JPQL.g:873:7: a= ALL LEFT_ROUND_BRACKET n= subquery RIGHT_ROUND_BRACKET
                     {
                     a=(Token)input.LT(1);
                     match(input,ALL,FOLLOW_ALL_in_anyOrAllExpression5409); if (failed) return node;
@@ -9929,7 +9929,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
                     }
                     break;
                 case 2 :
-                    // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:875:7: y= ANY LEFT_ROUND_BRACKET n= subquery RIGHT_ROUND_BRACKET
+                    // JPQL.g:875:7: y= ANY LEFT_ROUND_BRACKET n= subquery RIGHT_ROUND_BRACKET
                     {
                     y=(Token)input.LT(1);
                     match(input,ANY,FOLLOW_ANY_in_anyOrAllExpression5439); if (failed) return node;
@@ -9946,7 +9946,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
                     }
                     break;
                 case 3 :
-                    // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:877:7: s= SOME LEFT_ROUND_BRACKET n= subquery RIGHT_ROUND_BRACKET
+                    // JPQL.g:877:7: s= SOME LEFT_ROUND_BRACKET n= subquery RIGHT_ROUND_BRACKET
                     {
                     s=(Token)input.LT(1);
                     match(input,SOME,FOLLOW_SOME_in_anyOrAllExpression5469); if (failed) return node;
@@ -9977,7 +9977,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
     
     // $ANTLR start entityTypeExpression
-    // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:881:1: entityTypeExpression returns [Object node] : n= typeDiscriminator ;
+    // JPQL.g:881:1: entityTypeExpression returns [Object node] : n= typeDiscriminator ;
     public final Object entityTypeExpression() throws RecognitionException {
 
         Object node = null;
@@ -9987,8 +9987,8 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
     
         node = null;
         try {
-            // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:883:7: (n= typeDiscriminator )
-            // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:883:7: n= typeDiscriminator
+            // JPQL.g:883:7: (n= typeDiscriminator )
+            // JPQL.g:883:7: n= typeDiscriminator
             {
             pushFollow(FOLLOW_typeDiscriminator_in_entityTypeExpression5519);
             n=typeDiscriminator();
@@ -10013,7 +10013,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
     
     // $ANTLR start typeDiscriminator
-    // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:886:1: typeDiscriminator returns [Object node] : (a= TYPE LEFT_ROUND_BRACKET n= variableOrSingleValuedPath RIGHT_ROUND_BRACKET | c= TYPE LEFT_ROUND_BRACKET n= inputParameter RIGHT_ROUND_BRACKET );
+    // JPQL.g:886:1: typeDiscriminator returns [Object node] : (a= TYPE LEFT_ROUND_BRACKET n= variableOrSingleValuedPath RIGHT_ROUND_BRACKET | c= TYPE LEFT_ROUND_BRACKET n= inputParameter RIGHT_ROUND_BRACKET );
     public final Object typeDiscriminator() throws RecognitionException {
 
         Object node = null;
@@ -10025,7 +10025,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
     
         node = null;
         try {
-            // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:888:7: (a= TYPE LEFT_ROUND_BRACKET n= variableOrSingleValuedPath RIGHT_ROUND_BRACKET | c= TYPE LEFT_ROUND_BRACKET n= inputParameter RIGHT_ROUND_BRACKET )
+            // JPQL.g:888:7: (a= TYPE LEFT_ROUND_BRACKET n= variableOrSingleValuedPath RIGHT_ROUND_BRACKET | c= TYPE LEFT_ROUND_BRACKET n= inputParameter RIGHT_ROUND_BRACKET )
             int alt70=2;
             int LA70_0 = input.LA(1);
             
@@ -10066,7 +10066,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
             }
             switch (alt70) {
                 case 1 :
-                    // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:888:7: a= TYPE LEFT_ROUND_BRACKET n= variableOrSingleValuedPath RIGHT_ROUND_BRACKET
+                    // JPQL.g:888:7: a= TYPE LEFT_ROUND_BRACKET n= variableOrSingleValuedPath RIGHT_ROUND_BRACKET
                     {
                     a=(Token)input.LT(1);
                     match(input,TYPE,FOLLOW_TYPE_in_typeDiscriminator5552); if (failed) return node;
@@ -10083,7 +10083,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
                     }
                     break;
                 case 2 :
-                    // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:889:7: c= TYPE LEFT_ROUND_BRACKET n= inputParameter RIGHT_ROUND_BRACKET
+                    // JPQL.g:889:7: c= TYPE LEFT_ROUND_BRACKET n= inputParameter RIGHT_ROUND_BRACKET
                     {
                     c=(Token)input.LT(1);
                     match(input,TYPE,FOLLOW_TYPE_in_typeDiscriminator5577); if (failed) return node;
@@ -10114,7 +10114,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
     
     // $ANTLR start caseExpression
-    // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:892:1: caseExpression returns [Object node] : (n= simpleCaseExpression | n= generalCaseExpression | n= coalesceExpression | n= nullIfExpression );
+    // JPQL.g:892:1: caseExpression returns [Object node] : (n= simpleCaseExpression | n= generalCaseExpression | n= coalesceExpression | n= nullIfExpression );
     public final Object caseExpression() throws RecognitionException {
 
         Object node = null;
@@ -10124,7 +10124,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
     
         node = null;
         try {
-            // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:894:6: (n= simpleCaseExpression | n= generalCaseExpression | n= coalesceExpression | n= nullIfExpression )
+            // JPQL.g:894:6: (n= simpleCaseExpression | n= generalCaseExpression | n= coalesceExpression | n= nullIfExpression )
             int alt71=4;
             switch ( input.LA(1) ) {
             case CASE:
@@ -10166,7 +10166,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
             
             switch (alt71) {
                 case 1 :
-                    // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:894:6: n= simpleCaseExpression
+                    // JPQL.g:894:6: n= simpleCaseExpression
                     {
                     pushFollow(FOLLOW_simpleCaseExpression_in_caseExpression5622);
                     n=simpleCaseExpression();
@@ -10179,7 +10179,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
                     }
                     break;
                 case 2 :
-                    // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:895:6: n= generalCaseExpression
+                    // JPQL.g:895:6: n= generalCaseExpression
                     {
                     pushFollow(FOLLOW_generalCaseExpression_in_caseExpression5635);
                     n=generalCaseExpression();
@@ -10192,7 +10192,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
                     }
                     break;
                 case 3 :
-                    // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:896:6: n= coalesceExpression
+                    // JPQL.g:896:6: n= coalesceExpression
                     {
                     pushFollow(FOLLOW_coalesceExpression_in_caseExpression5648);
                     n=coalesceExpression();
@@ -10205,7 +10205,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
                     }
                     break;
                 case 4 :
-                    // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:897:6: n= nullIfExpression
+                    // JPQL.g:897:6: n= nullIfExpression
                     {
                     pushFollow(FOLLOW_nullIfExpression_in_caseExpression5661);
                     n=nullIfExpression();
@@ -10237,7 +10237,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
     
     
     // $ANTLR start simpleCaseExpression
-    // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:900:1: simpleCaseExpression returns [Object node] : a= CASE c= caseOperand w= simpleWhenClause (w= simpleWhenClause )* ELSE e= scalarExpression END ;
+    // JPQL.g:900:1: simpleCaseExpression returns [Object node] : a= CASE c= caseOperand w= simpleWhenClause (w= simpleWhenClause )* ELSE e= scalarExpression END ;
     public final Object simpleCaseExpression() throws RecognitionException {
         simpleCaseExpression_stack.push(new simpleCaseExpression_scope());
 
@@ -10256,8 +10256,8 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
             ((simpleCaseExpression_scope)simpleCaseExpression_stack.peek()).whens = new ArrayList();
     
         try {
-            // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:908:6: (a= CASE c= caseOperand w= simpleWhenClause (w= simpleWhenClause )* ELSE e= scalarExpression END )
-            // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:908:6: a= CASE c= caseOperand w= simpleWhenClause (w= simpleWhenClause )* ELSE e= scalarExpression END
+            // JPQL.g:908:6: (a= CASE c= caseOperand w= simpleWhenClause (w= simpleWhenClause )* ELSE e= scalarExpression END )
+            // JPQL.g:908:6: a= CASE c= caseOperand w= simpleWhenClause (w= simpleWhenClause )* ELSE e= scalarExpression END
             {
             a=(Token)input.LT(1);
             match(input,CASE,FOLLOW_CASE_in_simpleCaseExpression5699); if (failed) return node;
@@ -10272,7 +10272,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
             if ( backtracking==0 ) {
               ((simpleCaseExpression_scope)simpleCaseExpression_stack.peek()).whens.add(w);
             }
-            // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:908:97: (w= simpleWhenClause )*
+            // JPQL.g:908:97: (w= simpleWhenClause )*
             loop72:
             do {
                 int alt72=2;
@@ -10285,7 +10285,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
             
                 switch (alt72) {
             	case 1 :
-            	    // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:908:98: w= simpleWhenClause
+            	    // JPQL.g:908:98: w= simpleWhenClause
             	    {
             	    pushFollow(FOLLOW_simpleWhenClause_in_simpleCaseExpression5720);
             	    w=simpleWhenClause();
@@ -10337,7 +10337,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
     
     
     // $ANTLR start generalCaseExpression
-    // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:915:1: generalCaseExpression returns [Object node] : a= CASE w= whenClause (w= whenClause )* ELSE e= scalarExpression END ;
+    // JPQL.g:915:1: generalCaseExpression returns [Object node] : a= CASE w= whenClause (w= whenClause )* ELSE e= scalarExpression END ;
     public final Object generalCaseExpression() throws RecognitionException {
         generalCaseExpression_stack.push(new generalCaseExpression_scope());
 
@@ -10354,8 +10354,8 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
             ((generalCaseExpression_scope)generalCaseExpression_stack.peek()).whens = new ArrayList();
     
         try {
-            // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:923:6: (a= CASE w= whenClause (w= whenClause )* ELSE e= scalarExpression END )
-            // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:923:6: a= CASE w= whenClause (w= whenClause )* ELSE e= scalarExpression END
+            // JPQL.g:923:6: (a= CASE w= whenClause (w= whenClause )* ELSE e= scalarExpression END )
+            // JPQL.g:923:6: a= CASE w= whenClause (w= whenClause )* ELSE e= scalarExpression END
             {
             a=(Token)input.LT(1);
             match(input,CASE,FOLLOW_CASE_in_generalCaseExpression5778); if (failed) return node;
@@ -10366,7 +10366,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
             if ( backtracking==0 ) {
               ((generalCaseExpression_scope)generalCaseExpression_stack.peek()).whens.add(w);
             }
-            // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:923:76: (w= whenClause )*
+            // JPQL.g:923:76: (w= whenClause )*
             loop73:
             do {
                 int alt73=2;
@@ -10379,7 +10379,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
             
                 switch (alt73) {
             	case 1 :
-            	    // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:923:77: w= whenClause
+            	    // JPQL.g:923:77: w= whenClause
             	    {
             	    pushFollow(FOLLOW_whenClause_in_generalCaseExpression5793);
             	    w=whenClause();
@@ -10431,7 +10431,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
     
     
     // $ANTLR start coalesceExpression
-    // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:930:1: coalesceExpression returns [Object node] : c= COALESCE LEFT_ROUND_BRACKET p= scalarExpression ( COMMA s= scalarExpression )+ RIGHT_ROUND_BRACKET ;
+    // JPQL.g:930:1: coalesceExpression returns [Object node] : c= COALESCE LEFT_ROUND_BRACKET p= scalarExpression ( COMMA s= scalarExpression )+ RIGHT_ROUND_BRACKET ;
     public final Object coalesceExpression() throws RecognitionException {
         coalesceExpression_stack.push(new coalesceExpression_scope());
 
@@ -10448,8 +10448,8 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
             ((coalesceExpression_scope)coalesceExpression_stack.peek()).primaries = new ArrayList();
     
         try {
-            // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:938:6: (c= COALESCE LEFT_ROUND_BRACKET p= scalarExpression ( COMMA s= scalarExpression )+ RIGHT_ROUND_BRACKET )
-            // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:938:6: c= COALESCE LEFT_ROUND_BRACKET p= scalarExpression ( COMMA s= scalarExpression )+ RIGHT_ROUND_BRACKET
+            // JPQL.g:938:6: (c= COALESCE LEFT_ROUND_BRACKET p= scalarExpression ( COMMA s= scalarExpression )+ RIGHT_ROUND_BRACKET )
+            // JPQL.g:938:6: c= COALESCE LEFT_ROUND_BRACKET p= scalarExpression ( COMMA s= scalarExpression )+ RIGHT_ROUND_BRACKET
             {
             c=(Token)input.LT(1);
             match(input,COALESCE,FOLLOW_COALESCE_in_coalesceExpression5851); if (failed) return node;
@@ -10461,7 +10461,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
             if ( backtracking==0 ) {
               ((coalesceExpression_scope)coalesceExpression_stack.peek()).primaries.add(p);
             }
-            // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:938:106: ( COMMA s= scalarExpression )+
+            // JPQL.g:938:106: ( COMMA s= scalarExpression )+
             int cnt74=0;
             loop74:
             do {
@@ -10475,7 +10475,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
             
                 switch (alt74) {
             	case 1 :
-            	    // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:938:107: COMMA s= scalarExpression
+            	    // JPQL.g:938:107: COMMA s= scalarExpression
             	    {
             	    match(input,COMMA,FOLLOW_COMMA_in_coalesceExpression5864); if (failed) return node;
             	    pushFollow(FOLLOW_scalarExpression_in_coalesceExpression5870);
@@ -10523,7 +10523,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
     
     // $ANTLR start nullIfExpression
-    // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:945:1: nullIfExpression returns [Object node] : n= NULLIF LEFT_ROUND_BRACKET l= scalarExpression COMMA r= scalarExpression RIGHT_ROUND_BRACKET ;
+    // JPQL.g:945:1: nullIfExpression returns [Object node] : n= NULLIF LEFT_ROUND_BRACKET l= scalarExpression COMMA r= scalarExpression RIGHT_ROUND_BRACKET ;
     public final Object nullIfExpression() throws RecognitionException {
 
         Object node = null;
@@ -10536,8 +10536,8 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
     
         node = null;
         try {
-            // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:947:6: (n= NULLIF LEFT_ROUND_BRACKET l= scalarExpression COMMA r= scalarExpression RIGHT_ROUND_BRACKET )
-            // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:947:6: n= NULLIF LEFT_ROUND_BRACKET l= scalarExpression COMMA r= scalarExpression RIGHT_ROUND_BRACKET
+            // JPQL.g:947:6: (n= NULLIF LEFT_ROUND_BRACKET l= scalarExpression COMMA r= scalarExpression RIGHT_ROUND_BRACKET )
+            // JPQL.g:947:6: n= NULLIF LEFT_ROUND_BRACKET l= scalarExpression COMMA r= scalarExpression RIGHT_ROUND_BRACKET
             {
             n=(Token)input.LT(1);
             match(input,NULLIF,FOLLOW_NULLIF_in_nullIfExpression5917); if (failed) return node;
@@ -10574,7 +10574,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
     
     // $ANTLR start caseOperand
-    // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:955:1: caseOperand returns [Object node] : (n= stateFieldPathExpression | n= typeDiscriminator );
+    // JPQL.g:955:1: caseOperand returns [Object node] : (n= stateFieldPathExpression | n= typeDiscriminator );
     public final Object caseOperand() throws RecognitionException {
 
         Object node = null;
@@ -10584,7 +10584,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
     
         node = null;
         try {
-            // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:957:6: (n= stateFieldPathExpression | n= typeDiscriminator )
+            // JPQL.g:957:6: (n= stateFieldPathExpression | n= typeDiscriminator )
             int alt75=2;
             int LA75_0 = input.LA(1);
             
@@ -10603,7 +10603,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
             }
             switch (alt75) {
                 case 1 :
-                    // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:957:6: n= stateFieldPathExpression
+                    // JPQL.g:957:6: n= stateFieldPathExpression
                     {
                     pushFollow(FOLLOW_stateFieldPathExpression_in_caseOperand5982);
                     n=stateFieldPathExpression();
@@ -10616,7 +10616,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
                     }
                     break;
                 case 2 :
-                    // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:958:6: n= typeDiscriminator
+                    // JPQL.g:958:6: n= typeDiscriminator
                     {
                     pushFollow(FOLLOW_typeDiscriminator_in_caseOperand5996);
                     n=typeDiscriminator();
@@ -10643,7 +10643,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
     
     // $ANTLR start whenClause
-    // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:961:1: whenClause returns [Object node] : w= WHEN c= conditionalExpression THEN a= scalarExpression ;
+    // JPQL.g:961:1: whenClause returns [Object node] : w= WHEN c= conditionalExpression THEN a= scalarExpression ;
     public final Object whenClause() throws RecognitionException {
 
         Object node = null;
@@ -10656,8 +10656,8 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
     
         node = null;
         try {
-            // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:963:6: (w= WHEN c= conditionalExpression THEN a= scalarExpression )
-            // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:963:6: w= WHEN c= conditionalExpression THEN a= scalarExpression
+            // JPQL.g:963:6: (w= WHEN c= conditionalExpression THEN a= scalarExpression )
+            // JPQL.g:963:6: w= WHEN c= conditionalExpression THEN a= scalarExpression
             {
             w=(Token)input.LT(1);
             match(input,WHEN,FOLLOW_WHEN_in_whenClause6031); if (failed) return node;
@@ -10692,7 +10692,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
     
     // $ANTLR start simpleWhenClause
-    // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:970:1: simpleWhenClause returns [Object node] : w= WHEN c= scalarExpression THEN a= scalarExpression ;
+    // JPQL.g:970:1: simpleWhenClause returns [Object node] : w= WHEN c= scalarExpression THEN a= scalarExpression ;
     public final Object simpleWhenClause() throws RecognitionException {
 
         Object node = null;
@@ -10705,8 +10705,8 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
     
         node = null;
         try {
-            // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:972:6: (w= WHEN c= scalarExpression THEN a= scalarExpression )
-            // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:972:6: w= WHEN c= scalarExpression THEN a= scalarExpression
+            // JPQL.g:972:6: (w= WHEN c= scalarExpression THEN a= scalarExpression )
+            // JPQL.g:972:6: w= WHEN c= scalarExpression THEN a= scalarExpression
             {
             w=(Token)input.LT(1);
             match(input,WHEN,FOLLOW_WHEN_in_simpleWhenClause6087); if (failed) return node;
@@ -10741,7 +10741,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
     
     // $ANTLR start variableOrSingleValuedPath
-    // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:979:1: variableOrSingleValuedPath returns [Object node] : (n= singleValuedPathExpression | n= variableAccessOrTypeConstant );
+    // JPQL.g:979:1: variableOrSingleValuedPath returns [Object node] : (n= singleValuedPathExpression | n= variableAccessOrTypeConstant );
     public final Object variableOrSingleValuedPath() throws RecognitionException {
 
         Object node = null;
@@ -10751,7 +10751,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
     
         node = null;
         try {
-            // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:981:7: (n= singleValuedPathExpression | n= variableAccessOrTypeConstant )
+            // JPQL.g:981:7: (n= singleValuedPathExpression | n= variableAccessOrTypeConstant )
             int alt76=2;
             int LA76_0 = input.LA(1);
             
@@ -10784,7 +10784,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
             }
             switch (alt76) {
                 case 1 :
-                    // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:981:7: n= singleValuedPathExpression
+                    // JPQL.g:981:7: n= singleValuedPathExpression
                     {
                     pushFollow(FOLLOW_singleValuedPathExpression_in_variableOrSingleValuedPath6138);
                     n=singleValuedPathExpression();
@@ -10797,7 +10797,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
                     }
                     break;
                 case 2 :
-                    // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:982:7: n= variableAccessOrTypeConstant
+                    // JPQL.g:982:7: n= variableAccessOrTypeConstant
                     {
                     pushFollow(FOLLOW_variableAccessOrTypeConstant_in_variableOrSingleValuedPath6152);
                     n=variableAccessOrTypeConstant();
@@ -10824,7 +10824,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
     
     // $ANTLR start stringPrimary
-    // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:985:1: stringPrimary returns [Object node] : (n= literalString | n= functionsReturningStrings | n= inputParameter | n= stateFieldPathExpression );
+    // JPQL.g:985:1: stringPrimary returns [Object node] : (n= literalString | n= functionsReturningStrings | n= inputParameter | n= stateFieldPathExpression );
     public final Object stringPrimary() throws RecognitionException {
 
         Object node = null;
@@ -10834,7 +10834,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
     
          node = null; 
         try {
-            // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:987:7: (n= literalString | n= functionsReturningStrings | n= inputParameter | n= stateFieldPathExpression )
+            // JPQL.g:987:7: (n= literalString | n= functionsReturningStrings | n= inputParameter | n= stateFieldPathExpression )
             int alt77=4;
             switch ( input.LA(1) ) {
             case STRING_LITERAL_DOUBLE_QUOTED:
@@ -10875,7 +10875,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
             
             switch (alt77) {
                 case 1 :
-                    // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:987:7: n= literalString
+                    // JPQL.g:987:7: n= literalString
                     {
                     pushFollow(FOLLOW_literalString_in_stringPrimary6184);
                     n=literalString();
@@ -10888,7 +10888,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
                     }
                     break;
                 case 2 :
-                    // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:988:7: n= functionsReturningStrings
+                    // JPQL.g:988:7: n= functionsReturningStrings
                     {
                     pushFollow(FOLLOW_functionsReturningStrings_in_stringPrimary6198);
                     n=functionsReturningStrings();
@@ -10901,7 +10901,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
                     }
                     break;
                 case 3 :
-                    // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:989:7: n= inputParameter
+                    // JPQL.g:989:7: n= inputParameter
                     {
                     pushFollow(FOLLOW_inputParameter_in_stringPrimary6212);
                     n=inputParameter();
@@ -10914,7 +10914,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
                     }
                     break;
                 case 4 :
-                    // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:990:7: n= stateFieldPathExpression
+                    // JPQL.g:990:7: n= stateFieldPathExpression
                     {
                     pushFollow(FOLLOW_stateFieldPathExpression_in_stringPrimary6226);
                     n=stateFieldPathExpression();
@@ -10941,7 +10941,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
     
     // $ANTLR start literal
-    // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:995:1: literal returns [Object node] : (n= literalNumeric | n= literalBoolean | n= literalString );
+    // JPQL.g:995:1: literal returns [Object node] : (n= literalNumeric | n= literalBoolean | n= literalString );
     public final Object literal() throws RecognitionException {
 
         Object node = null;
@@ -10951,7 +10951,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
     
          node = null; 
         try {
-            // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:997:7: (n= literalNumeric | n= literalBoolean | n= literalString )
+            // JPQL.g:997:7: (n= literalNumeric | n= literalBoolean | n= literalString )
             int alt78=3;
             switch ( input.LA(1) ) {
             case INTEGER_LITERAL:
@@ -10984,7 +10984,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
             
             switch (alt78) {
                 case 1 :
-                    // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:997:7: n= literalNumeric
+                    // JPQL.g:997:7: n= literalNumeric
                     {
                     pushFollow(FOLLOW_literalNumeric_in_literal6260);
                     n=literalNumeric();
@@ -10997,7 +10997,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
                     }
                     break;
                 case 2 :
-                    // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:998:7: n= literalBoolean
+                    // JPQL.g:998:7: n= literalBoolean
                     {
                     pushFollow(FOLLOW_literalBoolean_in_literal6274);
                     n=literalBoolean();
@@ -11010,7 +11010,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
                     }
                     break;
                 case 3 :
-                    // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:999:7: n= literalString
+                    // JPQL.g:999:7: n= literalString
                     {
                     pushFollow(FOLLOW_literalString_in_literal6288);
                     n=literalString();
@@ -11037,7 +11037,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
     
     // $ANTLR start literalNumeric
-    // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:1002:1: literalNumeric returns [Object node] : (i= INTEGER_LITERAL | l= LONG_LITERAL | f= FLOAT_LITERAL | d= DOUBLE_LITERAL );
+    // JPQL.g:1002:1: literalNumeric returns [Object node] : (i= INTEGER_LITERAL | l= LONG_LITERAL | f= FLOAT_LITERAL | d= DOUBLE_LITERAL );
     public final Object literalNumeric() throws RecognitionException {
 
         Object node = null;
@@ -11049,7 +11049,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
     
          node = null; 
         try {
-            // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:1004:7: (i= INTEGER_LITERAL | l= LONG_LITERAL | f= FLOAT_LITERAL | d= DOUBLE_LITERAL )
+            // JPQL.g:1004:7: (i= INTEGER_LITERAL | l= LONG_LITERAL | f= FLOAT_LITERAL | d= DOUBLE_LITERAL )
             int alt79=4;
             switch ( input.LA(1) ) {
             case INTEGER_LITERAL:
@@ -11082,7 +11082,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
             
             switch (alt79) {
                 case 1 :
-                    // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:1004:7: i= INTEGER_LITERAL
+                    // JPQL.g:1004:7: i= INTEGER_LITERAL
                     {
                     i=(Token)input.LT(1);
                     match(input,INTEGER_LITERAL,FOLLOW_INTEGER_LITERAL_in_literalNumeric6318); if (failed) return node;
@@ -11096,7 +11096,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
                     }
                     break;
                 case 2 :
-                    // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:1009:7: l= LONG_LITERAL
+                    // JPQL.g:1009:7: l= LONG_LITERAL
                     {
                     l=(Token)input.LT(1);
                     match(input,LONG_LITERAL,FOLLOW_LONG_LITERAL_in_literalNumeric6334); if (failed) return node;
@@ -11113,7 +11113,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
                     }
                     break;
                 case 3 :
-                    // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:1017:7: f= FLOAT_LITERAL
+                    // JPQL.g:1017:7: f= FLOAT_LITERAL
                     {
                     f=(Token)input.LT(1);
                     match(input,FLOAT_LITERAL,FOLLOW_FLOAT_LITERAL_in_literalNumeric6355); if (failed) return node;
@@ -11127,7 +11127,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
                     }
                     break;
                 case 4 :
-                    // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:1022:7: d= DOUBLE_LITERAL
+                    // JPQL.g:1022:7: d= DOUBLE_LITERAL
                     {
                     d=(Token)input.LT(1);
                     match(input,DOUBLE_LITERAL,FOLLOW_DOUBLE_LITERAL_in_literalNumeric6375); if (failed) return node;
@@ -11155,7 +11155,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
     
     // $ANTLR start literalBoolean
-    // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:1029:1: literalBoolean returns [Object node] : (t= TRUE | f= FALSE );
+    // JPQL.g:1029:1: literalBoolean returns [Object node] : (t= TRUE | f= FALSE );
     public final Object literalBoolean() throws RecognitionException {
 
         Object node = null;
@@ -11165,7 +11165,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
     
          node = null; 
         try {
-            // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:1031:7: (t= TRUE | f= FALSE )
+            // JPQL.g:1031:7: (t= TRUE | f= FALSE )
             int alt80=2;
             int LA80_0 = input.LA(1);
             
@@ -11184,7 +11184,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
             }
             switch (alt80) {
                 case 1 :
-                    // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:1031:7: t= TRUE
+                    // JPQL.g:1031:7: t= TRUE
                     {
                     t=(Token)input.LT(1);
                     match(input,TRUE,FOLLOW_TRUE_in_literalBoolean6413); if (failed) return node;
@@ -11195,7 +11195,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
                     }
                     break;
                 case 2 :
-                    // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:1033:7: f= FALSE
+                    // JPQL.g:1033:7: f= FALSE
                     {
                     f=(Token)input.LT(1);
                     match(input,FALSE,FOLLOW_FALSE_in_literalBoolean6435); if (failed) return node;
@@ -11220,7 +11220,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
     
     // $ANTLR start literalString
-    // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:1037:1: literalString returns [Object node] : (d= STRING_LITERAL_DOUBLE_QUOTED | s= STRING_LITERAL_SINGLE_QUOTED );
+    // JPQL.g:1037:1: literalString returns [Object node] : (d= STRING_LITERAL_DOUBLE_QUOTED | s= STRING_LITERAL_SINGLE_QUOTED );
     public final Object literalString() throws RecognitionException {
 
         Object node = null;
@@ -11230,7 +11230,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
     
          node = null; 
         try {
-            // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:1039:7: (d= STRING_LITERAL_DOUBLE_QUOTED | s= STRING_LITERAL_SINGLE_QUOTED )
+            // JPQL.g:1039:7: (d= STRING_LITERAL_DOUBLE_QUOTED | s= STRING_LITERAL_SINGLE_QUOTED )
             int alt81=2;
             int LA81_0 = input.LA(1);
             
@@ -11249,7 +11249,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
             }
             switch (alt81) {
                 case 1 :
-                    // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:1039:7: d= STRING_LITERAL_DOUBLE_QUOTED
+                    // JPQL.g:1039:7: d= STRING_LITERAL_DOUBLE_QUOTED
                     {
                     d=(Token)input.LT(1);
                     match(input,STRING_LITERAL_DOUBLE_QUOTED,FOLLOW_STRING_LITERAL_DOUBLE_QUOTED_in_literalString6474); if (failed) return node;
@@ -11263,7 +11263,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
                     }
                     break;
                 case 2 :
-                    // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:1044:7: s= STRING_LITERAL_SINGLE_QUOTED
+                    // JPQL.g:1044:7: s= STRING_LITERAL_SINGLE_QUOTED
                     {
                     s=(Token)input.LT(1);
                     match(input,STRING_LITERAL_SINGLE_QUOTED,FOLLOW_STRING_LITERAL_SINGLE_QUOTED_in_literalString6495); if (failed) return node;
@@ -11291,7 +11291,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
     
     // $ANTLR start literalTemporal
-    // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:1051:1: literalTemporal returns [Object node] : (d= DATE_LITERAL | d= TIME_LITERAL | d= TIMESTAMP_LITERAL );
+    // JPQL.g:1051:1: literalTemporal returns [Object node] : (d= DATE_LITERAL | d= TIME_LITERAL | d= TIMESTAMP_LITERAL );
     public final Object literalTemporal() throws RecognitionException {
 
         Object node = null;
@@ -11300,7 +11300,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
     
          node = null; 
         try {
-            // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:1053:7: (d= DATE_LITERAL | d= TIME_LITERAL | d= TIMESTAMP_LITERAL )
+            // JPQL.g:1053:7: (d= DATE_LITERAL | d= TIME_LITERAL | d= TIMESTAMP_LITERAL )
             int alt82=3;
             switch ( input.LA(1) ) {
             case DATE_LITERAL:
@@ -11328,7 +11328,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
             
             switch (alt82) {
                 case 1 :
-                    // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:1053:7: d= DATE_LITERAL
+                    // JPQL.g:1053:7: d= DATE_LITERAL
                     {
                     d=(Token)input.LT(1);
                     match(input,DATE_LITERAL,FOLLOW_DATE_LITERAL_in_literalTemporal6535); if (failed) return node;
@@ -11339,7 +11339,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
                     }
                     break;
                 case 2 :
-                    // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:1054:7: d= TIME_LITERAL
+                    // JPQL.g:1054:7: d= TIME_LITERAL
                     {
                     d=(Token)input.LT(1);
                     match(input,TIME_LITERAL,FOLLOW_TIME_LITERAL_in_literalTemporal6549); if (failed) return node;
@@ -11350,7 +11350,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
                     }
                     break;
                 case 3 :
-                    // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:1055:7: d= TIMESTAMP_LITERAL
+                    // JPQL.g:1055:7: d= TIMESTAMP_LITERAL
                     {
                     d=(Token)input.LT(1);
                     match(input,TIMESTAMP_LITERAL,FOLLOW_TIMESTAMP_LITERAL_in_literalTemporal6563); if (failed) return node;
@@ -11375,7 +11375,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
     
     // $ANTLR start inputParameter
-    // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:1058:1: inputParameter returns [Object node] : (p= POSITIONAL_PARAM | n= NAMED_PARAM );
+    // JPQL.g:1058:1: inputParameter returns [Object node] : (p= POSITIONAL_PARAM | n= NAMED_PARAM );
     public final Object inputParameter() throws RecognitionException {
 
         Object node = null;
@@ -11385,7 +11385,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
     
          node = null; 
         try {
-            // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:1060:7: (p= POSITIONAL_PARAM | n= NAMED_PARAM )
+            // JPQL.g:1060:7: (p= POSITIONAL_PARAM | n= NAMED_PARAM )
             int alt83=2;
             int LA83_0 = input.LA(1);
             
@@ -11404,7 +11404,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
             }
             switch (alt83) {
                 case 1 :
-                    // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:1060:7: p= POSITIONAL_PARAM
+                    // JPQL.g:1060:7: p= POSITIONAL_PARAM
                     {
                     p=(Token)input.LT(1);
                     match(input,POSITIONAL_PARAM,FOLLOW_POSITIONAL_PARAM_in_inputParameter6593); if (failed) return node;
@@ -11419,7 +11419,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
                     }
                     break;
                 case 2 :
-                    // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:1066:7: n= NAMED_PARAM
+                    // JPQL.g:1066:7: n= NAMED_PARAM
                     {
                     n=(Token)input.LT(1);
                     match(input,NAMED_PARAM,FOLLOW_NAMED_PARAM_in_inputParameter6613); if (failed) return node;
@@ -11448,7 +11448,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
     
     // $ANTLR start functionsReturningNumerics
-    // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:1074:1: functionsReturningNumerics returns [Object node] : (n= abs | n= length | n= mod | n= sqrt | n= locate | n= size | n= index | n= func );
+    // JPQL.g:1074:1: functionsReturningNumerics returns [Object node] : (n= abs | n= length | n= mod | n= sqrt | n= locate | n= size | n= index | n= func );
     public final Object functionsReturningNumerics() throws RecognitionException {
 
         Object node = null;
@@ -11458,7 +11458,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
     
          node = null; 
         try {
-            // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:1076:7: (n= abs | n= length | n= mod | n= sqrt | n= locate | n= size | n= index | n= func )
+            // JPQL.g:1076:7: (n= abs | n= length | n= mod | n= sqrt | n= locate | n= size | n= index | n= func )
             int alt84=8;
             switch ( input.LA(1) ) {
             case ABS:
@@ -11511,7 +11511,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
             
             switch (alt84) {
                 case 1 :
-                    // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:1076:7: n= abs
+                    // JPQL.g:1076:7: n= abs
                     {
                     pushFollow(FOLLOW_abs_in_functionsReturningNumerics6653);
                     n=abs();
@@ -11524,7 +11524,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
                     }
                     break;
                 case 2 :
-                    // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:1077:7: n= length
+                    // JPQL.g:1077:7: n= length
                     {
                     pushFollow(FOLLOW_length_in_functionsReturningNumerics6667);
                     n=length();
@@ -11537,7 +11537,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
                     }
                     break;
                 case 3 :
-                    // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:1078:7: n= mod
+                    // JPQL.g:1078:7: n= mod
                     {
                     pushFollow(FOLLOW_mod_in_functionsReturningNumerics6681);
                     n=mod();
@@ -11550,7 +11550,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
                     }
                     break;
                 case 4 :
-                    // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:1079:7: n= sqrt
+                    // JPQL.g:1079:7: n= sqrt
                     {
                     pushFollow(FOLLOW_sqrt_in_functionsReturningNumerics6695);
                     n=sqrt();
@@ -11563,7 +11563,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
                     }
                     break;
                 case 5 :
-                    // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:1080:7: n= locate
+                    // JPQL.g:1080:7: n= locate
                     {
                     pushFollow(FOLLOW_locate_in_functionsReturningNumerics6709);
                     n=locate();
@@ -11576,7 +11576,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
                     }
                     break;
                 case 6 :
-                    // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:1081:7: n= size
+                    // JPQL.g:1081:7: n= size
                     {
                     pushFollow(FOLLOW_size_in_functionsReturningNumerics6723);
                     n=size();
@@ -11589,7 +11589,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
                     }
                     break;
                 case 7 :
-                    // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:1082:7: n= index
+                    // JPQL.g:1082:7: n= index
                     {
                     pushFollow(FOLLOW_index_in_functionsReturningNumerics6737);
                     n=index();
@@ -11602,7 +11602,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
                     }
                     break;
                 case 8 :
-                    // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:1083:7: n= func
+                    // JPQL.g:1083:7: n= func
                     {
                     pushFollow(FOLLOW_func_in_functionsReturningNumerics6751);
                     n=func();
@@ -11629,7 +11629,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
     
     // $ANTLR start functionsReturningDatetime
-    // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:1086:1: functionsReturningDatetime returns [Object node] : (d= CURRENT_DATE | t= CURRENT_TIME | ts= CURRENT_TIMESTAMP );
+    // JPQL.g:1086:1: functionsReturningDatetime returns [Object node] : (d= CURRENT_DATE | t= CURRENT_TIME | ts= CURRENT_TIMESTAMP );
     public final Object functionsReturningDatetime() throws RecognitionException {
 
         Object node = null;
@@ -11640,7 +11640,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
     
          node = null; 
         try {
-            // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:1088:7: (d= CURRENT_DATE | t= CURRENT_TIME | ts= CURRENT_TIMESTAMP )
+            // JPQL.g:1088:7: (d= CURRENT_DATE | t= CURRENT_TIME | ts= CURRENT_TIMESTAMP )
             int alt85=3;
             switch ( input.LA(1) ) {
             case CURRENT_DATE:
@@ -11668,7 +11668,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
             
             switch (alt85) {
                 case 1 :
-                    // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:1088:7: d= CURRENT_DATE
+                    // JPQL.g:1088:7: d= CURRENT_DATE
                     {
                     d=(Token)input.LT(1);
                     match(input,CURRENT_DATE,FOLLOW_CURRENT_DATE_in_functionsReturningDatetime6781); if (failed) return node;
@@ -11679,7 +11679,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
                     }
                     break;
                 case 2 :
-                    // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:1090:7: t= CURRENT_TIME
+                    // JPQL.g:1090:7: t= CURRENT_TIME
                     {
                     t=(Token)input.LT(1);
                     match(input,CURRENT_TIME,FOLLOW_CURRENT_TIME_in_functionsReturningDatetime6802); if (failed) return node;
@@ -11690,7 +11690,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
                     }
                     break;
                 case 3 :
-                    // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:1092:7: ts= CURRENT_TIMESTAMP
+                    // JPQL.g:1092:7: ts= CURRENT_TIMESTAMP
                     {
                     ts=(Token)input.LT(1);
                     match(input,CURRENT_TIMESTAMP,FOLLOW_CURRENT_TIMESTAMP_in_functionsReturningDatetime6822); if (failed) return node;
@@ -11715,7 +11715,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
     
     // $ANTLR start functionsReturningStrings
-    // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:1096:1: functionsReturningStrings returns [Object node] : (n= concat | n= substring | n= trim | n= upper | n= lower );
+    // JPQL.g:1096:1: functionsReturningStrings returns [Object node] : (n= concat | n= substring | n= trim | n= upper | n= lower );
     public final Object functionsReturningStrings() throws RecognitionException {
 
         Object node = null;
@@ -11725,7 +11725,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
     
          node = null; 
         try {
-            // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:1098:7: (n= concat | n= substring | n= trim | n= upper | n= lower )
+            // JPQL.g:1098:7: (n= concat | n= substring | n= trim | n= upper | n= lower )
             int alt86=5;
             switch ( input.LA(1) ) {
             case CONCAT:
@@ -11763,7 +11763,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
             
             switch (alt86) {
                 case 1 :
-                    // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:1098:7: n= concat
+                    // JPQL.g:1098:7: n= concat
                     {
                     pushFollow(FOLLOW_concat_in_functionsReturningStrings6862);
                     n=concat();
@@ -11776,7 +11776,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
                     }
                     break;
                 case 2 :
-                    // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:1099:7: n= substring
+                    // JPQL.g:1099:7: n= substring
                     {
                     pushFollow(FOLLOW_substring_in_functionsReturningStrings6876);
                     n=substring();
@@ -11789,7 +11789,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
                     }
                     break;
                 case 3 :
-                    // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:1100:7: n= trim
+                    // JPQL.g:1100:7: n= trim
                     {
                     pushFollow(FOLLOW_trim_in_functionsReturningStrings6890);
                     n=trim();
@@ -11802,7 +11802,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
                     }
                     break;
                 case 4 :
-                    // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:1101:7: n= upper
+                    // JPQL.g:1101:7: n= upper
                     {
                     pushFollow(FOLLOW_upper_in_functionsReturningStrings6904);
                     n=upper();
@@ -11815,7 +11815,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
                     }
                     break;
                 case 5 :
-                    // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:1102:7: n= lower
+                    // JPQL.g:1102:7: n= lower
                     {
                     pushFollow(FOLLOW_lower_in_functionsReturningStrings6918);
                     n=lower();
@@ -11847,7 +11847,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
     
     
     // $ANTLR start concat
-    // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:1106:1: concat returns [Object node] : c= CONCAT LEFT_ROUND_BRACKET firstArg= scalarExpression ( COMMA arg= scalarExpression )+ RIGHT_ROUND_BRACKET ;
+    // JPQL.g:1106:1: concat returns [Object node] : c= CONCAT LEFT_ROUND_BRACKET firstArg= scalarExpression ( COMMA arg= scalarExpression )+ RIGHT_ROUND_BRACKET ;
     public final Object concat() throws RecognitionException {
         concat_stack.push(new concat_scope());
 
@@ -11864,8 +11864,8 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
             ((concat_scope)concat_stack.peek()).items = new ArrayList();
     
         try {
-            // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:1114:7: (c= CONCAT LEFT_ROUND_BRACKET firstArg= scalarExpression ( COMMA arg= scalarExpression )+ RIGHT_ROUND_BRACKET )
-            // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:1114:7: c= CONCAT LEFT_ROUND_BRACKET firstArg= scalarExpression ( COMMA arg= scalarExpression )+ RIGHT_ROUND_BRACKET
+            // JPQL.g:1114:7: (c= CONCAT LEFT_ROUND_BRACKET firstArg= scalarExpression ( COMMA arg= scalarExpression )+ RIGHT_ROUND_BRACKET )
+            // JPQL.g:1114:7: c= CONCAT LEFT_ROUND_BRACKET firstArg= scalarExpression ( COMMA arg= scalarExpression )+ RIGHT_ROUND_BRACKET
             {
             c=(Token)input.LT(1);
             match(input,CONCAT,FOLLOW_CONCAT_in_concat6953); if (failed) return node;
@@ -11877,7 +11877,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
             if ( backtracking==0 ) {
               ((concat_scope)concat_stack.peek()).items.add(firstArg);
             }
-            // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:1116:75: ( COMMA arg= scalarExpression )+
+            // JPQL.g:1116:75: ( COMMA arg= scalarExpression )+
             int cnt87=0;
             loop87:
             do {
@@ -11891,7 +11891,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
             
                 switch (alt87) {
             	case 1 :
-            	    // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:1116:76: COMMA arg= scalarExpression
+            	    // JPQL.g:1116:76: COMMA arg= scalarExpression
             	    {
             	    match(input,COMMA,FOLLOW_COMMA_in_concat6984); if (failed) return node;
             	    pushFollow(FOLLOW_scalarExpression_in_concat6990);
@@ -11936,7 +11936,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
     
     // $ANTLR start substring
-    // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:1121:1: substring returns [Object node] : s= SUBSTRING LEFT_ROUND_BRACKET string= scalarExpression COMMA start= simpleArithmeticExpression ( COMMA lengthNode= simpleArithmeticExpression )? RIGHT_ROUND_BRACKET ;
+    // JPQL.g:1121:1: substring returns [Object node] : s= SUBSTRING LEFT_ROUND_BRACKET string= scalarExpression COMMA start= scalarExpression ( COMMA lengthNode= scalarExpression )? RIGHT_ROUND_BRACKET ;
     public final Object substring() throws RecognitionException {
 
         Object node = null;
@@ -11954,8 +11954,8 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
             lengthNode = null;
     
         try {
-            // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:1126:7: (s= SUBSTRING LEFT_ROUND_BRACKET string= scalarExpression COMMA start= simpleArithmeticExpression ( COMMA lengthNode= simpleArithmeticExpression )? RIGHT_ROUND_BRACKET )
-            // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:1126:7: s= SUBSTRING LEFT_ROUND_BRACKET string= scalarExpression COMMA start= simpleArithmeticExpression ( COMMA lengthNode= simpleArithmeticExpression )? RIGHT_ROUND_BRACKET
+            // JPQL.g:1126:7: (s= SUBSTRING LEFT_ROUND_BRACKET string= scalarExpression COMMA start= scalarExpression ( COMMA lengthNode= scalarExpression )? RIGHT_ROUND_BRACKET )
+            // JPQL.g:1126:7: s= SUBSTRING LEFT_ROUND_BRACKET string= scalarExpression COMMA start= scalarExpression ( COMMA lengthNode= scalarExpression )? RIGHT_ROUND_BRACKET
             {
             s=(Token)input.LT(1);
             match(input,SUBSTRING,FOLLOW_SUBSTRING_in_substring7042); if (failed) return node;
@@ -11965,11 +11965,11 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
             _fsp--;
             if (failed) return node;
             match(input,COMMA,FOLLOW_COMMA_in_substring7071); if (failed) return node;
-            pushFollow(FOLLOW_simpleArithmeticExpression_in_substring7085);
-            start=simpleArithmeticExpression();
+            pushFollow(FOLLOW_scalarExpression_in_substring7085);
+            start=scalarExpression();
             _fsp--;
             if (failed) return node;
-            // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:1130:9: ( COMMA lengthNode= simpleArithmeticExpression )?
+            // JPQL.g:1130:9: ( COMMA lengthNode= scalarExpression )?
             int alt88=2;
             int LA88_0 = input.LA(1);
             
@@ -11978,11 +11978,11 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
             }
             switch (alt88) {
                 case 1 :
-                    // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:1130:10: COMMA lengthNode= simpleArithmeticExpression
+                    // JPQL.g:1130:10: COMMA lengthNode= scalarExpression
                     {
                     match(input,COMMA,FOLLOW_COMMA_in_substring7096); if (failed) return node;
-                    pushFollow(FOLLOW_simpleArithmeticExpression_in_substring7102);
-                    lengthNode=simpleArithmeticExpression();
+                    pushFollow(FOLLOW_scalarExpression_in_substring7102);
+                    lengthNode=scalarExpression();
                     _fsp--;
                     if (failed) return node;
                     
@@ -12019,7 +12019,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
     
     // $ANTLR start trim
-    // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:1143:1: trim returns [Object node] : t= TRIM LEFT_ROUND_BRACKET (trimSpecIndicator= trimSpec trimCharNode= trimChar FROM )? n= stringPrimary RIGHT_ROUND_BRACKET ;
+    // JPQL.g:1143:1: trim returns [Object node] : t= TRIM LEFT_ROUND_BRACKET (trimSpecIndicator= trimSpec trimCharNode= trimChar FROM )? n= stringPrimary RIGHT_ROUND_BRACKET ;
     public final Object trim() throws RecognitionException {
 
         Object node = null;
@@ -12037,13 +12037,13 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
             trimSpecIndicator = TrimSpecification.BOTH;
     
         try {
-            // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:1148:7: (t= TRIM LEFT_ROUND_BRACKET (trimSpecIndicator= trimSpec trimCharNode= trimChar FROM )? n= stringPrimary RIGHT_ROUND_BRACKET )
-            // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:1148:7: t= TRIM LEFT_ROUND_BRACKET (trimSpecIndicator= trimSpec trimCharNode= trimChar FROM )? n= stringPrimary RIGHT_ROUND_BRACKET
+            // JPQL.g:1148:7: (t= TRIM LEFT_ROUND_BRACKET (trimSpecIndicator= trimSpec trimCharNode= trimChar FROM )? n= stringPrimary RIGHT_ROUND_BRACKET )
+            // JPQL.g:1148:7: t= TRIM LEFT_ROUND_BRACKET (trimSpecIndicator= trimSpec trimCharNode= trimChar FROM )? n= stringPrimary RIGHT_ROUND_BRACKET
             {
             t=(Token)input.LT(1);
             match(input,TRIM,FOLLOW_TRIM_in_trim7152); if (failed) return node;
             match(input,LEFT_ROUND_BRACKET,FOLLOW_LEFT_ROUND_BRACKET_in_trim7162); if (failed) return node;
-            // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:1150:9: (trimSpecIndicator= trimSpec trimCharNode= trimChar FROM )?
+            // JPQL.g:1150:9: (trimSpecIndicator= trimSpec trimCharNode= trimChar FROM )?
             int alt89=2;
             switch ( input.LA(1) ) {
                 case BOTH:
@@ -12094,7 +12094,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
             
             switch (alt89) {
                 case 1 :
-                    // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:1150:10: trimSpecIndicator= trimSpec trimCharNode= trimChar FROM
+                    // JPQL.g:1150:10: trimSpecIndicator= trimSpec trimCharNode= trimChar FROM
                     {
                     pushFollow(FOLLOW_trimSpec_in_trim7178);
                     trimSpecIndicator=trimSpec();
@@ -12138,14 +12138,14 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
     
     // $ANTLR start trimSpec
-    // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:1159:1: trimSpec returns [TrimSpecification trimSpec] : ( LEADING | TRAILING | BOTH | );
+    // JPQL.g:1159:1: trimSpec returns [TrimSpecification trimSpec] : ( LEADING | TRAILING | BOTH | );
     public final TrimSpecification trimSpec() throws RecognitionException {
 
         TrimSpecification trimSpec = null;
     
          trimSpec = TrimSpecification.BOTH; 
         try {
-            // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:1161:7: ( LEADING | TRAILING | BOTH | )
+            // JPQL.g:1161:7: ( LEADING | TRAILING | BOTH | )
             int alt90=4;
             switch ( input.LA(1) ) {
             case LEADING:
@@ -12182,7 +12182,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
             
             switch (alt90) {
                 case 1 :
-                    // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:1161:7: LEADING
+                    // JPQL.g:1161:7: LEADING
                     {
                     match(input,LEADING,FOLLOW_LEADING_in_trimSpec7248); if (failed) return trimSpec;
                     if ( backtracking==0 ) {
@@ -12192,7 +12192,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
                     }
                     break;
                 case 2 :
-                    // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:1163:7: TRAILING
+                    // JPQL.g:1163:7: TRAILING
                     {
                     match(input,TRAILING,FOLLOW_TRAILING_in_trimSpec7266); if (failed) return trimSpec;
                     if ( backtracking==0 ) {
@@ -12202,7 +12202,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
                     }
                     break;
                 case 3 :
-                    // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:1165:7: BOTH
+                    // JPQL.g:1165:7: BOTH
                     {
                     match(input,BOTH,FOLLOW_BOTH_in_trimSpec7284); if (failed) return trimSpec;
                     if ( backtracking==0 ) {
@@ -12212,7 +12212,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
                     }
                     break;
                 case 4 :
-                    // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:1168:5: 
+                    // JPQL.g:1168:5: 
                     {
                     }
                     break;
@@ -12231,7 +12231,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
     
     // $ANTLR start trimChar
-    // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:1170:1: trimChar returns [Object node] : (n= literalString | n= inputParameter | );
+    // JPQL.g:1170:1: trimChar returns [Object node] : (n= literalString | n= inputParameter | );
     public final Object trimChar() throws RecognitionException {
 
         Object node = null;
@@ -12241,7 +12241,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
     
          node = null; 
         try {
-            // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:1172:7: (n= literalString | n= inputParameter | )
+            // JPQL.g:1172:7: (n= literalString | n= inputParameter | )
             int alt91=3;
             switch ( input.LA(1) ) {
             case STRING_LITERAL_DOUBLE_QUOTED:
@@ -12271,7 +12271,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
             
             switch (alt91) {
                 case 1 :
-                    // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:1172:7: n= literalString
+                    // JPQL.g:1172:7: n= literalString
                     {
                     pushFollow(FOLLOW_literalString_in_trimChar7331);
                     n=literalString();
@@ -12284,7 +12284,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
                     }
                     break;
                 case 2 :
-                    // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:1173:7: n= inputParameter
+                    // JPQL.g:1173:7: n= inputParameter
                     {
                     pushFollow(FOLLOW_inputParameter_in_trimChar7345);
                     n=inputParameter();
@@ -12297,7 +12297,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
                     }
                     break;
                 case 3 :
-                    // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:1175:5: 
+                    // JPQL.g:1175:5: 
                     {
                     }
                     break;
@@ -12316,7 +12316,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
     
     // $ANTLR start upper
-    // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:1177:1: upper returns [Object node] : u= UPPER LEFT_ROUND_BRACKET n= scalarExpression RIGHT_ROUND_BRACKET ;
+    // JPQL.g:1177:1: upper returns [Object node] : u= UPPER LEFT_ROUND_BRACKET n= scalarExpression RIGHT_ROUND_BRACKET ;
     public final Object upper() throws RecognitionException {
 
         Object node = null;
@@ -12327,8 +12327,8 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
     
          node = null; 
         try {
-            // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:1179:7: (u= UPPER LEFT_ROUND_BRACKET n= scalarExpression RIGHT_ROUND_BRACKET )
-            // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:1179:7: u= UPPER LEFT_ROUND_BRACKET n= scalarExpression RIGHT_ROUND_BRACKET
+            // JPQL.g:1179:7: (u= UPPER LEFT_ROUND_BRACKET n= scalarExpression RIGHT_ROUND_BRACKET )
+            // JPQL.g:1179:7: u= UPPER LEFT_ROUND_BRACKET n= scalarExpression RIGHT_ROUND_BRACKET
             {
             u=(Token)input.LT(1);
             match(input,UPPER,FOLLOW_UPPER_in_upper7382); if (failed) return node;
@@ -12357,7 +12357,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
     
     // $ANTLR start lower
-    // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:1183:1: lower returns [Object node] : l= LOWER LEFT_ROUND_BRACKET n= scalarExpression RIGHT_ROUND_BRACKET ;
+    // JPQL.g:1183:1: lower returns [Object node] : l= LOWER LEFT_ROUND_BRACKET n= scalarExpression RIGHT_ROUND_BRACKET ;
     public final Object lower() throws RecognitionException {
 
         Object node = null;
@@ -12368,8 +12368,8 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
     
          node = null; 
         try {
-            // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:1185:7: (l= LOWER LEFT_ROUND_BRACKET n= scalarExpression RIGHT_ROUND_BRACKET )
-            // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:1185:7: l= LOWER LEFT_ROUND_BRACKET n= scalarExpression RIGHT_ROUND_BRACKET
+            // JPQL.g:1185:7: (l= LOWER LEFT_ROUND_BRACKET n= scalarExpression RIGHT_ROUND_BRACKET )
+            // JPQL.g:1185:7: l= LOWER LEFT_ROUND_BRACKET n= scalarExpression RIGHT_ROUND_BRACKET
             {
             l=(Token)input.LT(1);
             match(input,LOWER,FOLLOW_LOWER_in_lower7430); if (failed) return node;
@@ -12398,7 +12398,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
     
     // $ANTLR start abs
-    // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:1190:1: abs returns [Object node] : a= ABS LEFT_ROUND_BRACKET n= simpleArithmeticExpression RIGHT_ROUND_BRACKET ;
+    // JPQL.g:1190:1: abs returns [Object node] : a= ABS LEFT_ROUND_BRACKET n= simpleArithmeticExpression RIGHT_ROUND_BRACKET ;
     public final Object abs() throws RecognitionException {
 
         Object node = null;
@@ -12409,8 +12409,8 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
     
          node = null; 
         try {
-            // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:1192:7: (a= ABS LEFT_ROUND_BRACKET n= simpleArithmeticExpression RIGHT_ROUND_BRACKET )
-            // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:1192:7: a= ABS LEFT_ROUND_BRACKET n= simpleArithmeticExpression RIGHT_ROUND_BRACKET
+            // JPQL.g:1192:7: (a= ABS LEFT_ROUND_BRACKET n= simpleArithmeticExpression RIGHT_ROUND_BRACKET )
+            // JPQL.g:1192:7: a= ABS LEFT_ROUND_BRACKET n= simpleArithmeticExpression RIGHT_ROUND_BRACKET
             {
             a=(Token)input.LT(1);
             match(input,ABS,FOLLOW_ABS_in_abs7479); if (failed) return node;
@@ -12439,7 +12439,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
     
     // $ANTLR start length
-    // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:1196:1: length returns [Object node] : l= LENGTH LEFT_ROUND_BRACKET n= scalarExpression RIGHT_ROUND_BRACKET ;
+    // JPQL.g:1196:1: length returns [Object node] : l= LENGTH LEFT_ROUND_BRACKET n= scalarExpression RIGHT_ROUND_BRACKET ;
     public final Object length() throws RecognitionException {
 
         Object node = null;
@@ -12450,8 +12450,8 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
     
          node = null; 
         try {
-            // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:1198:7: (l= LENGTH LEFT_ROUND_BRACKET n= scalarExpression RIGHT_ROUND_BRACKET )
-            // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:1198:7: l= LENGTH LEFT_ROUND_BRACKET n= scalarExpression RIGHT_ROUND_BRACKET
+            // JPQL.g:1198:7: (l= LENGTH LEFT_ROUND_BRACKET n= scalarExpression RIGHT_ROUND_BRACKET )
+            // JPQL.g:1198:7: l= LENGTH LEFT_ROUND_BRACKET n= scalarExpression RIGHT_ROUND_BRACKET
             {
             l=(Token)input.LT(1);
             match(input,LENGTH,FOLLOW_LENGTH_in_length7527); if (failed) return node;
@@ -12480,7 +12480,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
     
     // $ANTLR start locate
-    // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:1202:1: locate returns [Object node] : l= LOCATE LEFT_ROUND_BRACKET pattern= scalarExpression COMMA n= scalarExpression ( COMMA startPos= simpleArithmeticExpression )? RIGHT_ROUND_BRACKET ;
+    // JPQL.g:1202:1: locate returns [Object node] : l= LOCATE LEFT_ROUND_BRACKET pattern= scalarExpression COMMA n= scalarExpression ( COMMA startPos= scalarExpression )? RIGHT_ROUND_BRACKET ;
     public final Object locate() throws RecognitionException {
 
         Object node = null;
@@ -12497,8 +12497,8 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
             node = null; 
     
         try {
-            // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:1206:7: (l= LOCATE LEFT_ROUND_BRACKET pattern= scalarExpression COMMA n= scalarExpression ( COMMA startPos= simpleArithmeticExpression )? RIGHT_ROUND_BRACKET )
-            // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:1206:7: l= LOCATE LEFT_ROUND_BRACKET pattern= scalarExpression COMMA n= scalarExpression ( COMMA startPos= simpleArithmeticExpression )? RIGHT_ROUND_BRACKET
+            // JPQL.g:1206:7: (l= LOCATE LEFT_ROUND_BRACKET pattern= scalarExpression COMMA n= scalarExpression ( COMMA startPos= scalarExpression )? RIGHT_ROUND_BRACKET )
+            // JPQL.g:1206:7: l= LOCATE LEFT_ROUND_BRACKET pattern= scalarExpression COMMA n= scalarExpression ( COMMA startPos= scalarExpression )? RIGHT_ROUND_BRACKET
             {
             l=(Token)input.LT(1);
             match(input,LOCATE,FOLLOW_LOCATE_in_locate7575); if (failed) return node;
@@ -12512,7 +12512,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
             n=scalarExpression();
             _fsp--;
             if (failed) return node;
-            // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:1209:9: ( COMMA startPos= simpleArithmeticExpression )?
+            // JPQL.g:1209:9: ( COMMA startPos= scalarExpression )?
             int alt92=2;
             int LA92_0 = input.LA(1);
             
@@ -12521,11 +12521,11 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
             }
             switch (alt92) {
                 case 1 :
-                    // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:1209:11: COMMA startPos= simpleArithmeticExpression
+                    // JPQL.g:1209:11: COMMA startPos= scalarExpression
                     {
                     match(input,COMMA,FOLLOW_COMMA_in_locate7620); if (failed) return node;
-                    pushFollow(FOLLOW_simpleArithmeticExpression_in_locate7626);
-                    startPos=simpleArithmeticExpression();
+                    pushFollow(FOLLOW_scalarExpression_in_locate7626);
+                    startPos=scalarExpression();
                     _fsp--;
                     if (failed) return node;
                     
@@ -12557,7 +12557,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
     
     // $ANTLR start size
-    // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:1217:1: size returns [Object node] : s= SIZE LEFT_ROUND_BRACKET n= collectionValuedPathExpression RIGHT_ROUND_BRACKET ;
+    // JPQL.g:1217:1: size returns [Object node] : s= SIZE LEFT_ROUND_BRACKET n= collectionValuedPathExpression RIGHT_ROUND_BRACKET ;
     public final Object size() throws RecognitionException {
 
         Object node = null;
@@ -12568,8 +12568,8 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
     
          node = null; 
         try {
-            // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:1219:7: (s= SIZE LEFT_ROUND_BRACKET n= collectionValuedPathExpression RIGHT_ROUND_BRACKET )
-            // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:1219:7: s= SIZE LEFT_ROUND_BRACKET n= collectionValuedPathExpression RIGHT_ROUND_BRACKET
+            // JPQL.g:1219:7: (s= SIZE LEFT_ROUND_BRACKET n= collectionValuedPathExpression RIGHT_ROUND_BRACKET )
+            // JPQL.g:1219:7: s= SIZE LEFT_ROUND_BRACKET n= collectionValuedPathExpression RIGHT_ROUND_BRACKET
             {
             s=(Token)input.LT(1);
             match(input,SIZE,FOLLOW_SIZE_in_size7677); if (failed) return node;
@@ -12598,7 +12598,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
     
     // $ANTLR start mod
-    // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:1224:1: mod returns [Object node] : m= MOD LEFT_ROUND_BRACKET left= simpleArithmeticExpression COMMA right= simpleArithmeticExpression RIGHT_ROUND_BRACKET ;
+    // JPQL.g:1224:1: mod returns [Object node] : m= MOD LEFT_ROUND_BRACKET left= scalarExpression COMMA right= scalarExpression RIGHT_ROUND_BRACKET ;
     public final Object mod() throws RecognitionException {
 
         Object node = null;
@@ -12613,19 +12613,19 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
             node = null; 
     
         try {
-            // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:1228:7: (m= MOD LEFT_ROUND_BRACKET left= simpleArithmeticExpression COMMA right= simpleArithmeticExpression RIGHT_ROUND_BRACKET )
-            // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:1228:7: m= MOD LEFT_ROUND_BRACKET left= simpleArithmeticExpression COMMA right= simpleArithmeticExpression RIGHT_ROUND_BRACKET
+            // JPQL.g:1228:7: (m= MOD LEFT_ROUND_BRACKET left= scalarExpression COMMA right= scalarExpression RIGHT_ROUND_BRACKET )
+            // JPQL.g:1228:7: m= MOD LEFT_ROUND_BRACKET left= scalarExpression COMMA right= scalarExpression RIGHT_ROUND_BRACKET
             {
             m=(Token)input.LT(1);
             match(input,MOD,FOLLOW_MOD_in_mod7734); if (failed) return node;
             match(input,LEFT_ROUND_BRACKET,FOLLOW_LEFT_ROUND_BRACKET_in_mod7736); if (failed) return node;
-            pushFollow(FOLLOW_simpleArithmeticExpression_in_mod7750);
-            left=simpleArithmeticExpression();
+            pushFollow(FOLLOW_scalarExpression_in_mod7750);
+            left=scalarExpression();
             _fsp--;
             if (failed) return node;
             match(input,COMMA,FOLLOW_COMMA_in_mod7752); if (failed) return node;
-            pushFollow(FOLLOW_simpleArithmeticExpression_in_mod7767);
-            right=simpleArithmeticExpression();
+            pushFollow(FOLLOW_scalarExpression_in_mod7767);
+            right=scalarExpression();
             _fsp--;
             if (failed) return node;
             match(input,RIGHT_ROUND_BRACKET,FOLLOW_RIGHT_ROUND_BRACKET_in_mod7777); if (failed) return node;
@@ -12648,7 +12648,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
     
     // $ANTLR start sqrt
-    // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:1235:1: sqrt returns [Object node] : s= SQRT LEFT_ROUND_BRACKET n= simpleArithmeticExpression RIGHT_ROUND_BRACKET ;
+    // JPQL.g:1235:1: sqrt returns [Object node] : s= SQRT LEFT_ROUND_BRACKET n= scalarExpression RIGHT_ROUND_BRACKET ;
     public final Object sqrt() throws RecognitionException {
 
         Object node = null;
@@ -12659,14 +12659,14 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
     
          node = null; 
         try {
-            // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:1237:7: (s= SQRT LEFT_ROUND_BRACKET n= simpleArithmeticExpression RIGHT_ROUND_BRACKET )
-            // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:1237:7: s= SQRT LEFT_ROUND_BRACKET n= simpleArithmeticExpression RIGHT_ROUND_BRACKET
+            // JPQL.g:1237:7: (s= SQRT LEFT_ROUND_BRACKET n= scalarExpression RIGHT_ROUND_BRACKET )
+            // JPQL.g:1237:7: s= SQRT LEFT_ROUND_BRACKET n= scalarExpression RIGHT_ROUND_BRACKET
             {
             s=(Token)input.LT(1);
             match(input,SQRT,FOLLOW_SQRT_in_sqrt7815); if (failed) return node;
             match(input,LEFT_ROUND_BRACKET,FOLLOW_LEFT_ROUND_BRACKET_in_sqrt7826); if (failed) return node;
-            pushFollow(FOLLOW_simpleArithmeticExpression_in_sqrt7832);
-            n=simpleArithmeticExpression();
+            pushFollow(FOLLOW_scalarExpression_in_sqrt7832);
+            n=scalarExpression();
             _fsp--;
             if (failed) return node;
             match(input,RIGHT_ROUND_BRACKET,FOLLOW_RIGHT_ROUND_BRACKET_in_sqrt7834); if (failed) return node;
@@ -12689,7 +12689,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
     
     // $ANTLR start index
-    // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:1242:1: index returns [Object node] : s= INDEX LEFT_ROUND_BRACKET n= variableAccessOrTypeConstant RIGHT_ROUND_BRACKET ;
+    // JPQL.g:1242:1: index returns [Object node] : s= INDEX LEFT_ROUND_BRACKET n= variableAccessOrTypeConstant RIGHT_ROUND_BRACKET ;
     public final Object index() throws RecognitionException {
 
         Object node = null;
@@ -12700,8 +12700,8 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
     
          node = null; 
         try {
-            // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:1244:7: (s= INDEX LEFT_ROUND_BRACKET n= variableAccessOrTypeConstant RIGHT_ROUND_BRACKET )
-            // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:1244:7: s= INDEX LEFT_ROUND_BRACKET n= variableAccessOrTypeConstant RIGHT_ROUND_BRACKET
+            // JPQL.g:1244:7: (s= INDEX LEFT_ROUND_BRACKET n= variableAccessOrTypeConstant RIGHT_ROUND_BRACKET )
+            // JPQL.g:1244:7: s= INDEX LEFT_ROUND_BRACKET n= variableAccessOrTypeConstant RIGHT_ROUND_BRACKET
             {
             s=(Token)input.LT(1);
             match(input,INDEX,FOLLOW_INDEX_in_index7876); if (failed) return node;
@@ -12735,7 +12735,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
     
     
     // $ANTLR start func
-    // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:1249:1: func returns [Object node] : f= FUNC LEFT_ROUND_BRACKET name= STRING_LITERAL_SINGLE_QUOTED ( COMMA n= newValue )* RIGHT_ROUND_BRACKET ;
+    // JPQL.g:1249:1: func returns [Object node] : f= FUNC LEFT_ROUND_BRACKET name= STRING_LITERAL_SINGLE_QUOTED ( COMMA n= newValue )* RIGHT_ROUND_BRACKET ;
     public final Object func() throws RecognitionException {
         func_stack.push(new func_scope());
 
@@ -12751,15 +12751,15 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
             ((func_scope)func_stack.peek()).exprs = new ArrayList();
     
         try {
-            // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:1257:7: (f= FUNC LEFT_ROUND_BRACKET name= STRING_LITERAL_SINGLE_QUOTED ( COMMA n= newValue )* RIGHT_ROUND_BRACKET )
-            // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:1257:7: f= FUNC LEFT_ROUND_BRACKET name= STRING_LITERAL_SINGLE_QUOTED ( COMMA n= newValue )* RIGHT_ROUND_BRACKET
+            // JPQL.g:1257:7: (f= FUNC LEFT_ROUND_BRACKET name= STRING_LITERAL_SINGLE_QUOTED ( COMMA n= newValue )* RIGHT_ROUND_BRACKET )
+            // JPQL.g:1257:7: f= FUNC LEFT_ROUND_BRACKET name= STRING_LITERAL_SINGLE_QUOTED ( COMMA n= newValue )* RIGHT_ROUND_BRACKET
             {
             f=(Token)input.LT(1);
             match(input,FUNC,FOLLOW_FUNC_in_func7928); if (failed) return node;
             match(input,LEFT_ROUND_BRACKET,FOLLOW_LEFT_ROUND_BRACKET_in_func7930); if (failed) return node;
             name=(Token)input.LT(1);
             match(input,STRING_LITERAL_SINGLE_QUOTED,FOLLOW_STRING_LITERAL_SINGLE_QUOTED_in_func7942); if (failed) return node;
-            // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:1259:7: ( COMMA n= newValue )*
+            // JPQL.g:1259:7: ( COMMA n= newValue )*
             loop93:
             do {
                 int alt93=2;
@@ -12772,7 +12772,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
             
                 switch (alt93) {
             	case 1 :
-            	    // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:1259:8: COMMA n= newValue
+            	    // JPQL.g:1259:8: COMMA n= newValue
             	    {
             	    match(input,COMMA,FOLLOW_COMMA_in_func7951); if (failed) return node;
             	    pushFollow(FOLLOW_newValue_in_func7957);
@@ -12814,7 +12814,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
     
     // $ANTLR start subquery
-    // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:1268:1: subquery returns [Object node] : select= simpleSelectClause from= subqueryFromClause (where= whereClause )? (groupBy= groupByClause )? (having= havingClause )? ;
+    // JPQL.g:1268:1: subquery returns [Object node] : select= simpleSelectClause from= subqueryFromClause (where= whereClause )? (groupBy= groupByClause )? (having= havingClause )? ;
     public final Object subquery() throws RecognitionException {
 
         Object node = null;
@@ -12834,8 +12834,8 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
             node = null; 
     
         try {
-            // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:1272:7: (select= simpleSelectClause from= subqueryFromClause (where= whereClause )? (groupBy= groupByClause )? (having= havingClause )? )
-            // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:1272:7: select= simpleSelectClause from= subqueryFromClause (where= whereClause )? (groupBy= groupByClause )? (having= havingClause )?
+            // JPQL.g:1272:7: (select= simpleSelectClause from= subqueryFromClause (where= whereClause )? (groupBy= groupByClause )? (having= havingClause )? )
+            // JPQL.g:1272:7: select= simpleSelectClause from= subqueryFromClause (where= whereClause )? (groupBy= groupByClause )? (having= havingClause )?
             {
             pushFollow(FOLLOW_simpleSelectClause_in_subquery8027);
             select=simpleSelectClause();
@@ -12845,7 +12845,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
             from=subqueryFromClause();
             _fsp--;
             if (failed) return node;
-            // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:1274:7: (where= whereClause )?
+            // JPQL.g:1274:7: (where= whereClause )?
             int alt94=2;
             int LA94_0 = input.LA(1);
             
@@ -12854,7 +12854,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
             }
             switch (alt94) {
                 case 1 :
-                    // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:1274:8: where= whereClause
+                    // JPQL.g:1274:8: where= whereClause
                     {
                     pushFollow(FOLLOW_whereClause_in_subquery8057);
                     where=whereClause();
@@ -12866,7 +12866,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
             
             }
 
-            // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:1275:7: (groupBy= groupByClause )?
+            // JPQL.g:1275:7: (groupBy= groupByClause )?
             int alt95=2;
             int LA95_0 = input.LA(1);
             
@@ -12875,7 +12875,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
             }
             switch (alt95) {
                 case 1 :
-                    // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:1275:8: groupBy= groupByClause
+                    // JPQL.g:1275:8: groupBy= groupByClause
                     {
                     pushFollow(FOLLOW_groupByClause_in_subquery8072);
                     groupBy=groupByClause();
@@ -12887,7 +12887,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
             
             }
 
-            // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:1276:7: (having= havingClause )?
+            // JPQL.g:1276:7: (having= havingClause )?
             int alt96=2;
             int LA96_0 = input.LA(1);
             
@@ -12896,7 +12896,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
             }
             switch (alt96) {
                 case 1 :
-                    // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:1276:8: having= havingClause
+                    // JPQL.g:1276:8: having= havingClause
                     {
                     pushFollow(FOLLOW_havingClause_in_subquery8088);
                     having=havingClause();
@@ -12935,7 +12935,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
     
     
     // $ANTLR start simpleSelectClause
-    // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:1283:1: simpleSelectClause returns [Object node] : s= SELECT ( DISTINCT )? n= simpleSelectExpression ;
+    // JPQL.g:1283:1: simpleSelectClause returns [Object node] : s= SELECT ( DISTINCT )? n= simpleSelectExpression ;
     public final Object simpleSelectClause() throws RecognitionException {
         simpleSelectClause_stack.push(new simpleSelectClause_scope());
 
@@ -12950,12 +12950,12 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
             ((simpleSelectClause_scope)simpleSelectClause_stack.peek()).distinct = false;
     
         try {
-            // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:1291:7: (s= SELECT ( DISTINCT )? n= simpleSelectExpression )
-            // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:1291:7: s= SELECT ( DISTINCT )? n= simpleSelectExpression
+            // JPQL.g:1291:7: (s= SELECT ( DISTINCT )? n= simpleSelectExpression )
+            // JPQL.g:1291:7: s= SELECT ( DISTINCT )? n= simpleSelectExpression
             {
             s=(Token)input.LT(1);
             match(input,SELECT,FOLLOW_SELECT_in_simpleSelectClause8131); if (failed) return node;
-            // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:1291:16: ( DISTINCT )?
+            // JPQL.g:1291:16: ( DISTINCT )?
             int alt97=2;
             int LA97_0 = input.LA(1);
             
@@ -12964,7 +12964,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
             }
             switch (alt97) {
                 case 1 :
-                    // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:1291:17: DISTINCT
+                    // JPQL.g:1291:17: DISTINCT
                     {
                     match(input,DISTINCT,FOLLOW_DISTINCT_in_simpleSelectClause8134); if (failed) return node;
                     if ( backtracking==0 ) {
@@ -13005,7 +13005,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
     
     // $ANTLR start simpleSelectExpression
-    // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:1301:1: simpleSelectExpression returns [Object node] : (n= singleValuedPathExpression | n= aggregateExpression | n= variableAccessOrTypeConstant );
+    // JPQL.g:1301:1: simpleSelectExpression returns [Object node] : (n= singleValuedPathExpression | n= aggregateExpression | n= variableAccessOrTypeConstant );
     public final Object simpleSelectExpression() throws RecognitionException {
 
         Object node = null;
@@ -13015,7 +13015,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
     
          node = null; 
         try {
-            // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:1303:7: (n= singleValuedPathExpression | n= aggregateExpression | n= variableAccessOrTypeConstant )
+            // JPQL.g:1303:7: (n= singleValuedPathExpression | n= aggregateExpression | n= variableAccessOrTypeConstant )
             int alt98=3;
             switch ( input.LA(1) ) {
             case IDENT:
@@ -13062,7 +13062,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
             
             switch (alt98) {
                 case 1 :
-                    // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:1303:7: n= singleValuedPathExpression
+                    // JPQL.g:1303:7: n= singleValuedPathExpression
                     {
                     pushFollow(FOLLOW_singleValuedPathExpression_in_simpleSelectExpression8190);
                     n=singleValuedPathExpression();
@@ -13075,7 +13075,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
                     }
                     break;
                 case 2 :
-                    // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:1304:7: n= aggregateExpression
+                    // JPQL.g:1304:7: n= aggregateExpression
                     {
                     pushFollow(FOLLOW_aggregateExpression_in_simpleSelectExpression8205);
                     n=aggregateExpression();
@@ -13088,7 +13088,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
                     }
                     break;
                 case 3 :
-                    // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:1305:7: n= variableAccessOrTypeConstant
+                    // JPQL.g:1305:7: n= variableAccessOrTypeConstant
                     {
                     pushFollow(FOLLOW_variableAccessOrTypeConstant_in_simpleSelectExpression8220);
                     n=variableAccessOrTypeConstant();
@@ -13120,7 +13120,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
     
     
     // $ANTLR start subqueryFromClause
-    // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:1309:1: subqueryFromClause returns [Object node] : f= FROM subselectIdentificationVariableDeclaration[$subqueryFromClause::varDecls] ( COMMA subselectIdentificationVariableDeclaration[$subqueryFromClause::varDecls] | c= collectionMemberDeclaration )* ;
+    // JPQL.g:1309:1: subqueryFromClause returns [Object node] : f= FROM subselectIdentificationVariableDeclaration[$subqueryFromClause::varDecls] ( COMMA subselectIdentificationVariableDeclaration[$subqueryFromClause::varDecls] | c= collectionMemberDeclaration )* ;
     public final Object subqueryFromClause() throws RecognitionException {
         subqueryFromClause_stack.push(new subqueryFromClause_scope());
 
@@ -13135,8 +13135,8 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
             ((subqueryFromClause_scope)subqueryFromClause_stack.peek()).varDecls = new ArrayList();
     
         try {
-            // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:1317:7: (f= FROM subselectIdentificationVariableDeclaration[$subqueryFromClause::varDecls] ( COMMA subselectIdentificationVariableDeclaration[$subqueryFromClause::varDecls] | c= collectionMemberDeclaration )* )
-            // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:1317:7: f= FROM subselectIdentificationVariableDeclaration[$subqueryFromClause::varDecls] ( COMMA subselectIdentificationVariableDeclaration[$subqueryFromClause::varDecls] | c= collectionMemberDeclaration )*
+            // JPQL.g:1317:7: (f= FROM subselectIdentificationVariableDeclaration[$subqueryFromClause::varDecls] ( COMMA subselectIdentificationVariableDeclaration[$subqueryFromClause::varDecls] | c= collectionMemberDeclaration )* )
+            // JPQL.g:1317:7: f= FROM subselectIdentificationVariableDeclaration[$subqueryFromClause::varDecls] ( COMMA subselectIdentificationVariableDeclaration[$subqueryFromClause::varDecls] | c= collectionMemberDeclaration )*
             {
             f=(Token)input.LT(1);
             match(input,FROM,FOLLOW_FROM_in_subqueryFromClause8255); if (failed) return node;
@@ -13144,7 +13144,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
             subselectIdentificationVariableDeclaration(((subqueryFromClause_scope)subqueryFromClause_stack.peek()).varDecls);
             _fsp--;
             if (failed) return node;
-            // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:1318:9: ( COMMA subselectIdentificationVariableDeclaration[$subqueryFromClause::varDecls] | c= collectionMemberDeclaration )*
+            // JPQL.g:1318:9: ( COMMA subselectIdentificationVariableDeclaration[$subqueryFromClause::varDecls] | c= collectionMemberDeclaration )*
             loop99:
             do {
                 int alt99=3;
@@ -13160,7 +13160,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
             
                 switch (alt99) {
             	case 1 :
-            	    // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:1319:13: COMMA subselectIdentificationVariableDeclaration[$subqueryFromClause::varDecls]
+            	    // JPQL.g:1319:13: COMMA subselectIdentificationVariableDeclaration[$subqueryFromClause::varDecls]
             	    {
             	    match(input,COMMA,FOLLOW_COMMA_in_subqueryFromClause8284); if (failed) return node;
             	    pushFollow(FOLLOW_subselectIdentificationVariableDeclaration_in_subqueryFromClause8303);
@@ -13171,7 +13171,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
             	    }
             	    break;
             	case 2 :
-            	    // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:1321:19: c= collectionMemberDeclaration
+            	    // JPQL.g:1321:19: c= collectionMemberDeclaration
             	    {
             	    pushFollow(FOLLOW_collectionMemberDeclaration_in_subqueryFromClause8329);
             	    c=collectionMemberDeclaration();
@@ -13209,7 +13209,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
     
     // $ANTLR start subselectIdentificationVariableDeclaration
-    // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:1326:1: subselectIdentificationVariableDeclaration[List varDecls] : ( identificationVariableDeclaration[varDecls] | n= associationPathExpression ( AS )? i= IDENT ( join )* | n= collectionMemberDeclaration );
+    // JPQL.g:1326:1: subselectIdentificationVariableDeclaration[List varDecls] : ( identificationVariableDeclaration[varDecls] | n= associationPathExpression ( AS )? i= IDENT ( join )* | n= collectionMemberDeclaration );
     public final void subselectIdentificationVariableDeclaration(List varDecls) throws RecognitionException {
         Token i=null;
         Object n = null;
@@ -13217,7 +13217,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
     
          Object node; 
         try {
-            // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:1328:7: ( identificationVariableDeclaration[varDecls] | n= associationPathExpression ( AS )? i= IDENT ( join )* | n= collectionMemberDeclaration )
+            // JPQL.g:1328:7: ( identificationVariableDeclaration[varDecls] | n= associationPathExpression ( AS )? i= IDENT ( join )* | n= collectionMemberDeclaration )
             int alt102=3;
             switch ( input.LA(1) ) {
             case IDENT:
@@ -13421,7 +13421,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
             
             switch (alt102) {
                 case 1 :
-                    // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:1328:7: identificationVariableDeclaration[varDecls]
+                    // JPQL.g:1328:7: identificationVariableDeclaration[varDecls]
                     {
                     pushFollow(FOLLOW_identificationVariableDeclaration_in_subselectIdentificationVariableDeclaration8376);
                     identificationVariableDeclaration(varDecls);
@@ -13431,13 +13431,13 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
                     }
                     break;
                 case 2 :
-                    // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:1329:7: n= associationPathExpression ( AS )? i= IDENT ( join )*
+                    // JPQL.g:1329:7: n= associationPathExpression ( AS )? i= IDENT ( join )*
                     {
                     pushFollow(FOLLOW_associationPathExpression_in_subselectIdentificationVariableDeclaration8389);
                     n=associationPathExpression();
                     _fsp--;
                     if (failed) return ;
-                    // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:1329:37: ( AS )?
+                    // JPQL.g:1329:37: ( AS )?
                     int alt100=2;
                     int LA100_0 = input.LA(1);
                     
@@ -13446,7 +13446,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
                     }
                     switch (alt100) {
                         case 1 :
-                            // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:1329:38: AS
+                            // JPQL.g:1329:38: AS
                             {
                             match(input,AS,FOLLOW_AS_in_subselectIdentificationVariableDeclaration8392); if (failed) return ;
                             
@@ -13457,7 +13457,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
                     i=(Token)input.LT(1);
                     match(input,IDENT,FOLLOW_IDENT_in_subselectIdentificationVariableDeclaration8398); if (failed) return ;
-                    // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:1329:51: ( join )*
+                    // JPQL.g:1329:51: ( join )*
                     loop101:
                     do {
                         int alt101=2;
@@ -13470,7 +13470,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
                     
                         switch (alt101) {
                     	case 1 :
-                    	    // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:1329:52: join
+                    	    // JPQL.g:1329:52: join
                     	    {
                     	    pushFollow(FOLLOW_join_in_subselectIdentificationVariableDeclaration8401);
                     	    join();
@@ -13498,7 +13498,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
                     }
                     break;
                 case 3 :
-                    // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:1334:7: n= collectionMemberDeclaration
+                    // JPQL.g:1334:7: n= collectionMemberDeclaration
                     {
                     pushFollow(FOLLOW_collectionMemberDeclaration_in_subselectIdentificationVariableDeclaration8428);
                     n=collectionMemberDeclaration();
@@ -13530,7 +13530,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
     
     
     // $ANTLR start orderByClause
-    // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:1337:1: orderByClause returns [Object node] : o= ORDER BY n= orderByItem ( COMMA n= orderByItem )* ;
+    // JPQL.g:1337:1: orderByClause returns [Object node] : o= ORDER BY n= orderByItem ( COMMA n= orderByItem )* ;
     public final Object orderByClause() throws RecognitionException {
         orderByClause_stack.push(new orderByClause_scope());
 
@@ -13545,8 +13545,8 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
             ((orderByClause_scope)orderByClause_stack.peek()).items = new ArrayList();
     
         try {
-            // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:1345:7: (o= ORDER BY n= orderByItem ( COMMA n= orderByItem )* )
-            // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:1345:7: o= ORDER BY n= orderByItem ( COMMA n= orderByItem )*
+            // JPQL.g:1345:7: (o= ORDER BY n= orderByItem ( COMMA n= orderByItem )* )
+            // JPQL.g:1345:7: o= ORDER BY n= orderByItem ( COMMA n= orderByItem )*
             {
             o=(Token)input.LT(1);
             match(input,ORDER,FOLLOW_ORDER_in_orderByClause8461); if (failed) return node;
@@ -13558,7 +13558,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
             if ( backtracking==0 ) {
                ((orderByClause_scope)orderByClause_stack.peek()).items.add(n); 
             }
-            // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:1347:9: ( COMMA n= orderByItem )*
+            // JPQL.g:1347:9: ( COMMA n= orderByItem )*
             loop103:
             do {
                 int alt103=2;
@@ -13571,7 +13571,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
             
                 switch (alt103) {
             	case 1 :
-            	    // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:1347:10: COMMA n= orderByItem
+            	    // JPQL.g:1347:10: COMMA n= orderByItem
             	    {
             	    match(input,COMMA,FOLLOW_COMMA_in_orderByClause8492); if (failed) return node;
             	    pushFollow(FOLLOW_orderByItem_in_orderByClause8498);
@@ -13610,7 +13610,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
     
     // $ANTLR start orderByItem
-    // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:1351:1: orderByItem returns [Object node] : (n= stateFieldPathExpression (a= ASC | d= DESC | ) | i= IDENT (a= ASC | d= DESC | ) );
+    // JPQL.g:1351:1: orderByItem returns [Object node] : (n= stateFieldPathExpression (a= ASC | d= DESC | ) | i= IDENT (a= ASC | d= DESC | ) );
     public final Object orderByItem() throws RecognitionException {
 
         Object node = null;
@@ -13623,7 +13623,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
     
          node = null; 
         try {
-            // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:1353:7: (n= stateFieldPathExpression (a= ASC | d= DESC | ) | i= IDENT (a= ASC | d= DESC | ) )
+            // JPQL.g:1353:7: (n= stateFieldPathExpression (a= ASC | d= DESC | ) | i= IDENT (a= ASC | d= DESC | ) )
             int alt106=2;
             int LA106_0 = input.LA(1);
             
@@ -13656,13 +13656,13 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
             }
             switch (alt106) {
                 case 1 :
-                    // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:1353:7: n= stateFieldPathExpression (a= ASC | d= DESC | )
+                    // JPQL.g:1353:7: n= stateFieldPathExpression (a= ASC | d= DESC | )
                     {
                     pushFollow(FOLLOW_stateFieldPathExpression_in_orderByItem8544);
                     n=stateFieldPathExpression();
                     _fsp--;
                     if (failed) return node;
-                    // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:1354:9: (a= ASC | d= DESC | )
+                    // JPQL.g:1354:9: (a= ASC | d= DESC | )
                     int alt104=3;
                     switch ( input.LA(1) ) {
                     case ASC:
@@ -13691,7 +13691,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
                     
                     switch (alt104) {
                         case 1 :
-                            // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:1354:11: a= ASC
+                            // JPQL.g:1354:11: a= ASC
                             {
                             a=(Token)input.LT(1);
                             match(input,ASC,FOLLOW_ASC_in_orderByItem8558); if (failed) return node;
@@ -13702,7 +13702,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
                             }
                             break;
                         case 2 :
-                            // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:1356:11: d= DESC
+                            // JPQL.g:1356:11: d= DESC
                             {
                             d=(Token)input.LT(1);
                             match(input,DESC,FOLLOW_DESC_in_orderByItem8587); if (failed) return node;
@@ -13713,7 +13713,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
                             }
                             break;
                         case 3 :
-                            // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:1359:13: 
+                            // JPQL.g:1359:13: 
                             {
                             if ( backtracking==0 ) {
                                node = factory.newAscOrdering(0, 0, n); 
@@ -13728,11 +13728,11 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
                     }
                     break;
                 case 2 :
-                    // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:1361:8: i= IDENT (a= ASC | d= DESC | )
+                    // JPQL.g:1361:8: i= IDENT (a= ASC | d= DESC | )
                     {
                     i=(Token)input.LT(1);
                     match(input,IDENT,FOLLOW_IDENT_in_orderByItem8649); if (failed) return node;
-                    // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:1362:9: (a= ASC | d= DESC | )
+                    // JPQL.g:1362:9: (a= ASC | d= DESC | )
                     int alt105=3;
                     switch ( input.LA(1) ) {
                     case ASC:
@@ -13761,7 +13761,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
                     
                     switch (alt105) {
                         case 1 :
-                            // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:1362:11: a= ASC
+                            // JPQL.g:1362:11: a= ASC
                             {
                             a=(Token)input.LT(1);
                             match(input,ASC,FOLLOW_ASC_in_orderByItem8663); if (failed) return node;
@@ -13772,7 +13772,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
                             }
                             break;
                         case 2 :
-                            // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:1364:11: d= DESC
+                            // JPQL.g:1364:11: d= DESC
                             {
                             d=(Token)input.LT(1);
                             match(input,DESC,FOLLOW_DESC_in_orderByItem8692); if (failed) return node;
@@ -13783,7 +13783,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
                             }
                             break;
                         case 3 :
-                            // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:1367:13: 
+                            // JPQL.g:1367:13: 
                             {
                             if ( backtracking==0 ) {
                                node = factory.newAscOrdering(0, 0, i.getText()); 
@@ -13817,7 +13817,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
     
     
     // $ANTLR start groupByClause
-    // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:1371:1: groupByClause returns [Object node] : g= GROUP BY n= groupByItem ( COMMA n= groupByItem )* ;
+    // JPQL.g:1371:1: groupByClause returns [Object node] : g= GROUP BY n= groupByItem ( COMMA n= groupByItem )* ;
     public final Object groupByClause() throws RecognitionException {
         groupByClause_stack.push(new groupByClause_scope());
 
@@ -13832,8 +13832,8 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
             ((groupByClause_scope)groupByClause_stack.peek()).items = new ArrayList();
     
         try {
-            // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:1379:7: (g= GROUP BY n= groupByItem ( COMMA n= groupByItem )* )
-            // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:1379:7: g= GROUP BY n= groupByItem ( COMMA n= groupByItem )*
+            // JPQL.g:1379:7: (g= GROUP BY n= groupByItem ( COMMA n= groupByItem )* )
+            // JPQL.g:1379:7: g= GROUP BY n= groupByItem ( COMMA n= groupByItem )*
             {
             g=(Token)input.LT(1);
             match(input,GROUP,FOLLOW_GROUP_in_groupByClause8773); if (failed) return node;
@@ -13845,7 +13845,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
             if ( backtracking==0 ) {
                ((groupByClause_scope)groupByClause_stack.peek()).items.add(n); 
             }
-            // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:1381:9: ( COMMA n= groupByItem )*
+            // JPQL.g:1381:9: ( COMMA n= groupByItem )*
             loop107:
             do {
                 int alt107=2;
@@ -13858,7 +13858,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
             
                 switch (alt107) {
             	case 1 :
-            	    // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:1381:10: COMMA n= groupByItem
+            	    // JPQL.g:1381:10: COMMA n= groupByItem
             	    {
             	    match(input,COMMA,FOLLOW_COMMA_in_groupByClause8802); if (failed) return node;
             	    pushFollow(FOLLOW_groupByItem_in_groupByClause8808);
@@ -13897,7 +13897,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
     
     // $ANTLR start groupByItem
-    // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:1385:1: groupByItem returns [Object node] : (n= stateFieldPathExpression | n= variableAccessOrTypeConstant );
+    // JPQL.g:1385:1: groupByItem returns [Object node] : (n= stateFieldPathExpression | n= variableAccessOrTypeConstant );
     public final Object groupByItem() throws RecognitionException {
 
         Object node = null;
@@ -13907,7 +13907,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
     
          node = null; 
         try {
-            // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:1387:7: (n= stateFieldPathExpression | n= variableAccessOrTypeConstant )
+            // JPQL.g:1387:7: (n= stateFieldPathExpression | n= variableAccessOrTypeConstant )
             int alt108=2;
             int LA108_0 = input.LA(1);
             
@@ -13940,7 +13940,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
             }
             switch (alt108) {
                 case 1 :
-                    // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:1387:7: n= stateFieldPathExpression
+                    // JPQL.g:1387:7: n= stateFieldPathExpression
                     {
                     pushFollow(FOLLOW_stateFieldPathExpression_in_groupByItem8854);
                     n=stateFieldPathExpression();
@@ -13953,7 +13953,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
                     }
                     break;
                 case 2 :
-                    // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:1388:7: n= variableAccessOrTypeConstant
+                    // JPQL.g:1388:7: n= variableAccessOrTypeConstant
                     {
                     pushFollow(FOLLOW_variableAccessOrTypeConstant_in_groupByItem8868);
                     n=variableAccessOrTypeConstant();
@@ -13980,7 +13980,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
     
     // $ANTLR start havingClause
-    // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:1391:1: havingClause returns [Object node] : h= HAVING n= conditionalExpression ;
+    // JPQL.g:1391:1: havingClause returns [Object node] : h= HAVING n= conditionalExpression ;
     public final Object havingClause() throws RecognitionException {
 
         Object node = null;
@@ -13991,8 +13991,8 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
     
          node = null; 
         try {
-            // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:1393:7: (h= HAVING n= conditionalExpression )
-            // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:1393:7: h= HAVING n= conditionalExpression
+            // JPQL.g:1393:7: (h= HAVING n= conditionalExpression )
+            // JPQL.g:1393:7: h= HAVING n= conditionalExpression
             {
             h=(Token)input.LT(1);
             match(input,HAVING,FOLLOW_HAVING_in_havingClause8898); if (failed) return node;
@@ -14025,8 +14025,8 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
     // $ANTLR start synpred1
     public final void synpred1_fragment() throws RecognitionException {   
-        // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:640:7: ( LEFT_ROUND_BRACKET conditionalExpression )
-        // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:640:8: LEFT_ROUND_BRACKET conditionalExpression
+        // JPQL.g:640:7: ( LEFT_ROUND_BRACKET conditionalExpression )
+        // JPQL.g:640:8: LEFT_ROUND_BRACKET conditionalExpression
         {
         match(input,LEFT_ROUND_BRACKET,FOLLOW_LEFT_ROUND_BRACKET_in_synpred13533); if (failed) return ;
         pushFollow(FOLLOW_conditionalExpression_in_synpred13535);
@@ -14421,10 +14421,10 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
     public static final BitSet FOLLOW_SUBSTRING_in_substring7042 = new BitSet(new long[]{0x0000000000000000L,0x0000000000040000L});
     public static final BitSet FOLLOW_LEFT_ROUND_BRACKET_in_substring7055 = new BitSet(new long[]{0x808DD221401FC410L,0x000001FFCC0499CDL});
     public static final BitSet FOLLOW_scalarExpression_in_substring7069 = new BitSet(new long[]{0x0000000000000000L,0x0000000000010000L});
-    public static final BitSet FOLLOW_COMMA_in_substring7071 = new BitSet(new long[]{0x808D52210002C410L,0x00000183CC049009L});
-    public static final BitSet FOLLOW_simpleArithmeticExpression_in_substring7085 = new BitSet(new long[]{0x0000000000000000L,0x0000000000090000L});
-    public static final BitSet FOLLOW_COMMA_in_substring7096 = new BitSet(new long[]{0x808D52210002C410L,0x00000183CC049009L});
-    public static final BitSet FOLLOW_simpleArithmeticExpression_in_substring7102 = new BitSet(new long[]{0x0000000000000000L,0x0000000000080000L});
+    public static final BitSet FOLLOW_COMMA_in_substring7071 = new BitSet(new long[]{0x808DD221401FC410L,0x000001FFCC0499CDL});
+    public static final BitSet FOLLOW_scalarExpression_in_substring7085 = new BitSet(new long[]{0x0000000000000000L,0x0000000000090000L});
+    public static final BitSet FOLLOW_COMMA_in_substring7096 = new BitSet(new long[]{0x808DD221401FC410L,0x000001FFCC0499CDL});
+    public static final BitSet FOLLOW_scalarExpression_in_substring7102 = new BitSet(new long[]{0x0000000000000000L,0x0000000000080000L});
     public static final BitSet FOLLOW_RIGHT_ROUND_BRACKET_in_substring7114 = new BitSet(new long[]{0x0000000000000002L});
     public static final BitSet FOLLOW_TRIM_in_trim7152 = new BitSet(new long[]{0x0000000000000000L,0x0000000000040000L});
     public static final BitSet FOLLOW_LEFT_ROUND_BRACKET_in_trim7162 = new BitSet(new long[]{0x0000860200011000L,0x0000018C00009864L});
@@ -14459,22 +14459,22 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
     public static final BitSet FOLLOW_scalarExpression_in_locate7600 = new BitSet(new long[]{0x0000000000000000L,0x0000000000010000L});
     public static final BitSet FOLLOW_COMMA_in_locate7602 = new BitSet(new long[]{0x808DD221401FC410L,0x000001FFCC0499CDL});
     public static final BitSet FOLLOW_scalarExpression_in_locate7608 = new BitSet(new long[]{0x0000000000000000L,0x0000000000090000L});
-    public static final BitSet FOLLOW_COMMA_in_locate7620 = new BitSet(new long[]{0x808D52210002C410L,0x00000183CC049009L});
-    public static final BitSet FOLLOW_simpleArithmeticExpression_in_locate7626 = new BitSet(new long[]{0x0000000000000000L,0x0000000000080000L});
+    public static final BitSet FOLLOW_COMMA_in_locate7620 = new BitSet(new long[]{0x808DD221401FC410L,0x000001FFCC0499CDL});
+    public static final BitSet FOLLOW_scalarExpression_in_locate7626 = new BitSet(new long[]{0x0000000000000000L,0x0000000000080000L});
     public static final BitSet FOLLOW_RIGHT_ROUND_BRACKET_in_locate7639 = new BitSet(new long[]{0x0000000000000002L});
     public static final BitSet FOLLOW_SIZE_in_size7677 = new BitSet(new long[]{0x0000000000000000L,0x0000000000040000L});
     public static final BitSet FOLLOW_LEFT_ROUND_BRACKET_in_size7688 = new BitSet(new long[]{0x0000020000000000L,0x0000000000009000L});
     public static final BitSet FOLLOW_collectionValuedPathExpression_in_size7694 = new BitSet(new long[]{0x0000000000000000L,0x0000000000080000L});
     public static final BitSet FOLLOW_RIGHT_ROUND_BRACKET_in_size7696 = new BitSet(new long[]{0x0000000000000002L});
     public static final BitSet FOLLOW_MOD_in_mod7734 = new BitSet(new long[]{0x0000000000000000L,0x0000000000040000L});
-    public static final BitSet FOLLOW_LEFT_ROUND_BRACKET_in_mod7736 = new BitSet(new long[]{0x808D52210002C410L,0x00000183CC049009L});
-    public static final BitSet FOLLOW_simpleArithmeticExpression_in_mod7750 = new BitSet(new long[]{0x0000000000000000L,0x0000000000010000L});
-    public static final BitSet FOLLOW_COMMA_in_mod7752 = new BitSet(new long[]{0x808D52210002C410L,0x00000183CC049009L});
-    public static final BitSet FOLLOW_simpleArithmeticExpression_in_mod7767 = new BitSet(new long[]{0x0000000000000000L,0x0000000000080000L});
+    public static final BitSet FOLLOW_LEFT_ROUND_BRACKET_in_mod7736 = new BitSet(new long[]{0x808DD221401FC410L,0x000001FFCC0499CDL});
+    public static final BitSet FOLLOW_scalarExpression_in_mod7750 = new BitSet(new long[]{0x0000000000000000L,0x0000000000010000L});
+    public static final BitSet FOLLOW_COMMA_in_mod7752 = new BitSet(new long[]{0x808DD221401FC410L,0x000001FFCC0499CDL});
+    public static final BitSet FOLLOW_scalarExpression_in_mod7767 = new BitSet(new long[]{0x0000000000000000L,0x0000000000080000L});
     public static final BitSet FOLLOW_RIGHT_ROUND_BRACKET_in_mod7777 = new BitSet(new long[]{0x0000000000000002L});
     public static final BitSet FOLLOW_SQRT_in_sqrt7815 = new BitSet(new long[]{0x0000000000000000L,0x0000000000040000L});
-    public static final BitSet FOLLOW_LEFT_ROUND_BRACKET_in_sqrt7826 = new BitSet(new long[]{0x808D52210002C410L,0x00000183CC049009L});
-    public static final BitSet FOLLOW_simpleArithmeticExpression_in_sqrt7832 = new BitSet(new long[]{0x0000000000000000L,0x0000000000080000L});
+    public static final BitSet FOLLOW_LEFT_ROUND_BRACKET_in_sqrt7826 = new BitSet(new long[]{0x808DD221401FC410L,0x000001FFCC0499CDL});
+    public static final BitSet FOLLOW_scalarExpression_in_sqrt7832 = new BitSet(new long[]{0x0000000000000000L,0x0000000000080000L});
     public static final BitSet FOLLOW_RIGHT_ROUND_BRACKET_in_sqrt7834 = new BitSet(new long[]{0x0000000000000002L});
     public static final BitSet FOLLOW_INDEX_in_index7876 = new BitSet(new long[]{0x0000000000000000L,0x0000000000040000L});
     public static final BitSet FOLLOW_LEFT_ROUND_BRACKET_in_index7878 = new BitSet(new long[]{0x0000000000000000L,0x0000000000008000L});

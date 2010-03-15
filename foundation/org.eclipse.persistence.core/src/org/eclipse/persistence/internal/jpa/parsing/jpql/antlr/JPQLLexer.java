@@ -1,4 +1,4 @@
-// $ANTLR 3.0 C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g 2010-03-03 14:13:45
+// $ANTLR 3.0 JPQL.g 2010-03-15 11:19:21
 
     package org.eclipse.persistence.internal.jpa.parsing.jpql.antlr;
 
@@ -132,14 +132,14 @@ public class JPQLLexer extends Lexer {
     public JPQLLexer(CharStream input) {
         super(input);
     }
-    public String getGrammarFileName() { return "C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g"; }
+    public String getGrammarFileName() { return "JPQL.g"; }
 
     // $ANTLR start ABS
     public final void mABS() throws RecognitionException {
         try {
             int _type = ABS;
-            // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:8:7: ( 'abs' )
-            // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:8:7: 'abs'
+            // JPQL.g:8:7: ( 'abs' )
+            // JPQL.g:8:7: 'abs'
             {
             match("abs"); 
 
@@ -157,8 +157,8 @@ public class JPQLLexer extends Lexer {
     public final void mALL() throws RecognitionException {
         try {
             int _type = ALL;
-            // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:9:7: ( 'all' )
-            // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:9:7: 'all'
+            // JPQL.g:9:7: ( 'all' )
+            // JPQL.g:9:7: 'all'
             {
             match("all"); 
 
@@ -176,8 +176,8 @@ public class JPQLLexer extends Lexer {
     public final void mAND() throws RecognitionException {
         try {
             int _type = AND;
-            // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:10:7: ( 'and' )
-            // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:10:7: 'and'
+            // JPQL.g:10:7: ( 'and' )
+            // JPQL.g:10:7: 'and'
             {
             match("and"); 
 
@@ -195,8 +195,8 @@ public class JPQLLexer extends Lexer {
     public final void mANY() throws RecognitionException {
         try {
             int _type = ANY;
-            // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:11:7: ( 'any' )
-            // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:11:7: 'any'
+            // JPQL.g:11:7: ( 'any' )
+            // JPQL.g:11:7: 'any'
             {
             match("any"); 
 
@@ -214,8 +214,8 @@ public class JPQLLexer extends Lexer {
     public final void mAS() throws RecognitionException {
         try {
             int _type = AS;
-            // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:12:6: ( 'as' )
-            // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:12:6: 'as'
+            // JPQL.g:12:6: ( 'as' )
+            // JPQL.g:12:6: 'as'
             {
             match("as"); 
 
@@ -233,8 +233,8 @@ public class JPQLLexer extends Lexer {
     public final void mASC() throws RecognitionException {
         try {
             int _type = ASC;
-            // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:13:7: ( 'asc' )
-            // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:13:7: 'asc'
+            // JPQL.g:13:7: ( 'asc' )
+            // JPQL.g:13:7: 'asc'
             {
             match("asc"); 
 
@@ -252,8 +252,8 @@ public class JPQLLexer extends Lexer {
     public final void mAVG() throws RecognitionException {
         try {
             int _type = AVG;
-            // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:14:7: ( 'avg' )
-            // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:14:7: 'avg'
+            // JPQL.g:14:7: ( 'avg' )
+            // JPQL.g:14:7: 'avg'
             {
             match("avg"); 
 
@@ -271,8 +271,8 @@ public class JPQLLexer extends Lexer {
     public final void mBETWEEN() throws RecognitionException {
         try {
             int _type = BETWEEN;
-            // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:15:11: ( 'between' )
-            // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:15:11: 'between'
+            // JPQL.g:15:11: ( 'between' )
+            // JPQL.g:15:11: 'between'
             {
             match("between"); 
 
@@ -290,8 +290,8 @@ public class JPQLLexer extends Lexer {
     public final void mBOTH() throws RecognitionException {
         try {
             int _type = BOTH;
-            // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:16:8: ( 'both' )
-            // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:16:8: 'both'
+            // JPQL.g:16:8: ( 'both' )
+            // JPQL.g:16:8: 'both'
             {
             match("both"); 
 
@@ -309,8 +309,8 @@ public class JPQLLexer extends Lexer {
     public final void mBY() throws RecognitionException {
         try {
             int _type = BY;
-            // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:17:6: ( 'by' )
-            // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:17:6: 'by'
+            // JPQL.g:17:6: ( 'by' )
+            // JPQL.g:17:6: 'by'
             {
             match("by"); 
 
@@ -328,8 +328,8 @@ public class JPQLLexer extends Lexer {
     public final void mCASE() throws RecognitionException {
         try {
             int _type = CASE;
-            // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:18:8: ( 'case' )
-            // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:18:8: 'case'
+            // JPQL.g:18:8: ( 'case' )
+            // JPQL.g:18:8: 'case'
             {
             match("case"); 
 
@@ -347,8 +347,8 @@ public class JPQLLexer extends Lexer {
     public final void mCOALESCE() throws RecognitionException {
         try {
             int _type = COALESCE;
-            // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:19:12: ( 'coalesce' )
-            // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:19:12: 'coalesce'
+            // JPQL.g:19:12: ( 'coalesce' )
+            // JPQL.g:19:12: 'coalesce'
             {
             match("coalesce"); 
 
@@ -366,8 +366,8 @@ public class JPQLLexer extends Lexer {
     public final void mCONCAT() throws RecognitionException {
         try {
             int _type = CONCAT;
-            // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:20:10: ( 'concat' )
-            // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:20:10: 'concat'
+            // JPQL.g:20:10: ( 'concat' )
+            // JPQL.g:20:10: 'concat'
             {
             match("concat"); 
 
@@ -385,8 +385,8 @@ public class JPQLLexer extends Lexer {
     public final void mCOUNT() throws RecognitionException {
         try {
             int _type = COUNT;
-            // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:21:9: ( 'count' )
-            // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:21:9: 'count'
+            // JPQL.g:21:9: ( 'count' )
+            // JPQL.g:21:9: 'count'
             {
             match("count"); 
 
@@ -404,8 +404,8 @@ public class JPQLLexer extends Lexer {
     public final void mCURRENT_DATE() throws RecognitionException {
         try {
             int _type = CURRENT_DATE;
-            // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:22:16: ( 'current_date' )
-            // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:22:16: 'current_date'
+            // JPQL.g:22:16: ( 'current_date' )
+            // JPQL.g:22:16: 'current_date'
             {
             match("current_date"); 
 
@@ -423,8 +423,8 @@ public class JPQLLexer extends Lexer {
     public final void mCURRENT_TIME() throws RecognitionException {
         try {
             int _type = CURRENT_TIME;
-            // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:23:16: ( 'current_time' )
-            // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:23:16: 'current_time'
+            // JPQL.g:23:16: ( 'current_time' )
+            // JPQL.g:23:16: 'current_time'
             {
             match("current_time"); 
 
@@ -442,8 +442,8 @@ public class JPQLLexer extends Lexer {
     public final void mCURRENT_TIMESTAMP() throws RecognitionException {
         try {
             int _type = CURRENT_TIMESTAMP;
-            // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:24:21: ( 'current_timestamp' )
-            // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:24:21: 'current_timestamp'
+            // JPQL.g:24:21: ( 'current_timestamp' )
+            // JPQL.g:24:21: 'current_timestamp'
             {
             match("current_timestamp"); 
 
@@ -461,8 +461,8 @@ public class JPQLLexer extends Lexer {
     public final void mDESC() throws RecognitionException {
         try {
             int _type = DESC;
-            // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:25:8: ( 'desc' )
-            // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:25:8: 'desc'
+            // JPQL.g:25:8: ( 'desc' )
+            // JPQL.g:25:8: 'desc'
             {
             match("desc"); 
 
@@ -480,8 +480,8 @@ public class JPQLLexer extends Lexer {
     public final void mDELETE() throws RecognitionException {
         try {
             int _type = DELETE;
-            // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:26:10: ( 'delete' )
-            // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:26:10: 'delete'
+            // JPQL.g:26:10: ( 'delete' )
+            // JPQL.g:26:10: 'delete'
             {
             match("delete"); 
 
@@ -499,8 +499,8 @@ public class JPQLLexer extends Lexer {
     public final void mDISTINCT() throws RecognitionException {
         try {
             int _type = DISTINCT;
-            // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:27:12: ( 'distinct' )
-            // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:27:12: 'distinct'
+            // JPQL.g:27:12: ( 'distinct' )
+            // JPQL.g:27:12: 'distinct'
             {
             match("distinct"); 
 
@@ -518,8 +518,8 @@ public class JPQLLexer extends Lexer {
     public final void mELSE() throws RecognitionException {
         try {
             int _type = ELSE;
-            // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:28:8: ( 'else' )
-            // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:28:8: 'else'
+            // JPQL.g:28:8: ( 'else' )
+            // JPQL.g:28:8: 'else'
             {
             match("else"); 
 
@@ -537,8 +537,8 @@ public class JPQLLexer extends Lexer {
     public final void mEMPTY() throws RecognitionException {
         try {
             int _type = EMPTY;
-            // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:29:9: ( 'empty' )
-            // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:29:9: 'empty'
+            // JPQL.g:29:9: ( 'empty' )
+            // JPQL.g:29:9: 'empty'
             {
             match("empty"); 
 
@@ -556,8 +556,8 @@ public class JPQLLexer extends Lexer {
     public final void mEND() throws RecognitionException {
         try {
             int _type = END;
-            // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:30:7: ( 'end' )
-            // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:30:7: 'end'
+            // JPQL.g:30:7: ( 'end' )
+            // JPQL.g:30:7: 'end'
             {
             match("end"); 
 
@@ -575,8 +575,8 @@ public class JPQLLexer extends Lexer {
     public final void mENTRY() throws RecognitionException {
         try {
             int _type = ENTRY;
-            // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:31:9: ( 'entry' )
-            // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:31:9: 'entry'
+            // JPQL.g:31:9: ( 'entry' )
+            // JPQL.g:31:9: 'entry'
             {
             match("entry"); 
 
@@ -594,8 +594,8 @@ public class JPQLLexer extends Lexer {
     public final void mESCAPE() throws RecognitionException {
         try {
             int _type = ESCAPE;
-            // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:32:10: ( 'escape' )
-            // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:32:10: 'escape'
+            // JPQL.g:32:10: ( 'escape' )
+            // JPQL.g:32:10: 'escape'
             {
             match("escape"); 
 
@@ -613,8 +613,8 @@ public class JPQLLexer extends Lexer {
     public final void mEXISTS() throws RecognitionException {
         try {
             int _type = EXISTS;
-            // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:33:10: ( 'exists' )
-            // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:33:10: 'exists'
+            // JPQL.g:33:10: ( 'exists' )
+            // JPQL.g:33:10: 'exists'
             {
             match("exists"); 
 
@@ -632,8 +632,8 @@ public class JPQLLexer extends Lexer {
     public final void mFALSE() throws RecognitionException {
         try {
             int _type = FALSE;
-            // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:34:9: ( 'false' )
-            // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:34:9: 'false'
+            // JPQL.g:34:9: ( 'false' )
+            // JPQL.g:34:9: 'false'
             {
             match("false"); 
 
@@ -651,8 +651,8 @@ public class JPQLLexer extends Lexer {
     public final void mFETCH() throws RecognitionException {
         try {
             int _type = FETCH;
-            // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:35:9: ( 'fetch' )
-            // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:35:9: 'fetch'
+            // JPQL.g:35:9: ( 'fetch' )
+            // JPQL.g:35:9: 'fetch'
             {
             match("fetch"); 
 
@@ -670,8 +670,8 @@ public class JPQLLexer extends Lexer {
     public final void mFUNC() throws RecognitionException {
         try {
             int _type = FUNC;
-            // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:36:8: ( 'func' )
-            // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:36:8: 'func'
+            // JPQL.g:36:8: ( 'func' )
+            // JPQL.g:36:8: 'func'
             {
             match("func"); 
 
@@ -689,8 +689,8 @@ public class JPQLLexer extends Lexer {
     public final void mFROM() throws RecognitionException {
         try {
             int _type = FROM;
-            // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:37:8: ( 'from' )
-            // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:37:8: 'from'
+            // JPQL.g:37:8: ( 'from' )
+            // JPQL.g:37:8: 'from'
             {
             match("from"); 
 
@@ -708,8 +708,8 @@ public class JPQLLexer extends Lexer {
     public final void mGROUP() throws RecognitionException {
         try {
             int _type = GROUP;
-            // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:38:9: ( 'group' )
-            // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:38:9: 'group'
+            // JPQL.g:38:9: ( 'group' )
+            // JPQL.g:38:9: 'group'
             {
             match("group"); 
 
@@ -727,8 +727,8 @@ public class JPQLLexer extends Lexer {
     public final void mHAVING() throws RecognitionException {
         try {
             int _type = HAVING;
-            // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:39:10: ( 'having' )
-            // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:39:10: 'having'
+            // JPQL.g:39:10: ( 'having' )
+            // JPQL.g:39:10: 'having'
             {
             match("having"); 
 
@@ -746,8 +746,8 @@ public class JPQLLexer extends Lexer {
     public final void mIN() throws RecognitionException {
         try {
             int _type = IN;
-            // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:40:6: ( 'in' )
-            // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:40:6: 'in'
+            // JPQL.g:40:6: ( 'in' )
+            // JPQL.g:40:6: 'in'
             {
             match("in"); 
 
@@ -765,8 +765,8 @@ public class JPQLLexer extends Lexer {
     public final void mINDEX() throws RecognitionException {
         try {
             int _type = INDEX;
-            // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:41:9: ( 'index' )
-            // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:41:9: 'index'
+            // JPQL.g:41:9: ( 'index' )
+            // JPQL.g:41:9: 'index'
             {
             match("index"); 
 
@@ -784,8 +784,8 @@ public class JPQLLexer extends Lexer {
     public final void mINNER() throws RecognitionException {
         try {
             int _type = INNER;
-            // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:42:9: ( 'inner' )
-            // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:42:9: 'inner'
+            // JPQL.g:42:9: ( 'inner' )
+            // JPQL.g:42:9: 'inner'
             {
             match("inner"); 
 
@@ -803,8 +803,8 @@ public class JPQLLexer extends Lexer {
     public final void mIS() throws RecognitionException {
         try {
             int _type = IS;
-            // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:43:6: ( 'is' )
-            // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:43:6: 'is'
+            // JPQL.g:43:6: ( 'is' )
+            // JPQL.g:43:6: 'is'
             {
             match("is"); 
 
@@ -822,8 +822,8 @@ public class JPQLLexer extends Lexer {
     public final void mJOIN() throws RecognitionException {
         try {
             int _type = JOIN;
-            // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:44:8: ( 'join' )
-            // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:44:8: 'join'
+            // JPQL.g:44:8: ( 'join' )
+            // JPQL.g:44:8: 'join'
             {
             match("join"); 
 
@@ -841,8 +841,8 @@ public class JPQLLexer extends Lexer {
     public final void mKEY() throws RecognitionException {
         try {
             int _type = KEY;
-            // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:45:7: ( 'key' )
-            // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:45:7: 'key'
+            // JPQL.g:45:7: ( 'key' )
+            // JPQL.g:45:7: 'key'
             {
             match("key"); 
 
@@ -860,8 +860,8 @@ public class JPQLLexer extends Lexer {
     public final void mLEADING() throws RecognitionException {
         try {
             int _type = LEADING;
-            // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:46:11: ( 'leading' )
-            // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:46:11: 'leading'
+            // JPQL.g:46:11: ( 'leading' )
+            // JPQL.g:46:11: 'leading'
             {
             match("leading"); 
 
@@ -879,8 +879,8 @@ public class JPQLLexer extends Lexer {
     public final void mLEFT() throws RecognitionException {
         try {
             int _type = LEFT;
-            // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:47:8: ( 'left' )
-            // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:47:8: 'left'
+            // JPQL.g:47:8: ( 'left' )
+            // JPQL.g:47:8: 'left'
             {
             match("left"); 
 
@@ -898,8 +898,8 @@ public class JPQLLexer extends Lexer {
     public final void mLENGTH() throws RecognitionException {
         try {
             int _type = LENGTH;
-            // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:48:10: ( 'length' )
-            // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:48:10: 'length'
+            // JPQL.g:48:10: ( 'length' )
+            // JPQL.g:48:10: 'length'
             {
             match("length"); 
 
@@ -917,8 +917,8 @@ public class JPQLLexer extends Lexer {
     public final void mLIKE() throws RecognitionException {
         try {
             int _type = LIKE;
-            // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:49:8: ( 'like' )
-            // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:49:8: 'like'
+            // JPQL.g:49:8: ( 'like' )
+            // JPQL.g:49:8: 'like'
             {
             match("like"); 
 
@@ -936,8 +936,8 @@ public class JPQLLexer extends Lexer {
     public final void mLOCATE() throws RecognitionException {
         try {
             int _type = LOCATE;
-            // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:50:10: ( 'locate' )
-            // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:50:10: 'locate'
+            // JPQL.g:50:10: ( 'locate' )
+            // JPQL.g:50:10: 'locate'
             {
             match("locate"); 
 
@@ -955,8 +955,8 @@ public class JPQLLexer extends Lexer {
     public final void mLOWER() throws RecognitionException {
         try {
             int _type = LOWER;
-            // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:51:9: ( 'lower' )
-            // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:51:9: 'lower'
+            // JPQL.g:51:9: ( 'lower' )
+            // JPQL.g:51:9: 'lower'
             {
             match("lower"); 
 
@@ -974,8 +974,8 @@ public class JPQLLexer extends Lexer {
     public final void mMAX() throws RecognitionException {
         try {
             int _type = MAX;
-            // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:52:7: ( 'max' )
-            // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:52:7: 'max'
+            // JPQL.g:52:7: ( 'max' )
+            // JPQL.g:52:7: 'max'
             {
             match("max"); 
 
@@ -993,8 +993,8 @@ public class JPQLLexer extends Lexer {
     public final void mMEMBER() throws RecognitionException {
         try {
             int _type = MEMBER;
-            // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:53:10: ( 'member' )
-            // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:53:10: 'member'
+            // JPQL.g:53:10: ( 'member' )
+            // JPQL.g:53:10: 'member'
             {
             match("member"); 
 
@@ -1012,8 +1012,8 @@ public class JPQLLexer extends Lexer {
     public final void mMIN() throws RecognitionException {
         try {
             int _type = MIN;
-            // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:54:7: ( 'min' )
-            // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:54:7: 'min'
+            // JPQL.g:54:7: ( 'min' )
+            // JPQL.g:54:7: 'min'
             {
             match("min"); 
 
@@ -1031,8 +1031,8 @@ public class JPQLLexer extends Lexer {
     public final void mMOD() throws RecognitionException {
         try {
             int _type = MOD;
-            // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:55:7: ( 'mod' )
-            // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:55:7: 'mod'
+            // JPQL.g:55:7: ( 'mod' )
+            // JPQL.g:55:7: 'mod'
             {
             match("mod"); 
 
@@ -1050,8 +1050,8 @@ public class JPQLLexer extends Lexer {
     public final void mNEW() throws RecognitionException {
         try {
             int _type = NEW;
-            // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:56:7: ( 'new' )
-            // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:56:7: 'new'
+            // JPQL.g:56:7: ( 'new' )
+            // JPQL.g:56:7: 'new'
             {
             match("new"); 
 
@@ -1069,8 +1069,8 @@ public class JPQLLexer extends Lexer {
     public final void mNOT() throws RecognitionException {
         try {
             int _type = NOT;
-            // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:57:7: ( 'not' )
-            // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:57:7: 'not'
+            // JPQL.g:57:7: ( 'not' )
+            // JPQL.g:57:7: 'not'
             {
             match("not"); 
 
@@ -1088,8 +1088,8 @@ public class JPQLLexer extends Lexer {
     public final void mNULL() throws RecognitionException {
         try {
             int _type = NULL;
-            // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:58:8: ( 'null' )
-            // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:58:8: 'null'
+            // JPQL.g:58:8: ( 'null' )
+            // JPQL.g:58:8: 'null'
             {
             match("null"); 
 
@@ -1107,8 +1107,8 @@ public class JPQLLexer extends Lexer {
     public final void mNULLIF() throws RecognitionException {
         try {
             int _type = NULLIF;
-            // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:59:10: ( 'nullif' )
-            // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:59:10: 'nullif'
+            // JPQL.g:59:10: ( 'nullif' )
+            // JPQL.g:59:10: 'nullif'
             {
             match("nullif"); 
 
@@ -1126,8 +1126,8 @@ public class JPQLLexer extends Lexer {
     public final void mOBJECT() throws RecognitionException {
         try {
             int _type = OBJECT;
-            // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:60:10: ( 'object' )
-            // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:60:10: 'object'
+            // JPQL.g:60:10: ( 'object' )
+            // JPQL.g:60:10: 'object'
             {
             match("object"); 
 
@@ -1145,8 +1145,8 @@ public class JPQLLexer extends Lexer {
     public final void mOF() throws RecognitionException {
         try {
             int _type = OF;
-            // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:61:6: ( 'of' )
-            // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:61:6: 'of'
+            // JPQL.g:61:6: ( 'of' )
+            // JPQL.g:61:6: 'of'
             {
             match("of"); 
 
@@ -1164,8 +1164,8 @@ public class JPQLLexer extends Lexer {
     public final void mOR() throws RecognitionException {
         try {
             int _type = OR;
-            // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:62:6: ( 'or' )
-            // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:62:6: 'or'
+            // JPQL.g:62:6: ( 'or' )
+            // JPQL.g:62:6: 'or'
             {
             match("or"); 
 
@@ -1183,8 +1183,8 @@ public class JPQLLexer extends Lexer {
     public final void mORDER() throws RecognitionException {
         try {
             int _type = ORDER;
-            // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:63:9: ( 'order' )
-            // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:63:9: 'order'
+            // JPQL.g:63:9: ( 'order' )
+            // JPQL.g:63:9: 'order'
             {
             match("order"); 
 
@@ -1202,8 +1202,8 @@ public class JPQLLexer extends Lexer {
     public final void mOUTER() throws RecognitionException {
         try {
             int _type = OUTER;
-            // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:64:9: ( 'outer' )
-            // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:64:9: 'outer'
+            // JPQL.g:64:9: ( 'outer' )
+            // JPQL.g:64:9: 'outer'
             {
             match("outer"); 
 
@@ -1221,8 +1221,8 @@ public class JPQLLexer extends Lexer {
     public final void mSELECT() throws RecognitionException {
         try {
             int _type = SELECT;
-            // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:65:10: ( 'select' )
-            // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:65:10: 'select'
+            // JPQL.g:65:10: ( 'select' )
+            // JPQL.g:65:10: 'select'
             {
             match("select"); 
 
@@ -1240,8 +1240,8 @@ public class JPQLLexer extends Lexer {
     public final void mSET() throws RecognitionException {
         try {
             int _type = SET;
-            // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:66:7: ( 'set' )
-            // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:66:7: 'set'
+            // JPQL.g:66:7: ( 'set' )
+            // JPQL.g:66:7: 'set'
             {
             match("set"); 
 
@@ -1259,8 +1259,8 @@ public class JPQLLexer extends Lexer {
     public final void mSIZE() throws RecognitionException {
         try {
             int _type = SIZE;
-            // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:67:8: ( 'size' )
-            // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:67:8: 'size'
+            // JPQL.g:67:8: ( 'size' )
+            // JPQL.g:67:8: 'size'
             {
             match("size"); 
 
@@ -1278,8 +1278,8 @@ public class JPQLLexer extends Lexer {
     public final void mSQRT() throws RecognitionException {
         try {
             int _type = SQRT;
-            // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:68:8: ( 'sqrt' )
-            // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:68:8: 'sqrt'
+            // JPQL.g:68:8: ( 'sqrt' )
+            // JPQL.g:68:8: 'sqrt'
             {
             match("sqrt"); 
 
@@ -1297,8 +1297,8 @@ public class JPQLLexer extends Lexer {
     public final void mSOME() throws RecognitionException {
         try {
             int _type = SOME;
-            // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:69:8: ( 'some' )
-            // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:69:8: 'some'
+            // JPQL.g:69:8: ( 'some' )
+            // JPQL.g:69:8: 'some'
             {
             match("some"); 
 
@@ -1316,8 +1316,8 @@ public class JPQLLexer extends Lexer {
     public final void mSUBSTRING() throws RecognitionException {
         try {
             int _type = SUBSTRING;
-            // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:70:13: ( 'substring' )
-            // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:70:13: 'substring'
+            // JPQL.g:70:13: ( 'substring' )
+            // JPQL.g:70:13: 'substring'
             {
             match("substring"); 
 
@@ -1335,8 +1335,8 @@ public class JPQLLexer extends Lexer {
     public final void mSUM() throws RecognitionException {
         try {
             int _type = SUM;
-            // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:71:7: ( 'sum' )
-            // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:71:7: 'sum'
+            // JPQL.g:71:7: ( 'sum' )
+            // JPQL.g:71:7: 'sum'
             {
             match("sum"); 
 
@@ -1354,8 +1354,8 @@ public class JPQLLexer extends Lexer {
     public final void mTHEN() throws RecognitionException {
         try {
             int _type = THEN;
-            // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:72:8: ( 'then' )
-            // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:72:8: 'then'
+            // JPQL.g:72:8: ( 'then' )
+            // JPQL.g:72:8: 'then'
             {
             match("then"); 
 
@@ -1373,8 +1373,8 @@ public class JPQLLexer extends Lexer {
     public final void mTRAILING() throws RecognitionException {
         try {
             int _type = TRAILING;
-            // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:73:12: ( 'trailing' )
-            // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:73:12: 'trailing'
+            // JPQL.g:73:12: ( 'trailing' )
+            // JPQL.g:73:12: 'trailing'
             {
             match("trailing"); 
 
@@ -1392,8 +1392,8 @@ public class JPQLLexer extends Lexer {
     public final void mTRIM() throws RecognitionException {
         try {
             int _type = TRIM;
-            // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:74:8: ( 'trim' )
-            // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:74:8: 'trim'
+            // JPQL.g:74:8: ( 'trim' )
+            // JPQL.g:74:8: 'trim'
             {
             match("trim"); 
 
@@ -1411,8 +1411,8 @@ public class JPQLLexer extends Lexer {
     public final void mTRUE() throws RecognitionException {
         try {
             int _type = TRUE;
-            // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:75:8: ( 'true' )
-            // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:75:8: 'true'
+            // JPQL.g:75:8: ( 'true' )
+            // JPQL.g:75:8: 'true'
             {
             match("true"); 
 
@@ -1430,8 +1430,8 @@ public class JPQLLexer extends Lexer {
     public final void mTYPE() throws RecognitionException {
         try {
             int _type = TYPE;
-            // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:76:8: ( 'type' )
-            // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:76:8: 'type'
+            // JPQL.g:76:8: ( 'type' )
+            // JPQL.g:76:8: 'type'
             {
             match("type"); 
 
@@ -1449,8 +1449,8 @@ public class JPQLLexer extends Lexer {
     public final void mUNKNOWN() throws RecognitionException {
         try {
             int _type = UNKNOWN;
-            // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:77:11: ( 'unknown' )
-            // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:77:11: 'unknown'
+            // JPQL.g:77:11: ( 'unknown' )
+            // JPQL.g:77:11: 'unknown'
             {
             match("unknown"); 
 
@@ -1468,8 +1468,8 @@ public class JPQLLexer extends Lexer {
     public final void mUPDATE() throws RecognitionException {
         try {
             int _type = UPDATE;
-            // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:78:10: ( 'update' )
-            // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:78:10: 'update'
+            // JPQL.g:78:10: ( 'update' )
+            // JPQL.g:78:10: 'update'
             {
             match("update"); 
 
@@ -1487,8 +1487,8 @@ public class JPQLLexer extends Lexer {
     public final void mUPPER() throws RecognitionException {
         try {
             int _type = UPPER;
-            // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:79:9: ( 'upper' )
-            // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:79:9: 'upper'
+            // JPQL.g:79:9: ( 'upper' )
+            // JPQL.g:79:9: 'upper'
             {
             match("upper"); 
 
@@ -1506,8 +1506,8 @@ public class JPQLLexer extends Lexer {
     public final void mVALUE() throws RecognitionException {
         try {
             int _type = VALUE;
-            // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:80:9: ( 'value' )
-            // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:80:9: 'value'
+            // JPQL.g:80:9: ( 'value' )
+            // JPQL.g:80:9: 'value'
             {
             match("value"); 
 
@@ -1525,8 +1525,8 @@ public class JPQLLexer extends Lexer {
     public final void mWHEN() throws RecognitionException {
         try {
             int _type = WHEN;
-            // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:81:8: ( 'when' )
-            // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:81:8: 'when'
+            // JPQL.g:81:8: ( 'when' )
+            // JPQL.g:81:8: 'when'
             {
             match("when"); 
 
@@ -1544,8 +1544,8 @@ public class JPQLLexer extends Lexer {
     public final void mWHERE() throws RecognitionException {
         try {
             int _type = WHERE;
-            // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:82:9: ( 'where' )
-            // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:82:9: 'where'
+            // JPQL.g:82:9: ( 'where' )
+            // JPQL.g:82:9: 'where'
             {
             match("where"); 
 
@@ -1563,8 +1563,8 @@ public class JPQLLexer extends Lexer {
     public final void mDOT() throws RecognitionException {
         try {
             int _type = DOT;
-            // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:1403:7: ( '.' )
-            // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:1403:7: '.'
+            // JPQL.g:1403:7: ( '.' )
+            // JPQL.g:1403:7: '.'
             {
             match('.'); 
             
@@ -1581,10 +1581,10 @@ public class JPQLLexer extends Lexer {
     public final void mWS() throws RecognitionException {
         try {
             int _type = WS;
-            // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:1406:7: ( ( ' ' | '\\t' | '\\n' | '\\r' )+ )
-            // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:1406:7: ( ' ' | '\\t' | '\\n' | '\\r' )+
+            // JPQL.g:1406:7: ( ( ' ' | '\\t' | '\\n' | '\\r' )+ )
+            // JPQL.g:1406:7: ( ' ' | '\\t' | '\\n' | '\\r' )+
             {
-            // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:1406:7: ( ' ' | '\\t' | '\\n' | '\\r' )+
+            // JPQL.g:1406:7: ( ' ' | '\\t' | '\\n' | '\\r' )+
             int cnt1=0;
             loop1:
             do {
@@ -1598,7 +1598,7 @@ public class JPQLLexer extends Lexer {
             
                 switch (alt1) {
             	case 1 :
-            	    // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:
+            	    // JPQL.g:
             	    {
             	    if ( (input.LA(1)>='\t' && input.LA(1)<='\n')||input.LA(1)=='\r'||input.LA(1)==' ' ) {
             	        input.consume();
@@ -1638,8 +1638,8 @@ public class JPQLLexer extends Lexer {
     public final void mLEFT_ROUND_BRACKET() throws RecognitionException {
         try {
             int _type = LEFT_ROUND_BRACKET;
-            // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:1410:7: ( '(' )
-            // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:1410:7: '('
+            // JPQL.g:1410:7: ( '(' )
+            // JPQL.g:1410:7: '('
             {
             match('('); 
             
@@ -1656,8 +1656,8 @@ public class JPQLLexer extends Lexer {
     public final void mLEFT_CURLY_BRACKET() throws RecognitionException {
         try {
             int _type = LEFT_CURLY_BRACKET;
-            // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:1414:7: ( '{' )
-            // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:1414:7: '{'
+            // JPQL.g:1414:7: ( '{' )
+            // JPQL.g:1414:7: '{'
             {
             match('{'); 
             
@@ -1674,8 +1674,8 @@ public class JPQLLexer extends Lexer {
     public final void mRIGHT_ROUND_BRACKET() throws RecognitionException {
         try {
             int _type = RIGHT_ROUND_BRACKET;
-            // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:1418:7: ( ')' )
-            // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:1418:7: ')'
+            // JPQL.g:1418:7: ( ')' )
+            // JPQL.g:1418:7: ')'
             {
             match(')'); 
             
@@ -1692,8 +1692,8 @@ public class JPQLLexer extends Lexer {
     public final void mRIGHT_CURLY_BRACKET() throws RecognitionException {
         try {
             int _type = RIGHT_CURLY_BRACKET;
-            // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:1422:7: ( '}' )
-            // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:1422:7: '}'
+            // JPQL.g:1422:7: ( '}' )
+            // JPQL.g:1422:7: '}'
             {
             match('}'); 
             
@@ -1710,8 +1710,8 @@ public class JPQLLexer extends Lexer {
     public final void mCOMMA() throws RecognitionException {
         try {
             int _type = COMMA;
-            // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:1426:7: ( ',' )
-            // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:1426:7: ','
+            // JPQL.g:1426:7: ( ',' )
+            // JPQL.g:1426:7: ','
             {
             match(','); 
             
@@ -1728,8 +1728,8 @@ public class JPQLLexer extends Lexer {
     public final void mIDENT() throws RecognitionException {
         try {
             int _type = IDENT;
-            // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:1430:7: ( TEXTCHAR )
-            // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:1430:7: TEXTCHAR
+            // JPQL.g:1430:7: ( TEXTCHAR )
+            // JPQL.g:1430:7: TEXTCHAR
             {
             mTEXTCHAR(); 
             
@@ -1748,10 +1748,10 @@ public class JPQLLexer extends Lexer {
             int c1;
             int c2;
     
-            // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:1435:7: ( ( 'a' .. 'z' | 'A' .. 'Z' | '_' | '$' | c1= '\\u0080' .. '\\uFFFE' ) ( 'a' .. 'z' | '_' | '$' | '0' .. '9' | c2= '\\u0080' .. '\\uFFFE' )* )
-            // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:1435:7: ( 'a' .. 'z' | 'A' .. 'Z' | '_' | '$' | c1= '\\u0080' .. '\\uFFFE' ) ( 'a' .. 'z' | '_' | '$' | '0' .. '9' | c2= '\\u0080' .. '\\uFFFE' )*
+            // JPQL.g:1435:7: ( ( 'a' .. 'z' | 'A' .. 'Z' | '_' | '$' | c1= '\\u0080' .. '\\uFFFE' ) ( 'a' .. 'z' | '_' | '$' | '0' .. '9' | c2= '\\u0080' .. '\\uFFFE' )* )
+            // JPQL.g:1435:7: ( 'a' .. 'z' | 'A' .. 'Z' | '_' | '$' | c1= '\\u0080' .. '\\uFFFE' ) ( 'a' .. 'z' | '_' | '$' | '0' .. '9' | c2= '\\u0080' .. '\\uFFFE' )*
             {
-            // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:1435:7: ( 'a' .. 'z' | 'A' .. 'Z' | '_' | '$' | c1= '\\u0080' .. '\\uFFFE' )
+            // JPQL.g:1435:7: ( 'a' .. 'z' | 'A' .. 'Z' | '_' | '$' | c1= '\\u0080' .. '\\uFFFE' )
             int alt2=5;
             int LA2_0 = input.LA(1);
             
@@ -1778,35 +1778,35 @@ public class JPQLLexer extends Lexer {
             }
             switch (alt2) {
                 case 1 :
-                    // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:1435:8: 'a' .. 'z'
+                    // JPQL.g:1435:8: 'a' .. 'z'
                     {
                     matchRange('a','z'); 
                     
                     }
                     break;
                 case 2 :
-                    // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:1435:19: 'A' .. 'Z'
+                    // JPQL.g:1435:19: 'A' .. 'Z'
                     {
                     matchRange('A','Z'); 
                     
                     }
                     break;
                 case 3 :
-                    // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:1435:30: '_'
+                    // JPQL.g:1435:30: '_'
                     {
                     match('_'); 
                     
                     }
                     break;
                 case 4 :
-                    // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:1435:36: '$'
+                    // JPQL.g:1435:36: '$'
                     {
                     match('$'); 
                     
                     }
                     break;
                 case 5 :
-                    // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:1436:8: c1= '\\u0080' .. '\\uFFFE'
+                    // JPQL.g:1436:8: c1= '\\u0080' .. '\\uFFFE'
                     {
                     c1 = input.LA(1);
                     matchRange('\u0080','\uFFFE'); 
@@ -1821,7 +1821,7 @@ public class JPQLLexer extends Lexer {
             
             }
 
-            // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:1443:7: ( 'a' .. 'z' | '_' | '$' | '0' .. '9' | c2= '\\u0080' .. '\\uFFFE' )*
+            // JPQL.g:1443:7: ( 'a' .. 'z' | '_' | '$' | '0' .. '9' | c2= '\\u0080' .. '\\uFFFE' )*
             loop3:
             do {
                 int alt3=6;
@@ -1846,35 +1846,35 @@ public class JPQLLexer extends Lexer {
             
                 switch (alt3) {
             	case 1 :
-            	    // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:1443:8: 'a' .. 'z'
+            	    // JPQL.g:1443:8: 'a' .. 'z'
             	    {
             	    matchRange('a','z'); 
             	    
             	    }
             	    break;
             	case 2 :
-            	    // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:1443:19: '_'
+            	    // JPQL.g:1443:19: '_'
             	    {
             	    match('_'); 
             	    
             	    }
             	    break;
             	case 3 :
-            	    // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:1443:25: '$'
+            	    // JPQL.g:1443:25: '$'
             	    {
             	    match('$'); 
             	    
             	    }
             	    break;
             	case 4 :
-            	    // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:1443:31: '0' .. '9'
+            	    // JPQL.g:1443:31: '0' .. '9'
             	    {
             	    matchRange('0','9'); 
             	    
             	    }
             	    break;
             	case 5 :
-            	    // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:1444:8: c2= '\\u0080' .. '\\uFFFE'
+            	    // JPQL.g:1444:8: c2= '\\u0080' .. '\\uFFFE'
             	    {
             	    c2 = input.LA(1);
             	    matchRange('\u0080','\uFFFE'); 
@@ -1905,8 +1905,8 @@ public class JPQLLexer extends Lexer {
     public final void mHEX_LITERAL() throws RecognitionException {
         try {
             int _type = HEX_LITERAL;
-            // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:1454:15: ( '0' ( 'x' | 'X' ) ( HEX_DIGIT )+ )
-            // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:1454:15: '0' ( 'x' | 'X' ) ( HEX_DIGIT )+
+            // JPQL.g:1454:15: ( '0' ( 'x' | 'X' ) ( HEX_DIGIT )+ )
+            // JPQL.g:1454:15: '0' ( 'x' | 'X' ) ( HEX_DIGIT )+
             {
             match('0'); 
             if ( input.LA(1)=='X'||input.LA(1)=='x' ) {
@@ -1919,7 +1919,7 @@ public class JPQLLexer extends Lexer {
                 recover(mse);    throw mse;
             }
 
-            // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:1454:29: ( HEX_DIGIT )+
+            // JPQL.g:1454:29: ( HEX_DIGIT )+
             int cnt4=0;
             loop4:
             do {
@@ -1933,7 +1933,7 @@ public class JPQLLexer extends Lexer {
             
                 switch (alt4) {
             	case 1 :
-            	    // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:1454:29: HEX_DIGIT
+            	    // JPQL.g:1454:29: HEX_DIGIT
             	    {
             	    mHEX_DIGIT(); 
             	    
@@ -1963,10 +1963,10 @@ public class JPQLLexer extends Lexer {
     public final void mINTEGER_LITERAL() throws RecognitionException {
         try {
             int _type = INTEGER_LITERAL;
-            // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:1456:19: ( ( MINUS )? ( '0' | '1' .. '9' ( '0' .. '9' )* ) )
-            // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:1456:19: ( MINUS )? ( '0' | '1' .. '9' ( '0' .. '9' )* )
+            // JPQL.g:1456:19: ( ( MINUS )? ( '0' | '1' .. '9' ( '0' .. '9' )* ) )
+            // JPQL.g:1456:19: ( MINUS )? ( '0' | '1' .. '9' ( '0' .. '9' )* )
             {
-            // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:1456:19: ( MINUS )?
+            // JPQL.g:1456:19: ( MINUS )?
             int alt5=2;
             int LA5_0 = input.LA(1);
             
@@ -1975,7 +1975,7 @@ public class JPQLLexer extends Lexer {
             }
             switch (alt5) {
                 case 1 :
-                    // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:1456:19: MINUS
+                    // JPQL.g:1456:19: MINUS
                     {
                     mMINUS(); 
                     
@@ -1984,7 +1984,7 @@ public class JPQLLexer extends Lexer {
             
             }
 
-            // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:1456:26: ( '0' | '1' .. '9' ( '0' .. '9' )* )
+            // JPQL.g:1456:26: ( '0' | '1' .. '9' ( '0' .. '9' )* )
             int alt7=2;
             int LA7_0 = input.LA(1);
             
@@ -2002,17 +2002,17 @@ public class JPQLLexer extends Lexer {
             }
             switch (alt7) {
                 case 1 :
-                    // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:1456:27: '0'
+                    // JPQL.g:1456:27: '0'
                     {
                     match('0'); 
                     
                     }
                     break;
                 case 2 :
-                    // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:1456:33: '1' .. '9' ( '0' .. '9' )*
+                    // JPQL.g:1456:33: '1' .. '9' ( '0' .. '9' )*
                     {
                     matchRange('1','9'); 
-                    // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:1456:42: ( '0' .. '9' )*
+                    // JPQL.g:1456:42: ( '0' .. '9' )*
                     loop6:
                     do {
                         int alt6=2;
@@ -2025,7 +2025,7 @@ public class JPQLLexer extends Lexer {
                     
                         switch (alt6) {
                     	case 1 :
-                    	    // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:1456:42: '0' .. '9'
+                    	    // JPQL.g:1456:42: '0' .. '9'
                     	    {
                     	    matchRange('0','9'); 
                     	    
@@ -2057,8 +2057,8 @@ public class JPQLLexer extends Lexer {
     public final void mLONG_LITERAL() throws RecognitionException {
         try {
             int _type = LONG_LITERAL;
-            // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:1458:16: ( INTEGER_LITERAL INTEGER_SUFFIX )
-            // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:1458:16: INTEGER_LITERAL INTEGER_SUFFIX
+            // JPQL.g:1458:16: ( INTEGER_LITERAL INTEGER_SUFFIX )
+            // JPQL.g:1458:16: INTEGER_LITERAL INTEGER_SUFFIX
             {
             mINTEGER_LITERAL(); 
             mINTEGER_SUFFIX(); 
@@ -2076,10 +2076,10 @@ public class JPQLLexer extends Lexer {
     public final void mOCTAL_LITERAL() throws RecognitionException {
         try {
             int _type = OCTAL_LITERAL;
-            // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:1460:17: ( ( MINUS )? '0' ( '0' .. '7' )+ )
-            // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:1460:17: ( MINUS )? '0' ( '0' .. '7' )+
+            // JPQL.g:1460:17: ( ( MINUS )? '0' ( '0' .. '7' )+ )
+            // JPQL.g:1460:17: ( MINUS )? '0' ( '0' .. '7' )+
             {
-            // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:1460:17: ( MINUS )?
+            // JPQL.g:1460:17: ( MINUS )?
             int alt8=2;
             int LA8_0 = input.LA(1);
             
@@ -2088,7 +2088,7 @@ public class JPQLLexer extends Lexer {
             }
             switch (alt8) {
                 case 1 :
-                    // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:1460:17: MINUS
+                    // JPQL.g:1460:17: MINUS
                     {
                     mMINUS(); 
                     
@@ -2098,7 +2098,7 @@ public class JPQLLexer extends Lexer {
             }
 
             match('0'); 
-            // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:1460:28: ( '0' .. '7' )+
+            // JPQL.g:1460:28: ( '0' .. '7' )+
             int cnt9=0;
             loop9:
             do {
@@ -2112,7 +2112,7 @@ public class JPQLLexer extends Lexer {
             
                 switch (alt9) {
             	case 1 :
-            	    // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:1460:29: '0' .. '7'
+            	    // JPQL.g:1460:29: '0' .. '7'
             	    {
             	    matchRange('0','7'); 
             	    
@@ -2141,8 +2141,8 @@ public class JPQLLexer extends Lexer {
     // $ANTLR start HEX_DIGIT
     public final void mHEX_DIGIT() throws RecognitionException {
         try {
-            // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:1465:9: ( ( '0' .. '9' | 'a' .. 'f' | 'A' .. 'F' ) )
-            // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:1465:9: ( '0' .. '9' | 'a' .. 'f' | 'A' .. 'F' )
+            // JPQL.g:1465:9: ( ( '0' .. '9' | 'a' .. 'f' | 'A' .. 'F' ) )
+            // JPQL.g:1465:9: ( '0' .. '9' | 'a' .. 'f' | 'A' .. 'F' )
             {
             if ( (input.LA(1)>='0' && input.LA(1)<='9')||(input.LA(1)>='A' && input.LA(1)<='F')||(input.LA(1)>='a' && input.LA(1)<='f') ) {
                 input.consume();
@@ -2166,8 +2166,8 @@ public class JPQLLexer extends Lexer {
     // $ANTLR start INTEGER_SUFFIX
     public final void mINTEGER_SUFFIX() throws RecognitionException {
         try {
-            // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:1469:18: ( ( 'l' | 'L' ) )
-            // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:1469:18: ( 'l' | 'L' )
+            // JPQL.g:1469:18: ( ( 'l' | 'L' ) )
+            // JPQL.g:1469:18: ( 'l' | 'L' )
             {
             if ( input.LA(1)=='L'||input.LA(1)=='l' ) {
                 input.consume();
@@ -2191,14 +2191,14 @@ public class JPQLLexer extends Lexer {
     // $ANTLR start NUMERIC_DIGITS
     public final void mNUMERIC_DIGITS() throws RecognitionException {
         try {
-            // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:1473:9: ( ( MINUS )? ( '0' .. '9' )+ '.' ( '0' .. '9' )* | ( MINUS )? '.' ( '0' .. '9' )+ | ( MINUS )? ( '0' .. '9' )+ )
+            // JPQL.g:1473:9: ( ( MINUS )? ( '0' .. '9' )+ '.' ( '0' .. '9' )* | ( MINUS )? '.' ( '0' .. '9' )+ | ( MINUS )? ( '0' .. '9' )+ )
             int alt17=3;
             alt17 = dfa17.predict(input);
             switch (alt17) {
                 case 1 :
-                    // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:1473:9: ( MINUS )? ( '0' .. '9' )+ '.' ( '0' .. '9' )*
+                    // JPQL.g:1473:9: ( MINUS )? ( '0' .. '9' )+ '.' ( '0' .. '9' )*
                     {
-                    // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:1473:9: ( MINUS )?
+                    // JPQL.g:1473:9: ( MINUS )?
                     int alt10=2;
                     int LA10_0 = input.LA(1);
                     
@@ -2207,7 +2207,7 @@ public class JPQLLexer extends Lexer {
                     }
                     switch (alt10) {
                         case 1 :
-                            // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:1473:9: MINUS
+                            // JPQL.g:1473:9: MINUS
                             {
                             mMINUS(); 
                             
@@ -2216,7 +2216,7 @@ public class JPQLLexer extends Lexer {
                     
                     }
 
-                    // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:1473:16: ( '0' .. '9' )+
+                    // JPQL.g:1473:16: ( '0' .. '9' )+
                     int cnt11=0;
                     loop11:
                     do {
@@ -2230,7 +2230,7 @@ public class JPQLLexer extends Lexer {
                     
                         switch (alt11) {
                     	case 1 :
-                    	    // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:1473:17: '0' .. '9'
+                    	    // JPQL.g:1473:17: '0' .. '9'
                     	    {
                     	    matchRange('0','9'); 
                     	    
@@ -2247,7 +2247,7 @@ public class JPQLLexer extends Lexer {
                     } while (true);
 
                     match('.'); 
-                    // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:1473:32: ( '0' .. '9' )*
+                    // JPQL.g:1473:32: ( '0' .. '9' )*
                     loop12:
                     do {
                         int alt12=2;
@@ -2260,7 +2260,7 @@ public class JPQLLexer extends Lexer {
                     
                         switch (alt12) {
                     	case 1 :
-                    	    // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:1473:33: '0' .. '9'
+                    	    // JPQL.g:1473:33: '0' .. '9'
                     	    {
                     	    matchRange('0','9'); 
                     	    
@@ -2276,9 +2276,9 @@ public class JPQLLexer extends Lexer {
                     }
                     break;
                 case 2 :
-                    // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:1474:9: ( MINUS )? '.' ( '0' .. '9' )+
+                    // JPQL.g:1474:9: ( MINUS )? '.' ( '0' .. '9' )+
                     {
-                    // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:1474:9: ( MINUS )?
+                    // JPQL.g:1474:9: ( MINUS )?
                     int alt13=2;
                     int LA13_0 = input.LA(1);
                     
@@ -2287,7 +2287,7 @@ public class JPQLLexer extends Lexer {
                     }
                     switch (alt13) {
                         case 1 :
-                            // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:1474:9: MINUS
+                            // JPQL.g:1474:9: MINUS
                             {
                             mMINUS(); 
                             
@@ -2297,7 +2297,7 @@ public class JPQLLexer extends Lexer {
                     }
 
                     match('.'); 
-                    // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:1474:20: ( '0' .. '9' )+
+                    // JPQL.g:1474:20: ( '0' .. '9' )+
                     int cnt14=0;
                     loop14:
                     do {
@@ -2311,7 +2311,7 @@ public class JPQLLexer extends Lexer {
                     
                         switch (alt14) {
                     	case 1 :
-                    	    // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:1474:21: '0' .. '9'
+                    	    // JPQL.g:1474:21: '0' .. '9'
                     	    {
                     	    matchRange('0','9'); 
                     	    
@@ -2331,9 +2331,9 @@ public class JPQLLexer extends Lexer {
                     }
                     break;
                 case 3 :
-                    // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:1475:9: ( MINUS )? ( '0' .. '9' )+
+                    // JPQL.g:1475:9: ( MINUS )? ( '0' .. '9' )+
                     {
-                    // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:1475:9: ( MINUS )?
+                    // JPQL.g:1475:9: ( MINUS )?
                     int alt15=2;
                     int LA15_0 = input.LA(1);
                     
@@ -2342,7 +2342,7 @@ public class JPQLLexer extends Lexer {
                     }
                     switch (alt15) {
                         case 1 :
-                            // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:1475:9: MINUS
+                            // JPQL.g:1475:9: MINUS
                             {
                             mMINUS(); 
                             
@@ -2351,7 +2351,7 @@ public class JPQLLexer extends Lexer {
                     
                     }
 
-                    // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:1475:16: ( '0' .. '9' )+
+                    // JPQL.g:1475:16: ( '0' .. '9' )+
                     int cnt16=0;
                     loop16:
                     do {
@@ -2365,7 +2365,7 @@ public class JPQLLexer extends Lexer {
                     
                         switch (alt16) {
                     	case 1 :
-                    	    // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:1475:17: '0' .. '9'
+                    	    // JPQL.g:1475:17: '0' .. '9'
                     	    {
                     	    matchRange('0','9'); 
                     	    
@@ -2396,11 +2396,11 @@ public class JPQLLexer extends Lexer {
     public final void mDOUBLE_LITERAL() throws RecognitionException {
         try {
             int _type = DOUBLE_LITERAL;
-            // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:1479:9: ( NUMERIC_DIGITS ( DOUBLE_SUFFIX )? )
-            // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:1479:9: NUMERIC_DIGITS ( DOUBLE_SUFFIX )?
+            // JPQL.g:1479:9: ( NUMERIC_DIGITS ( DOUBLE_SUFFIX )? )
+            // JPQL.g:1479:9: NUMERIC_DIGITS ( DOUBLE_SUFFIX )?
             {
             mNUMERIC_DIGITS(); 
-            // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:1479:24: ( DOUBLE_SUFFIX )?
+            // JPQL.g:1479:24: ( DOUBLE_SUFFIX )?
             int alt18=2;
             int LA18_0 = input.LA(1);
             
@@ -2409,7 +2409,7 @@ public class JPQLLexer extends Lexer {
             }
             switch (alt18) {
                 case 1 :
-                    // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:1479:24: DOUBLE_SUFFIX
+                    // JPQL.g:1479:24: DOUBLE_SUFFIX
                     {
                     mDOUBLE_SUFFIX(); 
                     
@@ -2432,16 +2432,16 @@ public class JPQLLexer extends Lexer {
     public final void mFLOAT_LITERAL() throws RecognitionException {
         try {
             int _type = FLOAT_LITERAL;
-            // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:1483:9: ( NUMERIC_DIGITS EXPONENT ( FLOAT_SUFFIX )? | NUMERIC_DIGITS FLOAT_SUFFIX )
+            // JPQL.g:1483:9: ( NUMERIC_DIGITS EXPONENT ( FLOAT_SUFFIX )? | NUMERIC_DIGITS FLOAT_SUFFIX )
             int alt20=2;
             alt20 = dfa20.predict(input);
             switch (alt20) {
                 case 1 :
-                    // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:1483:9: NUMERIC_DIGITS EXPONENT ( FLOAT_SUFFIX )?
+                    // JPQL.g:1483:9: NUMERIC_DIGITS EXPONENT ( FLOAT_SUFFIX )?
                     {
                     mNUMERIC_DIGITS(); 
                     mEXPONENT(); 
-                    // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:1483:33: ( FLOAT_SUFFIX )?
+                    // JPQL.g:1483:33: ( FLOAT_SUFFIX )?
                     int alt19=2;
                     int LA19_0 = input.LA(1);
                     
@@ -2450,7 +2450,7 @@ public class JPQLLexer extends Lexer {
                     }
                     switch (alt19) {
                         case 1 :
-                            // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:1483:33: FLOAT_SUFFIX
+                            // JPQL.g:1483:33: FLOAT_SUFFIX
                             {
                             mFLOAT_SUFFIX(); 
                             
@@ -2463,7 +2463,7 @@ public class JPQLLexer extends Lexer {
                     }
                     break;
                 case 2 :
-                    // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:1484:9: NUMERIC_DIGITS FLOAT_SUFFIX
+                    // JPQL.g:1484:9: NUMERIC_DIGITS FLOAT_SUFFIX
                     {
                     mNUMERIC_DIGITS(); 
                     mFLOAT_SUFFIX(); 
@@ -2482,8 +2482,8 @@ public class JPQLLexer extends Lexer {
     // $ANTLR start EXPONENT
     public final void mEXPONENT() throws RecognitionException {
         try {
-            // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:1490:9: ( ( 'e' | 'E' ) ( '+' | '-' )? ( '0' .. '9' )+ )
-            // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:1490:9: ( 'e' | 'E' ) ( '+' | '-' )? ( '0' .. '9' )+
+            // JPQL.g:1490:9: ( ( 'e' | 'E' ) ( '+' | '-' )? ( '0' .. '9' )+ )
+            // JPQL.g:1490:9: ( 'e' | 'E' ) ( '+' | '-' )? ( '0' .. '9' )+
             {
             if ( input.LA(1)=='E'||input.LA(1)=='e' ) {
                 input.consume();
@@ -2495,7 +2495,7 @@ public class JPQLLexer extends Lexer {
                 recover(mse);    throw mse;
             }
 
-            // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:1490:21: ( '+' | '-' )?
+            // JPQL.g:1490:21: ( '+' | '-' )?
             int alt21=2;
             int LA21_0 = input.LA(1);
             
@@ -2504,7 +2504,7 @@ public class JPQLLexer extends Lexer {
             }
             switch (alt21) {
                 case 1 :
-                    // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:
+                    // JPQL.g:
                     {
                     if ( input.LA(1)=='+'||input.LA(1)=='-' ) {
                         input.consume();
@@ -2522,7 +2522,7 @@ public class JPQLLexer extends Lexer {
             
             }
 
-            // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:1490:32: ( '0' .. '9' )+
+            // JPQL.g:1490:32: ( '0' .. '9' )+
             int cnt22=0;
             loop22:
             do {
@@ -2536,7 +2536,7 @@ public class JPQLLexer extends Lexer {
             
                 switch (alt22) {
             	case 1 :
-            	    // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:1490:33: '0' .. '9'
+            	    // JPQL.g:1490:33: '0' .. '9'
             	    {
             	    matchRange('0','9'); 
             	    
@@ -2564,8 +2564,8 @@ public class JPQLLexer extends Lexer {
     // $ANTLR start FLOAT_SUFFIX
     public final void mFLOAT_SUFFIX() throws RecognitionException {
         try {
-            // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:1496:9: ( 'f' )
-            // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:1496:9: 'f'
+            // JPQL.g:1496:9: ( 'f' )
+            // JPQL.g:1496:9: 'f'
             {
             match('f'); 
             
@@ -2581,18 +2581,18 @@ public class JPQLLexer extends Lexer {
     public final void mDATE_LITERAL() throws RecognitionException {
         try {
             int _type = DATE_LITERAL;
-            // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:1500:7: ( LEFT_CURLY_BRACKET ( 'd' ) ( ' ' | '\\t' )+ '\\'' DATE_STRING '\\'' ( ' ' | '\\t' )* RIGHT_CURLY_BRACKET )
-            // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:1500:7: LEFT_CURLY_BRACKET ( 'd' ) ( ' ' | '\\t' )+ '\\'' DATE_STRING '\\'' ( ' ' | '\\t' )* RIGHT_CURLY_BRACKET
+            // JPQL.g:1500:7: ( LEFT_CURLY_BRACKET ( 'd' ) ( ' ' | '\\t' )+ '\\'' DATE_STRING '\\'' ( ' ' | '\\t' )* RIGHT_CURLY_BRACKET )
+            // JPQL.g:1500:7: LEFT_CURLY_BRACKET ( 'd' ) ( ' ' | '\\t' )+ '\\'' DATE_STRING '\\'' ( ' ' | '\\t' )* RIGHT_CURLY_BRACKET
             {
             mLEFT_CURLY_BRACKET(); 
-            // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:1500:26: ( 'd' )
-            // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:1500:27: 'd'
+            // JPQL.g:1500:26: ( 'd' )
+            // JPQL.g:1500:27: 'd'
             {
             match('d'); 
             
             }
 
-            // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:1500:32: ( ' ' | '\\t' )+
+            // JPQL.g:1500:32: ( ' ' | '\\t' )+
             int cnt23=0;
             loop23:
             do {
@@ -2606,7 +2606,7 @@ public class JPQLLexer extends Lexer {
             
                 switch (alt23) {
             	case 1 :
-            	    // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:
+            	    // JPQL.g:
             	    {
             	    if ( input.LA(1)=='\t'||input.LA(1)==' ' ) {
             	        input.consume();
@@ -2634,7 +2634,7 @@ public class JPQLLexer extends Lexer {
             match('\''); 
             mDATE_STRING(); 
             match('\''); 
-            // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:1500:68: ( ' ' | '\\t' )*
+            // JPQL.g:1500:68: ( ' ' | '\\t' )*
             loop24:
             do {
                 int alt24=2;
@@ -2647,7 +2647,7 @@ public class JPQLLexer extends Lexer {
             
                 switch (alt24) {
             	case 1 :
-            	    // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:
+            	    // JPQL.g:
             	    {
             	    if ( input.LA(1)=='\t'||input.LA(1)==' ' ) {
             	        input.consume();
@@ -2683,18 +2683,18 @@ public class JPQLLexer extends Lexer {
     public final void mTIME_LITERAL() throws RecognitionException {
         try {
             int _type = TIME_LITERAL;
-            // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:1504:7: ( LEFT_CURLY_BRACKET ( 't' ) ( ' ' | '\\t' )+ '\\'' TIME_STRING '\\'' ( ' ' | '\\t' )* RIGHT_CURLY_BRACKET )
-            // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:1504:7: LEFT_CURLY_BRACKET ( 't' ) ( ' ' | '\\t' )+ '\\'' TIME_STRING '\\'' ( ' ' | '\\t' )* RIGHT_CURLY_BRACKET
+            // JPQL.g:1504:7: ( LEFT_CURLY_BRACKET ( 't' ) ( ' ' | '\\t' )+ '\\'' TIME_STRING '\\'' ( ' ' | '\\t' )* RIGHT_CURLY_BRACKET )
+            // JPQL.g:1504:7: LEFT_CURLY_BRACKET ( 't' ) ( ' ' | '\\t' )+ '\\'' TIME_STRING '\\'' ( ' ' | '\\t' )* RIGHT_CURLY_BRACKET
             {
             mLEFT_CURLY_BRACKET(); 
-            // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:1504:26: ( 't' )
-            // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:1504:27: 't'
+            // JPQL.g:1504:26: ( 't' )
+            // JPQL.g:1504:27: 't'
             {
             match('t'); 
             
             }
 
-            // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:1504:32: ( ' ' | '\\t' )+
+            // JPQL.g:1504:32: ( ' ' | '\\t' )+
             int cnt25=0;
             loop25:
             do {
@@ -2708,7 +2708,7 @@ public class JPQLLexer extends Lexer {
             
                 switch (alt25) {
             	case 1 :
-            	    // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:
+            	    // JPQL.g:
             	    {
             	    if ( input.LA(1)=='\t'||input.LA(1)==' ' ) {
             	        input.consume();
@@ -2736,7 +2736,7 @@ public class JPQLLexer extends Lexer {
             match('\''); 
             mTIME_STRING(); 
             match('\''); 
-            // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:1504:68: ( ' ' | '\\t' )*
+            // JPQL.g:1504:68: ( ' ' | '\\t' )*
             loop26:
             do {
                 int alt26=2;
@@ -2749,7 +2749,7 @@ public class JPQLLexer extends Lexer {
             
                 switch (alt26) {
             	case 1 :
-            	    // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:
+            	    // JPQL.g:
             	    {
             	    if ( input.LA(1)=='\t'||input.LA(1)==' ' ) {
             	        input.consume();
@@ -2785,19 +2785,19 @@ public class JPQLLexer extends Lexer {
     public final void mTIMESTAMP_LITERAL() throws RecognitionException {
         try {
             int _type = TIMESTAMP_LITERAL;
-            // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:1508:7: ( LEFT_CURLY_BRACKET ( 'ts' ) ( ' ' | '\\t' )+ '\\'' DATE_STRING ' ' TIME_STRING '\\'' ( ' ' | '\\t' )* RIGHT_CURLY_BRACKET )
-            // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:1508:7: LEFT_CURLY_BRACKET ( 'ts' ) ( ' ' | '\\t' )+ '\\'' DATE_STRING ' ' TIME_STRING '\\'' ( ' ' | '\\t' )* RIGHT_CURLY_BRACKET
+            // JPQL.g:1508:7: ( LEFT_CURLY_BRACKET ( 'ts' ) ( ' ' | '\\t' )+ '\\'' DATE_STRING ' ' TIME_STRING '\\'' ( ' ' | '\\t' )* RIGHT_CURLY_BRACKET )
+            // JPQL.g:1508:7: LEFT_CURLY_BRACKET ( 'ts' ) ( ' ' | '\\t' )+ '\\'' DATE_STRING ' ' TIME_STRING '\\'' ( ' ' | '\\t' )* RIGHT_CURLY_BRACKET
             {
             mLEFT_CURLY_BRACKET(); 
-            // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:1508:26: ( 'ts' )
-            // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:1508:27: 'ts'
+            // JPQL.g:1508:26: ( 'ts' )
+            // JPQL.g:1508:27: 'ts'
             {
             match("ts"); 
 
             
             }
 
-            // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:1508:33: ( ' ' | '\\t' )+
+            // JPQL.g:1508:33: ( ' ' | '\\t' )+
             int cnt27=0;
             loop27:
             do {
@@ -2811,7 +2811,7 @@ public class JPQLLexer extends Lexer {
             
                 switch (alt27) {
             	case 1 :
-            	    // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:
+            	    // JPQL.g:
             	    {
             	    if ( input.LA(1)=='\t'||input.LA(1)==' ' ) {
             	        input.consume();
@@ -2841,7 +2841,7 @@ public class JPQLLexer extends Lexer {
             match(' '); 
             mTIME_STRING(); 
             match('\''); 
-            // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:1508:85: ( ' ' | '\\t' )*
+            // JPQL.g:1508:85: ( ' ' | '\\t' )*
             loop28:
             do {
                 int alt28=2;
@@ -2854,7 +2854,7 @@ public class JPQLLexer extends Lexer {
             
                 switch (alt28) {
             	case 1 :
-            	    // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:
+            	    // JPQL.g:
             	    {
             	    if ( input.LA(1)=='\t'||input.LA(1)==' ' ) {
             	        input.consume();
@@ -2890,8 +2890,8 @@ public class JPQLLexer extends Lexer {
     public final void mDATE_STRING() throws RecognitionException {
         try {
             int _type = DATE_STRING;
-            // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:1512:7: ( '0' .. '9' '0' .. '9' '0' .. '9' '0' .. '9' '-' '0' .. '9' '0' .. '9' '-' '0' .. '9' '0' .. '9' )
-            // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:1512:7: '0' .. '9' '0' .. '9' '0' .. '9' '0' .. '9' '-' '0' .. '9' '0' .. '9' '-' '0' .. '9' '0' .. '9'
+            // JPQL.g:1512:7: ( '0' .. '9' '0' .. '9' '0' .. '9' '0' .. '9' '-' '0' .. '9' '0' .. '9' '-' '0' .. '9' '0' .. '9' )
+            // JPQL.g:1512:7: '0' .. '9' '0' .. '9' '0' .. '9' '0' .. '9' '-' '0' .. '9' '0' .. '9' '-' '0' .. '9' '0' .. '9'
             {
             matchRange('0','9'); 
             matchRange('0','9'); 
@@ -2917,11 +2917,11 @@ public class JPQLLexer extends Lexer {
     public final void mTIME_STRING() throws RecognitionException {
         try {
             int _type = TIME_STRING;
-            // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:1516:7: ( '0' .. '9' ( '0' .. '9' )? ':' '0' .. '9' '0' .. '9' ':' '0' .. '9' '0' .. '9' '.' ( '0' .. '9' )* )
-            // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:1516:7: '0' .. '9' ( '0' .. '9' )? ':' '0' .. '9' '0' .. '9' ':' '0' .. '9' '0' .. '9' '.' ( '0' .. '9' )*
+            // JPQL.g:1516:7: ( '0' .. '9' ( '0' .. '9' )? ':' '0' .. '9' '0' .. '9' ':' '0' .. '9' '0' .. '9' '.' ( '0' .. '9' )* )
+            // JPQL.g:1516:7: '0' .. '9' ( '0' .. '9' )? ':' '0' .. '9' '0' .. '9' ':' '0' .. '9' '0' .. '9' '.' ( '0' .. '9' )*
             {
             matchRange('0','9'); 
-            // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:1516:16: ( '0' .. '9' )?
+            // JPQL.g:1516:16: ( '0' .. '9' )?
             int alt29=2;
             int LA29_0 = input.LA(1);
             
@@ -2930,7 +2930,7 @@ public class JPQLLexer extends Lexer {
             }
             switch (alt29) {
                 case 1 :
-                    // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:1516:17: '0' .. '9'
+                    // JPQL.g:1516:17: '0' .. '9'
                     {
                     matchRange('0','9'); 
                     
@@ -2946,7 +2946,7 @@ public class JPQLLexer extends Lexer {
             matchRange('0','9'); 
             matchRange('0','9'); 
             match('.'); 
-            // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:1516:76: ( '0' .. '9' )*
+            // JPQL.g:1516:76: ( '0' .. '9' )*
             loop30:
             do {
                 int alt30=2;
@@ -2959,7 +2959,7 @@ public class JPQLLexer extends Lexer {
             
                 switch (alt30) {
             	case 1 :
-            	    // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:1516:76: '0' .. '9'
+            	    // JPQL.g:1516:76: '0' .. '9'
             	    {
             	    matchRange('0','9'); 
             	    
@@ -2984,8 +2984,8 @@ public class JPQLLexer extends Lexer {
     // $ANTLR start DOUBLE_SUFFIX
     public final void mDOUBLE_SUFFIX() throws RecognitionException {
         try {
-            // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:1521:7: ( 'd' )
-            // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:1521:7: 'd'
+            // JPQL.g:1521:7: ( 'd' )
+            // JPQL.g:1521:7: 'd'
             {
             match('d'); 
             
@@ -3001,8 +3001,8 @@ public class JPQLLexer extends Lexer {
     public final void mEQUALS() throws RecognitionException {
         try {
             int _type = EQUALS;
-            // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:1525:7: ( '=' )
-            // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:1525:7: '='
+            // JPQL.g:1525:7: ( '=' )
+            // JPQL.g:1525:7: '='
             {
             match('='); 
             
@@ -3019,8 +3019,8 @@ public class JPQLLexer extends Lexer {
     public final void mGREATER_THAN() throws RecognitionException {
         try {
             int _type = GREATER_THAN;
-            // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:1529:7: ( '>' )
-            // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:1529:7: '>'
+            // JPQL.g:1529:7: ( '>' )
+            // JPQL.g:1529:7: '>'
             {
             match('>'); 
             
@@ -3037,8 +3037,8 @@ public class JPQLLexer extends Lexer {
     public final void mGREATER_THAN_EQUAL_TO() throws RecognitionException {
         try {
             int _type = GREATER_THAN_EQUAL_TO;
-            // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:1533:7: ( '>=' )
-            // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:1533:7: '>='
+            // JPQL.g:1533:7: ( '>=' )
+            // JPQL.g:1533:7: '>='
             {
             match(">="); 
 
@@ -3056,8 +3056,8 @@ public class JPQLLexer extends Lexer {
     public final void mLESS_THAN() throws RecognitionException {
         try {
             int _type = LESS_THAN;
-            // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:1537:7: ( '<' )
-            // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:1537:7: '<'
+            // JPQL.g:1537:7: ( '<' )
+            // JPQL.g:1537:7: '<'
             {
             match('<'); 
             
@@ -3074,8 +3074,8 @@ public class JPQLLexer extends Lexer {
     public final void mLESS_THAN_EQUAL_TO() throws RecognitionException {
         try {
             int _type = LESS_THAN_EQUAL_TO;
-            // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:1541:7: ( '<=' )
-            // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:1541:7: '<='
+            // JPQL.g:1541:7: ( '<=' )
+            // JPQL.g:1541:7: '<='
             {
             match("<="); 
 
@@ -3093,8 +3093,8 @@ public class JPQLLexer extends Lexer {
     public final void mNOT_EQUAL_TO() throws RecognitionException {
         try {
             int _type = NOT_EQUAL_TO;
-            // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:1545:7: ( '<>' )
-            // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:1545:7: '<>'
+            // JPQL.g:1545:7: ( '<>' )
+            // JPQL.g:1545:7: '<>'
             {
             match("<>"); 
 
@@ -3112,8 +3112,8 @@ public class JPQLLexer extends Lexer {
     public final void mMULTIPLY() throws RecognitionException {
         try {
             int _type = MULTIPLY;
-            // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:1549:7: ( '*' )
-            // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:1549:7: '*'
+            // JPQL.g:1549:7: ( '*' )
+            // JPQL.g:1549:7: '*'
             {
             match('*'); 
             
@@ -3130,8 +3130,8 @@ public class JPQLLexer extends Lexer {
     public final void mDIVIDE() throws RecognitionException {
         try {
             int _type = DIVIDE;
-            // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:1553:7: ( '/' )
-            // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:1553:7: '/'
+            // JPQL.g:1553:7: ( '/' )
+            // JPQL.g:1553:7: '/'
             {
             match('/'); 
             
@@ -3148,8 +3148,8 @@ public class JPQLLexer extends Lexer {
     public final void mPLUS() throws RecognitionException {
         try {
             int _type = PLUS;
-            // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:1557:7: ( '+' )
-            // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:1557:7: '+'
+            // JPQL.g:1557:7: ( '+' )
+            // JPQL.g:1557:7: '+'
             {
             match('+'); 
             
@@ -3166,8 +3166,8 @@ public class JPQLLexer extends Lexer {
     public final void mMINUS() throws RecognitionException {
         try {
             int _type = MINUS;
-            // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:1561:7: ( '-' )
-            // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:1561:7: '-'
+            // JPQL.g:1561:7: ( '-' )
+            // JPQL.g:1561:7: '-'
             {
             match('-'); 
             
@@ -3184,18 +3184,18 @@ public class JPQLLexer extends Lexer {
     public final void mPOSITIONAL_PARAM() throws RecognitionException {
         try {
             int _type = POSITIONAL_PARAM;
-            // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:1566:7: ( '?' ( '1' .. '9' ) ( '0' .. '9' )* )
-            // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:1566:7: '?' ( '1' .. '9' ) ( '0' .. '9' )*
+            // JPQL.g:1566:7: ( '?' ( '1' .. '9' ) ( '0' .. '9' )* )
+            // JPQL.g:1566:7: '?' ( '1' .. '9' ) ( '0' .. '9' )*
             {
             match('?'); 
-            // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:1566:11: ( '1' .. '9' )
-            // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:1566:12: '1' .. '9'
+            // JPQL.g:1566:11: ( '1' .. '9' )
+            // JPQL.g:1566:12: '1' .. '9'
             {
             matchRange('1','9'); 
             
             }
 
-            // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:1566:22: ( '0' .. '9' )*
+            // JPQL.g:1566:22: ( '0' .. '9' )*
             loop31:
             do {
                 int alt31=2;
@@ -3208,7 +3208,7 @@ public class JPQLLexer extends Lexer {
             
                 switch (alt31) {
             	case 1 :
-            	    // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:1566:23: '0' .. '9'
+            	    // JPQL.g:1566:23: '0' .. '9'
             	    {
             	    matchRange('0','9'); 
             	    
@@ -3234,8 +3234,8 @@ public class JPQLLexer extends Lexer {
     public final void mNAMED_PARAM() throws RecognitionException {
         try {
             int _type = NAMED_PARAM;
-            // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:1570:7: ( ':' TEXTCHAR )
-            // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:1570:7: ':' TEXTCHAR
+            // JPQL.g:1570:7: ( ':' TEXTCHAR )
+            // JPQL.g:1570:7: ':' TEXTCHAR
             {
             match(':'); 
             mTEXTCHAR(); 
@@ -3253,11 +3253,11 @@ public class JPQLLexer extends Lexer {
     public final void mSTRING_LITERAL_DOUBLE_QUOTED() throws RecognitionException {
         try {
             int _type = STRING_LITERAL_DOUBLE_QUOTED;
-            // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:1576:7: ( '\"' (~ ( '\"' ) )* '\"' )
-            // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:1576:7: '\"' (~ ( '\"' ) )* '\"'
+            // JPQL.g:1576:7: ( '\"' (~ ( '\"' ) )* '\"' )
+            // JPQL.g:1576:7: '\"' (~ ( '\"' ) )* '\"'
             {
             match('\"'); 
-            // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:1576:11: (~ ( '\"' ) )*
+            // JPQL.g:1576:11: (~ ( '\"' ) )*
             loop32:
             do {
                 int alt32=2;
@@ -3270,7 +3270,7 @@ public class JPQLLexer extends Lexer {
             
                 switch (alt32) {
             	case 1 :
-            	    // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:1576:12: ~ ( '\"' )
+            	    // JPQL.g:1576:12: ~ ( '\"' )
             	    {
             	    if ( (input.LA(1)>='\u0000' && input.LA(1)<='!')||(input.LA(1)>='#' && input.LA(1)<='\uFFFE') ) {
             	        input.consume();
@@ -3306,11 +3306,11 @@ public class JPQLLexer extends Lexer {
     public final void mSTRING_LITERAL_SINGLE_QUOTED() throws RecognitionException {
         try {
             int _type = STRING_LITERAL_SINGLE_QUOTED;
-            // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:1580:7: ( '\\'' (~ ( '\\'' ) | ( '\\'\\'' ) )* '\\'' )
-            // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:1580:7: '\\'' (~ ( '\\'' ) | ( '\\'\\'' ) )* '\\''
+            // JPQL.g:1580:7: ( '\\'' (~ ( '\\'' ) | ( '\\'\\'' ) )* '\\'' )
+            // JPQL.g:1580:7: '\\'' (~ ( '\\'' ) | ( '\\'\\'' ) )* '\\''
             {
             match('\''); 
-            // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:1580:12: (~ ( '\\'' ) | ( '\\'\\'' ) )*
+            // JPQL.g:1580:12: (~ ( '\\'' ) | ( '\\'\\'' ) )*
             loop33:
             do {
                 int alt33=3;
@@ -3332,7 +3332,7 @@ public class JPQLLexer extends Lexer {
             
                 switch (alt33) {
             	case 1 :
-            	    // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:1580:13: ~ ( '\\'' )
+            	    // JPQL.g:1580:13: ~ ( '\\'' )
             	    {
             	    if ( (input.LA(1)>='\u0000' && input.LA(1)<='&')||(input.LA(1)>='(' && input.LA(1)<='\uFFFE') ) {
             	        input.consume();
@@ -3348,10 +3348,10 @@ public class JPQLLexer extends Lexer {
             	    }
             	    break;
             	case 2 :
-            	    // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:1580:24: ( '\\'\\'' )
+            	    // JPQL.g:1580:24: ( '\\'\\'' )
             	    {
-            	    // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:1580:24: ( '\\'\\'' )
-            	    // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:1580:25: '\\'\\''
+            	    // JPQL.g:1580:24: ( '\\'\\'' )
+            	    // JPQL.g:1580:25: '\\'\\''
             	    {
             	    match("\'\'"); 
 
@@ -3379,761 +3379,761 @@ public class JPQLLexer extends Lexer {
     // $ANTLR end STRING_LITERAL_SINGLE_QUOTED
 
     public void mTokens() throws RecognitionException {
-        // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:1:10: ( ABS | ALL | AND | ANY | AS | ASC | AVG | BETWEEN | BOTH | BY | CASE | COALESCE | CONCAT | COUNT | CURRENT_DATE | CURRENT_TIME | CURRENT_TIMESTAMP | DESC | DELETE | DISTINCT | ELSE | EMPTY | END | ENTRY | ESCAPE | EXISTS | FALSE | FETCH | FUNC | FROM | GROUP | HAVING | IN | INDEX | INNER | IS | JOIN | KEY | LEADING | LEFT | LENGTH | LIKE | LOCATE | LOWER | MAX | MEMBER | MIN | MOD | NEW | NOT | NULL | NULLIF | OBJECT | OF | OR | ORDER | OUTER | SELECT | SET | SIZE | SQRT | SOME | SUBSTRING | SUM | THEN | TRAILING | TRIM | TRUE | TYPE | UNKNOWN | UPDATE | UPPER | VALUE | WHEN | WHERE | DOT | WS | LEFT_ROUND_BRACKET | LEFT_CURLY_BRACKET | RIGHT_ROUND_BRACKET | RIGHT_CURLY_BRACKET | COMMA | IDENT | HEX_LITERAL | INTEGER_LITERAL | LONG_LITERAL | OCTAL_LITERAL | DOUBLE_LITERAL | FLOAT_LITERAL | DATE_LITERAL | TIME_LITERAL | TIMESTAMP_LITERAL | DATE_STRING | TIME_STRING | EQUALS | GREATER_THAN | GREATER_THAN_EQUAL_TO | LESS_THAN | LESS_THAN_EQUAL_TO | NOT_EQUAL_TO | MULTIPLY | DIVIDE | PLUS | MINUS | POSITIONAL_PARAM | NAMED_PARAM | STRING_LITERAL_DOUBLE_QUOTED | STRING_LITERAL_SINGLE_QUOTED )
+        // JPQL.g:1:10: ( ABS | ALL | AND | ANY | AS | ASC | AVG | BETWEEN | BOTH | BY | CASE | COALESCE | CONCAT | COUNT | CURRENT_DATE | CURRENT_TIME | CURRENT_TIMESTAMP | DESC | DELETE | DISTINCT | ELSE | EMPTY | END | ENTRY | ESCAPE | EXISTS | FALSE | FETCH | FUNC | FROM | GROUP | HAVING | IN | INDEX | INNER | IS | JOIN | KEY | LEADING | LEFT | LENGTH | LIKE | LOCATE | LOWER | MAX | MEMBER | MIN | MOD | NEW | NOT | NULL | NULLIF | OBJECT | OF | OR | ORDER | OUTER | SELECT | SET | SIZE | SQRT | SOME | SUBSTRING | SUM | THEN | TRAILING | TRIM | TRUE | TYPE | UNKNOWN | UPDATE | UPPER | VALUE | WHEN | WHERE | DOT | WS | LEFT_ROUND_BRACKET | LEFT_CURLY_BRACKET | RIGHT_ROUND_BRACKET | RIGHT_CURLY_BRACKET | COMMA | IDENT | HEX_LITERAL | INTEGER_LITERAL | LONG_LITERAL | OCTAL_LITERAL | DOUBLE_LITERAL | FLOAT_LITERAL | DATE_LITERAL | TIME_LITERAL | TIMESTAMP_LITERAL | DATE_STRING | TIME_STRING | EQUALS | GREATER_THAN | GREATER_THAN_EQUAL_TO | LESS_THAN | LESS_THAN_EQUAL_TO | NOT_EQUAL_TO | MULTIPLY | DIVIDE | PLUS | MINUS | POSITIONAL_PARAM | NAMED_PARAM | STRING_LITERAL_DOUBLE_QUOTED | STRING_LITERAL_SINGLE_QUOTED )
         int alt34=108;
         alt34 = dfa34.predict(input);
         switch (alt34) {
             case 1 :
-                // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:1:10: ABS
+                // JPQL.g:1:10: ABS
                 {
                 mABS(); 
                 
                 }
                 break;
             case 2 :
-                // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:1:14: ALL
+                // JPQL.g:1:14: ALL
                 {
                 mALL(); 
                 
                 }
                 break;
             case 3 :
-                // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:1:18: AND
+                // JPQL.g:1:18: AND
                 {
                 mAND(); 
                 
                 }
                 break;
             case 4 :
-                // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:1:22: ANY
+                // JPQL.g:1:22: ANY
                 {
                 mANY(); 
                 
                 }
                 break;
             case 5 :
-                // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:1:26: AS
+                // JPQL.g:1:26: AS
                 {
                 mAS(); 
                 
                 }
                 break;
             case 6 :
-                // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:1:29: ASC
+                // JPQL.g:1:29: ASC
                 {
                 mASC(); 
                 
                 }
                 break;
             case 7 :
-                // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:1:33: AVG
+                // JPQL.g:1:33: AVG
                 {
                 mAVG(); 
                 
                 }
                 break;
             case 8 :
-                // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:1:37: BETWEEN
+                // JPQL.g:1:37: BETWEEN
                 {
                 mBETWEEN(); 
                 
                 }
                 break;
             case 9 :
-                // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:1:45: BOTH
+                // JPQL.g:1:45: BOTH
                 {
                 mBOTH(); 
                 
                 }
                 break;
             case 10 :
-                // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:1:50: BY
+                // JPQL.g:1:50: BY
                 {
                 mBY(); 
                 
                 }
                 break;
             case 11 :
-                // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:1:53: CASE
+                // JPQL.g:1:53: CASE
                 {
                 mCASE(); 
                 
                 }
                 break;
             case 12 :
-                // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:1:58: COALESCE
+                // JPQL.g:1:58: COALESCE
                 {
                 mCOALESCE(); 
                 
                 }
                 break;
             case 13 :
-                // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:1:67: CONCAT
+                // JPQL.g:1:67: CONCAT
                 {
                 mCONCAT(); 
                 
                 }
                 break;
             case 14 :
-                // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:1:74: COUNT
+                // JPQL.g:1:74: COUNT
                 {
                 mCOUNT(); 
                 
                 }
                 break;
             case 15 :
-                // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:1:80: CURRENT_DATE
+                // JPQL.g:1:80: CURRENT_DATE
                 {
                 mCURRENT_DATE(); 
                 
                 }
                 break;
             case 16 :
-                // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:1:93: CURRENT_TIME
+                // JPQL.g:1:93: CURRENT_TIME
                 {
                 mCURRENT_TIME(); 
                 
                 }
                 break;
             case 17 :
-                // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:1:106: CURRENT_TIMESTAMP
+                // JPQL.g:1:106: CURRENT_TIMESTAMP
                 {
                 mCURRENT_TIMESTAMP(); 
                 
                 }
                 break;
             case 18 :
-                // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:1:124: DESC
+                // JPQL.g:1:124: DESC
                 {
                 mDESC(); 
                 
                 }
                 break;
             case 19 :
-                // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:1:129: DELETE
+                // JPQL.g:1:129: DELETE
                 {
                 mDELETE(); 
                 
                 }
                 break;
             case 20 :
-                // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:1:136: DISTINCT
+                // JPQL.g:1:136: DISTINCT
                 {
                 mDISTINCT(); 
                 
                 }
                 break;
             case 21 :
-                // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:1:145: ELSE
+                // JPQL.g:1:145: ELSE
                 {
                 mELSE(); 
                 
                 }
                 break;
             case 22 :
-                // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:1:150: EMPTY
+                // JPQL.g:1:150: EMPTY
                 {
                 mEMPTY(); 
                 
                 }
                 break;
             case 23 :
-                // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:1:156: END
+                // JPQL.g:1:156: END
                 {
                 mEND(); 
                 
                 }
                 break;
             case 24 :
-                // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:1:160: ENTRY
+                // JPQL.g:1:160: ENTRY
                 {
                 mENTRY(); 
                 
                 }
                 break;
             case 25 :
-                // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:1:166: ESCAPE
+                // JPQL.g:1:166: ESCAPE
                 {
                 mESCAPE(); 
                 
                 }
                 break;
             case 26 :
-                // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:1:173: EXISTS
+                // JPQL.g:1:173: EXISTS
                 {
                 mEXISTS(); 
                 
                 }
                 break;
             case 27 :
-                // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:1:180: FALSE
+                // JPQL.g:1:180: FALSE
                 {
                 mFALSE(); 
                 
                 }
                 break;
             case 28 :
-                // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:1:186: FETCH
+                // JPQL.g:1:186: FETCH
                 {
                 mFETCH(); 
                 
                 }
                 break;
             case 29 :
-                // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:1:192: FUNC
+                // JPQL.g:1:192: FUNC
                 {
                 mFUNC(); 
                 
                 }
                 break;
             case 30 :
-                // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:1:197: FROM
+                // JPQL.g:1:197: FROM
                 {
                 mFROM(); 
                 
                 }
                 break;
             case 31 :
-                // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:1:202: GROUP
+                // JPQL.g:1:202: GROUP
                 {
                 mGROUP(); 
                 
                 }
                 break;
             case 32 :
-                // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:1:208: HAVING
+                // JPQL.g:1:208: HAVING
                 {
                 mHAVING(); 
                 
                 }
                 break;
             case 33 :
-                // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:1:215: IN
+                // JPQL.g:1:215: IN
                 {
                 mIN(); 
                 
                 }
                 break;
             case 34 :
-                // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:1:218: INDEX
+                // JPQL.g:1:218: INDEX
                 {
                 mINDEX(); 
                 
                 }
                 break;
             case 35 :
-                // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:1:224: INNER
+                // JPQL.g:1:224: INNER
                 {
                 mINNER(); 
                 
                 }
                 break;
             case 36 :
-                // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:1:230: IS
+                // JPQL.g:1:230: IS
                 {
                 mIS(); 
                 
                 }
                 break;
             case 37 :
-                // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:1:233: JOIN
+                // JPQL.g:1:233: JOIN
                 {
                 mJOIN(); 
                 
                 }
                 break;
             case 38 :
-                // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:1:238: KEY
+                // JPQL.g:1:238: KEY
                 {
                 mKEY(); 
                 
                 }
                 break;
             case 39 :
-                // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:1:242: LEADING
+                // JPQL.g:1:242: LEADING
                 {
                 mLEADING(); 
                 
                 }
                 break;
             case 40 :
-                // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:1:250: LEFT
+                // JPQL.g:1:250: LEFT
                 {
                 mLEFT(); 
                 
                 }
                 break;
             case 41 :
-                // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:1:255: LENGTH
+                // JPQL.g:1:255: LENGTH
                 {
                 mLENGTH(); 
                 
                 }
                 break;
             case 42 :
-                // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:1:262: LIKE
+                // JPQL.g:1:262: LIKE
                 {
                 mLIKE(); 
                 
                 }
                 break;
             case 43 :
-                // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:1:267: LOCATE
+                // JPQL.g:1:267: LOCATE
                 {
                 mLOCATE(); 
                 
                 }
                 break;
             case 44 :
-                // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:1:274: LOWER
+                // JPQL.g:1:274: LOWER
                 {
                 mLOWER(); 
                 
                 }
                 break;
             case 45 :
-                // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:1:280: MAX
+                // JPQL.g:1:280: MAX
                 {
                 mMAX(); 
                 
                 }
                 break;
             case 46 :
-                // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:1:284: MEMBER
+                // JPQL.g:1:284: MEMBER
                 {
                 mMEMBER(); 
                 
                 }
                 break;
             case 47 :
-                // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:1:291: MIN
+                // JPQL.g:1:291: MIN
                 {
                 mMIN(); 
                 
                 }
                 break;
             case 48 :
-                // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:1:295: MOD
+                // JPQL.g:1:295: MOD
                 {
                 mMOD(); 
                 
                 }
                 break;
             case 49 :
-                // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:1:299: NEW
+                // JPQL.g:1:299: NEW
                 {
                 mNEW(); 
                 
                 }
                 break;
             case 50 :
-                // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:1:303: NOT
+                // JPQL.g:1:303: NOT
                 {
                 mNOT(); 
                 
                 }
                 break;
             case 51 :
-                // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:1:307: NULL
+                // JPQL.g:1:307: NULL
                 {
                 mNULL(); 
                 
                 }
                 break;
             case 52 :
-                // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:1:312: NULLIF
+                // JPQL.g:1:312: NULLIF
                 {
                 mNULLIF(); 
                 
                 }
                 break;
             case 53 :
-                // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:1:319: OBJECT
+                // JPQL.g:1:319: OBJECT
                 {
                 mOBJECT(); 
                 
                 }
                 break;
             case 54 :
-                // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:1:326: OF
+                // JPQL.g:1:326: OF
                 {
                 mOF(); 
                 
                 }
                 break;
             case 55 :
-                // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:1:329: OR
+                // JPQL.g:1:329: OR
                 {
                 mOR(); 
                 
                 }
                 break;
             case 56 :
-                // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:1:332: ORDER
+                // JPQL.g:1:332: ORDER
                 {
                 mORDER(); 
                 
                 }
                 break;
             case 57 :
-                // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:1:338: OUTER
+                // JPQL.g:1:338: OUTER
                 {
                 mOUTER(); 
                 
                 }
                 break;
             case 58 :
-                // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:1:344: SELECT
+                // JPQL.g:1:344: SELECT
                 {
                 mSELECT(); 
                 
                 }
                 break;
             case 59 :
-                // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:1:351: SET
+                // JPQL.g:1:351: SET
                 {
                 mSET(); 
                 
                 }
                 break;
             case 60 :
-                // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:1:355: SIZE
+                // JPQL.g:1:355: SIZE
                 {
                 mSIZE(); 
                 
                 }
                 break;
             case 61 :
-                // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:1:360: SQRT
+                // JPQL.g:1:360: SQRT
                 {
                 mSQRT(); 
                 
                 }
                 break;
             case 62 :
-                // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:1:365: SOME
+                // JPQL.g:1:365: SOME
                 {
                 mSOME(); 
                 
                 }
                 break;
             case 63 :
-                // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:1:370: SUBSTRING
+                // JPQL.g:1:370: SUBSTRING
                 {
                 mSUBSTRING(); 
                 
                 }
                 break;
             case 64 :
-                // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:1:380: SUM
+                // JPQL.g:1:380: SUM
                 {
                 mSUM(); 
                 
                 }
                 break;
             case 65 :
-                // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:1:384: THEN
+                // JPQL.g:1:384: THEN
                 {
                 mTHEN(); 
                 
                 }
                 break;
             case 66 :
-                // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:1:389: TRAILING
+                // JPQL.g:1:389: TRAILING
                 {
                 mTRAILING(); 
                 
                 }
                 break;
             case 67 :
-                // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:1:398: TRIM
+                // JPQL.g:1:398: TRIM
                 {
                 mTRIM(); 
                 
                 }
                 break;
             case 68 :
-                // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:1:403: TRUE
+                // JPQL.g:1:403: TRUE
                 {
                 mTRUE(); 
                 
                 }
                 break;
             case 69 :
-                // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:1:408: TYPE
+                // JPQL.g:1:408: TYPE
                 {
                 mTYPE(); 
                 
                 }
                 break;
             case 70 :
-                // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:1:413: UNKNOWN
+                // JPQL.g:1:413: UNKNOWN
                 {
                 mUNKNOWN(); 
                 
                 }
                 break;
             case 71 :
-                // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:1:421: UPDATE
+                // JPQL.g:1:421: UPDATE
                 {
                 mUPDATE(); 
                 
                 }
                 break;
             case 72 :
-                // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:1:428: UPPER
+                // JPQL.g:1:428: UPPER
                 {
                 mUPPER(); 
                 
                 }
                 break;
             case 73 :
-                // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:1:434: VALUE
+                // JPQL.g:1:434: VALUE
                 {
                 mVALUE(); 
                 
                 }
                 break;
             case 74 :
-                // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:1:440: WHEN
+                // JPQL.g:1:440: WHEN
                 {
                 mWHEN(); 
                 
                 }
                 break;
             case 75 :
-                // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:1:445: WHERE
+                // JPQL.g:1:445: WHERE
                 {
                 mWHERE(); 
                 
                 }
                 break;
             case 76 :
-                // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:1:451: DOT
+                // JPQL.g:1:451: DOT
                 {
                 mDOT(); 
                 
                 }
                 break;
             case 77 :
-                // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:1:455: WS
+                // JPQL.g:1:455: WS
                 {
                 mWS(); 
                 
                 }
                 break;
             case 78 :
-                // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:1:458: LEFT_ROUND_BRACKET
+                // JPQL.g:1:458: LEFT_ROUND_BRACKET
                 {
                 mLEFT_ROUND_BRACKET(); 
                 
                 }
                 break;
             case 79 :
-                // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:1:477: LEFT_CURLY_BRACKET
+                // JPQL.g:1:477: LEFT_CURLY_BRACKET
                 {
                 mLEFT_CURLY_BRACKET(); 
                 
                 }
                 break;
             case 80 :
-                // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:1:496: RIGHT_ROUND_BRACKET
+                // JPQL.g:1:496: RIGHT_ROUND_BRACKET
                 {
                 mRIGHT_ROUND_BRACKET(); 
                 
                 }
                 break;
             case 81 :
-                // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:1:516: RIGHT_CURLY_BRACKET
+                // JPQL.g:1:516: RIGHT_CURLY_BRACKET
                 {
                 mRIGHT_CURLY_BRACKET(); 
                 
                 }
                 break;
             case 82 :
-                // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:1:536: COMMA
+                // JPQL.g:1:536: COMMA
                 {
                 mCOMMA(); 
                 
                 }
                 break;
             case 83 :
-                // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:1:542: IDENT
+                // JPQL.g:1:542: IDENT
                 {
                 mIDENT(); 
                 
                 }
                 break;
             case 84 :
-                // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:1:548: HEX_LITERAL
+                // JPQL.g:1:548: HEX_LITERAL
                 {
                 mHEX_LITERAL(); 
                 
                 }
                 break;
             case 85 :
-                // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:1:560: INTEGER_LITERAL
+                // JPQL.g:1:560: INTEGER_LITERAL
                 {
                 mINTEGER_LITERAL(); 
                 
                 }
                 break;
             case 86 :
-                // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:1:576: LONG_LITERAL
+                // JPQL.g:1:576: LONG_LITERAL
                 {
                 mLONG_LITERAL(); 
                 
                 }
                 break;
             case 87 :
-                // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:1:589: OCTAL_LITERAL
+                // JPQL.g:1:589: OCTAL_LITERAL
                 {
                 mOCTAL_LITERAL(); 
                 
                 }
                 break;
             case 88 :
-                // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:1:603: DOUBLE_LITERAL
+                // JPQL.g:1:603: DOUBLE_LITERAL
                 {
                 mDOUBLE_LITERAL(); 
                 
                 }
                 break;
             case 89 :
-                // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:1:618: FLOAT_LITERAL
+                // JPQL.g:1:618: FLOAT_LITERAL
                 {
                 mFLOAT_LITERAL(); 
                 
                 }
                 break;
             case 90 :
-                // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:1:632: DATE_LITERAL
+                // JPQL.g:1:632: DATE_LITERAL
                 {
                 mDATE_LITERAL(); 
                 
                 }
                 break;
             case 91 :
-                // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:1:645: TIME_LITERAL
+                // JPQL.g:1:645: TIME_LITERAL
                 {
                 mTIME_LITERAL(); 
                 
                 }
                 break;
             case 92 :
-                // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:1:658: TIMESTAMP_LITERAL
+                // JPQL.g:1:658: TIMESTAMP_LITERAL
                 {
                 mTIMESTAMP_LITERAL(); 
                 
                 }
                 break;
             case 93 :
-                // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:1:676: DATE_STRING
+                // JPQL.g:1:676: DATE_STRING
                 {
                 mDATE_STRING(); 
                 
                 }
                 break;
             case 94 :
-                // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:1:688: TIME_STRING
+                // JPQL.g:1:688: TIME_STRING
                 {
                 mTIME_STRING(); 
                 
                 }
                 break;
             case 95 :
-                // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:1:700: EQUALS
+                // JPQL.g:1:700: EQUALS
                 {
                 mEQUALS(); 
                 
                 }
                 break;
             case 96 :
-                // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:1:707: GREATER_THAN
+                // JPQL.g:1:707: GREATER_THAN
                 {
                 mGREATER_THAN(); 
                 
                 }
                 break;
             case 97 :
-                // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:1:720: GREATER_THAN_EQUAL_TO
+                // JPQL.g:1:720: GREATER_THAN_EQUAL_TO
                 {
                 mGREATER_THAN_EQUAL_TO(); 
                 
                 }
                 break;
             case 98 :
-                // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:1:742: LESS_THAN
+                // JPQL.g:1:742: LESS_THAN
                 {
                 mLESS_THAN(); 
                 
                 }
                 break;
             case 99 :
-                // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:1:752: LESS_THAN_EQUAL_TO
+                // JPQL.g:1:752: LESS_THAN_EQUAL_TO
                 {
                 mLESS_THAN_EQUAL_TO(); 
                 
                 }
                 break;
             case 100 :
-                // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:1:771: NOT_EQUAL_TO
+                // JPQL.g:1:771: NOT_EQUAL_TO
                 {
                 mNOT_EQUAL_TO(); 
                 
                 }
                 break;
             case 101 :
-                // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:1:784: MULTIPLY
+                // JPQL.g:1:784: MULTIPLY
                 {
                 mMULTIPLY(); 
                 
                 }
                 break;
             case 102 :
-                // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:1:793: DIVIDE
+                // JPQL.g:1:793: DIVIDE
                 {
                 mDIVIDE(); 
                 
                 }
                 break;
             case 103 :
-                // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:1:800: PLUS
+                // JPQL.g:1:800: PLUS
                 {
                 mPLUS(); 
                 
                 }
                 break;
             case 104 :
-                // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:1:805: MINUS
+                // JPQL.g:1:805: MINUS
                 {
                 mMINUS(); 
                 
                 }
                 break;
             case 105 :
-                // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:1:811: POSITIONAL_PARAM
+                // JPQL.g:1:811: POSITIONAL_PARAM
                 {
                 mPOSITIONAL_PARAM(); 
                 
                 }
                 break;
             case 106 :
-                // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:1:828: NAMED_PARAM
+                // JPQL.g:1:828: NAMED_PARAM
                 {
                 mNAMED_PARAM(); 
                 
                 }
                 break;
             case 107 :
-                // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:1:840: STRING_LITERAL_DOUBLE_QUOTED
+                // JPQL.g:1:840: STRING_LITERAL_DOUBLE_QUOTED
                 {
                 mSTRING_LITERAL_DOUBLE_QUOTED(); 
                 
                 }
                 break;
             case 108 :
-                // C:/Dev-eclipselink-rt/trunk/foundation/org.eclipse.persistence.core/resource/org/eclipse/persistence/internal/jpa/parsing/jpql/antlr/JPQL.g:1:869: STRING_LITERAL_SINGLE_QUOTED
+                // JPQL.g:1:869: STRING_LITERAL_SINGLE_QUOTED
                 {
                 mSTRING_LITERAL_SINGLE_QUOTED(); 
                 
