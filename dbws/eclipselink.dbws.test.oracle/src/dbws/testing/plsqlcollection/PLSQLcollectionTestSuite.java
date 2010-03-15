@@ -121,8 +121,8 @@ public class PLSQLcollectionTestSuite {
                  "<class-mapping-descriptor xsi:type=\"object-relational-class-mapping-descriptor\">" +
                     "<class>org.eclipse.persistence.testing.tests.plsqlcollection.T1</class>" +
                     "<alias>T1</alias>" +
-                    "<events xsi:type=\"event-policy\"/>" +
-                    "<querying xsi:type=\"query-policy\">" +
+                    "<events/>" +
+                    "<querying>" +
                        "<queries>" +
                           "<query name=\"PLSQLcollectionQuery\" xsi:type=\"data-modify-query\">" +
                              "<arguments>" +

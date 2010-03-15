@@ -137,20 +137,20 @@ public class OracleObjecttypeTestSuite {
               "<class-mapping-descriptor xsi:type=\"object-relational-class-mapping-descriptor\">" +
                  "<class>dbws.testing.oracleobjecttype.Address</class>" +
                  "<alias>address</alias>" +
-                 "<events xsi:type=\"event-policy\"/>" +
-                 "<querying xsi:type=\"query-policy\"/>" +
+                 "<events/>" +
+                 "<querying/>" +
                  "<attribute-mappings>" +
                     "<attribute-mapping xsi:type=\"direct-mapping\">" +
                        "<attribute-name>street</attribute-name>" +
-                       "<field name=\"STREET\" xsi:type=\"column\"/>" +
+                       "<field name=\"STREET\"/>" +
                     "</attribute-mapping>" +
                     "<attribute-mapping xsi:type=\"direct-mapping\">" +
                        "<attribute-name>city</attribute-name>" +
-                       "<field name=\"CITY\" xsi:type=\"column\"/>" +
+                       "<field name=\"CITY\"/>" +
                     "</attribute-mapping>" +
                     "<attribute-mapping xsi:type=\"direct-mapping\">" +
                        "<attribute-name>province</attribute-name>" +
-                       "<field name=\"PROV\" xsi:type=\"column\"/>" +
+                       "<field name=\"PROV\"/>" +
                     "</attribute-mapping>" +
                  "</attribute-mappings>" +
                  "<descriptor-type>aggregate</descriptor-type>" +
@@ -164,19 +164,19 @@ public class OracleObjecttypeTestSuite {
                  "<copying xsi:type=\"instantiation-copy-policy\"/>" +
                  "<structure>XR_ADDRESS_TYPE</structure>" +
                  "<field-order>" +
-                    "<field name=\"STREET\" xsi:type=\"column\"/>" +
-                    "<field name=\"CITY\" xsi:type=\"column\"/>" +
-                    "<field name=\"PROV\" xsi:type=\"column\"/>" +
+                    "<field name=\"STREET\"/>" +
+                    "<field name=\"CITY\"/>" +
+                    "<field name=\"PROV\"/>" +
                  "</field-order>" +
               "</class-mapping-descriptor>" +
               "<class-mapping-descriptor xsi:type=\"object-relational-class-mapping-descriptor\">" +
                  "<class>dbws.testing.oracleobjecttype.EmployeeWithAddress</class>" +
                  "<alias>employee</alias>" +
                  "<primary-key>" +
-                    "<field table=\"XR_EMP_ADDR\" name=\"EMPNO\" xsi:type=\"column\"/>" +
+                    "<field table=\"XR_EMP_ADDR\" name=\"EMPNO\"/>" +
                  "</primary-key>" +
-                 "<events xsi:type=\"event-policy\"/>" +
-                 "<querying xsi:type=\"query-policy\">" +
+                 "<events/>" +
+                 "<querying>" +
                     "<queries>" +
                        "<query name=\"getEmployeesByProv\" xsi:type=\"read-all-query\">" +
                           "<arguments>" +
@@ -188,7 +188,7 @@ public class OracleObjecttypeTestSuite {
                              "<procedure-name>GET_EMPLOYEES_BY_PROV</procedure-name>" +
                              "<cursor-output-procedure>true</cursor-output-procedure>" +
                              "<arguments>" +
-                                "<argument xsi:type=\"procedure-argument\">" +
+                                "<argument>" +
                                    "<procedure-argument-name>X</procedure-argument-name>" +
                                    "<argument-name>X</argument-name>" +
                                    "<procedure-argument-sqltype>2002</procedure-argument-sqltype>" +
@@ -210,15 +210,15 @@ public class OracleObjecttypeTestSuite {
                  "<attribute-mappings>" +
                     "<attribute-mapping xsi:type=\"direct-mapping\">" +
                        "<attribute-name>id</attribute-name>" +
-                       "<field table=\"XR_EMP_ADDR\" name=\"EMPNO\" xsi:type=\"column\"/>" +
+                       "<field table=\"XR_EMP_ADDR\" name=\"EMPNO\"/>" +
                     "</attribute-mapping>" +
                     "<attribute-mapping xsi:type=\"direct-mapping\">" +
                        "<attribute-name>firstName</attribute-name>" +
-                       "<field table=\"XR_EMP_ADDR\" name=\"FNAME\" xsi:type=\"column\"/>" +
+                       "<field table=\"XR_EMP_ADDR\" name=\"FNAME\"/>" +
                     "</attribute-mapping>" +
                     "<attribute-mapping xsi:type=\"direct-mapping\">" +
                        "<attribute-name>lastName</attribute-name>" +
-                       "<field table=\"XR_EMP_ADDR\" name=\"LNAME\" xsi:type=\"column\"/>" +
+                       "<field table=\"XR_EMP_ADDR\" name=\"LNAME\"/>" +
                     "</attribute-mapping>" +
                     "<attribute-mapping xsi:type=\"structure-mapping\">" +
                        "<attribute-name>address</attribute-name>" +
@@ -249,8 +249,8 @@ public class OracleObjecttypeTestSuite {
               "<class-mapping-descriptor xsi:type=\"xml-class-mapping-descriptor\">" +
                  "<class>dbws.testing.oracleobjecttype.Address</class>" +
                  "<alias>address</alias>" +
-                 "<events xsi:type=\"event-policy\"/>" +
-                 "<querying xsi:type=\"query-policy\"/>" +
+                 "<events/>" +
+                 "<querying/>" +
                  "<attribute-mappings>" +
                     "<attribute-mapping xsi:type=\"xml-direct-mapping\">" +
                        "<attribute-name>street</attribute-name>" +
@@ -287,7 +287,7 @@ public class OracleObjecttypeTestSuite {
                  "<instantiation/>" +
                  "<copying xsi:type=\"instantiation-copy-policy\"/>" +
                  "<default-root-element>address</default-root-element>" +
-                 "<default-root-element-field name=\"address\" xsi:type=\"node\"/>" +
+                 "<default-root-element-field name=\"address\"/>" +
                  "<namespace-resolver>" +
                     "<default-namespace-uri>urn:oracleobjecttype</default-namespace-uri>" +
                  "</namespace-resolver>" +
@@ -299,8 +299,8 @@ public class OracleObjecttypeTestSuite {
               "<class-mapping-descriptor xsi:type=\"xml-class-mapping-descriptor\">" +
                  "<class>dbws.testing.oracleobjecttype.EmployeeWithAddress</class>" +
                  "<alias>employee</alias>" +
-                 "<events xsi:type=\"event-policy\"/>" +
-                 "<querying xsi:type=\"query-policy\"/>" +
+                 "<events/>" +
+                 "<querying/>" +
                  "<attribute-mappings>" +
                     "<attribute-mapping xsi:type=\"xml-direct-mapping\">" +
                        "<attribute-name>id</attribute-name>" +
@@ -342,7 +342,7 @@ public class OracleObjecttypeTestSuite {
                  "<instantiation/>" +
                  "<copying xsi:type=\"instantiation-copy-policy\"/>" +
                  "<default-root-element>employee</default-root-element>" +
-                 "<default-root-element-field name=\"employee\" xsi:type=\"node\"/>" +
+                 "<default-root-element-field name=\"employee\"/>" +
                  "<namespace-resolver>" +
                     "<default-namespace-uri>urn:oracleobjecttype</default-namespace-uri>" +
                  "</namespace-resolver>" +

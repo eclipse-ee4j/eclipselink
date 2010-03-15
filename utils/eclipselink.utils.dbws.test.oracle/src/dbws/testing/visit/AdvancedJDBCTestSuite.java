@@ -75,16 +75,16 @@ public class AdvancedJDBCTestSuite extends BuilderTestSuite {
           "<class-mapping-descriptor xsi:type=\"object-relational-class-mapping-descriptor\">" +
              "<class>advanced_object_demo.region</class>" +
              "<alias>region</alias>" +
-             "<events xsi:type=\"event-policy\"/>" +
-             "<querying xsi:type=\"query-policy\"/>" +
+             "<events/>" +
+             "<querying/>" +
              "<attribute-mappings>" +
                 "<attribute-mapping xsi:type=\"direct-mapping\">" +
                    "<attribute-name>reg_id</attribute-name>" +
-                   "<field name=\"REG_ID\" xsi:type=\"column\"/>" +
+                   "<field name=\"REG_ID\"/>" +
                 "</attribute-mapping>" +
                 "<attribute-mapping xsi:type=\"direct-mapping\">" +
                    "<attribute-name>reg_name</attribute-name>" +
-                   "<field name=\"REG_NAME\" xsi:type=\"column\"/>" +
+                   "<field name=\"REG_NAME\"/>" +
                 "</attribute-mapping>" +
              "</attribute-mappings>" +
              "<descriptor-type>aggregate</descriptor-type>" +
@@ -98,8 +98,8 @@ public class AdvancedJDBCTestSuite extends BuilderTestSuite {
              "<copying xsi:type=\"instantiation-copy-policy\"/>" +
              "<structure>REGION</structure>" +
              "<field-order>" +
-                "<field name=\"REG_ID\" xsi:type=\"column\"/>" +
-                "<field name=\"REG_NAME\" xsi:type=\"column\"/>" +
+                "<field name=\"REG_ID\"/>" +
+                "<field name=\"REG_NAME\"/>" +
              "</field-order>" +
           "</class-mapping-descriptor>" +
        "</class-mapping-descriptors>" +
@@ -116,7 +116,7 @@ public class AdvancedJDBCTestSuite extends BuilderTestSuite {
                  "<procedure-name>ADVANCED_OBJECT_DEMO.ECHOREGION</procedure-name>" +
                  "<cursor-output-procedure>false</cursor-output-procedure>" +
                  "<arguments>" +
-                    "<argument xsi:type=\"procedure-argument\">" +
+                    "<argument>" +
                        "<procedure-argument-name>AREGION</procedure-argument-name>" +
                        "<argument-name>AREGION</argument-name>" +
                        "<procedure-argument-type>advanced_object_demo.region</procedure-argument-type>" +
@@ -124,7 +124,7 @@ public class AdvancedJDBCTestSuite extends BuilderTestSuite {
                        "<procedure-argument-sqltype-name>REGION</procedure-argument-sqltype-name>" +
                     "</argument>" +
                  "</arguments>" +
-                 "<stored-function-result xsi:type=\"procedure-output-argument\">" +
+                 "<stored-function-result>" +
                     "<procedure-argument-type>advanced_object_demo.region</procedure-argument-type>" +
                     "<procedure-argument-sqltype>2002</procedure-argument-sqltype>" +
                     "<procedure-argument-sqltype-name>REGION</procedure-argument-sqltype-name>" +
@@ -180,8 +180,8 @@ public class AdvancedJDBCTestSuite extends BuilderTestSuite {
            "<class-mapping-descriptor xsi:type=\"xml-class-mapping-descriptor\">" +
                "<class>advanced_object_demo.region</class>" +
                "<alias>region</alias>" +
-               "<events xsi:type=\"event-policy\"/>" +
-               "<querying xsi:type=\"query-policy\"/>" +
+               "<events/>" +
+               "<querying/>" +
                "<attribute-mappings>" +
                   "<attribute-mapping xsi:type=\"xml-direct-mapping\">" +
                      "<attribute-name>reg_id</attribute-name>" +
@@ -210,7 +210,7 @@ public class AdvancedJDBCTestSuite extends BuilderTestSuite {
                "<instantiation/>" +
                "<copying xsi:type=\"instantiation-copy-policy\"/>" +
                "<default-root-element>regionType</default-root-element>" +
-               "<default-root-element-field name=\"regionType\" xsi:type=\"node\"/>" +
+               "<default-root-element-field name=\"regionType\"/>" +
                "<namespace-resolver>" +
                   "<namespaces>" +
                      "<namespace>" +
@@ -239,23 +239,23 @@ public class AdvancedJDBCTestSuite extends BuilderTestSuite {
         "<xsd:element name=\"regionType\" type=\"regionType\"/>" +
     "</xsd:schema>";
     static final String EMPADDRESS_OR_PROJECT =
-    "<?xml version=\"1.0\" encoding=\"UTF-8\"?>" +
-    "<object-persistence version=\"Eclipse Persistence Services - some version (some build date)\" xmlns=\"http://www.eclipse.org/eclipselink/xsds/persistence\" xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xmlns:eclipselink=\"http://www.eclipse.org/eclipselink/xsds/persistence\">" +
+    "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"no\"?>" +
+    "<object-persistence xmlns=\"http://www.eclipse.org/eclipselink/xsds/persistence\" xmlns:eclipselink=\"http://www.eclipse.org/eclipselink/xsds/persistence\" xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" version=\"Eclipse Persistence Services - some version (some build date)\">" +
        "<name>empAddress</name>" +
        "<class-mapping-descriptors>" +
           "<class-mapping-descriptor xsi:type=\"object-relational-class-mapping-descriptor\">" +
              "<class>advanced_object_demo.region</class>" +
              "<alias>region</alias>" +
-             "<events xsi:type=\"event-policy\"/>" +
-             "<querying xsi:type=\"query-policy\"/>" +
+             "<events/>" +
+             "<querying/>" +
              "<attribute-mappings>" +
                 "<attribute-mapping xsi:type=\"direct-mapping\">" +
                    "<attribute-name>reg_id</attribute-name>" +
-                   "<field name=\"REG_ID\" xsi:type=\"column\"/>" +
+                   "<field name=\"REG_ID\"/>" +
                 "</attribute-mapping>" +
                 "<attribute-mapping xsi:type=\"direct-mapping\">" +
                    "<attribute-name>reg_name</attribute-name>" +
-                   "<field name=\"REG_NAME\" xsi:type=\"column\"/>" +
+                   "<field name=\"REG_NAME\"/>" +
                 "</attribute-mapping>" +
              "</attribute-mappings>" +
              "<descriptor-type>aggregate</descriptor-type>" +
@@ -269,23 +269,23 @@ public class AdvancedJDBCTestSuite extends BuilderTestSuite {
              "<copying xsi:type=\"instantiation-copy-policy\"/>" +
              "<structure>REGION</structure>" +
              "<field-order>" +
-                "<field name=\"REG_ID\" xsi:type=\"column\"/>" +
-                "<field name=\"REG_NAME\" xsi:type=\"column\"/>" +
+                "<field name=\"REG_ID\"/>" +
+                "<field name=\"REG_NAME\"/>" +
              "</field-order>" +
           "</class-mapping-descriptor>" +
           "<class-mapping-descriptor xsi:type=\"object-relational-class-mapping-descriptor\">" +
              "<class>advanced_object_demo.emp_address</class>" +
              "<alias>emp_address</alias>" +
-             "<events xsi:type=\"event-policy\"/>" +
-             "<querying xsi:type=\"query-policy\"/>" +
+             "<events/>" +
+             "<querying/>" +
              "<attribute-mappings>" +
                 "<attribute-mapping xsi:type=\"direct-mapping\">" +
                    "<attribute-name>street</attribute-name>" +
-                   "<field name=\"STREET\" xsi:type=\"column\"/>" +
+                   "<field name=\"STREET\"/>" +
                 "</attribute-mapping>" +
                 "<attribute-mapping xsi:type=\"direct-mapping\">" +
                    "<attribute-name>suburb</attribute-name>" +
-                   "<field name=\"SUBURB\" xsi:type=\"column\"/>" +
+                   "<field name=\"SUBURB\"/>" +
                 "</attribute-mapping>" +
                 "<attribute-mapping xsi:type=\"structure-mapping\">" +
                    "<attribute-name>addr_region</attribute-name>" +
@@ -294,7 +294,7 @@ public class AdvancedJDBCTestSuite extends BuilderTestSuite {
                 "</attribute-mapping>" +
                 "<attribute-mapping xsi:type=\"direct-mapping\">" +
                    "<attribute-name>postcode</attribute-name>" +
-                   "<field name=\"POSTCODE\" xsi:type=\"column\"/>" +
+                   "<field name=\"POSTCODE\"/>" +
                 "</attribute-mapping>" +
              "</attribute-mappings>" +
              "<descriptor-type>aggregate</descriptor-type>" +
@@ -308,10 +308,10 @@ public class AdvancedJDBCTestSuite extends BuilderTestSuite {
              "<copying xsi:type=\"instantiation-copy-policy\"/>" +
              "<structure>EMP_ADDRESS</structure>" +
              "<field-order>" +
-                "<field name=\"STREET\" xsi:type=\"column\"/>" +
-                "<field name=\"SUBURB\" xsi:type=\"column\"/>" +
-                "<field name=\"ADDR_REGION\" xsi:type=\"column\"/>" +
-                "<field name=\"POSTCODE\" xsi:type=\"column\"/>" +
+                "<field name=\"STREET\"/>" +
+                "<field name=\"SUBURB\"/>" +
+                "<field name=\"ADDR_REGION\"/>" +
+                "<field name=\"POSTCODE\"/>" +
              "</field-order>" +
           "</class-mapping-descriptor>" +
        "</class-mapping-descriptors>" +
@@ -328,7 +328,7 @@ public class AdvancedJDBCTestSuite extends BuilderTestSuite {
                 "<procedure-name>advanced_object_demo.ECHOEMPADDRESS</procedure-name>" +
                 "<cursor-output-procedure>false</cursor-output-procedure>" +
                 "<arguments>" +
-                   "<argument xsi:type=\"procedure-argument\">" +
+                   "<argument>" +
                       "<procedure-argument-name>ANEMPADDRESS</procedure-argument-name>" +
                       "<argument-name>ANEMPADDRESS</argument-name>" +
                       "<procedure-argument-type>advanced_object_demo.emp_address</procedure-argument-type>" +
@@ -336,7 +336,7 @@ public class AdvancedJDBCTestSuite extends BuilderTestSuite {
                       "<procedure-argument-sqltype-name>EMP_ADDRESS</procedure-argument-sqltype-name>" +
                    "</argument>" +
                 "</arguments>" +
-                "<stored-function-result xsi:type=\"procedure-output-argument\">" +
+                "<stored-function-result>" +
                    "<procedure-argument-type>advanced_object_demo.emp_address</procedure-argument-type>" +
                    "<procedure-argument-sqltype>2002</procedure-argument-sqltype>" +
                    "<procedure-argument-sqltype-name>EMP_ADDRESS</procedure-argument-sqltype-name>" +
@@ -405,8 +405,8 @@ public class AdvancedJDBCTestSuite extends BuilderTestSuite {
           "<class-mapping-descriptor xsi:type=\"xml-class-mapping-descriptor\">" +
              "<class>advanced_object_demo.region</class>" +
              "<alias>region</alias>" +
-             "<events xsi:type=\"event-policy\"/>" +
-             "<querying xsi:type=\"query-policy\"/>" +
+             "<events/>" +
+             "<querying/>" +
              "<attribute-mappings>" +
                 "<attribute-mapping xsi:type=\"xml-direct-mapping\">" +
                    "<attribute-name>reg_id</attribute-name>" +
@@ -451,8 +451,8 @@ public class AdvancedJDBCTestSuite extends BuilderTestSuite {
           "<class-mapping-descriptor xsi:type=\"xml-class-mapping-descriptor\">" +
              "<class>advanced_object_demo.emp_address</class>" +
              "<alias>emp_address</alias>" +
-             "<events xsi:type=\"event-policy\"/>" +
-             "<querying xsi:type=\"query-policy\"/>" +
+             "<events/>" +
+             "<querying/>" +
              "<attribute-mappings>" +
                "<attribute-mapping xsi:type=\"xml-direct-mapping\">" +
                   "<attribute-name>street</attribute-name>" +
@@ -497,7 +497,7 @@ public class AdvancedJDBCTestSuite extends BuilderTestSuite {
              "<instantiation/>" +
              "<copying xsi:type=\"instantiation-copy-policy\"/>" +
              "<default-root-element>emp_addressType</default-root-element>" +
-             "<default-root-element-field name=\"emp_addressType\" xsi:type=\"node\"/>" +
+             "<default-root-element-field name=\"emp_addressType\"/>" +
              "<namespace-resolver>" +
                  "<namespaces>" +
                      "<namespace>" +
@@ -541,16 +541,16 @@ public class AdvancedJDBCTestSuite extends BuilderTestSuite {
           "<class-mapping-descriptor xsi:type=\"object-relational-class-mapping-descriptor\">" +
              "<class>advanced_object_demo.region</class>" +
              "<alias>region</alias>" +
-             "<events xsi:type=\"event-policy\"/>" +
-             "<querying xsi:type=\"query-policy\"/>" +
+             "<events/>" +
+             "<querying/>" +
              "<attribute-mappings>" +
                 "<attribute-mapping xsi:type=\"direct-mapping\">" +
                    "<attribute-name>reg_id</attribute-name>" +
-                   "<field name=\"REG_ID\" xsi:type=\"column\"/>" +
+                   "<field name=\"REG_ID\"/>" +
                 "</attribute-mapping>" +
                 "<attribute-mapping xsi:type=\"direct-mapping\">" +
                    "<attribute-name>reg_name</attribute-name>" +
-                   "<field name=\"REG_NAME\" xsi:type=\"column\"/>" +
+                   "<field name=\"REG_NAME\"/>" +
                 "</attribute-mapping>" +
              "</attribute-mappings>" +
              "<descriptor-type>aggregate</descriptor-type>" +
@@ -564,19 +564,19 @@ public class AdvancedJDBCTestSuite extends BuilderTestSuite {
              "<copying xsi:type=\"instantiation-copy-policy\"/>" +
              "<structure>REGION</structure>" +
              "<field-order>" +
-                "<field name=\"REG_ID\" xsi:type=\"column\"/>" +
-                "<field name=\"REG_NAME\" xsi:type=\"column\"/>" +
+                "<field name=\"REG_ID\"/>" +
+                "<field name=\"REG_NAME\"/>" +
              "</field-order>" +
           "</class-mapping-descriptor>" +
           "<class-mapping-descriptor xsi:type=\"object-relational-class-mapping-descriptor\">" +
              "<class>advanced_object_demo.emp_object</class>" +
              "<alias>emp_object</alias>" +
-             "<events xsi:type=\"event-policy\"/>" +
-             "<querying xsi:type=\"query-policy\"/>" +
+             "<events/>" +
+             "<querying/>" +
              "<attribute-mappings>" +
                 "<attribute-mapping xsi:type=\"direct-mapping\">" +
                    "<attribute-name>employee_id</attribute-name>" +
-                   "<field name=\"EMPLOYEE_ID\" xsi:type=\"column\"/>" +
+                   "<field name=\"EMPLOYEE_ID\"/>" +
                 "</attribute-mapping>" +
                 "<attribute-mapping xsi:type=\"structure-mapping\">" +
                    "<attribute-name>address</attribute-name>" +
@@ -585,11 +585,11 @@ public class AdvancedJDBCTestSuite extends BuilderTestSuite {
                 "</attribute-mapping>" +
                 "<attribute-mapping xsi:type=\"direct-mapping\">" +
                    "<attribute-name>employee_name</attribute-name>" +
-                   "<field name=\"EMPLOYEE_NAME\" xsi:type=\"column\"/>" +
+                   "<field name=\"EMPLOYEE_NAME\"/>" +
                 "</attribute-mapping>" +
                 "<attribute-mapping xsi:type=\"direct-mapping\">" +
                    "<attribute-name>date_of_hire</attribute-name>" +
-                   "<field name=\"DATE_OF_HIRE\" xsi:type=\"column\"/>" +
+                   "<field name=\"DATE_OF_HIRE\"/>" +
                 "</attribute-mapping>" +
              "</attribute-mappings>" +
              "<descriptor-type>aggregate</descriptor-type>" +
@@ -603,25 +603,25 @@ public class AdvancedJDBCTestSuite extends BuilderTestSuite {
              "<copying xsi:type=\"instantiation-copy-policy\"/>" +
              "<structure>EMP_OBJECT</structure>" +
              "<field-order>" +
-                "<field name=\"EMPLOYEE_ID\" xsi:type=\"column\"/>" +
-                "<field name=\"ADDRESS\" xsi:type=\"column\"/>" +
-                "<field name=\"EMPLOYEE_NAME\" xsi:type=\"column\"/>" +
-                "<field name=\"DATE_OF_HIRE\" xsi:type=\"column\"/>" +
+                "<field name=\"EMPLOYEE_ID\"/>" +
+                "<field name=\"ADDRESS\"/>" +
+                "<field name=\"EMPLOYEE_NAME\"/>" +
+                "<field name=\"DATE_OF_HIRE\"/>" +
              "</field-order>" +
           "</class-mapping-descriptor>" +
           "<class-mapping-descriptor xsi:type=\"object-relational-class-mapping-descriptor\">" +
              "<class>advanced_object_demo.emp_address</class>" +
              "<alias>emp_address</alias>" +
-             "<events xsi:type=\"event-policy\"/>" +
-             "<querying xsi:type=\"query-policy\"/>" +
+             "<events/>" +
+             "<querying/>" +
              "<attribute-mappings>" +
                 "<attribute-mapping xsi:type=\"direct-mapping\">" +
                    "<attribute-name>street</attribute-name>" +
-                   "<field name=\"STREET\" xsi:type=\"column\"/>" +
+                   "<field name=\"STREET\"/>" +
                 "</attribute-mapping>" +
                 "<attribute-mapping xsi:type=\"direct-mapping\">" +
                    "<attribute-name>suburb</attribute-name>" +
-                   "<field name=\"SUBURB\" xsi:type=\"column\"/>" +
+                   "<field name=\"SUBURB\"/>" +
                 "</attribute-mapping>" +
                 "<attribute-mapping xsi:type=\"structure-mapping\">" +
                    "<attribute-name>addr_region</attribute-name>" +
@@ -630,7 +630,7 @@ public class AdvancedJDBCTestSuite extends BuilderTestSuite {
                 "</attribute-mapping>" +
                 "<attribute-mapping xsi:type=\"direct-mapping\">" +
                    "<attribute-name>postcode</attribute-name>" +
-                   "<field name=\"POSTCODE\" xsi:type=\"column\"/>" +
+                   "<field name=\"POSTCODE\"/>" +
                 "</attribute-mapping>" +
              "</attribute-mappings>" +
              "<descriptor-type>aggregate</descriptor-type>" +
@@ -644,10 +644,10 @@ public class AdvancedJDBCTestSuite extends BuilderTestSuite {
              "<copying xsi:type=\"instantiation-copy-policy\"/>" +
              "<structure>EMP_ADDRESS</structure>" +
              "<field-order>" +
-                "<field name=\"STREET\" xsi:type=\"column\"/>" +
-                "<field name=\"SUBURB\" xsi:type=\"column\"/>" +
-                "<field name=\"ADDR_REGION\" xsi:type=\"column\"/>" +
-                "<field name=\"POSTCODE\" xsi:type=\"column\"/>" +
+                "<field name=\"STREET\"/>" +
+                "<field name=\"SUBURB\"/>" +
+                "<field name=\"ADDR_REGION\"/>" +
+                "<field name=\"POSTCODE\"/>" +
              "</field-order>" +
           "</class-mapping-descriptor>" +
        "</class-mapping-descriptors>" +
@@ -664,7 +664,7 @@ public class AdvancedJDBCTestSuite extends BuilderTestSuite {
                 "<procedure-name>advanced_object_demo.ECHOEMPOBJECT</procedure-name>" +
                 "<cursor-output-procedure>false</cursor-output-procedure>" +
                 "<arguments>" +
-                   "<argument xsi:type=\"procedure-argument\">" +
+                   "<argument>" +
                       "<procedure-argument-name>ANEMPOBJECT</procedure-argument-name>" +
                       "<argument-name>ANEMPOBJECT</argument-name>" +
                       "<procedure-argument-type>advanced_object_demo.emp_object</procedure-argument-type>" +
@@ -672,7 +672,7 @@ public class AdvancedJDBCTestSuite extends BuilderTestSuite {
                       "<procedure-argument-sqltype-name>EMP_OBJECT</procedure-argument-sqltype-name>" +
                    "</argument>" +
                 "</arguments>" +
-                "<stored-function-result xsi:type=\"procedure-output-argument\">" +
+                "<stored-function-result>" +
                    "<procedure-argument-type>advanced_object_demo.emp_object</procedure-argument-type>" +
                    "<procedure-argument-sqltype>2002</procedure-argument-sqltype>" +
                    "<procedure-argument-sqltype-name>EMP_OBJECT</procedure-argument-sqltype-name>" +
@@ -808,8 +808,8 @@ public class AdvancedJDBCTestSuite extends BuilderTestSuite {
               "<class-mapping-descriptor xsi:type=\"xml-class-mapping-descriptor\">" +
                  "<class>advanced_object_demo.region</class>" +
                  "<alias>region</alias>" +
-                 "<events xsi:type=\"event-policy\"/>" +
-                 "<querying xsi:type=\"query-policy\"/>" +
+                 "<events/>" +
+                 "<querying/>" +
                  "<attribute-mappings>" +
                     "<attribute-mapping xsi:type=\"xml-direct-mapping\">" +
                        "<attribute-name>reg_id</attribute-name>" +
@@ -854,8 +854,8 @@ public class AdvancedJDBCTestSuite extends BuilderTestSuite {
               "<class-mapping-descriptor xsi:type=\"xml-class-mapping-descriptor\">" +
                  "<class>advanced_object_demo.emp_object</class>" +
                  "<alias>emp_object</alias>" +
-                 "<events xsi:type=\"event-policy\"/>" +
-                 "<querying xsi:type=\"query-policy\"/>" +
+                 "<events/>" +
+                 "<querying/>" +
                  "<attribute-mappings>" +
                     "<attribute-mapping xsi:type=\"xml-direct-mapping\">" +
                        "<attribute-name>employee_id</attribute-name>" +
@@ -908,7 +908,7 @@ public class AdvancedJDBCTestSuite extends BuilderTestSuite {
                  "<instantiation/>" +
                  "<copying xsi:type=\"instantiation-copy-policy\"/>" +
                  "<default-root-element>emp_objectType</default-root-element>" +
-                 "<default-root-element-field name=\"emp_objectType\" xsi:type=\"node\"/>" +
+                 "<default-root-element-field name=\"emp_objectType\"/>" +
                  "<namespace-resolver>" +
                     "<namespaces>" +
                        "<namespace>" +
@@ -930,8 +930,8 @@ public class AdvancedJDBCTestSuite extends BuilderTestSuite {
               "<class-mapping-descriptor xsi:type=\"xml-class-mapping-descriptor\">" +
                  "<class>advanced_object_demo.emp_address</class>" +
                  "<alias>emp_address</alias>" +
-                 "<events xsi:type=\"event-policy\"/>" +
-                 "<querying xsi:type=\"query-policy\"/>" +
+                 "<events/>" +
+                 "<querying/>" +
                  "<attribute-mappings>" +
                     "<attribute-mapping xsi:type=\"xml-direct-mapping\">" +
                        "<attribute-name>street</attribute-name>" +
@@ -1027,16 +1027,16 @@ public class AdvancedJDBCTestSuite extends BuilderTestSuite {
           "<class-mapping-descriptor xsi:type=\"object-relational-class-mapping-descriptor\">" +
              "<class>another_advanced_demo.emp_info</class>" +
              "<alias>emp_info</alias>" +
-             "<events xsi:type=\"event-policy\"/>" +
-             "<querying xsi:type=\"query-policy\"/>" +
+             "<events/>" +
+             "<querying/>" +
              "<attribute-mappings>" +
                 "<attribute-mapping xsi:type=\"direct-mapping\">" +
                    "<attribute-name>id</attribute-name>" +
-                   "<field name=\"ID\" xsi:type=\"column\"/>" +
+                   "<field name=\"ID\"/>" +
                 "</attribute-mapping>" +
                 "<attribute-mapping xsi:type=\"direct-mapping\">" +
                    "<attribute-name>name</attribute-name>" +
-                   "<field name=\"NAME\" xsi:type=\"column\"/>" +
+                   "<field name=\"NAME\"/>" +
                 "</attribute-mapping>" +
              "</attribute-mappings>" +
              "<descriptor-type>aggregate</descriptor-type>" +
@@ -1050,15 +1050,15 @@ public class AdvancedJDBCTestSuite extends BuilderTestSuite {
              "<copying xsi:type=\"instantiation-copy-policy\"/>" +
              "<structure>EMP_INFO</structure>" +
              "<field-order>" +
-                "<field name=\"ID\" xsi:type=\"column\"/>" +
-                "<field name=\"NAME\" xsi:type=\"column\"/>" +
+                "<field name=\"ID\"/>" +
+                "<field name=\"NAME\"/>" +
              "</field-order>" +
           "</class-mapping-descriptor>" +
           "<class-mapping-descriptor xsi:type=\"object-relational-class-mapping-descriptor\">" +
              "<class>another_advanced_demo.emp_info_array_CollectionWrapper</class>" +
              "<alias>emp_info_array</alias>" +
-             "<events xsi:type=\"event-policy\"/>" +
-             "<querying xsi:type=\"query-policy\"/>" +
+             "<events/>" +
+             "<querying/>" +
              "<attribute-mappings>" +
                 "<attribute-mapping xsi:type=\"object-array-mapping\">" +
                    "<attribute-name>items</attribute-name>" +
@@ -1094,16 +1094,16 @@ public class AdvancedJDBCTestSuite extends BuilderTestSuite {
                 "<procedure-name>another_advanced_demo.BUILDEMPARRAY</procedure-name>" +
                 "<cursor-output-procedure>false</cursor-output-procedure>" +
                 "<arguments>" +
-                   "<argument xsi:type=\"procedure-argument\">" +
+                   "<argument>" +
                       "<procedure-argument-name>NUM</procedure-argument-name>" +
                       "<argument-name>NUM</argument-name>" +
                    "</argument>" +
                 "</arguments>" +
-                "<stored-function-result xsi:type=\"procedure-output-argument\">" +
+                "<stored-function-result>" +
                    "<procedure-argument-type>another_advanced_demo.emp_info_array_CollectionWrapper</procedure-argument-type>" +
                    "<procedure-argument-sqltype>2003</procedure-argument-sqltype>" +
                    "<procedure-argument-sqltype-name>EMP_INFO_ARRAY</procedure-argument-sqltype-name>" +
-                   "<nested-type-field xsi:type=\"procedure-argument\">" +
+                   "<nested-type-field>" +
                       "<procedure-argument-type>another_advanced_demo.emp_info</procedure-argument-type>" +
                       "<procedure-argument-sqltype>2002</procedure-argument-sqltype>" +
                       "<procedure-argument-sqltype-name>EMP_INFO</procedure-argument-sqltype-name>" +
@@ -1190,8 +1190,8 @@ public class AdvancedJDBCTestSuite extends BuilderTestSuite {
               "<class-mapping-descriptor xsi:type=\"xml-class-mapping-descriptor\">" +
                  "<class>another_advanced_demo.emp_info</class>" +
                  "<alias>emp_info</alias>" +
-                 "<events xsi:type=\"event-policy\"/>" +
-                 "<querying xsi:type=\"query-policy\"/>" +
+                 "<events/>" +
+                 "<querying/>" +
                  "<attribute-mappings>" +
                     "<attribute-mapping xsi:type=\"xml-direct-mapping\">" +
                        "<attribute-name>id</attribute-name>" +
@@ -1236,8 +1236,8 @@ public class AdvancedJDBCTestSuite extends BuilderTestSuite {
               "<class-mapping-descriptor xsi:type=\"xml-class-mapping-descriptor\">" +
                  "<class>another_advanced_demo.emp_info_array_CollectionWrapper</class>" +
                  "<alias>emp_info_array</alias>" +
-                 "<events xsi:type=\"event-policy\"/>" +
-                 "<querying xsi:type=\"query-policy\"/>" +
+                 "<events/>" +
+                 "<querying/>" +
                  "<attribute-mappings>" +
                     "<attribute-mapping xsi:type=\"xml-composite-collection-mapping\">" +
                        "<attribute-name>items</attribute-name>" +
@@ -1252,7 +1252,7 @@ public class AdvancedJDBCTestSuite extends BuilderTestSuite {
                  "<instantiation/>" +
                  "<copying xsi:type=\"instantiation-copy-policy\"/>" +
                  "<default-root-element>emp_info_arrayType</default-root-element>" +
-                 "<default-root-element-field name=\"emp_info_arrayType\" xsi:type=\"node\"/>" +
+                 "<default-root-element-field name=\"emp_info_arrayType\"/>" +
                  "<namespace-resolver>" +
                     "<default-namespace-uri>urn:empArray</default-namespace-uri>" +
                  "</namespace-resolver>" +
@@ -1288,13 +1288,13 @@ public class AdvancedJDBCTestSuite extends BuilderTestSuite {
           "<class-mapping-descriptor xsi:type=\"object-relational-class-mapping-descriptor\">" +
              "<class>toplevel.somepackage_tbl1_CollectionWrapper</class>" +
              "<alias>somepackage_tbl1</alias>" +
-             "<events xsi:type=\"event-policy\"/>" +
-             "<querying xsi:type=\"query-policy\"/>" +
+             "<events/>" +
+             "<querying/>" +
              "<attribute-mappings>" +
                 "<attribute-mapping xsi:type=\"array-mapping\">" +
                    "<attribute-name>items</attribute-name>" +
                    "<field name=\"items\" xsi:type=\"object-relational-field\">" +
-                      "<nested-type-field name=\"\" sql-typecode=\"12\" column-definition=\"VARCHAR2\" xsi:type=\"column\"/>" +
+                      "<nested-type-field name=\"\" sql-typecode=\"12\" column-definition=\"VARCHAR2\"/>" +
                    "</field>" +                       
                    "<container xsi:type=\"list-container-policy\">" +
                       "<collection-type>java.util.ArrayList</collection-type>" +
@@ -1326,12 +1326,12 @@ public class AdvancedJDBCTestSuite extends BuilderTestSuite {
                 "<procedure-name>SF_TBL1</procedure-name>" +
                 "<cursor-output-procedure>false</cursor-output-procedure>" +
                 "<arguments>" +
-                   "<argument xsi:type=\"procedure-argument\">" +
+                   "<argument>" +
                       "<procedure-argument-name>NUM</procedure-argument-name>" +
                       "<argument-name>NUM</argument-name>" +
                    "</argument>" +
                 "</arguments>" +
-                "<stored-function-result xsi:type=\"procedure-output-argument\">" +
+                "<stored-function-result>" +
                    "<procedure-argument-type>toplevel.somepackage_tbl1_CollectionWrapper</procedure-argument-type>" +
                    "<procedure-argument-sqltype>2003</procedure-argument-sqltype>" +
                    "<procedure-argument-sqltype-name>SOMEPACKAGE_TBL1</procedure-argument-sqltype-name>" +
@@ -1384,8 +1384,8 @@ public class AdvancedJDBCTestSuite extends BuilderTestSuite {
               "<class-mapping-descriptor xsi:type=\"xml-class-mapping-descriptor\">" +
                  "<class>toplevel.somepackage_tbl1_CollectionWrapper</class>" +
                  "<alias>somepackage_tbl1</alias>" +
-                 "<events xsi:type=\"event-policy\"/>" +
-                 "<querying xsi:type=\"query-policy\"/>" +
+                 "<events/>" +
+                 "<querying/>" +
                  "<attribute-mappings>" +
                     "<attribute-mapping xsi:type=\"xml-composite-direct-collection-mapping\">" +
                        "<attribute-name>items</attribute-name>" +
@@ -1408,7 +1408,7 @@ public class AdvancedJDBCTestSuite extends BuilderTestSuite {
                  "<instantiation/>" +
                  "<copying xsi:type=\"instantiation-copy-policy\"/>" +
                  "<default-root-element>somepackage_tbl1Type</default-root-element>" +
-                 "<default-root-element-field name=\"somepackage_tbl1Type\" xsi:type=\"node\"/>" +
+                 "<default-root-element-field name=\"somepackage_tbl1Type\"/>" +
                  "<namespace-resolver>" +
                     "<namespaces>" +
                        "<namespace>" +
@@ -1444,13 +1444,13 @@ public class AdvancedJDBCTestSuite extends BuilderTestSuite {
           "<class-mapping-descriptor xsi:type=\"object-relational-class-mapping-descriptor\">" +
              "<class>toplevel.somepackage_tbl5_CollectionWrapper</class>" +
              "<alias>somepackage_tbl5</alias>" +
-             "<events xsi:type=\"event-policy\"/>" +
-             "<querying xsi:type=\"query-policy\"/>" +
+             "<events/>" +
+             "<querying/>" +
              "<attribute-mappings>" +
                 "<attribute-mapping xsi:type=\"array-mapping\">" +
                    "<attribute-name>items</attribute-name>" +
                    "<field name=\"items\" xsi:type=\"object-relational-field\">" +
-                      "<nested-type-field name=\"\" sql-typecode=\"91\" column-definition=\"DATE\" xsi:type=\"column\"/>" +
+                      "<nested-type-field name=\"\" sql-typecode=\"91\" column-definition=\"DATE\"/>" +
                    "</field>" +
                    "<container xsi:type=\"list-container-policy\">" +
                       "<collection-type>java.util.ArrayList</collection-type>" +
@@ -1482,12 +1482,12 @@ public class AdvancedJDBCTestSuite extends BuilderTestSuite {
                 "<procedure-name>BUILDTBL5</procedure-name>" +
                 "<cursor-output-procedure>false</cursor-output-procedure>" +
                 "<arguments>" +
-                   "<argument xsi:type=\"procedure-argument\">" +
+                   "<argument>" +
                       "<procedure-argument-name>NUM</procedure-argument-name>" +
                       "<argument-name>NUM</argument-name>" +
                    "</argument>" +
                 "</arguments>" +
-                "<stored-function-result xsi:type=\"procedure-output-argument\">" +
+                "<stored-function-result>" +
                    "<procedure-argument-type>toplevel.somepackage_tbl5_CollectionWrapper</procedure-argument-type>" +
                    "<procedure-argument-sqltype>2003</procedure-argument-sqltype>" +
                    "<procedure-argument-sqltype-name>SOMEPACKAGE_TBL5</procedure-argument-sqltype-name>" +
@@ -1536,8 +1536,8 @@ public class AdvancedJDBCTestSuite extends BuilderTestSuite {
               "<class-mapping-descriptor xsi:type=\"xml-class-mapping-descriptor\">" +
                  "<class>toplevel.somepackage_tbl5_CollectionWrapper</class>" +
                  "<alias>somepackage_tbl5</alias>" +
-                 "<events xsi:type=\"event-policy\"/>" +
-                 "<querying xsi:type=\"query-policy\"/>" +
+                 "<events/>" +
+                 "<querying/>" +
                  "<attribute-mappings>" +
                     "<attribute-mapping xsi:type=\"xml-composite-direct-collection-mapping\">" +
                        "<attribute-name>items</attribute-name>" +
@@ -1560,7 +1560,7 @@ public class AdvancedJDBCTestSuite extends BuilderTestSuite {
                  "<instantiation/>" +
                  "<copying xsi:type=\"instantiation-copy-policy\"/>" +
                  "<default-root-element>somepackage_tbl5Type</default-root-element>" +
-                 "<default-root-element-field name=\"somepackage_tbl5Type\" xsi:type=\"node\"/>" +
+                 "<default-root-element-field name=\"somepackage_tbl5Type\"/>" +
                  "<namespace-resolver>" +
                      "<namespaces>" +
                         "<namespace>" +
@@ -1596,13 +1596,13 @@ public class AdvancedJDBCTestSuite extends BuilderTestSuite {
           "<class-mapping-descriptor xsi:type=\"object-relational-class-mapping-descriptor\">" +
              "<class>toplevel.somepackage_arecord</class>" +
              "<alias>somepackage_arecord</alias>" +
-             "<events xsi:type=\"event-policy\"/>" +
-             "<querying xsi:type=\"query-policy\"/>" +
+             "<events/>" +
+             "<querying/>" +
              "<attribute-mappings>" +
                 "<attribute-mapping xsi:type=\"array-mapping\">" +
                    "<attribute-name>t1</attribute-name>" +
                    "<field name=\"T1\" xsi:type=\"object-relational-field\">" +
-                      "<nested-type-field name=\"\" sql-typecode=\"12\" column-definition=\"VARCHAR2\" xsi:type=\"column\"/>" +
+                      "<nested-type-field name=\"\" sql-typecode=\"12\" column-definition=\"VARCHAR2\"/>" +
                    "</field>" +
                    "<container xsi:type=\"list-container-policy\">" +
                       "<collection-type>java.util.ArrayList</collection-type>" +
@@ -1612,7 +1612,7 @@ public class AdvancedJDBCTestSuite extends BuilderTestSuite {
                 "<attribute-mapping xsi:type=\"array-mapping\">" +
                    "<attribute-name>t2</attribute-name>" +
                    "<field name=\"T2\" xsi:type=\"object-relational-field\">" +
-                      "<nested-type-field name=\"\" sql-typecode=\"2\" column-definition=\"NUMBER\" xsi:type=\"column\"/>" +
+                      "<nested-type-field name=\"\" sql-typecode=\"2\" column-definition=\"NUMBER\"/>" +
                    "</field>" +
                    "<container xsi:type=\"list-container-policy\">" +
                       "<collection-type>java.util.ArrayList</collection-type>" +
@@ -1621,7 +1621,7 @@ public class AdvancedJDBCTestSuite extends BuilderTestSuite {
                 "</attribute-mapping>" +
                 "<attribute-mapping xsi:type=\"direct-mapping\">" +
                    "<attribute-name>t3</attribute-name>" +
-                   "<field name=\"T3\" xsi:type=\"column\"/>" +
+                   "<field name=\"T3\"/>" +
                 "</attribute-mapping>" +
              "</attribute-mappings>" +
              "<descriptor-type>aggregate</descriptor-type>" +
@@ -1635,21 +1635,21 @@ public class AdvancedJDBCTestSuite extends BuilderTestSuite {
              "<copying xsi:type=\"instantiation-copy-policy\"/>" +
              "<structure>SOMEPACKAGE_ARECORD</structure>" +
              "<field-order>" +
-                "<field name=\"T1\" xsi:type=\"column\"/>" +
-                "<field name=\"T2\" xsi:type=\"column\"/>" +
-                "<field name=\"T3\" xsi:type=\"column\"/>" +
+                "<field name=\"T1\"/>" +
+                "<field name=\"T2\"/>" +
+                "<field name=\"T3\"/>" +
              "</field-order>" +
           "</class-mapping-descriptor>" +
           "<class-mapping-descriptor xsi:type=\"object-relational-class-mapping-descriptor\">" +
              "<class>toplevel.somepackage_tbl1_CollectionWrapper</class>" +
              "<alias>somepackage_tbl1</alias>" +
-             "<events xsi:type=\"event-policy\"/>" +
-             "<querying xsi:type=\"query-policy\"/>" +
+             "<events/>" +
+             "<querying/>" +
              "<attribute-mappings>" +
                 "<attribute-mapping xsi:type=\"array-mapping\">" +
                    "<attribute-name>items</attribute-name>" +
                    "<field name=\"items\" xsi:type=\"object-relational-field\">" +
-                      "<nested-type-field name=\"\" sql-typecode=\"12\" column-definition=\"VARCHAR2\" xsi:type=\"column\"/>" +
+                      "<nested-type-field name=\"\" sql-typecode=\"12\" column-definition=\"VARCHAR2\"/>" +
                    "</field>" +
                    "<container xsi:type=\"list-container-policy\">" +
                       "<collection-type>java.util.ArrayList</collection-type>" +
@@ -1670,13 +1670,13 @@ public class AdvancedJDBCTestSuite extends BuilderTestSuite {
           "<class-mapping-descriptor xsi:type=\"object-relational-class-mapping-descriptor\">" +
              "<class>toplevel.somepackage_tbl2_CollectionWrapper</class>" +
              "<alias>somepackage_tbl2</alias>" +
-             "<events xsi:type=\"event-policy\"/>" +
-             "<querying xsi:type=\"query-policy\"/>" +
+             "<events/>" +
+             "<querying/>" +
              "<attribute-mappings>" +
                 "<attribute-mapping xsi:type=\"array-mapping\">" +
                    "<attribute-name>items</attribute-name>" +
                    "<field name=\"items\" xsi:type=\"object-relational-field\">" +
-                      "<nested-type-field name=\"\" sql-typecode=\"2\" column-definition=\"NUMBER\" xsi:type=\"column\"/>" +
+                      "<nested-type-field name=\"\" sql-typecode=\"2\" column-definition=\"NUMBER\"/>" +
                    "</field>" +
                    "<container xsi:type=\"list-container-policy\">" +
                       "<collection-type>java.util.ArrayList</collection-type>" +
@@ -1708,12 +1708,12 @@ public class AdvancedJDBCTestSuite extends BuilderTestSuite {
                 "<procedure-name>BUILDARECORD</procedure-name>" +
                 "<cursor-output-procedure>false</cursor-output-procedure>" +
                 "<arguments>" +
-                   "<argument xsi:type=\"procedure-argument\">" +
+                   "<argument>" +
                       "<procedure-argument-name>NUM</procedure-argument-name>" +
                       "<argument-name>NUM</argument-name>" +
                    "</argument>" +
                 "</arguments>" +
-                "<stored-function-result xsi:type=\"procedure-output-argument\">" +
+                "<stored-function-result>" +
                    "<procedure-argument-type>toplevel.somepackage_arecord</procedure-argument-type>" +
                    "<procedure-argument-sqltype>2002</procedure-argument-sqltype>" +
                    "<procedure-argument-sqltype-name>SOMEPACKAGE_ARECORD</procedure-argument-sqltype-name>" +
@@ -1773,8 +1773,8 @@ public class AdvancedJDBCTestSuite extends BuilderTestSuite {
               "<class-mapping-descriptor xsi:type=\"xml-class-mapping-descriptor\">" +
                  "<class>toplevel.somepackage_arecord</class>" +
                  "<alias>somepackage_arecord</alias>" +
-                 "<events xsi:type=\"event-policy\"/>" +
-                 "<querying xsi:type=\"query-policy\"/>" +
+                 "<events/>" +
+                 "<querying/>" +
                  "<attribute-mappings>" +
                     "<attribute-mapping xsi:type=\"xml-composite-direct-collection-mapping\">" +
                        "<attribute-name>t1</attribute-name>" +
@@ -1824,7 +1824,7 @@ public class AdvancedJDBCTestSuite extends BuilderTestSuite {
                  "<instantiation/>" +
                  "<copying xsi:type=\"instantiation-copy-policy\"/>" +
                  "<default-root-element>somepackage_arecordType</default-root-element>" +
-                 "<default-root-element-field name=\"somepackage_arecordType\" xsi:type=\"node\"/>" +
+                 "<default-root-element-field name=\"somepackage_arecordType\"/>" +
                  "<namespace-resolver>" +
                      "<namespaces>" +
                         "<namespace>" +
@@ -1842,8 +1842,8 @@ public class AdvancedJDBCTestSuite extends BuilderTestSuite {
               "<class-mapping-descriptor xsi:type=\"xml-class-mapping-descriptor\">" +
                  "<class>toplevel.somepackage_tbl1_CollectionWrapper</class>" +
                  "<alias>somepackage_tbl1</alias>" +
-                 "<events xsi:type=\"event-policy\"/>" +
-                 "<querying xsi:type=\"query-policy\"/>" +
+                 "<events/>" +
+                 "<querying/>" +
                  "<attribute-mappings>" +
                     "<attribute-mapping xsi:type=\"xml-composite-direct-collection-mapping\">" +
                        "<attribute-name>items</attribute-name>" +
@@ -1882,8 +1882,8 @@ public class AdvancedJDBCTestSuite extends BuilderTestSuite {
               "<class-mapping-descriptor xsi:type=\"xml-class-mapping-descriptor\">" +
                  "<class>toplevel.somepackage_tbl2_CollectionWrapper</class>" +
                  "<alias>somepackage_tbl2</alias>" +
-                 "<events xsi:type=\"event-policy\"/>" +
-                 "<querying xsi:type=\"query-policy\"/>" +
+                 "<events/>" +
+                 "<querying/>" +
                  "<attribute-mappings>" +
                     "<attribute-mapping xsi:type=\"xml-composite-direct-collection-mapping\">" +
                        "<attribute-name>items</attribute-name>" +
@@ -1964,8 +1964,8 @@ public class AdvancedJDBCTestSuite extends BuilderTestSuite {
               "<class-mapping-descriptor xsi:type=\"object-relational-class-mapping-descriptor\">" +
                  "<class>toplevel.somepackage_crecord</class>" +
                  "<alias>somepackage_crecord</alias>" +
-                 "<events xsi:type=\"event-policy\"/>" +
-                 "<querying xsi:type=\"query-policy\"/>" +
+                 "<events/>" +
+                 "<querying/>" +
                  "<attribute-mappings>" +
                     "<attribute-mapping xsi:type=\"structure-mapping\">" +
                        "<attribute-name>c1</attribute-name>" +
@@ -1975,7 +1975,7 @@ public class AdvancedJDBCTestSuite extends BuilderTestSuite {
                     "<attribute-mapping xsi:type=\"array-mapping\">" +
                        "<attribute-name>c2</attribute-name>" +
                        "<field name=\"C2\" xsi:type=\"object-relational-field\">" +
-                          "<nested-type-field name=\"\" sql-typecode=\"2\" column-definition=\"NUMBER\" xsi:type=\"column\"/>" +
+                          "<nested-type-field name=\"\" sql-typecode=\"2\" column-definition=\"NUMBER\"/>" +
                        "</field>" +
                        "<container xsi:type=\"list-container-policy\">" +
                           "<collection-type>java.util.ArrayList</collection-type>" +
@@ -1994,20 +1994,20 @@ public class AdvancedJDBCTestSuite extends BuilderTestSuite {
                  "<copying xsi:type=\"instantiation-copy-policy\"/>" +
                  "<structure>SOMEPACKAGE_CRECORD</structure>" +
                  "<field-order>" +
-                    "<field name=\"C1\" xsi:type=\"column\"/>" +
-                    "<field name=\"C2\" xsi:type=\"column\"/>" +
+                    "<field name=\"C1\"/>" +
+                    "<field name=\"C2\"/>" +
                  "</field-order>" +
               "</class-mapping-descriptor>" +
               "<class-mapping-descriptor xsi:type=\"object-relational-class-mapping-descriptor\">" +
                  "<class>toplevel.somepackage_arecord</class>" +
                  "<alias>somepackage_arecord</alias>" +
-                 "<events xsi:type=\"event-policy\"/>" +
-                 "<querying xsi:type=\"query-policy\"/>" +
+                 "<events/>" +
+                 "<querying/>" +
                  "<attribute-mappings>" +
                     "<attribute-mapping xsi:type=\"array-mapping\">" +
                        "<attribute-name>t1</attribute-name>" +
                        "<field name=\"T1\" xsi:type=\"object-relational-field\">" +
-                          "<nested-type-field name=\"\" sql-typecode=\"12\" column-definition=\"VARCHAR2\" xsi:type=\"column\"/>" +
+                          "<nested-type-field name=\"\" sql-typecode=\"12\" column-definition=\"VARCHAR2\"/>" +
                        "</field>" +
                        "<container xsi:type=\"list-container-policy\">" +
                           "<collection-type>java.util.ArrayList</collection-type>" +
@@ -2017,7 +2017,7 @@ public class AdvancedJDBCTestSuite extends BuilderTestSuite {
                     "<attribute-mapping xsi:type=\"array-mapping\">" +
                        "<attribute-name>t2</attribute-name>" +
                        "<field name=\"T2\" xsi:type=\"object-relational-field\">" +
-                          "<nested-type-field name=\"\" sql-typecode=\"2\" column-definition=\"NUMBER\" xsi:type=\"column\"/>" +
+                          "<nested-type-field name=\"\" sql-typecode=\"2\" column-definition=\"NUMBER\"/>" +
                        "</field>" +
                        "<container xsi:type=\"list-container-policy\">" +
                           "<collection-type>java.util.ArrayList</collection-type>" +
@@ -2026,7 +2026,7 @@ public class AdvancedJDBCTestSuite extends BuilderTestSuite {
                     "</attribute-mapping>" +
                     "<attribute-mapping xsi:type=\"direct-mapping\">" +
                        "<attribute-name>t3</attribute-name>" +
-                       "<field name=\"T3\" xsi:type=\"column\"/>" +
+                       "<field name=\"T3\"/>" +
                     "</attribute-mapping>" +
                  "</attribute-mappings>" +
                  "<descriptor-type>aggregate</descriptor-type>" +
@@ -2040,21 +2040,21 @@ public class AdvancedJDBCTestSuite extends BuilderTestSuite {
                  "<copying xsi:type=\"instantiation-copy-policy\"/>" +
                  "<structure>SOMEPACKAGE_ARECORD</structure>" +
                  "<field-order>" +
-                    "<field name=\"T1\" xsi:type=\"column\"/>" +
-                    "<field name=\"T2\" xsi:type=\"column\"/>" +
-                    "<field name=\"T3\" xsi:type=\"column\"/>" +
+                    "<field name=\"T1\"/>" +
+                    "<field name=\"T2\"/>" +
+                    "<field name=\"T3\"/>" +
                  "</field-order>" +
               "</class-mapping-descriptor>" +
               "<class-mapping-descriptor xsi:type=\"object-relational-class-mapping-descriptor\">" +
                  "<class>toplevel.somepackage_tbl1_CollectionWrapper</class>" +
                  "<alias>somepackage_tbl1</alias>" +
-                 "<events xsi:type=\"event-policy\"/>" +
-                 "<querying xsi:type=\"query-policy\"/>" +
+                 "<events/>" +
+                 "<querying/>" +
                  "<attribute-mappings>" +
                     "<attribute-mapping xsi:type=\"array-mapping\">" +
                        "<attribute-name>items</attribute-name>" +
                        "<field name=\"items\" xsi:type=\"object-relational-field\">" +
-                          "<nested-type-field name=\"\" sql-typecode=\"12\" column-definition=\"VARCHAR2\" xsi:type=\"column\"/>" +
+                          "<nested-type-field name=\"\" sql-typecode=\"12\" column-definition=\"VARCHAR2\"/>" +
                        "</field>" +
                        "<container xsi:type=\"list-container-policy\">" +
                           "<collection-type>java.util.ArrayList</collection-type>" +
@@ -2075,13 +2075,13 @@ public class AdvancedJDBCTestSuite extends BuilderTestSuite {
               "<class-mapping-descriptor xsi:type=\"object-relational-class-mapping-descriptor\">" +
                  "<class>toplevel.somepackage_tbl2_CollectionWrapper</class>" +
                  "<alias>somepackage_tbl2</alias>" +
-                 "<events xsi:type=\"event-policy\"/>" +
-                 "<querying xsi:type=\"query-policy\"/>" +
+                 "<events/>" +
+                 "<querying/>" +
                  "<attribute-mappings>" +
                     "<attribute-mapping xsi:type=\"array-mapping\">" +
                        "<attribute-name>items</attribute-name>" +
                        "<field name=\"items\" xsi:type=\"object-relational-field\">" +
-                          "<nested-type-field name=\"\" sql-typecode=\"2\" column-definition=\"NUMBER\" xsi:type=\"column\"/>" +
+                          "<nested-type-field name=\"\" sql-typecode=\"2\" column-definition=\"NUMBER\"/>" +
                        "</field>" +
                        "<container xsi:type=\"list-container-policy\">" +
                           "<collection-type>java.util.ArrayList</collection-type>" +
@@ -2113,12 +2113,12 @@ public class AdvancedJDBCTestSuite extends BuilderTestSuite {
                     "<procedure-name>BUILDCRECORD</procedure-name>" +
                     "<cursor-output-procedure>false</cursor-output-procedure>" +
                     "<arguments>" +
-                       "<argument xsi:type=\"procedure-argument\">" +
+                       "<argument>" +
                           "<procedure-argument-name>NUM</procedure-argument-name>" +
                           "<argument-name>NUM</argument-name>" +
                        "</argument>" +
                     "</arguments>" +
-                    "<stored-function-result xsi:type=\"procedure-output-argument\">" +
+                    "<stored-function-result>" +
                        "<procedure-argument-type>toplevel.somepackage_crecord</procedure-argument-type>" +
                        "<procedure-argument-sqltype>2002</procedure-argument-sqltype>" +
                        "<procedure-argument-sqltype-name>SOMEPACKAGE_CRECORD</procedure-argument-sqltype-name>" +
@@ -2165,8 +2165,8 @@ public class AdvancedJDBCTestSuite extends BuilderTestSuite {
               "<class-mapping-descriptor xsi:type=\"xml-class-mapping-descriptor\">" +
                  "<class>toplevel.somepackage_crecord</class>" +
                  "<alias>somepackage_crecord</alias>" +
-                 "<events xsi:type=\"event-policy\"/>" +
-                 "<querying xsi:type=\"query-policy\"/>" +
+                 "<events/>" +
+                 "<querying/>" +
                  "<attribute-mappings>" +
                     "<attribute-mapping xsi:type=\"xml-composite-object-mapping\">" +
                        "<attribute-name>c1</attribute-name>" +
@@ -2194,7 +2194,7 @@ public class AdvancedJDBCTestSuite extends BuilderTestSuite {
                  "<instantiation/>" +
                  "<copying xsi:type=\"instantiation-copy-policy\"/>" +
                  "<default-root-element>somepackage_crecordType</default-root-element>" +
-                 "<default-root-element-field name=\"somepackage_crecordType\" xsi:type=\"node\"/>" +
+                 "<default-root-element-field name=\"somepackage_crecordType\"/>" +
                  "<namespace-resolver>" +
                      "<namespaces>" +
                         "<namespace>" +
@@ -2212,8 +2212,8 @@ public class AdvancedJDBCTestSuite extends BuilderTestSuite {
               "<class-mapping-descriptor xsi:type=\"xml-class-mapping-descriptor\">" +
                  "<class>toplevel.somepackage_arecord</class>" +
                  "<alias>somepackage_arecord</alias>" +
-                 "<events xsi:type=\"event-policy\"/>" +
-                 "<querying xsi:type=\"query-policy\"/>" +
+                 "<events/>" +
+                 "<querying/>" +
                  "<attribute-mappings>" +
                     "<attribute-mapping xsi:type=\"xml-composite-direct-collection-mapping\">" +
                        "<attribute-name>t1</attribute-name>" +
@@ -2279,8 +2279,8 @@ public class AdvancedJDBCTestSuite extends BuilderTestSuite {
               "<class-mapping-descriptor xsi:type=\"xml-class-mapping-descriptor\">" +
                  "<class>toplevel.somepackage_tbl1_CollectionWrapper</class>" +
                  "<alias>somepackage_tbl1</alias>" +
-                 "<events xsi:type=\"event-policy\"/>" +
-                 "<querying xsi:type=\"query-policy\"/>" +
+                 "<events/>" +
+                 "<querying/>" +
                  "<attribute-mappings>" +
                     "<attribute-mapping xsi:type=\"xml-composite-direct-collection-mapping\">" +
                        "<attribute-name>items</attribute-name>" +
@@ -2319,8 +2319,8 @@ public class AdvancedJDBCTestSuite extends BuilderTestSuite {
               "<class-mapping-descriptor xsi:type=\"xml-class-mapping-descriptor\">" +
                  "<class>toplevel.somepackage_tbl2_CollectionWrapper</class>" +
                  "<alias>somepackage_tbl2</alias>" +
-                 "<events xsi:type=\"event-policy\"/>" +
-                 "<querying xsi:type=\"query-policy\"/>" +
+                 "<events/>" +
+                 "<querying/>" +
                  "<attribute-mappings>" +
                     "<attribute-mapping xsi:type=\"xml-composite-direct-collection-mapping\">" +
                        "<attribute-name>items</attribute-name>" +
@@ -2438,8 +2438,8 @@ public class AdvancedJDBCTestSuite extends BuilderTestSuite {
         XMLMarshaller marshaller = new XMLContext(writeObjectPersistenceProject).createMarshaller();
         marshaller.marshal(p, resultDoc);
         Document controlDoc = xmlParser.parse(new StringReader(orProject));
-        assertTrue("control document not same as instance document",
-                comparer.isNodeEqual(controlDoc, resultDoc));
+        boolean nodeEqual = comparer.isNodeEqual(controlDoc, resultDoc);
+        assertTrue("control document not same as instance document", nodeEqual);
     }
     
     @SuppressWarnings("unchecked")
