@@ -2629,6 +2629,12 @@ public class JUnitJPQLComplexTestSuite extends JUnitTestCase
     
     // Bug 300512 - Add FUNCTION support to extended JPQL 
     public void caseTypeTest() {
+        if (((Session) JUnitTestCase.getServerSession()).getPlatform().isDerby())
+        {
+            warning("The test caseTypeTest is not supported on Derby, because Derby does not support simple CASE");
+            return;
+        }
+
         EntityManager em = createEntityManager();
         
         String jpqlString1 = "SELECT CONCAT(case e.firstName when 'Bob' then 'Robert' when 'Jill' then 'Gillian' else '' end, ' - full name') FROM Employee e";
@@ -2656,7 +2662,7 @@ public class JUnitJPQLComplexTestSuite extends JUnitTestCase
                 "SELECT CONCAT(e.firstName, e.lastName) FROM Employee e", 
                 "SELECT CONCAT('a', e.lastName) FROM Employee e", 
                 "SELECT CONCAT(e.firstName, 'b') FROM Employee e", 
-                "SELECT SUBSTRING(e.firstName, 0, 2) FROM Employee e",
+                "SELECT SUBSTRING(e.firstName, 1, 2) FROM Employee e",
                 "SELECT TRIM(e.firstName) FROM Employee e",
                 "SELECT TRIM(LEADING FROM e.firstName) FROM Employee e",
                 "SELECT TRIM(TRAILING FROM e.firstName) FROM Employee e",
@@ -2763,6 +2769,7 @@ public class JUnitJPQLComplexTestSuite extends JUnitTestCase
     public void customFunctionNVLTest() {
         // NVL is Oracle database function, therefore the test runs on Oracle only.
         if(!getServerSession().getPlatform().isOracle()) {
+            warning("The test customFunctionNVLTest is supported on Oracle only");
             return;
         }
         EntityManager em = createEntityManager();
