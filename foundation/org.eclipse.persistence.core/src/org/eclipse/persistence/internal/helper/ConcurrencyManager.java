@@ -533,7 +533,7 @@ public class ConcurrencyManager implements Serializable {
      * Print the nested depth.
      */
     public String toString() {
-        Object[] args = { new Integer(getDepth()) };
+        Object[] args = { Integer.valueOf(getDepth()) };
         return Helper.getShortClassName(getClass()) + ToStringLocalization.buildMessage("nest_level", args);
     }
 }

@@ -38,7 +38,7 @@ public class CciJMSReceiveInteractionSpec extends CciJMSInteractionSpec {
      * @param timeout
      */
     public void setTimeout(String timeout) {
-        this.timeout = new Long(timeout).longValue();
+        this.timeout = Long.valueOf(timeout).longValue();
     }
 
     /**

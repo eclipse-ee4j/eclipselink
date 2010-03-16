@@ -686,7 +686,7 @@ public abstract class ContainerPolicy implements Cloneable, Serializable {
             Object[] arguments = new Object[1];
 
             //Code change for 3732.  No longer need to add 1 as this was for JDK 1.1
-            arguments[0] = new Integer(initialCapacity);
+            arguments[0] = Integer.valueOf(initialCapacity);
             if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()){
                 try {
                     return AccessController.doPrivileged(new PrivilegedInvokeConstructor(getConstructor(), arguments));

@@ -1147,7 +1147,7 @@ public class MetadataProject {
                 Integer allocationSize = sequenceGenerator.getAllocationSize();
                 if (allocationSize == null) {
                     // Default value, same as annotation default.
-                    allocationSize = new Integer(50);
+                    allocationSize = Integer.valueOf(50);
                 }
                 
                 NativeSequence sequence = new NativeSequence(seqName, allocationSize, false);
@@ -1181,13 +1181,13 @@ public class MetadataProject {
                 Integer allocationSize = tableGenerator.getAllocationSize();
                 if (allocationSize == null) {
                     // Default value, same as annotation default.
-                    allocationSize = new Integer(50);
+                    allocationSize = Integer.valueOf(50);
                 }
                 
                 Integer initialValue = tableGenerator.getInitialValue();
                 if (initialValue == null) {
                     // Default value, same as annotation default.
-                    initialValue = new Integer(0);
+                    initialValue = Integer.valueOf(0);
                 }
                 
                 TableSequence sequence = new TableSequence(seqName, allocationSize, initialValue);

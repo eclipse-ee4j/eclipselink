@@ -53,7 +53,7 @@ public class ExpressionMath {
      * Return a new expression that applies the function to the given expression.
      */
     public static Expression add(Expression left, int right) {
-        return add(left, new Integer(right));
+        return add(left, Integer.valueOf(right));
     }
 
     /**
@@ -88,7 +88,7 @@ public class ExpressionMath {
      * Return a new expression that applies the function to the given expression.
      */
     public static Expression atan2(Expression expression, int value) {
-        return atan2(expression, new Integer(value));
+        return atan2(expression, Integer.valueOf(value));
     }
 
     /**
@@ -160,7 +160,7 @@ public class ExpressionMath {
      * Return a new expression that applies the function to the given expression.
      */
     public static Expression divide(Expression left, int right) {
-        return divide(left, new Integer(right));
+        return divide(left, Integer.valueOf(right));
     }
 
     /**
@@ -195,7 +195,7 @@ public class ExpressionMath {
      * Return the operator.
      */
     public static ExpressionOperator getOperator(int selector) {
-        ExpressionOperator result = ExpressionOperator.getOperator(new Integer(selector));
+        ExpressionOperator result = ExpressionOperator.getOperator(Integer.valueOf(selector));
         if (result != null) {
             return result;
         }
@@ -231,7 +231,7 @@ public class ExpressionMath {
      * Return a new expression that applies the function to the given expression.
      */
     public static Expression max(Expression left, int right) {
-        return max(left, new Integer(right));
+        return max(left, Integer.valueOf(right));
     }
 
     /**
@@ -248,7 +248,7 @@ public class ExpressionMath {
      * Return a new expression that applies the function to the given expression.
      */
     public static Expression min(Expression left, int right) {
-        return min(left, new Integer(right));
+        return min(left, Integer.valueOf(right));
     }
 
     /**
@@ -265,7 +265,7 @@ public class ExpressionMath {
      * Return a new expression that applies the function to the given expression.
      */
     public static Expression mod(Expression expression, int base) {
-        return mod(expression, new Integer(base));
+        return mod(expression, Integer.valueOf(base));
     }
 
     /**
@@ -282,7 +282,7 @@ public class ExpressionMath {
      * Return a new expression that applies the function to the given expression.
      */
     public static Expression multiply(Expression left, int right) {
-        return multiply(left, new Integer(right));
+        return multiply(left, Integer.valueOf(right));
     }
 
     /**
@@ -308,7 +308,7 @@ public class ExpressionMath {
      * Return a new expression that applies the function to the given expression.
      */
     public static Expression power(Expression expression, int raised) {
-        return power(expression, new Integer(raised));
+        return power(expression, Integer.valueOf(raised));
     }
 
     /**
@@ -325,7 +325,7 @@ public class ExpressionMath {
      * Return a new expression that applies the function to the given expression.
      */
     public static Expression round(Expression expression, int decimalPlaces) {
-        return round(expression, new Integer(decimalPlaces));
+        return round(expression, Integer.valueOf(decimalPlaces));
     }
 
     /**
@@ -378,7 +378,7 @@ public class ExpressionMath {
      * Return a new expression that applies the function to the given expression.
      */
     public static Expression subtract(Expression left, int right) {
-        return subtract(left, new Integer(right));
+        return subtract(left, Integer.valueOf(right));
     }
 
     /**
@@ -413,7 +413,7 @@ public class ExpressionMath {
      * Return a new expression that applies the function to the given expression.
      */
     public static Expression trunc(Expression expression, int decimalPlaces) {
-        return trunc(expression, new Integer(decimalPlaces));
+        return trunc(expression, Integer.valueOf(decimalPlaces));
     }
 
     /**

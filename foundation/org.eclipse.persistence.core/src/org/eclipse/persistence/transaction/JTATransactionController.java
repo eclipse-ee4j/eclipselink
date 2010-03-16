@@ -125,7 +125,7 @@ public class JTATransactionController extends AbstractTransactionController {
      * @return The current transaction status
      */
     protected Object getTransactionStatus_impl() throws Exception {
-        return new Integer(getTransactionManager().getStatus());
+        return Integer.valueOf(getTransactionManager().getStatus());
     }
 
     /**

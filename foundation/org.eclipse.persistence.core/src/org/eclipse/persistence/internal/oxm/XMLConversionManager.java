@@ -494,9 +494,9 @@ public class XMLConversionManager extends ConversionManager implements TimeZoneH
    protected Double convertObjectToDouble(Object sourceObject) throws ConversionException {       
        if (sourceObject instanceof String) {
            if(XMLConstants.POSITIVE_INFINITY.equals(sourceObject)){
-        	   return new Double(Double.POSITIVE_INFINITY);
+        	   return Double.valueOf(Double.POSITIVE_INFINITY);
            }else if(XMLConstants.NEGATIVE_INFINITY.equals(sourceObject)){
-        	   return new Double(Double.NEGATIVE_INFINITY);
+        	   return Double.valueOf(Double.NEGATIVE_INFINITY);
            }else{
                return super.convertObjectToDouble(sourceObject);
        	   }

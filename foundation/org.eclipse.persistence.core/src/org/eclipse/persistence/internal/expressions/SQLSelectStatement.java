@@ -382,8 +382,8 @@ public class SQLSelectStatement extends SQLStatement {
                         tablesInOrder.add(targetAlias);
                         TreeMap indexToExpressionMap = new TreeMap();
                         mapTableIndexToExpression((Expression)getOuterJoinedMappingCriteria().elementAt(index), indexToExpressionMap, tablesInOrder);
-                        Expression sourceToRelationJoin = (Expression)indexToExpressionMap.get(new Integer(1));
-                        Expression relationToTargetJoin = (Expression)indexToExpressionMap.get(new Integer(2));
+                        Expression sourceToRelationJoin = (Expression)indexToExpressionMap.get(Integer.valueOf(1));
+                        Expression relationToTargetJoin = (Expression)indexToExpressionMap.get(Integer.valueOf(2));
                         
                         writer.write(" LEFT OUTER JOIN ");
                         if (platform.supportsNestingOuterJoins()) {
@@ -1933,7 +1933,7 @@ public class SQLSelectStatement extends SQLStatement {
         if(expression instanceof DataExpression) {
             DataExpression de = (DataExpression)expression;
             if(de.getAliasedField() != null) {
-                tables.add(new Integer(tablesInOrder.indexOf(de.getAliasedField().getTable())));
+                tables.add(Integer.valueOf(tablesInOrder.indexOf(de.getAliasedField().getTable())));
             }
             return tables;
         }

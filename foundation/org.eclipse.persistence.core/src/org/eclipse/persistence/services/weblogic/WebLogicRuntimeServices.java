@@ -765,12 +765,12 @@ public class WebLogicRuntimeServices extends RuntimeServices {
       */
     public Integer getStringBindingSize() {
         if (!(getSession().getDatasourceLogin() instanceof DatabaseLogin)) {
-            return new Integer(0);
+            return Integer.valueOf(0);
         }
         if (!((DatabaseLogin)getSession().getDatasourceLogin()).getPlatform().usesStringBinding()) {
-            return new Integer(0);
+            return Integer.valueOf(0);
         }
-        return new Integer(((DatabaseLogin)getSession().getDatasourceLogin()).getStringBindingSize());
+        return Integer.valueOf(((DatabaseLogin)getSession().getDatasourceLogin()).getStringBindingSize());
     }
 
     /**
@@ -785,7 +785,7 @@ public class WebLogicRuntimeServices extends RuntimeServices {
       *   session connected to the database.
       */
     public Long getTimeConnectionEstablished() {
-        return new Long(((DatabaseSessionImpl)getSession()).getConnectedTime());
+        return Long.valueOf(((DatabaseSessionImpl)getSession()).getConnectedTime());
     }
 
     /**
@@ -843,7 +843,7 @@ public class WebLogicRuntimeServices extends RuntimeServices {
         if (!(getSession().getDatasourceLogin() instanceof DatabaseLogin)) {
             return 0;
         }
-        return new Integer(((DatabaseLogin)getSession().getDatasourceLogin()).getStatementCacheSize());
+        return Integer.valueOf(((DatabaseLogin)getSession().getDatasourceLogin()).getStatementCacheSize());
     }
 
     /**
@@ -895,10 +895,10 @@ public class WebLogicRuntimeServices extends RuntimeServices {
         if (ClassConstants.ServerSession_Class.isAssignableFrom(getSession().getClass())) {
             ConnectionPool connectionPool = ((ServerSession)getSession()).getConnectionPool(poolName);
             if (connectionPool != null) {
-                return new Integer(connectionPool.getMaxNumberOfConnections());
+                return Integer.valueOf(connectionPool.getMaxNumberOfConnections());
             }
         }
-        return new Integer(-1);
+        return Integer.valueOf(-1);
     }
 
     /**
@@ -910,10 +910,10 @@ public class WebLogicRuntimeServices extends RuntimeServices {
         if (ClassConstants.ServerSession_Class.isAssignableFrom(getSession().getClass())) {
             ConnectionPool connectionPool = ((ServerSession)getSession()).getConnectionPool(poolName);
             if (connectionPool != null) {
-                return new Integer(connectionPool.getMinNumberOfConnections());
+                return Integer.valueOf(connectionPool.getMinNumberOfConnections());
             }
         }
-        return new Integer(-1);
+        return Integer.valueOf(-1);
     }
 
     /**
@@ -1060,7 +1060,7 @@ public class WebLogicRuntimeServices extends RuntimeServices {
             rootClass = rootDescriptor.getJavaClass();
         }
 
-        return new Integer(getSession().getIdentityMapAccessorInstance().getIdentityMap(rootClass).getSize(rootClass, true));
+        return Integer.valueOf(getSession().getIdentityMapAccessorInstance().getIdentityMap(rootClass).getSize(rootClass, true));
     }
 
     /**
@@ -1074,7 +1074,7 @@ public class WebLogicRuntimeServices extends RuntimeServices {
         //Check if there aren't any classes registered
         if (classesRegistered.size() == 0) {
             ((AbstractSession)session).log(SessionLog.INFO, SessionLog.SERVER, "jmx_mbean_runtime_services_no_identity_maps_in_session");
-            return new Integer(0);
+            return Integer.valueOf(0);
         }
 
         //get each identity map, and log the size
@@ -1089,7 +1089,7 @@ public class WebLogicRuntimeServices extends RuntimeServices {
             }
         }
 
-        return new Integer(sum);
+        return Integer.valueOf(sum);
     }
 
     /**
@@ -1109,7 +1109,7 @@ public class WebLogicRuntimeServices extends RuntimeServices {
             }
         }
 
-        return new Integer(classesTable.size());
+        return Integer.valueOf(classesTable.size());
     }
 
     /**

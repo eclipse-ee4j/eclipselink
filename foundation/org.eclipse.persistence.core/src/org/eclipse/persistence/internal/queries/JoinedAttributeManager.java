@@ -305,7 +305,7 @@ public class JoinedAttributeManager implements Cloneable, Serializable {
             DatabaseMapping mapping = objectExpression.getMapping();
             // Ignore nested
             if ((objectExpression.getBaseExpression() == objectExpression.getBuilder()) && (mapping != null) && mapping.isForeignReferenceMapping()) {
-                getJoinedMappingIndexes_().put(mapping, new Integer(currentIndex));
+                getJoinedMappingIndexes_().put(mapping, Integer.valueOf(currentIndex));
             }
             ClassDescriptor descriptor = mapping.getReferenceDescriptor();
             int numberOfFields = 0;

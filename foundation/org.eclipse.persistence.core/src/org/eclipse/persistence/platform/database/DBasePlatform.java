@@ -112,12 +112,12 @@ public class DBasePlatform extends org.eclipse.persistence.platform.database.Dat
     public Hashtable maximumNumericValues() {
         Hashtable values = new Hashtable();
 
-        values.put(Integer.class, new Integer(Integer.MAX_VALUE));
+        values.put(Integer.class, Integer.valueOf(Integer.MAX_VALUE));
         values.put(Long.class, Long.valueOf("922337203685478000"));
-        values.put(Double.class, new Double("99999999.999999999"));
-        values.put(Short.class, new Short(Short.MIN_VALUE));
-        values.put(Byte.class, new Byte(Byte.MIN_VALUE));
-        values.put(Float.class, new Float("99999999.999999999"));
+        values.put(Double.class, Double.valueOf("99999999.999999999"));
+        values.put(Short.class, Short.valueOf(Short.MIN_VALUE));
+        values.put(Byte.class, Byte.valueOf(Byte.MIN_VALUE));
+        values.put(Float.class, Float.valueOf("99999999.999999999"));
         values.put(java.math.BigInteger.class, new java.math.BigInteger("922337203685478000"));
         values.put(java.math.BigDecimal.class, new java.math.BigDecimal("999999.999999999"));
         return values;
@@ -131,12 +131,12 @@ public class DBasePlatform extends org.eclipse.persistence.platform.database.Dat
     public Hashtable minimumNumericValues() {
         Hashtable values = new Hashtable();
 
-        values.put(Integer.class, new Integer(Integer.MIN_VALUE));
+        values.put(Integer.class, Integer.valueOf(Integer.MIN_VALUE));
         values.put(Long.class, Long.valueOf("-922337203685478000"));
-        values.put(Double.class, new Double("-99999999.999999999"));
-        values.put(Short.class, new Short(Short.MIN_VALUE));
-        values.put(Byte.class, new Byte(Byte.MIN_VALUE));
-        values.put(Float.class, new Float("-99999999.999999999"));
+        values.put(Double.class, Double.valueOf("-99999999.999999999"));
+        values.put(Short.class, Short.valueOf(Short.MIN_VALUE));
+        values.put(Byte.class, Byte.valueOf(Byte.MIN_VALUE));
+        values.put(Float.class, Float.valueOf("-99999999.999999999"));
         values.put(java.math.BigInteger.class, new java.math.BigInteger("-922337203685478000"));
         values.put(java.math.BigDecimal.class, new java.math.BigDecimal("-999999.999999999"));
         return values;

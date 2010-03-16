@@ -465,9 +465,9 @@ public class DirectCollectionMapping extends CollectionMapping implements Relati
                 } else {
                     Integer count = (Integer)originalKeyValues.get(secondObject);
                     if (count == null) {
-                        originalKeyValues.put(secondObject, new Integer(1));
+                        originalKeyValues.put(secondObject, Integer.valueOf(1));
                     } else {
-                        originalKeyValues.put(secondObject, new Integer(count.intValue() + 1));
+                        originalKeyValues.put(secondObject, Integer.valueOf(count.intValue() + 1));
                     }
                 }
             }
@@ -500,15 +500,15 @@ public class DirectCollectionMapping extends CollectionMapping implements Relati
 
                         //Add it to the additions hashtable
                         if (cloneCount == null) {
-                            cloneKeyValues.put(firstObject, new Integer(1));
+                            cloneKeyValues.put(firstObject, Integer.valueOf(1));
                         } else {
-                            cloneKeyValues.put(firstObject, new Integer(cloneCount.intValue() + 1));
+                            cloneKeyValues.put(firstObject, Integer.valueOf(cloneCount.intValue() + 1));
                         }
                     } else if (count.intValue() == 1) {
                         //There is only one object so remove the whole reference
                         originalKeyValues.remove(firstObject);
                     } else {
-                        originalKeyValues.put(firstObject, new Integer(count.intValue() - 1));
+                        originalKeyValues.put(firstObject, Integer.valueOf(count.intValue() - 1));
                     }
                 }
             }
@@ -520,12 +520,12 @@ public class DirectCollectionMapping extends CollectionMapping implements Relati
         ((DirectCollectionChangeRecord)changeRecord).addRemoveChange(originalKeyValues, databaseCount);
         //For CR#2258, produce a changeRecord which reflects the addition and removal of null values.
         if (numberOfNewNulls != 0) {
-            ((DirectCollectionChangeRecord)changeRecord).getCommitAddMap().put(null, new Integer(databaseNullCount));
+            ((DirectCollectionChangeRecord)changeRecord).getCommitAddMap().put(null, Integer.valueOf(databaseNullCount));
             if (numberOfNewNulls > 0) {
-                ((DirectCollectionChangeRecord)changeRecord).addAdditionChange(null, new Integer(numberOfNewNulls));
+                ((DirectCollectionChangeRecord)changeRecord).addAdditionChange(null, Integer.valueOf(numberOfNewNulls));
             } else {
                 numberOfNewNulls *= -1;
-                ((DirectCollectionChangeRecord)changeRecord).addRemoveChange(null, new Integer(numberOfNewNulls));
+                ((DirectCollectionChangeRecord)changeRecord).addRemoveChange(null, Integer.valueOf(numberOfNewNulls));
             }
         }
     }
@@ -685,9 +685,9 @@ public class DirectCollectionMapping extends CollectionMapping implements Relati
             Object object = containerPolicy.next(iter, session);
             if (firstCounter.containsKey(object)) {
                 int count = ((Integer)firstCounter.get(object)).intValue();
-                firstCounter.put(object, new Integer(++count));
+                firstCounter.put(object, Integer.valueOf(++count));
             } else {
-                firstCounter.put(object, new Integer(1));
+                firstCounter.put(object, Integer.valueOf(1));
             }
         }
         for (Object iter = containerPolicy.iteratorFor(secondCollection);
@@ -695,9 +695,9 @@ public class DirectCollectionMapping extends CollectionMapping implements Relati
             Object object = containerPolicy.next(iter, session);
             if (secondCounter.containsKey(object)) {
                 int count = ((Integer)secondCounter.get(object)).intValue();
-                secondCounter.put(object, new Integer(++count));
+                secondCounter.put(object, Integer.valueOf(++count));
             } else {
-                secondCounter.put(object, new Integer(1));
+                secondCounter.put(object, Integer.valueOf(1));
             }
         }
         for (Iterator iterator = firstCounter.keySet().iterator(); iterator.hasNext();) {
@@ -2669,7 +2669,7 @@ public class DirectCollectionMapping extends CollectionMapping implements Relati
             }
         }
         if(!collectionChangeRecord.isDeferred() && this.listOrderField == null) {
-            collectionChangeRecord.addAdditionChange(objectToAdd, new Integer(1));
+            collectionChangeRecord.addAdditionChange(objectToAdd, Integer.valueOf(1));
         }
     }
 
@@ -2709,7 +2709,7 @@ public class DirectCollectionMapping extends CollectionMapping implements Relati
             }
         }
         if(!collectionChangeRecord.isDeferred() && this.listOrderField == null) {
-            collectionChangeRecord.addRemoveChange(objectToRemove, new Integer(1));
+            collectionChangeRecord.addRemoveChange(objectToRemove, Integer.valueOf(1));
         }
     }
 

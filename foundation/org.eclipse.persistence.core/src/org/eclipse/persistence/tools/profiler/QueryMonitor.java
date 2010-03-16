@@ -64,11 +64,11 @@ public class QueryMonitor {
             for (String query : queries) {
                 Number hits = cacheHits.get(query);
                 if (hits == null) {
-                    hits = new Integer(0);
+                    hits = Integer.valueOf(0);
                 }
                 Number misses = cacheMisses.get(query);
                 if (misses == null) {
-                    misses = new Integer(0);
+                    misses = Integer.valueOf(0);
                 }
                 writer.write(query);
                 writer.write("\t");
@@ -86,9 +86,9 @@ public class QueryMonitor {
         String name = query.getReferenceClass().getName() + "-findByPrimaryKey";
         Number hits = cacheHits.get(name);
         if (hits == null) {
-            hits = new Integer(0);
+            hits = Integer.valueOf(0);
         }
-        hits = new Integer(hits.intValue() + 1);
+        hits = Integer.valueOf(hits.intValue() + 1);
         cacheHits.put(name, hits);        
     }
     
@@ -97,9 +97,9 @@ public class QueryMonitor {
         String name = query.getReferenceClass().getName() + "-findByPrimaryKey";
         Number misses = cacheMisses.get(name);
         if (misses == null) {
-            misses = new Integer(0);
+            misses = Integer.valueOf(0);
         }
-        misses = new Integer(misses.intValue() + 1);
+        misses = Integer.valueOf(misses.intValue() + 1);
         cacheMisses.put(name, misses);
     }
     
@@ -113,9 +113,9 @@ public class QueryMonitor {
         }
         Number hits = cacheHits.get(name);
         if (hits == null) {
-            hits = new Integer(0);
+            hits = Integer.valueOf(0);
         }
-        hits = new Integer(hits.intValue() + 1);
+        hits = Integer.valueOf(hits.intValue() + 1);
         cacheHits.put(name, hits);        
     }
     
@@ -129,9 +129,9 @@ public class QueryMonitor {
         }
         Number misses = cacheMisses.get(name);
         if (misses == null) {
-            misses = new Integer(0);
+            misses = Integer.valueOf(0);
         }
-        misses = new Integer(misses.intValue() + 1);
+        misses = Integer.valueOf(misses.intValue() + 1);
         cacheMisses.put(name, misses);
     }
     
@@ -140,9 +140,9 @@ public class QueryMonitor {
         String name = query.getReferenceClass().getName() + "-insert";
         Number misses = cacheMisses.get(name);
         if (misses == null) {
-            misses = new Integer(0);
+            misses = Integer.valueOf(0);
         }
-        misses = new Integer(misses.intValue() + 1);
+        misses = Integer.valueOf(misses.intValue() + 1);
         cacheMisses.put(name, misses);
     }
     
@@ -151,9 +151,9 @@ public class QueryMonitor {
         String name = query.getReferenceClass().getName() + "-update";
         Number misses = cacheMisses.get(name);
         if (misses == null) {
-            misses = new Integer(0);
+            misses = Integer.valueOf(0);
         }
-        misses = new Integer(misses.intValue() + 1);
+        misses = Integer.valueOf(misses.intValue() + 1);
         cacheMisses.put(name, misses);
     }
     
@@ -162,9 +162,9 @@ public class QueryMonitor {
         String name = query.getReferenceClass().getName() + "-delete";
         Number misses = cacheMisses.get(name);
         if (misses == null) {
-            misses = new Integer(0);
+            misses = Integer.valueOf(0);
         }
-        misses = new Integer(misses.intValue() + 1);
+        misses = Integer.valueOf(misses.intValue() + 1);
         cacheMisses.put(name, misses);
     }
 }

@@ -31,9 +31,9 @@ public class StoredProcedureDefinition extends DatabaseObjectDefinition {
     protected Vector statements;
     protected Vector arguments;
     protected Vector argumentTypes;
-    protected static final Integer IN = new Integer(1);
-    protected static final Integer OUT = new Integer(2);
-    protected static final Integer INOUT = new Integer(3);
+    protected static final Integer IN = Integer.valueOf(1);
+    protected static final Integer OUT = Integer.valueOf(2);
+    protected static final Integer INOUT = Integer.valueOf(3);
 
     public StoredProcedureDefinition() {
         this.statements = new Vector();
@@ -298,16 +298,16 @@ public class StoredProcedureDefinition extends DatabaseObjectDefinition {
         if (fieldType.isSizeAllowed() && platform.allowsSizeInProcedureArguments() && ((argument.getSize() != 0) || (fieldType.isSizeRequired()))) {
             writer.write("(");
             if (argument.getSize() == 0) {
-                writer.write(new Integer(fieldType.getDefaultSize()).toString());
+                writer.write(Integer.valueOf(fieldType.getDefaultSize()).toString());
             } else {
-                writer.write(new Integer(argument.getSize()).toString());
+                writer.write(Integer.valueOf(argument.getSize()).toString());
             }
             if (argument.getSubSize() != 0) {
                 writer.write(",");
-                writer.write(new Integer(argument.getSubSize()).toString());
+                writer.write(Integer.valueOf(argument.getSubSize()).toString());
             } else if (fieldType.getDefaultSubSize() != 0) {
                 writer.write(",");
-                writer.write(new Integer(fieldType.getDefaultSubSize()).toString());
+                writer.write(Integer.valueOf(fieldType.getDefaultSubSize()).toString());
             }
             writer.write(")");
         }
@@ -340,16 +340,16 @@ public class StoredProcedureDefinition extends DatabaseObjectDefinition {
             if (fieldType.isSizeAllowed() && platform.allowsSizeInProcedureArguments() && ((argument.getSize() != 0) || (fieldType.isSizeRequired()))) {
                 writer.write("(");
                 if (argument.getSize() == 0) {
-                    writer.write(new Integer(fieldType.getDefaultSize()).toString());
+                    writer.write(Integer.valueOf(fieldType.getDefaultSize()).toString());
                 } else {
-                    writer.write(new Integer(argument.getSize()).toString());
+                    writer.write(Integer.valueOf(argument.getSize()).toString());
                 }
                 if (argument.getSubSize() != 0) {
                     writer.write(",");
-                    writer.write(new Integer(argument.getSubSize()).toString());
+                    writer.write(Integer.valueOf(argument.getSubSize()).toString());
                 } else if (fieldType.getDefaultSubSize() != 0) {
                     writer.write(",");
-                    writer.write(new Integer(fieldType.getDefaultSubSize()).toString());
+                    writer.write(Integer.valueOf(fieldType.getDefaultSubSize()).toString());
                 }
                 writer.write(")");
             }
@@ -388,16 +388,16 @@ public class StoredProcedureDefinition extends DatabaseObjectDefinition {
             if (fieldType.isSizeAllowed() && platform.allowsSizeInProcedureArguments() && ((argument.getSize() != 0) || (fieldType.isSizeRequired()))) {
                 writer.write("(");
                 if (argument.getSize() == 0) {
-                    writer.write(new Integer(fieldType.getDefaultSize()).toString());
+                    writer.write(Integer.valueOf(fieldType.getDefaultSize()).toString());
                 } else {
-                    writer.write(new Integer(argument.getSize()).toString());
+                    writer.write(Integer.valueOf(argument.getSize()).toString());
                 }
                 if (argument.getSubSize() != 0) {
                     writer.write(",");
-                    writer.write(new Integer(argument.getSubSize()).toString());
+                    writer.write(Integer.valueOf(argument.getSubSize()).toString());
                 } else if (fieldType.getDefaultSubSize() != 0) {
                     writer.write(",");
-                    writer.write(new Integer(fieldType.getDefaultSubSize()).toString());
+                    writer.write(Integer.valueOf(fieldType.getDefaultSubSize()).toString());
                 }
                 writer.write(")");
             }

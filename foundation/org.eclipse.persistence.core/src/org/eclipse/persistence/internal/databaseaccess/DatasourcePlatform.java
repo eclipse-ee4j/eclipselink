@@ -67,7 +67,7 @@ public class DatasourcePlatform implements Platform {
     }
 
     protected void addOperator(ExpressionOperator operator) {
-        platformOperators.put(new Integer(operator.getSelector()), operator);
+        platformOperators.put(Integer.valueOf(operator.getSelector()), operator);
     }
 
     /**
@@ -218,7 +218,7 @@ public class DatasourcePlatform implements Platform {
      * Return the operator for the operator constant defined in ExpressionOperator.
      */
     public ExpressionOperator getOperator(int selector) {
-        return (ExpressionOperator)getPlatformOperators().get(new Integer(selector));
+        return (ExpressionOperator)getPlatformOperators().get(Integer.valueOf(selector));
     }
 
     /**

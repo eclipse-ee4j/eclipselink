@@ -241,7 +241,7 @@ public class QuerySequence extends StandardSequence {
     * INTERNAL:
     */
     protected Number updateAndSelectSequence(Accessor accessor, AbstractSession writeSession, String seqName, int size) {
-        Integer sizeInteger = new Integer(size);
+        Integer sizeInteger = Integer.valueOf(size);
         if (shouldSkipUpdate()) {
             return (Number)select(accessor, writeSession, seqName, sizeInteger);
         } else {
@@ -249,7 +249,7 @@ public class QuerySequence extends StandardSequence {
                 Object result = select(accessor, writeSession, seqName, sizeInteger);
                 BigDecimal currentValue;
                 if (result instanceof Number) {
-                    currentValue = new BigDecimal(((Number)result).longValue());
+                    currentValue = BigDecimal.valueOf(((Number)result).longValue());
                 } else if (result instanceof String) {
                     currentValue = new BigDecimal((String)result);
                 } else if (result instanceof Record) {

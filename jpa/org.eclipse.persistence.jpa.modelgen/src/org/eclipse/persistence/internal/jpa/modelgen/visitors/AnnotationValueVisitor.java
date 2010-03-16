@@ -86,7 +86,7 @@ public class AnnotationValueVisitor<R, P> extends AbstractAnnotationValueVisitor
      */
     @Override
     public Object visitBoolean(boolean bool, Object arg1) {
-        return new Boolean(bool);
+        return Boolean.valueOf(bool);
     }
 
     /**
@@ -95,7 +95,7 @@ public class AnnotationValueVisitor<R, P> extends AbstractAnnotationValueVisitor
      */
     @Override
     public Object visitByte(byte b, Object arg1) {
-        return new Byte(b);
+        return Byte.valueOf(b);
     }
 
     /**
@@ -104,7 +104,7 @@ public class AnnotationValueVisitor<R, P> extends AbstractAnnotationValueVisitor
      */
     @Override
     public Object visitChar(char c, Object arg1) {
-        return new Character(c);
+        return Character.valueOf(c);
     }
 
     /**
@@ -113,7 +113,7 @@ public class AnnotationValueVisitor<R, P> extends AbstractAnnotationValueVisitor
      */
     @Override
     public Object visitDouble(double d, Object arg1) {
-        return new Double(d);
+        return Double.valueOf(d);
     }
 
     /**
@@ -131,7 +131,7 @@ public class AnnotationValueVisitor<R, P> extends AbstractAnnotationValueVisitor
      */
     @Override
     public Object visitFloat(float f, Object arg1) {
-        return new Float(f);
+        return Float.valueOf(f);
     }
 
     /**
@@ -140,7 +140,7 @@ public class AnnotationValueVisitor<R, P> extends AbstractAnnotationValueVisitor
      */
     @Override
     public Object visitInt(int i, Object arg1) {
-        return new Integer(i);
+        return Integer.valueOf(i);
     }
 
     /**
@@ -149,7 +149,7 @@ public class AnnotationValueVisitor<R, P> extends AbstractAnnotationValueVisitor
      */
     @Override
     public Object visitLong(long l, Object arg1) {
-        return new Long(l);
+        return Long.valueOf(l);
     }
 
     /**
@@ -158,7 +158,7 @@ public class AnnotationValueVisitor<R, P> extends AbstractAnnotationValueVisitor
      */
     @Override
     public Object visitShort(short s, Object arg1) {
-        return new Short(s);
+        return Short.valueOf(s);
     }
 
     /**

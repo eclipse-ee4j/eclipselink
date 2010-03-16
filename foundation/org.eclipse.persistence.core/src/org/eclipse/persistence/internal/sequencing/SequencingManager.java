@@ -321,14 +321,14 @@ class SequencingManager implements SequencingHome, SequencingServer, SequencingC
     protected void logDebugPreallocation(String seqName, Object firstSequenceValue, Vector sequences) {
         if (getOwnerSession().shouldLog(SessionLog.FINEST, SessionLog.SEQUENCING)) {
             // the first value has been already removed from sequences vector 
-            Object[] args = { seqName, new Integer(sequences.size() + 1), firstSequenceValue, sequences.lastElement() };
+            Object[] args = { seqName, Integer.valueOf(sequences.size() + 1), firstSequenceValue, sequences.lastElement() };
             getOwnerSession().log(SessionLog.FINEST, SessionLog.SEQUENCING, "sequencing_preallocation", args);
         }
     }
 
     protected void logDebugLocalPreallocation(AbstractSession writeSession, String seqName, Vector sequences, Accessor accessor) {
         if (writeSession.shouldLog(SessionLog.FINEST, SessionLog.SEQUENCING)) {
-            Object[] args = { seqName, new Integer(sequences.size()), sequences.firstElement(), sequences.lastElement() };
+            Object[] args = { seqName, Integer.valueOf(sequences.size()), sequences.firstElement(), sequences.lastElement() };
             writeSession.log(SessionLog.FINEST, SessionLog.SEQUENCING, "sequencing_localPreallocation", args, accessor);
         }
     }

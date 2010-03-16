@@ -322,7 +322,7 @@ public class ExpressionOperator implements Serializable {
      * Add an operator to the global list of operators.
      */
     public static void addOperator(ExpressionOperator exOperator) {
-        allOperators.put(new Integer(exOperator.getSelector()), exOperator);
+        allOperators.put(Integer.valueOf(exOperator.getSelector()), exOperator);
     }
 
     /**
@@ -360,49 +360,49 @@ public class ExpressionOperator implements Serializable {
             } else if (getSelector() == Trim) {
                 return ((String)source).trim();
             } else if (getSelector() == Length) {
-                return new Integer(((String)source).length());
+                return Integer.valueOf(((String)source).length());
             }
         } else if (source instanceof Number) {
             if (getSelector() == Ceil) {
-                return new Double(Math.ceil(((Number)source).doubleValue()));
+                return Double.valueOf(Math.ceil(((Number)source).doubleValue()));
             } else if (getSelector() == Cos) {
-                return new Double(Math.cos(((Number)source).doubleValue()));
+                return Double.valueOf(Math.cos(((Number)source).doubleValue()));
             } else if (getSelector() == Abs) {
-                return new Double(Math.abs(((Number)source).doubleValue()));
+                return Double.valueOf(Math.abs(((Number)source).doubleValue()));
             } else if (getSelector() == Acos) {
-                return new Double(Math.acos(((Number)source).doubleValue()));
+                return Double.valueOf(Math.acos(((Number)source).doubleValue()));
             } else if (getSelector() == Asin) {
-                return new Double(Math.asin(((Number)source).doubleValue()));
+                return Double.valueOf(Math.asin(((Number)source).doubleValue()));
             } else if (getSelector() == Atan) {
-                return new Double(Math.atan(((Number)source).doubleValue()));
+                return Double.valueOf(Math.atan(((Number)source).doubleValue()));
             } else if (getSelector() == Exp) {
-                return new Double(Math.exp(((Number)source).doubleValue()));
+                return Double.valueOf(Math.exp(((Number)source).doubleValue()));
             } else if (getSelector() == Sqrt) {
-                return new Double(Math.sqrt(((Number)source).doubleValue()));
+                return Double.valueOf(Math.sqrt(((Number)source).doubleValue()));
             } else if (getSelector() == Floor) {
-                return new Double(Math.floor(((Number)source).doubleValue()));
+                return Double.valueOf(Math.floor(((Number)source).doubleValue()));
             } else if (getSelector() == Log) {
-                return new Double(Math.log(((Number)source).doubleValue()));
+                return Double.valueOf(Math.log(((Number)source).doubleValue()));
             } else if ((getSelector() == Power) && (arguments.size() == 1) && (arguments.elementAt(0) instanceof Number)) {
-                return new Double(Math.pow(((Number)source).doubleValue(), (((Number)arguments.elementAt(0)).doubleValue())));
+                return Double.valueOf(Math.pow(((Number)source).doubleValue(), (((Number)arguments.elementAt(0)).doubleValue())));
             } else if (getSelector() == Round) {
-                return new Double(Math.round(((Number)source).doubleValue()));
+                return Double.valueOf(Math.round(((Number)source).doubleValue()));
             } else if (getSelector() == Sin) {
-                return new Double(Math.sin(((Number)source).doubleValue()));
+                return Double.valueOf(Math.sin(((Number)source).doubleValue()));
             } else if (getSelector() == Tan) {
-                return new Double(Math.tan(((Number)source).doubleValue()));
+                return Double.valueOf(Math.tan(((Number)source).doubleValue()));
             } else if ((getSelector() == Greatest) && (arguments.size() == 1) && (arguments.elementAt(0) instanceof Number)) {
-                return new Double(Math.max(((Number)source).doubleValue(), (((Number)arguments.elementAt(0)).doubleValue())));
+                return Double.valueOf(Math.max(((Number)source).doubleValue(), (((Number)arguments.elementAt(0)).doubleValue())));
             } else if ((getSelector() == Least) && (arguments.size() == 1) && (arguments.elementAt(0) instanceof Number)) {
-                return new Double(Math.min(((Number)source).doubleValue(), (((Number)arguments.elementAt(0)).doubleValue())));
+                return Double.valueOf(Math.min(((Number)source).doubleValue(), (((Number)arguments.elementAt(0)).doubleValue())));
             } else if ((getSelector() == Add) && (arguments.size() == 1) && (arguments.elementAt(0) instanceof Number)) {
-                return new Double(((Number)source).doubleValue() + (((Number)arguments.elementAt(0)).doubleValue()));
+                return Double.valueOf(((Number)source).doubleValue() + (((Number)arguments.elementAt(0)).doubleValue()));
             } else if ((getSelector() == Subtract) && (arguments.size() == 1) && (arguments.elementAt(0) instanceof Number)) {
-                return new Double(((Number)source).doubleValue() - (((Number)arguments.elementAt(0)).doubleValue()));
+                return Double.valueOf(((Number)source).doubleValue() - (((Number)arguments.elementAt(0)).doubleValue()));
             } else if ((getSelector() == Divide) && (arguments.size() == 1) && (arguments.elementAt(0) instanceof Number)) {
-                return new Double(((Number)source).doubleValue() / (((Number)arguments.elementAt(0)).doubleValue()));
+                return Double.valueOf(((Number)source).doubleValue() / (((Number)arguments.elementAt(0)).doubleValue()));
             } else if ((getSelector() == Multiply) && (arguments.size() == 1) && (arguments.elementAt(0) instanceof Number)) {
-                return new Double(((Number)source).doubleValue() * (((Number)arguments.elementAt(0)).doubleValue()));
+                return Double.valueOf(((Number)source).doubleValue() * (((Number)arguments.elementAt(0)).doubleValue()));
             }
         }
 
@@ -1257,7 +1257,7 @@ public class ExpressionOperator implements Serializable {
      * Initialize a mapping to the platform operator names for usage with exceptions.
      */
     public static String getPlatformOperatorName(int operator) {
-        String name = (String)getPlatformOperatorNames().get(new Integer(operator));
+        String name = (String)getPlatformOperatorNames().get(Integer.valueOf(operator));
         if (name == null) {
             name = String.valueOf(operator);
         }
@@ -1278,91 +1278,91 @@ public class ExpressionOperator implements Serializable {
      */
     public static Map initializePlatformOperatorNames() {
         Map platformOperatorNames = new HashMap();
-        platformOperatorNames.put(new Integer(ToUpperCase), "ToUpperCase");
-        platformOperatorNames.put(new Integer(ToLowerCase), "ToLowerCase");
-        platformOperatorNames.put(new Integer(Chr), "Chr");
-        platformOperatorNames.put(new Integer(Concat), "Concat");
-        platformOperatorNames.put(new Integer(HexToRaw), "HexToRaw");
-        platformOperatorNames.put(new Integer(Initcap), "Initcap");
-        platformOperatorNames.put(new Integer(Instring), "Instring");
-        platformOperatorNames.put(new Integer(Soundex), "Soundex");
-        platformOperatorNames.put(new Integer(LeftPad), "LeftPad");
-        platformOperatorNames.put(new Integer(LeftTrim), "LeftTrim");
-        platformOperatorNames.put(new Integer(RightPad), "RightPad");
-        platformOperatorNames.put(new Integer(RightTrim), "RightTrim");
-        platformOperatorNames.put(new Integer(Substring), "Substring");
-        platformOperatorNames.put(new Integer(SubstringSingleArg), "Substring");
-        platformOperatorNames.put(new Integer(Translate), "Translate");
-        platformOperatorNames.put(new Integer(Ascii), "Ascii");
-        platformOperatorNames.put(new Integer(Length), "Length");
-        platformOperatorNames.put(new Integer(CharIndex), "CharIndex");
-        platformOperatorNames.put(new Integer(CharLength), "CharLength");
-        platformOperatorNames.put(new Integer(Difference), "Difference");
-        platformOperatorNames.put(new Integer(Reverse), "Reverse");
-        platformOperatorNames.put(new Integer(Replicate), "Replicate");
-        platformOperatorNames.put(new Integer(Right), "Right");
-        platformOperatorNames.put(new Integer(Locate), "Locate");
-        platformOperatorNames.put(new Integer(Locate2), "Locate");
-        platformOperatorNames.put(new Integer(ToNumber), "ToNumber");
-        platformOperatorNames.put(new Integer(ToChar), "ToChar");
-        platformOperatorNames.put(new Integer(ToCharWithFormat), "ToChar");
-        platformOperatorNames.put(new Integer(AddMonths), "AddMonths");
-        platformOperatorNames.put(new Integer(DateToString), "DateToString");
-        platformOperatorNames.put(new Integer(MonthsBetween), "MonthsBetween");
-        platformOperatorNames.put(new Integer(NextDay), "NextDay");
-        platformOperatorNames.put(new Integer(RoundDate), "RoundDate");
-        platformOperatorNames.put(new Integer(AddDate), "AddDate");
-        platformOperatorNames.put(new Integer(DateName), "DateName");
-        platformOperatorNames.put(new Integer(DatePart), "DatePart");
-        platformOperatorNames.put(new Integer(DateDifference), "DateDifference");
-        platformOperatorNames.put(new Integer(TruncateDate), "TruncateDate");
-        platformOperatorNames.put(new Integer(NewTime), "NewTime");
-        platformOperatorNames.put(new Integer(Nvl), "Nvl");
-        platformOperatorNames.put(new Integer(NewTime), "NewTime");
-        platformOperatorNames.put(new Integer(Ceil), "Ceil");
-        platformOperatorNames.put(new Integer(Cos), "Cos");
-        platformOperatorNames.put(new Integer(Cosh), "Cosh");
-        platformOperatorNames.put(new Integer(Abs), "Abs");
-        platformOperatorNames.put(new Integer(Acos), "Acos");
-        platformOperatorNames.put(new Integer(Asin), "Asin");
-        platformOperatorNames.put(new Integer(Atan), "Atan");
-        platformOperatorNames.put(new Integer(Exp), "Exp");
-        platformOperatorNames.put(new Integer(Sqrt), "Sqrt");
-        platformOperatorNames.put(new Integer(Floor), "Floor");
-        platformOperatorNames.put(new Integer(Ln), "Ln");
-        platformOperatorNames.put(new Integer(Log), "Log");
-        platformOperatorNames.put(new Integer(Mod), "Mod");
-        platformOperatorNames.put(new Integer(Power), "Power");
-        platformOperatorNames.put(new Integer(Round), "Round");
-        platformOperatorNames.put(new Integer(Sign), "Sign");
-        platformOperatorNames.put(new Integer(Sin), "Sin");
-        platformOperatorNames.put(new Integer(Sinh), "Sinh");
-        platformOperatorNames.put(new Integer(Tan), "Tan");
-        platformOperatorNames.put(new Integer(Tanh), "Tanh");
-        platformOperatorNames.put(new Integer(Trunc), "Trunc");
-        platformOperatorNames.put(new Integer(Greatest), "Greatest");
-        platformOperatorNames.put(new Integer(Least), "Least");
-        platformOperatorNames.put(new Integer(Add), "Add");
-        platformOperatorNames.put(new Integer(Subtract), "Subtract");
-        platformOperatorNames.put(new Integer(Divide), "Divide");
-        platformOperatorNames.put(new Integer(Multiply), "Multiply");
-        platformOperatorNames.put(new Integer(Atan2), "Atan2");
-        platformOperatorNames.put(new Integer(Cot), "Cot");
-        platformOperatorNames.put(new Integer(Deref), "Deref");
-        platformOperatorNames.put(new Integer(Ref), "Ref");
-        platformOperatorNames.put(new Integer(RefToHex), "RefToHex");
-        platformOperatorNames.put(new Integer(Value), "Value");
-        platformOperatorNames.put(new Integer(Extract), "Extract");
-        platformOperatorNames.put(new Integer(ExtractValue), "ExtractValue");
-        platformOperatorNames.put(new Integer(ExistsNode), "ExistsNode");
-        platformOperatorNames.put(new Integer(GetStringVal), "GetStringVal");
-        platformOperatorNames.put(new Integer(GetNumberVal), "GetNumberVal");
-        platformOperatorNames.put(new Integer(IsFragment), "IsFragment");
-        platformOperatorNames.put(new Integer(SDO_WITHIN_DISTANCE), "MDSYS.SDO_WITHIN_DISTANCE");
-        platformOperatorNames.put(new Integer(SDO_RELATE), "MDSYS.SDO_RELATE");
-        platformOperatorNames.put(new Integer(SDO_FILTER), "MDSYS.SDO_FILTER");
-        platformOperatorNames.put(new Integer(SDO_NN), "MDSYS.SDO_NN");
-        platformOperatorNames.put(new Integer(NullIf), "NullIf");
+        platformOperatorNames.put(Integer.valueOf(ToUpperCase), "ToUpperCase");
+        platformOperatorNames.put(Integer.valueOf(ToLowerCase), "ToLowerCase");
+        platformOperatorNames.put(Integer.valueOf(Chr), "Chr");
+        platformOperatorNames.put(Integer.valueOf(Concat), "Concat");
+        platformOperatorNames.put(Integer.valueOf(HexToRaw), "HexToRaw");
+        platformOperatorNames.put(Integer.valueOf(Initcap), "Initcap");
+        platformOperatorNames.put(Integer.valueOf(Instring), "Instring");
+        platformOperatorNames.put(Integer.valueOf(Soundex), "Soundex");
+        platformOperatorNames.put(Integer.valueOf(LeftPad), "LeftPad");
+        platformOperatorNames.put(Integer.valueOf(LeftTrim), "LeftTrim");
+        platformOperatorNames.put(Integer.valueOf(RightPad), "RightPad");
+        platformOperatorNames.put(Integer.valueOf(RightTrim), "RightTrim");
+        platformOperatorNames.put(Integer.valueOf(Substring), "Substring");
+        platformOperatorNames.put(Integer.valueOf(SubstringSingleArg), "Substring");
+        platformOperatorNames.put(Integer.valueOf(Translate), "Translate");
+        platformOperatorNames.put(Integer.valueOf(Ascii), "Ascii");
+        platformOperatorNames.put(Integer.valueOf(Length), "Length");
+        platformOperatorNames.put(Integer.valueOf(CharIndex), "CharIndex");
+        platformOperatorNames.put(Integer.valueOf(CharLength), "CharLength");
+        platformOperatorNames.put(Integer.valueOf(Difference), "Difference");
+        platformOperatorNames.put(Integer.valueOf(Reverse), "Reverse");
+        platformOperatorNames.put(Integer.valueOf(Replicate), "Replicate");
+        platformOperatorNames.put(Integer.valueOf(Right), "Right");
+        platformOperatorNames.put(Integer.valueOf(Locate), "Locate");
+        platformOperatorNames.put(Integer.valueOf(Locate2), "Locate");
+        platformOperatorNames.put(Integer.valueOf(ToNumber), "ToNumber");
+        platformOperatorNames.put(Integer.valueOf(ToChar), "ToChar");
+        platformOperatorNames.put(Integer.valueOf(ToCharWithFormat), "ToChar");
+        platformOperatorNames.put(Integer.valueOf(AddMonths), "AddMonths");
+        platformOperatorNames.put(Integer.valueOf(DateToString), "DateToString");
+        platformOperatorNames.put(Integer.valueOf(MonthsBetween), "MonthsBetween");
+        platformOperatorNames.put(Integer.valueOf(NextDay), "NextDay");
+        platformOperatorNames.put(Integer.valueOf(RoundDate), "RoundDate");
+        platformOperatorNames.put(Integer.valueOf(AddDate), "AddDate");
+        platformOperatorNames.put(Integer.valueOf(DateName), "DateName");
+        platformOperatorNames.put(Integer.valueOf(DatePart), "DatePart");
+        platformOperatorNames.put(Integer.valueOf(DateDifference), "DateDifference");
+        platformOperatorNames.put(Integer.valueOf(TruncateDate), "TruncateDate");
+        platformOperatorNames.put(Integer.valueOf(NewTime), "NewTime");
+        platformOperatorNames.put(Integer.valueOf(Nvl), "Nvl");
+        platformOperatorNames.put(Integer.valueOf(NewTime), "NewTime");
+        platformOperatorNames.put(Integer.valueOf(Ceil), "Ceil");
+        platformOperatorNames.put(Integer.valueOf(Cos), "Cos");
+        platformOperatorNames.put(Integer.valueOf(Cosh), "Cosh");
+        platformOperatorNames.put(Integer.valueOf(Abs), "Abs");
+        platformOperatorNames.put(Integer.valueOf(Acos), "Acos");
+        platformOperatorNames.put(Integer.valueOf(Asin), "Asin");
+        platformOperatorNames.put(Integer.valueOf(Atan), "Atan");
+        platformOperatorNames.put(Integer.valueOf(Exp), "Exp");
+        platformOperatorNames.put(Integer.valueOf(Sqrt), "Sqrt");
+        platformOperatorNames.put(Integer.valueOf(Floor), "Floor");
+        platformOperatorNames.put(Integer.valueOf(Ln), "Ln");
+        platformOperatorNames.put(Integer.valueOf(Log), "Log");
+        platformOperatorNames.put(Integer.valueOf(Mod), "Mod");
+        platformOperatorNames.put(Integer.valueOf(Power), "Power");
+        platformOperatorNames.put(Integer.valueOf(Round), "Round");
+        platformOperatorNames.put(Integer.valueOf(Sign), "Sign");
+        platformOperatorNames.put(Integer.valueOf(Sin), "Sin");
+        platformOperatorNames.put(Integer.valueOf(Sinh), "Sinh");
+        platformOperatorNames.put(Integer.valueOf(Tan), "Tan");
+        platformOperatorNames.put(Integer.valueOf(Tanh), "Tanh");
+        platformOperatorNames.put(Integer.valueOf(Trunc), "Trunc");
+        platformOperatorNames.put(Integer.valueOf(Greatest), "Greatest");
+        platformOperatorNames.put(Integer.valueOf(Least), "Least");
+        platformOperatorNames.put(Integer.valueOf(Add), "Add");
+        platformOperatorNames.put(Integer.valueOf(Subtract), "Subtract");
+        platformOperatorNames.put(Integer.valueOf(Divide), "Divide");
+        platformOperatorNames.put(Integer.valueOf(Multiply), "Multiply");
+        platformOperatorNames.put(Integer.valueOf(Atan2), "Atan2");
+        platformOperatorNames.put(Integer.valueOf(Cot), "Cot");
+        platformOperatorNames.put(Integer.valueOf(Deref), "Deref");
+        platformOperatorNames.put(Integer.valueOf(Ref), "Ref");
+        platformOperatorNames.put(Integer.valueOf(RefToHex), "RefToHex");
+        platformOperatorNames.put(Integer.valueOf(Value), "Value");
+        platformOperatorNames.put(Integer.valueOf(Extract), "Extract");
+        platformOperatorNames.put(Integer.valueOf(ExtractValue), "ExtractValue");
+        platformOperatorNames.put(Integer.valueOf(ExistsNode), "ExistsNode");
+        platformOperatorNames.put(Integer.valueOf(GetStringVal), "GetStringVal");
+        platformOperatorNames.put(Integer.valueOf(GetNumberVal), "GetNumberVal");
+        platformOperatorNames.put(Integer.valueOf(IsFragment), "IsFragment");
+        platformOperatorNames.put(Integer.valueOf(SDO_WITHIN_DISTANCE), "MDSYS.SDO_WITHIN_DISTANCE");
+        platformOperatorNames.put(Integer.valueOf(SDO_RELATE), "MDSYS.SDO_RELATE");
+        platformOperatorNames.put(Integer.valueOf(SDO_FILTER), "MDSYS.SDO_FILTER");
+        platformOperatorNames.put(Integer.valueOf(SDO_NN), "MDSYS.SDO_NN");
+        platformOperatorNames.put(Integer.valueOf(NullIf), "NullIf");
         return platformOperatorNames;
     }
 

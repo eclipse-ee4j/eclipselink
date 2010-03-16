@@ -63,8 +63,8 @@ public abstract class DatabaseMapping implements Cloneable, Serializable {
     protected static final Vector NO_FIELDS = org.eclipse.persistence.internal.helper.NonSynchronizedVector.newInstance(0);
 
     /** Used to share integer instance to reduce memory. */
-    protected static final Integer NO_WEIGHT = new Integer(Integer.MAX_VALUE);
-    protected static final Integer WEIGHT_1 = new Integer(1);
+    protected static final Integer NO_WEIGHT = Integer.valueOf(Integer.MAX_VALUE);
+    protected static final Integer WEIGHT_1 = Integer.valueOf(1);
 
     /** ClassDescriptor to which this mapping belongs to */
     protected ClassDescriptor descriptor;

@@ -41,14 +41,14 @@ public abstract class DatasourceCall implements Call {
 
     // The parameter types determine if the parameter is a modify, translation or literal type.
     transient protected Vector parameterTypes;
-    public static final Integer LITERAL = new Integer(1);
-    public static final Integer MODIFY = new Integer(2);
-    public static final Integer TRANSLATION = new Integer(3);
-    public static final Integer CUSTOM_MODIFY = new Integer(4);
-    public static final Integer OUT = new Integer(5);
-    public static final Integer INOUT = new Integer(6);
-    public static final Integer IN = new Integer(7);
-    public static final Integer OUT_CURSOR = new Integer(8);
+    public static final Integer LITERAL = Integer.valueOf(1);
+    public static final Integer MODIFY = Integer.valueOf(2);
+    public static final Integer TRANSLATION = Integer.valueOf(3);
+    public static final Integer CUSTOM_MODIFY = Integer.valueOf(4);
+    public static final Integer OUT = Integer.valueOf(5);
+    public static final Integer INOUT = Integer.valueOf(6);
+    public static final Integer IN = Integer.valueOf(7);
+    public static final Integer OUT_CURSOR = Integer.valueOf(8);
 
     // Store if the call has been prepared.
     protected boolean isPrepared;

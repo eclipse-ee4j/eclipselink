@@ -92,7 +92,7 @@ public class XMLSessionConfigProject_11_1_1 extends XMLSessionConfigProject {
         ClassDescriptor descriptor = super.buildDatabaseLoginConfigDescriptor();
 
         XMLDirectMapping bindAllParametersMapping = (XMLDirectMapping)descriptor.getMappingForAttributeName("m_bindAllParameters");
-        bindAllParametersMapping.setNullValue(new Boolean(BIND_ALL_PARAMETERS_DEFAULT));
+        bindAllParametersMapping.setNullValue(Boolean.valueOf(BIND_ALL_PARAMETERS_DEFAULT));
 
         XMLDirectMapping validateConnectionHealthOnErrorMapping = new XMLDirectMapping();
         validateConnectionHealthOnErrorMapping.setAttributeName("connectionHealthValidatedOnError");
@@ -140,7 +140,7 @@ public class XMLSessionConfigProject_11_1_1 extends XMLSessionConfigProject {
         useSingleThreadedNotificationMapping.setGetMethodName("useSingleThreadedNotification");
         useSingleThreadedNotificationMapping.setSetMethodName("setUseSingleThreadedNotification");
         useSingleThreadedNotificationMapping.setXPath("use-single-threaded-notification/text()");
-        useSingleThreadedNotificationMapping.setNullValue(new Boolean(USE_SINGLE_THREADED_NOTIFICATION_DEFAULT));
+        useSingleThreadedNotificationMapping.setNullValue(Boolean.valueOf(USE_SINGLE_THREADED_NOTIFICATION_DEFAULT));
         descriptor.addMapping(useSingleThreadedNotificationMapping);
 
         XMLDirectMapping topicNameMapping = new XMLDirectMapping();

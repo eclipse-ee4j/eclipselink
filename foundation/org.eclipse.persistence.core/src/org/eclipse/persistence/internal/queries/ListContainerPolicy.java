@@ -170,11 +170,11 @@ public class ListContainerPolicy extends CollectionContainerPolicy {
                 ((List)container).remove(size);
             }
         } catch (ClassCastException ex1) {
-            throw QueryException.cannotRemoveFromContainer(new Integer(size), container, this);
+            throw QueryException.cannotRemoveFromContainer(Integer.valueOf(size), container, this);
         } catch (IllegalArgumentException ex2) {
-            throw QueryException.cannotRemoveFromContainer(new Integer(size), container, this);
+            throw QueryException.cannotRemoveFromContainer(Integer.valueOf(size), container, this);
         } catch (UnsupportedOperationException ex3) {
-            throw QueryException.cannotRemoveFromContainer(new Integer(size), container, this);
+            throw QueryException.cannotRemoveFromContainer(Integer.valueOf(size), container, this);
         }
     }
 }

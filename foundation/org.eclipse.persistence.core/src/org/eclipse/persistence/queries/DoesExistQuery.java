@@ -233,7 +233,7 @@ public class DoesExistQuery extends DatabaseQuery {
         AbstractRecord databaseRow = getQueryMechanism().selectRowForDoesExist(field);
 
         // Null means no row was returned.
-        return new Boolean(databaseRow != null);
+        return Boolean.valueOf(databaseRow != null);
     }
 
     /**

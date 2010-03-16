@@ -72,15 +72,15 @@ public class EntityListener extends DescriptorEventAdapter {
         // For quick look up of equivalent event strings from event codes.
         if (m_eventStrings == null) {
             m_eventStrings = new Hashtable<Integer, String>();   
-            m_eventStrings.put(new Integer(DescriptorEventManager.PostBuildEvent), POST_BUILD);
-            m_eventStrings.put(new Integer(DescriptorEventManager.PostCloneEvent), POST_CLONE);
-            m_eventStrings.put(new Integer(DescriptorEventManager.PostDeleteEvent), POST_DELETE);
-            m_eventStrings.put(new Integer(DescriptorEventManager.PostInsertEvent), POST_INSERT);
-            m_eventStrings.put(new Integer(DescriptorEventManager.PostRefreshEvent), POST_REFRESH);
-            m_eventStrings.put(new Integer(DescriptorEventManager.PostUpdateEvent), POST_UPDATE);
-            m_eventStrings.put(new Integer(DescriptorEventManager.PrePersistEvent), PRE_PERSIST);
-            m_eventStrings.put(new Integer(DescriptorEventManager.PreRemoveEvent), PRE_REMOVE);
-            m_eventStrings.put(new Integer(DescriptorEventManager.PreUpdateWithChangesEvent), PRE_UPDATE_WITH_CHANGES);
+            m_eventStrings.put(Integer.valueOf(DescriptorEventManager.PostBuildEvent), POST_BUILD);
+            m_eventStrings.put(Integer.valueOf(DescriptorEventManager.PostCloneEvent), POST_CLONE);
+            m_eventStrings.put(Integer.valueOf(DescriptorEventManager.PostDeleteEvent), POST_DELETE);
+            m_eventStrings.put(Integer.valueOf(DescriptorEventManager.PostInsertEvent), POST_INSERT);
+            m_eventStrings.put(Integer.valueOf(DescriptorEventManager.PostRefreshEvent), POST_REFRESH);
+            m_eventStrings.put(Integer.valueOf(DescriptorEventManager.PostUpdateEvent), POST_UPDATE);
+            m_eventStrings.put(Integer.valueOf(DescriptorEventManager.PrePersistEvent), PRE_PERSIST);
+            m_eventStrings.put(Integer.valueOf(DescriptorEventManager.PreRemoveEvent), PRE_REMOVE);
+            m_eventStrings.put(Integer.valueOf(DescriptorEventManager.PreUpdateWithChangesEvent), PRE_UPDATE_WITH_CHANGES);
         }
     }
     

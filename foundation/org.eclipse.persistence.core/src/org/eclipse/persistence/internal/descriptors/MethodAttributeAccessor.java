@@ -232,7 +232,7 @@ public class MethodAttributeAccessor extends AttributeAccessor {
 
                 //Found when fixing Bug2910086
                 if (fieldClass.isPrimitive() && (attributeValue == null)) {
-                    parameters[0] = ConversionManager.getDefaultManager().convertObject(new Integer(0), fieldClass);
+                    parameters[0] = ConversionManager.getDefaultManager().convertObject(Integer.valueOf(0), fieldClass);
                     if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()){
                         try {
                             AccessController.doPrivileged(new PrivilegedMethodInvoker(getSetMethod(), domainObject, parameters));

@@ -276,7 +276,7 @@ public class QueryByExamplePolicy implements java.io.Serializable {
      * The default excluded value for <code>byte</code> is <code>0</code>.
      */
     public void excludeValue(byte value) {
-        excludeValue(new Byte(value));
+        excludeValue(Byte.valueOf(value));
     }
 
     /**
@@ -286,7 +286,7 @@ public class QueryByExamplePolicy implements java.io.Serializable {
      * The default excluded value for <code>char</code> is <code>'\u0000'</code>.
      */
     public void excludeValue(char value) {
-        excludeValue(new Character(value));
+        excludeValue(Character.valueOf(value));
     }
 
     /**
@@ -296,7 +296,7 @@ public class QueryByExamplePolicy implements java.io.Serializable {
      * The default excluded value for <code>double</code> is <code>0.0</code>.
      */
     public void excludeValue(double value) {
-        excludeValue(new Double(value));
+        excludeValue(Double.valueOf(value));
     }
 
     /**
@@ -306,7 +306,7 @@ public class QueryByExamplePolicy implements java.io.Serializable {
      * The default excluded value for <code>float</code> is <code>0.0f</code>.
      */
     public void excludeValue(float value) {
-        excludeValue(new Float(value));
+        excludeValue(Float.valueOf(value));
     }
 
     /**
@@ -316,7 +316,7 @@ public class QueryByExamplePolicy implements java.io.Serializable {
      * The default excluded value for <code>int</code> is <code>0</code>.
      */
     public void excludeValue(int value) {
-        excludeValue(new Integer(value));
+        excludeValue(Integer.valueOf(value));
     }
 
     /**
@@ -326,7 +326,7 @@ public class QueryByExamplePolicy implements java.io.Serializable {
      * The default excluded value for <code>long</code> is <code>0</code>.
      */
     public void excludeValue(long value) {
-        excludeValue(new Long(value));
+        excludeValue(Long.valueOf(value));
     }
 
     /**
@@ -347,7 +347,7 @@ public class QueryByExamplePolicy implements java.io.Serializable {
      * The default excluded value for <code>short</code> is <code>0</code>.
      */
     public void excludeValue(short value) {
-        excludeValue(new Short(value));
+        excludeValue(Short.valueOf(value));
     }
 
     /**
@@ -357,7 +357,7 @@ public class QueryByExamplePolicy implements java.io.Serializable {
      * The default excluded value for <code>boolean</code> is <code>false</code>.
      */
     public void excludeValue(boolean value) {
-        excludeValue(new Boolean(value));
+        excludeValue(Boolean.valueOf(value));
     }
 
     /**

@@ -45,7 +45,7 @@ public class Profile implements Serializable, Cloneable {
     }
 
     public void addTiming(String name, long time) {
-        getOperationTimings().put(name, new Long(time));
+        getOperationTimings().put(name, Long.valueOf(time));
     }
 
     public Object clone() {

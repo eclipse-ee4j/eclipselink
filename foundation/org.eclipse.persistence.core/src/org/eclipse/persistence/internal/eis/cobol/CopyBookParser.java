@@ -102,7 +102,7 @@ public class CopyBookParser {
                     }
                     currentLine = currentLine.substring(0, currentLine.lastIndexOf("."));
                     recordLines.addElement(currentLine);
-                    lineNums.addElement(new Integer(currentLineNumber));
+                    lineNums.addElement(Integer.valueOf(currentLineNumber));
                 }
             }
         }
@@ -310,7 +310,7 @@ public class CopyBookParser {
                 if (tokens[++index].equalsIgnoreCase("to")) {
                     Integer newSize = Helper.integerFromString(tokens[++index]);
                     if (size.intValue() > 0) {
-                        newSize = new Integer(newSize.intValue() - size.intValue());
+                        newSize = Integer.valueOf(newSize.intValue() - size.intValue());
                     }
                     size = newSize;
                 }
@@ -387,7 +387,7 @@ public class CopyBookParser {
                     currentChar = picChars[index];
                 }
                 try {
-                    Integer value = new Integer(number);
+                    Integer value = Integer.valueOf(number);
                     size += value.intValue();
                 } catch (NumberFormatException exception) {
                     throw invalidCopyBookException("In pic statement a valid integer must be enclosed by the parenthesis.", exception);

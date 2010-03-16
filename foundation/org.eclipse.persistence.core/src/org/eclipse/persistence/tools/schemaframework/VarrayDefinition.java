@@ -51,9 +51,9 @@ public class VarrayDefinition extends DatabaseObjectDefinition {
             if ((fieldType.isSizeAllowed()) && ((getTypeSize() != 0) || (fieldType.isSizeRequired()))) {
                 writer.write("(");
                 if (getTypeSize() == 0) {
-                    writer.write(new Integer(fieldType.getDefaultSize()).toString());
+                    writer.write(Integer.valueOf(fieldType.getDefaultSize()).toString());
                 } else {
-                    writer.write(new Integer(getTypeSize()).toString());
+                    writer.write(Integer.valueOf(getTypeSize()).toString());
                 }
                 writer.write(")");
             }
@@ -77,7 +77,7 @@ public class VarrayDefinition extends DatabaseObjectDefinition {
                 throw ValidationException.oracleVarrayMaximumSizeNotDefined(getFullName());
             }
 
-            writer.write(new Integer(getSize()).toString());
+            writer.write(Integer.valueOf(getSize()).toString());
             writer.write(") OF ");
             appendTypeString(writer, session);
         } catch (IOException ioException) {

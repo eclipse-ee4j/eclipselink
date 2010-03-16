@@ -830,7 +830,7 @@ public class MergeManager {
         }
         if (doesExist == Boolean.FALSE) {
             checkNewObjectLockVersion(clone, primaryKey, descriptor, unitOfWork);
-            Object registeredObject = unitOfWork.internalRegisterObject(clone, descriptor);
+            Object registeredObject = unitOfWork.internalRegisterObject(clone, descriptor);//should use cloneAndRegisterNewObject to avoid the exist check
             this.mergedNewObjects.put(registeredObject, registeredObject);
             return registeredObject;
         }

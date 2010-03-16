@@ -85,7 +85,7 @@ public class InheritanceMetadata extends ORMetadata {
             if (discriminatorValue != null) {
                 if (descriptor.getClassDescriptor().getInheritancePolicy().getClassIndicatorField().getType() == Integer.class){
                     try {
-                        descriptor.getClassDescriptor().getInheritancePolicy().addClassNameIndicator(accessor.getJavaClassName(), new Integer(discriminatorValue));
+                        descriptor.getClassDescriptor().getInheritancePolicy().addClassNameIndicator(accessor.getJavaClassName(), Integer.valueOf(discriminatorValue));
                     } catch (NumberFormatException exc){
                         accessor.getLogger().logWarningMessage(MetadataLogger.WARNING_INCORRECT_DISCRIMINATOR_FORMAT, accessor.getJavaClassName(), discriminatorValue);
                     }

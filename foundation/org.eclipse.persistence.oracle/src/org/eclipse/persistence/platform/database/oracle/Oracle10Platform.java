@@ -70,13 +70,13 @@ public class Oracle10Platform extends Oracle9Platform  {
         if (isBlob(field.getType())) {
             java.sql.Blob blob = (java.sql.Blob)resultSet.getObject(field.getNameDelimited(this));
             blob.setBytes(1, (byte[])value);
-            //impose the locallization
-            session.log(SessionLog.FINEST, SessionLog.SQL, "write_BLOB", new Long(blob.length()), field.getNameDelimited(this));
+            //impose the localization
+            session.log(SessionLog.FINEST, SessionLog.SQL, "write_BLOB", Long.valueOf(blob.length()), field.getNameDelimited(this));
         } else if (isClob(field.getType())) {
             java.sql.Clob clob = (java.sql.Clob)resultSet.getObject(field.getNameDelimited(this));
             clob.setString(1, (String)value);
-            //impose the locallization
-            session.log(SessionLog.FINEST, SessionLog.SQL, "write_CLOB", new Long(clob.length()), field.getNameDelimited(this));
+            //impose the localization
+            session.log(SessionLog.FINEST, SessionLog.SQL, "write_CLOB", Long.valueOf(clob.length()), field.getNameDelimited(this));
         } else {
             //do nothing for now, open to BFILE or NCLOB types
         }

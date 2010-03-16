@@ -564,7 +564,7 @@ public class DatabaseAccessor extends DatasourceAccessor {
                 getActiveBatchWritingMechanism().appendCall(session, dbCall);
                 //bug 4241441: passing 1 back to avoid optimistic lock exceptions since there   
                 // is no way to know if it succeeded on the DB at this point.
-                return new Integer(1);
+                return Integer.valueOf(1);
             } else {
                 getActiveBatchWritingMechanism().executeBatchedStatements(session);
             }
@@ -808,7 +808,7 @@ public class DatabaseAccessor extends DatasourceAccessor {
             }
         }
 
-        return new Integer(rowCount);
+        return Integer.valueOf(rowCount);
     }
 
     /**
@@ -1171,7 +1171,7 @@ public class DatabaseAccessor extends DatasourceAccessor {
     }
 
     /**
-     * Handle the conversion into java optimially through calling the direct type API.
+     * Handle the conversion into java optimally through calling the direct type API.
      * If the type is not one that can be optimized return null.
      */
     protected Object getObjectThroughOptimizedDataConversion(ResultSet resultSet, DatabaseField field, int type, int columnNumber, DatabasePlatform platform, AbstractSession session) throws SQLException {
@@ -1181,7 +1181,7 @@ public class DatabaseAccessor extends DatasourceAccessor {
 
         // Optimize numeric values to avoid conversion into big-dec and back to primitives.
         if ((fieldType == ClassConstants.PLONG) || (fieldType == ClassConstants.LONG)) {
-            value = new Long(resultSet.getLong(columnNumber));
+            value = Long.valueOf(resultSet.getLong(columnNumber));
             isPrimitive = ((Long)value).longValue() == 0l;
         } else if ((type == Types.VARCHAR) || (type == Types.CHAR)) {
             // CUSTOM PATCH for oracle drivers because they don't respond to getObject() when using scrolling result sets. 
@@ -1191,16 +1191,16 @@ public class DatabaseAccessor extends DatasourceAccessor {
                 value = Helper.rightTrimString((String)value);
             }
         } else if ((fieldType == ClassConstants.INTEGER) || (fieldType == ClassConstants.PINT)) {
-            value = new Integer(resultSet.getInt(columnNumber));
+            value = Integer.valueOf(resultSet.getInt(columnNumber));
             isPrimitive = ((Integer)value).intValue() == 0;
         } else if ((fieldType == ClassConstants.FLOAT) || (fieldType == ClassConstants.PFLOAT)) {
-            value = new Float(resultSet.getFloat(columnNumber));
+            value = Float.valueOf(resultSet.getFloat(columnNumber));
             isPrimitive = ((Float)value).floatValue() == 0f;
         } else if ((fieldType == ClassConstants.DOUBLE) || (fieldType == ClassConstants.PDOUBLE)) {
-            value = new Double(resultSet.getDouble(columnNumber));
+            value = Double.valueOf(resultSet.getDouble(columnNumber));
             isPrimitive = ((Double)value).doubleValue() == 0d;
         } else if ((fieldType == ClassConstants.SHORT) || (fieldType == ClassConstants.PSHORT)) {
-            value = new Short(resultSet.getShort(columnNumber));
+            value = Short.valueOf(resultSet.getShort(columnNumber));
             isPrimitive = ((Short)value).shortValue() == 0;
         } else if (Helper.shouldOptimizeDates() && (fieldType != null) && ((type == Types.TIME) || (type == Types.DATE) || (type == Types.TIMESTAMP))) {
             // Optimize dates by avoid conversion to timestamp then back to date or time or util.date.

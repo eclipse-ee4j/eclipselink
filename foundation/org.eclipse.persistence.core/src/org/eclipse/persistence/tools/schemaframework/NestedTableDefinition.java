@@ -50,9 +50,9 @@ public class NestedTableDefinition extends DatabaseObjectDefinition {
             if ((fieldType.isSizeAllowed()) && ((getTypeSize() != 0) || (fieldType.isSizeRequired()))) {
                 writer.write("(");
                 if (getTypeSize() == 0) {
-                    writer.write(new Integer(fieldType.getDefaultSize()).toString());
+                    writer.write(Integer.valueOf(fieldType.getDefaultSize()).toString());
                 } else {
-                    writer.write(new Integer(getTypeSize()).toString());
+                    writer.write(Integer.valueOf(getTypeSize()).toString());
                 }
                 writer.write(")");
             }

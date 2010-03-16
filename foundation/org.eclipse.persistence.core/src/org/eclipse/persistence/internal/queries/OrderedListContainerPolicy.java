@@ -244,7 +244,7 @@ public class OrderedListContainerPolicy extends ListContainerPolicy {
             ListIterator iterator = (ListIterator)iteratorFor(oldList);
         
             while (iterator.hasNext()) {
-                Integer index = new Integer(iterator.nextIndex());
+                Integer index = Integer.valueOf(iterator.nextIndex());
                 Object value = iterator.next();
                 oldListValueIndex.put(value, index);
                 oldListIndexValue.put(index, value);
@@ -257,7 +257,7 @@ public class OrderedListContainerPolicy extends ListContainerPolicy {
             // Step i - Gather the list info.
             ListIterator iterator = (ListIterator)iteratorFor(newList);
             while (iterator.hasNext()) {
-                newListValueIndex.put(iterator.next(), new Integer(iterator.previousIndex()));
+                newListValueIndex.put(iterator.next(), Integer.valueOf(iterator.previousIndex()));
             }
         
             // Step ii - Go through the new list again.        
@@ -275,11 +275,11 @@ public class OrderedListContainerPolicy extends ListContainerPolicy {
                         oldListValueIndex.remove(currentObject);
                     
                         if (index == oldIndex) {
-                            indicesToRemove.remove(new Integer(oldIndex));
+                            indicesToRemove.remove(Integer.valueOf(oldIndex));
                             offset = 0; // Reset the offset, assume we're back on track.
                         } else if (index == (oldIndex + offset)) {
                             // We're in the right spot according to the offset.
-                            indicesToRemove.remove(new Integer(oldIndex));
+                            indicesToRemove.remove(Integer.valueOf(oldIndex));
                         } else {
                             // Time to be clever and figure out why we're not in the right spot!
                             int movedObjects = 0;
@@ -290,7 +290,7 @@ public class OrderedListContainerPolicy extends ListContainerPolicy {
                                 ++offset;    
                             } else {
                                 for (int i = oldIndex - 1; i >= index; i--) {
-                                    Object oldObject = oldListIndexValue.get(new Integer(i));
+                                    Object oldObject = oldListIndexValue.get(Integer.valueOf(i));
                                     if (newListValueIndex.containsKey(oldObject)) {
                                         ++movedObjects;
                                     } else {
@@ -308,7 +308,7 @@ public class OrderedListContainerPolicy extends ListContainerPolicy {
                                 } else {
                                     // Assume we moved down unless the object that was
                                     // here before is directly beside us.
-                                    Object oldObject = oldListIndexValue.get(new Integer(index));
+                                    Object oldObject = oldListIndexValue.get(Integer.valueOf(index));
                                 
                                     if (newListValueIndex.containsKey(oldObject)) {
                                         if ((((Integer) newListValueIndex.get(oldObject)).intValue() - index) > 1) {
@@ -324,7 +324,7 @@ public class OrderedListContainerPolicy extends ListContainerPolicy {
                                 orderedObjectsToAdd.add(currentObject);
                             } else {
                                 // Take us off the removed list.
-                                indicesToRemove.remove(new Integer(oldIndex));    
+                                indicesToRemove.remove(Integer.valueOf(oldIndex));    
                             }
                         }
                     } else {
@@ -596,11 +596,11 @@ public class OrderedListContainerPolicy extends ListContainerPolicy {
         try {
             ((List) container).remove(index);
         } catch (ClassCastException ex1) {
-            throw QueryException.cannotRemoveFromContainer(new Integer(index), container, this);
+            throw QueryException.cannotRemoveFromContainer(Integer.valueOf(index), container, this);
         } catch (IllegalArgumentException ex2) {
-            throw QueryException.cannotRemoveFromContainer(new Integer(index), container, this);
+            throw QueryException.cannotRemoveFromContainer(Integer.valueOf(index), container, this);
         } catch (UnsupportedOperationException ex3) {
-            throw QueryException.cannotRemoveFromContainer(new Integer(index), container, this);
+            throw QueryException.cannotRemoveFromContainer(Integer.valueOf(index), container, this);
         }
     }
     

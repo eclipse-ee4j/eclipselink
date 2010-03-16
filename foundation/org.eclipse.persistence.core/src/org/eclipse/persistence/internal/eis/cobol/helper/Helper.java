@@ -23,7 +23,7 @@ public class Helper {
     public static Integer integerFromString(String string) {
         Integer intValue;
         try {
-            intValue = new Integer(string);
+            intValue = Integer.valueOf(string);
         } catch (NumberFormatException exception) {
             return null;
         }
@@ -42,7 +42,7 @@ public class Helper {
     }
 
     public static byte byteFromString(String string) {
-        return new Byte(string).byteValue();
+        return Byte.valueOf(string).byteValue();
     }
 
     /** takes a hex string and returns an int value */
@@ -52,18 +52,18 @@ public class Helper {
 
     /** takes a byte and returns the Integer value */
     public static Integer integerFromByte(byte byteValue) {
-        return new Integer(intFromByte(byteValue));
+        return Integer.valueOf(intFromByte(byteValue));
     }
 
     /** takes a byte value and returns int value */
     public static int intFromByte(byte byteValue) {
-        Byte bigByte = new Byte(byteValue);
+        Byte bigByte = Byte.valueOf(byteValue);
         return bigByte.intValue();
     }
 
     /** takes a int an returns a byte */
     public static byte byteFromInt(int intValue) {
-        return new Integer(intValue).byteValue();
+        return Integer.valueOf(intValue).byteValue();
     }
 
     /** calculates a exponential value give the base and power */

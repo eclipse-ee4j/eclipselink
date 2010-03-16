@@ -111,7 +111,7 @@ public class CciJMSSendReceiveInteractionSpec extends CciJMSInteractionSpec {
      * @param timeout - should be set to 0 or above
      */
     public void setTimeout(String timeout) {
-        this.timeout = new Long(timeout).longValue();
+        this.timeout = Long.valueOf(timeout).longValue();
     }
 
     /**

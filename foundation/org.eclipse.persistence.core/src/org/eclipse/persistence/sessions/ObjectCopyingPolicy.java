@@ -182,7 +182,7 @@ public class ObjectCopyingPolicy {
         } else {
             depthString = "NO_CASCADING";
         }
-        Object[] args = { depthString, new Boolean(shouldResetPrimaryKey()) };
+        Object[] args = { depthString, Boolean.valueOf(shouldResetPrimaryKey()) };
         return Helper.getShortClassName(this) + ToStringLocalization.buildMessage("depth_reset_key", args);
     }
 }

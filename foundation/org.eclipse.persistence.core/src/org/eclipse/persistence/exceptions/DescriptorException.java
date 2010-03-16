@@ -792,7 +792,7 @@ public class DescriptorException extends ValidationException {
     }
 
     public static DescriptorException invalidDescriptorEventCode(DescriptorEvent event, ClassDescriptor descriptor) {
-        Object[] args = { new Integer(event.getEventCode()) };
+        Object[] args = { Integer.valueOf(event.getEventCode()) };
 
         DescriptorException descriptorException = new DescriptorException(ExceptionMessageGenerator.buildMessage(DescriptorException.class, INVALID_DESCRIPTOR_EVENT_CODE, args), descriptor);
         descriptorException.setErrorCode(INVALID_DESCRIPTOR_EVENT_CODE);

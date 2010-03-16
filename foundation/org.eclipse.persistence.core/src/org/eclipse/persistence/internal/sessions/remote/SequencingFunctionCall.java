@@ -24,13 +24,13 @@ import org.eclipse.persistence.internal.sessions.AbstractSession;
 public class SequencingFunctionCall {
     public static class DoesExist extends SimpleFunctionCall {
         protected Object execute(AbstractSession session) {
-            return new Boolean(session.getSequencing() != null);
+            return Boolean.valueOf(session.getSequencing() != null);
         }
     }
 
     public static class WhenShouldAcquireValueForAll extends SimpleFunctionCall {
         protected Object execute(AbstractSession session) {
-            return new Integer(session.getSequencing().whenShouldAcquireValueForAll());
+            return Integer.valueOf(session.getSequencing().whenShouldAcquireValueForAll());
         }
     }
 

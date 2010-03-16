@@ -103,7 +103,7 @@ public class DatabaseException extends EclipseLinkException {
     }
 
     public static DatabaseException couldNotConvertObjectType(int type) {
-        Object[] args = { CR, new Integer(type) };
+        Object[] args = { CR, Integer.valueOf(type) };
 
         DatabaseException databaseException = new DatabaseException(ExceptionMessageGenerator.buildMessage(DatabaseException.class, COULD_NOT_CONVERT_OBJECT_TYPE, args));
         databaseException.setErrorCode(COULD_NOT_CONVERT_OBJECT_TYPE);

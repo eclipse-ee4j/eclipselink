@@ -1332,12 +1332,12 @@ public class DatabasePlatform extends DatasourcePlatform {
     public Hashtable maximumNumericValues() {
         Hashtable values = new Hashtable();
 
-        values.put(Integer.class, new Integer(Integer.MAX_VALUE));
-        values.put(Long.class, new Long(Long.MAX_VALUE));
-        values.put(Double.class, new Double(Double.MAX_VALUE));
-        values.put(Short.class, new Short(Short.MAX_VALUE));
-        values.put(Byte.class, new Byte(Byte.MAX_VALUE));
-        values.put(Float.class, new Float(Float.MAX_VALUE));
+        values.put(Integer.class, Integer.valueOf(Integer.MAX_VALUE));
+        values.put(Long.class, Long.valueOf(Long.MAX_VALUE));
+        values.put(Double.class, Double.valueOf(Double.MAX_VALUE));
+        values.put(Short.class, Short.valueOf(Short.MAX_VALUE));
+        values.put(Byte.class, Byte.valueOf(Byte.MAX_VALUE));
+        values.put(Float.class, Float.valueOf(Float.MAX_VALUE));
         values.put(java.math.BigInteger.class, new java.math.BigInteger("999999999999999999999999999999999999999"));
         values.put(java.math.BigDecimal.class, new java.math.BigDecimal("99999999999999999999.9999999999999999999"));
         return values;
@@ -1351,12 +1351,12 @@ public class DatabasePlatform extends DatasourcePlatform {
     public Hashtable minimumNumericValues() {
         Hashtable values = new Hashtable();
 
-        values.put(Integer.class, new Integer(Integer.MIN_VALUE));
-        values.put(Long.class, new Long(Long.MIN_VALUE));
-        values.put(Double.class, new Double(Double.MIN_VALUE));
-        values.put(Short.class, new Short(Short.MIN_VALUE));
-        values.put(Byte.class, new Byte(Byte.MIN_VALUE));
-        values.put(Float.class, new Float(Float.MIN_VALUE));
+        values.put(Integer.class, Integer.valueOf(Integer.MIN_VALUE));
+        values.put(Long.class, Long.valueOf(Long.MIN_VALUE));
+        values.put(Double.class, Double.valueOf(Double.MIN_VALUE));
+        values.put(Short.class, Short.valueOf(Short.MIN_VALUE));
+        values.put(Byte.class, Byte.valueOf(Byte.MIN_VALUE));
+        values.put(Float.class, Float.valueOf(Float.MIN_VALUE));
         values.put(java.math.BigInteger.class, new java.math.BigInteger("-99999999999999999999999999999999999999"));
         values.put(java.math.BigDecimal.class, new java.math.BigDecimal("-9999999999999999999.9999999999999999999"));
         return values;
@@ -1405,7 +1405,7 @@ public class DatabasePlatform extends DatasourcePlatform {
         int nBoundParameters = 0;
         writer.write("(");
         for (int i = 0; i < theObjects.length; i++) {
-            nBoundParameters = nBoundParameters + appendParameterInternal(call, writer, new Integer(theObjects[i]));
+            nBoundParameters = nBoundParameters + appendParameterInternal(call, writer, Integer.valueOf(theObjects[i]));
             if (i < (theObjects.length - 1)) {
                 writer.write(", ");
             }
@@ -2682,16 +2682,16 @@ public class DatabasePlatform extends DatasourcePlatform {
         if ((fieldType.isSizeAllowed()) && ((field.getSize() != 0) || (fieldType.isSizeRequired()))) {
             writer.write("(");
             if (field.getSize() == 0) {
-                writer.write(new Integer(fieldType.getDefaultSize()).toString());
+                writer.write(Integer.valueOf(fieldType.getDefaultSize()).toString());
             } else {
-                writer.write(new Integer(field.getSize()).toString());
+                writer.write(Integer.valueOf(field.getSize()).toString());
             }
             if (field.getSubSize() != 0) {
                 writer.write(",");
-                writer.write(new Integer(field.getSubSize()).toString());
+                writer.write(Integer.valueOf(field.getSubSize()).toString());
             } else if (fieldType.getDefaultSubSize() != 0) {
                 writer.write(",");
-                writer.write(new Integer(fieldType.getDefaultSubSize()).toString());
+                writer.write(Integer.valueOf(fieldType.getDefaultSubSize()).toString());
             }
             writer.write(")");
         }

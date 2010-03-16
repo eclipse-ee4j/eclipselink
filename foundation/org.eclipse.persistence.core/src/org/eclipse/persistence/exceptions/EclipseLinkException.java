@@ -230,7 +230,7 @@ public abstract class EclipseLinkException extends RuntimeException {
      * in the stack trace or the exception message of EclipseLinkExceptions
      */
     public static void setShouldPrintInternalException(boolean printException) {
-        shouldPrintInternalException = new Boolean(printException);
+        shouldPrintInternalException = Boolean.valueOf(printException);
     }
 
     /**

@@ -905,7 +905,7 @@ public class ObjectPersistenceRuntimeXMLProject extends NamespaceResolvableProje
         stringBindingSizeMapping.setGetMethodName("getStringBindingSize");
         stringBindingSizeMapping.setSetMethodName("setStringBindingSize");
         stringBindingSizeMapping.setXPath(getPrimaryNamespaceXPath() + "string-binding-size/text()");
-        stringBindingSizeMapping.setNullValue(new Integer(255));
+        stringBindingSizeMapping.setNullValue(Integer.valueOf(255));
         descriptor.addMapping(stringBindingSizeMapping);
 
         XMLDirectMapping usesStreamsForBindingMapping = new XMLDirectMapping();
@@ -1005,8 +1005,8 @@ public class ObjectPersistenceRuntimeXMLProject extends NamespaceResolvableProje
         XMLDirectMapping operatorMapping = new XMLDirectMapping();
         operatorMapping.setAttributeName("operator");
         ObjectTypeConverter operatorConverter = new ObjectTypeConverter();
-        operatorConverter.addConversionValue("and", ExpressionOperator.getOperator(new Integer(ExpressionOperator.And)));
-        operatorConverter.addConversionValue("or", ExpressionOperator.getOperator(new Integer(ExpressionOperator.Or)));
+        operatorConverter.addConversionValue("and", ExpressionOperator.getOperator(Integer.valueOf(ExpressionOperator.And)));
+        operatorConverter.addConversionValue("or", ExpressionOperator.getOperator(Integer.valueOf(ExpressionOperator.Or)));
         operatorMapping.setConverter(operatorConverter);
         operatorMapping.setXPath("@operator");
         descriptor.addMapping(operatorMapping);
@@ -1056,14 +1056,14 @@ public class ObjectPersistenceRuntimeXMLProject extends NamespaceResolvableProje
         XMLDirectMapping operatorMapping = new XMLDirectMapping();
         operatorMapping.setAttributeName("operator");
         ObjectTypeConverter operatorConverter = new ObjectTypeConverter();
-        operatorConverter.addConversionValue("equal", ExpressionOperator.getOperator(new Integer(ExpressionOperator.Equal)));
-        operatorConverter.addConversionValue("notEqual", ExpressionOperator.getOperator(new Integer(ExpressionOperator.NotEqual)));
-        operatorConverter.addConversionValue("like", ExpressionOperator.getOperator(new Integer(ExpressionOperator.Like)));
-        operatorConverter.addConversionValue("notLike", ExpressionOperator.getOperator(new Integer(ExpressionOperator.NotLike)));
-        operatorConverter.addConversionValue("greaterThan", ExpressionOperator.getOperator(new Integer(ExpressionOperator.GreaterThan)));
-        operatorConverter.addConversionValue("greaterThanEqual", ExpressionOperator.getOperator(new Integer(ExpressionOperator.GreaterThanEqual)));
-        operatorConverter.addConversionValue("lessThan", ExpressionOperator.getOperator(new Integer(ExpressionOperator.LessThan)));
-        operatorConverter.addConversionValue("lessThanEqual", ExpressionOperator.getOperator(new Integer(ExpressionOperator.LessThanEqual)));
+        operatorConverter.addConversionValue("equal", ExpressionOperator.getOperator(Integer.valueOf(ExpressionOperator.Equal)));
+        operatorConverter.addConversionValue("notEqual", ExpressionOperator.getOperator(Integer.valueOf(ExpressionOperator.NotEqual)));
+        operatorConverter.addConversionValue("like", ExpressionOperator.getOperator(Integer.valueOf(ExpressionOperator.Like)));
+        operatorConverter.addConversionValue("notLike", ExpressionOperator.getOperator(Integer.valueOf(ExpressionOperator.NotLike)));
+        operatorConverter.addConversionValue("greaterThan", ExpressionOperator.getOperator(Integer.valueOf(ExpressionOperator.GreaterThan)));
+        operatorConverter.addConversionValue("greaterThanEqual", ExpressionOperator.getOperator(Integer.valueOf(ExpressionOperator.GreaterThanEqual)));
+        operatorConverter.addConversionValue("lessThan", ExpressionOperator.getOperator(Integer.valueOf(ExpressionOperator.LessThan)));
+        operatorConverter.addConversionValue("lessThanEqual", ExpressionOperator.getOperator(Integer.valueOf(ExpressionOperator.LessThanEqual)));
         operatorMapping.setConverter(operatorConverter);
         operatorMapping.setXPath("@operator");
         descriptor.addMapping(operatorMapping);
@@ -1221,24 +1221,24 @@ public class ObjectPersistenceRuntimeXMLProject extends NamespaceResolvableProje
         XMLDirectMapping operatorMapping = new XMLDirectMapping();
         operatorMapping.setAttributeName("operator");
         ExpressionOperatorConverter operatorConverter = new ExpressionOperatorConverter();
-        operatorConverter.addConversionValue("not", ExpressionOperator.getOperator(new Integer(ExpressionOperator.Not)));
-        operatorConverter.addConversionValue("isNull", ExpressionOperator.getOperator(new Integer(ExpressionOperator.IsNull)));
-        operatorConverter.addConversionValue("notNull", ExpressionOperator.getOperator(new Integer(ExpressionOperator.NotNull)));
-        operatorConverter.addConversionValue("ascending", ExpressionOperator.getOperator(new Integer(ExpressionOperator.Ascending)));
-        operatorConverter.addConversionValue("descending", ExpressionOperator.getOperator(new Integer(ExpressionOperator.Descending)));
+        operatorConverter.addConversionValue("not", ExpressionOperator.getOperator(Integer.valueOf(ExpressionOperator.Not)));
+        operatorConverter.addConversionValue("isNull", ExpressionOperator.getOperator(Integer.valueOf(ExpressionOperator.IsNull)));
+        operatorConverter.addConversionValue("notNull", ExpressionOperator.getOperator(Integer.valueOf(ExpressionOperator.NotNull)));
+        operatorConverter.addConversionValue("ascending", ExpressionOperator.getOperator(Integer.valueOf(ExpressionOperator.Ascending)));
+        operatorConverter.addConversionValue("descending", ExpressionOperator.getOperator(Integer.valueOf(ExpressionOperator.Descending)));
         // These are platform specific so not on operator.
         operatorConverter.addConversionValue("upper", new ExpressionOperator(ExpressionOperator.ToUpperCase, NonSynchronizedVector.newInstance(0)));
         operatorConverter.addConversionValue("lower", new ExpressionOperator(ExpressionOperator.ToLowerCase, NonSynchronizedVector.newInstance(0)));
         // Aggregate functions
-        operatorConverter.addConversionValue("count", ExpressionOperator.getOperator(new Integer(ExpressionOperator.Count)));
-        operatorConverter.addConversionValue("sum", ExpressionOperator.getOperator(new Integer(ExpressionOperator.Sum)));
-        operatorConverter.addConversionValue("average", ExpressionOperator.getOperator(new Integer(ExpressionOperator.Average)));
-        operatorConverter.addConversionValue("maximum", ExpressionOperator.getOperator(new Integer(ExpressionOperator.Maximum)));
-        operatorConverter.addConversionValue("minimum", ExpressionOperator.getOperator(new Integer(ExpressionOperator.Minimum)));
+        operatorConverter.addConversionValue("count", ExpressionOperator.getOperator(Integer.valueOf(ExpressionOperator.Count)));
+        operatorConverter.addConversionValue("sum", ExpressionOperator.getOperator(Integer.valueOf(ExpressionOperator.Sum)));
+        operatorConverter.addConversionValue("average", ExpressionOperator.getOperator(Integer.valueOf(ExpressionOperator.Average)));
+        operatorConverter.addConversionValue("maximum", ExpressionOperator.getOperator(Integer.valueOf(ExpressionOperator.Maximum)));
+        operatorConverter.addConversionValue("minimum", ExpressionOperator.getOperator(Integer.valueOf(ExpressionOperator.Minimum)));
         // standardDeviation is platform specific.
         operatorConverter.addConversionValue("standardDeviation", new ExpressionOperator(ExpressionOperator.StandardDeviation, NonSynchronizedVector.newInstance(0)));
         operatorConverter.addConversionValue("variance", new ExpressionOperator(ExpressionOperator.Variance, NonSynchronizedVector.newInstance(0)));
-        operatorConverter.addConversionValue("distinct", ExpressionOperator.getOperator(new Integer(ExpressionOperator.Distinct)));
+        operatorConverter.addConversionValue("distinct", ExpressionOperator.getOperator(Integer.valueOf(ExpressionOperator.Distinct)));
         operatorMapping.setConverter(operatorConverter);
         operatorMapping.setXPath("@function");
         descriptor.addMapping(operatorMapping);
@@ -1381,7 +1381,7 @@ public class ObjectPersistenceRuntimeXMLProject extends NamespaceResolvableProje
         queryTimeoutMapping.setGetMethodName("getQueryTimeout");
         queryTimeoutMapping.setSetMethodName("setQueryTimeout");
         queryTimeoutMapping.setXPath(getPrimaryNamespaceXPath() + "timeout/text()");
-        queryTimeoutMapping.setNullValue(new Integer(DescriptorQueryManager.DefaultTimeout));
+        queryTimeoutMapping.setNullValue(Integer.valueOf(DescriptorQueryManager.DefaultTimeout));
         descriptor.addMapping(queryTimeoutMapping);
 
         // feaure 2297
@@ -1426,7 +1426,7 @@ public class ObjectPersistenceRuntimeXMLProject extends NamespaceResolvableProje
         maximumCachedResultsMapping.setGetMethodName("getMaximumCachedResults");
         maximumCachedResultsMapping.setSetMethodName("setMaximumCachedResults");
         maximumCachedResultsMapping.setXPath(getPrimaryNamespaceXPath() + "maximum-cached-results/text()");
-        maximumCachedResultsMapping.setNullValue(new Integer(100));
+        maximumCachedResultsMapping.setNullValue(Integer.valueOf(100));
         descriptor.addMapping(maximumCachedResultsMapping);
 
         return descriptor;
@@ -1507,7 +1507,7 @@ public class ObjectPersistenceRuntimeXMLProject extends NamespaceResolvableProje
         maxRowsMapping.setGetMethodName("getMaxRows");
         maxRowsMapping.setSetMethodName("setMaxRows");
         maxRowsMapping.setXPath(getPrimaryNamespaceXPath() + "max-rows/text()");
-        maxRowsMapping.setNullValue(new Integer(0));
+        maxRowsMapping.setNullValue(Integer.valueOf(0));
         descriptor.addMapping(maxRowsMapping);
 
         XMLDirectMapping firstResultMapping = new XMLDirectMapping();
@@ -1515,14 +1515,14 @@ public class ObjectPersistenceRuntimeXMLProject extends NamespaceResolvableProje
         firstResultMapping.setGetMethodName("getFirstResult");
         firstResultMapping.setSetMethodName("setFirstResult");
         firstResultMapping.setXPath(getPrimaryNamespaceXPath() + "first-result/text()");
-        firstResultMapping.setNullValue(new Integer(0));
+        firstResultMapping.setNullValue(Integer.valueOf(0));
         descriptor.addMapping(firstResultMapping);
         XMLDirectMapping fetchSizeMapping = new XMLDirectMapping();
         fetchSizeMapping.setAttributeName("fetchSize");
         fetchSizeMapping.setGetMethodName("getFetchSize");
         fetchSizeMapping.setSetMethodName("setFetchSize");
         fetchSizeMapping.setXPath(getPrimaryNamespaceXPath() + "fetch-size/text()");
-        fetchSizeMapping.setNullValue(new Integer(0));
+        fetchSizeMapping.setNullValue(Integer.valueOf(0));
         descriptor.addMapping(fetchSizeMapping);
 
         XMLCompositeObjectMapping queryResultCachingPolicyMapping = new XMLCompositeObjectMapping();
@@ -1567,11 +1567,11 @@ public class ObjectPersistenceRuntimeXMLProject extends NamespaceResolvableProje
         cascadePolicyMapping.setGetMethodName("getCascadePolicy");
         cascadePolicyMapping.setSetMethodName("setCascadePolicy");
         ObjectTypeConverter cascadePolicyConverter = new ObjectTypeConverter();
-        cascadePolicyConverter.addConversionValue("none", new Integer(DatabaseQuery.NoCascading));
-        cascadePolicyConverter.addConversionValue("all", new Integer(DatabaseQuery.CascadeAllParts));
-        cascadePolicyConverter.addConversionValue("private", new Integer(DatabaseQuery.CascadePrivateParts));
+        cascadePolicyConverter.addConversionValue("none", Integer.valueOf(DatabaseQuery.NoCascading));
+        cascadePolicyConverter.addConversionValue("all", Integer.valueOf(DatabaseQuery.CascadeAllParts));
+        cascadePolicyConverter.addConversionValue("private", Integer.valueOf(DatabaseQuery.CascadePrivateParts));
         cascadePolicyMapping.setConverter(cascadePolicyConverter);
-        cascadePolicyMapping.setNullValue(new Integer(DatabaseQuery.NoCascading));
+        cascadePolicyMapping.setNullValue(Integer.valueOf(DatabaseQuery.NoCascading));
         cascadePolicyMapping.setXPath(getPrimaryNamespaceXPath() + "cascade-policy/text()");
         descriptor.addMapping(cascadePolicyMapping);
 
@@ -1581,15 +1581,15 @@ public class ObjectPersistenceRuntimeXMLProject extends NamespaceResolvableProje
         cacheUsageMapping.setSetMethodName("setCacheUsage");
         cacheUsageMapping.setXPath(getPrimaryNamespaceXPath() + "cache-usage/text()");
         ObjectTypeConverter cacheUsageConverter = new ObjectTypeConverter();
-        cacheUsageConverter.addConversionValue("exact-primary-key", new Integer(ObjectLevelReadQuery.CheckCacheByExactPrimaryKey));
-        cacheUsageConverter.addConversionValue("primary-key", new Integer(ObjectLevelReadQuery.CheckCacheByPrimaryKey));
-        cacheUsageConverter.addConversionValue("cache-only", new Integer(ObjectLevelReadQuery.CheckCacheOnly));
-        cacheUsageConverter.addConversionValue("cache-then-database", new Integer(ObjectLevelReadQuery.CheckCacheThenDatabase));
-        cacheUsageConverter.addConversionValue("conform", new Integer(ObjectLevelReadQuery.ConformResultsInUnitOfWork));
-        cacheUsageConverter.addConversionValue("none", new Integer(ObjectLevelReadQuery.DoNotCheckCache));
-        cacheUsageConverter.addConversionValue("use-descriptor-setting", new Integer(ObjectLevelReadQuery.UseDescriptorSetting));
+        cacheUsageConverter.addConversionValue("exact-primary-key", Integer.valueOf(ObjectLevelReadQuery.CheckCacheByExactPrimaryKey));
+        cacheUsageConverter.addConversionValue("primary-key", Integer.valueOf(ObjectLevelReadQuery.CheckCacheByPrimaryKey));
+        cacheUsageConverter.addConversionValue("cache-only", Integer.valueOf(ObjectLevelReadQuery.CheckCacheOnly));
+        cacheUsageConverter.addConversionValue("cache-then-database", Integer.valueOf(ObjectLevelReadQuery.CheckCacheThenDatabase));
+        cacheUsageConverter.addConversionValue("conform", Integer.valueOf(ObjectLevelReadQuery.ConformResultsInUnitOfWork));
+        cacheUsageConverter.addConversionValue("none", Integer.valueOf(ObjectLevelReadQuery.DoNotCheckCache));
+        cacheUsageConverter.addConversionValue("use-descriptor-setting", Integer.valueOf(ObjectLevelReadQuery.UseDescriptorSetting));
         cacheUsageMapping.setConverter(cacheUsageConverter);
-        cacheUsageMapping.setNullValue(new Integer(ObjectLevelReadQuery.UseDescriptorSetting));
+        cacheUsageMapping.setNullValue(Integer.valueOf(ObjectLevelReadQuery.UseDescriptorSetting));
         descriptor.addMapping(cacheUsageMapping);
 
         XMLDirectMapping lockModeMapping = new XMLDirectMapping();
@@ -1598,12 +1598,12 @@ public class ObjectPersistenceRuntimeXMLProject extends NamespaceResolvableProje
         lockModeMapping.setSetMethodName("setLockMode");
         lockModeMapping.setXPath(getPrimaryNamespaceXPath() + "lock-mode/text()");
         ObjectTypeConverter lockModeConverter = new ObjectTypeConverter();
-        lockModeConverter.addConversionValue("default", new Short(ObjectLevelReadQuery.DEFAULT_LOCK_MODE));
-        lockModeConverter.addConversionValue("lock", new Short(ObjectLevelReadQuery.LOCK));
-        lockModeConverter.addConversionValue("lock-no-wait", new Short(ObjectLevelReadQuery.LOCK_NOWAIT));
-        lockModeConverter.addConversionValue("none", new Short(ObjectLevelReadQuery.NO_LOCK));
+        lockModeConverter.addConversionValue("default", Short.valueOf(ObjectLevelReadQuery.DEFAULT_LOCK_MODE));
+        lockModeConverter.addConversionValue("lock", Short.valueOf(ObjectLevelReadQuery.LOCK));
+        lockModeConverter.addConversionValue("lock-no-wait", Short.valueOf(ObjectLevelReadQuery.LOCK_NOWAIT));
+        lockModeConverter.addConversionValue("none", Short.valueOf(ObjectLevelReadQuery.NO_LOCK));
         lockModeMapping.setConverter(lockModeConverter);
-        lockModeMapping.setNullValue(new Short(ObjectLevelReadQuery.DEFAULT_LOCK_MODE));
+        lockModeMapping.setNullValue(Short.valueOf(ObjectLevelReadQuery.DEFAULT_LOCK_MODE));
         descriptor.addMapping(lockModeMapping);
 
         XMLDirectMapping distinctStateMapping = new XMLDirectMapping();
@@ -1612,11 +1612,11 @@ public class ObjectPersistenceRuntimeXMLProject extends NamespaceResolvableProje
         distinctStateMapping.setSetMethodName("setDistinctState");
         distinctStateMapping.setXPath(getPrimaryNamespaceXPath() + "distinct-state/text()");
         ObjectTypeConverter distinctStateConverter = new ObjectTypeConverter();
-        distinctStateConverter.addConversionValue("dont-use-distinct", new Short(ObjectLevelReadQuery.DONT_USE_DISTINCT));
-        distinctStateConverter.addConversionValue("none", new Short(ObjectLevelReadQuery.UNCOMPUTED_DISTINCT));
-        distinctStateConverter.addConversionValue("use-distinct", new Short(ObjectLevelReadQuery.USE_DISTINCT));
+        distinctStateConverter.addConversionValue("dont-use-distinct", Short.valueOf(ObjectLevelReadQuery.DONT_USE_DISTINCT));
+        distinctStateConverter.addConversionValue("none", Short.valueOf(ObjectLevelReadQuery.UNCOMPUTED_DISTINCT));
+        distinctStateConverter.addConversionValue("use-distinct", Short.valueOf(ObjectLevelReadQuery.USE_DISTINCT));
         distinctStateMapping.setConverter(distinctStateConverter);
-        distinctStateMapping.setNullValue(new Short(ObjectLevelReadQuery.UNCOMPUTED_DISTINCT));
+        distinctStateMapping.setNullValue(Short.valueOf(ObjectLevelReadQuery.UNCOMPUTED_DISTINCT));
         descriptor.addMapping(distinctStateMapping);
 
         XMLCompositeObjectMapping inMemoryQueryIndirectionPolicyMapping = new XMLCompositeObjectMapping();
@@ -1756,12 +1756,12 @@ public class ObjectPersistenceRuntimeXMLProject extends NamespaceResolvableProje
         existenceCheckMapping.setSetMethodName("setExistencePolicy");
         existenceCheckMapping.setXPath(getPrimaryNamespaceXPath() + "existence-check/text()");
         ObjectTypeConverter existenceCheckConverter = new ObjectTypeConverter();
-        existenceCheckConverter.addConversionValue("check-cache", new Integer(DoesExistQuery.CheckCache));
-        existenceCheckConverter.addConversionValue("check-database", new Integer(DoesExistQuery.CheckDatabase));
-        existenceCheckConverter.addConversionValue("assume-existence", new Integer(DoesExistQuery.AssumeExistence));
-        existenceCheckConverter.addConversionValue("assume-non-existence", new Integer(DoesExistQuery.AssumeNonExistence));
+        existenceCheckConverter.addConversionValue("check-cache", Integer.valueOf(DoesExistQuery.CheckCache));
+        existenceCheckConverter.addConversionValue("check-database", Integer.valueOf(DoesExistQuery.CheckDatabase));
+        existenceCheckConverter.addConversionValue("assume-existence", Integer.valueOf(DoesExistQuery.AssumeExistence));
+        existenceCheckConverter.addConversionValue("assume-non-existence", Integer.valueOf(DoesExistQuery.AssumeNonExistence));
         existenceCheckMapping.setConverter(existenceCheckConverter);
-        existenceCheckMapping.setNullValue(new Integer(DoesExistQuery.CheckCache));
+        existenceCheckMapping.setNullValue(Integer.valueOf(DoesExistQuery.CheckCache));
         descriptor.addMapping(existenceCheckMapping);
 
         return descriptor;
@@ -1824,22 +1824,22 @@ public class ObjectPersistenceRuntimeXMLProject extends NamespaceResolvableProje
         returnChoiceMapping.setAttributeName("returnChoice");
         returnChoiceMapping.setXPath(getPrimaryNamespaceXPath() + "return-choice/text()");
         ObjectTypeConverter returnChoiceConverter = new ObjectTypeConverter();
-        returnChoiceConverter.addConversionValue("return-single-result", new Integer(ReportQuery.ShouldReturnSingleResult));
-        returnChoiceConverter.addConversionValue("return-single-value", new Integer(ReportQuery.ShouldReturnSingleValue));
-        returnChoiceConverter.addConversionValue("return-single-attribute", new Integer(ReportQuery.ShouldReturnSingleAttribute));
+        returnChoiceConverter.addConversionValue("return-single-result", Integer.valueOf(ReportQuery.ShouldReturnSingleResult));
+        returnChoiceConverter.addConversionValue("return-single-value", Integer.valueOf(ReportQuery.ShouldReturnSingleValue));
+        returnChoiceConverter.addConversionValue("return-single-attribute", Integer.valueOf(ReportQuery.ShouldReturnSingleAttribute));
         returnChoiceMapping.setConverter(returnChoiceConverter);
-        returnChoiceMapping.setNullValue(new Integer(0));
+        returnChoiceMapping.setNullValue(Integer.valueOf(0));
         descriptor.addMapping(returnChoiceMapping);
 
         XMLDirectMapping retrievePrimaryKeysMapping = new XMLDirectMapping();
         retrievePrimaryKeysMapping.setAttributeName("shouldRetrievePrimaryKeys");
         retrievePrimaryKeysMapping.setXPath(getPrimaryNamespaceXPath() + "retrieve-primary-keys/text()");
         ObjectTypeConverter retrievePrimaryKeysConverter = new ObjectTypeConverter();
-        retrievePrimaryKeysConverter.addConversionValue("full-primary-key", new Integer(ReportQuery.FULL_PRIMARY_KEY));
-        retrievePrimaryKeysConverter.addConversionValue("first-primary-key", new Integer(ReportQuery.FIRST_PRIMARY_KEY));
-        retrievePrimaryKeysConverter.addConversionValue("no-primary-key", new Integer(ReportQuery.NO_PRIMARY_KEY));
+        retrievePrimaryKeysConverter.addConversionValue("full-primary-key", Integer.valueOf(ReportQuery.FULL_PRIMARY_KEY));
+        retrievePrimaryKeysConverter.addConversionValue("first-primary-key", Integer.valueOf(ReportQuery.FIRST_PRIMARY_KEY));
+        retrievePrimaryKeysConverter.addConversionValue("no-primary-key", Integer.valueOf(ReportQuery.NO_PRIMARY_KEY));
         retrievePrimaryKeysMapping.setConverter(retrievePrimaryKeysConverter);
-        returnChoiceMapping.setNullValue(new Integer(ReportQuery.NO_PRIMARY_KEY));
+        returnChoiceMapping.setNullValue(Integer.valueOf(ReportQuery.NO_PRIMARY_KEY));
         descriptor.addMapping(retrievePrimaryKeysMapping);
 
         XMLCompositeCollectionMapping reportItemsMapping = new XMLCompositeCollectionMapping();
@@ -1910,12 +1910,12 @@ public class ObjectPersistenceRuntimeXMLProject extends NamespaceResolvableProje
         policyMapping.setSetMethodName("setPolicy");
         policyMapping.setXPath(getPrimaryNamespaceXPath() + "policy/text()");
         ObjectTypeConverter policyConverter = new ObjectTypeConverter();
-        policyConverter.addConversionValue("ignore-exceptions-return-conformed", new Integer(InMemoryQueryIndirectionPolicy.SHOULD_IGNORE_EXCEPTION_RETURN_CONFORMED));
-        policyConverter.addConversionValue("ignore-exceptions-returned-not-conformed", new Integer(InMemoryQueryIndirectionPolicy.SHOULD_IGNORE_EXCEPTION_RETURN_NOT_CONFORMED));
-        policyConverter.addConversionValue("trigger-indirection", new Integer(InMemoryQueryIndirectionPolicy.SHOULD_THROW_INDIRECTION_EXCEPTION));
-        policyConverter.addConversionValue("throw-indirection-exception", new Integer(InMemoryQueryIndirectionPolicy.SHOULD_TRIGGER_INDIRECTION));
+        policyConverter.addConversionValue("ignore-exceptions-return-conformed", Integer.valueOf(InMemoryQueryIndirectionPolicy.SHOULD_IGNORE_EXCEPTION_RETURN_CONFORMED));
+        policyConverter.addConversionValue("ignore-exceptions-returned-not-conformed", Integer.valueOf(InMemoryQueryIndirectionPolicy.SHOULD_IGNORE_EXCEPTION_RETURN_NOT_CONFORMED));
+        policyConverter.addConversionValue("trigger-indirection", Integer.valueOf(InMemoryQueryIndirectionPolicy.SHOULD_THROW_INDIRECTION_EXCEPTION));
+        policyConverter.addConversionValue("throw-indirection-exception", Integer.valueOf(InMemoryQueryIndirectionPolicy.SHOULD_TRIGGER_INDIRECTION));
         policyMapping.setConverter(policyConverter);
-        policyMapping.setNullValue(new Integer(InMemoryQueryIndirectionPolicy.SHOULD_THROW_INDIRECTION_EXCEPTION));
+        policyMapping.setNullValue(Integer.valueOf(InMemoryQueryIndirectionPolicy.SHOULD_THROW_INDIRECTION_EXCEPTION));
         descriptor.addMapping(policyMapping);
         return descriptor;
     }
@@ -2185,7 +2185,7 @@ public class ObjectPersistenceRuntimeXMLProject extends NamespaceResolvableProje
         identityMapSizeMapping.setGetMethodName("getIdentityMapSize");
         identityMapSizeMapping.setSetMethodName("setIdentityMapSize");
         identityMapSizeMapping.setXPath(getPrimaryNamespaceXPath() + "caching/" + getPrimaryNamespaceXPath() + "cache-size/text()");
-        identityMapSizeMapping.setNullValue(new Integer(100));
+        identityMapSizeMapping.setNullValue(Integer.valueOf(100));
         descriptor.addMapping(identityMapSizeMapping);
 
         XMLDirectMapping remoteIdentityMapSizeMapping = new XMLDirectMapping();
@@ -2193,7 +2193,7 @@ public class ObjectPersistenceRuntimeXMLProject extends NamespaceResolvableProje
         remoteIdentityMapSizeMapping.setGetMethodName("getRemoteIdentityMapSize");
         remoteIdentityMapSizeMapping.setSetMethodName("setRemoteIdentityMapSize");
         remoteIdentityMapSizeMapping.setXPath(getPrimaryNamespaceXPath() + "remote-caching/" + getPrimaryNamespaceXPath() + "cache-size/text()");
-        remoteIdentityMapSizeMapping.setNullValue(new Integer(100));
+        remoteIdentityMapSizeMapping.setNullValue(Integer.valueOf(100));
         descriptor.addMapping(remoteIdentityMapSizeMapping);
 
         XMLDirectMapping shouldAlwaysRefreshCacheMapping = new XMLDirectMapping();
@@ -2257,12 +2257,12 @@ public class ObjectPersistenceRuntimeXMLProject extends NamespaceResolvableProje
         unitOfWorkCacheIsolationLevelMapping.setSetMethodName("setUnitOfWorkCacheIsolationLevel");
         unitOfWorkCacheIsolationLevelMapping.setXPath(getPrimaryNamespaceXPath() + "caching/" + getPrimaryNamespaceXPath() + "unitofwork-isolation-level/text()");
         ObjectTypeConverter unitOfWorkCacheIsolationLevelConverter = new ObjectTypeConverter();
-        unitOfWorkCacheIsolationLevelConverter.addConversionValue("use-session-cache-after-transaction", new Integer(ClassDescriptor.USE_SESSION_CACHE_AFTER_TRANSACTION));
-        unitOfWorkCacheIsolationLevelConverter.addConversionValue("isolate-new-data-after-transaction", new Integer(ClassDescriptor.ISOLATE_NEW_DATA_AFTER_TRANSACTION));
-        unitOfWorkCacheIsolationLevelConverter.addConversionValue("isolate-cache-after-transaction", new Integer(ClassDescriptor.ISOLATE_CACHE_AFTER_TRANSACTION));
-        unitOfWorkCacheIsolationLevelConverter.addConversionValue("isolate-cache-always", new Integer(ClassDescriptor.ISOLATE_CACHE_ALWAYS));
+        unitOfWorkCacheIsolationLevelConverter.addConversionValue("use-session-cache-after-transaction", Integer.valueOf(ClassDescriptor.USE_SESSION_CACHE_AFTER_TRANSACTION));
+        unitOfWorkCacheIsolationLevelConverter.addConversionValue("isolate-new-data-after-transaction", Integer.valueOf(ClassDescriptor.ISOLATE_NEW_DATA_AFTER_TRANSACTION));
+        unitOfWorkCacheIsolationLevelConverter.addConversionValue("isolate-cache-after-transaction", Integer.valueOf(ClassDescriptor.ISOLATE_CACHE_AFTER_TRANSACTION));
+        unitOfWorkCacheIsolationLevelConverter.addConversionValue("isolate-cache-always", Integer.valueOf(ClassDescriptor.ISOLATE_CACHE_ALWAYS));
         unitOfWorkCacheIsolationLevelMapping.setConverter(unitOfWorkCacheIsolationLevelConverter);
-        unitOfWorkCacheIsolationLevelMapping.setNullValue(new Integer(ClassDescriptor.ISOLATE_NEW_DATA_AFTER_TRANSACTION));
+        unitOfWorkCacheIsolationLevelMapping.setNullValue(Integer.valueOf(ClassDescriptor.ISOLATE_NEW_DATA_AFTER_TRANSACTION));
         descriptor.addMapping(unitOfWorkCacheIsolationLevelMapping);
 
         XMLCompositeObjectMapping cacheInvalidationPolicyMapping = new XMLCompositeObjectMapping();
@@ -2275,12 +2275,12 @@ public class ObjectPersistenceRuntimeXMLProject extends NamespaceResolvableProje
         cacheSyncTypeMapping.setAttributeName("cacheSynchronizationType");
         cacheSyncTypeMapping.setXPath(getPrimaryNamespaceXPath() + "caching/" + getPrimaryNamespaceXPath() + "cache-sync-type/text()");
         ObjectTypeConverter cacheSyncTypeConverter = new ObjectTypeConverter();
-        cacheSyncTypeConverter.addConversionValue("invalidation", new Integer(ClassDescriptor.INVALIDATE_CHANGED_OBJECTS));
-        cacheSyncTypeConverter.addConversionValue("no-changes", new Integer(ClassDescriptor.DO_NOT_SEND_CHANGES));
-        cacheSyncTypeConverter.addConversionValue("change-set-with-new-objects", new Integer(ClassDescriptor.SEND_NEW_OBJECTS_WITH_CHANGES));
-        cacheSyncTypeConverter.addConversionValue("change-set", new Integer(ClassDescriptor.SEND_OBJECT_CHANGES));
+        cacheSyncTypeConverter.addConversionValue("invalidation", Integer.valueOf(ClassDescriptor.INVALIDATE_CHANGED_OBJECTS));
+        cacheSyncTypeConverter.addConversionValue("no-changes", Integer.valueOf(ClassDescriptor.DO_NOT_SEND_CHANGES));
+        cacheSyncTypeConverter.addConversionValue("change-set-with-new-objects", Integer.valueOf(ClassDescriptor.SEND_NEW_OBJECTS_WITH_CHANGES));
+        cacheSyncTypeConverter.addConversionValue("change-set", Integer.valueOf(ClassDescriptor.SEND_OBJECT_CHANGES));
         cacheSyncTypeMapping.setConverter(cacheSyncTypeConverter);
-        cacheSyncTypeMapping.setNullValue(new Integer(ClassDescriptor.SEND_OBJECT_CHANGES));
+        cacheSyncTypeMapping.setNullValue(Integer.valueOf(ClassDescriptor.SEND_OBJECT_CHANGES));
         descriptor.addMapping(cacheSyncTypeMapping);
 
         XMLCompositeObjectMapping historyPolicyMapping = new XMLCompositeObjectMapping();
@@ -3574,8 +3574,8 @@ public class ObjectPersistenceRuntimeXMLProject extends NamespaceResolvableProje
         joinFetchMapping.setAttributeName("joinFetch");
         joinFetchMapping.setXPath(getPrimaryNamespaceXPath() + "join-fetch/text()");
         ObjectTypeConverter joinFetchConverter = new ObjectTypeConverter();
-        joinFetchConverter.addConversionValue("true", new Integer(ForeignReferenceMapping.INNER_JOIN));
-        joinFetchConverter.addConversionValue("false", new Integer(ForeignReferenceMapping.NONE));
+        joinFetchConverter.addConversionValue("true", Integer.valueOf(ForeignReferenceMapping.INNER_JOIN));
+        joinFetchConverter.addConversionValue("false", Integer.valueOf(ForeignReferenceMapping.NONE));
         joinFetchMapping.setConverter(joinFetchConverter);
         joinFetchMapping.setNullValue(ForeignReferenceMapping.NONE);
         descriptor.addMapping(joinFetchMapping);        
@@ -3964,7 +3964,7 @@ public class ObjectPersistenceRuntimeXMLProject extends NamespaceResolvableProje
         queryTimeoutMapping.setGetMethodName("getQueryTimeout");
         queryTimeoutMapping.setSetMethodName("setQueryTimeout");
         queryTimeoutMapping.setXPath(getPrimaryNamespaceXPath() + "timeout/text()");
-        queryTimeoutMapping.setNullValue(new Integer(DescriptorQueryManager.DefaultTimeout));
+        queryTimeoutMapping.setNullValue(Integer.valueOf(DescriptorQueryManager.DefaultTimeout));
         descriptor.addMapping(queryTimeoutMapping);
 
         XMLCompositeObjectMapping insertQueryMapping = new XMLCompositeObjectMapping();
@@ -4775,10 +4775,10 @@ public class ObjectPersistenceRuntimeXMLProject extends NamespaceResolvableProje
         nodeTypeMapping.setXPath(getPrimaryNamespaceXPath() + "node-type/text()");
 
         ObjectTypeConverter nodeTypeConverter = new ObjectTypeConverter();
-        nodeTypeConverter.addConversionValue("element", new Integer(XMLSchemaReference.ELEMENT));
-        nodeTypeConverter.addConversionValue("simple-type", new Integer(XMLSchemaReference.SIMPLE_TYPE));
-        nodeTypeConverter.addConversionValue("complex-type", new Integer(XMLSchemaReference.COMPLEX_TYPE));
-        nodeTypeConverter.addConversionValue("group", new Integer(XMLSchemaReference.GROUP));
+        nodeTypeConverter.addConversionValue("element", Integer.valueOf(XMLSchemaReference.ELEMENT));
+        nodeTypeConverter.addConversionValue("simple-type", Integer.valueOf(XMLSchemaReference.SIMPLE_TYPE));
+        nodeTypeConverter.addConversionValue("complex-type", Integer.valueOf(XMLSchemaReference.COMPLEX_TYPE));
+        nodeTypeConverter.addConversionValue("group", Integer.valueOf(XMLSchemaReference.GROUP));
         nodeTypeMapping.setConverter(nodeTypeConverter);
 
         descriptor.addMapping(nodeTypeMapping);
@@ -4993,12 +4993,12 @@ public class ObjectPersistenceRuntimeXMLProject extends NamespaceResolvableProje
         modificationDeferralLevelMapping.setGetMethodName("getDeferModificationsUntilCommit");
         modificationDeferralLevelMapping.setSetMethodName("setDeferModificationsUntilCommit");
         ObjectTypeConverter modificationDeferralLevelConverter = new ObjectTypeConverter();
-        modificationDeferralLevelConverter.addConversionValue("all-modifications", new Integer(CMPPolicy.ALL_MODIFICATIONS));
-        modificationDeferralLevelConverter.addConversionValue("update-modifications", new Integer(CMPPolicy.UPDATE_MODIFICATIONS));
-        modificationDeferralLevelConverter.addConversionValue("none", new Integer(CMPPolicy.NONE));
+        modificationDeferralLevelConverter.addConversionValue("all-modifications", Integer.valueOf(CMPPolicy.ALL_MODIFICATIONS));
+        modificationDeferralLevelConverter.addConversionValue("update-modifications", Integer.valueOf(CMPPolicy.UPDATE_MODIFICATIONS));
+        modificationDeferralLevelConverter.addConversionValue("none", Integer.valueOf(CMPPolicy.NONE));
         modificationDeferralLevelMapping.setConverter(modificationDeferralLevelConverter);
         modificationDeferralLevelMapping.setXPath(getPrimaryNamespaceXPath() + "defer-until-commit/text()");
-        modificationDeferralLevelMapping.setNullValue(new Integer(CMPPolicy.ALL_MODIFICATIONS));
+        modificationDeferralLevelMapping.setNullValue(Integer.valueOf(CMPPolicy.ALL_MODIFICATIONS));
         descriptor.addMapping(modificationDeferralLevelMapping);
 
         XMLDirectMapping nonDeferredCreateTimeMapping = new XMLDirectMapping();
@@ -5006,12 +5006,12 @@ public class ObjectPersistenceRuntimeXMLProject extends NamespaceResolvableProje
         nonDeferredCreateTimeMapping.setGetMethodName("getNonDeferredCreateTime");
         nonDeferredCreateTimeMapping.setSetMethodName("setNonDeferredCreateTime");
         ObjectTypeConverter nonDeferredCreateTimeConverter = new ObjectTypeConverter();
-        nonDeferredCreateTimeConverter.addConversionValue("after-ejbcreate", new Integer(CMPPolicy.AFTER_EJBCREATE));
-        nonDeferredCreateTimeConverter.addConversionValue("after-ejbpostcreate", new Integer(CMPPolicy.AFTER_EJBPOSTCREATE));
-        nonDeferredCreateTimeConverter.addConversionValue("undefined", new Integer(CMPPolicy.UNDEFINED));
+        nonDeferredCreateTimeConverter.addConversionValue("after-ejbcreate", Integer.valueOf(CMPPolicy.AFTER_EJBCREATE));
+        nonDeferredCreateTimeConverter.addConversionValue("after-ejbpostcreate", Integer.valueOf(CMPPolicy.AFTER_EJBPOSTCREATE));
+        nonDeferredCreateTimeConverter.addConversionValue("undefined", Integer.valueOf(CMPPolicy.UNDEFINED));
         nonDeferredCreateTimeMapping.setConverter(nonDeferredCreateTimeConverter);
         nonDeferredCreateTimeMapping.setXPath(getPrimaryNamespaceXPath() + "non-deferred-create-time/text()");
-        nonDeferredCreateTimeMapping.setNullValue(new Integer(CMPPolicy.UNDEFINED));
+        nonDeferredCreateTimeMapping.setNullValue(Integer.valueOf(CMPPolicy.UNDEFINED));
         descriptor.addMapping(nonDeferredCreateTimeMapping);
 
         XMLCompositeObjectMapping pessimisticLockingPolicyMapping = new XMLCompositeObjectMapping();
@@ -5036,8 +5036,8 @@ public class ObjectPersistenceRuntimeXMLProject extends NamespaceResolvableProje
         lockingModeMapping.setGetMethodName("getLockingMode");
         lockingModeMapping.setSetMethodName("setLockingMode");
         ObjectTypeConverter lockingModeConverter = new ObjectTypeConverter();
-        lockingModeConverter.addConversionValue("wait", new Short(ObjectLevelReadQuery.LOCK));
-        lockingModeConverter.addConversionValue("no-wait", new Short(ObjectLevelReadQuery.LOCK_NOWAIT));
+        lockingModeConverter.addConversionValue("wait", Short.valueOf(ObjectLevelReadQuery.LOCK));
+        lockingModeConverter.addConversionValue("no-wait", Short.valueOf(ObjectLevelReadQuery.LOCK_NOWAIT));
         lockingModeMapping.setConverter(lockingModeConverter);
         descriptor.addMapping(lockingModeMapping);
 
@@ -5069,7 +5069,7 @@ public class ObjectPersistenceRuntimeXMLProject extends NamespaceResolvableProje
         preallocationSizeMapping.setGetMethodName("getPreallocationSize");
         preallocationSizeMapping.setSetMethodName("setPreallocationSize");
         preallocationSizeMapping.setXPath(getPrimaryNamespaceXPath() + "preallocation-size/text()");
-        preallocationSizeMapping.setNullValue(new Integer(50));
+        preallocationSizeMapping.setNullValue(Integer.valueOf(50));
         descriptor.addMapping(preallocationSizeMapping);
 
         return descriptor;

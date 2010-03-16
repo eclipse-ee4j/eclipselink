@@ -383,9 +383,9 @@ public class ObjectPersistenceRuntimeXMLProject_11_1_1 extends ObjectPersistence
         joinFetchMapping.setAttributeName("joinFetch");
         joinFetchMapping.setXPath(getPrimaryNamespaceXPath() + "join-fetch/text()");
         ObjectTypeConverter joinFetchConverter = new ObjectTypeConverter();
-        joinFetchConverter.addConversionValue("inner-join", new Integer(ForeignReferenceMapping.INNER_JOIN));
-        joinFetchConverter.addConversionValue("outer-join", new Integer(ForeignReferenceMapping.OUTER_JOIN));
-        joinFetchConverter.addConversionValue("none", new Integer(ForeignReferenceMapping.NONE));
+        joinFetchConverter.addConversionValue("inner-join", Integer.valueOf(ForeignReferenceMapping.INNER_JOIN));
+        joinFetchConverter.addConversionValue("outer-join", Integer.valueOf(ForeignReferenceMapping.OUTER_JOIN));
+        joinFetchConverter.addConversionValue("none", Integer.valueOf(ForeignReferenceMapping.NONE));
         joinFetchMapping.setConverter(joinFetchConverter);
         joinFetchMapping.setNullValue(ForeignReferenceMapping.NONE);
         descriptor.addMapping(joinFetchMapping);
@@ -424,9 +424,9 @@ public class ObjectPersistenceRuntimeXMLProject_11_1_1 extends ObjectPersistence
         joinFetchMapping.setAttributeName("joinFetch");
         joinFetchMapping.setXPath(getPrimaryNamespaceXPath() + "join-fetch/text()");
         ObjectTypeConverter joinFetchConverter = new ObjectTypeConverter();
-        joinFetchConverter.addConversionValue("inner-join", new Integer(ForeignReferenceMapping.INNER_JOIN));
-        joinFetchConverter.addConversionValue("outer-join", new Integer(ForeignReferenceMapping.OUTER_JOIN));
-        joinFetchConverter.addConversionValue("none", new Integer(ForeignReferenceMapping.NONE));
+        joinFetchConverter.addConversionValue("inner-join", Integer.valueOf(ForeignReferenceMapping.INNER_JOIN));
+        joinFetchConverter.addConversionValue("outer-join", Integer.valueOf(ForeignReferenceMapping.OUTER_JOIN));
+        joinFetchConverter.addConversionValue("none", Integer.valueOf(ForeignReferenceMapping.NONE));
         joinFetchMapping.setConverter(joinFetchConverter);
         joinFetchMapping.setNullValue(ForeignReferenceMapping.NONE);
         descriptor.addMapping(joinFetchMapping);
@@ -442,9 +442,9 @@ public class ObjectPersistenceRuntimeXMLProject_11_1_1 extends ObjectPersistence
         joinFetchMapping.setAttributeName("joinFetch");
         joinFetchMapping.setXPath(getPrimaryNamespaceXPath() + "join-fetch/text()");
         ObjectTypeConverter joinFetchConverter = new ObjectTypeConverter();
-        joinFetchConverter.addConversionValue("inner-join", new Integer(ForeignReferenceMapping.INNER_JOIN));
-        joinFetchConverter.addConversionValue("outer-join", new Integer(ForeignReferenceMapping.OUTER_JOIN));
-        joinFetchConverter.addConversionValue("none", new Integer(ForeignReferenceMapping.NONE));
+        joinFetchConverter.addConversionValue("inner-join", Integer.valueOf(ForeignReferenceMapping.INNER_JOIN));
+        joinFetchConverter.addConversionValue("outer-join", Integer.valueOf(ForeignReferenceMapping.OUTER_JOIN));
+        joinFetchConverter.addConversionValue("none", Integer.valueOf(ForeignReferenceMapping.NONE));
         joinFetchMapping.setConverter(joinFetchConverter);
         joinFetchMapping.setNullValue(ForeignReferenceMapping.NONE);
         descriptor.addMapping(joinFetchMapping);
@@ -460,9 +460,9 @@ public class ObjectPersistenceRuntimeXMLProject_11_1_1 extends ObjectPersistence
         joinFetchMapping.setAttributeName("joinFetch");
         joinFetchMapping.setXPath(getPrimaryNamespaceXPath() + "join-fetch/text()");
         ObjectTypeConverter joinFetchConverter = new ObjectTypeConverter();
-        joinFetchConverter.addConversionValue("inner-join", new Integer(ForeignReferenceMapping.INNER_JOIN));
-        joinFetchConverter.addConversionValue("outer-join", new Integer(ForeignReferenceMapping.OUTER_JOIN));
-        joinFetchConverter.addConversionValue("none", new Integer(ForeignReferenceMapping.NONE));
+        joinFetchConverter.addConversionValue("inner-join", Integer.valueOf(ForeignReferenceMapping.INNER_JOIN));
+        joinFetchConverter.addConversionValue("outer-join", Integer.valueOf(ForeignReferenceMapping.OUTER_JOIN));
+        joinFetchConverter.addConversionValue("none", Integer.valueOf(ForeignReferenceMapping.NONE));
         joinFetchMapping.setConverter(joinFetchConverter);
         joinFetchMapping.setNullValue(ForeignReferenceMapping.NONE);
         descriptor.addMapping(joinFetchMapping);
@@ -494,9 +494,9 @@ public class ObjectPersistenceRuntimeXMLProject_11_1_1 extends ObjectPersistence
         joinFetchMapping.setAttributeName("joinFetch");
         joinFetchMapping.setXPath(getPrimaryNamespaceXPath() + "join-fetch/text()");
         ObjectTypeConverter joinFetchConverter = new ObjectTypeConverter();
-        joinFetchConverter.addConversionValue("inner-join", new Integer(ForeignReferenceMapping.INNER_JOIN));
-        joinFetchConverter.addConversionValue("outer-join", new Integer(ForeignReferenceMapping.OUTER_JOIN));
-        joinFetchConverter.addConversionValue("none", new Integer(ForeignReferenceMapping.NONE));
+        joinFetchConverter.addConversionValue("inner-join", Integer.valueOf(ForeignReferenceMapping.INNER_JOIN));
+        joinFetchConverter.addConversionValue("outer-join", Integer.valueOf(ForeignReferenceMapping.OUTER_JOIN));
+        joinFetchConverter.addConversionValue("none", Integer.valueOf(ForeignReferenceMapping.NONE));
         joinFetchMapping.setConverter(joinFetchConverter);
         joinFetchMapping.setNullValue(ForeignReferenceMapping.NONE);
         descriptor.addMapping(joinFetchMapping);
@@ -679,8 +679,8 @@ public class ObjectPersistenceRuntimeXMLProject_11_1_1 extends ObjectPersistence
 
         XMLDirectMapping unitOfWorkCacheIsolationLevelMapping = (XMLDirectMapping)descriptor.getMappingForAttributeName("unitOfWorkCacheIsolationLevel");
         ObjectTypeConverter unitOfWorkCacheIsolationLevelConverter = (ObjectTypeConverter)unitOfWorkCacheIsolationLevelMapping.getConverter();
-        unitOfWorkCacheIsolationLevelConverter.addConversionValue("default", new Integer(ClassDescriptor.UNDEFINED_ISOLATATION));
-        unitOfWorkCacheIsolationLevelMapping.setNullValue(new Integer(ClassDescriptor.UNDEFINED_ISOLATATION));
+        unitOfWorkCacheIsolationLevelConverter.addConversionValue("default", Integer.valueOf(ClassDescriptor.UNDEFINED_ISOLATATION));
+        unitOfWorkCacheIsolationLevelMapping.setNullValue(Integer.valueOf(ClassDescriptor.UNDEFINED_ISOLATATION));
 
         return descriptor;
     }

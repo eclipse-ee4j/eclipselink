@@ -149,12 +149,12 @@ public class InstanceVariableAttributeAccessor extends AttributeAccessor {
                     if (org.eclipse.persistence.internal.helper.Helper.isPrimitiveWrapper(fieldClass)) {
                         if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()){
                             try {
-                                AccessController.doPrivileged(new PrivilegedSetValueInField(this.attributeField, anObject, ConversionManager.getDefaultManager().convertObject(new Integer(0), fieldClass)));
+                                AccessController.doPrivileged(new PrivilegedSetValueInField(this.attributeField, anObject, ConversionManager.getDefaultManager().convertObject(Integer.valueOf(0), fieldClass)));
                             } catch (PrivilegedActionException exc) {
                                 throw DescriptorException.nullPointerWhileSettingValueThruInstanceVariableAccessor(getAttributeName(), value, exc.getException());
                                                         }
                         } else {
-                            org.eclipse.persistence.internal.security.PrivilegedAccessHelper.setValueInField(this.attributeField, anObject, ConversionManager.getDefaultManager().convertObject(new Integer(0), fieldClass));
+                            org.eclipse.persistence.internal.security.PrivilegedAccessHelper.setValueInField(this.attributeField, anObject, ConversionManager.getDefaultManager().convertObject(Integer.valueOf(0), fieldClass));
                         }
                     }
                     return;
@@ -199,12 +199,12 @@ public class InstanceVariableAttributeAccessor extends AttributeAccessor {
                         if (org.eclipse.persistence.internal.helper.Helper.isPrimitiveWrapper(fieldClass)) {
                             if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()){
                                 try {
-                                    AccessController.doPrivileged(new PrivilegedSetValueInField(this.attributeField, anObject, ConversionManager.getDefaultManager().convertObject(new Integer(0), fieldClass)));
+                                    AccessController.doPrivileged(new PrivilegedSetValueInField(this.attributeField, anObject, ConversionManager.getDefaultManager().convertObject(Integer.valueOf(0), fieldClass)));
                                 } catch (PrivilegedActionException exc) {
                                     throw DescriptorException.nullPointerWhileSettingValueThruInstanceVariableAccessor(getAttributeName(), value, exc.getException());
                                 }
                             } else {
-                                org.eclipse.persistence.internal.security.PrivilegedAccessHelper.setValueInField(this.attributeField, anObject, ConversionManager.getDefaultManager().convertObject(new Integer(0), fieldClass));
+                                org.eclipse.persistence.internal.security.PrivilegedAccessHelper.setValueInField(this.attributeField, anObject, ConversionManager.getDefaultManager().convertObject(Integer.valueOf(0), fieldClass));
                             }
                         }
                     } else {

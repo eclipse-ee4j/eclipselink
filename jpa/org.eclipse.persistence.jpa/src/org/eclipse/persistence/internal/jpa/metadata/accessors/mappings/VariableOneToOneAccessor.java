@@ -123,7 +123,7 @@ public class VariableOneToOneAccessor extends ObjectAccessor {
             if (m_lastDiscriminatorIndex == null) {
                 // Our discriminators are added as Strings ...
                 for (String stringIndex : (List<String>) mapping.getTypeIndicatorNameTranslation().values()) {
-                    Integer index = new Integer(stringIndex);
+                    Integer index = Integer.valueOf(stringIndex);
 
                     if (m_lastDiscriminatorIndex == null || m_lastDiscriminatorIndex < index) {
                         m_lastDiscriminatorIndex = index;

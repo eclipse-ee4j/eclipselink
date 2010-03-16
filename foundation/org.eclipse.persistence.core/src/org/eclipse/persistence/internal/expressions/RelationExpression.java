@@ -392,7 +392,7 @@ public class RelationExpression extends CompoundExpression {
                 
                 // some db (derby) require that in EXIST(SELECT...) subquery returns a single column
                 subQuery.getItems().clear();
-                subQuery.addItem("one", new ConstantExpression(new Integer(1), subQuery.getExpressionBuilder()));
+                subQuery.addItem("one", new ConstantExpression(Integer.valueOf(1), subQuery.getExpressionBuilder()));
                 
                 Expression subSelectCriteria = subQuery.getSelectionCriteria();
                 ExpressionBuilder subBuilder = subQuery.getExpressionBuilder();

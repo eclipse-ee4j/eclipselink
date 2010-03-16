@@ -249,8 +249,8 @@ public class ObjectTypeConverter implements Converter {
      * to true and false respectively.
      */
     public void mapBooleans() {
-        addConversionValue("F", new Boolean(false));
-        addConversionValue("T", new Boolean(true));
+        addConversionValue("F", Boolean.valueOf(false));
+        addConversionValue("T", Boolean.valueOf(true));
     }
 
     /**

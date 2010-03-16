@@ -39,7 +39,7 @@ public class AsOfSCNClause extends AsOfClause {
     }
 
     public AsOfSCNClause(long systemChangeNumber) {
-        super(new Long(systemChangeNumber));
+        super(Long.valueOf(systemChangeNumber));
     }
 
     public AsOfSCNClause(Expression expression) {

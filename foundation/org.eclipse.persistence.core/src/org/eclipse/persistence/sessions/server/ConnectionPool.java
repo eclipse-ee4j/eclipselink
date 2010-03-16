@@ -140,7 +140,7 @@ public class ConnectionPool {
         }
         this.connectionsUsed.add(connection);
         if (this.owner.isInProfile()) {
-            this.owner.updateProfile(this.name, new Integer(this.connectionsUsed.size()));
+            this.owner.updateProfile(this.name, Integer.valueOf(this.connectionsUsed.size()));
         }
         return connection;
     }
@@ -279,7 +279,7 @@ public class ConnectionPool {
             }
         }
         if (this.owner.isInProfile()) {
-            this.owner.updateProfile(this.name, new Integer(this.connectionsUsed.size()));
+            this.owner.updateProfile(this.name, Integer.valueOf(this.connectionsUsed.size()));
         }
         notify();
     }
@@ -444,7 +444,7 @@ public class ConnectionPool {
      * return a string representation of this connection pool
      */
     public String toString() {
-        Object[] args = { new Integer(getMinNumberOfConnections()), new Integer(getMaxNumberOfConnections()) };
+        Object[] args = { Integer.valueOf(getMinNumberOfConnections()), Integer.valueOf(getMaxNumberOfConnections()) };
         return Helper.getShortClassName(getClass()) + ToStringLocalization.buildMessage("min_max", args);
     }
     

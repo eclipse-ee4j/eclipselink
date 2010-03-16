@@ -31,7 +31,7 @@ public class BooleanLiteralNode extends LiteralNode {
     }
 
     public BooleanLiteralNode(boolean thisBoolean) {
-        setLiteral(new Boolean(thisBoolean));
+        setLiteral(Boolean.valueOf(thisBoolean));
     }
 
     /**

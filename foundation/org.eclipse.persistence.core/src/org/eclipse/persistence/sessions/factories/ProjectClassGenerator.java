@@ -1851,7 +1851,7 @@ public class ProjectClassGenerator {
 
     /**
      * Return the printed version of the primitive value object.
-     * This must determine the class and use the correct constrcutor arguments.
+     * This must determine the class and use the correct constructor arguments.
      */
     protected String printString(Object value) {
         if ((value == null) || (value == Helper.getNullWrapper())) {

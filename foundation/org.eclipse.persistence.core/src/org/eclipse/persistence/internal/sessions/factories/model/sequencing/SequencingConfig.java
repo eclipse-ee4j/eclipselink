@@ -143,7 +143,7 @@ public class SequencingConfig {
             sequenceConfig = tableSequenceConfig;
         }
         sequenceConfig.setName("");
-        sequenceConfig.setPreallocationSize(new Integer(50));
+        sequenceConfig.setPreallocationSize(Integer.valueOf(50));
         setDefaultSequenceConfig(sequenceConfig);
     }
 }

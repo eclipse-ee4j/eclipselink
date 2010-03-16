@@ -57,7 +57,7 @@ public class AsOfClause implements Serializable {
     }
 
     public AsOfClause(long time) {
-        this.value = new Long(time);
+        this.value = Long.valueOf(time);
     }
 
     public AsOfClause(Long time) {

@@ -52,7 +52,7 @@ public class UnaryMinus extends Node {
      * Generate the expression.
      */
     public Expression generateExpression(GenerationContext context) {
-        Expression whereClause = new ConstantExpression(new Integer(0), new ExpressionBuilder());
+        Expression whereClause = new ConstantExpression(Integer.valueOf(0), new ExpressionBuilder());
         whereClause = ExpressionMath.subtract(whereClause, getLeft().generateExpression(context));
         return whereClause;
     }

@@ -462,7 +462,7 @@ public class IndirectList extends Vector implements CollectionChangeTracker, Ind
      */
     public void insertElementAt(Object obj, int index) {
         this.getDelegate().insertElementAt(obj, index);
-        this.raiseAddChangeEvent(obj, new Integer(index));
+        this.raiseAddChangeEvent(obj, Integer.valueOf(index));
     }
 
     /**
@@ -553,19 +553,19 @@ public class IndirectList extends Vector implements CollectionChangeTracker, Ind
             
             public void remove() {
                 this.delegateIterator.remove();
-                IndirectList.this.raiseRemoveChangeEvent(this.currentObject, new Integer(this.delegateIterator.nextIndex()));
+                IndirectList.this.raiseRemoveChangeEvent(this.currentObject, Integer.valueOf(this.delegateIterator.nextIndex()));
             }
             
             public void set(Object object) {
                 this.delegateIterator.set(object);
-                Integer index = new Integer(this.delegateIterator.previousIndex());
+                Integer index = Integer.valueOf(this.delegateIterator.previousIndex());
                 IndirectList.this.raiseRemoveChangeEvent(this.currentObject, index, true);
                 IndirectList.this.raiseAddChangeEvent(object, index, true);
             }
             
             public void add(Object object) {
                 this.delegateIterator.add(object);
-                IndirectList.this.raiseAddChangeEvent(object, new Integer(this.delegateIterator.previousIndex()));
+                IndirectList.this.raiseAddChangeEvent(object, Integer.valueOf(this.delegateIterator.previousIndex()));
             }
         };
     }
@@ -575,7 +575,7 @@ public class IndirectList extends Vector implements CollectionChangeTracker, Ind
      */
     public Object remove(int index) {
         Object value = getDelegate().remove(index);        
-        this.raiseRemoveChangeEvent(value, new Integer(index));
+        this.raiseRemoveChangeEvent(value, Integer.valueOf(index));
         return value;
     }
 
@@ -679,7 +679,7 @@ public class IndirectList extends Vector implements CollectionChangeTracker, Ind
      */
     public Object set(int index, Object element) {
         Object oldValue = getDelegate().set(index, element);
-        Integer bigIntIndex = new Integer(index);
+        Integer bigIntIndex = Integer.valueOf(index);
         raiseRemoveChangeEvent(oldValue, bigIntIndex, true);
         raiseAddChangeEvent(element, bigIntIndex, true);
         return oldValue;

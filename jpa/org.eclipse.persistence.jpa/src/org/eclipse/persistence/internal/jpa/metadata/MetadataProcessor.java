@@ -299,7 +299,7 @@ public class MetadataProcessor {
         // metadata where necessary. Note: we want the eclipselink orm
         // metadata to merge into standard jpa files and not vice versa. 
         // Loading them last will ensure this happens.
-        Boolean excludeEclipseLinkORM = new Boolean((String) m_project.getPersistenceUnitInfo().getProperties().get(PersistenceUnitProperties.EXCLUDE_ECLIPSELINK_ORM_FILE));
+        Boolean excludeEclipseLinkORM = Boolean.valueOf((String) m_project.getPersistenceUnitInfo().getProperties().get(PersistenceUnitProperties.EXCLUDE_ECLIPSELINK_ORM_FILE));
         if (! excludeEclipseLinkORM) {
             loadStandardMappingFiles(MetadataHelper.ECLIPSELINK_ORM_FILE);
         }

@@ -1885,7 +1885,7 @@ public class ValidationException extends EclipseLinkException {
     }
 
     public static ValidationException wrongCollectionChangeEventType(int eveType) {
-        Object[] args = { new Integer(eveType) };
+        Object[] args = { Integer.valueOf(eveType) };
         ValidationException validationException = new ValidationException(ExceptionMessageGenerator.buildMessage(ValidationException.class, WRONG_COLLECTION_CHANGE_EVENT_TYPE, args));
         validationException.setErrorCode(WRONG_COLLECTION_CHANGE_EVENT_TYPE);
         return validationException;

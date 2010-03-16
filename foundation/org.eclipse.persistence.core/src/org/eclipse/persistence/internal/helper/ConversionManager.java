@@ -246,26 +246,26 @@ public class ConversionManager implements Serializable, Cloneable {
             switch (Character.toLowerCase(((Character)sourceObject).charValue())) {
             case '1':
             case 't':
-                return new Boolean(true);
+                return Boolean.valueOf(true);
             case '0':
             case 'f':
-                return new Boolean(false);
+                return Boolean.valueOf(false);
             }
         }
         if (sourceObject instanceof String) {
             String stringValue = ((String)sourceObject).toLowerCase();
             if (stringValue.equals("t") || stringValue.equals("true") || stringValue.equals("1")) {
-                return new Boolean(true);
+                return Boolean.valueOf(true);
             } else if (stringValue.equals("f") || stringValue.equals("false") || stringValue.equals("0")) {
-                return new Boolean(false);
+                return Boolean.valueOf(false);
             }
         }
         if (sourceObject instanceof Number) {
             int intValue = ((Number)sourceObject).intValue();
             if (intValue != 0) {
-                return new Boolean(true);
+                return Boolean.valueOf(true);
             } else if (intValue == 0) {
-                return new Boolean(false);
+                return Boolean.valueOf(false);
             }
         }
         throw ConversionException.couldNotBeConverted(sourceObject, ClassConstants.BOOLEAN);
@@ -282,10 +282,10 @@ public class ConversionManager implements Serializable, Cloneable {
     protected Byte convertObjectToByte(Object sourceObject) throws ConversionException {
         try {
             if (sourceObject instanceof String) {
-                return new Byte((String)sourceObject);
+                return Byte.valueOf((String)sourceObject);
             }
             if (sourceObject instanceof Number) {
-                return new Byte(((Number)sourceObject).byteValue());
+                return Byte.valueOf(((Number)sourceObject).byteValue());
             }
         } catch (NumberFormatException exception) {
             throw ConversionException.couldNotBeConverted(sourceObject, ClassConstants.BYTE, exception);
@@ -351,7 +351,7 @@ public class ConversionManager implements Serializable, Cloneable {
         byte[] bytes = convertObjectToByteArray(sourceObject);
         Byte[] objectBytes = new Byte[bytes.length];
         for (int index = 0; index < bytes.length; index++) {
-            objectBytes[index] = new Byte(bytes[index]);
+            objectBytes[index] = Byte.valueOf(bytes[index]);
         }
         return objectBytes;
     }
@@ -379,11 +379,11 @@ public class ConversionManager implements Serializable, Cloneable {
             if (((String)sourceObject).length() < 1) {
                 return null;
             }
-            return new Character(((String)sourceObject).charAt(0));
+            return Character.valueOf(((String)sourceObject).charAt(0));
         }
 
         if (sourceObject instanceof Number) {
-            return new Character((char)((Number)sourceObject).byteValue());
+            return Character.valueOf((char)((Number)sourceObject).byteValue());
         }
 
         throw ConversionException.couldNotBeConverted(sourceObject, ClassConstants.CHAR);
@@ -396,7 +396,7 @@ public class ConversionManager implements Serializable, Cloneable {
         String stringValue = convertObjectToString(sourceObject);
         Character[] chars = new Character[stringValue.length()];
         for (int index = 0; index < stringValue.length(); index++) {
-            chars[index] = new Character(stringValue.charAt(index));
+            chars[index] = Character.valueOf(stringValue.charAt(index));
         }
         return chars;
     }
@@ -477,10 +477,10 @@ public class ConversionManager implements Serializable, Cloneable {
     protected Double convertObjectToDouble(Object sourceObject) throws ConversionException {
         try {
             if (sourceObject instanceof String) {
-                return new Double((String)sourceObject);
+                return Double.valueOf((String)sourceObject);
             }
             if (sourceObject instanceof Number) {
-                return new Double(((Number)sourceObject).doubleValue());
+                return Double.valueOf(((Number)sourceObject).doubleValue());
             }
         } catch (NumberFormatException exception) {
             throw ConversionException.couldNotBeConverted(sourceObject, ClassConstants.DOUBLE, exception);
@@ -497,10 +497,10 @@ public class ConversionManager implements Serializable, Cloneable {
     protected Float convertObjectToFloat(Object sourceObject) throws ConversionException {
         try {
             if (sourceObject instanceof String) {
-                return new Float((String)sourceObject);
+                return Float.valueOf((String)sourceObject);
             }
             if (sourceObject instanceof Number) {
-                return new Float(((Number)sourceObject).floatValue());
+                return Float.valueOf(((Number)sourceObject).floatValue());
             }
         } catch (NumberFormatException exception) {
             throw ConversionException.couldNotBeConverted(sourceObject, ClassConstants.FLOAT, exception);
@@ -518,18 +518,18 @@ public class ConversionManager implements Serializable, Cloneable {
     protected Integer convertObjectToInteger(Object sourceObject) throws ConversionException {
         try {
             if (sourceObject instanceof String) {
-                return new Integer((String)sourceObject);
+                return Integer.valueOf((String)sourceObject);
             }
 
             if (sourceObject instanceof Number) {
-                return new Integer(((Number)sourceObject).intValue());
+                return Integer.valueOf(((Number)sourceObject).intValue());
             }
 
             if (sourceObject instanceof Boolean) {
                 if (((Boolean)sourceObject).booleanValue()) {
-                    return new Integer(1);
+                    return Integer.valueOf(1);
                 } else {
-                    return new Integer(0);
+                    return Integer.valueOf(0);
                 }
             }
         } catch (NumberFormatException exception) {
@@ -549,23 +549,23 @@ public class ConversionManager implements Serializable, Cloneable {
     protected Long convertObjectToLong(Object sourceObject) throws ConversionException {
         try {
             if (sourceObject instanceof String) {
-                return new Long((String)sourceObject);
+                return Long.valueOf((String)sourceObject);
             }
             if (sourceObject instanceof Number) {
-                return new Long(((Number)sourceObject).longValue());
+                return Long.valueOf(((Number)sourceObject).longValue());
             }
             if (sourceObject instanceof java.util.Date) {
-                return new Long(((java.util.Date)sourceObject).getTime());
+                return Long.valueOf(((java.util.Date)sourceObject).getTime());
             }
             if (sourceObject instanceof java.util.Calendar) {
-                return new Long(((java.util.Calendar)sourceObject).getTimeInMillis());
+                return Long.valueOf(((java.util.Calendar)sourceObject).getTimeInMillis());
             }
 
             if (sourceObject instanceof Boolean) {
                 if (((Boolean)sourceObject).booleanValue()) {
-                    return new Long(1);
+                    return Long.valueOf(1);
                 } else {
-                    return new Long(0);
+                    return Long.valueOf(0);
                 }
             }
         } catch (NumberFormatException exception) {
@@ -596,9 +596,9 @@ public class ConversionManager implements Serializable, Cloneable {
 
             if (sourceObject instanceof Boolean) {
                 if (((Boolean)sourceObject).booleanValue()) {
-                    return new BigDecimal(1);
+                    return BigDecimal.valueOf(1);
                 } else {
-                    return new BigDecimal(0);
+                    return BigDecimal.valueOf(0);
                 }
             }
         } catch (NumberFormatException exception) {
@@ -618,18 +618,18 @@ public class ConversionManager implements Serializable, Cloneable {
     protected Short convertObjectToShort(Object sourceObject) throws ConversionException {
         try {
             if (sourceObject instanceof String) {
-                return new Short((String)sourceObject);
+                return Short.valueOf((String)sourceObject);
             }
 
             if (sourceObject instanceof Number) {
-                return new Short(((Number)sourceObject).shortValue());
+                return Short.valueOf(((Number)sourceObject).shortValue());
             }
 
             if (sourceObject instanceof Boolean) {
                 if (((Boolean)sourceObject).booleanValue()) {
-                    return new Short((short)1);
+                    return Short.valueOf((short)1);
                 } else {
-                    return new Short((short)0);
+                    return Short.valueOf((short)0);
                 }
             }
         } catch (Exception exception) {

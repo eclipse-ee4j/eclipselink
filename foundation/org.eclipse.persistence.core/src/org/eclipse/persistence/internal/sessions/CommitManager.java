@@ -577,7 +577,7 @@ public class CommitManager {
      * Print the in progress depth.
      */
     public String toString() {
-        Object[] args = { new Integer(this.commitDepth) };
+        Object[] args = { Integer.valueOf(this.commitDepth) };
         return Helper.getShortClassName(getClass()) + ToStringLocalization.buildMessage("commit_depth", args);
     }
 }

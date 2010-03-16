@@ -238,9 +238,9 @@ public class RemoteSessionController {
             //unwrap the remote cursored stream
             CursoredStream stream = (CursoredStream)getRemoteCursors().get(remoteCursoredStreamOid.getObject());
             if (stream != null) {
-                transporter.setObject(new Integer(stream.size()));
+                transporter.setObject(Integer.valueOf(stream.size()));
             } else {
-                transporter.setObject(new Integer(0));
+                transporter.setObject(Integer.valueOf(0));
             }
         } catch (RuntimeException exception) {
             transporter.setException(exception);
@@ -575,9 +575,9 @@ public class RemoteSessionController {
         try {
             ScrollableCursor stream = (ScrollableCursor)getRemoteCursors().get(remoteScrollableCursorOid.getObject());
             if (stream != null) {
-                transporter.setObject(new Boolean(stream.absolute(rows)));
+                transporter.setObject(Boolean.valueOf(stream.absolute(rows)));
             } else {
-                transporter.setObject(new Boolean(false));
+                transporter.setObject(Boolean.valueOf(false));
             }
         } catch (RuntimeException exception) {
             transporter.setException(exception);
@@ -642,9 +642,9 @@ public class RemoteSessionController {
         try {
             ScrollableCursor stream = (ScrollableCursor)getRemoteCursors().get(remoteScrollableCursorOid.getObject());
             if (stream != null) {
-                transporter.setObject(new Integer(stream.currentIndex()));
+                transporter.setObject(Integer.valueOf(stream.currentIndex()));
             } else {
-                transporter.setObject(new Integer(0));
+                transporter.setObject(Integer.valueOf(0));
             }
         } catch (RuntimeException exception) {
             transporter.setException(exception);
@@ -660,9 +660,9 @@ public class RemoteSessionController {
         try {
             ScrollableCursor stream = (ScrollableCursor)getRemoteCursors().get(remoteScrollableCursorOid.getObject());
             if (stream != null) {
-                transporter.setObject(new Boolean(stream.first()));
+                transporter.setObject(Boolean.valueOf(stream.first()));
             } else {
-                transporter.setObject(new Boolean(false));
+                transporter.setObject(Boolean.valueOf(false));
             }
         } catch (RuntimeException exception) {
             transporter.setException(exception);
@@ -678,9 +678,9 @@ public class RemoteSessionController {
         try {
             ScrollableCursor stream = (ScrollableCursor)getRemoteCursors().get(remoteScrollableCursorOid.getObject());
             if (stream != null) {
-                transporter.setObject(new Boolean(stream.isAfterLast()));
+                transporter.setObject(Boolean.valueOf(stream.isAfterLast()));
             } else {
-                transporter.setObject(new Boolean(false));
+                transporter.setObject(Boolean.valueOf(false));
             }
         } catch (RuntimeException exception) {
             transporter.setException(exception);
@@ -696,9 +696,9 @@ public class RemoteSessionController {
         try {
             ScrollableCursor stream = (ScrollableCursor)getRemoteCursors().get(remoteScrollableCursorOid.getObject());
             if (stream != null) {
-                transporter.setObject(new Boolean(stream.isBeforeFirst()));
+                transporter.setObject(Boolean.valueOf(stream.isBeforeFirst()));
             } else {
-                transporter.setObject(new Boolean(false));
+                transporter.setObject(Boolean.valueOf(false));
             }
         } catch (RuntimeException exception) {
             transporter.setException(exception);
@@ -714,9 +714,9 @@ public class RemoteSessionController {
         try {
             ScrollableCursor stream = (ScrollableCursor)getRemoteCursors().get(remoteScrollableCursorOid.getObject());
             if (stream != null) {
-                transporter.setObject(new Boolean(stream.isFirst()));
+                transporter.setObject(Boolean.valueOf(stream.isFirst()));
             } else {
-                transporter.setObject(new Boolean(false));
+                transporter.setObject(Boolean.valueOf(false));
             }
         } catch (RuntimeException exception) {
             transporter.setException(exception);
@@ -732,9 +732,9 @@ public class RemoteSessionController {
         try {
             ScrollableCursor stream = (ScrollableCursor)getRemoteCursors().get(remoteScrollableCursorOid.getObject());
             if (stream != null) {
-                transporter.setObject(new Boolean(stream.isLast()));
+                transporter.setObject(Boolean.valueOf(stream.isLast()));
             } else {
-                transporter.setObject(new Boolean(false));
+                transporter.setObject(Boolean.valueOf(false));
             }
         } catch (RuntimeException exception) {
             transporter.setException(exception);
@@ -750,9 +750,9 @@ public class RemoteSessionController {
         try {
             ScrollableCursor stream = (ScrollableCursor)getRemoteCursors().get(remoteScrollableCursorOid.getObject());
             if (stream != null) {
-                transporter.setObject(new Boolean(stream.last()));
+                transporter.setObject(Boolean.valueOf(stream.last()));
             } else {
-                transporter.setObject(new Boolean(false));
+                transporter.setObject(Boolean.valueOf(false));
             }
         } catch (RuntimeException exception) {
             transporter.setException(exception);
@@ -828,9 +828,9 @@ public class RemoteSessionController {
         try {
             ScrollableCursor stream = (ScrollableCursor)getRemoteCursors().get(remoteScrollableCursorOid.getObject());
             if (stream != null) {
-                transporter.setObject(new Boolean(stream.relative(rows)));
+                transporter.setObject(Boolean.valueOf(stream.relative(rows)));
             } else {
-                transporter.setObject(new Boolean(false));
+                transporter.setObject(Boolean.valueOf(false));
             }
         } catch (RuntimeException exception) {
             transporter.setException(exception);
@@ -847,9 +847,9 @@ public class RemoteSessionController {
             //unwrap the remote cursored stream
             ScrollableCursor cursor = (ScrollableCursor)getRemoteCursors().get(remoteCursorOid.getObject());
             if (cursor != null) {
-                transporter.setObject(new Integer(cursor.size()));
+                transporter.setObject(Integer.valueOf(cursor.size()));
             } else {
-                transporter.setObject(new Integer(0));
+                transporter.setObject(Integer.valueOf(0));
             }
         } catch (RuntimeException exception) {
             transporter.setException(exception);

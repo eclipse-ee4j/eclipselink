@@ -91,10 +91,10 @@ public class DirectCollectionChangeRecord extends DeferrableChangeRecord impleme
             int addition = count.intValue();
             int result = removeValue - addition;
             if (result > 0 ) { // more removes still
-                getRemoveObjectMap().put(key, new Integer(result));
+                getRemoveObjectMap().put(key, Integer.valueOf(result));
             } else if (result < 0) { // more adds now
                 getRemoveObjectMap().remove(key);
-                getAddObjectMap().put(key, new Integer(Math.abs(result)));
+                getAddObjectMap().put(key, Integer.valueOf(Math.abs(result)));
             } else { // equal
                 getRemoveObjectMap().remove(key);
             }
@@ -102,7 +102,7 @@ public class DirectCollectionChangeRecord extends DeferrableChangeRecord impleme
             if (this.getAddObjectMap().containsKey(key)) {
                 int addValue = ((Integer)this.getAddObjectMap().get(key)).intValue();
                 addValue += count.intValue();
-                this.getAddObjectMap().put(key, new Integer(addValue));
+                this.getAddObjectMap().put(key, Integer.valueOf(addValue));
             } else {
                 this.getAddObjectMap().put(key, count);
             }
@@ -119,7 +119,7 @@ public class DirectCollectionChangeRecord extends DeferrableChangeRecord impleme
         if (getCommitAddMap().containsKey(key)) {
             commitValue = ((Integer)getCommitAddMap().get(key)).intValue();
         }
-        getCommitAddMap().put(key, new Integer(addValue + commitValue));
+        getCommitAddMap().put(key, Integer.valueOf(addValue + commitValue));
     }
     
     /**
@@ -147,10 +147,10 @@ public class DirectCollectionChangeRecord extends DeferrableChangeRecord impleme
             int addition = count.intValue();
             int result = removeValue - addition;
             if (result > 0 ) { // more removes still
-                getAddObjectMap().put(key, new Integer(result));
+                getAddObjectMap().put(key, Integer.valueOf(result));
             } else if (result < 0) { // more adds now
                 getAddObjectMap().remove(key);
-                getRemoveObjectMap().put(key, new Integer(Math.abs(result)));
+                getRemoveObjectMap().put(key, Integer.valueOf(Math.abs(result)));
             } else { // equal
                 getAddObjectMap().remove(key);
             }
@@ -158,7 +158,7 @@ public class DirectCollectionChangeRecord extends DeferrableChangeRecord impleme
             if (this.getRemoveObjectMap().containsKey(key)){
                 int addValue = ((Integer)this.getRemoveObjectMap().get(key)).intValue();
                 addValue += count.intValue();
-                this.getRemoveObjectMap().put(key, new Integer(addValue));
+                this.getRemoveObjectMap().put(key, Integer.valueOf(addValue));
             } else {
                 this.getRemoveObjectMap().put(key, count);
             }
@@ -174,7 +174,7 @@ public class DirectCollectionChangeRecord extends DeferrableChangeRecord impleme
         if (getCommitAddMap().containsKey(key)){
             commitValue = ((Integer)getCommitAddMap().get(key)).intValue();
         }
-        getCommitAddMap().put(key, new Integer(commitValue - removeValue));
+        getCommitAddMap().put(key, Integer.valueOf(commitValue - removeValue));
     }
 
     /**
@@ -209,9 +209,9 @@ public class DirectCollectionChangeRecord extends DeferrableChangeRecord impleme
     public void incrementDatabaseCount(Object object){
         if (getCommitAddMap().containsKey(object)) {
             int count = ((Integer)getCommitAddMap().get(object)).intValue();
-            getCommitAddMap().put(object, new Integer(++count));
+            getCommitAddMap().put(object, Integer.valueOf(++count));
         } else {
-            getCommitAddMap().put(object, new Integer(1));
+            getCommitAddMap().put(object, Integer.valueOf(1));
         }
     }
 
@@ -222,7 +222,7 @@ public class DirectCollectionChangeRecord extends DeferrableChangeRecord impleme
         if (getCommitAddMap().containsKey(object)) {
             int count = ((Integer)getCommitAddMap().get(object)).intValue();
             if(count > 1) {
-                getCommitAddMap().put(object, new Integer(--count));
+                getCommitAddMap().put(object, Integer.valueOf(--count));
             } else {
                 getCommitAddMap().remove(object);
             }

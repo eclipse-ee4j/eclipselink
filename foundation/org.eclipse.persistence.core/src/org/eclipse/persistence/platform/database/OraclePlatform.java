@@ -453,12 +453,12 @@ public class OraclePlatform extends org.eclipse.persistence.platform.database.Da
     public Hashtable maximumNumericValues() {
         Hashtable values = new Hashtable();
 
-        values.put(Integer.class, new Integer(Integer.MAX_VALUE));
-        values.put(Long.class, new Long(Long.MAX_VALUE));
-        values.put(Double.class, new Double(9.9999E125));
-        values.put(Short.class, new Short(Short.MAX_VALUE));
-        values.put(Byte.class, new Byte(Byte.MAX_VALUE));
-        values.put(Float.class, new Float(Float.MAX_VALUE));
+        values.put(Integer.class, Integer.valueOf(Integer.MAX_VALUE));
+        values.put(Long.class, Long.valueOf(Long.MAX_VALUE));
+        values.put(Double.class, Double.valueOf(9.9999E125));
+        values.put(Short.class, Short.valueOf(Short.MAX_VALUE));
+        values.put(Byte.class, Byte.valueOf(Byte.MAX_VALUE));
+        values.put(Float.class, Float.valueOf(Float.MAX_VALUE));
         values.put(java.math.BigInteger.class, new java.math.BigInteger("0"));
         values.put(java.math.BigDecimal.class, new java.math.BigDecimal(new java.math.BigInteger("0"), 38));
         return values;
@@ -472,12 +472,12 @@ public class OraclePlatform extends org.eclipse.persistence.platform.database.Da
     public Hashtable minimumNumericValues() {
         Hashtable values = new Hashtable();
 
-        values.put(Integer.class, new Integer(Integer.MIN_VALUE));
-        values.put(Long.class, new Long(Long.MIN_VALUE));
-        values.put(Double.class, new Double(-1E-129));
-        values.put(Short.class, new Short(Short.MIN_VALUE));
-        values.put(Byte.class, new Byte(Byte.MIN_VALUE));
-        values.put(Float.class, new Float(Float.MIN_VALUE));
+        values.put(Integer.class, Integer.valueOf(Integer.MIN_VALUE));
+        values.put(Long.class, Long.valueOf(Long.MIN_VALUE));
+        values.put(Double.class, Double.valueOf(-1E-129));
+        values.put(Short.class, Short.valueOf(Short.MIN_VALUE));
+        values.put(Byte.class, Byte.valueOf(Byte.MIN_VALUE));
+        values.put(Float.class, Float.valueOf(Float.MIN_VALUE));
         values.put(java.math.BigInteger.class, new java.math.BigInteger("0"));
         values.put(java.math.BigDecimal.class, new java.math.BigDecimal(new java.math.BigInteger("0"), 38));
         return values;

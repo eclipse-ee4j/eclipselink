@@ -5616,7 +5616,7 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
      * INTERNAL:
      */
     public void addPessimisticLockedClone(Object clone) {
-        log(SessionLog.FINEST, SessionLog.TRANSACTION, "tracking_pl_object", clone, new Integer(this.hashCode()));
+        log(SessionLog.FINEST, SessionLog.TRANSACTION, "tracking_pl_object", clone, Integer.valueOf(this.hashCode()));
         getPessimisticLockedObjects().put(clone, clone);
     }
 
@@ -5793,9 +5793,9 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
             //ignore for bug 290703
         }
         if(accessor!=null && accessor instanceof DatasourceAccessor){
-            getProperties().put(DatasourceAccessor.READ_STATEMENTS_COUNT_PROPERTY,new Integer(((DatasourceAccessor)accessor).getReadStatementsCount()));
-            getProperties().put(DatasourceAccessor.WRITE_STATEMENTS_COUNT_PROPERTY,new Integer(((DatasourceAccessor)accessor).getWriteStatementsCount()));
-            getProperties().put(DatasourceAccessor.STOREDPROCEDURE_STATEMENTS_COUNT_PROPERTY,new Integer(((DatasourceAccessor)accessor).getStoredProcedureStatementsCount()));
+            getProperties().put(DatasourceAccessor.READ_STATEMENTS_COUNT_PROPERTY,Integer.valueOf(((DatasourceAccessor)accessor).getReadStatementsCount()));
+            getProperties().put(DatasourceAccessor.WRITE_STATEMENTS_COUNT_PROPERTY,Integer.valueOf(((DatasourceAccessor)accessor).getWriteStatementsCount()));
+            getProperties().put(DatasourceAccessor.STOREDPROCEDURE_STATEMENTS_COUNT_PROPERTY,Integer.valueOf(((DatasourceAccessor)accessor).getStoredProcedureStatementsCount()));
         }
     }
   

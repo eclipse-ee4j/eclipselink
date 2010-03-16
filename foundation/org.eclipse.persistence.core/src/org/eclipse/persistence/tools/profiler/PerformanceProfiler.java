@@ -127,7 +127,7 @@ public class PerformanceProfiler implements Serializable, Cloneable, SessionProf
                 } else {
                     newTime = oldTime.longValue() + profileTime;
                 }
-                summary.getOperationTimings().put(name, new Long(newTime));
+                summary.getOperationTimings().put(name, Long.valueOf(newTime));
             }
         }
 
@@ -175,7 +175,7 @@ public class PerformanceProfiler implements Serializable, Cloneable, SessionProf
                 } else {
                     newTime = oldTime.longValue() + profileTime;
                 }
-                summary.getOperationTimings().put(name, new Long(newTime));
+                summary.getOperationTimings().put(name, Long.valueOf(newTime));
             }
         }
 
@@ -217,7 +217,7 @@ public class PerformanceProfiler implements Serializable, Cloneable, SessionProf
                 } else {
                     newTime = oldTime.longValue() + profileTime;
                 }
-                summary.getOperationTimings().put(name, new Long(newTime));
+                summary.getOperationTimings().put(name, Long.valueOf(newTime));
             }
         }
 
@@ -279,9 +279,9 @@ public class PerformanceProfiler implements Serializable, Cloneable, SessionProf
 
         Long totalTime = (Long)getOperationTimings().get(operationName);
         if (totalTime == null) {
-            getOperationTimings().put(operationName, new Long(time));
+            getOperationTimings().put(operationName, Long.valueOf(time));
         } else {
-            getOperationTimings().put(operationName, new Long(totalTime.longValue() + time));
+            getOperationTimings().put(operationName, Long.valueOf(totalTime.longValue() + time));
         }
     }
 
@@ -302,7 +302,7 @@ public class PerformanceProfiler implements Serializable, Cloneable, SessionProf
     }
 
     protected Hashtable getOperationStartTimes() {
-        Integer threadId = new Integer(Thread.currentThread().hashCode());
+        Integer threadId = Integer.valueOf(Thread.currentThread().hashCode());
         if (getOperationStartTimesByThread().get(threadId) == null) {
             getOperationStartTimesByThread().put(threadId, new Hashtable(10));
         }
@@ -314,7 +314,7 @@ public class PerformanceProfiler implements Serializable, Cloneable, SessionProf
     }
 
     protected Hashtable getOperationTimings() {
-        Integer threadId = new Integer(Thread.currentThread().hashCode());
+        Integer threadId = Integer.valueOf(Thread.currentThread().hashCode());
         if (getOperationTimingsByThread().get(threadId) == null) {
             getOperationTimingsByThread().put(threadId, new Hashtable(10));
         }
@@ -486,7 +486,7 @@ public class PerformanceProfiler implements Serializable, Cloneable, SessionProf
                 for (Enumeration timingsEnum = ((Hashtable)startTimingsBeforeExecution.clone()).keys();
                          timingsEnum.hasMoreElements();) {
                     String timingName = (String)timingsEnum.nextElement();
-                    startTimingsBeforeExecution.put(timingName, new Long(((Number)startTimingsBeforeExecution.get(timingName)).longValue() + totalTimeIncludingProfiling));
+                    startTimingsBeforeExecution.put(timingName, Long.valueOf(((Number)startTimingsBeforeExecution.get(timingName)).longValue() + totalTimeIncludingProfiling));
                 }
             }
         } catch (IOException ioe) {
@@ -504,7 +504,7 @@ public class PerformanceProfiler implements Serializable, Cloneable, SessionProf
     }
 
     protected void setOperationStartTimes(Hashtable operationStartTimes) {
-        Integer threadId = new Integer(Thread.currentThread().hashCode());
+        Integer threadId = Integer.valueOf(Thread.currentThread().hashCode());
         getOperationStartTimesByThread().put(threadId, operationStartTimes);
     }
 
@@ -513,7 +513,7 @@ public class PerformanceProfiler implements Serializable, Cloneable, SessionProf
     }
 
     protected void setOperationTimings(Hashtable operationTimings) {
-        Integer threadId = new Integer(Thread.currentThread().hashCode());
+        Integer threadId = Integer.valueOf(Thread.currentThread().hashCode());
         getOperationTimingsByThread().put(threadId, operationTimings);
     }
 
@@ -551,7 +551,7 @@ public class PerformanceProfiler implements Serializable, Cloneable, SessionProf
      * Start the operation timing.
      */
     public void startOperationProfile(String operationName) {
-        getOperationStartTimes().put(operationName, new Long(System.currentTimeMillis()));
+        getOperationStartTimes().put(operationName, Long.valueOf(System.currentTimeMillis()));
     }
 
     /**

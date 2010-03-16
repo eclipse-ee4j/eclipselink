@@ -462,7 +462,7 @@ public class TransparentIndirectionPolicy extends IndirectionPolicy {
      */
     public static void setDefaultContainerSize(int defaultSize) {
         //3732
-        defaultContainerSize = new Integer(defaultSize);
+        defaultContainerSize = Integer.valueOf(defaultSize);
     }
 
     /**

@@ -220,8 +220,8 @@ public class RuntimeServices {
         if (ClassConstants.ServerSession_Class.isAssignableFrom(getSession().getClass())) {
             ConnectionPool connectionPool = ((ServerSession)getSession()).getConnectionPool(poolName);
             if (connectionPool != null) {
-                results.add(new Integer(connectionPool.getMaxNumberOfConnections()));
-                results.add(new Integer(connectionPool.getMinNumberOfConnections()));
+                results.add(Integer.valueOf(connectionPool.getMaxNumberOfConnections()));
+                results.add(Integer.valueOf(connectionPool.getMinNumberOfConnections()));
             }
         }
         return results;
@@ -304,7 +304,7 @@ public class RuntimeServices {
      */
     public Integer getNumberOfObjectsInIdentityMap(String className) throws ClassNotFoundException {
         Class classToChange = (Class)getSession().getDatasourcePlatform().getConversionManager().convertObject(className, ClassConstants.CLASS);
-        return new Integer(getSession().getIdentityMapAccessorInstance().getIdentityMap(classToChange).getSize());
+        return Integer.valueOf(getSession().getIdentityMapAccessorInstance().getIdentityMap(classToChange).getSize());
     }
 
     /**
@@ -335,12 +335,12 @@ public class RuntimeServices {
      */
     public Integer getNumberOfObjectsInIdentityMapSubCache(String className) throws ClassNotFoundException {
         //This needs to use the Session's active class loader (not implemented yet)
-        Integer result = new Integer(0);
+        Integer result = Integer.valueOf(0);
         Class classToChange = (Class)getSession().getDatasourcePlatform().getConversionManager().convertObject(className, ClassConstants.CLASS);
         IdentityMap map = getSession().getIdentityMapAccessorInstance().getIdentityMap(classToChange);
         if (map.getClass().isAssignableFrom(ClassConstants.HardCacheWeakIdentityMap_Class)) {
             List subCache = ((HardCacheWeakIdentityMap)map).getReferenceCache();
-            result = new Integer(subCache.size());
+            result = Integer.valueOf(subCache.size());
         }
         return result;
     }

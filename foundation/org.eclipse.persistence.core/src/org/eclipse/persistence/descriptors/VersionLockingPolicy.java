@@ -210,7 +210,7 @@ public class VersionLockingPolicy implements OptimisticLockingPolicy, Serializab
      * null in some situations.
      */
     public Object getBaseValue() {
-        return new Long(0);
+        return Long.valueOf(0);
     }
 
     /**
@@ -225,7 +225,7 @@ public class VersionLockingPolicy implements OptimisticLockingPolicy, Serializab
      * returns the initial locking value
      */
     protected Object getInitialWriteValue(AbstractSession session) {
-        return new Long(1);
+        return Long.valueOf(1);
     }
 
     /**
@@ -304,7 +304,7 @@ public class VersionLockingPolicy implements OptimisticLockingPolicy, Serializab
 
         // If null, was an insert, use 0.
         if (newWriteLockFieldValue == null) {
-            newWriteLockFieldValue = new Long(0);
+            newWriteLockFieldValue = Long.valueOf(0);
         }
 
         if (isStoredInCache()) {
@@ -313,7 +313,7 @@ public class VersionLockingPolicy implements OptimisticLockingPolicy, Serializab
             writeLockFieldValue = (Number)lockValueFromObject(domainObject);
         }
         if (writeLockFieldValue == null){
-            writeLockFieldValue = new Long(0);
+            writeLockFieldValue = Long.valueOf(0);
         }
         return (int)(newWriteLockFieldValue.longValue() - writeLockFieldValue.longValue());
     }
@@ -364,7 +364,7 @@ public class VersionLockingPolicy implements OptimisticLockingPolicy, Serializab
      * Adds 1 to the value passed in.
      */
     protected Number incrementWriteLockValue(Number numberValue) {
-        return new Long(numberValue.longValue() + 1);
+        return Long.valueOf(numberValue.longValue() + 1);
     }
 
     /**

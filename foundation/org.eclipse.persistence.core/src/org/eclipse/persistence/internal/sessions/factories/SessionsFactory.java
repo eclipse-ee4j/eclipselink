@@ -92,15 +92,15 @@ public class SessionsFactory {
      */
     public SessionsFactory() {
         m_logLevels = new HashMap();
-        m_logLevels.put("off", new Integer(SessionLog.OFF));
-        m_logLevels.put("severe", new Integer(SessionLog.SEVERE));
-        m_logLevels.put("warning", new Integer(SessionLog.WARNING));
-        m_logLevels.put("info", new Integer(SessionLog.INFO));
-        m_logLevels.put("config", new Integer(SessionLog.CONFIG));
-        m_logLevels.put("fine", new Integer(SessionLog.FINE));
-        m_logLevels.put("finer", new Integer(SessionLog.FINER));
-        m_logLevels.put("finest", new Integer(SessionLog.FINEST));
-        m_logLevels.put("all", new Integer(SessionLog.FINEST));
+        m_logLevels.put("off", Integer.valueOf(SessionLog.OFF));
+        m_logLevels.put("severe", Integer.valueOf(SessionLog.SEVERE));
+        m_logLevels.put("warning", Integer.valueOf(SessionLog.WARNING));
+        m_logLevels.put("info", Integer.valueOf(SessionLog.INFO));
+        m_logLevels.put("config", Integer.valueOf(SessionLog.CONFIG));
+        m_logLevels.put("fine", Integer.valueOf(SessionLog.FINE));
+        m_logLevels.put("finer", Integer.valueOf(SessionLog.FINER));
+        m_logLevels.put("finest", Integer.valueOf(SessionLog.FINEST));
+        m_logLevels.put("all", Integer.valueOf(SessionLog.FINEST));
     }
 
     /**

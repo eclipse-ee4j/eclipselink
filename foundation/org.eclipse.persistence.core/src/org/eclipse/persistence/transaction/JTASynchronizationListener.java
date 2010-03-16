@@ -76,6 +76,6 @@ public class JTASynchronizationListener extends AbstractSynchronizationListener 
      * @param stat The status of the transaction completion.
      */
     public void afterCompletion(int stat) {
-        super.afterCompletion(new Integer(stat));
+        super.afterCompletion(Integer.valueOf(stat));
     }
 }

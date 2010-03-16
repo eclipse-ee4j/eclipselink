@@ -94,7 +94,7 @@ public class StatementQueryMechanism extends CallQueryMechanism {
         if ((this.call == null) && (!hasMultipleCalls())) {
             prepareDeleteObject();
             if ((this.call == null) && (!hasMultipleCalls())) {
-                return new Integer(1);// Must be 1 otherwise locking error will occur.
+                return Integer.valueOf(1);// Must be 1 otherwise locking error will occur.
             }
         }
 
@@ -423,7 +423,7 @@ public class StatementQueryMechanism extends CallQueryMechanism {
         if ((this.call == null) && (!hasMultipleCalls())) {
             prepareUpdateObject();
             if ((this.call == null) && (!hasMultipleCalls())) {
-                return new Integer(1);// Must be 1 otherwise locking error will occur.
+                return Integer.valueOf(1);// Must be 1 otherwise locking error will occur.
             }
         }
 

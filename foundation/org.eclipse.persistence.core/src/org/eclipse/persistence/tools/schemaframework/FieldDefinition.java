@@ -195,16 +195,16 @@ public class FieldDefinition implements Serializable, Cloneable {
             if ((fieldType.isSizeAllowed()) && ((getSize() != 0) || (fieldType.isSizeRequired()))) {
                 writer.write("(");
                 if (getSize() == 0) {
-                    writer.write(new Integer(fieldType.getDefaultSize()).toString());
+                    writer.write(Integer.valueOf(fieldType.getDefaultSize()).toString());
                 } else {
-                    writer.write(new Integer(getSize()).toString());
+                    writer.write(Integer.valueOf(getSize()).toString());
                 }
                 if (getSubSize() != 0) {
                     writer.write(",");
-                    writer.write(new Integer(getSubSize()).toString());
+                    writer.write(Integer.valueOf(getSubSize()).toString());
                 } else if (fieldType.getDefaultSubSize() != 0) {
                     writer.write(",");
-                    writer.write(new Integer(fieldType.getDefaultSubSize()).toString());
+                    writer.write(Integer.valueOf(fieldType.getDefaultSubSize()).toString());
                 }
                 writer.write(")");
             }

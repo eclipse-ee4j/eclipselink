@@ -356,7 +356,7 @@ public class PersistenceUnit {
         // Load the eclipselink-orm.xml if it exists and is not excluded.
         Boolean excludeEclipseLinkORM = false;
         if (persistenceUnitProperties.containsKey(PersistenceUnitProperties.EXCLUDE_ECLIPSELINK_ORM_FILE)) {
-            excludeEclipseLinkORM = new Boolean((String) persistenceUnitProperties.get(PersistenceUnitProperties.EXCLUDE_ECLIPSELINK_ORM_FILE));
+            excludeEclipseLinkORM = Boolean.valueOf((String) persistenceUnitProperties.get(PersistenceUnitProperties.EXCLUDE_ECLIPSELINK_ORM_FILE));
         }
         
         if (! excludeEclipseLinkORM) {

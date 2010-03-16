@@ -76,7 +76,7 @@ public class ExistsNode extends Node {
             reportQuery.addNonFetchJoinedAttribute(expr);
         }
         reportQuery.clearItems();
-        Expression one = new ConstantExpression(new Integer(1), new ExpressionBuilder());
+        Expression one = new ConstantExpression(Integer.valueOf(1), new ExpressionBuilder());
         reportQuery.addItem("one", one);
         reportQuery.dontUseDistinct();
         Expression expr = context.getBaseExpression();

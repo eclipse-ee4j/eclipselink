@@ -73,7 +73,7 @@ public abstract class Expression implements Serializable, Cloneable {
      * </blockquote></pre>
      */
     public Expression addDate(String datePart, int numberToAdd) {
-        return addDate(datePart, new Integer(numberToAdd));
+        return addDate(datePart, Integer.valueOf(numberToAdd));
     }
 
     /**
@@ -103,7 +103,7 @@ public abstract class Expression implements Serializable, Cloneable {
      * Function, to add months to a date.
      */
     public Expression addMonths(int months) {
-        return addMonths(new Integer(months));
+        return addMonths(Integer.valueOf(months));
     }
 
     /**
@@ -477,7 +477,7 @@ public abstract class Expression implements Serializable, Cloneable {
      * Function, between two bytes
      */
     public Expression between(byte leftValue, byte rightValue) {
-        return between(new Byte(leftValue), new Byte(rightValue));
+        return between(Byte.valueOf(leftValue), Byte.valueOf(rightValue));
     }
 
     /**
@@ -485,7 +485,7 @@ public abstract class Expression implements Serializable, Cloneable {
      * Function, between two chars
      */
     public Expression between(char leftChar, char rightChar) {
-        return between(new Character(leftChar), new Character(rightChar));
+        return between(Character.valueOf(leftChar), Character.valueOf(rightChar));
     }
 
     /**
@@ -493,7 +493,7 @@ public abstract class Expression implements Serializable, Cloneable {
      * Function, between two doubles
      */
     public Expression between(double leftValue, double rightValue) {
-        return between(new Double(leftValue), new Double(rightValue));
+        return between(Double.valueOf(leftValue), Double.valueOf(rightValue));
     }
 
     /**
@@ -501,7 +501,7 @@ public abstract class Expression implements Serializable, Cloneable {
      * Function, between two floats
      */
     public Expression between(float leftValue, float rightValue) {
-        return between(new Float(leftValue), new Float(rightValue));
+        return between(Float.valueOf(leftValue), Float.valueOf(rightValue));
     }
 
     /**
@@ -509,7 +509,7 @@ public abstract class Expression implements Serializable, Cloneable {
      * Function, between two ints
      */
     public Expression between(int leftValue, int rightValue) {
-        return between(new Integer(leftValue), new Integer(rightValue));
+        return between(Integer.valueOf(leftValue), Integer.valueOf(rightValue));
     }
 
     /**
@@ -517,7 +517,7 @@ public abstract class Expression implements Serializable, Cloneable {
      * Function, between two longs
      */
     public Expression between(long leftValue, long rightValue) {
-        return between(new Long(leftValue), new Long(rightValue));
+        return between(Long.valueOf(leftValue), Long.valueOf(rightValue));
     }
 
     /**
@@ -552,7 +552,7 @@ public abstract class Expression implements Serializable, Cloneable {
      * Function, between two shorts
      */
     public Expression between(short leftValue, short rightValue) {
-        return between(new Short(leftValue), new Short(rightValue));
+        return between(Short.valueOf(leftValue), Short.valueOf(rightValue));
     }
 
     /**
@@ -1347,27 +1347,27 @@ public abstract class Expression implements Serializable, Cloneable {
     }
     
     public Expression equal(byte theValue) {
-        return equal(new Byte(theValue));
+        return equal(Byte.valueOf(theValue));
     }
 
     public Expression equal(char theChar) {
-        return equal(new Character(theChar));
+        return equal(Character.valueOf(theChar));
     }
 
     public Expression equal(double theValue) {
-        return equal(new Double(theValue));
+        return equal(Double.valueOf(theValue));
     }
 
     public Expression equal(float theValue) {
-        return equal(new Float(theValue));
+        return equal(Float.valueOf(theValue));
     }
 
     public Expression equal(int theValue) {
-        return equal(new Integer(theValue));
+        return equal(Integer.valueOf(theValue));
     }
 
     public Expression equal(long theValue) {
-        return equal(new Long(theValue));
+        return equal(Long.valueOf(theValue));
     }
 
     /**
@@ -1408,7 +1408,7 @@ public abstract class Expression implements Serializable, Cloneable {
     }
 
     public Expression equal(short theValue) {
-        return equal(new Short(theValue));
+        return equal(Short.valueOf(theValue));
     }
 
     public Expression equal(boolean theBoolean) {
@@ -1773,7 +1773,7 @@ public abstract class Expression implements Serializable, Cloneable {
      * Create a new expression tree with the named operator. Part of the implementation of user-level "get"
      */
     public ExpressionOperator getOperator(int selector) {
-        ExpressionOperator result = ExpressionOperator.getOperator(new Integer(selector));
+        ExpressionOperator result = ExpressionOperator.getOperator(Integer.valueOf(selector));
         if (result != null) {
             return result;
         }
@@ -1870,7 +1870,7 @@ public abstract class Expression implements Serializable, Cloneable {
      * This is equivalent to the SQL "=" operator and Java "equals" method.
      */
     public Expression greaterThan(byte theValue) {
-        return greaterThan(new Byte(theValue));
+        return greaterThan(Byte.valueOf(theValue));
     }
 
     /**
@@ -1879,7 +1879,7 @@ public abstract class Expression implements Serializable, Cloneable {
      * This is equivalent to the SQL "=" operator and Java "equals" method.
      */
     public Expression greaterThan(char theChar) {
-        return greaterThan(new Character(theChar));
+        return greaterThan(Character.valueOf(theChar));
     }
 
     /**
@@ -1888,7 +1888,7 @@ public abstract class Expression implements Serializable, Cloneable {
      * This is equivalent to the SQL "=" operator and Java "equals" method.
      */
     public Expression greaterThan(double theValue) {
-        return greaterThan(new Double(theValue));
+        return greaterThan(Double.valueOf(theValue));
     }
 
     /**
@@ -1897,7 +1897,7 @@ public abstract class Expression implements Serializable, Cloneable {
      * This is equivalent to the SQL "=" operator and Java "equals" method.
      */
     public Expression greaterThan(float theValue) {
-        return greaterThan(new Float(theValue));
+        return greaterThan(Float.valueOf(theValue));
     }
 
     /**
@@ -1906,7 +1906,7 @@ public abstract class Expression implements Serializable, Cloneable {
      * This is equivalent to the SQL "=" operator and Java "equals" method.
      */
     public Expression greaterThan(int theValue) {
-        return greaterThan(new Integer(theValue));
+        return greaterThan(Integer.valueOf(theValue));
     }
 
     /**
@@ -1915,7 +1915,7 @@ public abstract class Expression implements Serializable, Cloneable {
      * This is equivalent to the SQL "=" operator and Java "equals" method.
      */
     public Expression greaterThan(long theValue) {
-        return greaterThan(new Long(theValue));
+        return greaterThan(Long.valueOf(theValue));
     }
 
     /**
@@ -1940,7 +1940,7 @@ public abstract class Expression implements Serializable, Cloneable {
      * This is equivalent to the SQL "=" operator and Java "equals" method.
      */
     public Expression greaterThan(short theValue) {
-        return greaterThan(new Short(theValue));
+        return greaterThan(Short.valueOf(theValue));
     }
 
     /**
@@ -1958,7 +1958,7 @@ public abstract class Expression implements Serializable, Cloneable {
      * This is equivalent to the SQL ">=" operator .
      */
     public Expression greaterThanEqual(byte theValue) {
-        return greaterThanEqual(new Byte(theValue));
+        return greaterThanEqual(Byte.valueOf(theValue));
     }
 
     /**
@@ -1967,7 +1967,7 @@ public abstract class Expression implements Serializable, Cloneable {
      * This is equivalent to the SQL ">=" operator .
      */
     public Expression greaterThanEqual(char theChar) {
-        return greaterThanEqual(new Character(theChar));
+        return greaterThanEqual(Character.valueOf(theChar));
     }
 
     /**
@@ -1976,7 +1976,7 @@ public abstract class Expression implements Serializable, Cloneable {
      * This is equivalent to the SQL ">=" operator .
      */
     public Expression greaterThanEqual(double theValue) {
-        return greaterThanEqual(new Double(theValue));
+        return greaterThanEqual(Double.valueOf(theValue));
     }
 
     /**
@@ -1985,7 +1985,7 @@ public abstract class Expression implements Serializable, Cloneable {
      * This is equivalent to the SQL ">=" operator .
      */
     public Expression greaterThanEqual(float theValue) {
-        return greaterThanEqual(new Float(theValue));
+        return greaterThanEqual(Float.valueOf(theValue));
     }
 
     /**
@@ -1994,7 +1994,7 @@ public abstract class Expression implements Serializable, Cloneable {
      * This is equivalent to the SQL ">=" operator .
      */
     public Expression greaterThanEqual(int theValue) {
-        return greaterThanEqual(new Integer(theValue));
+        return greaterThanEqual(Integer.valueOf(theValue));
     }
 
     /**
@@ -2003,7 +2003,7 @@ public abstract class Expression implements Serializable, Cloneable {
      * This is equivalent to the SQL ">=" operator .
      */
     public Expression greaterThanEqual(long theValue) {
-        return greaterThanEqual(new Long(theValue));
+        return greaterThanEqual(Long.valueOf(theValue));
     }
 
     /**
@@ -2034,7 +2034,7 @@ public abstract class Expression implements Serializable, Cloneable {
      * This is equivalent to the SQL ">=" operator .
      */
     public Expression greaterThanEqual(short theValue) {
-        return greaterThanEqual(new Short(theValue));
+        return greaterThanEqual(Short.valueOf(theValue));
     }
 
     /**
@@ -2099,7 +2099,7 @@ public abstract class Expression implements Serializable, Cloneable {
         Vector vector = org.eclipse.persistence.internal.helper.NonSynchronizedVector.newInstance();
 
         for (int index = 0; index < theBytes.length; index++) {
-            vector.addElement(new Byte(theBytes[index]));
+            vector.addElement(Byte.valueOf(theBytes[index]));
         }
 
         return in(vector);
@@ -2114,7 +2114,7 @@ public abstract class Expression implements Serializable, Cloneable {
         Vector vector = org.eclipse.persistence.internal.helper.NonSynchronizedVector.newInstance();
 
         for (int index = 0; index < theChars.length; index++) {
-            vector.addElement(new Character(theChars[index]));
+            vector.addElement(Character.valueOf(theChars[index]));
         }
 
         return in(vector);
@@ -2129,7 +2129,7 @@ public abstract class Expression implements Serializable, Cloneable {
         Vector vector = org.eclipse.persistence.internal.helper.NonSynchronizedVector.newInstance();
 
         for (int index = 0; index < theDoubles.length; index++) {
-            vector.addElement(new Double(theDoubles[index]));
+            vector.addElement(Double.valueOf(theDoubles[index]));
         }
 
         return in(vector);
@@ -2144,7 +2144,7 @@ public abstract class Expression implements Serializable, Cloneable {
         Vector vector = org.eclipse.persistence.internal.helper.NonSynchronizedVector.newInstance();
 
         for (int index = 0; index < theFloats.length; index++) {
-            vector.addElement(new Float(theFloats[index]));
+            vector.addElement(Float.valueOf(theFloats[index]));
         }
 
         return in(vector);
@@ -2159,7 +2159,7 @@ public abstract class Expression implements Serializable, Cloneable {
         Vector vector = org.eclipse.persistence.internal.helper.NonSynchronizedVector.newInstance();
 
         for (int index = 0; index < theInts.length; index++) {
-            vector.addElement(new Integer(theInts[index]));
+            vector.addElement(Integer.valueOf(theInts[index]));
         }
 
         return in(vector);
@@ -2174,7 +2174,7 @@ public abstract class Expression implements Serializable, Cloneable {
         Vector vector = org.eclipse.persistence.internal.helper.NonSynchronizedVector.newInstance();
 
         for (int index = 0; index < theLongs.length; index++) {
-            vector.addElement(new Long(theLongs[index]));
+            vector.addElement(Long.valueOf(theLongs[index]));
         }
 
         return in(vector);
@@ -2204,7 +2204,7 @@ public abstract class Expression implements Serializable, Cloneable {
         Vector vector = org.eclipse.persistence.internal.helper.NonSynchronizedVector.newInstance();
 
         for (int index = 0; index < theShorts.length; index++) {
-            vector.addElement(new Short(theShorts[index]));
+            vector.addElement(Short.valueOf(theShorts[index]));
         }
 
         return in(vector);
@@ -2447,7 +2447,7 @@ public abstract class Expression implements Serializable, Cloneable {
      * Function, returns the string padded with the substring to the size.
      */
     public Expression leftPad(int size, Object substring) {
-        return leftPad(new Integer(size), substring);
+        return leftPad(Integer.valueOf(size), substring);
     }
 
     /**
@@ -2495,7 +2495,7 @@ public abstract class Expression implements Serializable, Cloneable {
      * This is equivalent to the SQL "<" operator.
      */
     public Expression lessThan(byte theValue) {
-        return lessThan(new Byte(theValue));
+        return lessThan(Byte.valueOf(theValue));
     }
 
     /**
@@ -2504,7 +2504,7 @@ public abstract class Expression implements Serializable, Cloneable {
      * This is equivalent to the SQL "<" operator.
      */
     public Expression lessThan(char theChar) {
-        return lessThan(new Character(theChar));
+        return lessThan(Character.valueOf(theChar));
     }
 
     /**
@@ -2513,7 +2513,7 @@ public abstract class Expression implements Serializable, Cloneable {
      * This is equivalent to the SQL "<" operator.
      */
     public Expression lessThan(double theValue) {
-        return lessThan(new Double(theValue));
+        return lessThan(Double.valueOf(theValue));
     }
 
     /**
@@ -2522,7 +2522,7 @@ public abstract class Expression implements Serializable, Cloneable {
      * This is equivalent to the SQL "<" operator.
      */
     public Expression lessThan(float theValue) {
-        return lessThan(new Float(theValue));
+        return lessThan(Float.valueOf(theValue));
     }
 
     /**
@@ -2531,7 +2531,7 @@ public abstract class Expression implements Serializable, Cloneable {
      * This is equivalent to the SQL "<" operator.
      */
     public Expression lessThan(int theValue) {
-        return lessThan(new Integer(theValue));
+        return lessThan(Integer.valueOf(theValue));
     }
 
     /**
@@ -2540,7 +2540,7 @@ public abstract class Expression implements Serializable, Cloneable {
      * This is equivalent to the SQL "<" operator.
      */
     public Expression lessThan(long theValue) {
-        return lessThan(new Long(theValue));
+        return lessThan(Long.valueOf(theValue));
     }
 
     /**
@@ -2565,7 +2565,7 @@ public abstract class Expression implements Serializable, Cloneable {
      * This is equivalent to the SQL "<" operator.
      */
     public Expression lessThan(short theValue) {
-        return lessThan(new Short(theValue));
+        return lessThan(Short.valueOf(theValue));
     }
 
     /**
@@ -2583,7 +2583,7 @@ public abstract class Expression implements Serializable, Cloneable {
      * This is equivalent to the SQL "<=" operator.
      */
     public Expression lessThanEqual(byte theValue) {
-        return lessThanEqual(new Byte(theValue));
+        return lessThanEqual(Byte.valueOf(theValue));
     }
 
     /**
@@ -2592,7 +2592,7 @@ public abstract class Expression implements Serializable, Cloneable {
      * This is equivalent to the SQL "<=" operator.
      */
     public Expression lessThanEqual(char theChar) {
-        return lessThanEqual(new Character(theChar));
+        return lessThanEqual(Character.valueOf(theChar));
     }
 
     /**
@@ -2601,7 +2601,7 @@ public abstract class Expression implements Serializable, Cloneable {
      * This is equivalent to the SQL "<=" operator.
      */
     public Expression lessThanEqual(double theValue) {
-        return lessThanEqual(new Double(theValue));
+        return lessThanEqual(Double.valueOf(theValue));
     }
 
     /**
@@ -2610,7 +2610,7 @@ public abstract class Expression implements Serializable, Cloneable {
      * This is equivalent to the SQL "<=" operator.
      */
     public Expression lessThanEqual(float theValue) {
-        return lessThanEqual(new Float(theValue));
+        return lessThanEqual(Float.valueOf(theValue));
     }
 
     /**
@@ -2619,7 +2619,7 @@ public abstract class Expression implements Serializable, Cloneable {
      * This is equivalent to the SQL "<=" operator.
      */
     public Expression lessThanEqual(int theValue) {
-        return lessThanEqual(new Integer(theValue));
+        return lessThanEqual(Integer.valueOf(theValue));
     }
 
     /**
@@ -2628,7 +2628,7 @@ public abstract class Expression implements Serializable, Cloneable {
      * This is equivalent to the SQL "<=" operator.
      */
     public Expression lessThanEqual(long theValue) {
-        return lessThanEqual(new Long(theValue));
+        return lessThanEqual(Long.valueOf(theValue));
     }
 
     /**
@@ -2658,7 +2658,7 @@ public abstract class Expression implements Serializable, Cloneable {
      * This is equivalent to the SQL "<=" operator.
      */
     public Expression lessThanEqual(short theValue) {
-        return lessThanEqual(new Short(theValue));
+        return lessThanEqual(Short.valueOf(theValue));
     }
 
     /**
@@ -2812,7 +2812,7 @@ public abstract class Expression implements Serializable, Cloneable {
      * starting at 1 if found.
      */
     public Expression locate(String str, int fromIndex) {
-        return locate(str, new Integer(fromIndex));
+        return locate(str, Integer.valueOf(fromIndex));
     }
 
     /**
@@ -3009,7 +3009,7 @@ public abstract class Expression implements Serializable, Cloneable {
      * @see #between(Object, Object)
      */
     public Expression notBetween(byte leftValue, byte rightValue) {
-        return notBetween(new Byte(leftValue), new Byte(rightValue));
+        return notBetween(Byte.valueOf(leftValue), Byte.valueOf(rightValue));
     }
 
     /**
@@ -3019,7 +3019,7 @@ public abstract class Expression implements Serializable, Cloneable {
      * @see #between(Object, Object)
      */
     public Expression notBetween(char leftChar, char rightChar) {
-        return notBetween(new Character(leftChar), new Character(rightChar));
+        return notBetween(Character.valueOf(leftChar), Character.valueOf(rightChar));
     }
 
     /**
@@ -3029,7 +3029,7 @@ public abstract class Expression implements Serializable, Cloneable {
      * @see #between(Object, Object)
      */
     public Expression notBetween(double leftValue, double rightValue) {
-        return notBetween(new Double(leftValue), new Double(rightValue));
+        return notBetween(Double.valueOf(leftValue), Double.valueOf(rightValue));
     }
 
     /**
@@ -3039,7 +3039,7 @@ public abstract class Expression implements Serializable, Cloneable {
      * @see #between(Object, Object)
      */
     public Expression notBetween(float leftValue, float rightValue) {
-        return notBetween(new Float(leftValue), new Float(rightValue));
+        return notBetween(Float.valueOf(leftValue), Float.valueOf(rightValue));
     }
 
     /**
@@ -3049,7 +3049,7 @@ public abstract class Expression implements Serializable, Cloneable {
      * @see #between(Object, Object)
      */
     public Expression notBetween(int leftValue, int rightValue) {
-        return notBetween(new Integer(leftValue), new Integer(rightValue));
+        return notBetween(Integer.valueOf(leftValue), Integer.valueOf(rightValue));
     }
 
     /**
@@ -3059,7 +3059,7 @@ public abstract class Expression implements Serializable, Cloneable {
      * @see #between(Object, Object)
      */
     public Expression notBetween(long leftValue, long rightValue) {
-        return notBetween(new Long(leftValue), new Long(rightValue));
+        return notBetween(Long.valueOf(leftValue), Long.valueOf(rightValue));
     }
 
     /**
@@ -3089,7 +3089,7 @@ public abstract class Expression implements Serializable, Cloneable {
      * @see #between(Object, Object)
      */
     public Expression notBetween(short leftValue, short rightValue) {
-        return notBetween(new Short(leftValue), new Short(rightValue));
+        return notBetween(Short.valueOf(leftValue), Short.valueOf(rightValue));
     }
 
     /**
@@ -3119,7 +3119,7 @@ public abstract class Expression implements Serializable, Cloneable {
      * @see #equal(Object)
      */
     public Expression notEqual(byte theValue) {
-        return notEqual(new Byte(theValue));
+        return notEqual(Byte.valueOf(theValue));
     }
 
     /**
@@ -3130,7 +3130,7 @@ public abstract class Expression implements Serializable, Cloneable {
      * @see #equal(Object)
      */
     public Expression notEqual(char theChar) {
-        return notEqual(new Character(theChar));
+        return notEqual(Character.valueOf(theChar));
     }
 
     /**
@@ -3141,7 +3141,7 @@ public abstract class Expression implements Serializable, Cloneable {
      * @see #equal(Object)
      */
     public Expression notEqual(double theValue) {
-        return notEqual(new Double(theValue));
+        return notEqual(Double.valueOf(theValue));
     }
 
     /**
@@ -3152,7 +3152,7 @@ public abstract class Expression implements Serializable, Cloneable {
      * @see #equal(Object)
      */
     public Expression notEqual(float theValue) {
-        return notEqual(new Float(theValue));
+        return notEqual(Float.valueOf(theValue));
     }
 
     /**
@@ -3163,7 +3163,7 @@ public abstract class Expression implements Serializable, Cloneable {
      * @see #equal(Object)
      */
     public Expression notEqual(int theValue) {
-        return notEqual(new Integer(theValue));
+        return notEqual(Integer.valueOf(theValue));
     }
 
     /**
@@ -3174,7 +3174,7 @@ public abstract class Expression implements Serializable, Cloneable {
      * @see #equal(Object)
      */
     public Expression notEqual(long theValue) {
-        return notEqual(new Long(theValue));
+        return notEqual(Long.valueOf(theValue));
     }
 
     /**
@@ -3209,7 +3209,7 @@ public abstract class Expression implements Serializable, Cloneable {
      * @see #equal(Object)
      */
     public Expression notEqual(short theValue) {
-        return notEqual(new Short(theValue));
+        return notEqual(Short.valueOf(theValue));
     }
 
     /**
@@ -3250,7 +3250,7 @@ public abstract class Expression implements Serializable, Cloneable {
         Vector vector = org.eclipse.persistence.internal.helper.NonSynchronizedVector.newInstance();
 
         for (int index = 0; index < theBytes.length; index++) {
-            vector.addElement(new Byte(theBytes[index]));
+            vector.addElement(Byte.valueOf(theBytes[index]));
         }
 
         return notIn(vector);
@@ -3265,7 +3265,7 @@ public abstract class Expression implements Serializable, Cloneable {
         Vector vector = org.eclipse.persistence.internal.helper.NonSynchronizedVector.newInstance();
 
         for (int index = 0; index < theChars.length; index++) {
-            vector.addElement(new Character(theChars[index]));
+            vector.addElement(Character.valueOf(theChars[index]));
         }
 
         return notIn(vector);
@@ -3280,7 +3280,7 @@ public abstract class Expression implements Serializable, Cloneable {
         Vector vector = org.eclipse.persistence.internal.helper.NonSynchronizedVector.newInstance();
 
         for (int index = 0; index < theDoubles.length; index++) {
-            vector.addElement(new Double(theDoubles[index]));
+            vector.addElement(Double.valueOf(theDoubles[index]));
         }
 
         return notIn(vector);
@@ -3295,7 +3295,7 @@ public abstract class Expression implements Serializable, Cloneable {
         Vector vector = org.eclipse.persistence.internal.helper.NonSynchronizedVector.newInstance();
 
         for (int index = 0; index < theFloats.length; index++) {
-            vector.addElement(new Float(theFloats[index]));
+            vector.addElement(Float.valueOf(theFloats[index]));
         }
 
         return notIn(vector);
@@ -3310,7 +3310,7 @@ public abstract class Expression implements Serializable, Cloneable {
         Vector vector = org.eclipse.persistence.internal.helper.NonSynchronizedVector.newInstance();
 
         for (int index = 0; index < theInts.length; index++) {
-            vector.addElement(new Integer(theInts[index]));
+            vector.addElement(Integer.valueOf(theInts[index]));
         }
 
         return notIn(vector);
@@ -3325,7 +3325,7 @@ public abstract class Expression implements Serializable, Cloneable {
         Vector vector = org.eclipse.persistence.internal.helper.NonSynchronizedVector.newInstance();
 
         for (int index = 0; index < theLongs.length; index++) {
-            vector.addElement(new Long(theLongs[index]));
+            vector.addElement(Long.valueOf(theLongs[index]));
         }
 
         return notIn(vector);
@@ -3360,7 +3360,7 @@ public abstract class Expression implements Serializable, Cloneable {
         Vector vector = org.eclipse.persistence.internal.helper.NonSynchronizedVector.newInstance();
 
         for (int index = 0; index < theShorts.length; index++) {
-            vector.addElement(new Short(theShorts[index]));
+            vector.addElement(Short.valueOf(theShorts[index]));
         }
 
         return notIn(vector);
@@ -3623,7 +3623,7 @@ public abstract class Expression implements Serializable, Cloneable {
      * </blockquote></pre>
      */
     public Expression replicate(int constant) {
-        return replicate(new Integer(constant));
+        return replicate(Integer.valueOf(constant));
     }
 
     /**
@@ -3675,7 +3675,7 @@ public abstract class Expression implements Serializable, Cloneable {
      * </blockquote></pre>
      */
     public Expression right(int characters) {
-        return right(new Integer(characters));
+        return right(Integer.valueOf(characters));
     }
 
     /**
@@ -3699,7 +3699,7 @@ public abstract class Expression implements Serializable, Cloneable {
      * Function, returns the string padded with the substring to the size.
      */
     public Expression rightPad(int size, Object substring) {
-        return rightPad(new Integer(size), substring);
+        return rightPad(Integer.valueOf(size), substring);
     }
 
     /**
@@ -3860,7 +3860,7 @@ public abstract class Expression implements Serializable, Cloneable {
      * SQL: SUBSTR(FIRST_NAME, 1, 2)
      */
     public Expression substring(int startPosition, int size) {
-        return substring(new Integer(startPosition), new Integer(size));
+        return substring(Integer.valueOf(startPosition), Integer.valueOf(size));
     }
 
     /**
@@ -3886,7 +3886,7 @@ public abstract class Expression implements Serializable, Cloneable {
      * SQL: SUBSTR(FIRST_NAME, 1)
      */
     public Expression substring(int startPosition) {
-        return substring(new Integer(startPosition));
+        return substring(Integer.valueOf(startPosition));
     }
 
     /**
@@ -4214,7 +4214,7 @@ public abstract class Expression implements Serializable, Cloneable {
      * </blockquote></pre>
      */
     public Expression value(byte constant) {
-        return value(new Byte(constant));
+        return value(Byte.valueOf(constant));
     }
 
     /**
@@ -4226,7 +4226,7 @@ public abstract class Expression implements Serializable, Cloneable {
      * </blockquote></pre>
      */
     public Expression value(char constant) {
-        return value(new Character(constant));
+        return value(Character.valueOf(constant));
     }
 
     /**
@@ -4238,7 +4238,7 @@ public abstract class Expression implements Serializable, Cloneable {
      * </blockquote></pre>
      */
     public Expression value(double constant) {
-        return value(new Double(constant));
+        return value(Double.valueOf(constant));
     }
 
     /**
@@ -4250,7 +4250,7 @@ public abstract class Expression implements Serializable, Cloneable {
      * </blockquote></pre>
      */
     public Expression value(float constant) {
-        return value(new Float(constant));
+        return value(Float.valueOf(constant));
     }
 
     /**
@@ -4262,7 +4262,7 @@ public abstract class Expression implements Serializable, Cloneable {
      * </blockquote></pre>
      */
     public Expression value(int constant) {
-        return value(new Integer(constant));
+        return value(Integer.valueOf(constant));
     }
 
     /**
@@ -4274,7 +4274,7 @@ public abstract class Expression implements Serializable, Cloneable {
      * </blockquote></pre>
      */
     public Expression value(long constant) {
-        return value(new Long(constant));
+        return value(Long.valueOf(constant));
     }
 
     /**
@@ -4298,7 +4298,7 @@ public abstract class Expression implements Serializable, Cloneable {
      * </blockquote></pre>
      */
     public Expression value(short constant) {
-        return value(new Short(constant));
+        return value(Short.valueOf(constant));
     }
 
     /**
@@ -4448,7 +4448,7 @@ public abstract class Expression implements Serializable, Cloneable {
         Vector vector = org.eclipse.persistence.internal.helper.NonSynchronizedVector.newInstance();
 
         for (int index = 0; index < theBytes.length; index++) {
-            vector.addElement(new Byte(theBytes[index]));
+            vector.addElement(Byte.valueOf(theBytes[index]));
         }
 
         return any(vector);
@@ -4463,7 +4463,7 @@ public abstract class Expression implements Serializable, Cloneable {
         Vector vector = org.eclipse.persistence.internal.helper.NonSynchronizedVector.newInstance();
 
         for (int index = 0; index < theChars.length; index++) {
-            vector.addElement(new Character(theChars[index]));
+            vector.addElement(Character.valueOf(theChars[index]));
         }
 
         return any(vector);
@@ -4478,7 +4478,7 @@ public abstract class Expression implements Serializable, Cloneable {
         Vector vector = org.eclipse.persistence.internal.helper.NonSynchronizedVector.newInstance();
 
         for (int index = 0; index < theDoubles.length; index++) {
-            vector.addElement(new Double(theDoubles[index]));
+            vector.addElement(Double.valueOf(theDoubles[index]));
         }
 
         return any(vector);
@@ -4493,7 +4493,7 @@ public abstract class Expression implements Serializable, Cloneable {
         Vector vector = org.eclipse.persistence.internal.helper.NonSynchronizedVector.newInstance();
 
         for (int index = 0; index < theFloats.length; index++) {
-            vector.addElement(new Float(theFloats[index]));
+            vector.addElement(Float.valueOf(theFloats[index]));
         }
 
         return any(vector);
@@ -4508,7 +4508,7 @@ public abstract class Expression implements Serializable, Cloneable {
         Vector vector = org.eclipse.persistence.internal.helper.NonSynchronizedVector.newInstance();
 
         for (int index = 0; index < theInts.length; index++) {
-            vector.addElement(new Integer(theInts[index]));
+            vector.addElement(Integer.valueOf(theInts[index]));
         }
 
         return any(vector);
@@ -4523,7 +4523,7 @@ public abstract class Expression implements Serializable, Cloneable {
         Vector vector = org.eclipse.persistence.internal.helper.NonSynchronizedVector.newInstance();
 
         for (int index = 0; index < theLongs.length; index++) {
-            vector.addElement(new Long(theLongs[index]));
+            vector.addElement(Long.valueOf(theLongs[index]));
         }
 
         return any(vector);
@@ -4553,7 +4553,7 @@ public abstract class Expression implements Serializable, Cloneable {
         Vector vector = org.eclipse.persistence.internal.helper.NonSynchronizedVector.newInstance();
 
         for (int index = 0; index < theShorts.length; index++) {
-            vector.addElement(new Short(theShorts[index]));
+            vector.addElement(Short.valueOf(theShorts[index]));
         }
 
         return any(vector);
@@ -4610,7 +4610,7 @@ public abstract class Expression implements Serializable, Cloneable {
         Vector vector = org.eclipse.persistence.internal.helper.NonSynchronizedVector.newInstance();
 
         for (int index = 0; index < theBytes.length; index++) {
-            vector.addElement(new Byte(theBytes[index]));
+            vector.addElement(Byte.valueOf(theBytes[index]));
         }
 
         return some(vector);
@@ -4625,7 +4625,7 @@ public abstract class Expression implements Serializable, Cloneable {
         Vector vector = org.eclipse.persistence.internal.helper.NonSynchronizedVector.newInstance();
 
         for (int index = 0; index < theChars.length; index++) {
-            vector.addElement(new Character(theChars[index]));
+            vector.addElement(Character.valueOf(theChars[index]));
         }
 
         return some(vector);
@@ -4640,7 +4640,7 @@ public abstract class Expression implements Serializable, Cloneable {
         Vector vector = org.eclipse.persistence.internal.helper.NonSynchronizedVector.newInstance();
 
         for (int index = 0; index < theDoubles.length; index++) {
-            vector.addElement(new Double(theDoubles[index]));
+            vector.addElement(Double.valueOf(theDoubles[index]));
         }
 
         return some(vector);
@@ -4655,7 +4655,7 @@ public abstract class Expression implements Serializable, Cloneable {
         Vector vector = org.eclipse.persistence.internal.helper.NonSynchronizedVector.newInstance();
 
         for (int index = 0; index < theFloats.length; index++) {
-            vector.addElement(new Float(theFloats[index]));
+            vector.addElement(Float.valueOf(theFloats[index]));
         }
 
         return some(vector);
@@ -4670,7 +4670,7 @@ public abstract class Expression implements Serializable, Cloneable {
         Vector vector = org.eclipse.persistence.internal.helper.NonSynchronizedVector.newInstance();
 
         for (int index = 0; index < theInts.length; index++) {
-            vector.addElement(new Integer(theInts[index]));
+            vector.addElement(Integer.valueOf(theInts[index]));
         }
 
         return some(vector);
@@ -4685,7 +4685,7 @@ public abstract class Expression implements Serializable, Cloneable {
         Vector vector = org.eclipse.persistence.internal.helper.NonSynchronizedVector.newInstance();
 
         for (int index = 0; index < theLongs.length; index++) {
-            vector.addElement(new Long(theLongs[index]));
+            vector.addElement(Long.valueOf(theLongs[index]));
         }
 
         return some(vector);
@@ -4715,7 +4715,7 @@ public abstract class Expression implements Serializable, Cloneable {
         Vector vector = org.eclipse.persistence.internal.helper.NonSynchronizedVector.newInstance();
 
         for (int index = 0; index < theShorts.length; index++) {
-            vector.addElement(new Short(theShorts[index]));
+            vector.addElement(Short.valueOf(theShorts[index]));
         }
 
         return some(vector);
@@ -4772,7 +4772,7 @@ public abstract class Expression implements Serializable, Cloneable {
         Vector vector = org.eclipse.persistence.internal.helper.NonSynchronizedVector.newInstance();
 
         for (int index = 0; index < theBytes.length; index++) {
-            vector.addElement(new Byte(theBytes[index]));
+            vector.addElement(Byte.valueOf(theBytes[index]));
         }
 
         return all(vector);
@@ -4787,7 +4787,7 @@ public abstract class Expression implements Serializable, Cloneable {
         Vector vector = org.eclipse.persistence.internal.helper.NonSynchronizedVector.newInstance();
 
         for (int index = 0; index < theChars.length; index++) {
-            vector.addElement(new Character(theChars[index]));
+            vector.addElement(Character.valueOf(theChars[index]));
         }
 
         return all(vector);
@@ -4802,7 +4802,7 @@ public abstract class Expression implements Serializable, Cloneable {
         Vector vector = org.eclipse.persistence.internal.helper.NonSynchronizedVector.newInstance();
 
         for (int index = 0; index < theDoubles.length; index++) {
-            vector.addElement(new Double(theDoubles[index]));
+            vector.addElement(Double.valueOf(theDoubles[index]));
         }
 
         return all(vector);
@@ -4817,7 +4817,7 @@ public abstract class Expression implements Serializable, Cloneable {
         Vector vector = org.eclipse.persistence.internal.helper.NonSynchronizedVector.newInstance();
 
         for (int index = 0; index < theFloats.length; index++) {
-            vector.addElement(new Float(theFloats[index]));
+            vector.addElement(Float.valueOf(theFloats[index]));
         }
 
         return all(vector);
@@ -4832,7 +4832,7 @@ public abstract class Expression implements Serializable, Cloneable {
         Vector vector = org.eclipse.persistence.internal.helper.NonSynchronizedVector.newInstance();
 
         for (int index = 0; index < theInts.length; index++) {
-            vector.addElement(new Integer(theInts[index]));
+            vector.addElement(Integer.valueOf(theInts[index]));
         }
 
         return all(vector);
@@ -4847,7 +4847,7 @@ public abstract class Expression implements Serializable, Cloneable {
         Vector vector = org.eclipse.persistence.internal.helper.NonSynchronizedVector.newInstance();
 
         for (int index = 0; index < theLongs.length; index++) {
-            vector.addElement(new Long(theLongs[index]));
+            vector.addElement(Long.valueOf(theLongs[index]));
         }
 
         return all(vector);
@@ -4877,7 +4877,7 @@ public abstract class Expression implements Serializable, Cloneable {
         Vector vector = org.eclipse.persistence.internal.helper.NonSynchronizedVector.newInstance();
 
         for (int index = 0; index < theShorts.length; index++) {
-            vector.addElement(new Short(theShorts[index]));
+            vector.addElement(Short.valueOf(theShorts[index]));
         }
 
         return all(vector);
