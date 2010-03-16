@@ -575,11 +575,14 @@ public class XMLProcessor {
             if (oldProperty.isXmlElementType()) {
                 oldProperty.setType(oldProperty.getOriginalType());
             }
+        } else if (xmlElement.getXmlMap() != null) {
+            getLogger().logWarning(JAXBMetadataLogger.INVALID_TYPE_ON_MAP, new Object[] { xmlElement.getName() });
         } else {
-            if (xmlElement.getXmlMap() != null) {
-                getLogger().logWarning(JAXBMetadataLogger.INVALID_TYPE_ON_MAP, new Object[] { xmlElement.getName() });
-            } else {
-                oldProperty.setType(jModelInput.getJavaModel().getClass(xmlElement.getType()));
+            JavaClass pType = jModelInput.getJavaModel().getClass(xmlElement.getType());
+            oldProperty.setType(pType);
+            // may need to generate a type info for the type
+            if (aProcessor.shouldGenerateTypeInfo(pType) && aProcessor.getTypeInfo().get(pType.getQualifiedName()) == null) {
+                aProcessor.buildNewTypeInfo(new JavaClass[] { pType });
             }
         }
 
