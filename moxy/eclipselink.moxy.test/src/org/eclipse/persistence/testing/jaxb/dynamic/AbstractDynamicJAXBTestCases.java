@@ -39,28 +39,27 @@ import org.w3c.dom.Text;
 
 public abstract class AbstractDynamicJAXBTestCases extends JAXBTestCases {
 
-    // TODO: Use qualified class names when bug 298984 is fixed
-    private static final String DOCWRAPPER_CLASS_NAME = "DocWrapper";
-        //"org.persistence.testing.jaxb.dynamic.xxx.DocWrapper";
-    private static final String ROOT_CLASS_NAME = "Root";
-        //"org.persistence.testing.jaxb.dynamic.xxx.Root";
-    private static final String COMPOBJ_CLASS_NAME = "CompositeObjectTarget";
-        //"org.persistence.testing.jaxb.dynamic.xxx.CompositeObjectTarget";
-    private static final String COMPCOLL_CLASS_NAME = "CompositeCollectionTarget";
-        //"org.persistence.testing.jaxb.dynamic.xxx.CompositeCollectionTarget";
-    private static final String ANYOBJ_CLASS_NAME = "AnyObjectTarget";
-        //"org.persistence.testing.jaxb.dynamic.xxx.AnyObjectTarget";
-    private static final String ANYCOLL_CLASS_NAME = "AnyCollectionTarget";
-        //"org.persistence.testing.jaxb.dynamic.xxx.AnyCollectionTarget";
-    private static final String ANYATT_CLASS_NAME = "AnyAttributeTarget";
-        //"org.persistence.testing.jaxb.dynamic.xxx.AnyAttributeTarget";
-    private static final String OBJREFSUB_CLASS_NAME = "ObjectReferenceSubclassTarget";
-        //"org.persistence.testing.jaxb.dynamic.xxx.ObjectReferenceSubclassTarget";
-    private static final String COLLREF_CLASS_NAME = "CollectionReferenceTarget";
-        //"org.persistence.testing.jaxb.dynamic.xxx.CollectionReferenceTarget";
+    private static final String DOCWRAPPER_CLASS_NAME =
+        "org.persistence.testing.jaxb.dynamic.xxx.DocWrapper";
+    private static final String ROOT_CLASS_NAME = 
+        "org.persistence.testing.jaxb.dynamic.xxx.Root";
+    private static final String COMPOBJ_CLASS_NAME = 
+        "org.persistence.testing.jaxb.dynamic.xxx.CompositeObjectTarget";
+    private static final String COMPCOLL_CLASS_NAME = 
+        "org.persistence.testing.jaxb.dynamic.xxx.CompositeCollectionTarget";
+    private static final String ANYOBJ_CLASS_NAME = 
+        "org.persistence.testing.jaxb.dynamic.xxx.AnyObjectTarget";
+    private static final String ANYCOLL_CLASS_NAME = 
+        "org.persistence.testing.jaxb.dynamic.xxx.AnyCollectionTarget";
+    private static final String ANYATT_CLASS_NAME = 
+        "org.persistence.testing.jaxb.dynamic.xxx.AnyAttributeTarget";
+    private static final String OBJREFSUB_CLASS_NAME = 
+        "org.persistence.testing.jaxb.dynamic.xxx.ObjectReferenceSubclassTarget";
+    private static final String COLLREF_CLASS_NAME = 
+        "org.persistence.testing.jaxb.dynamic.xxx.CollectionReferenceTarget";
 
-    private static final String EMP_CLASS_NAME = "Employee";
-        //"org.persistence.testing.jaxb.dynamic.zzz.Employee";
+    private static final String EMP_CLASS_NAME =
+        "org.persistence.testing.jaxb.dynamic.zzz.Employee";
 
     protected ArrayList objectsAlreadyCheckedForEquality;
 

@@ -18,7 +18,9 @@ package org.eclipse.persistence.dynamic;
 //javase imports
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.Iterator;
+import java.util.Map;
 
 //EclipseLink imports
 import org.eclipse.persistence.descriptors.ClassDescriptor;
@@ -44,10 +46,18 @@ import org.eclipse.persistence.tools.schemaframework.DynamicSchemaManager;
  */
 public class DynamicHelper {
 
-    private DatabaseSession session;
+    protected DatabaseSession session;
+    protected Map<String, ClassDescriptor> fqClassnameToDescriptor = 
+        new HashMap<String, ClassDescriptor>();
 
     public DynamicHelper(DatabaseSession session) {
         this.session = session;
+        Collection<ClassDescriptor> descriptors = session.getDescriptors().values();
+        for (ClassDescriptor desc : descriptors) {
+            if (desc.getJavaClassName() != null) {
+                fqClassnameToDescriptor.put(desc.getJavaClassName(), desc);
+            }
+        }
     }
 
     public DatabaseSession getSession() {
@@ -61,7 +71,10 @@ public class DynamicHelper {
      * as well as optimized data value retrieval from an entity.
      */
     public DynamicType getType(String typeName) {
-        ClassDescriptor cd = getSession().getClassDescriptorForAlias(typeName);
+        ClassDescriptor cd = fqClassnameToDescriptor.get(typeName);
+        if (cd == null) {
+            cd = getSession().getClassDescriptorForAlias(typeName);
+        }
 
         if (cd == null) {
             return null;
@@ -103,7 +116,7 @@ public class DynamicHelper {
             getSession().getIdentityMapAccessor().initializeIdentityMap(type.getJavaClass());
 
             ClassDescriptor descriptor = type.getDescriptor();
-
+            fqClassnameToDescriptor.remove(descriptor.getJavaClassName());
             getSession().getProject().getOrderedDescriptors().remove(descriptor);
             getSession().getProject().getDescriptors().remove(type.getJavaClass());
         }
@@ -193,6 +206,11 @@ public class DynamicHelper {
         }
 
         session.addDescriptors(descriptors);
+        for (ClassDescriptor desc : descriptors) {
+            if (desc.getJavaClassName() != null) {
+                fqClassnameToDescriptor.put(desc.getJavaClassName(), desc);
+            }
+        }
 
         if (createMissingTables) {
             if (!getSession().isConnected()) {

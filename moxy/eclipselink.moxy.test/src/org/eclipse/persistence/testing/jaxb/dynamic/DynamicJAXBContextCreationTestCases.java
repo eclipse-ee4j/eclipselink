@@ -25,8 +25,8 @@ import org.eclipse.persistence.jaxb.DynamicJAXBContext;
 
 public class DynamicJAXBContextCreationTestCases extends TestCase {
 
-    private static final String DOCWRAPPER_CLASS_NAME = "DocWrapper";
-    //"org.persistence.testing.jaxb.dynamic.xxx.DocWrapper";
+    private static final String DOCWRAPPER_CLASS_NAME = 
+        "org.persistence.testing.jaxb.dynamic.xxx.DocWrapper";
 
     private static final String SESSION_NAMES = 
         "org.eclipse.persistence.testing.jaxb.dynamic:org.eclipse.persistence.testing.jaxb.dynamic.secondproject";
