@@ -27,6 +27,7 @@ import org.eclipse.persistence.testing.jaxb.typemappinginfo.TypeMappingInfoTestC
 public class ConflictingClassesTestCases extends TypeMappingInfoTestCases{
 
 	protected final static String XML_RESOURCE = "org/eclipse/persistence/testing/jaxb/typemappinginfo/collisions/conflictingClasses.xml";
+	protected final static String XML_RESOURCE_NO_XSI_TYPE = "org/eclipse/persistence/testing/jaxb/typemappinginfo/collisions/conflictingClassesNoXsiType.xml";
     	
 	public ConflictingClassesTestCases(String name) throws Exception {
 		super(name);
@@ -35,6 +36,7 @@ public class ConflictingClassesTestCases extends TypeMappingInfoTestCases{
 	
 	public void init() throws Exception {
 		setControlDocument(XML_RESOURCE);	
+		setWriteControlDocument(XML_RESOURCE_NO_XSI_TYPE);
 		setTypeMappingInfos(getTypeMappingInfos());	
 	}
 	

@@ -715,6 +715,10 @@ public class XMLObjectBuilder extends ObjectBuilder {
                     return false;
 
                 }
+     	        
+     	       if(xr.getDeclaredType() != null && xr.getDeclaredType() == xr.getObject().getClass()){
+                   return false;
+    	        } 
 
                 String xmlRootLocalName = xr.getLocalName();
                 String xmlRootUri = xr.getNamespaceURI();

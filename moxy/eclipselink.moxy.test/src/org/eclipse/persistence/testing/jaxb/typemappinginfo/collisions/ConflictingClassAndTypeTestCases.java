@@ -73,6 +73,20 @@ public class ConflictingClassAndTypeTestCases extends TypeMappingInfoTestCases{
 		return jaxbElement;
 	}
 
+    public Object getWriteControlObject() {
+		
+		QName qname = new QName("someUri", "testTagName");
+		JAXBElement jaxbElement = new JAXBElement(qname, Object.class, null);
+		Employee emp = new Employee();
+		emp.firstName ="theFirstName";
+		emp.lastName = "theLastName";
+		
+		jaxbElement.setValue(emp);
+
+		return jaxbElement;
+	}
+	
+	
     public Map<String, InputStream> getControlSchemaFiles(){			 		   
 	    InputStream instream = ClassLoader.getSystemResourceAsStream("org/eclipse/persistence/testing/jaxb/typemappinginfo/collisions/conflictingClasses.xsd");
 		

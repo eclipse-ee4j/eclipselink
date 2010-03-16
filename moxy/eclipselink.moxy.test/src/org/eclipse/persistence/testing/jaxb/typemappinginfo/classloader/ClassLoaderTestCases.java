@@ -91,6 +91,33 @@ public class ClassLoaderTestCases extends TypeMappingInfoTestCases {
         JAXBElement jaxbElement = new JAXBElement(qname, Employee.class, ptEmp);
         return jaxbElement;
     }
+    
+    public Object getWriteControlObject() {
+
+        QName qname = new QName("examplenamespace", "root");
+        Employee ptEmp = new Employee();
+        Address address = new Address();
+        address.street = "theStreet";
+        address.city = "theCity";
+        ptEmp.address = address;
+
+        PhoneNumber num1 = new PhoneNumber();
+        num1.areaCode = "613";
+        num1.number = "1111111";
+
+        PhoneNumber num2 = new PhoneNumber();
+        num2.areaCode = "613";
+        num2.number = "2222222";
+
+        List<PhoneNumber> numbers = new ArrayList<PhoneNumber>();
+        numbers.add(num1);
+        numbers.add(num2);
+
+        ptEmp.phoneNumbers = numbers;
+
+        JAXBElement jaxbElement = new JAXBElement(qname, Object.class, ptEmp);
+        return jaxbElement;
+    }
 
     public Map<String, InputStream> getControlSchemaFiles(){
         Map<String, InputStream> controlSchema = new HashMap<String, InputStream>();

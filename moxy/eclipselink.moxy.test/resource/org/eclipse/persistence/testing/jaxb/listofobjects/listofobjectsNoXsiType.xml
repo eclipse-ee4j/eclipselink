@@ -60,4 +60,46 @@
       <value>30</value>
    </entry>
    </stringIntegerHashMap>
+   <integerLinkedList>5</integerLinkedList>
+   <integerLinkedList>15</integerLinkedList>
+   <integerLinkedList>25</integerLinkedList>
+   <stringEmployeeHashtable>
+      <entry>
+         <key>string1</key>
+         <value id="10">
+            <firstName>Bob</firstName>
+            <lastName>Smith</lastName>
+            <responsibilities>
+               <responsibility xmlns:xsi='http://www.w3.org/2001/XMLSchema-instance' xmlns:xsd='http://www.w3.org/2001/XMLSchema' xsi:type="xsd:string">Fix Bugs</responsibility>
+               <responsibility xmlns:xsi='http://www.w3.org/2001/XMLSchema-instance' xmlns:xsd='http://www.w3.org/2001/XMLSchema' xsi:type="xsd:string">Write JAXB2.0 Prototype</responsibility>
+               <responsibility xmlns:xsi='http://www.w3.org/2001/XMLSchema-instance' xmlns:xsd='http://www.w3.org/2001/XMLSchema' xsi:type="xsd:string">Write Design Spec</responsibility>
+            </responsibilities>
+         </value>        
+      </entry>
+   </stringEmployeeHashtable>
+   <bigDecimalStack>1</bigDecimalStack>
+   <bigDecimalStack>5</bigDecimalStack>
+   <bigDecimalStack>10</bigDecimalStack>
+   <stringMyList>aaa</stringMyList>
+   <stringMyList>bbb</stringMyList>
+   <stringMyList>ccc</stringMyList>
+   <stringIntegerConcurrentMap>
+      <entry>
+         <key>string1</key>
+         <value>10</value>
+      </entry>
+      <entry>
+         <key>string2</key>
+         <value>20</value>
+      </entry>
+      <entry>
+         <key>string3</key>
+        <value>30</value>
+      </entry>
+   </stringIntegerConcurrentMap>
+   <integerSet>20</integerSet>
+   <integerSet>40</integerSet>
+   <integerSet>60</integerSet>
+   <stringQueue>ddd</stringQueue>
+   <stringQueue>eee</stringQueue>
 </x:root>

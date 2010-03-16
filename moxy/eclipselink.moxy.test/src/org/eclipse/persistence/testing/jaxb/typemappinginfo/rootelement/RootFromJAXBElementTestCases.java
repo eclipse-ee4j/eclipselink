@@ -55,6 +55,13 @@ public class RootFromJAXBElementTestCases extends TypeMappingInfoTestCases {
         address.setStreet(CONTROL_STREET);
         return new JAXBElement<Address>(new QName(JAXB_ELEMENT_NAMESPACE_URI, JAXB_ELEMENT_LOCAL_NAME), Address.class, address);
     }
+    
+    @Override   
+    public JAXBElement<Object> getWriteControlObject() {
+        Address address = new Address();
+        address.setStreet(CONTROL_STREET);
+        return new JAXBElement<Object>(new QName(JAXB_ELEMENT_NAMESPACE_URI, JAXB_ELEMENT_LOCAL_NAME), Object.class, address);
+    }
 
     @Override
     public Map<String, InputStream> getControlSchemaFiles() {

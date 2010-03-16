@@ -61,6 +61,16 @@ public class EmptyClassTestCases extends TypeMappingInfoTestCases{
 		return jaxbElement;
 	}
     
+    public Object getWriteControlObject(){
+        Person person = new Person();
+    	
+		QName qname = new QName("examplenamespace", "root");
+		
+		JAXBElement jaxbElement = new JAXBElement(qname, Object.class, person);		
+		return jaxbElement;
+    	
+    }
+    
     public Map<String, InputStream> getControlSchemaFiles(){			 		   
 		Map<String, InputStream> controlSchema = new HashMap<String, InputStream>();
 

@@ -14,13 +14,10 @@ package org.eclipse.persistence.testing.jaxb.typemappinginfo;
 
 import java.io.InputStream;
 import java.lang.annotation.Annotation;
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import javax.xml.bind.JAXBElement;
-import javax.xml.bind.annotation.XmlMimeType;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 import javax.xml.namespace.QName;
 
@@ -69,7 +66,17 @@ public class JavaTypeAdapterMapToEmpTestCases extends TypeMappingInfoTestCases {
 
         return jaxbElement;
     }
-    
+ 
+    public Object getWriteControlObject() {
+        Map map = new HashMap();
+        map.put("firstName", "John");
+        map.put("lastName", "Doe");
+        QName qname = new QName("someUri", "testTagName");
+        JAXBElement jaxbElement = new JAXBElement(qname, Object.class, null);
+        jaxbElement.setValue(map);
+
+        return jaxbElement;
+    }
     public Map<String, InputStream> getControlSchemaFiles(){                       
         InputStream instream = ClassLoader.getSystemResourceAsStream("org/eclipse/persistence/testing/jaxb/typemappinginfo/maptoemployee.xsd");
         

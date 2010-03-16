@@ -46,6 +46,7 @@ public class JAXBTypedListTestCases  extends JAXBListOfObjectsTestCases {
 	
 	public void init() throws Exception {
 		setControlDocument(XML_RESOURCE);
+		setWriteControlDocument(XML_RESOURCE_NO_XSI_TYPE);
 		Class[] classes = new Class[1];
 		classes[0] = Company.class;
 		
