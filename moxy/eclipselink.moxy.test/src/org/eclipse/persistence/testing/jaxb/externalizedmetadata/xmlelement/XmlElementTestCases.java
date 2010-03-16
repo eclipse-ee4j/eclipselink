@@ -13,7 +13,16 @@
 package org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmlelement;
 
 import java.io.File;
+import java.io.InputStream;
+import java.util.HashMap;
+import java.util.Map;
 
+import javax.xml.bind.JAXBException;
+import javax.xml.transform.Source;
+import javax.xml.transform.stream.StreamSource;
+
+import org.eclipse.persistence.jaxb.JAXBContext;
+import org.eclipse.persistence.jaxb.JAXBContextFactory;
 import org.eclipse.persistence.testing.jaxb.externalizedmetadata.ExternalizedMetadataTestCases;
 
 /**
@@ -72,5 +81,29 @@ public class XmlElementTestCases extends ExternalizedMetadataTestCases {
         String src = PATH + "employee-invalid.xml";
         String result = validateAgainstSchema(src, EMPTY_NAMESPACE, outputResolver);
         assertTrue("Schema validation passed unxepectedly", result != null);
+    }
+    
+    public void testTeamWithListOfPlayersSchemaGen() {
+        String metadataFile = PATH + "team-oxm.xml";
+        
+        InputStream iStream = loader.getResourceAsStream(metadataFile);
+        if (iStream == null) {
+            fail("Couldn't load metadata file [" + metadataFile + "]");
+        }
+        HashMap<String, Source> metadataSourceMap = new HashMap<String, Source>();
+        metadataSourceMap.put(CONTEXT_PATH, new StreamSource(iStream));
+        Map<String, Map<String, Source>> properties = new HashMap<String, Map<String, Source>>();
+        properties.put(JAXBContextFactory.ECLIPSELINK_OXM_XML_KEY, metadataSourceMap);
+        
+        try {
+            JAXBContext jContext = (JAXBContext) JAXBContextFactory.createContext(new Class[] { Team.class }, properties, loader);
+            MySchemaOutputResolver oResolver = new MySchemaOutputResolver(); 
+            jContext.generateSchema(oResolver);
+            // validate schema
+            String controlSchema = PATH + "team-schema.xsd";
+            compareSchemas(oResolver.schemaFiles.get(EMPTY_NAMESPACE), new File(controlSchema));
+        } catch (JAXBException e) {
+            fail("An exception occurred creating the JAXBContext: " + e.getMessage());
+        }
     }
 }
