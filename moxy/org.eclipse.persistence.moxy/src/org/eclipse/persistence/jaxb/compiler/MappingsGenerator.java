@@ -170,7 +170,7 @@ public class MappingsGenerator {
             if (tInfo.getXmlCustomizer() != null) {
                 String customizerClassName = tInfo.getXmlCustomizer();
                 try {
-                    Class customizerClass = PrivilegedAccessHelper.getClassForName(customizerClassName);
+                    Class customizerClass = PrivilegedAccessHelper.getClassForName(customizerClassName, true, helper.getClassLoader());
                     DescriptorCustomizer descriptorCustomizer = (DescriptorCustomizer) PrivilegedAccessHelper.newInstanceFromClass(customizerClass);
                     descriptorCustomizer.customize(tInfo.getDescriptor());
                 } catch (IllegalAccessException iae) {
