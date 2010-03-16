@@ -42,7 +42,11 @@ public class UnmarshalNamespaceContext implements UnmarshalNamespaceResolver {
             prefix = XMLConstants.EMPTY_STRING;
         }
         try {
-            return xmlStreamReader.getNamespaceURI(prefix);
+            String namespaceURI = xmlStreamReader.getNamespaceURI(prefix);
+            if(null == namespaceURI) {
+                return xmlStreamReader.getAttributeValue(XMLConstants.XMLNS_URL, prefix);
+            }
+            return namespaceURI;
         } catch(IllegalStateException e) {
             return null;
         }
