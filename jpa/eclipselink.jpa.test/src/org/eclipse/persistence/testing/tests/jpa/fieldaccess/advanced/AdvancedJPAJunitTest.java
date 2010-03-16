@@ -839,7 +839,7 @@ public class AdvancedJPAJunitTest extends JUnitTestCase {
         ServerSession session = JUnitTestCase.getServerSession("fieldaccess");
         
         // Cannot create parallel entity managers in the server.
-        if (! isOnServer() && isSelectForUpateSupported()) {
+        if (! isOnServer() && isSelectForUpateNoWaitSupported("fieldaccess")) {
             EntityManager em = createEntityManager("fieldaccess");
             Employee employee;
             
@@ -869,12 +869,6 @@ public class AdvancedJPAJunitTest extends JUnitTestCase {
                 
                 try {
                     beginTransaction(em2);
-                    // This find should pick up a lock timeout value from the 
-                    // session default. In case it doesn't we'll set a jdbc 
-                    // timeout (bigger than the lock timeout default so we don't 
-                    // get deadlocked).
-                    HashMap properties = new HashMap();
-                    properties.put(QueryHints.JDBC_TIMEOUT, 10);
                     Employee emp2 = em2.find(Employee.class, employee.getId(), LockModeType.PESSIMISTIC_READ);
                 } catch (PersistenceException ex) {
                     if (ex instanceof javax.persistence.LockTimeoutException) {
