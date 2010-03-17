@@ -13,6 +13,7 @@
 
 package org.eclipse.persistence.testing.tests.wdf.jpa1.query;
 
+import org.eclipse.persistence.testing.framework.wdf.Skip;
 import org.eclipse.persistence.testing.framework.wdf.ToBeInvestigated;
 import org.junit.Test;
 
@@ -34,6 +35,7 @@ public class TestBuiltInFunctionExpressions extends QueryTest {
     }
 
     @Test
+    @Skip
     public void testConcatHandling3() {
         /* 3 */assertInvalidQuery("SELECT p FROM Person p where 'a' = concat(5, 5)");
     }
@@ -240,6 +242,7 @@ public class TestBuiltInFunctionExpressions extends QueryTest {
     }
 
     @Test
+    @Skip
     public void testUpperHandling42() {
         /* 42 */assertInvalidQuery("SELECT p FROM Person p where upper(2*2) = lower(1+1)");
     }
@@ -282,6 +285,7 @@ public class TestBuiltInFunctionExpressions extends QueryTest {
     }
 
     @Test
+    @Skip
     public void testLengthHandling50() {
         /* 50 */assertInvalidQuery("SELECT p FROM Person p where length(2*2) = 666");
     }
