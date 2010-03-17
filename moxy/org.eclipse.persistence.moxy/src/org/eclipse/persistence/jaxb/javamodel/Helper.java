@@ -77,6 +77,9 @@ public class Helper {
     public final static String LONG = "java.lang.Long";
     public final static String SHORT = "java.lang.Short";
     public final static String UTIL_DATE = "java.util.Date";
+    public final static String SQL_DATE = "java.sql.Date";
+    public final static String SQL_TIME = "java.sql.Time";
+    public final static String SQL_TIMESTAMP = "java.sql.Timestamp";
     public final static String DURATION = "javax.xml.datatype.Duration";
     public final static String XMLGREGORIANCALENDAR = "javax.xml.datatype.XMLGregorianCalendar";
 
@@ -127,6 +130,9 @@ public class Helper {
         javaTypes.put(LONG, XMLConstants.LONG_QNAME);
         javaTypes.put(SHORT, XMLConstants.SHORT_QNAME);
         javaTypes.put(UTIL_DATE, XMLConstants.DATE_TIME_QNAME);
+        javaTypes.put(SQL_DATE, XMLConstants.DATE_QNAME);
+        javaTypes.put(SQL_TIME, XMLConstants.TIME_QNAME);
+        javaTypes.put(SQL_TIMESTAMP, XMLConstants.DATE_TIME_QNAME);
         javaTypes.put(XMLGREGORIANCALENDAR, XMLConstants.ANY_SIMPLE_TYPE_QNAME);
         javaTypes.put(DURATION, XMLConstants.DURATION_QNAME);
         javaTypes.put(UUID, XMLConstants.STRING_QNAME);
