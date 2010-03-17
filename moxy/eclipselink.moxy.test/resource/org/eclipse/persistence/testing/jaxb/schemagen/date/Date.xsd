@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+   <xsd:complexType name="employee">
+      <xsd:sequence>
+         <xsd:element name="sqlDateProperty" type="xsd:date" minOccurs="0"/>
+         <xsd:element name="sqlTimeProperty" type="xsd:time" minOccurs="0"/>
+         <xsd:element name="sqlTimestampProperty" type="xsd:dateTime" minOccurs="0"/>
+         <xsd:element name="utilDateProperty" type="xsd:dateTime" minOccurs="0"/>
+      </xsd:sequence>
+   </xsd:complexType>
+   <xsd:element name="employee" type="employee"/>
+</xsd:schema>

@@ -12,6 +12,7 @@
  ******************************************************************************/  
 package org.eclipse.persistence.testing.jaxb.schemagen;
 
+import org.eclipse.persistence.testing.jaxb.schemagen.date.DateTestCases;
 import org.eclipse.persistence.testing.jaxb.schemagen.deploymentxml.DeploymentXMLSchemaGenTestCases;
 import org.eclipse.persistence.testing.jaxb.schemagen.employee.SchemaGenEmployeeTestCases;
 import org.eclipse.persistence.testing.jaxb.schemagen.imports.SchemaGenImportTestCases;
@@ -44,6 +45,7 @@ public class SchemaGenTestSuite extends TestSuite {
         suite.addTestSuite(TypeArraySchemaGenTestCases.class);
         suite.addTestSuite(SchemaGenScopeTestCases.class);
         //suite.addTestSuite(SchemaGenImportTestCases.class);
+        suite.addTestSuite(DateTestCases.class);
         return suite;
     }
 
@@ -51,4 +53,5 @@ public class SchemaGenTestSuite extends TestSuite {
         String[] arguments = { "-c", "org.eclipse.persistence.testing.jaxb.schemagen.SchemaGenTestSuite" };
         junit.textui.TestRunner.main(arguments);
     }
+
 }
