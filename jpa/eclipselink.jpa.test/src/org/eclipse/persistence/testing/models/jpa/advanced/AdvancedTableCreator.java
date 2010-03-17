@@ -586,6 +586,17 @@ public class AdvancedTableCreator extends TogglingFastTableCreator {
         fieldNAME.setShouldAllowNull(true);
         table.addField(fieldNAME);
 
+        FieldDefinition fieldHEAD = new FieldDefinition();
+        fieldHEAD.setName("DEPT_HEAD");
+        fieldHEAD.setTypeName("NUMERIC");
+        fieldHEAD.setSize(15);
+        fieldHEAD.setSubSize(0);
+        fieldHEAD.setIsPrimaryKey(false);
+        fieldHEAD.setIsIdentity(false);
+        fieldHEAD.setUnique(false);
+        fieldHEAD.setShouldAllowNull(true);
+        table.addField(fieldHEAD);
+        
         return table;
     }
     

@@ -143,7 +143,9 @@ public class JoinedAttributeAdvancedJunitTest extends JUnitTestCase {
         suite.addTest(new JoinedAttributeAdvancedJunitTest("testMultipleUnrelatedResultWithOneToManyJoins"));
         suite.addTest(new JoinedAttributeAdvancedJunitTest("testTwoUnrelatedResultWithOneToOneJoins"));
         suite.addTest(new JoinedAttributeAdvancedJunitTest("testTwoUnrelatedResultWithOneToOneJoinsWithExtraItem"));
-
+        // test for Bug 305713 - OuterJoinExpressionHolder order can be incorrect during ansi joins
+        suite.addTest(new JoinedAttributeAdvancedJunitTest("testOuterJoinSortingWithOneToOneJoins"));
+        
         // tests for Bug 274436: Custom QueryKeys fail to auto join.
         suite.addTest(new JoinedAttributeAdvancedJunitTest("testAddressQK"));
         suite.addTest(new JoinedAttributeAdvancedJunitTest("testManagedProjects"));
@@ -769,6 +771,45 @@ public class JoinedAttributeAdvancedJunitTest extends JUnitTestCase {
         } finally {
             testSetup();
         }
+    }
+    
+    public void testOuterJoinSortingWithOneToOneJoins() {
+    	ReadAllQuery controlQuery = new ReadAllQuery(Employee.class);
+    	ExpressionBuilder controlBuilder = controlQuery.getExpressionBuilder();
+    	Expression dept = controlBuilder.get("department");
+    	controlQuery.setSelectionCriteria(dept.notNull().and(dept.get("departmentHead").isNull()));
+    	List<Employee> controlResults = (List)getDbSession().executeQuery(controlQuery);
+    	
+    	assertNotNull("Control query results should be non-null", controlResults);
+    	assertFalse("Control query results should be non-empty", controlResults.isEmpty());
+    	
+    	ReadAllQuery query = new ReadAllQuery(Employee.class);
+    	ExpressionBuilder builder = query.getExpressionBuilder();
+    	
+    	Expression expression = builder.get("department");
+    	query.addJoinedAttribute(expression);
+    	
+    	expression = expression.getAllowingNull("departmentHead");
+    	query.addJoinedAttribute(expression);
+    	
+    	expression = expression.getAllowingNull("manager");
+    	query.addJoinedAttribute(expression);
+    	
+    	expression = expression.getAllowingNull("address");
+    	query.addJoinedAttribute(expression);
+
+    	List<Employee> actualResults = (List)getDbSession().executeQuery(query);
+    	
+    	assertNotNull("Query results should be non-null.", actualResults);
+    	assertFalse("Query results should be non-empty.", actualResults.isEmpty());
+    	
+    	assertEquals("Query results should be the same.", controlResults.size(), actualResults.size());
+    	
+    	for (Employee emp : controlResults) {
+    		if (!actualResults.contains(emp)) {
+    			fail("Actual results do not contain employee with id " + emp.getId());
+    		}
+    	}
     }
     
     public void testTwoUnrelatedResultWithOneToOneJoinsWithExtraItem() {
