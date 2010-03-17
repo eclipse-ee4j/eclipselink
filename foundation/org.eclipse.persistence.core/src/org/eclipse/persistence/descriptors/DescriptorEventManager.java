@@ -498,6 +498,7 @@ public class DescriptorEventManager implements Cloneable, Serializable {
      * Configure inherited selectors.
      */
     public void initialize(AbstractSession session) {
+        setHasAnyEventListeners(false);
         // Initialize the EJB 3.0 supported listeners.
         initializeEJB30EventManagers();
         if (hasEntityEventListener() || hasEntityListenerEventListeners()) {

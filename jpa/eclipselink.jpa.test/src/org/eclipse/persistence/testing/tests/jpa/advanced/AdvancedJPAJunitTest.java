@@ -47,6 +47,8 @@ import org.eclipse.persistence.internal.jpa.EntityManagerFactoryImpl;
 import org.eclipse.persistence.internal.jpa.EntityManagerImpl;
 import org.eclipse.persistence.internal.jpa.metamodel.MapAttributeImpl;
 import org.eclipse.persistence.internal.jpa.metamodel.SingularAttributeImpl;
+import org.eclipse.persistence.internal.sessions.AbstractSession;
+import org.eclipse.persistence.jpa.JpaHelper;
 import org.eclipse.persistence.mappings.DatabaseMapping;
 import org.eclipse.persistence.mappings.ForeignReferenceMapping;
 import org.eclipse.persistence.queries.DoesExistQuery;
@@ -1195,16 +1197,17 @@ public class AdvancedJPAJunitTest extends JUnitTestCase {
     
     public void testRelationshipReadDuringClone(){
         EntityManager em = createEntityManager();
-        Session session = em.unwrap(Session.class);
-        ClassDescriptor deparmentDesc = session.getDescriptor(Department.class);
+        Session session = JpaHelper.getServerSession(em.getEntityManagerFactory());
+        ClassDescriptor departmentDesc = session.getDescriptor(Department.class);
         DescriptorEventAdapter listener = new DescriptorEventAdapter(){
             public void postClone(DescriptorEvent event) {
                 ((Department)event.getObject()).getEquipment().size();
             }
         };
-        deparmentDesc.getDescriptorEventManager().addListener(listener);
+        departmentDesc.getDescriptorEventManager().addListener(listener);
         em.createQuery("SELECT e from Equipment e where e.department is not null").getResultList();
-        deparmentDesc.getDescriptorEventManager().removeListener(listener);
+        departmentDesc.getDescriptorEventManager().removeListener(listener);
+        departmentDesc.getDescriptorEventManager().initialize((AbstractSession) session);
         em.close();
     }
     

@@ -889,6 +889,7 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
         //but not for AttributeChangeTrackingPolicy
         Object backupClone = descriptor.getObjectChangePolicy().buildBackupClone(clone, builder, this);
         getCloneMapping().put(clone, backupClone);// The backup clone must be updated.
+        executeDeferredEvents();
 
         return clone;
     }
