@@ -18,6 +18,7 @@ import java.lang.ref.WeakReference;
 import java.lang.reflect.Method;
 import java.util.WeakHashMap;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
 
 import javax.management.AttributeChangeNotification;
 import javax.management.MBeanServer;
@@ -70,10 +71,11 @@ public class SDOHelperContext implements HelperContext {
     protected XMLHelper xmlHelper;
     protected TypeHelper typeHelper;
     protected XSDHelper xsdHelper;
+    private String identifier;
 
     // Each application will have its own helper context - it is assumed that application 
     // names/loaders are unique within each active server instance
-    private static ConcurrentHashMap<Object, HelperContext> helperContexts = new ConcurrentHashMap<Object, HelperContext>();
+    private static ConcurrentHashMap<Object, ConcurrentHashMap<String, HelperContext>> helperContexts = new ConcurrentHashMap<Object, ConcurrentHashMap<String, HelperContext>>();
     private static WeakHashMap<ClassLoader, WeakReference<HelperContext>> userSetHelperContexts = new WeakHashMap<ClassLoader, WeakReference<HelperContext>>();
 
     // Application server identifiers
@@ -81,7 +83,8 @@ public class SDOHelperContext implements HelperContext {
     private static String WLS_CLASSLOADER_NAME = "weblogic";
     private static String WAS_CLASSLOADER_NAME = "com.ibm.ws";
     private static String JBOSS_CLASSLOADER_NAME = "jboss";
-    
+    private static String GLOBAL_HELPER_IDENTIFIER = "";
+
     // Common
     private static final int COUNTER_LIMIT = 20;
 
@@ -128,6 +131,18 @@ public class SDOHelperContext implements HelperContext {
     }
 
     /**
+     * Create a local HelperContext with the given identifier.  The current 
+     * thread's context ClassLoader will be used to find static instance 
+     * classes.  In OSGi environments the construct that takes a ClassLoader 
+     * parameter should be used instead.
+     * 
+     * @param identifier The unique label for this HelperContext.
+     */
+    public SDOHelperContext(String identifier) {
+        this(identifier, Thread.currentThread().getContextClassLoader());
+    }
+
+    /**
      * Create a local HelperContext.  This constructor should be used in OSGi 
      * environments.
      * 
@@ -136,6 +151,21 @@ public class SDOHelperContext implements HelperContext {
      */
     public SDOHelperContext(ClassLoader aClassLoader) {
         super();
+        this.identifier = this.GLOBAL_HELPER_IDENTIFIER;
+        initialize(aClassLoader);
+    }
+
+    /**
+     * Create a local HelperContext with the given identifier.  This constructor
+     * should be used in OSGi environments.
+     * 
+     * @param identifier The unique label for this HelperContext.
+     * @param aClassLoader This class loader will be used to find static 
+     * instance classes.
+     */
+    public SDOHelperContext(String identifier, ClassLoader aClassLoader) {
+        super();
+        this.identifier = identifier;
         initialize(aClassLoader);
     }
 
@@ -244,7 +274,7 @@ public class SDOHelperContext implements HelperContext {
         }
         userSetHelperContexts.remove(key);
     }
-    
+
     /**
      * INTERNAL: 
      * Return the helper context for a given key.  The key will either
@@ -264,20 +294,76 @@ public class SDOHelperContext implements HelperContext {
         if (hCtx != null) {
             return hCtx;
         }
+        return getHelperContext(GLOBAL_HELPER_IDENTIFIER);
+    }
+
+    /**
+     * Return the local helper context with the given identifier, or create
+     * one if it does not already exist.
+     */
+    public static HelperContext getHelperContext(String identifier) {
+        ConcurrentMap<String, HelperContext> contextMap = getContextMap();
+        HelperContext helperContext = contextMap.get(identifier);
+        if (null == helperContext) {
+            helperContext = new SDOHelperContext(identifier);
+            HelperContext existingContext = contextMap.putIfAbsent(identifier, helperContext);
+            if(existingContext != null) {
+                helperContext = existingContext;
+            }
+        }
+        return helperContext;
+    }
+
+    /**
+     * Return the local helper context with the given identifier, or create
+     * one if it does not already exist.
+     */
+    public static HelperContext getHelperContext(String identifier, ClassLoader classLoader) {
+        ConcurrentMap<String, HelperContext> contextMap = getContextMap();
+        HelperContext helperContext = contextMap.get(identifier);
+        if (null == helperContext) {
+            helperContext = new SDOHelperContext(identifier, classLoader);
+            HelperContext existingContext = contextMap.putIfAbsent(identifier, helperContext);
+            if(existingContext != null) {
+                helperContext = existingContext;
+            }
+        }
+        return helperContext;
+    }
+
+    /**
+     * Returns the map of helper contexts, keyed on Identifier, for the current application
+     * @return
+     */
+    static ConcurrentMap<String, HelperContext> getContextMap() {
+        ClassLoader contextClassLoader = Thread.currentThread().getContextClassLoader();
         Object key = getDelegateMapKey(contextClassLoader);
-        hCtx = helperContexts.get(key);
-        if (hCtx == null) {
-            hCtx = new SDOHelperContext();
-            HelperContext existingCtx = helperContexts.putIfAbsent(key, hCtx);
-            if (existingCtx != null) {
-                hCtx = existingCtx;
+        ConcurrentHashMap<String, HelperContext> contextMap = helperContexts.get(key);
+        if(null == contextMap) {
+            contextMap = new ConcurrentHashMap<String, HelperContext>();
+            ConcurrentHashMap existingMap = helperContexts.putIfAbsent(key, contextMap);
+            if(existingMap != null) {
+                contextMap = existingMap;
             }
             if (key.getClass() == ClassConstants.STRING) {
-                helperContexts.put(contextClassLoader, hCtx);
+                helperContexts.put(contextClassLoader, contextMap);
             }
-            addNotificationListener(key);
         }
-        return hCtx;
+        addNotificationListener(key);
+        return contextMap;
+    }
+
+    /**
+     * Replaces the provided helper context in the map of identifiers to helper contexts for
+     * this application. ctx.getIdentifier() will be used to obtain identifier 
+     */
+    public static void putHelperContext(HelperContext ctx) {
+        String identifier = ((SDOHelperContext) ctx).getIdentifier();
+        if(GLOBAL_HELPER_IDENTIFIER.equals(identifier)) {
+            // The global HelperContext cannot be replaced
+            return;
+        }
+        getContextMap().put(identifier, ctx);
     }
 
     /**
@@ -286,12 +372,12 @@ public class SDOHelperContext implements HelperContext {
      * given key, if it exists in the map.
      */
     private static void resetHelperContext(Object key) {
-        HelperContext hCtx = helperContexts.get(key);
+        HelperContext hCtx = helperContexts.get(key).get(GLOBAL_HELPER_IDENTIFIER);
         if (hCtx != null) {
-            helperContexts.remove(key);        
+            helperContexts.remove(key);
         }
     }
-    
+
     /**
      * INTERNAL:
      * This method will return the key to be used to store/retrieve the delegates
@@ -491,9 +577,18 @@ public class SDOHelperContext implements HelperContext {
     public void makeDefaultContext() {
         ClassLoader contextClassLoader = Thread.currentThread().getContextClassLoader();
         Object key = getDelegateMapKey(contextClassLoader);
-        helperContexts.put(key, this);
+        ConcurrentHashMap<String, HelperContext> contexts = helperContexts.get(key);
+        if(contexts == null) {
+            contexts = new ConcurrentHashMap<String, HelperContext>();
+            ConcurrentHashMap<String, HelperContext> existingContexts = helperContexts.putIfAbsent(key, contexts);
+            if(existingContexts != null) {
+                contexts = existingContexts;
+            }
+        }
+        this.identifier = GLOBAL_HELPER_IDENTIFIER;
+        contexts.put(GLOBAL_HELPER_IDENTIFIER, this);
     }
-    
+
     /**
      * Attempt to return the WAS application name based on a given class loader
      * hierarchy.  The loader hierarchy will be traversed until the application 
@@ -551,6 +646,10 @@ public class SDOHelperContext implements HelperContext {
             }
         }
         return applicationName;
+    }
+
+    public String getIdentifier() {
+        return this.identifier;
     }
 
     /**
