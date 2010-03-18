@@ -22,6 +22,8 @@ import java.io.ObjectStreamException;
 import java.util.zip.GZIPInputStream;
 import java.util.zip.GZIPOutputStream;
 
+import org.eclipse.persistence.sdo.helper.SDOHelperContext;
+
 import commonj.sdo.helper.HelperContext;
 import commonj.sdo.helper.XMLDocument;
 import commonj.sdo.impl.ExternalizableDelegator;
@@ -104,6 +106,9 @@ public class SDOResolvable implements ExternalizableDelegator.Resolvable {
     /** Root element name for all DataObjects undergoing serialization = sdo:dataObject */
     public static final String DEFAULT_ROOT_ELEMENT_NAME = "dataObject";
 
+    /** root object with helper context id identifier */
+    public static final int SDO_HELPER_CONTEXT_ID_IDENTIFIER = 2;
+    
     /** root object serialization type identifier = 1 */
     public static final int SDO_ROOT_OBJECT_IDENTIFIER = 1;
 
@@ -164,8 +169,18 @@ public class SDOResolvable implements ExternalizableDelegator.Resolvable {
         if ((theSDODataObject.getContainer() == null)) {
             try {
                 // is a root object
-                objectOutput.writeByte(SDO_ROOT_OBJECT_IDENTIFIER);
-
+                String identifier = null;
+                if(this.aHelperContext.getClass() == SDOHelperContext.class) {
+                    identifier = ((SDOHelperContext)this.aHelperContext).getIdentifier();
+                }
+                if(identifier != null && !(identifier.equals(""))) {
+                    objectOutput.writeByte(SDO_HELPER_CONTEXT_ID_IDENTIFIER);
+                    objectOutput.writeUTF(identifier);
+                } else {
+                    objectOutput.writeByte(SDO_ROOT_OBJECT_IDENTIFIER);
+                }
+                
+                
                 // write root xml
                 aByteOutputStream = new ByteArrayOutputStream();
 
@@ -289,7 +304,42 @@ public class SDOResolvable implements ExternalizableDelegator.Resolvable {
                     aByteInputStream.close();
                 }
             }
-            break;        
+            break;
+        case SDO_HELPER_CONTEXT_ID_IDENTIFIER:
+            try {
+                String helperContextIdentifier = objectInput.readUTF();
+                // get length of gzip stream
+                int aStreamLength = objectInput.readInt();
+
+                // read in gzip bytes [rootXML]
+                byte[] aGZIPByteArray = new byte[aStreamLength];
+
+                // read in the length of bytes - EOF, buffering and stream
+                // length is handled internally by this function
+                objectInput.readFully(aGZIPByteArray);
+
+                // setup input stream chaining
+                aByteInputStream = new ByteArrayInputStream(aGZIPByteArray);
+
+                // chain a GZIP stream to the byte stream
+                aGZIPInputStream = new GZIPInputStream(aByteInputStream);
+
+                // read XML Serialization of the root DataObject from the GZIP input stream
+                HelperContext contextToUse = SDOHelperContext.getHelperContext(helperContextIdentifier);
+
+                XMLDocument aDocument = contextToUse.getXMLHelper().load(aGZIPInputStream);
+
+                theSDODataObject = (SDODataObject)aDocument.getRootObject();            
+            } finally {
+                // close streams on all Exceptions
+                if (aGZIPInputStream != null) {// Clover: false case testing requires IO/comm failure
+                    aGZIPInputStream.close();
+                }
+                if (aByteInputStream != null) {// Clover: false case testing requires IO/comm failure
+                    aByteInputStream.close();
+                }
+            }
+            break;
         }
     }
 

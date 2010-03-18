@@ -16,14 +16,25 @@ import commonj.sdo.DataObject;
 import commonj.sdo.Property;
 import commonj.sdo.helper.HelperContext;
 import commonj.sdo.helper.XMLDocument;
+import commonj.sdo.impl.HelperProvider;
+
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.ObjectOutputStream;
 import java.util.Iterator;
 import java.util.List;
+
+import javax.xml.parsers.DocumentBuilderFactory;
+
 import org.eclipse.persistence.sdo.SDOConstants;
 import org.eclipse.persistence.sdo.helper.DataObjectInputStream;
+import org.eclipse.persistence.sdo.helper.SDODataHelper;
+import org.eclipse.persistence.sdo.helper.SDOHelperContext;
+import org.eclipse.persistence.sdo.helper.SDOTypeHelper;
+import org.eclipse.persistence.sdo.helper.SDOXMLHelper;
+import org.eclipse.persistence.sdo.helper.SDOXSDHelper;
 import org.eclipse.persistence.testing.sdo.SDOTestCase;
+import org.eclipse.persistence.testing.sdo.SDOXMLComparer;
 
 public class SDOResolvableTestCases extends SDOTestCase {
     //protected String rootTypeName = "dataObject";    
@@ -47,8 +58,30 @@ public class SDOResolvableTestCases extends SDOTestCase {
      */
     public void setUp() {
         try {
-            super.setUp();
+            xmlComparer = new SDOXMLComparer();
+            aHelperContext = SDOHelperContext.getHelperContext();
+            typeHelper = aHelperContext.getTypeHelper();
+            xmlHelper = aHelperContext.getXMLHelper();
+            xsdHelper = aHelperContext.getXSDHelper();
+            equalityHelper = aHelperContext.getEqualityHelper();
+            copyHelper = aHelperContext.getCopyHelper();
+            dataFactory = aHelperContext.getDataFactory();
+            // TODO: we should be using the DataHelper interface
+            dataHelper = (SDODataHelper)aHelperContext.getDataHelper();
 
+            DocumentBuilderFactory builderFactory = DocumentBuilderFactory.newInstance();
+            builderFactory.setNamespaceAware(true);
+            builderFactory.setIgnoringElementContentWhitespace(true);
+            try {
+                parser = builderFactory.newDocumentBuilder();
+            } catch (Exception e) {
+                fail("Could not create parser.");
+                e.printStackTrace();
+            }
+            
+            ((SDOTypeHelper) typeHelper).reset();
+            ((SDOXMLHelper) xmlHelper).reset();
+            ((SDOXSDHelper) xsdHelper).reset();
             // load in the schema
             String xsdString = getXSDString("org/eclipse/persistence/testing/sdo/helper/xmlhelper/PurchaseOrderDeep.xsd");
 

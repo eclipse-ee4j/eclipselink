@@ -75,7 +75,7 @@ public class SDOTestCase extends junit.framework.TestCase {
     public DocumentBuilder parser;
     public String classgenCompilePath; 
     public String tempFileDir;
-    private SDOXMLComparer xmlComparer;
+    public SDOXMLComparer xmlComparer;
 
     protected static final String USER_DIR = System.getProperty("user.dir").replace('\\', '/');
     protected static final String FILE_PROTOCOL = USER_DIR.startsWith("/")? "file:" : "file:/";    
