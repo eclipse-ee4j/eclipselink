@@ -250,8 +250,9 @@ public class SQLSelectStatement extends SQLStatement {
         boolean firstTable = true;
         boolean requiresEscape = false; // Checks if the JDBC closing escape syntax is needed.
 
-        OuterJoinExpressionHolders outerJoinExpressionHolders = new OuterJoinExpressionHolders();
-        for (int index = 0; index < getOuterJoinExpressions().size(); index++) {
+        int nSize = getOuterJoinExpressions().size();
+        List<OuterJoinExpressionHolder> outerJoinExpressionHolders = new ArrayList(nSize);
+        for (int index = 0; index < nSize; index++) {
             QueryKeyExpression outerExpression = (QueryKeyExpression)getOuterJoinExpressions().elementAt(index);
 
             // CR#3083929 direct collection/map mappings do not have reference descriptor.
@@ -275,8 +276,11 @@ public class SQLSelectStatement extends SQLStatement {
                 new OuterJoinExpressionHolder(outerExpression, index, targetTable, sourceTable, targetAlias, sourceAlias));
         }
         
-        for (Iterator i = outerJoinExpressionHolders.linearize(this).iterator(); i.hasNext();) {
-            OuterJoinExpressionHolder holder = (OuterJoinExpressionHolder)i.next();
+        if(nSize > 1) {
+            sortOuterJoinExpressionHolders(outerJoinExpressionHolders);
+        }
+        
+        for (OuterJoinExpressionHolder holder : outerJoinExpressionHolders) {
             QueryKeyExpression outerExpression = holder.joinExpression;
             int index = holder.index;
             DatabaseTable targetTable = holder.targetTable;
@@ -1944,116 +1948,66 @@ public class SQLSelectStatement extends SQLStatement {
 
     // Outer join support methods / classes
         
-    /**
-     * This class manages outer join expressions. It stores them per source
-     * aliases, resolves nested joins and provides a method returning a list of
-     * outer join expressions in the correct order for code generation.
+    /*
+     * Sort the holder list.
+     * The sorting of holders is done to make sure that
+     * for every table alias that is both source of (one or more) holders
+     * and target of another holder the "target" holder is listed
+     * before the "source" holder(s).
+     * Denoting a holder as a pair of source alias and target alias, that means:
+     * 
+     * {t0, t1}, {t1, t2}, {t1, t3} or {t0, t1}, {t1, t3}, {t1, t2} is ok;
+     * but
+     * {t1, t2}, {t0, t1}, {t1, t3} or {t1, t2}, {t1, t3}, {t0, t1} should be reordered. 
+     * 
+     * To achieve this goal the method assigns an integer index to each table alias
+     * used by holders (for instance t0 -> 0; t1 -> 1; t2 -> 2; t3 -> 3).
+     * 
+     * Each holder assigned a list of integers corresponding to a sequence of aliases
+     * that starts with the one, which no holder uses as its target alias,
+     * possibly continues several times from source alias to target alias for some other holder (if exists),
+     * and ends with the holder's target alias.
+     * 
+     * {t0, t1} -> {0, 1};
+     * {t1, t2} -> {0, 1, 2}
+     * {t1, t3} -> {0, 1, 3}
+     * 
+     * Sorting of holders uses comparison of these lists (see OuterJoinExpressionHolder.compareTo):
+     * 
+     * {0, 1} < {0, 1, 2} < {0, 1, 3}
+     * Therefore the holders will be ordered:
+     * {t0, t1}, {t1, t2}, {t1, t3}
+     * 
+     * More complex example:
+     * {t0, t1}, {t1, t2}, {t2, t7}, {t7, t10}, {t1, t3}, {t4, t5}, {t5, t8}, {t8, t9}, {t5, t11}, {t4, t12}
      */
-    static class OuterJoinExpressionHolders {
-        
-        /** 
-         * key: sourceAlias name 
-         * value: list of OuterJoinExpressionHolder instances
-         */
-        Map sourceAlias2HoldersMap = new HashMap();
-
-        /** 
-         * Adds the specified outer join expression holder to the 
-         * internal map. 
-         */ 
-        void add(OuterJoinExpressionHolder holder) {
-            Object key = holder.sourceAlias.getName();
-            List holders = (List)sourceAlias2HoldersMap.get(key);
-            if (holders == null) {
-                holders = new ArrayList();
-                sourceAlias2HoldersMap.put(key, holders);
+    protected void sortOuterJoinExpressionHolders(List<OuterJoinExpressionHolder> holders) {
+        Map<DatabaseTable, OuterJoinExpressionHolder> targetAliasToHolders = new HashMap();
+        Set<DatabaseTable> aliases = new HashSet();
+        Map<DatabaseTable, Integer> aliasToIndexes = new HashMap(aliases.size());
+        int i = 0;
+        for(OuterJoinExpressionHolder holder : holders) {
+            targetAliasToHolders.put(holder.targetAlias, holder);
+            if(!aliases.contains(holder.sourceAlias)) {
+                aliases.add(holder.sourceAlias);
+                aliasToIndexes.put(holder.sourceAlias, i++);
             }
-            holders.add(holder);
-        }
-        
-        /** 
-         * Returns a list of OuterJoinExpressionHolder instances in the correct order.
-         */
-        List linearize(SQLSelectStatement statement) {
-            // Linearize the map:
-            // We will start with the expressions linked to the base of this query
-            // and do a depth first search for related expressions
-            List outerJoinExprHolders = new ArrayList();
-            
-            // Get the tables aliases that are related to outer join expressions
-            ArrayList keys = new ArrayList();
-            for (Iterator i = sourceAlias2HoldersMap.keySet().iterator(); i.hasNext();) {
-                keys.add(i.next());
-            }
-            
-            // Start with the keys for the ExpressionBuilder for this query and do a depth first search for 
-            // related expressions
-            DatabaseTable[] tables = statement.getBuilder().getTableAliases().keys();
-            for (int i = 0;i<tables.length;i++){
-                if (tables[i] != null){
-                    String alias = tables[i].getName();
-                    if (alias != null && !alias.equals("")){
-                        List holders = (List)sourceAlias2HoldersMap.get(alias);
-                        addHolders(outerJoinExprHolders, holders, keys);
-                    }
-                }
-            }
-            
-            // catch any additional expressions that were not related to the query builder
-            // and depth first search them to add them to the list
-            Iterator remaining = ((List)keys.clone()).iterator();
-            while (remaining.hasNext()){
-                String nextAlias = (String)remaining.next();
-                if (nextAlias != null && !nextAlias.equals("")){
-                    List holders = (List)sourceAlias2HoldersMap.get(nextAlias);
-                    addHolders(outerJoinExprHolders, holders, keys);
-                }
-            }
-            
-            return outerJoinExprHolders;
-        }
-
-
-        /**
-         * Add all elements from the specified holders list to the specified
-         * result list. If a holder has nested join add them to the result
-         * list before processing its sibling (depth first order). 
-         */
-        void addHolders(List result, List holders, List remainingTables) {
-            if ((holders == null) || holders.isEmpty()) {
-                // nothing to be done
-                return;
-            }
-            for (Iterator i = holders.iterator(); i.hasNext();) {
-                OuterJoinExpressionHolder holder = (OuterJoinExpressionHolder)i.next();
-                // add current holder
-                result.add(holder);
-                // keep track of the fact that we have dealt with this holder
-                remainingTables.remove(holder.sourceAlias.getName());
-                if (holder.joinExpression != null && holder.joinExpression.getTableAliases() != null){
-                    DatabaseTable[] tables = holder.joinExpression.getTableAliases().keys();
-                    for (int j = 0;j<tables.length;j++){
-                        if (tables[j] != null){
-                            String nextAlias = tables[j].getName();
-                            if (nextAlias != null && !nextAlias.equals("")){
-                                List nextHolders = (List)sourceAlias2HoldersMap.get(nextAlias);
-                                if (nextHolders != null){
-                                    addHolders(result, nextHolders, remainingTables);
-                                }
-                            }
-                        }
-                    }
-                }
+            if(!aliases.contains(holder.targetAlias)) {
+                aliases.add(holder.targetAlias);
+                aliasToIndexes.put(holder.targetAlias, i++);
             }
         }
+        for(OuterJoinExpressionHolder holder : holders) {
+            holder.createIndexList(targetAliasToHolders, aliasToIndexes);
+        }
+        Collections.sort(holders);
     }
     
-
     /**
      * Holder class storing a QueryKeyExpression representing an outer join
      * plus some data calculated by method appendFromClauseForOuterJoin.
      */
-    static class OuterJoinExpressionHolder
+    static class OuterJoinExpressionHolder implements Comparable 
     {
         final QueryKeyExpression joinExpression;
         final int index;
@@ -2061,6 +2015,7 @@ public class SQLSelectStatement extends SQLStatement {
         final DatabaseTable sourceTable;
         final DatabaseTable targetAlias;
         final DatabaseTable sourceAlias;
+        List<Integer> indexList;
         
         public OuterJoinExpressionHolder(QueryKeyExpression joinExpression, 
                                          int index,
@@ -2074,6 +2029,58 @@ public class SQLSelectStatement extends SQLStatement {
             this.sourceTable = sourceTable;
             this.targetAlias = targetAlias;
             this.sourceAlias = sourceAlias;
+        }
+        
+        public void createIndexList(Map<DatabaseTable, OuterJoinExpressionHolder> targetAliasToHolders, Map<DatabaseTable, Integer> aliasToIndexes) {
+            if(this.indexList != null) {
+                // indexList has been already created
+                return;
+            }
+            
+            this.indexList = new ArrayList();
+            OuterJoinExpressionHolder baseHolder = targetAliasToHolders.get(this.sourceAlias);
+            if(baseHolder != null) {
+                baseHolder.createIndexList(targetAliasToHolders, aliasToIndexes);
+                this.indexList.addAll(baseHolder.indexList);
+            } else {
+                this.indexList.add(aliasToIndexes.get(this.sourceAlias));
+            }
+            this.indexList.add(aliasToIndexes.get(this.targetAlias));
+        }
+        
+        /*
+         * The method should be called only on instances of OuterJoinExpressionHolder
+         * and only after the indexList has been created.
+         * Loop through both lists comparing the members corresponding to the same index
+         * until not equal members are found.
+         * If all the members are the same, but one of the lists is shorter then it's less.
+         * Examples:
+         * {2, 1} < {2, 2}; {2, 1} < {3}; {2, 1} > {2}
+         */
+        public int compareTo(Object other) {
+            if(other == this) {
+                return 0;
+            }
+            List<Integer> otherIndexList = ((OuterJoinExpressionHolder)other).indexList;
+            int nMinSize = this.indexList.size();
+            int nCompare = -1;
+            int nOtherSize = otherIndexList.size();
+            if(nMinSize > nOtherSize) {
+                nMinSize = nOtherSize;
+                nCompare = 1;
+            } else if(nMinSize == nOtherSize) {
+                nCompare = 0;
+            }
+            for(int i=0; i < nMinSize; i++) {
+                int index = indexList.get(i);
+                int otherIndex = otherIndexList.get(i);
+                if(index < otherIndex) {
+                    return -1;
+                } else if(index > otherIndex) {
+                    return 1;
+                }
+            }
+            return nCompare;
         }
     }
 }
