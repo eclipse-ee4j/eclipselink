@@ -15,13 +15,17 @@
  ******************************************************************************/
 package org.eclipse.persistence.testing.models.jpa.inherited;
 
+import static javax.persistence.FetchType.LAZY;
 import static javax.persistence.GenerationType.TABLE;
 
+import javax.persistence.Basic;
 import javax.persistence.Column;
 import javax.persistence.Embedded;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 import javax.persistence.NamedQuery;
 import javax.persistence.SecondaryTable;
 import javax.persistence.TableGenerator;
@@ -58,6 +62,14 @@ public class Official {
     @Column(table="JPA_OFFICIAL_COMPENSATION", insertable=false, updatable=true)
     private Integer bonus;
     
+    @ManyToOne(fetch = LAZY)
+    @JoinColumn(name = "OFFICIAL_ENTRYID", insertable = false, updatable = false)
+    private OfficialEntry officialEntry;
+
+    @Basic
+    @Column(name = "OFFICIAL_ENTRYID")
+    private Integer officialEntryId;
+
     public Official() {}
     
     public Integer getAge() {
@@ -76,6 +88,14 @@ public class Official {
         return name;
     }
     
+    public OfficialEntry getOfficialEntry() {
+        return officialEntry;
+    }
+    
+    public Integer getOfficialEntryId() {
+        return officialEntryId;
+    }
+
     public Integer getSalary() { 
         return salary; 
     }
@@ -98,6 +118,14 @@ public class Official {
     
     public void setName(String name) {
         this.name = name;
+    }
+    
+    public void setOfficialEntry(OfficialEntry officialEntry) {
+        this.officialEntry = officialEntry;
+    }
+
+    public void setOfficialEntryId(Integer officialEntryId) {
+        this.officialEntryId = officialEntryId;
     }
     
     public void setSalary(Integer salary) { 

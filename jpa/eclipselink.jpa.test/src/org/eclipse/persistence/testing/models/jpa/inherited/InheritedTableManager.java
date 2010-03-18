@@ -80,6 +80,7 @@ public class InheritedTableManager extends TableCreator {
         
         addTableDefinition(build_OFFICIAL_Table());
         addTableDefinition(build_OFFICIAL_COMPENSATIONTable());
+        addTableDefinition(build_OFFICIAL_ENTRY_Table());
         addTableDefinition(build_WITNESS_Table());
         addTableDefinition(build_CERTIFICATION_Table());
         addTableDefinition(build_COMMITTEE_Table());
@@ -1580,6 +1581,17 @@ public class InheritedTableManager extends TableCreator {
         fieldENDDATE.setIsIdentity(false);
         table.addField(fieldENDDATE);
         
+        FieldDefinition fieldOFFICIALENTRYID = new FieldDefinition();
+        fieldOFFICIALENTRYID.setName("OFFICIAL_ENTRYID");
+        fieldOFFICIALENTRYID.setTypeName("NUMERIC");
+        fieldOFFICIALENTRYID.setSize(15);
+        fieldOFFICIALENTRYID.setShouldAllowNull(true);
+        fieldOFFICIALENTRYID.setIsPrimaryKey(false);
+        fieldOFFICIALENTRYID.setUnique(false);
+        fieldOFFICIALENTRYID.setIsIdentity(false);
+        fieldOFFICIALENTRYID.setForeignKeyFieldName("JPA_OFFICIAL_ENTRY.ID");
+        table.addField(fieldOFFICIALENTRYID);
+        
         FieldDefinition EBC_ID_field = new FieldDefinition();
         EBC_ID_field.setName("FK_EBC_ID");
         EBC_ID_field.setTypeName("NUMERIC");
@@ -1601,6 +1613,23 @@ public class InheritedTableManager extends TableCreator {
         NBC_ID_field.setIsIdentity(false);
         NBC_ID_field.setForeignKeyFieldName("NOVICE_CONSUMER.ID");
         table.addField(NBC_ID_field);
+        
+        return table;
+    }
+    
+    public static TableDefinition build_OFFICIAL_ENTRY_Table() {
+        TableDefinition table = new TableDefinition();
+        table.setName("JPA_OFFICIAL_ENTRY");
+    
+        FieldDefinition ID_field = new FieldDefinition();
+        ID_field.setName("ID");
+        ID_field.setTypeName("NUMERIC");
+        ID_field.setSize(15);
+        ID_field.setIsPrimaryKey(true);
+        ID_field.setUnique(false);
+        ID_field.setIsIdentity(false);
+        ID_field.setShouldAllowNull(false);
+        table.addField(ID_field);
         
         return table;
     }
