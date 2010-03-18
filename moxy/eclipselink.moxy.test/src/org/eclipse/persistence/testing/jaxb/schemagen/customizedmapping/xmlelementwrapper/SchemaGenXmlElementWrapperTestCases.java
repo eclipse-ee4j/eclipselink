@@ -88,18 +88,4 @@ public class SchemaGenXmlElementWrapperTestCases extends SchemaGenTestCases {
             fail(result);
         }
     }
-    
-    /**
-     * Exception case - @XmlElementWrapper must be on collection property
-     */
-    public void testInvalidElementWrapper() {
-        MySchemaOutputResolver outputResolver = new MySchemaOutputResolver();
-        boolean exception = false;
-        try {
-            generateSchema(new Class[]{ MyInvalidClass.class }, outputResolver, null);
-        } catch (Exception ex) {
-            exception = true;
-        }
-        assertTrue("An error did not occur as expected", exception);
-    }
 }

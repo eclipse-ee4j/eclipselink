@@ -234,31 +234,4 @@ public class XmlElementWrapperTestCases extends ExternalizedMetadataTestCases {
 
         assertTrue("The unmarshalled Employee did not match the control Employee object.", ctrlEmp.equals(emp));
     }
-
-    /**
-     * Tests exception handling:  an xml-element-wrapper is applied to a 
-     * non-Collection or non-List property.
-     * 
-     * Negative test.
-     */
-    public void testInvalidElementWrapper() {
-        String metadataFile = PATH + "eclipselink-oxm-invalid.xml";
-        InputStream iStream = loader.getResourceAsStream(metadataFile);
-        if (iStream == null) {
-            fail("Couldn't load metadata file [" + metadataFile + "]");
-        }
-        HashMap<String, Source> metadataSourceMap = new HashMap<String, Source>();
-        metadataSourceMap.put(CONTEXT_PATH, new StreamSource(iStream));
-        Map<String, Map<String, Source>> properties = new HashMap<String, Map<String, Source>>();
-        properties.put(JAXBContextFactory.ECLIPSELINK_OXM_XML_KEY, metadataSourceMap);
-
-        boolean exceptionOccurred = false;
-        JAXBContext jaxbContext = null;
-        try {
-            jaxbContext = (JAXBContext) JAXBContextFactory.createContext(new Class[] { Employee.class }, properties);
-        } catch (JAXBException e1) {
-            exceptionOccurred = true;
-        }
-        assertTrue("The expected exception did not occur.", exceptionOccurred);
-    }
 }

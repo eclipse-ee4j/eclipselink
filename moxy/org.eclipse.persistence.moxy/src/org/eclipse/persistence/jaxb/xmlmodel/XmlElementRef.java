@@ -29,7 +29,7 @@ import javax.xml.bind.annotation.XmlType;
  *   &lt;complexContent>
  *     &lt;extension base="{http://www.eclipse.org/eclipselink/xsds/persistence/oxm}java-attribute">
  *       &lt;all>
- *         &lt;element ref="{http://www.eclipse.org/eclipselink/xsds/persistence/oxm}xml-element-wrapper"/>
+ *         &lt;element ref="{http://www.eclipse.org/eclipselink/xsds/persistence/oxm}xml-element-wrapper" minOccurs="0"/>
  *       &lt;/all>
  *       &lt;attribute name="name" type="{http://www.w3.org/2001/XMLSchema}string" default="##default" />
  *       &lt;attribute name="namespace" type="{http://www.w3.org/2001/XMLSchema}string" />
@@ -49,7 +49,7 @@ public class XmlElementRef
     extends JavaAttribute
 {
 
-    @XmlElement(name = "xml-element-wrapper", required = true)
+    @XmlElement(name = "xml-element-wrapper")
     protected XmlElementWrapper xmlElementWrapper;
     @XmlAttribute
     protected String name;

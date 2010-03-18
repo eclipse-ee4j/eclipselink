@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ns0:employee id="66" xmlns:ns0="http://www.example.com/employees" xmlns:prj="http://www.example.com/projects" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+    <projects>
+        <prj:project prj:managerId="99">XML External Metadata Support</prj:project>
+    </projects>
+    <project-id>999</project-id>
+    <info>
+        <personal-info>
+            <first-name>Joe</first-name>
+            <last-name>Oracle</last-name>
+        </personal-info>
+    </info>
+    <pieces-of-data>
+        <data>data one</data>
+        <data>data two</data>
+    </pieces-of-data>
+    <private-data>This is some private data</private-data>
+    <character-data><![CDATA[<characters>a b c d e f g</characters>]]></character-data>
+    <some-string xsi:nil="true" />
+    <a-string/>
+</ns0:employee>

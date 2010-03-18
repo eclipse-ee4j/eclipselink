@@ -22,6 +22,7 @@ import org.eclipse.persistence.jaxb.javamodel.Helper;
 import org.eclipse.persistence.jaxb.javamodel.JavaClass;
 import org.eclipse.persistence.jaxb.javamodel.JavaHasAnnotations;
 import org.eclipse.persistence.jaxb.javamodel.JavaMethod;
+import org.eclipse.persistence.jaxb.xmlmodel.XmlAbstractNullPolicy;
 import org.eclipse.persistence.jaxb.xmlmodel.XmlElementRef;
 import org.eclipse.persistence.jaxb.xmlmodel.XmlElementWrapper;
 import org.eclipse.persistence.jaxb.xmlmodel.XmlElements;
@@ -72,7 +73,12 @@ public class Property {
     private boolean xmlElementType = false;
     private JavaClass originalType;
     private String fixedValue;
+    private Boolean isReadOnly;
+    private Boolean isWriteOnly;
+    private Boolean isCdata;
+    private static final String OPEN_BRACKET =  "[";
     
+    private XmlAbstractNullPolicy nullPolicy;
     private XmlJavaTypeAdapter xmlJavaTypeAdapter;
     private XmlElementWrapper xmlElementWrapper;
     private boolean isXmlValue = false;
@@ -95,6 +101,7 @@ public class Property {
 	public static final String DEFAULT_KEY_NAME =  "key";
 	public static final String DEFAULT_VALUE_NAME =  "value";
 	private boolean isMap = false;
+    private String xmlPath;
 	
 	// XmlElements specific attributes
     private Collection<Property> choiceProperties;
@@ -105,7 +112,7 @@ public class Property {
     private ArrayList<ElementDeclaration> referencedElements;
     private List<XmlElementRef> xmlElementRefs;
     private boolean isReference = false;
-
+    
     public Property() {}
 
     public Property(Helper helper) {
@@ -806,5 +813,153 @@ public class Property {
     public void setFixedValue(String fixedValue) {
         this.fixedValue = fixedValue;
     }
+    
+    /**
+     * Indicates if this property is mapped by position, i.e. name="data[1]"
+     * 
+     * @return
+     */
+    public boolean isPositional() {
+        return (getXmlPath() != null && getXmlPath().contains(OPEN_BRACKET));
+    }
 
+    /**
+     * Flag the mapping for this Property as read-only.
+     * 
+     * @param isReadOnly the true/false value to set
+     */
+    public void setReadOnly(boolean isReadOnly) {
+        this.isReadOnly = isReadOnly;
+    }
+
+    /**
+     * Indicates if the mapping for this Property is read-only.
+     * 
+     * @return true if read-only, false if not
+     */
+    public boolean isReadOnly() {
+        if (isReadOnly == null) {
+            return false;
+        }
+        return isReadOnly;
+    }
+
+    /**
+     * Indicates if the isReadOnly flag was set via external metadata.
+     * 
+     * @return
+     */
+    public boolean isSetReadOnly() {
+        return isReadOnly != null;
+    }
+
+    /**
+     * Flag the mapping for this Property as write-only.
+     * 
+     * @param isWriteOnly the true/false value to set
+     */
+    public void setWriteOnly(boolean isWriteOnly) {
+        this.isWriteOnly = isWriteOnly;
+    }
+
+    /**
+     * @return true if write-only, false if not
+     */
+    public boolean isWriteOnly() {
+        if (isWriteOnly == null) {
+            return false;
+        }
+        return isWriteOnly;
+    }
+    
+    /**
+     * Indicates if the isWriteOnly flag was set via external metadata.
+     * 
+     * @return
+     */
+    public boolean isSetWriteOnly() {
+        return isWriteOnly != null;
+    }
+
+    /**
+     * Flag the mapping for this Property as containing character data.
+     * 
+     * @param isCdata the true/false value to set
+     */
+    public void setCdata(boolean isCdata) {
+        this.isCdata = isCdata;
+    }
+
+    /**
+     * @return true if character data, false if not
+     */
+    public boolean isCdata() {
+        if (isCdata == null) {
+            return false;
+        }
+        return isCdata;
+    }
+    
+    /**
+     * Indicates if the isCdata flag was set via external metadata.
+     * 
+     * @return
+     */
+    public boolean isSetCdata() {
+        return isCdata != null;
+    }
+    
+    /**
+     * Return the xpath for this property.
+     * 
+     * @return
+     */
+    public String getXmlPath() {
+        return xmlPath;
+    }
+
+    /**
+     * Set the xpath for this property.
+     * 
+     * @param xmlPath
+     */
+    public void setXmlPath(String xmlPath) {
+        this.xmlPath = xmlPath;
+    }
+    
+    /**
+     * Indicates if an xpath is set for this property.
+     * 
+     * @return
+     */
+    public boolean isSetXmlPath() {
+        return xmlPath != null;
+    }
+
+    /**
+     * Returns the null policy for this property.
+     * 
+     * @return null policy or null if not set
+     */
+    public XmlAbstractNullPolicy getNullPolicy() {
+        return nullPolicy;
+    }
+
+    /**
+     * Set the null policy for this property.
+     * 
+     * @param nullPolicy
+     */
+    public void setNullPolicy(XmlAbstractNullPolicy nullPolicy) {
+        this.nullPolicy = nullPolicy;
+    }
+    
+    /**
+     * Indicates if a null policy is set for this porperty.
+     * 
+     * @return
+     */
+    public boolean isSetNullPolicy() {
+        return nullPolicy != null;
+    }
 }

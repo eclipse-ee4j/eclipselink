@@ -1,21 +1,23 @@
 /*******************************************************************************
  * Copyright (c) 1998, 2010 Oracle. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
- *     Denise Smith, Nov. 19, 2009
+ * dmccann - February 22/2010 - 2.1 - Initial implementation
  ******************************************************************************/
 package org.eclipse.persistence.jaxb.xmlmodel;
 
+import java.util.ArrayList;
+import java.util.List;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
-import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlType;
 
 
@@ -27,28 +29,21 @@ import javax.xml.bind.annotation.XmlType;
  * <pre>
  * &lt;complexType>
  *   &lt;complexContent>
- *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType">
- *       &lt;all>
- *         &lt;element name="key" minOccurs="0">
+ *     &lt;extension base="{http://www.eclipse.org/eclipselink/xsds/persistence/oxm}xml-abstract-null-policy">
+ *       &lt;sequence>
+ *         &lt;element name="is-set-parameter" maxOccurs="unbounded" minOccurs="0">
  *           &lt;complexType>
  *             &lt;complexContent>
  *               &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType">
+ *                 &lt;attribute name="value" type="{http://www.w3.org/2001/XMLSchema}string" />
  *                 &lt;attribute name="type" type="{http://www.w3.org/2001/XMLSchema}string" />
  *               &lt;/restriction>
  *             &lt;/complexContent>
  *           &lt;/complexType>
  *         &lt;/element>
- *         &lt;element name="value" minOccurs="0">
- *           &lt;complexType>
- *             &lt;complexContent>
- *               &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType">
- *                 &lt;attribute name="type" type="{http://www.w3.org/2001/XMLSchema}string" />
- *               &lt;/restriction>
- *             &lt;/complexContent>
- *           &lt;/complexType>
- *         &lt;/element>
- *       &lt;/all>
- *     &lt;/restriction>
+ *       &lt;/sequence>
+ *       &lt;attribute name="is-set-method-name" type="{http://www.w3.org/2001/XMLSchema}string" />
+ *     &lt;/extension>
  *   &lt;/complexContent>
  * &lt;/complexType>
  * </pre>
@@ -57,60 +52,68 @@ import javax.xml.bind.annotation.XmlType;
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "", propOrder = {
-
+    "isSetParameter"
 })
-@XmlRootElement(name = "xml-map")
-public class XmlMap {
+public class XmlIsSetNullPolicy
+    extends XmlAbstractNullPolicy
+{
 
-    protected XmlMap.Key key;
-    protected XmlMap.Value value;
+    @XmlElement(name = "is-set-parameter")
+    protected List<XmlIsSetNullPolicy.IsSetParameter> isSetParameter;
+    @XmlAttribute(name = "is-set-method-name")
+    protected String isSetMethodName;
 
     /**
-     * Gets the value of the key property.
+     * Gets the value of the isSetParameter property.
+     * 
+     * <p>
+     * This accessor method returns a reference to the live list,
+     * not a snapshot. Therefore any modification you make to the
+     * returned list will be present inside the JAXB object.
+     * This is why there is not a <CODE>set</CODE> method for the isSetParameter property.
+     * 
+     * <p>
+     * For example, to add a new item, do as follows:
+     * <pre>
+     *    getIsSetParameter().add(newItem);
+     * </pre>
+     * 
+     * 
+     * <p>
+     * Objects of the following type(s) are allowed in the list
+     * {@link XmlIsSetNullPolicy.IsSetParameter }
+     * 
+     * 
+     */
+    public List<XmlIsSetNullPolicy.IsSetParameter> getIsSetParameter() {
+        if (isSetParameter == null) {
+            isSetParameter = new ArrayList<XmlIsSetNullPolicy.IsSetParameter>();
+        }
+        return this.isSetParameter;
+    }
+
+    /**
+     * Gets the value of the isSetMethodName property.
      * 
      * @return
      *     possible object is
-     *     {@link XmlMap.Key }
+     *     {@link String }
      *     
      */
-    public XmlMap.Key getKey() {
-        return key;
+    public String getIsSetMethodName() {
+        return isSetMethodName;
     }
 
     /**
-     * Sets the value of the key property.
+     * Sets the value of the isSetMethodName property.
      * 
      * @param value
      *     allowed object is
-     *     {@link XmlMap.Key }
+     *     {@link String }
      *     
      */
-    public void setKey(XmlMap.Key value) {
-        this.key = value;
-    }
-
-    /**
-     * Gets the value of the value property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link XmlMap.Value }
-     *     
-     */
-    public XmlMap.Value getValue() {
-        return value;
-    }
-
-    /**
-     * Sets the value of the value property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link XmlMap.Value }
-     *     
-     */
-    public void setValue(XmlMap.Value value) {
-        this.value = value;
+    public void setIsSetMethodName(String value) {
+        this.isSetMethodName = value;
     }
 
 
@@ -123,6 +126,7 @@ public class XmlMap {
      * &lt;complexType>
      *   &lt;complexContent>
      *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType">
+     *       &lt;attribute name="value" type="{http://www.w3.org/2001/XMLSchema}string" />
      *       &lt;attribute name="type" type="{http://www.w3.org/2001/XMLSchema}string" />
      *     &lt;/restriction>
      *   &lt;/complexContent>
@@ -133,61 +137,36 @@ public class XmlMap {
      */
     @XmlAccessorType(XmlAccessType.FIELD)
     @XmlType(name = "")
-    public static class Key {
+    public static class IsSetParameter {
 
+        @XmlAttribute
+        protected String value;
         @XmlAttribute
         protected String type;
 
         /**
-         * Gets the value of the type property.
+         * Gets the value of the value property.
          * 
          * @return
          *     possible object is
          *     {@link String }
          *     
          */
-        public String getType() {
-            return type;
+        public String getValue() {
+            return value;
         }
 
         /**
-         * Sets the value of the type property.
+         * Sets the value of the value property.
          * 
          * @param value
          *     allowed object is
          *     {@link String }
          *     
          */
-        public void setType(String value) {
-            this.type = value;
+        public void setValue(String value) {
+            this.value = value;
         }
-
-    }
-
-
-    /**
-     * <p>Java class for anonymous complex type.
-     * 
-     * <p>The following schema fragment specifies the expected content contained within this class.
-     * 
-     * <pre>
-     * &lt;complexType>
-     *   &lt;complexContent>
-     *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType">
-     *       &lt;attribute name="type" type="{http://www.w3.org/2001/XMLSchema}string" />
-     *     &lt;/restriction>
-     *   &lt;/complexContent>
-     * &lt;/complexType>
-     * </pre>
-     * 
-     * 
-     */
-    @XmlAccessorType(XmlAccessType.FIELD)
-    @XmlType(name = "")
-    public static class Value {
-
-        @XmlAttribute
-        protected String type;
 
         /**
          * Gets the value of the type property.

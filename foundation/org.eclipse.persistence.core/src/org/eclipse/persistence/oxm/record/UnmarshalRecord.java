@@ -256,6 +256,9 @@ public class UnmarshalRecord extends XMLRecord implements ContentHandler, Lexica
     }
 
     public List getNullCapableValues() {
+        if (null == nullCapableValues) {
+            this.nullCapableValues = new ArrayList<NullCapableValue>();
+        }
         return this.nullCapableValues;
     }
 

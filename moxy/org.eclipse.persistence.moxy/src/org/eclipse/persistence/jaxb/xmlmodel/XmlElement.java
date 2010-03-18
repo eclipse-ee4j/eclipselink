@@ -12,9 +12,11 @@
  ******************************************************************************/
 package org.eclipse.persistence.jaxb.xmlmodel;
 
+import javax.xml.bind.JAXBElement;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
+import javax.xml.bind.annotation.XmlElementRef;
 import javax.xml.bind.annotation.XmlType;
 
 
@@ -28,10 +30,12 @@ import javax.xml.bind.annotation.XmlType;
  *   &lt;complexContent>
  *     &lt;extension base="{http://www.eclipse.org/eclipselink/xsds/persistence/oxm}java-attribute">
  *       &lt;all>
- *         &lt;element ref="{http://www.eclipse.org/eclipselink/xsds/persistence/oxm}xml-element-wrapper"/>
- *         &lt;element ref="{http://www.eclipse.org/eclipselink/xsds/persistence/oxm}xml-java-type-adapter"/>
- *         &lt;element ref="{http://www.eclipse.org/eclipselink/xsds/persistence/oxm}xml-map"/>
- *         &lt;element ref="{http://www.eclipse.org/eclipselink/xsds/persistence/oxm}xml-schema-type"/>
+ *         &lt;element ref="{http://www.eclipse.org/eclipselink/xsds/persistence/oxm}xml-abstract-null-policy" minOccurs="0"/>
+ *         &lt;element ref="{http://www.eclipse.org/eclipselink/xsds/persistence/oxm}xml-access-methods" minOccurs="0"/>
+ *         &lt;element ref="{http://www.eclipse.org/eclipselink/xsds/persistence/oxm}xml-element-wrapper" minOccurs="0"/>
+ *         &lt;element ref="{http://www.eclipse.org/eclipselink/xsds/persistence/oxm}xml-java-type-adapter" minOccurs="0"/>
+ *         &lt;element ref="{http://www.eclipse.org/eclipselink/xsds/persistence/oxm}xml-map" minOccurs="0"/>
+ *         &lt;element ref="{http://www.eclipse.org/eclipselink/xsds/persistence/oxm}xml-schema-type" minOccurs="0"/>
  *       &lt;/all>
  *       &lt;attribute name="name" type="{http://www.w3.org/2001/XMLSchema}string" default="##default" />
  *       &lt;attribute name="namespace" type="{http://www.w3.org/2001/XMLSchema}string" default="##default" />
@@ -45,6 +49,10 @@ import javax.xml.bind.annotation.XmlType;
  *       &lt;attribute name="xml-inline-binary-data" type="{http://www.w3.org/2001/XMLSchema}boolean" default="false" />
  *       &lt;attribute name="xml-attachment-ref" type="{http://www.w3.org/2001/XMLSchema}boolean" default="false" />
  *       &lt;attribute name="xml-mime-type" type="{http://www.w3.org/2001/XMLSchema}string" />
+ *       &lt;attribute name="read-only" type="{http://www.w3.org/2001/XMLSchema}boolean" default="false" />
+ *       &lt;attribute name="write-only" type="{http://www.w3.org/2001/XMLSchema}boolean" default="false" />
+ *       &lt;attribute name="cdata" type="{http://www.w3.org/2001/XMLSchema}boolean" default="false" />
+ *       &lt;attribute name="xml-path" type="{http://www.w3.org/2001/XMLSchema}string" />
  *     &lt;/extension>
  *   &lt;/complexContent>
  * &lt;/complexType>
@@ -54,6 +62,8 @@ import javax.xml.bind.annotation.XmlType;
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "", propOrder = {
+    "xmlAbstractNullPolicy",
+    "xmlAccessMethods",
     "xmlElementWrapper",
     "xmlJavaTypeAdapter",
     "xmlMap",
@@ -63,13 +73,17 @@ public class XmlElement
     extends JavaAttribute
 {
 
-    @javax.xml.bind.annotation.XmlElement(name = "xml-element-wrapper", required = true)
+    @XmlElementRef(name = "xml-abstract-null-policy", namespace = "http://www.eclipse.org/eclipselink/xsds/persistence/oxm", type = JAXBElement.class)
+    protected JAXBElement<? extends XmlAbstractNullPolicy> xmlAbstractNullPolicy;
+    @javax.xml.bind.annotation.XmlElement(name = "xml-access-methods")
+    protected XmlAccessMethods xmlAccessMethods;
+    @javax.xml.bind.annotation.XmlElement(name = "xml-element-wrapper")
     protected XmlElementWrapper xmlElementWrapper;
-    @javax.xml.bind.annotation.XmlElement(name = "xml-java-type-adapter", required = true)
+    @javax.xml.bind.annotation.XmlElement(name = "xml-java-type-adapter")
     protected XmlJavaTypeAdapter xmlJavaTypeAdapter;
-    @javax.xml.bind.annotation.XmlElement(name = "xml-map", required = true)
+    @javax.xml.bind.annotation.XmlElement(name = "xml-map")
     protected XmlMap xmlMap;
-    @javax.xml.bind.annotation.XmlElement(name = "xml-schema-type", required = true)
+    @javax.xml.bind.annotation.XmlElement(name = "xml-schema-type")
     protected XmlSchemaType xmlSchemaType;
     @XmlAttribute
     protected String name;
@@ -95,6 +109,66 @@ public class XmlElement
     protected Boolean xmlAttachmentRef;
     @XmlAttribute(name = "xml-mime-type")
     protected String xmlMimeType;
+    @XmlAttribute(name = "read-only")
+    protected Boolean readOnly;
+    @XmlAttribute(name = "write-only")
+    protected Boolean writeOnly;
+    @XmlAttribute
+    protected Boolean cdata;
+    @XmlAttribute(name = "xml-path")
+    protected String xmlPath;
+
+    /**
+     * Gets the value of the xmlAbstractNullPolicy property.
+     * 
+     * @return
+     *     possible object is
+     *     {@link JAXBElement }{@code <}{@link XmlAbstractNullPolicy }{@code >}
+     *     {@link JAXBElement }{@code <}{@link XmlIsSetNullPolicy }{@code >}
+     *     {@link JAXBElement }{@code <}{@link XmlNullPolicy }{@code >}
+     *     
+     */
+    public JAXBElement<? extends XmlAbstractNullPolicy> getXmlAbstractNullPolicy() {
+        return xmlAbstractNullPolicy;
+    }
+
+    /**
+     * Sets the value of the xmlAbstractNullPolicy property.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link JAXBElement }{@code <}{@link XmlAbstractNullPolicy }{@code >}
+     *     {@link JAXBElement }{@code <}{@link XmlIsSetNullPolicy }{@code >}
+     *     {@link JAXBElement }{@code <}{@link XmlNullPolicy }{@code >}
+     *     
+     */
+    public void setXmlAbstractNullPolicy(JAXBElement<? extends XmlAbstractNullPolicy> value) {
+        this.xmlAbstractNullPolicy = ((JAXBElement<? extends XmlAbstractNullPolicy> ) value);
+    }
+
+    /**
+     * Gets the value of the xmlAccessMethods property.
+     * 
+     * @return
+     *     possible object is
+     *     {@link XmlAccessMethods }
+     *     
+     */
+    public XmlAccessMethods getXmlAccessMethods() {
+        return xmlAccessMethods;
+    }
+
+    /**
+     * Sets the value of the xmlAccessMethods property.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link XmlAccessMethods }
+     *     
+     */
+    public void setXmlAccessMethods(XmlAccessMethods value) {
+        this.xmlAccessMethods = value;
+    }
 
     /**
      * Gets the value of the xmlElementWrapper property.
@@ -530,6 +604,141 @@ public class XmlElement
      */
     public void setXmlMimeType(String value) {
         this.xmlMimeType = value;
+    }
+
+    /**
+     * Gets the value of the readOnly property.
+     * 
+     * @return
+     *     possible object is
+     *     {@link Boolean }
+     *     
+     */
+    public boolean isReadOnly() {
+        if (readOnly == null) {
+            return false;
+        } else {
+            return readOnly;
+        }
+    }
+
+    /**
+     * Sets the value of the readOnly property.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link Boolean }
+     *     
+     */
+    public void setReadOnly(Boolean value) {
+        this.readOnly = value;
+    }
+    
+    /**
+     * Indicates if the isReadOnly flag was set.
+     * 
+     * @return
+     */
+    public boolean isSetReadOnly() {
+        return this.readOnly != null;
+    }
+
+    /**
+     * Gets the value of the writeOnly property.
+     * 
+     * @return
+     *     possible object is
+     *     {@link Boolean }
+     *     
+     */
+    public boolean isWriteOnly() {
+        if (writeOnly == null) {
+            return false;
+        } else {
+            return writeOnly;
+        }
+    }
+
+    /**
+     * Sets the value of the writeOnly property.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link Boolean }
+     *     
+     */
+    public void setWriteOnly(Boolean value) {
+        this.writeOnly = value;
+    }
+
+    /**
+     * Indicates if the isWriteOnly flag was set.
+     * 
+     * @return
+     */
+    public boolean isSetWriteOnly() {
+        return this.writeOnly != null;
+    }
+
+    /**
+     * Gets the value of the cdata property.
+     * 
+     * @return
+     *     possible object is
+     *     {@link Boolean }
+     *     
+     */
+    public boolean isCdata() {
+        if (cdata == null) {
+            return false;
+        } else {
+            return cdata;
+        }
+    }
+
+    /**
+     * Sets the value of the cdata property.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link Boolean }
+     *     
+     */
+    public void setCdata(Boolean value) {
+        this.cdata = value;
+    }
+
+    /**
+     * Indicates if the cdata field has been set, i.e. is not null.
+     * 
+     * @return true if this.cdata is not null, false otherwise
+     */
+    public boolean isSetCdata() {
+        return this.cdata != null;
+    }
+
+    /**
+     * Gets the value of the xmlPath property.
+     * 
+     * @return
+     *     possible object is
+     *     {@link String }
+     *     
+     */
+    public String getXmlPath() {
+        return xmlPath;
+    }
+
+    /**
+     * Sets the value of the xmlPath property.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link String }
+     *     
+     */
+    public void setXmlPath(String value) {
+        this.xmlPath = value;
     }
 
 }

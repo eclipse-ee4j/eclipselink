@@ -30,7 +30,7 @@ import javax.xml.bind.annotation.XmlType;
  *   &lt;complexContent>
  *     &lt;extension base="{http://www.eclipse.org/eclipselink/xsds/persistence/oxm}java-attribute">
  *       &lt;sequence>
- *         &lt;element ref="{http://www.eclipse.org/eclipselink/xsds/persistence/oxm}xml-element" maxOccurs="unbounded"/>
+ *         &lt;element ref="{http://www.eclipse.org/eclipselink/xsds/persistence/oxm}xml-element" maxOccurs="unbounded" minOccurs="0"/>
  *         &lt;element ref="{http://www.eclipse.org/eclipselink/xsds/persistence/oxm}xml-element-wrapper" minOccurs="0"/>
  *       &lt;/sequence>
  *       &lt;attribute name="xml-idref" type="{http://www.w3.org/2001/XMLSchema}boolean" default="false" />
@@ -51,7 +51,7 @@ public class XmlElements
     extends JavaAttribute
 {
 
-    @javax.xml.bind.annotation.XmlElement(name = "xml-element", required = true)
+    @javax.xml.bind.annotation.XmlElement(name = "xml-element")
     protected List<org.eclipse.persistence.jaxb.xmlmodel.XmlElement> xmlElement;
     @javax.xml.bind.annotation.XmlElement(name = "xml-element-wrapper")
     protected XmlElementWrapper xmlElementWrapper;

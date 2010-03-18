@@ -29,7 +29,7 @@ import javax.xml.bind.annotation.XmlType;
  *   &lt;complexContent>
  *     &lt;extension base="{http://www.eclipse.org/eclipselink/xsds/persistence/oxm}java-attribute">
  *       &lt;all>
- *         &lt;element ref="{http://www.eclipse.org/eclipselink/xsds/persistence/oxm}xml-java-type-adapter"/>
+ *         &lt;element ref="{http://www.eclipse.org/eclipselink/xsds/persistence/oxm}xml-java-type-adapter" minOccurs="0"/>
  *       &lt;/all>
  *       &lt;attribute name="xml-mixed" type="{http://www.w3.org/2001/XMLSchema}boolean" default="false" />
  *       &lt;attribute name="lax" type="{http://www.w3.org/2001/XMLSchema}boolean" default="false" />
@@ -49,7 +49,7 @@ public class XmlAnyElement
     extends JavaAttribute
 {
 
-    @XmlElement(name = "xml-java-type-adapter", required = true)
+    @XmlElement(name = "xml-java-type-adapter")
     protected XmlJavaTypeAdapter xmlJavaTypeAdapter;
     @XmlAttribute(name = "xml-mixed")
     protected Boolean xmlMixed;

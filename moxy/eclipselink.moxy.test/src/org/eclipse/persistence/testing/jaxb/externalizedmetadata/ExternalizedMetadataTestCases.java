@@ -525,4 +525,33 @@ public class ExternalizedMetadataTestCases extends TestCase {
     protected boolean compareDocuments(Document ctrlDoc, Document testDoc) {
         return xmlComparer.isNodeEqual(ctrlDoc, testDoc);
     }
+    
+    /**
+     * Convenience method for creating a JAXBContext.  The XML document is
+     * validated against the metadata schema.
+     * 
+     * @param classes
+     * @param contextPath
+     * @param metadataFile
+     * @return
+     */
+    public JAXBContext createContext(Class[] classes, String contextPath, String metadataFile) throws JAXBException {
+        // validate instance document against the metadata schema
+        InputStream iStream = loader.getResourceAsStream(metadataFile);
+        InputStream iStreamCopy = loader.getResourceAsStream(metadataFile);
+        if (iStream == null) {
+            fail("Couldn't load metadata file [" + metadataFile + "]");
+        }        
+        HashMap<String, Source> metadataSourceMap = new HashMap<String, Source>();
+        metadataSourceMap.put(contextPath, new StreamSource(iStream));
+        Map<String, Map<String, Source>> properties = new HashMap<String, Map<String, Source>>();
+        properties.put(JAXBContextFactory.ECLIPSELINK_OXM_XML_KEY, metadataSourceMap);
+        MySchemaOutputResolver outputResolver = new MySchemaOutputResolver();
+        
+        validateBindingsFileAgainstSchema(iStreamCopy);
+
+        // create the JAXBContext
+        jaxbContext = (JAXBContext) JAXBContextFactory.createContext(classes, properties, loader);
+        return jaxbContext;
+    }
 }

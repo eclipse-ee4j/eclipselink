@@ -35,8 +35,11 @@ import org.eclipse.persistence.jaxb.javamodel.Helper;
 import org.eclipse.persistence.jaxb.javamodel.JavaClass;
 import org.eclipse.persistence.jaxb.javamodel.JavaField;
 import org.eclipse.persistence.jaxb.javamodel.JavaMethod;
+import org.eclipse.persistence.jaxb.xmlmodel.XmlAbstractNullPolicy;
 import org.eclipse.persistence.jaxb.xmlmodel.XmlElementWrapper;
+import org.eclipse.persistence.jaxb.xmlmodel.XmlIsSetNullPolicy;
 import org.eclipse.persistence.jaxb.xmlmodel.XmlJavaTypeAdapter;
+import org.eclipse.persistence.jaxb.xmlmodel.XmlNullPolicy;
 import org.eclipse.persistence.jaxb.JAXBEnumTypeConverter;
 import org.eclipse.persistence.jaxb.TypeMappingInfo;
 import org.eclipse.persistence.config.DescriptorCustomizer;
@@ -56,6 +59,7 @@ import org.eclipse.persistence.mappings.converters.Converter;
 import org.eclipse.persistence.oxm.*;
 import org.eclipse.persistence.oxm.mappings.*;
 import org.eclipse.persistence.oxm.mappings.converters.XMLListConverter;
+import org.eclipse.persistence.oxm.mappings.nullpolicy.AbstractNullPolicy;
 import org.eclipse.persistence.oxm.mappings.nullpolicy.IsSetNullPolicy;
 import org.eclipse.persistence.oxm.mappings.nullpolicy.NullPolicy;
 import org.eclipse.persistence.oxm.mappings.nullpolicy.XMLNullRepresentationType;
@@ -785,12 +789,21 @@ public class MappingsGenerator {
         return mapping;
         
     }
+    
     public XMLDirectMapping generateDirectMapping(Property property, XMLDescriptor descriptor, NamespaceInfo namespaceInfo) {
         XMLDirectMapping mapping = new XMLDirectMapping();
         mapping.setAttributeName(property.getPropertyName());
         String fixedValue = property.getFixedValue();
-        if(fixedValue != null){
+        if (fixedValue != null) {
             mapping.setIsWriteOnly(true);
+        }
+        // handle read-only set via metadata
+        if (property.isSetReadOnly()) {
+            mapping.setIsReadOnly(property.isReadOnly());
+        }
+        // handle write-only set via metadata
+        if (property.isSetWriteOnly()) {
+            mapping.setIsWriteOnly(property.isWriteOnly());
         }
         if (property.isMethodProperty()) {
             if (property.getGetMethodName() == null) {
@@ -807,34 +820,48 @@ public class MappingsGenerator {
                 mapping.setGetMethodName(property.getGetMethodName());
             }
         }
-        if(property.isNillable()){
-            mapping.getNullPolicy().setNullRepresentedByXsiNil(true);
+        // if the XPath is set (via xml-path) use it; otherwise figure it out
+        if (property.getXmlPath() != null) {
+            mapping.setField(new XMLField(property.getXmlPath()));
+        } else {
+            mapping.setField(getXPathForField(property, namespaceInfo, true));
         }
-        mapping.setField(getXPathForField(property, namespaceInfo, true));
-        mapping.getNullPolicy().setNullRepresentedByEmptyNode(false);
-
-        if (property.getType().getRawName().equals("java.lang.String")) {
+        
+        if (property.getDefaultValue() != null) {
+            mapping.setNullValue(property.getDefaultValue());
+        } else if (property.getType().getRawName().equals("java.lang.String")) {
             mapping.setNullValue("");
         }
         
-        if (!mapping.getXPath().equals("text()")) {
-            ((NullPolicy) mapping.getNullPolicy()).setSetPerformedForAbsentNode(false);
+        // handle null policy set via xml metadata
+        if (property.isSetNullPolicy()) {
+            mapping.setNullPolicy(getNullPolicyFromProperty(property, namespaceInfo.getNamespaceResolverForDescriptor()));
+        } else {
+            if (property.isNillable()){
+                mapping.getNullPolicy().setNullRepresentedByXsiNil(true);
+            }
+            mapping.getNullPolicy().setNullRepresentedByEmptyNode(false);
+
+            if (!mapping.getXPath().equals("text()")) {
+                ((NullPolicy) mapping.getNullPolicy()).setSetPerformedForAbsentNode(false);
+            }
         }
         
         if (property.isRequired()) {
             ((XMLField) mapping.getField()).setRequired(true);
         }
 
-        if(property.isXmlElementType()){
+        if (property.isXmlElementType()){
         	Class theClass = helper.getClassForJavaClass(property.getType());
         	mapping.setAttributeClassification(theClass);
         } 
 
-        if(XMLConstants.QNAME_QNAME.equals(property.getSchemaType())){
+        if (XMLConstants.QNAME_QNAME.equals(property.getSchemaType())){
             ((XMLField) mapping.getField()).setSchemaType(XMLConstants.QNAME_QNAME);
         }
-        if(property.getDefaultValue() != null) {
-            mapping.setNullValue(property.getDefaultValue());
+        // handle cdata set via metadata
+        if (property.isSetCdata()) {
+            mapping.setIsCDATA(property.isCdata());
         }
         descriptor.addMapping(mapping);
         return mapping;
@@ -1806,7 +1833,8 @@ public class MappingsGenerator {
             XMLField field = new XMLField(xPath);
             field.setSchemaType(schemaType);
             return field;
-        } else if (helper.isAnnotationPresent(property.getElement(), XmlValue.class)) {
+        }
+        if (property.isXmlValue()) {
             xPath = "text()";
             XMLField field = new XMLField(xPath);
             QName schemaType = (QName) userDefinedSchemaTypes.get(property.getType().getQualifiedName());
@@ -1818,22 +1846,25 @@ public class MappingsGenerator {
             }
             field.setSchemaType(schemaType);
             return field;
-        } else {
-            QName elementName = property.getSchemaName();
-            xmlField = getXPathForElement(xPath, elementName, namespaceInfo, isTextMapping);
-
-            QName schemaType = (QName) userDefinedSchemaTypes.get(property.getType().getQualifiedName());
-            if (property.getSchemaType() != null) {
-                schemaType = property.getSchemaType();
-            }
-
-            if (schemaType == null){
-            	JavaClass propertyType = property.getActualType();
-            	            	
-                schemaType = (QName) helper.getXMLToJavaTypeMap().get(propertyType.getRawName());
-            }            
-            xmlField.setSchemaType(schemaType);
         }
+        QName elementName = property.getSchemaName();
+        // handle positional
+//        if (property.isPositional()) {
+//            elementName = new QName(elementName.getNamespaceURI(), elementName.getLocalPart() + property.getPositionText(), elementName.getPrefix()); 
+//        }
+        xmlField = getXPathForElement(xPath, elementName, namespaceInfo, isTextMapping);
+
+        QName schemaType = (QName) userDefinedSchemaTypes.get(property.getType().getQualifiedName());
+        if (property.getSchemaType() != null) {
+            schemaType = property.getSchemaType();
+        }
+
+        if (schemaType == null){
+        	JavaClass propertyType = property.getActualType();
+        	            	
+            schemaType = (QName) helper.getXMLToJavaTypeMap().get(propertyType.getRawName());
+        }            
+        xmlField.setSchemaType(schemaType);
         return xmlField;
     }
 
@@ -2225,4 +2256,64 @@ public class MappingsGenerator {
     		valueClassName = valueClass;
     	}
 	}
+    
+    /**
+     * Convenience method which returns an AbstractNullPolicy built from an XmlAbstractNullPolicy.
+     * 
+     * @param property
+     * @param nsr if 'NullRepresentedByXsiNil' is true, this is the resolver
+     *            that we will add the schema instance prefix/uri pair to
+     * @return
+     * @see org.eclipse.persistence.oxm.mappings.nullpolicy.AbstractNullPolicy
+     * @see org.eclipse.persistence.jaxb.xmlmodel.XmlAbstractNullPolicy
+     */
+    private AbstractNullPolicy getNullPolicyFromProperty(Property property, NamespaceResolver nsr) {
+        AbstractNullPolicy absNullPolicy = null;
+        XmlAbstractNullPolicy xmlAbsNullPolicy = property.getNullPolicy();
+        
+        // policy is assumed to be one of XmlNullPolicy or XmlIsSetNullPolicy
+        if (xmlAbsNullPolicy instanceof XmlNullPolicy) {
+            XmlNullPolicy xmlNullPolicy = (XmlNullPolicy) xmlAbsNullPolicy;
+            NullPolicy nullPolicy = new NullPolicy();
+            nullPolicy.setSetPerformedForAbsentNode(xmlNullPolicy.isIsSetPerformedForAbsentNode());
+            absNullPolicy = nullPolicy;
+        } else {
+            XmlIsSetNullPolicy xmlIsSetNullPolicy = (XmlIsSetNullPolicy) xmlAbsNullPolicy;
+            IsSetNullPolicy isSetNullPolicy = new IsSetNullPolicy();
+            isSetNullPolicy.setIsSetMethodName(xmlIsSetNullPolicy.getIsSetMethodName());
+            // handle isSetParams
+            ArrayList<Object> parameters = new ArrayList<Object>();
+            ArrayList<Class> parameterTypes = new ArrayList<Class>();
+            List<XmlIsSetNullPolicy.IsSetParameter> params = xmlIsSetNullPolicy.getIsSetParameter();
+            for (XmlIsSetNullPolicy.IsSetParameter param : params) {
+                String valueStr = param.getValue();
+                String typeStr = param.getType(); 
+                // create a conversion manager instance with the helper's loader
+                XMLConversionManager mgr = new XMLConversionManager();
+                mgr.setLoader(helper.getClassLoader());
+                // handle parameter type
+                Class typeClass = mgr.convertClassNameToClass(typeStr);
+                // handle parameter value
+                Object parameterValue = mgr.convertObject(valueStr, typeClass);
+                parameters.add(parameterValue);
+                parameterTypes.add(typeClass);
+            }
+            isSetNullPolicy.setIsSetParameters(parameters.toArray());
+            isSetNullPolicy.setIsSetParameterTypes(parameterTypes.toArray(new Class[parameterTypes.size()]));
+            absNullPolicy = isSetNullPolicy;
+        }
+        // handle commmon settings
+        absNullPolicy.setMarshalNullRepresentation(XMLNullRepresentationType.valueOf(xmlAbsNullPolicy.getNullRepresentationForXml().name()));
+        absNullPolicy.setNullRepresentedByEmptyNode(xmlAbsNullPolicy.isEmptyNodeRepresentsNull());
+        boolean xsiRepresentsNull = xmlAbsNullPolicy.isXsiNilRepresentsNull();
+        if (xsiRepresentsNull) {
+            absNullPolicy.setNullRepresentedByXsiNil(true);
+            // add namespace prefix/uri pair to the resolver
+            if (nsr != null) {
+                nsr.put(XMLConstants.SCHEMA_INSTANCE_PREFIX, XMLConstants.SCHEMA_INSTANCE_URL);
+            }
+        }
+        
+        return absNullPolicy;
+    }
 }

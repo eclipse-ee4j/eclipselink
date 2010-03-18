@@ -31,7 +31,7 @@ import javax.xml.bind.annotation.XmlType;
  *   &lt;complexContent>
  *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType">
  *       &lt;sequence>
- *         &lt;element ref="{http://www.eclipse.org/eclipselink/xsds/persistence/oxm}xml-java-type-adapter" maxOccurs="unbounded"/>
+ *         &lt;element ref="{http://www.eclipse.org/eclipselink/xsds/persistence/oxm}xml-java-type-adapter" maxOccurs="unbounded" minOccurs="0"/>
  *       &lt;/sequence>
  *     &lt;/restriction>
  *   &lt;/complexContent>
@@ -47,7 +47,7 @@ import javax.xml.bind.annotation.XmlType;
 @XmlRootElement(name = "xml-java-type-adapters")
 public class XmlJavaTypeAdapters {
 
-    @XmlElement(name = "xml-java-type-adapter", required = true)
+    @XmlElement(name = "xml-java-type-adapter")
     protected List<XmlJavaTypeAdapter> xmlJavaTypeAdapter;
 
     /**

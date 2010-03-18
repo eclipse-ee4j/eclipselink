@@ -29,16 +29,16 @@ import javax.xml.bind.annotation.XmlList;
  *   &lt;complexContent>
  *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType">
  *       &lt;all>
- *         &lt;element ref="{http://www.eclipse.org/eclipselink/xsds/persistence/oxm}xml-type"/>
- *         &lt;element ref="{http://www.eclipse.org/eclipselink/xsds/persistence/oxm}xml-root-element"/>
- *         &lt;element ref="{http://www.eclipse.org/eclipselink/xsds/persistence/oxm}xml-see-also"/>
- *         &lt;element ref="{http://www.eclipse.org/eclipselink/xsds/persistence/oxm}xml-java-type-adapter"/>
- *         &lt;element name="java-attributes">
+ *         &lt;element ref="{http://www.eclipse.org/eclipselink/xsds/persistence/oxm}xml-type" minOccurs="0"/>
+ *         &lt;element ref="{http://www.eclipse.org/eclipselink/xsds/persistence/oxm}xml-root-element" minOccurs="0"/>
+ *         &lt;element ref="{http://www.eclipse.org/eclipselink/xsds/persistence/oxm}xml-see-also" minOccurs="0"/>
+ *         &lt;element ref="{http://www.eclipse.org/eclipselink/xsds/persistence/oxm}xml-java-type-adapter" minOccurs="0"/>
+ *         &lt;element name="java-attributes" minOccurs="0">
  *           &lt;complexType>
  *             &lt;complexContent>
  *               &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType">
  *                 &lt;sequence>
- *                   &lt;element ref="{http://www.eclipse.org/eclipselink/xsds/persistence/oxm}java-attribute" maxOccurs="unbounded"/>
+ *                   &lt;element ref="{http://www.eclipse.org/eclipselink/xsds/persistence/oxm}java-attribute" maxOccurs="unbounded" minOccurs="0"/>
  *                 &lt;/sequence>
  *               &lt;/restriction>
  *             &lt;/complexContent>
@@ -65,16 +65,16 @@ import javax.xml.bind.annotation.XmlList;
 @javax.xml.bind.annotation.XmlRootElement(name = "java-type")
 public class JavaType {
 
-    @javax.xml.bind.annotation.XmlElement(name = "xml-type", required = true)
+    @javax.xml.bind.annotation.XmlElement(name = "xml-type")
     protected org.eclipse.persistence.jaxb.xmlmodel.XmlType xmlType;
-    @javax.xml.bind.annotation.XmlElement(name = "xml-root-element", required = true)
+    @javax.xml.bind.annotation.XmlElement(name = "xml-root-element")
     protected org.eclipse.persistence.jaxb.xmlmodel.XmlRootElement xmlRootElement;
     @XmlList
-    @javax.xml.bind.annotation.XmlElement(name = "xml-see-also", required = true)
+    @javax.xml.bind.annotation.XmlElement(name = "xml-see-also")
     protected List<String> xmlSeeAlso;
-    @javax.xml.bind.annotation.XmlElement(name = "xml-java-type-adapter", required = true)
+    @javax.xml.bind.annotation.XmlElement(name = "xml-java-type-adapter")
     protected XmlJavaTypeAdapter xmlJavaTypeAdapter;
-    @javax.xml.bind.annotation.XmlElement(name = "java-attributes", required = true)
+    @javax.xml.bind.annotation.XmlElement(name = "java-attributes")
     protected JavaType.JavaAttributes javaAttributes;
     @javax.xml.bind.annotation.XmlAttribute
     protected String name;
@@ -420,7 +420,7 @@ public class JavaType {
      *   &lt;complexContent>
      *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType">
      *       &lt;sequence>
-     *         &lt;element ref="{http://www.eclipse.org/eclipselink/xsds/persistence/oxm}java-attribute" maxOccurs="unbounded"/>
+     *         &lt;element ref="{http://www.eclipse.org/eclipselink/xsds/persistence/oxm}java-attribute" maxOccurs="unbounded" minOccurs="0"/>
      *       &lt;/sequence>
      *     &lt;/restriction>
      *   &lt;/complexContent>
@@ -456,17 +456,17 @@ public class JavaType {
          * 
          * <p>
          * Objects of the following type(s) are allowed in the list
-         * {@link JAXBElement }{@code <}{@link org.eclipse.persistence.jaxb.xmlmodel.XmlAttribute }{@code >}
-         * {@link JAXBElement }{@code <}{@link XmlValue }{@code >}
-         * {@link JAXBElement }{@code <}{@link XmlAnyElement }{@code >}
-         * {@link JAXBElement }{@code <}{@link JavaAttribute }{@code >}
-         * {@link JAXBElement }{@code <}{@link org.eclipse.persistence.jaxb.xmlmodel.XmlElementRef }{@code >}
-         * {@link JAXBElement }{@code <}{@link XmlElementRefs }{@code >}
-         * {@link JAXBElement }{@code <}{@link org.eclipse.persistence.jaxb.xmlmodel.XmlElement }{@code >}
          * {@link JAXBElement }{@code <}{@link XmlAnyAttribute }{@code >}
          * {@link JAXBElement }{@code <}{@link XmlJavaTypeAdapter }{@code >}
-         * {@link JAXBElement }{@code <}{@link XmlElements }{@code >}
+         * {@link JAXBElement }{@code <}{@link XmlElementRefs }{@code >}
          * {@link JAXBElement }{@code <}{@link XmlTransient }{@code >}
+         * {@link JAXBElement }{@code <}{@link XmlAnyElement }{@code >}
+         * {@link JAXBElement }{@code <}{@link org.eclipse.persistence.jaxb.xmlmodel.XmlElementRef }{@code >}
+         * {@link JAXBElement }{@code <}{@link XmlValue }{@code >}
+         * {@link JAXBElement }{@code <}{@link JavaAttribute }{@code >}
+         * {@link JAXBElement }{@code <}{@link org.eclipse.persistence.jaxb.xmlmodel.XmlElement }{@code >}
+         * {@link JAXBElement }{@code <}{@link XmlElements }{@code >}
+         * {@link JAXBElement }{@code <}{@link org.eclipse.persistence.jaxb.xmlmodel.XmlAttribute }{@code >}
          * 
          * 
          */

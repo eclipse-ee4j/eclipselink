@@ -8,26 +8,27 @@
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
- * dmccann - June 29/2009 - 2.0 - Initial implementation
+ * dmccann - February 22/2010 - 2.1 - Initial implementation
  ******************************************************************************/
 package org.eclipse.persistence.jaxb.xmlmodel;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlSeeAlso;
+import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlType;
 
 
 /**
- * <p>Java class for java-attribute complex type.
+ * <p>Java class for xml-access-methods complex type.
  * 
  * <p>The following schema fragment specifies the expected content contained within this class.
  * 
  * <pre>
- * &lt;complexType name="java-attribute">
+ * &lt;complexType name="xml-access-methods">
  *   &lt;complexContent>
  *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType">
- *       &lt;attribute name="java-attribute" type="{http://www.w3.org/2001/XMLSchema}string" />
+ *       &lt;attribute name="get-method" use="required" type="{http://www.w3.org/2001/XMLSchema}string" />
+ *       &lt;attribute name="set-method" use="required" type="{http://www.w3.org/2001/XMLSchema}string" />
  *     &lt;/restriction>
  *   &lt;/complexContent>
  * &lt;/complexType>
@@ -36,46 +37,60 @@ import javax.xml.bind.annotation.XmlType;
  * 
  */
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlType(name = "java-attribute")
-@XmlSeeAlso({
-    XmlValue.class,
-    XmlElementRefs.class,
-    org.eclipse.persistence.jaxb.xmlmodel.XmlAttribute.class,
-    XmlJavaTypeAdapter.class,
-    XmlAnyAttribute.class,
-    XmlTransient.class,
-    XmlElement.class,
-    XmlAnyElement.class,
-    XmlElements.class,
-    XmlElementRef.class
-})
-public abstract class JavaAttribute {
+@XmlType(name = "xml-access-methods")
+public class XmlAccessMethods {
 
-    @javax.xml.bind.annotation.XmlAttribute(name = "java-attribute")
-    protected String javaAttribute;
+    @XmlAttribute(name = "get-method", required = true)
+    protected String getMethod;
+    @XmlAttribute(name = "set-method", required = true)
+    protected String setMethod;
 
     /**
-     * Gets the value of the javaAttribute property.
+     * Gets the value of the getMethod property.
      * 
      * @return
      *     possible object is
      *     {@link String }
      *     
      */
-    public String getJavaAttribute() {
-        return javaAttribute;
+    public String getGetMethod() {
+        return getMethod;
     }
 
     /**
-     * Sets the value of the javaAttribute property.
+     * Sets the value of the getMethod property.
      * 
      * @param value
      *     allowed object is
      *     {@link String }
      *     
      */
-    public void setJavaAttribute(String value) {
-        this.javaAttribute = value;
+    public void setGetMethod(String value) {
+        this.getMethod = value;
+    }
+
+    /**
+     * Gets the value of the setMethod property.
+     * 
+     * @return
+     *     possible object is
+     *     {@link String }
+     *     
+     */
+    public String getSetMethod() {
+        return setMethod;
+    }
+
+    /**
+     * Sets the value of the setMethod property.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link String }
+     *     
+     */
+    public void setSetMethod(String value) {
+        this.setMethod = value;
     }
 
 }

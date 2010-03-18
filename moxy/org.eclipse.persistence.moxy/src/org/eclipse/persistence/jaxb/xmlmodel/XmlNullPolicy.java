@@ -8,27 +8,27 @@
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
- * dmccann - June 29/2009 - 2.0 - Initial implementation
+ * dmccann - February 22/2010 - 2.1 - Initial implementation
  ******************************************************************************/
 package org.eclipse.persistence.jaxb.xmlmodel;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlSeeAlso;
+import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlType;
 
 
 /**
- * <p>Java class for java-attribute complex type.
+ * <p>Java class for anonymous complex type.
  * 
  * <p>The following schema fragment specifies the expected content contained within this class.
  * 
  * <pre>
- * &lt;complexType name="java-attribute">
+ * &lt;complexType>
  *   &lt;complexContent>
- *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType">
- *       &lt;attribute name="java-attribute" type="{http://www.w3.org/2001/XMLSchema}string" />
- *     &lt;/restriction>
+ *     &lt;extension base="{http://www.eclipse.org/eclipselink/xsds/persistence/oxm}xml-abstract-null-policy">
+ *       &lt;attribute name="is-set-performed-for-absent-node" type="{http://www.w3.org/2001/XMLSchema}boolean" default="true" />
+ *     &lt;/extension>
  *   &lt;/complexContent>
  * &lt;/complexType>
  * </pre>
@@ -36,46 +36,40 @@ import javax.xml.bind.annotation.XmlType;
  * 
  */
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlType(name = "java-attribute")
-@XmlSeeAlso({
-    XmlValue.class,
-    XmlElementRefs.class,
-    org.eclipse.persistence.jaxb.xmlmodel.XmlAttribute.class,
-    XmlJavaTypeAdapter.class,
-    XmlAnyAttribute.class,
-    XmlTransient.class,
-    XmlElement.class,
-    XmlAnyElement.class,
-    XmlElements.class,
-    XmlElementRef.class
-})
-public abstract class JavaAttribute {
+@XmlType(name = "")
+public class XmlNullPolicy
+    extends XmlAbstractNullPolicy
+{
 
-    @javax.xml.bind.annotation.XmlAttribute(name = "java-attribute")
-    protected String javaAttribute;
+    @XmlAttribute(name = "is-set-performed-for-absent-node")
+    protected Boolean isSetPerformedForAbsentNode;
 
     /**
-     * Gets the value of the javaAttribute property.
+     * Gets the value of the isSetPerformedForAbsentNode property.
      * 
      * @return
      *     possible object is
-     *     {@link String }
+     *     {@link Boolean }
      *     
      */
-    public String getJavaAttribute() {
-        return javaAttribute;
+    public boolean isIsSetPerformedForAbsentNode() {
+        if (isSetPerformedForAbsentNode == null) {
+            return true;
+        } else {
+            return isSetPerformedForAbsentNode;
+        }
     }
 
     /**
-     * Sets the value of the javaAttribute property.
+     * Sets the value of the isSetPerformedForAbsentNode property.
      * 
      * @param value
      *     allowed object is
-     *     {@link String }
+     *     {@link Boolean }
      *     
      */
-    public void setJavaAttribute(String value) {
-        this.javaAttribute = value;
+    public void setIsSetPerformedForAbsentNode(Boolean value) {
+        this.isSetPerformedForAbsentNode = value;
     }
 
 }

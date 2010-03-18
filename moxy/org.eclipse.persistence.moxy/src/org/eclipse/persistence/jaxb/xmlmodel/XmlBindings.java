@@ -31,38 +31,38 @@ import javax.xml.bind.annotation.XmlType;
  *   &lt;complexContent>
  *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType">
  *       &lt;all>
- *         &lt;element ref="{http://www.eclipse.org/eclipselink/xsds/persistence/oxm}xml-schema"/>
- *         &lt;element ref="{http://www.eclipse.org/eclipselink/xsds/persistence/oxm}xml-schema-type"/>
- *         &lt;element ref="{http://www.eclipse.org/eclipselink/xsds/persistence/oxm}xml-schema-types"/>
- *         &lt;element ref="{http://www.eclipse.org/eclipselink/xsds/persistence/oxm}xml-java-type-adapters"/>
- *         &lt;element name="xml-registries">
+ *         &lt;element ref="{http://www.eclipse.org/eclipselink/xsds/persistence/oxm}xml-schema" minOccurs="0"/>
+ *         &lt;element ref="{http://www.eclipse.org/eclipselink/xsds/persistence/oxm}xml-schema-type" minOccurs="0"/>
+ *         &lt;element ref="{http://www.eclipse.org/eclipselink/xsds/persistence/oxm}xml-schema-types" minOccurs="0"/>
+ *         &lt;element ref="{http://www.eclipse.org/eclipselink/xsds/persistence/oxm}xml-java-type-adapters" minOccurs="0"/>
+ *         &lt;element name="xml-registries" minOccurs="0">
  *           &lt;complexType>
  *             &lt;complexContent>
  *               &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType">
  *                 &lt;sequence>
- *                   &lt;element ref="{http://www.eclipse.org/eclipselink/xsds/persistence/oxm}xml-registry" maxOccurs="unbounded"/>
+ *                   &lt;element ref="{http://www.eclipse.org/eclipselink/xsds/persistence/oxm}xml-registry" maxOccurs="unbounded" minOccurs="0"/>
  *                 &lt;/sequence>
  *               &lt;/restriction>
  *             &lt;/complexContent>
  *           &lt;/complexType>
  *         &lt;/element>
- *         &lt;element name="xml-enums">
+ *         &lt;element name="xml-enums" minOccurs="0">
  *           &lt;complexType>
  *             &lt;complexContent>
  *               &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType">
  *                 &lt;sequence>
- *                   &lt;element ref="{http://www.eclipse.org/eclipselink/xsds/persistence/oxm}xml-enum" maxOccurs="unbounded"/>
+ *                   &lt;element ref="{http://www.eclipse.org/eclipselink/xsds/persistence/oxm}xml-enum" maxOccurs="unbounded" minOccurs="0"/>
  *                 &lt;/sequence>
  *               &lt;/restriction>
  *             &lt;/complexContent>
  *           &lt;/complexType>
  *         &lt;/element>
- *         &lt;element name="java-types">
+ *         &lt;element name="java-types" minOccurs="0">
  *           &lt;complexType>
  *             &lt;complexContent>
  *               &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType">
  *                 &lt;sequence>
- *                   &lt;element ref="{http://www.eclipse.org/eclipselink/xsds/persistence/oxm}java-type" maxOccurs="unbounded"/>
+ *                   &lt;element ref="{http://www.eclipse.org/eclipselink/xsds/persistence/oxm}java-type" maxOccurs="unbounded" minOccurs="0"/>
  *                 &lt;/sequence>
  *               &lt;/restriction>
  *             &lt;/complexContent>
@@ -85,19 +85,19 @@ import javax.xml.bind.annotation.XmlType;
 @XmlRootElement(name = "xml-bindings")
 public class XmlBindings {
 
-    @XmlElement(name = "xml-schema", required = true)
+    @XmlElement(name = "xml-schema")
     protected XmlSchema xmlSchema;
-    @XmlElement(name = "xml-schema-type", required = true)
+    @XmlElement(name = "xml-schema-type")
     protected XmlSchemaType xmlSchemaType;
-    @XmlElement(name = "xml-schema-types", required = true)
+    @XmlElement(name = "xml-schema-types")
     protected XmlSchemaTypes xmlSchemaTypes;
-    @XmlElement(name = "xml-java-type-adapters", required = true)
+    @XmlElement(name = "xml-java-type-adapters")
     protected XmlJavaTypeAdapters xmlJavaTypeAdapters;
-    @XmlElement(name = "xml-registries", required = true)
+    @XmlElement(name = "xml-registries")
     protected XmlBindings.XmlRegistries xmlRegistries;
-    @XmlElement(name = "xml-enums", required = true)
+    @XmlElement(name = "xml-enums")
     protected XmlBindings.XmlEnums xmlEnums;
-    @XmlElement(name = "java-types", required = true)
+    @XmlElement(name = "java-types")
     protected XmlBindings.JavaTypes javaTypes;
     @XmlAttribute(name = "xml-accessor-type")
     protected org.eclipse.persistence.jaxb.xmlmodel.XmlAccessType xmlAccessorType;
@@ -358,7 +358,7 @@ public class XmlBindings {
      *   &lt;complexContent>
      *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType">
      *       &lt;sequence>
-     *         &lt;element ref="{http://www.eclipse.org/eclipselink/xsds/persistence/oxm}java-type" maxOccurs="unbounded"/>
+     *         &lt;element ref="{http://www.eclipse.org/eclipselink/xsds/persistence/oxm}java-type" maxOccurs="unbounded" minOccurs="0"/>
      *       &lt;/sequence>
      *     &lt;/restriction>
      *   &lt;/complexContent>
@@ -373,7 +373,7 @@ public class XmlBindings {
     })
     public static class JavaTypes {
 
-        @XmlElement(name = "java-type", required = true)
+        @XmlElement(name = "java-type")
         protected List<JavaType> javaType;
 
         /**
@@ -418,7 +418,7 @@ public class XmlBindings {
      *   &lt;complexContent>
      *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType">
      *       &lt;sequence>
-     *         &lt;element ref="{http://www.eclipse.org/eclipselink/xsds/persistence/oxm}xml-enum" maxOccurs="unbounded"/>
+     *         &lt;element ref="{http://www.eclipse.org/eclipselink/xsds/persistence/oxm}xml-enum" maxOccurs="unbounded" minOccurs="0"/>
      *       &lt;/sequence>
      *     &lt;/restriction>
      *   &lt;/complexContent>
@@ -433,7 +433,7 @@ public class XmlBindings {
     })
     public static class XmlEnums {
 
-        @XmlElement(name = "xml-enum", required = true)
+        @XmlElement(name = "xml-enum")
         protected List<XmlEnum> xmlEnum;
 
         /**
@@ -478,7 +478,7 @@ public class XmlBindings {
      *   &lt;complexContent>
      *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType">
      *       &lt;sequence>
-     *         &lt;element ref="{http://www.eclipse.org/eclipselink/xsds/persistence/oxm}xml-registry" maxOccurs="unbounded"/>
+     *         &lt;element ref="{http://www.eclipse.org/eclipselink/xsds/persistence/oxm}xml-registry" maxOccurs="unbounded" minOccurs="0"/>
      *       &lt;/sequence>
      *     &lt;/restriction>
      *   &lt;/complexContent>
@@ -493,7 +493,7 @@ public class XmlBindings {
     })
     public static class XmlRegistries {
 
-        @XmlElement(name = "xml-registry", required = true)
+        @XmlElement(name = "xml-registry")
         protected List<XmlRegistry> xmlRegistry;
 
         /**

@@ -17,6 +17,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.StringTokenizer;
 import java.util.Map.Entry;
 
 import javax.xml.bind.JAXBElement;
@@ -28,6 +29,7 @@ import org.eclipse.persistence.jaxb.javamodel.JavaClass;
 import org.eclipse.persistence.jaxb.javamodel.JavaModelInput;
 import org.eclipse.persistence.jaxb.xmlmodel.JavaAttribute;
 import org.eclipse.persistence.jaxb.xmlmodel.JavaType;
+import org.eclipse.persistence.jaxb.xmlmodel.XmlAbstractNullPolicy;
 import org.eclipse.persistence.jaxb.xmlmodel.XmlAnyAttribute;
 import org.eclipse.persistence.jaxb.xmlmodel.XmlAnyElement;
 import org.eclipse.persistence.jaxb.xmlmodel.XmlAttribute;
@@ -59,6 +61,10 @@ public class XMLProcessor {
     private JavaModelInput jModelInput;
     private AnnotationsProcessor aProcessor;
     private JAXBMetadataLogger logger;
+    private static final String COLON = ":";
+    private static final String SLASH = "/";
+    private static final String SELF = ".";
+    private static final String OPEN_BRACKET =  "[";
 
     /**
      * This is the preferred constructor.
@@ -463,20 +469,34 @@ public class XMLProcessor {
         // set xml-inline-binary-data
         oldProperty.setisInlineBinaryData(xmlAttribute.isXmlInlineBinaryData());
 
+        String name;
+        String namespace;
+        
+        // handle XmlPath
+        // if xml-path is set, we ignore name/namespace
+        if (xmlAttribute.getXmlPath() != null) {
+            oldProperty.setXmlPath(xmlAttribute.getXmlPath());
+            name = getNameFromXPath(xmlAttribute.getXmlPath(), oldProperty.getPropertyName(), true);
+            namespace = "##default";
+        } else {
+            // no xml-path, so use name/namespace from xml-attribute
+            name = xmlAttribute.getName();
+            namespace = xmlAttribute.getNamespace();
+        }
+
         // set schema name
         QName qName;
-        String name = xmlAttribute.getName();
         if (name.equals("##default")) {
             name = oldProperty.getPropertyName();
         }
-        if (xmlAttribute.getNamespace().equals("##default")) {
+        if (namespace.equals("##default")) {
             if (nsInfo.isElementFormQualified()) {
                 qName = new QName(nsInfo.getNamespace(), name);
             } else {
                 qName = new QName(name);
             }
         } else {
-            qName = new QName(xmlAttribute.getNamespace(), name);
+            qName = new QName(namespace, name);
         }
         oldProperty.setSchemaName(qName);
 
@@ -484,7 +504,6 @@ public class XMLProcessor {
         if (xmlAttribute.getXmlJavaTypeAdapter() != null) {
             oldProperty.setXmlJavaTypeAdapter(xmlAttribute.getXmlJavaTypeAdapter());
         }
-
         // handle xml-mime-type
         if (xmlAttribute.getXmlMimeType() != null) {
             oldProperty.setMimeType(xmlAttribute.getXmlMimeType());
@@ -500,7 +519,25 @@ public class XMLProcessor {
         if (xmlAttribute.getXmlSchemaType() != null) {
             oldProperty.setSchemaType(new QName(xmlAttribute.getXmlSchemaType().getNamespace(), xmlAttribute.getXmlSchemaType().getName()));
         }
-
+        // handle get/set methods
+        if (xmlAttribute.getXmlAccessMethods() != null) {
+            oldProperty.setMethodProperty(true);
+            oldProperty.setGetMethodName(xmlAttribute.getXmlAccessMethods().getGetMethod());
+            oldProperty.setSetMethodName(xmlAttribute.getXmlAccessMethods().getSetMethod());
+        }
+        // handle read-only
+        if (xmlAttribute.isSetReadOnly()) {
+            oldProperty.setReadOnly(xmlAttribute.isReadOnly());
+        }
+        // handle write-only
+        if (xmlAttribute.isSetWriteOnly()) {
+            oldProperty.setWriteOnly(xmlAttribute.isWriteOnly());
+        }
+        // handle null policy
+        if (xmlAttribute.getXmlAbstractNullPolicy() != null) {
+            JAXBElement jaxbElt = xmlAttribute.getXmlAbstractNullPolicy();
+            oldProperty.setNullPolicy((XmlAbstractNullPolicy) jaxbElt.getValue());
+        }
         return oldProperty;
     }
 
@@ -551,20 +588,37 @@ public class XMLProcessor {
             oldProperty.setDefaultValue(xmlElement.getDefaultValue());
         }
 
+        String name;
+        String namespace;
+
+        // handle XmlPath / XmlElementWrapper
+        // if xml-path is set, we ignore xml-element-wrapper, as well as name/namespace on xml-element
+        if (xmlElement.getXmlPath() != null) {
+            oldProperty.setXmlPath(xmlElement.getXmlPath());
+            name = getNameFromXPath(xmlElement.getXmlPath(), oldProperty.getPropertyName(), false);           
+            namespace = "##default";
+        } else {
+            // no xml-path, so use name/namespace from xml-element, and process wrapper
+            name = xmlElement.getName();
+            namespace = xmlElement.getNamespace();
+            if (xmlElement.getXmlElementWrapper() != null) {
+                oldProperty.setXmlElementWrapper(xmlElement.getXmlElementWrapper());
+            }
+        }
+
         // set schema name
         QName qName;
-        String name = xmlElement.getName();
         if (name.equals("##default")) {
             name = oldProperty.getPropertyName();
         }
-        if (xmlElement.getNamespace().equals("##default")) {
+        if (namespace.equals("##default")) {
             if (nsInfo.isElementFormQualified()) {
                 qName = new QName(nsInfo.getNamespace(), name);
             } else {
                 qName = new QName(name);
             }
         } else {
-            qName = new QName(xmlElement.getNamespace(), name);
+            qName = new QName(namespace, name);
         }
         oldProperty.setSchemaName(qName);
 
@@ -589,11 +643,6 @@ public class XMLProcessor {
         // handle XmlJavaTypeAdapter
         if (xmlElement.getXmlJavaTypeAdapter() != null) {
             oldProperty.setXmlJavaTypeAdapter(xmlElement.getXmlJavaTypeAdapter());
-        }
-
-        // handle XmlElementWrapper
-        if (xmlElement.getXmlElementWrapper() != null) {
-            oldProperty.setXmlElementWrapper(xmlElement.getXmlElementWrapper());
         }
 
         // for primitives we always set required, a.k.a. minOccurs="1"
@@ -626,7 +675,29 @@ public class XMLProcessor {
         if (xmlElement.getXmlSchemaType() != null) {
             oldProperty.setSchemaType(new QName(xmlElement.getXmlSchemaType().getNamespace(), xmlElement.getXmlSchemaType().getName()));
         }
-
+        // handle get/set methods
+        if (xmlElement.getXmlAccessMethods() != null) {
+            oldProperty.setMethodProperty(true);
+            oldProperty.setGetMethodName(xmlElement.getXmlAccessMethods().getGetMethod());
+            oldProperty.setSetMethodName(xmlElement.getXmlAccessMethods().getSetMethod());
+        }
+        // handle read-only
+        if (xmlElement.isSetReadOnly()) {
+            oldProperty.setReadOnly(xmlElement.isReadOnly());
+        }
+        // handle write-only
+        if (xmlElement.isSetWriteOnly()) {
+            oldProperty.setWriteOnly(xmlElement.isWriteOnly());
+        }
+        // handle cdata
+        if (xmlElement.isSetCdata()) {
+            oldProperty.setCdata(xmlElement.isCdata());
+        }
+        // handle null policy
+        if (xmlElement.getXmlAbstractNullPolicy() != null) {
+            JAXBElement jaxbElt = xmlElement.getXmlAbstractNullPolicy();
+            oldProperty.setNullPolicy((XmlAbstractNullPolicy) jaxbElt.getValue());
+        }
         return oldProperty;
     }
 
@@ -732,6 +803,30 @@ public class XMLProcessor {
 
         oldProperty.setIsXmlValue(true);
         info.setXmlValueProperty(oldProperty);
+        
+        // handle get/set methods
+        if (xmlValue.getXmlAccessMethods() != null) {
+            oldProperty.setMethodProperty(true);
+            oldProperty.setGetMethodName(xmlValue.getXmlAccessMethods().getGetMethod());
+            oldProperty.setSetMethodName(xmlValue.getXmlAccessMethods().getSetMethod());
+        }
+        // handle read-only
+        if (xmlValue.isSetReadOnly()) {
+            oldProperty.setReadOnly(xmlValue.isReadOnly());
+        }
+        // handle write-only
+        if (xmlValue.isSetWriteOnly()) {
+            oldProperty.setWriteOnly(xmlValue.isWriteOnly());
+        }
+        // handle cdata
+        if (xmlValue.isSetCdata()) {
+            oldProperty.setCdata(xmlValue.isCdata());
+        }
+        // handle null policy
+        if (xmlValue.getXmlAbstractNullPolicy() != null) {
+            JAXBElement jaxbElt = xmlValue.getXmlAbstractNullPolicy();
+            oldProperty.setNullPolicy((XmlAbstractNullPolicy) jaxbElt.getValue());
+        }
         return oldProperty;
     }
 
@@ -993,5 +1088,69 @@ public class XMLProcessor {
         if (tInfo.isSetXmlValueProperty() && tInfo.getXmlValueProperty().getPropertyName().equals(oldProperty.getPropertyName())) {
             tInfo.setXmlValueProperty(null);
         }
+    }
+
+    /**
+     * Convenience method that returns the field name for a given xml-path.  This method
+     * would typically be called when building a QName to set as the 'SchemaName' on
+     * a Property.
+     *   
+     * Examples:
+     * - returns 'id' for xml-path '@id'
+     * - returns 'managerId' for xml-path 'projects/prj:project/@prj:managerId'
+     * - returns 'first-name' for xml-path 'info/personal-info/first-name/text()'
+     * - returns 'project' for xml-path 'projects/prj:project/text()'
+     * - returns 'data[1]' for xml-path 'pieces-of-data/data[1]/text()'
+     * 
+     * @param xpath
+     * @param propertyName
+     * @param isAttribute
+     * @return
+     */
+    private String getNameFromXPath(String xpath, String propertyName, boolean isAttribute) {
+        // handle self mapping
+        if (xpath.equals(SELF)) {
+            return propertyName;
+        }
+        
+        String name;
+        String path;
+        
+        // may need to strip off '/text()'
+        int idx = xpath.indexOf(SLASH + XMLConstants.TEXT);
+        if (idx >= 0) {
+            path = xpath.substring(0, idx);
+        } else {
+            path = xpath;
+        }
+        
+        idx = path.lastIndexOf(SLASH);
+        if (idx >= 0 && path.length() > 1) {
+            name = path.substring(idx+1);
+            // may have a prefix
+            StringTokenizer stok = new StringTokenizer(name, COLON);
+            if (stok.countTokens() == 2) {
+                // first token is prefix
+                stok.nextToken();
+                // second token is the field name
+                name = stok.nextToken();
+            }
+        } else {
+            name = path;
+        }
+        // may need to strip off '@'
+        if (isAttribute) {
+            idx = name.indexOf(XMLConstants.ATTRIBUTE);
+            if (idx >= 0 && name.length() > 1) {
+                name = name.substring(idx+1);
+            }
+        } else {
+            // may need to strip of positional info
+            idx = name.indexOf(OPEN_BRACKET);
+            if (idx != -1) {
+                name = name.substring(0, idx);
+            }
+        }
+        return name;
     }
 }
