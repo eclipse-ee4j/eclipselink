@@ -64,6 +64,7 @@ import org.eclipse.persistence.testing.models.jpa.inherited.InheritedTableManage
 import org.eclipse.persistence.testing.models.jpa.inherited.Location;
 import org.eclipse.persistence.testing.models.jpa.inherited.NoviceBeerConsumer;
 import org.eclipse.persistence.testing.models.jpa.inherited.Official;
+import org.eclipse.persistence.testing.models.jpa.inherited.OfficialEntry;
 import org.eclipse.persistence.testing.models.jpa.inherited.Record;
 import org.eclipse.persistence.testing.models.jpa.inherited.RedStripe;
 import org.eclipse.persistence.testing.models.jpa.inherited.SerialNumber;
@@ -1474,11 +1475,20 @@ public class InheritedModelJunitTest extends JUnitTestCase {
         try {
             // Create an official
             beginTransaction(em);
+            
+            OfficialEntry officialEntry = new OfficialEntry();
+            em.persist(officialEntry);
+            
             Official initialOfficial = new Official();
             initialOfficial.setName("Gui Pelletier"); // insertable=true, updatable=false
             initialOfficial.setAge(25); // insertable=false, updatable=true
             initialOfficial.setSalary(50000); // insertable=true, updatable=false
             initialOfficial.setBonus(10000); // insertable=false, updatable=true
+            
+            // Tests multiple mappings to the same column. The M-1 is read only
+            // and the basic is the writable mapping.
+            initialOfficial.setOfficialEntry(officialEntry); // insertable=false, updatable=false
+            initialOfficial.setOfficialEntryId(officialEntry.getId()); // insertable=true, updatable=true
             
             ServiceTime service = new ServiceTime();
             service.setStartDate("Jan 1, 2008"); // insertable=true, updatable=false 
@@ -1501,6 +1511,7 @@ public class InheritedModelJunitTest extends JUnitTestCase {
             assertTrue("The age was inserted", official.getAge() == null);
             assertTrue("The salary was not inserted", official.getSalary() == 50000);
             assertTrue("The bonus was inserted", official.getBonus() == null);
+            assertTrue("The official entry was not inserted", official.getOfficialEntryId() == officialEntry.getId());
             assertTrue("The embeddable start date was not inserted", official.getServiceTime().getStartDate().equals("Jan 1, 2008"));
             assertTrue("The embeddable end date was inserted", official.getServiceTime().getEndDate() == null);
             

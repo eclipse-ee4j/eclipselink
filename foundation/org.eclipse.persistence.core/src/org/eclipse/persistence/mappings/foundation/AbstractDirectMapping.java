@@ -62,7 +62,7 @@ import org.eclipse.persistence.internal.security.PrivilegedNewInstanceFromClass;
  * @since TopLink/Java 1.0
  */
 public abstract class AbstractDirectMapping extends DatabaseMapping  implements MapKeyMapping {
-
+    
     /** DatabaseField which this mapping represents. */
     protected DatabaseField field;
 
@@ -83,6 +83,12 @@ public abstract class AbstractDirectMapping extends DatabaseMapping  implements 
     protected DatabaseTable keyTableForMapKey = null;
     
     protected String fieldClassificationClassName = null;
+    
+    /** Flag to support insertable JPA setting */
+    protected boolean isInsertable = true;
+    
+    /** Flag to support updatable JPA setting */
+    protected boolean isUpdatable = true;
 
     /**
      * PERF: Indicates if this mapping's attribute is a simple atomic value and cannot be modified, only replaced.
@@ -129,7 +135,7 @@ public abstract class AbstractDirectMapping extends DatabaseMapping  implements 
      */
     public void addFieldsForMapKey(AbstractRecord joinRow) {
         if (!isReadOnly()){
-            if (getField().isUpdatable()){
+            if (isUpdatable){
                 joinRow.put(getField(), null);
             }
         }
@@ -979,10 +985,20 @@ public abstract class AbstractDirectMapping extends DatabaseMapping  implements 
     @Override
     public void initialize(AbstractSession session) throws DescriptorException {
         super.initialize(session);
-
+        
         if (getField() == null) {
             session.getIntegrityChecker().handleError(DescriptorException.fieldNameNotSetInMapping(this));
         }
+        
+        // Before potentially swapping out the field with an already built one, 
+        // set the JPA insertable and updatable flags based on the settings from 
+        // this mappings field. This must be done now. The reason for this code 
+        // is to cover the case where multiple mappings map to the same field. 
+        // One of those mappings must be write only, therefore, depending on the 
+        // initialization order we do not want to set the writable mapping as 
+        // non insertable and non updatable.
+        isInsertable = getField().isInsertable();
+        isUpdatable = getField().isUpdatable();
 
         if (keyTableForMapKey == null){
             setField(getDescriptor().buildField(getField()));
@@ -1088,7 +1104,7 @@ public abstract class AbstractDirectMapping extends DatabaseMapping  implements 
      * that are not read-only.
      */
     public boolean requiresDataModificationEventsForMapKey(){
-        return !isReadOnly() && getField().isUpdatable();
+        return !isReadOnly() && isUpdatable;
     }
     
     /**
@@ -1277,8 +1293,8 @@ public abstract class AbstractDirectMapping extends DatabaseMapping  implements 
     @Override
     public void writeFromObjectIntoRow(Object object, AbstractRecord row, AbstractSession session, WriteType writeType) {
         if (this.isReadOnly || 
-            (writeType.equals(WriteType.INSERT) && ! field.isInsertable()) ||
-            (writeType.equals(WriteType.UPDATE) && ! field.isUpdatable())) {
+            (writeType.equals(WriteType.INSERT) && ! isInsertable) ||
+            (writeType.equals(WriteType.UPDATE) && ! isUpdatable)) {
             return;
         }
 
@@ -1299,8 +1315,8 @@ public abstract class AbstractDirectMapping extends DatabaseMapping  implements 
     @Override
     public void writeFromObjectIntoRowWithChangeRecord(ChangeRecord changeRecord, AbstractRecord row, AbstractSession session, WriteType writeType) {
         if (this.isReadOnly || 
-           (writeType.equals(WriteType.INSERT) && ! field.isInsertable()) ||
-           (writeType.equals(WriteType.UPDATE) && ! field.isUpdatable())) {
+           (writeType.equals(WriteType.INSERT) && ! isInsertable) ||
+           (writeType.equals(WriteType.UPDATE) && ! isUpdatable)) {
            return;
         }
 
@@ -1335,11 +1351,7 @@ public abstract class AbstractDirectMapping extends DatabaseMapping  implements 
      */
     @Override
     public void writeInsertFieldsIntoRow(AbstractRecord databaseRow, AbstractSession session) {
-        if (isReadOnly()) {
-            return;
-        }
-        
-        if (getField().isInsertable()) {
+        if (isInsertable && ! isReadOnly()) {
             databaseRow.add(getField(), null);
         }
     }
@@ -1351,11 +1363,7 @@ public abstract class AbstractDirectMapping extends DatabaseMapping  implements 
      */
     @Override
     public void writeUpdateFieldsIntoRow(AbstractRecord databaseRow, AbstractSession session) {
-        if (isReadOnly()) {
-            return;
-        }
-        
-        if (getField().isUpdatable()) {
+        if (isUpdatable && ! isReadOnly()) {
             databaseRow.add(getField(), null);    
         }
     }
