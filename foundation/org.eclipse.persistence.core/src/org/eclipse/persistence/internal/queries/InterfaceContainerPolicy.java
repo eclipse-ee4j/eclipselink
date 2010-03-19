@@ -16,6 +16,7 @@ import java.security.AccessController;
 import java.security.PrivilegedActionException;
 import java.util.*;
 import java.lang.reflect.*;
+import org.eclipse.persistence.descriptors.changetracking.CollectionChangeEvent;
 import org.eclipse.persistence.exceptions.*;
 import org.eclipse.persistence.internal.helper.ClassConstants;
 import org.eclipse.persistence.internal.helper.DatabaseField;
@@ -123,6 +124,14 @@ public abstract class InterfaceContainerPolicy extends ContainerPolicy {
             throw ValidationException.classNotFoundWhileConvertingClassNames(getContainerClassName(), exception);
         }
         setContainerClass(containerClass);
+    }
+    
+    /**
+     * INTERNAL:
+     * Creates a CollectionChangeEvent for the container
+     */
+    public CollectionChangeEvent createChangeEvent(Object collectionOwner, String propertyName, Object collectionChanged, Object elementChanged, int changeType, Integer index) {
+        return new CollectionChangeEvent(collectionOwner, propertyName, collectionChanged, elementChanged, changeType, index);// make the remove change event fire.
     }
 
     /**

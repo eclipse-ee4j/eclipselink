@@ -273,6 +273,18 @@ public class MapContainerPolicy extends InterfaceContainerPolicy {
             throw ValidationException.classNotFoundWhileConvertingClassNames(containerClassName, exc);
         }
     }
+    
+    /**
+     * INTERNAL:
+     * Creates a CollectionChangeEvent for the container
+     */
+    public CollectionChangeEvent createChangeEvent(Object collectionOwner, String propertyName, Object collectionChanged, Object elementChanged, int changeType, Integer index) {
+        if (elementChanged instanceof Map.Entry) {
+            return new MapChangeEvent(collectionOwner,propertyName, collectionChanged,
+                    ((Map.Entry)elementChanged).getKey(), ((Map.Entry)elementChanged).getValue(), changeType);
+        } 
+        return super.createChangeEvent(collectionOwner, propertyName, collectionChanged, elementChanged, changeType, index);
+    }
 
     /**
      * INTERNAL:
@@ -565,7 +577,7 @@ public class MapContainerPolicy extends InterfaceContainerPolicy {
         }
         Object key = next.getKey();
         key = unwrapKey(key, session);
-        next = new Association(next.getKey(), object);
+        next = new Association(key, object);
         return next;
     }
     
@@ -630,7 +642,7 @@ public class MapContainerPolicy extends InterfaceContainerPolicy {
         if (event.getChangeType() == CollectionChangeEvent.ADD) {
             recordAddToCollectionInChangeRecord(changeSet, collectionChangeRecord);
             changeSet.setNewKey(key);
-        } else if (event.getChangeType() == MapChangeEvent.REMOVE) {
+        } else if (event.getChangeType() == CollectionChangeEvent.REMOVE) {
             recordRemoveFromCollectionInChangeRecord(changeSet, collectionChangeRecord);
             changeSet.setOldKey(key);
         } else {

@@ -1346,6 +1346,7 @@ public abstract class CollectionMapping extends ForeignReferenceMapping implemen
         // BUG#5190470 Must force instantiation of indirection collections.
         containerPolicy.sizeFor(valueOfTarget);
         boolean fireChangeEvents = false;
+        ObjectChangeListener listener = null;
         if (!mergeManager.shouldMergeOriginalIntoWorkingCopy()) {
             // if we are copying from original to clone then the source will be     
             // instantiated anyway and we must continue to use the UnitOfWork 
@@ -1360,13 +1361,14 @@ public abstract class CollectionMapping extends ForeignReferenceMapping implemen
                 fireChangeEvents = valueOfSource != valueOfTarget;
                 // Collections may not be indirect list or may have been replaced with user collection.
                 Object iterator = containerPolicy.iteratorFor(valueOfTarget);
-                PropertyChangeListener listener = ((ChangeTracker)target)._persistence_getPropertyChangeListener();
+                listener = (ObjectChangeListener)((ChangeTracker)target)._persistence_getPropertyChangeListener();
                 if (fireChangeEvents) {
                     // Objects removed from the first position in the list, so the index of the removed object is always 0. 
                     // When event is processed the index is used only in listOrderField case, ignored otherwise.  
-                    Integer zero = new Integer(0);
+                    Integer zero = Integer.valueOf(0);
                     while (containerPolicy.hasNext(iterator)) {
-                        ((ObjectChangeListener)listener).internalPropertyChange(new CollectionChangeEvent(target, getAttributeName(), valueOfTarget, containerPolicy.next(iterator, mergeSession), CollectionChangeEvent.REMOVE, zero));// make the remove change event fire.
+                        CollectionChangeEvent event = containerPolicy.createChangeEvent(target, getAttributeName(), valueOfTarget, containerPolicy.next(iterator, mergeSession), CollectionChangeEvent.REMOVE, zero);
+                        listener.internalPropertyChange(event);
                     }                        
                 }
                 if (newContainer instanceof ChangeTracker) {
@@ -1408,7 +1410,9 @@ public abstract class CollectionMapping extends ForeignReferenceMapping implemen
                 synchronized (valueOfTarget) {
                     if (fireChangeEvents) {
                         //Collections may not be indirect list or may have been replaced with user collection.
-                        ((ObjectChangeListener)((ChangeTracker)target)._persistence_getPropertyChangeListener()).internalPropertyChange(new CollectionChangeEvent(target, getAttributeName(), valueOfTarget, wrappedObject, CollectionChangeEvent.ADD, i++));// make the add change event fire.
+                        //bug 304251: let the ContainerPolicy decide what changeevent object to create
+                        CollectionChangeEvent event = containerPolicy.createChangeEvent(target, getAttributeName(), valueOfTarget, wrappedObject, CollectionChangeEvent.ADD, i++);
+                        listener.internalPropertyChange(event);
                     }
                     containerPolicy.addInto(wrappedObject, valueOfTarget, mergeManager.getSession());
                 }

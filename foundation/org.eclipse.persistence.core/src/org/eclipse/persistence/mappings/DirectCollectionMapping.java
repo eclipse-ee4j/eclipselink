@@ -1827,13 +1827,18 @@ public class DirectCollectionMapping extends CollectionMapping implements Relati
         Object newContainer = containerPolicy.containerInstance(containerPolicy.sizeFor(valueOfSource));
         boolean fireCollectionChangeEvents = false;
         boolean firePropertyChangeEvent = false;
+        ObjectChangeListener listener = null;
         if ((this.descriptor.getObjectChangePolicy().isObjectChangeTrackingPolicy()) && (target instanceof ChangeTracker) && (((ChangeTracker)target)._persistence_getPropertyChangeListener() != null)) {
+            listener = (ObjectChangeListener)((ChangeTracker)target)._persistence_getPropertyChangeListener();
             if(this.listOrderField == null) {
                 fireCollectionChangeEvents = true;
                 //Collections may not be indirect list or may have been replaced with user collection.
                 Object iterator = containerPolicy.iteratorFor(valueOfTarget);
+                Integer zero = Integer.valueOf(0);//remove does not seem to use index.
                 while (containerPolicy.hasNext(iterator)) {
-                    ((ObjectChangeListener)((ChangeTracker)target)._persistence_getPropertyChangeListener()).internalPropertyChange(new CollectionChangeEvent(target, getAttributeName(), valueOfTarget, containerPolicy.next(iterator, mergeManager.getSession()), CollectionChangeEvent.REMOVE));// make the remove change event fire.
+                    // Bug304251: let the containerPolicy build the proper remove CollectionChangeEvent
+                    CollectionChangeEvent event = containerPolicy.createChangeEvent(target, getAttributeName(), valueOfTarget, containerPolicy.next(iterator, mergeManager.getSession()), CollectionChangeEvent.REMOVE, zero);
+                    listener.internalPropertyChange(event);
                 }
                 if (newContainer instanceof ChangeTracker) {
                     ((ChangeTracker)newContainer)._persistence_setPropertyChangeListener(((ChangeTracker)target)._persistence_getPropertyChangeListener());
@@ -1847,14 +1852,19 @@ public class DirectCollectionMapping extends CollectionMapping implements Relati
         }
         Object originalValueOfTarget = valueOfTarget;
         valueOfTarget = newContainer;
+        int i = 0;
         for (Object sourceValuesIterator = containerPolicy.iteratorFor(valueOfSource);
                  containerPolicy.hasNext(sourceValuesIterator);) {
             Object sourceValue = containerPolicy.next(sourceValuesIterator, mergeManager.getSession());
             if (fireCollectionChangeEvents) {
                 //Collections may not be indirect list or may have been replaced with user collection.
                 ((ObjectChangeListener)((ChangeTracker)target)._persistence_getPropertyChangeListener()).internalPropertyChange(new CollectionChangeEvent(target, getAttributeName(), valueOfTarget, sourceValue, CollectionChangeEvent.ADD));// make the add change event fire.
+                // Bug304251: let the containerPolicy build the proper remove CollectionChangeEvent
+                CollectionChangeEvent event = containerPolicy.createChangeEvent(target, getAttributeName(), valueOfTarget, sourceValue, CollectionChangeEvent.ADD, Integer.valueOf(i));
+                listener.internalPropertyChange(event);
             }
             containerPolicy.addInto(sourceValue, valueOfTarget, mergeManager.getSession());
+            i++;
         }
         if (fireCollectionChangeEvents && (this.descriptor.getObjectChangePolicy().isAttributeChangeTrackingPolicy())) {
             // check that there were changes, if not then remove the record.

@@ -425,6 +425,14 @@ public abstract class ContainerPolicy implements Cloneable, Serializable {
     
     /**
      * INTERNAL:
+     * Creates a CollectionChangeEvent for the container
+     */
+    public CollectionChangeEvent createChangeEvent(Object collectionOwner, String propertyName, Object collectionChanged, Object elementChanged, int changeType, Integer index) {
+        return null;//not valid
+    }
+    
+    /**
+     * INTERNAL:
      * Return if the policy is equal to the other.
      * By default if they are the same class, they are considered equal.
      * This is used for query parse caching.
