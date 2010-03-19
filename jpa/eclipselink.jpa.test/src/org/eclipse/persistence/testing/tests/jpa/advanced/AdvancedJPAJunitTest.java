@@ -1227,7 +1227,7 @@ public class AdvancedJPAJunitTest extends JUnitTestCase {
     
     public void testRelationshipReadDuringClone(){
         EntityManager em = createEntityManager();
-        Session session = JpaHelper.getServerSession(em.getEntityManagerFactory());
+        Session session = JpaHelper.getServerSession(getEntityManagerFactory());
         ClassDescriptor departmentDesc = session.getDescriptor(Department.class);
         DescriptorEventAdapter listener = new DescriptorEventAdapter(){
             public void postClone(DescriptorEvent event) {
