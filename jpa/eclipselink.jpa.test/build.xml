@@ -173,15 +173,23 @@
     <available file="${jpatest.2.common.plugins.dir}/${modelgen.processor.jar}" property="modelgen.jar.exist"/>
 
 
-    <target name="set-app-name">
-        <condition property="APP_NAME" value="">
-            <contains string="${server.name}" substring="websphere"/>
-        </condition>
-        <condition property="APP_NAME" value="${MODEL_NAME}">
-            <not>
+    <target name="set-server-properties">
+        <property file="${user.home}/${server.name}.properties"/>
+        <property file="${eclipselink.jpa.test}/${server.name}.properties"/>
+
+        <condition property="SERVER.URL" value="${server.url}">
+            <or>
                 <isset property="is.websphere"/>
-            </not>
+                <isset property="is.jboss"/>
+            </or>
         </condition>
+        <condition property="SERVER.TESTRUNNER" value="${MODEL_NAME}/${server.testrunner}">
+            <and>
+                <isset property="is.jboss"/>
+            </and>
+        </condition>
+        <property name="SERVER.URL" value="${server.url}${MODEL_NAME}"/>
+        <property name="SERVER.TESTRUNNER" value="${server.testrunner}"/>
 
         <condition property="DS_NAME" value="java:/EclipseLinkDS">
             <contains string="${server.name}" substring="jboss"/>
@@ -1717,7 +1725,7 @@
     <target name="server-build" depends="prepare-non-jta-ds-servertest,server-build-client-jar,server-build-ejb-jar,server-build-ear"/>
 
     <!-- Build, deploy and run a test suite on the server. -->
-    <target name="server-run-all" depends="detect-os,set-app-name">
+    <target name="server-run-all" depends="detect-os,set-server-properties">
         <antcall target="server-build" inheritRefs="true"/>
         <antcall target="cleanup-non-jta-ds-servertest" inheritRefs="true"/>
         <antcall target="server-deploy" inheritRefs="true">
@@ -1731,7 +1739,7 @@
     </target>
 
     <!-- Build, deploy and run a test suite on the server using the prompt runner. -->
-    <target name="server-run-all-prompt" depends="detect-os,set-app-name">
+    <target name="server-run-all-prompt" depends="detect-os,set-server-properties">
         <antcall target="server-build" inheritRefs="true"/>
         <!--antcall target="server-deploy" inheritRefs="true">
             <param name="ear.name" value="${EAR_NAME}.ear"/>
@@ -1745,8 +1753,6 @@
 
     <!-- Run an ear on the server. -->
     <target name="server-run-test" depends="config-trunk, config-flat">
-        <property file="${user.home}/${server.name}.properties"/>
-        <property file="${eclipselink.jpa.test}/${server.name}.properties"/>
         <path id="run.path">
             <pathelement path="${eclipselink.jpa.test}/${build.dir}/${TEST_NAME}_client.jar"/>
             <pathelement path="${eclipselink.jpa.test}/${build.dir}/${MODEL_NAME}_ejb.jar"/>
@@ -1760,8 +1766,8 @@
             <sysproperty key="server.platform" value="${server.platform}"/>
             <sysproperty key="server.user" value="${server.user}"/>
             <sysproperty key="server.password" value="${server.pwd}"/>
-            <sysproperty key="server.url" value="${server.url}${APP_NAME}"/>
-            <sysproperty key="server.testrunner" value="${server.testrunner}"/>
+            <sysproperty key="server.url" value="${SERVER.URL}"/>
+            <sysproperty key="server.testrunner" value="${SERVER.TESTRUNNER}"/>
             <sysproperty key="server.run" value="TRUE"/>
             <classpath refid="run.path"/>
             <formatter type="xml"/>

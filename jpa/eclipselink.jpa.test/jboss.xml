@@ -66,11 +66,20 @@
         <contains string="${db.driver}" substring="sybase"/>
     </condition>
 
+    <condition property="is.eap">
+        <contains string="${server.version}" substring="eap"/>
+    </condition>
+
     <!-- Here will use default server configuration. -->
     <target name="jboss-install">
         <copy file="${junit.lib}" todir="${jboss.server}/lib"/>
         <copy file="${eclipselink.jar.name}" todir="${jboss.server}/lib"/>
         <copy file="${jdbc.driver.jar}" todir="${jboss.server}/lib"/>
+        <antcall target="copy-eclipselink-persistence-jars-to-domain-lib" inheritRefs="true"/>
+    </target>
+
+    <target name="copy-eclipselink-persistence-jars-to-domain-lib" if="is.eap">
+        <copy file="${eclipselink.jpa}/../${plugins.dir}/${persistence20.jar}" todir="${jboss.server}/lib" overwrite="true"/>
     </target>
 
     <!-- This target is to create datasource required for running JPA tests on the JBoss server. -->
@@ -121,10 +130,7 @@
                 <pathelement location="${jboss.home}/common/lib/servlet-api.jar"/>
                 <pathelement location="${jboss.home}/client/jboss-javaee.jar"/>
                 <pathelement location="${jboss.home}/common/lib/jboss-bindingservice.jar"/>
-                <pathelement location="${eclipselink.jar.name}"/>
-                <pathelement location="${junit.lib}"/>
                 <pathelement location="${jdbc.driver.jar}"/>
-                <pathelement location="${persistence.jar}"/>
                 <pathelement location="${oracle.extensions.depend.dir}/${oracle.xdb.lib}"/>
                 <pathelement location="${oracle.extensions.depend.dir}/${oracle.xmlparserv2.lib}"/>
                 <pathelement location="${oracle.extensions.depend.dir}/${oracle.spatial.lib}"/>
