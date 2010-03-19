@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2009 Oracle. All rights reserved.
+ * Copyright (c) 1998, 2010 Oracle. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -578,6 +578,17 @@ public class AdvancedTableCreator extends TableCreator {
         fieldNAME.setShouldAllowNull(true);
         table.addField(fieldNAME);
 
+        FieldDefinition fieldHEAD = new FieldDefinition();
+        fieldHEAD.setName("DEPT_HEAD");
+        fieldHEAD.setTypeName("NUMERIC");
+        fieldHEAD.setSize(15);
+        fieldHEAD.setSubSize(0);
+        fieldHEAD.setIsPrimaryKey(false);
+        fieldHEAD.setIsIdentity(false);
+        fieldHEAD.setUnique(false);
+        fieldHEAD.setShouldAllowNull(true);
+        table.addField(fieldHEAD);
+        
         return table;
     }
     

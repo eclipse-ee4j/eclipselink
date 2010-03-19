@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2009 Oracle. All rights reserved.
+ * Copyright (c) 1998, 2010 Oracle. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -22,8 +22,10 @@ import java.util.Vector;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.GeneratedValue;
+import javax.persistence.JoinColumn;
 import javax.persistence.NamedNativeQuery;
 import javax.persistence.OneToMany;
+import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import javax.persistence.TableGenerator;
 
@@ -55,6 +57,7 @@ import org.eclipse.persistence.annotations.PrivateOwned;
 public class Department implements Serializable {
     private Integer id;
     private String name;
+    private Employee departmentHead;
 
     private Collection<Employee> employees;
     private Collection<Employee> managers;
@@ -135,4 +138,15 @@ public class Department implements Serializable {
     public void setName(String name) {
         this.name = name;
     }
+    
+    @OneToOne(optional=true)
+    @JoinColumn(name="DEPT_HEAD", nullable=true)
+    public Employee getDepartmentHead() {
+        return this.departmentHead;
+    }
+    
+    public void setDepartmentHead(Employee employee) {
+        this.departmentHead = employee;
+    }
+
 }
