@@ -28,7 +28,7 @@ package org.eclipse.persistence.descriptors.changetracking;
 public class MapChangeEvent extends CollectionChangeEvent {
     /**
      * INTERNAL:
-     * Thie value of the key that was updated.
+     * The value of the key that was updated.
      */
     protected Object key;
 

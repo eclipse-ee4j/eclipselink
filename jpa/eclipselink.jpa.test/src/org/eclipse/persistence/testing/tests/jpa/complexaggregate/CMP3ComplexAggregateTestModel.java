@@ -28,6 +28,7 @@ public class CMP3ComplexAggregateTestModel extends CMP3TestModel {
     }
 
     public void addTests() {
+        addTest(new MapKeyColumnMergeTest());
         addTest(new AggregatePrimaryKeyTest());
         addTest(new AggregatePrimaryKeyOrderByTest());
         addTest(new NestedAggregateTest());

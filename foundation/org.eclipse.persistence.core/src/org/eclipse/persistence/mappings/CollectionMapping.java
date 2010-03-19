@@ -19,7 +19,6 @@ import java.beans.PropertyChangeListener;
 import java.util.*;
 
 import org.eclipse.persistence.annotations.OrderCorrectionType;
-import org.eclipse.persistence.descriptors.CMPPolicy;
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.descriptors.changetracking.*;
 import org.eclipse.persistence.internal.descriptors.changetracking.*;
@@ -1325,6 +1324,7 @@ public abstract class CollectionMapping extends ForeignReferenceMapping implemen
         // BUG#5190470 Must force instantiation of indirection collections.
         containerPolicy.sizeFor(valueOfTarget);
         boolean fireChangeEvents = false;
+        ObjectChangeListener listener = null;
         if (!mergeManager.shouldMergeOriginalIntoWorkingCopy()) {
             // if we are copying from original to clone then the source will be     
             // instantiated anyway and we must continue to use the UnitOfWork 
@@ -1339,13 +1339,14 @@ public abstract class CollectionMapping extends ForeignReferenceMapping implemen
                 fireChangeEvents = valueOfSource != valueOfTarget;
                 // Collections may not be indirect list or may have been replaced with user collection.
                 Object iterator = containerPolicy.iteratorFor(valueOfTarget);
-                PropertyChangeListener listener = ((ChangeTracker)target)._persistence_getPropertyChangeListener();
+                listener = (ObjectChangeListener)((ChangeTracker)target)._persistence_getPropertyChangeListener();
                 if (fireChangeEvents) {
                     // Objects removed from the first position in the list, so the index of the removed object is always 0. 
                     // When event is processed the index is used only in listOrderField case, ignored otherwise.  
                     Integer zero = Integer.valueOf(0);
-                    while (containerPolicy.hasNext(iterator)) {
-                        ((ObjectChangeListener)listener).internalPropertyChange(new CollectionChangeEvent(target, getAttributeName(), valueOfTarget, containerPolicy.next(iterator, mergeSession), CollectionChangeEvent.REMOVE, zero));// make the remove change event fire.
+                    while (containerPolicy.hasNext(iterator)) {  
+                        CollectionChangeEvent event = containerPolicy.createChangeEvent(target, getAttributeName(), valueOfTarget, containerPolicy.next(iterator, mergeSession), CollectionChangeEvent.REMOVE, zero);
+                        listener.internalPropertyChange(event);
                     }                        
                 }
                 if (newContainer instanceof ChangeTracker) {
@@ -1387,7 +1388,9 @@ public abstract class CollectionMapping extends ForeignReferenceMapping implemen
                 synchronized (valueOfTarget) {
                     if (fireChangeEvents) {
                         //Collections may not be indirect list or may have been replaced with user collection.
-                        ((ObjectChangeListener)((ChangeTracker)target)._persistence_getPropertyChangeListener()).internalPropertyChange(new CollectionChangeEvent(target, getAttributeName(), valueOfTarget, wrappedObject, CollectionChangeEvent.ADD, i++));// make the add change event fire.
+                        //bug 304251: let the ContainerPolicy decide what changeevent object to create
+                        CollectionChangeEvent event = containerPolicy.createChangeEvent(target, getAttributeName(), valueOfTarget, wrappedObject, CollectionChangeEvent.ADD, i++);
+                        listener.internalPropertyChange(event);
                     }
                     containerPolicy.addInto(wrappedObject, valueOfTarget, mergeManager.getSession());
                 }
@@ -1414,42 +1417,6 @@ public abstract class CollectionMapping extends ForeignReferenceMapping implemen
 
         // Must re-set variable to allow for set method to re-morph changes if the collection is not being stored directly.
         setRealAttributeValueInObject(target, valueOfTarget);
-    }
-    
-    /**
-     * INTERNAL:
-     * Iterate through the collection and merge all the objects in the collection as appropriate.
-     * @param wrappedObject
-     * @param valueOfTarget
-     * @param target
-     * @param mergeManager
-     * @param fireChangeEvents
-     */
-    protected void mergeChangesForCollectionMembers(Object valueOfSource, Object valueOfTarget, Object target, MergeManager mergeManager, boolean fireChangeEvents){
-        Object sourceIterator = containerPolicy.iteratorFor(valueOfSource);
-        while (containerPolicy.hasNext(sourceIterator)) {
-            Object wrappedObject = containerPolicy.nextEntry(sourceIterator, mergeManager.getSession());
-            Object object = containerPolicy.unwrapIteratorResult(wrappedObject);
-            if (object == null) {
-                continue;// skip the null
-            }
-            if (shouldMergeCascadeParts(mergeManager)) {
-                if ((mergeManager.getSession().isUnitOfWork()) && (((UnitOfWorkImpl)mergeManager.getSession()).getUnitOfWorkChangeSet() != null)) {
-                    // If it is a unit of work, we have to check if I have a change Set for this object
-                    mergeManager.mergeChanges(mergeManager.getObjectToMerge(object), (ObjectChangeSet)((UnitOfWorkImpl)mergeManager.getSession()).getUnitOfWorkChangeSet().getObjectChangeSetForClone(object));
-                } else {
-                    mergeManager.mergeChanges(mergeManager.getObjectToMerge(object), null);
-                }
-            }
-            object = this.referenceDescriptor.getObjectBuilder().wrapObject(mergeManager.getTargetVersionOfSourceObject(object), mergeManager.getSession());
-            synchronized (valueOfTarget) {
-                if (fireChangeEvents) {
-                    //Collections may not be indirect list or may have been replaced with user collection.
-                    ((ObjectChangeListener)((ChangeTracker)target)._persistence_getPropertyChangeListener()).internalPropertyChange(new CollectionChangeEvent(target, getAttributeName(), valueOfTarget, object, CollectionChangeEvent.ADD));// make the add change event fire.
-                }
-                containerPolicy.addInto(wrappedObject, valueOfTarget, mergeManager.getSession());
-            }
-        }
     }
     
     /**
