@@ -293,7 +293,7 @@ public class DirectMappingTestCases extends ExternalizedMetadataTestCases {
 
             String metadataFile = PATH + "vehicles-oxm.xml";
             MySchemaOutputResolver oResolver = new MySchemaOutputResolver(); 
-            oResolver = generateSchemaWithFileName(new Class[] { Car.class, Truck.class }, CONTEXT_PATH, metadataFile, 3);
+            oResolver = generateSchemaWithFileName(new Class[] { Car.class, Truck.class }, CONTEXT_PATH, metadataFile, 2);
             // validate schema
             String controlSchema = PATH + "vehicles.xsd";
             compareSchemas(oResolver.schemaFiles.get(EMPTY_NAMESPACE), new File(controlSchema));

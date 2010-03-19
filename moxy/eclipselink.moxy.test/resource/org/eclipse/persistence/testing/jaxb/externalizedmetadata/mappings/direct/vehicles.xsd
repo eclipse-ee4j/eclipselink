@@ -1,13 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<xsd:schema xmlns:t="http://www.example.com/trucks" xmlns:c="http://www.example.com/cars" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
-   <xsd:import schemaLocation="schema1.xsd" namespace="http://www.example.com/trucks"/>
-   <xsd:import schemaLocation="schema2.xsd" namespace="http://www.example.com/cars"/>
+<xsd:schema xmlns:v="http://www.example.com/vehicles" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+   <xsd:import schemaLocation="schema1.xsd" namespace="http://www.example.com/vehicles"/>
    <xsd:complexType name="car">
       <xsd:sequence>
          <xsd:element name="features">
             <xsd:complexType>
                <xsd:sequence>
-                  <xsd:element ref="c:horsepower" minOccurs="0"/>
+                  <xsd:element ref="v:horsepower" minOccurs="0"/>
                </xsd:sequence>
             </xsd:complexType>
          </xsd:element>
@@ -18,7 +17,7 @@
          <xsd:element name="features">
             <xsd:complexType>
                <xsd:sequence>
-                  <xsd:element ref="t:torque" minOccurs="0"/>
+                  <xsd:element ref="v:torque" minOccurs="0"/>
                </xsd:sequence>
             </xsd:complexType>
          </xsd:element>
