@@ -1097,6 +1097,8 @@
         <echo>Running test browser</echo>
         <mkdir dir="${eclipselink.jpa.test}/${run.dir}"/>
         <mkdir dir="${eclipselink.jpa.test}/${report.dir}"/>
+        <!-- Can be set e.g. in test.properties to add VM options for a particular platform/driver  -->
+        <property name="additional.jvmargs" value="-Ddummy2=dummy"/>
         <java classname="org.eclipse.persistence.testing.framework.ui.TestingBrowserFrame"
              fork="true"
              maxmemory="512m"
@@ -1110,6 +1112,7 @@
             <jvmarg value="-Ddb.user=${db.user}"/>
             <jvmarg value="-Ddb.pwd=${db.pwd}"/>
             <jvmarg value="-Ddb.platform=${db.platform}"/>
+            <jvmarg line="${additional.jvmargs}"/>
             <classpath>
                 <path refid="run.oracle.classpath"/>
             </classpath>
@@ -1143,10 +1146,10 @@
     <target name="run-test" depends="config-trunk, config-flat">
         <echo>Running test on ${DB_URL}</echo>
 
-        <condition property="jvmarg.db.platform" value="-Ddb.platform=${db.platform}">
+        <condition property="jvmarg.db.platform.class" value="-Ddb.platform=${db.platform}">
             <isset property="db.platform"/>
         </condition>
-        <condition property="jvmarg.db.platform" value="-Ddummy=dummy">
+        <condition property="jvmarg.db.platform.class" value="-Ddummy=dummy">
             <not>
                 <isset property="db.platform"/>
             </not>
@@ -1157,8 +1160,10 @@
         <property name="pa.connection.password" value="PA_CONN"/>
         <property name="pa.proxyuser" value="PA_PROXY"/>
         <property name="pa.proxyuser2" value="PA_PROXY2"/>
+        <!-- Can be set e.g. in test.properties to add VM options for a particular platform/driver  -->
+        <property name="additional.jvmargs" value="-Ddummy2=dummy"/>
 
-        <junit printsummary="yes" haltonfailure="yes" fork="yes" forkmode="once" showoutput="true" maxmemory="512m" dir="${eclipselink.jpa.test}/${run.dir}">
+        <junit printsummary="yes" haltonfailure="yes" fork="yes" forkmode="once" showoutput="true" maxmemory="${max.heap.memory}" dir="${eclipselink.jpa.test}/${run.dir}">
             <sysproperty key="proxy.user.name" value="${oracle.proxy.user}"/>
             <sysproperty key="pa.connection.user" value="${pa.connection.user}"/>
             <sysproperty key="pa.connection.password" value="${pa.connection.password}"/>
@@ -1172,7 +1177,8 @@
             <jvmarg value="-Ddb.url=${DB_URL}"/>
             <jvmarg value="-Ddb.user=${db.user}"/>
             <jvmarg value="-Ddb.pwd=${db.pwd}"/>
-            <jvmarg value="${jvmarg.db.platform}"/>
+            <jvmarg line="${additional.jvmargs}"/>
+            <jvmarg value="${jvmarg.db.platform.class}"/>
             <classpath>
                 <path refid="${RUN_PATH}"/>
             </classpath>
@@ -1186,14 +1192,16 @@
     <target name="run-spring-test" depends="config-trunk, config-flat">
         <echo>Running test on ${DB_URL}</echo>
 
-        <condition property="jvmarg.db.platform" value="-Ddb.platform=${db.platform}">
+        <condition property="jvmarg.db.platform.class" value="-Ddb.platform=${db.platform}">
             <isset property="db.platform"/>
         </condition>
-        <condition property="jvmarg.db.platform" value="-Ddummy=dummy">
+        <condition property="jvmarg.db.platform.class" value="-Ddummy=dummy">
             <not>
                 <isset property="db.platform"/>
             </not>
         </condition>
+        <!-- Can be set e.g. in test.properties to add VM options for a particular platform/driver  -->
+        <property name="additional.jvmargs" value="-Ddummy2=dummy"/>
 
         <junit printsummary="yes" haltonfailure="yes" fork="yes" forkmode="once" showoutput="true" maxmemory="512m" dir="${eclipselink.jpa.test}/${run.dir}">
             <sysproperty key="TEST_SERVER_PLATFORM" value="org.eclipse.persistence.testing.framework.server.SpringPlatform"/>
@@ -1207,6 +1215,8 @@
             <jvmarg value="-Ddb.user=${db.user}"/>
             <jvmarg value="-Ddb.pwd=${db.pwd}"/>
             <jvmarg value="${jvmarg.db.platform}"/>
+            <jvmarg line="${additional.jvmargs}"/>
+            <jvmarg value="${jvmarg.db.platform.class}"/>
             <classpath>
                 <path refid="${RUN_PATH}"/>
                 <path refid="spring.path"/>
@@ -1236,6 +1246,8 @@
                 <isset property="performance.baseline.version"/>
             </not>
         </condition>
+        <!-- Can be set e.g. in test.properties to add VM options for a particular platform/driver  -->
+        <property name="additional.jvmargs" value="-Ddummy2=dummy"/>
 
         <echo>Running test on ${db.url}</echo>
         <java classname="org.eclipse.persistence.testing.framework.PromptTestRunner"
@@ -1252,6 +1264,7 @@
             <jvmarg value="-Ddb.user=${db.user}"/>
             <jvmarg value="-Ddb.pwd=${db.pwd}"/>
             <jvmarg value="-Ddb.platform=${db.platform}"/>
+            <jvmarg line="${additional.jvmargs}"/>
             <arg value="testmodel=${TEST_CLASS}"/>
             <arg value="regressionlog=../${report.dir}/test.log"/>
             <arg value="saveresults=${should.save.results}" />

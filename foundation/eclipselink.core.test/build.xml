@@ -173,6 +173,9 @@
                 <isset property="tools.jar.exist"/>
             </and>
         </condition>
+
+        <!-- Can be set e.g. in test.properties to add VM options for a particular platform/driver  -->
+        <property name="additional.jvmargs" value="-Ddummy2=dummy"/>
     </target>
 
     <target name="init_eclipselink" if="use.eclipselink">
@@ -395,6 +398,7 @@
             <jvmarg value="${test.security-manager}"/>
             <jvmarg value="${test.security-manager.policy}"/>
             <jvmarg value="-Djava.naming.factory.initial=com.sun.jndi.cosnaming.CNCtxFactory"/>
+                <jvmarg line="${additional.jvmargs}"/>
             <classpath>
                 <path refid="core_test.run.path"/>
             </classpath>
@@ -415,6 +419,7 @@
             <jvmarg value="-Ddb.user=${db.user}"/>
             <jvmarg value="-Ddb.pwd=${db.pwd}"/>
             <jvmarg value="-Ddb.platform=${db.platform}"/>
+            <jvmarg line="${additional.jvmargs}"/>
             <jvmarg value="${test.security-manager}"/>
             <jvmarg value="${test.security-manager.policy}"/>
             <classpath>
@@ -462,6 +467,7 @@
             <jvmarg value="${test.security-manager}"/>
             <jvmarg value="${test.security-manager.policy}"/>
             <jvmarg value="-Djava.naming.factory.initial=com.sun.jndi.cosnaming.CNCtxFactory"/>
+            <jvmarg line="${additional.jvmargs}"/>
             <arg value="testmodel=${TEST_CLASS}" />
             <arg value="regressionlog=${core_test.report.dir}/test.log" />
             <arg value="saveresults=${should.save.results}" />
@@ -490,6 +496,7 @@
             <jvmarg value=""/>
             <jvmarg value="${test.security-manager}"/>
             <jvmarg value="${test.security-manager.policy}"/>
+            <jvmarg line="${additional.jvmargs}"/>
             <arg value="testmodel=org.eclipse.persistence.testing.tests.classpath.ClassPathTestModel" />
             <arg value="regressionlog=${core_test.report.dir}/test.log" />
             <arg value="createdbconnection=false" />
