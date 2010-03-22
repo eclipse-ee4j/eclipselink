@@ -89,13 +89,10 @@ public abstract class Expression implements Serializable, Cloneable {
      */
     public Expression addDate(String datePart, Object numberToAdd) {
         ExpressionOperator anOperator = getOperator(ExpressionOperator.AddDate);
-        FunctionExpression expression = new FunctionExpression();
-        expression.setBaseExpression(this);
-        expression.addChild(this);
-        expression.addChild(Expression.fromLiteral(datePart, this));
-        expression.addChild(Expression.from(numberToAdd, this));
-        expression.setOperator(anOperator);
-        return expression;
+        Vector args = org.eclipse.persistence.internal.helper.NonSynchronizedVector.newInstance();
+        args.addElement(Expression.fromLiteral(datePart, this));
+        args.addElement(numberToAdd);
+        return anOperator.expressionForArguments(this, args);
     }
 
     /**
@@ -1502,7 +1499,7 @@ public abstract class Expression implements Serializable, Cloneable {
         //CR#... null value used to return null, must build a null constant expression.
         if (value instanceof Expression) {
             Expression exp = (Expression)value;
-            if (exp.isValueExpression()) {
+            if (exp.isValueExpression() || base.isExpressionBuilder()) {
                 exp.setLocalBase(base);
             } else {
                 // We don't know which side of the relationship cares about the other one, so notify both
