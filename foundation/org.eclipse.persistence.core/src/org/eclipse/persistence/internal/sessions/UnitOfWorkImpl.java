@@ -283,7 +283,7 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
     /** temporarily holds a list of events that must be fired after the current operation completes. 
      *  Initialy created for postClone events.
      */
-    protected ArrayList<DescriptorEvent> deferredEvents;
+    protected List<DescriptorEvent> deferredEvents;
     
     /** records that the UOW is executing deferred events.  Events could cause operations to occur that may attempt to restart the event execution.  This must be avoided*/
     protected boolean isExecutingEvents = false;
@@ -327,7 +327,6 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
         }
         this.descriptors = parent.getDescriptors();
         incrementProfile(SessionProfiler.UowCreated);
-        this.deferredEvents = new ArrayList<DescriptorEvent>();
     }
 
     /**
@@ -1674,6 +1673,9 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
      * Add an event to the deferred list.  Events will be fired after the operation completes
      */
     public void deferEvent(DescriptorEvent event){
+        if (this.deferredEvents == null){
+            this.deferredEvents = new ArrayList<DescriptorEvent>();
+        }
         this.deferredEvents.add(event);
     }
 
@@ -1827,7 +1829,7 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
      * Causes any deferred events to be fired.  Called after operation completes
      */
     public void executeDeferredEvents(){
-        if (!this.isExecutingEvents) {
+        if (!this.isExecutingEvents && this.deferredEvents != null) {
             this.isExecutingEvents = true;
             try {
                 for (int i = 0; i < this.deferredEvents.size(); ++i) { 
@@ -1840,13 +1842,6 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
                 this.isExecutingEvents = false;
             }
         }
-    }
-
-    @Override
-    public Object executeQuery(DatabaseQuery query, AbstractRecord row){
-        Object result = super.executeQuery(query, row);
-        executeDeferredEvents();
-        return result;
     }
     
     /**
@@ -2900,7 +2895,9 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
      * the arguments should be a database row with raw data values.
      */
     public Object internalExecuteQuery(DatabaseQuery query, AbstractRecord databaseRow) throws DatabaseException, QueryException {
-        return query.executeInUnitOfWork(this, databaseRow);
+        Object result = query.executeInUnitOfWork(this, databaseRow);
+        executeDeferredEvents();
+        return result;
     }
 
     /**
