@@ -1237,6 +1237,11 @@ public class JUnitJPQLComplexTestSuite extends JUnitTestCase
             // Not work on the server.
             return;
         }
+        if (((Session) JUnitTestCase.getServerSession()).getPlatform().isDerby())
+        {
+            warning("The test simpleCaseInWhereTest is not supported on Derby, because Derby does not support simple CASE");
+            return;
+        }
         JpaEntityManager em = (JpaEntityManager) createEntityManager(); 
         Expression exp = (new ExpressionBuilder()).get("firstName").equal("Bob");
         Employee emp = (Employee)em.getActiveSession().readAllObjects(Employee.class, exp).firstElement();
