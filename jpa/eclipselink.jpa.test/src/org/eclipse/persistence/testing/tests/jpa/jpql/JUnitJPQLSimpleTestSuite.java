@@ -207,7 +207,7 @@ public class JUnitJPQLSimpleTestSuite extends JUnitTestCase {
     public void testOneEqualsOne() throws Exception {
         if ((JUnitTestCase.getServerSession()).getPlatform().isSymfoware()) {
             getServerSession().logMessage("Test testOneEqualsOne skipped for this platform, "
-                    + "Symfoware doesn't allow dynamic parameters on both sides of the equals operator at the same time.");
+                    + "Symfoware doesn't allow dynamic parameters on both sides of the equals operator at the same time. (bug 304897)");
             return;
         }
 
@@ -434,7 +434,7 @@ public class JUnitJPQLSimpleTestSuite extends JUnitTestCase {
     public void simpleConcatTestWithParameters() {
         if ((JUnitTestCase.getServerSession()).getPlatform().isSymfoware()) {
             getServerSession().logMessage("Test simpleConcatTestWithParameters skipped for this platform, "
-                    + "Symfoware doesn't allow dynamic parameters in both arguments to CONCAT at the same time.");
+                    + "Symfoware doesn't allow dynamic parameters in both arguments to CONCAT at the same time. (bug 304897)");
             return;
         }
         EntityManager em = createEntityManager();

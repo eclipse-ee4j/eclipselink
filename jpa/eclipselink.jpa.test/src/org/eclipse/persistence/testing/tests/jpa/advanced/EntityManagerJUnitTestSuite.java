@@ -1047,7 +1047,7 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
     public void testSubString() {
         if ((JUnitTestCase.getServerSession()).getPlatform().isSymfoware()) {
             getServerSession().logMessage("Test testSubString skipped for this platform, "
-                    + "Symfoware doesn't allow dynamic parameter as first argument of SUBSTRING.");
+                    + "Symfoware doesn't allow dynamic parameter as first argument of SUBSTRING. (bug 304897)");
             return;
         }
 

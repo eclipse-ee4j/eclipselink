@@ -37,7 +37,7 @@ public class ProjectWithSpacesDeleteTest extends DeleteObjectTest {
     protected void setup() {
         if (getSession().getPlatform().isSymfoware()) {
             throwWarning("Test system EmployeeWithSpacesSystem is not supported on Symfoware, "
-                    + "it does not allow spaces in tables or columns.");
+                    + "it does not allow spaces in tables or columns. (bug 304906)");
         }
         super.setup();
         // CR2114; Project.class passed as an argument

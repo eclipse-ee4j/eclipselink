@@ -637,7 +637,7 @@ public abstract class TestCase extends junit.framework.TestCase implements TestE
      * Currently testing supports select for update on Oracle, MySQL, SQLServer, TimesTen.
      * Some of the other platforms may have some support for select for update, but the databases we test with
      * for these do not have sufficient support to pass the tests.
-     * Derby, Firebird and Symfoware have some support, but does not work with joins (2008-12-01).
+     * Derby, Firebird and Symfoware (bug 304903) have some support, but does not work with joins (2008-12-01).
      */
     public void checkSelectForUpateSupported() {
         DatabasePlatform platform = getSession().getPlatform();

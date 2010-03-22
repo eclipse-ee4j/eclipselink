@@ -75,7 +75,7 @@ public class ReportQueryFunctionTypeTestCase extends AutoVerifyTestCase {
                 reportQuery .addVariance("salary-var", builder.get("salary")); 
             }
             
-            //Sybase and TimesTen doesn't support
+            //Sybase, Symfoware (bug 304909) and TimesTen don't support
             if(!(getSession().getDatasourcePlatform().isSybase() || getSession().getDatasourcePlatform().isTimesTen() || getSession().getDatasourcePlatform().isDerby() || getSession().getDatasourcePlatform().isSymfoware()))        
             {
               reportQuery .addStandardDeviation("salary-std", builder.get("salary")); 

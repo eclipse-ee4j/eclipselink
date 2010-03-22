@@ -545,7 +545,7 @@ public abstract class JUnitTestCase extends TestCase {
 
     public boolean isSelectForUpateSupported(String puName) {
         DatabasePlatform platform = getServerSession(puName).getPlatform();
-        // DB2, Derby, Symfoware and Firebird support pessimistic locking only for a single-table queries.
+        // DB2, Derby, Symfoware (bug 304903) and Firebird support pessimistic locking only for a single-table queries.
         // PostgreSQL supports for update, but not on outerjoins, which the test uses.
         // H2 supports pessimistic locking, but has table lock issues with multiple connections used in the tests.
         if (platform.isFirebird() || platform.isH2() || platform.isHSQL() || platform.isAccess() || platform.isSQLAnywhere() || platform.isDerby() || platform.isPostgreSQL() || platform.isSymfoware()) {

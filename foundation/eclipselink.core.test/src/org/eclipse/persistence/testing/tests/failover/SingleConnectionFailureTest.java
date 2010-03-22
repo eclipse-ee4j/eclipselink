@@ -33,7 +33,7 @@ public class SingleConnectionFailureTest extends TestCase {
     protected void setup() {
         if (getSession().getPlatform().isSymfoware()) {
             throwWarning("Test SingleConnectionFailureTest is not supported on Symfoware, "
-                    + "failover has not been implemented on this platform.");
+                    + "failover has not been implemented on this platform. (bug 304908)");
         }
         Project project = (Project)getSession().getProject().clone();
         DatabaseLogin login = (DatabaseLogin)project.getLogin().clone();

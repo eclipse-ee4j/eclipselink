@@ -45,7 +45,7 @@ import org.eclipse.persistence.testing.tests.failover.emulateddriver.EmulatedDri
     {
         if (getSession().getPlatform().isSymfoware()) {
             throwWarning("Test ConnectionPoolFailureTest is not supported on Symfoware, "
-                    + "failover has not been implemented on this platform.");
+                    + "failover has not been implemented on this platform. (bug 304908)");
         }
         Project project = (Project)getSession().getProject().clone();
         DatabaseLogin login = (DatabaseLogin)project.getLogin().clone();

@@ -31,7 +31,7 @@ public class QueryTimeoutTest extends TestCase {
     public void test() {
         if (getSession().getLogin().getPlatform().isSymfoware()) {
             throwWarning("Test QueryTimeoutTest skipped for this platform, "
-                    + "the driver does not support query timeout.");
+                    + "the driver does not support query timeout. (bug 304905)");
         }
         try {
             DataReadQuery query = new DataReadQuery();

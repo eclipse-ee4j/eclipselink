@@ -38,6 +38,7 @@ import org.eclipse.persistence.queries.ValueReadQuery;
 /**
  *  Symfoware Server<br/>
  *  http://wiki.eclipse.org/EclipseLink/Development/Incubator/Extensions/SymfowarePlatform <br/>
+ *  Test results: http://wiki.eclipse.org/EclipseLink/Development/DatabasePlatform/SymfowarePlatform/TestResults <br/>
  *  Contributed by: Fujitsu Ltd.<br/>
  *  Contributed under bug: 288715
  *  <p/>
@@ -53,7 +54,7 @@ import org.eclipse.persistence.queries.ValueReadQuery;
  * <li> Subquery - Succeeds with Limitations
  * <li> Stored Procedure Calls - Succeeds
  * <li> Stored Procedure Generation - Succeeds
- * <li> Native Sequences/Identifier fields - Succeeds with Limitations
+ * <li> Native Sequences/Identifier fields - Succeeds
  * <li> JPA Bulk Update/Delete - Succeeds with Limitations
  * <li> Batch Reading - Succeeds
  * <li> Batch Writing - Succeeds
@@ -68,32 +69,35 @@ import org.eclipse.persistence.queries.ValueReadQuery;
  * ----------------
  * <ul>
  * <li> Reserved SQL keywords cannot be used as table, column or sequence names. Use a different name, or enclose the name in double quotes. For example: @Column(name="\"LANGUAGE\"")
- * <li> Spaces cannot be used in table, column or sequence names.
- * <li> The MOD(x, y) function is executed as 'CASE WHEN y = 0 THEN x ELSE (x - y * TRUNC( x / y )) END' on Symfoware database, which gives the same result as the MOD function on Oracle database. Input parameters cannot be used for both its arguments at the same time. In such case, calculate the modulus in Java code first and pass the result to the query instead.
- * <li> No more than one input parameter can be used as argument to the LOCATE function.
- * <li> The first argument to the SUBSTRING function cannot be an input parameter.
- * <li> Input parameters cannot be used as arguments to the TRIM function.
- * <li> Input parameters cannot be used as argument to the LENGTH function. Calculate the length in Java code first and pass the result to the query instead.
- * <li> Input parameters cannot be used as adjacent arguments to the CONCAT function. Concatenate the values in Java code first and pass the result to the query instead.
+ * <li> Spaces cannot be used in table, column or sequence names. (bug 304906)
+ * <li> Input parameters cannot be used as first two arguments to the LOCATE function at the same time. (bug 304897)
+ * <li> The first argument to the SUBSTRING function cannot be an input parameter. (bug 304897)
+ * <li> Input parameters cannot be used as adjacent arguments to the CONCAT function. Concatenate the values in Java code first and pass the result to the query instead. (bug 304897)
  * <li> Input parameters cannot be used at both sides of an operand at the same time in an SQL statement (e.g. '? * ?'). Perform the operation in Java code first and pass the result to the query instead.
- * <li> Input parameters cannot be used as arguments to the UPPER and LOWER functions. Perform the operation in Java code first and pass the result to the query instead.
  * <li> Identity fields cannot be used. When primary key generation type IDENTITY is specified, a database sequence will be used instead.
- * <li> Pessimistic Locking adds 'FOR UPDATE' to the SELECT statement, and cannot be used with queries that use DISTINCT.
- * <li> Pessimistic Locking cannot be used with queries that select from multiple tables.
+ * <li> Pessimistic Locking adds 'FOR UPDATE' to the SELECT statement, and cannot be used with queries that use DISTINCT. (bug 304903)
+ * <li> Pessimistic Locking cannot be used with queries that select from multiple tables. (bug 304903)
  * <li> The LockNoWait option of Pessimistic Locking cannot be used; it is ignored when specified (i.e. only 'FOR UPDATE' is added to the SELECT statement).
- * <li> Query timeout cannot be used; the timeout value is silently ignored.
- * <li> Bulk update and delete operations that require multiple tables to be accessed cannot be used (e.g. bulk operation on an entity that is part of an inheritance hierarchy, etc.). (See bug 298193).
- * <li> UpdateAll and DeleteAll queries on multi-table objects (see limitation of JPA's bulk update and delete operations).
+ * <li> Query timeout cannot be used; the timeout value is silently ignored. (bug 304905)
+ * <li> Bulk update and delete operations that require multiple tables to be accessed cannot be used (e.g. bulk operation on an entity that is part of an inheritance hierarchy, UpdateAll and DeleteAll queries). (See bug 298193).
  * <li> Dropping of tables, sequences and procedures while the database connection is still open can fail due to unreleased locks. Shut down the Java process that executed the create operation before performing the drop operation, or have the create operation use an unpooled connection that is closed after use (GlassFish's deploy-time table generation function uses an unpooled connection). 
- * <li> The standard deviation (STDDEV) and variance (VARIANCE) functions cannot be used.
+ * <li> The standard deviation (STDDEV) and variance (VARIANCE) functions cannot be used. (bug 304909)
  * <li> '= NULL' and '<> NULL' cannot be used for null comparisons in the WHERE clause. Use 'IS (NOT) NULL' instead.
  * <li> A scrollable cursor policy of CONCUR_UPDATABLE mode cannot be used with queries that select from multiple tables.
  * <li> Columns and literals of different type may need casting to allow them to be compared or assigned. For example: 
  *   'SELECT ... WHERE CAST(PHONE_ORDER_VARCHAR AS INTEGER) BETWEEN 0 AND 1'
- * <li> Subqueries with joins to the outer query are not supported
- * <li> When using DDL generation, indices are automatically generated for primary and unique keys.
+ * <li> Subqueries with joins to the outer query are not supported. (see rfe 298193)
  * </ul>
- * 
+ * <p/><b>Additional Notes</b><br/>
+ * ----------------
+ * <ul>
+ * <li> When using DDL generation, indices are automatically generated for primary and unique keys.
+ * <li> The MOD(x, y) function is executed as 'CASE WHEN y = 0 THEN x ELSE (x - y * TRUNC( x / y )) END' on Symfoware database, which gives the same result as the MOD function on Oracle database. Input parameters cannot be used for both its arguments at the same time. In such case, calculate the modulus in Java code first and pass the result to the query instead.
+ * <li> When input parameters are used as arguments to the TRIM function, they are substituted with their values before the SQL statement is sent to the JDBC driver. 
+ * <li> When an input parameter is used as argument to the UPPER, LOWER or LENGTH functions, it is substituted with its value before the SQL statement is sent to the JDBC driver.
+ * </ul>
+ * <p/>
+ *  
  *  @author Dies Koper
  *  @author Wu Jie
  *  @since EclipseLink 2.1

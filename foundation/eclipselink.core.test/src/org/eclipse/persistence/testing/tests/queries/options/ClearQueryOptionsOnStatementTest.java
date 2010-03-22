@@ -180,7 +180,7 @@ public class ClearQueryOptionsOnStatementTest extends AutoVerifyTestCase {
     public void testQueryTimeoutReset(Session session) {
         if (getSession().getPlatform().isSymfoware()) {
             throwWarning("Test testQueryTimeoutReset skipped for this platform, "
-                    + "the driver does not support query timeout.");
+                    + "the driver does not support query timeout. (bug 304905)");
         }
         boolean query1TimedOut = false;
         boolean query2TimedOut = false;
