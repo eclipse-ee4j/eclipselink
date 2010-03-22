@@ -22,8 +22,10 @@ import java.util.Vector;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.GeneratedValue;
+import javax.persistence.JoinColumn;
 import javax.persistence.NamedNativeQuery;
 import javax.persistence.OneToMany;
+import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import javax.persistence.TableGenerator;
 
@@ -55,6 +57,7 @@ import org.eclipse.persistence.annotations.PrivateOwned;
 public class Department implements Serializable {
     private Integer id;
     private String name;
+    private Employee departmentHead;
 
     private Collection<Employee> employees;
     private Collection<Employee> managers;
@@ -135,4 +138,15 @@ public class Department implements Serializable {
     public void setName(String name) {
         this.name = name;
     }
+    
+    @OneToOne(optional=true)
+    @JoinColumn(name="DEPT_HEAD", nullable=true)
+    public Employee getDepartmentHead() {
+        return this.departmentHead;
+    }
+    
+    public void setDepartmentHead(Employee employee) {
+        this.departmentHead = employee;
+    }
+
 }
