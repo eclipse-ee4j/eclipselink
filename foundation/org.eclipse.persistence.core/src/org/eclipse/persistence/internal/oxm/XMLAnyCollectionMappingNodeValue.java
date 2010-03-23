@@ -183,7 +183,7 @@ public class XMLAnyCollectionMappingNodeValue extends XMLRelationshipMappingNode
     }
     
     protected void setOrAddAttributeValue(UnmarshalRecord unmarshalRecord, Object value, XPathFragment xPathFragment, Object collection){
-        if (!xmlAnyCollectionMapping.usesXMLRoot()) {
+        if (!xmlAnyCollectionMapping.usesXMLRoot() || xPathFragment.getLocalName() == null) {
             unmarshalRecord.addAttributeValue(this, value);
         } else {
             XMLRoot xmlRoot = new XMLRoot();

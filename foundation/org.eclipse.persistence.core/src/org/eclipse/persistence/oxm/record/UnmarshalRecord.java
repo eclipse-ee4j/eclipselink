@@ -112,6 +112,7 @@ public class UnmarshalRecord extends XMLRecord implements ContentHandler, Lexica
     private UnmarshalContext unmarshalContext;
     private UnmarshalNamespaceResolver unmarshalNamespaceResolver;
     private boolean isXsiNil;
+    private boolean xpathNodeIsMixedContent = false;
 
     protected List<UnmarshalRecord> childRecordPool;
 
@@ -593,7 +594,8 @@ public class UnmarshalRecord extends XMLRecord implements ContentHandler, Lexica
     		initializeRecord(atts);
     	}
     	
-        if(null != xPathNode.getXPathFragment() && xPathNode.getXPathFragment().nameIsText()) {
+        if((null != xPathNode.getXPathFragment() && xPathNode.getXPathFragment().nameIsText()) || xpathNodeIsMixedContent) {
+            xpathNodeIsMixedContent = false;
             if (null != xPathNode.getUnmarshalNodeValue()) {
                 xPathNode.getUnmarshalNodeValue().endElement(xPathFragment, this);
                 if (xPathNode.getParent() != null) {
@@ -787,6 +789,7 @@ public class UnmarshalRecord extends XMLRecord implements ContentHandler, Lexica
                 xPathNode = xPathNode.getParent();
             }
 
+            xpathNodeIsMixedContent = false;
             unmarshalContext.endElement(this);
 
             typeQName = null;
@@ -829,6 +832,9 @@ public class UnmarshalRecord extends XMLRecord implements ContentHandler, Lexica
             if (null == textNode) {
                 textNode = xPathNode.getAnyNode();
                 if (textNode != null) {
+                    xpathNodeIsMixedContent = true;
+                    this.xPathFragment.setLocalName(null);
+                    this.xPathFragment.setNamespaceURI(null);
                     if (0 == length) {
                         return;
                     }
