@@ -728,6 +728,14 @@ public class MappingsGenerator {
         XMLCompositeObjectMapping mapping = new XMLCompositeObjectMapping();
        
         mapping.setAttributeName(property.getPropertyName());
+        // handle read-only set via metadata
+        if (property.isSetReadOnly()) {
+            mapping.setIsReadOnly(property.isReadOnly());
+        }
+        // handle write-only set via metadata
+        if (property.isSetWriteOnly()) {
+            mapping.setIsWriteOnly(property.isWriteOnly());
+        }
         if (property.isMethodProperty()) {
             if (property.getGetMethodName() == null) {
                 // handle case of set with no get method 
@@ -743,31 +751,39 @@ public class MappingsGenerator {
                 mapping.setGetMethodName(property.getGetMethodName());
             }
         }
-        if(property.isNillable()){
+        // if the XPath is set (via xml-path) use it; otherwise figure it out
+        if (property.getXmlPath() != null) {
+            mapping.setField(new XMLField(property.getXmlPath()));
+        } else {
+            mapping.setXPath(getXPathForField(property, namespaceInfo, false).getXPath());
+        }
+        // handle null policy set via xml metadata
+        if (property.isSetNullPolicy()) {
+            mapping.setNullPolicy(getNullPolicyFromProperty(property, namespaceInfo.getNamespaceResolverForDescriptor()));
+        } else if (property.isNillable()){
             mapping.getNullPolicy().setNullRepresentedByXsiNil(true);
         }
-        mapping.setXPath(getXPathForField(property, namespaceInfo, false).getXPath());
         
-        if(referenceClassName == null){
+        if (referenceClassName == null){
         	((XMLField)mapping.getField()).setIsTypedTextField(true);        	
         	((XMLField)mapping.getField()).setSchemaType(XMLConstants.ANY_TYPE_QNAME);
         	String defaultValue = property.getDefaultValue();
-        	if(null != defaultValue) {
+        	if (null != defaultValue) {
         	    mapping.setConverter(new DefaultElementConverter(defaultValue));
         	}
-        }else{
+        } else {
         	mapping.setReferenceClassName(referenceClassName);
         }
                 
-        if(property.getInverseReferencePropertyName() != null) {
+        if (property.getInverseReferencePropertyName() != null) {
             mapping.setContainerAttributeName(property.getInverseReferencePropertyName());
             JavaClass backPointerPropertyType = null;
             JavaClass referenceClass = property.getActualType();
-            if(property.getInverseReferencePropertyGetMethodName() != null && property.getInverseReferencePropertySetMethodName() != null && !property.getInverseReferencePropertyGetMethodName().equals("") && !property.getInverseReferencePropertySetMethodName().equals("")) {
+            if (property.getInverseReferencePropertyGetMethodName() != null && property.getInverseReferencePropertySetMethodName() != null && !property.getInverseReferencePropertyGetMethodName().equals("") && !property.getInverseReferencePropertySetMethodName().equals("")) {
                 mapping.setContainerGetMethodName(property.getInverseReferencePropertySetMethodName());
                 mapping.setContainerSetMethodName(property.getInverseReferencePropertySetMethodName());
                 JavaMethod getMethod = referenceClass.getDeclaredMethod(mapping.getContainerGetMethodName(), new JavaClass[]{});
-                if(getMethod != null) {
+                if (getMethod != null) {
                     backPointerPropertyType = getMethod.getReturnType();
                 }
             } else {
@@ -776,7 +792,7 @@ public class MappingsGenerator {
                     backPointerPropertyType = backpointerField.getResolvedType();
                 }
             }
-            if(isCollectionType(backPointerPropertyType)) {
+            if (isCollectionType(backPointerPropertyType)) {
                 mapping.getInverseReferenceMapping().setContainerPolicy(ContainerPolicy.buildDefaultPolicy());
             }
         }
@@ -1848,10 +1864,6 @@ public class MappingsGenerator {
             return field;
         }
         QName elementName = property.getSchemaName();
-        // handle positional
-//        if (property.isPositional()) {
-//            elementName = new QName(elementName.getNamespaceURI(), elementName.getLocalPart() + property.getPositionText(), elementName.getPrefix()); 
-//        }
         xmlField = getXPathForElement(xPath, elementName, namespaceInfo, isTextMapping);
 
         QName schemaType = (QName) userDefinedSchemaTypes.get(property.getType().getQualifiedName());

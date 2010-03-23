@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<employee foodata="myfoo">
+    <info>
+        <contact-info>
+            <home-address>
+                <city>Kanata</city>
+                <street>66 Lakview Drive</street>
+                <province>ON</province>
+                <postalCode>K2M2K7</postalCode>
+            </home-address>
+            <work-address>
+                <city>Ottawa</city>
+                <street>45 O'Connor St.</street>
+                <province>ON</province>
+                <postalCode>K1P1A4</postalCode>
+            </work-address>
+            <phone>
+                <number>613.288.0001</number>
+            </phone>
+            <phone>
+                <number>613.288.0002</number>
+            </phone>
+        </contact-info>
+    </info>
+    <private-phone>
+        <number>000.000.0000</number>
+    </private-phone>
+    <deptId>101</deptId>
+    <deptName>Sanitation</deptName>
+    <a-dept />
+</employee>
