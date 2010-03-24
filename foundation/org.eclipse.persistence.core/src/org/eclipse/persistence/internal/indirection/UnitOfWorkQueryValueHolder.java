@@ -41,14 +41,14 @@ public class UnitOfWorkQueryValueHolder extends UnitOfWorkValueHolder {
      * Backup the clone attribute value.
      */
     protected Object buildBackupCloneFor(Object cloneAttributeValue) {
-        return getMapping().buildBackupCloneForPartObject(cloneAttributeValue, null, null, getUnitOfWork());
+        return this.mapping.buildBackupCloneForPartObject(cloneAttributeValue, null, null, getUnitOfWork());
     }
 
     /**
      * Clone the original attribute value.
      */
     public Object buildCloneFor(Object originalAttributeValue) {
-        return getMapping().buildCloneForPartObject(originalAttributeValue, null, this.relationshipSourceObject, getUnitOfWork(), true);
+        return this.mapping.buildCloneForPartObject(originalAttributeValue, null, this.relationshipSourceObject, getUnitOfWork(), true);
     }
 
     /**
@@ -56,7 +56,7 @@ public class UnitOfWorkQueryValueHolder extends UnitOfWorkValueHolder {
      */
     public void setValue(Object theValue) {
         // Must force instantiation to be able to compare with the old value.
-        if (!isInstantiated()) {
+        if (!this.isInstantiated) {
             instantiate();
         }
         Object oldValue = getValue();

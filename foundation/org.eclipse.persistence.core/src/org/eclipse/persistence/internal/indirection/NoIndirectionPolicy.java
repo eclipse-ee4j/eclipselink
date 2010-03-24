@@ -277,7 +277,7 @@ public class NoIndirectionPolicy extends IndirectionPolicy {
      * In this case, extract the result from the query.
      */
     public Object valueFromBatchQuery(ReadQuery batchQuery, AbstractRecord row, ObjectLevelReadQuery originalQuery) {
-        return getForeignReferenceMapping().extractResultFromBatchQuery(batchQuery, row, originalQuery.getSession(), originalQuery.getTranslationRow());
+        return getForeignReferenceMapping().extractResultFromBatchQuery(batchQuery, row, originalQuery.getSession(), originalQuery);
     }
 
     /**

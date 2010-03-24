@@ -125,11 +125,11 @@ public abstract class AbstractRecord implements Record, Cloneable, Serializable,
      * INTERNAL:
      * Clone the row and its values.
      */
-    public Object clone() {
+    public AbstractRecord clone() {
         try {
             AbstractRecord clone = (AbstractRecord)super.clone();
-            clone.setFields((Vector)getFields().clone());
-            clone.setValues((Vector)getValues().clone());
+            clone.fields = (Vector)this.fields.clone();
+            clone.values = (Vector)this.values.clone();
             return clone;
         } catch (CloneNotSupportedException exception) {
             throw new InternalError();

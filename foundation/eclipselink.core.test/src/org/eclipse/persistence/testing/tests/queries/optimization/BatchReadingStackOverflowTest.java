@@ -33,6 +33,7 @@ public class BatchReadingStackOverflowTest extends TestCase {
     
     public BatchReadingStackOverflowTest(BatchFetchType batchType) {
         this.batchType = batchType;
+        setName(getName() + batchType);
     }
     
     protected void setup() throws Throwable {

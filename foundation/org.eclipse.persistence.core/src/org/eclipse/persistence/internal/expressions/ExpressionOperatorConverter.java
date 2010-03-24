@@ -36,7 +36,7 @@ public class ExpressionOperatorConverter extends ObjectTypeConverter  {
     public Object convertObjectValueToDataValue(Object attributeValue, Session session) {
         Object fieldValue;
         if (attributeValue == null) {
-            fieldValue = getAttributeToFieldValues().get(Helper.getNullWrapper());
+            fieldValue = getAttributeToFieldValues().get(Helper.NULL_VALUE);
         } else {
             fieldValue = getAttributeToFieldValues().get(attributeValue);
             if (fieldValue == null) {
@@ -60,7 +60,7 @@ public class ExpressionOperatorConverter extends ObjectTypeConverter  {
         Object attributeValue = null;
 
         if (fieldValue == null) {
-            attributeValue = getFieldToAttributeValues().get(Helper.getNullWrapper());
+            attributeValue = getFieldToAttributeValues().get(Helper.NULL_VALUE);
         } else {
             try {
                 fieldValue = ((AbstractSession)session).getDatasourcePlatform().getConversionManager().convertObject(fieldValue, getFieldClassification());

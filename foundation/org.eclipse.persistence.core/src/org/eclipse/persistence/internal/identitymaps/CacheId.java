@@ -200,7 +200,7 @@ public class CacheId implements Serializable, Comparable<CacheId> {
                         return compareTo;
                     }
                 } catch (Exception exception) {
-                    return -1;
+                    return 0;
                 }
             }
             return 0;

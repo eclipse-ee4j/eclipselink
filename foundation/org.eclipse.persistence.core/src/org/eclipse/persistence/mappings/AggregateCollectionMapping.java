@@ -836,7 +836,7 @@ public class AggregateCollectionMapping extends CollectionMapping implements Rel
     
     protected int objectChangedListOrderDuringUpdate(WriteObjectQuery query, int iMin, int iMax, int iShift) {
         DataModifyQuery updateQuery;
-        AbstractRecord translationRow = (AbstractRecord)query.getTranslationRow().clone();
+        AbstractRecord translationRow = query.getTranslationRow().clone();
         translationRow.put(min, iMin);
         if(iMin == iMax) {
             translationRow.put(this.listOrderField, iMin + iShift);
@@ -850,7 +850,7 @@ public class AggregateCollectionMapping extends CollectionMapping implements Rel
     }
 
     protected int objectChangedListOrderDuringUpdate(WriteObjectQuery query, Object key, int newOrderValue) {
-        AbstractRecord translationRow = (AbstractRecord)query.getTranslationRow().clone();
+        AbstractRecord translationRow = query.getTranslationRow().clone();
         translationRow.put(this.listOrderField, newOrderValue);
         getReferenceDescriptor().getObjectBuilder().writeIntoRowFromPrimaryKeyValues(translationRow, key, query.getSession(), true);
         return (Integer)query.getSession().executeQuery(this.pkUpdateListOrderFieldQuery, translationRow);
@@ -992,22 +992,21 @@ public class AggregateCollectionMapping extends CollectionMapping implements Rel
      * Extract the source primary key value from the target row.
      * Used for batch reading, most following same order and fields as in the mapping.
      */
+    @Override
     protected Object extractKeyFromTargetRow(AbstractRecord row, AbstractSession session) {
         int size = this.targetForeignKeyFields.size();
         Object[] key = new Object[size];
-
+        ConversionManager conversionManager = session.getDatasourcePlatform().getConversionManager();
         for (int index = 0; index < size; index++) {
             DatabaseField targetField = this.targetForeignKeyFields.get(index);
             DatabaseField sourceField = this.sourceKeyFields.get(index);
             Object value = row.get(targetField);
-
             // Must ensure the classification gets a cache hit.
             try {
-                value = session.getDatasourcePlatform().getConversionManager().convertObject(value, this.descriptor.getObjectBuilder().getFieldClassification(sourceField));
+                value = conversionManager.convertObject(value, sourceField.getType());
             } catch (ConversionException e) {
                 throw ConversionException.couldNotBeConverted(this, getDescriptor(), e);
             }
-
             key[index] = value;
         }
         return new CacheId(key);
@@ -1018,26 +1017,36 @@ public class AggregateCollectionMapping extends CollectionMapping implements Rel
      * Extract the primary key value from the source row.
      * Used for batch reading, most following same order and fields as in the mapping.
      */
-    protected Object extractPrimaryKeyFromRow(AbstractRecord row, AbstractSession session) {
+    @Override
+    protected Object extractBatchKeyFromRow(AbstractRecord row, AbstractSession session) {
         int size = this.sourceKeyFields.size();
         Object[] key = new Object[size];
         ConversionManager conversionManager = session.getDatasourcePlatform().getConversionManager();
-
         for (int index = 0; index < size; index++) {
             DatabaseField field = this.sourceKeyFields.get(index);
             Object value = row.get(field);
-
             // Must ensure the classification gets a cache hit.
             try {
-                value = conversionManager.convertObject(value, this.descriptor.getObjectBuilder().getFieldClassification(field));
-            } catch (ConversionException e) {
-                throw ConversionException.couldNotBeConverted(this, getDescriptor(), e);
+                value = conversionManager.convertObject(value, field.getType());
+            } catch (ConversionException exception) {
+                throw ConversionException.couldNotBeConverted(this, this.descriptor, exception);
             }
-
             key[index] = value;
-        }
-        
+        }        
         return new CacheId(key);
+    }
+    
+    /**
+     * INTERNAL:
+     * Return the selection criteria used to IN batch fetching.
+     */
+    @Override
+    protected Expression buildBatchCriteria(ExpressionBuilder builder, ObjectLevelReadQuery query) {
+        if (this.targetForeignKeyFields.size() != 1) {
+            throw QueryException.batchReadingInRequiresSingletonPrimaryKey(query);
+        }
+        return builder.getField(this.targetForeignKeyFields.get(0)).in(
+                builder.getParameter(ForeignReferenceMapping.QUERY_BATCH_PARAMETER));
     }
 
     /**
@@ -2295,7 +2304,7 @@ public class AggregateCollectionMapping extends CollectionMapping implements Rel
         // The fix works by passing foreign key information between source and target queries via the translation row.
         // Must clone the row first, for due to prior optimizations the vector of fields is now part of
         // a prepared query!
-        row = (AbstractRecord)row.clone();
+        row = row.clone();
         int i = 0;
         for (Enumeration sourceKeys = getSourceKeyFields().elements();
                  sourceKeys.hasMoreElements(); i++) {

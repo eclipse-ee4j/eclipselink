@@ -26,6 +26,7 @@ public class NestedBatchReadingTest extends TestCase {
     public NestedBatchReadingTest(BatchFetchType batchType) {
         setDescription("Tests batch reading nesting across two 1-m mappings, polcies and claims");
         this.batchType = batchType;
+        setName(getName() + batchType);
     }
 
     public void setup() {

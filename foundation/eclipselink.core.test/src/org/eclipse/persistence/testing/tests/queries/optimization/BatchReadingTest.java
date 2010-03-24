@@ -14,6 +14,7 @@ package org.eclipse.persistence.testing.tests.queries.optimization;
 
 import java.util.*;
 
+import org.eclipse.persistence.annotations.BatchFetchType;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.queries.*;
 import org.eclipse.persistence.tools.schemaframework.*;
@@ -22,10 +23,13 @@ import org.eclipse.persistence.testing.framework.*;
 import org.eclipse.persistence.testing.models.collections.Restaurant;
 
 public class BatchReadingTest extends TestCase {
+    BatchFetchType batchType;
 
     public Vector result;
 
-    public BatchReadingTest() {
+    public BatchReadingTest(BatchFetchType batchType) {
+        this.batchType = batchType;
+        setName(getName() + batchType);
     }
 
     public void setup() {

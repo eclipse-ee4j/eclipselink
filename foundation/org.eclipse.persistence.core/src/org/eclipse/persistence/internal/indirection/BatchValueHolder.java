@@ -14,6 +14,7 @@ package org.eclipse.persistence.internal.indirection;
 
 import org.eclipse.persistence.internal.sessions.AbstractRecord;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
+import org.eclipse.persistence.internal.sessions.UnitOfWorkImpl;
 import org.eclipse.persistence.mappings.*;
 import org.eclipse.persistence.queries.*;
 import org.eclipse.persistence.exceptions.*;
@@ -27,7 +28,7 @@ import org.eclipse.persistence.exceptions.*;
  */
 public class BatchValueHolder extends QueryBasedValueHolder {
     protected transient ForeignReferenceMapping mapping;
-    protected transient AbstractRecord argumentRow;
+    protected transient ObjectLevelReadQuery originalQuery;
 
     /**
      * Initialize the query-based value holder.
@@ -35,14 +36,10 @@ public class BatchValueHolder extends QueryBasedValueHolder {
      * @param row The row representation of the object.
      * @param mapping The mapping that is uses batch reading.
      */
-    public BatchValueHolder(ReadQuery query, AbstractRecord row, ForeignReferenceMapping mapping, DatabaseQuery originalQuery) {
+    public BatchValueHolder(ReadQuery query, AbstractRecord row, ForeignReferenceMapping mapping, ObjectLevelReadQuery originalQuery) {
         super(query, row, originalQuery.getSession());
         this.mapping = mapping;
-        this.argumentRow = originalQuery.getTranslationRow();
-    }
-
-    protected AbstractRecord getArgumentRow() {
-        return argumentRow;
+        this.originalQuery = originalQuery;
     }
 
     protected ForeignReferenceMapping getMapping() {
@@ -55,7 +52,30 @@ public class BatchValueHolder extends QueryBasedValueHolder {
      * since they all share the same query, the extractResultFromBatchQuery method must be synchronized.
      */
     protected Object instantiate(AbstractSession session) throws EclipseLinkException {
-        return getMapping().extractResultFromBatchQuery(getQuery(), getRow(), session, getArgumentRow());
+        return this.mapping.extractResultFromBatchQuery(this.query, this.row, session, this.originalQuery);
+    }
+
+    /**
+     * Triggers UnitOfWork valueholders directly without triggering the wrapped
+     * valueholder (this).
+     * <p>
+     * When in transaction and/or for pessimistic locking the
+     * UnitOfWorkValueHolder needs to be triggered directly without triggering
+     * the wrapped valueholder. However only the wrapped valueholder knows how
+     * to trigger the indirection, i.e. it may be a batchValueHolder, and it
+     * stores all the info like the row and the query. Note: This method is not
+     * thread-safe. It must be used in a synchronized manner.
+     * The batch value holder must use a batch query relative to the unit of work,
+     * as the batch is local to the unit of work.
+     */
+    public Object instantiateForUnitOfWorkValueHolder(UnitOfWorkValueHolder unitOfWorkValueHolder) {
+        UnitOfWorkImpl unitOfWork = unitOfWorkValueHolder.getUnitOfWork();
+        ReadQuery localQuery = unitOfWork.getBatchQueries().get(this.query);
+        if (localQuery == null) {
+            localQuery = (ReadQuery)this.query.clone();
+            unitOfWork.getBatchQueries().put(this.query, localQuery);
+        }
+        return this.mapping.extractResultFromBatchQuery(localQuery, this.row, unitOfWorkValueHolder.getUnitOfWork(), this.originalQuery);
     }
 
     /**
@@ -64,7 +84,7 @@ public class BatchValueHolder extends QueryBasedValueHolder {
      * @return true if getValue() won't trigger a database read.
      */
     public boolean isEasilyInstantiated() {
-        return isInstantiated() || (getQuery().getProperty("batched objects") != null);
+        return this.isInstantiated;
     }
 
     /**
@@ -72,12 +92,8 @@ public class BatchValueHolder extends QueryBasedValueHolder {
      */
     protected void resetFields() {
         super.resetFields();
-        setArgumentRow(null);
-        setMapping(null);
-    }
-
-    protected void setArgumentRow(AbstractRecord argumentRow) {
-        this.argumentRow = argumentRow;
+        this.mapping = null;
+        this.originalQuery = null;
     }
 
     protected void setMapping(ForeignReferenceMapping mapping) {

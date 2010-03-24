@@ -117,6 +117,7 @@ public class DirectMapMapping extends DirectCollectionMapping implements MapComp
      * Require for cloning, the part must be cloned.
      * Ignore the objects, use the attribute value.
      */
+    @Override
     public Object buildCloneForPartObject(Object attributeValue, Object original, Object clone, UnitOfWorkImpl unitOfWork, boolean isExisting) {
         if (attributeValue == null) {
             return containerPolicy.containerInstance(1);
@@ -148,6 +149,7 @@ public class DirectMapMapping extends DirectCollectionMapping implements MapComp
      * as apposed to detected changes.  If an attribute can not be change tracked it's
      * changes can be detected through this process.
      */
+    @Override
     public void calculateDeferredChanges(ChangeRecord changeRecord, AbstractSession session) {
         DirectMapChangeRecord collectionRecord = (DirectMapChangeRecord)changeRecord;
         // TODO: Handle events that fired after collection was replaced.
@@ -159,6 +161,7 @@ public class DirectMapMapping extends DirectCollectionMapping implements MapComp
      * INTERNAL:
      * Cascade discover and persist new objects during commit.
      */
+    @Override
     public void cascadeDiscoverAndPersistUnregisteredNewObjects(Object object, Map newObjects, Map unregisteredExistingObjects, Map visitedObjects, UnitOfWorkImpl uow) {
         if (containerPolicy.isMappedKeyMapPolicy()){
             Object values = getAttributeValueFromObject(object);
@@ -174,6 +177,7 @@ public class DirectMapMapping extends DirectCollectionMapping implements MapComp
      * INTERNAL:
      * Cascade perform delete through mappings that require the cascade
      */
+    @Override
     public void cascadePerformRemoveIfRequired(Object object, UnitOfWorkImpl uow, Map visitedObjects) {
         if (containerPolicy.isMappedKeyMapPolicy()){
             Object values = getAttributeValueFromObject(object);
@@ -189,6 +193,7 @@ public class DirectMapMapping extends DirectCollectionMapping implements MapComp
      * INTERNAL:
      * Cascade registerNew for Create through mappings that require the cascade
      */
+    @Override
     public void cascadeRegisterNewIfRequired(Object object, UnitOfWorkImpl uow, Map visitedObjects) {
         if (containerPolicy.isMappedKeyMapPolicy()){
             Object values = getAttributeValueFromObject(object);
@@ -205,6 +210,7 @@ public class DirectMapMapping extends DirectCollectionMapping implements MapComp
      * This method compares the changes between two direct collections.  Comparisons are made on equality
      * not identity.
      */
+    @Override
     public ChangeRecord compareForChange(Object clone, Object backUp, ObjectChangeSet owner, AbstractSession session) {
         Object cloneAttribute = null;
         Object backUpAttribute = null;
@@ -259,6 +265,7 @@ public class DirectMapMapping extends DirectCollectionMapping implements MapComp
      * INTERNAL:
      * Compare the attributes belonging to this mapping for the objects.
      */
+    @Override
     public boolean compareObjects(Object firstObject, Object secondObject, AbstractSession session) {
         Object firstObjectMap = getRealCollectionAttributeValueFromObject(firstObject, session);
         Object secondObjectMap = getRealCollectionAttributeValueFromObject(secondObject, session);
@@ -289,6 +296,7 @@ public class DirectMapMapping extends DirectCollectionMapping implements MapComp
      * INTERNAL:
      * Initialize and validate the mapping properties.
      */
+    @Override
     public void initialize(AbstractSession session) throws DescriptorException {
         getDirectMapUsableContainerPolicy().setDescriptorForKeyMapping(this.getDescriptor());
         super.initialize(session);
@@ -298,6 +306,7 @@ public class DirectMapMapping extends DirectCollectionMapping implements MapComp
         }
     }
 
+    @Override
     protected void initializeDeleteQuery(AbstractSession session) {
         if (!getDeleteQuery().hasSessionName()) {
             getDeleteQuery().setSessionName(session.getName());
@@ -344,11 +353,13 @@ public class DirectMapMapping extends DirectCollectionMapping implements MapComp
      * Initialize insert query. This query is used to insert the collection of objects into the
      * reference table.
      */
+    @Override
     protected void initializeInsertQuery(AbstractSession session) {
         super.initializeInsertQuery(session);
         getContainerPolicy().addFieldsForMapKey(getInsertQuery().getModifyRow());
     }
 
+    @Override
     protected void initializeSelectionStatement(AbstractSession session) {
         if (selectionQuery.isReadAllQuery()){
             ((ReadAllQuery)selectionQuery).addAdditionalField((DatabaseField)getDirectField().clone());
@@ -370,6 +381,7 @@ public class DirectMapMapping extends DirectCollectionMapping implements MapComp
      * The value holder has already been processed.
      * PERF: Avoid iteration if not required.
      */
+    @Override
     public void iterateOnRealAttributeValue(DescriptorIterator iterator, Object realAttributeValue) {
         super.iterateOnRealAttributeValue(iterator, realAttributeValue);
         ContainerPolicy cp = getContainerPolicy();
@@ -385,6 +397,7 @@ public class DirectMapMapping extends DirectCollectionMapping implements MapComp
      * INTERNAL:
      * Iterate on the specified element.
      */
+    @Override
     public void iterateOnElement(DescriptorIterator iterator, Object element) {
         super.iterateOnElement(iterator, element);
         ContainerPolicy cp = getContainerPolicy();
@@ -398,6 +411,7 @@ public class DirectMapMapping extends DirectCollectionMapping implements MapComp
      * INTERNAL:
      * Related mapping should implement this method to return true.
      */
+    @Override
     public boolean isDirectMapMapping() {
         return true;
     }
@@ -408,6 +422,7 @@ public class DirectMapMapping extends DirectCollectionMapping implements MapComp
      * Because this is a collection mapping, values are added to or removed from the
      * collection based on the changeset.
      */
+    @Override
     public void mergeChangesIntoObject(Object target, ChangeRecord changeRecord, Object source, MergeManager mergeManager) {
         Map valueOfTarget = null;
         AbstractSession session = mergeManager.getSession();
@@ -470,6 +485,7 @@ public class DirectMapMapping extends DirectCollectionMapping implements MapComp
      * INTERNAL:
      * Merge changes from the source to the target object.
      */
+    @Override
     public void mergeIntoObject(Object target, boolean isTargetUnInitialized, Object source, MergeManager mergeManager) {
         if (isTargetUnInitialized) {
             // This will happen if the target object was removed from the cache before the commit was attempted
@@ -559,6 +575,7 @@ public class DirectMapMapping extends DirectCollectionMapping implements MapComp
      * This is used in the uow to delay data modifications.
      * This is mostly dealt with in the superclass.  Private Owned deletes require extra functionality
      */
+    @Override
     public void performDataModificationEvent(Object[] event, AbstractSession session) throws DatabaseException, DescriptorException {
         super.performDataModificationEvent(event, session);
         if (event[0] == Delete && containerPolicy.shouldIncludeKeyInDeleteEvent()) {
@@ -588,6 +605,7 @@ public class DirectMapMapping extends DirectCollectionMapping implements MapComp
      * INTERNAL:
      * Insert the private owned object.
      */
+    @Override
     public void postInsert(WriteObjectQuery query) throws DatabaseException {
         Object objects;
         AbstractRecord databaseRow = new DatabaseRecord();
@@ -637,6 +655,7 @@ public class DirectMapMapping extends DirectCollectionMapping implements MapComp
      * INTERNAL:
      * Update private owned part.
      */
+    @Override
     protected void postUpdateWithChangeSet(WriteObjectQuery writeQuery) throws DatabaseException {
         ObjectChangeSet changeSet = writeQuery.getObjectChangeSet();
         DirectMapChangeRecord changeRecord = (DirectMapChangeRecord)changeSet.getChangesForAttributeNamed(this.getAttributeName());
@@ -652,7 +671,7 @@ public class DirectMapMapping extends DirectCollectionMapping implements MapComp
         for (Iterator iterator = changeRecord.getRemoveObjects().entrySet().iterator();
                  iterator.hasNext();) {
             Object entry = iterator.next();
-            AbstractRecord thisRow = (AbstractRecord)writeQuery.getTranslationRow().clone();
+            AbstractRecord thisRow = writeQuery.getTranslationRow().clone();
             ContainerPolicy.copyMapDataToRow(containerPolicy.getKeyMappingDataForWriteQuery(entry, writeQuery.getSession()), thisRow);
             // Hey I might actually want to use an inner class here... ok array for now.
             Object[] event = null;
@@ -670,7 +689,7 @@ public class DirectMapMapping extends DirectCollectionMapping implements MapComp
         for (Iterator iterator = changeRecord.getAddObjects().entrySet().iterator();
                  iterator.hasNext();) {
             Map.Entry entry = (Map.Entry)iterator.next();
-            AbstractRecord thisRow = (AbstractRecord)writeQuery.getTranslationRow().clone();
+            AbstractRecord thisRow = writeQuery.getTranslationRow().clone();
             Object value = changeRecord.getAddObjects().get(entry.getKey());
             value = getFieldValue(value, writeQuery.getSession());
             ContainerPolicy.copyMapDataToRow(this.containerPolicy.getKeyMappingDataForWriteQuery(entry, writeQuery.getSession()), thisRow);
@@ -688,6 +707,7 @@ public class DirectMapMapping extends DirectCollectionMapping implements MapComp
      * INTERNAL:
      * Propagate the preDelete event through the container policy if necessary
      */
+    @Override
     public void preDelete(DeleteObjectQuery query) throws DatabaseException {
         if (getContainerPolicy().propagatesEventsToCollection()){
             Object queryObject = query.getObject();
@@ -705,6 +725,7 @@ public class DirectMapMapping extends DirectCollectionMapping implements MapComp
      * INTERNAL:
      * Rebuild select query.
      */
+    @Override
     protected void initOrRebuildSelectQuery() {        
         this.selectionQuery = containerPolicy.buildSelectionQueryForDirectCollectionMapping();
     }
@@ -772,6 +793,7 @@ public class DirectMapMapping extends DirectCollectionMapping implements MapComp
      * Either create a new change record or update the change record with the new value.
      * This is used by attribute change tracking.
      */
+    @Override
     public void updateChangeRecord(Object clone, Object newValue, Object oldValue, ObjectChangeSet objectChangeSet, UnitOfWorkImpl uow) throws DescriptorException {
         DirectMapChangeRecord collectionChangeRecord = (DirectMapChangeRecord)objectChangeSet.getChangesForAttributeNamed(this.getAttributeName());
         if (collectionChangeRecord == null) {
@@ -794,6 +816,7 @@ public class DirectMapMapping extends DirectCollectionMapping implements MapComp
      * Add or removes a new value and its change set to the collection change record based on the event passed in.  This is used by
      * attribute change tracking.
      */
+    @Override
     public void updateCollectionChangeRecord(CollectionChangeEvent event, ObjectChangeSet changeSet, UnitOfWorkImpl uow) {
         if (event != null ) {
             //Letting the mapping create and add the ChangeSet to the ChangeRecord rather 
@@ -885,6 +908,7 @@ public class DirectMapMapping extends DirectCollectionMapping implements MapComp
      * This method is used to have an object add to a collection once the changeSet is applied
      * The referenceKey parameter should only be used for direct Maps.
      */
+    @Override
     public void simpleAddToCollectionChangeRecord(Object referenceKey, Object objectToAdd, ObjectChangeSet changeSet, AbstractSession session) {
         DirectMapChangeRecord collectionChangeRecord = (DirectMapChangeRecord)changeSet.getChangesForAttributeNamed(getAttributeName());
         if (collectionChangeRecord == null) {
@@ -907,6 +931,7 @@ public class DirectMapMapping extends DirectCollectionMapping implements MapComp
      * This method is used to have an object removed from a collection once the changeSet is applied
      * The referenceKey parameter should only be used for direct Maps.
      */
+    @Override
     public void simpleRemoveFromCollectionChangeRecord(Object referenceKey, Object objectToRemove, ObjectChangeSet changeSet, AbstractSession session) {
         DirectMapChangeRecord collectionChangeRecord = (DirectMapChangeRecord)changeSet.getChangesForAttributeNamed(getAttributeName());
         if (collectionChangeRecord == null) {
@@ -939,57 +964,37 @@ public class DirectMapMapping extends DirectCollectionMapping implements MapComp
 
     /**
      * INTERNAL:
-     * Overwrite super method.
+     * Prepare and execute the batch query and store the
+     * results for each source object in a map keyed by the
+     * mappings source keys of the source objects.
      */
     @Override
-    public Object extractResultFromBatchQuery(DatabaseQuery query, AbstractRecord databaseRow, AbstractSession session, AbstractRecord argumentRow) {
-        //this can be null, because either one exists in the query or it will be created
-        Map<Object, Object> referenceDataByKey = null;
-        ContainerPolicy mappingContainerPolicy = getContainerPolicy();
-        synchronized (query) {
-            referenceDataByKey = getBatchReadObjects(query, session);
-            mappingContainerPolicy = getContainerPolicy();
-            if (referenceDataByKey == null) {
-                
-                List<AbstractRecord> rows = (List)session.executeQuery(query, argumentRow);
-                referenceDataByKey = new Hashtable();
-
-                for (AbstractRecord referenceRow : rows) {
-                    Object referenceKey = null;
-                    if (query.isObjectBuildingQuery()){
-                        referenceKey = getDirectMapUsableContainerPolicy().buildKey(databaseRow, (ObjectBuildingQuery)query, session);
-                    } else {
-                        referenceKey = getDirectMapUsableContainerPolicy().buildKey(databaseRow, null, session);
-                    }
-                    Object referenceValue = referenceRow.get(getDirectField());
-                    Object eachCacheKey = extractKeyFromTargetRow(referenceRow, session);
-
-                    Object container = referenceDataByKey.get(eachCacheKey);
-                    if (container == null) {
-                        container = mappingContainerPolicy.containerInstance();
-                        referenceDataByKey.put(eachCacheKey, container);
-                    }
-
-                    // Allow for value conversion.
-                    if (getValueConverter() != null) {
-                        referenceValue = getValueConverter().convertDataValueToObjectValue(referenceValue, query.getSession());
-                    }
-
-                    mappingContainerPolicy.addInto(referenceKey, referenceValue, container, query.getSession());
-                }
-
-                query.setProperty("batched objects", referenceDataByKey);
-                query.setSession(null);
-                
+    protected void executeBatchQuery(DatabaseQuery query, Map referenceDataByKey, AbstractSession session, AbstractRecord translationRow) {
+        // Execute query and index resulting object sets by key.                
+        List<AbstractRecord> rows = (List)session.executeQuery(query, translationRow);
+        DirectMapUsableContainerPolicy mapContainerPolicy = getDirectMapUsableContainerPolicy();
+        for (AbstractRecord referenceRow : rows) {
+            Object referenceKey = null;
+            if (query.isObjectBuildingQuery()){
+                referenceKey = mapContainerPolicy.buildKey(referenceRow, (ObjectBuildingQuery)query, session);
+            } else {
+                referenceKey = mapContainerPolicy.buildKey(referenceRow, null, session);
             }
-        }
-        Object result = referenceDataByKey.get(extractPrimaryKeyFromRow(databaseRow, session));
+            Object referenceValue = referenceRow.get(this.directField);
+            Object eachCacheKey = extractKeyFromTargetRow(referenceRow, session);
 
-        // The source object might not have any target objects
-        if (result == null) {
-            return mappingContainerPolicy.containerInstance();
-        } else {
-            return result;
+            Object container = referenceDataByKey.get(eachCacheKey);
+            if ((container == null) || (container == Helper.NULL_VALUE)) {
+                container = this.containerPolicy.containerInstance();
+                referenceDataByKey.put(eachCacheKey, container);
+            }
+
+            // Allow for value conversion.
+            if (this.valueConverter != null) {
+                referenceValue = this.valueConverter.convertDataValueToObjectValue(referenceValue, query.getSession());
+            }
+
+            this.containerPolicy.addInto(referenceKey, referenceValue, container, query.getSession());
         }
     }
     
@@ -997,6 +1002,7 @@ public class DirectMapMapping extends DirectCollectionMapping implements MapComp
      * INTERNAL:
      * Return the value of the field from the row or a value holder on the query to obtain the object.
      */
+    @Override
     protected Object valueFromRowInternalWithJoin(AbstractRecord row, JoinedAttributeManager joinManager, ObjectBuildingQuery sourceQuery, AbstractSession executionSession) throws DatabaseException {
 
         ContainerPolicy policy = getContainerPolicy();

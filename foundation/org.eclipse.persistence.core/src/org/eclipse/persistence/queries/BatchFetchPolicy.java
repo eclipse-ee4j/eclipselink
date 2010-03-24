@@ -14,6 +14,7 @@ package org.eclipse.persistence.queries;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -21,6 +22,7 @@ import org.eclipse.persistence.annotations.BatchFetchType;
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.expressions.Expression;
 import org.eclipse.persistence.internal.expressions.QueryKeyExpression;
+import org.eclipse.persistence.internal.sessions.AbstractRecord;
 import org.eclipse.persistence.mappings.DatabaseMapping;
 
 /**
@@ -33,13 +35,17 @@ public class BatchFetchPolicy implements Serializable, Cloneable {
     /** Define the type of batch fetching to use. */
     protected BatchFetchType type;
     /** Define the batch size for IN style batch fetching. */
-    protected int size;
+    protected int size = 100000;
     /** Define the attributes to be batch fetched. */
     protected List<Expression> attributeExpressions;
     /** PERF: Used internally to store the prepared mapping queries. */
     protected transient Map<DatabaseMapping, ReadQuery> mappingQueries;
     /** PERF: Cache the local batch read attribute names. */
     protected List<String> attributes;
+    /** Stores temporary list of rows from parent batch query per batched mapping. */
+    protected transient Map<Object, List<AbstractRecord>> dataResults;
+    /** Stores temporary map of batched objects (this queries results). */
+    protected transient Map<Object, Object> batchObjects;
 
     public BatchFetchPolicy() {
         this.type = BatchFetchType.JOIN;
@@ -50,11 +56,37 @@ public class BatchFetchPolicy implements Serializable, Cloneable {
     }
     
     public BatchFetchPolicy clone() {
+        BatchFetchPolicy clone = null;
         try {
-            return (BatchFetchPolicy)super.clone();
+            clone = (BatchFetchPolicy)super.clone();
         } catch (CloneNotSupportedException error) {
             throw new InternalError(error.getMessage());
         }
+        if (clone.dataResults != null) {
+            clone.dataResults.put(clone, clone.dataResults.get(this));
+        }
+        return clone;
+    }
+    
+    /**
+     * Return if using the IN fetch type.
+     */
+    public boolean isIN() {
+        return this.type == BatchFetchType.IN;
+    }
+    
+    /**
+     * Return if using the JOIN fetch type.
+     */
+    public boolean isJOIN() {
+        return this.type == BatchFetchType.JOIN;
+    }
+    
+    /**
+     * Return if using the EXISTS fetch type.
+     */
+    public boolean isEXISTS() {
+        return this.type == BatchFetchType.EXISTS;
     }
     
     /**
@@ -170,5 +202,87 @@ public class BatchFetchPolicy implements Serializable, Cloneable {
             return this.attributes.contains(attributeName);
         }
         return isAttributeBatchRead(attributeName);
+    }
+
+    /**
+     * INTERNAL:
+     * Add the row to the set of data results.
+     * This is used for IN batching in batches.
+     */
+    public void addDataResults(AbstractRecord row) {
+        if (this.dataResults == null) {
+            this.dataResults = new HashMap<Object, List<AbstractRecord>>();
+            this.dataResults.put(this, new ArrayList<AbstractRecord>());
+        }
+        for (List<AbstractRecord> results : this.dataResults.values()) {
+            results.add(row);
+        }
+    }
+
+    /**
+     * INTERNAL:
+     * Return the remaining data results for the mapping.
+     * This is used for IN batching in batches.
+     */
+    public List<AbstractRecord> getDataResults(DatabaseMapping mapping) {
+        List<AbstractRecord> result = this.dataResults.get(mapping);
+        if (result == null) {
+            result = this.dataResults.get(this);
+            this.dataResults.put(mapping, result);
+        }
+        return result;
+    }
+
+    /**
+     * INTERNAL:
+     * Set the remaining data results for the mapping.
+     * This is used for IN batching in batches.
+     */
+    public void setDataResults(DatabaseMapping mapping, List<AbstractRecord> rows) {
+        this.dataResults.put(mapping, rows);
+    }
+
+    /**
+     * INTERNAL:
+     * Set the rows to the set of data results for each mapping.
+     * This is used for IN batching in batches.
+     */
+    public void setDataResults(List<AbstractRecord> rows) {
+        this.dataResults = new HashMap<Object, List<AbstractRecord>>();
+        this.dataResults.put(this, rows);
+    }
+    
+    /**
+     * INTERNAL:
+     * Return temporary list of rows from parent batch query per batched mapping.
+     * This is used for IN batching in batches.
+     */
+    public Map<Object, List<AbstractRecord>> getDataResults() {
+        return this.dataResults;
+    }
+
+    /**
+     * INTERNAL:
+     * Set temporary list of rows from parent batch query per batched mapping.
+     * This is used for IN batching in batches.
+     */
+    public void setDataResults(Map<Object, List<AbstractRecord>> dataResults) {
+        this.dataResults = dataResults;
+    }
+
+    /**
+     * INTERNAL:
+     * Return temporary map of batched objects.
+     */
+    public Map<Object, Object> getBatchObjects() {
+        return batchObjects;
+    }
+
+    /**
+     * INTERNAL:
+     * Set temporary map of batched objects.
+     */
+    public void setBatchObjects(Map<Object, Object> batchObjects) {
+        this.batchObjects = batchObjects;
     }
 }

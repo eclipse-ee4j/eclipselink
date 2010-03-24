@@ -177,7 +177,8 @@ public class QueryException extends ValidationException {
     public final static int MAP_ENTRY_EXPRESSION_FOR_NON_MAP = 6161;
     public final static int LIST_ORDER_FIELD_WRONG_VALUE = 6162;
     public final static int INDEX_REQUIRES_QUERY_KEY_EXPRESSION = 6163;
-    public final static int INDEX_REQUIRES_COLLECTION_MAPPING_WITH_LIST_ORDER_FIELD = 6164;
+    public final static int INDEX_REQUIRES_COLLECTION_MAPPING_WITH_LIST_ORDER_FIELD = 6165;
+    public final static int BATCH_IN_REQUIRES_SINGLETON_PK = 6164;
 
     /**
      * INTERNAL:
@@ -1490,6 +1491,14 @@ public class QueryException extends ValidationException {
 
         QueryException queryException = new QueryException(ExceptionMessageGenerator.buildMessage(QueryException.class, INDEX_REQUIRES_COLLECTION_MAPPING_WITH_LIST_ORDER_FIELD, args));
         queryException.setErrorCode(INDEX_REQUIRES_COLLECTION_MAPPING_WITH_LIST_ORDER_FIELD);
+        return queryException;
+    }
+
+    public static QueryException batchReadingInRequiresSingletonPrimaryKey(DatabaseQuery query) {
+        Object[] args = {  };
+
+        QueryException queryException = new QueryException(ExceptionMessageGenerator.buildMessage(QueryException.class, BATCH_IN_REQUIRES_SINGLETON_PK, args), query);
+        queryException.setErrorCode(BATCH_IN_REQUIRES_SINGLETON_PK);
         return queryException;
     }
 

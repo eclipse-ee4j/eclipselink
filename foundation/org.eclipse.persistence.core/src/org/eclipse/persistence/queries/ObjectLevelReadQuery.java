@@ -353,19 +353,19 @@ public abstract class ObjectLevelReadQuery extends ObjectBuildingQuery {
 
         // Must also clone the joined expressions as always joined attribute will be added
         // don't use setters as this will trigger unprepare.
-        if (cloneQuery.hasJoining()) {
-            cloneQuery.joinedAttributeManager = cloneQuery.getJoinedAttributeManager().clone();
+        if (this.joinedAttributeManager != null) {
+            cloneQuery.joinedAttributeManager = this.joinedAttributeManager.clone();
             cloneQuery.joinedAttributeManager.setBaseQuery(cloneQuery);
         }
-        if (cloneQuery.hasBatchReadAttributes()) {
-            cloneQuery.batchFetchPolicy = cloneQuery.getBatchFetchPolicy().clone();
+        if (this.batchFetchPolicy != null) {
+            cloneQuery.batchFetchPolicy = this.batchFetchPolicy.clone();
         }
-        if (hasNonFetchJoinedAttributeExpressions()){
-            cloneQuery.setNonFetchJoinAttributeExpressions(new ArrayList<Expression>(this.nonFetchJoinAttributeExpressions));
+        if (this.nonFetchJoinAttributeExpressions != null){
+            cloneQuery.nonFetchJoinAttributeExpressions = new ArrayList<Expression>(this.nonFetchJoinAttributeExpressions);
         }
         // Don't use setters as that will trigger unprepare
-        if (hasOrderByExpressions()) {
-            cloneQuery.orderByExpressions = new ArrayList<Expression>(getOrderByExpressions());
+        if (this.orderByExpressions != null) {
+            cloneQuery.orderByExpressions = new ArrayList<Expression>(this.orderByExpressions);
         }
         return cloneQuery;
     }
@@ -2886,5 +2886,21 @@ public abstract class ObjectLevelReadQuery extends ObjectBuildingQuery {
      */
     public void setBatchFetchSize(int size) {
         getBatchFetchPolicy().setSize(size);
+    }
+
+    /**
+     * INTERNAL:
+     * Return temporary map of batched objects.
+     */
+    public Map<Object, Object> getBatchObjects() {
+        return getBatchFetchPolicy().getBatchObjects();
+    }
+
+    /**
+     * INTERNAL:
+     * Set temporary map of batched objects.
+     */
+    public void setBatchObjects(Map<Object, Object> batchObjects) {
+        getBatchFetchPolicy().setBatchObjects(batchObjects);
     }
 }

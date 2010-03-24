@@ -43,7 +43,6 @@ import org.eclipse.persistence.mappings.DatabaseMapping;
 import org.eclipse.persistence.mappings.DirectMapMapping;
 import org.eclipse.persistence.mappings.DirectToFieldMapping;
 import org.eclipse.persistence.mappings.ForeignReferenceMapping;
-import org.eclipse.persistence.mappings.ObjectReferenceMapping;
 import org.eclipse.persistence.mappings.converters.Converter;
 import org.eclipse.persistence.mappings.foundation.MapKeyMapping;
 import org.eclipse.persistence.mappings.foundation.MapComponentMapping;
@@ -314,7 +313,6 @@ public class MappedKeyMapContainerPolicy extends MapContainerPolicy implements D
                 result[index] = keyMapping.createSerializableMapKeyInfo(entry.getKey(), session);
                 ++index;
                 CMPPolicy policy = elementDescriptor.getCMPPolicy();
-                Object pk = null;
                 if (policy != null && policy.isCMP3Policy()){
                     result[index] = policy.createPrimaryKeyInstance(entry.getValue(), session);
                 }else{

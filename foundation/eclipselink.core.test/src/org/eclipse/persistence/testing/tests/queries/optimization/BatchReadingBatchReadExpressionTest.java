@@ -35,6 +35,7 @@ public class BatchReadingBatchReadExpressionTest extends TestCase {
      */
     public BatchReadingBatchReadExpressionTest(BatchFetchType batchType) {
         this.batchType = batchType;
+        setName(getName() + batchType);
     }
 
     public void reset() {

@@ -19,7 +19,6 @@ import org.eclipse.persistence.expressions.*;
 import org.eclipse.persistence.history.*;
 import org.eclipse.persistence.internal.expressions.*;
 import org.eclipse.persistence.internal.helper.*;
-import org.eclipse.persistence.internal.identitymaps.CacheId;
 import org.eclipse.persistence.internal.queries.*;
 import org.eclipse.persistence.internal.sessions.*;
 import org.eclipse.persistence.mappings.foundation.MapComponentMapping;
@@ -177,26 +176,9 @@ public class ManyToManyMapping extends CollectionMapping implements RelationalMa
      * Extract the source primary key value from the relation row.
      * Used for batch reading, most following same order and fields as in the mapping.
      */
+    @Override
     protected Object extractKeyFromTargetRow(AbstractRecord row, AbstractSession session) {
-        int size = getSourceRelationKeyFields().size();
-        Object[] key = new Object[size];
-
-        for (int index = 0; index < size; index++) {
-            DatabaseField relationField = getSourceRelationKeyFields().elementAt(index);
-            DatabaseField sourceField = getSourceKeyFields().elementAt(index);
-            Object value = row.get(relationField);
-
-            // Must ensure the classification gets a cache hit.
-            try {
-                value = session.getDatasourcePlatform().getConversionManager().convertObject(value, getDescriptor().getObjectBuilder().getFieldClassification(sourceField));
-            } catch (ConversionException e) {
-                throw ConversionException.couldNotBeConverted(this, getDescriptor(), e);
-            }
-
-            key[index] = value;
-        }
-
-        return new CacheId(key);
+        return this.mechanism.extractKeyFromTargetRow(row, session);
     }
 
     /**
@@ -204,26 +186,18 @@ public class ManyToManyMapping extends CollectionMapping implements RelationalMa
      * Extract the primary key value from the source row.
      * Used for batch reading, most following same order and fields as in the mapping.
      */
-    protected Object extractPrimaryKeyFromRow(AbstractRecord row, AbstractSession session) {
-        int size = getSourceKeyFields().size();
-        Object[] key = new Object[size];
-        ConversionManager conversionManager = session.getDatasourcePlatform().getConversionManager();
-
-        for (int index = 0; index < size; index++) {
-            DatabaseField field = getSourceKeyFields().get(index);
-            Object value = row.get(field);
-
-            // Must ensure the classification gets a cache hit.
-            try {
-                value = conversionManager.convertObject(value, this.descriptor.getObjectBuilder().getFieldClassification(field));
-            } catch (ConversionException e) {
-                throw ConversionException.couldNotBeConverted(this, this.descriptor, e);
-            }
-
-            key[index] = value;
-        }
-        
-        return new CacheId(key);
+    @Override
+    protected Object extractBatchKeyFromRow(AbstractRecord row, AbstractSession session) {
+        return this.mechanism.extractBatchKeyFromRow(row, session);
+    }
+    
+    /**
+     * INTERNAL:
+     * Return the selection criteria used to IN batch fetching.
+     */
+    @Override
+    protected Expression buildBatchCriteria(ExpressionBuilder builder, ObjectLevelReadQuery query) {
+        return this.mechanism.buildBatchCriteria(builder, query);
     }
 
     /**
@@ -233,10 +207,7 @@ public class ManyToManyMapping extends CollectionMapping implements RelationalMa
     @Override
     protected void postPrepareNestedBatchQuery(ReadQuery batchQuery, ObjectLevelReadQuery query) {
         ReadAllQuery mappingBatchQuery = (ReadAllQuery)batchQuery;
-        mappingBatchQuery.setShouldIncludeData(true);
-        for (DatabaseField relationField : getSourceRelationKeyFields()) {
-            mappingBatchQuery.getAdditionalFields().add(mappingBatchQuery.getExpressionBuilder().getTable(getRelationTable()).getField(relationField));
-        }        
+        this.mechanism.postPrepareNestedBatchQuery(batchQuery, query);
         if (this.historyPolicy != null) {
             ExpressionBuilder builder = mappingBatchQuery.getExpressionBuilder();
             Expression twisted = batchQuery.getSelectionCriteria();

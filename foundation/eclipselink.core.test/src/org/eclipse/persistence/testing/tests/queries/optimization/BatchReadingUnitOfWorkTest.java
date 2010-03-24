@@ -30,6 +30,7 @@ public class BatchReadingUnitOfWorkTest extends TestCase {
     public BatchReadingUnitOfWorkTest(BatchFetchType batchType) {
         setDescription("This test verifies that batch reading works correctly in a unit of work.");
         this.batchType = batchType;
+        setName(getName() + batchType);
     }
 
     public void test() {

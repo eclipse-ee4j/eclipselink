@@ -353,7 +353,7 @@ public abstract class AbstractTransformationMapping extends DatabaseMapping {
      * Cascade registerNew for Create through mappings that require the cascade
      */
     public void cascadeRegisterNewIfRequired(Object object, UnitOfWorkImpl uow, Map visitedObjects){
-        //Objects referenced through transformation mappingsare not registered as
+        //Objects referenced through transformation mappings are not registered as
         // they have no identity, this is a no-op.
     }
  
@@ -361,6 +361,7 @@ public abstract class AbstractTransformationMapping extends DatabaseMapping {
      * INTERNAL:
      * The mapping clones itself to create deep copy.
      */
+    @Override
     public Object clone() {
         AbstractTransformationMapping clone = (AbstractTransformationMapping)super.clone();
         clone.setFieldToTransformers(org.eclipse.persistence.internal.helper.NonSynchronizedVector.newInstance(getFieldToTransformers().size() + 1));
@@ -382,6 +383,7 @@ public abstract class AbstractTransformationMapping extends DatabaseMapping {
      * INTERNAL:
      * Return all the fields with this mapping.
      */
+    @Override
     protected Vector collectFields() {
         Vector databaseFields = new Vector(getFieldToTransformers().size());
         for (Enumeration stream = getFieldToTransformers().elements(); stream.hasMoreElements();) {

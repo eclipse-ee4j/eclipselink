@@ -1854,7 +1854,7 @@ public class ProjectClassGenerator {
      * This must determine the class and use the correct constructor arguments.
      */
     protected String printString(Object value) {
-        if ((value == null) || (value == Helper.getNullWrapper())) {
+        if ((value == null) || (value == Helper.NULL_VALUE)) {
             return "null";
         }
 

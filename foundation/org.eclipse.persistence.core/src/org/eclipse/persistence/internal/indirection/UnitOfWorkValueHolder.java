@@ -107,7 +107,7 @@ public abstract class UnitOfWorkValueHolder extends DatabaseValueHolder {
     }
 
     protected UnitOfWorkImpl getUnitOfWork() {
-        return (UnitOfWorkImpl)getSession();
+        return (UnitOfWorkImpl)this.session;
     }
 
     /**
@@ -135,11 +135,11 @@ public abstract class UnitOfWorkValueHolder extends DatabaseValueHolder {
      * sometimes triggered directly without triggering the underlying valueholder.
      */
     protected Object instantiateImpl() {
-        if (getWrappedValueHolder() instanceof DatabaseValueHolder) {
+        if (this.wrappedValueHolder instanceof DatabaseValueHolder) {
             // Bug 3835202 - Ensure access to valueholders is thread safe.  Several of the methods
             // called below are not threadsafe alone.
-            synchronized(getWrappedValueHolder()){
-                DatabaseValueHolder wrapped = (DatabaseValueHolder)getWrappedValueHolder();
+            synchronized (this.wrappedValueHolder) {
+                DatabaseValueHolder wrapped = (DatabaseValueHolder)this.wrappedValueHolder;
                 UnitOfWorkImpl unitOfWork = getUnitOfWork();
                 if (!wrapped.isEasilyInstantiated()) {
                     if (wrapped.isPessimisticLockingValueHolder()) {
@@ -157,8 +157,7 @@ public abstract class UnitOfWorkValueHolder extends DatabaseValueHolder {
                 }
             }
         }
-        Object originalAttributeValue = getWrappedValueHolder().getValue();
-        return buildCloneFor(originalAttributeValue);
+        return buildCloneFor(this.wrappedValueHolder.getValue());
     }
 
     /**
@@ -167,7 +166,8 @@ public abstract class UnitOfWorkValueHolder extends DatabaseValueHolder {
      * @return true if getValue() won't trigger a database read.
      */
     public boolean isEasilyInstantiated() {
-        return isInstantiated() || ((getWrappedValueHolder() != null) && (getWrappedValueHolder() instanceof DatabaseValueHolder) && ((DatabaseValueHolder)getWrappedValueHolder()).isEasilyInstantiated());
+        return this.isInstantiated || ((this.wrappedValueHolder != null)
+                && (!(this.wrappedValueHolder instanceof DatabaseValueHolder)) || ((DatabaseValueHolder)this.wrappedValueHolder).isEasilyInstantiated());
     }
 
     /**
@@ -181,7 +181,7 @@ public abstract class UnitOfWorkValueHolder extends DatabaseValueHolder {
     public boolean isPessimisticLockingValueHolder() {
         // This abstract method needs to be implemented but is not meaningfull for
         // this subclass.
-        return ((getWrappedValueHolder() != null) && (getWrappedValueHolder() instanceof DatabaseValueHolder) && ((DatabaseValueHolder)getWrappedValueHolder()).isPessimisticLockingValueHolder());
+        return ((this.wrappedValueHolder != null) && (this.wrappedValueHolder instanceof DatabaseValueHolder) && ((DatabaseValueHolder)this.wrappedValueHolder).isPessimisticLockingValueHolder());
     }
 
     public ValueHolderInterface getWrappedValueHolder() {
@@ -200,7 +200,7 @@ public abstract class UnitOfWorkValueHolder extends DatabaseValueHolder {
      * It has no reference to its wrapper value holder, so must find its original object to be able to instantiate.
      */
     public boolean isSerializedRemoteUnitOfWorkValueHolder() {
-        return (getRemoteUnitOfWork() != null) && (getRemoteUnitOfWork().getParent() != null) && (getWrappedValueHolder() == null);
+        return (this.remoteUnitOfWork != null) && (this.remoteUnitOfWork.getParent() != null) && (this.wrappedValueHolder == null);
     }
     
     /**
@@ -209,30 +209,24 @@ public abstract class UnitOfWorkValueHolder extends DatabaseValueHolder {
      */
     protected Object instantiate() {
         UnitOfWorkImpl unitOfWork;
-        if (isSerializedRemoteUnitOfWorkValueHolder()) {
-            unitOfWork = getRemoteUnitOfWork();
-        } else {
-            unitOfWork = getUnitOfWork();
-        }
-        if (unitOfWork == null){
-            throw ValidationException.instantiatingValueholderWithNullSession();
-        }
-
         Object originalAttributeValue;
         Object cloneAttributeValue;
-
-        // the wrapped value holder is transient, so it will be null for a remote UOW
         if (isSerializedRemoteUnitOfWorkValueHolder()) {
+            unitOfWork = getRemoteUnitOfWork();
             originalAttributeValue = getValueFromServerObject();
             cloneAttributeValue = buildCloneFor(originalAttributeValue);
         } else {
+            unitOfWork = getUnitOfWork();
+            if (unitOfWork == null){
+                throw ValidationException.instantiatingValueholderWithNullSession();
+            }
             cloneAttributeValue = instantiateImpl();
         }
 
         // Set the value in the backup clone also.
         // In some cases we may want to force instantiation before the backup is built
-        if (getBackupValueHolder() != null) {
-            getBackupValueHolder().setValue(buildBackupCloneFor(cloneAttributeValue));
+        if (this.backupValueHolder != null) {
+            this.backupValueHolder.setValue(buildBackupCloneFor(cloneAttributeValue));
         }
         return cloneAttributeValue;
     }

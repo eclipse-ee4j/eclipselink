@@ -43,7 +43,7 @@ public class Helper implements Serializable {
     protected static boolean shouldOptimizeDates = false;
 
     /** Used to store null values in hashtables, is helper because need to be serializable. */
-    protected static final Object nullWrapper = new Helper();
+    public static final Object NULL_VALUE = new Helper();
 
     /** PERF: Used to cache a set of calendars for conversion/printing purposes. */
     protected static Queue<Calendar> calendarCache = initCalendarCache();
@@ -1082,13 +1082,6 @@ public class Helper implements Serializable {
             exception.setInternalException(notAccessedException);
             throw exception;
         }
-    }
-
-    /**
-     * Used to store null values in hashtables, is helper because need to be serializable.
-     */
-    public static Object getNullWrapper() {
-        return nullWrapper;
     }
 
     /**

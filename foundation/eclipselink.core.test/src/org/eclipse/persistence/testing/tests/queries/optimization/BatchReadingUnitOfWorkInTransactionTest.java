@@ -31,6 +31,7 @@ public class BatchReadingUnitOfWorkInTransactionTest extends TestCase {
     public BatchReadingUnitOfWorkInTransactionTest(BatchFetchType batchType) {
         setDescription("This test verifies that batch reading works correctly in a unit of work while a transaction has already started");
         this.batchType = batchType;
+        setName(getName() + batchType);
     }
 
     public ReadAllQuery getMyQuery() {

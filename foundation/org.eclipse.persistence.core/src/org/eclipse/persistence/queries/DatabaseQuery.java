@@ -53,7 +53,9 @@ import org.eclipse.persistence.sessions.SessionProfiler;
  * @since TOPLink/Java 1.0
  */
 public abstract class DatabaseQuery implements Cloneable, Serializable {
-
+    /** INTERNAL: Property used for batch fetching in non object queries. */
+    public static final String BATCH_FETCH_PROPERTY = "BATCH_FETCH_PROPERTY";
+    
     /**
      * Queries can be given a name and registered with a descriptor to allow
      * common queries to be reused.
@@ -2331,5 +2333,21 @@ public abstract class DatabaseQuery implements Cloneable, Serializable {
      */
     public void setDoNotRedirect(boolean doNotRedirect) {
         this.doNotRedirect = doNotRedirect;
+    }
+
+    /**
+     * INTERNAL:
+     * Return temporary map of batched objects.
+     */
+    public Map<Object, Object> getBatchObjects() {
+        return (Map<Object, Object>)getProperty(BATCH_FETCH_PROPERTY);
+    }
+
+    /**
+     * INTERNAL:
+     * Set temporary map of batched objects.
+     */
+    public void setBatchObjects(Map<Object, Object> batchObjects) {
+        setProperty(BATCH_FETCH_PROPERTY, batchObjects);
     }
 }

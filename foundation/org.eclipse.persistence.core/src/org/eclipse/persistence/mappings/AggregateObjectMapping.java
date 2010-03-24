@@ -717,6 +717,7 @@ public class AggregateObjectMapping extends AggregateMapping implements Relation
      * INTERNAL:
      * Return the fields handled by the mapping.
      */
+    @Override
     protected Vector<DatabaseField> collectFields() {
         return getReferenceFields();
     }

@@ -27,7 +27,6 @@ import org.eclipse.persistence.internal.helper.linkedlist.LinkedNode;
 import org.eclipse.persistence.queries.DoesExistQuery;
 import org.eclipse.persistence.sessions.remote.*;
 import org.eclipse.persistence.internal.sessions.remote.*;
-import org.eclipse.persistence.internal.queries.ContainerPolicy;
 import org.eclipse.persistence.internal.identitymaps.*;
 import org.eclipse.persistence.internal.localization.ExceptionLocalization;
 import org.eclipse.persistence.logging.SessionLog;
@@ -103,23 +102,6 @@ public class MergeManager {
         this.cascadePolicy = CASCADE_ALL_PARTS;
         this.mergePolicy = WORKING_COPY_INTO_ORIGINAL;
         this.acquiredLocks = new ArrayList<CacheKey>();
-    }
-
-    /**
-     * Build and return an identity set for the specified container.
-     */
-    protected Map buildIdentitySet(Object container, ContainerPolicy containerPolicy, boolean keyByTarget) {
-        // find next power-of-2 size
-        Map result = new IdentityHashMap(containerPolicy.sizeFor(container) + 1);
-        for (Object iter = containerPolicy.iteratorFor(container); containerPolicy.hasNext(iter);) {
-            Object element = containerPolicy.next(iter, this.session);
-            if (keyByTarget) {
-                result.put(getTargetVersionOfSourceObject(element), element);
-            } else {
-                result.put(element, element);
-            }
-        }
-        return result;
     }
 
     /**

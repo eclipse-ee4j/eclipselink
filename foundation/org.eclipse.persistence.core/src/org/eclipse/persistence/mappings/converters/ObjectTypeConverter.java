@@ -65,11 +65,11 @@ public class ObjectTypeConverter implements Converter {
      */
     public void addConversionValue(Object fieldValue, Object attributeValue) {
         if (fieldValue == null) {
-            fieldValue = Helper.getNullWrapper();
+            fieldValue = Helper.NULL_VALUE;
         }
 
         if (attributeValue == null) {
-            attributeValue = Helper.getNullWrapper();
+            attributeValue = Helper.NULL_VALUE;
         }
 
         getFieldToAttributeValues().put(fieldValue, attributeValue);
@@ -84,11 +84,11 @@ public class ObjectTypeConverter implements Converter {
      */
     public void addToAttributeOnlyConversionValue(Object fieldValue, Object attributeValue) {
         if (fieldValue == null) {
-            fieldValue = Helper.getNullWrapper();
+            fieldValue = Helper.NULL_VALUE;
         }
 
         if (attributeValue == null) {
-            attributeValue = Helper.getNullWrapper();
+            attributeValue = Helper.NULL_VALUE;
         }
 
         getFieldToAttributeValues().put(fieldValue, attributeValue);
@@ -123,7 +123,7 @@ public class ObjectTypeConverter implements Converter {
         Object attributeValue = null;
 
         if (fieldValue == null) {
-            attributeValue = getFieldToAttributeValues().get(Helper.getNullWrapper());
+            attributeValue = getFieldToAttributeValues().get(Helper.NULL_VALUE);
         } else {
             try {
                 fieldValue = ((AbstractSession)session).getDatasourcePlatform().getConversionManager().convertObject(fieldValue, getFieldClassification());
@@ -204,11 +204,11 @@ public class ObjectTypeConverter implements Converter {
         Iterator attributeValueEnum = getFieldToAttributeValues().values().iterator();
         while (fieldValueEnum.hasNext()) {
             Object fieldValue = fieldValueEnum.next();
-            if (fieldValue == Helper.getNullWrapper()) {
+            if (fieldValue == Helper.NULL_VALUE) {
                 fieldValue = null;
             }
             Object attributeValue = attributeValueEnum.next();
-            if (attributeValue == Helper.getNullWrapper()) {
+            if (attributeValue == Helper.NULL_VALUE) {
                 attributeValue = null;
             }
             associations.addElement(new TypeMapping(fieldValue, attributeValue));
@@ -232,7 +232,7 @@ public class ObjectTypeConverter implements Converter {
     public Object convertObjectValueToDataValue(Object attributeValue, Session session) {
         Object fieldValue;
         if (attributeValue == null) {
-            fieldValue = getAttributeToFieldValues().get(Helper.getNullWrapper());
+            fieldValue = getAttributeToFieldValues().get(Helper.NULL_VALUE);
         } else {
             fieldValue = getAttributeToFieldValues().get(attributeValue);
             if (fieldValue == null) {
@@ -275,7 +275,7 @@ public class ObjectTypeConverter implements Converter {
 
     /**
      * INTERNAL:
-     * Set the field classification through searching the fields hashtable.
+     * Set the field classification through searching the fields map.
      */
     public void initializeFieldClassification(Session session) throws DescriptorException {
         if (getFieldToAttributeValues().isEmpty()) {
@@ -285,7 +285,7 @@ public class ObjectTypeConverter implements Converter {
         Iterator fieldValuesEnum = getFieldToAttributeValues().keySet().iterator();
         while (fieldValuesEnum.hasNext() && (type == null)) {
             Object value = fieldValuesEnum.next();
-            if (value != Helper.getNullWrapper()) {
+            if (value != Helper.NULL_VALUE) {
                 type = value.getClass();
             }
         }

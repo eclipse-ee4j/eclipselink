@@ -31,6 +31,7 @@ public class OneToManyBatchReadingCustomSelectionQueryTest extends TestCase {
     public OneToManyBatchReadingCustomSelectionQueryTest(BatchFetchType batchType) {
         setDescription("Tests a one to many mapping using a custom selction query to perform batch reading and a join ");
         this.batchType = batchType;
+        setName(getName() + batchType);
     }
 
     public void reset() {

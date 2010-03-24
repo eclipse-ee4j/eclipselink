@@ -37,6 +37,13 @@ public class EmptyRecord extends DatabaseRecord {
     protected EmptyRecord() {
         super(0);
     }
+    
+    /**
+     * Need to return a real record.
+     */
+    public DatabaseRecord clone() {
+        return new DatabaseRecord();
+    }
 
     public void add(DatabaseField key, Object value) {
         throw new UnsupportedOperationException();

@@ -134,11 +134,10 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
     protected MergeManager lastUsedMergeManager;
 
     /**
-     * When in transaction batch read objects must be remembered on the
-     * UnitOfWork not on the query.  Query is not safe
-     * and multiple units of work could trigger the same batch value holder.
+     * When in transaction batch read objects must use query local
+     * to the unit of work.
      */
-    protected Map<Object, Object> batchReadObjects;
+    protected Map<ReadQuery, ReadQuery> batchQueries;
 
     /** Read-only class can be used for reference data to avoid cloning when not required. */
     protected Set<Class> readOnlyClasses;
@@ -4460,7 +4459,7 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
             clearForClose(false);
         }
         // To be safe clean up as much state as possible.
-        setBatchReadObjects(null);
+        this.batchQueries = null;
         this.parent.releaseUnitOfWork(this);
         if (this.eventManager != null) {
             this.eventManager.postReleaseUnitOfWork();
@@ -5542,58 +5541,24 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
 
     /**
      * INTERNAL:
-     * Return the registered working copy from the unit of work identity map.
-     * If not registered in the unit of work yet, return null
+     * When in transaction batch read objects must use query local
+     * to the unit of work.
      */
-    public Object getWorkingCopyFromUnitOfWorkIdentityMap(Object object, Vector primaryKey) {
-        //return the descriptor of the passed object
-        ClassDescriptor descriptor = getDescriptor(object);
-        if (descriptor == null) {
-            throw DescriptorException.missingDescriptor(object.getClass().toString());
-        }
-
-        //aggregated object cannot be registered directly, but through the parent owning object.
-        if (descriptor.isDescriptorTypeAggregate()) {
-            throw ValidationException.cannotRegisterAggregateObjectInUnitOfWork(object.getClass());
-        }
-
-        // Check if the working copy is again being registered in which case we return the same working copy
-        Object registeredObject = getCloneMapping().get(object);
-        if (registeredObject != null) {
-            return object;
-        }
-
-        //check the unit of work cache first to see if already registered.
-        Object objectFromUOWCache = getIdentityMapAccessorInstance().getIdentityMapManager().getFromIdentityMap(primaryKey, object.getClass(), descriptor);
-        if (objectFromUOWCache != null) {
-            // Has already been cloned, return the working clone from the IM rather than the passed object.
-            return objectFromUOWCache;
-        }
-
-        //not found, return null
-        return null;
-    }
-
-    /**
-     * INTERNAL:
-     * From Read Query refactoring, batch results must be saved on the
-     * UnitOfWork when batch valueholders triggered in transaction.
-     */
-    public Map getBatchReadObjects() {
-        if (batchReadObjects == null) {
+    public Map<ReadQuery, ReadQuery> getBatchQueries() {
+        if (batchQueries == null) {
             // 2612538 - the default size of Map (32) is appropriate
-            batchReadObjects = createMap();
+            batchQueries = createMap();
         }
-        return batchReadObjects;
+        return batchQueries;
     }
 
     /**
      * INTERNAL:
-     * From Read Query refactoring, batch results must be saved on the
-     * UnitOfWork when batch valueholders triggered in transaction.
+     * When in transaction batch read objects must use query local
+     * to the unit of work.
      */
-    public void setBatchReadObjects(Map batchReadObjects) {
-        this.batchReadObjects = batchReadObjects;
+    public void setBatchQueries(Map<ReadQuery, ReadQuery> batchQueries) {
+        this.batchQueries = batchQueries;
     }
 
     /**
@@ -5712,7 +5677,7 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
         this.unitOfWorkChangeSet = null;
         this.pessimisticLockedObjects = null;
         this.optimisticReadLockObjects = null;
-        this.batchReadObjects = null;
+        this.batchQueries = null;
         this.privateOwnedObjects = null;
         if(shouldClearCache) {
             clearIdentityMapCache();

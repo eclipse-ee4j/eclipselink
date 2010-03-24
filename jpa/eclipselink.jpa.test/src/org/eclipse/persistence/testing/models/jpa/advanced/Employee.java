@@ -174,7 +174,7 @@ import static org.eclipse.persistence.annotations.OptimisticLockingType.VERSION_
     type=SOFT_WEAK,
     size=730,
     shared=true,
-    expiry=100000,
+    expiry=1000000,
     alwaysRefresh=false, // some test dependencies for this to be false.
     disableHits=true, // Employee customizer should set it back to false.
     coordinationType=INVALIDATE_CHANGED_OBJECTS

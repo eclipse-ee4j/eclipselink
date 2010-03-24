@@ -34,6 +34,7 @@ public class BatchReadingWithInvalidQueryKeyTest extends TestCase {
     public BatchReadingWithInvalidQueryKeyTest(BatchFetchType batchType) {
         setDescription("Tests an invalid batch attribute set on a query.");
         this.batchType = batchType;
+        setName(getName() + batchType);
     }
 
     public void test() {

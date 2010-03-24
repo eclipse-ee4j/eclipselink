@@ -31,6 +31,7 @@ public class BatchReadValueholderTest extends TestCase {
     public BatchReadValueholderTest(BatchFetchType batchType) {
         setDescription("Ensure instantiated valueholders are not reset when a batch query runs.");
         this.batchType = batchType;
+        setName(getName() + batchType);
     }
 
     public void setup() {

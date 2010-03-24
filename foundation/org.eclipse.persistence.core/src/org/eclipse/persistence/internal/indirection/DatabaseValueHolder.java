@@ -76,12 +76,12 @@ public abstract class DatabaseValueHolder implements WeavedAttributeValueHolderI
      * Return the object.
      */
     public Object getValue() {
-        if (!isInstantiated()) {
+        if (!this.isInstantiated) {
             synchronized (this) {
-                if (!isInstantiated()) {
+                if (!this.isInstantiated) {
                     // The value must be set directly because the setValue can also cause instantiation under UOW.
                     privilegedSetValue(instantiate());
-                    setInstantiated();
+                    this.isInstantiated = true;
                     resetFields();
                 }
             }
@@ -133,7 +133,7 @@ public abstract class DatabaseValueHolder implements WeavedAttributeValueHolderI
      * @return true if getValue() won't trigger a database read.
      */
     public boolean isEasilyInstantiated() {
-        return isInstantiated();
+        return this.isInstantiated;
     }
 
     /**
@@ -196,9 +196,9 @@ public abstract class DatabaseValueHolder implements WeavedAttributeValueHolderI
      * the server session.
      */
     public void releaseWrappedValueHolder() {
-        AbstractSession session = getSession();
+        AbstractSession session = this.session;
         if ((session != null) && session.isUnitOfWork()) {
-            setSession(session.getRootSession(null));
+            this.session = session.getRootSession(null);
         }
     }
 
@@ -206,8 +206,8 @@ public abstract class DatabaseValueHolder implements WeavedAttributeValueHolderI
      * Reset all the fields that are not needed after instantiation.
      */
     protected void resetFields() {
-        setRow(null);
-        setSession(null);
+        this.row = null;
+        this.session = null;
     }
     
     /**

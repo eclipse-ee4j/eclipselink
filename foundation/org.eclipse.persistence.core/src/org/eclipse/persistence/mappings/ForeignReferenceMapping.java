@@ -25,6 +25,7 @@ import org.eclipse.persistence.indirection.*;
 import org.eclipse.persistence.internal.descriptors.*;
 import org.eclipse.persistence.internal.expressions.*;
 import org.eclipse.persistence.internal.helper.*;
+import org.eclipse.persistence.internal.identitymaps.CacheId;
 import org.eclipse.persistence.internal.indirection.*;
 import org.eclipse.persistence.internal.queries.JoinedAttributeManager;
 import org.eclipse.persistence.internal.sessions.remote.*;
@@ -39,7 +40,10 @@ import org.eclipse.persistence.sessions.DatabaseRecord;
  * <b>Purpose</b>: Abstract class for relationship mappings
  */
 public abstract class ForeignReferenceMapping extends DatabaseMapping {
-
+    
+    /** Query parameter name used for IN batch ids. */
+    public static final String QUERY_BATCH_PARAMETER = "query-batch-parameter";
+    
     /** This is used only in descriptor proxy in remote session */
     protected Class referenceClass;
     protected String referenceClassName;
@@ -372,7 +376,130 @@ public abstract class ForeignReferenceMapping extends DatabaseMapping {
      * INTERNAL:
      * Extract the value from the batch optimized query, this should be supported by most query types.
      */
-    public Object extractResultFromBatchQuery(DatabaseQuery query, AbstractRecord Record, AbstractSession session, AbstractRecord argumentRow) throws QueryException {
+    public Object extractResultFromBatchQuery(DatabaseQuery batchQuery, AbstractRecord sourceRow, AbstractSession session, ObjectLevelReadQuery originalQuery) throws QueryException {
+        Map<Object, Object> batchedObjects = null;
+        Object result = null;
+        Object sourceKey = extractBatchKeyFromRow(sourceRow, session);
+        if (sourceKey == null) {
+            // If the foreign key was null, then just return null.
+            return null;
+        }
+        // Ensure the query is only executed once.
+        synchronized (batchQuery) {
+            // Check if query was already executed.
+            batchedObjects = batchQuery.getBatchObjects();
+            BatchFetchPolicy originalPolicy = originalQuery.getBatchFetchPolicy();
+            if (batchedObjects == null) {
+                batchedObjects = new Hashtable();
+                batchQuery.setBatchObjects(batchedObjects);
+            } else {
+                result = batchedObjects.get(sourceKey);
+                if (result == Helper.NULL_VALUE) {
+                    return null;
+                // If IN may not have that batch yet, or it may have been null.
+                } else if ((result != null) || (!originalPolicy.isIN())) {
+                    return result;
+                }
+            }
+            // In case of IN the batch including this row may not have been executed yet.
+            if (result == null) {
+                AbstractRecord translationRow = originalQuery.getTranslationRow();
+                // Execute query and index resulting object sets by key.
+                if (originalPolicy.isIN()) {
+                    // Need to extract all foreign key values from all parent rows for IN parameter.
+                    List<AbstractRecord> parentRows = originalPolicy.getDataResults(this);
+                    // Execute queries by batch if too many rows.
+                    int rowsSize = parentRows.size();
+                    int size = Math.min(rowsSize, originalPolicy.getSize());
+                    if (size == 0) {
+                        return null;
+                    }
+                    int startIndex = 0;
+                    if (size != rowsSize) {
+                        // If only fetching a page, need to make sure the row we want is in the page.
+                        startIndex = parentRows.indexOf(sourceRow);
+                    }
+                    List foreignKeyValues = new ArrayList(size);
+                    List foreignKeys = new ArrayList(size);
+                    Set uniqueForeignKeyValues = new HashSet(size);
+                    int index = 0;
+                    int offset = startIndex;
+                    for (int count = 0; count < size; count++) {
+                        if (index >= rowsSize) {
+                            // Processed all rows, done.
+                            break;
+                        } else if ((offset + index) > rowsSize) {
+                            // If passed the end, go back to start.
+                            offset = index * -1;
+                        }
+                        AbstractRecord row = parentRows.get(offset + index);
+                        Object foreignKey = extractBatchKeyFromRow(row, session);
+                        if (foreignKey == null) {
+                            // Ignore null foreign keys.
+                            count--;
+                        } else {
+                            Object foreignKeyValue = ((CacheId)foreignKey).getPrimaryKey()[0];
+                            // Ensure the same id is not selected twice.
+                            if (uniqueForeignKeyValues.contains(foreignKeyValue)) {
+                                count--;
+                            } else {
+                                uniqueForeignKeyValues.add(foreignKeyValue);
+                                foreignKeyValues.add(foreignKeyValue);
+                                foreignKeys.add(foreignKey);
+                            }
+                        }
+                        index++;
+                    }
+                    // Need to compute remaining rows, this is tricky because a page in the middle could have been processed.
+                    List<AbstractRecord> remainingParentRows = null;
+                    if (startIndex == 0) {
+                        // Tail
+                        remainingParentRows = parentRows.subList(index, rowsSize);
+                    } else if (startIndex == offset) {
+                        // Head and tail.
+                        remainingParentRows = new ArrayList(parentRows.subList(0, startIndex - 1));
+                        remainingParentRows.addAll(parentRows.subList(index, rowsSize));
+                    } else {
+                        // Middle
+                        remainingParentRows = parentRows.subList(offset + index, startIndex - 1);
+                    }
+                    originalPolicy.setDataResults(this, remainingParentRows);
+                    translationRow = translationRow.clone();
+                    translationRow.put(QUERY_BATCH_PARAMETER, foreignKeyValues);
+                    // Register each id as null, in case it has no relationship.
+                    for (Object foreignKey : foreignKeys) {
+                        batchedObjects.put(foreignKey, Helper.NULL_VALUE);
+                    }
+                }
+                executeBatchQuery(batchQuery, batchedObjects, session, translationRow);
+                batchQuery.setSession(null);
+            }
+        }
+        result = batchedObjects.get(sourceKey);
+        if (result == Helper.NULL_VALUE) {
+            return null;
+        } else {
+            return result;
+        }
+    }
+
+    /**
+     * INTERNAL:
+     * Extract the batch key value from the source row.
+     * Used for batch reading, most following same order and fields as in the mapping.
+     * The method should be overridden by classes that support batch reading.
+     */
+    protected Object extractBatchKeyFromRow(AbstractRecord targetRow, AbstractSession session) {
+        throw QueryException.batchReadingNotSupported(this, null);
+    }
+    
+    /**
+     * INTERNAL:
+     * Prepare and execute the batch query and store the
+     * results for each source object in a map keyed by the
+     * mappings source keys of the source objects.
+     */
+    protected void executeBatchQuery(DatabaseQuery query, Map referenceObjectsByKey, AbstractSession session, AbstractRecord row) {
         throw QueryException.batchReadingNotSupported(this, query);
     }
 
@@ -451,6 +578,14 @@ public abstract class ForeignReferenceMapping extends DatabaseMapping {
     
     /**
      * INTERNAL:
+     * Return the selection criteria used to IN batch fetching.
+     */
+    protected Expression buildBatchCriteria(ExpressionBuilder builder, ObjectLevelReadQuery query) {
+        throw QueryException.batchReadingNotSupported(this, null);
+    }
+    
+    /**
+     * INTERNAL:
      * Clone and prepare the selection query as a nested batch read query.
      * This is used for nested batch reading.
      */
@@ -464,9 +599,10 @@ public abstract class ForeignReferenceMapping extends DatabaseMapping {
             descriptorToUse = this.descriptor;
         }
         
-        ExpressionBuilder builder = new ExpressionBuilder(getReferenceClass());
-        builder.setQueryClassAndDescriptor(getReferenceClass(), getReferenceDescriptor());
-        ReadAllQuery batchQuery = new ReadAllQuery(getReferenceClass(), builder);
+        ExpressionBuilder builder = new ExpressionBuilder(this.referenceClass);
+        builder.setQueryClassAndDescriptor(this.referenceClass, getReferenceDescriptor());
+        ReadAllQuery batchQuery = new ReadAllQuery(this.referenceClass, builder);
+        batchQuery.setName(getAttributeName());
         batchQuery.setDescriptor(getReferenceDescriptor());
         batchQuery.setSession(query.getSession());
 
@@ -522,6 +658,9 @@ public abstract class ForeignReferenceMapping extends DatabaseMapping {
             }
             subQuery.setSelectionCriteria(subCriteria);
             batchSelectionCriteria = builder.exists(subQuery);
+        } else if (batchType == BatchFetchType.IN) {
+            // Using a IN with foreign key values (WHERE FK IN :QUERY_BATCH_PARAMETER)
+            batchSelectionCriteria = buildBatchCriteria(builder, query);
         } else {
             // Using a join, (WHERE <orginal-query-criteria> AND <mapping-join>)
             // Join the query where clause with the mapping's,
@@ -584,38 +723,6 @@ public abstract class ForeignReferenceMapping extends DatabaseMapping {
         batchQuery.setSession(null);
 
         return batchQuery;
-    }
-    
-    /**
-     * INTERNAL:
-     * The hashtable of batched objects resides in one of two places.
-     * In the normal case it is stored in a query property.
-     * When a UnitOfWork is in transaction, it executes the batch query
-     * on the UnitOfWork and stores the clones on the UnitOfWork.
-     */
-    protected Map getBatchReadObjects(DatabaseQuery query, AbstractSession session) {
-        if (session.isUnitOfWork()) {
-            UnitOfWorkImpl unitOfWork = (UnitOfWorkImpl)session;
-            return (Map)unitOfWork.getBatchReadObjects().get(query);
-        } else {
-            return (Map)query.getProperty("batched objects");
-        }
-    }
-
-    /**
-     * INTERNAL:
-     * The map of batched objects resides in one of two places.
-     * In the normal case it is stored in a query property.
-     * When a UnitOfWork is in transaction, it executes the batch query
-     * on the UnitOfWork and stores the clones on the UnitOfWork.
-     */
-    protected void setBatchReadObjects(Map referenceObjectsByKey, DatabaseQuery query, AbstractSession session) {
-        if (session.isUnitOfWork()) {
-            UnitOfWorkImpl unitOfWork = (UnitOfWorkImpl)session;
-            unitOfWork.getBatchReadObjects().put(query, referenceObjectsByKey);
-        } else {
-            query.setProperty("batched objects", referenceObjectsByKey);
-        }
     }
 
     /**

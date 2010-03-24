@@ -999,7 +999,7 @@ public class PLSQLStoredProcedureCall extends StoredProcedureCall {
     public void translate(AbstractRecord translationRow, AbstractRecord modifyRow,
         AbstractSession session) {
         // re-order elements in translationRow to conform to re-ordered indices
-        AbstractRecord copyOfTranslationRow = (AbstractRecord)translationRow.clone();
+        AbstractRecord copyOfTranslationRow = translationRow.clone();
         int len = copyOfTranslationRow.size();
         Vector copyOfTranslationFields = copyOfTranslationRow.getFields();
         translationRow.clear();

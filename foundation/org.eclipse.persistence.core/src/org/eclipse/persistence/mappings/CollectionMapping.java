@@ -765,70 +765,15 @@ public abstract class CollectionMapping extends ForeignReferenceMapping implemen
         super.convertClassNamesToClasses(classLoader);
         containerPolicy.convertClassNamesToClasses(classLoader);
     }
-
+    
     /**
      * INTERNAL:
-     * Extract the value from the batch optimized query.
+     * Extract the value from the batch optimized query, this should be supported by most query types.
      */
     @Override
-    public Object extractResultFromBatchQuery(DatabaseQuery query, AbstractRecord databaseRow, AbstractSession session, AbstractRecord argumentRow) {
-        //this can be null, because either one exists in the query or it will be created
-        Map<Object, Object> referenceObjectsByKey = null;
-        synchronized (query) {
-            referenceObjectsByKey = getBatchReadObjects(query, session);
-            if (referenceObjectsByKey == null) {
-                ReadAllQuery batchQuery = (ReadAllQuery)query;
-                ComplexQueryResult complexResult = (ComplexQueryResult)session.executeQuery(batchQuery, argumentRow);
-                Object results = complexResult.getResult();
-                referenceObjectsByKey = new Hashtable();
-                Iterator<AbstractRecord> rowsIterator = ((List<AbstractRecord>)complexResult.getData()).iterator();
-                ContainerPolicy queryContainerPolicy = batchQuery.getContainerPolicy();
-                if (this.containerPolicy.shouldAddAll()) {
-                    Map<Object, List[]> referenceObjectsAndRowsByKey = new HashMap();
-                    for (Object elementsIterator = queryContainerPolicy.iteratorFor(results); queryContainerPolicy.hasNext(elementsIterator);) {
-                        Object eachReferenceObject = queryContainerPolicy.next(elementsIterator, session);
-                        AbstractRecord row = rowsIterator.next();
-                        Object eachReferenceKey = extractKeyFromTargetRow(row, session);                        
-                        List[] objectsAndRows = referenceObjectsAndRowsByKey.get(eachReferenceKey);
-                        if (objectsAndRows == null) {
-                            objectsAndRows = new List[]{new ArrayList(), new ArrayList()};
-                            referenceObjectsAndRowsByKey.put(eachReferenceKey, objectsAndRows);
-                        }
-                        objectsAndRows[0].add(eachReferenceObject);
-                        objectsAndRows[1].add(row);
-                    }
-
-                    Iterator<Map.Entry<Object, List[]>> it = referenceObjectsAndRowsByKey.entrySet().iterator();
-                    while (it.hasNext()) {
-                        Map.Entry<Object, List[]> entry = it.next();
-                        Object eachReferenceKey = entry.getKey(); 
-                        List objects = entry.getValue()[0];
-                        List<AbstractRecord> rows = entry.getValue()[1];
-                        Object container = this.containerPolicy.containerInstance(objects.size());
-                        this.containerPolicy.addAll(objects, container, query.getSession(), rows, batchQuery);
-                        referenceObjectsByKey.put(eachReferenceKey, container);
-                    }
-                } else {
-                    for (Object elementsIterator = queryContainerPolicy.iteratorFor(results); queryContainerPolicy.hasNext(elementsIterator);) {
-                        Object eachReferenceObject = queryContainerPolicy.next(elementsIterator, session);
-                        AbstractRecord row = rowsIterator.next();
-                        Object eachReferenceKey = extractKeyFromTargetRow(row, session);
-                        
-                        Object container = referenceObjectsByKey.get(eachReferenceKey);
-                        if (container == null) {
-                            container = this.containerPolicy.containerInstance();
-                            referenceObjectsByKey.put(eachReferenceKey, container);
-                        }
-                        this.containerPolicy.addInto(eachReferenceObject, container, session);
-                    }
-                }
-                setBatchReadObjects(referenceObjectsByKey, query, session);
-                query.setSession(null);
-            }
-        }
-        Object result = referenceObjectsByKey.get(extractPrimaryKeyFromRow(databaseRow, session));
-
-        // The source object might not have any target objects
+    public Object extractResultFromBatchQuery(DatabaseQuery batchQuery, AbstractRecord sourceRow, AbstractSession session, ObjectLevelReadQuery originalQuery) throws QueryException {
+        Object result = super.extractResultFromBatchQuery(batchQuery, sourceRow, session, originalQuery);
+        // The source object might not have any target objects.
         if (result == null) {
             return this.containerPolicy.containerInstance();
         } else {
@@ -838,30 +783,68 @@ public abstract class CollectionMapping extends ForeignReferenceMapping implemen
 
     /**
      * INTERNAL:
-     * Extract the source primary key value from the target row.
-     * Used for batch reading, most following same order and fields as in the mapping.
-     * 
-     * Should have made it an abstract method but that breaks derived classes EISOneToManyMapping
-     * and NestedTableMapping that don't use batch reading.
-     * The method should be overridden by classes that use batch reading: 
-     * for those classes extractResultFromBatchQuery method is called. 
+     * Prepare and execute the batch query and store the
+     * results for each source object in a map keyed by the
+     * mappings source keys of the source objects.
      */
-    protected Object extractKeyFromTargetRow(AbstractRecord row, AbstractSession session) {
-        return null;
+    @Override
+    protected void executeBatchQuery(DatabaseQuery query, Map referenceObjectsByKey, AbstractSession session, AbstractRecord translationRow) {
+        // Execute query and index resulting object sets by key.
+        ReadAllQuery batchQuery = (ReadAllQuery)query;
+        ComplexQueryResult complexResult = (ComplexQueryResult)session.executeQuery(batchQuery, translationRow);
+        Object results = complexResult.getResult();
+        Iterator<AbstractRecord> rowsIterator = ((List<AbstractRecord>)complexResult.getData()).iterator();
+        ContainerPolicy queryContainerPolicy = batchQuery.getContainerPolicy();
+        if (this.containerPolicy.shouldAddAll()) {
+            // Indexed list mappings require special add that include the row data with the index.
+            Map<Object, List[]> referenceObjectsAndRowsByKey = new HashMap();
+            for (Object elementsIterator = queryContainerPolicy.iteratorFor(results); queryContainerPolicy.hasNext(elementsIterator);) {
+                Object eachReferenceObject = queryContainerPolicy.next(elementsIterator, session);
+                AbstractRecord row = rowsIterator.next();
+                Object eachReferenceKey = extractKeyFromTargetRow(row, session);                        
+                List[] objectsAndRows = referenceObjectsAndRowsByKey.get(eachReferenceKey);
+                if (objectsAndRows == null) {
+                    objectsAndRows = new List[]{new ArrayList(), new ArrayList()};
+                    referenceObjectsAndRowsByKey.put(eachReferenceKey, objectsAndRows);
+                }
+                objectsAndRows[0].add(eachReferenceObject);
+                objectsAndRows[1].add(row);
+            }
+
+            Iterator<Map.Entry<Object, List[]>> iterator = referenceObjectsAndRowsByKey.entrySet().iterator();
+            while (iterator.hasNext()) {
+                Map.Entry<Object, List[]> entry = iterator.next();
+                Object eachReferenceKey = entry.getKey(); 
+                List objects = entry.getValue()[0];
+                List<AbstractRecord> rows = entry.getValue()[1];
+                Object container = this.containerPolicy.containerInstance(objects.size());
+                this.containerPolicy.addAll(objects, container, query.getSession(), rows, batchQuery);
+                referenceObjectsByKey.put(eachReferenceKey, container);
+            }
+        } else {
+            for (Object elementsIterator = queryContainerPolicy.iteratorFor(results); queryContainerPolicy.hasNext(elementsIterator);) {
+                Object eachReferenceObject = queryContainerPolicy.next(elementsIterator, session);
+                AbstractRecord row = rowsIterator.next();
+                Object eachReferenceKey = extractKeyFromTargetRow(row, session);
+                
+                Object container = referenceObjectsByKey.get(eachReferenceKey);
+                if ((container == null) || (container == Helper.NULL_VALUE)) {
+                    container = this.containerPolicy.containerInstance();
+                    referenceObjectsByKey.put(eachReferenceKey, container);
+                }
+                this.containerPolicy.addInto(eachReferenceObject, container, session);
+            }
+        }
     }
 
-        /**
+    /**
      * INTERNAL:
-     * Extract the primary key value from the source row.
+     * Extract the source primary key value from the target row.
      * Used for batch reading, most following same order and fields as in the mapping.
-     * 
-     * Should have made it an abstract method but that breaks derived classes EISOneToManyMapping
-     * and NestedTableMapping that don't use batch reading.
-     * The method should be overridden by classes that use batch reading: 
-     * for those classes extractResultFromBatchQuery method is called. 
+     * The method should be overridden by classes that support batch reading.
      */
-    protected Object extractPrimaryKeyFromRow(AbstractRecord row, AbstractSession session) {
-        return null;
+    protected Object extractKeyFromTargetRow(AbstractRecord row, AbstractSession session) {
+        throw QueryException.batchReadingNotSupported(this, null);
     }
     
     /**

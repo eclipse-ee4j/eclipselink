@@ -167,7 +167,8 @@ public class QueryExceptionResource extends ListResourceBundle {
        { "6161", "MapEntryExpression with base: [{0}] refers to mapping [{1}] which does not refer to a map."},
        { "6162", "List order column [{0}] contains wrong values:{2}{1}"},
        { "6163", "index() requires QueryKeyExpression, cannot be applied to [{0}]"},
-       { "6164", "index() requires QueryKeyExpression with CollectionMapping that has non-null list order column. [{1}] in does not meet this condition in [{0}]"}
+       { "6164", "index() requires QueryKeyExpression with CollectionMapping that has non-null list order column. [{1}] in does not meet this condition in [{0}]"},
+       { "6165", "Batch fetch using IN requires singleton primary key."}
 
     };
 

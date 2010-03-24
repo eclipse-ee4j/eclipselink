@@ -766,8 +766,8 @@ public class HistoryPolicy implements Cloneable, Serializable {
         DatabaseTable histTable = (DatabaseTable)getHistoricalTables().elementAt(0);
 
         historyStatement.setTable(histTable);
-        AbstractRecord modifyRow = (AbstractRecord)originalQuery.getModifyRow().clone();
-        AbstractRecord translationRow = (AbstractRecord)arguments.clone();
+        AbstractRecord modifyRow = originalQuery.getModifyRow().clone();
+        AbstractRecord translationRow = arguments.clone();
 
         // Start could be the version field in timestamp locking.
         if (!modifyRow.containsKey(getStart())) {
@@ -847,7 +847,7 @@ public class HistoryPolicy implements Cloneable, Serializable {
         whereClause = whereClause.getBuilder().getField(endField).isNull().and(whereClause);
         historyStatement.setWhereClause(whereClause);
         AbstractRecord modifyRow = new DatabaseRecord();
-        AbstractRecord translationRow = (AbstractRecord)arguments.clone();
+        AbstractRecord translationRow = arguments.clone();
         Object time = getCurrentTime(session);
         modifyRow.add(getEnd(), time);
         translationRow.add(getEnd(), time);

@@ -18,6 +18,7 @@ import java.util.List;
 import java.util.Vector;
 
 import org.eclipse.persistence.exceptions.DescriptorException;
+import org.eclipse.persistence.exceptions.QueryException;
 import org.eclipse.persistence.expressions.Expression;
 import org.eclipse.persistence.expressions.ExpressionBuilder;
 import org.eclipse.persistence.internal.databaseaccess.DatasourcePlatform;
@@ -29,8 +30,10 @@ import org.eclipse.persistence.internal.expressions.ForUpdateOfClause;
 import org.eclipse.persistence.internal.expressions.SQLDeleteStatement;
 import org.eclipse.persistence.internal.expressions.SQLInsertStatement;
 import org.eclipse.persistence.internal.expressions.SQLSelectStatement;
+import org.eclipse.persistence.internal.helper.ConversionManager;
 import org.eclipse.persistence.internal.helper.DatabaseField;
 import org.eclipse.persistence.internal.helper.DatabaseTable;
+import org.eclipse.persistence.internal.identitymaps.CacheId;
 import org.eclipse.persistence.internal.sessions.AbstractRecord;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.mappings.ForeignReferenceMapping.ExtendPessimisticLockScope;
@@ -39,6 +42,7 @@ import org.eclipse.persistence.queries.DataModifyQuery;
 import org.eclipse.persistence.queries.DirectReadQuery;
 import org.eclipse.persistence.queries.ObjectBuildingQuery;
 import org.eclipse.persistence.queries.ObjectLevelReadQuery;
+import org.eclipse.persistence.queries.ReadAllQuery;
 import org.eclipse.persistence.queries.ReadQuery;
 import org.eclipse.persistence.sessions.DatabaseRecord;
 
@@ -287,8 +291,6 @@ public class RelationTableMechanism  implements Cloneable {
         return relationTable.getName();
     }
 
-    //CR#2407  This method is added to include table qualifier.
-
     /**
      * PUBLIC:
      * Return the relation table qualified name associated with the mapping.
@@ -314,7 +316,81 @@ public class RelationTableMechanism  implements Cloneable {
 
         return fieldNames;
     }
+    
+    /**
+     * INTERNAL:
+     * Return the selection criteria used to IN batch fetching.
+     */
+    public Expression buildBatchCriteria(ExpressionBuilder builder, ObjectLevelReadQuery query) {
+        if (this.sourceRelationKeyFields.size() != 1) {
+            throw QueryException.batchReadingInRequiresSingletonPrimaryKey(query);
+        }
 
+        Expression linkTable = builder.getTable(this.relationTable);
+        Expression criteria = null;
+        int size = this.targetRelationKeyFields.size();
+        for (int index = 0; index < size; index++) {
+            DatabaseField relationKey = this.targetRelationKeyFields.get(index);
+            DatabaseField targetKey = this.targetKeyFields.get(index);
+            criteria = builder.getField(targetKey).equal(linkTable.getField(relationKey)).and(criteria);
+        }
+
+        return criteria.and(linkTable.getField(this.sourceRelationKeyFields.get(0)).in(
+                builder.getParameter(ForeignReferenceMapping.QUERY_BATCH_PARAMETER)));
+    }
+
+    /**
+     * INTERNAL:
+     * Add the addition join fields to the batch query.
+     */
+    public void postPrepareNestedBatchQuery(ReadQuery batchQuery, ObjectLevelReadQuery query) {
+        ReadAllQuery mappingBatchQuery = (ReadAllQuery)batchQuery;
+        mappingBatchQuery.setShouldIncludeData(true);
+        Expression linkTable = mappingBatchQuery.getExpressionBuilder().getTable(this.relationTable);
+        for (DatabaseField relationField : this.sourceRelationKeyFields) {
+            mappingBatchQuery.getAdditionalFields().add(linkTable.getField(relationField));
+        }
+    }
+
+    /**
+     * INTERNAL:
+     * Extract the foreign key value from the source row.
+     */
+    protected Object extractBatchKeyFromRow(AbstractRecord row, AbstractSession session) {
+        Object[] key;
+        ConversionManager conversionManager = session.getDatasourcePlatform().getConversionManager();
+        List<DatabaseField> sourceKeyFields = this.sourceKeyFields;
+        int size = sourceKeyFields.size();
+        key = new Object[size];
+        for (int index = 0; index < size; index++) {                
+            DatabaseField field = sourceKeyFields.get(index);
+            Object value = row.get(field);                
+            // Must ensure the classification gets a cache hit.
+            key[index] = conversionManager.convertObject(value, field.getType());
+        }
+        return new CacheId(key);
+    }
+    
+    /**
+     * INTERNAL:
+     * Extract the source primary key value from the relation row.
+     * Used for batch reading, most following same order and fields as in the mapping.
+     */
+    protected Object extractKeyFromTargetRow(AbstractRecord row, AbstractSession session) {
+        int size = getSourceRelationKeyFields().size();
+        Object[] key = new Object[size];
+        ConversionManager conversionManager = session.getDatasourcePlatform().getConversionManager();
+        for (int index = 0; index < size; index++) {
+            DatabaseField relationField = this.sourceRelationKeyFields.get(index);
+            DatabaseField sourceField = this.sourceKeyFields.get(index);
+            Object value = row.get(relationField);
+            // Must ensure the classification gets a cache hit.
+            value = conversionManager.convertObject(value, sourceField.getType());
+            key[index] = value;
+        }
+        return new CacheId(key);
+    }
+    
     /**
      * INTERNAL:
      * Return all the source key fields associated with the mapping.

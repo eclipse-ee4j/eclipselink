@@ -440,6 +440,7 @@ public abstract class ObjectReferenceMapping extends ForeignReferenceMapping {
      * INTERNAL:
      * Return all the fields populated by this mapping, these are foreign keys only.
      */
+    @Override
     protected Vector<DatabaseField> collectFields() {
         return getForeignKeyFields();
     }

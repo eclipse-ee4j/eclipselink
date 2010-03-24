@@ -27,6 +27,7 @@ public class AggregateBatchReadingTest extends TestCase {
     public AggregateBatchReadingTest(BatchFetchType batchType) {
         setDescription("Tests batch reading nesting across an aggregate");
         this.batchType = batchType;
+        setName(getName() + batchType);
     }
 
     public void setup() {

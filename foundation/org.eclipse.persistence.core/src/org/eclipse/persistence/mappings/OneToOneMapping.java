@@ -578,46 +578,31 @@ public class OneToOneMapping extends ObjectReferenceMapping implements Relationa
      * INTERNAL:
      * Extract the foreign key value from the source row.
      */
-    protected Object extractForeignKeyFromRow(AbstractRecord row, AbstractSession session) {
+    @Override
+    protected Object extractBatchKeyFromRow(AbstractRecord row, AbstractSession session) {
+        if (this.mechanism != null) {
+            return this.mechanism.extractBatchKeyFromRow(row, session);             
+        }
         Object[] key;
         ConversionManager conversionManager = session.getDatasourcePlatform().getConversionManager();
-        ObjectBuilder builder = this.descriptor.getObjectBuilder();
-        if (this.mechanism == null) {
-            key = new Object[getSourceToTargetKeyFields().size()];
-            int index = 0;
-            for (DatabaseField field : getSourceToTargetKeyFields().keySet()) {
-                Object value = row.get(field);    
-                // Must ensure the classification gets a cache hit.
-                try {
-                    value = conversionManager.convertObject(value, builder.getFieldClassification(field));
-                } catch (ConversionException e) {
-                    throw ConversionException.couldNotBeConverted(this, getDescriptor(), e);
-                }
-    
-                key[index] = value;
-                index++;
+        key = new Object[this.sourceToTargetKeyFields.size()];
+        int index = 0;
+        for (DatabaseField field : this.sourceToTargetKeyFields.keySet()) {
+            Object value = row.get(field);
+            if (value == null) {
+                return null;
             }
-        } else {
-            List<DatabaseField> sourceKeyFields = this.mechanism.sourceKeyFields;
-            int size = sourceKeyFields.size();
-            key = new Object[size];
-            for (int i = 0; i < size; i++) {                
-                DatabaseField field = sourceKeyFields.get(i);
-                Object value = row.get(field);                
-                // Must ensure the classification gets a cache hit.
-                try {
-                    value = conversionManager.convertObject(value, builder.getFieldClassification(field));
-                } catch (ConversionException e) {
-                    throw ConversionException.couldNotBeConverted(this, getDescriptor(), e);
-                }
-    
-                key[i] = value;
-            }            
+            // Must ensure the classification gets a cache hit.
+            try {
+                value = conversionManager.convertObject(value, field.getType());
+            } catch (ConversionException exception) {
+                throw ConversionException.couldNotBeConverted(this, this.descriptor, exception);
+            }
+            key[index] = value;
+            index++;
         }
-
         return new CacheId(key);
     }
-
     
     /**
      * INTERNAL:
@@ -700,65 +685,60 @@ public class OneToOneMapping extends ObjectReferenceMapping implements Relationa
     @Override
     protected void postPrepareNestedBatchQuery(ReadQuery batchQuery, ObjectLevelReadQuery query) {
         // Force a distinct to filter out m-1 duplicates.
+        // TODO: Only set if really a m-1, not a 1-1
         if (!query.isDistinctComputed()) {
             ((ObjectLevelReadQuery)batchQuery).useDistinct();
         }
         if (this.mechanism != null) {
-            ReadAllQuery mappingBatchQuery = (ReadAllQuery)batchQuery;
-            mappingBatchQuery.setShouldIncludeData(true);
-            for (DatabaseField relationField : this.mechanism.getSourceRelationKeyFields()) {
-                mappingBatchQuery.getAdditionalFields().add(mappingBatchQuery.getExpressionBuilder().getTable(this.mechanism.getRelationTable()).getField(relationField));
-            }
+            this.mechanism.postPrepareNestedBatchQuery(batchQuery, query);
         }
     }
     
     /**
      * INTERNAL:
-     * Extract the value from the batch optimized query.
+     * Return the selection criteria used to IN batch fetching.
      */
     @Override
-    public Object extractResultFromBatchQuery(DatabaseQuery query, AbstractRecord databaseRow, AbstractSession session, AbstractRecord argumentRow) {
-        //this can be null, because either one exists in the query or it will be created
-        Map<Object, Object> referenceObjectsByKey = null;
-        synchronized (query) {
-            referenceObjectsByKey = getBatchReadObjects(query, session);
-            if (referenceObjectsByKey == null) {
-                List results;
-                referenceObjectsByKey = new Hashtable();
-                if (this.mechanism == null) {
-                    results = (List)session.executeQuery(query, argumentRow);
-    
-                    for (Object eachReferenceObject : results) {
-                        Object eachReferenceKey = extractKeyFromReferenceObject(eachReferenceObject, session);    
-                        referenceObjectsByKey.put(eachReferenceKey, session.wrapObject(eachReferenceObject));
-                    }
-                } else {
-                    ConversionManager conversionManager = session.getDatasourcePlatform().getConversionManager();
-                    ComplexQueryResult complexResult = (ComplexQueryResult)session.executeQuery(query, argumentRow);
-                    results = (List)complexResult.getResult();
-                    List<AbstractRecord> rows = (List)complexResult.getData();
-                    int size = results.size();
-                    List<DatabaseField> sourceKeyRelationFields = this.mechanism.getSourceRelationKeyFields();
-                    List<DatabaseField> sourceKeyFields = this.mechanism.getSourceKeyFields();
-                    int sourceSize = sourceKeyRelationFields.size();
-                    for (int i=0; i < size; i++) {
-                        AbstractRecord row = rows.get(i);
-                        Object[] key = new Object[sourceSize];
-                        for (int k = 0; k < sourceSize; k++) {
-                            Object value = row.get(sourceKeyRelationFields.get(k));
-                            // must do the same conversion as extractForeignKeyFromRow does 
-                            // so that CacheKey created here and in extractForeignKeyFromRow compare correctly. 
-                            key[k] = conversionManager.convertObject(value, getDescriptor().getObjectBuilder().getFieldClassification(sourceKeyFields.get(k)));
-                        }
-                        referenceObjectsByKey.put(new CacheId(key), session.wrapObject(results.get(i)));
-                    }
-                }
-                setBatchReadObjects(referenceObjectsByKey, query, session);
-                query.setSession(null);
+    protected Expression buildBatchCriteria(ExpressionBuilder builder, ObjectLevelReadQuery query) {
+        if (this.mechanism == null) {
+            if (this.sourceToTargetKeyFields.size() != 1) {
+                throw QueryException.batchReadingInRequiresSingletonPrimaryKey(query);
+            }
+            return builder.getField(this.sourceToTargetKeyFields.values().iterator().next()).in(
+                    builder.getParameter(ForeignReferenceMapping.QUERY_BATCH_PARAMETER));
+        } else {
+            return this.mechanism.buildBatchCriteria(builder, query);
+        }
+    }
+
+    /**
+     * INTERNAL:
+     * Prepare and execute the batch query and store the
+     * results for each source object in a map keyed by the
+     * mappings source keys of the source objects.
+     */
+    @Override
+    protected void executeBatchQuery(DatabaseQuery query, Map referenceObjectsByKey, AbstractSession session, AbstractRecord translationRow) {
+        // Execute query and index resulting objects by key.
+        List results;
+        ObjectBuilder builder = query.getDescriptor().getObjectBuilder();
+        if (this.mechanism == null) {
+            results = (List)session.executeQuery(query, translationRow);
+            for (Object eachReferenceObject : results) {
+                Object eachReferenceKey = extractKeyFromReferenceObject(eachReferenceObject, session);    
+                referenceObjectsByKey.put(eachReferenceKey, builder.wrapObject(eachReferenceObject, session));
+            }
+        } else {
+            ComplexQueryResult complexResult = (ComplexQueryResult)session.executeQuery(query, translationRow);
+            results = (List)complexResult.getResult();
+            List<AbstractRecord> rows = (List)complexResult.getData();
+            int size = results.size();
+            for (int index = 0; index < size; index++) {
+                AbstractRecord row = rows.get(index);
+                Object key = this.mechanism.extractKeyFromTargetRow(row, session);
+                referenceObjectsByKey.put(key, builder.wrapObject(results.get(index), session));
             }
         }
-
-        return referenceObjectsByKey.get(extractForeignKeyFromRow(databaseRow, session));
     }
 
     
@@ -1857,6 +1837,7 @@ public class OneToOneMapping extends ObjectReferenceMapping implements Relationa
      * INTERNAL:
      * Return all the fields populated by this mapping, these are foreign keys only.
      */
+    @Override
     protected Vector<DatabaseField> collectFields() {
         if(this.mechanism != null) {
             return new Vector(0);

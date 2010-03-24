@@ -69,7 +69,7 @@ public class UnitOfWorkTransformerValueHolder extends UnitOfWorkValueHolder {
      */
     public void setValue(Object theValue) {
         // Must force instantiation to be able to compare with the old value.
-        if (!isInstantiated()) {
+        if (!this.isInstantiated) {
             instantiate();
         }
         super.setValue(theValue);

@@ -224,7 +224,7 @@ public class TablePerClassPolicy extends InterfacePolicy implements Serializable
         } else {
             // Assuming we're doing a find by primary key ...
             // We have to update the translation row to be to the correct field.
-            AbstractRecord translationRow = (AbstractRecord) query.getTranslationRow().clone();
+            AbstractRecord translationRow = query.getTranslationRow().clone();
             Vector allFields = new Vector();
             
             for (DatabaseField field : (Vector<DatabaseField>) translationRow.getFields()) {

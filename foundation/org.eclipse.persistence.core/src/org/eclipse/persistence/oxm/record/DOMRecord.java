@@ -215,7 +215,7 @@ public class DOMRecord extends XMLRecord {
      * INTERNAL:
      * Clone the row and its values.
      */
-    public Object clone() {
+    public DOMRecord clone() {
         DOMRecord clone = (DOMRecord)super.clone();
         if (clone != null) {
             clone.setDOM((Element)dom.cloneNode(true));

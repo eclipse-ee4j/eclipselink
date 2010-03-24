@@ -23,7 +23,6 @@ import org.eclipse.persistence.internal.sessions.*;
 import org.eclipse.persistence.queries.*;
 import org.eclipse.persistence.sessions.DatabaseRecord;
 import org.eclipse.persistence.internal.descriptors.CascadeLockingPolicy;
-import org.eclipse.persistence.internal.descriptors.ObjectBuilder;
 import org.eclipse.persistence.internal.expressions.SQLUpdateStatement;
 import org.eclipse.persistence.mappings.foundation.MapComponentMapping;
 
@@ -293,147 +292,52 @@ public class OneToManyMapping extends CollectionMapping implements RelationalMap
     }
 
     /**
-     * We need to execute the batch query and store the
-     * results in a hash table keyed by the (primary) keys
-     * of the source objects.
-     */
-    protected Map executeBatchQuery(DatabaseQuery query, AbstractSession session, AbstractRecord row) {
-        ContainerPolicy mappingCP = getContainerPolicy();
-        ContainerPolicy queryCP = ((ReadAllQuery)query).getContainerPolicy();
-        Object queryResult = null;
-
-        queryResult = session.executeQuery(query, row);
-
-        Map batchedObjects = new Hashtable(queryCP.sizeFor(queryResult));
-
-        for (Object iter = queryCP.iteratorFor(queryResult); queryCP.hasNext(iter);) {
-            Object eachReferenceObject = queryCP.next(iter, session);
-            Object eachForeignKey = extractForeignKeyFromReferenceObject(eachReferenceObject, session);
-
-            Object container = batchedObjects.get(eachForeignKey);
-            if (container == null) {
-                container = mappingCP.containerInstance();
-                batchedObjects.put(eachForeignKey, container);
-            }
-            mappingCP.addInto(eachReferenceObject, container, session);
-        }
-        return batchedObjects;
-    }
-
-    /**
-     * Extract the foreign key value from the reference object.
-     * Used for batch reading. Keep the fields in the same order
-     * as in the targetForeignKeysToSourceKeys map.
-     */
-    protected Object extractForeignKeyFromReferenceObject(Object object, AbstractSession session) {
-        int size = this.sourceKeyFields.size();
-        Object[] foreignKey = new Object[size];
-        ConversionManager conversionManager = session.getDatasourcePlatform().getConversionManager();
-        ObjectBuilder builder = getReferenceDescriptor().getObjectBuilder();
-
-        for (int index = 0; index < size; index++) {
-            DatabaseField sourceField = this.sourceKeyFields.get(index);
-            DatabaseField targetField = this.targetForeignKeyFields.get(index);
-            if (object == null) {
-                foreignKey[index] = null;
-            } else {
-                Object value = builder.extractValueFromObjectForField(object, targetField, session);
-
-                //CR:somenewsgroupbug need to ensure source and target types match.
-                try {
-                    value = conversionManager.convertObject(value, builder.getFieldClassification(sourceField));
-                } catch (ConversionException e) {
-                    throw ConversionException.couldNotBeConverted(this, getDescriptor(), e);
-                }
-
-                foreignKey[index] = value;
-            }
-        }
-        return new CacheId(foreignKey);
-    }
-
-    /**
      * INTERNAL:
      * Extract the source primary key value from the target row.
      * Used for batch reading, most following same order and fields as in the mapping.
      */
+    @Override
     protected Object extractKeyFromTargetRow(AbstractRecord row, AbstractSession session) {
         int size = this.sourceKeyFields.size();
         Object[] key = new Object[size];
         ConversionManager conversionManager = session.getDatasourcePlatform().getConversionManager();
-
         for (int index = 0; index < size; index++) {
             DatabaseField targetField = this.targetForeignKeyFields.get(index);
             DatabaseField sourceField = this.sourceKeyFields.get(index);
             Object value = row.get(targetField);
-
             // Must ensure the classification gets a cache hit.
             try {
                 value = conversionManager.convertObject(value, sourceField.getType());
             } catch (ConversionException e) {
                 throw ConversionException.couldNotBeConverted(this, getDescriptor(), e);
             }
-
             key[index] = value;
         }
-
         return new CacheId(key);
     }
 
     /**
      * Extract the key field values from the specified row.
      * Used for batch reading. Keep the fields in the same order
-     * as in the targetForeignKeysToSourceKeys hashtable.
+     * as in the targetForeignKeysToSourceKeys map.
      */
-    protected Object extractPrimaryKeyFromRow(AbstractRecord row, AbstractSession session) {
+    @Override
+    protected Object extractBatchKeyFromRow(AbstractRecord row, AbstractSession session) {
         int size = this.sourceKeyFields.size();
         Object[] key = new Object[size];
         ConversionManager conversionManager = session.getDatasourcePlatform().getConversionManager();
-
         for (int index = 0; index < size; index++) {
             DatabaseField sourceField = this.sourceKeyFields.get(index);
             Object value = row.get(sourceField);
-
             // Must ensure the classification to get a cache hit.
             try {
                 value = conversionManager.convertObject(value, sourceField.getType());
-            } catch (ConversionException e) {
-                throw ConversionException.couldNotBeConverted(this, this.descriptor, e);
+            } catch (ConversionException exception) {
+                throw ConversionException.couldNotBeConverted(this, this.descriptor, exception);
             }
-
             key[index] = value;
-        }
-        
+        }        
         return new CacheId(key);
-    }
-
-    /**
-     * INTERNAL:
-     * Extract the value from the batch optimized query.
-     */
-    @Override
-    public Object extractResultFromBatchQuery(DatabaseQuery query, AbstractRecord row, AbstractSession session, AbstractRecord argumentRow) {
-        if (((ReadAllQuery)query).shouldIncludeData()) {
-            return super.extractResultFromBatchQuery(query, row, session, argumentRow);
-        }
-        //this can be null, because either one exists in the query or it will be created
-        Map<Object, Object> batchedObjects = null;
-        synchronized (query) {
-            batchedObjects = getBatchReadObjects(query, session);
-            if (batchedObjects == null) {
-                batchedObjects = executeBatchQuery(query, session, argumentRow);
-                setBatchReadObjects(batchedObjects, query, session);
-                query.setSession(null);
-            }
-        }
-        Object result = batchedObjects.get(extractPrimaryKeyFromRow(row, session));
-
-        // The source object might not have any target objects
-        if (result == null) {
-            return getContainerPolicy().containerInstance();
-        } else {
-            return result;
-        }
     }
 
     /**
@@ -1020,6 +924,19 @@ public class OneToManyMapping extends CollectionMapping implements RelationalMap
     
         compareObjectsAndWrite(objectsInDB, objectsInMemory, query);
     }
+    
+    /**
+     * INTERNAL:
+     * Return the selection criteria used to IN batch fetching.
+     */
+    @Override
+    protected Expression buildBatchCriteria(ExpressionBuilder builder, ObjectLevelReadQuery query) {
+        if (this.targetForeignKeyFields.size() != 1) {
+            throw QueryException.batchReadingInRequiresSingletonPrimaryKey(query);
+        }
+        return builder.getField(this.targetForeignKeyFields.get(0)).in(
+                builder.getParameter(ForeignReferenceMapping.QUERY_BATCH_PARAMETER));
+    }
 
     /**
      * INTERNAL:
@@ -1028,7 +945,7 @@ public class OneToManyMapping extends CollectionMapping implements RelationalMap
     @Override
     protected void postPrepareNestedBatchQuery(ReadQuery batchQuery, ObjectLevelReadQuery query) {
         ReadAllQuery mappingBatchQuery = (ReadAllQuery)batchQuery;
-        mappingBatchQuery.setShouldIncludeData(getSelectionQueryContainerPolicy().shouldAddAll());
+        mappingBatchQuery.setShouldIncludeData(true);
     }
 
     /**

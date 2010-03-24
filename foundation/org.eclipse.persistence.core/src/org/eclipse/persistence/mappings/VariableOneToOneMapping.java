@@ -74,7 +74,7 @@ public class VariableOneToOneMapping extends ObjectReferenceMapping implements R
      */
     public void addClassIndicator(Class implementer, Object typeIndicator) {
         if (typeIndicator == null) {
-            typeIndicator = Helper.getNullWrapper();
+            typeIndicator = Helper.NULL_VALUE;
         }
 
         getTypeIndicatorTranslation().put(implementer, typeIndicator);
@@ -87,7 +87,7 @@ public class VariableOneToOneMapping extends ObjectReferenceMapping implements R
      */
     public void addClassNameIndicator(String className, Object typeIndicator) {
         if (typeIndicator == null) {
-            typeIndicator = Helper.getNullWrapper();
+            typeIndicator = Helper.NULL_VALUE;
         }
         getTypeIndicatorNameTranslation().put(className, typeIndicator);
     }
@@ -336,7 +336,7 @@ public class VariableOneToOneMapping extends ObjectReferenceMapping implements R
      */
     protected Object getImplementorForType(Object type, AbstractSession session) {
         if (type == null) {
-            return getTypeIndicatorTranslation().get(Helper.getNullWrapper());
+            return getTypeIndicatorTranslation().get(Helper.NULL_VALUE);
         }
 
         // Must ensure the type is the same, i.e. Integer != BigDecimal.
@@ -396,7 +396,7 @@ public class VariableOneToOneMapping extends ObjectReferenceMapping implements R
      */
     protected Object getTypeForImplementor(Class implementor) {
         Object type = getTypeIndicatorTranslation().get(implementor);
-        if (type == Helper.getNullWrapper()) {
+        if (type == Helper.NULL_VALUE) {
             type = null;
         }
 
@@ -556,7 +556,7 @@ public class VariableOneToOneMapping extends ObjectReferenceMapping implements R
         for (Iterator typeValuesEnum = getTypeIndicatorTranslation().values().iterator();
                  typeValuesEnum.hasNext() && (type == null);) {
             Object value = typeValuesEnum.next();
-            if ((value != Helper.getNullWrapper()) && (!(value instanceof Class))) {
+            if ((value != Helper.NULL_VALUE) && (!(value instanceof Class))) {
                 type = value.getClass();
             }
         }

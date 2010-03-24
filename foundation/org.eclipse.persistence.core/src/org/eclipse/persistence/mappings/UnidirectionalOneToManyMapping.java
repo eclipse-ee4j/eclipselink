@@ -23,7 +23,6 @@ import org.eclipse.persistence.exceptions.OptimisticLockException;
 import org.eclipse.persistence.internal.descriptors.CascadeLockingPolicy;
 import org.eclipse.persistence.internal.helper.ConversionManager;
 import org.eclipse.persistence.internal.helper.DatabaseField;
-import org.eclipse.persistence.internal.identitymaps.CacheId;
 import org.eclipse.persistence.internal.sessions.AbstractRecord;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.internal.sessions.ChangeRecord;
@@ -100,33 +99,6 @@ public class UnidirectionalOneToManyMapping extends OneToManyMapping {
             postCalculateChanges(record, (UnitOfWorkImpl)uow);
         }
         return record;
-    }
-    
-    /**
-     * INTERNAL:
-     * Extract the primary key value from the source row.
-     * Used for batch reading, most following same order and fields as in the mapping.
-     */
-    protected Object extractPrimaryKeyFromRow(AbstractRecord row, AbstractSession session) {            
-        int size = this.sourceKeyFields.size();
-        Object[] key = new Object[size];
-        ConversionManager conversionManager = session.getDatasourcePlatform().getConversionManager();
-
-        for (int index=0; index < size; index++) {
-            DatabaseField field = sourceKeyFields.get(index);
-            Object value = row.get(field);
-
-            // Must ensure the classification gets a cache hit.
-            try {
-                value = conversionManager.convertObject(value, field.getType());
-            } catch (ConversionException e) {
-                throw ConversionException.couldNotBeConverted(this, getDescriptor(), e);
-            }
-
-            key[index] = value;
-        }
-        
-        return new CacheId(key);
     }
 
     /**

@@ -96,15 +96,15 @@ TransactionIsolationBatchReadingTest extends AutoVerifyTestCase {
         strongAssert((femaleAddress != null), "The batch read attribute [female.address] was null");
         strongAssert(male.address.isInstantiated(), 
                      "The wrapped valueholder should be instantiated, because it " + "was read on the session and is safe to trigger.");
-        strongAssert(((UnitOfWorkImpl)unitOfWork).getBatchReadObjects() != null, 
+        strongAssert(((UnitOfWorkImpl)unitOfWork).getBatchQueries() != null, 
                      "unitOfWork.getBatchReadObjects() must never return null");
-        strongAssert(((UnitOfWorkImpl)unitOfWork).getBatchReadObjects().size() == 2, 
+        strongAssert(((UnitOfWorkImpl)unitOfWork).getBatchQueries().size() == 2, 
                      "unitOfWork batchReadObjects should only be storing the female addresses");
 
-        if (!((UnitOfWorkImpl)unitOfWork).getBatchReadObjects().isEmpty()) {
+        if (!((UnitOfWorkImpl)unitOfWork).getBatchQueries().isEmpty()) {
             DatabaseQuery batchQuery = 
-                (DatabaseQuery)((UnitOfWorkImpl)unitOfWork).getBatchReadObjects().keySet().iterator().next();
-            strongAssert(batchQuery.getProperty("batched objects") == null, 
+                ((UnitOfWorkImpl)unitOfWork).getBatchQueries().keySet().iterator().next();
+            strongAssert(batchQuery.getBatchObjects() == null, 
                          "triggering batch query on UOW should not store batched objects on the query.");
         }
 

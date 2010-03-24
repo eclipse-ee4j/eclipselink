@@ -282,24 +282,24 @@ public abstract class Cursor implements Enumeration, java.io.Serializable {
      * supported.
      */
     protected Object buildAndRegisterObject(AbstractRecord row) {
-        Object object = null;
-        if (getSession().isUnitOfWork() && (!getQuery().isReportQuery()) && (getQuery().shouldMaintainCache()) && (getQuery().isObjectLevelReadQuery())) {
-            UnitOfWorkImpl unitOfWork = (UnitOfWorkImpl)getSession();
-            ObjectLevelReadQuery query = (ObjectLevelReadQuery)getQuery();
-            if (query.shouldConformResultsInUnitOfWork() || query.getDescriptor().shouldAlwaysConformResultsInUnitOfWork()) {
-                object = query.conformIndividualResult(query.buildObject(row), unitOfWork, getTranslationRow(), getSelectionCriteriaClone(), getInitiallyConformingIndex());
+        ReadQuery query = getQuery();
+        if (query.isObjectLevelReadQuery()) {
+            ObjectLevelReadQuery objectQuery = (ObjectLevelReadQuery)query;
+            if (objectQuery.hasBatchReadAttributes() && objectQuery.getBatchFetchPolicy().isIN()) {
+                objectQuery.getBatchFetchPolicy().addDataResults(row);
+            }
+            if (this.session.isUnitOfWork() && (!query.isReportQuery()) && query.shouldMaintainCache()
+                    && objectQuery.shouldConformResultsInUnitOfWork() || objectQuery.getDescriptor().shouldAlwaysConformResultsInUnitOfWork()) {
+                Object object = objectQuery.conformIndividualResult(
+                        objectQuery.buildObject(row), (UnitOfWorkImpl)this.session, this.translationRow, this.selectionCriteriaClone, this.initiallyConformingIndex);
                 // Notifies caller to continue until conforming instance found
                 if (object == null) {
                     return InvalidObject.instance;
                 }
-            } else {
-                // This will now automatically clone the result.
-                object = query.buildObject(row);
+                return object;
             }
-        } else {
-            object = getQuery().buildObject(row);
         }
-        return object;
+        return query.buildObject(row);
     }
 
     /**

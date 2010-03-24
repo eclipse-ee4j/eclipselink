@@ -332,7 +332,7 @@ public class TableCreatorClassGenerator {
      * This must determine the class and use the correct constrcutor arguments.
      */
     protected String printString(Object value) {
-        if ((value == null) || (value == Helper.getNullWrapper())) {
+        if ((value == null) || (value == Helper.NULL_VALUE)) {
             return "null";
         }
 

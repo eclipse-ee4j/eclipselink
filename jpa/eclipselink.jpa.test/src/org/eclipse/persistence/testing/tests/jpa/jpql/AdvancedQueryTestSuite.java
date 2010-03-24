@@ -29,6 +29,7 @@ import javax.persistence.RollbackException;
 import junit.framework.Test;
 import junit.framework.TestSuite;
 
+import org.eclipse.persistence.annotations.BatchFetchType;
 import org.eclipse.persistence.config.CacheUsage;
 import org.eclipse.persistence.config.QueryHints;
 import org.eclipse.persistence.config.QueryType;
@@ -51,6 +52,7 @@ import org.eclipse.persistence.testing.models.jpa.advanced.Employee;
 import org.eclipse.persistence.testing.models.jpa.advanced.Address;
 import org.eclipse.persistence.testing.models.jpa.advanced.EmployeePopulator;
 import org.eclipse.persistence.testing.models.jpa.advanced.AdvancedTableCreator;
+import org.eclipse.persistence.testing.models.jpa.advanced.Employee.Gender;
 
 
 /**
@@ -116,6 +118,11 @@ public class AdvancedQueryTestSuite extends JUnitTestCase {
         suite.addTest(new AdvancedQueryTestSuite("testVersionChangeWithReadLock"));
         suite.addTest(new AdvancedQueryTestSuite("testVersionChangeWithWriteLock"));
         suite.addTest(new AdvancedQueryTestSuite("testNamedQueryAnnotationOverwritePersistenceXML"));
+        suite.addTest(new AdvancedQueryTestSuite("testBatchFetchingJOIN"));
+        suite.addTest(new AdvancedQueryTestSuite("testBatchFetchingEXISTS"));
+        suite.addTest(new AdvancedQueryTestSuite("testBatchFetchingIN"));
+        suite.addTest(new AdvancedQueryTestSuite("testBatchFetchingIN5"));
+        suite.addTest(new AdvancedQueryTestSuite("testBatchFetchingIN2"));
         
         return suite;
     }
@@ -1515,6 +1522,102 @@ public class AdvancedQueryTestSuite extends JUnitTestCase {
                 closeEntityManager(em);
             }
             
+        }
+    }
+
+    /**
+     * Test batch fetching.
+     */
+    public void testBatchFetchingIN() {
+        testBatchFetching(BatchFetchType.IN, 1000);
+    }
+
+    /**
+     * Test batch fetching.
+     */
+    public void testBatchFetchingIN5() {
+        testBatchFetching(BatchFetchType.IN, 5);
+    }
+
+    /**
+     * Test batch fetching.
+     */
+    public void testBatchFetchingIN2() {
+        testBatchFetching(BatchFetchType.IN, 2);
+    }
+
+    /**
+     * Test batch fetching.
+     */
+    public void testBatchFetchingJOIN() {
+        testBatchFetching(BatchFetchType.JOIN, 0);
+    }
+
+    /**
+     * Test batch fetching.
+     */
+    public void testBatchFetchingEXISTS() {
+        testBatchFetching(BatchFetchType.EXISTS, 0);
+    }
+
+    /**
+     * Test batch fetching.
+     */
+    public void testBatchFetching(BatchFetchType type, int size) {
+        clearCache();
+        EntityManager em = createEntityManager();
+        beginTransaction(em);
+        // Count SQL.
+        QuerySQLTracker counter = new QuerySQLTracker(getServerSession());
+        try {
+            // Query by primary key.
+            Query query = em.createQuery("Select e from Employee e where e.gender = :g1 or e.gender = :g2");
+            query.setHint(QueryHints.BATCH_SIZE, size);
+            query.setHint(QueryHints.BATCH_TYPE, type);
+            query.setHint(QueryHints.BATCH, "e.address");
+            query.setHint(QueryHints.BATCH, "e.manager");
+            query.setHint(QueryHints.BATCH, "e.projects");
+            query.setHint(QueryHints.BATCH, "e.managedEmployees");
+            query.setHint(QueryHints.BATCH, "e.responsibilities");
+            query.setHint(QueryHints.BATCH, "e.dealers");
+            query.setHint(QueryHints.BATCH, "e.phoneNumbers");
+            //query.setHint(QueryHints.BATCH, "e.department"); is join fetched already.
+            query.setHint(QueryHints.BATCH, "e.workWeek");
+            query.setParameter("g1", Gender.Male);
+            query.setParameter("g2", Gender.Female);
+            List<Employee> results = query.getResultList();
+            if (counter.getSqlStatements().size() != 1) {
+                fail("Should have been 1 query but was: " + counter.getSqlStatements().size());
+            }
+            for (Employee employee : results) {
+                employee.getAddress();
+                employee.getManager();
+                employee.getProjects().size();
+                employee.getManagedEmployees().size();
+                employee.getResponsibilities().size();
+                employee.getDealers().size();
+                employee.getPhoneNumbers().size();
+                employee.getWorkWeek().size();
+            }
+            int queries = 11;
+            if (size == 2) {
+                queries = 55;
+            } else if (size == 5) {
+                queries = 30;
+            }
+            if (counter.getSqlStatements().size() > queries) {
+                fail("Should have been " + queries + " queries but was: " + counter.getSqlStatements().size());
+            }
+            clearCache();
+            for (Employee employee : results) {
+                verifyObject(employee);
+            }
+        } finally {
+            rollbackTransaction(em);
+            closeEntityManager(em);
+            if (counter != null) {
+                counter.remove();
+            }
         }
     }
 }

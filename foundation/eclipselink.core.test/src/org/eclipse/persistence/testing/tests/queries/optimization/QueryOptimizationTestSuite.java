@@ -66,6 +66,7 @@ public class QueryOptimizationTestSuite extends TestSuite {
         querybb2.setSelectionCriteria(new org.eclipse.persistence.expressions.ExpressionBuilder().get("lastName").equal("Way"));
         testbb2.setQuery(querybb2);
         addTest(testbb2);
+        
         //add the BatchReadingUnitOfWorkTest and BatchReadingUnitOfWorkInTransactionTest
         BatchReadingUnitOfWorkTest testbb3 = new BatchReadingUnitOfWorkTest(batchType);
         addTest(testbb3);
@@ -73,14 +74,18 @@ public class QueryOptimizationTestSuite extends TestSuite {
         BatchReadingUnitOfWorkInTransactionTest testbb4 = new BatchReadingUnitOfWorkInTransactionTest(batchType);
         addTest(testbb4);
 
-        //adding the OneToMany tests
-        OneToManyBatchReadingTest testbb5 = new OneToManyBatchReadingTest(batchType);
-        addTest(testbb5);
+        if (batchType != BatchFetchType.IN) {
+            //adding the OneToMany tests
+            OneToManyBatchReadingTest testbb5 = new OneToManyBatchReadingTest(batchType);
+            addTest(testbb5);
+        }
         
-        addTest(new BatchReadingTest());
+        addTest(new BatchReadingTest(batchType));
 
-        OneToManyBatchReadingCustomSelectionQueryTest testbb6 = new OneToManyBatchReadingCustomSelectionQueryTest(batchType);
-        addTest(testbb6);
+        if (batchType != BatchFetchType.IN) {
+            OneToManyBatchReadingCustomSelectionQueryTest testbb6 = new OneToManyBatchReadingCustomSelectionQueryTest(batchType);
+            addTest(testbb6);
+        }
 
         ReadAllBatchReadingTest test3 = new ReadAllBatchReadingTest(2);
         test3.setName("ReadAllBatchReadingTestWhereAddressManager-cursor" + batchType);
@@ -98,7 +103,7 @@ public class QueryOptimizationTestSuite extends TestSuite {
         addTest(test3);
 
         NestedOneToManyBatchReadAllTest test3_5 = new NestedOneToManyBatchReadAllTest(org.eclipse.persistence.testing.models.collections.Restaurant.class, 15);
-        test3_5.setName("NestedOneToManyBatchReadAllTest");
+        test3_5.setName("NestedOneToManyBatchReadAllTest" + batchType);
         ReadAllQuery query3_5 = new ReadAllQuery();
         query3_5.setBatchFetchType(batchType);
         query3_5.setReferenceClass(org.eclipse.persistence.testing.models.collections.Restaurant.class);
@@ -117,11 +122,13 @@ public class QueryOptimizationTestSuite extends TestSuite {
         test4.setQuery(query4);
         addTest(test4);
 
-        addTest(new OneToOneBatchReadingTest(batchType));
+        if (batchType != BatchFetchType.IN) {
+            addTest(new OneToOneBatchReadingTest(batchType));
+        }
 
         // Batch testing on 1-M mapping.
         ReadAllTest test5 = new ReadAllTest(org.eclipse.persistence.testing.models.insurance.Policy.class, 4);
-        test5.setName("ReadAllBatchReadingTestClaim");
+        test5.setName("ReadAllBatchReadingTestClaim" + batchType);
         ReadAllQuery query5 = new ReadAllQuery();
         query5.setBatchFetchType(batchType);
         query5.setReferenceClass(org.eclipse.persistence.testing.models.insurance.Policy.class);
@@ -129,14 +136,19 @@ public class QueryOptimizationTestSuite extends TestSuite {
         query5.setSelectionCriteria(new org.eclipse.persistence.expressions.ExpressionBuilder().get("maxCoverage").greaterThan(30000));
         test5.setQuery(query5);
         addTest(test5);
-        addTest(new OneToManyBatchReadingTest(batchType));
+        
+        if (batchType != BatchFetchType.IN) {
+            addTest(new OneToManyBatchReadingTest(batchType));
+        }
 
         addTest(new NestedBatchReadingTest(batchType));
         addTest(new AggregateBatchReadingTest(batchType));
         addTest(new BatchReadingBatchReadExpressionTest(batchType));
         addTest(new BatchReadingWithInvalidQueryKeyTest(batchType));
         addTest(new BatchReadValueholderTest(batchType));
-        addTest(new BatchReadingStackOverflowTest(batchType));
+        if (batchType != BatchFetchType.IN) {
+            addTest(new BatchReadingStackOverflowTest(batchType));
+        }
     }
 
     public void addJoinTests() {

@@ -153,7 +153,7 @@ public abstract class IndirectionPolicy implements Cloneable, Serializable {
      * Reduce casting clutter....
      */
     protected CollectionMapping getCollectionMapping() {
-        return (CollectionMapping)this.getMapping();
+        return (CollectionMapping)this.mapping;
     }
 
     /**
@@ -161,7 +161,7 @@ public abstract class IndirectionPolicy implements Cloneable, Serializable {
      * Reduce casting clutter....
      */
     protected ForeignReferenceMapping getForeignReferenceMapping() {
-        return (ForeignReferenceMapping)this.getMapping();
+        return (ForeignReferenceMapping)this.mapping;
     }
 
     /**
@@ -177,7 +177,7 @@ public abstract class IndirectionPolicy implements Cloneable, Serializable {
      * Reduce casting clutter....
      */
     protected ObjectReferenceMapping getOneToOneMapping() {
-        return (ObjectReferenceMapping)this.getMapping();
+        return (ObjectReferenceMapping)this.mapping;
     }
 
     /**
@@ -221,7 +221,7 @@ public abstract class IndirectionPolicy implements Cloneable, Serializable {
      * Reduce casting clutter....
      */
     protected AbstractTransformationMapping getTransformationMapping() {
-        return (AbstractTransformationMapping)this.getMapping();
+        return (AbstractTransformationMapping)this.mapping;
     }
 
     /**

@@ -215,7 +215,7 @@ public class ObjectChangeSet implements Serializable, Comparable<ObjectChangeSet
             if (changeSet.id != null) {
                 return -1;
             } else {
-                return 1;
+                return 0;
             }
         } else if (changeSet.id == null) {
             return 1;
@@ -223,7 +223,7 @@ public class ObjectChangeSet implements Serializable, Comparable<ObjectChangeSet
         try {
             return ((Comparable)this.id).compareTo(changeSet.id);
         } catch (Exception exception) {
-            return -1;
+            return 0;
         }
     }
 

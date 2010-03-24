@@ -72,7 +72,7 @@ public class QueryBasedValueHolder extends DatabaseValueHolder {
     }
 
     protected Object instantiate() throws DatabaseException {
-        return instantiate(getSession());
+        return instantiate(this.session);
     }
 
     /**
@@ -122,7 +122,7 @@ public class QueryBasedValueHolder extends DatabaseValueHolder {
      */
     protected void resetFields() {
         super.resetFields();
-        setQuery(null);
+        this.query = null;
     }
 
     /**
@@ -147,10 +147,10 @@ public class QueryBasedValueHolder extends DatabaseValueHolder {
      */
     public boolean isPessimisticLockingValueHolder() {
         // Get the easy checks out of the way first.
-        if ((getQuery() == null) || !getQuery().isObjectLevelReadQuery()) {
+        if ((this.query == null) || !this.query.isObjectLevelReadQuery()) {
             return false;
         }
-        ObjectLevelReadQuery query = (ObjectLevelReadQuery) getQuery();
+        ObjectLevelReadQuery query = (ObjectLevelReadQuery) this.query;
 
         // Note even if the reference class is not locked, but the valueholder
         // query
@@ -160,6 +160,6 @@ public class QueryBasedValueHolder extends DatabaseValueHolder {
         // is not to be pess. locked and get an exception for triggering it on
         // the
         // session outside a transaction.
-        return query.isLockQuery(getSession());
+        return query.isLockQuery(this.session);
     }
 }

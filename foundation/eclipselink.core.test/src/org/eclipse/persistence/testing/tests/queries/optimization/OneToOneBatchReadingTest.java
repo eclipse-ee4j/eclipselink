@@ -27,6 +27,7 @@ public class OneToOneBatchReadingTest extends TestCase {
     public OneToOneBatchReadingTest(BatchFetchType batchType) {
         setDescription("Tests batch reading using 1 to 1 mapping and composite primary key");
         this.batchType = batchType;
+        setName(getName() + batchType);
     }
 
     public void reset() {
