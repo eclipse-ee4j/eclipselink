@@ -1238,7 +1238,7 @@ public class AdvancedJPAJunitTest extends JUnitTestCase {
         em.createQuery("SELECT e from Equipment e where e.department is not null").getResultList();
         departmentDesc.getDescriptorEventManager().removeListener(listener);
         departmentDesc.getDescriptorEventManager().initialize((AbstractSession) session);
-        em.close();
+        closeEntityManager(em);
     }
     
     /**
