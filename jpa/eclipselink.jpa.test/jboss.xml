@@ -79,7 +79,7 @@
     </target>
 
     <target name="copy-eclipselink-persistence-jars-to-domain-lib" if="is.eap">
-        <copy file="${eclipselink.jpa}/../${plugins.dir}/${persistence20.jar}" todir="${jboss.server}/lib" overwrite="true"/>
+        <copy file="${eclipselink.plugins.trunk}/${persistence10.jar}" todir="${jboss.server}/lib" overwrite="true"/>
     </target>
 
     <!-- This target is to create datasource required for running JPA tests on the JBoss server. -->
