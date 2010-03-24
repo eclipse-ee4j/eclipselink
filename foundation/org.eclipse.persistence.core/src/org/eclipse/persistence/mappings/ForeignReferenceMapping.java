@@ -428,7 +428,7 @@ public abstract class ForeignReferenceMapping extends DatabaseMapping {
                         if (index >= rowsSize) {
                             // Processed all rows, done.
                             break;
-                        } else if ((offset + index) > rowsSize) {
+                        } else if ((offset + index) >= rowsSize) {
                             // If passed the end, go back to start.
                             offset = index * -1;
                         }
