@@ -1214,7 +1214,7 @@
             <jvmarg value="-Ddb.url=${DB_URL}"/>
             <jvmarg value="-Ddb.user=${db.user}"/>
             <jvmarg value="-Ddb.pwd=${db.pwd}"/>
-            <jvmarg value="${jvmarg.db.platform}"/>
+            <jvmarg value="${jvmarg.db.platform.class}"/>
             <jvmarg line="${additional.jvmargs}"/>
             <jvmarg value="${jvmarg.db.platform.class}"/>
             <classpath>
