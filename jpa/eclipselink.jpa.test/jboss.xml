@@ -129,15 +129,9 @@
             <sysproperty key="eclipselink.logging.level" value="${logging.level}"/>
             <sysproperty key="java.endorsed.dirs" value="${jboss.home}/lib/endorsed"/>
             <classpath>
-                <fileset
-                    dir="${jboss.home}/lib"
-                    includes="**/*.jar">
-                </fileset>
+                <pathelement location="${jboss.home}/lib/jboss-common-core.jar"/>
+                <pathelement location="${jboss.home}/lib/jboss-logging-spi.jar"/>
                 <pathelement location="${jboss.home}/bin/run.jar"/>
-                <pathelement location="${jboss.home}/server/all/lib/jboss-j2ee.jar"/>
-                <pathelement location="${jboss.home}/common/lib/servlet-api.jar"/>
-                <pathelement location="${jboss.home}/client/jboss-javaee.jar"/>
-                <pathelement location="${jboss.home}/common/lib/jboss-bindingservice.jar"/>
                 <pathelement location="${jdbc.driver.jar}"/>
                 <pathelement location="${oracle.extensions.depend.dir}/${oracle.xdb.lib}"/>
                 <pathelement location="${oracle.extensions.depend.dir}/${oracle.xmlparserv2.lib}"/>
