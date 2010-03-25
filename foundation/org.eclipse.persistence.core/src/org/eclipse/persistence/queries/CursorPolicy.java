@@ -16,6 +16,7 @@ import java.util.*;
 import org.eclipse.persistence.internal.queries.*;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.descriptors.ClassDescriptor;
+import org.eclipse.persistence.descriptors.changetracking.CollectionChangeEvent;
 import org.eclipse.persistence.exceptions.*;
 
 /**
@@ -52,6 +53,14 @@ public abstract class CursorPolicy extends ContainerPolicy {
         clone.setQuery(query);
 
         return clone;
+    }
+    
+    /**
+     * INTERNAL:
+     * Creates a CollectionChangeEvent for the container
+     */
+    public CollectionChangeEvent createChangeEvent(Object collectionOwner, String propertyName, Object collectionChanged, Object elementChanged, int changeType, Integer index){
+        throw ValidationException.operationNotSupported("createChangeEvent");
     }
 
     /**

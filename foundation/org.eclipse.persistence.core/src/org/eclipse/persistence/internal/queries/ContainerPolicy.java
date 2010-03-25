@@ -454,9 +454,7 @@ public abstract class ContainerPolicy implements Cloneable, Serializable {
      * INTERNAL:
      * Creates a CollectionChangeEvent for the container
      */
-    public CollectionChangeEvent createChangeEvent(Object collectionOwner, String propertyName, Object collectionChanged, Object elementChanged, int changeType, Integer index) {
-        return null;//not valid
-    }
+    public abstract CollectionChangeEvent createChangeEvent(Object collectionOwner, String propertyName, Object collectionChanged, Object elementChanged, int changeType, Integer index);
     
     /**
      * INTERNAL:
