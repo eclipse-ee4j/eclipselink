@@ -21,6 +21,7 @@ public class DynamicJAXBTestSuite extends TestSuite {
         TestSuite suite = new TestSuite("Dynamic JAXB Test Suite");
         suite.addTestSuite(DynamicJAXBContextCreationTestCases.class);
         suite.addTestSuite(DynamicJAXBFromSessionsXMLTestCases.class);
+        suite.addTestSuite(DynamicJAXBFromXSDTestCases.class);
         return suite;
     }
 

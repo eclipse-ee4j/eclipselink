@@ -70,6 +70,9 @@
     <property name="persistence.lib" value="${moxytest.2.common.plugins.dir}/${unsigned.persistence10.jar}"/>
     <property name="eclipselink.lib" value="${moxytest.2.trunk.dir}/${eclipselink.jar}"/>
 
+    <property name="moxytest.2.utils.jaxb.dir" value="${moxytest.2.trunk.dir}/utils/eclipselink.utils.jaxb"/>
+    <property name="jaxb-xjc.lib" value="${moxytest.2.utils.jaxb.dir}/${jaxb-xjc.jar}"/>
+
     <!-- Compile/run paths -->
     <path id="jaxb.compile.path">
         <pathelement path="${jaxb-api.lib}"/>
@@ -80,6 +83,7 @@
         <pathelement path="${junit.lib}"/>
         <pathelement path="${moxytest.2.moxy.dir}/${classes.dir}"/>
         <pathelement path="${moxytest.2.core.dir}/${classes.dir}"/>
+        <pathelement path="${jaxb-xjc.lib}"/>
     </path>
     <path id="jaxb.run.path">
         <pathelement path="${jaxb-api.lib}"/>
@@ -92,6 +96,7 @@
         <pathelement path="${moxytest.2.core.dir}/${classes.dir}"/>
         <pathelement path="${moxytest.2.core.dir}/${resource.dir}"/>
         <pathelement path="${moxytest.2.common.plugins.dir}/org.eclipse.persistence.asm"/>
+        <pathelement path="${jaxb-xjc.lib}"/>
     </path>
     <path id="oxm.compile.path">
         <pathelement path="${persistence.lib}"/>
@@ -123,6 +128,7 @@
             dir="${moxytest.2.common.plugins.dir}"
             includes="${eclipselink.core.depend}"/>
         <pathelement path="${eclipselink.lib}"/>
+        <pathelement path="${jaxb-xjc.lib}"/>
     </path>
     <path id="jaxb.run.against.jar.path">
         <pathelement path="${junit.lib}"/>
@@ -133,6 +139,7 @@
         <pathelement path="${classes.dir}"/>
         <pathelement path="${resource.dir}"/>
         <pathelement path="${eclipselink.lib}"/>
+        <pathelement path="${jaxb-xjc.lib}"/>
     </path>
     <path id="oxm.compile.against.jar.path">
         <pathelement path="${persistence.lib}"/>

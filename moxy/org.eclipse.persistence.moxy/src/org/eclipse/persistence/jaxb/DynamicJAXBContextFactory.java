@@ -12,9 +12,20 @@
  ******************************************************************************/
 package org.eclipse.persistence.jaxb;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.InputStream;
 import java.util.Map;
 
 import javax.xml.bind.JAXBException;
+import javax.xml.transform.Source;
+import javax.xml.transform.stream.StreamResult;
+
+import org.eclipse.persistence.oxm.NamespaceResolver;
+import org.eclipse.persistence.platform.xml.XMLPlatformFactory;
+import org.eclipse.persistence.platform.xml.XMLTransformer;
+import org.w3c.dom.Node;
+import org.xml.sax.InputSource;
 
 /**
  * <p>
@@ -67,6 +78,8 @@ public class DynamicJAXBContextFactory {
      *      The application's current class loader, which will be used to first lookup
      *      classes to see if they exist before new <tt>DynamicTypes</tt> are generated.  Can be
      *      <tt>null</tt>, in which case <tt>Thread.currentThread().getContextClassLoader()</tt> will be used.
+     * @param properties
+     *      Map of properties to use when creating a new <tt>DynamicJAXBContext</tt>.
      *
      * @return
      *      A new instance of <tt>DynamicJAXBContext</tt>.
@@ -74,7 +87,7 @@ public class DynamicJAXBContextFactory {
      * @throws JAXBException
      *      if an error was encountered while creating the <tt>DynamicJAXBContext</tt>.
      */
-    public static DynamicJAXBContext createContext(String sessionNames, ClassLoader classLoader, Map<String, ?> props) throws JAXBException {
+    public static DynamicJAXBContext createContext(String sessionNames, ClassLoader classLoader, Map<String, ?> properties) throws JAXBException {
         DynamicJAXBContext dContext = new DynamicJAXBContext();
         dContext.initializeFromSessionsXML(sessionNames, classLoader);
         return dContext;
@@ -83,11 +96,101 @@ public class DynamicJAXBContextFactory {
     /**
      * Unsupported Operation.  DynamicJAXBConexts can not be created from concrete classes.  Use the standard
      * JAXBContext to create a context from existing Classes.
-     * 
+     *
      * @see org.eclipse.persistence.jaxb.JAXBContext
      */
-    public static DynamicJAXBContext createContext(Class[] classes, Map props) throws JAXBException {
+    public static DynamicJAXBContext createContext(Class[] classes, Map<String, ?> properties) throws JAXBException {
         throw new JAXBException(org.eclipse.persistence.exceptions.JAXBException.cannotCreateDynamicContextFromClasses());
     }
-    
+
+    /**
+     * Create a <tt>DynamicJAXBContext</tt>, using XML Schema as the metadata source.
+     *
+     * @param schemaDOM
+     *      <tt>org.w3c.dom.Node</tt> representing the XML Schema.
+     * @param resolver
+     *      An EclipseLink <tt>NamespaceResolver</tt>, used to resolve namespace prefixes.
+     * @param classLoader
+     *      The application's current class loader, which will be used to first lookup
+     *      classes to see if they exist before new <tt>DynamicTypes</tt> are generated.  Can be
+     *      <tt>null</tt>, in which case <tt>Thread.currentThread().getContextClassLoader()</tt> will be used.
+     * @param properties
+     *      Map of properties to use when creating a new <tt>DynamicJAXBContext</tt>.
+     *
+     * @return
+     *      A new instance of <tt>DynamicJAXBContext</tt>.
+     *
+     * @throws JAXBException
+     *      if an error was encountered while creating the <tt>DynamicJAXBContext</tt>.
+     */
+    public static DynamicJAXBContext createContextFromXSD(Node schemaDOM, NamespaceResolver resolver, ClassLoader classLoader, Map<String, ?> properties) throws JAXBException {
+        DynamicJAXBContext dContext = new DynamicJAXBContext();
+        dContext.initializeFromXSDNode(schemaDOM, classLoader);
+
+        return dContext;
+    }
+
+    /**
+     * Create a <tt>DynamicJAXBContext</tt>, using XML Schema as the metadata source.
+     *
+     * @param schemaStream
+     *      <tt>java.io.InputStream</tt> from which to read the XML Schema.
+     * @param resolver
+     *      An EclipseLink <tt>NamespaceResolver</tt>, used to resolve namespace prefixes.
+     * @param classLoader
+     *      The application's current class loader, which will be used to first lookup
+     *      classes to see if they exist before new <tt>DynamicTypes</tt> are generated.  Can be
+     *      <tt>null</tt>, in which case <tt>Thread.currentThread().getContextClassLoader()</tt> will be used.
+     * @param properties
+     *      Map of properties to use when creating a new <tt>DynamicJAXBContext</tt>.
+     *
+     * @return
+     *      A new instance of <tt>DynamicJAXBContext</tt>.
+     *
+     * @throws JAXBException
+     *      if an error was encountered while creating the <tt>DynamicJAXBContext</tt>.
+     */
+    public static DynamicJAXBContext createContextFromXSD(InputStream schemaStream, NamespaceResolver resolver, ClassLoader classLoader, Map<String, ?> properties) throws JAXBException {
+        InputSource schemaSource = new InputSource(schemaStream);
+
+        DynamicJAXBContext dContext = new DynamicJAXBContext();
+        dContext.initializeFromXSDInputSource(schemaSource, classLoader);
+
+        return dContext;
+    }
+
+    /**
+     * Create a <tt>DynamicJAXBContext</tt>, using XML Schema as the metadata source.
+     *
+     * @param schemaSource
+     *      <tt>javax.xml.transform.Source</tt> from which to read the XML Schema.
+     * @param resolver
+     *      An EclipseLink <tt>NamespaceResolver</tt>, used to resolve namespace prefixes.
+     * @param classLoader
+     *      The application's current class loader, which will be used to first lookup
+     *      classes to see if they exist before new <tt>DynamicTypes</tt> are generated.  Can be
+     *      <tt>null</tt>, in which case <tt>Thread.currentThread().getContextClassLoader()</tt> will be used.
+     * @param properties
+     *      Map of properties to use when creating a new <tt>DynamicJAXBContext</tt>.
+     *
+     * @return
+     *      A new instance of <tt>DynamicJAXBContext</tt>.
+     *
+     * @throws JAXBException
+     *      if an error was encountered while creating the <tt>DynamicJAXBContext</tt>.
+     */
+    public static DynamicJAXBContext createContextFromXSD(Source schemaSource, NamespaceResolver resolver, ClassLoader classLoader, Map<String, ?> properties) throws JAXBException {
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        StreamResult result = new StreamResult(baos);
+        XMLTransformer t = XMLPlatformFactory.getInstance().getXMLPlatform().newXMLTransformer();
+        t.transform(schemaSource, result);
+        ByteArrayInputStream bais = new ByteArrayInputStream(baos.toByteArray());
+        InputSource schemaInputSource = new InputSource(bais);
+
+        DynamicJAXBContext dContext = new DynamicJAXBContext();
+        dContext.initializeFromXSDInputSource(schemaInputSource, classLoader);
+
+        return dContext;
+    }
+
 }

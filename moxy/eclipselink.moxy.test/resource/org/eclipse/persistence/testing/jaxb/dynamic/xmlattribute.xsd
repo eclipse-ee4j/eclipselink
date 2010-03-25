@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema targetNamespace="myNamespace" xmlns:myns="myNamespace" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+
+    <xs:element name="person" type="myns:person"/>
+
+    <xs:complexType name="person">
+        <xs:attribute name="id" type="xs:int"/>
+    </xs:complexType>
+
+</xs:schema>

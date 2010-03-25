@@ -53,6 +53,9 @@
         <propertyref prefix="javax.xml"/>
     </propertyset>
 
+    <property name="moxy.2.utils.jaxb.dir" value="${moxy.2.base.dir}/utils/eclipselink.utils.jaxb"/>
+    <property name="jaxb-xjc.lib" value="${moxy.2.utils.jaxb.dir}/${jaxb-xjc.jar}"/>
+
     <!-- Defaults, set var in ${user.home}/build.properties if different version required -->
     <property name="bndtool.jar" value="bnd-0.0.366.jar"/>
 
@@ -118,6 +121,7 @@
         <path id="moxy.compile.path">
             <pathelement path="${moxy.2.common.plugins.dir}/${jaxb-api.lib}"/>
             <pathelement path="${moxy.2.common.plugins.dir}/${asm}"/>
+            <pathelement path="${jaxb-xjc.lib}"/>
             <pathelement path="${core.lib}"/>
             <fileset
                 dir="${moxy.2.common.plugins.dir}"

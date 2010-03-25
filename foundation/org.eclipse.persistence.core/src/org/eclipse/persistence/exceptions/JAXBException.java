@@ -68,6 +68,8 @@ public class JAXBException extends EclipseLinkException {
     public static final int NULL_TYPE_ON_TYPEMAPPINGINFO = 50036;
     public static final int JAVATYPE_NOT_ALLOWED_IN_BINDINGS_FILE = 50037;
     public static final int CANNOT_CREATE_DYNAMIC_CONTEXT_FROM_CLASSES = 50038;
+    public static final int CANNOT_INITIALIZE_FROM_NODE = 50039;
+    public static final int ERROR_CREATING_DYNAMICJAXBCONTEXT = 50040;
 
     protected JAXBException(String message) {
         super(message);
@@ -213,9 +215,9 @@ public class JAXBException extends EclipseLinkException {
 
     /**
      * This exception would typically be used by JAXBContextFactory during externalized metadata processing (i.e.
-     * eclipselink-oxm.xml).  This exception applies to the case where the Key parameter type of the package name to 
+     * eclipselink-oxm.xml).  This exception applies to the case where the Key parameter type of the package name to
      * metadata source map is something other than String.  We require Map<String, Source>.
-     * 
+     *
      * @return
      */
     public static JAXBException incorrectKeyParameterType() {
@@ -227,9 +229,9 @@ public class JAXBException extends EclipseLinkException {
 
     /**
      * This exception would typically be used by JAXBContextFactory during externalized metadata processing (i.e.
-     * eclipselink-oxm.xml).  This exception applies to the case where the Value parameter type (of the package 
+     * eclipselink-oxm.xml).  This exception applies to the case where the Value parameter type (of the package
      * name to metadata source map) is something other than Source.  We require Map<String, Source>.
-     * 
+     *
      * @return
      */
     public static JAXBException incorrectValueParameterType() {
@@ -241,9 +243,9 @@ public class JAXBException extends EclipseLinkException {
 
     /**
      * This exception would typically be used by JAXBContextFactory during externalized metadata processing (i.e.
-     * eclipselink-oxm.xml).  This exception applies to the case where the Value parameter type associated with 
+     * eclipselink-oxm.xml).  This exception applies to the case where the Value parameter type associated with
      * the 'eclipselink-oxm-xml' Key (in the properties map) is something other than Map<String, Source>.
-     * 
+     *
      * @return
      */
     public static JAXBException incorrectValueParameterTypeForOxmXmlKey() {
@@ -255,9 +257,9 @@ public class JAXBException extends EclipseLinkException {
 
     /**
      * This exception would typically be used by JAXBContextFactory during externalized metadata processing (i.e.
-     * eclipselink-oxm.xml).  This exception applies to the case where the Value (in the package name 
+     * eclipselink-oxm.xml).  This exception applies to the case where the Value (in the package name
      * to metadata source map) is null.
-     * 
+     *
      * @param key
      * @return
      */
@@ -270,9 +272,9 @@ public class JAXBException extends EclipseLinkException {
 
     /**
      * This exception would typically be used by JAXBContextFactory during externalized metadata processing (i.e.
-     * eclipselink-oxm.xml).  This exception applies to the case where the Key (in the package name 
+     * eclipselink-oxm.xml).  This exception applies to the case where the Key (in the package name
      * to metadata source map) is null.
-     * 
+     *
      * @return
      */
     public static JAXBException nullMapKey() {
@@ -285,8 +287,8 @@ public class JAXBException extends EclipseLinkException {
     /**
      * This exception would typically be used by JAXBContextFactory during externalized metadata processing (i.e.
      * eclipselink-oxm.xml).  This exception applies to the case where a class that is declared in the metadata
-     * file cannot be loaded by the classloader. 
-     * 
+     * file cannot be loaded by the classloader.
+     *
      * @param classname
      * @return
      */
@@ -301,7 +303,7 @@ public class JAXBException extends EclipseLinkException {
      * This exception would typically be used by JAXBContextFactory during externalized metadata processing (i.e.
      * eclipselink-oxm.xml).  This exception applies to the case where JAXBContext creation fails for our
      * XmlModel.
-     * 
+     *
      * @return
      */
     public static JAXBException couldNotCreateContextForXmlModel() {
@@ -315,7 +317,7 @@ public class JAXBException extends EclipseLinkException {
      * This exception would typically be used by JAXBContextFactory during externalized metadata processing (i.e.
      * eclipselink-oxm.xml).  This exception applies to the case where JAXBContext creation fails for our
      * XmlModel.
-     * 
+     *
      * @param ex
      * @return
      */
@@ -328,9 +330,9 @@ public class JAXBException extends EclipseLinkException {
 
     /**
      * This exception would typically be used by JAXBContextFactory during externalized metadata processing (i.e.
-     * eclipselink-oxm.xml).  This exception applies to the case where an exception occurs while unmarshalling 
+     * eclipselink-oxm.xml).  This exception applies to the case where an exception occurs while unmarshalling
      * the eclipselink metadata file.
-     * 
+     *
      * @param e
      * @return
      */
@@ -343,7 +345,7 @@ public class JAXBException extends EclipseLinkException {
 
     /**
      * This exception should be used when a descriptor customizer instance cannot be created.
-     * 
+     *
      * @param e
      * @param javaClassName
      * @param customizerClassName
@@ -358,8 +360,8 @@ public class JAXBException extends EclipseLinkException {
 
     /**
      * This exception would typically be thrown when a customizer class is set
-     * that is not an instance of DescriptorCustomizer. 
-     * 
+     * that is not an instance of DescriptorCustomizer.
+     *
      * @param e
      * @param customizerClassName
      * @return
@@ -374,7 +376,7 @@ public class JAXBException extends EclipseLinkException {
     /**
      * This exception should be used when an attempt is made to set an ID property
      * when one has already been set.
-     *  
+     *
      * @param propertyName attempting to set this property as ID
      * @param idPropertyName existing ID property
      * @param className class in question
@@ -390,7 +392,7 @@ public class JAXBException extends EclipseLinkException {
     /**
      * This exception should be used when an attempt is made to set an XmlValue property
      * when one has already been set.
-     *  
+     *
      * @param propertyName attempting to set this property as XmlValue
      * @param xmlValuePropertyName existing XmlValue property
      * @param className class in question
@@ -404,9 +406,9 @@ public class JAXBException extends EclipseLinkException {
     }
 
     /**
-     * This exception should be used when an attempt is made to set an XmlAnyElement 
+     * This exception should be used when an attempt is made to set an XmlAnyElement
      * property when one has already been set.
-     *  
+     *
      * @param propertyName attempting to set this property as XmlAnyElement
      * @param xmlAnyElementPropertyName existing XmlAnyElement property
      * @param className class in question
@@ -421,7 +423,7 @@ public class JAXBException extends EclipseLinkException {
 
     /**
      * This exception should be used when DomHandlerConverter initialization fails.
-     *  
+     *
      * @param nestedException
      * @param domHandlerClassName
      * @param propertyName
@@ -435,9 +437,9 @@ public class JAXBException extends EclipseLinkException {
     }
 
     /**
-     * This exception should be used when an @XmlAttributeRef or xml-attribute-ref appears 
+     * This exception should be used when an @XmlAttributeRef or xml-attribute-ref appears
      * on a non-DataHandler property.
-     * 
+     *
      * @param propertyName
      * @param className
      * @return
@@ -450,11 +452,11 @@ public class JAXBException extends EclipseLinkException {
     }
 
     /**
-     * This exception should be used when XmlElements and XmlIDREF are set on a property, 
-     * but one or more of the XmlElement entries in the list has a type that does not 
+     * This exception should be used when XmlElements and XmlIDREF are set on a property,
+     * but one or more of the XmlElement entries in the list has a type that does not
      * have an XmlID property.
-     *   
-     * @param propertyName 
+     *
+     * @param propertyName
      * @param elementName
      * @return
      */
@@ -464,9 +466,9 @@ public class JAXBException extends EclipseLinkException {
         exception.setErrorCode(INVALID_XMLELEMENT_IN_XMLELEMENTS);
         return exception;
     }
-    
+
     /**
-     * This exception should be used when a TypeMappingInfo is specified but the Type is not set on it.  
+     * This exception should be used when a TypeMappingInfo is specified but the Type is not set on it.
      * @param tagName
      * @return
      */
@@ -476,9 +478,9 @@ public class JAXBException extends EclipseLinkException {
         exception.setErrorCode(NULL_TYPE_ON_TYPEMAPPINGINFO);
         return exception;
     }
-    
+
     /**
-     * This exception should be used when a TypeMappingInfo is specified but the Type is not set on it.  
+     * This exception should be used when a TypeMappingInfo is specified but the Type is not set on it.
      * @param tagName
      * @return
      */
@@ -488,10 +490,10 @@ public class JAXBException extends EclipseLinkException {
         exception.setErrorCode(JAVATYPE_NOT_ALLOWED_IN_BINDINGS_FILE);
         return exception;
     }
-    
+
     /**
      * This exception is thrown if the user tries to create a new instance of DynamicJAXBContext using an
-     * array of actual classes.  
+     * array of actual classes.
      */
     public static JAXBException cannotCreateDynamicContextFromClasses() {
         Object[] args = { };
@@ -499,5 +501,26 @@ public class JAXBException extends EclipseLinkException {
         exception.setErrorCode(CANNOT_CREATE_DYNAMIC_CONTEXT_FROM_CLASSES);
         return exception;
     }
-    
+
+    /**
+     * This exception is thrown if the user tries to create a new instance of DynamicJAXBContext using an
+     * Node, that is not an instance of either Document or Element.
+     */
+    public static JAXBException cannotInitializeFromNode() {
+        Object[] args = { };
+        JAXBException exception = new JAXBException(ExceptionMessageGenerator.buildMessage(JAXBException.class, CANNOT_INITIALIZE_FROM_NODE, args));
+        exception.setErrorCode(CANNOT_INITIALIZE_FROM_NODE);
+        return exception;
+    }
+
+    /**
+     * This is a general exception, thrown if a problem was encountered during DynamicJAXBContext creation.
+     */
+    public static JAXBException errorCreatingDynamicJAXBContext(Exception nestedException) {
+        Object[] args = { };
+        JAXBException exception = new JAXBException(ExceptionMessageGenerator.buildMessage(JAXBException.class, ERROR_CREATING_DYNAMICJAXBCONTEXT, args), nestedException);
+        exception.setErrorCode(ERROR_CREATING_DYNAMICJAXBCONTEXT);
+        return exception;
+    }
+
 }

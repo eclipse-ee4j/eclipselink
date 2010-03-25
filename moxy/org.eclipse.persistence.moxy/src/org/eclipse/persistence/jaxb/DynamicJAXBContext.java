@@ -13,6 +13,8 @@
 package org.eclipse.persistence.jaxb;
 
 import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.StringTokenizer;
 
@@ -21,11 +23,29 @@ import org.eclipse.persistence.dynamic.DynamicEntity;
 import org.eclipse.persistence.dynamic.DynamicHelper;
 import org.eclipse.persistence.dynamic.DynamicType;
 import org.eclipse.persistence.dynamic.DynamicTypeBuilder;
+import org.eclipse.persistence.exceptions.JAXBException;
+import org.eclipse.persistence.jaxb.compiler.Generator;
+import org.eclipse.persistence.jaxb.javamodel.JavaClass;
+import org.eclipse.persistence.jaxb.javamodel.xjc.XJCJavaClassImpl;
+import org.eclipse.persistence.jaxb.javamodel.xjc.XJCJavaModelImpl;
+import org.eclipse.persistence.jaxb.javamodel.xjc.XJCJavaModelInputImpl;
 import org.eclipse.persistence.oxm.XMLContext;
 import org.eclipse.persistence.sessions.DatabaseSession;
 import org.eclipse.persistence.sessions.Project;
 import org.eclipse.persistence.sessions.factories.SessionManager;
 import org.eclipse.persistence.sessions.factories.XMLSessionConfigLoader;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+import org.w3c.dom.Node;
+import org.xml.sax.InputSource;
+
+import com.sun.codemodel.JCodeModel;
+import com.sun.codemodel.JDefinedClass;
+import com.sun.codemodel.JPackage;
+import com.sun.tools.xjc.Plugin;
+import com.sun.tools.xjc.api.S2JJAXBModel;
+import com.sun.tools.xjc.api.SchemaCompiler;
+import com.sun.tools.xjc.api.XJC;
 
 /**
  * <p>
@@ -58,6 +78,8 @@ import org.eclipse.persistence.sessions.factories.XMLSessionConfigLoader;
 public class DynamicJAXBContext extends org.eclipse.persistence.jaxb.JAXBContext {
 
     private ArrayList<DynamicHelper> helpers;
+
+    private static final String SYSTEM_ID = "DynamicJAXBContextFactory:createFromXSD";
 
     DynamicJAXBContext() {
         this.helpers = new ArrayList();
@@ -147,6 +169,123 @@ public class DynamicJAXBContext extends org.eclipse.persistence.jaxb.JAXBContext
         List sessions = this.xmlContext.getSessions();
         for (Object session : sessions) {
             this.helpers.add(new DynamicHelper((DatabaseSession) session));
+        }
+    }
+
+    void initializeFromXSDNode(Node node, ClassLoader classLoader) {
+        Element element;
+
+        if (node.getNodeType() == Node.DOCUMENT_NODE) {
+            element = ((Document) node).getDocumentElement();
+        } else if (node.getNodeType() == Node.ELEMENT_NODE) {
+            element = (Element) node;
+        } else {
+            throw JAXBException.cannotInitializeFromNode();
+        }
+
+        // Use XJC API to parse the schema and generate its JCodeModel
+        SchemaCompiler sc = XJC.createSchemaCompiler();
+        sc.parseSchema(SYSTEM_ID, element);
+        S2JJAXBModel model = sc.bind();
+        JCodeModel jCodeModel = model.generateCode(new Plugin[0], null);
+
+        initializeFromXJC(jCodeModel, classLoader);
+    }
+
+    void initializeFromXSDInputSource(InputSource metadataSource, ClassLoader classLoader) {
+        // Use XJC API to parse the schema and generate its JCodeModel
+        SchemaCompiler sc = XJC.createSchemaCompiler();
+        metadataSource.setSystemId(SYSTEM_ID);
+        sc.parseSchema(metadataSource);
+        S2JJAXBModel model = sc.bind();
+        JCodeModel jCodeModel = model.generateCode(new Plugin[0], null);
+
+        initializeFromXJC(jCodeModel, classLoader);
+    }
+
+    void initializeFromXJC(JCodeModel codeModel, ClassLoader classLoader) {
+        if (classLoader == null) {
+            classLoader = Thread.currentThread().getContextClassLoader();
+        }
+        DynamicClassLoader dynamicClassLoader;
+        if (classLoader instanceof DynamicClassLoader) {
+           dynamicClassLoader = (DynamicClassLoader) classLoader;
+        } else {
+           dynamicClassLoader = new DynamicClassLoader(classLoader);
+        }
+
+        // Create EclipseLink JavaModel objects for each of XJC's JDefinedClasses
+        ArrayList<JDefinedClass> classesToProcess = new ArrayList<JDefinedClass>();
+        Iterator<JPackage> packages = codeModel.packages();
+        while (packages.hasNext()) {
+            JPackage pkg = packages.next();
+            Iterator<JDefinedClass> classes = pkg.classes();
+            while (classes.hasNext()) {
+                JDefinedClass cls = classes.next();
+                classesToProcess.add(cls);
+            }
+        }
+
+        // Look for Inner Classes and add them
+        ArrayList<JDefinedClass> innerClasses = new ArrayList<JDefinedClass>();
+        for (int i = 0; i < classesToProcess.size(); i++) {
+            innerClasses.addAll(getInnerClasses(classesToProcess.get(i)));
+        }
+        classesToProcess.addAll(innerClasses);
+
+        JavaClass[] jotClasses = createClassModelFromXJC(classesToProcess, codeModel, dynamicClassLoader);
+
+        // Use the JavaModel to setup a Generator to generate an EclipseLink project
+        XJCJavaModelImpl javaModel = new XJCJavaModelImpl(Thread.currentThread().getContextClassLoader(), codeModel, dynamicClassLoader);
+        XJCJavaModelInputImpl javaModelInput = new XJCJavaModelInputImpl(jotClasses, javaModel);
+        Generator g = new Generator(javaModelInput, null, dynamicClassLoader, null);
+
+        Project p = null;
+        Project dp = null;
+        try {
+            p = g.generateProject();
+            dp = DynamicTypeBuilder.loadDynamicProject(p, null, dynamicClassLoader);
+        } catch (Exception e) {
+            throw JAXBException.errorCreatingDynamicJAXBContext(e);
+        }
+
+        this.xmlContext = new XMLContext(dp);
+
+        List sessions = this.xmlContext.getSessions();
+        for (Object session : sessions) {
+            this.helpers.add(new DynamicHelper((DatabaseSession) session));
+        }
+    }
+
+    private HashSet<JDefinedClass> getInnerClasses(JDefinedClass xjcClass) {
+        // Check this xjcClass for inner classes.  If one is found, search that one too.
+
+        HashSet<JDefinedClass> classesToReturn = new HashSet<JDefinedClass>();
+        Iterator<JDefinedClass> it = xjcClass.classes();
+
+        while (it.hasNext()) {
+            JDefinedClass innerClass = it.next();
+            classesToReturn.add(innerClass);
+            classesToReturn.addAll(getInnerClasses(innerClass));
+        }
+
+        return classesToReturn;
+    }
+
+    private JavaClass[] createClassModelFromXJC(ArrayList<JDefinedClass> xjcClasses, JCodeModel jCodeModel, DynamicClassLoader dynamicClassLoader) {
+        try {
+            JavaClass[] elinkClasses = new JavaClass[xjcClasses.size()];
+
+            int count = 0;
+            for (JDefinedClass definedClass : xjcClasses) {
+                XJCJavaClassImpl xjcClass = new XJCJavaClassImpl(definedClass, jCodeModel, dynamicClassLoader);
+                elinkClasses[count] = xjcClass;
+                count++;
+            }
+
+            return elinkClasses;
+        } catch (Exception e) {
+            throw JAXBException.errorCreatingDynamicJAXBContext(e);
         }
     }
 

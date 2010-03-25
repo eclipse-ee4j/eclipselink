@@ -57,14 +57,16 @@ public class JAXBExceptionResource extends ListResourceBundle {
         {"50035", "Since the property or field [{0}] is set as XmlIDREF, the target type of each XmlElement declared within the XmlElements list must have an XmlID property.  Please ensure the target type of XmlElement [{1}] contains an XmlID property."},
         {"50036", "The TypeMappingInfo with XmlTagName QName [{0}] needs to have a non-null Type set on it."},
         {"50037", "The java-type with package [{0}] is not allowed in the bindings file keyed on package [{1}]."},
-        {"50038", "DynamicJAXBContext can not be created from concrete Classes.  Please use org.eclipse.persistence.jaxb.JAXBContext, or specify org.eclipse.persistence.jaxb.JAXBContextFactory in your jaxb.properties file, to create a context from existing Classes."}
+        {"50038", "DynamicJAXBContext can not be created from concrete Classes.  Please use org.eclipse.persistence.jaxb.JAXBContext, or specify org.eclipse.persistence.jaxb.JAXBContextFactory in your jaxb.properties file, to create a context from existing Classes."},
+        {"50039", "Error creating DynamicJAXBContext: Node must be an instance of either Document or Element."},
+        {"50040", "Error creating DynamicJAXBContext."}
     };
-    
+
     /**
      * Return the lookup table.
      */
     protected Object[][] getContents() {
         return contents;
-    }    
+    }
 
 }
