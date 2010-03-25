@@ -298,7 +298,7 @@ public interface MBeanWebLogicRuntimeServicesMBean extends MBeanRuntimeServicesM
     public void printProfileSummaryByQuery();
 
     /**
-    * Return the log type, either "EclipseLink",  "Java" or "Server"
+    * Return the log type, either "EclipseLink",  "Java" or the simple name of the logging class used.  
     * @return the log type
     */
     public String getLogType();

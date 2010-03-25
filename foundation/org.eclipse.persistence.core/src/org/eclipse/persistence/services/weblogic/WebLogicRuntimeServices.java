@@ -1186,15 +1186,17 @@ public class WebLogicRuntimeServices extends RuntimeServices {
     }
 
     /**
-    * Return the log type, either "EclipseLink",  "Java" or "Server"
+    * Return the log type, either "EclipseLink",  "Java" or the simple name of the logging class used.  
     *
     * @return the log type
     */
     public String getLogType() {
         if (this.getSession().getSessionLog().getClass() == JavaLog.class) {
             return "Java";
-        } else {
+        } else if (this.getSession().getSessionLog().getClass() == DefaultSessionLog.class) {
             return EclipseLink_Product_Name;
+        } else {
+            return this.getSession().getSessionLog().getClass().getSimpleName();
         }
     }
 
@@ -1237,15 +1239,13 @@ public class WebLogicRuntimeServices extends RuntimeServices {
 
     /**
     * Return the log filename. This returns the fully qualified path of the log file when
-    * EclipseLink logging is enabled. Null is returned otherwise.
+    * EclipseLink DefaultSessionLog instance is used. Null is returned otherwise.
     *
     * @return String logFilename
     */
     public String getLogFilename() {
         // returns String or null.
-        if (this.getLogType().equals(EclipseLink_Product_Name) && 
-                session.getSessionLog() instanceof DefaultSessionLog) {
-                // We are running on an application server here
+        if ( session.getSessionLog() instanceof DefaultSessionLog) {
                 return ((DefaultSessionLog)session.getSessionLog()).getWriterFilename();
         } else {
             return null;
