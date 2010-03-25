@@ -1586,7 +1586,7 @@ public class AdvancedQueryTestSuite extends JUnitTestCase {
             query.setParameter("g1", Gender.Male);
             query.setParameter("g2", Gender.Female);
             List<Employee> results = query.getResultList();
-            if (counter.getSqlStatements().size() != 1) {
+            if (isWeavingEnabled() && counter.getSqlStatements().size() != 1) {
                 fail("Should have been 1 query but was: " + counter.getSqlStatements().size());
             }
             for (Employee employee : results) {
@@ -1605,7 +1605,7 @@ public class AdvancedQueryTestSuite extends JUnitTestCase {
             } else if (size == 5) {
                 queries = 30;
             }
-            if (counter.getSqlStatements().size() > queries) {
+            if (isWeavingEnabled() && counter.getSqlStatements().size() > queries) {
                 fail("Should have been " + queries + " queries but was: " + counter.getSqlStatements().size());
             }
             clearCache();
