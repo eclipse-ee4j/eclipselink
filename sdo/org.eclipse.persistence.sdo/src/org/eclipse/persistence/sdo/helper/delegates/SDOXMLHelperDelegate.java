@@ -425,7 +425,7 @@ public class SDOXMLHelperDelegate implements SDOXMLHelper {
         
         ((SDOMarshalListener)anXMLMarshaller.getMarshalListener()).setMarshalledObject(xmlDocument.getRootObject());
         ((SDOMarshalListener)anXMLMarshaller.getMarshalListener()).setMarshalledObjectRootQName(new QName(xmlDocument.getRootElementURI(), xmlDocument.getRootElementName()));
-        ((SDOMarshalListener)anXMLMarshaller.getMarshalListener()).setRootMarshalReocrd(writerRecord);
+        ((SDOMarshalListener)anXMLMarshaller.getMarshalListener()).setRootMarshalRecord(writerRecord);
         
         anXMLMarshaller.marshal(xmlDocument, writerRecord);
         outputWriter.flush();
@@ -462,13 +462,13 @@ public class SDOXMLHelperDelegate implements SDOXMLHelper {
                 ContentHandlerRecord marshalRecord = new ContentHandlerRecord();
                 marshalRecord.setContentHandler(((SAXResult)result).getHandler());
                 marshalRecord.setMarshaller(anXMLMarshaller);
-                ((SDOMarshalListener)anXMLMarshaller.getMarshalListener()).setRootMarshalReocrd(marshalRecord);
+                ((SDOMarshalListener)anXMLMarshaller.getMarshalListener()).setRootMarshalRecord(marshalRecord);
                 anXMLMarshaller.marshal(xmlDocument, marshalRecord);
             } else if(result instanceof DOMResult) {
                 NodeRecord marshalRecord = new NodeRecord();
                 marshalRecord.setDOM(((DOMResult)result).getNode());
                 marshalRecord.setMarshaller(anXMLMarshaller);
-                ((SDOMarshalListener)anXMLMarshaller.getMarshalListener()).setRootMarshalReocrd(marshalRecord);
+                ((SDOMarshalListener)anXMLMarshaller.getMarshalListener()).setRootMarshalRecord(marshalRecord);
                 anXMLMarshaller.marshal(xmlDocument, marshalRecord);
             } else {
                 StringWriter writer = new StringWriter();
@@ -541,7 +541,7 @@ public class SDOXMLHelperDelegate implements SDOXMLHelper {
         
         ((SDOMarshalListener)anXMLMarshaller.getMarshalListener()).setMarshalledObject(rootObject);
         ((SDOMarshalListener)anXMLMarshaller.getMarshalListener()).setMarshalledObjectRootQName(new QName(rootElementURI, rootElementName));
-        ((SDOMarshalListener)anXMLMarshaller.getMarshalListener()).setRootMarshalReocrd(writerRecord);
+        ((SDOMarshalListener)anXMLMarshaller.getMarshalListener()).setRootMarshalRecord(writerRecord);
         anXMLMarshaller.marshal(xmlDocument, writerRecord);
         try {
             writer.flush();

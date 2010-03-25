@@ -368,7 +368,7 @@ public class SDOMarshalListener implements XMLMarshalListener {
         return this.marshalledObjectRootQName;
     }
     
-    public void setRootMarshalReocrd(MarshalRecord rootRecord) {
+    public void setRootMarshalRecord(MarshalRecord rootRecord) {
         this.rootMarshalRecord = rootRecord;
     }
     
