@@ -163,12 +163,8 @@ public class FormattedWriterRecord extends WriterRecord {
                 writer.write('>');
                 isStartElementOpen = false;
             }
-            writer.write(Helper.cr());
-            for (int x = 0; x < numberOfTabs; x++) {
-                writer.write(TAB);
-            }
             super.cdata(value);
-            complexType=true;
+            complexType=false;
         }catch(IOException ex) {
             throw XMLMarshalException.marshalException(ex);
         }

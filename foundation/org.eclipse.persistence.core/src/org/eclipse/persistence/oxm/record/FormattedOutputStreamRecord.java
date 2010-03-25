@@ -139,10 +139,8 @@ public class FormattedOutputStreamRecord extends OutputStreamRecord {
             outputStreamWrite(CLOSE_ELEMENT);
             isStartElementOpen = false;
         }
-        outputStreamWrite(CR);
-        outputStreamWriteTab();
         super.cdata(value);
-        complexType=true;
+        complexType=false;
     }
 
     /**
