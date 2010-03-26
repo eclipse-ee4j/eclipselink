@@ -37,6 +37,9 @@ public class XMLSchemaClassPathReference extends XMLSchemaReference {
     public URL getURL() {
         // The URL must be passed to the resource, not just the input stream, as it is 
         // required to resolve the relative URL for imports and includes.
+        if(null == loader) {
+            return Thread.currentThread().getContextClassLoader().getResource(this.getResource());
+        }
         return loader.getResource(this.getResource());
     }
 }

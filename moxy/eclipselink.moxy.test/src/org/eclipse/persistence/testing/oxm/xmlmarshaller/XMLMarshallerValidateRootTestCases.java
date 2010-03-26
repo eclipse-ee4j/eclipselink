@@ -12,13 +12,10 @@
  ******************************************************************************/  
 package org.eclipse.persistence.testing.oxm.xmlmarshaller;
 
-import org.eclipse.persistence.oxm.XMLDescriptor;
-import org.eclipse.persistence.oxm.XMLMarshaller;
-import org.eclipse.persistence.oxm.XMLContext;
-import org.eclipse.persistence.oxm.XMLUnmarshaller;
-import org.eclipse.persistence.oxm.XMLValidator;
-import org.eclipse.persistence.oxm.schema.XMLSchemaClassPathReference;
 import org.eclipse.persistence.exceptions.XMLMarshalException;
+import org.eclipse.persistence.oxm.XMLContext;
+import org.eclipse.persistence.oxm.XMLDescriptor;
+import org.eclipse.persistence.oxm.XMLValidator;
 import org.eclipse.persistence.testing.oxm.OXTestCase;
 import org.xml.sax.ErrorHandler;
 import org.xml.sax.SAXException;
@@ -27,7 +24,6 @@ import org.xml.sax.SAXParseException;
 public class XMLMarshallerValidateRootTestCases extends OXTestCase {
     private XMLContext xmlContext;
     private XMLValidator xmlValidator;
-    private XMLSchemaClassPathReference schemaRef;
     private XMLMarshallerCarProject project;
 
     public XMLMarshallerValidateRootTestCases(String name) {
@@ -35,7 +31,6 @@ public class XMLMarshallerValidateRootTestCases extends OXTestCase {
     }
 
     public void setUp() throws Exception {
-        schemaRef = new XMLSchemaClassPathReference("org/eclipse/persistence/testing/oxm/xmlmarshaller/Car.xsd");
         project = new XMLMarshallerCarProject();
         xmlContext = new XMLContext(project);
         xmlValidator = xmlContext.createValidator();
@@ -54,6 +49,7 @@ public class XMLMarshallerValidateRootTestCases extends OXTestCase {
     }
 
     public void testDescriptorWithNoSchemaReference() throws Exception {
+        ((XMLDescriptor) project.getClassDescriptor(Car.class)).setSchemaReference(null);
         Car car = new Car();
         car.setLicense("123789");
         try {
@@ -66,25 +62,18 @@ public class XMLMarshallerValidateRootTestCases extends OXTestCase {
     }
 
     public void testValidCar() throws Exception {
-        XMLDescriptor carDesc = (XMLDescriptor)project.getDescriptors().get(Car.class);
-        carDesc.setSchemaReference(schemaRef);
         Car car = new Car();
         car.setLicense("123987");
         assertTrue("Valid car reported invalid", xmlValidator.validateRoot(car));
     }
 
     public void testInvalidCar() throws Exception {
-        XMLDescriptor carDesc = (XMLDescriptor)project.getDescriptors().get(Car.class);
-        carDesc.setSchemaReference(schemaRef);
         Car car = new Car();
         car.setLicense("12345678910");
         assertFalse("Invalid car found to be valid", xmlValidator.validateRoot(car));
     }
 
     public void testErrorHandler() throws Exception {
-        XMLDescriptor carDesc = (XMLDescriptor)project.getDescriptors().get(Car.class);
-        carDesc.setSchemaReference(schemaRef);
-
         ErrorHandler errorHandler = new IgnoreAllErrorHandler();
         xmlValidator.setErrorHandler(errorHandler);
 
