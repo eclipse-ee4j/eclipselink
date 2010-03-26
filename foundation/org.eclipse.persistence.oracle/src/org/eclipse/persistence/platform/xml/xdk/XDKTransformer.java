@@ -23,7 +23,6 @@ import javax.xml.transform.OutputKeys;
 import javax.xml.transform.Result;
 import javax.xml.transform.Source;
 import javax.xml.transform.TransformerException;
-import javax.xml.transform.dom.DOMResult;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.sax.SAXResult;
 import javax.xml.transform.stream.StreamResult;
@@ -103,24 +102,7 @@ public class XDKTransformer implements XMLTransformer {
 
     public void transform(Node sourceNode, Result result) throws XMLPlatformException {
         DOMSource source = new DOMSource(sourceNode);
-        if(result instanceof DOMResult) {
-            Node node = ((DOMResult)result).getNode();
-            Document doc = null;
-            if(node instanceof Document) {
-                doc = (Document)node;
-            } else {
-                doc = node.getOwnerDocument();
-            }
-           Node clone = null;
-           if(sourceNode instanceof Document) {
-               clone = doc.importNode(((Document)sourceNode).getDocumentElement(), true);
-           } else {
-               clone = doc.importNode(sourceNode, true);
-           }
-           node.appendChild(clone);
-        } else {
-            transform(source, result);
-        }
+        transform(source, result);
     }
 
     public void transform(Node sourceNode, Writer resultWriter) throws XMLPlatformException {
