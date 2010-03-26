@@ -3,5 +3,6 @@
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 	<classpathentry excluding="**/.svn/**" kind="src" path="src"/>
 	<classpathentry kind="con" path="org.eclipse.pde.core.requiredPlugins"/>
+	<classpathentry kind="var" path="ECLIPSELINK_HOME/utils/eclipselink.utils.jaxb/jaxb-xjc.jar"/>
 	<classpathentry kind="output" path="classes"/>
 </classpath>
