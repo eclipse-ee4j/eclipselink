@@ -1838,7 +1838,7 @@ public abstract class MappingAccessor extends MetadataAccessor {
         if (hasAccess()) {
             return getAccess().equals(MetadataConstants.VIRTUAL);
         } else {
-            return m_classAccessor.usesNameAccess();
+            return m_classAccessor.usesVirtualAccess();
         }
     }
 }

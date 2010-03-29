@@ -302,9 +302,9 @@ public abstract class ClassAccessor extends MetadataAccessor {
         }
         
         // Process the fields or methods on the class for annotations. Unless
-        // we are processing a name access type which means we should not look
-        // any further then what is defined in XML.
-        if (! usesNameAccess()) {
+        // we are processing a virtual access type which means we should not 
+        // look any further then what is defined in XML.
+        if (! usesVirtualAccess()) {
             if (usesPropertyAccess()) {
                 addAccessorMethods(false);
             } else {
@@ -541,8 +541,8 @@ public abstract class ClassAccessor extends MetadataAccessor {
             getMethod.setName(accessMethods.getGetMethodName());
             setMethod.setName(accessMethods.getSetMethodName());
         } else {
-            getMethod.setName(MetadataMethod.DEFAULT_NAME_ACCESS_GET_METHOD);
-            setMethod.setName(MetadataMethod.DEFAULT_NAME_ACCESS_SET_METHOD);
+            getMethod.setName(MetadataMethod.DEFAULT_VIRTUAL_ACCESS_GET_METHOD);
+            setMethod.setName(MetadataMethod.DEFAULT_VIRTUAL_ACCESS_SET_METHOD);
         }
         
         // Validate that the mapping accessor has an attribute-type 
@@ -1201,18 +1201,18 @@ public abstract class ClassAccessor extends MetadataAccessor {
      * access as specified on the descriptor for this accessor since we may be 
      * processing a mapped superclass.
      */
-    public boolean usesNameAccess() {
-        return getAccessType().equals(MetadataConstants.VIRTUAL);
+    public boolean usesPropertyAccess() {
+        return getAccessType().equals(MetadataConstants.PROPERTY);
     }
     
     /**
      * INTERNAL:
-     * Returns true if this class uses property access. It will first check for 
+     * Returns true if this class uses virtual access. It will first check for 
      * an explicit access type specification, otherwise will use the default 
      * access as specified on the descriptor for this accessor since we may be 
      * processing a mapped superclass.
      */
-    public boolean usesPropertyAccess() {
-        return getAccessType().equals(MetadataConstants.PROPERTY);
+    public boolean usesVirtualAccess() {
+        return getAccessType().equals(MetadataConstants.VIRTUAL);
     }
 }
