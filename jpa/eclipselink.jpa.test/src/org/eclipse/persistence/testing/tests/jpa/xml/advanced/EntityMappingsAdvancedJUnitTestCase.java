@@ -12,7 +12,9 @@
  *     09/23/2008-1.1 Guy Pelletier 
  *       - 241651: JPA 2.0 Access Type support
  *     03/08/2010-2.1 Guy Pelletier 
- *       - 303632: Add attribute-type for mapping attributes to EclipseLink-ORM  
+ *       - 303632: Add attribute-type for mapping attributes to EclipseLink-ORM
+ *     03/29/2010-2.1 Guy Pelletier 
+ *       - 267217: Add Named Access Type to EclipseLink-ORM
  ******************************************************************************/  
 package org.eclipse.persistence.testing.tests.jpa.xml.advanced;
 
@@ -60,7 +62,13 @@ import org.eclipse.persistence.testing.models.jpa.xml.advanced.Name;
 import org.eclipse.persistence.testing.models.jpa.xml.advanced.PhoneNumber;
 import org.eclipse.persistence.testing.models.jpa.xml.advanced.Project;
 import org.eclipse.persistence.testing.models.jpa.xml.advanced.ReadOnlyClass;
+import org.eclipse.persistence.testing.models.jpa.xml.advanced.Shovel;
+import org.eclipse.persistence.testing.models.jpa.xml.advanced.ShovelDigger;
+import org.eclipse.persistence.testing.models.jpa.xml.advanced.ShovelOwner;
+import org.eclipse.persistence.testing.models.jpa.xml.advanced.ShovelProject;
+import org.eclipse.persistence.testing.models.jpa.xml.advanced.ShovelSections;
 import org.eclipse.persistence.testing.models.jpa.xml.advanced.SmallProject;
+import org.eclipse.persistence.testing.models.jpa.xml.advanced.ShovelSections.MaterialType;
 import org.eclipse.persistence.testing.framework.JoinedAttributeTestHelper;
 import org.eclipse.persistence.testing.framework.junit.JUnitTestCase;
 import org.eclipse.persistence.testing.tests.jpa.TestingProperties;
@@ -135,7 +143,10 @@ public class EntityMappingsAdvancedJUnitTestCase extends JUnitTestCase {
             suite.addTest(new EntityMappingsAdvancedJUnitTestCase("testProperty", persistenceUnit));
             suite.addTest(new EntityMappingsAdvancedJUnitTestCase("testAccessorMethods", persistenceUnit));
             suite.addTest(new EntityMappingsAdvancedJUnitTestCase("testIfMultipleBasicCollectionMappingsExistForEmployeeResponsibilites", persistenceUnit));
+            
+            // These are dynamic persistence tests.
             suite.addTest(new EntityMappingsAdvancedJUnitTestCase("testAttributeTypeSpecifications", persistenceUnit));
+            suite.addTest(new EntityMappingsAdvancedJUnitTestCase("testMockDynamicClassCRUD", persistenceUnit));
         }
         
         return suite;
@@ -1467,7 +1478,7 @@ public class EntityMappingsAdvancedJUnitTestCase extends JUnitTestCase {
     }    
     
     /**
-     * Verifies that access-methods are correctly processed and used.
+     * Verifies that attribute-types are correctly processed and used.
      */
     public void testAttributeTypeSpecifications() {
         EntityManager em = createEntityManager(m_persistenceUnit);
@@ -1506,4 +1517,111 @@ public class EntityMappingsAdvancedJUnitTestCase extends JUnitTestCase {
             closeEntityManager(em);
         }
     }
+    
+    /**
+     * Verifies that attribute-types and name access are correctly processed 
+     * and used.
+     */
+    public void testMockDynamicClassCRUD() {
+        EntityManager em = createEntityManager(m_persistenceUnit);
+        
+        try {
+            beginTransaction(em);
+            
+            // Cost
+            Shovel shovel = new Shovel();
+            shovel.set("cost", Double.valueOf(9.99));
+            
+            // Sections
+            ShovelSections shovelSections = new ShovelSections();
+            shovelSections.setMaterial("handle", MaterialType.Plastic);
+            shovelSections.setMaterial("shaft", MaterialType.Wood);
+            shovelSections.setMaterial("scoop", MaterialType.Plastic);
+            shovel.set("sections", shovelSections);
+            
+            // Owner
+            ShovelOwner shovelOwner = new ShovelOwner();
+            shovelOwner.set("name", "Mr. Shovel");
+            shovel.set("owner", shovelOwner);
+            
+            // Operators
+            ShovelDigger shovelDigger1 = new ShovelDigger();
+            shovelDigger1.set("name", "Digging Plebe 1");
+            shovelDigger1.set("shovel", shovel);
+            
+            ShovelDigger shovelDigger2 = new ShovelDigger();
+            shovelDigger2.set("name", "Digging Plebe 2");
+            shovelDigger2.set("shovel", shovel);
+            
+            List<ShovelDigger> operators = new ArrayList<ShovelDigger>();
+            operators.add(shovelDigger1);
+            operators.add(shovelDigger2);
+            shovel.set("operators", operators);
+            
+            // Projects
+            ShovelProject shovelProject = new ShovelProject();
+            shovelProject.set("description", "One lousy shovelling project");
+            
+            List<Shovel> shovels = new ArrayList<Shovel>();
+            shovels.add(shovel);
+            shovelProject.set("shovels", shovels);
+            
+            List<ShovelProject> projects = new ArrayList<ShovelProject>();
+            projects.add(shovelProject);
+            shovel.set("projects", projects);
+            
+            em.persist(shovel);
+            
+            // Grab id's for ease of lookup.
+            Object shovelId = shovel.get("id");
+            Object shovelOwnerId = shovelOwner.get("id");
+            Object shovelDigger1Id = shovelDigger1.get("id");
+            Object shovelDigger2Id = shovelDigger2.get("id");
+            Object shovelProjectId = shovelProject.get("id");
+            
+            commitTransaction(em);
+            
+            clearCache(m_persistenceUnit);
+            em.clear();
+            
+            Shovel refreshedShovel = em.find(Shovel.class, shovelId);
+            assertTrue("Shovel didn't match after write/read", getServerSession(m_persistenceUnit).compareObjects(shovel, refreshedShovel));
+            
+            // Do an update
+            beginTransaction(em);
+            
+            em.merge(refreshedShovel);
+            refreshedShovel.set("cost", Double.valueOf(7.99));
+            
+            commitTransaction(em);
+            
+            clearCache(m_persistenceUnit);
+            em.clear();
+            
+            Shovel refreshedUpdatedShovel = em.find(Shovel.class, shovelId);
+            assertTrue("Shovel didn't match after update", getServerSession(m_persistenceUnit).compareObjects(refreshedShovel, refreshedUpdatedShovel));
+            
+            // Now delete it            
+            beginTransaction(em);
+            em.merge(refreshedUpdatedShovel);
+            em.remove(refreshedUpdatedShovel);
+            commitTransaction(em);
+            
+            // Check what's left
+            assertNull("Shovel wasn't removed", em.find(Shovel.class, shovelId));
+            assertNull("Shovel owner wasn't removed", em.find(ShovelOwner.class, shovelOwnerId));
+            assertNull("Shovel digger 1 wasn't removed", em.find(ShovelDigger.class, shovelDigger1Id));
+            assertNull("Shovel digger 2 wasn't removed", em.find(ShovelDigger.class, shovelDigger2Id));
+            assertNotNull("Shovel project was removed",  em.find(ShovelProject.class, shovelProjectId));
+            
+        } catch (RuntimeException e) {
+            if (isTransactionActive(em)){
+                rollbackTransaction(em);
+            }
+
+            throw e;
+        } finally {
+            closeEntityManager(em);
+        }
+    }    
 }

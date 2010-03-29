@@ -14,6 +14,8 @@
  *       - 218084: Implement metadata merging functionality between mapping files
  *     11/06/2009-2.0 Guy Pelletier 
  *       - 286317: UniqueConstraint xml element is changing (plus couple other fixes, see bug)
+ *     03/29/2010-2.1 Guy Pelletier 
+ *       - 267217: Add Named Access Type to EclipseLink-ORM
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata.mappings;
 
@@ -35,6 +37,16 @@ public class AccessMethodsMetadata extends ORMetadata {
      */
     public AccessMethodsMetadata() {
         super("<access-methods>");
+    }
+    
+    /**
+     * INTERNAL:
+     */
+    public AccessMethodsMetadata clone() {
+        AccessMethodsMetadata accessMethods = new AccessMethodsMetadata();
+        accessMethods.setGetMethodName(getGetMethodName());
+        accessMethods.setSetMethodName(getSetMethodName());
+        return accessMethods;
     }
     
     /**

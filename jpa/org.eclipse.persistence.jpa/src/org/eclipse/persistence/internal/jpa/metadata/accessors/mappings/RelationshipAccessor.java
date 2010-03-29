@@ -30,7 +30,9 @@
  *     11/25/2009-2.0 Guy Pelletier 
  *       - 288955: EclipseLink 2.0.0.v20090821-r4934 (M7) throws EclipseLink-80/41 exceptions if InheritanceType.TABLE_PER_CLASS is used
  *     03/08/2010-2.1 Guy Pelletier 
- *       - 303632: Add attribute-type for mapping attributes to EclipseLink-ORM  
+ *       - 303632: Add attribute-type for mapping attributes to EclipseLink-ORM
+ *     03/29/2010-2.1 Guy Pelletier 
+ *       - 267217: Add Named Access Type to EclipseLink-ORM
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata.accessors.mappings;
 
@@ -575,7 +577,7 @@ public abstract class RelationshipAccessor extends MappingAccessor {
         // needed to weave  transient value holder fields on the class. 
         // With JPA 2.0 and the possibility of mixed access types this 
         // assumption no longer applies.
-        ((ForeignReferenceMapping) mapping).setRequiresTransientWeavedFields(usesPropertyAccess(getDescriptor()) && ! getClassAccessor().usesPropertyAccess());
+        ((ForeignReferenceMapping) mapping).setRequiresTransientWeavedFields(usesPropertyAccess() && ! getClassAccessor().usesPropertyAccess());
     }
     
     /**

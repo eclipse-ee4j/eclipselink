@@ -15,6 +15,8 @@
  *       - 241651: JPA 2.0 Access Type support
  *     10/01/2008-1.1 Guy Pelletier 
  *       - 249329: To remain JPA 1.0 compliant, any new JPA 2.0 annotations should be referenced by name
+ *     03/29/2010-2.1 Guy Pelletier 
+ *       - 267217: Add Named Access Type to EclipseLink-ORM
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata.accessors.objects;
 
@@ -59,7 +61,11 @@ public class MetadataMethod extends MetadataAnnotatedElement {
     
     /** Used to store multiple methods with the same name in a class. */
     protected MetadataMethod m_next;
-        
+
+    /** Constants used for default name access setter and getter methods */
+    public static final String DEFAULT_NAME_ACCESS_GET_METHOD = "get";
+    public static final String DEFAULT_NAME_ACCESS_SET_METHOD = "set";
+    
     /**
      * Create the method from the class metadata.
      */

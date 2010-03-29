@@ -39,7 +39,14 @@ public class MetadataField extends MetadataAnnotatedElement {
         super(metadataClass.getMetadataFactory());
         this.declaringClass = metadataClass;
     }
-        
+    
+    /**
+     * INTERNAL:
+     */
+    public MetadataClass getDeclaringClass() {
+        return declaringClass;
+    }
+    
     /**
      * INTERNAL:
      * Return true is this field is a valid persistence field. This method
@@ -74,10 +81,9 @@ public class MetadataField extends MetadataAnnotatedElement {
         return true;
     }
 
-    public MetadataClass getDeclaringClass() {
-        return declaringClass;
-    }
-
+    /**
+     * INTERNAL:
+     */
     public void setDeclaringClass(MetadataClass declaringClass) {
         this.declaringClass = declaringClass;
     }

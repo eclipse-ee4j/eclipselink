@@ -75,6 +75,7 @@ import org.eclipse.persistence.internal.jpa.metadata.MetadataLogger;
  * @author Guy Pelletier
  * @since EclipseLink 1.0
  */
+@SuppressWarnings("deprecation")
 public class MetadataAnnotatedElement extends MetadataAccessibleObject {
     public static final String JPA_PERSISTENCE_PACKAGE_PREFIX = "javax.persistence";
     public static final String ECLIPSELINK_PERSISTENCE_PACKAGE_PREFIX = "org.eclipse.persistence.annotations";

@@ -304,6 +304,8 @@ public class ValidationExceptionResource extends ListResourceBundle {
                                            { "7323", "The table with name [{1}] from [{2}] has multiple unique constraints with the name [{0}]. This is not allowed, unique constaints names must be unique across all tables." },
                                            { "7324", "The entity class [{1}] specifies both a @ClassExtractor and discriminator metadata. When using a @ClassExtractor, a @DiscriminatorColumn and/or @DiscriminatorValue should not be specified on this class nor should any discriminator value metadata be defined on its subclasses." },
                                            { "7325", "The sql result set mapping [{0}] used with the named query [{1}] from [{2}] is not a recognized sql result set mapping. Ensure the name is correct and that a sql result set mapping with that name exists." },
+                                           { "7326", "The attribute [{0}] from the class [{1}] mapped in [{2}] which uses NAME access does not specify an attribute-type. When using NAME access, an attribute-type must be specified. Note: For a one-to-one or a many-to-one, the attribute-type is specified using the target-entity. For a variable-one-to-one it is specified using the target-class." },
+                                           
  };
     
     /**

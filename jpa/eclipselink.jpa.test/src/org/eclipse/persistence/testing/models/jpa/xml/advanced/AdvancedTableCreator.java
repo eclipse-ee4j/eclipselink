@@ -16,7 +16,9 @@
  *     11/06/2009-2.0 Guy Pelletier 
  *       - 286317: UniqueConstraint xml element is changing (plus couple other fixes, see bug)
  *     03/08/2010-2.1 Guy Pelletier 
- *       - 303632: Add attribute-type for mapping attributes to EclipseLink-ORM  
+ *       - 303632: Add attribute-type for mapping attributes to EclipseLink-ORM
+ *     03/29/2010-2.1 Guy Pelletier 
+ *       - 267217: Add Named Access Type to EclipseLink-ORM
  ******************************************************************************/  
 package org.eclipse.persistence.testing.models.jpa.xml.advanced;
 
@@ -49,6 +51,12 @@ public class AdvancedTableCreator extends TogglingFastTableCreator {
         addTableDefinition(buildLONERTable());
         addTableDefinition(buildLONERCHARACTERISTICSTable());
         addTableDefinition(buildCONFIDANTTable());
+        
+        addTableDefinition(buildSHOVELTable());
+        addTableDefinition(buildSHOVELDIGGERTable());
+        addTableDefinition(buildSHOVELOWNERTable());
+        addTableDefinition(buildSHOVELPROJECTTable());
+        addTableDefinition(buildSHOVELPROJECTSTable());
     }
     
     public static TableDefinition buildREADONLYCLASSTable() {
@@ -984,8 +992,211 @@ public class AdvancedTableCreator extends TogglingFastTableCreator {
 
         return table;
     }
+    
+    public static TableDefinition buildSHOVELDIGGERTable() {
+        TableDefinition table = new TableDefinition();
+        table.setName("XML_SHOVEL_DIGGER");
 
-     public static TableDefinition buildWOMANTable() {
+        FieldDefinition fieldID = new FieldDefinition();
+        fieldID.setName("ID");
+        fieldID.setTypeName("NUMERIC");
+        fieldID.setSize(15);
+        fieldID.setSubSize(0);
+        fieldID.setIsPrimaryKey(true);
+        fieldID.setIsIdentity(true);
+        fieldID.setUnique(false);
+        fieldID.setShouldAllowNull(false);
+        table.addField(fieldID);
+
+        FieldDefinition fieldNAME = new FieldDefinition();
+        fieldNAME.setName("DIGGER_NAME");
+        fieldNAME.setTypeName("VARCHAR");
+        fieldNAME.setSize(40);
+        fieldNAME.setShouldAllowNull(true);
+        fieldNAME.setIsPrimaryKey(false);
+        fieldNAME.setUnique(false);
+        fieldNAME.setIsIdentity(false);
+        table.addField(fieldNAME);  
+        
+        FieldDefinition fieldSHOVEL = new FieldDefinition();
+        fieldSHOVEL.setName("SHOVEL_ID");
+        fieldSHOVEL.setTypeName("NUMERIC");
+        fieldSHOVEL.setSize(15);
+        fieldSHOVEL.setShouldAllowNull(true);
+        fieldSHOVEL.setIsPrimaryKey(false);
+        fieldSHOVEL.setUnique(false);
+        fieldSHOVEL.setIsIdentity(false);
+        fieldSHOVEL.setForeignKeyFieldName("XML_SHOVEL.ID");
+        table.addField(fieldSHOVEL);
+
+        return table;
+    }
+    
+    public static TableDefinition buildSHOVELOWNERTable() {
+        TableDefinition table = new TableDefinition();
+        table.setName("XML_SHOVEL_OWNER");
+
+        FieldDefinition fieldID = new FieldDefinition();
+        fieldID.setName("ID");
+        fieldID.setTypeName("NUMERIC");
+        fieldID.setSize(15);
+        fieldID.setSubSize(0);
+        fieldID.setIsPrimaryKey(true);
+        fieldID.setIsIdentity(true);
+        fieldID.setUnique(false);
+        fieldID.setShouldAllowNull(false);
+        table.addField(fieldID);
+
+        FieldDefinition fieldNAME = new FieldDefinition();
+        fieldNAME.setName("OWNER_NAME");
+        fieldNAME.setTypeName("VARCHAR");
+        fieldNAME.setSize(40);
+        fieldNAME.setShouldAllowNull(true);
+        fieldNAME.setIsPrimaryKey(false);
+        fieldNAME.setUnique(false);
+        fieldNAME.setIsIdentity(false);
+        table.addField(fieldNAME);  
+
+        return table;
+    }
+    
+    public static TableDefinition buildSHOVELPROJECTSTable() {
+        TableDefinition table = new TableDefinition();
+        table.setName("XML_SHOVEL_PROJECTS");
+
+        FieldDefinition fieldSHOVEL = new FieldDefinition();
+        fieldSHOVEL.setName("SHOVEL_ID");
+        fieldSHOVEL.setTypeName("NUMERIC");
+        fieldSHOVEL.setSize(15);
+        fieldSHOVEL.setShouldAllowNull(true);
+        fieldSHOVEL.setIsPrimaryKey(false);
+        fieldSHOVEL.setUnique(false);
+        fieldSHOVEL.setIsIdentity(false);
+        fieldSHOVEL.setForeignKeyFieldName("XML_SHOVEL.ID");
+        table.addField(fieldSHOVEL);
+
+        FieldDefinition fieldPROJECT = new FieldDefinition();
+        fieldPROJECT.setName("PROJECT_ID");
+        fieldPROJECT.setTypeName("NUMERIC");
+        fieldPROJECT.setSize(15);
+        fieldPROJECT.setShouldAllowNull(true);
+        fieldPROJECT.setIsPrimaryKey(false);
+        fieldPROJECT.setUnique(false);
+        fieldPROJECT.setIsIdentity(false);
+        fieldPROJECT.setForeignKeyFieldName("XML_SHOVEL_PROJECT.ID");
+        table.addField(fieldPROJECT);
+
+        return table;
+    }
+    
+    public static TableDefinition buildSHOVELPROJECTTable() {
+        TableDefinition table = new TableDefinition();
+        table.setName("XML_SHOVEL_PROJECT");
+
+        FieldDefinition fieldID = new FieldDefinition();
+        fieldID.setName("ID");
+        fieldID.setTypeName("NUMERIC");
+        fieldID.setSize(15);
+        fieldID.setSubSize(0);
+        fieldID.setIsPrimaryKey(true);
+        fieldID.setIsIdentity(true);
+        fieldID.setUnique(false);
+        fieldID.setShouldAllowNull(false);
+        table.addField(fieldID);
+
+        FieldDefinition fieldDESCRIPTION = new FieldDefinition();
+        fieldDESCRIPTION.setName("DESCRIP");
+        fieldDESCRIPTION.setTypeName("VARCHAR");
+        fieldDESCRIPTION.setSize(40);
+        fieldDESCRIPTION.setShouldAllowNull(true);
+        fieldDESCRIPTION.setIsPrimaryKey(false);
+        fieldDESCRIPTION.setUnique(false);
+        fieldDESCRIPTION.setIsIdentity(false);
+        table.addField(fieldDESCRIPTION);  
+
+        return table;
+    }
+    
+    public static TableDefinition buildSHOVELTable() {
+        TableDefinition table = new TableDefinition();
+        table.setName("XML_SHOVEL");
+
+        FieldDefinition fieldID = new FieldDefinition();
+        fieldID.setName("ID");
+        fieldID.setTypeName("NUMERIC");
+        fieldID.setSize(15);
+        fieldID.setSubSize(0);
+        fieldID.setIsPrimaryKey(true);
+        fieldID.setIsIdentity(true);
+        fieldID.setUnique(false);
+        fieldID.setShouldAllowNull(false);
+        table.addField(fieldID);
+
+        FieldDefinition fieldCOST = new FieldDefinition();
+        fieldCOST.setName("COST");
+        fieldCOST.setTypeName("DOUBLE PRECIS");
+        fieldCOST.setSize(15);
+        fieldCOST.setShouldAllowNull(true);
+        fieldCOST.setIsPrimaryKey(false);
+        fieldCOST.setUnique(false);
+        fieldCOST.setIsIdentity(false);
+        table.addField(fieldCOST);
+        
+        FieldDefinition fieldVERSION = new FieldDefinition();
+        fieldVERSION.setName("VERSION");
+        fieldVERSION.setTypeName("NUMERIC");
+        fieldVERSION.setSize(15);
+        fieldVERSION.setShouldAllowNull(true);
+        fieldVERSION.setIsPrimaryKey(false);
+        fieldVERSION.setUnique(false);
+        fieldVERSION.setIsIdentity(false);
+        table.addField(fieldVERSION);
+
+        FieldDefinition fieldOWNERID = new FieldDefinition();
+        fieldOWNERID.setName("OWNER_ID");
+        fieldOWNERID.setTypeName("NUMERIC");
+        fieldOWNERID.setSize(15);
+        fieldOWNERID.setShouldAllowNull(true);
+        fieldOWNERID.setIsPrimaryKey(false);
+        fieldOWNERID.setUnique(false);
+        fieldOWNERID.setIsIdentity(false);
+        fieldOWNERID.setForeignKeyFieldName("XML_SHOVEL_OWNER.ID");
+        table.addField(fieldOWNERID);
+        
+        FieldDefinition fieldHANDLE = new FieldDefinition();
+        fieldHANDLE.setName("HANDLE");
+        fieldHANDLE.setTypeName("VARCHAR");
+        fieldHANDLE.setSize(25);
+        fieldHANDLE.setShouldAllowNull(true);
+        fieldHANDLE.setIsPrimaryKey(false);
+        fieldHANDLE.setUnique(false);
+        fieldHANDLE.setIsIdentity(false);
+        table.addField(fieldHANDLE);
+        
+        FieldDefinition fieldSHAFT = new FieldDefinition();
+        fieldSHAFT.setName("SHAFT");
+        fieldSHAFT.setTypeName("VARCHAR");
+        fieldSHAFT.setSize(25);
+        fieldSHAFT.setShouldAllowNull(true);
+        fieldSHAFT.setIsPrimaryKey(false);
+        fieldSHAFT.setUnique(false);
+        fieldSHAFT.setIsIdentity(false);
+        table.addField(fieldSHAFT);
+        
+        FieldDefinition fieldSCOOP = new FieldDefinition();
+        fieldSCOOP.setName("SCOOP");
+        fieldSCOOP.setTypeName("VARCHAR");
+        fieldSCOOP.setSize(25);
+        fieldSCOOP.setShouldAllowNull(true);
+        fieldSCOOP.setIsPrimaryKey(false);
+        fieldSCOOP.setUnique(false);
+        fieldSCOOP.setIsIdentity(false);
+        table.addField(fieldSCOOP);
+        
+        return table;
+    }
+
+    public static TableDefinition buildWOMANTable() {
          TableDefinition table = new TableDefinition();
          table.setName("XML_WOMAN");
 

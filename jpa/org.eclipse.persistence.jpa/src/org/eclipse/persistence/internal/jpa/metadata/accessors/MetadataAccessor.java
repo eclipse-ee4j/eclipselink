@@ -28,7 +28,9 @@
  *     09/29/2009-2.0 Guy Pelletier 
  *       - 282553: JPA 2.0 JoinTable support for OneToOne and ManyToOne
  *     03/08/2010-2.1 Guy Pelletier 
- *       - 303632: Add attribute-type for mapping attributes to EclipseLink-ORM  
+ *       - 303632: Add attribute-type for mapping attributes to EclipseLink-ORM
+ *     03/29/2010-2.1 Guy Pelletier 
+ *       - 267217: Add Named Access Type to EclipseLink-ORM
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata.accessors;
 
@@ -375,13 +377,6 @@ public abstract class MetadataAccessor extends ORMetadata {
      */
     public boolean hasAccess() {
         return m_access != null;
-    }
-    
-    /**
-     * INTERNAL:
-     */
-    public boolean hasPropertyAccess() {
-        return hasAccess() && m_access.equals(MetadataConstants.PROPERTY);
     }
     
     /**

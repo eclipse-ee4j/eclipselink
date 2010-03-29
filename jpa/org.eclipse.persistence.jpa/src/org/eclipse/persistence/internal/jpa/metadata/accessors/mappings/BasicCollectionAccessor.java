@@ -54,6 +54,7 @@ import org.eclipse.persistence.mappings.DirectCollectionMapping;
  * @author Guy Pelletier
  * @since TopLink 11g
  */
+@SuppressWarnings("deprecation")
 public class BasicCollectionAccessor extends DirectCollectionAccessor {
     private ColumnMetadata m_valueColumn;
     

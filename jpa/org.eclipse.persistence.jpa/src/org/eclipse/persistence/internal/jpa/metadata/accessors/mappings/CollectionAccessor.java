@@ -36,7 +36,9 @@
  *     11/06/2009-2.0 Guy Pelletier 
  *       - 286317: UniqueConstraint xml element is changing (plus couple other fixes, see bug)
  *     03/08/2010-2.1 Guy Pelletier 
- *       - 303632: Add attribute-type for mapping attributes to EclipseLink-ORM  
+ *       - 303632: Add attribute-type for mapping attributes to EclipseLink-ORM
+ *     03/29/2010-2.1 Guy Pelletier 
+ *       - 267217: Add Named Access Type to EclipseLink-ORM
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata.accessors.mappings;
 
@@ -59,7 +61,6 @@ import javax.persistence.MapKeyTemporal;
 import javax.persistence.OrderBy;
 import javax.persistence.OrderColumn;
 
-import org.eclipse.persistence.annotations.BatchFetchType;
 import org.eclipse.persistence.annotations.MapKeyConvert;
 import org.eclipse.persistence.annotations.OrderCorrection;
 import org.eclipse.persistence.exceptions.ValidationException;
@@ -508,13 +509,15 @@ public abstract class CollectionAccessor extends RelationshipAccessor implements
         
         mapping.setIsReadOnly(false);
         mapping.setIsLazy(isLazy());
-        mapping.setJoinFetch(getMappingJoinFetchType(getJoinFetch()));
-        if (getBatchFetch() != null) {
-            mapping.setBatchFetchType(BatchFetchType.valueOf(getBatchFetch()));
-        }
         mapping.setAttributeName(getAttributeName());
         mapping.setReferenceClassName(getReferenceClassName());
         
+        // Process join fetch type.
+        processJoinFetch(getJoinFetch(), mapping);
+        
+        // Process the batch fetch if specified.
+        processBatchFetch(getBatchFetch(), mapping);
+            
         // Process the orphanRemoval or PrivateOwned
         processOrphanRemoval(mapping);
         

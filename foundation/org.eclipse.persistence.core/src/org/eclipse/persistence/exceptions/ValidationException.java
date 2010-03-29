@@ -393,6 +393,9 @@ public class ValidationException extends EclipseLinkException {
     public static final int CLASS_EXTRACTOR_CAN_NOT_BE_SPECIFIED_WITH_DISCRIMINATOR = 7324;
     public static final int INVALID_SQL_RESULT_SET_MAPPING_NAME = 7325;
     
+    // JPA dynamic persistence exceptions.
+    public static final int NO_ATTRIBUTE_TYPE_SPECIFICATION = 7326;
+    
     /**
      * INTERNAL:
      * EclipseLink exceptions should only be thrown by EclipseLink.
@@ -1862,6 +1865,13 @@ public class ValidationException extends EclipseLinkException {
         validationException.setErrorCode(NESTED_UOW_NOT_SUPPORTED_FOR_MODIFY_ALL_QUERY);
         return validationException;
     }
+    
+    public static ValidationException noAttributeTypeSpecification(String attributeName, String entityClassName, Object mappingFile) {
+        Object[] args = { attributeName, entityClassName, mappingFile };
+        ValidationException validationException = new ValidationException(ExceptionMessageGenerator.buildMessage(ValidationException.class, NO_ATTRIBUTE_TYPE_SPECIFICATION, args));
+        validationException.setErrorCode(NO_ATTRIBUTE_TYPE_SPECIFICATION);
+        return validationException;
+    }    
     
     public static ValidationException noConverterDataTypeSpecified(Object entityClass, String attributeName, String converterName) {
         Object[] args = { entityClass, attributeName, converterName };

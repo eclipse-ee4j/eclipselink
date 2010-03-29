@@ -313,6 +313,7 @@ public class XMLEntityMappingsMappingProject extends org.eclipse.persistence.ses
         XMLDescriptor descriptor = new XMLDescriptor();
         descriptor.setJavaClass(XMLAttributes.class);
         
+        // Element mappings - must remain in order of definition in XML.
         XMLCompositeObjectMapping embeddedIdMapping = new XMLCompositeObjectMapping();
         embeddedIdMapping.setAttributeName("m_embeddedId");
         embeddedIdMapping.setGetMethodName("getEmbeddedId");
@@ -3882,7 +3883,7 @@ public class XMLEntityMappingsMappingProject extends org.eclipse.persistence.ses
      */
     protected XMLDirectMapping getTargetInterfaceAttributeMapping() {
         XMLDirectMapping targetInterfaceMapping = new XMLDirectMapping();
-        targetInterfaceMapping.setAttributeName("m_targetEntity");
+        targetInterfaceMapping.setAttributeName("m_targetEntityName");
         targetInterfaceMapping.setGetMethodName("getTargetEntityName");
         targetInterfaceMapping.setSetMethodName("setTargetEntityName");
         targetInterfaceMapping.setXPath("@target-interface");

@@ -21,14 +21,15 @@
  *     11/06/2009-2.0 Guy Pelletier 
  *       - 286317: UniqueConstraint xml element is changing (plus couple other fixes, see bug)
  *     03/08/2010-2.1 Guy Pelletier 
- *       - 303632: Add attribute-type for mapping attributes to EclipseLink-ORM  
+ *       - 303632: Add attribute-type for mapping attributes to EclipseLink-ORM
+ *     03/29/2010-2.1 Guy Pelletier 
+ *       - 267217: Add Named Access Type to EclipseLink-ORM
  ******************************************************************************/ 
 package org.eclipse.persistence.internal.jpa.metadata.accessors.mappings;
 
 import javax.persistence.FetchType;
 
 import org.eclipse.persistence.annotations.BatchFetch;
-import org.eclipse.persistence.annotations.BatchFetchType;
 import org.eclipse.persistence.annotations.JoinFetch;
 import org.eclipse.persistence.internal.helper.DatabaseTable;
 import org.eclipse.persistence.internal.jpa.metadata.MetadataDescriptor;
@@ -242,12 +243,10 @@ public abstract class DirectCollectionAccessor extends DirectAccessor {
         setAccessorMethods(mapping);
         
         // Process join fetch type.
-        mapping.setJoinFetch(getMappingJoinFetchType(m_joinFetch));
+        processJoinFetch(getJoinFetch(), mapping);
         
-        // Process the batch fetch type.
-        if (getBatchFetch() != null) {
-            mapping.setBatchFetchType(BatchFetchType.valueOf(getBatchFetch()));
-        }
+        // Process the batch fetch if specified.
+        processBatchFetch(getBatchFetch(), mapping);
         
         // Process the collection table.
         processCollectionTable(mapping);

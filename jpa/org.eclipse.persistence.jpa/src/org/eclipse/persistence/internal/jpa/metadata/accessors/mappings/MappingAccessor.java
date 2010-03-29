@@ -46,7 +46,9 @@
  *     01/26/2010-2.0.1 Guy Pelletier 
  *       - 299893: @MapKeyClass does not work with ElementCollection
  *     03/08/2010-2.1 Guy Pelletier 
- *       - 303632: Add attribute-type for mapping attributes to EclipseLink-ORM  
+ *       - 303632: Add attribute-type for mapping attributes to EclipseLink-ORM
+ *     03/29/2010-2.1 Guy Pelletier 
+ *       - 267217: Add Named Access Type to EclipseLink-ORM
  ******************************************************************************/
 package org.eclipse.persistence.internal.jpa.metadata.accessors.mappings;
 
@@ -59,6 +61,7 @@ import java.util.Set;
 import javax.persistence.Column;
 import javax.persistence.FetchType;
 
+import org.eclipse.persistence.annotations.BatchFetchType;
 import org.eclipse.persistence.annotations.Convert;
 import org.eclipse.persistence.annotations.JoinFetchType;
 import org.eclipse.persistence.annotations.Properties;
@@ -67,10 +70,12 @@ import org.eclipse.persistence.annotations.ReturnInsert;
 import org.eclipse.persistence.annotations.ReturnUpdate;
 import org.eclipse.persistence.exceptions.ValidationException;
 
+import org.eclipse.persistence.internal.descriptors.VirtualAttributeAccessor;
 import org.eclipse.persistence.internal.helper.ClassConstants;
 import org.eclipse.persistence.internal.helper.DatabaseField;
 import org.eclipse.persistence.internal.helper.DatabaseTable;
 import org.eclipse.persistence.internal.indirection.TransparentIndirectionPolicy;
+import org.eclipse.persistence.internal.jpa.metadata.MetadataConstants;
 import org.eclipse.persistence.internal.jpa.metadata.MetadataDescriptor;
 import org.eclipse.persistence.internal.jpa.metadata.MetadataHelper;
 import org.eclipse.persistence.internal.jpa.metadata.MetadataLogger;
@@ -544,20 +549,6 @@ public abstract class MappingAccessor extends MetadataAccessor {
     
     /**
      * INTERNAL:
-     * Return the mapping join fetch type.
-     */
-    protected int getMappingJoinFetchType(String joinFetchType) {
-        if (joinFetchType == null) {
-            return ForeignReferenceMapping.NONE;
-        } else if (joinFetchType.equals(JoinFetchType.INNER.name())) {
-            return ForeignReferenceMapping.INNER_JOIN;
-        }
-
-        return ForeignReferenceMapping.OUTER_JOIN;
-    }
-    
-    /**
-     * INTERNAL:
      * Return the owning descriptor of this accessor.
      */
     public MetadataDescriptor getOwningDescriptor() {
@@ -656,7 +647,13 @@ public abstract class MappingAccessor extends MetadataAccessor {
      */
     public MetadataClass getRawClass() {
         if (m_attributeType == null) {
-            return getAccessibleObject().getRawClass(getDescriptor());
+            MetadataClass rawClass = getAccessibleObject().getRawClass(getDescriptor());
+
+            // Raw class == null and no attribute-type is specified, try the
+            // reference class since some mappings (1-1, M-1 or V1-1) don't 
+            // require an attribute-type specification since it can be specified
+            // through the target entity/interface specification.
+            return (rawClass == null) ? getReferenceClass() : rawClass;         
         } else {
             // If the class doesn't exist the factory we'll just return a
             // generic MetadataClass
@@ -747,6 +744,13 @@ public abstract class MappingAccessor extends MetadataAccessor {
      */
     public TemporalMetadata getTemporal(boolean isForMapKey) {
         return null;
+    }
+    
+    /**
+     * INTERNAL:
+     */
+    public boolean hasAccessMethods() {
+        return m_accessMethods != null;
     }
     
     /**
@@ -1234,6 +1238,16 @@ public abstract class MappingAccessor extends MetadataAccessor {
     
     /**
      * INTERNAL:
+     * Set the batch fetch type on the collection mapping.
+     */
+    protected void processBatchFetch(String batchFetch, ForeignReferenceMapping mapping) {
+        if (batchFetch != null) {
+            mapping.setBatchFetchType(BatchFetchType.valueOf(batchFetch));
+        }   
+    }
+    
+    /**
+     * INTERNAL:
      * Process the map metadata if this is a valid map accessor. Will return 
      * the map key method name that should be use, null otherwise.
      * @see CollectionAccessor
@@ -1383,6 +1397,20 @@ public abstract class MappingAccessor extends MetadataAccessor {
         }
         
         enumerated.process(mapping, this, referenceClass, isForMapKey);
+    }
+    
+    /**
+     * INTERNAL:
+     * Return the mapping join fetch type.
+     */
+    protected void processJoinFetch(String joinFetch, ForeignReferenceMapping mapping) {
+        if (joinFetch == null) {
+            mapping.setJoinFetch(ForeignReferenceMapping.NONE);
+        } else if (joinFetch.equals(JoinFetchType.INNER.name())) {
+            mapping.setJoinFetch(ForeignReferenceMapping.INNER_JOIN);
+        } else {
+            mapping.setJoinFetch(ForeignReferenceMapping.OUTER_JOIN);
+        }
     }
     
     /**
@@ -1640,6 +1668,7 @@ public abstract class MappingAccessor extends MetadataAccessor {
     
     /**
      * INTERNAL:
+     * Used for OX mapping.
      */
     public void setAccessMethods(AccessMethodsMetadata accessMethods){
         m_accessMethods = accessMethods;
@@ -1650,7 +1679,11 @@ public abstract class MappingAccessor extends MetadataAccessor {
      * Set the getter and setter access methods for this accessor.
      */
     protected void setAccessorMethods(DatabaseMapping mapping) {
-        if (usesPropertyAccess(getDescriptor())) {
+        if (usesPropertyAccess() || usesVirtualAccess()) {
+            if (usesVirtualAccess()) {
+                mapping.setAttributeAccessor(new VirtualAttributeAccessor());
+            }
+            
             mapping.setGetMethodName(getGetMethodName());
             mapping.setSetMethodName(getSetMethodName());
         }
@@ -1787,11 +1820,25 @@ public abstract class MappingAccessor extends MetadataAccessor {
      * inheritance hierarchy, the subclasses inherit their access type from 
      * the parent (unless there is an explicit access setting).
      */
-    public boolean usesPropertyAccess(MetadataDescriptor descriptor) {
+    public boolean usesPropertyAccess() {
         if (hasAccess()) {
-            return hasPropertyAccess();
+            return getAccess().equals(MetadataConstants.PROPERTY);
         } else {
             return (m_accessMethods == null) ? m_classAccessor.usesPropertyAccess() : true;
+        }
+    }
+    
+    /**
+     * INTERNAL:
+     * Returns true if this mapping or class uses virtual access. In an 
+     * inheritance hierarchy, the subclasses inherit their access type from 
+     * the parent (unless there is an explicit access setting).
+     */
+    public boolean usesVirtualAccess() {
+        if (hasAccess()) {
+            return getAccess().equals(MetadataConstants.VIRTUAL);
+        } else {
+            return m_classAccessor.usesNameAccess();
         }
     }
 }

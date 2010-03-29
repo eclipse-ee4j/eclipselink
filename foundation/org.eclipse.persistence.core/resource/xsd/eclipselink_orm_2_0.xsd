@@ -788,6 +788,7 @@
     <xsd:restriction base="xsd:token">
       <xsd:enumeration value="PROPERTY"/>
       <xsd:enumeration value="FIELD"/>
+      <xsd:enumeration value="VIRTUAL"/>
     </xsd:restriction>
   </xsd:simpleType>
 

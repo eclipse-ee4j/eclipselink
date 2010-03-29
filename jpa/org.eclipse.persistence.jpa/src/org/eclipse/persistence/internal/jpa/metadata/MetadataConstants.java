@@ -10,6 +10,8 @@
  * Contributors:
  *     10/01/2008-1.1 Guy Pelletier 
  *       - 249329: To remain JPA 1.0 compliant, any new JPA 2.0 annotations should be referenced by name
+ *     03/29/2010-2.1 Guy Pelletier 
+ *       - 267217: Add Named Access Type to EclipseLink-ORM
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata;
 
@@ -29,6 +31,7 @@ public class MetadataConstants {
     /** AccessType enum values */
     public static final String FIELD = "FIELD";
     public static final String PROPERTY = "PROPERTY";
+    public static final String VIRTUAL = "VIRTUAL";
 
     /** 
      * Metamodel processing for MappedSuperclasses non-functional names.<p>

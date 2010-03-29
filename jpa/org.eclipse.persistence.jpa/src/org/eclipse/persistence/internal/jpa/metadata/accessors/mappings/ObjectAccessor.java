@@ -33,6 +33,8 @@
  *       - 290567: mappedbyid support incomplete
  *     11/23/2009-2.0 Guy Pelletier 
  *       - 295790: JPA 2.0 adding @MapsId to one entity causes initialization errors in other entities
+ *     03/29/2010-2.1 Guy Pelletier 
+ *       - 267217: Add Named Access Type to EclipseLink-ORM
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata.accessors.mappings;
 
@@ -45,7 +47,6 @@ import javax.persistence.MapsId;
 import javax.persistence.PrimaryKeyJoinColumn;
 import javax.persistence.PrimaryKeyJoinColumns;
 
-import org.eclipse.persistence.annotations.BatchFetchType;
 import org.eclipse.persistence.exceptions.ValidationException;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.classes.ClassAccessor;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataAccessibleObject;
@@ -239,14 +240,16 @@ public abstract class ObjectAccessor extends RelationshipAccessor {
     protected OneToOneMapping initOneToOneMapping() {
         OneToOneMapping mapping = new OneToOneMapping();
         mapping.setIsReadOnly(false);
-        mapping.setJoinFetch(getMappingJoinFetchType(getJoinFetch()));
-        if (getBatchFetch() != null) {
-            mapping.setBatchFetchType(BatchFetchType.valueOf(getBatchFetch()));
-        }
         mapping.setIsOptional(isOptional());
         mapping.setAttributeName(getAttributeName());
         mapping.setReferenceClassName(getReferenceClassName());
         mapping.setDerivesId(derivesId());
+        
+        // Process join fetch type.
+        processJoinFetch(getJoinFetch(), mapping);
+        
+        // Process the batch fetch if specified.
+        processBatchFetch(getBatchFetch(), mapping);
         
         // Process the orphanRemoval or PrivateOwned
         processOrphanRemoval(mapping);
@@ -402,7 +405,7 @@ public abstract class ObjectAccessor extends RelationshipAccessor {
             usesIndirection = false;
         }
         
-        if (usesIndirection && usesPropertyAccess(getDescriptor())) {
+        if (usesIndirection && usesPropertyAccess()) {
             mapping.setIndirectionPolicy(new WeavedObjectBasicIndirectionPolicy(getSetMethodName()));
         } else {
             mapping.setUsesIndirection(usesIndirection);

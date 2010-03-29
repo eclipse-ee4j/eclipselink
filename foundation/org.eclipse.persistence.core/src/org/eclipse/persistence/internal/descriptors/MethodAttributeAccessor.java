@@ -50,10 +50,17 @@ public class MethodAttributeAccessor extends AttributeAccessor {
      * Gets the value of an instance variable in the object.
      */
     public Object getAttributeValueFromObject(Object anObject) throws DescriptorException {
+        return getAttributeValueFromObject(anObject, (Object[]) null);
+    }
+    
+    /**
+     * Gets the value of an instance variable in the object.
+     */
+    protected Object getAttributeValueFromObject(Object anObject, Object[] parameters) throws DescriptorException {
         try {
             if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()){
                 try {
-                    return AccessController.doPrivileged(new PrivilegedMethodInvoker(getGetMethod(), anObject, (Object[])null));
+                    return AccessController.doPrivileged(new PrivilegedMethodInvoker(getGetMethod(), anObject, parameters));
                 } catch (PrivilegedActionException exception) {
                     Exception throwableException = exception.getException();
                     if (throwableException instanceof IllegalAccessException) {
@@ -64,7 +71,7 @@ public class MethodAttributeAccessor extends AttributeAccessor {
                 }
             } else {
                 // PERF: Direct-var access.
-                return this.getMethod.invoke(anObject, (Object[])null);
+                return this.getMethod.invoke(anObject, parameters);    
             }
         } catch (IllegalArgumentException exception) {
             throw DescriptorException.illegalArgumentWhileGettingValueThruMethodAccessor(getGetMethodName(), anObject.getClass().getName(), exception);
@@ -121,34 +128,48 @@ public class MethodAttributeAccessor extends AttributeAccessor {
     }
 
     public Class getSetMethodParameterType() {
+        return getSetMethodParameterType(0);
+    }
+    
+    protected Class getSetMethodParameterType(int index) {
         if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()){
             try {
-                return ((Class[])AccessController.doPrivileged(new PrivilegedGetMethodParameterTypes(getSetMethod())))[0];
+                return ((Class[])AccessController.doPrivileged(new PrivilegedGetMethodParameterTypes(getSetMethod())))[index];
             } catch (PrivilegedActionException exception) {
                 // we should not get here since this call does not throw any checked exceptions
                 return null;
             }
         } else {
-            return PrivilegedAccessHelper.getMethodParameterTypes(getSetMethod())[0];
+            return PrivilegedAccessHelper.getMethodParameterTypes(getSetMethod())[index];
         }
     }
 
+    protected Class[] getSetMethodParameterTypes() { 
+        return new Class[] {getGetMethodReturnType()};
+    }
+    
     /**
      * Set get and set method after creating these methods by using
      * get and set method names
      */
     public void initializeAttributes(Class theJavaClass) throws DescriptorException {
+        initializeAttributes(theJavaClass, (Class[]) null);
+    }
+    
+    /**
+     * Set get and set method after creating these methods by using
+     * get and set method names
+     */
+    protected void initializeAttributes(Class theJavaClass, Class[] getParameterTypes) throws DescriptorException {
         if (getAttributeName() == null) {
             throw DescriptorException.attributeNameNotSpecified();
         }
         try {
-            setGetMethod(Helper.getDeclaredMethod(theJavaClass, getGetMethodName(), (Class[])null));
-
+            setGetMethod(Helper.getDeclaredMethod(theJavaClass, getGetMethodName(), getParameterTypes));
+            
             // The parameter type for the set method must always be the return type of the get method.
             if(!isWriteOnly()) {
-                Class[] parameterTypes = new Class[1];
-                parameterTypes[0] = getGetMethodReturnType();
-                setSetMethod(Helper.getDeclaredMethod(theJavaClass, getSetMethodName(), parameterTypes));
+                setSetMethod(Helper.getDeclaredMethod(theJavaClass, getSetMethodName(), getSetMethodParameterTypes()));
             }
         } catch (NoSuchMethodException ex) {
             DescriptorException descriptorException = DescriptorException.noSuchMethodWhileInitializingAttributesInMethodAccessor(getSetMethodName(), getGetMethodName(), theJavaClass.getName());
@@ -177,8 +198,13 @@ public class MethodAttributeAccessor extends AttributeAccessor {
      * Sets the value of the instance variable in the object to the value.
      */
     public void setAttributeValueInObject(Object domainObject, Object attributeValue) throws DescriptorException {
-        Object[] parameters = new Object[1];
-        parameters[0] = attributeValue;
+        setAttributeValueInObject(domainObject, attributeValue, new Object[] {attributeValue});
+    }
+    
+    /**
+     * Sets the value of the instance variable in the object to the value.
+     */
+    protected void setAttributeValueInObject(Object domainObject, Object attributeValue, Object[] parameters) throws DescriptorException {
         try {
             if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()){
                 try {
@@ -232,7 +258,7 @@ public class MethodAttributeAccessor extends AttributeAccessor {
 
                 //Found when fixing Bug2910086
                 if (fieldClass.isPrimitive() && (attributeValue == null)) {
-                    parameters[0] = ConversionManager.getDefaultManager().convertObject(Integer.valueOf(0), fieldClass);
+                    parameters[parameters.length-1] = ConversionManager.getDefaultManager().convertObject(Integer.valueOf(0), fieldClass);
                     if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()){
                         try {
                             AccessController.doPrivileged(new PrivilegedMethodInvoker(getSetMethod(), domainObject, parameters));

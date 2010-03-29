@@ -14,9 +14,11 @@ package org.eclipse.persistence.testing.models.jpa.ddlgeneration;
 
 import static javax.persistence.GenerationType.TABLE;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import javax.persistence.Lob;
 import javax.persistence.Table;
 import javax.persistence.TableGenerator;
 
@@ -36,6 +38,10 @@ public class Comment {
     
     private String text;
     
+    @Lob
+    @Column(name="PHOTO", length=80000)
+    private Byte[] photo;
+
     public Comment() {
         super();
     }
@@ -48,12 +54,22 @@ public class Comment {
     public int getId() {
         return id;
     }
+    
+    public Byte[] getPhoto() {
+		return photo;
+	}
+	
     public String getTest() {
         return text;
     }
     public void setId(int id) {
         this.id = id;
     }
+    
+    public void setPhoto(Byte[] photo) {
+		this.photo = photo;
+	}
+    
     public void setTest(String text) {
         this.text = text;
     }

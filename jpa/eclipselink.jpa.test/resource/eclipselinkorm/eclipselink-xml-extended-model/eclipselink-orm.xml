@@ -353,6 +353,99 @@
             </one-to-one>
         </attributes>
     </entity>
+    <entity name="XMLShovel" class="Shovel" access="VIRTUAL">
+        <table name="XML_SHOVEL"/>
+        <table-generator name="XML_SHOVEL_TABLE_GENERATOR" table="CMP3_XML_EMPLOYEE_SEQ" pk-column-name="SEQ_NAME" value-column-name="SEQ_COUNT" pk-column-value="XML_SHOVEL_SEQ"/>
+        <attributes>
+            <id name="id" attribute-type="Integer">
+                <column name="ID"/>
+                <generated-value strategy="TABLE" generator="XML_SHOVEL_TABLE_GENERATOR"/>
+            </id>
+            <basic name="cost" attribute-type="Double">
+                <column name="COST"/>
+            </basic>
+            <version name="version" attribute-type="Integer">
+                <column name="VERSION"/>
+            </version>
+            <many-to-one name="owner" target-entity="ShovelOwner">
+                <join-column name="OWNER_ID"/>
+                <cascade>
+                    <cascade-all/>
+                </cascade>
+            </many-to-one>
+            <one-to-many name="operators" target-entity="ShovelDigger" mapped-by="shovel" attribute-type="java.util.List">
+                <cascade>
+                    <cascade-all/>
+                </cascade>
+            </one-to-many>
+            <many-to-many name="projects" target-entity="ShovelProject" attribute-type="java.util.List">
+                <join-table name="XML_SHOVEL_PROJECTS">
+                    <join-column name="SHOVEL_ID" referenced-column-name="ID"/>
+                    <inverse-join-column name="PROJECT_ID" referenced-column-name="ID"/>
+                </join-table>
+                <cascade>
+                    <cascade-persist/>
+                </cascade>
+            </many-to-many>
+            <embedded name="sections" attribute-type="ShovelSections"/>
+        </attributes>
+    </entity>
+    <entity name="XMLShovelDigger" class="ShovelDigger" access="VIRTUAL">
+        <table name="XML_SHOVEL_DIGGER"/>
+        <table-generator name="XML_SHOVEL_DIGGER_TABLE_GENERATOR" table="CMP3_XML_EMPLOYEE_SEQ" pk-column-name="SEQ_NAME" value-column-name="SEQ_COUNT" pk-column-value="XML_SHOVEL_DIGGER_SEQ"/>
+        <attributes>
+            <id name="id" attribute-type="Integer">
+                <column name="ID"/>
+                <generated-value strategy="TABLE" generator="XML_SHOVEL_DIGGER_TABLE_GENERATOR"/>
+            </id>
+            <basic name="name" attribute-type="String">
+                <column name="DIGGER_NAME"/>
+            </basic>
+            <one-to-one name="shovel" target-entity="Shovel">
+                <join-column name="SHOVEL_ID"/>
+            </one-to-one>
+        </attributes>
+    </entity>
+    <entity name="XMLShovelOwner" class="ShovelOwner" access="VIRTUAL">
+        <table name="XML_SHOVEL_OWNER"/>
+        <table-generator name="XML_SHOVEL_OWNER_TABLE_GENERATOR" table="CMP3_XML_EMPLOYEE_SEQ" pk-column-name="SEQ_NAME" value-column-name="SEQ_COUNT" pk-column-value="XML_SHOVEL_OWNER_SEQ"/>
+        <attributes>
+            <id name="id" attribute-type="Integer">
+                <column name="ID"/>
+                <generated-value strategy="TABLE" generator="XML_SHOVEL_OWNER_TABLE_GENERATOR"/>
+            </id>
+            <basic name="name" attribute-type="String">
+                <column name="OWNER_NAME"/>
+            </basic>
+        </attributes>
+    </entity>
+    <entity name="XMLShovelProject" class="ShovelProject" access="VIRTUAL">
+        <table name="XML_SHOVEL_PROJECT"/>
+        <table-generator name="XML_SHOVEL_PROJECT_TABLE_GENERATOR" table="CMP3_XML_EMPLOYEE_SEQ" pk-column-name="SEQ_NAME" value-column-name="SEQ_COUNT" pk-column-value="XML_SHOVEL_PROJECT_SEQ"/>
+        <attributes>
+            <id name="id" attribute-type="Integer">
+                <column name="ID"/>
+                <generated-value strategy="TABLE" generator="XML_SHOVEL_PROJECT_TABLE_GENERATOR"/>
+            </id>
+            <basic name="description" attribute-type="String">
+                <column name="DESCRIP"/>
+            </basic>
+            <many-to-many name="shovels" target-entity="Shovel" mapped-by="projects" attribute-type="java.util.List"/>
+        </attributes>
+    </entity>
+    <embeddable class="ShovelSections" access="VIRTUAL">
+        <attributes>
+            <basic name="handle" attribute-type="ShovelSections$MaterialType">
+                <access-methods get-method="getMaterial" set-method="setMaterial"/>
+            </basic>
+            <basic name="shaft" attribute-type="ShovelSections$MaterialType">
+                <access-methods get-method="getMaterial" set-method="setMaterial"/>
+            </basic>
+            <basic name="scoop" attribute-type="ShovelSections$MaterialType">
+                <access-methods get-method="getMaterial" set-method="setMaterial"/>
+            </basic>
+        </attributes>
+    </embeddable>
     <embeddable class="Name" access="FIELD">
         <attributes>
             <basic name="firstName" attribute-type="java.lang.String">
@@ -363,7 +456,6 @@
             </basic>
         </attributes>
     </embeddable>
-
     <embeddable class="EmploymentPeriod">
         <property name="embeddableClassName" value="EmploymentPeriod"/>
         <property name="ToBeOverriddenByXml" value="true" value-type="Boolean"/>

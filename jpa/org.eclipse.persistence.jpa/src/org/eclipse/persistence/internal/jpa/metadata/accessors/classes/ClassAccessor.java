@@ -43,6 +43,8 @@
  *       - 294361: incorrect generated table for element collection attribute overrides
  *     01/26/2010-2.0.1 Guy Pelletier 
  *       - 299893: @MapKeyClass does not work with ElementCollection
+ *     03/29/2010-2.1 Guy Pelletier 
+ *       - 267217: Add Named Access Type to EclipseLink-ORM
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata.accessors.classes;
 
@@ -113,6 +115,7 @@ import org.eclipse.persistence.internal.jpa.metadata.copypolicy.CopyPolicyMetada
 import org.eclipse.persistence.internal.jpa.metadata.copypolicy.CustomCopyPolicyMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.copypolicy.InstantiationCopyPolicyMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.copypolicy.CloneCopyPolicyMetadata;
+import org.eclipse.persistence.internal.jpa.metadata.mappings.AccessMethodsMetadata;
 
 import org.eclipse.persistence.internal.jpa.metadata.xml.XMLEntityMappings;
 
@@ -132,6 +135,7 @@ import org.eclipse.persistence.internal.jpa.metadata.accessors.mappings.ObjectAc
  * @author Guy Pelletier
  * @since TopLink EJB 3.0 Reference Implementation
  */
+@SuppressWarnings("deprecation")
 public abstract class ClassAccessor extends MetadataAccessor {
     private boolean m_isPreProcessed = false;
     private boolean m_isProcessed = false;
@@ -237,6 +241,9 @@ public abstract class ClassAccessor extends MetadataAccessor {
      * tied to this class accessor. This method is called for every class
      * accessor and is also called from parent class accessors to each of its
      * subclasses of a TABLE_PER_CLASS inheritance strategy.
+     * 
+     * Add accessors is called in the preProcess stage and must not be called
+     * until its owning class accessor has processed its access type.
      */
     public void addAccessors() {      
         if (m_attributes != null) {
@@ -250,75 +257,59 @@ public abstract class ClassAccessor extends MetadataAccessor {
                 // process themselves correctly.
                 accessor.initXMLMappingAccessor(this);
                 
-                if (accessor.usesPropertyAccess(getDescriptor())) {
-                    if (accessor.getAccessMethods() != null) {
-                        // Can't rely on MappingAccessor's getGetMethodName 
-                        // methods as they could result in NPE if 
-                        // accessibleObject isn't set first
-                        String getMethodName = accessor.getAccessMethods().getGetMethodName();
-                        MetadataMethod getMethod = getJavaClass().getMethod(getMethodName, new String[]{});
-                        String setMethodName = accessor.getAccessMethods().getSetMethodName();
-                        MetadataMethod setMethod = getJavaClass().getMethod(setMethodName, Arrays.asList(new String[]{getMethod.getReturnType()}));
-                        getMethod.setSetMethod(setMethod);
-                        accessibleObject = getMethod;
-                    } else {
-                        MetadataMethod method = getJavaClass().getMethodForPropertyName(accessor.getName());
-
-                        if (method == null) {
-                            throw ValidationException.invalidPropertyForClass(accessor.getName(), getJavaClass());
-                        } else {
-                            // True will force an exception to be thrown if it 
-                            // is not a valid method. However, if it is a
-                            // transient accessor, don't validate it and just 
-                            // let it through.
-                            if (accessor.isTransient() || method.isValidPersistenceMethod(getDescriptor(), true)) {    
-                                accessibleObject = method;
-                            }
-                        }  
-                    }
+                // To load the accessible object we must check the access type
+                // on the individual accessors. If no type is defined we will
+                // ask the class accessor which can either return an explicit
+                // type it specified or a default type (pu default or inherited
+                // from a parent class)
+                if (accessor.usesVirtualAccess()) {
+                    accessibleObject = getAccessibleNameMethod(accessor);
+                } else if (accessor.usesPropertyAccess()) {
+                    accessibleObject = getAccessibleMethod(accessor);
                 } else {
-                    MetadataField field = getJavaClass().getField(accessor.getName());
-                
-                    if (field == null) {
-                        throw ValidationException.invalidFieldForClass(accessor.getName(), getJavaClass());
-                    } else {
-                        // True will force an exception to be thrown if it is 
-                        // not a valid field. However, if it is a transient 
-                        // accessor, don't validate it and just let it through.
-                        if (accessor.isTransient() || field.isValidPersistenceField(getDescriptor(), true)) {
-                            accessibleObject = field;
-                        }
-                    }
+                    accessibleObject = getAccessibleField(accessor);
                 }
                 
-                // Initialize the accessor with its real accessible object now,
-                // that is a field or method since it will currently hold a 
-                // reference to its owning class' accessible object.
-                accessor.initXMLObject(accessibleObject, getEntityMappings());
+                // If we have no accessible object at this point and no
+                // exception has been thrown then the user decorated an invalid
+                // attribute. A log warning will have been issued, do not
+                // further process this accessor.
+                if (accessibleObject != null) {
+                    // Initialize the accessor with its real accessible object 
+                    // now, that is a field or method since it will currently 
+                    // hold a reference to its owning class' accessible object.
+                    accessor.initXMLObject(accessibleObject, getEntityMappings());
                 
-                // It's now safe to init the correct access type for this
-                // mapping accessor since we now have set the actual accessible
-                // object for this mapping accessor. Note: the initAccess call
-                // was originally in initXMLObject, but with the current
-                // processing setup that isn't valid since mapping accessors
-                // have their accessible object 'faked' out for xml merging
-                // purposes during XMLAttributes initXMLObject call. Doing the
-                // access initialization there could cause one of two problems: 
-                // Firstly, an incorrect access type setting and secondly and
-                // more importantly, a null pointer exception (bug 264596) since
-                // our descriptor hasn't been set.
-                accessor.initAccess();
-                
-                // Add the accessor to the descriptor's list
-                addAccessor(accessor);
+                    // It's now safe to init the correct access type for this
+                    // mapping accessor since we now have set the actual 
+                    // accessible object for this mapping accessor. Note: the 
+                    // initAccess call was originally in initXMLObject, but with 
+                    // the current processing setup that isn't valid since 
+                    // mapping accessors have their accessible object 'faked' 
+                    // out for xml merging purposes during XMLAttributes 
+                    // initXMLObject call. Doing the access initialization there 
+                    // could cause one of two problems: Firstly, an incorrect 
+                    // access type setting and secondly and more importantly, a 
+                    // null pointer exception (bug 264596) since our descriptor 
+                    // hasn't been set which we use to retrieve the default 
+                    // access type.
+                    accessor.initAccess();
+                    
+                    // Add the accessor to the descriptor's list
+                    addAccessor(accessor);
+                }
             }
         }
         
-        // Process the fields or methods on the class for annotations.
-        if (usesPropertyAccess()) {
-            addAccessorMethods(false);
-        } else {
-            addAccessorFields(false);
+        // Process the fields or methods on the class for annotations. Unless
+        // we are processing a name access type which means we should not look
+        // any further then what is defined in XML.
+        if (! usesNameAccess()) {
+            if (usesPropertyAccess()) {
+                addAccessorMethods(false);
+            } else {
+                addAccessorFields(false);
+            }
         }
     }
     
@@ -474,12 +465,103 @@ public abstract class ClassAccessor extends MetadataAccessor {
     
     /**
      * INTERNAL:
+     * Return the accessible field for the given mapping accessor. Validation is
+     * performed on the existence of the field.
+     */
+    protected MetadataField getAccessibleField(MappingAccessor accessor) {
+        MetadataField field = getJavaClass().getField(accessor.getName());
+        
+        if (field == null) {
+            throw ValidationException.invalidFieldForClass(accessor.getName(), getJavaClass());
+        } else {
+            // True will force an exception to be thrown if it is not a valid 
+            // field. However, if it is a transient accessor, don't validate it 
+            // and return.
+            if (accessor.isTransient() || field.isValidPersistenceField(getDescriptor(), true)) {
+                return field;    
+            }
+            
+            return null;
+        }
+    }
+    
+    /**
+     * INTERNAL:
+     * Return the accessible method for the given mapping accessor. Validation 
+     * is performed on the existence of the method by property name or by
+     * the access methods if specified.
+     */
+    protected MetadataMethod getAccessibleMethod(MappingAccessor accessor) {
+        if (accessor.getAccessMethods() != null) {
+            // Can't rely on MappingAccessor's getGetMethodName methods as they 
+            // could result in NPE if accessibleObject isn't set first
+            String getMethodName = accessor.getAccessMethods().getGetMethodName();
+            MetadataMethod getMethod = getJavaClass().getMethod(getMethodName, new String[]{});
+            String setMethodName = accessor.getAccessMethods().getSetMethodName();
+            MetadataMethod setMethod = getJavaClass().getMethod(setMethodName, Arrays.asList(new String[]{getMethod.getReturnType()}));
+            getMethod.setSetMethod(setMethod);
+            return getMethod;
+        } else {
+            MetadataMethod method = getJavaClass().getMethodForPropertyName(accessor.getName());
+
+            if (method == null) {
+                throw ValidationException.invalidPropertyForClass(accessor.getName(), getJavaClass());
+            } else {
+                // True will force an exception to be thrown if it is not a 
+                // valid method. However, if it is a transient accessor, don't 
+                // validate it and return.
+                if (accessor.isTransient() || method.isValidPersistenceMethod(getDescriptor(), true)) {
+                    return method;
+                }
+                
+                return null;
+            }  
+        }
+    }
+    
+    /**
+     * INTERNAL:
+     * This method should only be called when using name access and presumably
+     * for dynamic persistence. No method validation is done and either the
+     * access methods specified or the default get and set methods for name
+     * access will be used.
+     */
+    protected MetadataMethod getAccessibleNameMethod(MappingAccessor accessor) {
+        AccessMethodsMetadata accessMethods = accessor.getAccessMethods();
+        MetadataMethod getMethod = new MetadataMethod(getMetadataFactory(), getJavaClass());
+        MetadataMethod setMethod = new MetadataMethod(getMetadataFactory(), getJavaClass());
+        
+        // Set the set method on the getMethod and return it.
+        getMethod.setSetMethod(setMethod);
+
+        // Make sure we set the attribute name on the getMethod.
+        getMethod.setAttributeName(accessor.getName());
+
+        if (accessMethods != null) {
+            getMethod.setName(accessMethods.getGetMethodName());
+            setMethod.setName(accessMethods.getSetMethodName());
+        } else {
+            getMethod.setName(MetadataMethod.DEFAULT_NAME_ACCESS_GET_METHOD);
+            setMethod.setName(MetadataMethod.DEFAULT_NAME_ACCESS_SET_METHOD);
+        }
+        
+        // Validate that the mapping accessor has an attribute-type 
+        // specification or specifies a target entity or class.
+        if (accessor.getRawClass() == null) {
+            throw ValidationException.noAttributeTypeSpecification(accessor.getAttributeName(), getJavaClassName(), getLocation());
+        }
+
+        return getMethod;
+    }
+    
+    /**
+     * INTERNAL:
      * Return the access type of this accessor. Assumes all access processing
      * has been performed before calling this method.
      */
     public String getAccessType() {
         if (hasAccess()) {    
-            return super.getAccess();
+            return getAccess();
         } else {
             return getDescriptor().getDefaultAccess();
         }
@@ -1110,6 +1192,17 @@ public abstract class ClassAccessor extends MetadataAccessor {
     @Override
     public String toString() {
         return getJavaClassName();
+    }
+    
+    /**
+     * INTERNAL:
+     * Returns true if this class uses property access. It will first check for 
+     * an explicit access type specification, otherwise will use the default 
+     * access as specified on the descriptor for this accessor since we may be 
+     * processing a mapped superclass.
+     */
+    public boolean usesNameAccess() {
+        return getAccessType().equals(MetadataConstants.VIRTUAL);
     }
     
     /**
