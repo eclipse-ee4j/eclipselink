@@ -45,7 +45,6 @@ public class Oracle10Platform extends Oracle9Platform  {
             return((OraclePreparedStatement)statement).sendBatch(); 
         }else {
             int[] results = statement.executeBatch();
-            System.out.println(Arrays.toString(results));
             return statement.getUpdateCount();
         }
     }

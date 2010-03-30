@@ -196,7 +196,6 @@ public class MySQLPlatform extends DatabasePlatform {
      */
     public int executeBatch(Statement statement, boolean isStatementPrepared) throws java.sql.SQLException {
        int[] updateResult = statement.executeBatch();
-       System.out.println(Arrays.toString(updateResult));
        int updateCount = 0;
        for (int count : updateResult){
            if (count == Statement.SUCCESS_NO_INFO){

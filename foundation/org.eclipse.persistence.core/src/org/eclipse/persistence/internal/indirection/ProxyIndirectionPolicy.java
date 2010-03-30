@@ -242,9 +242,6 @@ public class ProxyIndirectionPolicy extends BasicIndirectionPolicy {
             }
             return valueHolder;
         } else {
-            if (unitOfWorkIndirectionObject == null) {
-                System.out.println("Debug line");
-            }
             return unitOfWorkIndirectionObject;
         }
     }
