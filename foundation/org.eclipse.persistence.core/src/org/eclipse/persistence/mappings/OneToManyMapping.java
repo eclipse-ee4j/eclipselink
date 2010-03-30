@@ -940,16 +940,6 @@ public class OneToManyMapping extends CollectionMapping implements RelationalMap
 
     /**
      * INTERNAL:
-     * Add additional fields
-     */
-    @Override
-    protected void postPrepareNestedBatchQuery(ReadQuery batchQuery, ObjectLevelReadQuery query) {
-        ReadAllQuery mappingBatchQuery = (ReadAllQuery)batchQuery;
-        mappingBatchQuery.setShouldIncludeData(true);
-    }
-
-    /**
-     * INTERNAL:
      * Delete the reference objects.
      */
     @Override

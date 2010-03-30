@@ -91,6 +91,9 @@ public class Helper implements Serializable {
     public static final int POSITION_AFTER_GET_PREFIX = GET_PROPERTY_METHOD_PREFIX.length();
     
     public static final String DEFAULT_DATABASE_DELIMITER = "\"";
+    
+    public static final String PERSISTENCE_SET = "_persistence_set_";
+    public static final String PERSISTENCE_GET = "_persistence_get_";
 
     private static String defaultStartDatabaseDelimiter = null;
     private static String defaultEndDatabaseDelimiter = null;
@@ -2211,14 +2214,14 @@ public class Helper implements Serializable {
      * Return the get method name weaved for a value-holder attribute.
      */
     public static String getWeavedValueHolderGetMethodName(String attributeName) {
-        return "_persistence_get" + attributeName + "_vh";
+        return PERSISTENCE_GET + attributeName + "_vh";
     }
     
     /**
      * Return the set method name weaved for a value-holder attribute.
      */
     public static String getWeavedValueHolderSetMethodName(String attributeName) {
-        return "_persistence_set" + attributeName + "_vh";
+        return PERSISTENCE_SET + attributeName + "_vh";
     }
     
     /**

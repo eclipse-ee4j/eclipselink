@@ -665,20 +665,35 @@ public abstract class CollectionMapping extends ForeignReferenceMapping implemen
         Object firstIter = cp.iteratorFor(firstCollection);
         Object secondIter = cp.iteratorFor(secondCollection);
 
-        Set keyValue = new HashSet();
+        Map keyValues = new HashMap();
 
         while (cp.hasNext(secondIter)) {
-            Object secondObject = cp.next(secondIter, session);
-            Object primaryKey = getReferenceDescriptor().getObjectBuilder().extractPrimaryKeyFromObject(secondObject, session);
-            keyValue.add(primaryKey);
+            if (isMapKeyMapping()) {
+                Map.Entry secondObject = (Map.Entry)cp.nextEntry(secondIter, session);
+                Object primaryKey = getReferenceDescriptor().getObjectBuilder().extractPrimaryKeyFromObject(secondObject.getValue(), session);
+                Object key = secondObject.getKey();
+                keyValues.put(key, primaryKey);
+            } else {
+                Object secondObject = cp.next(secondIter, session);
+                Object primaryKey = getReferenceDescriptor().getObjectBuilder().extractPrimaryKeyFromObject(secondObject, session);
+                keyValues.put(primaryKey, primaryKey);
+            }
         }
 
         while (cp.hasNext(firstIter)) {
-            Object firstObject = cp.next(firstIter, session);
-            Object primaryKey = getReferenceDescriptor().getObjectBuilder().extractPrimaryKeyFromObject(firstObject, session);
-
-            if (!keyValue.contains(primaryKey)) {
-                return false;
+            if (isMapKeyMapping()) {
+                Map.Entry firstObject = (Map.Entry)cp.nextEntry(firstIter, session);
+                Object primaryKey = getReferenceDescriptor().getObjectBuilder().extractPrimaryKeyFromObject(firstObject.getValue(), session);
+                Object key = firstObject.getKey();
+                if (!primaryKey.equals(keyValues.get(key))) {
+                    return false;
+                }                
+            } else {
+                Object firstObject = cp.next(firstIter, session);
+                Object primaryKey = getReferenceDescriptor().getObjectBuilder().extractPrimaryKeyFromObject(firstObject, session);
+                if (!keyValues.containsKey(primaryKey)) {
+                    return false;
+                }
             }
         }
         return true;
@@ -798,8 +813,8 @@ public abstract class CollectionMapping extends ForeignReferenceMapping implemen
         if (this.containerPolicy.shouldAddAll()) {
             // Indexed list mappings require special add that include the row data with the index.
             Map<Object, List[]> referenceObjectsAndRowsByKey = new HashMap();
-            for (Object elementsIterator = queryContainerPolicy.iteratorFor(results); queryContainerPolicy.hasNext(elementsIterator);) {
-                Object eachReferenceObject = queryContainerPolicy.next(elementsIterator, session);
+            for (Object objectsIterator = queryContainerPolicy.iteratorFor(results); queryContainerPolicy.hasNext(objectsIterator);) {
+                Object eachReferenceObject = queryContainerPolicy.next(objectsIterator, session);
                 AbstractRecord row = rowsIterator.next();
                 Object eachReferenceKey = extractKeyFromTargetRow(row, session);                        
                 List[] objectsAndRows = referenceObjectsAndRowsByKey.get(eachReferenceKey);
@@ -822,8 +837,9 @@ public abstract class CollectionMapping extends ForeignReferenceMapping implemen
                 referenceObjectsByKey.put(eachReferenceKey, container);
             }
         } else {
-            for (Object elementsIterator = queryContainerPolicy.iteratorFor(results); queryContainerPolicy.hasNext(elementsIterator);) {
-                Object eachReferenceObject = queryContainerPolicy.next(elementsIterator, session);
+            // Non-indexed list, either normal collection, or a map key.
+            for (Object objectsIterator = queryContainerPolicy.iteratorFor(results); queryContainerPolicy.hasNext(objectsIterator);) {
+                Object eachReferenceObject = queryContainerPolicy.next(objectsIterator, session);
                 AbstractRecord row = rowsIterator.next();
                 Object eachReferenceKey = extractKeyFromTargetRow(row, session);
                 
@@ -832,7 +848,7 @@ public abstract class CollectionMapping extends ForeignReferenceMapping implemen
                     container = this.containerPolicy.containerInstance();
                     referenceObjectsByKey.put(eachReferenceKey, container);
                 }
-                this.containerPolicy.addInto(eachReferenceObject, container, session);
+                this.containerPolicy.addInto(eachReferenceObject, container, session, row, batchQuery);
             }
         }
     }
@@ -1526,21 +1542,26 @@ public abstract class CollectionMapping extends ForeignReferenceMapping implemen
 
     /**
      * INTERNAL:
-     * Clone and prepare the selection query as a nested batch read query.
-     * This is used for nested batch reading.
+     * Add additional fields
      */
     @Override
-    public ReadQuery prepareNestedBatchQuery(ObjectLevelReadQuery query) {
-        ReadAllQuery batchQuery = (ReadAllQuery)super.prepareNestedBatchQuery(query);
+    protected void postPrepareNestedBatchQuery(ReadQuery batchQuery, ObjectLevelReadQuery query) {
+        super.postPrepareNestedBatchQuery(batchQuery, query);
+        ReadAllQuery mappingBatchQuery = (ReadAllQuery)batchQuery;
+        mappingBatchQuery.setShouldIncludeData(true);
         if (this.listOrderField != null) {
-            batchQuery.addAdditionalField(getListOrderFieldExpression(batchQuery.getExpressionBuilder()));
+            mappingBatchQuery.addAdditionalField(getListOrderFieldExpression(mappingBatchQuery.getExpressionBuilder()));
         }
-        if (batchQuery.shouldPrepare()) {
-            batchQuery.checkPrepare(query.getSession(), query.getTranslationRow());
-        }
-        batchQuery.setSession(null);
-
-        return batchQuery;
+        this.containerPolicy.addAdditionalFieldsToQuery(mappingBatchQuery, getAdditionalFieldsBaseExpression(mappingBatchQuery));
+    }
+    
+    /**
+     * INTERNAL:
+     * Return the base expression to use for adding fields to the query.
+     * Normally this is the query's builder, but may be the join table for m-m.
+     */
+    protected Expression getAdditionalFieldsBaseExpression(ReadQuery query) {
+        return ((ReadAllQuery)query).getExpressionBuilder();
     }
     
     /**

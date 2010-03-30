@@ -16,7 +16,6 @@ package org.eclipse.persistence.internal.queries;
 
 import java.util.List;
 
-import org.eclipse.persistence.exceptions.QueryException;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.internal.sessions.ObjectChangeSet;
 import org.eclipse.persistence.internal.sessions.CollectionChangeRecord;
@@ -76,6 +75,7 @@ public class ListContainerPolicy extends CollectionContainerPolicy {
      * INTERNAL:
      * Validate the container type.
      */
+    @Override
     public boolean isValidContainer(Object container) {
         // PERF: Use instanceof which is inlined, not isAssignable which is very inefficent.
         return container instanceof List;
@@ -87,10 +87,12 @@ public class ListContainerPolicy extends CollectionContainerPolicy {
      *
      * @see ContainerPolicy#iteratorFor(java.lang.Object)
      */
+    @Override
     public boolean hasOrder() {
         return true;
     }
 
+    @Override
     public boolean isListPolicy() {
         return true;
     }
@@ -125,6 +127,7 @@ public class ListContainerPolicy extends CollectionContainerPolicy {
      * Each ContainerPolicy type will implement specific behavior for the collection 
      * type it is wrapping.  These methods are only valid for collections containing object references
      */
+    @Override
     public void recordAddToCollectionInChangeRecord(ObjectChangeSet changeSetToAdd, CollectionChangeRecord collectionChangeRecord){
         if (collectionChangeRecord.getRemoveObjectList().containsKey(changeSetToAdd)) {
             collectionChangeRecord.getRemoveObjectList().remove(changeSetToAdd);
@@ -143,6 +146,7 @@ public class ListContainerPolicy extends CollectionContainerPolicy {
      * Each ContainerPolicy type will implement specific behavior for the collection 
      * type it is wrapping.  These methods are only valid for collections containing object references
      */
+    @Override
     public void recordRemoveFromCollectionInChangeRecord(ObjectChangeSet changeSetToRemove, CollectionChangeRecord collectionChangeRecord){
         if(collectionChangeRecord.getAddObjectList().containsKey(changeSetToRemove)) {
             if (collectionChangeRecord.getAddOverFlow().contains(changeSetToRemove)){
@@ -152,29 +156,6 @@ public class ListContainerPolicy extends CollectionContainerPolicy {
             }
         } else {
             collectionChangeRecord.getRemoveObjectList().put(changeSetToRemove, changeSetToRemove);
-        }
-    }
-    
-    /**
-     * INTERNAL:
-     * Remove elements from this container starting with this index
-     *
-     * @param beginIndex int the point to start deleting values from the collection
-     * @param container java.lang.Object
-     * @return boolean indicating whether the container changed
-     */
-    public void removeFromWithOrder(int beginIndex, Object container) {
-        int size = sizeFor(container) - 1;
-        try {
-            for (; size >= beginIndex; --size) {
-                ((List)container).remove(size);
-            }
-        } catch (ClassCastException ex1) {
-            throw QueryException.cannotRemoveFromContainer(Integer.valueOf(size), container, this);
-        } catch (IllegalArgumentException ex2) {
-            throw QueryException.cannotRemoveFromContainer(Integer.valueOf(size), container, this);
-        } catch (UnsupportedOperationException ex3) {
-            throw QueryException.cannotRemoveFromContainer(Integer.valueOf(size), container, this);
         }
     }
 }

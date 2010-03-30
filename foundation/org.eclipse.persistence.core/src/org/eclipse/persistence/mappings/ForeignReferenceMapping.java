@@ -454,14 +454,14 @@ public abstract class ForeignReferenceMapping extends DatabaseMapping {
                     List<AbstractRecord> remainingParentRows = null;
                     if (startIndex == 0) {
                         // Tail
-                        remainingParentRows = parentRows.subList(index, rowsSize);
+                        remainingParentRows = new ArrayList(parentRows.subList(index, rowsSize));
                     } else if (startIndex == offset) {
                         // Head and tail.
                         remainingParentRows = new ArrayList(parentRows.subList(0, startIndex - 1));
                         remainingParentRows.addAll(parentRows.subList(index, rowsSize));
                     } else {
                         // Middle
-                        remainingParentRows = parentRows.subList(offset + index, startIndex - 1);
+                        remainingParentRows = new ArrayList(parentRows.subList(offset + index, startIndex - 1));
                     }
                     originalPolicy.setDataResults(this, remainingParentRows);
                     translationRow = translationRow.clone();

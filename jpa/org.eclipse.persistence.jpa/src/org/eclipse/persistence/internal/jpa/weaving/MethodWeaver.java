@@ -156,11 +156,11 @@ public class MethodWeaver extends CodeAdapter implements Constants {
      *  
      * A GETFIELD for an attribute named 'variableName' will be replaced by a call to:
      *  
-     * _persistence_getvariableName()
+     * _persistence_get_variableName()
      *  
      * A PUTFIELD for an attribute named 'variableName' will be replaced by a call to:
      *  
-     * _persistence_setvariableName(variableName)
+     * _persistence_set_variableName(variableName)
      */
     public void weaveAttributesIfRequired(int opcode, String owner, String name, String desc) {
         AttributeDetails attributeDetails = tcw.classDetails.getAttributeDetailsFromClassOrSuperClass(name);  
@@ -170,13 +170,13 @@ public class MethodWeaver extends CodeAdapter implements Constants {
         }
         if (opcode == GETFIELD) {
             if (attributeDetails.weaveValueHolders() || tcw.classDetails.shouldWeaveFetchGroups()) {
-                cv.visitMethodInsn(INVOKEVIRTUAL, tcw.classDetails.getClassName(), "_persistence_get" + name, "()" + attributeDetails.getReferenceClassType().getDescriptor());
+                cv.visitMethodInsn(INVOKEVIRTUAL, tcw.classDetails.getClassName(), ClassWeaver.PERSISTENCE_GET + name, "()" + attributeDetails.getReferenceClassType().getDescriptor());
             } else {
                 super.visitFieldInsn(opcode, owner, name, desc);
             }
         } else if (opcode == PUTFIELD) {
             if ((attributeDetails.weaveValueHolders()) || (tcw.classDetails.shouldWeaveChangeTracking()) || (tcw.classDetails.shouldWeaveFetchGroups())) {
-                cv.visitMethodInsn(INVOKEVIRTUAL, tcw.classDetails.getClassName(), "_persistence_set" + name, "(" + attributeDetails.getReferenceClassType().getDescriptor() + ")V");
+                cv.visitMethodInsn(INVOKEVIRTUAL, tcw.classDetails.getClassName(), ClassWeaver.PERSISTENCE_SET + name, "(" + attributeDetails.getReferenceClassType().getDescriptor() + ")V");
             } else {
                 super.visitFieldInsn(opcode, owner, name, desc);
             }

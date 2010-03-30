@@ -13,8 +13,10 @@
 
 package org.eclipse.persistence.testing.tests.jpa.jpql;
 
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -48,11 +50,15 @@ import org.eclipse.persistence.sessions.server.ServerSession;
 
 import org.eclipse.persistence.testing.framework.junit.JUnitTestCase;
 import org.eclipse.persistence.testing.framework.QuerySQLTracker;
+import org.eclipse.persistence.testing.models.jpa.advanced.Buyer;
 import org.eclipse.persistence.testing.models.jpa.advanced.Employee;
 import org.eclipse.persistence.testing.models.jpa.advanced.Address;
 import org.eclipse.persistence.testing.models.jpa.advanced.EmployeePopulator;
 import org.eclipse.persistence.testing.models.jpa.advanced.AdvancedTableCreator;
 import org.eclipse.persistence.testing.models.jpa.advanced.Employee.Gender;
+import org.eclipse.persistence.testing.models.jpa.relationships.Customer;
+import org.eclipse.persistence.testing.models.jpa.relationships.RelationshipsExamples;
+import org.eclipse.persistence.testing.models.jpa.relationships.RelationshipsTableManager;
 
 
 /**
@@ -123,6 +129,16 @@ public class AdvancedQueryTestSuite extends JUnitTestCase {
         suite.addTest(new AdvancedQueryTestSuite("testBatchFetchingIN"));
         suite.addTest(new AdvancedQueryTestSuite("testBatchFetchingIN5"));
         suite.addTest(new AdvancedQueryTestSuite("testBatchFetchingIN2"));
+        suite.addTest(new AdvancedQueryTestSuite("testBatchFetchingCursor"));
+        suite.addTest(new AdvancedQueryTestSuite("testBatchFetchingPagination"));
+        suite.addTest(new AdvancedQueryTestSuite("testBatchFetchingPagination2"));
+        suite.addTest(new AdvancedQueryTestSuite("testBatchFetchingReadObject"));
+        suite.addTest(new AdvancedQueryTestSuite("testBasicMapBatchFetchingJOIN"));
+        suite.addTest(new AdvancedQueryTestSuite("testBasicMapBatchFetchingEXISTS"));
+        suite.addTest(new AdvancedQueryTestSuite("testBasicMapBatchFetchingIN"));
+        suite.addTest(new AdvancedQueryTestSuite("testMapBatchFetchingJOIN"));
+        suite.addTest(new AdvancedQueryTestSuite("testMapBatchFetchingEXISTS"));
+        suite.addTest(new AdvancedQueryTestSuite("testMapBatchFetchingIN"));
         
         return suite;
     }
@@ -144,6 +160,10 @@ public class AdvancedQueryTestSuite extends JUnitTestCase {
         employeePopulator.buildExamples();
         //Persist the examples in the database
         employeePopulator.persistExample(session);
+
+        new RelationshipsTableManager().replaceTables(session);
+        //populate the relationships model and persist as well
+        new RelationshipsExamples().buildExamples(session);
     }
     
     /**
@@ -1570,7 +1590,6 @@ public class AdvancedQueryTestSuite extends JUnitTestCase {
         // Count SQL.
         QuerySQLTracker counter = new QuerySQLTracker(getServerSession());
         try {
-            // Query by primary key.
             Query query = em.createQuery("Select e from Employee e where e.gender = :g1 or e.gender = :g2");
             query.setHint(QueryHints.BATCH_SIZE, size);
             query.setHint(QueryHints.BATCH_TYPE, type);
@@ -1610,6 +1629,290 @@ public class AdvancedQueryTestSuite extends JUnitTestCase {
             }
             clearCache();
             for (Employee employee : results) {
+                verifyObject(employee);
+            }
+        } finally {
+            rollbackTransaction(em);
+            closeEntityManager(em);
+            if (counter != null) {
+                counter.remove();
+            }
+        }
+    }
+
+    /**
+     * Test batch fetching of maps.
+     */
+    public void testBasicMapBatchFetchingJOIN() {
+        testBasicMapBatchFetching(BatchFetchType.JOIN, 0);
+    }
+
+    /**
+     * Test batch fetching of maps.
+     */
+    public void testBasicMapBatchFetchingIN() {
+        testBasicMapBatchFetching(BatchFetchType.IN, 100);
+    }
+
+    /**
+     * Test batch fetching of maps.
+     */
+    public void testBasicMapBatchFetchingEXISTS() {
+        testBasicMapBatchFetching(BatchFetchType.EXISTS, 0);
+    }
+
+    /**
+     * Test batch fetching of maps.
+     */
+    public void testMapBatchFetchingJOIN() {
+        testMapBatchFetching(BatchFetchType.JOIN, 0);
+    }
+
+    /**
+     * Test batch fetching of maps.
+     */
+    public void testMapBatchFetchingIN() {
+        testMapBatchFetching(BatchFetchType.IN, 100);
+    }
+
+    /**
+     * Test batch fetching of maps.
+     */
+    public void testMapBatchFetchingEXISTS() {
+        testMapBatchFetching(BatchFetchType.EXISTS, 0);
+    }
+
+    /**
+     * Test batch fetching of maps.
+     */
+    public void testBasicMapBatchFetching(BatchFetchType type, int size) {
+        clearCache();
+        EntityManager em = createEntityManager();
+        beginTransaction(em);
+        // Count SQL.
+        QuerySQLTracker counter = new QuerySQLTracker(getServerSession());
+        try {
+            Query query = em.createQuery("Select b from Buyer b where b.name like :name");
+            query.setHint(QueryHints.BATCH_SIZE, size);
+            query.setHint(QueryHints.BATCH_TYPE, type);
+            query.setHint(QueryHints.BATCH, "e.creditCards");
+            query.setHint(QueryHints.BATCH, "e.creditLines");
+            query.setParameter("name", "%Gold%");
+            List<Buyer> results = query.getResultList();
+            if (isWeavingEnabled() && counter.getSqlStatements().size() != 3) {
+                fail("Should have been 1 query but was: " + counter.getSqlStatements().size());
+            }
+            for (Buyer buyer : results) {
+                buyer.getCreditCards().size();
+                buyer.getCreditLines().size();
+            }
+            int queries = 4;
+            if (isWeavingEnabled() && counter.getSqlStatements().size() > queries) {
+                fail("Should have been " + queries + " queries but was: " + counter.getSqlStatements().size());
+            }
+            clearCache();
+            for (Buyer buyer : results) {
+                verifyObject(buyer);
+            }
+        } finally {
+            rollbackTransaction(em);
+            closeEntityManager(em);
+            if (counter != null) {
+                counter.remove();
+            }
+        }
+    }
+
+    /**
+     * Test batch fetching of maps.
+     */
+    public void testMapBatchFetching(BatchFetchType type, int size) {
+        clearCache();
+        EntityManager em = createEntityManager();
+        beginTransaction(em);
+        // Count SQL.
+        QuerySQLTracker counter = new QuerySQLTracker(getServerSession());
+        try {
+            Query query = em.createQuery("Select c from Customer c");
+            query.setHint(QueryHints.BATCH_SIZE, size);
+            query.setHint(QueryHints.BATCH_TYPE, type);
+            query.setHint(QueryHints.BATCH, "e.cSInteractions");
+            query.setHint(QueryHints.BATCH, "e.cCustomers");
+            List<Customer> results = query.getResultList();
+            if (isWeavingEnabled() && counter.getSqlStatements().size() > 2) {
+                fail("Should have been 2 queries but was: " + counter.getSqlStatements().size());
+            }
+            int queries = 3;
+            for (Customer customer : results) {
+                queries = queries + customer.getCSInteractions().size();
+            }
+            if (isWeavingEnabled() && counter.getSqlStatements().size() > queries) {
+                fail("Should have been " + queries + " queries but was: " + counter.getSqlStatements().size());
+            }
+            clearCache();
+            for (Customer customer : results) {
+                verifyObject(customer);
+            }
+        } finally {
+            rollbackTransaction(em);
+            closeEntityManager(em);
+            if (counter != null) {
+                counter.remove();
+            }
+        }
+    }
+
+    /**
+     * Test batch fetching using first/max results.
+     */
+    public void testBatchFetchingPagination() {
+        clearCache();
+        EntityManager em = createEntityManager();
+        beginTransaction(em);
+        // Count SQL.
+        QuerySQLTracker counter = new QuerySQLTracker(getServerSession());
+        try {
+            Query query = em.createQuery("Select e from Employee e");
+            query.setHint(QueryHints.BATCH_TYPE, BatchFetchType.IN);
+            query.setHint(QueryHints.BATCH_SIZE, 5);
+            query.setHint(QueryHints.BATCH, "e.address");
+            query.setHint(QueryHints.BATCH, "e.manager");
+            query.setFirstResult(5);
+            query.setMaxResults(5);
+            List<Employee> results = query.getResultList();
+            if (isWeavingEnabled() && counter.getSqlStatements().size() != 1) {
+                fail("Should have been 1 query but was: " + counter.getSqlStatements().size());
+            }
+            if (results.size() > 5) {
+                fail("Should have only returned 5 objects but was: " + results.size());
+            }
+            for (Employee employee : results) {
+                employee.getAddress();
+            }
+            if (isWeavingEnabled() && counter.getSqlStatements().size() > 2) {
+                fail("Should have been 2 queries but was: " + counter.getSqlStatements().size());
+            }
+            clearCache();
+            for (Employee employee : results) {
+                verifyObject(employee);
+            }
+        } finally {
+            rollbackTransaction(em);
+            closeEntityManager(em);
+            if (counter != null) {
+                counter.remove();
+            }
+        }
+    }
+
+    /**
+     * Test batch fetching using read object query.
+     */
+    public void testBatchFetchingReadObject() {
+        clearCache();
+        EntityManager em = createEntityManager();
+        beginTransaction(em);
+        // Count SQL.
+        QuerySQLTracker counter = new QuerySQLTracker(getServerSession());
+        try {
+            Query query = em.createQuery("Select e from Employee e");
+            query.setHint(QueryHints.BATCH, "e.managedEmployees");
+            query.setHint(QueryHints.BATCH, "e.managedEmployees.address");
+            query.setHint(QueryHints.QUERY_TYPE, QueryType.ReadObject);
+            Employee result = (Employee)query.getSingleResult();
+            if (isWeavingEnabled() && counter.getSqlStatements().size() != 1) {
+                fail("Should have been 1 query but was: " + counter.getSqlStatements().size());
+            }
+            for (Employee employee : result.getManagedEmployees()) {
+                employee.getAddress();
+            }
+            if (isWeavingEnabled() && counter.getSqlStatements().size() > 3) {
+                fail("Should have been 3 queries but was: " + counter.getSqlStatements().size());
+            }
+            clearCache();
+            verifyObject(result);
+        } finally {
+            rollbackTransaction(em);
+            closeEntityManager(em);
+            if (counter != null) {
+                counter.remove();
+            }
+        }
+    }
+
+    /**
+     * Test batch fetching using first/max results.
+     */
+    public void testBatchFetchingPagination2() {
+        clearCache();
+        EntityManager em = createEntityManager();
+        beginTransaction(em);
+        // Count SQL.
+        QuerySQLTracker counter = new QuerySQLTracker(getServerSession());
+        try {
+            Query query = em.createQuery("Select e from Employee e");
+            query.setHint(QueryHints.BATCH, "e.address");
+            query.setHint(QueryHints.BATCH, "e.manager");
+            query.setFirstResult(5);
+            query.setMaxResults(5);
+            List<Employee> results = query.getResultList();
+            if (isWeavingEnabled() && counter.getSqlStatements().size() != 1) {
+                fail("Should have been 1 query but was: " + counter.getSqlStatements().size());
+            }
+            if (results.size() > 5) {
+                fail("Should have only returned 5 objects but was: " + results.size());
+            }
+            for (Employee employee : results) {
+                employee.getAddress();
+            }
+            if (isWeavingEnabled() && counter.getSqlStatements().size() > 2) {
+                fail("Should have been 2 queries but was: " + counter.getSqlStatements().size());
+            }
+            clearCache();
+            for (Employee employee : results) {
+                verifyObject(employee);
+            }
+        } finally {
+            rollbackTransaction(em);
+            closeEntityManager(em);
+            if (counter != null) {
+                counter.remove();
+            }
+        }
+    }
+
+    /**
+     * Test batch fetching using a cursor.
+     */
+    public void testBatchFetchingCursor() {
+        clearCache();
+        EntityManager em = createEntityManager();
+        beginTransaction(em);
+        // Count SQL.
+        QuerySQLTracker counter = new QuerySQLTracker(getServerSession());
+        try {
+            Query query = em.createQuery("Select e from Employee e");
+            query.setHint(QueryHints.BATCH_TYPE, String.valueOf(BatchFetchType.IN)); // Test as String as well.
+            query.setHint(QueryHints.BATCH, "e.address");
+            query.setHint(QueryHints.BATCH, "e.manager");
+            query.setHint(QueryHints.CURSOR_PAGE_SIZE, 5);
+            query.setHint(QueryHints.CURSOR_INITIAL_SIZE, 2);
+            Iterator<Employee> results = (Iterator<Employee>)query.getSingleResult();
+            if (isWeavingEnabled() && counter.getSqlStatements().size() != 1) {
+                fail("Should have been 1 query but was: " + counter.getSqlStatements().size());
+            }
+            int count = 0;
+            List<Employee> employees = new ArrayList<Employee>();
+            while (results.hasNext()) {
+                Employee employee = results.next();
+                employee.getAddress();
+                count++;
+            }
+            if (isWeavingEnabled() && counter.getSqlStatements().size() > (count/5 + 2)) {
+                fail("Should have been " + (count/5 + 1) + " queries but was: " + counter.getSqlStatements().size());
+            }
+            clearCache();
+            for (Employee employee : employees) {
                 verifyObject(employee);
             }
         } finally {

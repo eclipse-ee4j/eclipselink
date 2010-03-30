@@ -229,6 +229,14 @@ public class CursoredStream extends Cursor {
 
     /**
      * PUBLIC:
+     * Return whether the cursored stream has any more elements.
+     */
+    public boolean hasNext() {
+        return hasMoreElements();
+    }
+
+    /**
+     * PUBLIC:
      * Mark the present position in the stream.
      * Subsequent calls to reset() will attempt to reposition the stream to this point.
      *
@@ -262,6 +270,15 @@ public class CursoredStream extends Cursor {
 
     /**
      * PUBLIC:
+     * Return the next object from the collection, if beyond the read limit read from the cursor.
+     * @return the next object in stream
+     */
+    public Object next() {
+        return nextElement();
+    }
+
+    /**
+     * PUBLIC:
      * Return a Vector of at most numberOfElements of the next objects from the collection. If there
      * aren't that many objects left to read, just return what is available.
      * @return the next objects in stream
@@ -276,6 +293,16 @@ public class CursoredStream extends Cursor {
             nextElements.add(nextElement());
         }
         return nextElements;
+    }
+
+    /**
+     * PUBLIC:
+     * Return a Vector of at most numberOfElements of the next objects from the collection. If there
+     * aren't that many objects left to read, just return what is available.
+     * @return the next objects in stream
+     */
+    public Vector next(int numberOfElements) {
+        return nextElements(numberOfElements);
     }
 
     /**

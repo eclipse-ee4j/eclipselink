@@ -56,14 +56,16 @@ public class CollectionContainerPolicy extends InterfaceContainerPolicy {
     /**
      * INTERNAL:
      * Add element into a container which implements the Collection interface.
-     *
-     * @param element java.lang.Object
-     * @param container java.lang.Object
-     * @return boolean indicating whether the container changed
+     * @return boolean indicating whether the container changed.
      */
-    public boolean addInto(Object key, Object element, Object container) {
+    public boolean addInto(Object key, Object element, Object container, AbstractSession session) {
+        Object elementToAdd = element;
+        // PERF: Using direct access.
+        if (this.elementDescriptor != null) {
+            elementToAdd = this.elementDescriptor.getObjectBuilder().wrapObject(element, session);
+        }
         try {
-            return ((Collection)container).add(element);
+            return ((Collection)container).add(elementToAdd);
         } catch (ClassCastException ex1) {
             throw QueryException.cannotAddElement(element, container, ex1);
         } catch (IllegalArgumentException ex2) {

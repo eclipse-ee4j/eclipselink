@@ -406,7 +406,7 @@ public class ScrollableCursor extends Cursor implements ListIterator {
 
     /**
      * PUBLIC:
-     * This method differs slightly from conventinal read() operation on a Java stream.  This
+     * This method differs slightly from conventional read() operation on a Java stream.  This
      * method return the next object in the collection rather than specifying the number of
      * bytes to be read in.
      *
@@ -522,14 +522,6 @@ public class ScrollableCursor extends Cursor implements ListIterator {
             if (commException != null) throw commException;
             throw DatabaseException.sqlException(exception, getAccessor(), getSession(), false);
         }
-    }
-
-    /**
-     * PUBLIC:
-     * Remove is not support with scrollable cursors.
-     */
-    public void remove() throws QueryException {
-        QueryException.invalidOperation("remove");
     }
 
     /**

@@ -94,6 +94,7 @@ public class OrderedListContainerPolicy extends ListContainerPolicy {
      * The row may be required by subclasses
      * Return whether the container changed
      */
+    @Override
     public boolean addAll(List elements, Object container, AbstractSession session, List<AbstractRecord> dbRows, ObjectBuildingQuery query) {
         if(this.listOrderField == null) {
             return super.addAll(elements, container, session, dbRows, query);
@@ -110,6 +111,7 @@ public class OrderedListContainerPolicy extends ListContainerPolicy {
      * The row may be required by subclasses
      * Return whether the container changed
      */
+    @Override
     public boolean addAll(List elements, Object container, AbstractSession session, List<AbstractRecord> dbRows, DataReadQuery query) {
         if(this.listOrderField == null) {
             return super.addAll(elements, container, session, dbRows, query);
@@ -231,6 +233,7 @@ public class OrderedListContainerPolicy extends ListContainerPolicy {
      * This algorithm is a work in progress. It works great and all, but like 
      * anything, you can always make it better.
      */
+    @Override
     public void compareCollectionsForChange(Object oldList, Object newList, CollectionChangeRecord changeRecord, AbstractSession session, ClassDescriptor referenceDescriptor) {    
         Vector orderedObjectsToAdd = new Vector();
         Hashtable indicesToRemove = new Hashtable();
@@ -382,8 +385,8 @@ public class OrderedListContainerPolicy extends ListContainerPolicy {
      * to access the values to be removed.  In the case of some container policies the values will actually
      * be the keys.
      */
-    
-    public Iterator getChangeValuesFrom(Map map){
+    @Override    
+    public Iterator getChangeValuesFrom(Map map) {
         return map.keySet().iterator();
     }
 
@@ -415,10 +418,12 @@ public class OrderedListContainerPolicy extends ListContainerPolicy {
      * INTERNAL:
      * Return an list iterator for the given container.
      */
+    @Override
     public Object iteratorFor(Object container) {
         return ((List)container).listIterator();
     }
-    
+
+    @Override
     public boolean isOrderedListPolicy() {
         return true;
     }
@@ -429,6 +434,7 @@ public class OrderedListContainerPolicy extends ListContainerPolicy {
      * collection mapping, values are added to or removed from the collection 
      * based on the change set.
      */
+    @Override
     public void mergeChanges(CollectionChangeRecord changeRecord, Object valueOfTarget, boolean shouldMergeCascadeParts, MergeManager mergeManager, AbstractSession parentSession) {
         ObjectChangeSet objectChanges;
         // Ensure the collection is synchronized while changes are being made,
@@ -610,16 +616,19 @@ public class OrderedListContainerPolicy extends ListContainerPolicy {
      * Each ContainerPolicy type will implement specific behavior for the collection 
      * type it is wrapping.  These methods are only valid for collections containing object references
      */
+    @Override
     public void recordAddToCollectionInChangeRecord(ObjectChangeSet changeSetToAdd, CollectionChangeRecord collectionChangeRecord){
         OrderedChangeObject orderedChangeObject = new OrderedChangeObject(CollectionChangeEvent.ADD, null, changeSetToAdd);;
         collectionChangeRecord.getOrderedChangeObjectList().add(orderedChangeObject);
     }
-    
+
+    @Override
     public void recordRemoveFromCollectionInChangeRecord(ObjectChangeSet changeSetToRemove, CollectionChangeRecord collectionChangeRecord){
         OrderedChangeObject orderedChangeObject = new OrderedChangeObject(CollectionChangeEvent.REMOVE, null, changeSetToRemove);;
         collectionChangeRecord.getOrderedChangeObjectList().add(orderedChangeObject);
     }
-    
+
+    @Override
     public void recordUpdateToCollectionInChangeRecord(CollectionChangeEvent event, ObjectChangeSet changeSet, CollectionChangeRecord collectionChangeRecord){
         int changeType = event.getChangeType();
         if (changeType == CollectionChangeEvent.ADD) {
@@ -638,8 +647,8 @@ public class OrderedListContainerPolicy extends ListContainerPolicy {
      * INTERNAL:
      * Indicates whether addAll method should be called to add entire collection,
      * or it's possible to call addInto multiple times instead.
-     * @return
      */
+    @Override
     public boolean shouldAddAll(){
         return this.listOrderField != null;
     }

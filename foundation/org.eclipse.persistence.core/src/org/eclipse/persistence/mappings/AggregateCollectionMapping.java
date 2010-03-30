@@ -1054,9 +1054,9 @@ public class AggregateCollectionMapping extends CollectionMapping implements Rel
      * Allow the mapping the do any further batch preparation.
      */
     @Override
-    protected void postPrepareNestedBatchQuery(ReadQuery batchQuery, ObjectLevelReadQuery query) {        
+    protected void postPrepareNestedBatchQuery(ReadQuery batchQuery, ObjectLevelReadQuery query) {
+        super.postPrepareNestedBatchQuery(batchQuery, query);
         ReadAllQuery aggregateBatchQuery = (ReadAllQuery)batchQuery;
-        aggregateBatchQuery.setShouldIncludeData(true);
         for (DatabaseField relationField : getTargetForeignKeyFields()) {
             aggregateBatchQuery.getAdditionalFields().add(relationField);
         }

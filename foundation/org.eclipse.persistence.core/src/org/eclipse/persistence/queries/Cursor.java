@@ -14,6 +14,7 @@ package org.eclipse.persistence.queries;
 
 import java.sql.*;
 import java.util.*;
+
 import org.eclipse.persistence.exceptions.*;
 import org.eclipse.persistence.expressions.*;
 import org.eclipse.persistence.internal.databaseaccess.*;
@@ -26,7 +27,7 @@ import org.eclipse.persistence.internal.sessions.UnitOfWorkImpl;
  * <p><b>Purpose</b>:
  * Abstract class for CursoredStream and ScrolableCursor
  */
-public abstract class Cursor implements Enumeration, java.io.Serializable {
+public abstract class Cursor implements Enumeration, Iterator, java.io.Serializable {
 
     /** The preparedStatement that holds the handle to the database that the results are read from. */
     protected transient Statement statement;
@@ -469,4 +470,13 @@ public abstract class Cursor implements Enumeration, java.io.Serializable {
         }
         return size;
     }
+
+    /**
+     * PUBLIC:
+     * Remove is not support with cursors.
+     */
+    public void remove() throws QueryException {
+        QueryException.invalidOperation("remove");
+    }
+
 }

@@ -69,6 +69,9 @@ public class ClassWeaver extends ClassAdapter implements Constants {
     // Cloneable
     public static final String CLONEABLE_SHORT_SIGNATURE = "java/lang/Cloneable";
     
+    public static final String PERSISTENCE_SET = Helper.PERSISTENCE_SET;
+    public static final String PERSISTENCE_GET = Helper.PERSISTENCE_GET;
+  
     /** Store if JAXB is no the classpath. */
     protected static Boolean isJAXBOnPath;
     
@@ -353,7 +356,7 @@ public class ClassWeaver extends ClassAdapter implements Constants {
         String attribute = attributeDetails.getAttributeName();
         String className = classDetails.getClassName();
         // Create a getter method for the new valueholder
-        CodeVisitor cv_get_VH = cv.visitMethod(ACC_PUBLIC, "_persistence_get" + attribute + "_vh", "()" + VHI_SIGNATURE, null, null);
+        CodeVisitor cv_get_VH = cv.visitMethod(ACC_PUBLIC, PERSISTENCE_GET + attribute + "_vh", "()" + VHI_SIGNATURE, null, null);
         
         // _persistence_initialize_attributeName_vh();
         cv_get_VH.visitVarInsn(ALOAD, 0);
@@ -378,7 +381,7 @@ public class ClassWeaver extends ClassAdapter implements Constants {
             cv_get_VH.visitMethodInsn(INVOKEVIRTUAL, classDetails.getClassName(), attributeDetails.getGetterMethodName(), "()L" + attributeDetails.getReferenceClassName().replace('.','/') + ";");    
             cv_get_VH.visitTypeInsn(CHECKCAST, attributeDetails.getReferenceClassName().replace('.','/'));
         } else {
-            cv_get_VH.visitMethodInsn(INVOKEVIRTUAL, classDetails.getClassName(), "_persistence_get" + attributeDetails.attributeName, "()L" + attributeDetails.getReferenceClassName().replace('.','/') + ";");                
+            cv_get_VH.visitMethodInsn(INVOKEVIRTUAL, classDetails.getClassName(), PERSISTENCE_GET + attributeDetails.attributeName, "()L" + attributeDetails.getReferenceClassName().replace('.','/') + ";");                
         }
         cv_get_VH.visitVarInsn(ASTORE, 1);
 
@@ -395,7 +398,7 @@ public class ClassWeaver extends ClassAdapter implements Constants {
         if (attributeDetails.getSetterMethodName() != null){
             cv_get_VH.visitMethodInsn(INVOKEVIRTUAL, classDetails.getClassName(), attributeDetails.getSetterMethodName(), "(L" + attributeDetails.getReferenceClassName().replace('.','/') + ";)V");
         } else {
-            cv_get_VH.visitMethodInsn(INVOKEVIRTUAL, classDetails.getClassName(), "_persistence_set" + attributeDetails.getAttributeName(), "(L" + attributeDetails.getReferenceClassName().replace('.','/') + ";)V");
+            cv_get_VH.visitMethodInsn(INVOKEVIRTUAL, classDetails.getClassName(), PERSISTENCE_SET + attributeDetails.getAttributeName(), "(L" + attributeDetails.getReferenceClassName().replace('.','/') + ";)V");
         }
         
         // }
@@ -427,7 +430,7 @@ public class ClassWeaver extends ClassAdapter implements Constants {
         String attribute = attributeDetails.getAttributeName();
         String className = classDetails.getClassName();
         // create a setter method for the new valueholder
-        CodeVisitor cv_set_value = cv.visitMethod(ACC_PUBLIC, "_persistence_set" + attribute + "_vh", "(" + VHI_SIGNATURE + ")V", null, null);                                 
+        CodeVisitor cv_set_value = cv.visitMethod(ACC_PUBLIC, PERSISTENCE_SET + attribute + "_vh", "(" + VHI_SIGNATURE + ")V", null, null);                                 
         
         // _toplink_foo_vh = valueholderinterface;
         cv_set_value.visitVarInsn(ALOAD, 0);
@@ -445,7 +448,7 @@ public class ClassWeaver extends ClassAdapter implements Constants {
          if (attributeDetails.getGetterMethodName() != null){
             cv_set_value.visitMethodInsn(INVOKEVIRTUAL, className, attributeDetails.getGetterMethodName(), "()L" + attributeDetails.getReferenceClassName().replace('.','/') + ";");    
          } else {
-            cv_set_value.visitMethodInsn(INVOKEVIRTUAL, className, "_persistence_get" + attributeDetails.attributeName, "()L" + attributeDetails.getReferenceClassName().replace('.','/') + ";");                
+            cv_set_value.visitMethodInsn(INVOKEVIRTUAL, className, PERSISTENCE_GET + attributeDetails.attributeName, "()L" + attributeDetails.getReferenceClassName().replace('.','/') + ";");                
         }
         cv_set_value.visitVarInsn(ASTORE, 2);
         
@@ -466,7 +469,7 @@ public class ClassWeaver extends ClassAdapter implements Constants {
          if (attributeDetails.getSetterMethodName() != null){
             cv_set_value.visitMethodInsn(INVOKEVIRTUAL, className, attributeDetails.getSetterMethodName(), "(L" + attributeDetails.getReferenceClassName().replace('.','/') + ";)V");
         } else {
-            cv_set_value.visitMethodInsn(INVOKEVIRTUAL, className, "_persistence_set" + attributeDetails.getAttributeName(), "(L" + attributeDetails.getReferenceClassName().replace('.','/') + ";)V");
+            cv_set_value.visitMethodInsn(INVOKEVIRTUAL, className, PERSISTENCE_SET + attributeDetails.getAttributeName(), "(L" + attributeDetails.getReferenceClassName().replace('.','/') + ";)V");
         }
 
         cv_set_value.visitLabel(l0);
@@ -480,8 +483,8 @@ public class ClassWeaver extends ClassAdapter implements Constants {
      * Adds a convenience method used to replace a PUTFIELD when field access is used. The method follows
      * the following form:
      *     
-     *     public void _persistence_setvariableName((VariableClas) argument) {
-     *          _persistence_getvariableName();   
+     *     public void _persistence_set_variableName((VariableClas) argument) {
+     *          _persistence_get_variableName();   
      *          _persistence_propertyChange("variableName", this.variableName, argument); // if change tracking enabled, wrapping primitives, i.e. new Long(item)
      *          this.variableName = argument;
      *          _persistence_variableName_vh.setValue(variableName); // if lazy enabled
@@ -490,8 +493,8 @@ public class ClassWeaver extends ClassAdapter implements Constants {
     public void addSetterMethodForFieldAccess(ClassDetails classDetails, AttributeDetails attributeDetails){
         String attribute = attributeDetails.getAttributeName();
         
-        // create _persistence_setvariableName
-        CodeVisitor cv_set = cv.visitMethod(ACC_PUBLIC, "_persistence_set" + attribute, "(" + attributeDetails.getReferenceClassType().getDescriptor() + ")V", null, null);
+        // create _persistence_set_variableName
+        CodeVisitor cv_set = cv.visitMethod(ACC_PUBLIC, PERSISTENCE_SET + attribute, "(" + attributeDetails.getReferenceClassType().getDescriptor() + ")V", null, null);
         
         // Get the opcode for the load instruction.  This may be different depending on the type
         int opcode = attributeDetails.getReferenceClassType().getOpcode(Constants.ILOAD);
@@ -499,8 +502,8 @@ public class ClassWeaver extends ClassAdapter implements Constants {
         // First call the get to ensure the attribute is instantiated correctly,
         // otherwise setting to null in change tracking will think nothing changed.
         cv_set.visitVarInsn(ALOAD, 0);
-        // _persistence_getvariableName();
-        cv_set.visitMethodInsn(INVOKEVIRTUAL, classDetails.getClassName(), "_persistence_get" + attribute, "()" + attributeDetails.getReferenceClassType().getDescriptor());
+        // _persistence_get_variableName();
+        cv_set.visitMethodInsn(INVOKEVIRTUAL, classDetails.getClassName(), PERSISTENCE_GET + attribute, "()" + attributeDetails.getReferenceClassType().getDescriptor());
         
         if (classDetails.shouldWeaveChangeTracking()) {
             // load the string attribute name as the first argument of the property change call
@@ -561,7 +564,7 @@ public class ClassWeaver extends ClassAdapter implements Constants {
      * Adds a convenience method used to replace a GETFIELD when field access is used. The method follows
      * the following form:
      * 
-     *      public (VariableClass) _persistence_getvariableName() {
+     *      public (VariableClass) _persistence_get_variableName() {
      *          _persistence_checkFetched("variableName");
      *          _persistence_initialize_variableName_vh();
      *          this.variableName = ((VariableClass))_persistence_variableName_vh.getValue();
@@ -572,7 +575,7 @@ public class ClassWeaver extends ClassAdapter implements Constants {
         String attribute = attributeDetails.getAttributeName();
 
         // create the _persistenc_getvariableName method
-        CodeVisitor cv_get = cv.visitMethod(ACC_PUBLIC, "_persistence_get" + attribute, "()" + attributeDetails.getReferenceClassType().getDescriptor(), null, null);
+        CodeVisitor cv_get = cv.visitMethod(ACC_PUBLIC, PERSISTENCE_GET + attribute, "()" + attributeDetails.getReferenceClassType().getDescriptor(), null, null);
         
         if (classDetails.shouldWeaveFetchGroups()) {
             cv_get.visitVarInsn(ALOAD, 0);

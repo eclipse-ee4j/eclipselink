@@ -20,12 +20,10 @@ import java.lang.reflect.*;
 import org.eclipse.persistence.exceptions.*;
 import org.eclipse.persistence.internal.helper.*;
 import org.eclipse.persistence.queries.DatabaseQuery;
-import org.eclipse.persistence.queries.ObjectBuildingQuery;
 import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
 import org.eclipse.persistence.internal.security.PrivilegedClassForName;
 import org.eclipse.persistence.internal.security.PrivilegedMethodInvoker;
 import org.eclipse.persistence.internal.security.PrivilegedGetValueFromField;
-import org.eclipse.persistence.internal.sessions.AbstractRecord;
 import org.eclipse.persistence.internal.sessions.CollectionChangeRecord;
 import org.eclipse.persistence.internal.sessions.ObjectChangeSet;
 import org.eclipse.persistence.internal.sessions.UnitOfWorkChangeSet;
@@ -87,6 +85,7 @@ public class MapContainerPolicy extends InterfaceContainerPolicy {
      * Prepare and validate.
      * Set the element class.
      */
+    @Override
     public void prepare(DatabaseQuery query, AbstractSession session) throws QueryException {
         if ((getElementClass() == null) && (query.getDescriptor() != null)) {
             setElementClass(query.getDescriptor().getJavaClass());
@@ -96,20 +95,12 @@ public class MapContainerPolicy extends InterfaceContainerPolicy {
     
     /**
      * INTERNAL:
-     * Add element to that implements the Map interface
-     * use the row to compute the key
-     */ 
-    public boolean addInto(Object element, Object container, AbstractSession session, AbstractRecord dbRow, ObjectBuildingQuery query) {
-        return addInto(null, element, container, session);
-    }
-    
-    /**
-     * INTERNAL:
      * Add element to container.
-     * This is used to add to a collection independent of JDK 1.1 and 1.2.
+     * This is used to add to a collection independent of the collection type.
      * The session may be required to wrap for the wrapper policy.
-     * Return whether the container changed
+     * Return whether the container changed.
      */
+    @Override
     public boolean addInto(Object element, Object container, AbstractSession session){
         if (element instanceof Map.Entry){
             return addInto(((Map.Entry)element).getKey(), ((Map.Entry)element).getValue(), container, session);
@@ -122,6 +113,7 @@ public class MapContainerPolicy extends InterfaceContainerPolicy {
      * INTERNAL:
      * Add element into container which implements the Map interface.
      */
+    @Override
     public boolean addInto(Object key, Object element, Object container, AbstractSession session) {
         Object wrapped = element;
         if (hasElementDescriptor()) {
@@ -160,9 +152,9 @@ public class MapContainerPolicy extends InterfaceContainerPolicy {
     /**
      * INTERNAL:
      * This method is used to add the next value from an iterator built using ContainerPolicy's iteratorFor() method
-     * into the toCollection.  Since this ContainerPolicy represents a Map, the key and the value are extracted and added
-     * 
+     * into the toCollection.  Since this ContainerPolicy represents a Map, the key and the value are extracted and added.
      */
+    @Override
     public void addNextValueFromIteratorInto(Object valuesIterator, Object parent, Object toCollection, CollectionMapping mapping, UnitOfWorkImpl unitOfWork, boolean isExisting) {
         Map.Entry entry = ((MapContainerPolicyIterator)valuesIterator).next();
         Object clonedKey = buildCloneForKey(entry.getKey(), parent, unitOfWork, isExisting);
@@ -182,6 +174,7 @@ public class MapContainerPolicy extends InterfaceContainerPolicy {
      * Return an object representing an entry in the collection represented by this container policy
      * This method will returns an Association containing the key and the value for a Map
      */
+    @Override
     public Object buildCollectionEntry(Object objectAdded, ObjectChangeSet changeSet){
         return new Association(changeSet.getNewKey(), objectAdded);
     }
@@ -190,6 +183,7 @@ public class MapContainerPolicy extends InterfaceContainerPolicy {
      * INTERNAL:
      * Ensure the new key is set for the change set for a new map object
      */
+    @Override
     public void buildChangeSetForNewObjectInCollection(Object object, ClassDescriptor referenceDescriptor, UnitOfWorkChangeSet uowChangeSet, AbstractSession session){
         ObjectChangeSet changeSet = referenceDescriptor.getObjectBuilder().createObjectChangeSet(((Map.Entry)object).getValue(), uowChangeSet, session);
         Object key = ((Map.Entry)object).getKey();
@@ -198,11 +192,6 @@ public class MapContainerPolicy extends InterfaceContainerPolicy {
     
     /**
      * Build a clone for the value in a mapping.
-     * @param value
-     * @param mapping
-     * @param uow
-     * @param isExisting
-     * @return
      */
     protected Object buildCloneForValue(Object value, Object parent, CollectionMapping mapping, UnitOfWorkImpl uow, boolean isExisting){
         return mapping.buildElementClone(value, parent, uow, isExisting);
@@ -213,6 +202,7 @@ public class MapContainerPolicy extends InterfaceContainerPolicy {
      * INTERNAL:
      * Remove all the elements from container.
      */
+    @Override
     public void clear(Object container) {
         try {
             ((Map)container).clear();
@@ -224,8 +214,9 @@ public class MapContainerPolicy extends InterfaceContainerPolicy {
     /**
      * INTERNAL:
      * Return true if keys are the same in the source as the backup.  False otherwise
-     * in the case of readonly compare against the original
+     * in the case of read-only compare against the original
      */
+    @Override
     public boolean compareKeys(Object sourceValue, AbstractSession session) {
         if (((UnitOfWorkImpl)session).isClassReadOnly(sourceValue.getClass())) {
             return true;
@@ -239,6 +230,7 @@ public class MapContainerPolicy extends InterfaceContainerPolicy {
      * Return the true if element exists in container.
      * @return boolean true if container 'contains' element
      */
+    @Override
     protected boolean contains(Object element, Object container) {
         return ((Map)container).containsValue(element);
     }
@@ -250,6 +242,7 @@ public class MapContainerPolicy extends InterfaceContainerPolicy {
      * project that has been built with class names to a project with classes.
      * @param classLoader 
      */
+    @Override
     public void convertClassNamesToClasses(ClassLoader classLoader){
         super.convertClassNamesToClasses(classLoader);
         
@@ -278,6 +271,7 @@ public class MapContainerPolicy extends InterfaceContainerPolicy {
      * INTERNAL:
      * Creates a CollectionChangeEvent for the container
      */
+    @Override
     public CollectionChangeEvent createChangeEvent(Object collectionOwner, String propertyName, Object collectionChanged, Object elementChanged, int changeType, Integer index) {
         if (elementChanged instanceof Map.Entry) {
             return new MapChangeEvent(collectionOwner,propertyName, collectionChanged,
@@ -289,9 +283,9 @@ public class MapContainerPolicy extends InterfaceContainerPolicy {
     /**
      * INTERNAL:
      * Create a query key that links to the map key.  MapContainerPolicy does not have a specific mapping for the
-     * key, so return null;
-     * @return
+     * key, so return null.
      */
+    @Override
     public QueryKey createQueryKeyForMapKey(){
         return null;
     }
@@ -300,9 +294,9 @@ public class MapContainerPolicy extends InterfaceContainerPolicy {
      * INTERNAL:
      * Return all the fields in the key.  MapContainerPolicy gets it fields from the reference descriptor
      * of the provided mappings.  It uses its keyName to lookup the appropriate mapping and returns the fields from
-     * that mapping
-     * @return
+     * that mapping.
      */
+    @Override
     public List<DatabaseField> getAllFieldsForMapKey(CollectionMapping baseMapping){
         if (baseMapping == null){
             return null;
@@ -320,9 +314,9 @@ public class MapContainerPolicy extends InterfaceContainerPolicy {
      * INTERNAL:
      * Return the DatabaseField that represents the key in a DirectMapMapping.   MapContainerPolicy gets it fields from the reference descriptor
      * of the provided mappings.  It uses its keyName to lookup the appropriate mapping and returns the field from
-     * that mapping
-     * @return
+     * that mapping.
      */
+    @Override
     public DatabaseField getDirectKeyField(CollectionMapping baseMapping){
         if (baseMapping == null){
             return null;
@@ -354,6 +348,7 @@ public class MapContainerPolicy extends InterfaceContainerPolicy {
     /**
      * INTERNAL:
      */
+    @Override
     public Class getInterfaceType() {
         return ClassConstants.Map_Class;
     }
@@ -369,9 +364,9 @@ public class MapContainerPolicy extends InterfaceContainerPolicy {
 
     /**
      * INTERNAL:
-     * Return the type of the map key, this will be overridden by container policies that allow maps
-     * @return
+     * Return the type of the map key, this will be overridden by container policies that allow maps.
      */
+    @Override
     public Object getKeyType(){
         initializeKey();
         if (keyField != null){
@@ -388,29 +383,28 @@ public class MapContainerPolicy extends InterfaceContainerPolicy {
      * INTERNAL
      * Yes this is a MapPolicy
      */
+    @Override
     public boolean isMapPolicy() {
         return true;
     }
     
     
     /**
-     * MapContainerPolicy is for mappings where the key is stored in actual
-     * element.
-     * @return
+     * MapContainerPolicy is for mappings where the key is stored in actual element.
      */
-    protected boolean isKeyAvailableFromElement(){
+    protected boolean isKeyAvailableFromElement() {
         return true;
     }
     
     /**
      * INTERNAL:
-     * Return whether a map key this container policy represents is an attribute
-     * @return
+     * Return whether a map key this container policy represents is an attribute.
      */
-    public boolean isMapKeyAttribute(){
+    @Override
+    public boolean isMapKeyAttribute() {
         if (elementDescriptor != null && keyName != null){
             DatabaseMapping mapping = elementDescriptor.getMappingForAttributeName(Helper.getAttributeNameFromMethodName(keyName));
-            if (mapping != null){
+            if (mapping != null) {
                 return mapping.isDirectToFieldMapping();
             }
             
@@ -420,8 +414,8 @@ public class MapContainerPolicy extends InterfaceContainerPolicy {
             if (keyField.getClass().isPrimitive()){
                 return true;
             }
-        } else if (keyMethod != null){
-            if (keyMethod.getClass().isPrimitive()){
+        } else if (keyMethod != null) {
+            if (keyMethod.getClass().isPrimitive()) {
                 return true;
             }
         }
@@ -435,14 +429,16 @@ public class MapContainerPolicy extends InterfaceContainerPolicy {
      *
      * @see ContainerPolicy#iteratorFor(java.lang.Object)
      */
-    public boolean hasNext(Object iterator){
+    @Override
+    public boolean hasNext(Object iterator) {
         return ((MapContainerPolicyIterator)iterator).hasNext();
     }
+    
     /**
      * INTERNAL:
-     * Set the keyMethod or keyField based on the keyName
+     * Set the keyMethod or keyField based on the keyName.
      */
-    protected void initializeKey(){
+    protected void initializeKey() {
         // Should only run through this once ...
         if (keyName != null && keyMethod == null && keyField == null) {
             try {
@@ -461,6 +457,7 @@ public class MapContainerPolicy extends InterfaceContainerPolicy {
      * INTERNAL:
      * Return an Iterator for the given container.
      */
+    @Override
     public Object iteratorFor(Object container) {
         return new MapContainerPolicyIterator((Map)container);
     }
@@ -469,6 +466,7 @@ public class MapContainerPolicy extends InterfaceContainerPolicy {
      * INTERNAL:
      * Return the key for the specified element.
      */
+    @Override
     public Object keyFrom(Object element, AbstractSession session) {
         initializeKey();
         Object keyElement = element;
@@ -519,17 +517,17 @@ public class MapContainerPolicy extends InterfaceContainerPolicy {
     
 
     /**
-     * Get the key from the passed in Map.Entry
-     * @param entry
-     * @return
+     * Get the key from the passed in Map.Entry.
      */
+    @Override
     public Object keyFromEntry(Object entry){
         if (entry instanceof Map.Entry){
             return ((Map.Entry)entry).getKey();
         }
         return null;
     }
-    
+
+    @Override
     public Object keyFromIterator(Object iterator){
         return ((MapContainerPolicyIterator)iterator).getCurrentKey();
     }
@@ -541,6 +539,7 @@ public class MapContainerPolicy extends InterfaceContainerPolicy {
      *
      * @see ContainerPolicy#iteratorFor(java.lang.Object)
      */
+    @Override
     protected Object next(Object iterator){
         return ((MapContainerPolicyIterator)iterator).next().getValue();
     }
@@ -555,6 +554,7 @@ public class MapContainerPolicy extends InterfaceContainerPolicy {
      * @see ContainerPolicy#iteratorFor(java.lang.Object)
      * @see MapContainerPolicy.unwrapIteratorResult(Object object)
      */
+    @Override
     public Object nextEntry(Object iterator){
         return ((MapContainerPolicyIterator)iterator).next();
     }
@@ -569,6 +569,7 @@ public class MapContainerPolicy extends InterfaceContainerPolicy {
      * @see ContainerPolicy#iteratorFor(Object iterator, AbstractSession session)
      * @see MapContainerPolicy.unwrapIteratorResult(Object object)
      */
+    @Override
     public Object nextEntry(Object iterator, AbstractSession session) {
         Map.Entry next = (Map.Entry)nextEntry(iterator);
         Object object = next.getValue();
@@ -588,8 +589,9 @@ public class MapContainerPolicy extends InterfaceContainerPolicy {
      * 
      * @see MapContainerPolicy.nextWrapped(Object iterator)
      */
-    public Object unwrapElement(Object object){
-        if (object instanceof Association){
+    @Override
+    public Object unwrapElement(Object object) {
+        if (object instanceof Association) {
             return ((Association)object).getValue();
         } else {
             return object;
@@ -603,8 +605,9 @@ public class MapContainerPolicy extends InterfaceContainerPolicy {
      * 
      * @see MapContainerPolicy.nextWrapped(Object iterator)
      */
-    public Object unwrapIteratorResult(Object object){
-        if (object instanceof Map.Entry){
+    @Override
+    public Object unwrapIteratorResult(Object object) {
+        if (object instanceof Map.Entry) {
             return ((Map.Entry)object).getValue();
         } else {
             return object;
@@ -615,14 +618,9 @@ public class MapContainerPolicy extends InterfaceContainerPolicy {
     /**
      * INTERNAL:
      * Allow the key to be unwrapped.  This will be overridden by container policies that
-     * allow keys that are entities
-     * 
-     * @see MappedKeyMapContainerPolicy
-     * @param key
-     * @param session
-     * @return
+     * allow keys that are entities.
      */
-    public Object unwrapKey(Object key, AbstractSession session){
+    public Object unwrapKey(Object key, AbstractSession session) {
         return key;
     }
     
@@ -632,6 +630,7 @@ public class MapContainerPolicy extends InterfaceContainerPolicy {
      * Each ContainerPolicy type will implement specific behavior for the collection 
      * type it is wrapping.  These methods are only valid for collections containing object references
      */
+    @Override
     public void recordUpdateToCollectionInChangeRecord(CollectionChangeEvent event, ObjectChangeSet changeSet, CollectionChangeRecord collectionChangeRecord){
         
         Object key = null;
@@ -654,6 +653,7 @@ public class MapContainerPolicy extends InterfaceContainerPolicy {
      * INTERNAL:
      * Remove element from container which implements the Map interface.
      */
+    @Override
     public boolean removeFrom(Object key, Object element, Object container, AbstractSession session) {
         try {
             Object returnValue = null;
@@ -667,33 +667,6 @@ public class MapContainerPolicy extends InterfaceContainerPolicy {
             } else {
                 return true;
             }
-        } catch (UnsupportedOperationException ex) {
-            throw QueryException.methodNotValid(container, "remove(Object element)");
-        }
-    }
-
-    /**
-     * INTERNAL:
-     * Remove element from container which implements the Map interface.
-     */
-    public boolean removeFromWithIdentity(Object element, Object container, AbstractSession session) {
-        boolean found = false;
-        Vector knownKeys = new Vector(1);
-        try {
-            Iterator iterator = ((Map)container).keySet().iterator();
-            while (iterator.hasNext()) {
-                Object key = iterator.next();
-                if (((Map)container).get(key) == element) {
-                    knownKeys.addElement(key);
-                    found = true;
-                }
-            }
-            if (found) {
-                for (int index = 0; index < knownKeys.size(); ++index) {
-                    ((Map)container).remove(knownKeys.elementAt(index));
-                }
-            }
-            return found;
         } catch (UnsupportedOperationException ex) {
             throw QueryException.methodNotValid(container, "remove(Object element)");
         }
@@ -715,8 +688,9 @@ public class MapContainerPolicy extends InterfaceContainerPolicy {
      * INTERNAL:
      * Validate the container type.
      */
+    @Override
     public boolean isValidContainer(Object container) {
-        // PERF: Use instanceof which is inlined, not isAssignable which is very inefficent.
+        // PERF: Use instanceof which is inlined, not isAssignable which is very inefficient.
         return container instanceof Map;
     }
 
@@ -783,26 +757,10 @@ public class MapContainerPolicy extends InterfaceContainerPolicy {
      * INTERNAL:
      * Return the size of container.
      */
+    @Override
     public int sizeFor(Object container) {
         return ((Map)container).size();
     }
-
-    /**
-     * INTERNAL:
-     * If the key has changed, remove the element and add it back into the target.
-     */
-    public void validateElementAndRehashIfRequired(Object sourceValue, Object targetMap, AbstractSession session, Object targetVersionOfSource) {
-        if (session.isUnitOfWork()) {
-            //this must be a unit of work at this point
-            Object backupValue = ((UnitOfWorkImpl)session).getBackupClone(sourceValue, getElementDescriptor());
-            if (!keyFrom(backupValue, session).equals(keyFrom(sourceValue, session))) {
-                //the key has been changed.  Remove the old value and put back the new one
-                removeFrom(backupValue, targetMap, session);
-                addInto(targetVersionOfSource, targetMap, session);
-            }
-        }
-    }
-    
     
     public Object valueFromIterator(Object iterator){
         return ((MapContainerPolicyIterator)iterator).getCurrentValue();

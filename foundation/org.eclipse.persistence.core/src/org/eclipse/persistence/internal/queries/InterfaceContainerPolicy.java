@@ -20,6 +20,7 @@ import org.eclipse.persistence.descriptors.changetracking.CollectionChangeEvent;
 import org.eclipse.persistence.exceptions.*;
 import org.eclipse.persistence.internal.helper.ClassConstants;
 import org.eclipse.persistence.internal.helper.DatabaseField;
+import org.eclipse.persistence.internal.helper.Helper;
 import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
 import org.eclipse.persistence.internal.security.PrivilegedMethodInvoker;
 import org.eclipse.persistence.internal.security.PrivilegedClassForName;
@@ -83,6 +84,7 @@ public abstract class InterfaceContainerPolicy extends ContainerPolicy {
      * INTERNAL:
      * Return a clone of the specified container.
      */
+    @Override
     public Object cloneFor(Object container) {
         if (container == null) {
             return null;
@@ -104,6 +106,7 @@ public abstract class InterfaceContainerPolicy extends ContainerPolicy {
      * with class names to a project with classes.
      * @param classLoader 
      */
+    @Override
     public void convertClassNamesToClasses(ClassLoader classLoader){
         super.convertClassNamesToClasses(classLoader);
         if (getContainerClassName() == null){
@@ -130,6 +133,7 @@ public abstract class InterfaceContainerPolicy extends ContainerPolicy {
      * INTERNAL:
      * Creates a CollectionChangeEvent for the container
      */
+    @Override
     public CollectionChangeEvent createChangeEvent(Object collectionOwner, String propertyName, Object collectionChanged, Object elementChanged, int changeType, Integer index) {
         return new CollectionChangeEvent(collectionOwner, propertyName, collectionChanged, elementChanged, changeType, index);// make the remove change event fire.
     }
@@ -138,21 +142,19 @@ public abstract class InterfaceContainerPolicy extends ContainerPolicy {
      * INTERNAL:
      * Create a query key that links to the map key
      * InterfaceContainerPolicy does not support maps, so this method will return null
-     * subclasses will extend this method
-     * @return
+     * subclasses will extend this method.
      */
-    public QueryKey createQueryKeyForMapKey(){
+    public QueryKey createQueryKeyForMapKey() {
         return null;
     }
     
     
     /**
      * INTERNAL:
-     * Return all the fields in the key
-     * @param baseMapping TODO
-     * @return
+     * Return all the fields in the key.
      */
-    public List<DatabaseField> getAllFieldsForMapKey(CollectionMapping baseMapping){
+    @Override
+    public List<DatabaseField> getAllFieldsForMapKey(CollectionMapping baseMapping) {
         DatabaseField field = getDirectKeyField(null);
         if (field != null){
             List<DatabaseField> fields = new ArrayList<DatabaseField>(1);
@@ -200,6 +202,7 @@ public abstract class InterfaceContainerPolicy extends ContainerPolicy {
      * INTERNAL:
      * Returns the container class to be used with this policy.
      */
+    @Override
     public Class getContainerClass() {
         return containerClass;
     }
@@ -214,10 +217,9 @@ public abstract class InterfaceContainerPolicy extends ContainerPolicy {
     /**
      * INTERNAL:
      * Return the DatabaseField that represents the key in a DirectMapMapping.  If the
-     * keyMapping is not a DirectMapping, this will return null
-     * @return
+     * keyMapping is not a DirectMapping, this will return null.
      */
-    public DatabaseField getDirectKeyField(CollectionMapping mapping){
+    public DatabaseField getDirectKeyField(CollectionMapping mapping) {
         return null;
     }
     
@@ -227,6 +229,7 @@ public abstract class InterfaceContainerPolicy extends ContainerPolicy {
      * INTERNAL:
      * Return whether the iterator has more objects,
      */
+    @Override
     public boolean hasNext(Object iterator) {
         return ((Iterator)iterator).hasNext();
     }
@@ -263,7 +266,6 @@ public abstract class InterfaceContainerPolicy extends ContainerPolicy {
      * INTERNAL:
      * Return whether a map key this container policy represents is an attribute
      * By default this method will return false since only subclasses actually represent maps.
-     * @return
      */
     public boolean isMapKeyAttribute(){
         return false;
@@ -273,8 +275,9 @@ public abstract class InterfaceContainerPolicy extends ContainerPolicy {
      * INTERNAL:
      * Validate the container type.
      */
+    @Override
     public boolean isValidContainerType(Class containerType) {
-        return org.eclipse.persistence.internal.helper.Helper.classImplementsInterface(containerType, getInterfaceType());
+        return Helper.classImplementsInterface(containerType, getInterfaceType());
     }
 
     /**
@@ -282,6 +285,7 @@ public abstract class InterfaceContainerPolicy extends ContainerPolicy {
      * Return the next object on the queue.
      * Valid for some subclasses only.
      */
+    @Override
     protected Object next(Object iterator) {
         return ((Iterator)iterator).next();
     }
@@ -298,6 +302,7 @@ public abstract class InterfaceContainerPolicy extends ContainerPolicy {
      * INTERNAL:
      * Set the class to use as the container.
      */
+    @Override
     public void setContainerClass(Class containerClass) {
         this.containerClass = containerClass;
         initializeConstructor();
@@ -311,6 +316,7 @@ public abstract class InterfaceContainerPolicy extends ContainerPolicy {
      * INTERNAL:
      * Return a container populated with the contents of the specified Vector.
      */
+    @Override
     public Object buildContainerFromVector(Vector vector, AbstractSession session) {
         // PERF: If a Vector policy just return the original.
         if (this.containerClass == ClassConstants.Vector_class) {
@@ -319,7 +325,8 @@ public abstract class InterfaceContainerPolicy extends ContainerPolicy {
         return super.buildContainerFromVector(vector, session);
     }
 
+    @Override
     protected Object toStringInfo() {
-        return this.getContainerClass();
+        return getContainerClass();
     }
 }

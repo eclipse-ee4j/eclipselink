@@ -206,6 +206,7 @@ public class ManyToManyMapping extends CollectionMapping implements RelationalMa
      */
     @Override
     protected void postPrepareNestedBatchQuery(ReadQuery batchQuery, ObjectLevelReadQuery query) {
+        super.postPrepareNestedBatchQuery(batchQuery, query);
         ReadAllQuery mappingBatchQuery = (ReadAllQuery)batchQuery;
         this.mechanism.postPrepareNestedBatchQuery(batchQuery, query);
         if (this.historyPolicy != null) {
@@ -219,6 +220,16 @@ public class ManyToManyMapping extends CollectionMapping implements RelationalMa
             twisted = twisted.and(this.historyPolicy.additionalHistoryExpression(builder));
             mappingBatchQuery.setSelectionCriteria(twisted);
         }
+    }
+    
+    /**
+     * INTERNAL:
+     * Return the base expression to use for adding fields to the query.
+     * Normally this is the query's builder, but may be the join table for m-m.
+     */
+    @Override
+    protected Expression getAdditionalFieldsBaseExpression(ReadQuery query) {
+        return ((ReadAllQuery)query).getExpressionBuilder().getTable(getRelationTable());
     }
     
 
@@ -560,6 +571,7 @@ public class ManyToManyMapping extends CollectionMapping implements RelationalMa
      * Initializes listOrderField's table. 
      * Precondition: listOrderField != null.
      */
+    @Override
     protected void initializeListOrderFieldTable(AbstractSession session) {
         this.mechanism.initializeRelationTable(session, this);
     }

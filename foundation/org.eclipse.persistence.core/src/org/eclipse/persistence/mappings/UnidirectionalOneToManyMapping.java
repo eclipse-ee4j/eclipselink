@@ -302,8 +302,8 @@ public class UnidirectionalOneToManyMapping extends OneToManyMapping {
      */
     @Override
     protected void postPrepareNestedBatchQuery(ReadQuery batchQuery, ObjectLevelReadQuery query) {
+        super.postPrepareNestedBatchQuery(batchQuery, query);
         ReadAllQuery mappingBatchQuery = (ReadAllQuery)batchQuery;
-        mappingBatchQuery.setShouldIncludeData(true);
         int size = this.targetForeignKeyFields.size();
         for (int i=0; i < size; i++) {
             mappingBatchQuery.addAdditionalField(this.targetForeignKeyFields.get(i));

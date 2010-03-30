@@ -1772,6 +1772,7 @@ public abstract class ObjectLevelReadQuery extends ObjectBuildingQuery {
         if (hasJoining()) {
             getJoinedAttributeManager().computeJoiningMappingQueries(session);
         }
+        computeBatchReadMappingQueries();
     }
     
     /**

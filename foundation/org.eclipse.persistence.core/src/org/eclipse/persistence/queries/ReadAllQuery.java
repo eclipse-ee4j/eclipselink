@@ -393,6 +393,7 @@ public class ReadAllQuery extends ObjectLevelReadQuery {
         Object result = null;
         
         if (this.containerPolicy.overridesRead()) {
+            this.executionTime = System.currentTimeMillis();
             return this.containerPolicy.execute();
         }
 
@@ -430,7 +431,8 @@ public class ReadAllQuery extends ObjectLevelReadQuery {
 
         // Add the other (already registered) results and return them.
         if (this.descriptor.hasTablePerClassPolicy()) {
-            result = this.containerPolicy.concatenateContainers(result, this.descriptor.getTablePerClassPolicy().selectAllObjectsUsingMultipleTableSubclassRead(this));
+            result = this.containerPolicy.concatenateContainers(
+                    result, this.descriptor.getTablePerClassPolicy().selectAllObjectsUsingMultipleTableSubclassRead(this), this.session);
         }
 
         // If the results were empty, then ensure they get cached still.
@@ -619,7 +621,6 @@ public class ReadAllQuery extends ObjectLevelReadQuery {
         }
         
         prepareSelectAllRows();
-        computeBatchReadMappingQueries();
     }
     
     /**

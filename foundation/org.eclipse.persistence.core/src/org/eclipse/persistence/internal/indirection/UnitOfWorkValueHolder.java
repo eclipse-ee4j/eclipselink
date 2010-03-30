@@ -208,16 +208,13 @@ public abstract class UnitOfWorkValueHolder extends DatabaseValueHolder {
      * if necessary, and clone it.
      */
     protected Object instantiate() {
-        UnitOfWorkImpl unitOfWork;
         Object originalAttributeValue;
         Object cloneAttributeValue;
         if (isSerializedRemoteUnitOfWorkValueHolder()) {
-            unitOfWork = getRemoteUnitOfWork();
             originalAttributeValue = getValueFromServerObject();
             cloneAttributeValue = buildCloneFor(originalAttributeValue);
         } else {
-            unitOfWork = getUnitOfWork();
-            if (unitOfWork == null){
+            if (getUnitOfWork() == null) {
                 throw ValidationException.instantiatingValueholderWithNullSession();
             }
             cloneAttributeValue = instantiateImpl();

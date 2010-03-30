@@ -21,12 +21,14 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.Inheritance;
 import javax.persistence.ManyToMany;
+import javax.persistence.Table;
 
 import static javax.persistence.GenerationType.TABLE;
 import static javax.persistence.InheritanceType.TABLE_PER_CLASS;
 
 @Entity
 @Inheritance(strategy=TABLE_PER_CLASS)
+@Table(name="JPA_PLAYER")
 public class Player {
     @Id
     @GeneratedValue(strategy=TABLE)

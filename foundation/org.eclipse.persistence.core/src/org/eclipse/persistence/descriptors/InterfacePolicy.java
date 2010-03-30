@@ -18,6 +18,7 @@ import java.security.PrivilegedActionException;
 import java.util.*;
 
 import org.eclipse.persistence.exceptions.*;
+import org.eclipse.persistence.internal.queries.ContainerPolicy;
 import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
 import org.eclipse.persistence.internal.security.PrivilegedClassForName;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
@@ -229,17 +230,15 @@ public class InterfacePolicy implements Serializable {
      * INTERNAL:
      * Select all objects for an interface descriptor.
      * This is accomplished by selecting for all of the concrete classes and then merging the objects.
-     *
-     * @return Vector containing all objects.
-     * @exception DatabaseException - an error has occurred on the database.
      */
     public Object selectAllObjectsUsingMultipleTableSubclassRead(ReadAllQuery query) throws DatabaseException {
-        org.eclipse.persistence.internal.queries.ContainerPolicy containerPolicy = query.getContainerPolicy();
+        ContainerPolicy containerPolicy = query.getContainerPolicy();
         Object objects = containerPolicy.containerInstance(1);
-
-        for (Enumeration childDescriptors = getChildDescriptors().elements(); childDescriptors.hasMoreElements();) {
-            ClassDescriptor descriptor = (ClassDescriptor)childDescriptors.nextElement();
-            objects = containerPolicy.concatenateContainers(objects, descriptor.getInterfacePolicy().selectAllObjects(query));
+        int size = this.childDescriptors.size();
+        for (int index = 0; index < size; index++) {
+            ClassDescriptor descriptor = (ClassDescriptor)this.childDescriptors.get(index);
+            objects = containerPolicy.concatenateContainers(
+                    objects, descriptor.getInterfacePolicy().selectAllObjects(query), query.getSession());
         }
 
         return objects;

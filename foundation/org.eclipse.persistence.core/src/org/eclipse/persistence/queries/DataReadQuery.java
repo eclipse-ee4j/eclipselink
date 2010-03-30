@@ -191,9 +191,7 @@ public class DataReadQuery extends ReadQuery {
     protected Object executeNonCursor() throws DatabaseException {
         Vector rows = getQueryMechanism().executeSelect();
         Object results = null;
-        if (this.resultType == MAP) {
-            results = getContainerPolicy().buildContainerFromVector(rows, this.session);
-        } else if (this.resultType == VALUE) {
+        if (this.resultType == VALUE) {
             if (!rows.isEmpty()) {
                 AbstractRecord record = (AbstractRecord)rows.get(0);
                 // Use get with field for XML records.

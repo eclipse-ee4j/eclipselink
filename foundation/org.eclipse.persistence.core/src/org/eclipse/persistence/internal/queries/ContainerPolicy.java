@@ -107,16 +107,6 @@ public abstract class ContainerPolicy implements Cloneable, Serializable {
      */
     public void addFieldsForMapKey(AbstractRecord joinRow){
     }
-    
-    /**
-     * INTERNAL:
-     * Add element to container however that needs to be done for the type of container.
-     * Valid for some subclasses only.
-     * Return whether the container changed.
-     */
-    protected boolean addInto(Object key, Object element, Object container) {
-        throw QueryException.cannotAddToContainer(element, container, this);
-    }
 
     /**
      * INTERNAL:
@@ -132,10 +122,10 @@ public abstract class ContainerPolicy implements Cloneable, Serializable {
     /**
      * INTERNAL:
      * Add element to container.
-     * This is used to add to a collection independent of JDK 1.1 and 1.2.
+     * This is used to add to a collection independent of type.
      * The session may be required to wrap for the wrapper policy.
-     * The row may be required by subclasses
-     * Return whether the container changed
+     * The row may be required by subclasses, such as MappedKeyMap.
+     * Return whether the container changed.
      */
     public boolean addInto(Object element, Object container, AbstractSession session, AbstractRecord dbRow, ObjectBuildingQuery query) {
         return addInto(null, element, container, session);
@@ -143,11 +133,10 @@ public abstract class ContainerPolicy implements Cloneable, Serializable {
 
     /**
      * INTERNAL:
-     * Add a list of elements to container.
-     * This is used to add to a collection independent of JDK 1.1 and 1.2.
-     * The session may be required to wrap for the wrapper policy.
-     * The row may be required by subclasses
-     * Return whether the container changed
+     * This is used for ordered List containers to add all of the elements
+     * to the collection in the order of the index field in the row.
+     * This is currently only used by OrderListContainerPolicy, so this is just a stub.
+     * The passing of the query is to allow future compatibility with Maps (ordered Map).
      */
     public boolean addAll(List elements, Object container, AbstractSession session, List<AbstractRecord> dbRows, ObjectBuildingQuery query) {
         boolean changed = false;
@@ -159,28 +148,25 @@ public abstract class ContainerPolicy implements Cloneable, Serializable {
 
     /**
      * INTERNAL:
-     * Add element to container.
-     * This is used to add to a collection independent of JDK 1.1 and 1.2.
-     * The session may be required to wrap for the wrapper policy.
-     * The row may be required by subclasses
-     * Return whether the container changed
+     * This is used for adding to a direct map or direct collection from the database.
+     * The row data may also be requires, as in the case of indexed ordered lists,
+     * or direct maps.
      */
-    public boolean addInto(Object element, Object container, AbstractSession session, AbstractRecord dbRow, DataReadQuery query) {
+    public boolean addInto(Object element, Object container, AbstractSession session, AbstractRecord row, DataReadQuery query) {
         return addInto(null, element, container, session);
     }
 
     /**
      * INTERNAL:
-     * Add a list of elements to container.
-     * This is used to add to a collection independent of JDK 1.1 and 1.2.
-     * The session may be required to wrap for the wrapper policy.
-     * The row may be required by subclasses
-     * Return whether the container changed
+     * This is used for ordered List containers to add all of the elements
+     * to the collection in the order of the index field in the row.
+     * This is currently only used by OrderListContainerPolicy, so this is just a stub.
+     * The passing of the query is to allow future compatibility with Maps (ordered Map).
      */
-    public boolean addAll(List elements, Object container, AbstractSession session, List<AbstractRecord> dbRows, DataReadQuery query) {
+    public boolean addAll(List elements, Object container, AbstractSession session, List<AbstractRecord> rows, DataReadQuery query) {
         boolean changed = false;
         for(int i=0; i < elements.size(); i++) {
-            changed |= addInto(elements.get(i), container, session, dbRows.get(i), query);
+            changed |= addInto(elements.get(i), container, session, rows.get(i), query);
         }
         return changed;
     }
@@ -188,55 +174,12 @@ public abstract class ContainerPolicy implements Cloneable, Serializable {
     /**
      * INTERNAL:
      * Add element to container.
-     * This is used to add to a collection independent of JDK 1.1 and 1.2.
+     * This is used to add to a collection independent of type.
      * The session may be required to wrap for the wrapper policy.
-     * Return whether the container changed
+     * Return whether the container changed.
      */
     public boolean addInto(Object key, Object element, Object container, AbstractSession session) {
-        Object elementToAdd = element;
-        // PERF: Using direct access.
-        if (this.elementDescriptor != null) {
-            elementToAdd = this.elementDescriptor.getObjectBuilder().wrapObject(element, session);
-        }
-        return addInto(key, elementToAdd, container);
-    }
-
-    /**
-    * INTERNAL:
-    * It is illegal to send this message to this receiver. Try one of my subclasses.
-    * Throws an exception.
-    *
-    * @see #ListContainerPolicy
-    */
-    public void addIntoWithOrder(Integer index, Object element, Object container) {
-        throw QueryException.methodDoesNotExistInContainerClass("set", getContainerClass());
-    }
-
-    /**
-    * INTERNAL:
-    * It is illegal to send this message to this receiver. Try one of my subclasses.
-    * Throws an exception.
-    *
-    * @see #ListContainerPolicy
-    */
-    public void addIntoWithOrder(Integer index, Object element, Object container, AbstractSession session) {
-        Object elementToAdd = element;
-        // PERF: Using direct access.
-        if (this.elementDescriptor != null) {
-            elementToAdd = this.elementDescriptor.getObjectBuilder().wrapObject(element, session);
-        }
-        addIntoWithOrder(index, elementToAdd, container);
-    }
-
-    /**
-    * INTERNAL:
-    * It is illegal to send this message to this receiver. Try one of my subclasses.
-    * Throws an exception.
-    *
-    * @see #ListContainerPolicy
-    */
-    public void addIntoWithOrder(Vector indexes, Hashtable elements, Object container, AbstractSession session) {
-        throw QueryException.methodDoesNotExistInContainerClass("set", getContainerClass());
+        throw QueryException.cannotAddToContainer(element, container, this);
     }
     
     /**
@@ -270,20 +213,6 @@ public abstract class ContainerPolicy implements Cloneable, Serializable {
         }
         addInto(cloneValue, toCollection, unitOfWork);
     }
-    
-    /**
-     * INTERNAL:
-     * Add the provided object to the deleted objects list on the commit manager.
-     * This may be overridden by subclasses to process a composite object
-     * 
-     * @see MappedKeyMapContainerPolicy
-     * @param object
-     * @param manager
-     */
-    public void addToDeletedObjectsList(Object object, Map deletedObjects){
-        deletedObjects.put(object, object);
-    }
-    
     
     /**
      * Build a clone for the key of a Map represented by this container policy if necessary.
@@ -641,15 +570,15 @@ public abstract class ContainerPolicy implements Cloneable, Serializable {
      * to it, and return it.
      * Both of the containers must use the same container policy (namely, this one).
      */
-    public Object concatenateContainers(Object firstContainer, Object secondContainer) {
+    public Object concatenateContainers(Object firstContainer, Object secondContainer, AbstractSession session) {
         Object container = containerInstance(sizeFor(firstContainer) + sizeFor(secondContainer));
 
         for (Object firstIter = iteratorFor(firstContainer); hasNext(firstIter);) {
-            addInto(null, next(firstIter), container);
+            addInto(null, next(firstIter), container, session);
         }
 
         for (Object secondIter = iteratorFor(secondContainer); hasNext(secondIter);) {
-            addInto(null, next(secondIter), container);
+            addInto(null, next(secondIter), container, session);
         }
         return container;
     }
@@ -733,14 +662,6 @@ public abstract class ContainerPolicy implements Cloneable, Serializable {
         } else {
             return contains(element, container);
         }
-    }
-
-    /**
-     * INTERNAL:
-     * Return whether element exists in container.
-     */
-    protected boolean containsKey(Object element, Object container) {
-        throw QueryException.methodNotValid(this, "containsKey(Object element, Object container)");
     }
 
     /**
@@ -1425,15 +1346,6 @@ public abstract class ContainerPolicy implements Cloneable, Serializable {
 
     /**
      * INTERNAL:
-     * Remove all the elements from container.
-     * Valid only for certain subclasses.
-     */
-    public void removeAllElements(Object container) {
-        clear(container);
-    }
-
-    /**
-     * INTERNAL:
      * Remove element from container.
      * Valid for some subclasses only.
      */
@@ -1472,17 +1384,6 @@ public abstract class ContainerPolicy implements Cloneable, Serializable {
      */
     public boolean removeFrom(Object element, Object container, AbstractSession session) {
         return removeFrom(null, element, container, session);
-    }
-
-    /**
-    * INTERNAL:
-    * It is illegal to send this message to this receiver. Try one of my subclasses.
-    * Throws an exception.
-    *
-    * @see #ListContainerPolicy
-    */
-    public void removeFromWithOrder(int beginIndex, Object container) {
-        throw QueryException.methodDoesNotExistInContainerClass("remove(index)", getContainerClass());
     }
 
     /**
@@ -1627,14 +1528,6 @@ public abstract class ContainerPolicy implements Cloneable, Serializable {
      */
     public Object unwrapIteratorResult(Object object){
         return object;
-    }
-    
-    /**
-     * INTERNAL:
-     * over ride in MapPolicy subclass
-     */
-    public void validateElementAndRehashIfRequired(Object sourceValue, Object target, AbstractSession session, Object targetVersionOfSource) {
-        //do nothing
     }
 
     /**
