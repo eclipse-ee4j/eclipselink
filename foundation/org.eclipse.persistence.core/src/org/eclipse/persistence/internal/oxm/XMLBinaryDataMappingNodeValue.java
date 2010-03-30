@@ -232,7 +232,7 @@ public class XMLBinaryDataMappingNodeValue extends NodeValue implements NullCapa
     }
 
     public boolean isNullCapableValue() {
-        return true;
+        return xmlBinaryDataMapping.getNullPolicy().getIsSetPerformedForAbsentNode();
     }
 
     public DataHandler getDataHandlerForObjectValue(Object obj, Class classification) {

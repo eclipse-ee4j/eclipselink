@@ -35,6 +35,7 @@ public class LoadWithDataHandlerGetStringTestCases extends SDOXMLHelperLoadTestC
         super.verifyDocument(document);
 
         DataObject obj = document.getRootObject();
+        assertTrue(obj.isSet("simpleDHBinary"));
         String value = obj.getString("simpleDHBinary");
         assertTrue("Unexpected String Value: " + value, value.equals(CONTROL_BASE64_VALUE));
     }
