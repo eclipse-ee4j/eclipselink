@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<employee foodata="myfoo">
+<e:employee foodata="myfoo" xmlns:c="http://www.example.com/contacts" xmlns:e="http://www.example.com/employees">
     <info>
-        <contact-info>
+        <c:contact-info>
             <home-address>
                 <city>Kanata</city>
                 <street>66 Lakview Drive</street>
@@ -17,6 +17,8 @@
             <alt-address>
                 <city>Austin</city>
             </alt-address>
+        </c:contact-info>
+        <contact-info>
             <phone>
                 <number>613.288.0001</number>
             </phone>
@@ -33,4 +35,4 @@
     </private-phone>
     <deptId>101</deptId>
     <deptName>Sanitation</deptName>
-</employee>
+</e:employee>

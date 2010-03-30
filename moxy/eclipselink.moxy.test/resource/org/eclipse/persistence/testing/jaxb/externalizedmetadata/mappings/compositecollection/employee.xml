@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ns0:employee empId="101" xmlns:c="http://www.example.com/contacts" xmlns:ns0="http://www.example.com/employees">
+    <info>
+        <c:contact-info>
+            <addresses>
+                <address id="67">
+                    <city>Kanata</city>
+                    <street>66 Lakview Drive</street>
+                    <province>ON</province>
+                    <postalCode>K2M2K7</postalCode>
+                </address>
+                <address id="76">
+                    <city>Ottawa</city>
+                    <street>45 O'Connor St.</street>
+                    <province>ON</province>
+                    <postalCode>K1P1A4</postalCode>
+                </address>
+            </addresses>
+        </c:contact-info>
+    </info>
+</ns0:employee>

@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<employee foodata="myfoo">
+<ns0:employee xmlns:c="http://www.example.com/contacts" foodata="myfoo" xmlns:ns0="http://www.example.com/employees">
     <info>
-        <contact-info>
+        <c:contact-info>
             <home-address>
                 <city>Kanata</city>
                 <street>66 Lakview Drive</street>
@@ -14,6 +14,8 @@
                 <province>ON</province>
                 <postalCode>K1P1A4</postalCode>
             </work-address>
+        </c:contact-info>
+        <contact-info>
             <phone>
                 <number>613.288.0001</number>
             </phone>
@@ -28,4 +30,4 @@
     <deptId>101</deptId>
     <deptName>Sanitation</deptName>
     <a-dept />
-</employee>
+</ns0:employee>

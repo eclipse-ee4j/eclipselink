@@ -1,0 +1,151 @@
+/*******************************************************************************
+ * Copyright (c) 1998, 2010 Oracle. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
+ * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
+ * and the Eclipse Distribution License is available at
+ * http://www.eclipse.org/org/documents/edl-v10.php.
+ *
+ * Contributors:
+ * dmccann - March 25/2010 - 2.1 - Initial implementation
+ ******************************************************************************/
+package org.eclipse.persistence.testing.jaxb.externalizedmetadata.mappings.anyattribute;
+
+import java.io.File;
+import java.io.InputStream;
+import java.util.HashMap;
+
+import javax.xml.bind.JAXBException;
+import javax.xml.bind.Marshaller;
+import javax.xml.bind.Unmarshaller;
+import javax.xml.namespace.QName;
+
+import org.eclipse.persistence.testing.jaxb.externalizedmetadata.ExternalizedMetadataTestCases;
+import org.w3c.dom.Document;
+
+/**
+ * Tests XmlAnyAttributeMapping via eclipselink-oxm.xml
+ *
+ */
+public class AnyAttributeMappingTestCases extends ExternalizedMetadataTestCases {
+    private static final String CONTEXT_PATH = "org.eclipse.persistence.testing.jaxb.externalizedmetadata.mappings.anyattribute";
+    private static final String PATH = "org/eclipse/persistence/testing/jaxb/externalizedmetadata/mappings/anyattribute/";
+    
+    private MySchemaOutputResolver employeeResolver;
+
+    private static final String FNAME = "Joe";
+    private static final String LNAME = "Oracle";
+    private static final String FIRST_NAME = "first-name";
+    private static final String LAST_NAME = "last-name";
+    private static final String  STUFF_NS = "http://www.example.com/stuff";
+    
+    /**
+     * This is the preferred (and only) constructor.
+     * 
+     * @param name
+     */
+    public AnyAttributeMappingTestCases(String name) {
+        super(name);
+    }
+
+    /**
+     * Create the control Employee.
+     */
+    private Employee getControlObject() {
+        Employee ctrlEmp = new Employee();
+        HashMap stuff = new HashMap();
+        QName qname = new QName(EMPTY_NAMESPACE, FIRST_NAME);
+        stuff.put(qname, FNAME);
+        qname = new QName(EMPTY_NAMESPACE, LAST_NAME);
+        stuff.put(qname, LNAME);
+        ctrlEmp.stuff = stuff;
+        return ctrlEmp;
+    }
+    
+    /**
+     * This method's primary purpose id to generate schema(s). Validation of
+     * generated schemas will occur in the testXXXGen method(s) below. Note that
+     * the JAXBContext is created from this call and is required for
+     * marshal/unmarshal, etc. tests.
+     * 
+     */
+    @Override
+    public void setUp() throws Exception {
+        super.setUp();
+        employeeResolver = generateSchemaWithFileName(new Class[] { Employee.class }, CONTEXT_PATH, PATH + "employee-oxm.xml", 2);
+    }
+
+    /**
+     * Tests schema generation for XmlAnyAttributeMapping via eclipselink-oxm.xml.
+     * Utilizes xml-attribute and xml-element. xml-value is tested separately
+     * below.
+     * 
+     * Positive test.
+     */
+    public void testAnyAttributeSchemaGen() {
+        // validate employee schema
+        compareSchemas(employeeResolver.schemaFiles.get(EMPTY_NAMESPACE), new File(PATH + "employee.xsd"));
+        // validate stuff schema
+        compareSchemas(employeeResolver.schemaFiles.get(STUFF_NS), new File(PATH + "stuff.xsd"));
+    }
+
+    /**
+     * Tests XmlAnyAttributeMapping configuration via eclipselink-oxm.xml.
+     * Here an unmarshal operation is performed.  
+     * 
+     * Positive test.
+     */
+    public void testAnyAttributeUnmarshal() {
+        // load instance doc
+        String src = PATH + "employee.xml";
+        InputStream iDocStream = loader.getResourceAsStream(src);
+        if (iDocStream == null) {
+            fail("Couldn't load instance doc [" + src + "]");
+        }
+
+        // unmarshal
+        Employee ctrlEmp = getControlObject();
+        Employee empObj = null;
+        Unmarshaller unmarshaller = jaxbContext.createUnmarshaller();
+        try {
+            empObj = (Employee) unmarshaller.unmarshal(iDocStream);
+            assertNotNull("Unmarshalled object is null.", empObj);
+            assertTrue("Unmarshal failed:  Employee objects are not equal", ctrlEmp.equals(empObj));
+        } catch (JAXBException e) {
+            e.printStackTrace();
+            fail("Unmarshal operation failed.");
+        }
+    }
+    
+    /**
+     * Tests XmlAnyAttributeMapping configuration via eclipselink-oxm.xml.
+     * Here a marshal operation is performed.  
+     * 
+     * Positive test.
+     */
+    public void testAnyAttributeMarshal() {
+        // setup control document
+        String src = PATH + "employee.xml";
+        Document testDoc = parser.newDocument();
+        Document ctrlDoc = parser.newDocument();
+        try {
+            ctrlDoc = getControlDocument(src);
+        } catch (Exception e) {
+            e.printStackTrace();
+            fail("An unexpected exception occurred loading control document [" + src + "].");
+        }
+
+        // test marshal
+        Employee ctrlEmp = getControlObject();
+        Marshaller marshaller = jaxbContext.createMarshaller();
+        try {
+            marshaller.marshal(ctrlEmp, testDoc);
+            //marshaller.marshal(ctrlEmp, System.out);
+            assertTrue("Document comparison failed unxepectedly: ", compareDocuments(ctrlDoc, testDoc));
+        } catch (JAXBException e) {
+            e.printStackTrace();
+            fail("Marshal operation failed.");
+        }
+    }
+}

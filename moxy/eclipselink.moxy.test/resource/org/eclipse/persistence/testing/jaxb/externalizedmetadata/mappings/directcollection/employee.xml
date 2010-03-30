@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<employee empId="101">
+  <projects>
+    <projectId>01</projectId>
+    <projectId>10</projectId>
+    <projectId>11</projectId>
+  </projects>
+</employee>

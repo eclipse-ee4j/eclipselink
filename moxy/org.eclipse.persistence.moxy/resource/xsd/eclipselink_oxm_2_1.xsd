@@ -244,7 +244,9 @@
     <xs:element name="xml-any-attribute" substitutionGroup="java-attribute">
         <xs:complexType>
             <xs:complexContent>
-                <xs:extension base="java-attribute" />
+                <xs:extension base="java-attribute">
+                    <xs:attribute name="xml-path" type="xs:string" />
+                </xs:extension>
             </xs:complexContent>
         </xs:complexType>
     </xs:element>
@@ -284,6 +286,7 @@
                     <xs:attribute name="xml-mixed" type="xs:boolean" default="false" />
                     <xs:attribute name="lax" type="xs:boolean" default="false" />
                     <xs:attribute name="dom-handler" type="xs:string" default="javax.xml.bind.annotation.W3CDomHandler" />
+                    <xs:attribute name="xml-path" type="xs:string" />
                 </xs:extension>
             </xs:complexContent>
         </xs:complexType>

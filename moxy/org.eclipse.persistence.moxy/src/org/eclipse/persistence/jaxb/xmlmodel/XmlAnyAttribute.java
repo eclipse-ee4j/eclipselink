@@ -14,6 +14,7 @@ package org.eclipse.persistence.jaxb.xmlmodel;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlType;
 
 
@@ -26,6 +27,7 @@ import javax.xml.bind.annotation.XmlType;
  * &lt;complexType>
  *   &lt;complexContent>
  *     &lt;extension base="{http://www.eclipse.org/eclipselink/xsds/persistence/oxm}java-attribute">
+ *       &lt;attribute name="xml-path" type="{http://www.w3.org/2001/XMLSchema}string" />
  *     &lt;/extension>
  *   &lt;/complexContent>
  * &lt;/complexType>
@@ -39,5 +41,31 @@ public class XmlAnyAttribute
     extends JavaAttribute
 {
 
+    @XmlAttribute(name = "xml-path")
+    protected String xmlPath;
+
+    /**
+     * Gets the value of the xmlPath property.
+     * 
+     * @return
+     *     possible object is
+     *     {@link String }
+     *     
+     */
+    public String getXmlPath() {
+        return xmlPath;
+    }
+
+    /**
+     * Sets the value of the xmlPath property.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link String }
+     *     
+     */
+    public void setXmlPath(String value) {
+        this.xmlPath = value;
+    }
 
 }

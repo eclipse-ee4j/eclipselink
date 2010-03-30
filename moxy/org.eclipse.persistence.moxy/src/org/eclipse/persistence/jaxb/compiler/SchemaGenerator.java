@@ -261,11 +261,6 @@ public class SchemaGenerator {
             ComplexType type = new ComplexType();
             JavaClass superClass = helper.getNextMappedSuperClass(myClass);
 
-            // Handle mixed content
-            if (info.isMixed()) {
-                type.setMixed(true);
-            }
-
             // Handle abstract class
             if (myClass.isAbstract()) {
                 type.setAbstractValue(true);
@@ -340,18 +335,19 @@ public class SchemaGenerator {
         }
     }
 
-    public void addToSchemaType(TypeInfo ownerTypeInfo, java.util.List<Property> properties, TypeDefParticle compositor, ComplexType type, Schema schema) {
-        Property xmlValueProperty = ownerTypeInfo.getXmlValueProperty();
+    public void addToSchemaType(TypeInfo ownerTypeInfo, java.util.List<Property> properties, TypeDefParticle compositor, ComplexType type, Schema workingSchema) {
         //If there are no properties we don't want a sequence/choice or all tag written out
-        if (properties.size() == 0){
+        if (properties.size() == 0) {
         	type.setAll(null);
         	type.setSequence(null);
         	type.setChoice(null);
         	ownerTypeInfo.setCompositor(null);
         } else {
+            
             for (Property next : properties) {
                 if (next == null) { continue; }
-    
+                
+                Schema currentSchema = workingSchema;
                 TypeDefParticle parentCompositor = compositor;
                 boolean isChoice = (parentCompositor instanceof Choice);
                 ComplexType parentType = type;
@@ -360,10 +356,13 @@ public class SchemaGenerator {
                     if (next.getXmlPath() != null) {
                         // create the XPathFragment(s) for the path
                         XMLField xfld = new XMLField(next.getXmlPath());
-                        xfld.setNamespaceResolver(schema.getNamespaceResolver());
+                        xfld.setNamespaceResolver(currentSchema.getNamespaceResolver());
                         xfld.initialize();
-                        parentCompositor = buildSchemaComponentsForXPath(xfld.getXPathFragment(), parentCompositor, schema);
-                        // if we already have a schema component for the current prop we don't need to add another
+                        // build the schema components for the xml-path
+                        XmlPathResult xpr = buildSchemaComponentsForXPath(xfld.getXPathFragment(), new XmlPathResult(parentCompositor, currentSchema), (next.isAny() || next.isAnyAttribute()));
+                        parentCompositor = xpr.particle;
+                        currentSchema = xpr.schema;
+                        // if the schema component is null there is nothing to do
                         if (parentCompositor == null) {
                             continue;
                         }
@@ -383,11 +382,11 @@ public class SchemaGenerator {
     
                         // namespace in not the target or ##default, create a ref with min/max = 1
                         String wrapperNS = wrapper.getNamespace();
-                        if (!wrapperNS.equals("##default") && !wrapperNS.equals(schema.getTargetNamespace())) {
+                        if (!wrapperNS.equals("##default") && !wrapperNS.equals(currentSchema.getTargetNamespace())) {
                             wrapperElement.setMinOccurs(Occurs.ONE);
                             wrapperElement.setMaxOccurs(Occurs.ONE);
     
-                            String prefix = getOrGeneratePrefixForNamespace(wrapperNS, schema);
+                            String prefix = getOrGeneratePrefixForNamespace(wrapperNS, currentSchema);
                             wrapperElement.setRef(prefix + ":" + name);
                             compositor.addElement(wrapperElement);
                             // assume that the element exists and does not need to be created
@@ -407,6 +406,10 @@ public class SchemaGenerator {
                             parentType = wrapperType;
                             parentCompositor = wrapperSequence;
                         }
+                    }
+                    // handle mixed content
+                    if (next.isMixedContent()) {
+                        parentType.setMixed(true);
                     }
                     if (next.isAttribute() && !next.isAnyAttribute()) {
                         Attribute attribute = new Attribute();
@@ -434,7 +437,7 @@ public class SchemaGenerator {
                         } else if (info != null && !info.isComplexType()) {
                             typeName = info.getSimpleType().getName();
                         } else {
-                            typeName = getTypeName(next, javaType, schema);                    
+                            typeName = getTypeName(next, javaType, currentSchema);                    
                         }
     
                         if (isCollectionType(next)) {
@@ -447,8 +450,8 @@ public class SchemaGenerator {
                         } else {
                             // may need to qualify the type
                             if (typeName != null && !typeName.contains(":")) {
-                                if (info.getSchema() == schema) {
-                                    String prefix = getPrefixForNamespace(schema.getTargetNamespace(), schema.getNamespaceResolver());
+                                if (info.getSchema() == currentSchema) {
+                                    String prefix = getPrefixForNamespace(currentSchema.getTargetNamespace(), currentSchema.getNamespaceResolver());
                                     if (prefix != null) {
                                         typeName = prefix + ":" + typeName;
                                     }
@@ -456,7 +459,7 @@ public class SchemaGenerator {
                             }
                             attribute.setType(typeName);
                         }
-                        String lookupNamespace = schema.getTargetNamespace();
+                        String lookupNamespace = currentSchema.getTargetNamespace();
                         if (lookupNamespace == null) {
                             lookupNamespace = "";
                         }
@@ -477,11 +480,11 @@ public class SchemaGenerator {
                                 attributeSchema.getTopLevelAttributes().put(attribute.getName(), attribute);
                             }
     
-                            addImportIfRequired(schema, attributeSchema, attributeName.getNamespaceURI());
+                            addImportIfRequired(currentSchema, attributeSchema, attributeName.getNamespaceURI());
     
                             Attribute reference = new Attribute();
                             //add an import here
-                            String prefix = getPrefixForNamespace(attributeName.getNamespaceURI(), schema.getNamespaceResolver());
+                            String prefix = getPrefixForNamespace(attributeName.getNamespaceURI(), currentSchema.getNamespaceResolver());
                             
                             if (prefix == null) {
                                 reference.setRef(attribute.getName());
@@ -506,16 +509,16 @@ public class SchemaGenerator {
                         AnyAttribute anyAttribute = new AnyAttribute();
                         anyAttribute.setProcessContents("skip");
                         anyAttribute.setNamespace("##other");
-                        if (type.getSimpleContent() != null) {
-                            SimpleContent content = type.getSimpleContent();
+                        if (parentType.getSimpleContent() != null) {
+                            SimpleContent content = parentType.getSimpleContent();
                             content.getRestriction().setAnyAttribute(anyAttribute);
                         } else {
-                            type.setAnyAttribute(anyAttribute);
+                            parentType.setAnyAttribute(anyAttribute);
                         }
                     } else if (next.isChoice()) {
                         Choice choice = new Choice();
                         ArrayList<Property> choiceProperties = (ArrayList<Property>) next.getChoiceProperties();
-                        addToSchemaType(ownerTypeInfo, choiceProperties, choice, parentType, schema);
+                        addToSchemaType(ownerTypeInfo, choiceProperties, choice, parentType, currentSchema);
                         if (next.getGenericType() != null) {
                             choice.setMaxOccurs(Occurs.UNBOUNDED);
                         }
@@ -543,19 +546,18 @@ public class SchemaGenerator {
                         } else if (parentCompositor instanceof Choice) {
                             ((Choice) parentCompositor).addAny(any);
                         }
-    
                     } else if (next.isReference()) {
                         java.util.List<ElementDeclaration> referencedElements = next.getReferencedElements();
                         if (referencedElements.size() == 1) {
-                            //if only a single reference, just add the element.
+                            // if only a single reference, just add the element.
                             Element element = new Element();
                             ElementDeclaration decl = referencedElements.get(0);
                             String localName = decl.getElementName().getLocalPart();
                             Schema referencedSchema = this.getSchemaForNamespace(decl.getElementName().getNamespaceURI());
     
-                            addImportIfRequired(schema, referencedSchema, decl.getElementName().getNamespaceURI());
+                            addImportIfRequired(currentSchema, referencedSchema, decl.getElementName().getNamespaceURI());
     
-                            String prefix = this.getPrefixForNamespace(decl.getElementName().getNamespaceURI(), schema.getNamespaceResolver());
+                            String prefix = this.getPrefixForNamespace(decl.getElementName().getNamespaceURI(), currentSchema.getNamespaceResolver());
                             
                             if(decl.getScopeClass() == GLOBAL.class){
                                 if (prefix == null || prefix.equals("")) {
@@ -564,7 +566,7 @@ public class SchemaGenerator {
                                     element.setRef(prefix + ":" + localName);
                                 }
                             }else{
-                                element.setType(getTypeName(next, decl.getJavaType(), schema));
+                                element.setType(getTypeName(next, decl.getJavaType(), currentSchema));
                                 element.setName(localName);
                             }
                             
@@ -584,9 +586,9 @@ public class SchemaGenerator {
                                 String localName = elementDecl.getElementName().getLocalPart();
                                 Schema referencedSchema = this.getSchemaForNamespace(elementDecl.getElementName().getNamespaceURI());
     
-                                addImportIfRequired(schema, referencedSchema, elementDecl.getElementName().getNamespaceURI());
+                                addImportIfRequired(currentSchema, referencedSchema, elementDecl.getElementName().getNamespaceURI());
     
-                                String prefix = this.getPrefixForNamespace(elementDecl.getElementName().getNamespaceURI(), schema.getNamespaceResolver());
+                                String prefix = this.getPrefixForNamespace(elementDecl.getElementName().getNamespaceURI(), currentSchema.getNamespaceResolver());
                                 if(elementDecl.getScopeClass() == GLOBAL.class){
                                     if (prefix == null || prefix.equals("")) {
                                         element.setRef(localName);
@@ -605,7 +607,7 @@ public class SchemaGenerator {
                                 ((Choice) parentCompositor).addChoice(choice);
                             }
                         }
-                    } else if (!(xmlValueProperty != null && xmlValueProperty == next)) {
+                    } else if (!(ownerTypeInfo.getXmlValueProperty() != null && ownerTypeInfo.getXmlValueProperty() == next)) {
                         Element element = new Element();
                         // Set minOccurs based on the 'required' flag
                         if (!(parentCompositor instanceof All)) {
@@ -657,19 +659,19 @@ public class SchemaGenerator {
                                 }
     
                                 // check to see if we need to add an import
-                                if (addImportIfRequired(schema, info.getSchema(), info.getClassNamespace())) {
-                                    String prefix = schema.getNamespaceResolver().resolveNamespaceURI(info.getClassNamespace());
+                                if (addImportIfRequired(currentSchema, info.getSchema(), info.getClassNamespace())) {
+                                    String prefix = currentSchema.getNamespaceResolver().resolveNamespaceURI(info.getClassNamespace());
                                     if (prefix != null && !typeName.equals("")) {
                                         typeName = prefix + ":" + typeName;
                                     }
                                 }
                             } else if (!next.isMap()) {
-                                typeName = getTypeName(next, javaType, schema);                         
+                                typeName = getTypeName(next, javaType, currentSchema);                         
                             }
     
                             // may need to qualify the type
                             if (typeName != null && !typeName.contains(":")) {
-                                String prefix = getPrefixForNamespace(info.getSchema().getTargetNamespace(), schema.getNamespaceResolver());
+                                String prefix = getPrefixForNamespace(info.getSchema().getTargetNamespace(), currentSchema.getNamespaceResolver());
                                 if (prefix != null) {
                                     typeName = prefix + ":" + typeName;
                                 }
@@ -713,13 +715,13 @@ public class SchemaGenerator {
                                 if (targetInfo != null) {
                                     Schema keyElementSchema = this.getSchemaForNamespace(keySchemaType.getNamespaceURI());
                                     //add an import here
-                                    addImportIfRequired(schema, keyElementSchema, keySchemaType.getNamespaceURI());
+                                    addImportIfRequired(currentSchema, keyElementSchema, keySchemaType.getNamespaceURI());
                                 }
                                 String prefix;
                                 if (keySchemaType.getNamespaceURI().equals(XMLConstants.SCHEMA_URL)) {
                                     prefix = XMLConstants.SCHEMA_PREFIX;
                                 } else {
-                                    prefix = getPrefixForNamespace(keySchemaType.getNamespaceURI(), schema.getNamespaceResolver());
+                                    prefix = getPrefixForNamespace(keySchemaType.getNamespaceURI(), currentSchema.getNamespaceResolver());
                                 }
                                 if (prefix != null && !prefix.equals("")) {
                                     typeName = prefix + ":" + keySchemaType.getLocalPart();
@@ -740,13 +742,13 @@ public class SchemaGenerator {
                                 if (targetInfo != null) {
                                     Schema valueElementSchema = this.getSchemaForNamespace(valueSchemaType.getNamespaceURI());
                                     //add an import here
-                                    addImportIfRequired(schema, valueElementSchema, valueSchemaType.getNamespaceURI());
+                                    addImportIfRequired(currentSchema, valueElementSchema, valueSchemaType.getNamespaceURI());
                                 }
                                 String prefix;
                                 if (valueSchemaType.getNamespaceURI().equals(XMLConstants.SCHEMA_URL)) {
                                     prefix = XMLConstants.SCHEMA_PREFIX;
                                 } else {
-                                    prefix = getPrefixForNamespace(valueSchemaType.getNamespaceURI(), schema.getNamespaceResolver());
+                                    prefix = getPrefixForNamespace(valueSchemaType.getNamespaceURI(), currentSchema.getNamespaceResolver());
                                 }
                                 if (prefix != null && !prefix.equals("")) {
                                     typeName = prefix + ":" + valueSchemaType.getLocalPart();
@@ -783,7 +785,7 @@ public class SchemaGenerator {
                             element.setType(typeName);
                         }
     
-                        String lookupNamespace = schema.getTargetNamespace();
+                        String lookupNamespace = currentSchema.getTargetNamespace();
                         if (lookupNamespace == null) {
                             lookupNamespace = "";
                         }
@@ -807,9 +809,9 @@ public class SchemaGenerator {
                             }
     
                             //add an import here
-                            addImportIfRequired(schema, attributeSchema, elementName.getNamespaceURI());
+                            addImportIfRequired(currentSchema, attributeSchema, elementName.getNamespaceURI());
     
-                            String prefix = getPrefixForNamespace(elementName.getNamespaceURI(), schema.getNamespaceResolver());
+                            String prefix = getPrefixForNamespace(elementName.getNamespaceURI(), currentSchema.getNamespaceResolver());
                             if (prefix == null) {
                                 reference.setRef(element.getName());
                             } else {
@@ -1196,23 +1198,36 @@ public class SchemaGenerator {
     }
 
     /**
-     * This method will build element/complexType/typedefparticle components for a given XmlElementWrapper (name), 
-     * and return the sequence that the target should be added to. For example, if the XmlElementWrapper
-     * name attribute was "contact-info/address", and the owning XmlElement (or similar) name was "street", 
-     * "street" would be the target.  In this case the sequence containing the "address" element would be
-     * returned.
+     * This method will build element/complexType/typedefparticle components for a given xml-path, 
+     * and return an XmlPathResult instance containg the sequence that the target should be added
+     * to, as well as the current schema - which could be different than the working schema used
+     * before calling this method in the case of a prefixed path element from a different namespace.
+     * Regarding the path 'target', if the xml-path was "contact-info/address/street", "street" 
+     * would be the target.  In this case the sequence containing the "address" element would be 
+     * set in the XmlPathResult to be returned.
+     * 
+     * The exception case is an 'any', where we want to process the last path element before 
+     * returning - this is necessary due to the fact that an Any will be added to the sequence 
+     * in place of the last path element by the calling method. 
      * 
      * @param frag
-     * @param particle
-     * @param workingSchema
+     * @param xpr
+     * @param isAny
      * @return
      */
-    protected TypeDefParticle buildSchemaComponentsForXPath(XPathFragment frag, TypeDefParticle particle, Schema workingSchema) {
-        if (frag == null || frag.getNextFragment() == null) {
-           return particle;
+    protected XmlPathResult buildSchemaComponentsForXPath(XPathFragment frag, XmlPathResult xpr, boolean isAny) {
+        TypeDefParticle currentParticle = xpr.particle;
+        Schema workingSchema = xpr.schema;
+        
+        // don't process the last frag; that will be handled by the calling method if necessary
+        // note that we may need to process the last frag if it has a namespace or is an 'any'
+        boolean lastFrag = (frag.getNextFragment() == null || frag.getNextFragment().nameIsText());
+        // if the element is already in the sequence we don't want the calling method to add a second one
+        if (lastFrag && (elementExistsInParticle(frag.getLocalName(), frag.getShortName(), currentParticle) != null)) {
+            xpr.particle = null;
+            return xpr;
         }
 
-        TypeDefParticle currentParticle = particle;
         // if the current element exists, use it; otherwise create a new one
         Element currentElement = elementExistsInParticle(frag.getLocalName(), frag.getShortName(), currentParticle);
         boolean currentElementExists = (currentElement != null);
@@ -1226,25 +1241,45 @@ public class SchemaGenerator {
         }
         // may need to create a ref, depending on the namespace
         Element globalElement = null;
+
         String fragUri = frag.getNamespaceURI();
         if (fragUri != null) {
-            Schema s = getSchemaForNamespace(fragUri);
+            Schema fragSchema = getSchemaForNamespace(fragUri);
             String targetNS = workingSchema.getTargetNamespace();
-            if ((s.isElementFormDefault() && !fragUri.equals(targetNS)) || (!s.isElementFormDefault() && fragUri.length() > 0)) {
+            if ((fragSchema.isElementFormDefault() && !fragUri.equals(targetNS)) || (!fragSchema.isElementFormDefault() && fragUri.length() > 0)) {
                 // must generate a global element are create a reference to it
                 // if the global element exists, use it; otherwise create a new one
-                globalElement = (Element) s.getTopLevelElements().get(frag.getLocalName());
+                globalElement = (Element) fragSchema.getTopLevelElements().get(frag.getLocalName());
                 if (globalElement == null) {
-                    globalElement = createGlobalElement(frag, workingSchema, s); 
+                    globalElement = createGlobalElement(frag, workingSchema, fragSchema); 
                 }
                 // if the current element doesn't exist set a ref and add it to the sequence
                 if (!currentElementExists) {
                     currentElement = createRefElement(frag, currentParticle);
                     currentElementExists = true;
                 }
+                // set the frag's schema as it may be different than the current schema
+                xpr.schema = fragSchema;
+                // at this point, if we are dealing with the last fragment we will need to return
+                if (lastFrag) {
+                    // since we processed the last frag, return null so the calling method doesn't
+                    // add a second one...unless we're dealing with an 'any'
+                    if (isAny) {
+                        // set the sequence that the 'any' will be added to by the calling method
+                        xpr.particle = globalElement.getComplexType().getSequence();
+                        return xpr;
+                    }
+                    // ref case - indicate to the calling method that there's nothing to do
+                    xpr.particle = null;
+                    return xpr;
+                }
                 // make the global element current 
                 currentElement = globalElement;
             }
+        }
+        // if we're on the last fragment, we're done
+        if (lastFrag) {
+            return xpr;
         }
         // if we didn't process a global element, and the current element isn't already in the sequence, add it 
         if (!currentElementExists && globalElement == null) {
@@ -1252,44 +1287,11 @@ public class SchemaGenerator {
             currentParticle.addElement(currentElement);
         }
         // set the correct sequence to use/return
-        currentParticle = currentElement.getComplexType().getSequence();
-        frag = frag.getNextFragment();
-        
-        // don't process the last frag; that will be handled by the calling method if necessary
-        // note that we may need to process the last frag if it has a namespace
-        if (frag.getNextFragment() == null || frag.getNextFragment().nameIsText()) {
-            // if the element is already in the sequence we don't want the calling method to add a second one
-            if (elementExistsInParticle(frag.getLocalName(), frag.getShortName(), currentParticle) != null) {
-                return null;
-            }
-            // may need to create a ref, depending on the namespace
-            fragUri = frag.getNamespaceURI();
-            if (fragUri != null) {
-                Schema s = getSchemaForNamespace(fragUri);
-                String targetNS = workingSchema.getTargetNamespace();
-                if ((s.isElementFormDefault() && !fragUri.equals(targetNS)) || (!s.isElementFormDefault() && fragUri.length() > 0)) {
-                    // must generate a global element are create a reference to it
-                    // if the global element exists, use it; otherwise create a new one
-                    Element gElement = (Element) s.getTopLevelElements().get(frag.getLocalName());
-                    if (gElement == null) {
-                        gElement = createGlobalElement(frag, workingSchema, s);
-                    }
-                    // if the current element doesn't exist set a ref and add it to the sequence
-                    Element refElement = elementExistsInParticle(frag.getLocalName(), frag.getShortName(), currentParticle);
-                    if (refElement == null) {
-                        refElement = createRefElement(frag, currentParticle);
-                    }
-                    // since we processed the last frag, return null so the calling method doesn't add a second one
-                    return null;
-                }
-            }
-            // return the sequence that the last frag will be added to by the calling method
-            return currentParticle;
-        }        
+        xpr.particle = currentElement.getComplexType().getSequence(); 
         // call back into this method to process the next path element
-        return buildSchemaComponentsForXPath(frag, currentParticle, workingSchema);
+        return buildSchemaComponentsForXPath(frag.getNextFragment(), xpr, isAny);
     }
-
+    
     /**
      * Convenience method for determining if an element already exists in a given
      * typedefparticle.  If an element exists whose ref is equal to 'refString'
@@ -1363,5 +1365,21 @@ public class SchemaGenerator {
         refElement.setRef(frag.getShortName());
         particle.addElement(refElement);
         return refElement;
+    }
+
+    /**
+     * This class will typically be used when processing an xml-path.  It will hold the 
+     * TypeDefParticle (all, sequence, choice) and schema that are to be used by the 
+     * method that is processing the property that has the xml-path set on it.
+     *
+     */
+    class XmlPathResult {
+        TypeDefParticle particle;
+        Schema schema;
+        
+        XmlPathResult(TypeDefParticle particle, Schema schema) {
+            this.particle = particle;
+            this.schema = schema;
+        }
     }
 }

@@ -12,11 +12,17 @@
  ******************************************************************************/
 package org.eclipse.persistence.testing.jaxb.externalizedmetadata;
 
+import org.eclipse.persistence.testing.jaxb.externalizedmetadata.exceptions.ExceptionHandlingTestSuite;
 import org.eclipse.persistence.testing.jaxb.externalizedmetadata.exceptions.contextfactory.ExceptionHandlingTestCases;
 import org.eclipse.persistence.testing.jaxb.externalizedmetadata.exceptions.xmlcustomizer.CustomizerExceptionTestCases;
 import org.eclipse.persistence.testing.jaxb.externalizedmetadata.jaxbcontextfactory.JAXBContextFactoryTestCases;
+import org.eclipse.persistence.testing.jaxb.externalizedmetadata.mappings.MappingsTestSuite;
+import org.eclipse.persistence.testing.jaxb.externalizedmetadata.mappings.anyattribute.AnyAttributeMappingTestCases;
+import org.eclipse.persistence.testing.jaxb.externalizedmetadata.mappings.anyobject.AnyObjectMappingTestCases;
 import org.eclipse.persistence.testing.jaxb.externalizedmetadata.mappings.composite.CompositeMappingTestCases;
+import org.eclipse.persistence.testing.jaxb.externalizedmetadata.mappings.compositecollection.CompositeCollecitonMappingTestCases;
 import org.eclipse.persistence.testing.jaxb.externalizedmetadata.mappings.direct.DirectMappingTestCases;
+import org.eclipse.persistence.testing.jaxb.externalizedmetadata.mappings.directcollection.DirectCollectionMappingTestCases;
 import org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmlaccessororder.XmlAccessorOrderTestCases;
 import org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmlaccessortype.XmlAccessorTypeTestCases;
 import org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmladapter.XmlAdapterTestCases;
@@ -57,6 +63,8 @@ import junit.framework.TestSuite;
 public class ExternalizedMetadataTestSuite extends TestSuite {
     public static Test suite() {
         TestSuite suite = new TestSuite("Externalized Metadata Test Suite");
+        suite.addTest(MappingsTestSuite.suite());
+        suite.addTest(ExceptionHandlingTestSuite.suite());
         suite.addTestSuite(XmlTransientTestCases.class);
         suite.addTestSuite(XmlSeeAlsoTestCases.class);
         suite.addTestSuite(XmlSchemaTestCases.class);
@@ -69,9 +77,7 @@ public class ExternalizedMetadataTestSuite extends TestSuite {
         suite.addTestSuite(XmlElementTestCases.class);
         suite.addTestSuite(XmlAdapterTestCases.class);
         suite.addTestSuite(XmlAttributeTestCases.class);
-        suite.addTestSuite(ExceptionHandlingTestCases.class);
         suite.addTestSuite(XmlCustomizerTestCases.class);
-        suite.addTestSuite(CustomizerExceptionTestCases.class);
         suite.addTestSuite(XmlElementWrapperTestCases.class);
         suite.addTestSuite(XmlValueTestCases.class);
         suite.addTestSuite(XmlListTestCases.class);
@@ -89,8 +95,6 @@ public class ExternalizedMetadataTestSuite extends TestSuite {
         suite.addTestSuite(XmlEnumTestCases.class);
         suite.addTestSuite(XmlInlineBinaryDataTestCases.class);
         suite.addTestSuite(XmlRegistryTestCases.class);
-        suite.addTestSuite(DirectMappingTestCases.class);
-        suite.addTestSuite(CompositeMappingTestCases.class);
         return suite;
     }
     

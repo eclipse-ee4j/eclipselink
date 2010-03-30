@@ -57,6 +57,10 @@ public class CompositeMappingTestCases extends ExternalizedMetadataTestCases {
     private static final String FOO_NAME = "myfoo";
     private static final int DEPT_ID = 101;
     private static final String DEPT_NAME = "Sanitation";
+    private static final String EMPLOYEES_NS = "http://www.example.com/employees"; 
+    private static final String CONTACTS_NS = "http://www.example.com/contacts"; 
+    
+    private MySchemaOutputResolver employeeResolver;
 
     /**
      * This is the preferred (and only) constructor.
@@ -67,6 +71,24 @@ public class CompositeMappingTestCases extends ExternalizedMetadataTestCases {
         super(name);
     }
     
+    /**
+     * This method's primary purpose id to generate schema(s). Validation of
+     * generated schemas will occur in the testXXXGen method(s) below. Note that
+     * the JAXBContext is created from this call and is required for
+     * marshal/unmarshal, etc. tests.
+     * 
+     */
+    public void setUp() throws Exception {
+        super.setUp();
+        employeeResolver = generateSchemaWithFileName(new Class[] { Employee.class }, CONTEXT_PATH, PATH + "employee-oxm.xml", 2);
+    }
+
+
+    /**
+     * Return the control Employee.
+     * 
+     * @return
+     */
     public Employee getControlObject() {
         Address hAddress = new Address();
         hAddress.city = HOME_CITY;
@@ -118,19 +140,10 @@ public class CompositeMappingTestCases extends ExternalizedMetadataTestCases {
     }
     
     public void testEmployeeSchemaGen() {
-        try {
-            // remove the following setup call when bug# 306372 is resolved
-            super.setUp();
-
-            String metadataFile = PATH + "employee-oxm.xml";
-            MySchemaOutputResolver oResolver = new MySchemaOutputResolver(); 
-            oResolver = generateSchemaWithFileName(new Class[] { Employee.class }, CONTEXT_PATH, metadataFile, 1);
-            // validate schema
-            String controlSchema = PATH + "employee.xsd";
-            compareSchemas(oResolver.schemaFiles.get(EMPTY_NAMESPACE), new File(controlSchema));
-        } catch (Exception e) {
-            fail("An exception occurred creating the JAXBContext: " + e.getMessage());
-        }
+        // validate employee schema
+        compareSchemas(employeeResolver.schemaFiles.get(EMPLOYEES_NS), new File(PATH + "employee.xsd"));
+        // validate contacts schema
+        compareSchemas(employeeResolver.schemaFiles.get(CONTACTS_NS), new File(PATH + "contacts.xsd"));
     }
     
     /**
@@ -153,8 +166,7 @@ public class CompositeMappingTestCases extends ExternalizedMetadataTestCases {
         ctrlEmp.privatePhone = null;
 
         try {
-            JAXBContext jContext = createContext(new Class[] { Employee.class }, CONTEXT_PATH, PATH + "employee-oxm.xml");
-            Unmarshaller unmarshaller = jContext.createUnmarshaller();
+            Unmarshaller unmarshaller = jaxbContext.createUnmarshaller();
             Employee empObj = (Employee) unmarshaller.unmarshal(iDocStream);
             assertNotNull("Unmarshalled object is null.", empObj);
             assertTrue("Accessor method was not called as expected", empObj.wasSetCalled);
@@ -188,11 +200,10 @@ public class CompositeMappingTestCases extends ExternalizedMetadataTestCases {
 
         // test marshal
         try {
-            JAXBContext jContext = createContext(new Class[] { Employee.class }, CONTEXT_PATH, PATH + "employee-oxm.xml");
-            Marshaller marshaller = jContext.createMarshaller();
+            Marshaller marshaller = jaxbContext.createMarshaller();
             Employee ctrlEmp = getControlObject();
             marshaller.marshal(ctrlEmp, testDoc);
-            marshaller.marshal(ctrlEmp, System.out);
+            //marshaller.marshal(ctrlEmp, System.out);
             assertTrue("Accessor method was not called as expected", ctrlEmp.wasGetCalled);
             assertTrue("Document comparison failed unxepectedly: ", compareDocuments(ctrlDoc, testDoc));
         } catch (JAXBException e) {

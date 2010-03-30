@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xsd:schema xmlns:c="http://www.example.com/contacts" xmlns:ns0="http://www.example.com/employees" xmlns:xsd="http://www.w3.org/2001/XMLSchema" targetNamespace="http://www.example.com/employees">
+   <xsd:import schemaLocation="schema1.xsd" namespace="http://www.example.com/contacts"/>
+   <xsd:complexType name="address">
+      <xsd:sequence>
+         <xsd:element name="city" type="xsd:string" minOccurs="0"/>
+         <xsd:element name="street" type="xsd:string" minOccurs="0"/>
+         <xsd:element name="province" type="xsd:string" minOccurs="0"/>
+         <xsd:element name="postalCode" type="xsd:string" minOccurs="0"/>
+      </xsd:sequence>
+      <xsd:attribute name="id" type="xsd:int"/>
+   </xsd:complexType>
+   <xsd:complexType name="employee">
+      <xsd:sequence>
+         <xsd:element name="info">
+            <xsd:complexType>
+               <xsd:sequence>
+                  <xsd:element ref="c:contact-info" minOccurs="0"/>
+               </xsd:sequence>
+            </xsd:complexType>
+         </xsd:element>
+      </xsd:sequence>
+      <xsd:attribute name="empId" type="xsd:int"/>
+   </xsd:complexType>
+   <xsd:element name="employee" type="ns0:employee"/>
+</xsd:schema>

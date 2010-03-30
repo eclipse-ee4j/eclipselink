@@ -403,6 +403,11 @@ public class XMLProcessor {
         oldProperty.setIsAnyAttribute(true);
         tInfo.setAnyAttributePropertyName(oldProperty.getPropertyName());
 
+        // handle XmlPath
+        if (xmlAnyAttribute.getXmlPath() != null) {
+            oldProperty.setXmlPath(xmlAnyAttribute.getXmlPath());
+        }
+        
         return oldProperty;
     }
 
@@ -430,6 +435,11 @@ public class XMLProcessor {
         // update TypeInfo
         tInfo.setMixed(xmlAnyElement.isXmlMixed());
         tInfo.setAnyElementPropertyName(oldProperty.getPropertyName());
+
+        // handle XmlPath
+        if (xmlAnyElement.getXmlPath() != null) {
+            oldProperty.setXmlPath(xmlAnyElement.getXmlPath());
+        }
 
         return oldProperty;
     }

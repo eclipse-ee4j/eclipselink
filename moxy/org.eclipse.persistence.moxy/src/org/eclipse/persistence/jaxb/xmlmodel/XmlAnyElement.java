@@ -34,6 +34,7 @@ import javax.xml.bind.annotation.XmlType;
  *       &lt;attribute name="xml-mixed" type="{http://www.w3.org/2001/XMLSchema}boolean" default="false" />
  *       &lt;attribute name="lax" type="{http://www.w3.org/2001/XMLSchema}boolean" default="false" />
  *       &lt;attribute name="dom-handler" type="{http://www.w3.org/2001/XMLSchema}string" default="javax.xml.bind.annotation.W3CDomHandler" />
+ *       &lt;attribute name="xml-path" type="{http://www.w3.org/2001/XMLSchema}string" />
  *     &lt;/extension>
  *   &lt;/complexContent>
  * &lt;/complexType>
@@ -57,6 +58,8 @@ public class XmlAnyElement
     protected Boolean lax;
     @XmlAttribute(name = "dom-handler")
     protected String domHandler;
+    @XmlAttribute(name = "xml-path")
+    protected String xmlPath;
 
     /**
      * Gets the value of the xmlJavaTypeAdapter property.
@@ -164,6 +167,30 @@ public class XmlAnyElement
      */
     public void setDomHandler(String value) {
         this.domHandler = value;
+    }
+
+    /**
+     * Gets the value of the xmlPath property.
+     * 
+     * @return
+     *     possible object is
+     *     {@link String }
+     *     
+     */
+    public String getXmlPath() {
+        return xmlPath;
+    }
+
+    /**
+     * Sets the value of the xmlPath property.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link String }
+     *     
+     */
+    public void setXmlPath(String value) {
+        this.xmlPath = value;
     }
 
 }

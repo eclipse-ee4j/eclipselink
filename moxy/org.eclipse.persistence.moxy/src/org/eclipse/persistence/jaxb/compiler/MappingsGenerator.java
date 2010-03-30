@@ -554,14 +554,13 @@ public class MappingsGenerator {
     }
     
     public XMLMapping generateMappingForReferenceProperty(Property property, XMLDescriptor descriptor, NamespaceInfo namespaceInfo)  {
-           
-        if(property.isMixedContent()) {
+        if (property.isMixedContent()) {
             XMLAnyCollectionMapping mapping = generateAnyCollectionMapping(property, descriptor, namespaceInfo, true);
             return mapping;
         }
         boolean isCollection = isCollectionType(property) || property.getType().isArray();
         DatabaseMapping mapping;
-        if(isCollection) {
+        if (isCollection) {
             mapping = new XMLChoiceCollectionMapping();
             ((XMLChoiceCollectionMapping) mapping).setReuseContainer(true);
             ((XMLChoiceCollectionMapping) mapping).setConverter(new JAXBElementRootConverter(Object.class));
@@ -587,12 +586,12 @@ public class MappingsGenerator {
         }
 
         List<ElementDeclaration> referencedElements = property.getReferencedElements();
-        if(property.getType().isArray()) {
+        if (property.getType().isArray()) {
             JAXBObjectArrayAttributeAccessor accessor = new JAXBObjectArrayAttributeAccessor(mapping.getAttributeAccessor(), mapping.getContainerPolicy());           
             accessor.setComponentClassName(property.getType().getComponentType().getRawName());
             mapping.setAttributeAccessor(accessor);
         }
-        for(ElementDeclaration element:referencedElements) {
+        for (ElementDeclaration element:referencedElements) {
             QName elementName = element.getElementName();
             boolean isText = !(this.typeInfo.containsKey(element.getJavaTypeName())) && !(element.getJavaTypeName().equals(OBJECT_CLASS_NAME));
             String xPath = "";
@@ -674,14 +673,6 @@ public class MappingsGenerator {
     }
 
     public XMLAnyCollectionMapping generateAnyCollectionMapping(Property property, XMLDescriptor descriptor, NamespaceInfo namespaceInfo, boolean isMixed) {
-        boolean isLax = false;
-        String domHandlerClassName = null;
-        
-        if (property.isAny()) {
-            isLax = property.isLax();
-            domHandlerClassName = property.getDomHandlerClassName();
-        }
-        
         XMLAnyCollectionMapping  mapping = new XMLAnyCollectionMapping();
         mapping.setAttributeName(property.getPropertyName());
         mapping.setReuseContainer(true);
@@ -700,27 +691,31 @@ public class MappingsGenerator {
                 mapping.setGetMethodName(property.getGetMethodName());
             }
         }
-        if (!isMixed) {
-            mapping.setUseXMLRoot(true);
-        }
+        // if the XPath is set (via xml-path) use it
+        if (property.getXmlPath() != null) {
+            mapping.setField(new XMLField(property.getXmlPath()));
+        } 
 
         Class declaredType = helper.getClassForJavaClass(property.getActualType());
         JAXBElementRootConverter jaxbElementRootConverter = new JAXBElementRootConverter(declaredType);
         mapping.setConverter(jaxbElementRootConverter);
+        if (property.getDomHandlerClassName() != null) {
+            jaxbElementRootConverter.setNestedConverter(new DomHandlerConverter(property.getDomHandlerClassName()));
+        }
 
-        if (isLax) {
+        if (property.isLax()) {
             mapping.setKeepAsElementPolicy(UnmarshalKeepAsElementPolicy.KEEP_UNKNOWN_AS_ELEMENT);
         } else {
             mapping.setKeepAsElementPolicy(UnmarshalKeepAsElementPolicy.KEEP_ALL_AS_ELEMENT);
         }
-        if (domHandlerClassName != null) {
-            jaxbElementRootConverter.setNestedConverter(new DomHandlerConverter(domHandlerClassName));
-        }
-        descriptor.addMapping(mapping);
+
         mapping.setMixedContent(isMixed);
         if (isMixed) {
             mapping.setPreserveWhitespaceForMixedContent(true);
+        } else {
+            mapping.setUseXMLRoot(true);
         }
+        descriptor.addMapping(mapping);
         return mapping;
     }
     
@@ -1110,6 +1105,10 @@ public class MappingsGenerator {
                 mapping.setGetMethodName(property.getGetMethodName());
             }
         }
+        // if the XPath is set (via xml-path) use it
+        if (property.getXmlPath() != null) {
+            mapping.setField(new XMLField(property.getXmlPath()));
+        }
         mapping.setSchemaInstanceIncluded(false);
         mapping.setNamespaceDeclarationIncluded(false);
         descriptor.addMapping(mapping);
@@ -1118,7 +1117,6 @@ public class MappingsGenerator {
     public void generateAnyObjectMapping(Property property, XMLDescriptor descriptor, NamespaceInfo namespaceInfo)  {
         XMLAnyObjectMapping mapping = new XMLAnyObjectMapping();
         mapping.setAttributeName(property.getPropertyName());
-        mapping.setMixedContent(false);
         if (property.isMethodProperty()) {
             if (property.getGetMethodName() == null) {
                 // handle case of set with no get method 
@@ -1134,15 +1132,30 @@ public class MappingsGenerator {
                 mapping.setGetMethodName(property.getGetMethodName());
             }
         }
-        if(property.getType().getQualifiedName().equals("org.w3c.dom.Element")){
-            mapping.setKeepAsElementPolicy(UnmarshalKeepAsElementPolicy.KEEP_ALL_AS_ELEMENT);           
-        }else{
-            mapping.setKeepAsElementPolicy(UnmarshalKeepAsElementPolicy.KEEP_UNKNOWN_AS_ELEMENT);   
-        }
-        mapping.setUseXMLRoot(true);
+        // if the XPath is set (via xml-path) use it
+        if (property.getXmlPath() != null) {
+            mapping.setField(new XMLField(property.getXmlPath()));
+        } 
+
         Class declaredType = helper.getClassForJavaClass(property.getActualType());
         JAXBElementRootConverter jaxbElementRootConverter = new JAXBElementRootConverter(declaredType);
         mapping.setConverter(jaxbElementRootConverter);
+        if (property.getDomHandlerClassName() != null) {
+            jaxbElementRootConverter.setNestedConverter(new DomHandlerConverter(property.getDomHandlerClassName()));
+        }
+
+        if (property.isLax()) {
+            mapping.setKeepAsElementPolicy(UnmarshalKeepAsElementPolicy.KEEP_UNKNOWN_AS_ELEMENT);
+        } else {
+            mapping.setKeepAsElementPolicy(UnmarshalKeepAsElementPolicy.KEEP_ALL_AS_ELEMENT);
+        }
+
+        if (property.isMixedContent()) {
+            mapping.setMixedContent(true);
+        } else {
+            mapping.setUseXMLRoot(true);
+        }
+        
         descriptor.addMapping(mapping);
     }
     
@@ -1367,12 +1380,12 @@ public class MappingsGenerator {
         }
         
        
-        if(property.isNillable()){
+        if (property.isNillable()){
             mapping.getNullPolicy().setNullRepresentedByXsiNil(true);
         }
         JavaClass collectionType = property.getType();
  
-        if(collectionType.isArray()){        	        	
+        if (collectionType.isArray()){        	        	
             JAXBObjectArrayAttributeAccessor accessor = new JAXBObjectArrayAttributeAccessor(mapping.getAttributeAccessor(), mapping.getContainerPolicy());       	
             accessor.setComponentClassName(collectionType.getComponentType().getRawName());
             mapping.setAttributeAccessor(accessor);        	
@@ -1384,13 +1397,20 @@ public class MappingsGenerator {
         }
       
         mapping.useCollectionClassName(collectionType.getRawName());
-        XMLField xmlField = getXPathForField(property, namespaceInfo, false);
+        
+        // if the XPath is set (via xml-path) use it; otherwise figure it out
+        XMLField xmlField;
+        if (property.getXmlPath() != null) {
+            xmlField = new XMLField(property.getXmlPath());
+        } else {
+            xmlField = getXPathForField(property, namespaceInfo, false);
+        }
         mapping.setXPath(xmlField.getXPath());
         
-        if(referenceClassName == null){
+        if (referenceClassName == null){
         	((XMLField)mapping.getField()).setIsTypedTextField(true);        	
         	((XMLField)mapping.getField()).setSchemaType(XMLConstants.ANY_TYPE_QNAME);
-        }else{
+        } else {
         	mapping.setReferenceClassName(referenceClassName);	
         }
         
@@ -1398,7 +1418,7 @@ public class MappingsGenerator {
             ((XMLField) mapping.getField()).setRequired(true);
         }
         
-        if(property.getInverseReferencePropertyName() != null) {
+        if (property.getInverseReferencePropertyName() != null) {
             mapping.setContainerAttributeName(property.getInverseReferencePropertyName());
             JavaClass backPointerPropertyType = null;
             JavaClass referenceClass = property.getActualType();
@@ -1411,11 +1431,11 @@ public class MappingsGenerator {
                 }
             } else {
                 JavaField backpointerField = referenceClass.getDeclaredField(property.getInverseReferencePropertyName());
-                if(backpointerField != null) {
+                if (backpointerField != null) {
                     backPointerPropertyType = backpointerField.getResolvedType();
                 }
             }
-            if(isCollectionType(backPointerPropertyType)) {
+            if (isCollectionType(backPointerPropertyType)) {
                 mapping.getInverseReferenceMapping().setContainerPolicy(ContainerPolicy.buildDefaultPolicy());
             }
         }
@@ -1445,8 +1465,8 @@ public class MappingsGenerator {
         }
         JavaClass collectionType = property.getType();        
  
-        if(collectionType.isArray()){        	
-            if(collectionType.getComponentType().isPrimitive()){
+        if (collectionType.isArray()){        	
+            if (collectionType.getComponentType().isPrimitive()){
                 JAXBPrimitiveArrayAttributeAccessor accessor = new JAXBPrimitiveArrayAttributeAccessor(mapping.getAttributeAccessor(), mapping.getContainerPolicy());
                 String componentClassName = collectionType.getComponentType().getRawName();        	
                 Class primitiveClass = XMLConversionManager.getDefaultManager().convertClassNameToClass(componentClassName);
@@ -1455,7 +1475,7 @@ public class MappingsGenerator {
             	
                 Class declaredClass = XMLConversionManager.getDefaultManager().getObjectClass(primitiveClass);
                 mapping.setAttributeElementClass(declaredClass);
-            }else{
+            } else {
                 JAXBObjectArrayAttributeAccessor accessor = new JAXBObjectArrayAttributeAccessor(mapping.getAttributeAccessor(), mapping.getContainerPolicy());
                 String componentClassName = collectionType.getComponentType().getRawName();        	
                 accessor.setComponentClassName(componentClassName);
@@ -1467,7 +1487,6 @@ public class MappingsGenerator {
                     mapping.setAttributeElementClass(declaredClass);
                 }catch (Exception e) {}
             }
-        	
     		collectionType = jotArrayList;
         } else if (isCollectionType(collectionType)){        	
         	if (collectionType.hasActualTypeArguments()){
@@ -1485,13 +1504,21 @@ public class MappingsGenerator {
         }
 
         mapping.useCollectionClassName(collectionType.getRawName());
-        XMLField xmlField = getXPathForField(property, namespaceInfo, true);
+        
+        // if the XPath is set (via xml-path) use it; otherwise figure it out
+        XMLField xmlField;
+        if (property.getXmlPath() != null) {
+            xmlField = new XMLField(property.getXmlPath());
+        } else {
+            xmlField = getXPathForField(property, namespaceInfo, true);
+        }
         mapping.setField(xmlField);
-        if(helper.isAnnotationPresent(property.getElement(), XmlMixed.class)) {
+        
+        if (helper.isAnnotationPresent(property.getElement(), XmlMixed.class)) {
             xmlField.setXPath("text()");
         }
         
-        if(XMLConstants.QNAME_QNAME.equals(property.getSchemaType())){
+        if (XMLConstants.QNAME_QNAME.equals(property.getSchemaType())){
             ((XMLField) mapping.getField()).setSchemaType(XMLConstants.QNAME_QNAME);
         }
         
@@ -1503,12 +1530,12 @@ public class MappingsGenerator {
             ((XMLField) mapping.getField()).setRequired(true);
         }
         
-        if(property.isXmlElementType() && property.getGenericType()!=null ){           	
+        if (property.isXmlElementType() && property.getGenericType()!=null ){           	
         	Class theClass = helper.getClassForJavaClass(property.getGenericType());
         	mapping.setAttributeElementClass(theClass);
         } 
         
-        if(xmlField.getXPathFragment().isAttribute()){
+        if (xmlField.getXPathFragment().isAttribute()){
             mapping.setUsesSingleNode(true);
         }                
         if (property.isXmlList()) {         
@@ -1685,7 +1712,14 @@ public class MappingsGenerator {
      * @param referenceClass
      */
     public void generateXMLCollectionReferenceMapping(Property property, XMLDescriptor descriptor, NamespaceInfo namespaceInfo, JavaClass referenceClass) {
-        XMLField srcXPath = getXPathForField(property, namespaceInfo, true);
+        // if the XPath is set (via xml-path) use it
+        XMLField srcXPath;
+        if (property.getXmlPath() != null) {
+            srcXPath = new XMLField(property.getXmlPath());
+        } else { 
+            srcXPath = getXPathForField(property, namespaceInfo, true);
+        }
+        
         XMLCollectionReferenceMapping mapping = new XMLCollectionReferenceMapping();
         mapping.setAttributeName(property.getPropertyName());
         mapping.setReuseContainer(true);
@@ -1753,7 +1787,13 @@ public class MappingsGenerator {
      * @param referenceClass
      */
     public void generateXMLObjectReferenceMapping(Property property, XMLDescriptor descriptor, NamespaceInfo namespaceInfo, JavaClass referenceClass) {
-        XMLField srcXPath = getXPathForField(property, namespaceInfo, true);
+        // if the XPath is set (via xml-path) use it
+        XMLField srcXPath;
+        if (property.getXmlPath() != null) {
+            srcXPath = new XMLField(property.getXmlPath());
+        } else { 
+            srcXPath = getXPathForField(property, namespaceInfo, true);
+        }
 
         XMLObjectReferenceMapping mapping = new XMLObjectReferenceMapping();
         mapping.setAttributeName(property.getPropertyName());

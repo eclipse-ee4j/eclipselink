@@ -93,7 +93,7 @@ public class DomHandlerConverter implements XMLConverter {
 	}
 	
 	public Object convertObjectValueToDataValue(Object objectValue, Session session, XMLMarshaller marshaller) {
-		if(elementClass.isAssignableFrom(objectValue.getClass())) {
+		if (objectValue != null && elementClass.isAssignableFrom(objectValue.getClass())) {
 			Source source = domHandler.marshal(objectValue, null);
 			DOMResult result = new DOMResult();
 			xmlTransformer.transform(source, result);

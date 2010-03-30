@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+<xsd:schema xmlns:c="http://www.example.com/contacts" xmlns:ns0="http://www.example.com/employees" xmlns:xsd="http://www.w3.org/2001/XMLSchema" targetNamespace="http://www.example.com/employees">
+   <xsd:import schemaLocation="schema1.xsd" namespace="http://www.example.com/contacts"/>
    <xsd:complexType name="phone">
       <xsd:sequence>
          <xsd:element name="number" type="xsd:string" minOccurs="0"/>
@@ -21,31 +22,29 @@
    </xsd:complexType>
    <xsd:complexType name="foo">
       <xsd:sequence/>
-      <xsd:attribute name="foodata" type="xsd:string" />
+      <xsd:attribute name="foodata" type="xsd:string"/>
    </xsd:complexType>
    <xsd:complexType name="employee">
       <xsd:sequence>
          <xsd:element name="info">
             <xsd:complexType>
                <xsd:sequence>
+                  <xsd:element ref="c:contact-info" minOccurs="0"/>
                   <xsd:element name="contact-info">
                      <xsd:complexType>
                         <xsd:sequence>
-                           <xsd:element name="home-address" type="address" minOccurs="0"/>
-                           <xsd:element name="work-address" type="address" minOccurs="0"/>
-                           <xsd:element name="alt-address" type="address" minOccurs="0"/>
-                           <xsd:element name="phone" type="phone" minOccurs="0" maxOccurs="unbounded"/>
+                           <xsd:element name="phone" type="ns0:phone" minOccurs="0" maxOccurs="unbounded"/>
                         </xsd:sequence>
                      </xsd:complexType>
                   </xsd:element>
                </xsd:sequence>
             </xsd:complexType>
          </xsd:element>
-         <xsd:element name="foo" type="foo" minOccurs="0"/>
-         <xsd:element name="private-phone" type="phone" minOccurs="0"/>
-         <xsd:element name="department" type="department" minOccurs="0"/>
-         <xsd:element name="a-dept" type="department" minOccurs="0"/>
+         <xsd:element name="foo" type="ns0:foo" minOccurs="0"/>
+         <xsd:element name="private-phone" type="ns0:phone" minOccurs="0"/>
+         <xsd:element name="department" type="ns0:department" minOccurs="0"/>
+         <xsd:element name="a-dept" type="ns0:department" minOccurs="0"/>
       </xsd:sequence>
    </xsd:complexType>
-   <xsd:element name="employee" type="employee"/>
+   <xsd:element name="employee" type="ns0:employee"/>
 </xsd:schema>
