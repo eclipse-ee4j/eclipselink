@@ -145,12 +145,11 @@
         <java classname="org.jboss.Shutdown" 
             fork="true"
             failonerror="false">
-            <arg line="-s ${server.url}"/>
+            <arg line="-S -u ${admin.user} -p ${admin.password} ${server.url}"/>
             <classpath>
                 <fileset dir="${server.lib}" includes="${server.depend}"/>
                 <pathelement location="${jboss.home}/bin/shutdown.jar"/>
-                <pathelement location="${env.JAVA_HOME}/lib/tools.jar"/>
-            </classpath>           
+            </classpath>
         </java>
     </target>
 
