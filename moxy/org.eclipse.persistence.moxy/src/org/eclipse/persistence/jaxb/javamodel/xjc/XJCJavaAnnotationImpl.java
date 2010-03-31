@@ -13,6 +13,7 @@
 package org.eclipse.persistence.jaxb.javamodel.xjc;
 
 import java.lang.annotation.Annotation;
+import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.HashMap;
 import java.util.List;
@@ -21,6 +22,7 @@ import java.util.Map;
 import org.eclipse.persistence.dynamic.DynamicClassLoader;
 import org.eclipse.persistence.exceptions.JAXBException;
 import org.eclipse.persistence.internal.oxm.XMLConversionManager;
+import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
 import org.eclipse.persistence.jaxb.javamodel.AnnotationProxy;
 import org.eclipse.persistence.jaxb.javamodel.JavaAnnotation;
 
@@ -32,8 +34,21 @@ import com.sun.codemodel.JStringLiteral;
 
 public class XJCJavaAnnotationImpl implements JavaAnnotation {
 
-    JAnnotationUse xjcAnnotation;
-    DynamicClassLoader dynamicClassLoader;
+    private JAnnotationUse xjcAnnotation;
+    private DynamicClassLoader dynamicClassLoader;
+
+    private static Field JANNOTATIONUSE_CLAZZ = null;
+    private static Field JANNOTATIONUSE_MEMBERVALUES = null;
+    private static Field JANNOTATIONARRAYMEMBER_VALUES = null;
+    static {
+        try {
+            JANNOTATIONUSE_CLAZZ = PrivilegedAccessHelper.getDeclaredField(JAnnotationUse.class, "clazz", true);
+            JANNOTATIONUSE_MEMBERVALUES = PrivilegedAccessHelper.getDeclaredField(JAnnotationUse.class, "memberValues", true);
+            JANNOTATIONARRAYMEMBER_VALUES = PrivilegedAccessHelper.getDeclaredField(JAnnotationArrayMember.class, "values", true);
+        } catch (Exception e) {
+            throw JAXBException.errorCreatingDynamicJAXBContext(e);
+        }
+    }
 
     public XJCJavaAnnotationImpl(JAnnotationUse annotation, DynamicClassLoader loader) {
         this.xjcAnnotation = annotation;
@@ -45,15 +60,17 @@ public class XJCJavaAnnotationImpl implements JavaAnnotation {
             Map components = new HashMap<String, Object>();
 
             // First, get all the default values for this annotation class.
-            Object xjcRefClass = XJCJavaModelHelper.getFieldValueByReflection(xjcAnnotation, "clazz");
-            Class annotationClass = (Class) XJCJavaModelHelper.getFieldValueByReflection(xjcRefClass, "_class");
+            Object xjcRefClass = PrivilegedAccessHelper.getValueFromField(JANNOTATIONUSE_CLAZZ, xjcAnnotation);
+            // Cannot cache this field because JReferencedClass is a protected class.
+            Field _classField = PrivilegedAccessHelper.getDeclaredField(xjcRefClass.getClass(), "_class", true);
+            Class annotationClass = (Class) PrivilegedAccessHelper.getValueFromField(_classField, xjcRefClass);
             Method[] methods = annotationClass.getDeclaredMethods();
             for (int i = 0; i < methods.length; i++) {
                 components.put(methods[i].getName(), methods[i].getDefaultValue());
             }
 
             // Get the property values for this annotation instance.
-            Map memberValues = (Map) XJCJavaModelHelper.getFieldValueByReflection(xjcAnnotation, "memberValues");
+            Map memberValues = (Map) PrivilegedAccessHelper.getValueFromField(JANNOTATIONUSE_MEMBERVALUES, xjcAnnotation);
             if (memberValues == null) {
                 // Return an annotation with just the defaults set.
                 return AnnotationProxy.getProxy(components, annotationClass, dynamicClassLoader, XMLConversionManager.getDefaultManager());
@@ -63,25 +80,34 @@ public class XJCJavaAnnotationImpl implements JavaAnnotation {
             for (Object key : memberValues.keySet()) {
                 JAnnotationValue xjcValue = (JAnnotationValue) memberValues.get(key);
                 if (xjcValue instanceof JAnnotationArrayMember) {
-                    List<JAnnotationArrayMember> values =
-                        (List<JAnnotationArrayMember>) XJCJavaModelHelper.getFieldValueByReflection(xjcValue, "values");
+                    List values = (List) PrivilegedAccessHelper.getValueFromField(JANNOTATIONARRAYMEMBER_VALUES, xjcValue);
                     Object[] valuesArray = new Object[values.size()];
                     for (int i = 0; i < values.size(); i++) {
-                        Object value = XJCJavaModelHelper.getFieldValueByReflection(values.get(i), "value");
-                        if (value instanceof JStringLiteral) {
-                            JStringLiteral strvalue = (JStringLiteral) value;
-                            valuesArray[i] = strvalue.str;
+                        if (values.get(i) instanceof JAnnotationUse) {
+                            JAnnotationUse xjcAnno = (JAnnotationUse) values.get(i);
+                            XJCJavaAnnotationImpl anno = new XJCJavaAnnotationImpl(xjcAnno, dynamicClassLoader);
+                            valuesArray[i] = anno.getJavaAnnotation();
                         } else {
-                        	// XmlSeeAlso.value = Array of JDefinedClasses
-                            JDefinedClass wrappedValue = (JDefinedClass) XJCJavaModelHelper.getFieldValueByReflection(value, "val$cl");
-                            Class tempDynClass = dynamicClassLoader.createDynamicClass(wrappedValue.fullName());
-                            valuesArray[i] = tempDynClass;
+                            Field valueField = PrivilegedAccessHelper.getDeclaredField(values.get(i).getClass(), "value", true);
+                            Object value = PrivilegedAccessHelper.getValueFromField(valueField, values.get(i));
+                            if (value instanceof JStringLiteral) {
+                                JStringLiteral strvalue = (JStringLiteral) value;
+                                valuesArray[i] = strvalue.str;
+                            } else {
+                            	// XmlSeeAlso.value = Array of JDefinedClasses
+                                Field valClField = PrivilegedAccessHelper.getDeclaredField(value.getClass(), "val$cl", true);
+                                JDefinedClass wrappedValue = (JDefinedClass) PrivilegedAccessHelper.getValueFromField(valClField, value);
+                                Class tempDynClass = dynamicClassLoader.createDynamicClass(wrappedValue.fullName());
+                                valuesArray[i] = tempDynClass;
+                            }
                         }
                     }
                     components.put(key, valuesArray);
                 } else if (xjcValue.getClass().getName().contains("JAnnotationStringValue")) {
                     // JAnnotationStringValue is a package-protected class so need to compare class name.
-                    Object objValue = XJCJavaModelHelper.getFieldValueByReflection(xjcValue, "value");
+                    // Cannot cache this field because JAnnotationStringValue is a protected class.
+                    Field valueField = PrivilegedAccessHelper.getDeclaredField(xjcValue.getClass(), "value", true);
+                    Object objValue = PrivilegedAccessHelper.getValueFromField(valueField, xjcValue);
                     if (objValue instanceof JStringLiteral) {
                         JStringLiteral value = (JStringLiteral) objValue;
                         String stringValue = value == null ? null : value.str;
@@ -89,12 +115,16 @@ public class XJCJavaAnnotationImpl implements JavaAnnotation {
                     }
                     if (objValue.getClass().getName().contains("JAtom")) {
                         // e.g. XmlElement.required = JAtom
-                        String value = (String) XJCJavaModelHelper.getFieldValueByReflection(objValue, "what");
+                        // Cannot cache this field because JAtom is a protected class.
+                        Field whatField = PrivilegedAccessHelper.getDeclaredField(objValue.getClass(), "what", true);
+                        String value = (String) PrivilegedAccessHelper.getValueFromField(whatField, objValue);
                         components.put(key, value);
                     }
                 } else {
                     // e.g. XmlSchema.elementFormDefault = JAnnotationUse$1
-                    Object value = XJCJavaModelHelper.getFieldValueByReflection(xjcValue, "val$value");
+                    // Cannot cache this field because JAtom is a protected class.
+                    Field valValueField = PrivilegedAccessHelper.getDeclaredField(xjcValue.getClass(), "val$value", true);
+                    Object value = PrivilegedAccessHelper.getValueFromField(valValueField, xjcValue);
                     components.put(key, value);
                 }
             }
@@ -107,9 +137,10 @@ public class XJCJavaAnnotationImpl implements JavaAnnotation {
 
     public Class getJavaAnnotationClass() {
         try {
-            Object xjcRefClass = XJCJavaModelHelper.getFieldValueByReflection(xjcAnnotation, "clazz");
-            Class annotationClass = (Class) XJCJavaModelHelper.getFieldValueByReflection(xjcRefClass, "_class");
-
+            Object xjcRefClass = PrivilegedAccessHelper.getValueFromField(JANNOTATIONUSE_CLAZZ, xjcAnnotation);
+            // Cannot cache this field because JReferencedClass is a protected class.
+            Field _classField = PrivilegedAccessHelper.getDeclaredField(xjcRefClass.getClass(), "_class", true);
+            Class annotationClass = (Class) PrivilegedAccessHelper.getValueFromField(_classField, xjcRefClass);
             return annotationClass;
         } catch (Exception e) {
             return null;

@@ -24,14 +24,14 @@ import com.sun.codemodel.JCodeModel;
 
 public class XJCJavaModelImpl implements JavaModel {
 
-    private ClassLoader classLoader;
     private JCodeModel jCodeModel;
+    private ClassLoader classLoader;
     private DynamicClassLoader dynamicClassLoader;
 
-    public XJCJavaModelImpl(ClassLoader classLoader, JCodeModel codeModel, DynamicClassLoader loader) {
-        this.classLoader = classLoader;
+    public XJCJavaModelImpl(ClassLoader loader, JCodeModel codeModel, DynamicClassLoader dynLoader) {
         this.jCodeModel = codeModel;
-        this.dynamicClassLoader = loader;
+        this.classLoader = loader;
+        this.dynamicClassLoader = dynLoader;
     }
 
     public JavaClass getClass(Class jClass) {

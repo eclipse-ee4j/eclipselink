@@ -2,12 +2,17 @@
 <xs:schema targetNamespace="myNamespace" xmlns:myns="myNamespace" xmlns:xs="http://www.w3.org/2001/XMLSchema"
     attributeFormDefault="qualified" elementFormDefault="qualified">
 
-    <xs:element name="individuo">
+    <xs:element name="person">
         <xs:complexType>
             <xs:sequence>
                 <xs:element name="name" type="xs:string"/>
+                <xs:element name="codes" type="myns:codes"/>
             </xs:sequence>
         </xs:complexType>
     </xs:element>
+
+    <xs:simpleType name="codes">
+        <xs:list itemType="xs:string"/>
+    </xs:simpleType>
 
 </xs:schema>

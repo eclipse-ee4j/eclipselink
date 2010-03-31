@@ -12,6 +12,8 @@
  ******************************************************************************/
 package org.eclipse.persistence.jaxb.javamodel.xjc;
 
+import java.lang.reflect.Field;
+import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -21,6 +23,7 @@ import java.util.Map;
 
 import org.eclipse.persistence.dynamic.DynamicClassLoader;
 import org.eclipse.persistence.exceptions.JAXBException;
+import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
 import org.eclipse.persistence.jaxb.javamodel.JavaAnnotation;
 import org.eclipse.persistence.jaxb.javamodel.JavaClass;
 import org.eclipse.persistence.jaxb.javamodel.JavaConstructor;
@@ -49,6 +52,10 @@ public class XJCJavaClassImpl implements JavaClass {
     private JCodeModel jCodeModel;
     private DynamicClassLoader dynamicClassLoader;
 
+    private static Field JDEFINEDCLASS_ANNOTATIONS = null;
+    private static Field JDEFINEDCLASS_MODS = null;
+    private static Field JDEFINEDCLASS_SUPERCLASS = null;
+    private static Field JTYPEVAR_BOUND = null;
     private static final Map<String, JPrimitiveType> jPrimitiveTypes = new HashMap<String, JPrimitiveType>();
     static {
         JCodeModel tempCodeModel = new JCodeModel();
@@ -60,6 +67,15 @@ public class XJCJavaClassImpl implements JavaClass {
         jPrimitiveTypes.put("java.lang.Integer", tempCodeModel.INT);
         jPrimitiveTypes.put("java.lang.Long", tempCodeModel.LONG);
         jPrimitiveTypes.put("java.lang.Short", tempCodeModel.SHORT);
+
+        try {
+            JDEFINEDCLASS_ANNOTATIONS = PrivilegedAccessHelper.getDeclaredField(JDefinedClass.class, "annotations", true);
+            JDEFINEDCLASS_MODS = PrivilegedAccessHelper.getDeclaredField(JDefinedClass.class, "mods", true);
+            JDEFINEDCLASS_SUPERCLASS = PrivilegedAccessHelper.getDeclaredField(JDefinedClass.class, "superClass", true);
+            JTYPEVAR_BOUND = PrivilegedAccessHelper.getDeclaredField(JTypeVar.class, "bound", true);
+        } catch (Exception e) {
+            throw JAXBException.errorCreatingDynamicJAXBContext(e);
+        }
     }
 
     public XJCJavaClassImpl(JClass jRefClass, JCodeModel codeModel, DynamicClassLoader loader) {
@@ -79,17 +95,23 @@ public class XJCJavaClassImpl implements JavaClass {
     // ========================================================================
 
     public Collection getActualTypeArguments() {
-        JTypeVar[] typeParams = xjcClass.typeParams();
+        JTypeVar[] typeParams = null;
+
+        if (xjcRefClass != null) {
+            typeParams = xjcRefClass.typeParams();
+        } else {
+            typeParams = xjcClass.typeParams();
+        }
 
         ArrayList<XJCJavaClassImpl> typeArguments = new ArrayList<XJCJavaClassImpl>(typeParams.length);
 
         for (int i = 0; i < typeParams.length; i++) {
             JTypeVar var = typeParams[i];
 
-            JDefinedClass xjcBoundClass = null;
+            JClass xjcBoundClass = null;
 
             try {
-                xjcBoundClass = (JDefinedClass) XJCJavaModelHelper.getFieldValueByReflection(var, "bound");
+                xjcBoundClass = (JClass) PrivilegedAccessHelper.getValueFromField(JTYPEVAR_BOUND, var);
             } catch (Exception e) {
                 return null;
             }
@@ -244,7 +266,7 @@ public class XJCJavaClassImpl implements JavaClass {
         JMods xjcMods = null;
 
         try {
-            xjcMods = (JMods) XJCJavaModelHelper.getFieldValueByReflection(xjcClass, "mods");
+            xjcMods = (JMods) PrivilegedAccessHelper.getValueFromField(JDEFINEDCLASS_MODS, xjcClass);
         } catch (Exception e) {
             return 0;
         }
@@ -260,7 +282,9 @@ public class XJCJavaClassImpl implements JavaClass {
         if (xjcRefClass != null) {
             JPackage pkg = null;
             try {
-                pkg = (JPackage) XJCJavaModelHelper.invokeMethodByReflection(xjcRefClass, "_package", new Class[] {});
+                // Cannot cache this field because JReferencedClass is a protected class.
+                Field _packageField = PrivilegedAccessHelper.getDeclaredField(xjcRefClass.getClass(), "_package", true);
+                pkg = (JPackage) PrivilegedAccessHelper.getValueFromField(_packageField, xjcRefClass);
             } catch (Exception e) {
                 return null;
             }
@@ -273,7 +297,9 @@ public class XJCJavaClassImpl implements JavaClass {
         if (xjcRefClass != null) {
             JPackage pkg = null;
             try {
-                pkg = (JPackage) XJCJavaModelHelper.invokeMethodByReflection(xjcRefClass, "_package", new Class[] {});
+                // Cannot cache this method because JReferencedClass is a protected class.
+                Method _packageMethod = PrivilegedAccessHelper.getDeclaredMethod(xjcRefClass.getClass(), "_package", new Class[] {});
+                pkg = (JPackage) PrivilegedAccessHelper.invokeMethod(_packageMethod, xjcRefClass);
             } catch (Exception e) {
                 return null;
             }
@@ -287,7 +313,9 @@ public class XJCJavaClassImpl implements JavaClass {
             String name = null;
             try {
                 // binaryName includes package name
-                name = (String) XJCJavaModelHelper.invokeMethodByReflection(xjcRefClass, "binaryName", new Class[] {});
+                // Cannot cache this method because JReferencedClass is a protected class.
+                Method binaryNameMethod = PrivilegedAccessHelper.getDeclaredMethod(xjcRefClass.getClass(), "binaryName", new Class[] {});
+                name = (String) PrivilegedAccessHelper.invokeMethod(binaryNameMethod, xjcRefClass);
             } catch (Exception e) {
                 return null;
             }
@@ -306,7 +334,7 @@ public class XJCJavaClassImpl implements JavaClass {
         }
 
         try {
-            JClass superClass = (JClass) XJCJavaModelHelper.getFieldValueByReflection(xjcClass, "superClass");
+            JClass superClass = (JClass) PrivilegedAccessHelper.getValueFromField(JDEFINEDCLASS_SUPERCLASS, xjcClass);
 
             if (superClass instanceof JDefinedClass) {
                 return new XJCJavaClassImpl((JDefinedClass) superClass, jCodeModel, dynamicClassLoader);
@@ -320,6 +348,9 @@ public class XJCJavaClassImpl implements JavaClass {
     }
 
     public boolean hasActualTypeArguments() {
+        if (xjcRefClass != null) {
+            return xjcRefClass.typeParams().length > 0;
+        }
         return xjcClass.typeParams().length > 0;
     }
 
@@ -338,7 +369,9 @@ public class XJCJavaClassImpl implements JavaClass {
         if (xjcRefClass != null) {
             boolean isArray = false;
             try {
-                isArray = (Boolean) XJCJavaModelHelper.invokeMethodByReflection(xjcRefClass, "isArray", new Class[] {});
+                // Cannot cache this field because JReferencedClass is a protected class.
+                Field isArrayField = PrivilegedAccessHelper.getDeclaredField(xjcRefClass.getClass(), "isArray", true);
+                isArray = (Boolean) PrivilegedAccessHelper.getValueFromField(isArrayField, xjcRefClass);
             } catch (Exception e) {
                 return false;
             }
@@ -374,7 +407,9 @@ public class XJCJavaClassImpl implements JavaClass {
         if (xjcRefClass != null) {
             boolean isInterface = false;
             try {
-                isInterface = (Boolean) XJCJavaModelHelper.invokeMethodByReflection(xjcRefClass, "isInterface", new Class[] {});
+                // Cannot cache this field because JReferencedClass is a protected class.
+                Field isInterfaceField = PrivilegedAccessHelper.getDeclaredField(xjcRefClass.getClass(), "isInterface", true);
+                isInterface = (Boolean) PrivilegedAccessHelper.getValueFromField(isInterfaceField, xjcRefClass);
             } catch (Exception e) {
                 return false;
             }
@@ -391,7 +426,9 @@ public class XJCJavaClassImpl implements JavaClass {
         if (xjcRefClass != null) {
             Object primitiveType = null;
             try {
-                primitiveType = XJCJavaModelHelper.invokeMethodByReflection(xjcRefClass, "getPrimitiveType", new Class[] {});
+                // Cannot cache this method because JReferencedClass is a protected class.
+                Method getPrimitiveTypeMethod = PrivilegedAccessHelper.getDeclaredMethod(xjcRefClass.getClass(), "getPrimitiveType", new Class[] {});
+                primitiveType = PrivilegedAccessHelper.invokeMethod(getPrimitiveTypeMethod, xjcRefClass);
             } catch (Exception e) {
                 return false;
             }
@@ -429,7 +466,7 @@ public class XJCJavaClassImpl implements JavaClass {
 
             Collection<JAnnotationUse> annotations = null;
             try {
-                annotations = (Collection<JAnnotationUse>) XJCJavaModelHelper.getFieldValueByReflection(xjcClass, "annotations");
+                annotations = (Collection<JAnnotationUse>) PrivilegedAccessHelper.getValueFromField(JDEFINEDCLASS_ANNOTATIONS, xjcClass);
             } catch (Exception e) {
             }
 
@@ -461,7 +498,7 @@ public class XJCJavaClassImpl implements JavaClass {
 
         Collection<JAnnotationUse> annotations = null;
         try {
-            annotations = (Collection<JAnnotationUse>) XJCJavaModelHelper.getFieldValueByReflection(xjcClass, "annotations");
+            annotations = (Collection<JAnnotationUse>) PrivilegedAccessHelper.getValueFromField(JDEFINEDCLASS_ANNOTATIONS, xjcClass);
         } catch (Exception e) {
         }
 

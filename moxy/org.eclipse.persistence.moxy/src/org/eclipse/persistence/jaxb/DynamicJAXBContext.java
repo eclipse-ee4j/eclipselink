@@ -24,6 +24,7 @@ import org.eclipse.persistence.dynamic.DynamicHelper;
 import org.eclipse.persistence.dynamic.DynamicType;
 import org.eclipse.persistence.dynamic.DynamicTypeBuilder;
 import org.eclipse.persistence.exceptions.JAXBException;
+import org.eclipse.persistence.internal.jaxb.JaxbClassLoader;
 import org.eclipse.persistence.jaxb.compiler.Generator;
 import org.eclipse.persistence.jaxb.javamodel.JavaClass;
 import org.eclipse.persistence.jaxb.javamodel.xjc.XJCJavaClassImpl;
@@ -208,10 +209,13 @@ public class DynamicJAXBContext extends org.eclipse.persistence.jaxb.JAXBContext
             classLoader = Thread.currentThread().getContextClassLoader();
         }
         DynamicClassLoader dynamicClassLoader;
+
+        ClassLoader jaxbLoader = new JaxbClassLoader(classLoader);
+
         if (classLoader instanceof DynamicClassLoader) {
            dynamicClassLoader = (DynamicClassLoader) classLoader;
         } else {
-           dynamicClassLoader = new DynamicClassLoader(classLoader);
+           dynamicClassLoader = new DynamicClassLoader(jaxbLoader);
         }
 
         // Create EclipseLink JavaModel objects for each of XJC's JDefinedClasses
@@ -236,7 +240,7 @@ public class DynamicJAXBContext extends org.eclipse.persistence.jaxb.JAXBContext
         JavaClass[] jotClasses = createClassModelFromXJC(classesToProcess, codeModel, dynamicClassLoader);
 
         // Use the JavaModel to setup a Generator to generate an EclipseLink project
-        XJCJavaModelImpl javaModel = new XJCJavaModelImpl(Thread.currentThread().getContextClassLoader(), codeModel, dynamicClassLoader);
+        XJCJavaModelImpl javaModel = new XJCJavaModelImpl(jaxbLoader, codeModel, dynamicClassLoader);
         XJCJavaModelInputImpl javaModelInput = new XJCJavaModelInputImpl(jotClasses, javaModel);
         Generator g = new Generator(javaModelInput, null, dynamicClassLoader, null);
 

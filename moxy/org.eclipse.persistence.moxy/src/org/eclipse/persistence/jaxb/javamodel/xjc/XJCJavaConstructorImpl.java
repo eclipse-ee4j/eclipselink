@@ -15,7 +15,6 @@ package org.eclipse.persistence.jaxb.javamodel.xjc;
 import java.lang.reflect.Modifier;
 
 import org.eclipse.persistence.dynamic.DynamicClassLoader;
-import org.eclipse.persistence.exceptions.JAXBException;
 import org.eclipse.persistence.jaxb.javamodel.JavaClass;
 import org.eclipse.persistence.jaxb.javamodel.JavaConstructor;
 

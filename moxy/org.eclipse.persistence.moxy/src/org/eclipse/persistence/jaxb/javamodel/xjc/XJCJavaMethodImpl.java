@@ -40,6 +40,17 @@ public class XJCJavaMethodImpl implements JavaMethod {
     private JCodeModel jCodeModel;
     private DynamicClassLoader dynamicClassLoader;
 
+    private static Field JMETHOD_ANNOTATIONS = null;
+    private static Field JMETHOD_OUTER = null;
+    static {
+        try {
+            JMETHOD_ANNOTATIONS = PrivilegedAccessHelper.getDeclaredField(JMethod.class, "annotations", true);
+            JMETHOD_OUTER = PrivilegedAccessHelper.getDeclaredField(JMethod.class, "outer", true);
+        } catch (Exception e) {
+            throw JAXBException.errorCreatingDynamicJAXBContext(e);
+        }
+    }
+
     public XJCJavaMethodImpl(JMethod javaMethod, JCodeModel codeModel, DynamicClassLoader loader) {
         this.xjcMethod = javaMethod;
         this.jCodeModel = codeModel;
@@ -51,7 +62,7 @@ public class XJCJavaMethodImpl implements JavaMethod {
             Collection<JAnnotationUse> annotations = null;
 
             try {
-                annotations = (Collection<JAnnotationUse>) XJCJavaModelHelper.getFieldValueByReflection(xjcMethod, "annotations");
+                annotations = (Collection<JAnnotationUse>) PrivilegedAccessHelper.getValueFromField(JMETHOD_ANNOTATIONS, xjcMethod);
             } catch (Exception e) {
             }
 
@@ -78,7 +89,7 @@ public class XJCJavaMethodImpl implements JavaMethod {
         Collection<JAnnotationUse> annotations = null;
 
         try {
-            annotations = (Collection<JAnnotationUse>) XJCJavaModelHelper.getFieldValueByReflection(xjcMethod, "annotations");
+            annotations = (Collection<JAnnotationUse>) PrivilegedAccessHelper.getValueFromField(JMETHOD_ANNOTATIONS, xjcMethod);
         } catch (Exception e) {
         }
 
@@ -160,7 +171,7 @@ public class XJCJavaMethodImpl implements JavaMethod {
         JDefinedClass ownerXJCClass = null;
 
         try {
-            ownerXJCClass = (JDefinedClass) XJCJavaModelHelper.getFieldValueByReflection(xjcMethod, "outer");
+            ownerXJCClass = (JDefinedClass) PrivilegedAccessHelper.getValueFromField(JMETHOD_OUTER, xjcMethod);
         } catch (Exception e) {
             return null;
         }

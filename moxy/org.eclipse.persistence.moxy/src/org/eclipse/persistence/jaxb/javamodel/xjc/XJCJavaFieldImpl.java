@@ -12,6 +12,7 @@
  ******************************************************************************/
 package org.eclipse.persistence.jaxb.javamodel.xjc;
 
+import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -19,6 +20,7 @@ import java.util.List;
 
 import org.eclipse.persistence.dynamic.DynamicClassLoader;
 import org.eclipse.persistence.exceptions.JAXBException;
+import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
 import org.eclipse.persistence.jaxb.javamodel.JavaAnnotation;
 import org.eclipse.persistence.jaxb.javamodel.JavaClass;
 import org.eclipse.persistence.jaxb.javamodel.JavaField;
@@ -39,6 +41,17 @@ public class XJCJavaFieldImpl implements JavaField {
     private JCodeModel jCodeModel;
     private DynamicClassLoader dynamicClassLoader;
 
+    private static Field JVAR_ANNOTATIONS = null;
+    private static Field JFIELDVAR_OWNER = null;
+    static {
+        try {
+            JVAR_ANNOTATIONS = PrivilegedAccessHelper.getDeclaredField(JVar.class, "annotations", true);
+            JFIELDVAR_OWNER = PrivilegedAccessHelper.getDeclaredField(JFieldVar.class, "owner", true);
+        } catch (Exception e) {
+            throw JAXBException.errorCreatingDynamicJAXBContext(e);
+        }
+    }
+
     public XJCJavaFieldImpl(JFieldVar javaField, JCodeModel codeModel, DynamicClassLoader loader) {
         this.xjcField = javaField;
         this.jCodeModel = codeModel;
@@ -50,7 +63,7 @@ public class XJCJavaFieldImpl implements JavaField {
             Collection<JAnnotationUse> annotations = null;
 
             try {
-                annotations = (Collection<JAnnotationUse>) XJCJavaModelHelper.getFieldValueByReflection(xjcField, JVar.class, "annotations");
+                annotations = (Collection<JAnnotationUse>) PrivilegedAccessHelper.getValueFromField(JVAR_ANNOTATIONS, xjcField);
             } catch (Exception e) {
             }
 
@@ -77,7 +90,7 @@ public class XJCJavaFieldImpl implements JavaField {
         Collection<JAnnotationUse> annotations = null;
 
         try {
-            annotations = (Collection<JAnnotationUse>) XJCJavaModelHelper.getFieldValueByReflection(xjcField, JVar.class, "annotations");
+            annotations = (Collection<JAnnotationUse>) PrivilegedAccessHelper.getValueFromField(JVAR_ANNOTATIONS, xjcField);
         } catch (Exception e) {
         }
 
@@ -100,7 +113,7 @@ public class XJCJavaFieldImpl implements JavaField {
         JDefinedClass ownerXJCClass = null;
 
         try {
-            ownerXJCClass = (JDefinedClass) XJCJavaModelHelper.getFieldValueByReflection(xjcField, "owner");
+            ownerXJCClass = (JDefinedClass) PrivilegedAccessHelper.getValueFromField(JFIELDVAR_OWNER, xjcField);
         } catch (Exception e) {
             return null;
         }
@@ -110,14 +123,14 @@ public class XJCJavaFieldImpl implements JavaField {
 
     public JavaClass getResolvedType() {
         JType type = xjcField.type();
+        JType basis = null;
 
-        boolean isParameterized = false;
         try {
             // Check to see if this type has a 'basis' field.
-            // This would indicate it is a "parameterized type" (e.g. List<Employee>)
-            JClass basis = (JClass) XJCJavaModelHelper.getFieldValueByReflection(type, "basis");
-            type = basis;
-            isParameterized = true;
+            // This would indicate it is a "parameterized type" (e.g. List<Employee>).
+            // Cannot cache this field because JNarrowedClass is a protected class.
+            Field basisField = PrivilegedAccessHelper.getDeclaredField(type.getClass(), "basis", true);
+            basis = (JClass) PrivilegedAccessHelper.getValueFromField(basisField, type);
         } catch (Exception e) {
             // "basis" field not found
         }
@@ -129,19 +142,22 @@ public class XJCJavaFieldImpl implements JavaField {
             classToReturn = pType.boxify();
         } else {
             try {
-                classToReturn = jCodeModel._class(type.fullName());
+                classToReturn = jCodeModel._class(basis != null ? basis.fullName() : type.fullName());
             } catch (JClassAlreadyExistsException ex) {
-                classToReturn = jCodeModel._getClass(type.fullName());
+                classToReturn = jCodeModel._getClass(basis != null ? basis.fullName() : type.fullName());
             }
         }
 
-        if (isParameterized) {
+        if (basis != null) {
             try {
-                List<JClass> args = (List<JClass>) XJCJavaModelHelper.getFieldValueByReflection(type, "args");
+                // Cannot cache this field because JNarrowedClass is a protected class.
+                Field argsField = PrivilegedAccessHelper.getDeclaredField(type.getClass(), "args", true);
+                List<JClass> args = (List<JClass>) PrivilegedAccessHelper.getValueFromField(argsField, type);
                 for (JClass jClass : args) {
                     ((JDefinedClass) classToReturn).generify("param", jClass);
                 }
             } catch (Exception e) {
+                throw JAXBException.errorCreatingDynamicJAXBContext(e);
             }
         }
 

@@ -13,10 +13,15 @@
 package org.eclipse.persistence.testing.jaxb.dynamic;
 
 import java.io.InputStream;
+import java.math.BigDecimal;
+import java.math.BigInteger;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 
-import javax.xml.bind.JAXBContext;
+import javax.xml.bind.JAXBElement;
 import javax.xml.bind.Marshaller;
-import javax.xml.bind.Unmarshaller;
+import javax.xml.namespace.QName;
 import javax.xml.parsers.DocumentBuilderFactory;
 
 import junit.framework.TestCase;
@@ -26,10 +31,6 @@ import org.eclipse.persistence.jaxb.DynamicJAXBContext;
 import org.eclipse.persistence.jaxb.DynamicJAXBContextFactory;
 import org.eclipse.persistence.oxm.NamespaceResolver;
 import org.eclipse.persistence.oxm.XMLConstants;
-import org.eclipse.persistence.oxm.XMLContext;
-import org.eclipse.persistence.oxm.XMLDescriptor;
-import org.eclipse.persistence.sessions.Project;
-import org.w3c.dom.Attr;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 
@@ -46,10 +47,22 @@ public class DynamicJAXBFromXSDTestCases extends TestCase {
     private static final String XMLTYPE = RESOURCE_DIR + "xmltype.xsd";
     private static final String XMLATTRIBUTE = RESOURCE_DIR + "xmlattribute.xsd";
     private static final String XMLELEMENT = RESOURCE_DIR + "xmlelement.xsd";
+    private static final String XMLLIST = RESOURCE_DIR + "xmllist.xsd";
+    private static final String XMLVALUE = RESOURCE_DIR + "xmlvalue.xsd";
+    private static final String XMLANYELEMENT = RESOURCE_DIR + "xmlanyelement.xsd";
+    private static final String XMLANYATTRIBUTE = RESOURCE_DIR + "xmlanyattribute.xsd";
+    private static final String XMLMIXED = RESOURCE_DIR + "xmlmixed.xsd";
+
+
+
+
+    private static final String XMLELEMENTDECL = RESOURCE_DIR + "xmlelementdecl.xsd";
 
     private static final String PACKAGE = "mynamespace";
     private static final String PERSON = "Person";
     private static final String EMPLOYEE = "Employee";
+    private static final String INDIVIDUO = "Individuo";
+    private static final String CDN_CURRENCY = "CdnCurrency";
 
     DynamicJAXBContext jaxbContext;
 
@@ -177,7 +190,7 @@ public class DynamicJAXBFromXSDTestCases extends TestCase {
         InputStream inputStream = ClassLoader.getSystemResourceAsStream(XMLROOTELEMENT);
         jaxbContext = DynamicJAXBContextFactory.createContextFromXSD(inputStream, nsResolver, null, null);
 
-        DynamicEntity person = jaxbContext.newDynamicEntity(PACKAGE + "." + PERSON);
+        DynamicEntity person = jaxbContext.newDynamicEntity(PACKAGE + "." + INDIVIDUO);
         assertNotNull("Could not create Dynamic Entity.", person);
 
         person.set("name", "Bob Dobbs");
@@ -265,6 +278,141 @@ public class DynamicJAXBFromXSDTestCases extends TestCase {
 
         String elemName = node.getChildNodes().item(0).getNodeName();
         assertEquals("Element not present.", "type", elemName);
+    }
+
+    public void testXmlList() throws Exception {
+        InputStream inputStream = ClassLoader.getSystemResourceAsStream(XMLLIST);
+        jaxbContext = DynamicJAXBContextFactory.createContextFromXSD(inputStream, nsResolver, null, null);
+
+        DynamicEntity person = jaxbContext.newDynamicEntity(PACKAGE + "." + PERSON);
+        assertNotNull("Could not create Dynamic Entity.", person);
+
+        ArrayList<String> codes = new ArrayList<String>(3);
+        codes.add("D1182");
+        codes.add("D1716");
+        codes.add("G7212");
+
+        person.set("name", "Bob Dobbs");
+        person.set("codes", codes);
+
+        Document marshalDoc = DocumentBuilderFactory.newInstance().newDocumentBuilder().newDocument();
+        jaxbContext.createMarshaller().marshal(person, marshalDoc);
+
+        Node node = marshalDoc.getDocumentElement();
+
+        assertEquals("Unexpected number of nodes in document.", 2, node.getChildNodes().getLength());
+
+        String value = node.getChildNodes().item(1).getTextContent();
+
+        assertEquals("Unexpected element contents.", "D1182 D1716 G7212", value);
+    }
+
+    public void testXmlValue() throws Exception {
+        InputStream inputStream = ClassLoader.getSystemResourceAsStream(XMLVALUE);
+        jaxbContext = DynamicJAXBContextFactory.createContextFromXSD(inputStream, nsResolver, null, null);
+
+        DynamicEntity person = jaxbContext.newDynamicEntity(PACKAGE + "." + PERSON);
+        assertNotNull("Could not create Dynamic Entity.", person);
+
+        DynamicEntity salary = jaxbContext.newDynamicEntity(PACKAGE + "." + CDN_CURRENCY);
+        assertNotNull("Could not create Dynamic Entity.", salary);
+
+        salary.set("value", 75100.25);
+
+        person.set("name", "Bob Dobbs");
+        person.set("salary", salary);
+
+        Document marshalDoc = DocumentBuilderFactory.newInstance().newDocumentBuilder().newDocument();
+        jaxbContext.createMarshaller().marshal(person, marshalDoc);
+
+        // Nothing to really test, XmlValue isn't represented in an instance doc.
+    }
+
+    public void testXmlAnyElement() throws Exception {
+        InputStream inputStream = ClassLoader.getSystemResourceAsStream(XMLANYELEMENT);
+        jaxbContext = DynamicJAXBContextFactory.createContextFromXSD(inputStream, nsResolver, null, null);
+
+        DynamicEntity person = jaxbContext.newDynamicEntity(PACKAGE + "." + PERSON);
+        assertNotNull("Could not create Dynamic Entity.", person);
+
+        person.set("name", "Bob Dobbs");
+        person.set("any", "StringValue");
+
+        Document marshalDoc = DocumentBuilderFactory.newInstance().newDocumentBuilder().newDocument();
+        jaxbContext.createMarshaller().marshal(person, marshalDoc);
+
+        Node node = marshalDoc.getDocumentElement();
+
+        assertTrue("Any element not found.", node.getChildNodes().item(1).getNodeType() == Node.TEXT_NODE);
+    }
+
+    public void testXmlAnyAttribute() throws Exception {
+        InputStream inputStream = ClassLoader.getSystemResourceAsStream(XMLANYATTRIBUTE);
+        jaxbContext = DynamicJAXBContextFactory.createContextFromXSD(inputStream, nsResolver, null, null);
+
+        DynamicEntity person = jaxbContext.newDynamicEntity(PACKAGE + "." + PERSON);
+        assertNotNull("Could not create Dynamic Entity.", person);
+
+        Map<QName, Object> otherAttributes = new HashMap<QName, Object>();
+        otherAttributes.put(new QName("foo"), new BigDecimal(1234));
+        otherAttributes.put(new QName("bar"), Boolean.FALSE);
+
+        person.set("name", "Bob Dobbs");
+        person.set("otherAttributes", otherAttributes);
+
+        Document marshalDoc = DocumentBuilderFactory.newInstance().newDocumentBuilder().newDocument();
+        jaxbContext.createMarshaller().marshal(person, marshalDoc);
+
+        Node node = marshalDoc.getDocumentElement();
+
+        assertTrue("Unexpected number of attributes.", node.getAttributes().getLength() == 3);
+    }
+
+    public void testXmlMixed() throws Exception {
+        InputStream inputStream = ClassLoader.getSystemResourceAsStream(XMLMIXED);
+        jaxbContext = DynamicJAXBContextFactory.createContextFromXSD(inputStream, nsResolver, null, null);
+
+        DynamicEntity person = jaxbContext.newDynamicEntity(PACKAGE + "." + PERSON);
+        assertNotNull("Could not create Dynamic Entity.", person);
+
+        ArrayList list = new ArrayList();
+        list.add("Hello");
+        list.add(new JAXBElement<String>(new QName("myNamespace", "title"), String.class, person.getClass(), "MR"));
+        list.add(new JAXBElement<String>(new QName("myNamespace", "name"), String.class, person.getClass(), "Bob Dobbs"));
+        list.add(", your point balance is");
+        list.add(new JAXBElement<BigInteger>(new QName("myNamespace", "rewardPoints"), BigInteger.class, person.getClass(), BigInteger.valueOf(175)));
+        list.add("Visit www.rewards.com!");
+        person.set("content", list);
+
+        Document marshalDoc = DocumentBuilderFactory.newInstance().newDocumentBuilder().newDocument();
+        jaxbContext.createMarshaller().marshal(person, marshalDoc);
+
+        Node node = marshalDoc.getDocumentElement();
+
+        assertTrue("Unexpected number of elements.", node.getChildNodes().getLength() == 6);
+    }
+
+    public void testXmlElementDecl() throws Exception {
+        InputStream inputStream = ClassLoader.getSystemResourceAsStream(XMLELEMENTDECL);
+        jaxbContext = DynamicJAXBContextFactory.createContextFromXSD(inputStream, nsResolver, null, null);
+
+        DynamicEntity person = jaxbContext.newDynamicEntity(PACKAGE + "." + PERSON);
+        assertNotNull("Could not create Dynamic Entity.", person);
+
+        person.set("name", "Bob Dobbs");
+
+        Document marshalDoc = DocumentBuilderFactory.newInstance().newDocumentBuilder().newDocument();
+        jaxbContext.createMarshaller().marshal(person, marshalDoc);
+
+        Node node = marshalDoc.getChildNodes().item(0);
+
+        assertEquals("Root element was not 'individuo' as expected.", "individuo", node.getLocalName());
+    }
+
+    private void print(Object o) throws Exception {
+        Marshaller marshaller = jaxbContext.createMarshaller();
+        marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, Boolean.TRUE);
+        marshaller.marshal(o, System.out);
     }
 
 }

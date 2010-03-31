@@ -12,11 +12,13 @@
  ******************************************************************************/
 package org.eclipse.persistence.jaxb.javamodel.xjc;
 
+import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Collection;
 
 import org.eclipse.persistence.dynamic.DynamicClassLoader;
 import org.eclipse.persistence.exceptions.JAXBException;
+import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
 import org.eclipse.persistence.jaxb.javamodel.JavaAnnotation;
 import org.eclipse.persistence.jaxb.javamodel.JavaClass;
 import org.eclipse.persistence.jaxb.javamodel.JavaPackage;
@@ -29,6 +31,15 @@ public class XJCJavaPackageImpl implements JavaPackage {
     protected JPackage xjcPackage;
     private DynamicClassLoader dynamicClassLoader;
 
+    private static Field JPACKAGE_ANNOTATIONS = null;
+    static {
+        try {
+            JPACKAGE_ANNOTATIONS = PrivilegedAccessHelper.getDeclaredField(JPackage.class, "annotations", true);            
+        } catch (Exception e) {
+            throw JAXBException.errorCreatingDynamicJAXBContext(e);
+        }
+    }
+    
     public XJCJavaPackageImpl(JPackage jPackage, DynamicClassLoader loader) {
         this.xjcPackage = jPackage;
         this.dynamicClassLoader = loader;
@@ -39,8 +50,9 @@ public class XJCJavaPackageImpl implements JavaPackage {
 
             Collection<JAnnotationUse> annotations = null;
             try {
-                annotations = (Collection<JAnnotationUse>) XJCJavaModelHelper.getFieldValueByReflection(xjcPackage, "annotations");
+                annotations = (Collection<JAnnotationUse>) PrivilegedAccessHelper.getValueFromField(JPACKAGE_ANNOTATIONS, xjcPackage);
             } catch (Exception e) {
+                throw JAXBException.errorCreatingDynamicJAXBContext(e);
             }
 
             if (annotations == null) {
@@ -65,8 +77,9 @@ public class XJCJavaPackageImpl implements JavaPackage {
 
         Collection<JAnnotationUse> annotations = null;
         try {
-            annotations = (Collection<JAnnotationUse>) XJCJavaModelHelper.getFieldValueByReflection(xjcPackage, "annotations");
+            annotations = (Collection<JAnnotationUse>) PrivilegedAccessHelper.getValueFromField(JPACKAGE_ANNOTATIONS, xjcPackage);
         } catch (Exception e) {
+            throw JAXBException.errorCreatingDynamicJAXBContext(e);
         }
 
         if (annotations == null) {

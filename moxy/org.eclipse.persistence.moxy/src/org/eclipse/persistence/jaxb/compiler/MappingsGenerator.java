@@ -1,15 +1,15 @@
 /*******************************************************************************
  * Copyright (c) 1998, 2010 Oracle. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.jaxb.compiler;
 
 import java.beans.Introspector;
@@ -95,7 +95,7 @@ import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
  * for that class as well.
  * @see org.eclipse.persistence.jaxb.compiler.Generator
  * @see org.eclipse.persistence.jaxb.compiler.TypeInfo
- * @see org.eclipse.persistence.jaxb.compiler.Property 
+ * @see org.eclipse.persistence.jaxb.compiler.Property
  * @author mmacivor
  * @since Oracle TopLink 11.1.1.0.0
  *
@@ -126,18 +126,18 @@ public class MappingsGenerator {
     private NamespaceResolver globalNamespaceResolver;
     private boolean isDefaultNamespaceAllowed;
     private Map<TypeMappingInfo, Class>typeMappingInfoToAdapterClasses;
-    
+
     public MappingsGenerator(Helper helper) {
         this.helper = helper;
         jotArrayList = helper.getJavaClass(ArrayList.class);
-        jotHashSet = helper.getJavaClass(HashSet.class);               
+        jotHashSet = helper.getJavaClass(HashSet.class);
         qNamesToGeneratedClasses = new HashMap<QName, Class>();
         qNamesToDeclaredClasses = new HashMap<QName, Class>();
-        classToGeneratedClasses = new HashMap<String, Class>();       
+        classToGeneratedClasses = new HashMap<String, Class>();
         globalNamespaceResolver = new NamespaceResolver();
         isDefaultNamespaceAllowed = true;
     }
-    
+
     public Project generateProject(ArrayList<JavaClass> typeInfoClasses, HashMap<String, TypeInfo> typeInfo, HashMap<String, QName> userDefinedSchemaTypes, HashMap<String, NamespaceInfo> packageToNamespaceMappings, HashMap<QName, ElementDeclaration> globalElements, List<ElementDeclaration> localElements, Map<TypeMappingInfo, Class> typeMappingInfoToGeneratedClass, Map<TypeMappingInfo, Class> typeMappingInfoToAdapterClasses,  boolean isDefaultNamespaceAllowed) throws Exception {
         this.typeInfo = typeInfo;
         this.userDefinedSchemaTypes = userDefinedSchemaTypes;
@@ -161,10 +161,10 @@ public class MappingsGenerator {
                 setupInheritance(next);
             }
         }
-        
+
         // Now create mappings
         generateMappings();
-        
+
         // apply customizers if necessary
         Set<Entry<String, TypeInfo>> entrySet = this.typeInfo.entrySet();
         for (Entry<String, TypeInfo> entry : entrySet) {
@@ -186,12 +186,12 @@ public class MappingsGenerator {
                 }
             }
         }
-        
+
         processGlobalElements(project);
         wrapperCounter = 0;
         return project;
     }
-    
+
     public void generateDescriptor(JavaClass javaClass, Project project) {
         String jClassName = javaClass.getQualifiedName();
         TypeInfo info = typeInfo.get(jClassName);
@@ -207,7 +207,7 @@ public class MappingsGenerator {
             generateDescriptorForJAXBElementSubclass(javaClass, project, namespaceInfo.getNamespaceResolverForDescriptor());
             return;
         }
-        
+
         XMLDescriptor descriptor = new XMLDescriptor();
         org.eclipse.persistence.jaxb.xmlmodel.XmlRootElement rootElem = info.getXmlRootElement();
         if (rootElem == null) {
@@ -222,17 +222,17 @@ public class MappingsGenerator {
             namespace = rootElem.getNamespace();
             descriptor.setResultAlwaysXMLRoot(false);
         }
-                
+
         descriptor.setJavaClassName(jClassName);
 
         if (info.getFactoryMethodName() != null) {
             descriptor.getInstantiationPolicy().useFactoryInstantiationPolicy(info.getObjectFactoryClassName(), info.getFactoryMethodName());
         }
-        
+
         if (namespace.equals("##default")) {
             namespace = namespaceInfo.getNamespace();
         }
-        
+
         JavaClass manyValueJavaClass = helper.getJavaClass(ManyValue.class);
         if(!manyValueJavaClass.isAssignableFrom(javaClass)){
         if (rootElem == null) {
@@ -249,9 +249,9 @@ public class MappingsGenerator {
 	        }
         }
         }
-        
+
         descriptor.setNamespaceResolver(namespaceInfo.getNamespaceResolverForDescriptor());
-        
+
         setPKField(descriptor, info);
         setSchemaContext(descriptor, info);
         project.addDescriptor(descriptor);
@@ -264,36 +264,36 @@ public class MappingsGenerator {
 
         XMLDescriptor xmlDescriptor = new XMLDescriptor();
         xmlDescriptor.setJavaClassName(jClassName);
-        
+
         String[] factoryMethodParamTypes = info.getFactoryMethodParamTypes();
-        
+
         MultiArgInstantiationPolicy policy = new MultiArgInstantiationPolicy();
         policy.useFactoryInstantiationPolicy(info.getObjectFactoryClassName(), info.getFactoryMethodName());
         policy.setParameterTypeNames(factoryMethodParamTypes);
         policy.setDefaultValues(new String[]{null});
-        
+
         xmlDescriptor.setInstantiationPolicy(policy);
-        JavaClass paramClass = helper.getJavaClass(factoryMethodParamTypes[0]);        
-        if(helper.isBuiltInJavaType(paramClass)){        
+        JavaClass paramClass = helper.getJavaClass(factoryMethodParamTypes[0]);
+        if(helper.isBuiltInJavaType(paramClass)){
             XMLDirectMapping mapping = new XMLDirectMapping();
             mapping.setAttributeName("value");
             mapping.setGetMethodName("getValue");
             mapping.setSetMethodName("setValue");
             mapping.setXPath("text()");
             Class attributeClassification = org.eclipse.persistence.internal.helper.Helper.getClassFromClasseName(factoryMethodParamTypes[0], getClass().getClassLoader());
-            mapping.setAttributeClassification(attributeClassification);                        
+            mapping.setAttributeClassification(attributeClassification);
             xmlDescriptor.addMapping(mapping);
         }else{
             XMLCompositeObjectMapping mapping = new XMLCompositeObjectMapping();
             mapping.setAttributeName("value");
             mapping.setGetMethodName("getValue");
             mapping.setSetMethodName("setValue");
-            mapping.setXPath(".");          
+            mapping.setXPath(".");
             mapping.setReferenceClassName(factoryMethodParamTypes[0]);
             xmlDescriptor.addMapping(mapping);
         }
         xmlDescriptor.setNamespaceResolver(nsr);
-        
+
         setPKField(xmlDescriptor, info);
         setSchemaContext(xmlDescriptor, info);
         project.addDescriptor(xmlDescriptor);
@@ -302,7 +302,7 @@ public class MappingsGenerator {
     private void setSchemaContext(XMLDescriptor desc, TypeInfo info) {
         XMLSchemaClassPathReference schemaRef = new XMLSchemaClassPathReference();
 
-        
+
         if (info.getClassNamespace() == null || info.getClassNamespace().equals("")) {
             schemaRef.setSchemaContext("/" + info.getSchemaTypeName());
         } else {
@@ -320,16 +320,16 @@ public class MappingsGenerator {
             schemaRef.setType(XMLSchemaReference.SIMPLE_TYPE);
         }
         desc.setSchemaReference(schemaRef);
-        
+
     }
-    
+
     private void setPKField(XMLDescriptor desc, TypeInfo info) {
-    	
+
         // if there is an @XmlID annotation, we need to add
         // primary key field names to the descriptor
         if (info.isIDSet()) {
             String pkFieldName;
-            
+
             String uri = info.getIDProperty().getSchemaName().getNamespaceURI();
             String local = info.getIDProperty().getSchemaName().getLocalPart();
             String prefix = null;
@@ -344,26 +344,26 @@ public class MappingsGenerator {
             } else {
                 prefix += ":";
             }
-            
+
             if (info.getIDProperty().isAttribute()) {
                 pkFieldName = ATT + prefix + local;
             } else { // assume element
                 pkFieldName = prefix + local + TXT;
             }
             desc.addPrimaryKeyFieldName(pkFieldName);
-        }      
+        }
     }
-    
+
     public void generateMapping(Property property, XMLDescriptor descriptor, NamespaceInfo namespaceInfo) {
         if (property.isSetXmlJavaTypeAdapter()) {
             // need to check the adapter to determine whether we require a
             // direct mapping (anything we can create a descriptor for) or
             // a composite mapping
-            
+
             XmlJavaTypeAdapter xja = property.getXmlJavaTypeAdapter();
             JavaClass adapterClass = helper.getJavaClass(xja.getValue());
-            JavaClass valueType = property.getActualType();            
-                      
+            JavaClass valueType = property.getActualType();
+
             // if the value type is something we have a descriptor for, create
             // a composite object mapping, otherwise create a direct mapping
             if (typeInfo.containsKey(valueType.getQualifiedName())) {
@@ -404,9 +404,9 @@ public class MappingsGenerator {
             }else{
                 generateAnyObjectMapping(property, descriptor, namespaceInfo);
             }
-            
+
         } else if(property.isReference()) {
-            generateMappingForReferenceProperty(property, descriptor, namespaceInfo);            
+            generateMappingForReferenceProperty(property, descriptor, namespaceInfo);
         } else if (property.isMap()){
         	if(property.isAnyAttribute()) {
         		generateAnyAttributeMapping(property, descriptor, namespaceInfo);
@@ -417,7 +417,7 @@ public class MappingsGenerator {
             generateCollectionMapping(property, descriptor, namespaceInfo);
         } else {
             JavaClass referenceClass = property.getType();
-            
+
             String referenceClassName = referenceClass.getRawName();
             if(referenceClass.isArray()  && !referenceClassName.equals("byte[]")  && !referenceClassName.equals("java.lang.Byte[]")){
                 JavaClass componentType = referenceClass.getComponentType();
@@ -449,49 +449,49 @@ public class MappingsGenerator {
                        } else {
                            generateDirectMapping(property, descriptor, namespaceInfo);
                        }
-                   }    
+                   }
                 }
             }
         }
     }
-    
+
     private XMLInverseReferenceMapping generateInverseReferenceMapping(Property property, XMLDescriptor descriptor, NamespaceInfo namespace) {
         XMLInverseReferenceMapping invMapping = new XMLInverseReferenceMapping();
-        
+
         if (isCollectionType(property.getType())) {
             invMapping.setReferenceClassName(property.getGenericType().getQualifiedName());
         } else {
             invMapping.setReferenceClassName(property.getType().getQualifiedName());
         }
-        
+
         invMapping.setAttributeName(property.getPropertyName());
-        
+
         String setMethodName = property.getInverseReferencePropertySetMethodName();
-        String getMethodName = property.getInverseReferencePropertyGetMethodName(); 
-        
+        String getMethodName = property.getInverseReferencePropertyGetMethodName();
+
         if (setMethodName != null && !setMethodName.equals(XMLConstants.EMPTY_STRING)) {
             invMapping.setSetMethodName(setMethodName);
         }
         if (getMethodName != null && !getMethodName.equals(XMLConstants.EMPTY_STRING)) {
-            invMapping.setGetMethodName(getMethodName);                    
+            invMapping.setGetMethodName(getMethodName);
         }
         invMapping.setMappedBy(property.getInverseReferencePropertyName());
-        
+
         if (isCollectionType(property.getType())) {
             invMapping.setContainerPolicy(ContainerPolicy.buildDefaultPolicy());
         }
-        
+
         descriptor.addMapping(invMapping);
-        
+
         return invMapping;
     }
-    
+
     public XMLChoiceObjectMapping generateChoiceMapping(Property property, XMLDescriptor descriptor, NamespaceInfo namespace) {
         XMLChoiceObjectMapping mapping = new XMLChoiceObjectMapping();
         mapping.setAttributeName(property.getPropertyName());
         if (property.isMethodProperty()) {
             if (property.getGetMethodName() == null) {
-                // handle case of set with no get method 
+                // handle case of set with no get method
                 String paramTypeAsString = property.getType().getName();
                 mapping.setAttributeAccessor(new JAXBSetMethodAttributeAccessor(paramTypeAsString, helper.getClassLoader()));
                 mapping.setIsReadOnly(true);
@@ -514,14 +514,14 @@ public class MappingsGenerator {
         descriptor.addMapping(mapping);
         return mapping;
     }
-    
+
     public XMLChoiceCollectionMapping generateChoiceCollectionMapping(Property property, XMLDescriptor descriptor, NamespaceInfo namespace) {
         XMLChoiceCollectionMapping mapping = new XMLChoiceCollectionMapping();
         mapping.setReuseContainer(true);
         mapping.setAttributeName(property.getPropertyName());
         if (property.isMethodProperty()) {
             if (property.getGetMethodName() == null) {
-                // handle case of set with no get method 
+                // handle case of set with no get method
                 String paramTypeAsString = property.getType().getName();
                 mapping.setAttributeAccessor(new JAXBSetMethodAttributeAccessor(paramTypeAsString, helper.getClassLoader()));
                 mapping.setIsReadOnly(true);
@@ -541,7 +541,7 @@ public class MappingsGenerator {
             collectionType = jotHashSet;
         }
         mapping.useCollectionClassName(collectionType.getRawName());
-        
+
         Iterator<Property> choiceProperties = property.getChoiceProperties().iterator();
         while(choiceProperties.hasNext()) {
             Property next = choiceProperties.next();
@@ -552,7 +552,7 @@ public class MappingsGenerator {
         descriptor.addMapping(mapping);
         return mapping;
     }
-    
+
     public XMLMapping generateMappingForReferenceProperty(Property property, XMLDescriptor descriptor, NamespaceInfo namespaceInfo)  {
         if (property.isMixedContent()) {
             XMLAnyCollectionMapping mapping = generateAnyCollectionMapping(property, descriptor, namespaceInfo, true);
@@ -571,7 +571,7 @@ public class MappingsGenerator {
         mapping.setAttributeName(property.getPropertyName());
         if (property.isMethodProperty()) {
             if (property.getGetMethodName() == null) {
-                // handle case of set with no get method 
+                // handle case of set with no get method
                 String paramTypeAsString = property.getType().getName();
                 mapping.setAttributeAccessor(new JAXBSetMethodAttributeAccessor(paramTypeAsString, helper.getClassLoader()));
                 mapping.setIsReadOnly(true);
@@ -587,7 +587,7 @@ public class MappingsGenerator {
 
         List<ElementDeclaration> referencedElements = property.getReferencedElements();
         if (property.getType().isArray()) {
-            JAXBObjectArrayAttributeAccessor accessor = new JAXBObjectArrayAttributeAccessor(mapping.getAttributeAccessor(), mapping.getContainerPolicy());           
+            JAXBObjectArrayAttributeAccessor accessor = new JAXBObjectArrayAttributeAccessor(mapping.getAttributeAccessor(), mapping.getContainerPolicy());
             accessor.setComponentClassName(property.getType().getComponentType().getRawName());
             mapping.setAttributeAccessor(accessor);
         }
@@ -595,7 +595,7 @@ public class MappingsGenerator {
             QName elementName = element.getElementName();
             boolean isText = !(this.typeInfo.containsKey(element.getJavaTypeName())) && !(element.getJavaTypeName().equals(OBJECT_CLASS_NAME));
             String xPath = "";
-            
+
             // handle XmlElementWrapper
             if (property.isSetXmlElementWrapper()) {
                 XmlElementWrapper wrapper = property.getXmlElementWrapper();
@@ -614,7 +614,7 @@ public class MappingsGenerator {
                     xPath += getQualifiedString(prefix, wrapper.getName() + "/");
                 }
             }
-            
+
             XMLField xmlField = this.getXPathForElement(xPath, elementName, namespaceInfo, isText);
             //ensure byte[] goes to base64 instead of the default hex.
             if(helper.getXMLToJavaTypeMap().get(element.getJavaType().getRawName()) == XMLConstants.BASE_64_BINARY_QNAME) {
@@ -648,7 +648,7 @@ public class MappingsGenerator {
             }
 
             if (!element.isXmlRootElement()) {
-                Class scopeClass = element.getScopeClass(); 
+                Class scopeClass = element.getScopeClass();
                 if (scopeClass == javax.xml.bind.annotation.XmlElementDecl.GLOBAL.class){
                     scopeClass = JAXBElement.GlobalScope.class;
                 }
@@ -678,7 +678,7 @@ public class MappingsGenerator {
         mapping.setReuseContainer(true);
         if (property.isMethodProperty()) {
             if (property.getGetMethodName() == null) {
-                // handle case of set with no get method 
+                // handle case of set with no get method
                 String paramTypeAsString = property.getType().getName();
                 mapping.setAttributeAccessor(new JAXBSetMethodAttributeAccessor(paramTypeAsString, helper.getClassLoader()));
                 mapping.setIsReadOnly(true);
@@ -694,7 +694,7 @@ public class MappingsGenerator {
         // if the XPath is set (via xml-path) use it
         if (property.getXmlPath() != null) {
             mapping.setField(new XMLField(property.getXmlPath()));
-        } 
+        }
 
         Class declaredType = helper.getClassForJavaClass(property.getActualType());
         JAXBElementRootConverter jaxbElementRootConverter = new JAXBElementRootConverter(declaredType);
@@ -712,16 +712,16 @@ public class MappingsGenerator {
         mapping.setMixedContent(isMixed);
         if (isMixed) {
             mapping.setPreserveWhitespaceForMixedContent(true);
-        } else {
-            mapping.setUseXMLRoot(true);
         }
+        mapping.setUseXMLRoot(true);
+
         descriptor.addMapping(mapping);
         return mapping;
     }
-    
+
     public XMLCompositeObjectMapping generateCompositeObjectMapping(Property property, XMLDescriptor descriptor, NamespaceInfo namespaceInfo, String referenceClassName) {
         XMLCompositeObjectMapping mapping = new XMLCompositeObjectMapping();
-       
+
         mapping.setAttributeName(property.getPropertyName());
         // handle read-only set via metadata
         if (property.isSetReadOnly()) {
@@ -733,7 +733,7 @@ public class MappingsGenerator {
         }
         if (property.isMethodProperty()) {
             if (property.getGetMethodName() == null) {
-                // handle case of set with no get method 
+                // handle case of set with no get method
                 String paramTypeAsString = property.getType().getName();
                 mapping.setAttributeAccessor(new JAXBSetMethodAttributeAccessor(paramTypeAsString, helper.getClassLoader()));
                 mapping.setIsReadOnly(true);
@@ -758,9 +758,9 @@ public class MappingsGenerator {
         } else if (property.isNillable()){
             mapping.getNullPolicy().setNullRepresentedByXsiNil(true);
         }
-        
+
         if (referenceClassName == null){
-        	((XMLField)mapping.getField()).setIsTypedTextField(true);        	
+        	((XMLField)mapping.getField()).setIsTypedTextField(true);
         	((XMLField)mapping.getField()).setSchemaType(XMLConstants.ANY_TYPE_QNAME);
         	String defaultValue = property.getDefaultValue();
         	if (null != defaultValue) {
@@ -769,7 +769,7 @@ public class MappingsGenerator {
         } else {
         	mapping.setReferenceClassName(referenceClassName);
         }
-                
+
         if (property.getInverseReferencePropertyName() != null) {
             mapping.setContainerAttributeName(property.getInverseReferencePropertyName());
             JavaClass backPointerPropertyType = null;
@@ -798,9 +798,9 @@ public class MappingsGenerator {
 
         descriptor.addMapping(mapping);
         return mapping;
-        
+
     }
-    
+
     public XMLDirectMapping generateDirectMapping(Property property, XMLDescriptor descriptor, NamespaceInfo namespaceInfo) {
         XMLDirectMapping mapping = new XMLDirectMapping();
         mapping.setAttributeName(property.getPropertyName());
@@ -818,7 +818,7 @@ public class MappingsGenerator {
         }
         if (property.isMethodProperty()) {
             if (property.getGetMethodName() == null) {
-                // handle case of set with no get method 
+                // handle case of set with no get method
                 String paramTypeAsString = property.getType().getName();
                 mapping.setAttributeAccessor(new JAXBSetMethodAttributeAccessor(paramTypeAsString, helper.getClassLoader()));
                 mapping.setIsReadOnly(true);
@@ -837,13 +837,13 @@ public class MappingsGenerator {
         } else {
             mapping.setField(getXPathForField(property, namespaceInfo, true));
         }
-        
+
         if (property.getDefaultValue() != null) {
             mapping.setNullValue(property.getDefaultValue());
         } else if (property.getType().getRawName().equals("java.lang.String")) {
             mapping.setNullValue("");
         }
-        
+
         // handle null policy set via xml metadata
         if (property.isSetNullPolicy()) {
             mapping.setNullPolicy(getNullPolicyFromProperty(property, namespaceInfo.getNamespaceResolverForDescriptor()));
@@ -857,7 +857,7 @@ public class MappingsGenerator {
                 ((NullPolicy) mapping.getNullPolicy()).setSetPerformedForAbsentNode(false);
             }
         }
-        
+
         if (property.isRequired()) {
             ((XMLField) mapping.getField()).setRequired(true);
         }
@@ -865,7 +865,7 @@ public class MappingsGenerator {
         if (property.isXmlElementType()){
         	Class theClass = helper.getClassForJavaClass(property.getType());
         	mapping.setAttributeClassification(theClass);
-        } 
+        }
 
         if (XMLConstants.QNAME_QNAME.equals(property.getSchemaType())){
             ((XMLField) mapping.getField()).setSchemaType(XMLConstants.QNAME_QNAME);
@@ -877,13 +877,13 @@ public class MappingsGenerator {
         descriptor.addMapping(mapping);
         return mapping;
     }
-    
+
     public XMLBinaryDataMapping generateBinaryMapping(Property property, XMLDescriptor descriptor, NamespaceInfo namespaceInfo) {
         XMLBinaryDataMapping mapping = new XMLBinaryDataMapping();
         mapping.setAttributeName(property.getPropertyName());
         if (property.isMethodProperty()) {
             if (property.getGetMethodName() == null) {
-                // handle case of set with no get method 
+                // handle case of set with no get method
                 String paramTypeAsString = property.getType().getName();
                 mapping.setAttributeAccessor(new JAXBSetMethodAttributeAccessor(paramTypeAsString, helper.getClassLoader()));
                 mapping.setIsReadOnly(true);
@@ -922,16 +922,16 @@ public class MappingsGenerator {
         	}
         }
         descriptor.addMapping(mapping);
-        
+
         return mapping;
     }
-    
+
     public XMLBinaryDataCollectionMapping generateBinaryDataCollectionMapping(Property property, XMLDescriptor descriptor, NamespaceInfo namespaceInfo) {
         XMLBinaryDataCollectionMapping mapping = new XMLBinaryDataCollectionMapping();
         mapping.setAttributeName(property.getPropertyName());
         if (property.isMethodProperty()) {
             if (property.getGetMethodName() == null) {
-                // handle case of set with no get method 
+                // handle case of set with no get method
                 String paramTypeAsString = property.getType().getName();
                 mapping.setAttributeAccessor(new JAXBSetMethodAttributeAccessor(paramTypeAsString, helper.getClassLoader()));
                 mapping.setIsReadOnly(true);
@@ -969,16 +969,16 @@ public class MappingsGenerator {
         		mapping.setMimeTypePolicy(new FixedMimeTypePolicy("application/octet-stream"));
         	}
         }
-        
+
         JavaClass collectionType = property.getType();
-        if(collectionType != null && isCollectionType(collectionType)){        	            
+        if(collectionType != null && isCollectionType(collectionType)){
         	if(collectionType.hasActualTypeArguments()){
         		JavaClass itemType = (JavaClass)collectionType.getActualTypeArguments().toArray()[0];
         		try{
         			Class declaredClass = PrivilegedAccessHelper.getClassForName(itemType.getQualifiedName(), false, helper.getClassLoader());
         			mapping.setAttributeElementClass(declaredClass);
         		}catch (Exception e) {
- 
+
 			}
         	}
         }else{
@@ -990,9 +990,9 @@ public class MappingsGenerator {
             collectionType = jotHashSet;
         }
         mapping.useCollectionClassName(collectionType.getRawName());
-        
+
         descriptor.addMapping(mapping);
-        
+
         return mapping;
     }
     public void generateDirectEnumerationMapping(Property property, XMLDescriptor descriptor, NamespaceInfo namespaceInfo, EnumTypeInfo enumInfo) {
@@ -1001,7 +1001,7 @@ public class MappingsGenerator {
         mapping.setAttributeName(property.getPropertyName());
         if (property.isMethodProperty()) {
             if (property.getGetMethodName() == null) {
-                // handle case of set with no get method 
+                // handle case of set with no get method
                 String paramTypeAsString = property.getType().getName();
                 mapping.setAttributeAccessor(new JAXBSetMethodAttributeAccessor(paramTypeAsString, helper.getClassLoader()));
                 mapping.setIsReadOnly(true);
@@ -1015,24 +1015,24 @@ public class MappingsGenerator {
             }
         }
         mapping.setField(getXPathForField(property, namespaceInfo, true));
-   
+
         descriptor.addMapping(mapping);
     }
-    
+
     private JAXBEnumTypeConverter buildJAXBEnumTypeConverter(DatabaseMapping mapping, EnumTypeInfo enumInfo){
         JAXBEnumTypeConverter converter = new JAXBEnumTypeConverter(mapping, enumInfo.getClassName(), false);
         List<String> fieldNames = enumInfo.getFieldNames();
         List<String> xmlEnumValues = enumInfo.getXmlEnumValues();
-        for (int i=0; i< fieldNames.size(); i++) {         
+        for (int i=0; i< fieldNames.size(); i++) {
             converter.addConversionValue(xmlEnumValues.get(i), fieldNames.get(i));
         }
         return converter;
     }
-    
+
     public void generateCollectionMapping(Property property, XMLDescriptor descriptor, NamespaceInfo namespaceInfo) {
         // check to see if this should be a composite or direct mapping
         JavaClass javaClass = property.getActualType();
-       
+
         if (property.isMixedContent()) {
             generateAnyCollectionMapping(property, descriptor, namespaceInfo, true);
             return;
@@ -1048,7 +1048,7 @@ public class MappingsGenerator {
                     generateCompositeCollectionMapping(property, descriptor, namespaceInfo, javaClass.getQualifiedName());
                 }
             }
-        } else if(!property.isAttribute() && javaClass != null && javaClass.getQualifiedName().equals(OBJECT_CLASS_NAME)){         
+        } else if(!property.isAttribute() && javaClass != null && javaClass.getQualifiedName().equals(OBJECT_CLASS_NAME)){
             XMLCompositeCollectionMapping ccMapping = generateCompositeCollectionMapping(property, descriptor, namespaceInfo, null);
             ccMapping.setKeepAsElementPolicy(UnmarshalKeepAsElementPolicy.KEEP_UNKNOWN_AS_ELEMENT);
         }else if(areEquals(javaClass, ClassConstants.ABYTE) || areEquals(javaClass, ClassConstants.APBYTE) ||areEquals(javaClass, "javax.activation.DataHandler") || areEquals(javaClass, "java.awt.Image") || areEquals(javaClass, "java.xml.transform.Source") || areEquals(javaClass, "javax.mail.internet.MimeMultipart")) {
@@ -1056,15 +1056,15 @@ public class MappingsGenerator {
         } else {
             generateDirectCollectionMapping(property, descriptor, namespaceInfo);
         }
-    } 
-    
+    }
+
     public void generateEnumCollectionMapping(Property property, XMLDescriptor descriptor, NamespaceInfo namespaceInfo, EnumTypeInfo info) {
         XMLCompositeDirectCollectionMapping mapping = new XMLCompositeDirectCollectionMapping();
         mapping.setAttributeName(property.getPropertyName());
         mapping.setReuseContainer(true);
         if (property.isMethodProperty()) {
             if (property.getGetMethodName() == null) {
-                // handle case of set with no get method 
+                // handle case of set with no get method
                 String paramTypeAsString = property.getType().getName();
                 mapping.setAttributeAccessor(new JAXBSetMethodAttributeAccessor(paramTypeAsString, helper.getClassLoader()));
                 mapping.setIsReadOnly(true);
@@ -1079,7 +1079,7 @@ public class MappingsGenerator {
         }
 
         mapping.setValueConverter(buildJAXBEnumTypeConverter(mapping, info));
-        
+
         JavaClass collectionType = property.getType();
         if (areEquals(collectionType, Collection.class) || areEquals(collectionType, List.class)) {
             collectionType = jotArrayList;
@@ -1087,12 +1087,12 @@ public class MappingsGenerator {
             collectionType = jotHashSet;
         }
         mapping.useCollectionClassName(collectionType.getRawName());
-        
+
         mapping.setField(getXPathForField(property, namespaceInfo, true));
-        if (property.isXmlList()) {         
+        if (property.isXmlList()) {
             mapping.setUsesSingleNode(true);
-        }        
-        
+        }
+
         descriptor.addMapping(mapping);
     }
 
@@ -1102,7 +1102,7 @@ public class MappingsGenerator {
         mapping.setReuseContainer(true);
         if (property.isMethodProperty()) {
             if (property.getGetMethodName() == null) {
-                // handle case of set with no get method 
+                // handle case of set with no get method
                 String paramTypeAsString = property.getType().getName();
                 mapping.setAttributeAccessor(new JAXBSetMethodAttributeAccessor(paramTypeAsString, helper.getClassLoader()));
                 mapping.setIsReadOnly(true);
@@ -1123,13 +1123,13 @@ public class MappingsGenerator {
         mapping.setNamespaceDeclarationIncluded(false);
         descriptor.addMapping(mapping);
     }
-    
+
     public void generateAnyObjectMapping(Property property, XMLDescriptor descriptor, NamespaceInfo namespaceInfo)  {
         XMLAnyObjectMapping mapping = new XMLAnyObjectMapping();
         mapping.setAttributeName(property.getPropertyName());
         if (property.isMethodProperty()) {
             if (property.getGetMethodName() == null) {
-                // handle case of set with no get method 
+                // handle case of set with no get method
                 String paramTypeAsString = property.getType().getName();
                 mapping.setAttributeAccessor(new JAXBSetMethodAttributeAccessor(paramTypeAsString, helper.getClassLoader()));
                 mapping.setIsReadOnly(true);
@@ -1145,7 +1145,7 @@ public class MappingsGenerator {
         // if the XPath is set (via xml-path) use it
         if (property.getXmlPath() != null) {
             mapping.setField(new XMLField(property.getXmlPath()));
-        } 
+        }
 
         Class declaredType = helper.getClassForJavaClass(property.getActualType());
         JAXBElementRootConverter jaxbElementRootConverter = new JAXBElementRootConverter(declaredType);
@@ -1165,22 +1165,22 @@ public class MappingsGenerator {
         } else {
             mapping.setUseXMLRoot(true);
         }
-        
+
         descriptor.addMapping(mapping);
     }
-    
+
     protected boolean areEquals(JavaClass src, Class tgt) {
         if (src == null || tgt == null) {
             return false;
         }
         return src.getRawName().equals(tgt.getCanonicalName());
     }
-    
+
     /**
      * Compares a JavaModel JavaClass to a Class.  Equality is based on
      * the raw name of the JavaClass compared to the canonical
      * name of the Class.
-     * 
+     *
      * @param src
      * @param tgt
      * @return
@@ -1209,34 +1209,34 @@ public class MappingsGenerator {
         mapping.setReferenceClass(generatedClass);
         String mapClassName = property.getType().getRawName();
         mapping.useCollectionClass(ArrayList.class);
-     
+
         mapping.setAttributeAccessor(new MapValueAttributeAccessor(mapping.getAttributeAccessor(), mapping.getContainerPolicy(), generatedClass, mapClassName));
         descriptor.addMapping(mapping);
-           
+
         return mapping;
     }
-    
+
     private Class generateMapEntryClassAndDescriptor(Property property, NamespaceResolver nr){
     	JavaClass keyType = property.getKeyType();
         JavaClass valueType = property.getValueType();
         if(keyType == null){
-        	keyType = helper.getJavaClass("java.lang.Object");        	
+        	keyType = helper.getJavaClass("java.lang.Object");
         }
         if(valueType == null){
-        	valueType = helper.getJavaClass("java.lang.Object");        	
+        	valueType = helper.getJavaClass("java.lang.Object");
         }
-        String mapEntryClassName = WRAPPER_CLASS + wrapperCounter++; 
-        
+        String mapEntryClassName = WRAPPER_CLASS + wrapperCounter++;
+
         MapEntryGeneratedKey mapKey = new MapEntryGeneratedKey(keyType.getQualifiedName(),valueType.getQualifiedName());
     	Class generatedClass = getGeneratedMapEntryClasses().get(mapKey);
-    	
+
         if(generatedClass == null){
             generatedClass = generateMapEntryClass(mapEntryClassName, keyType.getQualifiedName(), valueType.getQualifiedName());
             getGeneratedMapEntryClasses().put(mapKey, generatedClass);
             XMLDescriptor desc = new XMLDescriptor();
-            desc.setJavaClass(generatedClass);            
-                       
-            desc.addMapping(generateMappingForType(keyType, Property.DEFAULT_KEY_NAME));            	
+            desc.setJavaClass(generatedClass);
+
+            desc.addMapping(generateMappingForType(keyType, Property.DEFAULT_KEY_NAME));
             desc.addMapping(generateMappingForType(valueType, Property.DEFAULT_VALUE_NAME));
             NamespaceResolver newNr = new NamespaceResolver();
             String prefix = getPrefixForNamespace(XMLConstants.SCHEMA_INSTANCE_URL, nr, XMLConstants.SCHEMA_INSTANCE_PREFIX, false);
@@ -1244,65 +1244,65 @@ public class MappingsGenerator {
                 newNr.put(prefix, XMLConstants.SCHEMA_INSTANCE_URL);
             }
             desc.setNamespaceResolver(newNr);
-            project.addDescriptor(desc);            
-        }		        
+            project.addDescriptor(desc);
+        }
         return generatedClass;
     }
-    
+
     private Class generateMapEntryClass(String className, String keyType, String valueType){
-		
+
         ClassWriter cw = new ClassWriter(false);
         CodeVisitor cv;
 
         String qualifiedInternalClassName = className.replace('.', '/');
         String qualifiedInternalKeyClassName = keyType.replace('.', '/');
-        String qualifiedInternalValueClassName = valueType.replace('.', '/');	
-  		
+        String qualifiedInternalValueClassName = valueType.replace('.', '/');
+
         cw.visit(Constants.V1_5, Constants.ACC_PUBLIC + Constants.ACC_SUPER, qualifiedInternalClassName, "java/lang/Object", new String[] { "org/eclipse/persistence/internal/jaxb/many/MapEntry" }, className.substring(className.lastIndexOf(".")));
 
         cw.visitField(Constants.ACC_PRIVATE, "key", "L"+qualifiedInternalKeyClassName+";", null, null);
 
         cw.visitField(Constants.ACC_PRIVATE, "value", "L"+qualifiedInternalValueClassName+";", null, null);
-  	
+
         cv = cw.visitMethod(Constants.ACC_PUBLIC, "<init>", "()V", null, null);
         cv.visitVarInsn(Constants.ALOAD, 0);
         cv.visitMethodInsn(Constants.INVOKESPECIAL, "java/lang/Object", "<init>", "()V");
         cv.visitInsn(Constants.RETURN);
         cv.visitMaxs(1, 1);
-  		        
+
         cv = cw.visitMethod(Constants.ACC_PUBLIC, "getKey", "()L"+qualifiedInternalKeyClassName+";", null, null);
         cv.visitVarInsn(Constants.ALOAD, 0);
         cv.visitFieldInsn(Constants.GETFIELD, qualifiedInternalClassName, "key", "L"+qualifiedInternalKeyClassName+";");
         cv.visitInsn(Constants.ARETURN);
         cv.visitMaxs(1, 1);
-  		
+
         cv = cw.visitMethod(Constants.ACC_PUBLIC, "setKey", "(L"+qualifiedInternalKeyClassName+";)V", null, null);
         cv.visitVarInsn(Constants.ALOAD, 0);
         cv.visitVarInsn(Constants.ALOAD, 1);
         cv.visitFieldInsn(Constants.PUTFIELD, qualifiedInternalClassName, "key", "L"+qualifiedInternalKeyClassName+";");
         cv.visitInsn(Constants.RETURN);
         cv.visitMaxs(2, 2);
-  		
+
         cv = cw.visitMethod(Constants.ACC_PUBLIC, "getValue", "()L"+qualifiedInternalValueClassName+";", null, null);
         cv.visitVarInsn(Constants.ALOAD, 0);
         cv.visitFieldInsn(Constants.GETFIELD, qualifiedInternalClassName, "value", "L"+qualifiedInternalValueClassName+";");
         cv.visitInsn(Constants.ARETURN);
         cv.visitMaxs(1, 1);
-  	  		
+
         cv = cw.visitMethod(Constants.ACC_PUBLIC, "setValue", "(L"+qualifiedInternalValueClassName+";)V", null, null);
         cv.visitVarInsn(Constants.ALOAD, 0);
         cv.visitVarInsn(Constants.ALOAD, 1);
         cv.visitFieldInsn(Constants.PUTFIELD, qualifiedInternalClassName, "value", "L"+qualifiedInternalValueClassName+";");
         cv.visitInsn(Constants.RETURN);
         cv.visitMaxs(2, 2);
-  		
+
         if(!qualifiedInternalValueClassName.equals("java/lang/Object")){
 	        cv = cw.visitMethod(Constants.ACC_PUBLIC + Constants.ACC_BRIDGE + Constants.ACC_SYNTHETIC, "getValue", "()Ljava/lang/Object;", null, null);
 	        cv.visitVarInsn(Constants.ALOAD, 0);
 	        cv.visitMethodInsn(Constants.INVOKEVIRTUAL, qualifiedInternalClassName, "getValue", "()L"+qualifiedInternalValueClassName+";");
 	        cv.visitInsn(Constants.ARETURN);
 	        cv.visitMaxs(1, 1);
-	        
+
 	        cv = cw.visitMethod(Constants.ACC_PUBLIC + Constants.ACC_BRIDGE + Constants.ACC_SYNTHETIC, "setValue", "(Ljava/lang/Object;)V", null, null);
 	        cv.visitVarInsn(Constants.ALOAD, 0);
 	        cv.visitVarInsn(Constants.ALOAD, 1);
@@ -1311,14 +1311,14 @@ public class MappingsGenerator {
 	        cv.visitInsn(Constants.RETURN);
 	        cv.visitMaxs(2, 2);
         }
-  		
+
         if(!qualifiedInternalKeyClassName.equals("java/lang/Object")){
             cv = cw.visitMethod(Constants.ACC_PUBLIC + Constants.ACC_BRIDGE + Constants.ACC_SYNTHETIC, "getKey", "()Ljava/lang/Object;", null, null);
             cv.visitVarInsn(Constants.ALOAD, 0);
             cv.visitMethodInsn(Constants.INVOKEVIRTUAL,qualifiedInternalClassName, "getKey", "()L"+qualifiedInternalKeyClassName+";");
             cv.visitInsn(Constants.ARETURN);
             cv.visitMaxs(1, 1);
-            
+
             cv = cw.visitMethod(Constants.ACC_PUBLIC + Constants.ACC_BRIDGE + Constants.ACC_SYNTHETIC, "setKey", "(Ljava/lang/Object;)V", null, null);
             cv.visitVarInsn(Constants.ALOAD, 0);
             cv.visitVarInsn(Constants.ALOAD, 1);
@@ -1327,17 +1327,17 @@ public class MappingsGenerator {
             cv.visitInsn(Constants.RETURN);
             cv.visitMaxs(2, 2);
         }
-      
+
   		// CLASS ATRIBUTE
         SignatureAttribute attr = new SignatureAttribute("Ljava/lang/Object;Lorg/eclipse/persistence/internal/jaxb/many/MapEntry<L"+qualifiedInternalKeyClassName+";L"+qualifiedInternalValueClassName+";>;");
         cw.visitAttribute(attr);
-  		  		
-        cw.visitEnd();				       
-        
+
+        cw.visitEnd();
+
         byte[] classBytes =cw.toByteArray();
-        JaxbClassLoader loader = (JaxbClassLoader)helper.getClassLoader();   
+        JaxbClassLoader loader = (JaxbClassLoader)helper.getClassLoader();
         Class generatedClass = loader.generateClass(className, classBytes);
-        return generatedClass;    	
+        return generatedClass;
     }
 
     private DatabaseMapping generateMappingForType(JavaClass theType, String attributeName){
@@ -1345,37 +1345,37 @@ public class MappingsGenerator {
         boolean typeIsObject =  theType.getRawName().equals(OBJECT_CLASS_NAME);
         if (typeInfo.containsKey(theType.getQualifiedName()) || typeIsObject) {
             mapping = new XMLCompositeObjectMapping();
-            mapping.setAttributeName(attributeName);            
-            ((XMLCompositeObjectMapping)mapping).setXPath(attributeName);  
+            mapping.setAttributeName(attributeName);
+            ((XMLCompositeObjectMapping)mapping).setXPath(attributeName);
             if(typeIsObject){
             	((XMLCompositeObjectMapping)mapping).setKeepAsElementPolicy(UnmarshalKeepAsElementPolicy.KEEP_UNKNOWN_AS_ELEMENT);
             	((XMLField)((XMLCompositeObjectMapping)mapping).getField()).setIsTypedTextField(true);
             	((XMLField)((XMLCompositeObjectMapping)mapping).getField()).setSchemaType(XMLConstants.ANY_TYPE_QNAME);
             }else{
             	((XMLCompositeObjectMapping)mapping).setReferenceClassName(theType.getQualifiedName());
-            }           
-        } else {        	
+            }
+        } else {
             mapping = new XMLDirectMapping();
             mapping.setAttributeName(attributeName);
             ((XMLDirectMapping)mapping).setXPath(attributeName + "/text()");
-            
-            QName schemaType = (QName) userDefinedSchemaTypes.get(theType.getQualifiedName());        
-                     
-            if (schemaType == null) {            	
+
+            QName schemaType = (QName) userDefinedSchemaTypes.get(theType.getQualifiedName());
+
+            if (schemaType == null) {
                 schemaType = (QName) helper.getXMLToJavaTypeMap().get(theType);
             }
-            ((XMLField)((XMLDirectMapping)mapping).getField()).setSchemaType(schemaType);            
+            ((XMLField)((XMLDirectMapping)mapping).getField()).setSchemaType(schemaType);
         }
         return mapping;
     }
-    
+
     public XMLCompositeCollectionMapping generateCompositeCollectionMapping(Property property, XMLDescriptor descriptor, NamespaceInfo namespaceInfo, String referenceClassName) {
         XMLCompositeCollectionMapping mapping = new XMLCompositeCollectionMapping();
         mapping.setAttributeName(property.getPropertyName());
         mapping.setReuseContainer(true);
         if (property.isMethodProperty()) {
             if (property.getGetMethodName() == null) {
-                // handle case of set with no get method 
+                // handle case of set with no get method
                 String paramTypeAsString = property.getType().getName();
                 mapping.setAttributeAccessor(new JAXBSetMethodAttributeAccessor(paramTypeAsString, helper.getClassLoader()));
                 mapping.setIsReadOnly(true);
@@ -1388,26 +1388,26 @@ public class MappingsGenerator {
                 mapping.setGetMethodName(property.getGetMethodName());
             }
         }
-        
-       
+
+
         if (property.isNillable()){
             mapping.getNullPolicy().setNullRepresentedByXsiNil(true);
         }
         JavaClass collectionType = property.getType();
- 
-        if (collectionType.isArray()){        	        	
-            JAXBObjectArrayAttributeAccessor accessor = new JAXBObjectArrayAttributeAccessor(mapping.getAttributeAccessor(), mapping.getContainerPolicy());       	
+
+        if (collectionType.isArray()){
+            JAXBObjectArrayAttributeAccessor accessor = new JAXBObjectArrayAttributeAccessor(mapping.getAttributeAccessor(), mapping.getContainerPolicy());
             accessor.setComponentClassName(collectionType.getComponentType().getRawName());
-            mapping.setAttributeAccessor(accessor);        	
+            mapping.setAttributeAccessor(accessor);
             collectionType = jotArrayList;
         }else if (areEquals(collectionType, Collection.class) || areEquals(collectionType, List.class)) {
             collectionType = jotArrayList;
         } else if (areEquals(collectionType, Set.class)) {
             collectionType = jotHashSet;
         }
-      
+
         mapping.useCollectionClassName(collectionType.getRawName());
-        
+
         // if the XPath is set (via xml-path) use it; otherwise figure it out
         XMLField xmlField;
         if (property.getXmlPath() != null) {
@@ -1416,18 +1416,18 @@ public class MappingsGenerator {
             xmlField = getXPathForField(property, namespaceInfo, false);
         }
         mapping.setXPath(xmlField.getXPath());
-        
+
         if (referenceClassName == null){
-        	((XMLField)mapping.getField()).setIsTypedTextField(true);        	
+        	((XMLField)mapping.getField()).setIsTypedTextField(true);
         	((XMLField)mapping.getField()).setSchemaType(XMLConstants.ANY_TYPE_QNAME);
         } else {
-        	mapping.setReferenceClassName(referenceClassName);	
+        	mapping.setReferenceClassName(referenceClassName);
         }
-        
+
         if (property.isRequired()) {
             ((XMLField) mapping.getField()).setRequired(true);
         }
-        
+
         if (property.getInverseReferencePropertyName() != null) {
             mapping.setContainerAttributeName(property.getInverseReferencePropertyName());
             JavaClass backPointerPropertyType = null;
@@ -1450,17 +1450,17 @@ public class MappingsGenerator {
             }
         }
         descriptor.addMapping(mapping);
-        
+
         return mapping;
     }
-    
+
     public XMLCompositeDirectCollectionMapping generateDirectCollectionMapping(Property property, XMLDescriptor descriptor, NamespaceInfo namespaceInfo) {
         XMLCompositeDirectCollectionMapping mapping = new XMLCompositeDirectCollectionMapping();
         mapping.setAttributeName(property.getPropertyName());
         mapping.setReuseContainer(true);
         if (property.isMethodProperty()) {
             if (property.getGetMethodName() == null) {
-                // handle case of set with no get method 
+                // handle case of set with no get method
                 String paramTypeAsString = property.getType().getName();
                 mapping.setAttributeAccessor(new JAXBSetMethodAttributeAccessor(paramTypeAsString, helper.getClassLoader()));
                 mapping.setIsReadOnly(true);
@@ -1473,24 +1473,24 @@ public class MappingsGenerator {
                 mapping.setGetMethodName(property.getGetMethodName());
             }
         }
-        JavaClass collectionType = property.getType();        
- 
-        if (collectionType.isArray()){        	
+        JavaClass collectionType = property.getType();
+
+        if (collectionType.isArray()){
             if (collectionType.getComponentType().isPrimitive()){
                 JAXBPrimitiveArrayAttributeAccessor accessor = new JAXBPrimitiveArrayAttributeAccessor(mapping.getAttributeAccessor(), mapping.getContainerPolicy());
-                String componentClassName = collectionType.getComponentType().getRawName();        	
+                String componentClassName = collectionType.getComponentType().getRawName();
                 Class primitiveClass = XMLConversionManager.getDefaultManager().convertClassNameToClass(componentClassName);
                 accessor.setComponentClass(primitiveClass);
                 mapping.setAttributeAccessor(accessor);
-            	
+
                 Class declaredClass = XMLConversionManager.getDefaultManager().getObjectClass(primitiveClass);
                 mapping.setAttributeElementClass(declaredClass);
             } else {
                 JAXBObjectArrayAttributeAccessor accessor = new JAXBObjectArrayAttributeAccessor(mapping.getAttributeAccessor(), mapping.getContainerPolicy());
-                String componentClassName = collectionType.getComponentType().getRawName();        	
+                String componentClassName = collectionType.getComponentType().getRawName();
                 accessor.setComponentClassName(componentClassName);
                 mapping.setAttributeAccessor(accessor);
-            	
+
                 JavaClass componentType = collectionType.getComponentType();
                 try{
                     Class declaredClass = PrivilegedAccessHelper.getClassForName(componentType.getRawName(), false, helper.getClassLoader());
@@ -1498,7 +1498,7 @@ public class MappingsGenerator {
                 }catch (Exception e) {}
             }
     		collectionType = jotArrayList;
-        } else if (isCollectionType(collectionType)){        	
+        } else if (isCollectionType(collectionType)){
         	if (collectionType.hasActualTypeArguments()){
         		JavaClass itemType = (JavaClass)collectionType.getActualTypeArguments().toArray()[0];
         		try {
@@ -1514,7 +1514,7 @@ public class MappingsGenerator {
         }
 
         mapping.useCollectionClassName(collectionType.getRawName());
-        
+
         // if the XPath is set (via xml-path) use it; otherwise figure it out
         XMLField xmlField;
         if (property.getXmlPath() != null) {
@@ -1523,32 +1523,32 @@ public class MappingsGenerator {
             xmlField = getXPathForField(property, namespaceInfo, true);
         }
         mapping.setField(xmlField);
-        
+
         if (helper.isAnnotationPresent(property.getElement(), XmlMixed.class)) {
             xmlField.setXPath("text()");
         }
-        
+
         if (XMLConstants.QNAME_QNAME.equals(property.getSchemaType())){
             ((XMLField) mapping.getField()).setSchemaType(XMLConstants.QNAME_QNAME);
         }
-        
+
         if (property.getActualType() == null || property.getActualType().getRawName().equals("java.lang.String")) {
             mapping.getNullPolicy().setNullRepresentedByEmptyNode(false);
         }
-        
+
         if (property.isRequired()) {
             ((XMLField) mapping.getField()).setRequired(true);
         }
-        
-        if (property.isXmlElementType() && property.getGenericType()!=null ){           	
+
+        if (property.isXmlElementType() && property.getGenericType()!=null ){
         	Class theClass = helper.getClassForJavaClass(property.getGenericType());
         	mapping.setAttributeElementClass(theClass);
-        } 
-        
+        }
+
         if (xmlField.getXPathFragment().isAttribute()){
             mapping.setUsesSingleNode(true);
-        }                
-        if (property.isXmlList()) {         
+        }
+        if (property.isXmlList()) {
             mapping.setUsesSingleNode(true);
         }
         descriptor.addMapping(mapping);
@@ -1563,8 +1563,8 @@ public class MappingsGenerator {
     	if(defaultNS != null && URI.equals(defaultNS)){
     		return null;
     	}
-    	
-    	
+
+
         Enumeration keys = namespaceResolver.getPrefixes();
         while (keys.hasMoreElements()) {
             String next = (String) keys.nextElement();
@@ -1577,9 +1577,9 @@ public class MappingsGenerator {
         if(suggestedPrefix != null){
         	prefix = globalNamespaceResolver.generatePrefix(suggestedPrefix);
         }else{
-        	prefix = globalNamespaceResolver.generatePrefix();	
+        	prefix = globalNamespaceResolver.generatePrefix();
         }
-                
+
         while(null != namespaceResolver.resolveNamespacePrefix(prefix)){
         	prefix = globalNamespaceResolver.generatePrefix();
         }
@@ -1593,9 +1593,9 @@ public class MappingsGenerator {
         JavaClass type = field.getType();
         return isCollectionType(type);
     }
-    public boolean isCollectionType(JavaClass type) {        
-        if (helper.getJavaClass(Collection.class).isAssignableFrom(type) 
-                || helper.getJavaClass(List.class).isAssignableFrom(type) 
+    public boolean isCollectionType(JavaClass type) {
+        if (helper.getJavaClass(Collection.class).isAssignableFrom(type)
+                || helper.getJavaClass(List.class).isAssignableFrom(type)
                 || helper.getJavaClass(Set.class).isAssignableFrom(type)) {
             return true;
         }
@@ -1603,13 +1603,13 @@ public class MappingsGenerator {
     }
 
     /**
-     * Setup inheritance for abstract superclass.  
-     * 
-     * NOTE: We currently only handle one level of inheritance in this case.  
-     * For multiple levels the code will need to be modified. The logic in 
-     * generateMappings() that determines when to copy down inherited 
-     * methods from the parent class will need to be changed as well. 
-     * 
+     * Setup inheritance for abstract superclass.
+     *
+     * NOTE: We currently only handle one level of inheritance in this case.
+     * For multiple levels the code will need to be modified. The logic in
+     * generateMappings() that determines when to copy down inherited
+     * methods from the parent class will need to be changed as well.
+     *
      * @param jClass
      */
     private void setupInheritance(JavaClass jClass) {
@@ -1617,38 +1617,38 @@ public class MappingsGenerator {
         if (descriptor == null) {
             return;
         }
-           
+
         JavaClass superClass = helper.getNextMappedSuperClass(jClass);
         if(superClass == null){
             return;
         }
-    
+
         TypeInfo superTypeInfo =  typeInfo.get(superClass.getName());
         if(superTypeInfo == null){
         	return;
         }
         XMLDescriptor superDescriptor = superTypeInfo.getDescriptor();
-        if (superDescriptor != null) {                          
+        if (superDescriptor != null) {
             XMLSchemaReference sRef = descriptor.getSchemaReference();
             if (sRef == null || sRef.getSchemaContext() == null) {
                 return;
-            }         
-            
-            JavaClass rootMappedSuperClass = getRootMappedSuperClass(superClass);                  
-            
+            }
+
+            JavaClass rootMappedSuperClass = getRootMappedSuperClass(superClass);
+
             TypeInfo rootTypeInfo =  typeInfo.get(rootMappedSuperClass.getName());
 
             XMLDescriptor rootDescriptor = rootTypeInfo.getDescriptor();
             if (rootDescriptor.getNamespaceResolver() == null) {
                 rootDescriptor.setNamespaceResolver(new NamespaceResolver());
             }
-            
+
             if(rootDescriptor.getInheritancePolicy().getClassIndicatorField() == null){
             	String prefix = getPrefixForNamespace(XMLConstants.SCHEMA_INSTANCE_URL, rootDescriptor.getNamespaceResolver(),XMLConstants.SCHEMA_INSTANCE_PREFIX);
-            	XMLField classIndicatorField = new XMLField("@"+ getQualifiedString(prefix, "type"));                
-                rootDescriptor.getInheritancePolicy().setClassIndicatorField(classIndicatorField);                  
+            	XMLField classIndicatorField = new XMLField("@"+ getQualifiedString(prefix, "type"));
+                rootDescriptor.getInheritancePolicy().setClassIndicatorField(classIndicatorField);
             }
-                        
+
             String sCtx = sRef.getSchemaContext();
             if (sCtx.length() > 1 && sCtx.startsWith("/")) {
                 sCtx = sCtx.substring(1);
@@ -1664,16 +1664,16 @@ public class MappingsGenerator {
                         rootSCtx = rootSCtx.substring(1);
                     }
                     rootDescriptor.getInheritancePolicy().addClassNameIndicator(rootDescriptor.getJavaClassName(), rootSCtx);
-                }                   
+                }
             }
-            rootDescriptor.getInheritancePolicy().setShouldReadSubclasses(true);  
-        }                      
+            rootDescriptor.getInheritancePolicy().setShouldReadSubclasses(true);
+        }
     }
-    
-    
+
+
     private JavaClass getRootMappedSuperClass(JavaClass javaClass){
         JavaClass rootMappedSuperClass = javaClass;
-        
+
         JavaClass nextMappedSuperClass = rootMappedSuperClass;
         while(nextMappedSuperClass != null){
             nextMappedSuperClass = helper.getNextMappedSuperClass(nextMappedSuperClass);
@@ -1682,10 +1682,10 @@ public class MappingsGenerator {
             }
             rootMappedSuperClass = nextMappedSuperClass;
         }
-        
-        return rootMappedSuperClass;        
+
+        return rootMappedSuperClass;
     }
-    
+
     public void generateMappings() {
         Iterator javaClasses = this.typeInfo.keySet().iterator();
         while (javaClasses.hasNext()) {
@@ -1703,7 +1703,7 @@ public class MappingsGenerator {
         }
     }
 
-    public void generateMappings(TypeInfo info, XMLDescriptor descriptor, NamespaceInfo namespaceInfo) {    
+    public void generateMappings(TypeInfo info, XMLDescriptor descriptor, NamespaceInfo namespaceInfo) {
     	List<Property> propertiesInOrder = info.getNonTransientPropertiesInPropOrder();
     	for (int i = 0; i < propertiesInOrder.size(); i++) {
     		Property next = propertiesInOrder.get(i);
@@ -1715,7 +1715,7 @@ public class MappingsGenerator {
 
     /**
      * Create an XMLCollectionReferenceMapping and add it to the descriptor.
-     * 
+     *
      * @param property
      * @param descriptor
      * @param namespaceInfo
@@ -1726,16 +1726,16 @@ public class MappingsGenerator {
         XMLField srcXPath;
         if (property.getXmlPath() != null) {
             srcXPath = new XMLField(property.getXmlPath());
-        } else { 
+        } else {
             srcXPath = getXPathForField(property, namespaceInfo, true);
         }
-        
+
         XMLCollectionReferenceMapping mapping = new XMLCollectionReferenceMapping();
         mapping.setAttributeName(property.getPropertyName());
         mapping.setReuseContainer(true);
         if (property.isMethodProperty()) {
             if (property.getGetMethodName() == null) {
-                // handle case of set with no get method 
+                // handle case of set with no get method
                 String paramTypeAsString = property.getType().getName();
                 mapping.setAttributeAccessor(new JAXBSetMethodAttributeAccessor(paramTypeAsString, helper.getClassLoader()));
                 mapping.setIsReadOnly(true);
@@ -1765,7 +1765,7 @@ public class MappingsGenerator {
             XMLField tgtXPath = getXPathForField(prop, namespaceInfo, !(helper.isAnnotationPresent(prop.getElement(), XmlAttribute.class)));
             mapping.addSourceToTargetKeyFieldAssociation(srcXPath.getXPath(), tgtXPath.getXPath());
         }
-        
+
         if(property.getInverseReferencePropertyName() != null) {
             mapping.getInverseReferenceMapping().setAttributeName(property.getInverseReferencePropertyName());
             JavaClass backPointerPropertyType = null;
@@ -1790,7 +1790,7 @@ public class MappingsGenerator {
     }
     /**
      * Create an XMLObjectReferenceMapping and add it to the descriptor.
-     * 
+     *
      * @param property
      * @param descriptor
      * @param namespaceInfo
@@ -1801,7 +1801,7 @@ public class MappingsGenerator {
         XMLField srcXPath;
         if (property.getXmlPath() != null) {
             srcXPath = new XMLField(property.getXmlPath());
-        } else { 
+        } else {
             srcXPath = getXPathForField(property, namespaceInfo, true);
         }
 
@@ -1809,7 +1809,7 @@ public class MappingsGenerator {
         mapping.setAttributeName(property.getPropertyName());
         if (property.isMethodProperty()) {
             if (property.getGetMethodName() == null) {
-                // handle case of set with no get method 
+                // handle case of set with no get method
                 String paramTypeAsString = property.getType().getName();
                 mapping.setAttributeAccessor(new JAXBSetMethodAttributeAccessor(paramTypeAsString, helper.getClassLoader()));
                 mapping.setIsReadOnly(true);
@@ -1853,7 +1853,7 @@ public class MappingsGenerator {
         }
         descriptor.addMapping(mapping);
     }
-    
+
     public XMLField getXPathForField(Property property, NamespaceInfo namespaceInfo, boolean isTextMapping) {
         String xPath = "";
         XMLField xmlField = null;
@@ -1923,9 +1923,9 @@ public class MappingsGenerator {
 
         if (schemaType == null){
         	JavaClass propertyType = property.getActualType();
-        	            	
+
             schemaType = (QName) helper.getXMLToJavaTypeMap().get(propertyType.getRawName());
-        }            
+        }
         xmlField.setSchemaType(schemaType);
         return xmlField;
     }
@@ -1949,7 +1949,7 @@ public class MappingsGenerator {
         }
         return new XMLField(path);
     }
-    
+
     public Property getXmlValueFieldForSimpleContent(ArrayList<Property> properties) {
         boolean foundValue = false;
         boolean foundNonAttribute = false;
@@ -1968,17 +1968,17 @@ public class MappingsGenerator {
         }
         return null;
     }
-   
+
     public String getSchemaTypeNameForClassName(String className) {
         String typeName = Introspector.decapitalize(className.substring(className.lastIndexOf('.') + 1));
         return typeName;
     }
-    
+
     public boolean isMapType(Property property) {
         JavaClass mapCls = helper.getJavaClass(java.util.Map.class);
         return mapCls.isAssignableFrom(property.getType());
     }
-    
+
     public void processGlobalElements(Project project) {
         //Find any global elements for classes we've generated descriptors for, and add them as possible
         //root elements.
@@ -1992,18 +1992,18 @@ public class MappingsGenerator {
             QName next = nextElement.getElementName();
             String nextClassName = nextElement.getJavaTypeName();
             TypeInfo type = this.typeInfo.get(nextClassName);
-                
+
             if(helper.isBuiltInJavaType(nextElement.getJavaType()) || (type !=null && type.isEnumerationType())){
 
-                //generate a class/descriptor for this element            	
+                //generate a class/descriptor for this element
                 String attributeTypeName = nextClassName;
                 if(nextElement.getJavaType().isPrimitive()) {
                     attributeTypeName = helper.getClassForJavaClass(nextElement.getJavaType()).getName();
                 }
                 if (nextElement.getAdaptedJavaTypeName() != null) {
-                    attributeTypeName = nextElement.getAdaptedJavaTypeName(); 
+                    attributeTypeName = nextElement.getAdaptedJavaTypeName();
                 }
-                
+
                 if(next == null){
             		if(areEquals(nextElement.getJavaType(), ClassConstants.ABYTE) || areEquals(nextElement.getJavaType(), ClassConstants.APBYTE) ||areEquals(nextElement.getJavaType(), "javax.activation.DataHandler") || areEquals(nextElement.getJavaType(), "java.awt.Image") || areEquals(nextElement.getJavaType(), "java.xml.transform.Source") || areEquals(nextElement.getJavaType(), "javax.mail.internet.MimeMultipart")) {
             			Class generatedClass = addByteArrayWrapperAndDescriptor(type, nextElement.getJavaType().getRawName(), nextElement,nextClassName, attributeTypeName);
@@ -2020,13 +2020,13 @@ public class MappingsGenerator {
             		}
             	}
                 Class generatedClass = generateWrapperClassAndDescriptor(type, next, nextElement, nextClassName, attributeTypeName);
-                
+
                 this.qNamesToGeneratedClasses.put(next, generatedClass);
                 try{
                     Class declaredClass = PrivilegedAccessHelper.getClassForName(nextClassName, false, helper.getClassLoader());
                     this.qNamesToDeclaredClasses.put(next, declaredClass);
                 }catch(Exception e){
-                    
+
                 }
             }else if(type != null && !type.isTransient()){
                 if(next.getNamespaceURI() == null || next.getNamespaceURI().equals("")) {
@@ -2035,7 +2035,7 @@ public class MappingsGenerator {
                 	}else{
                         type.getDescriptor().addRootElement(next.getLocalPart());
                 	}
-                } else {                    
+                } else {
                     XMLDescriptor descriptor = type.getDescriptor();
                     String uri = next.getNamespaceURI();
                     String prefix = getPrefixForNamespace(uri, descriptor.getNamespaceResolver(),null);
@@ -2048,71 +2048,71 @@ public class MappingsGenerator {
             }
         }
     }
-    
+
     private Class addByteArrayWrapperAndDescriptor(TypeInfo type , String javaClassName,  ElementDeclaration nextElement, String nextClassName, String attributeTypeName){
     	Class generatedClass = classToGeneratedClasses.get(javaClassName);
-    	if(generatedClass == null){ 
+    	if(generatedClass == null){
     		generatedClass = generateWrapperClassAndDescriptor(type, null, nextElement, nextClassName, attributeTypeName);
     		classToGeneratedClasses.put(javaClassName, generatedClass);
     	}
     	return generatedClass;
     }
-    
+
     private Class generateWrapperClassAndDescriptor(TypeInfo type, QName next, ElementDeclaration nextElement, String nextClassName, String attributeTypeName){
         String namespaceUri = null;
       	if(next!= null){
-              //generate a class/descriptor for this element	                
+              //generate a class/descriptor for this element
               namespaceUri = next.getNamespaceURI();
               if(namespaceUri == null || namespaceUri.equals("##default")) {
                   namespaceUri = "";
-              }	              	               
+              }
       	}
-      	 
+
       	TypeMappingInfo tmi = nextElement.getTypeMappingInfo();
       	Class generatedClass = null;
-      	if(tmi != null){      		      		      
-            generatedClass = CompilerHelper.getExisitingGeneratedClass(tmi, typeMappingInfoToGeneratedClasses, typeMappingInfoToAdapterClasses, helper.getClassLoader());                
-            if(generatedClass == null){                      
+      	if(tmi != null){
+            generatedClass = CompilerHelper.getExisitingGeneratedClass(tmi, typeMappingInfoToGeneratedClasses, typeMappingInfoToAdapterClasses, helper.getClassLoader());
+            if(generatedClass == null){
             	generatedClass = this.generateWrapperClass(WRAPPER_CLASS + wrapperCounter++, attributeTypeName, nextElement.isList(), next);
             }
-      		
+
             typeMappingInfoToGeneratedClasses.put(tmi, generatedClass);
       	}else{
       	    generatedClass = this.generateWrapperClass(WRAPPER_CLASS + wrapperCounter++, attributeTypeName, nextElement.isList(), next);
       	}
-      	 
+
           this.qNamesToGeneratedClasses.put(next, generatedClass);
           try{
               Class declaredClass = PrivilegedAccessHelper.getClassForName(nextClassName, false, helper.getClassLoader());
               this.qNamesToDeclaredClasses.put(next, declaredClass);
           }catch(Exception e){
-              
+
           }
-          
+
           XMLDescriptor desc = (XMLDescriptor)project.getDescriptor(generatedClass);
-          
+
           if(desc == null){
 	          desc = new XMLDescriptor();
 	          desc.setJavaClass(generatedClass);
-	                      
-	          
+
+
 	          if(nextElement.isList()){
 	              XMLCompositeDirectCollectionMapping mapping = new XMLCompositeDirectCollectionMapping();
 	              mapping.setAttributeName("value");
 	              mapping.setXPath("text()");
 	              mapping.setUsesSingleNode(true);
 	              mapping.setReuseContainer(true);
-	              
+
 	              if(type != null && type.isEnumerationType()){
 	                  mapping.setValueConverter(buildJAXBEnumTypeConverter(mapping, (EnumTypeInfo)type));
 	              }else{
 	                  try{
-	                      Class fieldElementClass = PrivilegedAccessHelper.getClassForName(nextClassName, false, helper.getClassLoader());                                                                                        
-	                      mapping.setFieldElementClass(fieldElementClass);                        
-	                  }catch(ClassNotFoundException e){                       
+	                      Class fieldElementClass = PrivilegedAccessHelper.getClassForName(nextClassName, false, helper.getClassLoader());
+	                      mapping.setFieldElementClass(fieldElementClass);
+	                  }catch(ClassNotFoundException e){
 	                  }
 	              }
-	                                  
+
 	              if(nextClassName.equals("[B") || nextClassName.equals("[Ljava.lang.Byte;")) {
 	                 ((XMLField)mapping.getField()).setSchemaType(XMLConstants.BASE_64_BINARY_QNAME);
 	              }
@@ -2120,37 +2120,37 @@ public class MappingsGenerator {
 	                  ((XMLField)mapping.getField()).setSchemaType(XMLConstants.QNAME_QNAME);
 	              }
 	              desc.addMapping(mapping);
-	          } else{                 
+	          } else{
 	              if(nextElement.getJavaTypeName().equals(OBJECT_CLASS_NAME)){
 	                  XMLCompositeObjectMapping mapping = new XMLCompositeObjectMapping();
 	                  mapping.setAttributeName("value");
 	                  mapping.setSetMethodName("setValue");
-	                  mapping.setGetMethodName("getValue");                                
-	                  mapping.getNullPolicy().setNullRepresentedByXsiNil(true);                                                       
+	                  mapping.setGetMethodName("getValue");
+	                  mapping.getNullPolicy().setNullRepresentedByXsiNil(true);
 	                  mapping.setKeepAsElementPolicy(UnmarshalKeepAsElementPolicy.KEEP_UNKNOWN_AS_ELEMENT);
 	                  mapping.setXPath(".");
 	                  ((XMLField)mapping.getField()).setIsTypedTextField(true);
 	                  ((XMLField)mapping.getField()).setSchemaType(XMLConstants.ANY_TYPE_QNAME);
 	                  desc.addMapping(mapping);
 	              }else if(areEquals(nextElement.getJavaType(), ClassConstants.ABYTE) || areEquals(nextElement.getJavaType(), ClassConstants.APBYTE)|| areEquals(nextElement.getJavaType(), "javax.activation.DataHandler") || areEquals(nextElement.getJavaType(), "java.awt.Image") || areEquals(nextElement.getJavaType(), "javax.xml.transform.Source")){
-	              	  XMLBinaryDataMapping mapping = new XMLBinaryDataMapping(); 
+	              	  XMLBinaryDataMapping mapping = new XMLBinaryDataMapping();
 	              	  mapping.setAttributeName("value");
 	              	  mapping.setXPath(".");
 	                  ((XMLField)mapping.getField()).setSchemaType(XMLConstants.BASE_64_BINARY_QNAME);
 	                  mapping.setSetMethodName("setValue");
 	                  mapping.setGetMethodName("getValue");
-	                  
-	                  Class attributeClassification = org.eclipse.persistence.internal.helper.Helper.getClassFromClasseName(attributeTypeName, getClass().getClassLoader());                      
+
+	                  Class attributeClassification = org.eclipse.persistence.internal.helper.Helper.getClassFromClasseName(attributeTypeName, getClass().getClassLoader());
 	                  mapping.setAttributeClassification(attributeClassification);
-	                  
+
 	              	  mapping.setShouldInlineBinaryData(false);
 	              	  if(nextElement.getTypeMappingInfo() != null) {
 	              	      mapping.setSwaRef(nextElement.isXmlAttachmentRef());
 	              	      mapping.setMimeType(nextElement.getXmlMimeType());
 	              	  }
 	                  desc.addMapping(mapping);
-	                  
-	              }else{                  
+
+	              }else{
 	                  XMLDirectMapping mapping = new XMLDirectMapping();
 	                  mapping.setAttributeName("value");
 	                  mapping.setXPath("text()");
@@ -2159,8 +2159,8 @@ public class MappingsGenerator {
 	                  if(nextElement.getDefaultValue() != null) {
 	                      mapping.setNullValue(nextElement.getDefaultValue());
 	                  }
-	
-	                  if(helper.isBuiltInJavaType(nextElement.getJavaType())){ 
+
+	                  if(helper.isBuiltInJavaType(nextElement.getJavaType())){
 	                      Class attributeClassification = null;
 	                      if(nextElement.getJavaType().isPrimitive()) {
 	                          attributeClassification = XMLConversionManager.getDefaultManager().convertClassNameToClass(attributeTypeName);
@@ -2168,12 +2168,12 @@ public class MappingsGenerator {
 	                          attributeClassification = org.eclipse.persistence.internal.helper.Helper.getClassFromClasseName(attributeTypeName, getClass().getClassLoader());
 	                      }
 	                      mapping.setAttributeClassification(attributeClassification);
-	                  }               
-	                  
+	                  }
+
 	                  IsSetNullPolicy nullPolicy = new IsSetNullPolicy("isSetValue", false, true, XMLNullRepresentationType.ABSENT_NODE);
 	                  //nullPolicy.setNullRepresentedByEmptyNode(true);
 	                  mapping.setNullPolicy(nullPolicy);
-	                                      
+
 	                  if(type != null && type.isEnumerationType()){
 	                      mapping.setConverter(buildJAXBEnumTypeConverter(mapping, (EnumTypeInfo)type));
 	                  }
@@ -2183,17 +2183,17 @@ public class MappingsGenerator {
 	                  else if(nextClassName.equals("javax.xml.namespace.QName")){
 	                      ((XMLField)mapping.getField()).setSchemaType(XMLConstants.QNAME_QNAME);
 	                  }
-	                                      
+
 	                  if (nextElement.getJavaTypeAdapterClass() != null) {
 	                      mapping.setConverter(new XMLJavaTypeConverter(nextElement.getJavaTypeAdapterClass()));
 	                  }
-	
+
 	                  desc.addMapping(mapping);
 	              }
 	          }
 	          if(next != null){
 	              NamespaceInfo info = getNamespaceInfoForURI(namespaceUri);
-	              
+
 	  			if(info != null) {
 	  				NamespaceResolver resolver = info.getNamespaceResolverForDescriptor();
 	  				String prefix = resolver.resolveNamespaceURI(namespaceUri);
@@ -2202,11 +2202,11 @@ public class MappingsGenerator {
 	  				desc.addRootElement(getQualifiedString(prefix, next.getLocalPart()));
 	              } else {
 	                  if(namespaceUri.equals("")) {
-	                      desc.setDefaultRootElement(next.getLocalPart());                      
+	                      desc.setDefaultRootElement(next.getLocalPart());
 	                  } else {
 	                      NamespaceResolver resolver = new NamespaceResolver();
 	                      String prefix = getPrefixForNamespace(namespaceUri, resolver, null);
-	                      
+
 	                      desc.setNamespaceResolver(resolver);
 	                      desc.setDefaultRootElement("");
 	                      desc.addRootElement(getQualifiedString(prefix, next.getLocalPart()));
@@ -2217,14 +2217,14 @@ public class MappingsGenerator {
           }
           return generatedClass;
     }
-    
+
     private String getQualifiedString(String prefix, String localPart){
     	if(prefix == null){
     		return localPart;
     	}
     	return prefix + XMLConstants.COLON + localPart;
     }
-    
+
     private NamespaceInfo getNamespaceInfoForURI(String namespaceUri) {
         Iterator<NamespaceInfo> namespaces = this.packageToNamespaceMappings.values().iterator();
         while(namespaces.hasNext()) {
@@ -2235,7 +2235,7 @@ public class MappingsGenerator {
         }
         return null;
     }
-    
+
     @SuppressWarnings("unused")
     private String getPackageNameForURI(String namespaceUri) {
         for(String next:this.packageToNamespaceMappings.keySet()) {
@@ -2245,12 +2245,12 @@ public class MappingsGenerator {
         }
         return null;
     }
-    
+
     public Class generateWrapperClass(String className, String attributeType, boolean isList, QName theQName) {
         org.eclipse.persistence.internal.libraries.asm.ClassWriter cw = new org.eclipse.persistence.internal.libraries.asm.ClassWriter(false);
-        
+
         CodeVisitor cv;
-        cw.visit(Constants.V1_5, Constants.ACC_PUBLIC, className.replace(".", "/"), org.eclipse.persistence.internal.libraries.asm.Type.getType(WrappedValue.class).getInternalName(), new String[0], null); 
+        cw.visit(Constants.V1_5, Constants.ACC_PUBLIC, className.replace(".", "/"), org.eclipse.persistence.internal.libraries.asm.Type.getType(WrappedValue.class).getInternalName(), new String[0], null);
 
         String fieldType = null;
         if(isList){
@@ -2265,9 +2265,9 @@ public class MappingsGenerator {
         	if(theQName == null){
         		theQName = RESERVED_QNAME;
         	}
-        
+
 	        cv = cw.visitMethod(Constants.ACC_PUBLIC, "<init>", "()V", null, null);
-        
+
 	        cv.visitVarInsn(Constants.ALOAD, 0);
 	        cv.visitTypeInsn(Constants.NEW, "javax/xml/namespace/QName");
 	        cv.visitInsn(Constants.DUP);
@@ -2276,14 +2276,14 @@ public class MappingsGenerator {
 	        cv.visitMethodInsn(Constants.INVOKESPECIAL, "javax/xml/namespace/QName", "<init>", "(Ljava/lang/String;Ljava/lang/String;)V");
 	        cv.visitLdcInsn(Type.getType(fieldType));
 	        cv.visitInsn(Constants.ACONST_NULL);
-        
+
 	        cv.visitMethodInsn(Constants.INVOKESPECIAL, "org/eclipse/persistence/internal/jaxb/WrappedValue", "<init>", "(Ljavax/xml/namespace/QName;Ljava/lang/Class;Ljava/lang/Object;)V");
 	        cv.visitInsn(Constants.RETURN);
 	        cv.visitMaxs(5, 1);
-        
-        
+
+
         cw.visitEnd();
-        
+
         byte[] classBytes = cw.toByteArray();
 
         JaxbClassLoader loader = (JaxbClassLoader)helper.getClassLoader();
@@ -2293,11 +2293,11 @@ public class MappingsGenerator {
 
     public HashMap<QName, Class> getQNamesToGeneratedClasses() {
         return qNamesToGeneratedClasses;
-    }    
-    
+    }
+
     public HashMap<String, Class> getClassToGeneratedClasses() {
         return classToGeneratedClasses;
-    } 
+    }
     public HashMap<QName, Class> getQNamesToDeclaredClasses() {
         return qNamesToDeclaredClasses;
     }
@@ -2312,16 +2312,16 @@ public class MappingsGenerator {
     private class MapEntryGeneratedKey {
         String keyClassName;
 		String valueClassName;
-		
+
     	public MapEntryGeneratedKey(String keyClass, String valueClass){
     		keyClassName = keyClass;
     		valueClassName = valueClass;
     	}
 	}
-    
+
     /**
      * Convenience method which returns an AbstractNullPolicy built from an XmlAbstractNullPolicy.
-     * 
+     *
      * @param property
      * @param nsr if 'NullRepresentedByXsiNil' is true, this is the resolver
      *            that we will add the schema instance prefix/uri pair to
@@ -2332,7 +2332,7 @@ public class MappingsGenerator {
     private AbstractNullPolicy getNullPolicyFromProperty(Property property, NamespaceResolver nsr) {
         AbstractNullPolicy absNullPolicy = null;
         XmlAbstractNullPolicy xmlAbsNullPolicy = property.getNullPolicy();
-        
+
         // policy is assumed to be one of XmlNullPolicy or XmlIsSetNullPolicy
         if (xmlAbsNullPolicy instanceof XmlNullPolicy) {
             XmlNullPolicy xmlNullPolicy = (XmlNullPolicy) xmlAbsNullPolicy;
@@ -2349,7 +2349,7 @@ public class MappingsGenerator {
             List<XmlIsSetNullPolicy.IsSetParameter> params = xmlIsSetNullPolicy.getIsSetParameter();
             for (XmlIsSetNullPolicy.IsSetParameter param : params) {
                 String valueStr = param.getValue();
-                String typeStr = param.getType(); 
+                String typeStr = param.getType();
                 // create a conversion manager instance with the helper's loader
                 XMLConversionManager mgr = new XMLConversionManager();
                 mgr.setLoader(helper.getClassLoader());
@@ -2375,7 +2375,7 @@ public class MappingsGenerator {
                 nsr.put(XMLConstants.SCHEMA_INSTANCE_PREFIX, XMLConstants.SCHEMA_INSTANCE_URL);
             }
         }
-        
+
         return absNullPolicy;
     }
 }
