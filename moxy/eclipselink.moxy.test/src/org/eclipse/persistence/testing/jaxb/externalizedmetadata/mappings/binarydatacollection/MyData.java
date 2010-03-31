@@ -1,0 +1,44 @@
+/*******************************************************************************
+ * Copyright (c) 1998, 2010 Oracle. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
+ * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
+ * and the Eclipse Distribution License is available at
+ * http://www.eclipse.org/org/documents/edl-v10.php.
+ *
+ * Contributors:
+ * dmccann - March 31/2010 - 2.1 - Initial implementation
+ ******************************************************************************/
+package org.eclipse.persistence.testing.jaxb.externalizedmetadata.mappings.binarydatacollection;
+
+import java.util.Arrays;
+import java.util.List;
+
+public class MyData {
+    public List<byte[]> bytes;
+    
+    public boolean equals(Object obj) {
+        MyData mdObj;
+        try {
+            mdObj = (MyData) obj;
+        } catch (ClassCastException cce) {
+            return false;
+        }
+        for (byte[] b : bytes) {
+            if (!bytesExistsInList(b, mdObj.bytes)) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    private boolean bytesExistsInList(byte[] bites, List<byte[]> byteList) {
+        for (byte[] b : byteList) {
+            if (Arrays.equals(b, bites)) {
+                return true;
+            }
+        }
+        return false;
+    }
+}

@@ -374,7 +374,7 @@ public class MappingsGenerator {
                 }
             } else {
                 if (isCollectionType(property)) {
-                    if(areEquals(valueType, ClassConstants.ABYTE) || areEquals(valueType, ClassConstants.APBYTE) ||areEquals(valueType, "javax.activation.DataHandler") || areEquals(valueType, "java.awt.Image") || areEquals(valueType, "java.xml.transform.Source") || areEquals(valueType, "javax.mail.internet.MimeMultipart")) {                      	
+                    if (property.isSwaAttachmentRef() || property.isMtomAttachment()) {
                     	generateBinaryDataCollectionMapping(property, descriptor, namespaceInfo).setValueConverter(new XMLJavaTypeConverter(adapterClass.getQualifiedName()));
                     } else{
                 	    generateDirectCollectionMapping(property, descriptor, namespaceInfo).setValueConverter(new XMLJavaTypeConverter(adapterClass.getQualifiedName()));
@@ -896,7 +896,12 @@ public class MappingsGenerator {
                 mapping.setGetMethodName(property.getGetMethodName());
             }
         }
-        mapping.setField(getXPathForField(property, namespaceInfo, false));
+        // if the XPath is set (via xml-path) use it
+        if (property.getXmlPath() != null) {
+            mapping.setField(new XMLField(property.getXmlPath()));
+        } else {
+            mapping.setField(getXPathForField(property, namespaceInfo, false));
+        }
         if (property.isSwaAttachmentRef()) {
             ((XMLField) mapping.getField()).setSchemaType(XMLConstants.SWA_REF_QNAME);
             mapping.setSwaRef(true);
@@ -939,7 +944,12 @@ public class MappingsGenerator {
                 mapping.setGetMethodName(property.getGetMethodName());
             }
         }
-        mapping.setField(getXPathForField(property, namespaceInfo, false));
+        // if the XPath is set (via xml-path) use it
+        if (property.getXmlPath() != null) {
+            mapping.setField(new XMLField(property.getXmlPath()));
+        } else {
+            mapping.setField(getXPathForField(property, namespaceInfo, false));
+        }
         if (property.isSwaAttachmentRef()) {
             ((XMLField) mapping.getField()).setSchemaType(XMLConstants.SWA_REF_QNAME);
             mapping.setSwaRef(true);
