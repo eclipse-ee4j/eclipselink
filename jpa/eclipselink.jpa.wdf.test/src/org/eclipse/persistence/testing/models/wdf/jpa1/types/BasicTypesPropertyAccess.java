@@ -318,7 +318,7 @@ public class BasicTypesPropertyAccess {
      * @return Returns the primitiveByteArray2Blob.
      */
     @Basic
-    @Column(name = "PBA_BLOB")
+    @Column(name = "PBA_BLOB", length = 65535) // FIXME: remove length after bugzilla 307774 is fixed
     @Lob
     @Mutable
     public byte[] getPrimitiveByteArray2Blob() {
@@ -494,7 +494,7 @@ public class BasicTypesPropertyAccess {
      * @return Returns the serializable.
      */
     @Basic
-    @Column(name = "SERIALIZABLE")
+    @Column(name = "SERIALIZABLE", length = 65535) // FIXME: remove length after bugzilla 307774 is fixed
     @Lob
     public Serializable getSerializable() {
         return _serializable;
@@ -684,7 +684,7 @@ public class BasicTypesPropertyAccess {
      * @return Returns the wrapperByteArray2Blob.
      */
     @Basic
-    @Column(name = "WBA_BLOB")
+    @Column(name = "WBA_BLOB", length = 65535) // FIXME: remove length after bugzilla 307774 is fixed
     @Lob
     @Mutable
     public Byte[] getWrapperByteArray2Blob() {
