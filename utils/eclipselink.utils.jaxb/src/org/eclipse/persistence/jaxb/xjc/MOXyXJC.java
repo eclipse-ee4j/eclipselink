@@ -34,18 +34,18 @@ public class MOXyXJC {
         Listener listener = new Listener();
 
         int compileSuccess = -1;
-        String[] arguments = args;
-        
-        System.out.println("args:" + args);
-        if(args[0].equals("-empty_output")) {
-            arguments = new String[args.length - 1];
-            for(int i = 1; i < args.length; i++) {
-                arguments[i - 1] = args[i];
-            }
-        }
-        System.out.println("arguments:" + arguments);
+
         try {
-            compileSuccess = Driver.run(arguments, listener);
+            for(int x=0; x<args.length; x++) {
+                if("-empty_output".equals(args[x])) {
+                    String[] args2 = new String[args.length - 1];
+                    System.arraycopy(args, 0, args2, 0, x);
+                    System.arraycopy(args, x+1, args2, x, args.length - x - 1);
+                    args = args2;
+                    break;
+                }
+            }
+            compileSuccess = Driver.run(args, listener);
         } catch (BadCommandLineException e) {
             if (e.getMessage() != null) {
                 System.out.println(e.getMessage());
