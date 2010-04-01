@@ -34,9 +34,18 @@ public class MOXyXJC {
         Listener listener = new Listener();
 
         int compileSuccess = -1;
-
+        String[] arguments = args;
+        
+        System.out.println("args:" + args);
+        if(args[0].equals("-empty_output")) {
+            arguments = new String[args.length - 1];
+            for(int i = 1; i < args.length; i++) {
+                arguments[i - 1] = args[i];
+            }
+        }
+        System.out.println("arguments:" + arguments);
         try {
-            compileSuccess = Driver.run(args, listener);
+            compileSuccess = Driver.run(arguments, listener);
         } catch (BadCommandLineException e) {
             if (e.getMessage() != null) {
                 System.out.println(e.getMessage());
@@ -55,11 +64,13 @@ public class MOXyXJC {
                 }
             }
 
-            File jaxbPropsFile = new File(destDir + File.separator + listener.getGeneratedPackagePath(), "jaxb.properties");
-            FileWriter writer = new FileWriter(jaxbPropsFile);
-            writer.write("javax.xml.bind.context.factory=org.eclipse.persistence.jaxb.JAXBContextFactory");
-            listener.generatedFile(listener.getGeneratedPackagePath() + File.separator + "jaxb.properties", 0, 0);
-            writer.close();
+            if(listener.getGeneratedPackagePath() != null) {
+                File jaxbPropsFile = new File(destDir + File.separator + listener.getGeneratedPackagePath(), "jaxb.properties");
+                FileWriter writer = new FileWriter(jaxbPropsFile);
+                writer.write("javax.xml.bind.context.factory=org.eclipse.persistence.jaxb.JAXBContextFactory");
+                listener.generatedFile(listener.getGeneratedPackagePath() + File.separator + "jaxb.properties", 0, 0);
+                writer.close();
+            }
         }
 
         System.exit(compileSuccess);

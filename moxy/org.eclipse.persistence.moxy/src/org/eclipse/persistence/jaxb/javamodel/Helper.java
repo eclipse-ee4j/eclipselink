@@ -82,6 +82,7 @@ public class Helper {
     public final static String SQL_TIMESTAMP = "java.sql.Timestamp";
     public final static String DURATION = "javax.xml.datatype.Duration";
     public final static String XMLGREGORIANCALENDAR = "javax.xml.datatype.XMLGregorianCalendar";
+    public final static String URI = "java.net.URI";
 
     /**
      * INTERNAL:
@@ -136,6 +137,7 @@ public class Helper {
         javaTypes.put(XMLGREGORIANCALENDAR, XMLConstants.ANY_SIMPLE_TYPE_QNAME);
         javaTypes.put(DURATION, XMLConstants.DURATION_QNAME);
         javaTypes.put(UUID, XMLConstants.STRING_QNAME);
+        javaTypes.put(URI, XMLConstants.STRING_QNAME);
         return javaTypes;
     }
     
