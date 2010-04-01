@@ -48,7 +48,7 @@ public class AttunityPlatform extends org.eclipse.persistence.platform.database.
         fieldTypeMapping.put(java.math.BigDecimal.class, new FieldTypeDefinition("DOUBLE", false));
         fieldTypeMapping.put(Number.class, new FieldTypeDefinition("DOUBLE", false));
 
-        fieldTypeMapping.put(String.class, new FieldTypeDefinition("VARCHAR", 255));
+        fieldTypeMapping.put(String.class, new FieldTypeDefinition("VARCHAR", DEFAULT_VARCHAR_SIZE));
         fieldTypeMapping.put(Character.class, new FieldTypeDefinition("CHAR", 1));
 
         fieldTypeMapping.put(Byte[].class, new FieldTypeDefinition("IMAGE", false));

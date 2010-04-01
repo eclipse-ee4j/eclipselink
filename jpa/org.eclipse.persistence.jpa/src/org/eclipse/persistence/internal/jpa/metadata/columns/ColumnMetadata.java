@@ -109,7 +109,7 @@ public class ColumnMetadata extends DirectColumnMetadata {
 		DatabaseField field = super.getDatabaseField();
 		field.setUnique(m_unique == null ? false : m_unique.booleanValue());
 		field.setScale(m_scale == null ? 0 : m_scale.intValue());
-		field.setLength(m_length == null ? 255 : m_length.intValue());
+		field.setLength(m_length == null ? 0 : m_length.intValue());
 		field.setPrecision(m_precision == null ? 0 : m_precision.intValue());
 		field.setTableName(m_table == null ? "" : m_table);
         return field;

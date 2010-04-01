@@ -42,7 +42,7 @@ public class CloudscapePlatform extends org.eclipse.persistence.platform.databas
         fieldTypeMapping.put(java.math.BigDecimal.class, new FieldTypeDefinition("DECIMAL", 32).setLimits(32, -19, 19));
         fieldTypeMapping.put(Number.class, new FieldTypeDefinition("DECIMAL", 32).setLimits(32, -19, 19));
 
-        fieldTypeMapping.put(String.class, new FieldTypeDefinition("VARCHAR", 255));
+        fieldTypeMapping.put(String.class, new FieldTypeDefinition("VARCHAR", DEFAULT_VARCHAR_SIZE));
         fieldTypeMapping.put(Character.class, new FieldTypeDefinition("CHAR", 1));
         fieldTypeMapping.put(Byte[].class, new FieldTypeDefinition("BYTE", false));
         fieldTypeMapping.put(Character[].class, new FieldTypeDefinition("TEXT", false));

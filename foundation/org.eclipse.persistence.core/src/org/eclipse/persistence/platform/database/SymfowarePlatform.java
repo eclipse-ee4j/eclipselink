@@ -185,7 +185,7 @@ public class SymfowarePlatform extends DatabasePlatform {
 
         // character types
         fieldTypeMapping.put(java.lang.String.class, new FieldTypeDefinition(
-                "VARCHAR", 255));
+                "VARCHAR", DEFAULT_VARCHAR_SIZE));
         fieldTypeMapping.put(java.lang.Character.class,
                 new FieldTypeDefinition("CHARACTER", 1));
 

@@ -683,34 +683,13 @@ public class DefaultTableGenerator {
                 // Check if the user field is a String and only then allow the length specified
                 // in the @Column annotation to be set on the field.
                 if (fieldType != null) {
-                    // Column has three related attributes length, precision and 
-                    // scale. Length will be used in the case where size is 
-                    // allowed on the field. (String, Blob and Clob). Otherwise, 
-                    // check the precision and set the precision and scale for
-                    // numbers.
-                    if (fieldType.equals(ClassConstants.STRING) ||
-                            fieldType.equals(ClassConstants.BLOB) ||
-                            fieldType.equals(ClassConstants.CLOB) ||
-                            fieldType.equals(ClassConstants.APCHAR)  ||
-                            fieldType.equals(ClassConstants.ACHAR) ||
-                            fieldType.equals(ClassConstants.ABYTE) ||
-                            fieldType.equals(ClassConstants.APBYTE)) {
-                        
-                        // We must still check if size is allowed on the database platform used.
-                        // If we have no field type def, just set it anyway.
-                        if (fieldTypeDef == null || fieldTypeDef.isSizeAllowed()) {
-                            // The field size is defaulted to "255" or use the user supplied length
-                            fieldDef.setSize(dbField.getLength());
-                        }
-                    } else {
-                        if (dbField.getPrecision() > 0) {
-                            // We must still check if size is allowed on the database platform used.
-                            // If we have no field type def, just set it anyway.
-                            if (fieldTypeDef == null || fieldTypeDef.isSizeAllowed()) {
-                                fieldDef.setSize(dbField.getPrecision()); 
-                                fieldDef.setSubSize(dbField.getScale());
-                            }
-                         }
+                    // If a length has been specified, set it, otherwise let the
+                    // field def from individual platforms handle it.
+                    if (dbField.getLength() > 0) {
+                        fieldDef.setSize(dbField.getLength());
+                    } else if (dbField.getPrecision() > 0) {
+                        fieldDef.setSize(dbField.getPrecision()); 
+                        fieldDef.setSubSize(dbField.getScale());
                     }
                 }
 

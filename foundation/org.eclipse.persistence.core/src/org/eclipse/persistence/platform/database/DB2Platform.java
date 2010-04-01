@@ -274,7 +274,7 @@ public class DB2Platform extends org.eclipse.persistence.platform.database.Datab
         fieldTypeMapping.put(java.math.BigDecimal.class, new FieldTypeDefinition("DECIMAL", 15));
         fieldTypeMapping.put(Number.class, new FieldTypeDefinition("DECIMAL", 15));
 
-        fieldTypeMapping.put(String.class, new FieldTypeDefinition("VARCHAR", 255));
+        fieldTypeMapping.put(String.class, new FieldTypeDefinition("VARCHAR", DEFAULT_VARCHAR_SIZE));
         fieldTypeMapping.put(Character.class, new FieldTypeDefinition("CHAR", 1));
         fieldTypeMapping.put(Byte[].class, new FieldTypeDefinition("BLOB", 64000));
         fieldTypeMapping.put(Character[].class, new FieldTypeDefinition("CLOB", 64000));
