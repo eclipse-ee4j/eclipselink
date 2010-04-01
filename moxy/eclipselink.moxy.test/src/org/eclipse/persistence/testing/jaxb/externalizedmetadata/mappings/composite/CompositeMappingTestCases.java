@@ -147,7 +147,7 @@ public class CompositeMappingTestCases extends ExternalizedMetadataTestCases {
     }
     
     /**
-     * Tests XmlCpompositeObjectMapping configuration via eclipselink-oxm.xml. 
+     * Tests XmlCompositeObjectMapping configuration via eclipselink-oxm.xml. 
      * Here an unmarshal operation is performed. Utilizes xml-attribute and 
      * xml-element.
      * 

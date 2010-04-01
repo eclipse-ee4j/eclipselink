@@ -17,6 +17,21 @@ import java.util.Arrays;
 public class MyData {
     public byte[] bytes;
     
+    @javax.xml.bind.annotation.XmlTransient
+    public boolean wasGetCalled;
+    @javax.xml.bind.annotation.XmlTransient
+    public boolean wasSetCalled;
+
+    public byte[] getBytes() {
+        wasGetCalled = true;
+        return bytes;
+    }
+
+    public void setBytes(byte[] bytes) {
+        wasSetCalled = true;
+        this.bytes = bytes;
+    }
+
     public boolean equals(Object obj) {
         MyData mdObj;
         try {

@@ -7,7 +7,9 @@
 		<java-type name="org.eclipse.persistence.testing.jaxb.externalizedmetadata.mappings.anycollection.Employee">
             <xml-root-element name="employee" />
             <java-attributes>
-                <xml-any-element java-attribute="stuff" xml-path="things/junk/s:stuff" xml-mixed="true" />
+                <xml-any-element java-attribute="stuff" xml-path="things/junk/s:stuff" xml-mixed="true">
+                    <xml-access-methods get-method="getStuff" set-method="setStuff" />
+                </xml-any-element>
             </java-attributes>
 		</java-type>
 	</java-types>

@@ -17,6 +17,8 @@ import org.eclipse.persistence.testing.jaxb.externalizedmetadata.mappings.anycol
 import org.eclipse.persistence.testing.jaxb.externalizedmetadata.mappings.anyobject.AnyObjectMappingTestCases;
 import org.eclipse.persistence.testing.jaxb.externalizedmetadata.mappings.binarydata.BinaryDataMappingTestCases;
 import org.eclipse.persistence.testing.jaxb.externalizedmetadata.mappings.binarydatacollection.BinaryDataCollectionMappingTestCases;
+import org.eclipse.persistence.testing.jaxb.externalizedmetadata.mappings.choice.ChoiceMappingTestCases;
+import org.eclipse.persistence.testing.jaxb.externalizedmetadata.mappings.choicecollection.ChoiceCollectionMappingTestCases;
 import org.eclipse.persistence.testing.jaxb.externalizedmetadata.mappings.collectionreference.CollectionReferenceMappingTestCases;
 import org.eclipse.persistence.testing.jaxb.externalizedmetadata.mappings.composite.CompositeMappingTestCases;
 import org.eclipse.persistence.testing.jaxb.externalizedmetadata.mappings.compositecollection.CompositeCollecitonMappingTestCases;
@@ -39,6 +41,8 @@ public class MappingsTestSuite extends TestSuite {
         suite.addTestSuite(AnyObjectMappingTestCases.class);
         suite.addTestSuite(BinaryDataMappingTestCases.class);
         suite.addTestSuite(BinaryDataCollectionMappingTestCases.class);
+        suite.addTestSuite(ChoiceMappingTestCases.class);
+        suite.addTestSuite(ChoiceCollectionMappingTestCases.class);
         suite.addTestSuite(CollectionReferenceMappingTestCases.class);
         suite.addTestSuite(CompositeCollecitonMappingTestCases.class);
         suite.addTestSuite(CompositeMappingTestCases.class);

@@ -10,7 +10,9 @@
         </java-type>
 		<java-type name="org.eclipse.persistence.testing.jaxb.externalizedmetadata.mappings.objectreference.Employee">
             <java-attributes>
-                <xml-attribute java-attribute="workAddress" xml-path="contact-info/work-address/@work-address-id" xml-idref="true"/>
+                <xml-attribute java-attribute="workAddress" xml-path="contact-info/work-address/@work-address-id" xml-idref="true">
+                    <xml-access-methods get-method="getWorkAddress" set-method="setWorkAddress" />
+                </xml-attribute>
             </java-attributes>
 		</java-type>
         <java-type name="org.eclipse.persistence.testing.jaxb.externalizedmetadata.mappings.objectreference.Address">

@@ -99,6 +99,7 @@ public class BinaryDataCollectionMappingTestCases extends ExternalizedMetadataTe
             Unmarshaller unmarshaller = jaxbContext.createUnmarshaller();
             MyData myObj = (MyData) unmarshaller.unmarshal(iDocStream);
             assertNotNull("Unmarshalled object is null.", myObj);
+            assertTrue("Accessor method was not called as expected", myObj.wasSetCalled);
             assertTrue("Unmarshal failed:  MyData objects are not equal", getControlObject().equals(myObj));
         } catch (JAXBException e) {
             e.printStackTrace();
@@ -125,9 +126,11 @@ public class BinaryDataCollectionMappingTestCases extends ExternalizedMetadataTe
             fail("An unexpected exception occurred loading control document [" + src + "].");
         }
         try {
+            MyData ctrlData = getControlObject();
             Marshaller marshaller = jaxbContext.createMarshaller();
-            marshaller.marshal(getControlObject(), testDoc);
+            marshaller.marshal(ctrlData, testDoc);
             //marshaller.marshal(getControlObject(), System.out);
+            assertTrue("Accessor method was not called as expected", ctrlData.wasGetCalled);
             assertTrue("Document comparison failed unxepectedly: ", compareDocuments(ctrlDoc, testDoc));
         } catch (JAXBException e) {
             e.printStackTrace();

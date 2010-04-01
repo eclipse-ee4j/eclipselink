@@ -20,7 +20,22 @@ import org.eclipse.persistence.testing.oxm.mappings.anyattribute.withoutgrouping
 
 public class Employee {
     public Map<QName, String> stuff;
-    
+
+    @javax.xml.bind.annotation.XmlTransient
+    public boolean wasGetCalled;
+    @javax.xml.bind.annotation.XmlTransient
+    public boolean wasSetCalled;
+
+    public Map<QName, String> getStuff() {
+        wasGetCalled = true;
+        return stuff;
+    }
+
+    public void setStuff(Map<QName, String> stuff) {
+        wasSetCalled = true;
+        this.stuff = stuff;
+    }
+
     public boolean equals(Object obj) {
         if (obj == null) { return false; }
 

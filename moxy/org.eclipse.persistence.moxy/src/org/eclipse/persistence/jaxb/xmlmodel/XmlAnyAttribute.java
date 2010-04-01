@@ -15,6 +15,7 @@ package org.eclipse.persistence.jaxb.xmlmodel;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
+import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlType;
 
 
@@ -27,6 +28,9 @@ import javax.xml.bind.annotation.XmlType;
  * &lt;complexType>
  *   &lt;complexContent>
  *     &lt;extension base="{http://www.eclipse.org/eclipselink/xsds/persistence/oxm}java-attribute">
+ *       &lt;all>
+ *         &lt;element ref="{http://www.eclipse.org/eclipselink/xsds/persistence/oxm}xml-access-methods" minOccurs="0"/>
+ *       &lt;/all>
  *       &lt;attribute name="xml-path" type="{http://www.w3.org/2001/XMLSchema}string" />
  *     &lt;/extension>
  *   &lt;/complexContent>
@@ -36,13 +40,41 @@ import javax.xml.bind.annotation.XmlType;
  * 
  */
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlType(name = "")
+@XmlType(name = "", propOrder = {
+    "xmlAccessMethods"
+})
 public class XmlAnyAttribute
     extends JavaAttribute
 {
 
+    @XmlElement(name = "xml-access-methods")
+    protected XmlAccessMethods xmlAccessMethods;
     @XmlAttribute(name = "xml-path")
     protected String xmlPath;
+
+    /**
+     * Gets the value of the xmlAccessMethods property.
+     * 
+     * @return
+     *     possible object is
+     *     {@link XmlAccessMethods }
+     *     
+     */
+    public XmlAccessMethods getXmlAccessMethods() {
+        return xmlAccessMethods;
+    }
+
+    /**
+     * Sets the value of the xmlAccessMethods property.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link XmlAccessMethods }
+     *     
+     */
+    public void setXmlAccessMethods(XmlAccessMethods value) {
+        this.xmlAccessMethods = value;
+    }
 
     /**
      * Gets the value of the xmlPath property.

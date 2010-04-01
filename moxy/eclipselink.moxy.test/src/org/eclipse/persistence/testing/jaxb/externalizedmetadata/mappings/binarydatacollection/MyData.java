@@ -17,7 +17,22 @@ import java.util.List;
 
 public class MyData {
     public List<byte[]> bytes;
+
+    @javax.xml.bind.annotation.XmlTransient
+    public boolean wasGetCalled;
+    @javax.xml.bind.annotation.XmlTransient
+    public boolean wasSetCalled;
     
+    public List<byte[]> getBytes() {
+        wasGetCalled = true;
+        return bytes;
+    }
+
+    public void setBytes(List<byte[]> bytes) {
+        wasSetCalled = true;
+        this.bytes = bytes;
+    }
+
     public boolean equals(Object obj) {
         MyData mdObj;
         try {

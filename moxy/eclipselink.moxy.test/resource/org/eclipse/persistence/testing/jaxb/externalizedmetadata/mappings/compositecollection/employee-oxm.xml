@@ -4,10 +4,12 @@
         <xml-ns namespace-uri="http://www.example.com/contacts" prefix="c"/>
     </xml-schema>
 	<java-types>
-		<java-type name="org.eclipse.persistence.testing.jaxb.externalizedmetadata.mappings.compositecollection.Employee">
+		<java-type name="org.eclipse.persistence.testing.jaxb.externalizedmetadata.mappings.compositecollection.Employee" xml-accessor-type="FIELD">
             <xml-root-element name="employee" />
             <java-attributes>
-                <xml-attribute java-attribute="id" xml-path="@empId" />
+                <xml-attribute java-attribute="id" xml-path="@empId">
+                    <xml-access-methods get-method="getId" set-method="setId" />
+                </xml-attribute>
                 <xml-element java-attribute="addresses" xml-path="info/c:contact-info/addresses/address" />
             </java-attributes>
         </java-type>

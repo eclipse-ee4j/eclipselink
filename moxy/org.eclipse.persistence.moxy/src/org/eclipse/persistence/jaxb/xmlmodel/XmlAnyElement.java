@@ -29,6 +29,7 @@ import javax.xml.bind.annotation.XmlType;
  *   &lt;complexContent>
  *     &lt;extension base="{http://www.eclipse.org/eclipselink/xsds/persistence/oxm}java-attribute">
  *       &lt;all>
+ *         &lt;element ref="{http://www.eclipse.org/eclipselink/xsds/persistence/oxm}xml-access-methods" minOccurs="0"/>
  *         &lt;element ref="{http://www.eclipse.org/eclipselink/xsds/persistence/oxm}xml-java-type-adapter" minOccurs="0"/>
  *       &lt;/all>
  *       &lt;attribute name="xml-mixed" type="{http://www.w3.org/2001/XMLSchema}boolean" default="false" />
@@ -44,12 +45,15 @@ import javax.xml.bind.annotation.XmlType;
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "", propOrder = {
+    "xmlAccessMethods",
     "xmlJavaTypeAdapter"
 })
 public class XmlAnyElement
     extends JavaAttribute
 {
 
+    @XmlElement(name = "xml-access-methods")
+    protected XmlAccessMethods xmlAccessMethods;
     @XmlElement(name = "xml-java-type-adapter")
     protected XmlJavaTypeAdapter xmlJavaTypeAdapter;
     @XmlAttribute(name = "xml-mixed")
@@ -60,6 +64,30 @@ public class XmlAnyElement
     protected String domHandler;
     @XmlAttribute(name = "xml-path")
     protected String xmlPath;
+
+    /**
+     * Gets the value of the xmlAccessMethods property.
+     * 
+     * @return
+     *     possible object is
+     *     {@link XmlAccessMethods }
+     *     
+     */
+    public XmlAccessMethods getXmlAccessMethods() {
+        return xmlAccessMethods;
+    }
+
+    /**
+     * Sets the value of the xmlAccessMethods property.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link XmlAccessMethods }
+     *     
+     */
+    public void setXmlAccessMethods(XmlAccessMethods value) {
+        this.xmlAccessMethods = value;
+    }
 
     /**
      * Gets the value of the xmlJavaTypeAdapter property.

@@ -245,6 +245,9 @@
         <xs:complexType>
             <xs:complexContent>
                 <xs:extension base="java-attribute">
+                    <xs:all>
+                        <xs:element ref="xml-access-methods" minOccurs="0" />
+                    </xs:all>
                     <xs:attribute name="xml-path" type="xs:string" />
                 </xs:extension>
             </xs:complexContent>
@@ -281,6 +284,7 @@
             <xs:complexContent>
                 <xs:extension base="java-attribute">
                     <xs:all>
+                        <xs:element ref="xml-access-methods" minOccurs="0" />
                         <xs:element ref="xml-java-type-adapter" minOccurs="0"/>
                     </xs:all>
                     <xs:attribute name="xml-mixed" type="xs:boolean" default="false" />
@@ -328,6 +332,7 @@
             <xs:complexContent>
                 <xs:extension base="java-attribute">
                     <xs:sequence>
+                        <xs:element ref="xml-access-methods" minOccurs="0" />
                         <xs:element ref="xml-element" maxOccurs="unbounded" minOccurs="0"/>
                         <xs:element ref="xml-element-wrapper" minOccurs="0"/>
                     </xs:sequence>

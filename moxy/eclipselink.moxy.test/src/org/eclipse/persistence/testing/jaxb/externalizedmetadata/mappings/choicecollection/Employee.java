@@ -8,46 +8,57 @@
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
- * dmccann - March 25/2010 - 2.1 - Initial implementation
+ * dmccann - April 019/2010 - 2.1 - Initial implementation
  ******************************************************************************/
-package org.eclipse.persistence.testing.jaxb.externalizedmetadata.mappings.objectreference;
+package org.eclipse.persistence.testing.jaxb.externalizedmetadata.mappings.choicecollection;
+
+import java.util.List;
 
 public class Employee {
-    public Address workAddress;
+    public List<Object> things;
 
     @javax.xml.bind.annotation.XmlTransient
     public boolean wasGetCalled;
     @javax.xml.bind.annotation.XmlTransient
     public boolean wasSetCalled;
 
-    public Address getWorkAddress() {
+    public List<Object> getThings() {
         wasGetCalled = true;
-        return workAddress;
+        return things;
     }
 
-    public void setWorkAddress(Address workAddress) {
+    public void setThings(List<Object> things) {
         wasSetCalled = true;
-        this.workAddress = workAddress;
+        this.things = things;
     }
 
     public boolean equals(Object obj) {
         if (obj == null) { return false; }
 
-        Employee theObj;
+        Employee empObj;
         try {
-            theObj = (Employee) obj;
+            empObj = (Employee) obj;
         } catch (ClassCastException e) {
             return false;
         }
-        
-        if (workAddress == null) {
-            return theObj.workAddress == null;
+
+        if (things == null) {
+            return empObj.things == null;
         }
-        
-        if (theObj.workAddress == null) { 
-            return false; 
+        for (Object thing : things) {
+            if (!thingExistsInList(thing, empObj.things)) {
+                return false;
+            }
         }
-        
-        return workAddress.equals(theObj.workAddress);
-    }   
+        return true;
+    }
+
+    private boolean thingExistsInList(Object thing, List<Object> things) {
+        for (Object listThing : things) {
+            if (listThing.equals(thing)) {
+                return true;
+            }
+        }
+        return false;
+    }
 }

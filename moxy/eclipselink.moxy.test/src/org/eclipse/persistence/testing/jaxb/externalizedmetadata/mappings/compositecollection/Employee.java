@@ -18,6 +18,21 @@ public class Employee {
     public int id;
     public List<Address> addresses;
     
+    @javax.xml.bind.annotation.XmlTransient
+    public boolean wasGetCalled;
+    @javax.xml.bind.annotation.XmlTransient
+    public boolean wasSetCalled;
+
+    public int getId() {
+        wasGetCalled = true;
+        return id;
+    }
+
+    public void setId(int id) {
+        wasSetCalled = true;
+        this.id = id;
+    }
+
     public boolean equals(Object obj) {
         if (obj == null) { return false; }
 

@@ -122,6 +122,7 @@ public class ObjectReferenceMappingTestCases extends ExternalizedMetadataTestCas
             root = (Root) unmarshaller.unmarshal(iDocStream);
             assertNotNull("Unmarshalled object is null.", root);
             assertTrue("Unmarshal failed:  Root objects are not equal", ctrlObj.equals(root));
+            assertTrue("Accessor method was not called as expected", root.employees.get(0).wasSetCalled);
         } catch (JAXBException e) {
             e.printStackTrace();
             fail("Unmarshal operation failed.");
@@ -153,6 +154,7 @@ public class ObjectReferenceMappingTestCases extends ExternalizedMetadataTestCas
             marshaller.marshal(ctrlObj, testDoc);
             //marshaller.marshal(ctrlObj, System.out);
             assertTrue("Document comparison failed unxepectedly: ", compareDocuments(ctrlDoc, testDoc));
+            assertTrue("Accessor method was not called as expected", ctrlObj.employees.get(0).wasGetCalled);
         } catch (JAXBException e) {
             e.printStackTrace();
             fail("Marshal operation failed.");

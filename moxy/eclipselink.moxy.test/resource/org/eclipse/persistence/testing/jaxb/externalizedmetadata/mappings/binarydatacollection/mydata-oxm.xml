@@ -4,7 +4,9 @@
 		<java-type name="org.eclipse.persistence.testing.jaxb.externalizedmetadata.mappings.binarydatacollection.MyData">
             <xml-root-element name="my-data" />
             <java-attributes>
-                <xml-element java-attribute="bytes" xml-path="mybytes/bytes" />
+                <xml-element java-attribute="bytes" xml-path="mybytes/bytes">
+                    <xml-access-methods get-method="getBytes" set-method="setBytes" />
+                </xml-element>
             </java-attributes>
 		</java-type>
 	</java-types>

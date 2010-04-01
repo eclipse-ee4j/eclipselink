@@ -4,10 +4,12 @@
         <xml-ns namespace-uri="http://www.example.com/stuff" prefix="s"/>
     </xml-schema>
 	<java-types>
-		<java-type name="org.eclipse.persistence.testing.jaxb.externalizedmetadata.mappings.anyobject.Employee">
+		<java-type name="org.eclipse.persistence.testing.jaxb.externalizedmetadata.mappings.anyobject.Employee" xml-accessor-type="FIELD">
             <xml-root-element name="employee" />
             <java-attributes>
-                <xml-any-element java-attribute="stuff" xml-path="things/junk/s:stuff" xml-mixed="true" />
+                <xml-any-element java-attribute="stuff" xml-path="things/junk/s:stuff" xml-mixed="true">
+                    <xml-access-methods get-method="getStuff" set-method="setStuff" />
+                </xml-any-element>
             </java-attributes>
 		</java-type>
 	</java-types>

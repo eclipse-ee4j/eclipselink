@@ -8,46 +8,41 @@
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
- * dmccann - March 25/2010 - 2.1 - Initial implementation
+ * dmccann - April 019/2010 - 2.1 - Initial implementation
  ******************************************************************************/
-package org.eclipse.persistence.testing.jaxb.externalizedmetadata.mappings.objectreference;
+package org.eclipse.persistence.testing.jaxb.externalizedmetadata.mappings.choice;
 
 public class Employee {
-    public Address workAddress;
+    public Object thing;
 
     @javax.xml.bind.annotation.XmlTransient
     public boolean wasGetCalled;
     @javax.xml.bind.annotation.XmlTransient
     public boolean wasSetCalled;
 
-    public Address getWorkAddress() {
+    public Object getThing() {
         wasGetCalled = true;
-        return workAddress;
+        return thing;
     }
 
-    public void setWorkAddress(Address workAddress) {
+    public void setThing(Object thing) {
         wasSetCalled = true;
-        this.workAddress = workAddress;
+        this.thing = thing;
     }
 
     public boolean equals(Object obj) {
         if (obj == null) { return false; }
 
-        Employee theObj;
+        Employee empObj;
         try {
-            theObj = (Employee) obj;
+            empObj = (Employee) obj;
         } catch (ClassCastException e) {
             return false;
         }
-        
-        if (workAddress == null) {
-            return theObj.workAddress == null;
+
+        if (thing == null) {
+            return empObj.thing == null;
         }
-        
-        if (theObj.workAddress == null) { 
-            return false; 
-        }
-        
-        return workAddress.equals(theObj.workAddress);
-    }   
+        return thing.equals(empObj.thing);
+    }
 }

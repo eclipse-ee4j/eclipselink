@@ -407,7 +407,13 @@ public class XMLProcessor {
         if (xmlAnyAttribute.getXmlPath() != null) {
             oldProperty.setXmlPath(xmlAnyAttribute.getXmlPath());
         }
-        
+        // handle get/set methods
+        if (xmlAnyAttribute.getXmlAccessMethods() != null) {
+            oldProperty.setMethodProperty(true);
+            oldProperty.setGetMethodName(xmlAnyAttribute.getXmlAccessMethods().getGetMethod());
+            oldProperty.setSetMethodName(xmlAnyAttribute.getXmlAccessMethods().getSetMethod());
+        }
+
         return oldProperty;
     }
 
@@ -439,6 +445,12 @@ public class XMLProcessor {
         // handle XmlPath
         if (xmlAnyElement.getXmlPath() != null) {
             oldProperty.setXmlPath(xmlAnyElement.getXmlPath());
+        }
+        // handle get/set methods
+        if (xmlAnyElement.getXmlAccessMethods() != null) {
+            oldProperty.setMethodProperty(true);
+            oldProperty.setGetMethodName(xmlAnyElement.getXmlAccessMethods().getGetMethod());
+            oldProperty.setSetMethodName(xmlAnyElement.getXmlAccessMethods().getSetMethod());
         }
 
         return oldProperty;
@@ -751,7 +763,12 @@ public class XMLProcessor {
         if (xmlElements.getXmlElementWrapper() != null) {
             oldProperty.setXmlElementWrapper(xmlElements.getXmlElementWrapper());
         }
-
+        // handle get/set methods
+        if (xmlElements.getXmlAccessMethods() != null) {
+            oldProperty.setMethodProperty(true);
+            oldProperty.setGetMethodName(xmlElements.getXmlAccessMethods().getGetMethod());
+            oldProperty.setSetMethodName(xmlElements.getXmlAccessMethods().getSetMethod());
+        }
         return oldProperty;
     }
 
@@ -1110,7 +1127,7 @@ public class XMLProcessor {
      * - returns 'managerId' for xml-path 'projects/prj:project/@prj:managerId'
      * - returns 'first-name' for xml-path 'info/personal-info/first-name/text()'
      * - returns 'project' for xml-path 'projects/prj:project/text()'
-     * - returns 'data[1]' for xml-path 'pieces-of-data/data[1]/text()'
+     * - returns 'data' for xml-path 'pieces-of-data/data[1]/text()'
      * 
      * @param xpath
      * @param propertyName

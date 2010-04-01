@@ -8,14 +8,12 @@
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
- * dmccann - March 19/2010 - 2.1 - Initial implementation
+ * dmccann - April 01/2010 - 2.1 - Initial implementation
  ******************************************************************************/
-package org.eclipse.persistence.testing.jaxb.externalizedmetadata.mappings.compositecollection;
+package org.eclipse.persistence.testing.jaxb.externalizedmetadata.mappings.choice;
 
 import java.io.File;
 import java.io.InputStream;
-import java.util.ArrayList;
-import java.util.List;
 
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
@@ -24,7 +22,6 @@ import javax.xml.bind.Unmarshaller;
 import org.eclipse.persistence.jaxb.JAXBContext;
 import org.eclipse.persistence.oxm.NamespaceResolver;
 import org.eclipse.persistence.oxm.XMLDescriptor;
-import org.eclipse.persistence.oxm.mappings.XMLCompositeCollectionMapping;
 import org.eclipse.persistence.oxm.mappings.XMLCompositeObjectMapping;
 import org.eclipse.persistence.oxm.mappings.XMLDirectMapping;
 import org.eclipse.persistence.oxm.mappings.nullpolicy.NullPolicy;
@@ -35,33 +32,22 @@ import org.eclipse.persistence.testing.jaxb.externalizedmetadata.ExternalizedMet
 import org.w3c.dom.Document;
 
 /**
- * Tests XmlCompositeCollectionMappings via eclipselink-oxm.xml
+ * Tests XmlChoiceObjectMappings via eclipselink-oxm.xml
  * 
  */
-public class CompositeCollecitonMappingTestCases extends ExternalizedMetadataTestCases {
-    private static final String CONTEXT_PATH = "org.eclipse.persistence.testing.jaxb.externalizedmetadata.mappings.compositecollection";
-    private static final String PATH = "org/eclipse/persistence/testing/jaxb/externalizedmetadata/mappings/compositecollection/";
-    private static final int HOME_ID = 67;
-    private static final String HOME_CITY = "Kanata";
-    private static final String HOME_STREET = "66 Lakview Drive";
-    private static final String HOME_PROVINCE = "ON";
-    private static final String HOME_POSTAL = "K2M2K7";
-    private static final int WORK_ID = 76;
-    private static final String WORK_CITY = "Ottawa";
-    private static final String WORK_STREET = "45 O'Connor St.";
-    private static final String WORK_PROVINCE = "ON";
-    private static final String WORK_POSTAL = "K1P1A4";
-    private static final String EMPLOYEES_NS = "http://www.example.com/employees"; 
-    private static final String CONTACTS_NS = "http://www.example.com/contacts"; 
+public class ChoiceMappingTestCases extends ExternalizedMetadataTestCases {
+    private static final String CONTEXT_PATH = "org.eclipse.persistence.testing.jaxb.externalizedmetadata.mappings.choice";
+    private static final String PATH = "org/eclipse/persistence/testing/jaxb/externalizedmetadata/mappings/choice/";
+    private static final String INT_VAL = "66";
     
-    private MySchemaOutputResolver employeeResolver;
+    private MySchemaOutputResolver resolver;
 
     /**
      * This is the preferred (and only) constructor.
      * 
      * @param name
      */
-    public CompositeCollecitonMappingTestCases(String name) {
+    public ChoiceMappingTestCases(String name) {
         super(name);
     }
     
@@ -74,53 +60,34 @@ public class CompositeCollecitonMappingTestCases extends ExternalizedMetadataTes
      */
     public void setUp() throws Exception {
         super.setUp();
-        employeeResolver = generateSchemaWithFileName(new Class[] { Employee.class }, CONTEXT_PATH, PATH + "employee-oxm.xml", 2);
+        resolver = generateSchemaWithFileName(new Class[] { }, CONTEXT_PATH, PATH + "employee-oxm.xml", 1);
     }
 
+
     /**
-     * Create the control Employee object.
+     * Return the control Employee.
      * 
+     * @return
      */
     public Employee getControlObject() {
-        Address hAddress = new Address();
-        hAddress.id = HOME_ID;
-        hAddress.city = HOME_CITY;
-        hAddress.street = HOME_STREET;
-        hAddress.province = HOME_PROVINCE;
-        hAddress.postalCode = HOME_POSTAL;
-        
-        Address wAddress = new Address();
-        wAddress.id = WORK_ID;
-        wAddress.city = WORK_CITY;
-        wAddress.street = WORK_STREET;
-        wAddress.province = WORK_PROVINCE;
-        wAddress.postalCode = WORK_POSTAL;
-
-        List<Address> adds = new ArrayList<Address>();
-        adds.add(hAddress);
-        adds.add(wAddress);
-        
         Employee emp = new Employee();
-        emp.id = 101;
-        emp.addresses = adds;
+        emp.thing = new Integer(INT_VAL);
         return emp;
     }
     
     public void testEmployeeSchemaGen() {
-        // validate employee schema
-        compareSchemas(employeeResolver.schemaFiles.get(EMPLOYEES_NS), new File(PATH + "employee.xsd"));
-        // validate contacts schema
-        compareSchemas(employeeResolver.schemaFiles.get(CONTACTS_NS), new File(PATH + "contacts.xsd"));
+        // validate the schema
+        compareSchemas(resolver.schemaFiles.get(EMPTY_NAMESPACE), new File(PATH + "employee.xsd"));
     }
     
     /**
-     * Tests XmlCompositeCollectionObjectMapping configuration via eclipselink-oxm.xml. 
+     * Tests XmlChoiceMapping configuration via eclipselink-oxm.xml. 
      * Here an unmarshal operation is performed. Utilizes xml-attribute and 
      * xml-element.
      * 
      * Positive test.
      */
-    public void testCompositeCollectionMappingUnmarshal() {
+    public void testChoiceMappingUnmarshal() {
         // load instance doc
         InputStream iDocStream = loader.getResourceAsStream(PATH + "employee.xml");
         if (iDocStream == null) {
@@ -143,12 +110,12 @@ public class CompositeCollecitonMappingTestCases extends ExternalizedMetadataTes
     }
 
     /**
-     * Tests XmlCompositeCollectionMapping configuration via eclipselink-oxm.xml. Here a
+     * Tests XmlChoiceMapping configuration via eclipselink-oxm.xml. Here a
      * marshal operation is performed. Utilizes xml-attribute and xml-element
      * 
      * Positive test.
      */
-    public void testCompositeCollectionMappingMarshal() {
+    public void testChoiceMappingMarshal() {
         // load instance doc
         String src = PATH + "employee.xml";
 
@@ -173,32 +140,6 @@ public class CompositeCollecitonMappingTestCases extends ExternalizedMetadataTes
         } catch (JAXBException e) {
             e.printStackTrace();
             fail("Marshal operation failed.");
-        }
-    }
-
-    // THE FOLLOWING CODE CAN BE USED TO GENERATE DEPLOYMENT XML FOR DOCUMENTATION PURPOSES. //
-
-    public void xtestDeploymentXML() {
-        XMLProjectWriter.write(new EmployeeProject(), "employee.xml");
-    }
-
-    class EmployeeProject extends Project {
-        public EmployeeProject() {
-            addDescriptor(getEmployeeDescriptor());
-        }
-
-        XMLDescriptor getEmployeeDescriptor() {
-            // setup mappings
-            XMLCompositeCollectionMapping addressesMapping = new XMLCompositeCollectionMapping();
-            addressesMapping.setAttributeName("addresses");
-            addressesMapping.setXPath("info/contact-info/addresses");
-
-            // setup descriptor
-            XMLDescriptor descriptor = new XMLDescriptor();
-            descriptor.setJavaClass(Employee.class);
-            descriptor.setDefaultRootElement("employee");
-            descriptor.addMapping(addressesMapping);
-            return descriptor;
         }
     }
 }

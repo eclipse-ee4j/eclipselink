@@ -14,7 +14,22 @@ package org.eclipse.persistence.testing.jaxb.externalizedmetadata.mappings.anyob
 
 public class Employee {
     public Object stuff;
-    
+
+    @javax.xml.bind.annotation.XmlTransient
+    public boolean wasGetCalled;
+    @javax.xml.bind.annotation.XmlTransient
+    public boolean wasSetCalled;
+
+    public Object getStuff() {
+        wasGetCalled = true;
+        return stuff;
+    }
+
+    public void setStuff(Object stuff) {
+        wasSetCalled = true;
+        this.stuff = stuff;
+    }
+
     public boolean equals(Object obj) {
         if (obj == null) { return false; }
 

@@ -111,6 +111,7 @@ public class AnyAttributeMappingTestCases extends ExternalizedMetadataTestCases 
         try {
             empObj = (Employee) unmarshaller.unmarshal(iDocStream);
             assertNotNull("Unmarshalled object is null.", empObj);
+            assertTrue("Accessor method was not called as expected", empObj.wasSetCalled);
             assertTrue("Unmarshal failed:  Employee objects are not equal", ctrlEmp.equals(empObj));
         } catch (JAXBException e) {
             e.printStackTrace();
@@ -142,6 +143,7 @@ public class AnyAttributeMappingTestCases extends ExternalizedMetadataTestCases 
         try {
             marshaller.marshal(ctrlEmp, testDoc);
             //marshaller.marshal(ctrlEmp, System.out);
+            assertTrue("Accessor method was not called as expected", ctrlEmp.wasGetCalled);
             assertTrue("Document comparison failed unxepectedly: ", compareDocuments(ctrlDoc, testDoc));
         } catch (JAXBException e) {
             e.printStackTrace();

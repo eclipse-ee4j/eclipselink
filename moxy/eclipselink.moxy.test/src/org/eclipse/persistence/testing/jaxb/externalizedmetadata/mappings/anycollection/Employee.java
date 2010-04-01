@@ -17,6 +17,21 @@ import java.util.List;
 public class Employee {
     public List<Object> stuff;
     
+    @javax.xml.bind.annotation.XmlTransient
+    public boolean wasGetCalled;
+    @javax.xml.bind.annotation.XmlTransient
+    public boolean wasSetCalled;
+
+    public List<Object> getStuff() {
+        wasGetCalled = true;
+        return stuff;
+    }
+
+    public void setStuff(List<Object> stuff) {
+        wasSetCalled = true;
+        this.stuff = stuff;
+    }
+
     public boolean equals(Object obj) {
         if (obj == null) { return false; }
 

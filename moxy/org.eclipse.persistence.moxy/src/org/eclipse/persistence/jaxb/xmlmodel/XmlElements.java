@@ -30,6 +30,7 @@ import javax.xml.bind.annotation.XmlType;
  *   &lt;complexContent>
  *     &lt;extension base="{http://www.eclipse.org/eclipselink/xsds/persistence/oxm}java-attribute">
  *       &lt;sequence>
+ *         &lt;element ref="{http://www.eclipse.org/eclipselink/xsds/persistence/oxm}xml-access-methods" minOccurs="0"/>
  *         &lt;element ref="{http://www.eclipse.org/eclipselink/xsds/persistence/oxm}xml-element" maxOccurs="unbounded" minOccurs="0"/>
  *         &lt;element ref="{http://www.eclipse.org/eclipselink/xsds/persistence/oxm}xml-element-wrapper" minOccurs="0"/>
  *       &lt;/sequence>
@@ -44,6 +45,7 @@ import javax.xml.bind.annotation.XmlType;
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "", propOrder = {
+    "xmlAccessMethods",
     "xmlElement",
     "xmlElementWrapper"
 })
@@ -51,6 +53,8 @@ public class XmlElements
     extends JavaAttribute
 {
 
+    @javax.xml.bind.annotation.XmlElement(name = "xml-access-methods")
+    protected XmlAccessMethods xmlAccessMethods;
     @javax.xml.bind.annotation.XmlElement(name = "xml-element")
     protected List<org.eclipse.persistence.jaxb.xmlmodel.XmlElement> xmlElement;
     @javax.xml.bind.annotation.XmlElement(name = "xml-element-wrapper")
@@ -59,6 +63,30 @@ public class XmlElements
     protected Boolean xmlIdref;
     @XmlAttribute(name = "xml-list")
     protected Boolean xmlList;
+
+    /**
+     * Gets the value of the xmlAccessMethods property.
+     * 
+     * @return
+     *     possible object is
+     *     {@link XmlAccessMethods }
+     *     
+     */
+    public XmlAccessMethods getXmlAccessMethods() {
+        return xmlAccessMethods;
+    }
+
+    /**
+     * Sets the value of the xmlAccessMethods property.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link XmlAccessMethods }
+     *     
+     */
+    public void setXmlAccessMethods(XmlAccessMethods value) {
+        this.xmlAccessMethods = value;
+    }
 
     /**
      * Gets the value of the xmlElement property.
@@ -168,5 +196,4 @@ public class XmlElements
     public void setXmlList(Boolean value) {
         this.xmlList = value;
     }
-
 }

@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="US-ASCII"?>
+<xml-bindings xmlns="http://www.eclipse.org/eclipselink/xsds/persistence/oxm">
+	<java-types>
+		<java-type name="org.eclipse.persistence.testing.jaxb.externalizedmetadata.mappings.choicecollection.Employee">
+            <xml-root-element name="employee"/>
+            <java-attributes>
+                <xml-elements java-attribute="things">
+                    <xml-access-methods get-method="getThings" set-method="setThings" />
+                    <xml-element java-attribute="MyInteger" type="java.lang.Integer" name="my-integer" />
+                    <xml-element java-attribute="MyFloat" type="java.lang.Float" name="my-float" />
+                </xml-elements>
+            </java-attributes>
+		</java-type>
+	</java-types>
+</xml-bindings>
