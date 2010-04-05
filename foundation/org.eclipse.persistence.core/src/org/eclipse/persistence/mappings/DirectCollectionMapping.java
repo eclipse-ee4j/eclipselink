@@ -1914,8 +1914,6 @@ public class DirectCollectionMapping extends CollectionMapping implements Relati
                  containerPolicy.hasNext(sourceValuesIterator);) {
             Object sourceValue = containerPolicy.next(sourceValuesIterator, mergeManager.getSession());
             if (fireCollectionChangeEvents) {
-                //Collections may not be indirect list or may have been replaced with user collection.
-                ((ObjectChangeListener)((ChangeTracker)target)._persistence_getPropertyChangeListener()).internalPropertyChange(new CollectionChangeEvent(target, getAttributeName(), valueOfTarget, sourceValue, CollectionChangeEvent.ADD));// make the add change event fire.
                 // Bug304251: let the containerPolicy build the proper remove CollectionChangeEvent
                 CollectionChangeEvent event = containerPolicy.createChangeEvent(target, getAttributeName(), valueOfTarget, sourceValue, CollectionChangeEvent.ADD, Integer.valueOf(i));
                 listener.internalPropertyChange(event);
