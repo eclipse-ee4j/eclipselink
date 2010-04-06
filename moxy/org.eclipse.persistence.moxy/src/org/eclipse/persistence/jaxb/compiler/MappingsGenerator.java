@@ -1389,10 +1389,13 @@ public class MappingsGenerator {
             }
         }
 
-
-        if (property.isNillable()){
+        // handle null policy set via xml metadata
+        if (property.isSetNullPolicy()) {
+            mapping.setNullPolicy(getNullPolicyFromProperty(property, namespaceInfo.getNamespaceResolverForDescriptor()));
+        } else if (property.isNillable()){
             mapping.getNullPolicy().setNullRepresentedByXsiNil(true);
         }
+        
         JavaClass collectionType = property.getType();
 
         if (collectionType.isArray()){
@@ -1400,7 +1403,7 @@ public class MappingsGenerator {
             accessor.setComponentClassName(collectionType.getComponentType().getRawName());
             mapping.setAttributeAccessor(accessor);
             collectionType = jotArrayList;
-        }else if (areEquals(collectionType, Collection.class) || areEquals(collectionType, List.class)) {
+        } else if (areEquals(collectionType, Collection.class) || areEquals(collectionType, List.class)) {
             collectionType = jotArrayList;
         } else if (areEquals(collectionType, Set.class)) {
             collectionType = jotHashSet;
@@ -1532,10 +1535,13 @@ public class MappingsGenerator {
             ((XMLField) mapping.getField()).setSchemaType(XMLConstants.QNAME_QNAME);
         }
 
-        if (property.getActualType() == null || property.getActualType().getRawName().equals("java.lang.String")) {
+        // handle null policy set via xml metadata
+        if (property.isSetNullPolicy()) {
+            mapping.setNullPolicy(getNullPolicyFromProperty(property, namespaceInfo.getNamespaceResolverForDescriptor()));
+        } else if (property.getActualType() == null || property.getActualType().getRawName().equals("java.lang.String")) {
             mapping.getNullPolicy().setNullRepresentedByEmptyNode(false);
         }
-
+        
         if (property.isRequired()) {
             ((XMLField) mapping.getField()).setRequired(true);
         }

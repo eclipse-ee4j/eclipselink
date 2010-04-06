@@ -81,7 +81,7 @@ public class CompositeCollecitonMappingTestCases extends ExternalizedMetadataTes
      * Create the control Employee object.
      * 
      */
-    public Employee getControlObject() {
+    public Employee getControlObject(boolean nullAddresses) {
         Address hAddress = new Address();
         hAddress.id = HOME_ID;
         hAddress.city = HOME_CITY;
@@ -98,7 +98,9 @@ public class CompositeCollecitonMappingTestCases extends ExternalizedMetadataTes
 
         List<Address> adds = new ArrayList<Address>();
         adds.add(hAddress);
+        if (nullAddresses) { adds.add(null); }
         adds.add(wAddress);
+        if (nullAddresses) { adds.add(null); }
         
         Employee emp = new Employee();
         emp.id = 101;
@@ -114,7 +116,7 @@ public class CompositeCollecitonMappingTestCases extends ExternalizedMetadataTes
     }
     
     /**
-     * Tests XmlCompositeCollectionObjectMapping configuration via eclipselink-oxm.xml. 
+     * Tests XmlCompositeCollectionMapping configuration via eclipselink-oxm.xml. 
      * Here an unmarshal operation is performed. Utilizes xml-attribute and 
      * xml-element.
      * 
@@ -126,16 +128,11 @@ public class CompositeCollecitonMappingTestCases extends ExternalizedMetadataTes
         if (iDocStream == null) {
             fail("Couldn't load instance doc [" + PATH + "employee.xml" + "]");
         }
-
-        // setup control Employee
-        Employee ctrlEmp = getControlObject();
-
         try {
-            Unmarshaller unmarshaller = jaxbContext.createUnmarshaller();
-            Employee empObj = (Employee) unmarshaller.unmarshal(iDocStream);
+            Employee empObj = (Employee) jaxbContext.createUnmarshaller().unmarshal(iDocStream);
             assertNotNull("Unmarshalled object is null.", empObj);
             assertTrue("Accessor method was not called as expected", empObj.wasSetCalled);
-            assertTrue("Unmarshal failed:  Employee objects are not equal", ctrlEmp.equals(empObj));
+            assertTrue("Unmarshal failed:  Employee objects are not equal", getControlObject(false).equals(empObj));
         } catch (JAXBException e) {
             e.printStackTrace();
             fail("Unmarshal operation failed.");
@@ -151,7 +148,6 @@ public class CompositeCollecitonMappingTestCases extends ExternalizedMetadataTes
     public void testCompositeCollectionMappingMarshal() {
         // load instance doc
         String src = PATH + "employee.xml";
-
         // setup control document
         Document testDoc = parser.newDocument();
         Document ctrlDoc = parser.newDocument();
@@ -161,11 +157,9 @@ public class CompositeCollecitonMappingTestCases extends ExternalizedMetadataTes
             e.printStackTrace();
             fail("An unexpected exception occurred loading control document [" + src + "].");
         }
-
-        // test marshal
         try {
             Marshaller marshaller = jaxbContext.createMarshaller();
-            Employee ctrlEmp = getControlObject();
+            Employee ctrlEmp = getControlObject(false);
             marshaller.marshal(ctrlEmp, testDoc);
             //marshaller.marshal(ctrlEmp, System.out);
             assertTrue("Accessor method was not called as expected", ctrlEmp.wasGetCalled);
@@ -176,29 +170,64 @@ public class CompositeCollecitonMappingTestCases extends ExternalizedMetadataTes
         }
     }
 
-    // THE FOLLOWING CODE CAN BE USED TO GENERATE DEPLOYMENT XML FOR DOCUMENTATION PURPOSES. //
-
-    public void xtestDeploymentXML() {
-        XMLProjectWriter.write(new EmployeeProject(), "employee.xml");
+    /**
+     * Tests XmlCompositeCollectionMapping configuration via eclipselink-oxm.xml. 
+     * Here an unmarshal operation is performed. Utilizes xml-attribute and 
+     * xml-element.
+     * 
+     * Positive test.
+     */
+    public void testCompositeCollectionNullPolicyMappingUnmarshal() {
+        // load instance doc
+        InputStream iDocStream = loader.getResourceAsStream(PATH + "employee-null-addresses.xml");
+        if (iDocStream == null) {
+            fail("Couldn't load instance doc [" + PATH + "employee.xml" + "]");
+        }
+        // tweak control object (unmarshal null will result in new Address instances being set in the object)
+        Employee ctrlEmp = getControlObject(true);
+        ctrlEmp.addresses.remove(1);
+        ctrlEmp.addresses.add(1, new Address());
+        ctrlEmp.addresses.remove(3);
+        ctrlEmp.addresses.add(3, new Address());
+        try {
+            Employee empObj = (Employee) jaxbContext.createUnmarshaller().unmarshal(iDocStream);
+            assertNotNull("Unmarshalled object is null.", empObj);
+            assertTrue("Accessor method was not called as expected", empObj.wasSetCalled);
+            assertTrue("Unmarshal failed:  Employee objects are not equal", ctrlEmp.equals(empObj));
+        } catch (JAXBException e) {
+            e.printStackTrace();
+            fail("Unmarshal operation failed.");
+        }
     }
 
-    class EmployeeProject extends Project {
-        public EmployeeProject() {
-            addDescriptor(getEmployeeDescriptor());
+    /**
+     * Tests XmlCompositeCollectionMapping configuration via eclipselink-oxm.xml. Here a
+     * marshal operation is performed. Utilizes xml-attribute and xml-element
+     * 
+     * Positive test.
+     */
+    public void testCompositeCollectionNullPolicyMappingMarshal() {
+        // load instance doc
+        String src = PATH + "employee-null-addresses.xml";
+        // setup control document
+        Document testDoc = parser.newDocument();
+        Document ctrlDoc = parser.newDocument();
+        try {
+            ctrlDoc = getControlDocument(src);
+        } catch (Exception e) {
+            e.printStackTrace();
+            fail("An unexpected exception occurred loading control document [" + src + "].");
         }
-
-        XMLDescriptor getEmployeeDescriptor() {
-            // setup mappings
-            XMLCompositeCollectionMapping addressesMapping = new XMLCompositeCollectionMapping();
-            addressesMapping.setAttributeName("addresses");
-            addressesMapping.setXPath("info/contact-info/addresses");
-
-            // setup descriptor
-            XMLDescriptor descriptor = new XMLDescriptor();
-            descriptor.setJavaClass(Employee.class);
-            descriptor.setDefaultRootElement("employee");
-            descriptor.addMapping(addressesMapping);
-            return descriptor;
+        try {
+            Marshaller marshaller = jaxbContext.createMarshaller();
+            Employee ctrlEmp = getControlObject(true);
+            marshaller.marshal(ctrlEmp, testDoc);
+            //marshaller.marshal(ctrlEmp, System.out);
+            assertTrue("Accessor method was not called as expected", ctrlEmp.wasGetCalled);
+            assertTrue("Document comparison failed unxepectedly: ", compareDocuments(ctrlDoc, testDoc));
+        } catch (JAXBException e) {
+            e.printStackTrace();
+            fail("Marshal operation failed.");
         }
     }
 }

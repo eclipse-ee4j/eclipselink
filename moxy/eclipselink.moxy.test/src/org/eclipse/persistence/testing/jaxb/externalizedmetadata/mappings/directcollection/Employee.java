@@ -24,15 +24,23 @@ public class Employee {
     public boolean wasSetCalled;
 
     public int getId() {
-        wasGetCalled = true;
         return id;
     }
 
     public void setId(int id) {
-        wasSetCalled = true;
         this.id = id;
     }
     
+    public List<String> getProjectIds() {
+        wasGetCalled = true;
+        return projectIds;
+    }
+
+    public void setProjectIds(List<String> projectIds) {
+        wasSetCalled = true;
+        this.projectIds = projectIds;
+    }
+
     public boolean equals(Object obj) {
         Employee empObj;
         try {

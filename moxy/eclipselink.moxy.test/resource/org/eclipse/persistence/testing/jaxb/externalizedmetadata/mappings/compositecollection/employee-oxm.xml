@@ -10,7 +10,9 @@
                 <xml-attribute java-attribute="id" xml-path="@empId">
                     <xml-access-methods get-method="getId" set-method="setId" />
                 </xml-attribute>
-                <xml-element java-attribute="addresses" xml-path="info/c:contact-info/addresses/address" />
+                <xml-element java-attribute="addresses" xml-path="info/c:contact-info/addresses/address">
+                    <xml-null-policy null-representation-for-xml="EMPTY_NODE" />
+                </xml-element>
             </java-attributes>
         </java-type>
         <java-type name="org.eclipse.persistence.testing.jaxb.externalizedmetadata.mappings.compositecollection.Address">

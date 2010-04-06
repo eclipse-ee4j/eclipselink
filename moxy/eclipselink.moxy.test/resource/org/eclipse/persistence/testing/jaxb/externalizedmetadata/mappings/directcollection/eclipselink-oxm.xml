@@ -7,7 +7,10 @@
                 <xml-attribute java-attribute="id" xml-path="@empId">
                     <xml-access-methods get-method="getId" set-method="setId" />
                 </xml-attribute>
-                <xml-element java-attribute="projectIds" xml-path="projects/projectId/text()" />
+                <xml-element java-attribute="projectIds" xml-path="projects/projectId/text()">
+                    <xml-access-methods get-method="getProjectIds" set-method="setProjectIds" />
+                    <xml-null-policy null-representation-for-xml="EMPTY_NODE" />
+                </xml-element>
             </java-attributes>
 		</java-type>
 	</java-types>
