@@ -185,7 +185,7 @@ public class BasicTypesFieldAccess {
     protected byte[] primitiveByteArray2Longvarbinary; // LONGVARBINARY
 
     @Basic
-    @Column(name = "PBA_BLOB", length = 65535) // FIXME: remove length after bugzilla 307774 is fixed
+    @Column(name = "PBA_BLOB")
     @Lob
     @Mutable
     protected byte[] primitiveByteArray2Blob; // BLOB
@@ -201,7 +201,7 @@ public class BasicTypesFieldAccess {
     protected Byte[] wrapperByteArray2Longvarbinary; // LONGVARBINARY
 
     @Basic
-    @Column(name = "WBA_BLOB", length = 65535) // FIXME: remove length after bugzilla 307774 is fixed
+    @Column(name = "WBA_BLOB")
     @Lob
     @Mutable
     protected Byte[] wrapperByteArray2Blob; // BLOB
@@ -230,7 +230,7 @@ public class BasicTypesFieldAccess {
 
     // user-defined serializable
     @Basic
-    @Column(name = "SERIALIZABLE", length = 65535) // FIXME: remove length after bugzilla 307774 is fixed
+    @Column(name = "SERIALIZABLE")
     @Lob
     protected Serializable serializable; // BLOB
 
