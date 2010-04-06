@@ -40,6 +40,7 @@ import org.eclipse.persistence.internal.sessions.factories.model.login.StructCon
 import org.eclipse.persistence.internal.sessions.factories.model.login.XMLLoginConfig;
 import org.eclipse.persistence.internal.sessions.factories.model.platform.CustomServerPlatformConfig;
 import org.eclipse.persistence.internal.sessions.factories.model.platform.JBossPlatformConfig;
+import org.eclipse.persistence.internal.sessions.factories.model.platform.NetWeaver_7_1_PlatformConfig;
 import org.eclipse.persistence.internal.sessions.factories.model.platform.Oc4jPlatformConfig;
 import org.eclipse.persistence.internal.sessions.factories.model.platform.ServerPlatformConfig;
 import org.eclipse.persistence.internal.sessions.factories.model.platform.WebLogic_6_1_PlatformConfig;
@@ -222,6 +223,7 @@ public class XMLSessionConfigProject extends org.eclipse.persistence.sessions.Pr
         addDescriptor(buildServerPlatformConfigDescriptorFor(WebSphere_5_1_PlatformConfig.class));
         addDescriptor(buildServerPlatformConfigDescriptorFor(WebSphere_6_0_PlatformConfig.class));
         addDescriptor(buildServerPlatformConfigDescriptorFor(JBossPlatformConfig.class));
+        addDescriptor(buildServerPlatformConfigDescriptorFor(NetWeaver_7_1_PlatformConfig.class));
 
         // Set the namespaces on all descriptors.
         NamespaceResolver namespaceResolver = new NamespaceResolver();
@@ -1186,6 +1188,8 @@ public class XMLSessionConfigProject extends org.eclipse.persistence.sessions.Pr
         descriptor.getInheritancePolicy().addClassIndicator(WebSphere_5_1_PlatformConfig.class, "websphere-51-platform");
         descriptor.getInheritancePolicy().addClassIndicator(WebSphere_6_0_PlatformConfig.class, "websphere-60-platform");
         descriptor.getInheritancePolicy().addClassIndicator(JBossPlatformConfig.class, "jboss-platform");
+        descriptor.getInheritancePolicy().addClassIndicator(NetWeaver_7_1_PlatformConfig.class, "netweaver-71-platform");
+        
 
         XMLDirectMapping enableRuntimeServicesMapping = new XMLDirectMapping();
         enableRuntimeServicesMapping.setAttributeName("m_enableRuntimeServices");

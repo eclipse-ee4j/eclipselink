@@ -540,8 +540,8 @@ public class PropertiesHandler {
                 {TargetServer.WebLogic, pcg + "wls.WebLogicPlatform"},
                 {TargetServer.WebLogic_9, pcg + "wls.WebLogic_9_Platform"},
                 {TargetServer.WebLogic_10, pcg + "wls.WebLogic_10_Platform"},
-                {TargetServer.JBoss, pcg + "jboss.JBossPlatform"}
-            };
+                {TargetServer.JBoss, pcg + "jboss.JBossPlatform"},
+                {TargetServer.SAPNetWeaver_7_1, pcg + "sap.SAPNetWeaver_7_1_Platform"},            };
         }  
     }
 

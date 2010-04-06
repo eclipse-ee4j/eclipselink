@@ -35,7 +35,7 @@
 
     <!-- Allows a user to overide certain user specific properties. -->
     <property file="${user.home}/netweaver.properties"/>
-    <property file="./netweaver.properties"/>
+    <property file="${eclipselink.jpa.test}/netweaver.properties"/>
     
     <property name="cpath" value="${netweaver.deployment.ant.dir}/tc~je~dc_ant.jar: 
                                   ${netweaver.clientlib.dir}/sap.com~tc~exception~impl.jar:
@@ -52,6 +52,7 @@
             <available file="${netweaver.deployment.dir}/scripts/make_SDA.csh"/>
         </and>
     </condition>
+        <echo message="suffix=${suffix}"/>
 
     <macrodef name="make_sda">
         <attribute name="source" />
@@ -84,7 +85,6 @@
         <!-- pack EAR file containing eclipselink.jar and other required libraries and convert it to SDA -->
         <zip destfile="${eclipselink.jpa.test}/${build.dir}/${netweaver.eclipselink.app}.ear">
             <fileset dir="${eclipselink.home}" includes="eclipselink.jar"/>
-            <fileset dir="${extensions.home}/org.eclipse.persistence.platform.server.netweaver" includes="*.jar"/>
             <fileset file="${junit.lib}"/>
         </zip>
         <make_sda source="${basedir}/${build.dir}/${netweaver.eclipselink.app}.ear" target="${basedir}/${build.dir}/${netweaver.eclipselink.app}.sda" />        
@@ -143,7 +143,7 @@
         </copy>
         <replace dir="${eclipselink.jpa.test}/resource/${server.name}/META-INF" token='%%eclipselinklib%%' value="${netweaver.eclipselink.app}"/>
         <replace dir="${eclipselink.jpa.test}/resource/${server.name}/META-INF" token='%%datasourcename%%' value="${netweaver.datasource.name}"/>
-    	<ear destfile="${eclipselink.jpa.test}/${ear.name}" update="true">
+    	<ear destfile="${basedir}/${ear.name}" update="true">
     	    <fileset dir="${eclipselink.jpa.test}/resource/${server.name}" includes="META-INF/*.*"/>
         </ear>
         <dirname property="basedir" file="${eclipselink.jpa.test}"/>
