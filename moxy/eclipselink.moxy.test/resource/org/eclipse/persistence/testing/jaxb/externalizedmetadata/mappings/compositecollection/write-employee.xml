@@ -19,5 +19,13 @@
                 <address/>
             </addresses>
         </c:contact-info>
+        <write-only>
+            <address id="77">
+                <city>Woodlawn</city>
+                <street>463 Bayview Dr.</street>
+                <province>ON</province>
+                <postalCode>K0A3M0</postalCode>
+            </address>
+        </write-only>
     </info>
 </ns0:employee>

@@ -1373,6 +1373,14 @@ public class MappingsGenerator {
         XMLCompositeCollectionMapping mapping = new XMLCompositeCollectionMapping();
         mapping.setAttributeName(property.getPropertyName());
         mapping.setReuseContainer(true);
+        // handle read-only set via metadata
+        if (property.isSetReadOnly()) {
+            mapping.setIsReadOnly(property.isReadOnly());
+        }
+        // handle write-only set via metadata
+        if (property.isSetWriteOnly()) {
+            mapping.setIsWriteOnly(property.isWriteOnly());
+        }
         if (property.isMethodProperty()) {
             if (property.getGetMethodName() == null) {
                 // handle case of set with no get method
@@ -1461,6 +1469,14 @@ public class MappingsGenerator {
         XMLCompositeDirectCollectionMapping mapping = new XMLCompositeDirectCollectionMapping();
         mapping.setAttributeName(property.getPropertyName());
         mapping.setReuseContainer(true);
+        // handle read-only set via metadata
+        if (property.isSetReadOnly()) {
+            mapping.setIsReadOnly(property.isReadOnly());
+        }
+        // handle write-only set via metadata
+        if (property.isSetWriteOnly()) {
+            mapping.setIsWriteOnly(property.isWriteOnly());
+        }
         if (property.isMethodProperty()) {
             if (property.getGetMethodName() == null) {
                 // handle case of set with no get method
@@ -1556,6 +1572,10 @@ public class MappingsGenerator {
         }
         if (property.isXmlList()) {
             mapping.setUsesSingleNode(true);
+        }
+        // handle cdata set via metadata
+        if (property.isSetCdata()) {
+            mapping.setIsCDATA(property.isCdata());
         }
         descriptor.addMapping(mapping);
         return mapping;

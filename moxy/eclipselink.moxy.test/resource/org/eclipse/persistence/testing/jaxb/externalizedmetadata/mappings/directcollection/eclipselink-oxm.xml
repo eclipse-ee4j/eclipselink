@@ -11,6 +11,9 @@
                     <xml-access-methods get-method="getProjectIds" set-method="setProjectIds" />
                     <xml-null-policy null-representation-for-xml="EMPTY_NODE" />
                 </xml-element>
+                <xml-attribute java-attribute="salaries" read-only="true" />
+                <xml-element java-attribute="privateData" xml-path="private-data/entry/text()" write-only="true" />
+                <xml-element java-attribute="characterData" xml-path="character-data/entry/text()" cdata="true" />
             </java-attributes>
 		</java-type>
 	</java-types>

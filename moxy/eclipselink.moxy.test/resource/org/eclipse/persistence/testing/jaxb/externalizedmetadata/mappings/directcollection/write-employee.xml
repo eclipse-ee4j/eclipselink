@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<employee empId="101" salaries="123456.78 234567.89">
+<employee empId="101">
   <projects>
     <projectId>01</projectId>
     <projectId/>

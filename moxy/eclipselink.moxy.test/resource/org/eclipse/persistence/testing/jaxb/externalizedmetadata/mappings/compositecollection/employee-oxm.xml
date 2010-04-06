@@ -13,6 +13,8 @@
                 <xml-element java-attribute="addresses" xml-path="info/c:contact-info/addresses/address">
                     <xml-null-policy null-representation-for-xml="EMPTY_NODE" />
                 </xml-element>
+                <xml-element java-attribute="readOnlyAddressList" xml-path="info/read-only/address" read-only="true" />
+                <xml-element java-attribute="writeOnlyAddressList" xml-path="info/write-only/address" write-only="true" />
             </java-attributes>
         </java-type>
         <java-type name="org.eclipse.persistence.testing.jaxb.externalizedmetadata.mappings.compositecollection.Address">

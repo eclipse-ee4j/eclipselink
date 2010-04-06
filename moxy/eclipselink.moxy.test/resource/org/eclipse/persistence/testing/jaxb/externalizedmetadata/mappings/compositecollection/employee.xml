@@ -9,13 +9,31 @@
                     <province>ON</province>
                     <postalCode>K2M2K7</postalCode>
                 </address>
+                <address/>
                 <address id="76">
                     <city>Ottawa</city>
                     <street>45 O'Connor St.</street>
                     <province>ON</province>
                     <postalCode>K1P1A4</postalCode>
                 </address>
+                <address/>
             </addresses>
         </c:contact-info>
+        <read-only>
+            <address id="66">
+                <city>Woodlawn</city>
+                <street>465 Bayview Dr.</street>
+                <province>ON</province>
+                <postalCode>K0A3M0</postalCode>
+            </address>
+        </read-only>
+        <write-only>
+            <address id="77">
+                <city>Woodlawn</city>
+                <street>463 Bayview Dr.</street>
+                <province>ON</province>
+                <postalCode>K0A3M0</postalCode>
+            </address>
+        </write-only>
     </info>
 </ns0:employee>

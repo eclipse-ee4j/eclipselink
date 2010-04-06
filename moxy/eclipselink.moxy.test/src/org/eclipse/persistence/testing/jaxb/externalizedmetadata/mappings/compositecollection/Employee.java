@@ -17,6 +17,8 @@ import java.util.List;
 public class Employee {
     public int id;
     public List<Address> addresses;
+    public List<Address> readOnlyAddressList;
+    public List<Address> writeOnlyAddressList;
     
     @javax.xml.bind.annotation.XmlTransient
     public boolean wasGetCalled;
@@ -42,13 +44,49 @@ public class Employee {
         } catch (ClassCastException e) {
             return false;
         }
-        if (id != empObj.id) { return false; }
-        if (addresses == null && empObj.addresses != null) {
+        if (id != empObj.id) {
             return false;
         }
-        for (Address add : addresses) {
-            if (!addressExistsInList(add, empObj.addresses)) {
+        if (addresses == null) {
+            if (empObj.addresses != null) {
                 return false;
+            }
+        } else {
+            if (empObj.addresses == null) {
+                return false;
+            }
+            for (Address add : addresses) {
+                if (!addressExistsInList(add, empObj.addresses)) {
+                    return false;
+                }
+            }
+        }
+        if (readOnlyAddressList == null) {
+            if (empObj.readOnlyAddressList != null) {
+                return false;
+            }
+        } else {
+            if (empObj.readOnlyAddressList == null) {
+                return false;
+            }
+            for (Address add : readOnlyAddressList) {
+                if (!addressExistsInList(add, empObj.readOnlyAddressList)) {
+                    return false;
+                }
+            }
+        }
+        if (writeOnlyAddressList == null) {
+            if (empObj.writeOnlyAddressList != null) {
+                return false;
+            }
+        } else {
+            if (empObj.writeOnlyAddressList == null) {
+                return false;
+            }
+            for (Address add : writeOnlyAddressList) {
+                if (!addressExistsInList(add, empObj.writeOnlyAddressList)) {
+                    return false;
+                }
             }
         }
         return true;

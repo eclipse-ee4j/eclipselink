@@ -42,6 +42,12 @@ public class DirectCollectionMappingTestCases extends ExternalizedMetadataTestCa
     private static final String PRJ_ID1 = "01";
     private static final String PRJ_ID2 = "10";
     private static final String PRJ_ID3 = "11";
+    private static final String SAL_1 = "123456.78";
+    private static final String SAL_2 = "234567.89";
+    private static final String PDATA_1 = "This is some private data";
+    private static final String PDATA_2 = "This is more private data";
+    private static final String CDATA_1 = "<characters>a b c d e f g</characters>";
+    private static final String CDATA_2 = "<characters>h i j k l m n</characters>";
     
     /**
      * This is the preferred (and only) constructor.
@@ -55,19 +61,31 @@ public class DirectCollectionMappingTestCases extends ExternalizedMetadataTestCa
     /**
      * Create the control Employee.
      */
-    private Employee getControlObject(boolean nullProjectIds) {
+    private Employee getControlObject() {
         List<String> prjIds = new ArrayList<String>();
-        if (nullProjectIds) {
-            prjIds.add(null);
-        } else {
-            prjIds.add(PRJ_ID1);
-            prjIds.add(PRJ_ID2);
-        }
+        prjIds.add(PRJ_ID1);
+        prjIds.add(null);
+        prjIds.add(PRJ_ID2);
         prjIds.add(PRJ_ID3);
         
+        List<Float> sals = new ArrayList<Float>();
+        sals.add(Float.valueOf(SAL_1));
+        sals.add(Float.valueOf(SAL_2));
+        
+        List<String> pData = new ArrayList<String>();
+        pData.add(PDATA_1);
+        pData.add(PDATA_2);
+
+        List<String> cData = new ArrayList<String>();
+        cData.add(CDATA_1);
+        cData.add(CDATA_2);
+
         Employee ctrlEmp = new Employee();
         ctrlEmp.id = EMPID;
         ctrlEmp.projectIds = prjIds;
+        ctrlEmp.salaries = sals;
+        ctrlEmp.privateData = pData;
+        ctrlEmp.characterData = cData;
         return ctrlEmp;
     }
     
@@ -108,11 +126,19 @@ public class DirectCollectionMappingTestCases extends ExternalizedMetadataTestCa
         if (iDocStream == null) {
             fail("Couldn't load instance doc [" + src + "]");
         }
+        // tweak control object
+        Employee ctrlEmp = getControlObject();
+        // unmarshal null will result in "" being set in the object
+        ctrlEmp.projectIds.remove(1);
+        ctrlEmp.projectIds.add(1, "");
+        // 'privateData' is write only
+        ctrlEmp.privateData = null;
+
         try {
             Employee empObj = (Employee) jaxbContext.createUnmarshaller().unmarshal(iDocStream);
             assertNotNull("Unmarshalled object is null.", empObj);
             assertTrue("Accessor method was not called as expected", empObj.wasSetCalled);
-            assertTrue("Unmarshal failed:  Employee objects are not equal", getControlObject(false).equals(empObj));
+            assertTrue("Unmarshal failed:  Employee objects are not equal", ctrlEmp.equals(empObj));
         } catch (JAXBException e) {
             e.printStackTrace();
             fail("Unmarshal operation failed.");
@@ -127,7 +153,7 @@ public class DirectCollectionMappingTestCases extends ExternalizedMetadataTestCa
      */
     public void testDirectCollectionMarshal() {
         // setup control document
-        String src = PATH + "employee.xml";
+        String src = PATH + "write-employee.xml";
         Document testDoc = parser.newDocument();
         Document ctrlDoc = parser.newDocument();
         try {
@@ -137,67 +163,11 @@ public class DirectCollectionMappingTestCases extends ExternalizedMetadataTestCa
             fail("An unexpected exception occurred loading control document [" + src + "].");
         }
         try {
-            Employee ctrlEmp = getControlObject(false);
+            Employee ctrlEmp = getControlObject();
             Marshaller marshaller = jaxbContext.createMarshaller();
             marshaller.marshal(ctrlEmp, testDoc);
             //marshaller.marshal(ctrlEmp, System.out);
             assertTrue("Accessor method was not called as expected", ctrlEmp.wasGetCalled);
-            assertTrue("Document comparison failed unxepectedly: ", compareDocuments(ctrlDoc, testDoc));
-        } catch (JAXBException e) {
-            e.printStackTrace();
-            fail("Marshal operation failed.");
-        }
-    }
-    
-    /**
-     * Tests XmlDirectCollectionMapping configuration via eclipselink-oxm.xml.
-     * Here an unmarshal operation is performed.  
-     * 
-     * Positive test.
-     */
-    public void testDirectCollectionNullPolicyUnmarshal() {
-        // load instance doc
-        String src = PATH + "employee-null-projectids.xml";
-        InputStream iDocStream = loader.getResourceAsStream(src);
-        if (iDocStream == null) {
-            fail("Couldn't load instance doc [" + src + "]");
-        }
-        // tewak control object (unmarshal null will result in "" being set in the object)
-        Employee ctrlEmp = getControlObject(true);
-        ctrlEmp.projectIds.remove(0);
-        ctrlEmp.projectIds.add(0, "");
-        try {
-            Employee empObj = (Employee) jaxbContext.createUnmarshaller().unmarshal(iDocStream);
-            assertNotNull("Unmarshalled object is null.", empObj);
-            assertTrue("Unmarshal failed:  Employee objects are not equal", ctrlEmp.equals(empObj));
-        } catch (JAXBException e) {
-            e.printStackTrace();
-            fail("Unmarshal operation failed.");
-        }
-    }
-    
-    /**
-     * Tests XmlDirectCollectionMapping configuration via eclipselink-oxm.xml.
-     * Here a marshal operation is performed.  
-     * 
-     * Positive test.
-     */
-    public void testDirectCollectionNullPolicyMarshal() {
-        // setup control document
-        String src = PATH + "employee-null-projectids.xml";
-        Document testDoc = parser.newDocument();
-        Document ctrlDoc = parser.newDocument();
-        try {
-            ctrlDoc = getControlDocument(src);
-        } catch (Exception e) {
-            e.printStackTrace();
-            fail("An unexpected exception occurred loading control document [" + src + "].");
-        }
-        try {
-            Employee ctrlEmp = getControlObject(true);
-            Marshaller marshaller = jaxbContext.createMarshaller();
-            marshaller.marshal(ctrlEmp, testDoc);
-            //marshaller.marshal(ctrlEmp, System.out);
             assertTrue("Document comparison failed unxepectedly: ", compareDocuments(ctrlDoc, testDoc));
         } catch (JAXBException e) {
             e.printStackTrace();

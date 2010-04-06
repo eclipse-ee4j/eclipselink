@@ -17,6 +17,9 @@ import java.util.List;
 public class Employee {
     public int id;
     public List<String> projectIds;
+    public List<Float> salaries;
+    public List<String> privateData;
+    public List<String> characterData; 
 
     @javax.xml.bind.annotation.XmlTransient
     public boolean wasGetCalled;
@@ -48,13 +51,68 @@ public class Employee {
         } catch (ClassCastException e) {
             return false;
         }
-        if (id != empObj.id) { return false; }
-        if (projectIds == null) { return empObj.projectIds == null; }
-        if (empObj.projectIds == null) { return false; }
-        if (projectIds.size() != empObj.projectIds.size()) { return false; }
-        for (String prj : projectIds) {
-            if (!empObj.projectIds.contains(prj)) {
+        // compare id
+        if (id != empObj.id) { 
+            return false;
+        }
+        // compare projectIds
+        if (projectIds == null) { 
+            if (empObj.projectIds != null) {
                 return false;
+            }
+        } else { 
+            if (empObj.projectIds == null || projectIds.size() != empObj.projectIds.size()) { 
+                return false;
+            }
+            for (String prj : projectIds) {
+                if (!empObj.projectIds.contains(prj)) {
+                    return false;
+                }
+            }
+        }
+        // compare salaries
+        if (salaries == null) { 
+            if (empObj.salaries != null) {
+                return false;
+            }
+        } else {
+            if (empObj.salaries == null || salaries.size() != empObj.salaries.size()) { 
+                return false;
+            }
+            for (Float sal : salaries) {
+                if (!empObj.salaries.contains(sal)) {
+                    return false;
+                }
+            }
+        }
+        // compare privateData
+        if (privateData == null) { 
+            if (empObj.privateData != null) {
+                return false;
+            }
+        } else { 
+            if (empObj.privateData == null || privateData.size() != empObj.privateData.size()) { 
+                return false; 
+            }
+            for (String pd : privateData) {
+                if (!empObj.privateData.contains(pd)) {
+                    return false;
+                }
+            }
+        }
+        // compare characterData
+        if (characterData == null) { 
+            if (empObj.characterData != null) {
+                return false;
+            }
+        } else {
+            if (empObj.characterData == null || characterData.size() != empObj.characterData.size()) { 
+                return false;
+            }
+            for (String cd : characterData) {
+                if (!empObj.characterData.contains(cd)) {
+                    return false;
+                }
             }
         }
         return true;
