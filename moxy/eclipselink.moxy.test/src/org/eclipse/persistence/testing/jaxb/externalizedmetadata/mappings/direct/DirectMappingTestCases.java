@@ -199,13 +199,6 @@ public class DirectMappingTestCases extends ExternalizedMetadataTestCases {
      * Positive test.
      */
     public void testDirectMappingXmlValueUnmarshal() {
-        try {
-            super.setUp();
-        } catch (Exception e) {
-            e.printStackTrace();
-            fail("Test setup failed.");
-        }
-
         // create the JAXBContext
         JAXBContext jCtx = null;
         try {
@@ -244,13 +237,6 @@ public class DirectMappingTestCases extends ExternalizedMetadataTestCases {
      * Positive test.
      */
     public void testDirectMappingXmlValueMarshal() {
-        try {
-            super.setUp();
-        } catch (Exception e) {
-            e.printStackTrace();
-            fail("Test setup failed.");
-        }
-
         // create the JAXBContext
         JAXBContext jCtx = null;
         try {
@@ -288,9 +274,6 @@ public class DirectMappingTestCases extends ExternalizedMetadataTestCases {
     
     public void testVehiclesSchemaGen() {
         try {
-            // remove the following setup call when bug# 306372 is resolved
-            super.setUp();
-
             String metadataFile = PATH + "vehicles-oxm.xml";
             MySchemaOutputResolver oResolver = new MySchemaOutputResolver(); 
             oResolver = generateSchemaWithFileName(new Class[] { Car.class, Truck.class }, CONTEXT_PATH, metadataFile, 2);
@@ -304,9 +287,6 @@ public class DirectMappingTestCases extends ExternalizedMetadataTestCases {
 
     public void testTeamSchemaGen() {
         try {
-            // remove the following setup call when bug# 306372 is resolved
-            super.setUp();
-
             String metadataFile = PATH + "team-oxm.xml";
             MySchemaOutputResolver oResolver = new MySchemaOutputResolver(); 
             oResolver = generateSchemaWithFileName(new Class[] { Team.class }, CONTEXT_PATH, metadataFile, 3);

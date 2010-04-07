@@ -62,7 +62,6 @@ public class ExternalizedMetadataTestCases extends TestCase {
     protected JAXBContext jaxbContext;
     protected DocumentBuilder parser;
     protected XMLComparer xmlComparer;
-    protected Source bindingsFileXSDSource;
 
     /**
      * This is the preferred (and only) constructor.
@@ -79,14 +78,6 @@ public class ExternalizedMetadataTestCases extends TestCase {
         builderFactory.setIgnoringElementContentWhitespace(true);
         parser = builderFactory.newDocumentBuilder();
         xmlComparer = new XMLComparer();
-        InputStream bindingsFileXSDInputStream = getClass().getClassLoader().getResourceAsStream("eclipselink_oxm_2_1.xsd");
-        if(bindingsFileXSDInputStream == null){
-        	bindingsFileXSDInputStream = getClass().getClassLoader().getResourceAsStream("xsd/eclipselink_oxm_2_1.xsd");
-        }
-        if(bindingsFileXSDInputStream == null){
-        	fail("ERROR LOADING eclipselink_oxm_2_1.xsd");
-        }
-        bindingsFileXSDSource = new StreamSource(bindingsFileXSDInputStream);
     }
     
     /**
@@ -421,6 +412,14 @@ public class ExternalizedMetadataTestCases extends TestCase {
         SchemaFactory sFact = SchemaFactory.newInstance(XMLConstants.SCHEMA_URL);
         Schema theSchema;
         try {
+            InputStream bindingsFileXSDInputStream = getClass().getClassLoader().getResourceAsStream("eclipselink_oxm_2_1.xsd");
+            if (bindingsFileXSDInputStream == null){
+                bindingsFileXSDInputStream = getClass().getClassLoader().getResourceAsStream("xsd/eclipselink_oxm_2_1.xsd");
+            }
+            if (bindingsFileXSDInputStream == null){
+                fail("ERROR LOADING eclipselink_oxm_2_1.xsd");
+            }
+            Source bindingsFileXSDSource = new StreamSource(bindingsFileXSDInputStream);
             theSchema = sFact.newSchema(bindingsFileXSDSource);
             Validator validator = theSchema.newValidator();
                    
