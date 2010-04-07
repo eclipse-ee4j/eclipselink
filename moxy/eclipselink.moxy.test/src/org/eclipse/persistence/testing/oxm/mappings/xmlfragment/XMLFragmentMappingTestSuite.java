@@ -25,6 +25,7 @@ public class XMLFragmentMappingTestSuite extends TestCase {
         suite.addTestSuite(XMLFragmentTextNodeTestCases.class);
         suite.addTestSuite(XMLFragmentNSTestCases.class);
         suite.addTestSuite(XMLFragmentNSAttributeTestCases.class);
+        suite.addTestSuite(SelfTestCases.class);
         return suite;
     }
 

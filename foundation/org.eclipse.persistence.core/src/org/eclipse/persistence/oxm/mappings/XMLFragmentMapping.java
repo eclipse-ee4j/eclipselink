@@ -45,7 +45,11 @@ public class XMLFragmentMapping extends XMLDirectMapping {
     }
 
     public Object valueFromRow(AbstractRecord row, JoinedAttributeManager joinManager, ObjectBuildingQuery query, AbstractSession executionSession) {
-        Object value = ((DOMRecord)row).getIndicatingNoEntry(this.getField(), true);
+        DOMRecord domRecord = (DOMRecord) row;
+        Object value = domRecord.getIndicatingNoEntry(this.getField(), true);
+        if(value == domRecord) {
+            value = domRecord.getDOM();
+        }
         if (value instanceof Element) {
             XMLPlatformFactory.getInstance().getXMLPlatform().namespaceQualifyFragment((Element)value);
         }
