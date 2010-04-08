@@ -17,6 +17,8 @@ import java.util.List;
 
 public class MyData {
     public List<byte[]> bytes;
+    public List<byte[]> readOnlyBytes;
+    public List<byte[]> writeOnlyBytes;
 
     @javax.xml.bind.annotation.XmlTransient
     public boolean wasGetCalled;
@@ -40,9 +42,46 @@ public class MyData {
         } catch (ClassCastException cce) {
             return false;
         }
-        for (byte[] b : bytes) {
-            if (!bytesExistsInList(b, mdObj.bytes)) {
+        if (bytes == null) {
+            if (mdObj.bytes != null) {
                 return false;
+            }
+        } else { 
+            if (mdObj.bytes == null) {
+                return false;
+            }
+            for (byte[] b : bytes) {
+                if (!bytesExistsInList(b, mdObj.bytes)) {
+                    return false;
+                }
+            }
+        }
+        if (readOnlyBytes == null) {
+            if (mdObj.readOnlyBytes != null) {
+                return false;
+            }
+        } else { 
+            if (mdObj.readOnlyBytes == null) {
+                return false;
+            }
+            for (byte[] b : readOnlyBytes) {
+                if (!bytesExistsInList(b, mdObj.readOnlyBytes)) {
+                    return false;
+                }
+            }
+        }
+        if (writeOnlyBytes == null) {
+            if (mdObj.writeOnlyBytes != null) {
+                return false;
+            }
+        } else {
+            if (mdObj.writeOnlyBytes == null) {
+                return false;
+            }
+            for (byte[] b : writeOnlyBytes) {
+                if (!bytesExistsInList(b, mdObj.writeOnlyBytes)) {
+                    return false;
+                }
             }
         }
         return true;

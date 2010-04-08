@@ -33,6 +33,11 @@ public class BinaryDataCollectionMappingTestCases extends ExternalizedMetadataTe
     private static final String PATH = "org/eclipse/persistence/testing/jaxb/externalizedmetadata/mappings/binarydatacollection/";
     
     private MySchemaOutputResolver resolver;
+    
+    private static final byte[] BYTES0123 = new byte[] { 0, 1, 2, 3 };
+    private static final byte[] BYTES1234 = new byte[] { 1, 2, 3, 4 };
+    private static final byte[] BYTES2345 = new byte[] { 2, 3, 4, 5 };
+
 
     /**
      * This is the preferred (and only) constructor.
@@ -63,13 +68,19 @@ public class BinaryDataCollectionMappingTestCases extends ExternalizedMetadataTe
      */
     public MyData getControlObject() {
         // setup control object
-        MyData ctrlData = new MyData();
-        byte[] bytes1 = new byte[] { 0, 1, 2, 3 };
-        byte[] bytes2 = new byte[] { 1, 2, 3, 4 };
         List<byte[]> bytesList = new ArrayList<byte[]>();
-        bytesList.add(bytes1);
-        bytesList.add(bytes2);
+        bytesList.add(BYTES0123);
+        bytesList.add(BYTES1234);
+        List<byte[]> roBytesList = new ArrayList<byte[]>();
+        roBytesList.add(BYTES2345);
+        roBytesList.add(BYTES0123);
+        List<byte[]> woBytesList = new ArrayList<byte[]>();
+        woBytesList.add(BYTES1234);
+        woBytesList.add(BYTES2345);
+        MyData ctrlData = new MyData();
         ctrlData.bytes = bytesList;
+        ctrlData.readOnlyBytes = roBytesList;
+        ctrlData.writeOnlyBytes = woBytesList;
         return ctrlData;
     }
     
@@ -95,12 +106,15 @@ public class BinaryDataCollectionMappingTestCases extends ExternalizedMetadataTe
         if (iDocStream == null) {
             fail("Couldn't load instance doc [" + PATH + "mydata.xml" + "]");
         }
+        MyData ctrlData = getControlObject();
+        // writeOnlyBytes will not be read in
+        ctrlData.writeOnlyBytes = null;
         try {
             Unmarshaller unmarshaller = jaxbContext.createUnmarshaller();
             MyData myObj = (MyData) unmarshaller.unmarshal(iDocStream);
             assertNotNull("Unmarshalled object is null.", myObj);
             assertTrue("Accessor method was not called as expected", myObj.wasSetCalled);
-            assertTrue("Unmarshal failed:  MyData objects are not equal", getControlObject().equals(myObj));
+            assertTrue("Unmarshal failed:  MyData objects are not equal", ctrlData.equals(myObj));
         } catch (JAXBException e) {
             e.printStackTrace();
             fail("Unmarshal operation failed.");
@@ -115,7 +129,7 @@ public class BinaryDataCollectionMappingTestCases extends ExternalizedMetadataTe
      */
     public void testBinaryDataCollectionMappingMarshal() {
         // load instance doc
-        String src = PATH + "mydata.xml";
+        String src = PATH + "write-mydata.xml";
         // setup control document
         Document testDoc = parser.newDocument();
         Document ctrlDoc = parser.newDocument();
@@ -129,7 +143,7 @@ public class BinaryDataCollectionMappingTestCases extends ExternalizedMetadataTe
             MyData ctrlData = getControlObject();
             Marshaller marshaller = jaxbContext.createMarshaller();
             marshaller.marshal(ctrlData, testDoc);
-            //marshaller.marshal(getControlObject(), System.out);
+            //marshaller.marshal(ctrlData, System.out);
             assertTrue("Accessor method was not called as expected", ctrlData.wasGetCalled);
             assertTrue("Document comparison failed unxepectedly: ", compareDocuments(ctrlDoc, testDoc));
         } catch (JAXBException e) {

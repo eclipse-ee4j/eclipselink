@@ -489,6 +489,14 @@ public class MappingsGenerator {
     public XMLChoiceObjectMapping generateChoiceMapping(Property property, XMLDescriptor descriptor, NamespaceInfo namespace) {
         XMLChoiceObjectMapping mapping = new XMLChoiceObjectMapping();
         mapping.setAttributeName(property.getPropertyName());
+        // handle read-only set via metadata
+        if (property.isSetReadOnly()) {
+            mapping.setIsReadOnly(property.isReadOnly());
+        }
+        // handle write-only set via metadata
+        if (property.isSetWriteOnly()) {
+            mapping.setIsWriteOnly(property.isWriteOnly());
+        }
         if (property.isMethodProperty()) {
             if (property.getGetMethodName() == null) {
                 // handle case of set with no get method
@@ -519,6 +527,14 @@ public class MappingsGenerator {
         XMLChoiceCollectionMapping mapping = new XMLChoiceCollectionMapping();
         mapping.setReuseContainer(true);
         mapping.setAttributeName(property.getPropertyName());
+        // handle read-only set via metadata
+        if (property.isSetReadOnly()) {
+            mapping.setIsReadOnly(property.isReadOnly());
+        }
+        // handle write-only set via metadata
+        if (property.isSetWriteOnly()) {
+            mapping.setIsWriteOnly(property.isWriteOnly());
+        }
         if (property.isMethodProperty()) {
             if (property.getGetMethodName() == null) {
                 // handle case of set with no get method
@@ -676,6 +692,14 @@ public class MappingsGenerator {
         XMLAnyCollectionMapping  mapping = new XMLAnyCollectionMapping();
         mapping.setAttributeName(property.getPropertyName());
         mapping.setReuseContainer(true);
+        // handle read-only set via metadata
+        if (property.isSetReadOnly()) {
+            mapping.setIsReadOnly(property.isReadOnly());
+        }
+        // handle write-only set via metadata
+        if (property.isSetWriteOnly()) {
+            mapping.setIsWriteOnly(property.isWriteOnly());
+        }
         if (property.isMethodProperty()) {
             if (property.getGetMethodName() == null) {
                 // handle case of set with no get method
@@ -881,6 +905,14 @@ public class MappingsGenerator {
     public XMLBinaryDataMapping generateBinaryMapping(Property property, XMLDescriptor descriptor, NamespaceInfo namespaceInfo) {
         XMLBinaryDataMapping mapping = new XMLBinaryDataMapping();
         mapping.setAttributeName(property.getPropertyName());
+        // handle read-only set via metadata
+        if (property.isSetReadOnly()) {
+            mapping.setIsReadOnly(property.isReadOnly());
+        }
+        // handle write-only set via metadata
+        if (property.isSetWriteOnly()) {
+            mapping.setIsWriteOnly(property.isWriteOnly());
+        }
         if (property.isMethodProperty()) {
             if (property.getGetMethodName() == null) {
                 // handle case of set with no get method
@@ -929,6 +961,14 @@ public class MappingsGenerator {
     public XMLBinaryDataCollectionMapping generateBinaryDataCollectionMapping(Property property, XMLDescriptor descriptor, NamespaceInfo namespaceInfo) {
         XMLBinaryDataCollectionMapping mapping = new XMLBinaryDataCollectionMapping();
         mapping.setAttributeName(property.getPropertyName());
+        // handle read-only set via metadata
+        if (property.isSetReadOnly()) {
+            mapping.setIsReadOnly(property.isReadOnly());
+        }
+        // handle write-only set via metadata
+        if (property.isSetWriteOnly()) {
+            mapping.setIsWriteOnly(property.isWriteOnly());
+        }
         if (property.isMethodProperty()) {
             if (property.getGetMethodName() == null) {
                 // handle case of set with no get method
@@ -1100,6 +1140,14 @@ public class MappingsGenerator {
         XMLAnyAttributeMapping mapping = new XMLAnyAttributeMapping();
         mapping.setAttributeName(property.getPropertyName());
         mapping.setReuseContainer(true);
+        // handle read-only set via metadata
+        if (property.isSetReadOnly()) {
+            mapping.setIsReadOnly(property.isReadOnly());
+        }
+        // handle write-only set via metadata
+        if (property.isSetWriteOnly()) {
+            mapping.setIsWriteOnly(property.isWriteOnly());
+        }
         if (property.isMethodProperty()) {
             if (property.getGetMethodName() == null) {
                 // handle case of set with no get method
@@ -1127,6 +1175,14 @@ public class MappingsGenerator {
     public void generateAnyObjectMapping(Property property, XMLDescriptor descriptor, NamespaceInfo namespaceInfo)  {
         XMLAnyObjectMapping mapping = new XMLAnyObjectMapping();
         mapping.setAttributeName(property.getPropertyName());
+        // handle read-only set via metadata
+        if (property.isSetReadOnly()) {
+            mapping.setIsReadOnly(property.isReadOnly());
+        }
+        // handle write-only set via metadata
+        if (property.isSetWriteOnly()) {
+            mapping.setIsWriteOnly(property.isWriteOnly());
+        }
         if (property.isMethodProperty()) {
             if (property.getGetMethodName() == null) {
                 // handle case of set with no get method
@@ -1759,6 +1815,14 @@ public class MappingsGenerator {
         XMLCollectionReferenceMapping mapping = new XMLCollectionReferenceMapping();
         mapping.setAttributeName(property.getPropertyName());
         mapping.setReuseContainer(true);
+        // handle read-only set via metadata
+        if (property.isSetReadOnly()) {
+            mapping.setIsReadOnly(property.isReadOnly());
+        }
+        // handle write-only set via metadata
+        if (property.isSetWriteOnly()) {
+            mapping.setIsWriteOnly(property.isWriteOnly());
+        }
         if (property.isMethodProperty()) {
             if (property.getGetMethodName() == null) {
                 // handle case of set with no get method
@@ -1833,6 +1897,15 @@ public class MappingsGenerator {
 
         XMLObjectReferenceMapping mapping = new XMLObjectReferenceMapping();
         mapping.setAttributeName(property.getPropertyName());
+
+        // handle read-only set via metadata
+        if (property.isSetReadOnly()) {
+            mapping.setIsReadOnly(property.isReadOnly());
+        }
+        // handle write-only set via metadata
+        if (property.isSetWriteOnly()) {
+            mapping.setIsWriteOnly(property.isWriteOnly());
+        }
         if (property.isMethodProperty()) {
             if (property.getGetMethodName() == null) {
                 // handle case of set with no get method

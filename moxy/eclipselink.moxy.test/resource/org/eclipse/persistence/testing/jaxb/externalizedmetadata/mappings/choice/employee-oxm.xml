@@ -6,8 +6,16 @@
             <java-attributes>
                 <xml-elements java-attribute="thing">
                     <xml-access-methods get-method="getThing" set-method="setThing" />
-                    <xml-element java-attribute="MyInteger" type="java.lang.Integer" name="my-integer" />
-                    <xml-element java-attribute="MyFloat" type="java.lang.Float" name="my-float" />
+                    <xml-element type="java.lang.Integer" name="my-integer" />
+                    <xml-element type="java.lang.Float" name="my-float" />
+                </xml-elements>
+                <xml-elements java-attribute="readOnlyThing" read-only="true">
+                    <xml-element type="java.lang.Integer" name="my-read-only-integer" />
+                    <xml-element type="java.lang.Float" name="my-read-only-float" />
+                </xml-elements>
+                <xml-elements java-attribute="writeOnlyThing" write-only="true">
+                    <xml-element type="java.lang.Integer" name="my-write-only-integer" />
+                    <xml-element type="java.lang.Float" name="my-write-only-float" />
                 </xml-elements>
             </java-attributes>
 		</java-type>

@@ -36,6 +36,8 @@ import javax.xml.bind.annotation.XmlType;
  *       &lt;/sequence>
  *       &lt;attribute name="xml-idref" type="{http://www.w3.org/2001/XMLSchema}boolean" default="false" />
  *       &lt;attribute name="xml-list" type="{http://www.w3.org/2001/XMLSchema}boolean" default="false" />
+ *       &lt;attribute name="read-only" type="{http://www.w3.org/2001/XMLSchema}boolean" default="false" />
+ *       &lt;attribute name="write-only" type="{http://www.w3.org/2001/XMLSchema}boolean" default="false" />
  *     &lt;/extension>
  *   &lt;/complexContent>
  * &lt;/complexType>
@@ -63,6 +65,10 @@ public class XmlElements
     protected Boolean xmlIdref;
     @XmlAttribute(name = "xml-list")
     protected Boolean xmlList;
+    @XmlAttribute(name = "read-only")
+    protected Boolean readOnly;
+    @XmlAttribute(name = "write-only")
+    protected Boolean writeOnly;
 
     /**
      * Gets the value of the xmlAccessMethods property.
@@ -195,5 +201,79 @@ public class XmlElements
      */
     public void setXmlList(Boolean value) {
         this.xmlList = value;
+    }
+
+    /**
+     * Gets the value of the readOnly property.
+     * 
+     * @return
+     *     possible object is
+     *     {@link Boolean }
+     *     
+     */
+    public boolean isReadOnly() {
+        if (readOnly == null) {
+            return false;
+        } else {
+            return readOnly;
+        }
+    }
+
+    /**
+     * Sets the value of the readOnly property.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link Boolean }
+     *     
+     */
+    public void setReadOnly(Boolean value) {
+        this.readOnly = value;
+    }
+
+    /**
+     * Indicates if readOnly has been set, i.e. is non-null.
+     * 
+     * @return true if readOnly has been set, i.e. is non-null, false otherwise
+     */
+    public boolean isSetReadOnly() {
+        return this.readOnly != null;
+    }
+    
+    /**
+     * Gets the value of the writeOnly property.
+     * 
+     * @return
+     *     possible object is
+     *     {@link Boolean }
+     *     
+     */
+    public boolean isWriteOnly() {
+        if (writeOnly == null) {
+            return false;
+        } else {
+            return writeOnly;
+        }
+    }
+
+    /**
+     * Sets the value of the writeOnly property.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link Boolean }
+     *     
+     */
+    public void setWriteOnly(Boolean value) {
+        this.writeOnly = value;
+    }
+
+    /**
+     * Indicates if writeOnly has been set, i.e. is non-null.
+     * 
+     * @return true if writeOnly has been set, i.e. is non-null, false otherwise
+     */
+    public boolean isSetWriteOnly() {
+        return this.writeOnly != null;
     }
 }

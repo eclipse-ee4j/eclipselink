@@ -7,6 +7,8 @@
                 <xml-attribute java-attribute="bytes" xml-path="@mybytes">
                     <xml-access-methods get-method="getBytes" set-method="setBytes" />
                 </xml-attribute>
+                <xml-attribute java-attribute="readOnlyBytes" xml-path="@my-read-only-bytes" read-only="true" />
+                <xml-element java-attribute="writeOnlyBytes" name="write-only-bytes" write-only="true" />
             </java-attributes>
 		</java-type>
 	</java-types>

@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<employee>
+   <read-only>
+      <stuff first-name="Joe" last-name="Oracle" />
+   </read-only>
+</employee>

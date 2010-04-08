@@ -16,6 +16,8 @@ import java.util.Arrays;
 
 public class MyData {
     public byte[] bytes;
+    public byte[] readOnlyBytes;
+    public byte[] writeOnlyBytes;
     
     @javax.xml.bind.annotation.XmlTransient
     public boolean wasGetCalled;
@@ -39,6 +41,36 @@ public class MyData {
         } catch (ClassCastException cce) {
             return false;
         }
-        return Arrays.equals(bytes, mdObj.bytes);
+        if (bytes == null) {
+            if (mdObj.bytes != null) {
+                return false;
+            }
+        } else if (mdObj.bytes == null) {
+            return false;
+        }
+        if (!Arrays.equals(bytes, mdObj.bytes)) {
+            return false;
+        }
+        if (readOnlyBytes == null) {
+            if (mdObj.readOnlyBytes != null) {
+                return false;
+            }
+        } else if (mdObj.readOnlyBytes == null) {
+            return false;
+        }
+        if (!Arrays.equals(readOnlyBytes, mdObj.readOnlyBytes)) {
+            return false;
+        }
+        if (writeOnlyBytes == null) {
+            if (mdObj.writeOnlyBytes != null) {
+                return false;
+            }
+        } else if (mdObj.writeOnlyBytes == null) {
+            return false;
+        }
+        if (!Arrays.equals(writeOnlyBytes, mdObj.writeOnlyBytes)) {
+            return false;
+        }
+        return true;
     }
 }

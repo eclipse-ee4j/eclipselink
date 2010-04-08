@@ -43,6 +43,9 @@ public class ChoiceCollectionMappingTestCases extends ExternalizedMetadataTestCa
     private static final String INT_VAL66 = "66";
     private static final String INT_VAL99 = "99";
     private static final String FLOAT_VAL = "101.1";
+    private static final String RO_INT_VAL = "77";
+    private static final String RO_FLOAT_VAL = "88.8";
+    private static final String WO_INT_VAL = "3";
     
     private MySchemaOutputResolver resolver;
 
@@ -78,8 +81,15 @@ public class ChoiceCollectionMappingTestCases extends ExternalizedMetadataTestCa
         things.add(new Integer(INT_VAL66));
         things.add(new Integer(INT_VAL99));
         things.add(new Float(FLOAT_VAL));
+        List<Object> roThings = new ArrayList<Object>();
+        roThings.add(new Integer(RO_INT_VAL));
+        roThings.add(new Float(RO_FLOAT_VAL));
+        List<Object> woThings = new ArrayList<Object>();
+        woThings.add(new Integer(WO_INT_VAL));
         Employee emp = new Employee();
         emp.things = things;
+        emp.readOnlyThings = roThings;
+        emp.writeOnlyThings = woThings;
         return emp;
     }
     
@@ -104,7 +114,8 @@ public class ChoiceCollectionMappingTestCases extends ExternalizedMetadataTestCa
 
         // setup control Employee
         Employee ctrlEmp = getControlObject();
-
+        // writeOnlyThings should not be read in
+        ctrlEmp.writeOnlyThings = null;
         try {
             Unmarshaller unmarshaller = jaxbContext.createUnmarshaller();
             Employee empObj = (Employee) unmarshaller.unmarshal(iDocStream);
@@ -125,7 +136,7 @@ public class ChoiceCollectionMappingTestCases extends ExternalizedMetadataTestCa
      */
     public void testChoiceCollectionMappingMarshal() {
         // load instance doc
-        String src = PATH + "employee.xml";
+        String src = PATH + "write-employee.xml";
 
         // setup control document
         Document testDoc = parser.newDocument();
@@ -141,6 +152,8 @@ public class ChoiceCollectionMappingTestCases extends ExternalizedMetadataTestCa
         try {
             Marshaller marshaller = jaxbContext.createMarshaller();
             Employee ctrlEmp = getControlObject();
+            // NOTE: the following line can be removed when bug# 308538 has been fixed.
+            ctrlEmp.readOnlyThings = null;
             marshaller.marshal(ctrlEmp, testDoc);
             //marshaller.marshal(ctrlEmp, System.out);
             assertTrue("Accessor method was not called as expected", ctrlEmp.wasGetCalled);

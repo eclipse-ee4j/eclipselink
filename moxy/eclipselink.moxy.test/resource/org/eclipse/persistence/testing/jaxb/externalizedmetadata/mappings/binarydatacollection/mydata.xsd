@@ -6,9 +6,17 @@
             <xsd:complexType>
                <xsd:sequence>
                   <xsd:element name="bytes" type="xsd:base64Binary" maxOccurs="unbounded"/>
+                  <xsd:element name="read-only-bytes">
+                     <xsd:complexType>
+                        <xsd:sequence>
+                           <xsd:element name="byte" type="xsd:base64Binary" maxOccurs="unbounded"/>
+                        </xsd:sequence>
+                     </xsd:complexType>
+                  </xsd:element>
                </xsd:sequence>
             </xsd:complexType>
          </xsd:element>
+         <xsd:element name="write-only-bytes" type="xsd:base64Binary" maxOccurs="unbounded"/>
       </xsd:sequence>
    </xsd:complexType>
    <xsd:element name="my-data" type="myData"/>

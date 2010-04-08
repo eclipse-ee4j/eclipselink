@@ -25,14 +25,14 @@ public class Employee {
     @javax.xml.bind.annotation.XmlTransient
     public boolean wasSetCalled;
 
-    public int getId() {
+    public List<Address> getAddresses() {
         wasGetCalled = true;
-        return id;
+        return addresses;
     }
 
-    public void setId(int id) {
+    public void setAddresses(List<Address> addresses) {
         wasSetCalled = true;
-        this.id = id;
+        this.addresses = addresses;
     }
 
     public boolean equals(Object obj) {

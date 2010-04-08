@@ -20,14 +20,6 @@ import javax.xml.bind.Marshaller;
 import javax.xml.bind.Unmarshaller;
 
 import org.eclipse.persistence.jaxb.JAXBContext;
-import org.eclipse.persistence.oxm.NamespaceResolver;
-import org.eclipse.persistence.oxm.XMLDescriptor;
-import org.eclipse.persistence.oxm.mappings.XMLCompositeObjectMapping;
-import org.eclipse.persistence.oxm.mappings.XMLDirectMapping;
-import org.eclipse.persistence.oxm.mappings.nullpolicy.NullPolicy;
-import org.eclipse.persistence.oxm.mappings.nullpolicy.XMLNullRepresentationType;
-import org.eclipse.persistence.sessions.Project;
-import org.eclipse.persistence.sessions.factories.XMLProjectWriter;
 import org.eclipse.persistence.testing.jaxb.externalizedmetadata.ExternalizedMetadataTestCases;
 import org.w3c.dom.Document;
 
@@ -39,6 +31,7 @@ public class ChoiceMappingTestCases extends ExternalizedMetadataTestCases {
     private static final String CONTEXT_PATH = "org.eclipse.persistence.testing.jaxb.externalizedmetadata.mappings.choice";
     private static final String PATH = "org/eclipse/persistence/testing/jaxb/externalizedmetadata/mappings/choice/";
     private static final String INT_VAL = "66";
+    private static final String FLT_VAL = "66.66";
     
     private MySchemaOutputResolver resolver;
 
@@ -72,6 +65,8 @@ public class ChoiceMappingTestCases extends ExternalizedMetadataTestCases {
     public Employee getControlObject() {
         Employee emp = new Employee();
         emp.thing = new Integer(INT_VAL);
+        emp.readOnlyThing = new Float(FLT_VAL);
+        emp.writeOnlyThing = new Integer(INT_VAL);
         return emp;
     }
     
@@ -96,7 +91,9 @@ public class ChoiceMappingTestCases extends ExternalizedMetadataTestCases {
 
         // setup control Employee
         Employee ctrlEmp = getControlObject();
-
+        // writeOnlyThing should not be read in
+        // NOTE; the following line can be uncommented when bug# 308531 is fixed
+        //ctrlEmp.writeOnlyThing = null;
         try {
             Unmarshaller unmarshaller = jaxbContext.createUnmarshaller();
             Employee empObj = (Employee) unmarshaller.unmarshal(iDocStream);
@@ -117,7 +114,7 @@ public class ChoiceMappingTestCases extends ExternalizedMetadataTestCases {
      */
     public void testChoiceMappingMarshal() {
         // load instance doc
-        String src = PATH + "employee.xml";
+        String src = PATH + "write-employee.xml";
 
         // setup control document
         Document testDoc = parser.newDocument();
@@ -142,4 +139,153 @@ public class ChoiceMappingTestCases extends ExternalizedMetadataTestCases {
             fail("Marshal operation failed.");
         }
     }
+
+    
+    /**
+     * Tests XmlChoiceObjectMapping configuration via eclipselink-oxm.xml.
+     * Here an unmarshal operation is performed.  In this case, the 'choice'
+     * is marked read-only.
+     * 
+     * Positive test.
+     *
+    public void testChoiceObjectReadOnlyUnmarshal() {
+        // load instance doc
+        String src = PATH + "read-only-employee.xml";
+        InputStream iDocStream = loader.getResourceAsStream(src);
+        if (iDocStream == null) {
+            fail("Couldn't load instance doc [" + src + "]");
+        }
+
+        JAXBContext jCtx = null;
+        try {
+            jCtx = createContext(new Class[] { Employee.class }, CONTEXT_PATH, PATH + "read-only-employee-oxm.xml");
+        } catch (JAXBException e1) {
+            fail("JAXBContext creation failed: " + e1.getMessage());
+        }
+        
+        // unmarshal
+        Employee ctrlEmp = getControlObject();
+        Employee eObj = null;
+        Unmarshaller unmarshaller = jCtx.createUnmarshaller();
+        try {
+            eObj = (Employee) unmarshaller.unmarshal(iDocStream);
+            assertNotNull("Unmarshalled object is null.", eObj);
+            assertTrue("Unmarshal failed:  Employee objects are not equal", ctrlEmp.equals(eObj));
+        } catch (JAXBException e) {
+            e.printStackTrace();
+            fail("Unmarshal operation failed.");
+        }
+    }*/
+
+    /**
+     * Tests XmlAnyObjectMapping configuration via eclipselink-oxm.xml.
+     * Here a marshal operation is performed.    In this case, the 'any'
+     * is marked read-only, and should not be written out.
+     * 
+     * Positive test.
+     *
+    public void testAnyObjectReadOnlyMarshal() {
+        // setup control document
+        String src = PATH + "marshal-read-only-employee.xml";
+        Document testDoc = parser.newDocument();
+        Document ctrlDoc = parser.newDocument();
+        try {
+            ctrlDoc = getControlDocument(src);
+        } catch (Exception e) {
+            e.printStackTrace();
+            fail("An unexpected exception occurred loading control document [" + src + "].");
+        }
+        JAXBContext jCtx = null;
+        try {
+            jCtx = createContext(new Class[] { Employee.class }, CONTEXT_PATH, PATH + "read-only-employee-oxm.xml");
+        } catch (JAXBException e1) {
+            fail("JAXBContext creation failed: " + e1.getMessage());
+        }
+        
+        // test marshal
+        Employee ctrlEmp = getControlObject();
+        Marshaller marshaller = jCtx.createMarshaller();
+        try {
+            marshaller.marshal(ctrlEmp, testDoc);
+            //marshaller.marshal(ctrlEmp, System.out);
+            assertTrue("Document comparison failed unxepectedly: ", compareDocuments(ctrlDoc, testDoc));
+        } catch (JAXBException e) {
+            e.printStackTrace();
+            fail("Marshal operation failed.");
+        }
+    }*/
+    
+    /**
+     * Tests XmlAnyObjectMapping configuration via eclipselink-oxm.xml.
+     * Here an unmarshal operation is performed.  In this case, the 'any'
+     * is marked write-only, and should not be read in.
+     * 
+     * Positive test.
+     *
+    public void testAnyObjectWriteOnlyUnmarshal() {
+        // load instance doc
+        String src = PATH + "write-only-employee.xml";
+        InputStream iDocStream = loader.getResourceAsStream(src);
+        if (iDocStream == null) {
+            fail("Couldn't load instance doc [" + src + "]");
+        }
+        JAXBContext jCtx = null;
+        try {
+            jCtx = createContext(new Class[] { Employee.class }, CONTEXT_PATH, PATH + "write-only-employee-oxm.xml");
+        } catch (JAXBException e1) {
+            fail("JAXBContext creation failed: " + e1.getMessage());
+        }
+
+        // unmarshal
+        Employee ctrlEmp = getControlObject();
+        ctrlEmp.stuff = null;
+        Employee eObj = null;
+        Unmarshaller unmarshaller = jaxbContext.createUnmarshaller();
+        try {
+            eObj = (Employee) unmarshaller.unmarshal(iDocStream);
+            assertNotNull("Unmarshalled object is null.", eObj);
+            assertTrue("Unmarshal failed:  Employee objects are not equal", ctrlEmp.equals(eObj));
+        } catch (JAXBException e) {
+            e.printStackTrace();
+            fail("Unmarshal operation failed.");
+        }
+    }*/
+    
+    /**
+     * Tests XmlAnyObjectMapping configuration via eclipselink-oxm.xml.
+     * Here a marshal operation is performed.    In this case, the 'any'
+     * is marked write-only.
+     * 
+     * Positive test.
+     *
+    public void testAnyObjectWriteOnlyMarshal() {
+        // setup control document
+        String src = PATH + "write-only-employee.xml";
+        Document testDoc = parser.newDocument();
+        Document ctrlDoc = parser.newDocument();
+        try {
+            ctrlDoc = getControlDocument(src);
+        } catch (Exception e) {
+            e.printStackTrace();
+            fail("An unexpected exception occurred loading control document [" + src + "].");
+        }
+        JAXBContext jCtx = null;
+        try {
+            jCtx = createContext(new Class[] { Employee.class }, CONTEXT_PATH, PATH + "write-only-employee-oxm.xml");
+        } catch (JAXBException e1) {
+            fail("JAXBContext creation failed: " + e1.getMessage());
+        }
+        
+        // test marshal
+        Employee ctrlEmp = getControlObject();
+        Marshaller marshaller = jCtx.createMarshaller();
+        try {
+            marshaller.marshal(ctrlEmp, testDoc);
+            //marshaller.marshal(ctrlEmp, System.out);
+            assertTrue("Document comparison failed unxepectedly: ", compareDocuments(ctrlDoc, testDoc));
+        } catch (JAXBException e) {
+            e.printStackTrace();
+            fail("Marshal operation failed.");
+        }
+    }*/
 }

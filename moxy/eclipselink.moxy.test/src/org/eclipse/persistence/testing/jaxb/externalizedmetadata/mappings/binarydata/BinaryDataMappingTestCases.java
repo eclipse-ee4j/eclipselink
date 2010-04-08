@@ -31,6 +31,10 @@ public class BinaryDataMappingTestCases extends ExternalizedMetadataTestCases {
     private static final String PATH = "org/eclipse/persistence/testing/jaxb/externalizedmetadata/mappings/binarydata/";
     
     private MySchemaOutputResolver resolver;
+    
+    private static final byte[] BYTES0123 = new byte[] { 0, 1, 2, 3 };
+    private static final byte[] BYTES1234 = new byte[] { 1, 2, 3, 4 };
+    private static final byte[] BYTES2345 = new byte[] { 2, 3, 4, 5 };
 
     /**
      * This is the preferred (and only) constructor.
@@ -62,7 +66,9 @@ public class BinaryDataMappingTestCases extends ExternalizedMetadataTestCases {
     public MyData getControlObject() {
         // setup control object
         MyData ctrlData = new MyData();
-        ctrlData.bytes = new byte[] { 0, 1, 2, 3 };
+        ctrlData.bytes = BYTES0123;
+        ctrlData.readOnlyBytes = BYTES1234;
+        ctrlData.writeOnlyBytes = BYTES2345;
         return ctrlData;
     }
     
@@ -88,12 +94,16 @@ public class BinaryDataMappingTestCases extends ExternalizedMetadataTestCases {
         if (iDocStream == null) {
             fail("Couldn't load instance doc [" + PATH + "mydata.xml" + "]");
         }
+        // setup the control MyData
+        MyData ctrlData = getControlObject();
+        // writeOnlyBytes will not be read in
+        ctrlData.writeOnlyBytes = null;
         try {
             Unmarshaller unmarshaller = jaxbContext.createUnmarshaller();
             MyData myObj = (MyData) unmarshaller.unmarshal(iDocStream);
             assertNotNull("Unmarshalled object is null.", myObj);
             assertTrue("Accessor method was not called as expected", myObj.wasSetCalled);
-            assertTrue("Unmarshal failed:  MyData objects are not equal", getControlObject().equals(myObj));
+            assertTrue("Unmarshal failed:  MyData objects are not equal", ctrlData.equals(myObj));
         } catch (JAXBException e) {
             e.printStackTrace();
             fail("Unmarshal operation failed.");
@@ -108,7 +118,7 @@ public class BinaryDataMappingTestCases extends ExternalizedMetadataTestCases {
      */
     public void testBinaryDataMappingMarshal() {
         // load instance doc
-        String src = PATH + "mydata.xml";
+        String src = PATH + "write-mydata.xml";
         // setup control document
         Document testDoc = parser.newDocument();
         Document ctrlDoc = parser.newDocument();

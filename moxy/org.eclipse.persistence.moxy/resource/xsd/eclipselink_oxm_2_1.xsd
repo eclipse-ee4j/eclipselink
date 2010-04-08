@@ -248,6 +248,8 @@
                     <xs:all>
                         <xs:element ref="xml-access-methods" minOccurs="0" />
                     </xs:all>
+                    <xs:attribute name="read-only" type="xs:boolean" default="false" />
+                    <xs:attribute name="write-only" type="xs:boolean" default="false" />
                     <xs:attribute name="xml-path" type="xs:string" />
                 </xs:extension>
             </xs:complexContent>
@@ -290,6 +292,8 @@
                     <xs:attribute name="xml-mixed" type="xs:boolean" default="false" />
                     <xs:attribute name="lax" type="xs:boolean" default="false" />
                     <xs:attribute name="dom-handler" type="xs:string" default="javax.xml.bind.annotation.W3CDomHandler" />
+                    <xs:attribute name="read-only" type="xs:boolean" default="false" />
+                    <xs:attribute name="write-only" type="xs:boolean" default="false" />
                     <xs:attribute name="xml-path" type="xs:string" />
                 </xs:extension>
             </xs:complexContent>
@@ -338,6 +342,8 @@
                     </xs:sequence>
                     <xs:attribute name="xml-idref" type="xs:boolean" default="false" />
                     <xs:attribute name="xml-list" type="xs:boolean" default="false" />
+                    <xs:attribute name="read-only" type="xs:boolean" default="false" />
+                    <xs:attribute name="write-only" type="xs:boolean" default="false" />
                 </xs:extension>
             </xs:complexContent>
         </xs:complexType>

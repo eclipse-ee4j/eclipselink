@@ -8,12 +8,14 @@
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
- * dmccann - April 019/2010 - 2.1 - Initial implementation
+ * dmccann - April 01/2010 - 2.1 - Initial implementation
  ******************************************************************************/
 package org.eclipse.persistence.testing.jaxb.externalizedmetadata.mappings.choice;
 
 public class Employee {
     public Object thing;
+    public Object readOnlyThing;
+    public Object writeOnlyThing;
 
     @javax.xml.bind.annotation.XmlTransient
     public boolean wasGetCalled;
@@ -41,8 +43,27 @@ public class Employee {
         }
 
         if (thing == null) {
-            return empObj.thing == null;
+            if (empObj.thing != null) {
+                return false;
+            }
+        } else if (!thing.equals(empObj.thing)){
+            return false;
         }
-        return thing.equals(empObj.thing);
+        if (readOnlyThing == null) {
+            if (empObj.readOnlyThing != null) {
+                return false;
+            }
+        } else if (!readOnlyThing.equals(empObj.readOnlyThing)){
+            return false;
+        }
+        if (writeOnlyThing == null) {
+            if (empObj.writeOnlyThing != null) {
+                return false;
+            }
+        } else if (!writeOnlyThing.equals(empObj.writeOnlyThing)){
+            return false;
+        }
+        
+        return true;
     }
 }

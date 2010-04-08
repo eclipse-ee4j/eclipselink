@@ -413,7 +413,14 @@ public class XMLProcessor {
             oldProperty.setGetMethodName(xmlAnyAttribute.getXmlAccessMethods().getGetMethod());
             oldProperty.setSetMethodName(xmlAnyAttribute.getXmlAccessMethods().getSetMethod());
         }
-
+        // handle read-only
+        if (xmlAnyAttribute.isSetReadOnly()) {
+            oldProperty.setReadOnly(xmlAnyAttribute.isReadOnly());
+        }
+        // handle write-only
+        if (xmlAnyAttribute.isSetWriteOnly()) {
+            oldProperty.setWriteOnly(xmlAnyAttribute.isWriteOnly());
+        }
         return oldProperty;
     }
 
@@ -452,7 +459,14 @@ public class XMLProcessor {
             oldProperty.setGetMethodName(xmlAnyElement.getXmlAccessMethods().getGetMethod());
             oldProperty.setSetMethodName(xmlAnyElement.getXmlAccessMethods().getSetMethod());
         }
-
+        // handle read-only
+        if (xmlAnyElement.isSetReadOnly()) {
+            oldProperty.setReadOnly(xmlAnyElement.isReadOnly());
+        }
+        // handle write-only
+        if (xmlAnyElement.isSetWriteOnly()) {
+            oldProperty.setWriteOnly(xmlAnyElement.isWriteOnly());
+        }
         return oldProperty;
     }
 
@@ -768,6 +782,14 @@ public class XMLProcessor {
             oldProperty.setMethodProperty(true);
             oldProperty.setGetMethodName(xmlElements.getXmlAccessMethods().getGetMethod());
             oldProperty.setSetMethodName(xmlElements.getXmlAccessMethods().getSetMethod());
+        }
+        // handle read-only
+        if (xmlElements.isSetReadOnly()) {
+            oldProperty.setReadOnly(xmlElements.isReadOnly());
+        }
+        // handle write-only
+        if (xmlElements.isSetWriteOnly()) {
+            oldProperty.setWriteOnly(xmlElements.isWriteOnly());
         }
         return oldProperty;
     }

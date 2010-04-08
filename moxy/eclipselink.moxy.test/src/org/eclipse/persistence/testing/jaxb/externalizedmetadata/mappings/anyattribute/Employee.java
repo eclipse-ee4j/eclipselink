@@ -8,7 +8,7 @@
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
- * dmccann - March 25/2009 - 2.0 - Initial implementation
+ * dmccann - March 25/2010 - 2.1 - Initial implementation
  ******************************************************************************/
 package org.eclipse.persistence.testing.jaxb.externalizedmetadata.mappings.anyattribute;
 
