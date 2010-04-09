@@ -92,10 +92,19 @@ public class ChoiceCollectionMappingTestCases extends ExternalizedMetadataTestCa
         emp.writeOnlyThings = woThings;
         return emp;
     }
-    
+
     public void testEmployeeSchemaGen() {
         // validate the schema
         compareSchemas(resolver.schemaFiles.get(EMPTY_NAMESPACE), new File(PATH + "employee.xsd"));
+    }
+    
+    public void testInstanceDocValidation() {
+        String src = PATH + "employee.xml";
+        String result = validateAgainstSchema(src, EMPTY_NAMESPACE, resolver);
+        assertTrue("Instance doc validation (employee.xml) failed unxepectedly: " + result, result == null);
+        src = PATH + "write-employee.xml";
+        result = validateAgainstSchema(src, EMPTY_NAMESPACE, resolver);
+        assertTrue("Instance doc validation (write-employee) failed unxepectedly: " + result, result == null);
     }
     
     /**

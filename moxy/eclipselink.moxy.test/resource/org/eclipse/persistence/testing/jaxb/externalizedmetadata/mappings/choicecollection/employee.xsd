@@ -3,17 +3,29 @@
    <xsd:complexType name="employee">
       <xsd:sequence>
          <xsd:choice maxOccurs="unbounded">
-            <xsd:element name="my-integer" type="xsd:int" minOccurs="0"/>
-            <xsd:element name="my-float" type="xsd:float" minOccurs="0"/>
+            <xsd:element name="things">
+               <xsd:complexType>
+                  <xsd:choice maxOccurs="unbounded">
+                     <xsd:element name="my-integer" type="xsd:int" minOccurs="0"/>
+                     <xsd:element name="my-float" type="xsd:float" minOccurs="0"/>
+                  </xsd:choice>
+               </xsd:complexType>
+            </xsd:element>
          </xsd:choice>
          <xsd:choice maxOccurs="unbounded">
             <xsd:element name="my-read-only-integer" type="xsd:int" minOccurs="0"/>
             <xsd:element name="my-read-only-float" type="xsd:float" minOccurs="0"/>
          </xsd:choice>
-         <xsd:choice maxOccurs="unbounded">
-            <xsd:element name="my-write-only-integer" type="xsd:int" minOccurs="0"/>
-            <xsd:element name="my-write-only-float" type="xsd:float" minOccurs="0"/>
-         </xsd:choice>
+         <xsd:element name="stuff" minOccurs="0">
+            <xsd:complexType>
+               <xsd:sequence>
+                  <xsd:choice maxOccurs="unbounded">
+                     <xsd:element name="my-write-only-integer" type="xsd:int" minOccurs="0"/>
+                     <xsd:element name="my-write-only-float" type="xsd:float" minOccurs="0"/>
+                  </xsd:choice>
+               </xsd:sequence>
+            </xsd:complexType>
+         </xsd:element>
       </xsd:sequence>
    </xsd:complexType>
    <xsd:element name="employee" type="employee"/>

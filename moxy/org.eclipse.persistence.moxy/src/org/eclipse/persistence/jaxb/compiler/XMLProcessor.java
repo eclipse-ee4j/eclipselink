@@ -1156,7 +1156,7 @@ public class XMLProcessor {
      * @param isAttribute
      * @return
      */
-    private String getNameFromXPath(String xpath, String propertyName, boolean isAttribute) {
+    public static String getNameFromXPath(String xpath, String propertyName, boolean isAttribute) {
         // handle self mapping
         if (xpath.equals(SELF)) {
             return propertyName;

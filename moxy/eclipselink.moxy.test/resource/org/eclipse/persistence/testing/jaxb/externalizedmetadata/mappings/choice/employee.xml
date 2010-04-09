@@ -1,6 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <employee>
-    <my-integer>66</my-integer>
+    <integers>
+        <my-integer>66</my-integer>
+    </integers>
     <my-read-only-float>66.66</my-read-only-float>
     <my-write-only-integer>66</my-write-only-integer>
 </employee>

@@ -1408,7 +1408,23 @@ public class AnnotationsProcessor {
 
         ArrayList<Property> choiceProperties = new ArrayList<Property>();
         for (org.eclipse.persistence.jaxb.xmlmodel.XmlElement next : choiceProperty.getXmlElements().getXmlElement()) {
-            String name = next.getName();
+            Property choiceProp = new Property(helper);
+            
+            String name;
+            String namespace;
+            
+            // handle XmlPath
+            // if xml-path is set, we ignore name/namespace
+            if (next.getXmlPath() != null) {
+                choiceProp.setXmlPath(next.getXmlPath());
+                name = XMLProcessor.getNameFromXPath(next.getXmlPath(), propertyName, false);
+                namespace = "##default";
+            } else {
+                // no xml-path, so use name/namespace from xml-element
+                name = next.getName();
+                namespace = next.getNamespace();
+            }
+
             if (name == null || name.equals("##default")) {
                 if (next.getJavaAttribute() != null) {
                     name = next.getJavaAttribute();
@@ -1425,9 +1441,6 @@ public class AnnotationsProcessor {
                 }
             }
 
-            Property choiceProp = new Property(helper);
-
-            String namespace = next.getNamespace();
             QName qName = null;
             if (!namespace.equals("##default")) {
                 qName = new QName(namespace, name);

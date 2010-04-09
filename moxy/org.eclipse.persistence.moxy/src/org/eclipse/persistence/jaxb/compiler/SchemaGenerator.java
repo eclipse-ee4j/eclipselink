@@ -343,10 +343,8 @@ public class SchemaGenerator {
         	type.setChoice(null);
         	ownerTypeInfo.setCompositor(null);
         } else {
-            
             for (Property next : properties) {
                 if (next == null) { continue; }
-                
                 Schema currentSchema = workingSchema;
                 TypeDefParticle parentCompositor = compositor;
                 boolean isChoice = (parentCompositor instanceof Choice);
@@ -359,7 +357,7 @@ public class SchemaGenerator {
                         xfld.setNamespaceResolver(currentSchema.getNamespaceResolver());
                         xfld.initialize();
                         // build the schema components for the xml-path
-                        XmlPathResult xpr = buildSchemaComponentsForXPath(xfld.getXPathFragment(), new XmlPathResult(parentCompositor, currentSchema), (next.isAny() || next.isAnyAttribute()));
+                        XmlPathResult xpr = buildSchemaComponentsForXPath(xfld.getXPathFragment(), new XmlPathResult(parentCompositor, currentSchema), (next.isAny() || next.isAnyAttribute()), isChoice);
                         parentCompositor = xpr.particle;
                         currentSchema = xpr.schema;
                         // if the schema component is null there is nothing to do
@@ -517,11 +515,11 @@ public class SchemaGenerator {
                         }
                     } else if (next.isChoice()) {
                         Choice choice = new Choice();
-                        ArrayList<Property> choiceProperties = (ArrayList<Property>) next.getChoiceProperties();
-                        addToSchemaType(ownerTypeInfo, choiceProperties, choice, parentType, currentSchema);
                         if (next.getGenericType() != null) {
                             choice.setMaxOccurs(Occurs.UNBOUNDED);
                         }
+                        ArrayList<Property> choiceProperties = (ArrayList<Property>) next.getChoiceProperties();
+                        addToSchemaType(ownerTypeInfo, choiceProperties, choice, parentType, currentSchema);
                         if (parentCompositor instanceof Sequence) {
                             ((Sequence) parentCompositor).addChoice(choice);
                         } else if (parentCompositor instanceof Choice) {
@@ -1213,11 +1211,14 @@ public class SchemaGenerator {
      * @param frag
      * @param xpr
      * @param isAny
+     * @param isChoice
      * @return
      */
-    protected XmlPathResult buildSchemaComponentsForXPath(XPathFragment frag, XmlPathResult xpr, boolean isAny) {
+    protected XmlPathResult buildSchemaComponentsForXPath(XPathFragment frag, XmlPathResult xpr, boolean isAny, boolean isChoice) {
         TypeDefParticle currentParticle = xpr.particle;
         Schema workingSchema = xpr.schema;
+        // each nested choice on a collection will be unbounded
+        boolean isUnbounded = (currentParticle.getMaxOccurs() != null && currentParticle.getMaxOccurs()==Occurs.UNBOUNDED);
         
         // don't process the last frag; that will be handled by the calling method if necessary
         // note that we may need to process the last frag if it has a namespace or is an 'any'
@@ -1235,8 +1236,16 @@ public class SchemaGenerator {
             currentElement = new Element();
             // don't set the element name yet, as it may end up being a ref
             ComplexType cType = new ComplexType();
-            Sequence sequence = new Sequence();
-            cType.setSequence(sequence);
+            TypeDefParticle particle = null;
+            if (isChoice) {
+                particle = new Choice();
+                if (isUnbounded) {
+                    particle.setMaxOccurs(Occurs.UNBOUNDED);
+                }
+            } else {
+                particle = new Sequence();
+            }
+            cType.setTypeDefParticle(particle);
             currentElement.setComplexType(cType);
         }
         // may need to create a ref, depending on the namespace
@@ -1251,7 +1260,7 @@ public class SchemaGenerator {
                 // if the global element exists, use it; otherwise create a new one
                 globalElement = (Element) fragSchema.getTopLevelElements().get(frag.getLocalName());
                 if (globalElement == null) {
-                    globalElement = createGlobalElement(frag, workingSchema, fragSchema); 
+                    globalElement = createGlobalElement(frag, workingSchema, fragSchema, isChoice, isUnbounded); 
                 }
                 // if the current element doesn't exist set a ref and add it to the sequence
                 if (!currentElementExists) {
@@ -1265,8 +1274,8 @@ public class SchemaGenerator {
                     // since we processed the last frag, return null so the calling method doesn't
                     // add a second one...unless we're dealing with an 'any'
                     if (isAny) {
-                        // set the sequence that the 'any' will be added to by the calling method
-                        xpr.particle = globalElement.getComplexType().getSequence();
+                        // set the particle that the 'any' will be added to by the calling method
+                        xpr.particle = globalElement.getComplexType().getTypeDefParticle();
                         return xpr;
                     }
                     // ref case - indicate to the calling method that there's nothing to do
@@ -1286,10 +1295,11 @@ public class SchemaGenerator {
             currentElement.setName(frag.getLocalName());
             currentParticle.addElement(currentElement);
         }
-        // set the correct sequence to use/return
-        xpr.particle = currentElement.getComplexType().getSequence(); 
+        // set the correct particle to use/return
+        xpr.particle = currentElement.getComplexType().getTypeDefParticle();
+        
         // call back into this method to process the next path element
-        return buildSchemaComponentsForXPath(frag.getNextFragment(), xpr, isAny);
+        return buildSchemaComponentsForXPath(frag.getNextFragment(), xpr, isAny, isChoice);
     }
     
     /**
@@ -1333,14 +1343,24 @@ public class SchemaGenerator {
      * @param frag
      * @param workingSchema
      * @param fragSchema
+     * @param isChoice
+     * @param isUnbounded
      * @return
      */
-    public Element createGlobalElement(XPathFragment frag, Schema workingSchema, Schema fragSchema) {
+    public Element createGlobalElement(XPathFragment frag, Schema workingSchema, Schema fragSchema, boolean isChoice, boolean isUnbounded) {
         Element gElement = new Element();
         gElement.setName(frag.getLocalName());
         ComplexType gCType = new ComplexType();
-        Sequence gSequence = new Sequence();
-        gCType.setSequence(gSequence);
+        TypeDefParticle particle;
+        if (isChoice) {
+            particle = new Choice();
+            if (isUnbounded) {
+                particle.setMaxOccurs(Occurs.UNBOUNDED);
+            }
+        } else {
+            particle = new Sequence();
+        }
+        gCType.setTypeDefParticle(particle);
         gElement.setComplexType(gCType);
         fragSchema.addTopLevelElement(gElement);
         addImportIfRequired(workingSchema, fragSchema, frag.getNamespaceURI());

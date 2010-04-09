@@ -516,7 +516,13 @@ public class MappingsGenerator {
         while(choiceProperties.hasNext()) {
             Property next = choiceProperties.next();
             JavaClass type = next.getType();
-            XMLField xpath = getXPathForField(next, namespace, !(this.typeInfo.containsKey(type.getQualifiedName())));
+            // if the XPath is set (via xml-path) use it; otherwise figure it out
+            XMLField xpath;
+            if (next.getXmlPath() != null) {
+                xpath = new XMLField(next.getXmlPath());
+            } else {
+                xpath = getXPathForField(next, namespace, !(this.typeInfo.containsKey(type.getQualifiedName())));
+            }
             mapping.addChoiceElement(xpath.getName(), type.getQualifiedName(), false);
         }
         descriptor.addMapping(mapping);
@@ -562,7 +568,13 @@ public class MappingsGenerator {
         while(choiceProperties.hasNext()) {
             Property next = choiceProperties.next();
             JavaClass type = next.getType();
-            XMLField xpath = getXPathForField(next, namespace, !(this.typeInfo.containsKey(type.getQualifiedName())));
+            // if the XPath is set (via xml-path) use it; otherwise figure it out
+            XMLField xpath;
+            if (next.getXmlPath() != null) {
+                xpath = new XMLField(next.getXmlPath());
+            } else {
+                xpath = getXPathForField(next, namespace, !(this.typeInfo.containsKey(type.getQualifiedName())));
+            }
             mapping.addChoiceElement(xpath.getName(), type.getQualifiedName());
         }
         descriptor.addMapping(mapping);

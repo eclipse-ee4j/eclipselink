@@ -6,8 +6,8 @@
             <java-attributes>
                 <xml-elements java-attribute="things">
                     <xml-access-methods get-method="getThings" set-method="setThings" />
-                    <xml-element type="java.lang.Integer" name="my-integer" />
-                    <xml-element type="java.lang.Float" name="my-float" />
+                    <xml-element type="java.lang.Integer" xml-path="things/my-integer/text()" />
+                    <xml-element type="java.lang.Float" xml-path="things/my-float/text()" />
                 </xml-elements>
                 <xml-elements java-attribute="readOnlyThings" read-only="true">
                     <xml-element type="java.lang.Integer" name="my-read-only-integer" />
@@ -16,6 +16,7 @@
                 <xml-elements java-attribute="writeOnlyThings" write-only="true">
                     <xml-element type="java.lang.Integer" name="my-write-only-integer" />
                     <xml-element type="java.lang.Float" name="my-write-only-float" />
+                    <xml-element-wrapper name="stuff" />
                 </xml-elements>
             </java-attributes>
 		</java-type>
