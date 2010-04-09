@@ -26,20 +26,25 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Hashtable;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
 
+import javax.naming.Context;
+import javax.naming.InitialContext;
 import javax.naming.NamingException;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
+import javax.persistence.LockModeType;
 import javax.persistence.Persistence;
 import javax.sql.DataSource;
 
 import org.eclipse.persistence.config.PersistenceUnitProperties;
-import org.eclipse.persistence.testing.framework.junit.JUnitTestCase;
 import org.eclipse.persistence.testing.framework.junit.JUnitTestCaseHelper;
+import org.eclipse.persistence.testing.framework.server.JEEPlatform;
+import org.eclipse.persistence.testing.framework.server.ServerPlatform;
 import org.eclipse.persistence.testing.tests.feature.TestDataSource;
 import org.junit.Assert;
 import org.junit.Before;
@@ -48,33 +53,58 @@ import org.junit.runners.Parameterized.Parameters;
 
 @SuppressWarnings("unchecked")
 @RunWith(SkipBugzillaTestRunner.class)
-public abstract class AbstractBaseTest extends JUnitTestCase {
+public abstract class AbstractBaseTest {
+
+    // /** System variable to set the tests to run on the server. */
+    // public static final String RUN_ON_SERVER = "server.run";
+    //
+    private static Map<String, EntityManagerFactory> emfNamedPersistenceUnits = new Hashtable<String, EntityManagerFactory>();
+
+    /** Determine if the test is running on a JEE server, or in JSE. */
+
+    private static ServerPlatform serverPlatform;
 
     private final JPAEnvironment environment;
     private final String puName;
     private final static DataSource dataSource;
     private final static Map EMF_PROPERTIES;
 
+    private static boolean seesJPA2 = (LockModeType.values().length > 2);
+
     static {
-        Map<String, String> properties = JUnitTestCaseHelper.getDatabaseProperties();
-        String driver = properties.get(PersistenceUnitProperties.JDBC_DRIVER);
-        String url = properties.get(PersistenceUnitProperties.JDBC_URL);
-        String user = properties.get(PersistenceUnitProperties.JDBC_USER);
-        String password = properties.get(PersistenceUnitProperties.JDBC_PASSWORD);
+        final DataSource aDataSource;
 
-        Properties userPasswd = new Properties();
-        userPasswd.put("user", user);
-        userPasswd.put("password", password);
+        if (!ServerInfoHolder.isOnServer()) {
+            Map<String, String> properties = JUnitTestCaseHelper.getDatabaseProperties();
+            String driver = properties.get(PersistenceUnitProperties.JDBC_DRIVER);
+            String url = properties.get(PersistenceUnitProperties.JDBC_URL);
+            String user = properties.get(PersistenceUnitProperties.JDBC_USER);
+            String password = properties.get(PersistenceUnitProperties.JDBC_PASSWORD);
 
-        DataSource ds = new TestDataSource(driver, url, userPasswd);
-        dataSource = new PooledDataSource(ds);
+            Properties userPasswd = new Properties();
+            userPasswd.put("user", user);
+            userPasswd.put("password", password);
+
+            DataSource ds = new TestDataSource(driver, url, userPasswd);
+            aDataSource = new PooledDataSource(ds);
+
+        } else {
+            Context context;
+            try {
+                context = new InitialContext();
+                aDataSource = (DataSource) context.lookup(ServerInfoHolder.getDataSourceName()); 
+            } catch (NamingException e) {
+                throw new RuntimeException(e);
+            }
+        }
+        dataSource = aDataSource;
         EMF_PROPERTIES = new HashMap();
         EMF_PROPERTIES.put("delimited-identifiers", "true");
         EMF_PROPERTIES.put(PersistenceUnitProperties.NON_JTA_DATASOURCE, dataSource);
     }
 
     public AbstractBaseTest(String name) {
-        environment = new EnvironmentAdapter();
+        environment = new ResourceLocalEnvironment();
         puName = name;
     }
 
@@ -87,7 +117,87 @@ public abstract class AbstractBaseTest extends JUnitTestCase {
 
     }
 
-    final class EnvironmentAdapter implements JPAEnvironment {
+    final class ResourceLocalEnvironment implements JPAEnvironment {
+
+        @Override
+        public void beginTransaction(EntityManager em) {
+            em.getTransaction().begin();
+        }
+
+        @Override
+        public void commitTransaction(EntityManager em) {
+            em.getTransaction().commit();
+        }
+
+        @Override
+        public void commitTransactionAndClear(EntityManager em) {
+            try {
+                commitTransaction(em);
+            } finally {
+                em.clear();
+            }
+        }
+
+        @Override
+        public EntityManagerFactory createNewEntityManagerFactory() throws NamingException {
+            AbstractBaseTest.closeEntityManagerFactory(puName);
+            return Persistence.createEntityManagerFactory(puName, EMF_PROPERTIES);
+        }
+
+        @Override
+        public EntityManager getEntityManager() {
+            return getEntityManagerFactory().createEntityManager();
+            // return AbstractBaseTest.createEntityManager(puName,
+            // EMF_PROPERTIES);
+        }
+
+        @Override
+        public EntityManagerFactory getEntityManagerFactory() {
+            return AbstractBaseTest.getEntityManagerFactory(puName, EMF_PROPERTIES);
+        }
+
+        @Override
+        public boolean isTransactionActive(EntityManager em) {
+            return em.getTransaction().isActive();
+        }
+
+        @Override
+        public boolean isTransactionMarkedForRollback(EntityManager em) {
+            return em.getTransaction().getRollbackOnly();
+        }
+
+        @Override
+        public void markTransactionForRollback(EntityManager em) {
+            throw new UnsupportedOperationException();
+        }
+
+        @Override
+        public void rollbackTransaction(EntityManager em) {
+            em.getTransaction().rollback();
+        }
+
+        @Override
+        public void rollbackTransactionAndClear(EntityManager em) {
+            try {
+                rollbackTransaction(em);
+            } finally {
+                em.clear();
+            }
+        }
+
+        @Override
+        public boolean usesExtendedPC() {
+            return true;
+        }
+
+        @Override
+        public DataSource getDataSource() {
+            return AbstractBaseTest.this.getDataSource();
+        }
+
+    }
+
+    final class JTATxScopedEnvironment implements JPAEnvironment {
 
         @Override
         public void beginTransaction(EntityManager em) {
@@ -110,18 +220,18 @@ public abstract class AbstractBaseTest extends JUnitTestCase {
 
         @Override
         public EntityManagerFactory createNewEntityManagerFactory() throws NamingException {
-            JUnitTestCase.closeEntityManagerFactory(puName);
+            AbstractBaseTest.closeEntityManagerFactory(puName);
             return Persistence.createEntityManagerFactory(puName, EMF_PROPERTIES);
         }
 
         @Override
         public EntityManager getEntityManager() {
-            return JUnitTestCase.createEntityManager(puName, EMF_PROPERTIES);
+            return AbstractBaseTest.createEntityManager(puName, EMF_PROPERTIES);
         }
 
         @Override
         public EntityManagerFactory getEntityManagerFactory() {
-            return JUnitTestCase.getEntityManagerFactory(puName, EMF_PROPERTIES);
+            return AbstractBaseTest.getEntityManagerFactory(puName, EMF_PROPERTIES);
         }
 
         @Override
@@ -169,13 +279,14 @@ public abstract class AbstractBaseTest extends JUnitTestCase {
         return dataSource;
     }
 
-    @Override
     final public void closeEntityManager(EntityManager em) {
         if (!em.isOpen()) {
             return;
         }
         if (environment.isTransactionActive(em)/*
-                                                * ||environment. isTransactionMarkedForRollback (em)
+                                                * ||environment.
+                                                * isTransactionMarkedForRollback
+                                                * (em)
                                                 */) { // FIXME discuss if tx is
             // active if marked for
             // rollback
@@ -255,8 +366,7 @@ public abstract class AbstractBaseTest extends JUnitTestCase {
 
     }
 
-    public static final <T extends Serializable> T serializeDeserialize(T serializable) throws IOException,
-            ClassNotFoundException {
+    public static final <T extends Serializable> T serializeDeserialize(T serializable) throws IOException, ClassNotFoundException {
         ByteArrayOutputStream out = new ByteArrayOutputStream();
         ObjectOutputStream objectOutputStream = new ObjectOutputStream(out);
         try {
@@ -273,12 +383,14 @@ public abstract class AbstractBaseTest extends JUnitTestCase {
     }
 
     /**
-     * Checks whether the given throwable is of type java.lang.IllegalStateException, or otherwise if the throwable contains a
+     * Checks whether the given throwable is of type
+     * java.lang.IllegalStateException, or otherwise if the throwable contains a
      * java.lang.IllegalStateException somewhere in the cause stack.
      * 
      * @param e
      *            The throwable to check
-     * @return <code>true</code> if the throwable is instance of or caused by java.lang.IllegalStateException
+     * @return <code>true</code> if the throwable is instance of or caused by
+     *         java.lang.IllegalStateException
      */
     protected final boolean checkForIllegalStateException(Throwable e) {
         boolean contained = false;
@@ -293,12 +405,14 @@ public abstract class AbstractBaseTest extends JUnitTestCase {
     }
 
     /**
-     * Checks whether the given throwable is of type java.sql.SQLException, or otherwise if the throwable contains a
-     * java.sql.SQLException somewhere in the cause stack.
+     * Checks whether the given throwable is of type java.sql.SQLException, or
+     * otherwise if the throwable contains a java.sql.SQLException somewhere in
+     * the cause stack.
      * 
      * @param e
      *            The throwable to check
-     * @return <code>true</code> if the throwable is instance of or caused by java.sql.SQLException
+     * @return <code>true</code> if the throwable is instance of or caused by
+     *         java.sql.SQLException
      */
     protected final boolean checkForSQLException(Throwable e) {
         boolean contained = false;
@@ -312,4 +426,147 @@ public abstract class AbstractBaseTest extends JUnitTestCase {
         return contained;
     }
 
+    /**
+     * Return if the transaction is active. This allows the same code to be used
+     * on the server where JTA is used.
+     */
+    public boolean isTransactionActive(EntityManager entityManager) {
+        if (ServerInfoHolder.isOnServer()) {
+            return getServerPlatform().isTransactionActive();
+        } else {
+            return entityManager.getTransaction().isActive();
+        }
+    }
+
+    /**
+     * Return if the transaction is roll back only. This allows the same code to
+     * be used on the server where JTA is used.
+     */
+    public boolean getRollbackOnly(EntityManager entityManager) {
+        if (ServerInfoHolder.isOnServer()) {
+            return getServerPlatform().getRollbackOnly();
+        } else {
+            return entityManager.getTransaction().getRollbackOnly();
+        }
+    }
+
+    /**
+     * Begin a transaction on the entity manager. This allows the same code to
+     * be used on the server where JTA is used.
+     */
+    public void beginTransaction(EntityManager entityManager) {
+        if (ServerInfoHolder.isOnServer()) {
+            getServerPlatform().beginTransaction();
+        } else {
+            entityManager.getTransaction().begin();
+        }
+    }
+
+    /**
+     * Commit a transaction on the entity manager. This allows the same code to
+     * be used on the server where JTA is used.
+     */
+    public void commitTransaction(EntityManager entityManager) {
+        if (ServerInfoHolder.isOnServer()) {
+            getServerPlatform().commitTransaction();
+        } else {
+            entityManager.getTransaction().commit();
+        }
+    }
+
+    /**
+     * Rollback a transaction on the entity manager. This allows the same code
+     * to be used on the server where JTA is used.
+     */
+    public void rollbackTransaction(EntityManager entityManager) {
+        if (ServerInfoHolder.isOnServer()) {
+            getServerPlatform().rollbackTransaction();
+        } else {
+            entityManager.getTransaction().rollback();
+        }
+    }
+
+    /**
+     * Return the server platform if running in JEE.
+     */
+    public static ServerPlatform getServerPlatform() {
+        if (serverPlatform == null) {
+            serverPlatform = new JEEPlatform();
+        }
+        return serverPlatform;
+    }
+
+    /**
+     * Create a new entity manager for the "default" persistence unit. If in JEE
+     * this will create or return the active managed entity manager.
+     */
+    public static EntityManager createEntityManager() {
+        if (ServerInfoHolder.isOnServer()) {
+            return getServerPlatform().getEntityManager("default");
+        } else {
+            return getEntityManagerFactory().createEntityManager();
+        }
+    }
+
+    /**
+     * Create a new entity manager for the persistence unit using the
+     * properties. The properties will only be used the first time this entity
+     * manager is accessed. If in JEE this will create or return the active
+     * managed entity manager.
+     */
+    public static EntityManager createEntityManager(String persistenceUnitName, Map<String, String> properties) {
+        if (ServerInfoHolder.isOnServer()) {
+            return getServerPlatform().getEntityManager(persistenceUnitName);
+        } else {
+            return getEntityManagerFactory(persistenceUnitName, properties).createEntityManager();
+        }
+    }
+
+    public static EntityManagerFactory getEntityManagerFactory(String persistenceUnitName) {
+        return getEntityManagerFactory(persistenceUnitName, JUnitTestCaseHelper.getDatabaseProperties());
+    }
+
+    public static EntityManagerFactory getEntityManagerFactory(String persistenceUnitName, Map<String, String> properties) {
+        if (ServerInfoHolder.isOnServer()) {
+            return getServerPlatform().getEntityManagerFactory(persistenceUnitName);
+        } else {
+            EntityManagerFactory emfNamedPersistenceUnit = (EntityManagerFactory) emfNamedPersistenceUnits.get(persistenceUnitName);
+            if (emfNamedPersistenceUnit == null) {
+                emfNamedPersistenceUnit = Persistence.createEntityManagerFactory(persistenceUnitName, properties);
+                emfNamedPersistenceUnits.put(persistenceUnitName, emfNamedPersistenceUnit);
+            }
+            return emfNamedPersistenceUnit;
+        }
+    }
+
+    public static EntityManagerFactory getEntityManagerFactory() {
+        return getEntityManagerFactory("default");
+    }
+
+    public static void closeEntityManagerFactory() {
+        closeEntityManagerFactory("default");
+    }
+
+    public static void closeEntityManagerFactory(String persistenceUnitName) {
+        EntityManagerFactory emfNamedPersistenceUnit = (EntityManagerFactory) emfNamedPersistenceUnits.get(persistenceUnitName);
+        if (emfNamedPersistenceUnit != null) {
+            if (emfNamedPersistenceUnit.isOpen()) {
+                emfNamedPersistenceUnit.close();
+            }
+            emfNamedPersistenceUnits.remove(persistenceUnitName);
+        }
+    }
+
+    public static boolean seesJPA2() {
+        return seesJPA2;
+    }
+
+    public static Map<String, String> getTestProperties() {
+        if (ServerInfoHolder.isOnServer()) {
+            return ServerInfoHolder.getTestProperties();
+        } else {
+            return JUnitTestCaseHelper.getDatabaseProperties();
+        }
+
+    }
 }

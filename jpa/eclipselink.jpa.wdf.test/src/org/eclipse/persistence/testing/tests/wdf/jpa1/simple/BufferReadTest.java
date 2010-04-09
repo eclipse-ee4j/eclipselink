@@ -312,7 +312,6 @@ public class BufferReadTest extends JPA1Base {
                     public void run() {
                         try {
                             ResultSet rs = preparedStatement.executeQuery();
-                            connection.commit();
                             try {
                                 rs.next();
                                 new Department(rs.getInt(1), rs.getString(2));

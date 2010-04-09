@@ -425,6 +425,33 @@ public class TestBidirectionalManyToMany extends JPA1Base {
     }
 
     @Test
+    public void testCopyProjectsToExistingTouching() throws SQLException {
+        // copy all projects from hans to a new employee with out actually touching them
+        JPAEnvironment env = getEnvironment();
+        EntityManager em = env.getEntityManager();
+        try {
+            env.beginTransaction(em);
+            Employee hans = em.find(Employee.class, HANS_ID);
+            Employee fred = em.find(Employee.class, FRED_ID);
+            hans.getProjects().size();
+            fred.setProjects(hans.getProjects());
+            env.commitTransactionAndClear(em);
+            Set<Pair> expected = new HashSet<Pair>(SEED_SET);
+            expected.removeAll(FRED_SET);
+            for (Pair pair : HANS_SET) {
+                expected.add(new Pair(FRED_ID_VALUE, pair.getProjectId()));
+            }
+            checkJoinTable(expected);
+            env.beginTransaction(em);
+            fred = em.find(Employee.class, FRED_ID);
+            verify(fred.getProjects().size() == HANS_SET.size(), "Paul has wrong number of projects");
+            env.rollbackTransactionAndClear(em);
+        } finally {
+            closeEntityManager(em);
+        }
+    }
+
+    @Test
     @Issue(issueid = 10)
     public void testGuidCollection() throws SQLException {
         JPAEnvironment env = getEnvironment();

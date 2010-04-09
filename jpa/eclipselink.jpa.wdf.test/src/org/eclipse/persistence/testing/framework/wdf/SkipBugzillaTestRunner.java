@@ -15,11 +15,20 @@ package org.eclipse.persistence.testing.framework.wdf;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
+import java.util.List;
 import java.util.Map;
+import java.util.Properties;
+
+import javax.naming.Context;
+import javax.naming.InitialContext;
+import javax.naming.NamingException;
+import javax.rmi.PortableRemoteObject;
 
 import org.eclipse.persistence.config.PersistenceUnitProperties;
 import org.eclipse.persistence.platform.database.DatabasePlatform;
-import org.eclipse.persistence.testing.framework.junit.JUnitTestCaseHelper;
+import org.eclipse.persistence.testing.framework.wdf.server.Notification;
+import org.eclipse.persistence.testing.framework.wdf.server.ServerTestRunner;
+import org.junit.Assert;
 import org.junit.runner.Description;
 import org.junit.runner.notification.RunNotifier;
 import org.junit.runners.BlockJUnit4ClassRunner;
@@ -27,24 +36,88 @@ import org.junit.runners.model.FrameworkMethod;
 
 public class SkipBugzillaTestRunner extends BlockJUnit4ClassRunner {
 
+    private static final String TEST_TO_BE_INVESTIGATED_RUN = "test.to-be-investigated.run";
+    private static final String TEST_ISSUE_RUN = "test.issue.run";
+    private static final String TEST_BUGZILLA_RUN = "test.bugzilla.run";
+
+
+    @Override
+    public void run(RunNotifier notifier) {
+        if (Boolean.valueOf(System.getProperty("servertest"))) {
+            runOnServer(notifier);
+        } else {
+            super.run(notifier);
+        }
+    }
+
+    /**
+     * Delegates test execution to the server. On the server, JUnit will be
+     * invoked to run the tests with a special run listener, which collects
+     * the notifications (events). On the client, the recorded notifications will be
+     * replayed on the run notifier passed to this message.
+     * @param notifier the run notifier to replay the notifications recorded on the server
+     */
+    private void runOnServer(RunNotifier notifier) {
+        Properties properties = new Properties();
+        String url = getMandatorySystemProperty("server.url");
+        properties.put("java.naming.provider.url", url);
+        Context context;
+        try {
+            context = new InitialContext(properties);
+            String testrunner = getMandatorySystemProperty("server.testrunner.wdf");
+            String dataSourceName = getMandatorySystemProperty("datasource.name");
+
+            Object object = context.lookup(testrunner);
+            ServerTestRunner runner = (ServerTestRunner) PortableRemoteObject.narrow(object, ServerTestRunner.class);
+            String testClassName = getTestClass().getJavaClass().getName();
+            List<Notification> notifications = runner.runTestClass(testClassName, dataSourceName, testProperties);
+            
+            for (Notification notification : notifications) {
+                notification.notify(notifier);
+            }
+        } catch (NamingException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    private String getMandatorySystemProperty(final String propertyName) {
+        String url = System.getProperty(propertyName);
+        if (url == null) {
+            Assert.fail("System property '" + propertyName + "' must be set.");
+        }
+        return url;
+    }
+
     final long bugid;
     final long issueid;
     final boolean runAllBugzilla;
     final boolean runAllIssues;
     final boolean runAllUnknown;
     final Class<? extends DatabasePlatform> databasePlatformClass;
+    private final Map<String, String> testProperties;
+    
     
     @SuppressWarnings("unchecked")
     public SkipBugzillaTestRunner(Class<?> klass) throws Throwable {
         super(klass);
         
-        Map<String, String> properties = JUnitTestCaseHelper.getDatabaseProperties();
+        testProperties = AbstractBaseTest.getTestProperties();
+        
+        
+        addProperty(TEST_BUGZILLA_RUN);
+        addProperty(TEST_ISSUE_RUN);
+        addProperty(TEST_TO_BE_INVESTIGATED_RUN);
 
-        String databasePlatformClassName = properties.get(PersistenceUnitProperties.TARGET_DATABASE);
+        String databasePlatformClassName = testProperties.get(PersistenceUnitProperties.TARGET_DATABASE); 
+        
 
+        if (databasePlatformClassName != null) {
         databasePlatformClass = (Class<? extends DatabasePlatform>) Class.forName(databasePlatformClassName);
+        } else {
+            databasePlatformClass = null; // FIXME
+        }
 
-        String testBugzillaRun = (String) properties.get("test.bugzilla.run");
+        String testBugzillaRun = (String) testProperties.get(TEST_BUGZILLA_RUN);
         if ("all".equals(testBugzillaRun)) {
             runAllBugzilla = true;
             bugid = -1;
@@ -57,7 +130,7 @@ public class SkipBugzillaTestRunner extends BlockJUnit4ClassRunner {
             }
         }
 
-        String testIssueRun = (String) properties.get("test.issue.run");
+        String testIssueRun = (String) testProperties.get(TEST_ISSUE_RUN);
         if ("all".equals(testIssueRun)) {
             runAllIssues = true;
             issueid = -1;
@@ -70,13 +143,21 @@ public class SkipBugzillaTestRunner extends BlockJUnit4ClassRunner {
             }
         }
 
-        String testToBeInvestigatedRun = (String) properties.get("test.to-be-investigated.run");
+        String testToBeInvestigatedRun = (String) testProperties.get(TEST_TO_BE_INVESTIGATED_RUN);
         if ("all".equals(testToBeInvestigatedRun)) {
             runAllUnknown = true;
         } else {
             runAllUnknown = false;
         }
+        
 
+    }
+
+    private void addProperty(final String name) {
+        String value = System.getProperty(name);
+        if(value != null) {
+            testProperties.put(name, value);
+        }
     }
 
     @Override
@@ -115,10 +196,12 @@ public class SkipBugzillaTestRunner extends BlockJUnit4ClassRunner {
             throw new SkipException();
         }
 
-        for (Class<? extends DatabasePlatform> clazz : databases) {
-            if (clazz.isAssignableFrom(databasePlatformClass)) {
-                // the current database platform is not supported
-                throw new SkipException();
+        if (databasePlatformClass != null) {
+            for (Class<? extends DatabasePlatform> clazz : databases) {
+                if (clazz.isAssignableFrom(databasePlatformClass)) {
+                    // the current database platform is not supported
+                    throw new SkipException();
+                }
             }
         }
 
@@ -148,6 +231,11 @@ public class SkipBugzillaTestRunner extends BlockJUnit4ClassRunner {
 
         @Override
         public boolean runThis(Skip skip) {
+            
+            if(skip.server()) {
+                return !ServerInfoHolder.isOnServer();
+            }
+            
             return false;
         }
 

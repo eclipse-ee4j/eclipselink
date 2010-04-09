@@ -242,8 +242,8 @@ public class TestOptimistic extends JPA1Base {
             caughtException = true;
         } finally {
             closeEntityManager(em);
-            verify(caughtException, "PersistenceException not thrown for versionModification");
         }
+        verify(caughtException, "PersistenceException not thrown for versionModification");
     }
 
     @Test

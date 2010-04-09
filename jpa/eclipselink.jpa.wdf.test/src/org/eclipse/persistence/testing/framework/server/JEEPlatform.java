@@ -91,7 +91,7 @@ public class JEEPlatform implements ServerPlatform {
 
     public UserTransaction getUserTransaction() {
         try {
-            return (UserTransaction) new InitialContext().lookup("java:comp/UserTransaction");
+            return (UserTransaction) new InitialContext().lookup("java:comp/UserTransaction");  
         } catch (NamingException exception) {
             throw new RuntimeException(exception);
         }
@@ -158,7 +158,7 @@ public class JEEPlatform implements ServerPlatform {
         if (entityManagerFactory != null) {
             return entityManagerFactory;
         }
-        String contextName = "java:comp/env/persistence/" + persistenceUnit + "/factory";
+        String contextName = "java:comp/env/persistence/" + persistenceUnit + "_rl/factory";
         try {
             return (EntityManagerFactory) new InitialContext().lookup(contextName);
         } catch (NamingException exception) {

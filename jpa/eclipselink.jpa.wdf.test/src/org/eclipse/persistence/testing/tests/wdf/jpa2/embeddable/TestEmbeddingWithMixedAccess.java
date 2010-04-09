@@ -16,6 +16,7 @@ package org.eclipse.persistence.testing.tests.wdf.jpa2.embeddable;
 import javax.persistence.EntityManager;
 
 import org.eclipse.persistence.testing.framework.wdf.JPAEnvironment;
+import org.eclipse.persistence.testing.framework.wdf.Skip;
 import org.eclipse.persistence.testing.models.wdf.jpa2.embedded.EmbeddedFieldAccess;
 import org.eclipse.persistence.testing.models.wdf.jpa2.embedded.EmbeddedPropertyAccess;
 import org.eclipse.persistence.testing.models.wdf.jpa2.embedded.EmbeddingFieldAccess;
@@ -25,6 +26,7 @@ import org.junit.Test;
 public class TestEmbeddingWithMixedAccess extends JPA2Base {
 
     @Test
+    @Skip(server=true)
     public void testFieldAccess() {
         JPAEnvironment env = getEnvironment();
         EntityManager em = env.getEntityManager();
@@ -45,6 +47,7 @@ public class TestEmbeddingWithMixedAccess extends JPA2Base {
     }
 
     @Test
+    @Skip(server=true)
     public void testPropertyAccess() {
         JPAEnvironment env = getEnvironment();
         EntityManager em = env.getEntityManager();

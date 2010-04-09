@@ -99,6 +99,7 @@
     <echo message="user.home            = '${user.home}'"/>
     <echo message="Loading user properties from: '${user.home}/build.properties'"/>
     <property file="${user.home}/build.properties"/>
+    <property file="${user.home}/test.properties"/>
     <!-- Sets default junit.lib and all extensions.depend dir locations to static paths -->
     <!-- temporary until all build files reworked -->
     <property name="oracle.extensions.depend.dir" value="${trunk.build.location}/../extension.oracle.lib.external"/>

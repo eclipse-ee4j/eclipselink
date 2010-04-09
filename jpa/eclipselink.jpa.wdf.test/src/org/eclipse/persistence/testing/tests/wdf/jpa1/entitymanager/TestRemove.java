@@ -375,7 +375,6 @@ public class TestRemove extends JPA1Base {
         Department dep = new Department(40, "dep40");
         try {
             em.remove(dep);
-            flop("exception not thrown as expected");
         } catch (TransactionRequiredException e) {
             // $JL-EXC$ expected behavior
         } finally {

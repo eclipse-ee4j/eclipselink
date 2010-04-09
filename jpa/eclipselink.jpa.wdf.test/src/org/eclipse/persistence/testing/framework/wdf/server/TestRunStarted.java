@@ -10,27 +10,26 @@
  * Contributors:
  *     SAP - initial API and implementation
  ******************************************************************************/
+package org.eclipse.persistence.testing.framework.wdf.server;
 
-package org.eclipse.persistence.testing.framework.wdf;
-
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-
-import org.eclipse.persistence.platform.database.DatabasePlatform;
+import org.junit.runner.Description;
+import org.junit.runner.notification.RunNotifier;
 
 /**
- * Test should be skipped in a certain environment. This is not an issue.
+ * A notification indicating that a tes run has started.
  */
-@Retention(RetentionPolicy.RUNTIME)
-public @interface Skip {
-
-    /**
-     * The databases on which this test should be skipped. Default: skip on all databases
-     */
-    Class<? extends DatabasePlatform>[] databases() default {};
+public class TestRunStarted implements Notification {
     
-    /**
-     * Indicates if this test should be skipped on server. 
-     */
-    boolean server() default false;
+    private static final long serialVersionUID = 1L;
+    private final SerializableDescription description;
+    
+    public TestRunStarted(Description aDescription) {
+        description = SerializableDescription.create(aDescription);
+        }
+
+    @Override
+    public void notify(RunNotifier notifier) {
+        notifier.fireTestRunStarted(description.restore());
+    }
+
 }

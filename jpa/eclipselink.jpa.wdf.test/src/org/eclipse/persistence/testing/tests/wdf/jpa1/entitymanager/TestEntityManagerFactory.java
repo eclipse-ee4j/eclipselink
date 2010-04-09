@@ -23,6 +23,7 @@ import org.junit.Test;
 import org.eclipse.persistence.testing.tests.wdf.jpa1.JPA1Base;
 import org.eclipse.persistence.testing.framework.wdf.AbstractBaseTest;
 import org.eclipse.persistence.testing.framework.wdf.JPAEnvironment;
+import org.eclipse.persistence.testing.framework.wdf.Skip;
 import org.eclipse.persistence.testing.framework.wdf.ToBeInvestigated;
 import org.eclipse.persistence.testing.models.wdf.jpa1.employee.Department;
 
@@ -38,6 +39,7 @@ public class TestEntityManagerFactory extends JPA1Base {
     }
 
     @Test()
+    @Skip(server=true)
     public void testEntityManagerFactoryClose() throws NamingException {
         final boolean closingEmfThrowsException = AbstractBaseTest.isInsideEngine();
         final JPAEnvironment env = getEnvironment();

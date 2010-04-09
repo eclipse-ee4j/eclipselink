@@ -23,6 +23,7 @@ import javax.persistence.EntityManager;
 import javax.persistence.Query;
 
 import org.eclipse.persistence.testing.framework.wdf.JPAEnvironment;
+import org.eclipse.persistence.testing.framework.wdf.Skip;
 import org.eclipse.persistence.testing.models.wdf.jpa2.employee.Address;
 import org.eclipse.persistence.testing.models.wdf.jpa2.employee.ContactInfo;
 import org.eclipse.persistence.testing.models.wdf.jpa2.employee.Employee;
@@ -43,6 +44,7 @@ public class TestNestedEmbeddables extends JPA2Base {
     private static final String ORANGE = "Orange";
 
     @Test
+    @Skip(server=true)
     public void testNonNested() {
         JPAEnvironment env = getEnvironment();
         EntityManager em = env.getEntityManager();
@@ -62,6 +64,7 @@ public class TestNestedEmbeddables extends JPA2Base {
     }
 
     @Test
+    @Skip(server=true)
     public void testNested() {
         JPAEnvironment env = getEnvironment();
         EntityManager em = env.getEntityManager();
@@ -115,6 +118,7 @@ public class TestNestedEmbeddables extends JPA2Base {
     }
 
     @Test
+    @Skip(server=true)
     public void testNestedOuterNull() {
         JPAEnvironment env = getEnvironment();
         EntityManager em = env.getEntityManager();
@@ -148,6 +152,7 @@ public class TestNestedEmbeddables extends JPA2Base {
     }
 
     @Test
+    @Skip(server=true)
     public void testNestedInnerNull() {
         JPAEnvironment env = getEnvironment();
         EntityManager em = env.getEntityManager();
@@ -184,6 +189,7 @@ public class TestNestedEmbeddables extends JPA2Base {
     }
 
     @Test
+    @Skip(server=true)
     public void testNestedQuery() {
         JPAEnvironment env = getEnvironment();
         EntityManager em = env.getEntityManager();

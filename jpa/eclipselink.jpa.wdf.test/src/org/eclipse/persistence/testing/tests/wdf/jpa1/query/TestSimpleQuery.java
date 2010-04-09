@@ -558,23 +558,35 @@ public class TestSimpleQuery extends JPA1Base {
             closeEntityManager(em);
         }
     }
+    
+    private static boolean hasGetmaxRowsMethod() {
+        try {
+            return Query.class.getMethod("getMaxResults") != null;
+        } catch (NoSuchMethodException e) {
+            return false;
+        }
+    }
 
-    private void verifyRowCount(Query query, int maxRows, int startPos, int expected) {
+    private void verifyRowCount(Query query, int maxRows, int startPos, int expected) throws SecurityException, NoSuchMethodException {
         query.setMaxResults(maxRows);
         query.setFirstResult(startPos);
 
-        assertEquals(query.getMaxResults(), maxRows);
-        assertEquals(query.getFirstResult(), startPos);
+        if (hasGetmaxRowsMethod()) {
+            assertEquals(query.getMaxResults(), maxRows);
+            assertEquals(query.getFirstResult(), startPos);
+        }
 
         int count = query.getResultList().size();
         verify(count == expected, "wrong row count: " + count);
-        
-        assertEquals(query.getMaxResults(), maxRows);
-        assertEquals(query.getFirstResult(), startPos);
+
+        if (hasGetmaxRowsMethod()) {
+            assertEquals(query.getMaxResults(), maxRows);
+            assertEquals(query.getFirstResult(), startPos);
+        }
     }
 
     @Test
-    public void testMaxResult() throws SQLException {
+    public void testMaxResult() throws SQLException, SecurityException, NoSuchMethodException {
         clearAllTables();
         JPAEnvironment env = getEnvironment();
         EntityManager em = env.getEntityManager();
@@ -601,7 +613,7 @@ public class TestSimpleQuery extends JPA1Base {
     }
 
     @Test
-    public void testMaxResultUnlimited() throws SQLException {
+    public void testMaxResultUnlimited() throws SQLException, SecurityException, NoSuchMethodException {
         clearAllTables();
         JPAEnvironment env = getEnvironment();
         EntityManager em = env.getEntityManager();
@@ -623,6 +635,9 @@ public class TestSimpleQuery extends JPA1Base {
     
     @Test
     public void testPagingDefaults() throws SQLException {
+        if (!hasGetmaxRowsMethod()) {
+            return;
+        }
         JPAEnvironment env = getEnvironment();
         EntityManager em = env.getEntityManager();
         try {
