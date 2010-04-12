@@ -170,24 +170,24 @@ public class SQLSelectStatement extends SQLStatement {
         boolean firstTable = true;
 
         for (int index = 0; index < getOuterJoinExpressions().size(); index++) {
-            QueryKeyExpression outerExpression = (QueryKeyExpression)getOuterJoinExpressions().elementAt(index);
-            CompoundExpression relationExpression = (CompoundExpression)getOuterJoinedMappingCriteria().elementAt(index);// get expression for multiple table case
+            QueryKeyExpression outerExpression = (QueryKeyExpression)getOuterJoinExpressions().get(index);
+            CompoundExpression relationExpression = (CompoundExpression)getOuterJoinedMappingCriteria().get(index);// get expression for multiple table case
 
             // CR#3083929 direct collection/map mappings do not have reference descriptor.
             DatabaseTable targetTable = null;
             if (outerExpression.getMapping().isDirectCollectionMapping()) {
                 targetTable = ((DirectCollectionMapping)outerExpression.getMapping()).getReferenceTable();
             } else {
-                targetTable = outerExpression.getMapping().getReferenceDescriptor().getTables().firstElement();
+                targetTable = outerExpression.getMapping().getReferenceDescriptor().getTables().get(0);
             }
             // Grab the source table from the mapping not just the first table 
             // from the descriptor. In an joined inheritance hierarchy, the
             // fk used in the outer join may be from a subclasses's table .
             DatabaseTable sourceTable;
             if (outerExpression.getMapping().isObjectReferenceMapping() && ((ObjectReferenceMapping) outerExpression.getMapping()).isForeignKeyRelationship()) {
-                sourceTable = (outerExpression.getMapping().getFields().firstElement()).getTable();
+                sourceTable = (outerExpression.getMapping().getFields().get(0)).getTable();
             } else {
-                sourceTable = ((ObjectExpression)outerExpression.getBaseExpression()).getDescriptor().getTables().firstElement();    
+                sourceTable = ((ObjectExpression)outerExpression.getBaseExpression()).getDescriptor().getTables().get(0);    
             }
 
             DatabaseTable sourceAlias = outerExpression.getBaseExpression().aliasForTable(sourceTable);
@@ -255,7 +255,7 @@ public class SQLSelectStatement extends SQLStatement {
         int nSize = getOuterJoinExpressions().size();
         List<OuterJoinExpressionHolder> outerJoinExpressionHolders = new ArrayList(nSize);
         for (int index = 0; index < nSize; index++) {
-            QueryKeyExpression outerExpression = (QueryKeyExpression)getOuterJoinExpressions().elementAt(index);
+            QueryKeyExpression outerExpression = (QueryKeyExpression)getOuterJoinExpressions().get(index);
 
             // CR#3083929 direct collection/map mappings do not have reference descriptor.
             DatabaseTable targetTable = null;
@@ -263,6 +263,7 @@ public class SQLSelectStatement extends SQLStatement {
             DatabaseTable sourceAlias = null;
             DatabaseTable targetAlias = null;
             if (outerExpression != null) {
+                // TODO: This does not seem to work if the mapping joins with a secondary table of the descriptor.
                 targetTable = outerExpression.getReferenceTable();
                 sourceTable = outerExpression.getSourceTable();
                 sourceAlias = outerExpression.getBaseExpression().aliasForTable(sourceTable);
@@ -272,9 +273,9 @@ public class SQLSelectStatement extends SQLStatement {
                     targetTable = (DatabaseTable)getTableAliases().get(targetAlias);
                 }
             } else {
-                sourceTable = ((ClassDescriptor)getDescriptorsForMultitableInheritanceOnly().get(index)).getTables().firstElement();
+                sourceTable = ((ClassDescriptor)getDescriptorsForMultitableInheritanceOnly().get(index)).getTables().get(0);
                 targetTable = ((ClassDescriptor)getDescriptorsForMultitableInheritanceOnly().get(index)).getInheritancePolicy().getChildrenTables().get(0);
-                Expression exp = (Expression)((Map)getOuterJoinedAdditionalJoinCriteria().elementAt(index)).get(targetTable);
+                Expression exp = (Expression)((Map)getOuterJoinedAdditionalJoinCriteria().get(index)).get(targetTable);
                 sourceAlias = exp.aliasForTable(sourceTable);
                 targetAlias = exp.aliasForTable(targetTable);
             }
@@ -319,14 +320,15 @@ public class SQLSelectStatement extends SQLStatement {
                 }
 
                 if (outerExpression == null) {
-                    printAdditionalJoins(printer, outerJoinedAliases, (ClassDescriptor)getDescriptorsForMultitableInheritanceOnly().get(index), (Map)getOuterJoinedAdditionalJoinCriteria().elementAt(index), aliasesOfTablesToBeLocked, shouldPrintUpdateClauseForAllTables, usesHistory);
+                    printAdditionalJoins(printer, outerJoinedAliases, (ClassDescriptor)getDescriptorsForMultitableInheritanceOnly().get(index), (Map)getOuterJoinedAdditionalJoinCriteria().get(index), aliasesOfTablesToBeLocked, shouldPrintUpdateClauseForAllTables, usesHistory);
                 } else {
                     DatabaseTable relationTable = outerExpression.getRelationTable();
+                    boolean isMapKeyObject = outerExpression.isMapKeyObjectRelationship();
                     if (relationTable == null) {
                         if (outerExpression.isDirectCollection()) {
                             // Append the join clause,
                             // If this is a direct collection, join to direct table.
-                            Expression onExpression = (Expression)getOuterJoinedMappingCriteria().elementAt(index);
+                            Expression onExpression = (Expression)getOuterJoinedMappingCriteria().get(index);
         
                             DatabaseTable newAlias = onExpression.aliasForTable(targetTable);
                             writer.write(" LEFT OUTER JOIN ");
@@ -345,7 +347,7 @@ public class SQLSelectStatement extends SQLStatement {
                             // The first table is joined with the mapping join criteria,
                             // the rest of the tables are joined with the additional join criteria.
                             writer.write(" LEFT OUTER JOIN ");
-                            Map tablesJoinExpression = (Map)getOuterJoinedAdditionalJoinCriteria().elementAt(index);
+                            Map tablesJoinExpression = (Map)getOuterJoinedAdditionalJoinCriteria().get(index);
                             boolean hasAdditionalJoinExpressions = tablesJoinExpression != null && !tablesJoinExpression.isEmpty();
                             if (hasAdditionalJoinExpressions && platform.supportsNestingOuterJoins()) {
                                 writer.write("(");
@@ -363,7 +365,7 @@ public class SQLSelectStatement extends SQLStatement {
                                 printAdditionalJoins(printer, outerJoinedAliases, outerExpression.getDescriptor(), tablesJoinExpression, aliasesOfTablesToBeLocked, shouldPrintUpdateClauseForAllTables, usesHistory);
                                 writer.write(")");
                             }
-                            Expression sourceToTargetJoin = (Expression)getOuterJoinedMappingCriteria().elementAt(index);
+                            Expression sourceToTargetJoin = (Expression)getOuterJoinedMappingCriteria().get(index);
                             printOnClause(sourceToTargetJoin, printer, platform);
                             if (hasAdditionalJoinExpressions && !platform.supportsNestingOuterJoins()) {
                                 printAdditionalJoins(printer, outerJoinedAliases, outerExpression.getDescriptor(), tablesJoinExpression, aliasesOfTablesToBeLocked, shouldPrintUpdateClauseForAllTables, usesHistory);
@@ -376,7 +378,14 @@ public class SQLSelectStatement extends SQLStatement {
                         // the rest of the tables are joined with the additional join criteria.
                         // For example: EMPLOYEE t1 LEFT OUTER JOIN (PROJ_EMP t3 LEFT OUTER JOIN PROJECT t0 ON (t0.PROJ_ID = t3.PROJ_ID)) ON (t3.EMP_ID = t1.EMP_ID)
                         // Now OneToOneMapping also may have relation table.
-                        DatabaseTable relationAlias = ((Expression)getOuterJoinedMappingCriteria().elementAt(index)).aliasForTable(relationTable);                        
+                        DatabaseTable relationAlias = ((Expression)getOuterJoinedMappingCriteria().get(index)).aliasForTable(relationTable);
+                        DatabaseTable mapKeyAlias = null;
+                        DatabaseTable mapKeyTable = null;
+                        if (isMapKeyObject) {
+                            // Need to also join the map key key.
+                            mapKeyTable = outerExpression.getMapKeyDescriptor().getTables().get(0);
+                            mapKeyAlias = ((Expression)getOuterJoinedMappingCriteria().get(index)).aliasForTable(mapKeyTable);                        
+                        }
                         Vector tablesInOrder = NonSynchronizedVector.newInstance(3);
                         // glassfish issue 2440: store aliases instead of tables
                         // in the tablesInOrder. This allows to distinguish source
@@ -384,10 +393,17 @@ public class SQLSelectStatement extends SQLStatement {
                         tablesInOrder.add(sourceAlias);
                         tablesInOrder.add(relationAlias);
                         tablesInOrder.add(targetAlias);
+                        if (isMapKeyObject) {
+                            tablesInOrder.add(mapKeyAlias);
+                        }
                         TreeMap indexToExpressionMap = new TreeMap();
-                        mapTableIndexToExpression((Expression)getOuterJoinedMappingCriteria().elementAt(index), indexToExpressionMap, tablesInOrder);
+                        mapTableIndexToExpression((Expression)getOuterJoinedMappingCriteria().get(index), indexToExpressionMap, tablesInOrder);
                         Expression sourceToRelationJoin = (Expression)indexToExpressionMap.get(Integer.valueOf(1));
                         Expression relationToTargetJoin = (Expression)indexToExpressionMap.get(Integer.valueOf(2));
+                        Expression relationToKeyJoin = null;
+                        if (isMapKeyObject) {
+                            relationToKeyJoin = (Expression)indexToExpressionMap.get(Integer.valueOf(3));
+                        }
                         
                         writer.write(" LEFT OUTER JOIN ");
                         if (platform.supportsNestingOuterJoins()) {
@@ -404,6 +420,29 @@ public class SQLSelectStatement extends SQLStatement {
                         writer.write(relationAlias.getQualifiedNameDelimited(printer.getPlatform()));
                         if (!platform.supportsNestingOuterJoins()) {
                             printOnClause(sourceToRelationJoin, printer, platform);                            
+                        }
+                        
+                        if (isMapKeyObject) {
+                            // Append join to map key.
+                            if (!session.getPlatform().supportsANSIInnerJoinSyntax()) {
+                                writer.write(" LEFT OUTER");
+                            }
+                            writer.write(" JOIN ");
+                            writer.write(mapKeyTable.getQualifiedNameDelimited(printer.getPlatform()));
+                            writer.write(" ");
+                            if (mapKeyAlias.isDecorated()) {
+                                ((DecoratedDatabaseTable)mapKeyAlias).getAsOfClause().printSQL(printer);
+                                writer.write(" ");
+                            }
+                            outerJoinedAliases.add(mapKeyAlias);
+                            writer.write(mapKeyAlias.getQualifiedNameDelimited(printer.getPlatform()));
+                            printForUpdateClauseOnJoin(mapKeyAlias, printer, shouldPrintUpdateClauseForAllTables, aliasesOfTablesToBeLocked, platform);
+                            printOnClause(relationToKeyJoin, printer, platform);
+                            
+                            Map tablesJoinExpression = (Map)getOuterJoinedAdditionalJoinCriteria().get(index);
+                            if(tablesJoinExpression != null && !tablesJoinExpression.isEmpty()) {
+                                printAdditionalJoins(printer, outerJoinedAliases, outerExpression.getMapKeyDescriptor(), tablesJoinExpression, aliasesOfTablesToBeLocked, shouldPrintUpdateClauseForAllTables, usesHistory);
+                            }
                         }
                         
                         if (!session.getPlatform().supportsANSIInnerJoinSyntax()) {
@@ -425,7 +464,7 @@ public class SQLSelectStatement extends SQLStatement {
                         printForUpdateClauseOnJoin(targetAlias, printer, shouldPrintUpdateClauseForAllTables, aliasesOfTablesToBeLocked, platform);
                         printOnClause(relationToTargetJoin, printer, platform);
                         
-                        Map tablesJoinExpression = (Map)getOuterJoinedAdditionalJoinCriteria().elementAt(index);
+                        Map tablesJoinExpression = (Map)getOuterJoinedAdditionalJoinCriteria().get(index);
                         if(tablesJoinExpression != null && !tablesJoinExpression.isEmpty()) {
                             printAdditionalJoins(printer, outerJoinedAliases, outerExpression.getDescriptor(), tablesJoinExpression, aliasesOfTablesToBeLocked, shouldPrintUpdateClauseForAllTables, usesHistory);
                         }
@@ -480,7 +519,7 @@ public class SQLSelectStatement extends SQLStatement {
         // skip main table - start with i=1
         int tablesSize = tables.size();
         for(int i=1; i < tablesSize; i++) {
-            DatabaseTable table = (DatabaseTable)tables.elementAt(i);
+            DatabaseTable table = (DatabaseTable)tables.get(i);
             Expression onExpression = (Expression)tablesJoinExpressions.get(table);
             if (onExpression != null) {
                 if(i < nDescriptorTables) {
@@ -878,7 +917,7 @@ public class SQLSelectStatement extends SQLStatement {
         if (getWhereClause() != null) {
             iterator.iterateOn(getWhereClause());
         } else if (hasOuterJoinExpressions()) {
-            Expression outerJoinCriteria = (Expression)getOuterJoinedMappingCriteria().firstElement();
+            Expression outerJoinCriteria = (Expression)getOuterJoinedMappingCriteria().get(0);
             if (outerJoinCriteria != null){
                 iterator.iterateOn(outerJoinCriteria);
             }
@@ -916,7 +955,7 @@ public class SQLSelectStatement extends SQLStatement {
         }
 
         for (int index = 0; index < getTables().size(); index++) {
-            DatabaseTable next = (DatabaseTable)getTables().elementAt(index);
+            DatabaseTable next = (DatabaseTable)getTables().get(index);
 
             // Aliases in allTables must now be decorated database tables.
             DatabaseTable alias = new DecoratedDatabaseTable("t" + (index), asOfClause);
@@ -1376,7 +1415,7 @@ public class SQLSelectStatement extends SQLStatement {
         }
 
         for (int index = 0; index < allExpressions.size(); index++) {
-            Expression expression = (Expression)allExpressions.elementAt(index);
+            Expression expression = (Expression)allExpressions.get(index);
             expression.normalize(normalizer);
         }
 
@@ -1477,7 +1516,7 @@ public class SQLSelectStatement extends SQLStatement {
             setBuilder(builder);
         }
 
-        builder.setViewTable((DatabaseTable)getTables().firstElement());
+        builder.setViewTable((DatabaseTable)getTables().get(0));
 
         normalize(theSession, theDescriptor, clonedExpressions);
     }
@@ -2000,7 +2039,7 @@ public class SQLSelectStatement extends SQLStatement {
         while(it.hasNext()) {
             Map.Entry entry = (Map.Entry)it.next();
             int index = ((Integer)entry.getKey()).intValue();
-            map.put(tablesInOrder.elementAt(index), entry.getValue());
+            map.put(tablesInOrder.get(index), entry.getValue());
         }
         return map;
     }

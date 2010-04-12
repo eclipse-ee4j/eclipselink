@@ -585,7 +585,7 @@ public class FunctionExpression extends BaseExpression {
                 field = new DatabaseField("*");
             } else {
                 // Clone the field since we will change its type.
-                field = (DatabaseField) field.clone();
+                field = field.clone();
             }
             
             // If the result type is set, use it.

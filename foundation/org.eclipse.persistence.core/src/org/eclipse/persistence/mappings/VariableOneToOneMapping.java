@@ -159,13 +159,13 @@ public class VariableOneToOneMapping extends ObjectReferenceMapping implements R
         Vector foreignKeys = org.eclipse.persistence.internal.helper.NonSynchronizedVector.newInstance(getForeignKeyFields().size());
 
         if (getTypeField() != null) {
-            clone.setTypeField((DatabaseField)this.getTypeField().clone());
+            clone.setTypeField(this.getTypeField().clone());
         }
 
         for (Iterator enumtr = getSourceToTargetQueryKeyNames().keySet().iterator(); enumtr.hasNext();) {
             // Clone the SourceKeyFields
             DatabaseField field = (DatabaseField)enumtr.next();
-            DatabaseField clonedField = (DatabaseField)field.clone();
+            DatabaseField clonedField = field.clone();
             setOfKeys.put(field, clonedField);
             // on the next line I'm cloning the query key names
             sourceToTarget.put(clonedField, getSourceToTargetQueryKeyNames().get(field));

@@ -147,22 +147,6 @@ public abstract class InterfaceContainerPolicy extends ContainerPolicy {
     public QueryKey createQueryKeyForMapKey() {
         return null;
     }
-    
-    
-    /**
-     * INTERNAL:
-     * Return all the fields in the key.
-     */
-    @Override
-    public List<DatabaseField> getAllFieldsForMapKey(CollectionMapping baseMapping) {
-        DatabaseField field = getDirectKeyField(null);
-        if (field != null){
-            List<DatabaseField> fields = new ArrayList<DatabaseField>(1);
-            fields.add(field);
-            return fields;
-        }
-        return null;
-    }
 
     /**
      * INTERNAL:

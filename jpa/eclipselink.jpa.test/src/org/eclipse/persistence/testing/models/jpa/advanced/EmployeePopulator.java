@@ -834,7 +834,10 @@ public class EmployeePopulator {
         try {
             goldBuyer.setName("Gold Buyer 2");
             goldBuyer.setDescription("Second of the Gold Buyers");
-
+            goldBuyer.addDinersClub(12345L);
+            goldBuyer.addTorontoDominionCreditLine(6789L);
+            goldBuyer.addVisa(1000000L);
+            goldBuyer.addCanadianImperialCreditLine(6000000L);
         } catch (Exception exception) {
             throw new RuntimeException(exception.toString());
         }

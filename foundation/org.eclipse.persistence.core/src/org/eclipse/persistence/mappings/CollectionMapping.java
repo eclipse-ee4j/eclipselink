@@ -155,6 +155,7 @@ public abstract class CollectionMapping extends ForeignReferenceMapping implemen
      * Used during building the backup shallow copy to copy
      * the vector without re-registering the target objects.
      */
+    @Override
     public Object buildBackupCloneForPartObject(Object attributeValue, Object clone, Object backup, UnitOfWorkImpl unitOfWork) {
         // Check for null
         if (attributeValue == null) {
@@ -169,6 +170,7 @@ public abstract class CollectionMapping extends ForeignReferenceMapping implemen
      * Require for cloning, the part must be cloned.
      * Ignore the objects, use the attribute value.
      */
+    @Override
     public Object buildCloneForPartObject(Object attributeValue, Object original, Object clone, UnitOfWorkImpl unitOfWork, boolean isExisting) {
         ContainerPolicy containerPolicy = this.containerPolicy;
         if (attributeValue == null) {
@@ -207,6 +209,7 @@ public abstract class CollectionMapping extends ForeignReferenceMapping implemen
      * Copy of the attribute of the object.
      * This is NOT used for unit of work but for templatizing an object.
      */
+    @Override
     public void buildCopy(Object copy, Object original, ObjectCopyingPolicy policy) {
         Object attributeValue = getRealCollectionAttributeValueFromObject(original, policy.getSession());
         Object valuesIterator = this.containerPolicy.iteratorFor(attributeValue);
@@ -247,6 +250,7 @@ public abstract class CollectionMapping extends ForeignReferenceMapping implemen
      * This method is used in combination with the CachedValueHolder to store references to PK's to be loaded
      * from a cache instead of a query.
      */
+    @Override
     public Object[] buildReferencesPKList(Object entity, Object attribute, AbstractSession session){
         Object container = indirectionPolicy.getRealAttributeValueFromObject(entity, attribute);
         return containerPolicy.buildReferencesPKList(container, session);
@@ -256,6 +260,7 @@ public abstract class CollectionMapping extends ForeignReferenceMapping implemen
      * INTERNAL:
      * Cascade perform delete through mappings that require the cascade
      */
+    @Override
     public void cascadePerformRemoveIfRequired(Object object, UnitOfWorkImpl uow, Map visitedObjects) {
         if (!isCascadeRemove()) {
             return;
@@ -284,6 +289,7 @@ public abstract class CollectionMapping extends ForeignReferenceMapping implemen
      * INTERNAL:
      * Cascade perform removal of orphaned private owned objects from the UnitOfWorkChangeSet
      */
+    @Override
     public void cascadePerformRemovePrivateOwnedObjectFromChangeSetIfRequired(Object object, UnitOfWorkImpl uow, Map visitedObjects) {
         // if the object is not instantiated, do not instantiate or cascade
         Object attributeValue = getAttributeValueFromObject(object);
@@ -305,6 +311,7 @@ public abstract class CollectionMapping extends ForeignReferenceMapping implemen
      * INTERNAL:
      * Cascade discover and persist new objects during commit.
      */
+    @Override
     public void cascadeDiscoverAndPersistUnregisteredNewObjects(Object object, Map newObjects, Map unregisteredExistingObjects, Map visitedObjects, UnitOfWorkImpl uow) {
         Object cloneAttribute = getAttributeValueFromObject(object);
         if ((cloneAttribute == null) || (!this.indirectionPolicy.objectIsInstantiated(cloneAttribute))) {
@@ -346,6 +353,7 @@ public abstract class CollectionMapping extends ForeignReferenceMapping implemen
      * INTERNAL:
      * Cascade registerNew for Create through mappings that require the cascade
      */
+    @Override
     public void cascadeRegisterNewIfRequired(Object object, UnitOfWorkImpl uow, Map visitedObjects) {
         if (!isCascadePersist()) {
             return;
@@ -378,6 +386,7 @@ public abstract class CollectionMapping extends ForeignReferenceMapping implemen
      * as apposed to detected changes.  If an attribute can not be change tracked it's
      * changes can be detected through this process.
      */
+    @Override
     public void calculateDeferredChanges(ChangeRecord changeRecord, AbstractSession session) {
         CollectionChangeRecord collectionRecord = (CollectionChangeRecord)changeRecord;
         // TODO: Handle events that fired after collection was replaced.
@@ -392,6 +401,7 @@ public abstract class CollectionMapping extends ForeignReferenceMapping implemen
      * INTERNAL:
      * Cascade the merge to the component object, if appropriate.
      */
+    @Override
     public void cascadeMerge(Object sourceElement, MergeManager mergeManager) {
         if (shouldMergeCascadeParts(mergeManager)) {
             mergeManager.mergeChanges(mergeManager.getObjectToMerge(sourceElement), null);
@@ -402,11 +412,12 @@ public abstract class CollectionMapping extends ForeignReferenceMapping implemen
      * INTERNAL:
      * The mapping clones itself to create deep copy.
      */
+    @Override
     public Object clone() {
         CollectionMapping clone = (CollectionMapping)super.clone();
         clone.setDeleteAllQuery((ModifyQuery)getDeleteAllQuery().clone());
-        if(this.listOrderField != null) {
-            clone.listOrderField = ((DatabaseField)this.listOrderField.clone());
+        if (this.listOrderField != null) {
+            clone.listOrderField = this.listOrderField.clone();
         }
         if(this.changeOrderTargetQuery != null) {
             clone.changeOrderTargetQuery = (DataModifyQuery)this.changeOrderTargetQuery.clone();
@@ -424,9 +435,9 @@ public abstract class CollectionMapping extends ForeignReferenceMapping implemen
 
     /**
      * INTERNAL:
-     * This method is used to create a change record from comparing two collections
-     * @return prototype.changeset.ChangeRecord
+     * This method is used to create a change record from comparing two collections.
      */
+    @Override
     public ChangeRecord compareForChange(Object clone, Object backUp, ObjectChangeSet owner, AbstractSession session) {
         Object cloneAttribute = null;
         Object backUpAttribute = null;
@@ -470,6 +481,7 @@ public abstract class CollectionMapping extends ForeignReferenceMapping implemen
      * INTERNAL:
      * Compare the attributes belonging to this mapping for the objects.
      */
+    @Override
     public boolean compareObjects(Object firstObject, Object secondObject, AbstractSession session) {
         Object firstObjectCollection = getRealCollectionAttributeValueFromObject(firstObject, session);
         Object secondObjectCollection = getRealCollectionAttributeValueFromObject(secondObject, session);
@@ -479,7 +491,7 @@ public abstract class CollectionMapping extends ForeignReferenceMapping implemen
 
     /**
      * INTERNAL:
-     * The memory objects are compared and only the changes are written to the database
+     * The memory objects are compared and only the changes are written to the database.
      */
     protected void compareObjectsAndWrite(Object previousObjects, Object currentObjects, WriteObjectQuery query) throws DatabaseException, OptimisticLockException {
         // If it is for an aggregate collection let it continue so that all of the correct values are deleted
@@ -652,6 +664,7 @@ public abstract class CollectionMapping extends ForeignReferenceMapping implemen
     /**
      * Compare two objects if their parts are not private owned
      */
+    @Override
     protected boolean compareObjectsWithoutPrivateOwned(Object firstCollection, Object secondCollection, AbstractSession session) {
         if(this.listOrderField != null) {
             return compareLists((List)firstCollection, (List)secondCollection, session, false);
@@ -667,28 +680,28 @@ public abstract class CollectionMapping extends ForeignReferenceMapping implemen
 
         Map keyValues = new HashMap();
 
-        while (cp.hasNext(secondIter)) {
-            if (isMapKeyMapping()) {
+        if (isMapKeyMapping()) {
+            while (cp.hasNext(secondIter)) {
                 Map.Entry secondObject = (Map.Entry)cp.nextEntry(secondIter, session);
                 Object primaryKey = getReferenceDescriptor().getObjectBuilder().extractPrimaryKeyFromObject(secondObject.getValue(), session);
                 Object key = secondObject.getKey();
                 keyValues.put(key, primaryKey);
-            } else {
-                Object secondObject = cp.next(secondIter, session);
-                Object primaryKey = getReferenceDescriptor().getObjectBuilder().extractPrimaryKeyFromObject(secondObject, session);
-                keyValues.put(primaryKey, primaryKey);
-            }
-        }
-
-        while (cp.hasNext(firstIter)) {
-            if (isMapKeyMapping()) {
+            }    
+            while (cp.hasNext(firstIter)) {
                 Map.Entry firstObject = (Map.Entry)cp.nextEntry(firstIter, session);
                 Object primaryKey = getReferenceDescriptor().getObjectBuilder().extractPrimaryKeyFromObject(firstObject.getValue(), session);
                 Object key = firstObject.getKey();
                 if (!primaryKey.equals(keyValues.get(key))) {
                     return false;
-                }                
-            } else {
+                }
+            }
+        } else {        
+            while (cp.hasNext(secondIter)) {
+                Object secondObject = cp.next(secondIter, session);
+                Object primaryKey = getReferenceDescriptor().getObjectBuilder().extractPrimaryKeyFromObject(secondObject, session);
+                keyValues.put(primaryKey, primaryKey);
+            }    
+            while (cp.hasNext(firstIter)) {
                 Object firstObject = cp.next(firstIter, session);
                 Object primaryKey = getReferenceDescriptor().getObjectBuilder().extractPrimaryKeyFromObject(firstObject, session);
                 if (!keyValues.containsKey(primaryKey)) {
@@ -702,6 +715,7 @@ public abstract class CollectionMapping extends ForeignReferenceMapping implemen
     /**
      * Compare two objects if their parts are private owned
      */
+    @Override
     protected boolean compareObjectsWithPrivateOwned(Object firstCollection, Object secondCollection, AbstractSession session) {
         if(this.listOrderField != null) {
             return compareLists((List)firstCollection, (List)secondCollection, session, true);
@@ -776,6 +790,7 @@ public abstract class CollectionMapping extends ForeignReferenceMapping implemen
      * This method is implemented by subclasses as necessary.
      * @param classLoader 
      */
+    @Override
     public void convertClassNamesToClasses(ClassLoader classLoader){
         super.convertClassNamesToClasses(classLoader);
         containerPolicy.convertClassNamesToClasses(classLoader);
@@ -869,6 +884,7 @@ public abstract class CollectionMapping extends ForeignReferenceMapping implemen
      * so we need to replace the reference object(s) with
      * the corresponding object(s) from the remote session.
      */
+    @Override
     public void fixRealObjectReferences(Object object, Map objectDescriptors, Map processedObjects, ObjectLevelReadQuery query, RemoteSession session) {
         //bug 4147755 getRealAttribute... / setReal
         Object attributeValue = getRealAttributeValueFromObject(object, session);
@@ -926,6 +942,7 @@ public abstract class CollectionMapping extends ForeignReferenceMapping implemen
      * CollectionMappings have to worry about
      * maintaining object identity.
      */
+    @Override
     public Object getObjectCorrespondingTo(Object object, RemoteSession session, Map objectDescriptors, Map processedObjects, ObjectLevelReadQuery query) {
         return session.getObjectsCorrespondingToAll(object, objectDescriptors, processedObjects, query, this.containerPolicy);
     }
@@ -964,6 +981,7 @@ public abstract class CollectionMapping extends ForeignReferenceMapping implemen
      * Return the value of an attribute, unwrapping value holders if necessary.
      * If the value is null, build a new container.
      */
+    @Override
     public Object getRealCollectionAttributeValueFromObject(Object object, AbstractSession session) throws DescriptorException {
         Object value = getRealAttributeValueFromObject(object, session);
         if (value == null) {
@@ -1015,6 +1033,7 @@ public abstract class CollectionMapping extends ForeignReferenceMapping implemen
      * INTERNAL:
      * Initialize the state of mapping.
      */
+    @Override
     public void initialize(AbstractSession session) throws DescriptorException {
         super.initialize(session);
         setFields(collectFields());
@@ -1094,13 +1113,10 @@ public abstract class CollectionMapping extends ForeignReferenceMapping implemen
         buildListOrderField();
         
         // DirectCollectMap - that uses DataReadQuery - adds listOrderField to selection query in initializeSelectionStatement method.
-        if(getSelectionQuery().isReadAllQuery()) {
-            ReadAllQuery readAllQuery = (ReadAllQuery)getSelectionQuery();
+        if (getSelectionQuery().isReadAllQuery()) {
             if(shouldUseListOrderFieldTableExpression()) {
                 initializeListOrderFieldTable(session);
             }
-            Expression expField = getListOrderFieldExpression(readAllQuery.getExpressionBuilder());
-            readAllQuery.addAdditionalField(expField);
         }
         
         initializeChangeOrderTargetQuery(session);
@@ -1132,18 +1148,6 @@ public abstract class CollectionMapping extends ForeignReferenceMapping implemen
     
     /**
      * INTERNAL:
-     * Creates expression for listOrderField 
-     * Precondition: listOrderField != null.
-     */
-    public Expression getListOrderFieldExpression(Expression baseExpression) {
-        if(shouldUseListOrderFieldTableExpression()) {
-            baseExpression = baseExpression.getTable(this.listOrderField.getTable());
-        }
-        return baseExpression.getField(this.listOrderField);
-    }
-    
-    /**
-     * INTERNAL:
      * Indicates whether getListOrderFieldExpression method should create field expression based on table expression.  
      */
     public boolean shouldUseListOrderFieldTableExpression() {
@@ -1161,8 +1165,17 @@ public abstract class CollectionMapping extends ForeignReferenceMapping implemen
      * INTERNAL:
      * Return whether this mapping is a Collection type.
      */
+    @Override
     public boolean isCollectionMapping() {
         return true;
+    }
+    
+    /**
+     * INTERNAL:
+     * Return if this mapping has a mapped key that uses a OneToOne (object).
+     */
+    public boolean isMapKeyObjectRelationship() {
+        return this.containerPolicy.isMapKeyObject();
     }
     
     /**
@@ -1187,6 +1200,7 @@ public abstract class CollectionMapping extends ForeignReferenceMapping implemen
      * Iterate on the attribute value.
      * The value holder has already been processed.
      */
+    @Override
     public void iterateOnRealAttributeValue(DescriptorIterator iterator, Object realAttributeValue) {
         if (realAttributeValue == null) {
             return;
@@ -1215,6 +1229,7 @@ public abstract class CollectionMapping extends ForeignReferenceMapping implemen
      * Because this is a collection mapping, values are added to or removed from the
      * collection based on the changeset
      */
+    @Override
     public void mergeChangesIntoObject(Object target, ChangeRecord chgRecord, Object source, MergeManager mergeManager) {
         Object valueOfTarget = null;
         Object valueOfSource = null;
@@ -1279,6 +1294,7 @@ public abstract class CollectionMapping extends ForeignReferenceMapping implemen
      * Merge changes from the source to the target object. This merge is only called when a changeSet for the target
      * does not exist or the target is uninitialized
      */
+    @Override
     public void mergeIntoObject(Object target, boolean isTargetUnInitialized, Object source, MergeManager mergeManager) {
         if (isTargetUnInitialized) {
             // This will happen if the target object was removed from the cache before the commit was attempted
@@ -1549,9 +1565,6 @@ public abstract class CollectionMapping extends ForeignReferenceMapping implemen
         super.postPrepareNestedBatchQuery(batchQuery, query);
         ReadAllQuery mappingBatchQuery = (ReadAllQuery)batchQuery;
         mappingBatchQuery.setShouldIncludeData(true);
-        if (this.listOrderField != null) {
-            mappingBatchQuery.addAdditionalField(getListOrderFieldExpression(mappingBatchQuery.getExpressionBuilder()));
-        }
         this.containerPolicy.addAdditionalFieldsToQuery(mappingBatchQuery, getAdditionalFieldsBaseExpression(mappingBatchQuery));
     }
     
@@ -1577,6 +1590,7 @@ public abstract class CollectionMapping extends ForeignReferenceMapping implemen
      * A subclass should implement this method if it wants different behavior.
      * Recurse thru the parts to delete the reference objects after the actual object is deleted.
      */
+    @Override
     public void postDelete(DeleteObjectQuery query) throws DatabaseException {
         if (this.containerPolicy.propagatesEventsToCollection()){
             Object queryObject = query.getObject();
@@ -1593,6 +1607,7 @@ public abstract class CollectionMapping extends ForeignReferenceMapping implemen
      * INTERNAL:
      * Ensure the container policy is post initialized
      */
+    @Override
     public void postInitialize(AbstractSession session) {
         this.containerPolicy.postInitialize(session);
     }
@@ -1602,6 +1617,7 @@ public abstract class CollectionMapping extends ForeignReferenceMapping implemen
      * A subclass should implement this method if it wants different behavior.
      * Recurse thru the parts to delete the reference objects after the actual object is deleted.
      */
+    @Override
     public void postInsert(WriteObjectQuery query) throws DatabaseException {
         if (this.containerPolicy.propagatesEventsToCollection()){
             Object queryObject = query.getObject();
@@ -1618,6 +1634,7 @@ public abstract class CollectionMapping extends ForeignReferenceMapping implemen
      * INTERNAL:
      * Propagate preInsert event to container policy if necessary
      */
+    @Override
     public void preInsert(WriteObjectQuery query) throws DatabaseException, OptimisticLockException {
         if (this.containerPolicy.propagatesEventsToCollection()){
             Object queryObject = query.getObject();
@@ -1635,6 +1652,7 @@ public abstract class CollectionMapping extends ForeignReferenceMapping implemen
      * INTERNAL:
      * Propagate preUpdate event to container policy if necessary
      */
+    @Override
     public void preUpdate(WriteObjectQuery query) throws DatabaseException {
         if (this.containerPolicy.propagatesEventsToCollection()){
             Object queryObject = query.getObject();
@@ -1673,6 +1691,7 @@ public abstract class CollectionMapping extends ForeignReferenceMapping implemen
      * INTERNAL:
      * replace the value holders in the specified reference object(s)
      */
+    @Override
     public Map replaceValueHoldersIn(Object object, RemoteSessionController controller) {
         return controller.replaceValueHoldersInAll(object, this.containerPolicy);
     }
@@ -1806,6 +1825,7 @@ public abstract class CollectionMapping extends ForeignReferenceMapping implemen
      * And mark the ObjectChangeSet with the attribute name then when the changes are calculated
      * force a compare on the collections to determine changes.
      */
+    @Override
     public void updateChangeRecord(Object clone, Object newValue, Object oldValue, ObjectChangeSet objectChangeSet, UnitOfWorkImpl uow) {
         CollectionChangeRecord collectionChangeRecord = (CollectionChangeRecord)objectChangeSet.getChangesForAttributeNamed(this.getAttributeName());
         if (collectionChangeRecord == null) {
@@ -1862,6 +1882,7 @@ public abstract class CollectionMapping extends ForeignReferenceMapping implemen
      * If the collection is not indirect it must be re-built.
      * This is used for resuming or flushing units of work.
      */
+    @Override
     public void setChangeListener(Object clone, PropertyChangeListener listener, UnitOfWorkImpl uow) {
         if (this.indirectionPolicy.usesTransparentIndirection() && isAttributeValueInstantiated(clone)) {
             Object attributeValue = getRealAttributeValueFromObject(clone, uow);
@@ -2129,6 +2150,7 @@ public abstract class CollectionMapping extends ForeignReferenceMapping implemen
      * INTERNAL:
      * To validate mappings declaration
      */
+    @Override
     public void validateBeforeInitialization(AbstractSession session) throws DescriptorException {
         super.validateBeforeInitialization(session);
 
@@ -2150,6 +2172,7 @@ public abstract class CollectionMapping extends ForeignReferenceMapping implemen
      * INTERNAL:
      * Checks if object is deleted from the database or not.
      */
+    @Override
     public boolean verifyDelete(Object object, AbstractSession session) throws DatabaseException {
         // Row is built for translation
         if (isReadOnly()) {
@@ -2181,6 +2204,7 @@ public abstract class CollectionMapping extends ForeignReferenceMapping implemen
      * INTERNAL:
      * Return if this mapping supports change tracking.
      */
+    @Override
     public boolean isChangeTrackingSupported(Project project) {
         return this.indirectionPolicy.usesTransparentIndirection();
     }
@@ -2189,6 +2213,7 @@ public abstract class CollectionMapping extends ForeignReferenceMapping implemen
      * INTERNAL:
      * Directly build a change record without comparison
      */
+    @Override
     public ChangeRecord buildChangeRecord(Object clone, ObjectChangeSet owner, AbstractSession session) {
         Object cloneAttribute = null;
         cloneAttribute = getAttributeValueFromObject(clone);
@@ -2229,6 +2254,7 @@ public abstract class CollectionMapping extends ForeignReferenceMapping implemen
      * This method is used to load a relationship from a list of PKs. This list
      * may be available if the relationship has been cached.
      */
+    @Override
     public Object valueFromPKList(Object[] pks, AbstractSession session){
         ContainerPolicy cp = this.containerPolicy;
         return cp.valueFromPKList(pks, session);
@@ -2239,6 +2265,7 @@ public abstract class CollectionMapping extends ForeignReferenceMapping implemen
      * Return the value of the field from the row or a value holder on the query to obtain the object.
      * To get here the mapping's isJoiningSupported() should return true.
      */
+    @Override
     protected Object valueFromRowInternalWithJoin(AbstractRecord row, JoinedAttributeManager joinManager, ObjectBuildingQuery sourceQuery, AbstractSession executionSession) throws DatabaseException {
 
         Object value = this.containerPolicy.containerInstance();
@@ -2246,6 +2273,11 @@ public abstract class CollectionMapping extends ForeignReferenceMapping implemen
         Object sourceKey = this.descriptor.getObjectBuilder().extractPrimaryKeyFromRow(row, executionSession);
         // If the query was using joining, all of the result rows by primary key will have been computed.
         List<AbstractRecord> rows = joinManager.getDataResultsByPrimaryKey().get(sourceKey);
+        // If no 1-m rows were fetch joined, then get the value normally,
+        // this can occur with pagination where the last row may not be complete.
+        if (rows == null) {
+            return valueFromRowInternal(row, joinManager, sourceQuery, executionSession);
+        }
         int size = rows.size();
         if (size > 0) {
             // A nested query must be built to pass to the descriptor that looks like the real query execution would,

@@ -74,7 +74,7 @@ import org.eclipse.persistence.queries.WriteObjectQuery;
  * @author tware
  *
  */
-public class MappedKeyMapContainerPolicy extends MapContainerPolicy implements DirectMapUsableContainerPolicy {
+public class MappedKeyMapContainerPolicy extends MapContainerPolicy {
     
     protected transient MapKeyMapping keyMapping;
 
@@ -364,7 +364,7 @@ public class MappedKeyMapContainerPolicy extends MapContainerPolicy implements D
      * Create a query key that links to the map key.
      */
     @Override
-    public QueryKey createQueryKeyForMapKey(){
+    public QueryKey createQueryKeyForMapKey() {
         return keyMapping.createQueryKeyForMapKey();
     }
     
@@ -390,7 +390,7 @@ public class MappedKeyMapContainerPolicy extends MapContainerPolicy implements D
      * @param classLoader 
      */
     @Override
-    public void convertClassNamesToClasses(ClassLoader classLoader){
+    public void convertClassNamesToClasses(ClassLoader classLoader) {
         ((DatabaseMapping)keyMapping).convertClassNamesToClasses(classLoader);
     }
     
@@ -400,7 +400,7 @@ public class MappedKeyMapContainerPolicy extends MapContainerPolicy implements D
      * Delete the key and value of the passed association passed object.
      */
     @Override
-    public void deleteWrappedObject(Object objectDeleted, AbstractSession session){
+    public void deleteWrappedObject(Object objectDeleted, AbstractSession session) {
         if (((DatabaseMapping)keyMapping).isPrivateOwned()){
             keyMapping.deleteMapKey(((Map.Entry)objectDeleted).getKey(), session);
         }
@@ -412,16 +412,16 @@ public class MappedKeyMapContainerPolicy extends MapContainerPolicy implements D
      * Return any tables that will be required when this mapping is used as part of a join query.
      */
     @Override
-    public List<DatabaseTable> getAdditionalTablesForJoinQuery(){
+    public List<DatabaseTable> getAdditionalTablesForJoinQuery() {
         return keyMapping.getAdditionalTablesForJoinQuery();
     }
     
     /**
      * INTERNAL:
-     * Return all the fields in the key.
+     * Return any additional fields required by the policy for a fetch join.
      */
     @Override
-    public List<DatabaseField> getAllFieldsForMapKey(CollectionMapping baseMapping){
+    public List<DatabaseField> getAdditionalFieldsForJoin(CollectionMapping baseMapping) {
         return keyMapping.getAllFieldsForMapKey();
     }
     
@@ -429,7 +429,7 @@ public class MappedKeyMapContainerPolicy extends MapContainerPolicy implements D
      * INTERNAL:
      * Return a Map of any foreign keys defined within the the MapKey.
      */
-    public Map<DatabaseField, DatabaseField> getForeignKeyFieldsForMapKey(){
+    public Map<DatabaseField, DatabaseField> getForeignKeyFieldsForMapKey() {
         return keyMapping.getForeignKeyFieldsForMapKey();
     }
     
@@ -438,7 +438,7 @@ public class MappedKeyMapContainerPolicy extends MapContainerPolicy implements D
      * Return the reference descriptor for the map key if it exists.
      */
     @Override
-    public ClassDescriptor getDescriptorForMapKey(){
+    public ClassDescriptor getDescriptorForMapKey() {
         return keyMapping.getReferenceDescriptor();
     }
     
@@ -550,6 +550,15 @@ public class MappedKeyMapContainerPolicy extends MapContainerPolicy implements D
     @Override
     public boolean isMapKeyAttribute() {
         return ((DatabaseMapping)keyMapping).isAbstractDirectMapping();
+    }
+    
+    /**
+     * INTERNAL:
+     * Return if the map key this container policy represents is a OneToOne.
+     */
+    @Override
+    public boolean isMapKeyObject() {
+        return ((DatabaseMapping)keyMapping).isOneToOneMapping();
     }
     
     /**
@@ -806,19 +815,6 @@ public class MappedKeyMapContainerPolicy extends MapContainerPolicy implements D
         this.keyQuery = keyQuery;
     }
     
-    /**
-     * INTERNAL:
-     * Used during initialization of DirectMapMapping to make the ContainerPolicy aware of the 
-     * DatabaseField used for the value portion of the mapping
-     * 
-     * This method is a no-op for MappedKeyMapContainerPolicy since it does not require that information
-     * 
-     * @param directField
-     * @param valueConverter
-     */
-    public void setValueField(DatabaseField field, Converter converter) {
-    }
-    
     public void setValueMapping(MapComponentMapping mapping) {
         this.valueMapping = mapping;
     }
@@ -852,7 +848,7 @@ public class MappedKeyMapContainerPolicy extends MapContainerPolicy implements D
     @Override
     public int updateJoinedMappingIndexesForMapKey(Map<DatabaseMapping, Object> indexList, int index){
         indexList.put((DatabaseMapping)keyMapping, index);
-        return getAllFieldsForMapKey(null).size();
+        return getAdditionalFieldsForJoin(null).size();
     }
     
     /**

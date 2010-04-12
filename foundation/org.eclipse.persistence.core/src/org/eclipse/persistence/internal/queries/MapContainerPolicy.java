@@ -292,26 +292,6 @@ public class MapContainerPolicy extends InterfaceContainerPolicy {
     
     /**
      * INTERNAL:
-     * Return all the fields in the key.  MapContainerPolicy gets it fields from the reference descriptor
-     * of the provided mappings.  It uses its keyName to lookup the appropriate mapping and returns the fields from
-     * that mapping.
-     */
-    @Override
-    public List<DatabaseField> getAllFieldsForMapKey(CollectionMapping baseMapping){
-        if (baseMapping == null){
-            return null;
-        }
-        ClassDescriptor descriptor = baseMapping.getReferenceDescriptor();
-        if (keyName != null){
-            DatabaseMapping mapping = descriptor.getMappingForAttributeName(Helper.getAttributeNameFromMethodName(keyName));
-            return mapping.getFields();
-        } else {
-            return descriptor.getPrimaryKeyFields();
-        }
-    }
-    
-    /**
-     * INTERNAL:
      * Return the DatabaseField that represents the key in a DirectMapMapping.   MapContainerPolicy gets it fields from the reference descriptor
      * of the provided mappings.  It uses its keyName to lookup the appropriate mapping and returns the field from
      * that mapping.

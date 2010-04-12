@@ -17,7 +17,6 @@ import java.util.*;
 import org.eclipse.persistence.sessions.remote.*;
 import org.eclipse.persistence.queries.*;
 import org.eclipse.persistence.exceptions.*;
-import org.eclipse.persistence.internal.helper.*;
 
 /**
  * <p><b>Purpose</b>:
@@ -90,13 +89,11 @@ public class RemoteCursoredStream extends CursoredStream {
         if (isClosed()) {
             return null;
         }
-
         Vector nextPageObjects = (((RemoteSession)getSession()).getRemoteConnection()).cursoredStreamNextPage(this, getPolicy().getQuery(), (RemoteSession)getSession(), getPageSize());
         if ((nextPageObjects == null) || nextPageObjects.isEmpty()) {
             return null;
         }
-
-        Helper.addAllToVector(getObjectCollection(), nextPageObjects);
-        return getObjectCollection().lastElement();
+        getObjectCollection().addAll(nextPageObjects);
+        return getObjectCollection().get(getObjectCollection().size());
     }
 }

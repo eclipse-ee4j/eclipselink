@@ -322,7 +322,7 @@ public class HistoryPolicy implements Cloneable, Serializable {
                     table.setTableQualifier(mirrored.getTableQualifier());
                 }
                 if (getStartFields().size() < (i + 1)) {
-                    DatabaseField startField = (DatabaseField)getStart(0).clone();
+                    DatabaseField startField = getStart(0).clone();
                     startField.setTable(table);
                     getStartFields().addElement(startField);
                 } else {
@@ -330,7 +330,7 @@ public class HistoryPolicy implements Cloneable, Serializable {
                     startField.setTable(table);
                 }
                 if (getEndFields().size() < (i + 1)) {
-                    DatabaseField endField = (DatabaseField)getEnd(0).clone();
+                    DatabaseField endField = getEnd(0).clone();
                     endField.setTable(table);
                     getEndFields().addElement(endField);
                 } else {
@@ -364,7 +364,7 @@ public class HistoryPolicy implements Cloneable, Serializable {
                 sortedTables.add(historicalTable);
 
                 if (universalStartField) {
-                    historyField = (DatabaseField)getStart(0).clone();
+                    historyField = getStart(0).clone();
                     historyField.setTable(historicalTable);
                     sortedStartFields.add(historyField);
                 } else {
@@ -381,7 +381,7 @@ public class HistoryPolicy implements Cloneable, Serializable {
                     }
                 }
                 if (universalEndField) {
-                    historyField = (DatabaseField)getEnd(0).clone();
+                    historyField = getEnd(0).clone();
                     historyField.setTable(historicalTable);
                     sortedEndFields.add(historyField);
                 } else {

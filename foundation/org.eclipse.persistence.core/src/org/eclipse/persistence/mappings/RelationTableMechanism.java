@@ -245,7 +245,7 @@ public class RelationTableMechanism  implements Cloneable {
         DirectReadQuery lockRelationTableQueryClone = (DirectReadQuery)lockRelationTableQuery.clone(); 
         SQLSelectStatement statement = new SQLSelectStatement();
         statement.addTable(this.relationTable);
-        statement.addField((DatabaseField)this.sourceRelationKeyFields.get(0).clone());
+        statement.addField(this.sourceRelationKeyFields.get(0).clone());
         statement.setWhereClause((Expression)lockRelationTableQuery.getSelectionCriteria().clone());
         statement.setLockingClause(new ForUpdateClause(lockMode));
         statement.normalize(session, null);
@@ -641,7 +641,7 @@ public class RelationTableMechanism  implements Cloneable {
         Expression criteria = buildSelectionCriteriaAndAddFieldsToQueryInternal(mapping, startCriteria, false, false);
         SQLSelectStatement statement = new SQLSelectStatement();
         statement.addTable(this.relationTable);
-        statement.addField((DatabaseField)this.sourceRelationKeyFields.get(0).clone());
+        statement.addField(this.sourceRelationKeyFields.get(0).clone());
         statement.setWhereClause(criteria);
         statement.normalize(session, null);
         lockRelationTableQuery.setSQLStatement(statement);

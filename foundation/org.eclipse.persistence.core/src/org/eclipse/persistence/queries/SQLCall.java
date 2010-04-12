@@ -70,7 +70,7 @@ public class SQLCall extends DatabaseCall implements QueryStringCall {
                 if (outField !=null){
                     if (((Object[])parameter)[0] instanceof DatabaseField){
                         if ( ((Object[])parameter)[0] != ((Object[])parameter)[1] ) {
-                            DatabaseField inField = (DatabaseField)outField.clone();
+                            DatabaseField inField = outField.clone();
                             inField.setName( ((DatabaseField)((Object[])parameter)[0]).getName());
                             ((Object[])parameter)[0] = inField;
                         }else {

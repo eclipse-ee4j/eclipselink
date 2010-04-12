@@ -269,7 +269,7 @@ public class ClassTypeExpression extends DataExpression {
      * Alias the database field for our current environment
      */
     protected void initializeAliasedField() {
-        DatabaseField tempField = (DatabaseField)getField().clone();
+        DatabaseField tempField = getField().clone();
         DatabaseTable aliasedTable = getAliasedTable();
 
         aliasedField = tempField;

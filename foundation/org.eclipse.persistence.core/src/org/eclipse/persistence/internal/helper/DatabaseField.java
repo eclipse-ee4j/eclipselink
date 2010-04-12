@@ -135,15 +135,14 @@ public class DatabaseField implements Cloneable, Serializable {
     }
 
     /**
-     * The table is not cloned because it is treated as an automic value.
+     * The table is not cloned because it is treated as an automatic value.
      */
-    public Object clone() {
+    public DatabaseField clone() {
         try {
-            return super.clone();
+            return (DatabaseField)super.clone();
         } catch (CloneNotSupportedException exception) {
+            throw new InternalError(exception.getMessage());
         }
-
-        return null;
     }
 
     /**

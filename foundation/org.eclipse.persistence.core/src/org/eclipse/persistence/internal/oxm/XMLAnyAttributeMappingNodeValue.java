@@ -18,7 +18,8 @@ import java.util.Map;
 
 import javax.xml.namespace.QName;
 import org.eclipse.persistence.internal.oxm.record.MarshalContext;
-import org.eclipse.persistence.internal.queries.DirectMapContainerPolicy;
+import org.eclipse.persistence.internal.queries.ContainerPolicy;
+import org.eclipse.persistence.internal.queries.MappedKeyMapContainerPolicy;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.oxm.NamespaceResolver;
 import org.eclipse.persistence.oxm.XMLConstants;
@@ -52,7 +53,7 @@ public class XMLAnyAttributeMappingNodeValue extends MappingNodeValue implements
         if (collection == null) {
             return false;
         }
-        DirectMapContainerPolicy cp = getContainerPolicy();
+        ContainerPolicy cp = getContainerPolicy();
         Object iter = cp.iteratorFor(collection);
         if (!cp.hasNext(iter)) {
             return false;
@@ -92,7 +93,7 @@ public class XMLAnyAttributeMappingNodeValue extends MappingNodeValue implements
     }
 
     public void attribute(UnmarshalRecord unmarshalRecord, String namespaceURI, String localName, String value) {
-        DirectMapContainerPolicy cp = (DirectMapContainerPolicy) xmlAnyAttributeMapping.getContainerPolicy();
+        ContainerPolicy cp = xmlAnyAttributeMapping.getContainerPolicy();
         Object containerInstance = unmarshalRecord.getContainerInstance(this);
             
         boolean includeAttribute = true;
@@ -116,8 +117,8 @@ public class XMLAnyAttributeMappingNodeValue extends MappingNodeValue implements
         xmlAnyAttributeMapping.setAttributeValueInObject(object, container);
     }
 
-    public DirectMapContainerPolicy getContainerPolicy() {
-        return (DirectMapContainerPolicy) xmlAnyAttributeMapping.getContainerPolicy();
+    public MappedKeyMapContainerPolicy getContainerPolicy() {
+        return (MappedKeyMapContainerPolicy) xmlAnyAttributeMapping.getContainerPolicy();
     }
 
     public boolean isContainerValue() {

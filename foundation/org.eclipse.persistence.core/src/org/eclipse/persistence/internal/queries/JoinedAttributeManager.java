@@ -35,6 +35,7 @@ import org.eclipse.persistence.internal.expressions.ForUpdateOfClause;
 import org.eclipse.persistence.exceptions.QueryException;
 import org.eclipse.persistence.internal.helper.NonSynchronizedSubVector;
 import org.eclipse.persistence.mappings.DatabaseMapping;
+import org.eclipse.persistence.queries.Cursor;
 import org.eclipse.persistence.queries.ObjectBuildingQuery;
 import org.eclipse.persistence.queries.ObjectLevelReadQuery;
 import org.eclipse.persistence.sessions.DatabaseRecord;
@@ -313,8 +314,6 @@ public class JoinedAttributeManager implements Cloneable, Serializable {
                 // Direct-collection mappings do not have descriptor.
                 if (mapping.isDirectCollectionMapping()) {
                     numberOfFields = 1;
-                } else if (mapping.isDirectMapMapping()) {
-                    numberOfFields = 2;
                 }
             } else if (objectExpression.isQueryKeyExpression() && objectExpression.isUsingOuterJoinForMultitableInheritance()) {
                 numberOfFields = descriptor.getAllFields().size();
@@ -688,12 +687,8 @@ public class JoinedAttributeManager implements Cloneable, Serializable {
             } else if (mapping.isOuterJoinFetched()) {
                 joinMappingExpression = getBaseExpressionBuilder().anyOfAllowingNone(mapping.getAttributeName());
             }
-            if(joinMappingExpression != null) {
+            if (joinMappingExpression != null) {
                 addJoinedMappingExpression(joinMappingExpression);
-                if(((CollectionMapping)mapping).getListOrderField() != null) {
-                    Expression expField = ((CollectionMapping)mapping).getListOrderFieldExpression(joinMappingExpression);
-                    getAdditionalFieldExpressions().add(expField);
-                }
             }
         } else {
             if (mapping.isInnerJoinFetched()) {
@@ -762,16 +757,20 @@ public class JoinedAttributeManager implements Cloneable, Serializable {
     protected void processDataResults(AbstractSession session) {
         this.dataResultsByPrimaryKey = new HashMap();
         int size = this.dataResults.size();
+        Object firstKey = null;
         Object lastKey = null;
         List<AbstractRecord> childRows = null;
         ObjectBuilder builder = getDescriptor().getObjectBuilder();
         int parentIndex = getParentResultIndex();
+        Vector trimedFields = null;
         for (int dataResultsIndex = 0; dataResultsIndex < size; dataResultsIndex++) {
             AbstractRecord row = this.dataResults.get(dataResultsIndex);
             AbstractRecord parentRow = row;
             // Must adjust for the parent index to ensure the correct pk is extracted.
             if (parentIndex > 0) {
-                Vector trimedFields = new NonSynchronizedSubVector(row.getFields(), parentIndex, row.size());
+                if (trimedFields == null) { // The fields are always the same, so only build once.
+                    trimedFields = new NonSynchronizedSubVector(row.getFields(), parentIndex, row.size());
+                }
                 Vector trimedValues = new NonSynchronizedSubVector(row.getValues(), parentIndex, row.size());
                 parentRow = new DatabaseRecord(trimedFields, trimedValues);
             }
@@ -779,6 +778,9 @@ public class JoinedAttributeManager implements Cloneable, Serializable {
             Object sourceKey = builder.extractPrimaryKeyFromRow(parentRow, session);
             // May be any outer-join so ignore null.
             if (sourceKey != null) {
+                if (firstKey == null) {
+                    firstKey = sourceKey;
+                }
                 if ((lastKey != null) && lastKey.equals(sourceKey)) {
                     childRows.add(row);
                     if (shouldFilterDuplicates()) {
@@ -801,6 +803,75 @@ public class JoinedAttributeManager implements Cloneable, Serializable {
                 }
             }
         }
+        // If pagination is used, the first and last rows may be missing their 1-m joined rows, so reject them from the results.
+        // This will cause them to build normally by executing a query.
+        if (this.isToManyJoin) {
+            if ((lastKey != null) && (this.baseQuery.getMaxRows() > 0)) {
+                this.dataResultsByPrimaryKey.remove(lastKey);
+            }
+            if ((firstKey != null) && (this.baseQuery.getFirstResult() > 0)) {
+                this.dataResultsByPrimaryKey.remove(firstKey);
+            }
+        }
+    }
+    
+    /**
+     * Clear the data-results for joined data for a 1-m join.
+     */
+    public void clearDataResults() {
+        this.dataResults = null;
+        this.dataResultsByPrimaryKey = null;
+    }
+    
+    /**
+     * Process the data-results for joined data for a 1-m join.
+     * This allows incremental processing for a cursor.
+     */
+    public AbstractRecord processDataResults(AbstractRecord row, Cursor cursor, boolean forward) {
+        if (this.dataResultsByPrimaryKey == null) {
+            this.dataResultsByPrimaryKey = new HashMap();
+        }
+        AbstractRecord parentRow = row;
+        List<AbstractRecord> childRows = new ArrayList<AbstractRecord>();
+        childRows.add(row);
+        int parentIndex = getParentResultIndex();
+        // Must adjust for the parent index to ensure the correct pk is extracted.
+        Vector trimedFields = new NonSynchronizedSubVector(row.getFields(), parentIndex, row.size());
+        if (parentIndex > 0) {
+            Vector trimedValues = new NonSynchronizedSubVector(row.getValues(), parentIndex, row.size());
+            parentRow = new DatabaseRecord(trimedFields, trimedValues);
+        }
+        ObjectBuilder builder = getDescriptor().getObjectBuilder();
+        AbstractSession session = cursor.getExecutionSession();
+        // Extract the primary key of the source object, to filter only the joined rows for that object.
+        Object sourceKey = builder.extractPrimaryKeyFromRow(parentRow, session);
+        AbstractRecord extraRow = null;
+        while (true) {
+            AbstractRecord nextRow = null;
+            if (forward) {
+                nextRow = cursor.getAccessor().cursorRetrieveNextRow(cursor.getFields(), cursor.getResultSet(), session);
+            } else {
+                nextRow = cursor.getAccessor().cursorRetrievePreviousRow(cursor.getFields(), cursor.getResultSet(), session);
+            }
+            if (nextRow == null) {
+                break;
+            }
+            AbstractRecord nextParentRow = nextRow;
+            if (parentIndex > 0) {
+                Vector trimedValues = new NonSynchronizedSubVector(nextParentRow.getValues(), parentIndex, nextParentRow.size());
+                nextParentRow = new DatabaseRecord(trimedFields, trimedValues);
+            }
+            // Extract the primary key of the source object, to filter only the joined rows for that object.
+            Object nextKey = builder.extractPrimaryKeyFromRow(nextParentRow, session);
+            if ((sourceKey != null) && sourceKey.equals(nextKey)) {
+                childRows.add(nextRow);
+            } else {
+                extraRow = nextRow;
+                break;
+            }
+        }
+        this.dataResultsByPrimaryKey.put(sourceKey, childRows);
+        return extraRow;
     }
 
     /**

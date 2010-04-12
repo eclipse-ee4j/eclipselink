@@ -13,9 +13,12 @@
 package org.eclipse.persistence.queries;
 
 import java.util.*;
+
+import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.exceptions.*;
 import org.eclipse.persistence.expressions.*;
 import org.eclipse.persistence.internal.queries.*;
+import org.eclipse.persistence.internal.sessions.AbstractRecord;
 import org.eclipse.persistence.internal.expressions.*;
 import org.eclipse.persistence.internal.databaseaccess.*;
 import org.eclipse.persistence.internal.helper.*;
@@ -67,15 +70,15 @@ public class CursoredStream extends Cursor {
      * Return whether the cursored stream is at its end.
      */
     public boolean atEnd() throws DatabaseException {
-        if ((getPosition() + 1) <= getObjectCollection().size()) {
+        if ((this.position + 1) <= this.objectCollection.size()) {
             return false;
         }
         if (isClosed()) {
             return true;
         }
-        int oldSize = getObjectCollection().size();
+        int oldSize = this.objectCollection.size();
         retrieveNextPage();
-        return getObjectCollection().size() == oldSize;
+        return this.objectCollection.size() == oldSize;
     }
 
     /**
@@ -84,7 +87,7 @@ public class CursoredStream extends Cursor {
      */
     public int available() throws DatabaseException {
         //For CR#2570/CR#2571.
-        return getObjectCollection().size() - (getPosition());
+        return this.objectCollection.size() - this.position;
     }
 
     /**
@@ -97,8 +100,8 @@ public class CursoredStream extends Cursor {
         ExpressionOperator countOperator = new ExpressionOperator();
         countOperator.setType(ExpressionOperator.AggregateOperator);
         Vector databaseStrings = new Vector();
-        databaseStrings.addElement("COUNT(DISTINCT ");
-        databaseStrings.addElement(")");
+        databaseStrings.add("COUNT(DISTINCT ");
+        databaseStrings.add(")");
         countOperator.printsAs(databaseStrings);
         countOperator.bePrefix();
         countOperator.setNodeClass(ClassConstants.FunctionExpression_Class);
@@ -109,30 +112,30 @@ public class CursoredStream extends Cursor {
 
     /**
      * INTERNAL:
-     * Answer a Vector of the elements of the receiver's collection from startIndex to endIndex.
+     * Answer a list of the elements of the receiver's collection from startIndex to endIndex.
      */
-    protected Vector copy(int startIndex, int endIndex) throws QueryException {
-        while (getObjectCollection().size() < endIndex) {
+    protected List<Object> copy(int startIndex, int endIndex) throws QueryException {
+        while (this.objectCollection.size() < endIndex) {
             if (retrieveNextObject() == null) {
-                throw QueryException.readBeyondStream(getQuery());
+                throw QueryException.readBeyondStream(this.query);
             }
         }
-        return Helper.copyVector(getObjectCollection(), startIndex, endIndex);
+        return Helper.copyVector(this.objectCollection, startIndex, endIndex);
     }
 
     /**
      * INTERNAL:
-     * Retreive the size of the open cursor by executing a count on the same query as the cursor.
+     * Retrieve the size of the open cursor by executing a count on the same query as the cursor.
      */
     protected int getCursorSize() throws DatabaseException, QueryException {
         ValueReadQuery query;
-        if (!((CursoredStreamPolicy)getPolicy()).hasSizeQuery()) {
-            if (getQuery().isCallQuery()) {
-                throw QueryException.additionalSizeQueryNotSpecified(getQuery());
+        if (!((CursoredStreamPolicy)this.policy).hasSizeQuery()) {
+            if (this.query.isCallQuery()) {
+                throw QueryException.additionalSizeQueryNotSpecified(this.query);
             }
             
-            if (!getQuery().isExpressionQuery()) {
-                throw QueryException.sizeOnlySupportedOnExpressionQueries(getQuery());
+            if (!this.query.isExpressionQuery()) {
+                throw QueryException.sizeOnlySupportedOnExpressionQueries(this.query);
             }
 
             // Construct the select statement
@@ -140,11 +143,12 @@ public class CursoredStream extends Cursor {
 
             // 2612538 - the default size of Map (32) is appropriate
             Map clonedExpressions = new IdentityHashMap();
-            selectStatement.setWhereClause(((ExpressionQueryMechanism)getQuery().getQueryMechanism()).buildBaseSelectionCriteria(false, clonedExpressions));
+            selectStatement.setWhereClause(((ExpressionQueryMechanism)this.query.getQueryMechanism()).buildBaseSelectionCriteria(false, clonedExpressions));
 
+            ClassDescriptor descriptor = this.query.getDescriptor();
             // Case, normal read for branch inheritance class that reads subclasses all in its own table(s).
-            if (getQuery().getDescriptor().hasInheritance() && (getQuery().getDescriptor().getInheritancePolicy().getWithAllSubclassesExpression() != null)) {
-                Expression branchIndicator = getQuery().getDescriptor().getInheritancePolicy().getWithAllSubclassesExpression();
+            if (descriptor.hasInheritance() && (descriptor.getInheritancePolicy().getWithAllSubclassesExpression() != null)) {
+                Expression branchIndicator = descriptor.getInheritancePolicy().getWithAllSubclassesExpression();
                 if ((branchIndicator != null) && (selectStatement.getWhereClause() != null)) {
                     selectStatement.setWhereClause(selectStatement.getWhereClause().and(branchIndicator));
                 } else if (branchIndicator != null) {
@@ -152,36 +156,36 @@ public class CursoredStream extends Cursor {
                 }
             }
 
-            selectStatement.setTables((Vector)getQuery().getDescriptor().getTables().clone());
+            selectStatement.setTables((Vector)descriptor.getTables().clone());
 
             // Count * cannot be used with distinct.
             // Count * cannot be used with distinct.
             // CR 2900 if the original query used distinct only on one field then perform the count
             // on that field.
-            if (((ReadAllQuery)getQuery()).shouldDistinctBeUsed() && (getQuery().getCall().getFields().size() == 1)) {
-                selectStatement.addField(buildCountDistinctExpression(getQuery().getCall().getFields(), ((ReadAllQuery)getQuery()).getExpressionBuilder()));
+            if (((ReadAllQuery)this.query).shouldDistinctBeUsed() && (this.query.getCall().getFields().size() == 1)) {
+                selectStatement.addField(buildCountDistinctExpression(this.query.getCall().getFields(), ((ReadAllQuery)this.query).getExpressionBuilder()));
             } else {
                 selectStatement.computeDistinct();
-                if (selectStatement.shouldDistinctBeUsed() && (getQuery().getDescriptor().getPrimaryKeyFields().size() == 1)) {
+                if (selectStatement.shouldDistinctBeUsed() && (descriptor.getPrimaryKeyFields().size() == 1)) {
                     // Can only do this with a singleton primary keys.
-                    selectStatement.addField(buildCountDistinctExpression(getQuery().getDescriptor().getPrimaryKeyFields(), ((ReadAllQuery)getQuery()).getExpressionBuilder()));
+                    selectStatement.addField(buildCountDistinctExpression(descriptor.getPrimaryKeyFields(), ((ReadAllQuery)this.query).getExpressionBuilder()));
                 } else {
-                    selectStatement.addField(((ReadAllQuery)getQuery()).getExpressionBuilder().count());
+                    selectStatement.addField(((ReadAllQuery)this.query).getExpressionBuilder().count());
                 }
                 selectStatement.dontUseDistinct();
             }
-            selectStatement.normalize(getSession(), getQuery().getDescriptor(), clonedExpressions);
+            selectStatement.normalize(getSession(), descriptor, clonedExpressions);
 
             // Construct the query
             query = new ValueReadQuery();
             query.setSQLStatement(selectStatement);
         } else {
-            query = ((CursoredStreamPolicy)getPolicy()).getSizeQuery();
+            query = ((CursoredStreamPolicy)this.policy).getSizeQuery();
         }
 
-        Number value = (Number)getSession().executeQuery(query, getQuery().getTranslationRow());
+        Number value = (Number)getSession().executeQuery(query, this.query.getTranslationRow());
         if (value == null) {
-            throw QueryException.incorrectSizeQueryForCursorStream(getQuery());
+            throw QueryException.incorrectSizeQueryForCursorStream(this.query);
         }
 
         return value.intValue();
@@ -192,12 +196,12 @@ public class CursoredStream extends Cursor {
      * Return the threshold for the stream.
      */
     protected int getInitialReadSize() {
-        return ((CursoredStreamPolicy)getPolicy()).getInitialReadSize();
+        return ((CursoredStreamPolicy)this.policy).getInitialReadSize();
     }
 
     /**
      * INTERNAL:
-     * Return the marker used for mark() & reset() operations
+     * Return the marker used for mark() & reset() operations.
      */
     protected int getMarker() {
         return marker;
@@ -205,10 +209,10 @@ public class CursoredStream extends Cursor {
 
     /**
      * INTERNAL:
-     * Return the page size for the stream
+     * Return the page size for the stream.
      */
     public int getPageSize() {
-        return ((CursoredStreamPolicy)getPolicy()).getPageSize();
+        return ((CursoredStreamPolicy)this.policy).getPageSize();
     }
 
     /**
@@ -232,7 +236,7 @@ public class CursoredStream extends Cursor {
      * Return whether the cursored stream has any more elements.
      */
     public boolean hasNext() {
-        return hasMoreElements();
+        return !atEnd();
     }
 
     /**
@@ -246,7 +250,7 @@ public class CursoredStream extends Cursor {
      *                         is no actual limit, so this argument is ignored.
      */
     public void mark(int readAheadLimit) {
-        setMarker(getPosition());
+        this.marker = this.position;
     }
 
     /**
@@ -274,7 +278,7 @@ public class CursoredStream extends Cursor {
      * @return the next object in stream
      */
     public Object next() {
-        return nextElement();
+        return read();
     }
 
     /**
@@ -284,8 +288,7 @@ public class CursoredStream extends Cursor {
      * @return the next objects in stream
      */
     public Vector nextElements(int numberOfElements) {
-        java.util.Vector nextElements = new java.util.Vector(numberOfElements);
-
+        Vector nextElements = new Vector(numberOfElements);
         while (nextElements.size() < numberOfElements) {
             if (atEnd()) {
                 return nextElements;
@@ -301,7 +304,7 @@ public class CursoredStream extends Cursor {
      * aren't that many objects left to read, just return what is available.
      * @return the next objects in stream
      */
-    public Vector next(int numberOfElements) {
+    public List<Object> next(int numberOfElements) {
         return nextElements(numberOfElements);
     }
 
@@ -311,7 +314,7 @@ public class CursoredStream extends Cursor {
      */
     public Object peek() throws DatabaseException {
         Object object = read();
-        setPosition(getPosition() - 1);
+        this.position = this.position - 1;
         return object;
     }
 
@@ -327,16 +330,14 @@ public class CursoredStream extends Cursor {
      */
     public Object read() throws DatabaseException, QueryException {
         // CR#2571.  If no more objects in collection get next page.
-        if (getObjectCollection().size() == getPosition()) {
+        if (this.objectCollection.size() == this.position) {
             retrieveNextPage();
         }
-
         if (atEnd()) {
-            throw QueryException.readBeyondStream(getQuery());
+            throw QueryException.readBeyondStream(this.query);
         }
-
-        Object object = getObjectCollection().elementAt(getPosition());
-        setPosition(getPosition() + 1);
+        Object object = this.objectCollection.get(this.position);
+        this.position = this.position + 1;
         return object;
     }
 
@@ -350,9 +351,9 @@ public class CursoredStream extends Cursor {
      * @return - vector containing next number of objects
      * @exception - throws exception if read pass end of stream
      */
-    public Vector read(int number) throws DatabaseException {
-        Vector result = copy(getPosition(), getPosition() + number);
-        setPosition(getPosition() + result.size());
+    public List<Object> read(int number) throws DatabaseException {        
+        List<Object> result = copy(this.position, this.position + number);
+        this.position = this.position + result.size();
         return result;
     }
 
@@ -362,14 +363,23 @@ public class CursoredStream extends Cursor {
       * This should be performed when reading in a large collection of
       * objects in order to preserve memory.
       */
-    public void releasePrevious() {
-        if (getPosition() == 0) {
+    public void clear() {
+        super.clear();
+        if (this.position == 0) {
             return;
         }
-
-        setObjectCollection(Helper.copyVector(getObjectCollection(), getPosition(), getObjectCollection().size()));
-
-        setPosition(0);
+        this.objectCollection = Helper.copyVector(this.objectCollection, this.position, this.objectCollection.size());
+        this.position = 0;        
+    }
+    
+    /**
+      * PUBLIC:
+      * Release all objects read in so far.
+      * This should be performed when reading in a large collection of
+      * objects in order to preserve memory.
+      */
+    public void releasePrevious() {
+        clear();
     }
 
     /**
@@ -378,15 +388,41 @@ public class CursoredStream extends Cursor {
      * mark method was last called on this stream.
      */
     public void reset() {
-        setPosition(getMarker());
+        this.position = this.marker;
     }
 
     protected Object retrieveNextObject() throws DatabaseException {
-        Object next = super.retrieveNextObject();
-        if (next != null) {
-            getObjectCollection().addElement(next);
+        while (true) {
+            if (isClosed()) {
+                return null;
+            }
+            AbstractRecord row = null;
+            if (this.nextRow == null) {
+                row = getAccessor().cursorRetrieveNextRow(this.fields, this.resultSet, this.executionSession);
+            } else {
+                row = this.nextRow;
+                this.nextRow = null;
+            }
+            if (row == null) {
+                close();
+                return null;
+            }
+            // If using 1-m joining need to fetch 1-m rows as well.
+            if (this.query.isObjectLevelReadQuery() && ((ObjectLevelReadQuery)this.query).hasJoining()) {
+                JoinedAttributeManager joinManager = ((ObjectLevelReadQuery)this.query).getJoinedAttributeManager();
+                if (joinManager.isToManyJoin()) {
+                    this.nextRow = joinManager.processDataResults(row, this, true);
+                }
+            }
+            Object object = buildAndRegisterObject(row);
+            if (object == InvalidObject.instance) {
+                continue;
+            }
+            if (object != null) {
+                this.objectCollection.add(object);
+            }
+            return object;
         }
-        return next;
     }
 
     /**
@@ -396,7 +432,8 @@ public class CursoredStream extends Cursor {
      */
     protected Object retrieveNextPage() throws DatabaseException {
         Object last = null;
-        for (int index = 0; index < getPageSize(); index++) {
+        int pageSize = getPageSize();
+        for (int index = 0; index < pageSize; index++) {
             last = retrieveNextObject();
             if (last == null) {
                 return null;
@@ -410,10 +447,10 @@ public class CursoredStream extends Cursor {
      * Initialize the stream size and position
      */
     protected void setLimits() {
-        setPosition(0);
-        setMarker(0);
-
-        for (int index = 0; index < getInitialReadSize(); index++) {
+        this.position = 0;
+        this.marker = 0;
+        int readSize = getInitialReadSize();
+        for (int index = 0; index < readSize; index++) {
             retrieveNextObject();
         }
     }

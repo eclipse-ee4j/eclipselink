@@ -1138,7 +1138,7 @@ public class ClassDescriptor implements Cloneable, Serializable {
         List primaryKeyVector = new ArrayList(getPrimaryKeyFields().size());
         List primaryKeyFields = getPrimaryKeyFields();
         for (int index = 0; index < primaryKeyFields.size(); index++) {
-            DatabaseField primaryKey = (DatabaseField)((DatabaseField)primaryKeyFields.get(index)).clone();
+            DatabaseField primaryKey = ((DatabaseField)primaryKeyFields.get(index)).clone();
             primaryKeyVector.add(primaryKey);
         }
         clonedDescriptor.setPrimaryKeyFields(primaryKeyVector);
@@ -2459,7 +2459,7 @@ public class ClassDescriptor implements Cloneable, Serializable {
             }
         }
         if (foundField != null) {
-            foundField = (DatabaseField)foundField.clone();
+            foundField = foundField.clone();
             if (!field.hasTableName()) {
                 foundField.setTableName("");
             }
@@ -2888,7 +2888,7 @@ public class ClassDescriptor implements Cloneable, Serializable {
                 List primaryKeyFields = getPrimaryKeyFields();
                 for (int pkIndex = 0; pkIndex < primaryKeyFields.size(); pkIndex++) {
                     DatabaseField primaryKeyField = (DatabaseField)primaryKeyFields.get(pkIndex);
-                    DatabaseField secondaryKeyField = (DatabaseField)primaryKeyField.clone();
+                    DatabaseField secondaryKeyField = primaryKeyField.clone();
                     secondaryKeyField.setTable(table);
                     newKeyMapping.put(primaryKeyField, secondaryKeyField);
                     // Must add this field to read, so translations work on database row.

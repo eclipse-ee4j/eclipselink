@@ -35,6 +35,7 @@ public class RelationshipsExamples {
         CustomerServiceRepresentative rep2 = new CustomerServiceRepresentative();
         rep.setName("Darrel");
         customerExample1.addCSInteraction(call2, rep2);
+        customerExample1.addCCustomer(customerExample2);
 
         /*
          * Set relationships: Order1 has customer1 as the billed customer Order1

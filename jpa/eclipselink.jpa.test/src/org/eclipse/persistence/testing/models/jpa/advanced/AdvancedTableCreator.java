@@ -357,7 +357,7 @@ public class AdvancedTableCreator extends TogglingFastTableCreator {
         fieldID.setTypeName("NUMERIC");
         fieldID.setSize(15);
         fieldID.setShouldAllowNull(false);
-        fieldID.setIsPrimaryKey(false);
+        fieldID.setIsPrimaryKey(true);
         fieldID.setUnique(false);
         fieldID.setIsIdentity(false);
         fieldID.setForeignKeyFieldName("CMP3_BUYER.BUYER_ID");
@@ -368,8 +368,8 @@ public class AdvancedTableCreator extends TogglingFastTableCreator {
         fieldCARD.setTypeName("VARCHAR");
         fieldCARD.setSize(2);
         fieldCARD.setShouldAllowNull(false);
-        fieldCARD.setIsPrimaryKey(false);
-        fieldCARD.setUnique(true);
+        fieldCARD.setIsPrimaryKey(true);
+        fieldCARD.setUnique(false);
         fieldCARD.setIsIdentity(false);
         table.addField(fieldCARD);
         
@@ -395,7 +395,7 @@ public class AdvancedTableCreator extends TogglingFastTableCreator {
          fieldID.setTypeName("NUMERIC");
          fieldID.setSize(15);
          fieldID.setShouldAllowNull(false);
-         fieldID.setIsPrimaryKey(false);
+         fieldID.setIsPrimaryKey(true);
          fieldID.setUnique(false);
          fieldID.setIsIdentity(false);
          fieldID.setForeignKeyFieldName("CMP3_BUYER.BUYER_ID");
@@ -406,8 +406,8 @@ public class AdvancedTableCreator extends TogglingFastTableCreator {
          fieldBANK.setTypeName("VARCHAR");
          fieldBANK.setSize(4);
          fieldBANK.setShouldAllowNull(false);
-         fieldBANK.setIsPrimaryKey(false);
-         fieldBANK.setUnique(true);
+         fieldBANK.setIsPrimaryKey(true);
+         fieldBANK.setUnique(false);
          fieldBANK.setIsIdentity(false);
          table.addField(fieldBANK);
          

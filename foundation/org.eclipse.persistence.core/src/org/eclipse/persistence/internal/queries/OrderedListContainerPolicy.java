@@ -26,9 +26,12 @@ import java.util.IdentityHashMap;
 import java.util.ListIterator;
 import org.eclipse.persistence.exceptions.QueryException;
 import org.eclipse.persistence.exceptions.ValidationException;
+import org.eclipse.persistence.expressions.Expression;
 import org.eclipse.persistence.internal.descriptors.ObjectBuilder;
+import org.eclipse.persistence.internal.expressions.SQLSelectStatement;
 import org.eclipse.persistence.internal.helper.ConversionManager;
 import org.eclipse.persistence.internal.helper.DatabaseField;
+import org.eclipse.persistence.internal.helper.DatabaseTable;
 import org.eclipse.persistence.internal.helper.IndexedObject;
 import org.eclipse.persistence.internal.sessions.AbstractRecord;
 import org.eclipse.persistence.internal.sessions.MergeManager;
@@ -42,8 +45,11 @@ import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.descriptors.changetracking.CollectionChangeEvent;
 import org.eclipse.persistence.indirection.IndirectCollection;
 import org.eclipse.persistence.indirection.IndirectList;
+import org.eclipse.persistence.mappings.CollectionMapping;
+import org.eclipse.persistence.mappings.DatabaseMapping;
 import org.eclipse.persistence.queries.DataReadQuery;
 import org.eclipse.persistence.queries.ObjectBuildingQuery;
+import org.eclipse.persistence.queries.ObjectLevelReadQuery;
 import org.eclipse.persistence.queries.ReadQuery;
 
 /**
@@ -649,7 +655,62 @@ public class OrderedListContainerPolicy extends ListContainerPolicy {
      * or it's possible to call addInto multiple times instead.
      */
     @Override
-    public boolean shouldAddAll(){
+    public boolean shouldAddAll() {
         return this.listOrderField != null;
+    }
+    
+    /**
+     * INTERNAL:
+     * Return any additional fields required by the policy for a fetch join.
+     */
+    @Override
+    public List<DatabaseField> getAdditionalFieldsForJoin(CollectionMapping baseMapping) {
+        if (this.listOrderField != null) {
+            List<DatabaseField> fields = new ArrayList<DatabaseField>(1);
+            fields.add(this.listOrderField);
+            return fields;
+        }
+        return null;
+    }
+
+    /**
+     * INTERNAL:
+     * Add the index field count.
+     */
+    @Override
+    public int updateJoinedMappingIndexesForMapKey(Map<DatabaseMapping, Object> indexList, int index) {
+        if (this.listOrderField != null) {
+            return 1;            
+        }
+        return 0;
+    }
+    
+    /**
+     * INTERNAL:
+     * Return any tables that will be required when this mapping is used as part of a join query.
+     */
+    @Override
+    public List<DatabaseTable> getAdditionalTablesForJoinQuery() {
+        if (this.listOrderField != null) {
+            List tables = new ArrayList(1);
+            tables.add(this.listOrderField.getTable());
+            return tables;
+        }
+        return null;
+    }
+    
+    /**
+     * INTERNAL:
+     * Add the index field to the query. 
+     */
+    @Override
+    public void addAdditionalFieldsToQuery(ReadQuery selectionQuery, Expression baseExpression) {
+        if (this.listOrderField != null) {
+            if (selectionQuery.isObjectLevelReadQuery()) {
+                ((ObjectLevelReadQuery)selectionQuery).addAdditionalField(baseExpression.getField(this.listOrderField));
+            } else {
+                ((SQLSelectStatement)((DataReadQuery)selectionQuery).getSQLStatement()).addField(baseExpression.getField(this.listOrderField));
+            }
+        }
     }
 }

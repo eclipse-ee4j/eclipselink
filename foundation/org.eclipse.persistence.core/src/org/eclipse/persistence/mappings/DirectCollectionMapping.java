@@ -277,15 +277,9 @@ public class DirectCollectionMapping extends CollectionMapping implements Relati
         }
 
         batchStatement.addField(builder.getTable(this.referenceTable).getField(this.directField));
-
-        if (this.listOrderField != null) {
-            Expression expField = getListOrderFieldExpression(builder);
-            batchStatement.addField(expField);
-        }
-
         batchStatement.setWhereClause(batchSelectionCriteria);
         batchQuery.setSQLStatement(batchStatement);
-        this.containerPolicy.addAdditionalFieldsToQuery(batchQuery, builder);
+        this.containerPolicy.addAdditionalFieldsToQuery(batchQuery, getAdditionalFieldsBaseExpression(batchQuery));
 
         batchStatement.normalize(query.getSession(), this.descriptor, clonedExpressions);
 
@@ -315,6 +309,11 @@ public class DirectCollectionMapping extends CollectionMapping implements Relati
         Object sourceKey = objectBuilder.extractPrimaryKeyFromRow(row, executionSession);
         // If the query was using joining, all of the result rows by primary key will have been computed.
         List<AbstractRecord> rows = joinManager.getDataResultsByPrimaryKey().get(sourceKey);
+        // If no 1-m rows were fetch joined, then get the value normally,
+        // this can occur with pagination where the last row may not be complete.
+        if (rows == null) {
+            return valueFromRowInternal(row, joinManager, sourceQuery, executionSession);
+        }
         int size = rows.size();
         
         if(size > 0) {
@@ -1628,14 +1627,11 @@ public class DirectCollectionMapping extends CollectionMapping implements Relati
     protected void initializeSelectionStatement(AbstractSession session) {
         SQLSelectStatement statement = new SQLSelectStatement();
         statement.addTable(getReferenceTable());
-        statement.addField((DatabaseField)getDirectField().clone());
+        statement.addField(getDirectField().clone());
         statement.setWhereClause(getSelectionCriteria());
-        if(listOrderField != null) {
-            Expression expField = getListOrderFieldExpression(statement.getBuilder());
-            statement.addField(expField);
-        }
-        statement.normalize(session, null);
         getSelectionQuery().setSQLStatement(statement);
+        getContainerPolicy().addAdditionalFieldsToQuery(selectionQuery, getAdditionalFieldsBaseExpression(getSelectionQuery()));
+        statement.normalize(session, null);
     }
 
     /**
@@ -1656,6 +1652,20 @@ public class DirectCollectionMapping extends CollectionMapping implements Relati
         List<DatabaseField> primaryKeyFields = getDescriptor().getPrimaryKeyFields();
         for (int index = 0; index < primaryKeyFields.size(); index++) {
             getSourceKeyFields().addElement(primaryKeyFields.get(index));
+        }
+    }
+    
+    /**
+     * INTERNAL:
+     * Return the base expression to use for adding fields to the query.
+     * This is the reference table.
+     */
+    @Override
+    protected Expression getAdditionalFieldsBaseExpression(ReadQuery query) {
+        if (query.isReadAllQuery()) {
+            return ((ReadAllQuery)query).getExpressionBuilder();            
+        } else {
+            return ((DataReadQuery)query).getSQLStatement().getBuilder().getTable(getReferenceTable());
         }
     }
 
@@ -2882,9 +2892,9 @@ public class DirectCollectionMapping extends CollectionMapping implements Relati
             // Code copied roughly from initializeSelectionStatement.
             SQLSelectStatement statement = new SQLSelectStatement();
             statement.addTable(getReferenceTable());
-            statement.addField((DatabaseField)getDirectField().clone());
+            statement.addField(getDirectField().clone());
             if (isDirectMapMapping()) {
-                statement.addField((DatabaseField)((DirectMapMapping)this).getDirectKeyField().clone());
+                statement.addField(((DirectMapMapping)this).getDirectKeyField().clone());
             }
             statement.setWhereClause((Expression)getSelectionCriteria().clone());
             if (sourceQuery.isObjectLevelReadQuery()) {

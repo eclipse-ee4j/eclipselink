@@ -104,11 +104,69 @@ public class OrderListTestModel extends TestModel {
         isTopLevel = true;
     }
 
+    void addTestModel(DatabasePlatform platform) {
+        if (shouldAddModel(platform)) {            
+            addTest(new OrderListTestModel(useListOrderField, useIndirection, isPrivatelyOwned, useSecondaryTable, useVarcharOrder, changeTracking, orderCorrectionType, shouldOverrideContainerPolicy, joinFetchOrBatchRead));
+        }
+    }
+    
     /*
      * Loops through all possible model configurations and adds those for which shouldAddModel returns true.
      */
     void addModels() {
         DatabasePlatform platform = getSession().getPlatform();
+        changeTracking = ChangeTracking.ATTRIBUTE;
+        orderCorrectionType = OrderCorrectionType.READ_WRITE;
+        joinFetchOrBatchRead = JoinFetchOrBatchRead.NONE;
+        useVarcharOrder = false;
+        useSecondaryTable = false;
+        isPrivatelyOwned = false;
+        useIndirection = true;
+        useListOrderField = true;
+        shouldOverrideContainerPolicy = false;
+        useVarcharOrder = true;
+        addTestModel(platform);
+        useVarcharOrder = false;
+        useSecondaryTable = true;
+        addTestModel(platform);
+        useSecondaryTable = false;
+        useIndirection = false;
+        changeTracking = ChangeTracking.DEFERRED;
+        addTestModel(platform);
+        changeTracking = ChangeTracking.ATTRIBUTE;
+        useIndirection = true;
+        shouldOverrideContainerPolicy = true;
+        addTestModel(platform);
+        shouldOverrideContainerPolicy = false;
+        for (int i=0; i < ChangeTracking.values().length; i++) {
+            changeTracking = ChangeTracking.values()[i];
+            addTestModel(platform);
+        }
+        isPrivatelyOwned = true;
+        for (int i=0; i < ChangeTracking.values().length; i++) {
+            changeTracking = ChangeTracking.values()[i];
+            addTestModel(platform);
+        }
+        changeTracking = ChangeTracking.ATTRIBUTE;
+        isPrivatelyOwned = false;
+        for (int j=0; j < OrderCorrectionType.values().length; j++) {
+            orderCorrectionType = OrderCorrectionType.values()[j];
+            addTestModel(platform);
+        }
+        orderCorrectionType = OrderCorrectionType.READ_WRITE;
+        for (int k=0; k < JoinFetchOrBatchRead.values().length; k++) {
+            joinFetchOrBatchRead = JoinFetchOrBatchRead.values()[k];
+            addTestModel(platform);
+        }
+        joinFetchOrBatchRead = JoinFetchOrBatchRead.NONE;
+        useSecondaryTable = true;
+        for (int k=0; k < JoinFetchOrBatchRead.values().length; k++) {
+            joinFetchOrBatchRead = JoinFetchOrBatchRead.values()[k];
+            addTestModel(platform);
+        }
+        joinFetchOrBatchRead = JoinFetchOrBatchRead.NONE;
+        useSecondaryTable = false;
+        /** Un-comment to run 2^6 * 3 * 6 * 15 tests... (a lot...)
         do {
             do {
                 do {
@@ -121,9 +179,7 @@ public class OrderListTestModel extends TestModel {
                                     do{ 
                                         for(int k=0; k < JoinFetchOrBatchRead.values().length; k++) {
                                             joinFetchOrBatchRead = JoinFetchOrBatchRead.values()[k];
-                                            if(shouldAddModel(platform)) {
-                                                addTest(new OrderListTestModel(useListOrderField, useIndirection, isPrivatelyOwned, useSecondaryTable, useVarcharOrder, changeTracking, orderCorrectionType, shouldOverrideContainerPolicy, joinFetchOrBatchRead));
-                                            }
+                                            addTestModel(platform);
                                         }
                                         shouldOverrideContainerPolicy = !shouldOverrideContainerPolicy;
                                     } while(shouldOverrideContainerPolicy);
@@ -138,7 +194,7 @@ public class OrderListTestModel extends TestModel {
                 useIndirection = !useIndirection;
             } while(useIndirection);
             useListOrderField = !useListOrderField;
-        } while(useListOrderField);
+        } while(useListOrderField);*/
     }
 
     /*
@@ -162,71 +218,6 @@ public class OrderListTestModel extends TestModel {
         }
         if (useVarcharOrder && !platform.supportsAutoConversionToNumericForArithmeticOperations()) {
             return false;
-        }
-
-        // listOrderField is not used 
-        if(!useListOrderField) {
-            // explicitly asked not to run the model that don't use listOrderField.
-            if(!shouldRunWithoutListOrderField) {
-                return false;
-            }
-            // the model would be identical to OrderCorrectionType.READ
-            if(orderCorrectionType != OrderCorrectionType.READ) {
-                return false;
-            }
-            // the model would be identical to useVarcharOrder==false
-            if(useVarcharOrder) {
-                return false;
-            }
-        }
-        
-        // Don't need too many tests for varcharOrder (listOrderField VARCHAR in the db) -
-        // just one model is enough.
-        // Note that other varcharOrder test models are bypassed for time saving sake only -
-        // this condition may be removed and all the tests should pass.
-        if(useVarcharOrder) {
-            if(!useIndirection) {
-                return false;
-            }
-            if(useSecondaryTable) {
-                return false;
-            }
-            if(changeTracking != ChangeTracking.DEFERRED) {
-                return false;
-            }
-            if(orderCorrectionType != orderCorrectionType.READ) {
-                return false;
-            }
-            if(joinFetchOrBatchRead != JoinFetchOrBatchRead.NONE) {
-                return false;
-            }
-        }
-        
-        // Don't need too many tests for overrideContainerPolicy -
-        // just one model is enough.
-        // Note that other overrideContainerPolicy test models are bypassed for time saving sake only -
-        // this condition may be removed and all the tests should pass.
-        if(shouldOverrideContainerPolicy) {
-            if(!useIndirection) {
-                return false;
-            }
-            if(useSecondaryTable) {
-                return false;
-            }
-            if(changeTracking != ChangeTracking.DEFERRED) {
-                return false;
-            }
-            // READ and READ_WRITE are the cases when the overridden method OrderedListContainerPolicy.correctOrderList is used,
-            // let's choose one of them. Doesn't make sense to run with EXCEPTION.
-            if(orderCorrectionType != orderCorrectionType.READ_WRITE) {
-                return false;
-            }
-            if(joinFetchOrBatchRead != JoinFetchOrBatchRead.NONE) {
-                return false;
-            }
-            if(useVarcharOrder) {
-                return false;
-            }
         }
         
         return true;

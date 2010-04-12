@@ -22,6 +22,7 @@ import org.eclipse.persistence.sessions.DatabaseLogin;
 import org.eclipse.persistence.sessions.DatabaseSession;
 import org.eclipse.persistence.testing.models.orderedlist.EmployeeSystem.ChangeTracking;
 import org.eclipse.persistence.testing.models.orderedlist.EmployeeSystem.JoinFetchOrBatchRead;
+import org.eclipse.persistence.annotations.BatchFetchType;
 import org.eclipse.persistence.annotations.OrderCorrectionType;
 import org.eclipse.persistence.descriptors.*;
 import org.eclipse.persistence.indirection.IndirectList;
@@ -559,8 +560,12 @@ public class EmployeeProject extends org.eclipse.persistence.sessions.Project {
             mapping.setJoinFetch(ForeignReferenceMapping.INNER_JOIN);
         } else if(joinFetchOrBatchRead == JoinFetchOrBatchRead.OUTER_JOIN) {
             mapping.setJoinFetch(ForeignReferenceMapping.OUTER_JOIN);
-        } else if(joinFetchOrBatchRead == JoinFetchOrBatchRead.BATCH_READ) {
-            mapping.setUsesBatchReading(true);
+        } else if(joinFetchOrBatchRead == JoinFetchOrBatchRead.BATCH_FETCH) {
+            mapping.setBatchFetchType(BatchFetchType.JOIN);
+        } else if(joinFetchOrBatchRead == JoinFetchOrBatchRead.BATCH_IN_FETCH) {
+            mapping.setBatchFetchType(BatchFetchType.IN);
+        } else if(joinFetchOrBatchRead == JoinFetchOrBatchRead.BATCH_EXISTS_FETCH) {
+            mapping.setBatchFetchType(BatchFetchType.EXISTS);
         }
     }
     

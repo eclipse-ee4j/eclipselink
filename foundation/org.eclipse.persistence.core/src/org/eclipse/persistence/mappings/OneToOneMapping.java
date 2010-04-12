@@ -98,19 +98,13 @@ public class OneToOneMapping extends ObjectReferenceMapping implements Relationa
 
     /**
      * INTERNAL:
-     * Used when initializing queries for mappings that use a Map
-     * Called when the selection query is being initialized to add the fields for the map key to the query
+     * Used when initializing queries for mappings that use a Map.
+     * Called when the selection query is being initialized to add the fields for the map key to the query.
      */
     public void addAdditionalFieldsToQuery(ReadQuery selectionQuery, Expression baseExpression){
-        Iterator i = getForeignKeyFields().iterator();
-        while (i.hasNext()){
-            DatabaseField field = (DatabaseField)i.next();
+        for (DatabaseField field : getForeignKeyFields()) {
             if (selectionQuery.isObjectLevelReadQuery()){
-                if (baseExpression != null){
-                    ((ObjectLevelReadQuery)selectionQuery).addAdditionalField(baseExpression.getField(field));
-                } else {
-                    ((ObjectLevelReadQuery)selectionQuery).addAdditionalField(field);
-                }
+                ((ObjectLevelReadQuery)selectionQuery).addAdditionalField(baseExpression.getField(field));
             } else if (selectionQuery.isDataReadQuery()){
                 ((SQLSelectStatement)((DataReadQuery)selectionQuery).getSQLStatement()).addField(field);
             }
@@ -413,7 +407,7 @@ public class OneToOneMapping extends ObjectReferenceMapping implements Relationa
             //clone foreign keys and save the clones in a set
             for (Enumeration enumtr = getForeignKeyFields().elements(); enumtr.hasMoreElements();) {
                 DatabaseField field = (DatabaseField)enumtr.nextElement();
-                DatabaseField fieldClone = (DatabaseField)field.clone();
+                DatabaseField fieldClone = field.clone();
                 setOfFields.put(field, fieldClone);
                 clone.getForeignKeyFields().addElement(fieldClone);
             }
@@ -429,12 +423,12 @@ public class OneToOneMapping extends ObjectReferenceMapping implements Relationa
     
                 targetClone = (DatabaseField)setOfFields.get(targetField);
                 if (targetClone == null) {
-                    targetClone = (DatabaseField)targetField.clone();
+                    targetClone = targetField.clone();
                     setOfFields.put(targetField, targetClone);
                 }
                 sourceClone = (DatabaseField)setOfFields.get(sourceField);
                 if (sourceClone == null) {
-                    sourceClone = (DatabaseField)sourceField.clone();
+                    sourceClone = sourceField.clone();
                     setOfFields.put(sourceField, sourceClone);
                 }
                 clone.getSourceToTargetKeyFields().put(sourceClone, targetClone);
@@ -451,12 +445,12 @@ public class OneToOneMapping extends ObjectReferenceMapping implements Relationa
     
                 targetClone = (DatabaseField)setOfFields.get(targetField);
                 if (targetClone == null) {
-                    targetClone = (DatabaseField)targetField.clone();
+                    targetClone = targetField.clone();
                     setOfFields.put(targetField, targetClone);
                 }
                 sourceClone = (DatabaseField)setOfFields.get(sourceField);
                 if (sourceClone == null) {
-                    sourceClone = (DatabaseField)sourceField.clone();
+                    sourceClone = sourceField.clone();
                     setOfFields.put(sourceField, sourceClone);
                 }
                 clone.getTargetToSourceKeyFields().put(targetClone, sourceClone);

@@ -713,8 +713,7 @@ public abstract class ContainerPolicy implements Cloneable, Serializable {
 
     /**
      * INTERNAL:
-     * Return any tables that will be required when this mapping is used as part of a join query
-     * @return
+     * Return any tables that will be required when this mapping is used as part of a join query.
      */
     public List<DatabaseTable> getAdditionalTablesForJoinQuery(){
         return null;
@@ -722,11 +721,10 @@ public abstract class ContainerPolicy implements Cloneable, Serializable {
     
     /**
      * INTERNAL:
-     * Return all the fields in the key
-     * This method will be overridden by ContainerPolicies that handle map keys
-     * @return
+     * Return any additional fields required by the policy for a fetch join.
+     * This method will be overridden by ContainerPolicies that handle map keys.
      */
-    public List<DatabaseField> getAllFieldsForMapKey(CollectionMapping baseMapping){
+    public List<DatabaseField> getAdditionalFieldsForJoin(CollectionMapping baseMapping) {
         return null;
     }
     
@@ -745,8 +743,7 @@ public abstract class ContainerPolicy implements Cloneable, Serializable {
      * INTERNAL:
      * Used when objects are added or removed during an update.
      * This method returns either the clone from the ChangeSet or a packaged
-     * version of it that contains things like map keys
-     * @return
+     * version of it that contains things like map keys.
      */
     public Object getCloneDataFromChangeSet(ObjectChangeSet changeSet){
         return changeSet.getUnitOfWorkClone();
@@ -795,8 +792,7 @@ public abstract class ContainerPolicy implements Cloneable, Serializable {
     /**
      * INTERNAL:
      * Return the fields that make up the identity of the key if this mapping is a list
-     * This method will be overridden by subclasses
-     * @return
+     * This method will be overridden by subclasses.
      */
     public List<DatabaseField> getIdentityFieldsForMapKey(){
         return null;
@@ -807,9 +803,6 @@ public abstract class ContainerPolicy implements Cloneable, Serializable {
      * Add any non-Foreign-key data from an Object describe by a MapKeyMapping to a database row
      * This is typically used in write queries to ensure all the data stored in the collection table is included
      * in the query.
-     * @param object
-     * @param databaseRow
-     * @param session
      */
     public Map getKeyMappingDataForWriteQuery(Object object, AbstractSession session){
         return null;
@@ -827,8 +820,7 @@ public abstract class ContainerPolicy implements Cloneable, Serializable {
     
     /**
      * INTERNAL:
-     * Return the type of the map key, this will be overridden by container policies that allow maps
-     * @return
+     * Return the type of the map key, this will be overridden by container policies that allow maps.
      */
     public Object getKeyType(){
         return null;
@@ -935,6 +927,14 @@ public abstract class ContainerPolicy implements Cloneable, Serializable {
     public boolean isMappedKeyMapPolicy(){
         return false;
     }
+    
+    /**
+     * INTERNAL:
+     * Return if the map key this container policy represents is a OneToOne.
+     */
+    public boolean isMapKeyObject() {
+        return false;
+    }
 
     /**
      * INTERNAL:
@@ -976,10 +976,7 @@ public abstract class ContainerPolicy implements Cloneable, Serializable {
 
     /**
      * INTERNAL:
-     * Return the key for the specified element.
-     *
-     * @param element java.lang.Object
-     * @return java.lang.Object
+     * Return the key for the specified element..
      */
     public Object keyFrom(Object element, AbstractSession session) {
         return null;
@@ -987,9 +984,7 @@ public abstract class ContainerPolicy implements Cloneable, Serializable {
     
     /**
      * Get the key from the passed in Map.Entry
-     * This method will be overridden by ContainerPolicies that allows maps
-     * @param entry
-     * @return
+     * This method will be overridden by ContainerPolicies that allows maps.
      */
     public Object keyFromEntry(Object entry){
         return null;
@@ -1179,11 +1174,7 @@ public abstract class ContainerPolicy implements Cloneable, Serializable {
     /**
      * INTERNAL:
      * Add the provided object to the deleted objects list on the commit manager.
-     * This may be overridden by subclasses to process a composite object
-     * 
-     * @see MappedKeyMapContainerPolicy
-     * @param object
-     * @param manager
+     * This may be overridden by subclasses to process a composite object.
      */
     public void postCalculateChanges(Object key, Object value, ClassDescriptor referenceDescriptor, DatabaseMapping mapping, UnitOfWorkImpl uow){
         if (! mapping.isDirectCollectionMapping() && ! mapping.isAggregateCollectionMapping()){
@@ -1194,11 +1185,7 @@ public abstract class ContainerPolicy implements Cloneable, Serializable {
     /**
      * INTERNAL:
      * Add the provided object to the deleted objects list on the commit manager.
-     * This may be overridden by subclasses to process a composite object
-     * 
-     * @see MappedKeyMapContainerPolicy
-     * @param object
-     * @param manager
+     * This may be overridden by subclasses to process a composite object.
      */
     public void recordPrivateOwnedRemovals(Object object, ClassDescriptor referenceDescriptor, UnitOfWorkImpl uow){
         if (referenceDescriptor != null){
@@ -1433,7 +1420,7 @@ public abstract class ContainerPolicy implements Cloneable, Serializable {
      * It is illegal to send this message to this receiver. Try one of my 
      * subclasses. Throws an exception.
      *
-     * @see #MapContainerPolicy
+     * @see MapContainerPolicy
      */
     public void setKeyName(String instanceVariableName, String elementClassName) {
         throw ValidationException.containerPolicyDoesNotUseKeys(this, instanceVariableName);
@@ -1463,9 +1450,7 @@ public abstract class ContainerPolicy implements Cloneable, Serializable {
     /**
      * INTERNAL:
      * Return whether data for a map key must be included on a Delete data modification event
-     * This will be overridden by subclasses that handle maps
-     * 
-     * @return
+     * This will be overridden by subclasses that handle maps.
      */
     public boolean shouldIncludeKeyInDeleteEvent(){
         return false;
@@ -1474,8 +1459,7 @@ public abstract class ContainerPolicy implements Cloneable, Serializable {
     /**
      * INTERNAL:
      * Certain types of container policies require an extra update statement after a relationship
-     * is inserted.  Return whether this update statement is required
-     * @return
+     * is inserted.  Return whether this update statement is required.
      */
     public boolean shouldUpdateForeignKeysPostInsert(){
         return false;
@@ -1523,8 +1507,6 @@ public abstract class ContainerPolicy implements Cloneable, Serializable {
      * may be wrapped.  This method unwraps the values.
      * 
      * @see MapContainerPolicy.unwrapIteratorResult(Object object)
-     * @param object
-     * @return
      */
     public Object unwrapIteratorResult(Object object){
         return object;
@@ -1572,7 +1554,7 @@ public abstract class ContainerPolicy implements Cloneable, Serializable {
     /**
      * INTERNAL:
      * convenience method to copy the keys and values from a Map into an AbstractRecord
-     * @param mappingData a Map containering a database field as the key and the value of that field as the value
+     * @param mappingData a Map containing a database field as the key and the value of that field as the value
      * @param databaseRow
      */
     public static void copyMapDataToRow(Map mappingData, AbstractRecord databaseRow){

@@ -608,7 +608,7 @@ public abstract class DatabaseCall extends DatasourceCall {
                 if (outField.getType() == null) {
                     DatabaseField typeOutField = getFieldWithTypeFromDescriptor(outField);
                     if (typeOutField != null) {
-                        outField = (DatabaseField)typeOutField.clone();
+                        outField = typeOutField.clone();
                     }
                 }
                 if (outField.getType() != null) {
@@ -626,7 +626,7 @@ public abstract class DatabaseCall extends DatasourceCall {
                 if (outField.getType() == null) {
                     DatabaseField typeOutField = getFieldWithTypeFromDescriptor(outField);
                     if (typeOutField != null) {
-                        outField = (DatabaseField)typeOutField.clone();
+                        outField = typeOutField.clone();
                     }
                 }
 

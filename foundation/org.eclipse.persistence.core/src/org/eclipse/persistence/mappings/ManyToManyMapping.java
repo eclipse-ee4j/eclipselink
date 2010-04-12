@@ -259,6 +259,7 @@ public class ManyToManyMapping extends CollectionMapping implements RelationalMa
      * Returns the join criteria stored in the mapping selection query. This criteria
      * is used to read reference objects across the tables from the database.
      */
+    @Override
     public Expression getJoinCriteria(QueryKeyExpression exp) {
         if (getHistoryPolicy() != null) {
             Expression result = super.getJoinCriteria(exp);

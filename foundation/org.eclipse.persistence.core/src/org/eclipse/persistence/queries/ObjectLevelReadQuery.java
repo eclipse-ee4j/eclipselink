@@ -1575,18 +1575,18 @@ public abstract class ObjectLevelReadQuery extends ObjectBuildingQuery {
         }
         
         // Add joined fields.
-        if(hasJoining()){
-            if(isCustomSQL){
+        if (hasJoining()) {
+            if (isCustomSQL) {
                 addSelectionFieldsForJoinedExpressions(fields, getJoinedAttributeManager().getJoinedAttributeExpressions());
                 addSelectionFieldsForJoinedExpressions(fields, getJoinedAttributeManager().getJoinedMappingExpressions());
-            }else{
-                Helper.addAllToVector(fields, getJoinedAttributeManager().getJoinedAttributeExpressions());
-                Helper.addAllToVector(fields, getJoinedAttributeManager().getJoinedMappingExpressions());
+            } else {
+                fields.addAll(getJoinedAttributeManager().getJoinedAttributeExpressions());
+                fields.addAll(getJoinedAttributeManager().getJoinedMappingExpressions());
             }
         }
         if (hasAdditionalFields()) {
             // Add additional fields, use for batch reading m-m.
-            Helper.addAllToVector(fields, getAdditionalFields());
+            fields.addAll(getAdditionalFields());
         }
         return fields;
     }
@@ -1974,7 +1974,7 @@ public abstract class ObjectLevelReadQuery extends ObjectBuildingQuery {
         // Validate and prepare join expressions.			
         if (hasJoining()) {
             getJoinedAttributeManager().prepareJoinExpressions(getSession());
-        }  
+        }
 
         // Validate and prepare partial attribute expressions.
         if (hasPartialAttributeExpressions()) {
@@ -2777,11 +2777,40 @@ public abstract class ObjectLevelReadQuery extends ObjectBuildingQuery {
      * Used to optimize joining by pre-computing the nested join queries for the mappings.
      */
     public void computeBatchReadMappingQueries() {
+        boolean initialized = false;
+        if (getDescriptor().getObjectBuilder().hasBatchFetchedAttributes()) {
+            // Only set the descriptor batched attributes if no batching has been set.
+            // This avoid endless recursion if a recursive relationship is batched.
+            // The batched mapping do not need to be processed up front,
+            // this is just an optimization, and needed for IN batching.
+            if (this.batchFetchPolicy == null) {
+                this.batchFetchPolicy = new BatchFetchPolicy();
+                if (getDescriptor().getObjectBuilder().hasInBatchFetchedAttribute()) {
+                    this.batchFetchPolicy.setType(BatchFetchType.IN);
+                }
+                List<DatabaseMapping> batchedMappings = getDescriptor().getObjectBuilder().getBatchFetchedAttributes();
+                this.batchFetchPolicy.setMappingQueries(new HashMap(batchedMappings.size()));
+                initialized = true;
+                int size = batchedMappings.size();
+                for (int index = 0; index < size; index++) {
+                    DatabaseMapping mapping = batchedMappings.get(index);
+                    if ((mapping != null) && mapping.isForeignReferenceMapping()) {
+                        // A nested query must be built to pass to the descriptor that looks like the real query execution would.
+                        ReadQuery nestedQuery = ((ForeignReferenceMapping)mapping).prepareNestedBatchQuery(this);    
+                        // Register the nested query to be used by the mapping for all the objects.
+                        this.batchFetchPolicy.getMappingQueries().put(mapping, nestedQuery);
+                    }
+                }
+                this.batchFetchPolicy.setBatchedMappings(getDescriptor().getObjectBuilder().getBatchFetchedAttributes());
+            }
+        }
         // Cannot prepare the batch queries if using inheritance, as child descriptors can have different mappings.
         if (hasBatchReadAttributes() && (!this.descriptor.hasInheritance())) {
             List<Expression> batchReadAttributeExpressions = getBatchReadAttributeExpressions();
             this.batchFetchPolicy.setAttributes(new ArrayList(batchReadAttributeExpressions.size()));
-            this.batchFetchPolicy.setMappingQueries(new HashMap(batchReadAttributeExpressions.size()));
+            if (!initialized) {
+                this.batchFetchPolicy.setMappingQueries(new HashMap(batchReadAttributeExpressions.size()));
+            }
             computeNestedQueriesForBatchReadExpressions(batchReadAttributeExpressions);
         }
     }

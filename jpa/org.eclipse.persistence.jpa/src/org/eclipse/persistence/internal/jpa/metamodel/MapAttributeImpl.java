@@ -146,9 +146,9 @@ public class MapAttributeImpl<X, K, V> extends PluralAttributeImpl<X, Map<K, V>,
                             private Map<String, HardwareDesigner> hardwareDesignersMapUC7; 
          */        
         // Step 1: We check via the ContainerPolicy interface for a mapPolicy for the keyMapping (covers MappedKeyMapContainerPolicy and its superclass MapContainerPolicy
-        if(policy.isMapPolicy() || policy.isDirectMapPolicy()) {
+        if (policy.isMapPolicy()) {
             // check for Either a generic Map (MapContainerPolicy) or specific MappedKeyMapContainerPolicy subclass
-            if(policy.isMappedKeyMapPolicy()) {
+            if (policy.isMappedKeyMapPolicy()) {
                 // See UC9
                 // The cast below is unavoidable because getKeyMapping() is not overridden from the MapContainerPolicy superclass
                 keyMapping = ((MappedKeyMapContainerPolicy)policy).getKeyMapping();
@@ -216,7 +216,9 @@ public class MapAttributeImpl<X, K, V> extends PluralAttributeImpl<X, Map<K, V>,
             javaClass = ((DatabaseMapping)mapKeyMapping).getAttributeClassification();
             if(null == javaClass) {
                 // Default to the PK of the owning descriptor when no MapKey or MapKey:name attribute is specified
-                javaClass = descriptor.getCMPPolicy().getPKClass();        
+                if (descriptor.getCMPPolicy() != null) {
+                    javaClass = descriptor.getCMPPolicy().getPKClass();
+                }
             }
         }
         return javaClass;

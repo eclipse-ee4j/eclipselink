@@ -146,7 +146,7 @@ public class EISOneToOneMapping extends ObjectReferenceMapping implements EISMap
         for (Enumeration enumtr = getForeignKeyFields().elements(); enumtr.hasMoreElements();) {
             DatabaseField field = (DatabaseField)enumtr.nextElement();
 
-            DatabaseField fieldClone = (DatabaseField)field.clone();
+            DatabaseField fieldClone = field.clone();
             setOfFields.put(field, fieldClone);
             clone.getForeignKeyFields().addElement(fieldClone);
         }
@@ -159,13 +159,13 @@ public class EISOneToOneMapping extends ObjectReferenceMapping implements EISMap
 
             DatabaseField targetClone = (DatabaseField)setOfFields.get(targetField);
             if (targetClone == null) {
-                targetClone = (DatabaseField)targetField.clone();
+                targetClone = targetField.clone();
                 setOfFields.put(targetField, targetClone);
             }
 
-            DatabaseField sourceClone = (DatabaseField)sourceField.clone();
+            DatabaseField sourceClone = sourceField.clone();
             if (sourceClone == null) {
-                sourceClone = (DatabaseField)sourceField.clone();
+                sourceClone = sourceField.clone();
                 setOfFields.put(sourceField, sourceClone);
             }
             clone.getSourceToTargetKeyFields().put(sourceClone, targetClone);
@@ -179,13 +179,13 @@ public class EISOneToOneMapping extends ObjectReferenceMapping implements EISMap
 
             DatabaseField targetClone = (DatabaseField)setOfFields.get(targetField);
             if (targetClone == null) {
-                targetClone = (DatabaseField)targetField.clone();
+                targetClone = targetField.clone();
                 setOfFields.put(targetField, targetClone);
             }
 
             DatabaseField sourceClone = (DatabaseField)setOfFields.get(sourceField);
             if (sourceClone == null) {
-                sourceClone = (DatabaseField)sourceField.clone();
+                sourceClone = sourceField.clone();
                 setOfFields.put(sourceField, sourceClone);
             }
             clone.getTargetToSourceKeyFields().put(targetClone, sourceClone);

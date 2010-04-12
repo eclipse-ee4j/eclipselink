@@ -16,12 +16,15 @@ import java.util.*;
 import java.sql.*;
 import org.eclipse.persistence.exceptions.*;
 import org.eclipse.persistence.internal.helper.InvalidObject;
+import org.eclipse.persistence.internal.queries.JoinedAttributeManager;
 import org.eclipse.persistence.internal.sessions.AbstractRecord;
 import org.eclipse.persistence.internal.databaseaccess.*;
 
 public class ScrollableCursor extends Cursor implements ListIterator {
     protected transient Object nextObject;
     protected transient Object previousObject;
+    /** Store the previous row, for 1-m joining. */
+    protected AbstractRecord previousRow;
 
     /**
      * INTERNAL:
@@ -48,13 +51,13 @@ public class ScrollableCursor extends Cursor implements ListIterator {
         clearNextAndPrevious();
         try {
             boolean suceeded = false;
-            int initiallyConforming = getObjectCollection().size();
+            int initiallyConforming = this.objectCollection.size();
             if ((rows >= 0) && (rows <= initiallyConforming)) {
-                getResultSet().beforeFirst();
+                this.resultSet.beforeFirst();
                 setPosition(rows);
                 return true;
             } else if (rows > initiallyConforming) {
-                suceeded = getResultSet().absolute(rows - initiallyConforming);
+                suceeded = this.resultSet.absolute(rows - initiallyConforming);
                 if (suceeded) {
                     setPosition(initiallyConforming + rows);
                 } else {
@@ -67,9 +70,9 @@ public class ScrollableCursor extends Cursor implements ListIterator {
                 return absolute(size() + rows);
             }
         } catch (SQLException exception) {
-            DatabaseException commException = getAccessor().processExceptionForCommError(getSession(), exception, null);
+            DatabaseException commException = getAccessor().processExceptionForCommError(this.session, exception, null);
             if (commException != null) throw commException;
-            throw DatabaseException.sqlException(exception, getAccessor(), getSession(), false);
+            throw DatabaseException.sqlException(exception, getAccessor(), this.session, false);
         }
     }
 
@@ -88,12 +91,12 @@ public class ScrollableCursor extends Cursor implements ListIterator {
     public void afterLast() throws DatabaseException {
         clearNextAndPrevious();
         try {
-            getResultSet().afterLast();
+            this.resultSet.afterLast();
             setPosition(size() + 1);
         } catch (SQLException exception) {
-            DatabaseException commException = getAccessor().processExceptionForCommError(getSession(), exception, null);
+            DatabaseException commException = getAccessor().processExceptionForCommError(this.session, exception, null);
             if (commException != null) throw commException;
-            throw DatabaseException.sqlException(exception, getAccessor(), getSession(), false);
+            throw DatabaseException.sqlException(exception, getAccessor(), this.session, false);
         }
     }
 
@@ -104,12 +107,12 @@ public class ScrollableCursor extends Cursor implements ListIterator {
     public void beforeFirst() throws DatabaseException {
         clearNextAndPrevious();
         try {
-            getResultSet().beforeFirst();
+            this.resultSet.beforeFirst();
             setPosition(0);
         } catch (SQLException exception) {
-            DatabaseException commException = getAccessor().processExceptionForCommError(getSession(), exception, null);
+            DatabaseException commException = getAccessor().processExceptionForCommError(this.session, exception, null);
             if (commException != null) throw commException;
-            throw DatabaseException.sqlException(exception, getAccessor(), getSession(), false);
+            throw DatabaseException.sqlException(exception, getAccessor(), this.session, false);
         }
     }
 
@@ -119,8 +122,10 @@ public class ScrollableCursor extends Cursor implements ListIterator {
      * This must be called whenever the cursor is re-positioned.
      */
     protected void clearNextAndPrevious() {
-        setNextObject(null);
-        setPreviousObject(null);
+        this.nextObject = null;
+        this.previousObject = null;
+        this.nextRow = null;
+        this.previousRow = null;
     }
 
     /**
@@ -138,17 +143,17 @@ public class ScrollableCursor extends Cursor implements ListIterator {
     public boolean first() throws DatabaseException {
         clearNextAndPrevious();
         try {
-            if (getObjectCollection().size() > 0) {
+            if (this.objectCollection.size() > 0) {
                 setPosition(1);
-                getResultSet().beforeFirst();
+                this.resultSet.beforeFirst();
                 return true;
             } else {
-                return getResultSet().first();
+                return this.resultSet.first();
             }
         } catch (SQLException exception) {
-            DatabaseException commException = getAccessor().processExceptionForCommError(getSession(), exception, null);
+            DatabaseException commException = getAccessor().processExceptionForCommError(this.session, exception, null);
             if (commException != null) throw commException;
-            throw DatabaseException.sqlException(exception, getAccessor(), getSession(), false);
+            throw DatabaseException.sqlException(exception, getAccessor(), this.session, false);
         }
     }
 
@@ -166,29 +171,29 @@ public class ScrollableCursor extends Cursor implements ListIterator {
         boolean wasAfterLast = false;
 
         try {
-            wasAfterLast = getResultSet().isAfterLast();
-            currentPos = getResultSet().getRow();
-            getResultSet().last();
+            wasAfterLast = this.resultSet.isAfterLast();
+            currentPos = this.resultSet.getRow();
+            this.resultSet.last();
         } catch (SQLException exception) {
-            DatabaseException commException = getAccessor().processExceptionForCommError(getSession(), exception, null);
+            DatabaseException commException = getAccessor().processExceptionForCommError(this.session, exception, null);
             if (commException != null) throw commException;
-            throw DatabaseException.sqlException(exception, getAccessor(), getSession(), false);
+            throw DatabaseException.sqlException(exception, getAccessor(), this.session, false);
         }
 
         int size = 0;
         try {
-            size = getResultSet().getRow();
+            size = this.resultSet.getRow();
             if (wasAfterLast) {// Move the cursor back to where we were before calling last()
-                getResultSet().afterLast();
+                this.resultSet.afterLast();
             } else if (currentPos == 0) {
-                getResultSet().beforeFirst();
+                this.resultSet.beforeFirst();
             } else {
-                getResultSet().absolute(currentPos);
+                this.resultSet.absolute(currentPos);
             }
         } catch (SQLException exception) {
-            DatabaseException commException = getAccessor().processExceptionForCommError(getSession(), exception, null);
+            DatabaseException commException = getAccessor().processExceptionForCommError(this.session, exception, null);
             if (commException != null) throw commException;
-            throw DatabaseException.sqlException(exception, getAccessor(), getSession(), false);
+            throw DatabaseException.sqlException(exception, getAccessor(), this.session, false);
         }
 
         return size;
@@ -198,7 +203,7 @@ public class ScrollableCursor extends Cursor implements ListIterator {
         if (size == -1) {
             return size;
         } else {
-            return size - getObjectCollection().size();
+            return size - this.objectCollection.size();
         }
     }
 
@@ -216,22 +221,22 @@ public class ScrollableCursor extends Cursor implements ListIterator {
      */
     public int getPosition() throws DatabaseException {
         try {
-            if (position == -1) {
-                position = getResultSet().getRow();
-                if (position == 0) {
+            if (this.position == -1) {
+                this.position = this.resultSet.getRow();
+                if (this.position == 0) {
                     // This could mean either beforeFirst or afterLast!
                     if (isAfterLast()) {
-                        position = size() + 1;
+                        this.position = size() + 1;
                     }
                 } else {
-                    position += getObjectCollection().size();
+                    this.position += this.objectCollection.size();
                 }
             }
-            return position;
+            return this.position;
         } catch (SQLException exception) {
-            DatabaseException commException = getAccessor().processExceptionForCommError(getSession(), exception, null);
+            DatabaseException commException = getAccessor().processExceptionForCommError(this.session, exception, null);
             if (commException != null) throw commException;
-            throw DatabaseException.sqlException(exception, getAccessor(), getSession(), false);
+            throw DatabaseException.sqlException(exception, getAccessor(), this.session, false);
         }
     }
 
@@ -256,7 +261,7 @@ public class ScrollableCursor extends Cursor implements ListIterator {
             return false;
         }
         loadNext();
-        return (getNextObject() != null);
+        return (this.nextObject != null);
     }
 
     /**
@@ -286,17 +291,17 @@ public class ScrollableCursor extends Cursor implements ListIterator {
      */
     public boolean isAfterLast() throws DatabaseException {
         try {
-            if (getNextObject() != null) {
+            if (this.nextObject != null) {
                 return false;
             }
-            if ((getObjectCollection().size() > 0) && (getPosition() <= getObjectCollection().size())) {
+            if ((this.objectCollection.size() > 0) && (getPosition() <= this.objectCollection.size())) {
                 return false;
             }
-            return getResultSet().isAfterLast();
+            return this.resultSet.isAfterLast();
         } catch (SQLException exception) {
-            DatabaseException commException = getAccessor().processExceptionForCommError(getSession(), exception, null);
+            DatabaseException commException = getAccessor().processExceptionForCommError(this.session, exception, null);
             if (commException != null) throw commException;
-            throw DatabaseException.sqlException(exception, getAccessor(), getSession(), false);
+            throw DatabaseException.sqlException(exception, getAccessor(), this.session, false);
         }
     }
 
@@ -320,14 +325,14 @@ public class ScrollableCursor extends Cursor implements ListIterator {
             return false;
         }
         try {
-            if (getObjectCollection().size() > 0) {
+            if (this.objectCollection.size() > 0) {
                 return getPosition() == 1;
             }
-            return getResultSet().isFirst();
+            return this.resultSet.isFirst();
         } catch (SQLException exception) {
-            DatabaseException commException = getAccessor().processExceptionForCommError(getSession(), exception, null);
+            DatabaseException commException = getAccessor().processExceptionForCommError(this.session, exception, null);
             if (commException != null) throw commException;
-            throw DatabaseException.sqlException(exception, getAccessor(), getSession(), false);
+            throw DatabaseException.sqlException(exception, getAccessor(), this.session, false);
         }
     }
 
@@ -336,25 +341,25 @@ public class ScrollableCursor extends Cursor implements ListIterator {
      * Indicates whether the cursor is on the last row of the result set.
      */
     public boolean isLast() throws DatabaseException {
-        if (getNextObject() != null) {
+        if (this.nextObject != null) {
             return false;
         }
         try {
-            return getResultSet().isLast();
+            return this.resultSet.isLast();
         } catch (UnsupportedOperationException ex) {
             // isLast() is not supported by some drivers (specifically JConnect5.0)
             // Do this the hard way instead.
             try {
-                return getResultSet().getRow() == getCursorSize();
+                return this.resultSet.getRow() == getCursorSize();
             } catch (SQLException ex2) {
-                DatabaseException commException = getAccessor().processExceptionForCommError(getSession(), ex2, null);
+                DatabaseException commException = getAccessor().processExceptionForCommError(this.session, ex2, null);
                 if (commException != null) throw commException;
-                throw DatabaseException.sqlException(ex2, getAccessor(), getSession(), false);
+                throw DatabaseException.sqlException(ex2, getAccessor(), this.session, false);
             }
         } catch (SQLException exception) {
-            DatabaseException commException = getAccessor().processExceptionForCommError(getSession(), exception, null);
+            DatabaseException commException = getAccessor().processExceptionForCommError(this.session, exception, null);
             if (commException != null) throw commException;
-            throw DatabaseException.sqlException(exception, getAccessor(), getSession(), false);
+            throw DatabaseException.sqlException(exception, getAccessor(), this.session, false);
         }
     }
 
@@ -365,22 +370,22 @@ public class ScrollableCursor extends Cursor implements ListIterator {
     public boolean last() throws DatabaseException {
         clearNextAndPrevious();
         try {
-            boolean isLast = getResultSet().last();
+            boolean isLast = this.resultSet.last();
             if (!isLast) {
                 // cursor must be empty.
-                if (getObjectCollection().size() > 0) {
-                    setPosition(getObjectCollection().size());
+                if (this.objectCollection.size() > 0) {
+                    setPosition(this.objectCollection.size());
                     isLast = true;
                 }
             } else {
-                setSize(getObjectCollection().size() + getResultSet().getRow());
+                setSize(this.objectCollection.size() + this.resultSet.getRow());
                 setPosition(size);
             }
             return isLast;
         } catch (SQLException exception) {
-            DatabaseException commException = getAccessor().processExceptionForCommError(getSession(), exception, null);
+            DatabaseException commException = getAccessor().processExceptionForCommError(this.session, exception, null);
             if (commException != null) throw commException;
-            throw DatabaseException.sqlException(exception, getAccessor(), getSession(), false);
+            throw DatabaseException.sqlException(exception, getAccessor(), this.session, false);
         }
     }
 
@@ -388,9 +393,9 @@ public class ScrollableCursor extends Cursor implements ListIterator {
      * Load the next object
      */
     protected void loadNext() {
-        if (getNextObject() == null) {
+        if (this.nextObject == null) {
             Object next = retrieveNextObject();
-            setNextObject(next);
+            this.nextObject = next;
         }
     }
 
@@ -399,8 +404,8 @@ public class ScrollableCursor extends Cursor implements ListIterator {
      */
     protected void loadPrevious() {
         // CR#4139
-        if (getPreviousObject() == null) {
-            setPreviousObject(retrievePreviousObject());
+        if (this.previousObject == null) {
+            this.previousObject = retrievePreviousObject();
         }
     }
 
@@ -416,10 +421,10 @@ public class ScrollableCursor extends Cursor implements ListIterator {
      */
     public Object next() throws DatabaseException, QueryException {
         loadNext();
-        if (getNextObject() == null) {
-            throw QueryException.readBeyondStream(getQuery());
+        if (this.nextObject == null) {
+            throw QueryException.readBeyondStream(this.query);
         }
-        Object next = getNextObject();
+        Object next = this.nextObject;
         clearNextAndPrevious();
         return next;
     }
@@ -434,10 +439,10 @@ public class ScrollableCursor extends Cursor implements ListIterator {
      * @return - vector containing next number of objects
      * @exception - throws exception if read pass end of stream
      */
-    public Vector next(int number) throws DatabaseException {
-        Vector result = new Vector(number);
+    public List<Object> next(int number) throws DatabaseException {
+        List<Object> result = new ArrayList(number);
         for (int index = 0; index < number; index++) {
-            result.addElement(next());
+            result.add(next());
         }
         return result;
     }
@@ -470,7 +475,7 @@ public class ScrollableCursor extends Cursor implements ListIterator {
         // CR#4139
         loadPrevious();
         if (getPreviousObject() == null) {
-            throw QueryException.readBeyondStream(getQuery());
+            throw QueryException.readBeyondStream(this.query);
         }
         Object previous = getPreviousObject();
         clearNextAndPrevious();
@@ -497,18 +502,18 @@ public class ScrollableCursor extends Cursor implements ListIterator {
             boolean suceeded = false;
             int oldPosition = getPosition();
             int newPosition = getPosition() + rows;
-            int initiallyConforming = getObjectCollection().size();
+            int initiallyConforming = this.objectCollection.size();
             if (newPosition <= initiallyConforming) {
                 setPosition(newPosition);
                 if (oldPosition > initiallyConforming) {
-                    getResultSet().beforeFirst();
+                    this.resultSet.beforeFirst();
                 }
                 if (newPosition < 0) {
                     setPosition(0);
                 }
                 suceeded = (newPosition > 0);
             } else {
-                suceeded = getResultSet().relative(rows);
+                suceeded = this.resultSet.relative(rows);
                 if (!suceeded) {
                     // Must be afterLast now.
                     setPosition(size() + 1);
@@ -518,9 +523,9 @@ public class ScrollableCursor extends Cursor implements ListIterator {
             }
             return suceeded;
         } catch (SQLException exception) {
-            DatabaseException commException = getAccessor().processExceptionForCommError(getSession(), exception, null);
+            DatabaseException commException = getAccessor().processExceptionForCommError(this.session, exception, null);
             if (commException != null) throw commException;
-            throw DatabaseException.sqlException(exception, getAccessor(), getSession(), false);
+            throw DatabaseException.sqlException(exception, getAccessor(), this.session, false);
         }
     }
 
@@ -530,23 +535,34 @@ public class ScrollableCursor extends Cursor implements ListIterator {
      */
     protected Object retrieveNextObject() throws DatabaseException {
         while (true) {
-            if (getPosition() < getObjectCollection().size()) {
-                setPosition(getPosition() + 1);
-                return getObjectCollection().elementAt(getPosition() - 1);
+            int currentPosition = getPosition();
+            if (currentPosition < this.objectCollection.size()) {
+                this.position = currentPosition + 1;
+                return this.objectCollection.get(currentPosition);
             }
             if (isClosed()) {
                 return null;
             }
-
-            AbstractRecord row = getAccessor().cursorRetrieveNextRow(getFields(), getResultSet(), getExecutionSession());
-
+            AbstractRecord row = null;
+            if (this.nextRow == null) {
+                row = getAccessor().cursorRetrieveNextRow(this.fields, this.resultSet, this.executionSession);
+            } else {
+                row = this.nextRow;
+                this.nextRow = null;
+            }
+            // If using 1-m joining need to fetch 1-m rows as well.
+            if (this.query.isObjectLevelReadQuery() && ((ObjectLevelReadQuery)this.query).hasJoining()) {
+                JoinedAttributeManager joinManager = ((ObjectLevelReadQuery)this.query).getJoinedAttributeManager();
+                if (joinManager.isToManyJoin()) {
+                    this.nextRow = joinManager.processDataResults(row, this, true);
+                }
+            }
             if (row == null) {
                 // If already afterLast do not increment position again.
-                setPosition(size() + 1);
+                this.position = size() + 1;
                 return null;
             }
-            setPosition(getPosition() + 1);
-
+            this.position = currentPosition + 1;
             Object object = buildAndRegisterObject(row);
             if (object == InvalidObject.instance) {
                 continue;
@@ -563,31 +579,43 @@ public class ScrollableCursor extends Cursor implements ListIterator {
      */
     protected Object retrievePreviousObject() throws DatabaseException {
         while (true) {
-            if (getPosition() <= (getObjectCollection().size() + 1)) {
+            int currentPosition = getPosition();
+            if (currentPosition <= (this.objectCollection.size() + 1)) {
                 // If at first of cursor, move cursor to beforeFirst.
-                if ((getPosition() == (getObjectCollection().size() + 1)) && (!isClosed())) {
-                    getAccessor().cursorRetrievePreviousRow(getFields(), getResultSet(), getExecutionSession());
+                if ((currentPosition == (this.objectCollection.size() + 1)) && (!isClosed())) {
+                    getAccessor().cursorRetrievePreviousRow(this.fields, this.resultSet, this.executionSession);
                 }
-                if (getPosition() <= 1) {
+                if (currentPosition <= 1) {
                     // Cursor can not move back further than beforeFirst.
-                    setPosition(0);
+                    this.position = 0;
                     return null;
                 } else {
-                    setPosition(getPosition() - 1);
-                    return getObjectCollection().elementAt(getPosition() - 1);
+                    this.position = currentPosition - 1;
+                    return this.objectCollection.get(this.position - 1);
                 }
             }
             if (isClosed()) {
                 return null;
             }
-
-            AbstractRecord row = getAccessor().cursorRetrievePreviousRow(getFields(), getResultSet(), getExecutionSession());
-
+            AbstractRecord row = null;
+            if (this.previousRow == null) {
+                row = getAccessor().cursorRetrievePreviousRow(this.fields, this.resultSet, this.executionSession);
+            } else {
+                row = this.previousRow;
+                this.previousRow = null;
+            }
+            // If using 1-m joining need to fetch 1-m rows as well.
+            if (this.query.isObjectLevelReadQuery() && ((ObjectLevelReadQuery)this.query).hasJoining()) {
+                JoinedAttributeManager joinManager = ((ObjectLevelReadQuery)this.query).getJoinedAttributeManager();
+                if (joinManager.isToManyJoin()) {
+                    this.previousRow = joinManager.processDataResults(row, this, false);
+                }
+            }
             // This scenario is now impossible.
             if (row == null) {
                 return null;
             }
-            setPosition(getPosition() - 1);
+            this.position = currentPosition - 1;
 
             Object object = buildAndRegisterObject(row);
 

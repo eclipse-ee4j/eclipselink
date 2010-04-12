@@ -109,10 +109,10 @@ import org.eclipse.persistence.internal.oxm.QNameInheritancePolicy;
 import org.eclipse.persistence.internal.oxm.XMLConversionPair;
 import org.eclipse.persistence.internal.queries.CollectionContainerPolicy;
 import org.eclipse.persistence.internal.queries.ContainerPolicy;
-import org.eclipse.persistence.internal.queries.DirectMapContainerPolicy;
 import org.eclipse.persistence.internal.queries.InterfaceContainerPolicy;
 import org.eclipse.persistence.internal.queries.ListContainerPolicy;
 import org.eclipse.persistence.internal.queries.MapContainerPolicy;
+import org.eclipse.persistence.internal.queries.MappedKeyMapContainerPolicy;
 import org.eclipse.persistence.internal.queries.ReportItem;
 import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
 import org.eclipse.persistence.internal.security.PrivilegedClassForName;
@@ -653,7 +653,7 @@ public class ObjectPersistenceRuntimeXMLProject extends NamespaceResolvableProje
         descriptor.getInheritancePolicy().addClassIndicator(CollectionContainerPolicy.class, getPrimaryNamespaceXPath() + "container-policy");
         descriptor.getInheritancePolicy().addClassIndicator(ListContainerPolicy.class, getPrimaryNamespaceXPath() + "list-container-policy");
         descriptor.getInheritancePolicy().addClassIndicator(MapContainerPolicy.class, getPrimaryNamespaceXPath() + "map-container-policy");
-        descriptor.getInheritancePolicy().addClassIndicator(DirectMapContainerPolicy.class, getPrimaryNamespaceXPath() + "direct-map-container-policy");
+        descriptor.getInheritancePolicy().addClassIndicator(MappedKeyMapContainerPolicy.class, getPrimaryNamespaceXPath() + "direct-map-container-policy");
 
         return descriptor;
     }
@@ -2614,7 +2614,7 @@ public class ObjectPersistenceRuntimeXMLProject extends NamespaceResolvableProje
 
     protected ClassDescriptor buildDirectMapContainerPolicyDescriptor() {
         XMLDescriptor descriptor = new XMLDescriptor();
-        descriptor.setJavaClass(DirectMapContainerPolicy.class);
+        descriptor.setJavaClass(MappedKeyMapContainerPolicy.class);
 
         descriptor.getInheritancePolicy().setParentClass(InterfaceContainerPolicy.class);
 

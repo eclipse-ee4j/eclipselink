@@ -30,7 +30,9 @@ public class EmployeeSystem extends TestSystem {
         NONE, 
         INNER_JOIN,
         OUTER_JOIN,
-        BATCH_READ;
+        BATCH_FETCH,
+        BATCH_IN_FETCH,
+        BATCH_EXISTS_FETCH;
         
         public String toString() {
             if(this == NONE) {

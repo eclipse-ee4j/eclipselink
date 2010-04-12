@@ -176,24 +176,16 @@ public class MapEntryExpression extends QueryKeyExpression {
         } else if (isAttribute()) {
             DatabaseField field = getField();
             if (field != null) {
-                result.addElement(field);
+                result.add(field);
             }
         } else {
-            result.addAll(getInterfaceContainerPolicy().getAllFieldsForMapKey(getMapping()));
+            result.addAll(getInterfaceContainerPolicy().getAdditionalFieldsForJoin(getMapping()));
         }
         return result;
     }
     
     public CollectionMapping getMapping() {
         return (CollectionMapping)((QueryKeyExpression)getBaseExpression()).getMapping();
-    }
-    
-    /**
-     * INTERNAL:
-     * The parent expression should hold all of the tables for a TableEntryExpression
-     */
-    public Vector getOwnedTables() {
-        return null;
     }
     
     public QueryKey getQueryKeyOrNull() {
@@ -274,11 +266,11 @@ public class MapEntryExpression extends QueryKeyExpression {
         if ((getQueryKeyOrNull() == null) && (getMapping() == null)) {
             throw QueryException.invalidQueryKeyInExpression(getName());
         }
-        if (!getMapping().isCollectionMapping()){
+        if (!getMapping().isCollectionMapping()) {
             throw QueryException.mapEntryExpressionForNonCollection(getBaseExpression(), getMapping());
         }
         ContainerPolicy cp = getMapping().getContainerPolicy();
-        if ((cp == null) || !(cp.isMapPolicy() || cp.isDirectMapPolicy())){
+        if ((cp == null) || !cp.isMapPolicy()) {
             throw QueryException.mapEntryExpressionForNonMap(getBaseExpression(), getMapping());
         }
     }

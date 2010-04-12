@@ -249,7 +249,7 @@ public class ReadAllQuery extends ObjectLevelReadQuery {
         // Let c be objects from cache.
         // Presently p intersect c = empty set, but later p subset c.
         // By checking cache now doesConform will be called p fewer times.
-        Map indexedInterimResult = unitOfWork.scanForConformingInstances(getSelectionCriteria(), getReferenceClass(), arguments, this);
+        Map<Object, Object> indexedInterimResult = unitOfWork.scanForConformingInstances(getSelectionCriteria(), getReferenceClass(), arguments, this);
         
         Cursor cursor = null;
         // In the case of cursors just conform/register the initially read collection.
@@ -315,15 +315,13 @@ public class ReadAllQuery extends ObjectLevelReadQuery {
         }
 
         if (cursor != null) {
-            cursor.setObjectCollection((Vector)conformedResult);
+            cursor.setObjectCollection((List)conformedResult);
 
             // For nested UOW must copy all in object collection to
             // initiallyConformingIndex, as some of these could have been from 
             // the parent UnitOfWork.
             if (unitOfWork.isNestedUnitOfWork()) {
-                for (Enumeration enumtr = cursor.getObjectCollection().elements();
-                         enumtr.hasMoreElements();) {
-                    Object clone = enumtr.nextElement();
+                for (Object clone : cursor.getObjectCollection()) {
                     indexedInterimResult.put(clone, clone);
                 }
             }

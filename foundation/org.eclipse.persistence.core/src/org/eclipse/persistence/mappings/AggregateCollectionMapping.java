@@ -1242,7 +1242,7 @@ public class AggregateCollectionMapping extends CollectionMapping implements Rel
             }
 
             initializeSelectionCriteria(session);
-            getContainerPolicy().addAdditionalFieldsToQuery(getSelectionQuery(), null);
+            getContainerPolicy().addAdditionalFieldsToQuery(getSelectionQuery(), getAdditionalFieldsBaseExpression(getSelectionQuery()));
         }
 
         // Aggregate 1:m never maintains cache as target objects are aggregates.

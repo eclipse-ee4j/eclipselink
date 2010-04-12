@@ -38,28 +38,32 @@ public abstract class Cursor implements Enumeration, Iterator, java.io.Serializa
     /** The session that executed the query for the stream. */
     protected transient AbstractSession session;
 
-    /** The root session that executed the call for the query.  Knows the database
-     * platform. */
+    /** The root session that executed the call for the query.  Knows the database platform. */
     protected transient AbstractSession executionSession;
 
     /** The fields expected in the result set. */
-    protected transient Vector fields;
+    protected transient Vector<DatabaseField> fields;
 
     /** Cached size of the stream. */
     protected int size = -1;
 
-    /** Object-level read query that initialize the stream. */
+    /** Read query that initialize the stream. */
+    public transient ReadQuery query;
+    
+    /** Query policy that initialize the stream. */
     public transient CursorPolicy policy;
 
     /** Internal collection of objects. */
-    protected Vector objectCollection;
+    protected List<Object> objectCollection;
 
     /** Conforming instances found in memory when building the result. */
-    protected Map initiallyConformingIndex;
+    protected Map<Object, Object> initiallyConformingIndex;
 
     /** SelectionCriteria & translation row ready for incremental conforming. */
     protected Expression selectionCriteriaClone;
     protected AbstractRecord translationRow;
+    /** Store the next row, for 1-m joining. */
+    protected AbstractRecord nextRow;
 
     /** Current position in the objectCollection of the stream. */
     protected int position;
@@ -76,23 +80,24 @@ public abstract class Cursor implements Enumeration, Iterator, java.io.Serializa
      * INTERNAL:
      */
     public Cursor(DatabaseCall call, CursorPolicy policy) {
-        this.session = policy.getQuery().getSession();
-        this.executionSession = session.getExecutionSession(policy.getQuery());
+        ReadQuery query = policy.getQuery();
+        this.query = query;
+        this.session = query.getSession();
+        this.executionSession = session.getExecutionSession(query);
         this.statement = call.getStatement();
         this.fields = call.getFields();
         this.resultSet = call.getResult();
         this.policy = policy;
-        setObjectCollection(new Vector());
+        this.objectCollection = new Vector();
 
-        if (getQuery().getSession().isUnitOfWork() && getQuery().isObjectLevelReadQuery()) {
+        if (query.getSession().isUnitOfWork() && query.isObjectLevelReadQuery()) {
             // Call register on the cursor itself.  This will set up 
             // incremental conforming by setting the 
             // selection criteria clone and arguments, and building the
             // intially conforming index (scans the UOW cache).
             // The incremental registration/conforming is done 
             // in retrieveNext/PreviousObject -> buildAndRegisterObject
-            ObjectLevelReadQuery query = (ObjectLevelReadQuery)getQuery();
-            query.registerResultInUnitOfWork(this, (UnitOfWorkImpl)this.session, getQuery().getTranslationRow(), false);// object collection is empty, so setting irrelevant.
+            ((ObjectLevelReadQuery)query).registerResultInUnitOfWork(this, (UnitOfWorkImpl)this.session, query.getTranslationRow(), false);// object collection is empty, so setting irrelevant.
         }
     }
 
@@ -108,15 +113,15 @@ public abstract class Cursor implements Enumeration, Iterator, java.io.Serializa
                 return;
             }
             try {
-                getAccessor().closeCursor(getResultSet(), getSession());
-                getAccessor().closeStatement(getStatement(), getSession(), null);
+                getAccessor().closeCursor(this.resultSet, this.session);
+                getAccessor().closeStatement(this.statement, this.session, null);
             } catch (RuntimeException caughtException) {
                 exception = caughtException;
             } finally {
                 //release the connection (back into the pool if Three tier)
                 try {
                     //bug 4668234 -- used to only release connections on server sessions but should always release
-                    getSession().releaseReadConnection(getQuery().getAccessor());
+                    this.session.releaseReadConnection(this.query.getAccessor());
                 } catch (RuntimeException releaseException) {
                     if (exception == null) {
                         throw releaseException;
@@ -128,7 +133,9 @@ public abstract class Cursor implements Enumeration, Iterator, java.io.Serializa
                     throw exception;
                 }
             }
-            setResultSet(null);
+            this.statement = null;
+            this.resultSet = null;
+            this.nextRow = null;
         } catch (SQLException sqlException) {
             throw DatabaseException.sqlException(sqlException, getAccessor(), getSession(), false);
         }
@@ -145,26 +152,26 @@ public abstract class Cursor implements Enumeration, Iterator, java.io.Serializa
      * INTERNAL:
      * Return the accessor associated with the cursor.
      */
-    protected DatabaseAccessor getAccessor() {
+    public DatabaseAccessor getAccessor() {
         // Assume we have a JDBC accessor
         try {
-            return (DatabaseAccessor)getQuery().getAccessor();
+            return (DatabaseAccessor)this.query.getAccessor();
         } catch (ClassCastException e) {
-            throw QueryException.invalidDatabaseAccessor(getQuery().getAccessor());
+            throw QueryException.invalidDatabaseAccessor(this.query.getAccessor());
         }
     }
 
     /**
      * INTERNAL:
-     * Retreive the size of the open cursor by executing a count on the same query as the cursor.
+     * Retrieve the size of the open cursor by executing a count on the same query as the cursor.
      */
     protected abstract int getCursorSize() throws DatabaseException, QueryException;
 
     /**
      * INTERNAL:
-     * Return the fields for the stream
+     * Return the fields for the stream.
      */
-    protected Vector getFields() {
+    public Vector<DatabaseField> getFields() {
         return fields;
     }
 
@@ -175,7 +182,7 @@ public abstract class Cursor implements Enumeration, Iterator, java.io.Serializa
      * is needed to make sure the same objects appearing in the cursor are
      * filtered out.
      */
-    public Map getInitiallyConformingIndex() {
+    public Map<Object, Object> getInitiallyConformingIndex() {
         return initiallyConformingIndex;
     }
 
@@ -183,7 +190,7 @@ public abstract class Cursor implements Enumeration, Iterator, java.io.Serializa
      * INTERNAL:
      * Return the internal object collection that stores the objects.
      */
-    public Vector getObjectCollection() {
+    public List<Object> getObjectCollection() {
         return objectCollection;
     }
 
@@ -192,7 +199,7 @@ public abstract class Cursor implements Enumeration, Iterator, java.io.Serializa
      * Return the number of items to be faulted in for the stream.
      */
     public int getPageSize() {
-        return getPolicy().getPageSize();
+        return this.policy.getPageSize();
     }
 
     /**
@@ -205,21 +212,21 @@ public abstract class Cursor implements Enumeration, Iterator, java.io.Serializa
 
     /**
      * INTERNAL:
-     * Return the position of the stream inside the object collection
+     * Return the position of the stream inside the object collection.
      */
     public abstract int getPosition();
 
     /**
      * INTERNAL:
-     * Return the query associated with the stream
+     * Return the query associated with the stream.
      */
     public ReadQuery getQuery() {
-        return getPolicy().getQuery();
+        return this.query;
     }
 
     /**
      * INTERNAL:
-     * Return the result set (cursor)
+     * Return the result set (cursor).
      */
     public ResultSet getResultSet() {
         return resultSet;
@@ -247,13 +254,13 @@ public abstract class Cursor implements Enumeration, Iterator, java.io.Serializa
      * Returns the session the underlying call was executed on.  This root
      * session knows the database platform.
      */
-    protected AbstractSession getExecutionSession() {
+    public AbstractSession getExecutionSession() {
         return executionSession;
     }
 
     /**
      * INTERNAL:
-     * Return the Statement
+     * Return the Statement.
      */
     protected Statement getStatement() {
         return statement;
@@ -273,7 +280,7 @@ public abstract class Cursor implements Enumeration, Iterator, java.io.Serializa
      * Return if the stream is closed.
      */
     public boolean isClosed() {
-        return (getResultSet() == null);
+        return (this.resultSet == null);
     }
 
     /**
@@ -283,7 +290,7 @@ public abstract class Cursor implements Enumeration, Iterator, java.io.Serializa
      * supported.
      */
     protected Object buildAndRegisterObject(AbstractRecord row) {
-        ReadQuery query = getQuery();
+        ReadQuery query = this.query;
         if (query.isObjectLevelReadQuery()) {
             ObjectLevelReadQuery objectQuery = (ObjectLevelReadQuery)query;
             if (objectQuery.hasBatchReadAttributes() && objectQuery.getBatchFetchPolicy().isIN()) {
@@ -307,63 +314,13 @@ public abstract class Cursor implements Enumeration, Iterator, java.io.Serializa
      * INTERNAL:
      * Read the next row from the result set.
      */
-    protected Object retrieveNextObject() throws DatabaseException {
-        while (true) {
-            if (isClosed()) {
-                return null;
-            }
-
-            AbstractRecord row = getAccessor().cursorRetrieveNextRow(getFields(), getResultSet(), getExecutionSession());
-
-            if (row == null) {
-                if (!(this instanceof ScrollableCursor)) {
-                    close();
-                }
-                return null;
-            }
-
-            Object object = buildAndRegisterObject(row);
-            if (object == InvalidObject.instance) {
-                continue;
-            }
-            return object;
-        }
-    }
+    protected abstract Object retrieveNextObject() throws DatabaseException;
 
     /**
      * INTERNAL:
-     * CR#4139
-     * Read the previous row from the result set. It is used solely
-     * for scrollable cursor support.
+     * Set the fields for the stream.
      */
-    protected Object retrievePreviousObject() throws DatabaseException {
-        while (true) {
-            if (isClosed()) {
-                return null;
-            }
-
-            AbstractRecord row = getAccessor().cursorRetrievePreviousRow(getFields(), getResultSet(), getExecutionSession());
-
-            if (row == null) {
-                if (!(this instanceof ScrollableCursor)) {
-                    close();
-                }
-                return null;
-            }
-
-            Object object = buildAndRegisterObject(row);
-            if (object == InvalidObject.instance) {
-                continue;
-            }
-            return object;
-        }
-    }
-
-    /**
-     * INTERNAL:
-     * Set the fields for the stream
-     */
-    protected void setFields(Vector fields) {
+    protected void setFields(Vector<DatabaseField> fields) {
         this.fields = fields;
     }
 
@@ -374,7 +331,7 @@ public abstract class Cursor implements Enumeration, Iterator, java.io.Serializa
      * is needed to make sure the same objects appearing in the cursor are
      * filtered out.
      */
-    public void setInitiallyConformingIndex(Map index) {
+    public void setInitiallyConformingIndex(Map<Object, Object> index) {
         this.initiallyConformingIndex = index;
     }
 
@@ -382,7 +339,7 @@ public abstract class Cursor implements Enumeration, Iterator, java.io.Serializa
      * INTERNAL:
      * Set the internal object collection
      */
-    public void setObjectCollection(Vector collection) {
+    public void setObjectCollection(List<Object> collection) {
         objectCollection = collection;
     }
 
@@ -462,13 +419,13 @@ public abstract class Cursor implements Enumeration, Iterator, java.io.Serializa
      * union (actual result) may be smaller than this.
      */
     public int size() throws DatabaseException {
-        if (size == -1) {
-            size = getCursorSize();
-            if (getInitiallyConformingIndex() != null) {
-                size += getInitiallyConformingIndex().size();
+        if (this.size == -1) {
+            this.size = getCursorSize();
+            if (this.initiallyConformingIndex != null) {
+                this.size += this.initiallyConformingIndex.size();
             }
         }
-        return size;
+        return this.size;
     }
 
     /**
@@ -479,4 +436,16 @@ public abstract class Cursor implements Enumeration, Iterator, java.io.Serializa
         QueryException.invalidOperation("remove");
     }
 
+    /**
+      * PUBLIC:
+      * Release all objects read in so far.
+      * This should be performed when reading in a large collection of
+      * objects in order to preserve memory.
+      */
+    public void clear() {
+        // If using 1-m joining need to release 1-m rows as well.
+        if (this.query.isObjectLevelReadQuery() && ((ObjectLevelReadQuery)this.query).hasJoining()) {
+            ((ObjectLevelReadQuery)this.query).getJoinedAttributeManager().clearDataResults();
+        }
+    }
 }

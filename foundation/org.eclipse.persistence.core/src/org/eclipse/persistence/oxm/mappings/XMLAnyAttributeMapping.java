@@ -29,8 +29,8 @@ import org.eclipse.persistence.internal.helper.Helper;
 import org.eclipse.persistence.internal.oxm.XMLObjectBuilder;
 import org.eclipse.persistence.internal.oxm.XPathEngine;
 import org.eclipse.persistence.internal.queries.ContainerPolicy;
-import org.eclipse.persistence.internal.queries.DirectMapContainerPolicy;
 import org.eclipse.persistence.internal.queries.JoinedAttributeManager;
+import org.eclipse.persistence.internal.queries.MappedKeyMapContainerPolicy;
 import org.eclipse.persistence.internal.sessions.AbstractRecord;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.internal.sessions.ChangeRecord;
@@ -69,14 +69,14 @@ import org.w3c.dom.Node;
  */
 public class XMLAnyAttributeMapping extends DatabaseMapping implements XMLMapping {
     private XMLField field;
-    private DirectMapContainerPolicy containerPolicy;
+    private MappedKeyMapContainerPolicy containerPolicy;
     private boolean isNamespaceDeclarationIncluded;
     private boolean isSchemaInstanceIncluded;
     private boolean isWriteOnly;
     private boolean reuseContainer;
 
     public XMLAnyAttributeMapping() {
-        this.containerPolicy = new DirectMapContainerPolicy(HashMap.class);
+        this.containerPolicy = new MappedKeyMapContainerPolicy(HashMap.class);
         this.isNamespaceDeclarationIncluded = true;
         this.isSchemaInstanceIncluded = true;
     }
@@ -206,10 +206,10 @@ public class XMLAnyAttributeMapping extends DatabaseMapping implements XMLMappin
     }
 
     public void setContainerPolicy(ContainerPolicy cp) {
-        if (!cp.isDirectMapPolicy()) {
+        if (!cp.isMappedKeyMapPolicy()) {
             throw DescriptorException.invalidContainerPolicy(cp, this.getClass());
         }
-        this.containerPolicy = (DirectMapContainerPolicy) cp;
+        this.containerPolicy = (MappedKeyMapContainerPolicy) cp;
     }
 
     public void setField(DatabaseField field) {
@@ -236,7 +236,7 @@ public class XMLAnyAttributeMapping extends DatabaseMapping implements XMLMappin
     private Object buildObjectValuesFromDOMRecord(DOMRecord record, AbstractSession session, ObjectBuildingQuery query) {
         //This DOMRecord represents the root node of the AnyType instance
         //Grab ALL children to populate the collection.
-        DirectMapContainerPolicy cp = (DirectMapContainerPolicy) getContainerPolicy();
+        ContainerPolicy cp = getContainerPolicy();
 
         Object container = null;
         if (reuseContainer) {
@@ -319,7 +319,7 @@ public class XMLAnyAttributeMapping extends DatabaseMapping implements XMLMappin
     }
 
     public void writeSingleValue(Object attributeValue, Object parent, XMLRecord row, AbstractSession session) {
-        DirectMapContainerPolicy cp = (DirectMapContainerPolicy) this.getContainerPolicy();
+        ContainerPolicy cp = this.getContainerPolicy();
         if ((attributeValue == null) || (cp.sizeFor(attributeValue) == 0)) {
             return;
         }
@@ -383,8 +383,8 @@ public class XMLAnyAttributeMapping extends DatabaseMapping implements XMLMappin
      * @param concreteMapClassName
      */
     public void useMapClassName(String concreteMapClassName) {
-        this.setContainerPolicy(new DirectMapContainerPolicy());
-        this.getContainerPolicy().setContainerClassName(concreteMapClassName);
+        MappedKeyMapContainerPolicy policy = new MappedKeyMapContainerPolicy(concreteMapClassName);
+        this.setContainerPolicy(policy);
     }
 
     public boolean isNamespaceDeclarationIncluded() {

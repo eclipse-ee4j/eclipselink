@@ -311,7 +311,7 @@ public class QueryKeyExpression extends ObjectExpression {
             Vector result = new Vector();
             result.addAll(super.getFields());
             if (mapping.isCollectionMapping()){
-                List<DatabaseField> fields = mapping.getContainerPolicy().getAllFieldsForMapKey((CollectionMapping)mapping);
+                List<DatabaseField> fields = mapping.getContainerPolicy().getAdditionalFieldsForJoin((CollectionMapping)mapping);
                 if (fields != null){
                     result.addAll(fields);
                 }
@@ -461,7 +461,7 @@ public class QueryKeyExpression extends ObjectExpression {
      * Alias the database field for our current environment
      */
     protected void initializeAliasedField() {
-        DatabaseField tempField = (DatabaseField)getField().clone();
+        DatabaseField tempField = getField().clone();
         DatabaseTable aliasedTable = getAliasedTable();
 
         //  Put in a special check here so that if the aliasing does nothing we don't cache the
@@ -666,7 +666,7 @@ public class QueryKeyExpression extends ObjectExpression {
             // The aliased table comes for free as it was a required part of the join criteria.
             TableExpression table = (TableExpression)getTable(directCollectionMapping.getReferenceTable());
             DatabaseTable aliasedTable = table.aliasForTable(table.getTable());
-            DatabaseField aliasedField = (DatabaseField)directCollectionMapping.getDirectField().clone();
+            DatabaseField aliasedField = directCollectionMapping.getDirectField().clone();
             aliasedField.setTable(aliasedTable);
             printer.printField(aliasedField);
         }
@@ -812,12 +812,7 @@ public class QueryKeyExpression extends ObjectExpression {
                     CollectionMapping collectionMapping = (CollectionMapping)getMapping();
                     if(collectionMapping.getListOrderField() != null) {
                         index.setField(collectionMapping.getListOrderField());
-                        if(collectionMapping.shouldUseListOrderFieldTableExpression()) {
-                            Expression newBase = getTable(collectionMapping.getListOrderField().getTable());
-                            index.setBaseExpression(newBase);
-                        } else {
-                            addDerivedField(index);
-                        }
+                        addDerivedField(index);
                     } else {
                         throw QueryException.indexRequiresCollectionMappingWithListOrderField(this, collectionMapping);
                     }
@@ -1077,6 +1072,26 @@ public class QueryKeyExpression extends ObjectExpression {
                 return false;
             }
         }
+    }
+
+    /**
+     * INTERNAL:
+     * Return if the expression if for a map key mapping where the key is a OneToOne.
+     */
+    public boolean isMapKeyObjectRelationship() {
+        if (getMapping() != null) {
+            return getMapping().isCollectionMapping() && ((CollectionMapping)getMapping()).isMapKeyObjectRelationship();
+        } else {
+            return false;
+        }
+    }
+
+    /**
+     * INTERNAL:
+     * Return if descriptor for the map key mapping where the key is a OneToOne.
+     */
+    public ClassDescriptor getMapKeyDescriptor() {
+        return ((CollectionMapping)getMapping()).getContainerPolicy().getDescriptorForMapKey();
     }
     
     /**

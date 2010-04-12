@@ -13,6 +13,7 @@
 package org.eclipse.persistence.internal.expressions;
 
 import java.util.*;
+
 import org.eclipse.persistence.exceptions.*;
 import org.eclipse.persistence.mappings.querykeys.*;
 import org.eclipse.persistence.expressions.*;
@@ -317,14 +318,41 @@ public abstract class ObjectExpression extends DataExpression {
     }
 
     /**
-     * INTERNAL:
+     * Return any tables in addition to the descriptor's tables, such as the mappings join table.
+     */
+    public List<DatabaseTable> getAdditionalTables() {
+        return null;
+    }
+    
+    /**
+     * Return any tables that are defined by this expression (and not its base).
      */
     public Vector getOwnedTables() {
-        if(isUsingOuterJoinForMultitableInheritance()) {
-            return getDescriptor().getInheritancePolicy().getAllTables();
+        ClassDescriptor descriptor = getDescriptor();
+        Vector tables = null;
+        if (descriptor == null) {
+            List additionalTables = getAdditionalTables();
+            if (additionalTables == null) {
+                return null;
+            } else {
+                return new Vector(additionalTables);
+            }
+        } else if (descriptor.isAggregateDescriptor()) {
+            return null;
+        } else if ((descriptor.getHistoryPolicy() != null) && (getAsOfClause().getValue() != null)) {
+            tables = descriptor.getHistoryPolicy().getHistoricalTables();
+        } else if (isUsingOuterJoinForMultitableInheritance()) {
+            tables = descriptor.getInheritancePolicy().getAllTables();
         } else {
-            return super.getOwnedTables();
+            tables = descriptor.getTables();
         }
+        List additionalTables = getAdditionalTables();
+        if (additionalTables != null) {
+            tables = new Vector(tables);
+            Helper.addAllUniqueToVector(tables, additionalTables);
+            return tables;
+        }
+        return tables;
     }
 
     protected boolean hasDerivedExpressions() {

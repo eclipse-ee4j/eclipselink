@@ -59,12 +59,25 @@ public class DirectMapMapping extends DirectCollectionMapping implements MapComp
         super();
         DataReadQuery query = new DataReadQuery();
         this.selectionQuery = query;
-        this.containerPolicy = new DirectMapContainerPolicy(ClassConstants.Hashtable_Class);        
+        MappedKeyMapContainerPolicy mapPolicy = new MappedKeyMapContainerPolicy(ClassConstants.Hashtable_Class);
+        mapPolicy.setValueMapping(this);
+        this.containerPolicy = mapPolicy;        
         this.isListOrderFieldSupported = false;
     }
 
-    private DirectMapUsableContainerPolicy getDirectMapUsableContainerPolicy(){
-        return (DirectMapUsableContainerPolicy)containerPolicy;
+    /**
+     * ADVANCED:
+     * Configure the mapping to use a container policy.
+     * This must be a MappedKeyMapContainerPolicy policy.
+     * Set the valueMapping for the policy.
+     */
+    public void setContainerPolicy(ContainerPolicy containerPolicy) {
+        super.setContainerPolicy(containerPolicy);
+        ((MappedKeyMapContainerPolicy)containerPolicy).setValueMapping(this);        
+    }
+
+    private MappedKeyMapContainerPolicy getMappedKeyMapContainerPolicy(){
+        return (MappedKeyMapContainerPolicy)containerPolicy;
     }
     
     /**
@@ -73,7 +86,7 @@ public class DirectMapMapping extends DirectCollectionMapping implements MapComp
      * A converter can be used to convert between the key's object value and database value.
      */
     public Converter getKeyConverter() {
-        return getDirectMapUsableContainerPolicy().getKeyConverter();
+        return getMappedKeyMapContainerPolicy().getKeyConverter();
     }
 
     /**
@@ -82,7 +95,7 @@ public class DirectMapMapping extends DirectCollectionMapping implements MapComp
      * A converter can be used to convert between the key's object value and database value.
      */
     public void setKeyConverter(Converter keyConverter) {
-        getDirectMapUsableContainerPolicy().setKeyConverter(keyConverter, this);
+        getMappedKeyMapContainerPolicy().setKeyConverter(keyConverter, this);
     }
 
     /**
@@ -92,7 +105,7 @@ public class DirectMapMapping extends DirectCollectionMapping implements MapComp
      * A converter can be used to convert between the key's object value and database value.
      */
     public void setKeyConverterClassName(String keyConverterClassName) {
-        getDirectMapUsableContainerPolicy().setKeyConverterClassName(keyConverterClassName, this);
+        getMappedKeyMapContainerPolicy().setKeyConverterClassName(keyConverterClassName, this);
     }
     
     /**
@@ -269,8 +282,7 @@ public class DirectMapMapping extends DirectCollectionMapping implements MapComp
     public boolean compareObjects(Object firstObject, Object secondObject, AbstractSession session) {
         Object firstObjectMap = getRealCollectionAttributeValueFromObject(firstObject, session);
         Object secondObjectMap = getRealCollectionAttributeValueFromObject(secondObject, session);
-        DirectMapUsableContainerPolicy mapContainerPolicy = getDirectMapUsableContainerPolicy();
-        return mapContainerPolicy.compareContainers(firstObjectMap, secondObjectMap);
+        return getMappedKeyMapContainerPolicy().compareContainers(firstObjectMap, secondObjectMap);
     }
 
     /**
@@ -289,7 +301,7 @@ public class DirectMapMapping extends DirectCollectionMapping implements MapComp
      * INTERNAL:
      */
     public DatabaseField getDirectKeyField() {
-        return getDirectMapUsableContainerPolicy().getDirectKeyField(null);
+        return getMappedKeyMapContainerPolicy().getDirectKeyField(null);
     }
 
     /**
@@ -298,9 +310,8 @@ public class DirectMapMapping extends DirectCollectionMapping implements MapComp
      */
     @Override
     public void initialize(AbstractSession session) throws DescriptorException {
-        getDirectMapUsableContainerPolicy().setDescriptorForKeyMapping(this.getDescriptor());
+        getMappedKeyMapContainerPolicy().setDescriptorForKeyMapping(this.getDescriptor());
         super.initialize(session);
-        getDirectMapUsableContainerPolicy().setValueField(directField, valueConverter);
         if (getValueConverter() != null) {
             getValueConverter().initialize(this, session);
         }
@@ -361,17 +372,17 @@ public class DirectMapMapping extends DirectCollectionMapping implements MapComp
 
     @Override
     protected void initializeSelectionStatement(AbstractSession session) {
-        if (selectionQuery.isReadAllQuery()){
-            ((ReadAllQuery)selectionQuery).addAdditionalField((DatabaseField)getDirectField().clone());
+        if (this.selectionQuery.isReadAllQuery()){
+            ((ReadAllQuery)this.selectionQuery).addAdditionalField(getDirectField().clone());
         } else {
-            SQLSelectStatement statement = (SQLSelectStatement)selectionQuery.getSQLStatement();
+            SQLSelectStatement statement = (SQLSelectStatement)this.selectionQuery.getSQLStatement();
             statement.addTable(getReferenceTable());
-            statement.addField((DatabaseField)getDirectField().clone());
-            getContainerPolicy().addAdditionalFieldsToQuery(selectionQuery, null);
+            statement.addField(getDirectField().clone());
+            getContainerPolicy().addAdditionalFieldsToQuery(this.selectionQuery, getAdditionalFieldsBaseExpression(this.selectionQuery));
             statement.normalize(session, null);
         }
-        if (selectionQuery.isDirectReadQuery()){
-            ((DirectReadQuery)selectionQuery).setResultType(DataReadQuery.MAP);
+        if (this.selectionQuery.isDirectReadQuery()){
+            ((DirectReadQuery)this.selectionQuery).setResultType(DataReadQuery.MAP);
         }
     }
     
@@ -765,7 +776,7 @@ public class DirectMapMapping extends DirectCollectionMapping implements MapComp
      * INTERNAL:
      */
     public void setDirectKeyField(DatabaseField keyField) {
-        getDirectMapUsableContainerPolicy().setKeyField(keyField, descriptor);
+        getMappedKeyMapContainerPolicy().setKeyField(keyField, descriptor);
     }
 
     /**
@@ -972,7 +983,7 @@ public class DirectMapMapping extends DirectCollectionMapping implements MapComp
     protected void executeBatchQuery(DatabaseQuery query, Map referenceDataByKey, AbstractSession session, AbstractRecord translationRow) {
         // Execute query and index resulting object sets by key.                
         List<AbstractRecord> rows = (List)session.executeQuery(query, translationRow);
-        DirectMapUsableContainerPolicy mapContainerPolicy = getDirectMapUsableContainerPolicy();
+        MappedKeyMapContainerPolicy mapContainerPolicy = getMappedKeyMapContainerPolicy();
         for (AbstractRecord referenceRow : rows) {
             Object referenceKey = null;
             if (query.isObjectBuildingQuery()){
@@ -1012,7 +1023,11 @@ public class DirectMapMapping extends DirectCollectionMapping implements MapComp
         Object sourceKey = objectBuilder.extractPrimaryKeyFromRow(row, executionSession);
         // If the query was using joining, all of the result rows by primary key will have been computed.
         List<AbstractRecord> rows = joinManager.getDataResultsByPrimaryKey().get(sourceKey);
-        
+        // If no 1-m rows were fetch joined, then get the value normally,
+        // this can occur with pagination where the last row may not be complete.
+        if (rows == null) {
+            return valueFromRowInternal(row, joinManager, sourceQuery, executionSession);
+        }
         // A set of direct values must be maintained to avoid duplicates from multiple 1-m joins.
         Set directValues = new HashSet();
 

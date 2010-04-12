@@ -20,6 +20,7 @@ import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 
+import org.eclipse.persistence.annotations.BatchFetchType;
 import org.eclipse.persistence.annotations.CacheKeyType;
 import org.eclipse.persistence.annotations.IdValidation;
 import org.eclipse.persistence.descriptors.ClassDescriptor;
@@ -79,6 +80,10 @@ public class ObjectBuilder implements Cloneable, Serializable {
     protected transient Expression primaryKeyExpression;
     /** PERF: Cache mapping that use joining. */
     protected List<DatabaseMapping> joinedAttributes;
+    /** PERF: Cache mapping that use batch fetching. */
+    protected List<DatabaseMapping> batchFetchedAttributes;
+    /** PERF: Cache mapping that use batch fetching. */
+    protected boolean hasInBatchFetchedAttribute;
     /** PERF: Cache mappings that require cloning. */
     protected List<DatabaseMapping> cloningMappings;    
     /** PERF: Cache mappings that are eager loaded. */
@@ -2252,11 +2257,17 @@ public class ObjectBuilder implements Cloneable, Serializable {
     }
 
     /**
-     * INTERNAL:
      * Answers the attributes which are always joined to the original query on reads.
      */
     public List<DatabaseMapping> getJoinedAttributes() {
         return joinedAttributes;
+    }
+
+    /**
+     * Return the mappings that are always batch fetched.
+     */
+    public List<DatabaseMapping> getBatchFetchedAttributes() {
+        return this.batchFetchedAttributes;
     }
 
     /**
@@ -2276,12 +2287,32 @@ public class ObjectBuilder implements Cloneable, Serializable {
     }
     
     /**
-     * INTERNAL:
      * Answers if any attributes are to be joined / returned in the same select
      * statement.
      */
     public boolean hasJoinedAttributes() {
-        return (joinedAttributes != null);
+        return (this.joinedAttributes != null);
+    }
+    
+    /**
+     * Return is any mappings are always batch fetched.
+     */
+    public boolean hasBatchFetchedAttributes() {
+        return (this.batchFetchedAttributes != null);
+    }
+    
+    /**
+     * Return is any mappings are always batch fetched using IN.
+     */
+    public boolean hasInBatchFetchedAttribute() {
+        return this.hasInBatchFetchedAttribute;
+    }
+    
+    /**
+     * Set if any mappings are always batch fetched using IN.
+     */
+    public void setHasInBatchFetchedAttribute(boolean hasInBatchFetchedAttribute) {
+        this.hasInBatchFetchedAttribute = hasInBatchFetchedAttribute;
     }
 
     /**
@@ -2494,6 +2525,7 @@ public class ObjectBuilder implements Cloneable, Serializable {
 
         initializePrimaryKey(session);
         initializeJoinedAttributes();
+        initializeBatchFetchedAttributes();
         
         if (this.descriptor.usesSequenceNumbers()) {
             DatabaseMapping sequenceMapping = getMappingForField(this.descriptor.getSequenceNumberField());
@@ -2562,6 +2594,29 @@ public class ObjectBuilder implements Cloneable, Serializable {
             }
         }
         this.joinedAttributes = joinedAttributes;
+    }
+    
+    /**
+     * INTERNAL:
+     * Iterates through all one to one mappings and checks if any of them use batch fetching.
+     * <p>
+     * By caching the result query execution in the case where there are no batch fetched
+     * attributes can be improved.
+     */
+    public void initializeBatchFetchedAttributes() {
+        List<DatabaseMapping> batchedAttributes = null;
+        for (DatabaseMapping mapping : this.descriptor.getMappings()) {
+            if (mapping.isForeignReferenceMapping() && ((ForeignReferenceMapping)mapping).shouldUseBatchReading()) {
+                if (batchedAttributes == null) {
+                    batchedAttributes = new ArrayList();
+                }
+                batchedAttributes.add(mapping);
+                if (((ForeignReferenceMapping)mapping).getBatchFetchType() == BatchFetchType.IN) {
+                    this.hasInBatchFetchedAttribute = true;
+                }
+            }
+        }
+        this.batchFetchedAttributes = batchedAttributes;
     }
 
     /**

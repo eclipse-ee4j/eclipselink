@@ -642,8 +642,7 @@ public class JUnitJPQLComplexAggregateTestSuite extends JUnitTestCase
     {
         EntityManager em = createEntityManager();
 
-        Long zero = Long.valueOf(0);
-        List expectedResult = Arrays.asList(new Long[] { zero, zero, zero, zero });
+        List expectedResult = Arrays.asList(new Long[] { 1L, 0L, 0L, 0L });
 
         String jpql = "SELECT COUNT(cc) FROM Customer c LEFT JOIN c.cCustomers cc GROUP BY c.name";
         Query q = em.createQuery(jpql);

@@ -169,19 +169,18 @@ public class Helper implements Serializable {
         }
     }
 
-    public static void addAllToVector(Vector theVector, List elementsToAdd) {
-        theVector.addAll(elementsToAdd);
-    }
-
-    public static Vector addAllUniqueToVector(Vector theVector, Vector elementsToAdd) {
-        for (Enumeration stream = elementsToAdd.elements(); stream.hasMoreElements();) {
-            Object element = stream.nextElement();
-            if (!theVector.contains(element)) {
-                theVector.addElement(element);
+    public static Vector addAllUniqueToVector(Vector objects, List objectsToAdd) {
+        if (objectsToAdd == null) {
+            return objects;
+        }
+        int size = objectsToAdd.size();
+        for (int index = 0; index < size; index++) {
+            Object element = objectsToAdd.get(index);
+            if (!objects.contains(element)) {
+                objects.add(element);
             }
         }
-
-        return theVector;
+        return objects;
     }
 
     /**
@@ -771,14 +770,14 @@ public class Helper implements Serializable {
      *  @param stopIndex - ending position in vector
      *  @exception EclipseLinkException
      */
-    public static Vector copyVector(Vector originalVector, int startIndex, int stopIndex) throws ValidationException {
+    public static Vector copyVector(List originalVector, int startIndex, int stopIndex) throws ValidationException {
         Vector newVector;
 
         if (stopIndex < startIndex) {
-            return org.eclipse.persistence.internal.helper.NonSynchronizedVector.newInstance();
+            return NonSynchronizedVector.newInstance();
         }
 
-        newVector = org.eclipse.persistence.internal.helper.NonSynchronizedVector.newInstance(stopIndex - startIndex);
+        newVector = NonSynchronizedVector.newInstance(stopIndex - startIndex);
 
         for (int index = startIndex; index < stopIndex; index++) {
             newVector.add(originalVector.get(index));

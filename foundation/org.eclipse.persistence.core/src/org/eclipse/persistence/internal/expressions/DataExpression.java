@@ -57,24 +57,6 @@ public abstract class DataExpression extends BaseExpression {
         return ((getBaseExpression() == expression.getBaseExpression()) || ((getBaseExpression() != null) && getBaseExpression().equals(expression.getBaseExpression())))
             && ((getAsOfClause() == expression.getAsOfClause()) || ((getAsOfClause() != null) && getAsOfClause().equals(expression.getAsOfClause())));
     }
-
-    /**
-     * INTERNAL:
-     * Add any additional tables for this DataExpression to the given list
-     * @param tableList
-     * @return
-     */
-    private void addAdditionalTablesToTableList(Vector tableList){
-        if (getAdditionalTables() != null){
-              Iterator<DatabaseTable> i = getAdditionalTables().iterator();
-            while (i.hasNext()){
-                DatabaseTable table = i.next();
-                if (!tableList.contains(table)){
-                    tableList.add(table);
-                }
-            }
-        }
-    }
     
     public void addDerivedField(Expression addThis) {
         if (derivedFields == null) {
@@ -235,41 +217,9 @@ public abstract class DataExpression extends BaseExpression {
         }
         return aDescriptor.getObjectBuilder().getMappingForAttributeName(getName());
     }
-
-    /**
-     * INTERNAL:
-     */
-    public Vector getOwnedTables() {
-        if (getDescriptor() == null) {
-            if (getAdditionalTables() != null){
-                Vector tables = new Vector();
-                addAdditionalTablesToTableList(tables);
-                return tables;
-            }
-            return null;
-        } else {
-            if (getDescriptor().isAggregateDescriptor()) {
-                return null;
-            } else {
-                if ((getDescriptor().getHistoryPolicy() != null) && (getAsOfClause().getValue() != null)) {
-                    return getDescriptor().getHistoryPolicy().getHistoricalTables();
-                }
-                Vector tables = new Vector();
-                tables.addAll(getDescriptor().getTables());
-                addAdditionalTablesToTableList(tables);
-                return tables;
-            }
-        }
-    }
-
-    
-    public List<DatabaseTable> getAdditionalTables(){
-        return null;
-    }
     
     public QueryKey getQueryKeyOrNull() {
         return null;
-
     }
 
     public Expression getTable(String tableName) {

@@ -38,6 +38,8 @@ public class BatchFetchPolicy implements Serializable, Cloneable {
     protected int size = 100000;
     /** Define the attributes to be batch fetched. */
     protected List<Expression> attributeExpressions;
+    /** Define the mapping to be batch fetched. */
+    protected List<DatabaseMapping> batchedMappings;
     /** PERF: Used internally to store the prepared mapping queries. */
     protected transient Map<DatabaseMapping, ReadQuery> mappingQueries;
     /** PERF: Cache the local batch read attribute names. */
@@ -165,9 +167,26 @@ public class BatchFetchPolicy implements Serializable, Cloneable {
      * Return true is this query has batching
      */
     public boolean hasAttributes() {
-        return (this.attributeExpressions != null) && (!this.attributeExpressions.isEmpty());
+        return (this.attributeExpressions != null) && (!this.attributeExpressions.isEmpty())
+                    || (this.batchedMappings != null);
     }
 
+    /**
+     * INTERNAL:
+     * Return any mappings that are always batched.
+     */
+    public List<DatabaseMapping> getBatchedMappings() {
+        return batchedMappings;
+    }
+
+    /**
+     * INTERNAL:
+     * Set any mappings that are always batched.
+     */
+    public void setBatchedMappings(List<DatabaseMapping> batchedMappings) {
+        this.batchedMappings = batchedMappings;
+    }
+    
     /**
      * INTERNAL:
      * Return if the attribute is specified for batch reading.

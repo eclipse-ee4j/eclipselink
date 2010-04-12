@@ -105,25 +105,11 @@ public class AggregateObjectMapping extends AggregateMapping implements Relation
      * Called when the selection query is being initialized to add the fields for the map key to the query
      */
     public void addAdditionalFieldsToQuery(ReadQuery selectionQuery, Expression baseExpression){
-        Iterator i = getReferenceDescriptor().getAllFields().iterator();
-        while (i.hasNext()){
-            DatabaseField field = (DatabaseField)i.next();
-             if (selectionQuery.isObjectLevelReadQuery()){
-                if (baseExpression != null){
-                    ((ObjectLevelReadQuery)selectionQuery).addAdditionalField(baseExpression.getField(field));
-                } else {
-                    ((ObjectLevelReadQuery)selectionQuery).addAdditionalField((DatabaseField)field.clone());
-                }
-            } else if (selectionQuery.isDataReadQuery()){
-                if (baseExpression == null){
-                    ((SQLSelectStatement)((DataReadQuery)selectionQuery).getSQLStatement()).addField((DatabaseField)field.clone());
-                    if (!((SQLSelectStatement)((DataReadQuery)selectionQuery).getSQLStatement()).getTables().contains(field.getTable())){
-                        ((SQLSelectStatement)((DataReadQuery)selectionQuery).getSQLStatement()).addTable((DatabaseTable)field.getTable().clone());
-                    }
-                } else {
-                    ((SQLSelectStatement)((DataReadQuery)selectionQuery).getSQLStatement()).addField(baseExpression.getTable(field.getTable()).getField(field));
-                }
-                
+        for (DatabaseField field : getReferenceDescriptor().getAllFields()) {
+             if (selectionQuery.isObjectLevelReadQuery()) {
+                 ((ObjectLevelReadQuery)selectionQuery).addAdditionalField(baseExpression.getField(field));
+             } else if (selectionQuery.isDataReadQuery()) {
+                ((SQLSelectStatement)((DataReadQuery)selectionQuery).getSQLStatement()).addField(baseExpression.getField(field));
             }
         }
     }
@@ -134,13 +120,9 @@ public class AggregateObjectMapping extends AggregateMapping implements Relation
      * Called when the insert query is being initialized to ensure the fields for the map key are in the insert query
      */
     public void addFieldsForMapKey(AbstractRecord joinRow){
-        Iterator <DatabaseMapping> i = getReferenceDescriptor().getMappings().iterator();
-        while (i.hasNext()){
-            DatabaseMapping mapping = i.next();
-            if (!mapping.isReadOnly()){
-                Iterator<DatabaseField> fields = mapping.getFields().iterator();
-                while (fields.hasNext()){
-                    DatabaseField field = fields.next();
+        for (DatabaseMapping mapping : getReferenceDescriptor().getMappings()) {
+            if (!mapping.isReadOnly()) {
+                for (DatabaseField field : mapping.getFields()) {
                     if (field.isUpdatable()){
                         joinRow.put(field, null);
                     }

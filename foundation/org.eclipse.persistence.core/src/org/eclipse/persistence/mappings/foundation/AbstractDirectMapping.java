@@ -112,19 +112,9 @@ public abstract class AbstractDirectMapping extends DatabaseMapping  implements 
      */
     public void addAdditionalFieldsToQuery(ReadQuery selectionQuery, Expression baseExpression){
         if (selectionQuery.isObjectLevelReadQuery()){
-            if (baseExpression == null){
-                ((ObjectLevelReadQuery)selectionQuery).addAdditionalField((DatabaseField)getField().clone());
-            } else {
-                ((ObjectLevelReadQuery)selectionQuery).addAdditionalField(baseExpression.getField(getField()));
-            }
-        
+            ((ObjectLevelReadQuery)selectionQuery).addAdditionalField(baseExpression.getField(getField()));        
         } else if (selectionQuery.isDataReadQuery()){
-            if (baseExpression == null){
-                ((SQLSelectStatement)((DataReadQuery)selectionQuery).getSQLStatement()).addField((DatabaseField)getField().clone());
-                ((SQLSelectStatement)((DataReadQuery)selectionQuery).getSQLStatement()).addTable((DatabaseTable)getField().getTable().clone());
-            } else {
-                ((SQLSelectStatement)((DataReadQuery)selectionQuery).getSQLStatement()).addField(baseExpression.getTable(getField().getTable()).getField(getField()));
-            }
+            ((SQLSelectStatement)((DataReadQuery)selectionQuery).getSQLStatement()).addField(baseExpression.getField(getField()));
         }
     }
 
@@ -372,7 +362,7 @@ public abstract class AbstractDirectMapping extends DatabaseMapping  implements 
         AbstractDirectMapping clone = (AbstractDirectMapping)super.clone();
 
         // Field must be cloned so aggregates do not share fields.
-        clone.setField((DatabaseField)getField().clone());
+        clone.setField(getField().clone());
 
         return clone;
     }
@@ -640,7 +630,7 @@ public abstract class AbstractDirectMapping extends DatabaseMapping  implements 
      * INTERNAL:
      * Return any tables that will be required when this mapping is used as part of a join query.
      */
-    public List<DatabaseTable> getAdditionalTablesForJoinQuery(){
+    public List<DatabaseTable> getAdditionalTablesForJoinQuery() {
         List tables = new ArrayList(1);
         tables.add(getField().getTable());
         return tables;
@@ -902,11 +892,14 @@ public abstract class AbstractDirectMapping extends DatabaseMapping  implements 
      * Return the class this key mapping maps or the descriptor for it
      * @return
      */
-    public Class getMapKeyTargetType(){
+    public Class getMapKeyTargetType() {
         Class aClass = getAttributeAccessor().getAttributeClass();
         // 294765: check the attributeClassification when the MapKey annotation is not specified
-        if(null == aClass) {
+        if (null == aClass) {
             aClass = getAttributeClassification();
+        }
+        if (null == aClass) {
+            aClass = getField().getType();
         }
         return aClass;
     }

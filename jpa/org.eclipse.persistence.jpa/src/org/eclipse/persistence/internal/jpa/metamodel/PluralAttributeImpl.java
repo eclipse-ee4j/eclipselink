@@ -95,31 +95,29 @@ public abstract class PluralAttributeImpl<X, C, V> extends AttributeImpl<X, C> i
                  *  Collection getBasicCollection()
                  */
                 // Note: a call to managedType.getTypeClassFromAttributeOrMethodLevelAccesso will only return the class of the collection on the method accessor
-                if(null == attributeClass) {
+                if (null == attributeClass) {
                     //attributeClass = managedType.getTypeClassFromAttributeOrMethodLevelAccessor(mapping);
                     AbstractSessionLog.getLog().log(SessionLog.FINEST, "metamodel_unable_to_determine_element_type_in_absence_of_generic_parameters", this);
                 }
             } else if(mapping.isMapKeyMapping()) {                   
                 ContainerPolicy policy = mapping.getContainerPolicy();
-                if(policy.isMapPolicy()) {
+                if (policy.isMapPolicy()) {
                     MapContainerPolicy mapPolicy = (MapContainerPolicy) mapping.getContainerPolicy();
                     attributeClass = mapPolicy.getElementClass();
-                } else if(policy.isDirectMapPolicy()) {
-                    attributeClass = mapping.getAttributeClassification();
                 } else {
                     // TODO: refactor: default to the managedType
                     attributeClass = managedType.getJavaType();
                 }
-            } else if(mapping.isManyToManyMapping() || mapping.isOneToManyMapping()) {
+            } else if (mapping.isManyToManyMapping() || mapping.isOneToManyMapping()) {
                 // Example: Collection with an instantiated Set/List
-                attributeClass = ((CollectionMapping)mapping).getReferenceClass();
-            } else if(mapping.isAggregateCollectionMapping()) {
+                attributeClass = mapping.getReferenceClass();
+            } else if (mapping.isAggregateCollectionMapping()) {
                 // get reference class and check if managedType is a MappedSuperclass
                 attributeClass = ((AggregateCollectionMapping)mapping).getReferenceClass();
             }
 
             // TODO: refactor exception handling
-            if(null == attributeClass && validationEnabled) {
+            if (null == attributeClass && validationEnabled) {
                 attributeClass = Object.class;
                 AbstractSessionLog.getLog().log(SessionLog.FINEST, "metamodel_attribute_class_type_is_null", this);                    
             }

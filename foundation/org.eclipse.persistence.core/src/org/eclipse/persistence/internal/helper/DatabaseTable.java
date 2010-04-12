@@ -94,16 +94,13 @@ public class DatabaseTable implements Cloneable, Serializable {
     
     /** 
      * Return a shallow copy of the receiver.
-     * @return Object An Object must be returned or the signature of this method
-     * will conflict with the signature in Object.
      */
-    public Object clone() {
+    public DatabaseTable clone() {
         try {
-            return super.clone();
+            return (DatabaseTable)super.clone();
         } catch (CloneNotSupportedException exception) {
+            throw new InternalError(exception.getMessage());
         }
-
-        return null;
     }
 
     /** 

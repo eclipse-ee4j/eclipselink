@@ -51,6 +51,7 @@ import org.eclipse.persistence.sessions.server.ServerSession;
 import org.eclipse.persistence.testing.framework.junit.JUnitTestCase;
 import org.eclipse.persistence.testing.framework.QuerySQLTracker;
 import org.eclipse.persistence.testing.models.jpa.advanced.Buyer;
+import org.eclipse.persistence.testing.models.jpa.advanced.Department;
 import org.eclipse.persistence.testing.models.jpa.advanced.Employee;
 import org.eclipse.persistence.testing.models.jpa.advanced.Address;
 import org.eclipse.persistence.testing.models.jpa.advanced.EmployeePopulator;
@@ -139,7 +140,14 @@ public class AdvancedQueryTestSuite extends JUnitTestCase {
         suite.addTest(new AdvancedQueryTestSuite("testMapBatchFetchingJOIN"));
         suite.addTest(new AdvancedQueryTestSuite("testMapBatchFetchingEXISTS"));
         suite.addTest(new AdvancedQueryTestSuite("testMapBatchFetchingIN"));
-        
+        suite.addTest(new AdvancedQueryTestSuite("testBasicMapJoinFetching"));
+        suite.addTest(new AdvancedQueryTestSuite("testBasicMapLeftJoinFetching"));
+        suite.addTest(new AdvancedQueryTestSuite("testJoinFetching"));
+        suite.addTest(new AdvancedQueryTestSuite("testMapJoinFetching"));
+        suite.addTest(new AdvancedQueryTestSuite("testJoinFetchingCursor"));
+        suite.addTest(new AdvancedQueryTestSuite("testJoinFetchingPagination"));
+        suite.addTest(new AdvancedQueryTestSuite("testMapKeyJoinFetching"));
+        suite.addTest(new AdvancedQueryTestSuite("testMapKeyBatchFetching"));
         return suite;
     }
     
@@ -1641,6 +1649,56 @@ public class AdvancedQueryTestSuite extends JUnitTestCase {
     }
 
     /**
+     * Test join fetching.
+     */
+    public void testJoinFetching() {
+        clearCache();
+        EntityManager em = createEntityManager();
+        beginTransaction(em);
+        // Count SQL.
+        QuerySQLTracker counter = new QuerySQLTracker(getServerSession());
+        try {
+            Query query = em.createQuery("Select e from Employee e where e.gender = :g1 or e.gender = :g2");
+            query.setHint(QueryHints.LEFT_FETCH, "e.address");
+            //query.setHint(QueryHints.LEFT_FETCH, "e.manager"); - has eagers
+            //query.setHint(QueryHints.LEFT_FETCH, "e.projects"); - has eagers
+            //query.setHint(QueryHints.LEFT_FETCH, "e.managedEmployees"); - has eagers
+            query.setHint(QueryHints.LEFT_FETCH, "e.responsibilities");
+            query.setHint(QueryHints.LEFT_FETCH, "e.dealers");
+            query.setHint(QueryHints.LEFT_FETCH, "e.phoneNumbers");
+            //query.setHint(QueryHints.BATCH, "e.department"); is join fetched already.
+            query.setHint(QueryHints.LEFT_FETCH, "e.workWeek");
+            query.setParameter("g1", Gender.Male);
+            query.setParameter("g2", Gender.Female);
+            List<Employee> results = query.getResultList();
+            if (isWeavingEnabled() && counter.getSqlStatements().size() != 1) {
+                fail("Should have been 1 query but was: " + counter.getSqlStatements().size());
+            }
+            for (Employee employee : results) {
+                employee.getAddress();
+                employee.getResponsibilities().size();
+                employee.getDealers().size();
+                employee.getPhoneNumbers().size();
+                employee.getWorkWeek().size();
+            }
+            int queries = 1;
+            if (isWeavingEnabled() && counter.getSqlStatements().size() > queries) {
+                fail("Should have been " + queries + " queries but was: " + counter.getSqlStatements().size());
+            }
+            clearCache();
+            for (Employee employee : results) {
+                verifyObject(employee);
+            }
+        } finally {
+            rollbackTransaction(em);
+            closeEntityManager(em);
+            if (counter != null) {
+                counter.remove();
+            }
+        }
+    }
+
+    /**
      * Test batch fetching of maps.
      */
     public void testBasicMapBatchFetchingJOIN() {
@@ -1700,13 +1758,93 @@ public class AdvancedQueryTestSuite extends JUnitTestCase {
             query.setParameter("name", "%Gold%");
             List<Buyer> results = query.getResultList();
             if (isWeavingEnabled() && counter.getSqlStatements().size() != 3) {
-                fail("Should have been 1 query but was: " + counter.getSqlStatements().size());
+                fail("Should have been 3 query but was: " + counter.getSqlStatements().size());
             }
             for (Buyer buyer : results) {
                 buyer.getCreditCards().size();
                 buyer.getCreditLines().size();
             }
             int queries = 4;
+            if (isWeavingEnabled() && counter.getSqlStatements().size() > queries) {
+                fail("Should have been " + queries + " queries but was: " + counter.getSqlStatements().size());
+            }
+            clearCache();
+            for (Buyer buyer : results) {
+                verifyObject(buyer);
+            }
+        } finally {
+            rollbackTransaction(em);
+            closeEntityManager(em);
+            if (counter != null) {
+                counter.remove();
+            }
+        }
+    }
+
+    /**
+     * Test join fetching of maps.
+     */
+    public void testBasicMapJoinFetching() {
+        clearCache();
+        EntityManager em = createEntityManager();
+        beginTransaction(em);
+        // Count SQL.
+        QuerySQLTracker counter = new QuerySQLTracker(getServerSession());
+        try {
+            Query query = em.createQuery("Select b from Buyer b where b.name like :name");
+            query.setHint(QueryHints.FETCH, "e.creditCards");
+            query.setHint(QueryHints.FETCH, "e.creditLines");
+            query.setParameter("name", "%Gold%");
+            List<Buyer> results = query.getResultList();
+            if (isWeavingEnabled() && counter.getSqlStatements().size() != 2) {
+                fail("Should have been 2 query but was: " + counter.getSqlStatements().size());
+            }
+            for (Buyer buyer : results) {
+                buyer.getCreditCards().size();
+                buyer.getCreditLines().size();
+            }
+            int queries = 2;
+            if (isWeavingEnabled() && counter.getSqlStatements().size() > queries) {
+                fail("Should have been " + queries + " queries but was: " + counter.getSqlStatements().size());
+            }
+            clearCache();
+            for (Buyer buyer : results) {
+                verifyObject(buyer);
+            }
+        } finally {
+            rollbackTransaction(em);
+            closeEntityManager(em);
+            if (counter != null) {
+                counter.remove();
+            }
+        }
+    }
+
+    /**
+     * Test join fetching of maps.
+     */
+    public void testBasicMapLeftJoinFetching() {
+        clearCache();
+        EntityManager em = createEntityManager();
+        beginTransaction(em);
+        // Count SQL.
+        QuerySQLTracker counter = new QuerySQLTracker(getServerSession());
+        try {
+            Query query = em.createQuery("Select b from Buyer b where b.name like :name");
+            query.setHint(QueryHints.LEFT_FETCH, "e.creditCards");
+            query.setHint(QueryHints.LEFT_FETCH, "e.creditLines");
+            query.setParameter("name", "%Gold%");
+            List<Buyer> results = query.getResultList();
+            if (isWeavingEnabled() && counter.getSqlStatements().size() != 2) {
+                fail("Should have been 2 query but was: " + counter.getSqlStatements().size());
+            }
+            boolean found = false;
+            for (Buyer buyer : results) {
+                found = found || buyer.getCreditCards().size() > 0;
+                found = found || buyer.getCreditLines().size() > 0;
+            }
+            assertTrue("No data to join.", found);
+            int queries = 2;
             if (isWeavingEnabled() && counter.getSqlStatements().size() > queries) {
                 fail("Should have been " + queries + " queries but was: " + counter.getSqlStatements().size());
             }
@@ -1739,10 +1877,10 @@ public class AdvancedQueryTestSuite extends JUnitTestCase {
             query.setHint(QueryHints.BATCH, "e.cSInteractions");
             query.setHint(QueryHints.BATCH, "e.cCustomers");
             List<Customer> results = query.getResultList();
-            if (isWeavingEnabled() && counter.getSqlStatements().size() > 2) {
-                fail("Should have been 2 queries but was: " + counter.getSqlStatements().size());
+            if (isWeavingEnabled() && counter.getSqlStatements().size() > 3) {
+                fail("Should have been 3 queries but was: " + counter.getSqlStatements().size());
             }
-            int queries = 3;
+            int queries = 5;
             for (Customer customer : results) {
                 queries = queries + customer.getCSInteractions().size();
             }
@@ -1762,6 +1900,126 @@ public class AdvancedQueryTestSuite extends JUnitTestCase {
         }
     }
 
+    /**
+     * Test join fetching of maps.
+     */
+    public void testMapJoinFetching() {
+        clearCache();
+        EntityManager em = createEntityManager();
+        beginTransaction(em);
+        // Count SQL.
+        QuerySQLTracker counter = new QuerySQLTracker(getServerSession());
+        try {
+            Query query = em.createQuery("Select c from Customer c");
+            query.setHint(QueryHints.LEFT_FETCH, "e.cSInteractions");
+            query.setHint(QueryHints.LEFT_FETCH, "e.cCustomers");
+            List<Customer> results = query.getResultList();
+            if (isWeavingEnabled() && counter.getSqlStatements().size() > 3) {
+                fail("Should have been 3 queries but was: " + counter.getSqlStatements().size());
+            }
+            int queries = 1;
+            for (Customer customer : results) {
+                queries = queries + customer.getCSInteractions().size();
+            }
+            assertTrue("No data to join.", queries > 1);
+            if (isWeavingEnabled() && counter.getSqlStatements().size() > queries) {
+                fail("Should have been " + queries + " queries but was: " + counter.getSqlStatements().size());
+            }
+            clearCache();
+            for (Customer customer : results) {
+                verifyObject(customer);
+            }
+        } finally {
+            rollbackTransaction(em);
+            closeEntityManager(em);
+            if (counter != null) {
+                counter.remove();
+            }
+        }
+    }
+
+    /**
+     * Test join fetching of maps.
+     */
+    public void testMapKeyJoinFetching() {
+        clearCache();
+        EntityManager em = createEntityManager();
+        beginTransaction(em);
+        // Count SQL.
+        QuerySQLTracker counter = new QuerySQLTracker(getServerSession());
+        try {
+            Query query = em.createQuery("Select d from ADV_DEPT d");
+            query.setHint(QueryHints.LEFT_FETCH, "d.equipment");
+            query.setHint(QueryHints.LEFT_FETCH, "d.employees");
+            query.setHint(QueryHints.LEFT_FETCH, "d.managers");
+            List<Department> results = query.getResultList();
+            if (isWeavingEnabled() && counter.getSqlStatements().size() > 1) {
+                fail("Should have been 13 queries but was: " + counter.getSqlStatements().size());
+            }
+            int queries = 1;
+            for (Department department : results) {
+                queries = queries + department.getEquipment().size();
+                department.getEmployees().size();
+                department.getManagers().size();
+            }
+            assertTrue("No data to join.", queries > 1);
+            if (isWeavingEnabled() && counter.getSqlStatements().size() > 1) {
+                fail("Should have been " + 1 + " queries but was: " + counter.getSqlStatements().size());
+            }
+            clearCache();
+            for (Department department : results) {
+                verifyObject(department);
+            }
+        } finally {
+            rollbackTransaction(em);
+            closeEntityManager(em);
+            if (counter != null) {
+                counter.remove();
+            }
+        }
+    }
+    
+    /**
+     * Test join fetching of maps.
+     */
+    public void testMapKeyBatchFetching() {
+        clearCache();
+        EntityManager em = createEntityManager();
+        beginTransaction(em);
+        // Count SQL.
+        QuerySQLTracker counter = new QuerySQLTracker(getServerSession());
+        try {
+            Query query = em.createQuery("Select d from ADV_DEPT d");
+            query.setHint(QueryHints.BATCH, "d.equipment");
+            query.setHint(QueryHints.BATCH, "d.employees");
+            query.setHint(QueryHints.BATCH, "d.managers");
+            List<Department> results = query.getResultList();
+            if (isWeavingEnabled() && counter.getSqlStatements().size() > 1) {
+                fail("Should have been 1 queries but was: " + counter.getSqlStatements().size());
+            }
+            int queries = 1;
+            for (Department department : results) {
+                queries = queries + department.getEquipment().size();
+                department.getEmployees().size();
+                department.getManagers().size();
+            }
+            assertTrue("No data to join.", queries > 1);
+            if (isWeavingEnabled() && counter.getSqlStatements().size() > 4) {
+                fail("Should have been " + 4 + " queries but was: " + counter.getSqlStatements().size());
+            }
+            clearCache();
+            for (Department department : results) {
+                verifyObject(department);
+            }
+        } finally {
+            rollbackTransaction(em);
+            closeEntityManager(em);
+            if (counter != null) {
+                counter.remove();
+            }
+        }
+    }
+    
     /**
      * Test batch fetching using first/max results.
      */
@@ -1805,6 +2063,47 @@ public class AdvancedQueryTestSuite extends JUnitTestCase {
         }
     }
 
+    /**
+     * Test join fetching using first/max results.
+     */
+    public void testJoinFetchingPagination() {
+        clearCache();
+        EntityManager em = createEntityManager();
+        beginTransaction(em);
+        // Count SQL.
+        QuerySQLTracker counter = new QuerySQLTracker(getServerSession());
+        try {
+            Query query = em.createQuery("Select e from Employee e");
+            query.setHint(QueryHints.LEFT_FETCH, "e.address");
+            query.setHint(QueryHints.LEFT_FETCH, "e.phoneNumbers");
+            query.setFirstResult(5);
+            query.setMaxResults(5);
+            List<Employee> results = query.getResultList();
+            if (isWeavingEnabled() && counter.getSqlStatements().size() != 3) {
+                fail("Should have been 3 query but was: " + counter.getSqlStatements().size());
+            }
+            if (results.size() > 5) {
+                fail("Should have only returned 5 objects but was: " + results.size());
+            }
+            for (Employee employee : results) {
+                employee.getAddress();
+            }
+            if (isWeavingEnabled() && counter.getSqlStatements().size() > 3) {
+                fail("Should have been 3 queries but was: " + counter.getSqlStatements().size());
+            }
+            clearCache();
+            for (Employee employee : results) {
+                verifyObject(employee);
+            }
+        } finally {
+            rollbackTransaction(em);
+            closeEntityManager(em);
+            if (counter != null) {
+                counter.remove();
+            }
+        }
+    }
+    
     /**
      * Test batch fetching using read object query.
      */
@@ -1909,7 +2208,62 @@ public class AdvancedQueryTestSuite extends JUnitTestCase {
                 count++;
             }
             if (isWeavingEnabled() && counter.getSqlStatements().size() > (count/5 + 2)) {
-                fail("Should have been " + (count/5 + 1) + " queries but was: " + counter.getSqlStatements().size());
+                fail("Should have been " + (count/5 + 2) + " queries but was: " + counter.getSqlStatements().size());
+            }
+            clearCache();
+            for (Employee employee : employees) {
+                verifyObject(employee);
+            }
+        } finally {
+            rollbackTransaction(em);
+            closeEntityManager(em);
+            if (counter != null) {
+                counter.remove();
+            }
+        }
+    }
+
+    /**
+     * Test join fetching using a cursor.
+     */
+    public void testJoinFetchingCursor() {
+        clearCache();
+        EntityManager em = createEntityManager();
+        beginTransaction(em);
+        // Count SQL.
+        QuerySQLTracker counter = new QuerySQLTracker(getServerSession());
+        try {
+            Query query = em.createQuery("Select e from Employee e order by e.id"); // Currently need to order for multiple 1-m joins.
+            query.setHint(QueryHints.LEFT_FETCH, "e.address");
+            //query.setHint(QueryHints.LEFT_FETCH, "e.manager"); - has eagers
+            //query.setHint(QueryHints.LEFT_FETCH, "e.projects"); - has eagers
+            //query.setHint(QueryHints.LEFT_FETCH, "e.managedEmployees"); - has eagers
+            query.setHint(QueryHints.LEFT_FETCH, "e.responsibilities");
+            query.setHint(QueryHints.LEFT_FETCH, "e.dealers");
+            query.setHint(QueryHints.LEFT_FETCH, "e.phoneNumbers");
+            //query.setHint(QueryHints.BATCH, "e.department"); is join fetched already.
+            query.setHint(QueryHints.LEFT_FETCH, "e.workWeek");
+            query.setHint(QueryHints.CURSOR_PAGE_SIZE, 5);
+            query.setHint(QueryHints.CURSOR_INITIAL_SIZE, 2);
+            Iterator<Employee> results = (Iterator<Employee>)query.getSingleResult();
+            if (isWeavingEnabled() && counter.getSqlStatements().size() != 1) {
+                fail("Should have been 1 query but was: " + counter.getSqlStatements().size());
+            }
+            int count = 0;
+            List<Employee> employees = new ArrayList<Employee>();
+            while (results.hasNext()) {
+                Employee employee = results.next();
+                employees.add(employee);
+                employee.getAddress();
+                employee.getResponsibilities().size();
+                employee.getDealers().size();
+                employee.getPhoneNumbers().size();
+                employee.getWorkWeek().size();
+                count++;
+            }
+            int queries = 1;
+            if (isWeavingEnabled() && counter.getSqlStatements().size() > queries) {
+                fail("Should have been " + queries + " queries but was: " + counter.getSqlStatements().size());
             }
             clearCache();
             for (Employee employee : employees) {

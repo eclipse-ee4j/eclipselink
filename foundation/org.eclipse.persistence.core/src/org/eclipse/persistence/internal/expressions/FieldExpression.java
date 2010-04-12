@@ -137,7 +137,7 @@ public class FieldExpression extends DataExpression {
      * If there are any fields associated with this expression, return them
      */
     public DatabaseField getClonedField() {
-        return (DatabaseField)getField().clone();
+        return getField().clone();
     }
 
     /**
@@ -172,7 +172,7 @@ public class FieldExpression extends DataExpression {
      * Alias the database field for our current environment
      */
     private void initializeAliasedField() {
-        DatabaseField tempField = (DatabaseField)getField().clone();
+        DatabaseField tempField = getField().clone();
         DatabaseTable aliasedTable = getAliasedTable();
 
         //  Put in a special check here so that if the aliasing does nothing we don't cache the

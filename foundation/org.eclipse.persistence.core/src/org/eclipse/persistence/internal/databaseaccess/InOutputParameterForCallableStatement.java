@@ -30,7 +30,7 @@ public class InOutputParameterForCallableStatement extends OutputParameterForCal
 
     public InOutputParameterForCallableStatement(Object inParameter, DatabaseField outField, AbstractSession session) {
         if ((outField.getType() == null) && (inParameter != null)) {
-            DatabaseField typeField = (DatabaseField)outField.clone();
+            DatabaseField typeField = outField.clone();
             if (inParameter instanceof DatabaseField) {
                 typeField.setType(((DatabaseField)inParameter).getType());
             } else if (inParameter instanceof InParameterForCallableStatement){

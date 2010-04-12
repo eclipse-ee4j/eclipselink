@@ -487,6 +487,15 @@ public class ProjectClassGenerator {
                 if (!collectionClassName.equals(Vector.class.getName())) {
                     method.addLine(mappingName + ".useCollectionClass(" + collectionClassName + ".class);");
                 }
+            } else if (collectionMapping.isDirectMapMapping()) {
+                if (policy instanceof TransparentIndirectionPolicy) {
+                    method.addLine(mappingName + ".useTransparentMap();");
+                    if (!collectionClassName.equals(IndirectMap.class.getName())) {
+                        method.addLine(mappingName + ".useMapClass(" + collectionClassName + ".class);");
+                    }
+                } else {
+                    method.addLine(mappingName + ".useMapClass(" + collectionClassName + ".class);");
+                }
             } else if (collectionMapping.getContainerPolicy().isMapPolicy()) {
                 String keyMethodName = ((org.eclipse.persistence.internal.queries.MapContainerPolicy)collectionMapping.getContainerPolicy()).getKeyName();
                 if (policy instanceof TransparentIndirectionPolicy) {
@@ -496,15 +505,6 @@ public class ProjectClassGenerator {
                     }
                 } else {
                     method.addLine(mappingName + ".useMapClass(" + collectionClassName + ".class, \"" + keyMethodName + "\");");
-                }
-            } else if (collectionMapping.getContainerPolicy().isDirectMapPolicy()) {
-                if (policy instanceof TransparentIndirectionPolicy) {
-                    method.addLine(mappingName + ".useTransparentMap();");
-                    if (!collectionClassName.equals(IndirectMap.class.getName())) {
-                        method.addLine(mappingName + ".useMapClass(" + collectionClassName + ".class);");
-                    }
-                } else {
-                    method.addLine(mappingName + ".useMapClass(" + collectionClassName + ".class);");
                 }
             }
 

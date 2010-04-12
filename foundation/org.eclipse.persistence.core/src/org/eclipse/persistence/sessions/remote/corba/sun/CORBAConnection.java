@@ -201,14 +201,13 @@ public class CORBAConnection extends RemoteConnection {
      */
     public void fixObjectReferences(Transporter remoteCursoredStream, ObjectLevelReadQuery query, RemoteSession session) {
         RemoteCursoredStream stream = (RemoteCursoredStream)remoteCursoredStream.getObject();
-        Vector remoteObjectCollection = stream.getObjectCollection();
+        List remoteObjectCollection = stream.getObjectCollection();
         if (query.isReadAllQuery() && (!query.isReportQuery())) {// could be DataReadQuery
             Vector clientObjectCollection = new Vector(remoteObjectCollection.size());
 
             // find next power-of-2 size
             Map recursiveSet = new IdentityHashMap(remoteObjectCollection.size() + 1);
-            for (Enumeration enumtr = remoteObjectCollection.elements(); enumtr.hasMoreElements();) {
-                Object serverSideDomainObject = enumtr.nextElement();
+            for (Object serverSideDomainObject : remoteObjectCollection) {
                 clientObjectCollection.addElement(session.getObjectCorrespondingTo(serverSideDomainObject, remoteCursoredStream.getObjectDescriptors(), recursiveSet, query));
             }
             stream.setObjectCollection(clientObjectCollection);

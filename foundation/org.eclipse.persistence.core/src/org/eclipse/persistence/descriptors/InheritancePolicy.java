@@ -379,7 +379,7 @@ public class InheritancePolicy implements Serializable, Cloneable {
         try {
             clone = (InheritancePolicy)super.clone();
             if (hasClassIndicator()) {
-                clone.setClassIndicatorField((DatabaseField)clone.getClassIndicatorField().clone());
+                clone.setClassIndicatorField(clone.getClassIndicatorField().clone());
             }
         } catch (Exception exception) {
             throw new InternalError("clone failed");

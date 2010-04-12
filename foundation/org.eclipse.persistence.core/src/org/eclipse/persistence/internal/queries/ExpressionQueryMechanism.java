@@ -74,7 +74,7 @@ public class ExpressionQueryMechanism extends StatementQueryMechanism {
         Vector result = new Vector(fields.size());
 
         for (Enumeration e = fields.elements(); e.hasMoreElements();) {
-            DatabaseField eachField = (DatabaseField)((DatabaseField)e.nextElement()).clone();
+            DatabaseField eachField = ((DatabaseField)e.nextElement()).clone();
             eachField.setTable(node.aliasForTable(eachField.getTable()));
             result.addElement(eachField);
         }
@@ -967,16 +967,16 @@ public class ExpressionQueryMechanism extends StatementQueryMechanism {
             fields = (Vector)getDescriptor().getAllFields().clone();
         } else {
             fields = org.eclipse.persistence.internal.helper.NonSynchronizedVector.newInstance();
-            fields.addElement(base);
+            fields.add(base);
         }
         // Add joined fields.
         if (owner.hasJoining()) {
-            Helper.addAllToVector(fields, owner.getJoinedAttributeManager().getJoinedAttributeExpressions());
-            Helper.addAllToVector(fields, owner.getJoinedAttributeManager().getJoinedMappingExpressions());
+            fields.addAll(owner.getJoinedAttributeManager().getJoinedAttributeExpressions());
+            fields.addAll(owner.getJoinedAttributeManager().getJoinedMappingExpressions());
         }
         if (owner.hasAdditionalFields()) {
             // Add additional fields, use for batch reading m-m.
-            Helper.addAllToVector(fields, owner.getAdditionalFields());
+            fields.addAll(owner.getAdditionalFields());
         }
         return fields;
     }

@@ -133,7 +133,7 @@ public class ExpressionBuilder extends ObjectExpression {
         // will contain one table, and that will be the
         // table of the view...
         if (hasViewTable()) {
-            DatabaseTable aliased = (DatabaseTable)viewTable.clone();
+            DatabaseTable aliased = viewTable.clone();
             String alias = "t" + initialValue;
             aliased.setName(alias);
             assignAlias(alias, viewTable);

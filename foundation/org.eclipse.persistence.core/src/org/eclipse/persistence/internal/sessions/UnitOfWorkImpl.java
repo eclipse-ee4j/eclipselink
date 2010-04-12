@@ -4671,23 +4671,21 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
      * @return Map to facilitate merging with conforming instances
      * returned from a query on the database.
      */
-    public Map scanForConformingInstances(Expression selectionCriteria, Class referenceClass, AbstractRecord arguments, ObjectLevelReadQuery query) {
+    public Map<Object, Object> scanForConformingInstances(Expression selectionCriteria, Class referenceClass, AbstractRecord arguments, ObjectLevelReadQuery query) {
         // for bug 3568141 use the painstaking shouldTriggerIndirection if set
         int policy = query.getInMemoryQueryIndirectionPolicyState();
         if (policy != InMemoryQueryIndirectionPolicy.SHOULD_TRIGGER_INDIRECTION) {
             policy = InMemoryQueryIndirectionPolicy.SHOULD_IGNORE_EXCEPTION_RETURN_NOT_CONFORMED;
         }
-        Map indexedInterimResult = new IdentityHashMap();
+        Map<Object, Object> indexedInterimResult = new IdentityHashMap<Object, Object>();
         try {
-            Vector fromCache = null;
+            List fromCache = null;
             if (selectionCriteria != null) {
                 // assume objects that have the compared relationship 
                 // untriggered do not conform as they have not been changed.
                 // bug 2637555
                 fromCache = getIdentityMapAccessor().getAllFromIdentityMap(selectionCriteria, referenceClass, arguments, policy);
-                for (Enumeration fromCacheEnum = fromCache.elements();
-                         fromCacheEnum.hasMoreElements();) {
-                    Object object = fromCacheEnum.nextElement();
+                for (Object object : fromCache) {
                     if (!isObjectDeleted(object)) {
                         indexedInterimResult.put(object, object);
                     }
@@ -4695,11 +4693,9 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
             }
 
             // Add any new objects that conform to the query.
-            Vector newObjects = null;
+            List newObjects = null;
             newObjects = getAllFromNewObjects(selectionCriteria, referenceClass, arguments, policy);
-            for (Enumeration newObjectsEnum = newObjects.elements();
-                     newObjectsEnum.hasMoreElements();) {
-                Object object = newObjectsEnum.nextElement();
+            for (Object object : newObjects) {
                 if (!isObjectDeleted(object)) {
                     indexedInterimResult.put(object, object);
                 }
