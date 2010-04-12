@@ -77,6 +77,7 @@ public class XMLAnyAttributeMapping extends DatabaseMapping implements XMLMappin
 
     public XMLAnyAttributeMapping() {
         this.containerPolicy = new MappedKeyMapContainerPolicy(HashMap.class);
+        this.containerPolicy.setKeyMapping(new XMLDirectMapping());
         this.isNamespaceDeclarationIncluded = true;
         this.isSchemaInstanceIncluded = true;
     }
