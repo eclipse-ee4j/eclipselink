@@ -15,6 +15,8 @@
  *       - 241651: JPA 2.0 Access Type support
  *     10/01/2008-1.1 Guy Pelletier 
  *       - 249329: To remain JPA 1.0 compliant, any new JPA 2.0 annotations should be referenced by name
+ *     04/09/2010-2.1 Guy Pelletier 
+ *       - 307050: Add defaults for access methods of a VIRTUAL access type
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata.xml;
 
@@ -22,6 +24,7 @@ import java.util.List;
 
 import org.eclipse.persistence.internal.jpa.metadata.ORMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.listeners.EntityListenerMetadata;
+import org.eclipse.persistence.internal.jpa.metadata.mappings.AccessMethodsMetadata;
 
 /**
  * Object to hold onto the XML persistence unit defaults.
@@ -30,12 +33,16 @@ import org.eclipse.persistence.internal.jpa.metadata.listeners.EntityListenerMet
  * @since EclipseLink 1.0
  */
 public class XMLPersistenceUnitDefaults extends ORMetadata {
-    private List<EntityListenerMetadata> m_entityListeners;
+    private AccessMethodsMetadata m_accessMethods;
+    
     private boolean m_cascadePersist;
+    private boolean m_delimitedIdentifiers;
+    
+    private List<EntityListenerMetadata> m_entityListeners;
+    
     private String m_access;
     private String m_catalog;
     private String m_schema;
-    private boolean m_delimitedIdentifiers = false;
 
     /**
      * INTERNAL:
@@ -90,6 +97,14 @@ public class XMLPersistenceUnitDefaults extends ORMetadata {
      * INTERNAL:
      * Used for OX mapping.
      */
+    public AccessMethodsMetadata getAccessMethods() {
+        return m_accessMethods;
+    }
+    
+    /**
+     * INTERNAL:
+     * Used for OX mapping.
+     */
     public String getCascadePersist() {
         return null;
     }
@@ -128,12 +143,23 @@ public class XMLPersistenceUnitDefaults extends ORMetadata {
     
     /**
      * INTERNAL:
+     */
+    public boolean hasAccessMethods() {
+        return m_accessMethods != null;
+    }
+    
+    /**
+     * INTERNAL:
      * Used for OX mapping.
      */
     public boolean isCascadePersist() {
         return m_cascadePersist;
     }
-    
+
+    /**
+     * INTERNAL:
+     * Used for OX mapping.
+     */
     public boolean isDelimitedIdentifiers(){
         return m_delimitedIdentifiers;
     }
@@ -148,12 +174,13 @@ public class XMLPersistenceUnitDefaults extends ORMetadata {
             // Primitive boolean merging.
             mergePrimitiveBoolean(m_cascadePersist, persistenceUnitDefaults.isCascadePersist(), persistenceUnitDefaults, "cascade-persist");
             mergePrimitiveBoolean(m_delimitedIdentifiers, persistenceUnitDefaults.isDelimitedIdentifiers(), persistenceUnitDefaults, "delimited-identifiers");
-
-            
             // Simple object merging.
             m_access = (String) mergeSimpleObjects(m_access, persistenceUnitDefaults.getAccess(), persistenceUnitDefaults, "<access>");
             m_catalog = (String) mergeSimpleObjects(m_catalog, persistenceUnitDefaults.getCatalog(), persistenceUnitDefaults, "<catalog>");
             m_schema = (String) mergeSimpleObjects(m_schema, persistenceUnitDefaults.getSchema(),  persistenceUnitDefaults, "<schema>");
+            
+            // ORMetadata object merging.        
+            m_accessMethods = (AccessMethodsMetadata) mergeORObjects(m_accessMethods, persistenceUnitDefaults.getAccessMethods());
         }
     }
     
@@ -163,6 +190,14 @@ public class XMLPersistenceUnitDefaults extends ORMetadata {
      */
     public void setAccess(String access) {
         m_access = access;
+    }
+    
+    /**
+     * INTERNAL:
+     * Used for OX mapping.
+     */
+    public void setAccessMethods(AccessMethodsMetadata accessMethods){
+        m_accessMethods = accessMethods;
     }
     
     /**
@@ -189,6 +224,10 @@ public class XMLPersistenceUnitDefaults extends ORMetadata {
         m_cascadePersist = true;
     }
     
+    /**
+     * INTERNAL:
+     * Used for OX mapping.
+     */
     public void setDelimitedIdentifiers(String ignore){
         m_delimitedIdentifiers = true;
     }

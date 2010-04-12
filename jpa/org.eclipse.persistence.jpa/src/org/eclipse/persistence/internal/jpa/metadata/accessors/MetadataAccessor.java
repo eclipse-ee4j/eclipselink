@@ -31,6 +31,8 @@
  *       - 303632: Add attribute-type for mapping attributes to EclipseLink-ORM
  *     03/29/2010-2.1 Guy Pelletier 
  *       - 267217: Add Named Access Type to EclipseLink-ORM
+ *     04/09/2010-2.1 Guy Pelletier 
+ *       - 307050: Add defaults for access methods of a VIRTUAL access type
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata.accessors;
 
@@ -61,6 +63,7 @@ import org.eclipse.persistence.internal.jpa.metadata.converters.ObjectTypeConver
 import org.eclipse.persistence.internal.jpa.metadata.converters.StructConverterMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.converters.TypeConverterMetadata;
 
+import org.eclipse.persistence.internal.jpa.metadata.mappings.AccessMethodsMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.tables.TableMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.xml.XMLEntityMappings;
 
@@ -78,7 +81,7 @@ import org.eclipse.persistence.internal.jpa.metadata.ORMetadata;
  * @since TopLink EJB 3.0 Reference Implementation
  */
 public abstract class MetadataAccessor extends ORMetadata {
-    private String m_access;
+    private AccessMethodsMetadata m_accessMethods;
     
     private List<ConverterMetadata> m_converters = new ArrayList<ConverterMetadata>();
     private List<ObjectTypeConverterMetadata> m_objectTypeConverters = new ArrayList<ObjectTypeConverterMetadata>();
@@ -88,6 +91,8 @@ public abstract class MetadataAccessor extends ORMetadata {
     
     private MetadataDescriptor m_descriptor;
     private MetadataProject m_project;
+    
+    private String m_access;
     private String m_name;
     
     /**
@@ -152,6 +157,14 @@ public abstract class MetadataAccessor extends ORMetadata {
      */
     public String getAccessibleObjectName() {
         return getAccessibleObject().getName();
+    }
+    
+    /**
+     * INTERNAL:
+     * Used for OX mapping.
+     */
+    public AccessMethodsMetadata getAccessMethods() {
+        return m_accessMethods;
     }
     
     /**
@@ -380,6 +393,13 @@ public abstract class MetadataAccessor extends ORMetadata {
     }
     
     /**
+     * INTERNAL:
+     */
+    public boolean hasAccessMethods() {
+        return m_accessMethods != null;
+    }
+    
+    /**
      * INTERNAL: 
      * Called from annotation and xml initialization.
      */
@@ -410,6 +430,9 @@ public abstract class MetadataAccessor extends ORMetadata {
     @Override
     public void initXMLObject(MetadataAccessibleObject accessibleObject, XMLEntityMappings entityMappings) {
         super.initXMLObject(accessibleObject, entityMappings);
+        
+        // Initialize single objects.
+        initXMLObject(m_accessMethods, accessibleObject);
         
         // Initialize lists of objects.
         initXMLObjects(m_converters, accessibleObject);
@@ -445,6 +468,9 @@ public abstract class MetadataAccessor extends ORMetadata {
         
         // Simple object merging.
         m_access = (String) mergeSimpleObjects(m_access, accessor.getAccess(), accessor, "@access");
+        
+        // ORMetadata object merging.        
+        m_accessMethods = (AccessMethodsMetadata) mergeORObjects(m_accessMethods, accessor.getAccessMethods());
         
         // ORMetadata list merging.
         m_converters = mergeORObjectLists(m_converters, accessor.getConverters());
@@ -578,6 +604,14 @@ public abstract class MetadataAccessor extends ORMetadata {
     public void setAccess(String access) {
         m_access = access;
     } 
+    
+    /**
+     * INTERNAL:
+     * Used for OX mapping.
+     */
+    public void setAccessMethods(AccessMethodsMetadata accessMethods){
+        m_accessMethods = accessMethods;
+    }
     
     /**
      * INTERNAL:

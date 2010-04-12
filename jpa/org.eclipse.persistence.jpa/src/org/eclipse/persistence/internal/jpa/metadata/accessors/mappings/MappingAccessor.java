@@ -49,6 +49,8 @@
  *       - 303632: Add attribute-type for mapping attributes to EclipseLink-ORM
  *     03/29/2010-2.1 Guy Pelletier 
  *       - 267217: Add Named Access Type to EclipseLink-ORM
+ *     04/09/2010-2.1 Guy Pelletier 
+ *       - 307050: Add defaults for access methods of a VIRTUAL access type
  ******************************************************************************/
 package org.eclipse.persistence.internal.jpa.metadata.accessors.mappings;
 
@@ -99,9 +101,7 @@ import org.eclipse.persistence.internal.jpa.metadata.converters.EnumeratedMetada
 import org.eclipse.persistence.internal.jpa.metadata.converters.LobMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.converters.SerializedMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.converters.TemporalMetadata;
-import org.eclipse.persistence.internal.jpa.metadata.mappings.AccessMethodsMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.mappings.MapKeyMetadata;
-import org.eclipse.persistence.internal.jpa.metadata.xml.XMLEntityMappings;
 import org.eclipse.persistence.internal.queries.CollectionContainerPolicy;
 import org.eclipse.persistence.internal.queries.MappedKeyMapContainerPolicy;
 
@@ -135,7 +135,6 @@ public abstract class MappingAccessor extends MetadataAccessor {
 
     private final static String DEFAULT_MAP_KEY_COLUMN_SUFFIX = "_KEY";
 
-    private AccessMethodsMetadata m_accessMethods;
     private ClassAccessor m_classAccessor;
     private DatabaseMapping m_mapping;
     private Map<String, PropertyMetadata> m_properties = new HashMap<String, PropertyMetadata>();
@@ -197,14 +196,6 @@ public abstract class MappingAccessor extends MetadataAccessor {
             // Set the field name translation on the mapping.
             embeddableMapping.addFieldNameTranslation(overrideField.getQualifiedName(), aggregatesMappingField.getName()); 
         }
-    }
-    
-    /**
-     * INTERNAL:
-     * Used for OX mapping.
-     */
-    public AccessMethodsMetadata getAccessMethods() {
-        return m_accessMethods;
     }
     
     /**
@@ -271,10 +262,10 @@ public abstract class MappingAccessor extends MetadataAccessor {
      */
     @Override
     public String getAttributeName() {
-        if (m_accessMethods == null) {
-            return getAccessibleObject().getAttributeName();
-        } else {
+        if (hasAccessMethods()) {
             return getName();
+        } else {
+            return getAccessibleObject().getAttributeName();
         }
     }
     
@@ -454,12 +445,8 @@ public abstract class MappingAccessor extends MetadataAccessor {
      * Returns the get method name of a method accessor. Note, this method
      * should not be called when processing field access.
      */
-    protected String getGetMethodName() {
-        if (m_accessMethods != null && m_accessMethods.getGetMethodName() != null) {
-            return m_accessMethods.getGetMethodName();
-        }
-        
-        return getAccessibleObjectName();
+    public String getGetMethodName() {
+        return hasAccessMethods() ? getAccessMethods().getGetMethodName() : getAccessibleObjectName(); 
     }
     
     /**
@@ -728,12 +715,8 @@ public abstract class MappingAccessor extends MetadataAccessor {
      * Returns the set method name of a method accessor. Note, this method
      * should not be called when processing field access.
      */
-    protected String getSetMethodName() {
-        if (m_accessMethods != null && m_accessMethods.getSetMethodName() != null) {
-            return m_accessMethods.getSetMethodName();
-        }
-
-        return ((MetadataMethod) getAccessibleObject()).getSetMethodName();
+    public String getSetMethodName() {
+        return hasAccessMethods() ? getAccessMethods().getSetMethodName() : ((MetadataMethod) getAccessibleObject()).getSetMethodName();
     }
     
     /**
@@ -744,13 +727,6 @@ public abstract class MappingAccessor extends MetadataAccessor {
      */
     public TemporalMetadata getTemporal(boolean isForMapKey) {
         return null;
-    }
-    
-    /**
-     * INTERNAL:
-     */
-    public boolean hasAccessMethods() {
-        return m_accessMethods != null;
     }
     
     /**
@@ -866,17 +842,6 @@ public abstract class MappingAccessor extends MetadataAccessor {
         m_classAccessor = classAccessor;
         setEntityMappings(classAccessor.getEntityMappings());
         initXMLAccessor(classAccessor.getDescriptor(), classAccessor.getProject());   
-    }
-    
-    /**
-     * INTERNAL:
-     */
-    @Override
-    public void initXMLObject(MetadataAccessibleObject accessibleObject, XMLEntityMappings entityMappings) {
-        super.initXMLObject(accessibleObject, entityMappings);
-        
-        // Initialize single objects.
-        initXMLObject(m_accessMethods, accessibleObject);
     }
     
     /**
@@ -1668,14 +1633,6 @@ public abstract class MappingAccessor extends MetadataAccessor {
     
     /**
      * INTERNAL:
-     * Used for OX mapping.
-     */
-    public void setAccessMethods(AccessMethodsMetadata accessMethods){
-        m_accessMethods = accessMethods;
-    }
-    
-    /**
-     * INTERNAL:
      * Set the getter and setter access methods for this accessor.
      */
     protected void setAccessorMethods(DatabaseMapping mapping) {
@@ -1824,7 +1781,7 @@ public abstract class MappingAccessor extends MetadataAccessor {
         if (hasAccess()) {
             return getAccess().equals(MetadataConstants.PROPERTY);
         } else {
-            return (m_accessMethods == null) ? m_classAccessor.usesPropertyAccess() : true;
+            return hasAccessMethods() ? true : m_classAccessor.usesPropertyAccess();
         }
     }
     

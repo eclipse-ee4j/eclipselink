@@ -1,12 +1,27 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <entity-mappings version="2.1" xmlns="http://www.eclipse.org/eclipselink/xsds/persistence/orm" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
     <description>Advanced Extended Test Model Instance Document</description>
+    <persistence-unit-metadata>
+        <persistence-unit-defaults>
+            <access-methods get-method="getMy" set-method="setMy"/>
+        </persistence-unit-defaults>
+    </persistence-unit-metadata>
     <package>org.eclipse.persistence.testing.models.jpa.xml.advanced</package>
     <type-converter name="String2String" data-type="String" object-type="String"/>
     <mapped-superclass class="org.eclipse.persistence.testing.models.jpa.xml.advanced.fetchgroup.GoalieGear" access="FIELD">
         <fetch-group name="AgeGroup">
             <attribute name="ageGroup"/>
         </fetch-group>
+    </mapped-superclass>
+    <mapped-superclass class="ShovelPerson" access="VIRTUAL">
+        <access-methods get-method="get" set-method="set"/>
+        <attributes>
+            <id name="id" attribute-type="Integer">
+                <column name="ID"/>
+                <generated-value strategy="TABLE" generator="XML_SHOVEL_OWNER_TABLE_GENERATOR"/>
+            </id>
+            <basic name="name" attribute-type="String"/>
+        </attributes>
     </mapped-superclass>
     <entity class="Employee" existence-checking="CHECK_DATABASE">
         <customizer class="EmployeeCustomizer"/>
@@ -393,33 +408,25 @@
     <entity name="XMLShovelDigger" class="ShovelDigger" access="VIRTUAL">
         <table name="XML_SHOVEL_DIGGER"/>
         <table-generator name="XML_SHOVEL_DIGGER_TABLE_GENERATOR" table="CMP3_XML_EMPLOYEE_SEQ" pk-column-name="SEQ_NAME" value-column-name="SEQ_COUNT" pk-column-value="XML_SHOVEL_DIGGER_SEQ"/>
+        <attribute-override name="name">
+            <column name="DIGGER_NAME"/>
+        </attribute-override>
         <attributes>
-            <id name="id" attribute-type="Integer">
-                <column name="ID"/>
-                <generated-value strategy="TABLE" generator="XML_SHOVEL_DIGGER_TABLE_GENERATOR"/>
-            </id>
-            <basic name="name" attribute-type="String">
-                <column name="DIGGER_NAME"/>
-            </basic>
             <one-to-one name="shovel" target-entity="Shovel">
                 <join-column name="SHOVEL_ID"/>
+                <access-methods get-method="getX" set-method="setX"/>
             </one-to-one>
         </attributes>
     </entity>
     <entity name="XMLShovelOwner" class="ShovelOwner" access="VIRTUAL">
         <table name="XML_SHOVEL_OWNER"/>
         <table-generator name="XML_SHOVEL_OWNER_TABLE_GENERATOR" table="CMP3_XML_EMPLOYEE_SEQ" pk-column-name="SEQ_NAME" value-column-name="SEQ_COUNT" pk-column-value="XML_SHOVEL_OWNER_SEQ"/>
-        <attributes>
-            <id name="id" attribute-type="Integer">
-                <column name="ID"/>
-                <generated-value strategy="TABLE" generator="XML_SHOVEL_OWNER_TABLE_GENERATOR"/>
-            </id>
-            <basic name="name" attribute-type="String">
-                <column name="OWNER_NAME"/>
-            </basic>
-        </attributes>
+        <attribute-override name="name">
+            <column name="OWNER_NAME"/>
+        </attribute-override>
     </entity>
     <entity name="XMLShovelProject" class="ShovelProject" access="VIRTUAL">
+        <access-methods get-method="get" set-method="set"/>
         <table name="XML_SHOVEL_PROJECT"/>
         <table-generator name="XML_SHOVEL_PROJECT_TABLE_GENERATOR" table="CMP3_XML_EMPLOYEE_SEQ" pk-column-name="SEQ_NAME" value-column-name="SEQ_COUNT" pk-column-value="XML_SHOVEL_PROJECT_SEQ"/>
         <attributes>
@@ -434,16 +441,11 @@
         </attributes>
     </entity>
     <embeddable class="ShovelSections" access="VIRTUAL">
+        <access-methods get-method="getMaterial" set-method="setMaterial"/>
         <attributes>
-            <basic name="handle" attribute-type="ShovelSections$MaterialType">
-                <access-methods get-method="getMaterial" set-method="setMaterial"/>
-            </basic>
-            <basic name="shaft" attribute-type="ShovelSections$MaterialType">
-                <access-methods get-method="getMaterial" set-method="setMaterial"/>
-            </basic>
-            <basic name="scoop" attribute-type="ShovelSections$MaterialType">
-                <access-methods get-method="getMaterial" set-method="setMaterial"/>
-            </basic>
+            <basic name="handle" attribute-type="ShovelSections$MaterialType"/>
+            <basic name="shaft" attribute-type="ShovelSections$MaterialType"/>
+            <basic name="scoop" attribute-type="ShovelSections$MaterialType"/>
         </attributes>
     </embeddable>
     <embeddable class="Name" access="FIELD">

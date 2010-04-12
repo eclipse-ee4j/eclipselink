@@ -41,6 +41,8 @@
  *       - 211322: Add fetch-group(s) support to the EclipseLink-ORM.XML Schema
  *     03/08/2010-2.1 Guy Pelletier 
  *       - 303632: Add attribute-type for mapping attributes to EclipseLink-ORM
+ *     04/09/2010-2.1 Guy Pelletier 
+ *       - 307050: Add defaults for access methods of a VIRTUAL access type
  *******************************************************************************/
 package org.eclipse.persistence.internal.jpa.metadata.xml;
 
@@ -681,15 +683,7 @@ public class XMLEntityMappingsMappingProject extends org.eclipse.persistence.ses
         cascadeAllMapping.setXPath("orm:cascade-all");
         descriptor.addMapping(cascadeAllMapping);
         
-        XMLDirectMapping cascadePersistMapping = new XMLDirectMapping();
-        cascadePersistMapping.setAttributeName("m_cascadePersist");
-        cascadePersistMapping.setGetMethodName("getCascadePersist");
-        cascadePersistMapping.setSetMethodName("setCascadePersist");
-        IsSetNullPolicy cascadePersistPolicy = new IsSetNullPolicy("isCascadePersist");
-        cascadePersistPolicy.setMarshalNullRepresentation(XMLNullRepresentationType.EMPTY_NODE);
-        cascadePersistMapping.setNullPolicy(cascadePersistPolicy);
-        cascadePersistMapping.setXPath("orm:cascade-persist");
-        descriptor.addMapping(cascadePersistMapping);
+        descriptor.addMapping(getCascadePersistMapping());
         
         XMLDirectMapping cascadeMergeMapping = new XMLDirectMapping();
         cascadeMergeMapping.setAttributeName("m_cascadeMerge");
@@ -988,6 +982,7 @@ public class XMLEntityMappingsMappingProject extends org.eclipse.persistence.ses
         
         // Element mappings - must remain in order of definition in XML.
         descriptor.addMapping(getDescriptionMapping());
+        descriptor.addMapping(getAccessMethodsMapping());
         descriptor.addMapping(getCustomizerMapping());
         descriptor.addMapping(getChangeTrackingMapping());
         descriptor.addMapping(getConverterMapping());
@@ -1063,6 +1058,7 @@ public class XMLEntityMappingsMappingProject extends org.eclipse.persistence.ses
 
         // Element mappings - must remain in order of definition in XML.
         descriptor.addMapping(getDescriptionMapping());
+        descriptor.addMapping(getAccessMethodsMapping());
         descriptor.addMapping(getCustomizerMapping());
         descriptor.addMapping(getChangeTrackingMapping());
         
@@ -1205,6 +1201,7 @@ public class XMLEntityMappingsMappingProject extends org.eclipse.persistence.ses
         descriptor.addMapping(getSchemaMapping());
         descriptor.addMapping(getCatalogMapping());
         descriptor.addMapping(getAccessMapping());
+        descriptor.addMapping(getAccessMethodsMapping());
         descriptor.addMapping(getConverterMapping());
         descriptor.addMapping(getTypeConverterMapping());
         descriptor.addMapping(getObjectTypeConverterMapping());
@@ -1550,6 +1547,7 @@ public class XMLEntityMappingsMappingProject extends org.eclipse.persistence.ses
 
         // Element mappings - must remain in order of definition in XML.
         descriptor.addMapping(getDescriptionMapping());
+        descriptor.addMapping(getAccessMethodsMapping());
         descriptor.addMapping(getCustomizerMapping());
         descriptor.addMapping(getChangeTrackingMapping());
         descriptor.addMapping(getIdClassMapping());
@@ -1925,21 +1923,9 @@ public class XMLEntityMappingsMappingProject extends org.eclipse.persistence.ses
         XMLDescriptor descriptor = new XMLDescriptor();
         descriptor.setJavaClass(XMLPersistenceUnitDefaults.class);
 
+        // Element mappings - must remain in order of definition in XML.
         descriptor.addMapping(getSchemaMapping());        
         descriptor.addMapping(getCatalogMapping());
-        descriptor.addMapping(getAccessMapping());
-
-        XMLDirectMapping cascadePersistMapping = new XMLDirectMapping();
-        cascadePersistMapping.setAttributeName("m_cascadePersist");
-        cascadePersistMapping.setGetMethodName("getCascadePersist");
-        cascadePersistMapping.setSetMethodName("setCascadePersist");
-        IsSetNullPolicy cascadePersistPolicy = new IsSetNullPolicy("isCascadePersist");
-        cascadePersistPolicy.setMarshalNullRepresentation(XMLNullRepresentationType.EMPTY_NODE);
-        cascadePersistMapping.setNullPolicy(cascadePersistPolicy);
-        cascadePersistMapping.setXPath("orm:cascade-persist/text()");
-        descriptor.addMapping(cascadePersistMapping);
-        
-        descriptor.addMapping(getEntityListenersMapping());
         
         XMLDirectMapping delimitedIdentifiersMapping = new XMLDirectMapping();
         delimitedIdentifiersMapping.setAttributeName("m_delimitedIdentifiers");
@@ -1950,6 +1936,11 @@ public class XMLEntityMappingsMappingProject extends org.eclipse.persistence.ses
         delimitedIdentifiersMapping.setNullPolicy(delimitedIdentifiersPolicy);
         delimitedIdentifiersMapping.setXPath("orm:delimited-identifiers/text()");
         descriptor.addMapping(delimitedIdentifiersMapping);
+        
+        descriptor.addMapping(getAccessMapping());
+        descriptor.addMapping(getAccessMethodsMapping());
+        descriptor.addMapping(getCascadePersistMapping());
+        descriptor.addMapping(getEntityListenersMapping());
         
         return descriptor;
     }
@@ -2727,6 +2718,7 @@ public class XMLEntityMappingsMappingProject extends org.eclipse.persistence.ses
         cacheMapping.setXPath("orm:cache-interceptor");
         return cacheMapping;
     }
+    
     /**
      * INTERNAL:
      */
@@ -2738,6 +2730,21 @@ public class XMLEntityMappingsMappingProject extends org.eclipse.persistence.ses
         cascadeMapping.setReferenceClass(CascadeMetadata.class);
         cascadeMapping.setXPath("orm:cascade");
         return cascadeMapping;
+    }
+    
+    /**
+     * INTERNAL:
+     */
+    protected XMLDirectMapping getCascadePersistMapping() {
+        XMLDirectMapping cascadePersistMapping = new XMLDirectMapping();
+        cascadePersistMapping.setAttributeName("m_cascadePersist");
+        cascadePersistMapping.setGetMethodName("getCascadePersist");
+        cascadePersistMapping.setSetMethodName("setCascadePersist");
+        IsSetNullPolicy cascadePersistPolicy = new IsSetNullPolicy("isCascadePersist");
+        cascadePersistPolicy.setMarshalNullRepresentation(XMLNullRepresentationType.EMPTY_NODE);
+        cascadePersistMapping.setNullPolicy(cascadePersistPolicy);
+        cascadePersistMapping.setXPath("orm:cascade-persist");
+        return cascadePersistMapping;
     }
     
     /**

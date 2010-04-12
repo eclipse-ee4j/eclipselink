@@ -51,6 +51,8 @@
  *       - 296289: Add current annotation metadata support on mapped superclasses to EclipseLink-ORM.XML Schema  
  *     12/18/2009-2.1 Guy Pelletier 
  *       - 211323: Add class extractor support to the EclipseLink-ORM.XML Schema
+ *     04/09/2010-2.1 Guy Pelletier 
+ *       - 307050: Add defaults for access methods of a VIRTUAL access type
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata.accessors.classes;
 
@@ -557,6 +559,10 @@ public class EntityAccessor extends MappedSuperclassAccessor {
         // Process the correct access type before any other processing.
         processAccessType();
         
+        // Once we have the access type we can look for access methods if need
+        // be.
+        processAccessMethods();
+        
         // Process the metadata complete flag now before we start looking
         // for annotations.
         processMetadataComplete();
@@ -769,6 +775,43 @@ public class EntityAccessor extends MappedSuperclassAccessor {
         }
         
         return null;
+    }
+    
+    /**
+     * INTERNAL:
+     * For VIRTUAL access we need to look for default access methods that we 
+     * need to use with our mapping attributes.
+     */
+    public void processAccessMethods() {
+        if (usesVirtualAccess()) {
+            // If we use virtual access and do not have any access methods
+            // specified then go look for access methods on a mapped superclass
+            // or inheritance parent.
+            if (hasAccessMethods()) {
+                getDescriptor().setDefaultAccessMethods(getAccessMethods());
+            } else {
+                // Go through the mapped superclasses.
+                for (MappedSuperclassAccessor mappedSuperclass : getMappedSuperclasses()) {
+                    if (mappedSuperclass.hasAccessMethods()) {
+                        getDescriptor().setDefaultAccessMethods(mappedSuperclass.getAccessMethods());
+                        return;
+                    }
+                }
+                
+                // Go through the inheritance parents.
+                if (getDescriptor().isInheritanceSubclass()) {
+                    MetadataDescriptor parentDescriptor = getDescriptor().getInheritanceParentDescriptor();
+                    while (parentDescriptor.isInheritanceSubclass()) {
+                        if (parentDescriptor.getClassAccessor().hasAccessMethods()) {
+                            getDescriptor().setDefaultAccessMethods(parentDescriptor.getClassAccessor().getAccessMethods());
+                            return;
+                        }
+                        
+                        parentDescriptor = parentDescriptor.getInheritanceParentDescriptor();
+                    }
+                }
+            }
+        }
     }
     
     /**

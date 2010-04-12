@@ -9,7 +9,9 @@
  *
  * Contributors:
  *     03/29/2010-2.1 Guy Pelletier 
- *       - 267217: Add Named Access Type to EclipseLink-ORM  
+ *       - 267217: Add Named Access Type to EclipseLink-ORM
+ *     04/09/2010-2.1 Guy Pelletier 
+ *       - 307050: Add defaults for access methods of a VIRTUAL access type
  ******************************************************************************/
 package org.eclipse.persistence.testing.models.jpa.xml.advanced;
 
@@ -22,28 +24,6 @@ package org.eclipse.persistence.testing.models.jpa.xml.advanced;
  *  
  * @author gpelleti
  */
-public class ShovelOwner {
-    // id
-    private Integer id;
-    
-    // basic
-    private String name;
-    
+public class ShovelOwner extends ShovelPerson {
     public ShovelOwner() {}
-    
-    public Object get(String attribute) {
-        try {
-            return getClass().getDeclaredField(attribute).get(this);
-        } catch (Exception e) {
-            throw new RuntimeException("Error occured getting the value of attributee: " + attribute);
-        }
-    }
-    
-    public void set(String attribute, Object value) {
-        try {
-            getClass().getDeclaredField(attribute).set(this, value);
-        } catch (Exception e) {
-            throw new RuntimeException("Error occured set the attribute: " + attribute + ", with value: " + value);
-        }
-    }
 }

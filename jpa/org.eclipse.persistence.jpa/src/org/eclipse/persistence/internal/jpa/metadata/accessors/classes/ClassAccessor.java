@@ -45,6 +45,8 @@
  *       - 299893: @MapKeyClass does not work with ElementCollection
  *     03/29/2010-2.1 Guy Pelletier 
  *       - 267217: Add Named Access Type to EclipseLink-ORM
+ *     04/09/2010-2.1 Guy Pelletier 
+ *       - 307050: Add defaults for access methods of a VIRTUAL access type
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata.accessors.classes;
 
@@ -115,7 +117,6 @@ import org.eclipse.persistence.internal.jpa.metadata.copypolicy.CopyPolicyMetada
 import org.eclipse.persistence.internal.jpa.metadata.copypolicy.CustomCopyPolicyMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.copypolicy.InstantiationCopyPolicyMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.copypolicy.CloneCopyPolicyMetadata;
-import org.eclipse.persistence.internal.jpa.metadata.mappings.AccessMethodsMetadata;
 
 import org.eclipse.persistence.internal.jpa.metadata.xml.XMLEntityMappings;
 
@@ -263,7 +264,7 @@ public abstract class ClassAccessor extends MetadataAccessor {
                 // type it specified or a default type (pu default or inherited
                 // from a parent class)
                 if (accessor.usesVirtualAccess()) {
-                    accessibleObject = getAccessibleNameMethod(accessor);
+                    accessibleObject = getAccessibleVirtualMethod(accessor);
                 } else if (accessor.usesPropertyAccess()) {
                     accessibleObject = getAccessibleMethod(accessor);
                 } else {
@@ -492,13 +493,9 @@ public abstract class ClassAccessor extends MetadataAccessor {
      * the access methods if specified.
      */
     protected MetadataMethod getAccessibleMethod(MappingAccessor accessor) {
-        if (accessor.getAccessMethods() != null) {
-            // Can't rely on MappingAccessor's getGetMethodName methods as they 
-            // could result in NPE if accessibleObject isn't set first
-            String getMethodName = accessor.getAccessMethods().getGetMethodName();
-            MetadataMethod getMethod = getJavaClass().getMethod(getMethodName, new String[]{});
-            String setMethodName = accessor.getAccessMethods().getSetMethodName();
-            MetadataMethod setMethod = getJavaClass().getMethod(setMethodName, Arrays.asList(new String[]{getMethod.getReturnType()}));
+        if (accessor.hasAccessMethods()) {
+            MetadataMethod getMethod = getJavaClass().getMethod(accessor.getGetMethodName(), new String[]{});
+            MetadataMethod setMethod = getJavaClass().getMethod(accessor.getSetMethodName(), Arrays.asList(new String[]{getMethod.getReturnType()}));
             getMethod.setSetMethod(setMethod);
             return getMethod;
         } else {
@@ -526,8 +523,13 @@ public abstract class ClassAccessor extends MetadataAccessor {
      * access methods specified or the default get and set methods for name
      * access will be used.
      */
-    protected MetadataMethod getAccessibleNameMethod(MappingAccessor accessor) {
-        AccessMethodsMetadata accessMethods = accessor.getAccessMethods();
+    protected MetadataMethod getAccessibleVirtualMethod(MappingAccessor accessor) {
+        // If the mapping accessor does not have access methods specified,
+        // set the default access methods.
+        if (! accessor.hasAccessMethods()) {
+            accessor.setAccessMethods(getDescriptor().getDefaultAccessMethods());
+        }
+
         MetadataMethod getMethod = new MetadataMethod(getMetadataFactory(), getJavaClass());
         MetadataMethod setMethod = new MetadataMethod(getMetadataFactory(), getJavaClass());
         
@@ -536,14 +538,10 @@ public abstract class ClassAccessor extends MetadataAccessor {
 
         // Make sure we set the attribute name on the getMethod.
         getMethod.setAttributeName(accessor.getName());
-
-        if (accessMethods != null) {
-            getMethod.setName(accessMethods.getGetMethodName());
-            setMethod.setName(accessMethods.getSetMethodName());
-        } else {
-            getMethod.setName(MetadataMethod.DEFAULT_VIRTUAL_ACCESS_GET_METHOD);
-            setMethod.setName(MetadataMethod.DEFAULT_VIRTUAL_ACCESS_SET_METHOD);
-        }
+        
+        // Set the get and set method names.
+        getMethod.setName(accessor.getGetMethodName());
+        setMethod.setName(accessor.getSetMethodName());
         
         // Validate that the mapping accessor has an attribute-type 
         // specification or specifies a target entity or class.

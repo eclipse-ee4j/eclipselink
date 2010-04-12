@@ -33,7 +33,9 @@
  *       - 270011: JPA 2.0 MappedById support
  *     06/25/2009-2.0 Michael O'Brien 
  *       - 266912: change MappedSuperclass handling in stage2 to pre process accessors
- *          in support of the custom descriptors holding mappings required by the Metamodel 
+ *          in support of the custom descriptors holding mappings required by the Metamodel
+ *     04/09/2010-2.1 Guy Pelletier 
+ *       - 307050: Add defaults for access methods of a VIRTUAL access type
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata.accessors.classes;
 
@@ -202,9 +204,15 @@ public class EmbeddableAccessor extends ClassAccessor {
         setIsPreProcessed();
         
         // Step 1 - process the embeddable specifics, like access type, 
-        // metadata complete etc. which we need before proceeding any further.
+        // metadata complete etc. first which we need before proceeding any 
+        // further.
+        
         // Process the access type first.
         processAccessType();
+        
+        // Process the default access methods after an access type has been 
+        // figured out.
+        processAccessMethods();
         
         // Set a metadata complete flag if specified.
         if (getMetadataComplete() != null) {
@@ -262,6 +270,45 @@ public class EmbeddableAccessor extends ClassAccessor {
     
     /**
      * INTERNAL:
+     * For VIRTUAL access we need to look for default access methods that we 
+     * need to use with our mapping attributes.
+     */
+    public void processAccessMethods() {
+        if (usesVirtualAccess()) {
+            // If we use virtual access and do not have any access methods
+            // specified then get the default access methods from our owning
+            // entity.
+            if (hasAccessMethods()) {
+                getDescriptor().setDefaultAccessMethods(getAccessMethods());
+            } else {
+                // The embeddable does not define default access methods. We 
+                // need to look at our owning entities and 1) validate that
+                // they all use the same default access methods and 2) grab
+                // the default access methods from them.
+                ClassAccessor embeddingAccessor = null;
+                for (ClassAccessor currentEmbeddingAccessor : m_embeddingAccessors.values()) {
+                    if (embeddingAccessor == null) {
+                        embeddingAccessor = currentEmbeddingAccessor;
+                        continue;
+                    }
+                    
+                    if (! embeddingAccessor.getDescriptor().getDefaultAccessMethods().equals(currentEmbeddingAccessor.getDescriptor().getDefaultAccessMethods())) {
+                        throw ValidationException.conflictingAccessMethodsForEmbeddable(getJavaClassName(), embeddingAccessor.getJavaClassName(), embeddingAccessor.getDescriptor().getDefaultAccessMethods(), currentEmbeddingAccessor.getJavaClassName(), currentEmbeddingAccessor.getDescriptor().getDefaultAccessMethods());
+                    }
+                }
+
+                // Set the default access methods on the descriptor and log a
+                // message if there is an embedding accessor. Otherwise we'll
+                // use the default set on our descriptor.
+                if (embeddingAccessor != null) {
+                    getDescriptor().setDefaultAccessMethods(embeddingAccessor.getDescriptor().getDefaultAccessMethods());
+                }
+            }
+        }
+    }
+    
+    /**
+     * INTERNAL:
      * Process the access type of this embeddable. If this embeddable is not
      * embedded by at least one entity, it will not be processed. Therefore,
      * embedding accessors can not be empty at this point.
@@ -284,7 +331,7 @@ public class EmbeddableAccessor extends ClassAccessor {
                 }
                 
                 if (! embeddingAccessor.getAccessType().equals(currentEmbeddingAccessor.getAccessType())) {
-                    throw ValidationException.conflictingAccessTypeForEmbeddable(getJavaClassName(), embeddingAccessor.getAccessType(), embeddingAccessor.getJavaClassName(), currentEmbeddingAccessor.getAccessType(), currentEmbeddingAccessor.getJavaClassName());
+                    throw ValidationException.conflictingAccessTypeForEmbeddable(getJavaClassName(), embeddingAccessor.getJavaClassName(), embeddingAccessor.getAccessType(), currentEmbeddingAccessor.getJavaClassName(), currentEmbeddingAccessor.getAccessType());
                 }
             }
             

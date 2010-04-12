@@ -21,6 +21,8 @@
  *       - 249860: Implement table per class inheritance support.
  *     03/08/2010-2.1 Guy Pelletier 
  *       - 303632: Add attribute-type for mapping attributes to EclipseLink-ORM
+ *     04/09/2010-2.1 Guy Pelletier 
+ *       - 307050: Add defaults for access methods of a VIRTUAL access type
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata.xml;
 
@@ -50,6 +52,7 @@ import org.eclipse.persistence.internal.jpa.metadata.converters.StructConverterM
 import org.eclipse.persistence.internal.jpa.metadata.converters.TypeConverterMetadata;
 
 import org.eclipse.persistence.internal.jpa.metadata.listeners.EntityListenerMetadata;
+import org.eclipse.persistence.internal.jpa.metadata.mappings.AccessMethodsMetadata;
 
 import org.eclipse.persistence.internal.jpa.metadata.queries.NamedNativeQueryMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.queries.NamedQueryMetadata;
@@ -66,6 +69,8 @@ import org.eclipse.persistence.internal.jpa.metadata.sequencing.TableGeneratorMe
  * @since EclipseLink 1.0
  */
 public class XMLEntityMappings extends ORMetadata {
+    private AccessMethodsMetadata m_accessMethods;
+    
     private boolean m_isEclipseLinkORMFile;
     
     private ClassLoader m_loader;
@@ -94,8 +99,8 @@ public class XMLEntityMappings extends ORMetadata {
     private String m_package;
     private String m_schema;
     private String m_version;
-    
     private String m_mappingFileNameOrURL;
+    
     private XMLPersistenceUnitMetadata m_persistenceUnitMetadata;
     
     /**
@@ -112,6 +117,14 @@ public class XMLEntityMappings extends ORMetadata {
      */
     public String getAccess() {
         return m_access;
+    }
+    
+    /**
+     * INTERNAL:
+     * Used for OX mapping.
+     */
+    public AccessMethodsMetadata getAccessMethods() {
+        return m_accessMethods;
     }
     
     /**
@@ -531,6 +544,11 @@ public class XMLEntityMappings extends ORMetadata {
             descriptor.setDefaultAccess(m_access);
         }
         
+        // Set the entity-mappings access methods if specified
+        if (m_accessMethods != null) {
+            descriptor.setDefaultAccessMethods(m_accessMethods);
+        }
+        
         // Set the entity-mappings catalog if specified.                
         if (m_catalog != null) {
             descriptor.setDefaultCatalog(m_catalog);
@@ -664,6 +682,14 @@ public class XMLEntityMappings extends ORMetadata {
      */
     public void setAccess(String access) {
         m_access = access;
+    }
+    
+    /**
+     * INTERNAL:
+     * Used for OX mapping.
+     */
+    public void setAccessMethods(AccessMethodsMetadata accessMethods){
+        m_accessMethods = accessMethods;
     }
     
     /**

@@ -17,6 +17,8 @@
  *       - 249329: To remain JPA 1.0 compliant, any new JPA 2.0 annotations should be referenced by name
  *     03/29/2010-2.1 Guy Pelletier 
  *       - 267217: Add Named Access Type to EclipseLink-ORM
+ *     04/09/2010-2.1 Guy Pelletier 
+ *       - 307050: Add defaults for access methods of a VIRTUAL access type
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata.accessors.objects;
 
@@ -61,10 +63,6 @@ public class MetadataMethod extends MetadataAnnotatedElement {
     
     /** Used to store multiple methods with the same name in a class. */
     protected MetadataMethod m_next;
-
-    /** Constants used for default virtual access setter and getter methods */
-    public static final String DEFAULT_VIRTUAL_ACCESS_GET_METHOD = "get";
-    public static final String DEFAULT_VIRTUAL_ACCESS_SET_METHOD = "set";
     
     /**
      * Create the method from the class metadata.

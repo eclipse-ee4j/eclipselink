@@ -15,6 +15,8 @@
  *       - 303632: Add attribute-type for mapping attributes to EclipseLink-ORM
  *     03/29/2010-2.1 Guy Pelletier 
  *       - 267217: Add Named Access Type to EclipseLink-ORM
+ *     04/09/2010-2.1 Guy Pelletier 
+ *       - 307050: Add defaults for access methods of a VIRTUAL access type
  ******************************************************************************/  
 package org.eclipse.persistence.testing.tests.jpa.xml.advanced;
 
@@ -1530,33 +1532,33 @@ public class EntityMappingsAdvancedJUnitTestCase extends JUnitTestCase {
             
             // Cost
             Shovel shovel = new Shovel();
-            shovel.set("cost", Double.valueOf(9.99));
+            shovel.setMy("cost", Double.valueOf(9.99));
             
             // Sections
             ShovelSections shovelSections = new ShovelSections();
             shovelSections.setMaterial("handle", MaterialType.Plastic);
             shovelSections.setMaterial("shaft", MaterialType.Wood);
             shovelSections.setMaterial("scoop", MaterialType.Plastic);
-            shovel.set("sections", shovelSections);
+            shovel.setMy("sections", shovelSections);
             
             // Owner
             ShovelOwner shovelOwner = new ShovelOwner();
             shovelOwner.set("name", "Mr. Shovel");
-            shovel.set("owner", shovelOwner);
+            shovel.setMy("owner", shovelOwner);
             
             // Operators
             ShovelDigger shovelDigger1 = new ShovelDigger();
             shovelDigger1.set("name", "Digging Plebe 1");
-            shovelDigger1.set("shovel", shovel);
+            shovelDigger1.setX("shovel", shovel);
             
             ShovelDigger shovelDigger2 = new ShovelDigger();
             shovelDigger2.set("name", "Digging Plebe 2");
-            shovelDigger2.set("shovel", shovel);
+            shovelDigger2.setX("shovel", shovel);
             
             List<ShovelDigger> operators = new ArrayList<ShovelDigger>();
             operators.add(shovelDigger1);
             operators.add(shovelDigger2);
-            shovel.set("operators", operators);
+            shovel.setMy("operators", operators);
             
             // Projects
             ShovelProject shovelProject = new ShovelProject();
@@ -1568,12 +1570,12 @@ public class EntityMappingsAdvancedJUnitTestCase extends JUnitTestCase {
             
             List<ShovelProject> projects = new ArrayList<ShovelProject>();
             projects.add(shovelProject);
-            shovel.set("projects", projects);
+            shovel.setMy("projects", projects);
             
             em.persist(shovel);
             
             // Grab id's for ease of lookup.
-            Object shovelId = shovel.get("id");
+            Object shovelId = shovel.getMy("id");
             Object shovelOwnerId = shovelOwner.get("id");
             Object shovelDigger1Id = shovelDigger1.get("id");
             Object shovelDigger2Id = shovelDigger2.get("id");
@@ -1591,7 +1593,7 @@ public class EntityMappingsAdvancedJUnitTestCase extends JUnitTestCase {
             beginTransaction(em);
             
             em.merge(refreshedShovel);
-            refreshedShovel.set("cost", Double.valueOf(7.99));
+            refreshedShovel.setMy("cost", Double.valueOf(7.99));
             
             commitTransaction(em);
             

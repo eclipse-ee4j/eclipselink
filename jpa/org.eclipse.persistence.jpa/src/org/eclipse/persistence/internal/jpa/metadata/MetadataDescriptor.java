@@ -58,6 +58,8 @@
  *                      can better determine when to add the MAPPED_SUPERCLASS_RESERVED_PK_NAME
  *                      temporary PK field used to process MappedSuperclasses for the Metamodel API
  *                      during MetadataProject.addMetamodelMappedSuperclass()
+ *     04/09/2010-2.1 Guy Pelletier 
+ *       - 307050: Add defaults for access methods of a VIRTUAL access type
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata;
 
@@ -100,6 +102,7 @@ import org.eclipse.persistence.internal.jpa.metadata.columns.AssociationOverride
 import org.eclipse.persistence.internal.jpa.metadata.columns.AttributeOverrideMetadata;
 
 import org.eclipse.persistence.internal.jpa.metadata.listeners.EntityListener;
+import org.eclipse.persistence.internal.jpa.metadata.mappings.AccessMethodsMetadata;
 
 import org.eclipse.persistence.internal.helper.DatabaseField;
 import org.eclipse.persistence.internal.helper.DatabaseTable;
@@ -126,6 +129,10 @@ public class MetadataDescriptor {
     private boolean m_hasCustomizer;
     private boolean m_hasReadOnly;
     private boolean m_hasCopyPolicy;
+    
+    // Default access methods are used for VIRTUAL mapping attributes when
+    // the attributes do not specify their own access methods.
+    private AccessMethodsMetadata m_defaultAccessMethods;
     
     private Boolean m_cacheable;
     private Boolean m_usesCascadedOptimisticLocking;
@@ -193,6 +200,8 @@ public class MetadataDescriptor {
         m_isCascadePersist = false;
         m_ignoreAnnotations = false;
         m_ignoreDefaultMappings = false;
+        
+        m_defaultAccessMethods = new AccessMethodsMetadata();
         
         m_idAttributeNames = new ArrayList<String>();
         m_orderByAttributeNames = new ArrayList<String>();
@@ -565,6 +574,13 @@ public class MetadataDescriptor {
      */
     public String getDefaultAccess() {
         return m_defaultAccess;
+    }
+    
+    /**
+     * INTERNAL:
+     */
+    public AccessMethodsMetadata getDefaultAccessMethods() {
+        return m_defaultAccessMethods;
     }
     
     /**
@@ -1349,6 +1365,23 @@ public class MetadataDescriptor {
      */
     public void setDefaultAccess(String defaultAccess) {
         m_defaultAccess = defaultAccess;
+    }
+    
+    /**
+     * INTERNAL:
+     * Default access methods can come from the following locations 
+     * (in XML only) :
+     * - persistence-unit-defaults
+     * - entity-mappings
+     * - entity
+     * - embeddable
+     * 
+     * Be default, the default access methods are set to use "get" and "set"
+     * unless they are overridden by discovering access methods specified at
+     * one of the locations above. 
+     */
+    public void setDefaultAccessMethods(AccessMethodsMetadata accessMethods) {
+        m_defaultAccessMethods = accessMethods;
     }
     
     /**

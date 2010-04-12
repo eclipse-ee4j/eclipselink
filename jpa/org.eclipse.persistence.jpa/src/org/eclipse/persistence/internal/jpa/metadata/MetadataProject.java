@@ -49,6 +49,8 @@
  *                      can better determine when to add the MAPPED_SUPERCLASS_RESERVED_PK_NAME
  *                      temporary PK field used to process MappedSuperclasses for the Metamodel API
  *                      during MetadataProject.addMetamodelMappedSuperclass()
+ *     04/09/2010-2.1 Guy Pelletier 
+ *       - 307050: Add defaults for access methods of a VIRTUAL access type
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata;
 
@@ -1078,6 +1080,11 @@ public class MetadataProject {
                 descriptor.setDefaultSchema(persistenceUnitDefaults.getSchema());
                 descriptor.setDefaultCatalog(persistenceUnitDefaults.getCatalog());
                 descriptor.setIsCascadePersist(persistenceUnitDefaults.isCascadePersist());
+                
+                // Set any default access methods if specified.
+                if (persistenceUnitDefaults.hasAccessMethods()) {
+                    descriptor.setDefaultAccessMethods(persistenceUnitDefaults.getAccessMethods());
+                }
             }
         }
     }

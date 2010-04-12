@@ -395,6 +395,7 @@ public class ValidationException extends EclipseLinkException {
     
     // JPA dynamic persistence exceptions.
     public static final int NO_ATTRIBUTE_TYPE_SPECIFICATION = 7326;
+    public static final int CONFLICTNG_ACCESS_METHODS_FOR_EMBEDDABLE = 7327;
     
     /**
      * INTERNAL:
@@ -2397,6 +2398,13 @@ public class ValidationException extends EclipseLinkException {
         Object[] args = {embeddableClassName, embeddingClassName1, accessType1, embeddingClassName2, accessType2};
         ValidationException validationException = new ValidationException(ExceptionMessageGenerator.buildMessage(ValidationException.class, CONFLICTNG_ACCESS_TYPE_FOR_EMBEDDABLE, args));
         validationException.setErrorCode(CONFLICTNG_ACCESS_TYPE_FOR_EMBEDDABLE);
+        return validationException;
+    }
+    
+    public static ValidationException conflictingAccessMethodsForEmbeddable(String embeddableClassName, String embeddingClassName1, Object accessMethods1, String embeddingClassName2, Object accessMethods2) {
+        Object[] args = {embeddableClassName, embeddingClassName1, accessMethods1, embeddingClassName2, accessMethods2};
+        ValidationException validationException = new ValidationException(ExceptionMessageGenerator.buildMessage(ValidationException.class, CONFLICTNG_ACCESS_METHODS_FOR_EMBEDDABLE, args));
+        validationException.setErrorCode(CONFLICTNG_ACCESS_METHODS_FOR_EMBEDDABLE);
         return validationException;
     }
 

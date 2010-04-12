@@ -16,6 +16,8 @@
  *       - 286317: UniqueConstraint xml element is changing (plus couple other fixes, see bug)
  *     03/29/2010-2.1 Guy Pelletier 
  *       - 267217: Add Named Access Type to EclipseLink-ORM
+ *     04/09/2010-2.1 Guy Pelletier 
+ *       - 307050: Add defaults for access methods of a VIRTUAL access type
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata.mappings;
 
@@ -23,14 +25,19 @@ import org.eclipse.persistence.internal.jpa.metadata.ORMetadata;
 
 /**
  * INTERNAL:
- * AccessMethodsMetadata. Metadata for user specified property access methods
+ * Metadata for user specified property access methods and also used with
+ * VIRTUAL access types. When specified in XML the set and get method names
+ * are required. For VIRTUAL access defaults we use the defaults "get" and 
+ * "set" if no access methods are specified.
  * 
  * @author Chris Delahunt
  * @since EclipseLink 1.0M8
  */
 public class AccessMethodsMetadata extends ORMetadata {
-    String getMethodName;
-    String setMethodName;
+    // Access method names are required in XML, therefore will override these
+    // default values used for VIRTUAL access defaults.
+    String getMethodName = "get";
+    String setMethodName = "set";
 
     /**
      * INTERNAL:
@@ -79,5 +86,13 @@ public class AccessMethodsMetadata extends ORMetadata {
      */
     public void setSetMethodName(String setMethodName){
         this.setMethodName = setMethodName;
+    }
+    
+    /**
+     * INTERNAL:
+     * Used for validation exception message string and debugging.
+     */
+    public String toString() {
+        return "Get method name: " + getMethodName + ", Set method name: " + setMethodName;
     }
 }
