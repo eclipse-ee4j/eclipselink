@@ -52,9 +52,13 @@ public class AttributeChangeTrackingPolicy extends ObjectChangeTrackingPolicy {
      * Create ObjectChangeSet
      */
     public ObjectChangeSet createObjectChangeSet(Object clone, Object backUp, org.eclipse.persistence.internal.sessions.UnitOfWorkChangeSet changeSet, boolean isNew, AbstractSession session, ClassDescriptor descriptor) {
-        ObjectChangeSet changes;
+        ObjectChangeSet changes = null;
         if (!isNew) {
-            changes = ((AttributeChangeListener)((ChangeTracker)clone)._persistence_getPropertyChangeListener()).getObjectChangeSet();
+            AttributeChangeListener listener = (AttributeChangeListener)((ChangeTracker)clone)._persistence_getPropertyChangeListener();
+            if (listener != null){
+                changes = listener.getObjectChangeSet();
+            }
+    
             // The changes can be null if forceUpdate is used in CMP, so an empty change must be created.
             if (changes != null) {
                 // PERF: Only merge the change set if merging into a new uow change set.
