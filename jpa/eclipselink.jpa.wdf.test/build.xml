@@ -258,7 +258,12 @@
         <replace dir="${build.dir}/META-INF" token='%%data-source-name%%' value="${DS_NAME}">
             <include name="persistence.xml"/>
         </replace>
-        <replace dir="${build.dir}/META-INF" token='%%server-platform%%' value="${server.platform}">
+        
+        <condition property="SERVER-PLATFORM-PROPERTY" value="&lt;property name=&quot;eclipselink.target-server&quot; value=&quot;${server.platform}&quot;/&gt;"
+                                                       else="">
+            <isset property="server.name"/>
+        </condition>
+        <replace dir="${build.dir}/META-INF" token='%%server-platform-property%%' value="${SERVER-PLATFORM-PROPERTY}">
             <include name="persistence.xml"/>
         </replace>
         <jar jarfile="${wdf_test.build.location}/${MODEL}.jar">
