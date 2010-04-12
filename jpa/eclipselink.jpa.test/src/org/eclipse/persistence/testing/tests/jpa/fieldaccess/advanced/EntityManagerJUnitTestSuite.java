@@ -18,6 +18,7 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.StringWriter;
 
+import java.sql.Date;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -40,6 +41,7 @@ import javax.persistence.RollbackException;
 
 import junit.framework.*;
 
+import org.eclipse.persistence.jpa.JpaHelper;
 import org.eclipse.persistence.jpa.JpaQuery;
 import org.eclipse.persistence.jpa.JpaEntityManager;
 import org.eclipse.persistence.logging.SessionLog;
@@ -62,6 +64,8 @@ import org.eclipse.persistence.config.QueryHints;
 import org.eclipse.persistence.config.PersistenceUnitProperties;
 import org.eclipse.persistence.config.PessimisticLock;
 import org.eclipse.persistence.descriptors.ClassDescriptor;
+import org.eclipse.persistence.descriptors.DescriptorEvent;
+import org.eclipse.persistence.descriptors.DescriptorEventAdapter;
 import org.eclipse.persistence.descriptors.InheritancePolicy;
 import org.eclipse.persistence.descriptors.changetracking.ChangeTracker;
 import org.eclipse.persistence.internal.descriptors.PersistenceEntity;
@@ -205,6 +209,7 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
         suite.addTest(new EntityManagerJUnitTestSuite("testSuperclassFieldInSubclass"));
         suite.addTest(new EntityManagerJUnitTestSuite("testCopyingAddress"));
         suite.addTest(new EntityManagerJUnitTestSuite("testSequencePreallocationUsingCallbackTest"));
+        suite.addTest(new EntityManagerJUnitTestSuite("updateAttributeWithObjectTest"));
         
         return suite;
     }
@@ -4556,6 +4561,47 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
         // report result
         if(assignedSequenceNumber + 1 != nextSequenceNumber) {
             fail("Transaction that assigned sequence number committed, assignedSequenceNumber = " + assignedSequenceNumber +", but nextSequenceNumber = "+ nextSequenceNumber +"("+Integer.toString(assignedSequenceNumber+1)+" was expected)");
+        }
+    }
+    
+    // Test for bug fix: 299637 - updateAttributeWithObjectTest with aggregate causes NPE when using field access
+    public void updateAttributeWithObjectTest(){
+        EntityManager em = createEntityManager("fieldaccess");
+        ServerSession session = (ServerSession)JpaHelper.getServerSession(em.getEntityManagerFactory());
+        ClassDescriptor descriptor = session.getDescriptor(Employee.class);
+        UpdateListener listener = new UpdateListener();
+        descriptor.getEventManager().addListener(listener);
+        beginTransaction(em);
+        Employee emp = new Employee();
+        emp.setFirstName("Mar");
+        EmploymentPeriod period = new EmploymentPeriod();
+        period.setStartDate(Date.valueOf("2010-11-12"));
+        period.setEndDate(Date.valueOf("2010-11-13"));
+        emp.setPeriod(period);
+        em.persist(emp);
+        em.flush();
+        em.clear();
+        
+        emp = em.find(Employee.class, emp.getId());
+        emp.setFirstName("Mark");
+        em.flush();
+        
+        em.refresh(emp);
+        
+        assertTrue("The employment period was not properly updated.", emp.getPeriod().getStartDate().equals(Date.valueOf("2010-11-14")) && emp.getPeriod().getEndDate().equals(Date.valueOf("2010-11-15")));
+        em.getTransaction().rollback();
+        descriptor.getEventManager().removeListener(listener);
+
+    }
+    
+    // listener for updateAttributeWithObjectTest - Test for bug fix: 299637 - updateAttributeWithObjectTest
+    private class UpdateListener extends DescriptorEventAdapter {
+        public void aboutToUpdate(DescriptorEvent event) {
+            Employee myclass = (Employee)event.getObject();
+            EmploymentPeriod period = new EmploymentPeriod();
+            period.setStartDate(Date.valueOf("2010-11-14"));
+            period.setEndDate(Date.valueOf("2010-11-15"));
+            event.updateAttributeWithObject("period", period);
         }
     }
 }
