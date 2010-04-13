@@ -444,7 +444,7 @@ public abstract class Cursor implements Enumeration, Iterator, java.io.Serializa
       */
     public void clear() {
         // If using 1-m joining need to release 1-m rows as well.
-        if (this.query.isObjectLevelReadQuery() && ((ObjectLevelReadQuery)this.query).hasJoining()) {
+        if ((this.query != null) && this.query.isObjectLevelReadQuery() && ((ObjectLevelReadQuery)this.query).hasJoining()) {
             ((ObjectLevelReadQuery)this.query).getJoinedAttributeManager().clearDataResults();
         }
     }

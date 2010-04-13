@@ -385,6 +385,7 @@ public class XMLAnyAttributeMapping extends DatabaseMapping implements XMLMappin
      */
     public void useMapClassName(String concreteMapClassName) {
         MappedKeyMapContainerPolicy policy = new MappedKeyMapContainerPolicy(concreteMapClassName);
+        policy.setKeyMapping(new XMLDirectMapping());
         this.setContainerPolicy(policy);
     }
 

@@ -68,7 +68,7 @@ public class RemoteCursoredStream extends CursoredStream {
 
     /**
      * INTERNAL:
-     * Retreive the OID of the wrapped cursored stream.
+     * Retrieve the OID of the wrapped cursored stream.
      */
     public ObjID getID() {
         return this.id;
@@ -94,6 +94,6 @@ public class RemoteCursoredStream extends CursoredStream {
             return null;
         }
         getObjectCollection().addAll(nextPageObjects);
-        return getObjectCollection().get(getObjectCollection().size());
+        return getObjectCollection().get(getObjectCollection().size() - 1);
     }
 }
