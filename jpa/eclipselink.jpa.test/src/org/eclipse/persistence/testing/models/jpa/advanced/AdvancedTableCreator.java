@@ -33,7 +33,6 @@ public class AdvancedTableCreator extends TogglingFastTableCreator {
         addTableDefinition(buildEQUIPMENTTable());
         addTableDefinition(buildEQUIPMENTCODETable());
         addTableDefinition(buildGOLFERTable());
-        addTableDefinition(buildHUGEPROJECTTable());
         addTableDefinition(buildLARGEPROJECTTable());
         addTableDefinition(buildMANTable());
         addTableDefinition(buildPARTNERLINKTable());
@@ -843,17 +842,6 @@ public class AdvancedTableCreator extends TogglingFastTableCreator {
         fieldFormerEndDate.setIsIdentity(false );
         table.addField(fieldFormerEndDate);
 
-        FieldDefinition fieldHugeProj = new FieldDefinition();
-        fieldHugeProj.setName("HUGE_PROJ_ID");
-        fieldHugeProj.setTypeName("NUMERIC");
-        fieldHugeProj.setSize(15);
-        fieldHugeProj.setShouldAllowNull(true);
-        fieldHugeProj.setIsPrimaryKey(false);
-        fieldHugeProj.setUnique(false);
-        fieldHugeProj.setIsIdentity(false);
-        fieldHugeProj.setForeignKeyFieldName("CMP3_PROJECT.PROJ_ID");
-        table.addField(fieldHugeProj);
-        
         return table;
     }
     
@@ -961,37 +949,6 @@ public class AdvancedTableCreator extends TogglingFastTableCreator {
         return table;
     }
 
-    public static TableDefinition buildHUGEPROJECTTable() {
-        TableDefinition table = new TableDefinition();
-        table.setName("CMP3_HPROJECT");
-
-        // SECTION: FIELD
-        FieldDefinition field = new FieldDefinition();
-        field.setName("PROJ_ID");
-        field.setTypeName("NUMERIC");
-        field.setSize(15);
-        field.setShouldAllowNull(false );
-        field.setIsPrimaryKey(true );
-        field.setUnique(false );
-        field.setIsIdentity(false );
-        field.setForeignKeyFieldName("CMP3_PROJECT.PROJ_ID");
-        table.addField(field);
-    
-        // SECTION: FIELD
-        FieldDefinition field1 = new FieldDefinition();
-        field1.setName("EVANGELIST_ID");
-        field1.setTypeName("NUMERIC");
-        field1.setSize(15);
-        field1.setShouldAllowNull(true);
-        field1.setIsPrimaryKey(false);
-        field1.setUnique(false);
-        field1.setIsIdentity(false);
-        field1.setForeignKeyFieldName("CMP3_EMPLOYEE.EMP_ID");
-        table.addField(field1);
-    
-        return table;
-    }
-    
     public static TableDefinition buildLARGEPROJECTTable() {
         TableDefinition table = new TableDefinition();
         table.setName("CMP3_LPROJECT");
