@@ -84,7 +84,7 @@
 
 		<exclude-unlisted-classes>true</exclude-unlisted-classes>
 		<properties>
-                   <property name="eclipselink.target-server" value="%%server-platform%%"/>
+		           %%server-platform-property%%
                    <property name="eclipselink.target-database" value="%%database-platform%%"/>
                    <property name="eclipselink.ddl-generation" value="drop-and-create-tables"/>
                    <property name="eclipselink.cache.shared.default" value="false"/>
@@ -98,7 +98,7 @@
 	        <provider>org.eclipse.persistence.jpa.PersistenceProvider</provider>
 		<jta-data-source>jdbc/EclipseLinkDS</jta-data-source>
 		<properties>
-                   <property name="eclipselink.target-server" value="%%server-platform%%"/>
+		           %%server-platform-property%%
                    <property name="eclipselink.target-database" value="%%database-platform%%"/>
                    <property name="eclipselink.ddl-generation" value="drop-and-create-tables"/>
                    <property name="eclipselink.cache.shared.default" value="false"/>
