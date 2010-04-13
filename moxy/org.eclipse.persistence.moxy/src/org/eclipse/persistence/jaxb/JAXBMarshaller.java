@@ -113,6 +113,7 @@ public class JAXBMarshaller implements javax.xml.bind.Marshaller {
         xmlroot.setLocalName(qname.getLocalPart());
         xmlroot.setNamespaceURI(qname.getNamespaceURI());
         xmlroot.setDeclaredType(elt.getDeclaredType());
+        xmlroot.setNil(elt.isNil());
         if(elt.getDeclaredType() == ClassConstants.ABYTE || elt.getDeclaredType() == ClassConstants.APBYTE || elt.getDeclaredType().getCanonicalName().equals("javax.activation.DataHandler")) {
             xmlroot.setSchemaType(XMLConstants.BASE_64_BINARY_QNAME);
             //need a binary data mapping so need to wrap

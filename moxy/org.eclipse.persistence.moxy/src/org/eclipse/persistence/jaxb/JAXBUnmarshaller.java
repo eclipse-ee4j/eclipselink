@@ -200,7 +200,9 @@ public class JAXBUnmarshaller implements Unmarshaller {
         // element of the object being marshalled to - need to create a
         // JAXBElement from the returned XMLRoot object
         if (obj instanceof XMLRoot) {
-            return createJAXBElementFromXMLRoot(((XMLRoot)obj), declaredClass);
+            JAXBElement jaxbElement = createJAXBElementFromXMLRoot(((XMLRoot)obj), declaredClass);
+            jaxbElement.setNil(((XMLRoot)obj).isNil());
+            return jaxbElement;
         }
 
 
@@ -621,7 +623,9 @@ public class JAXBUnmarshaller implements Unmarshaller {
 
     private Object createJAXBElementIfRequired(Object value){
         if(value instanceof XMLRoot){
-            return createJAXBElementFromXMLRoot((XMLRoot)value, Object.class);
+            JAXBElement jaxbElement = createJAXBElementFromXMLRoot((XMLRoot)value, Object.class);
+            jaxbElement.setNil(((XMLRoot) value).isNil()); 
+            return jaxbElement;
         }
         return value;
     }

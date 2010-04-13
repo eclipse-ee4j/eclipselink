@@ -2237,7 +2237,6 @@ public class MappingsGenerator {
 	                  mapping.setAttributeName("value");
 	                  mapping.setSetMethodName("setValue");
 	                  mapping.setGetMethodName("getValue");
-	                  mapping.getNullPolicy().setNullRepresentedByXsiNil(true);
 	                  mapping.setKeepAsElementPolicy(UnmarshalKeepAsElementPolicy.KEEP_UNKNOWN_AS_ELEMENT);
 	                  mapping.setXPath(".");
 	                  ((XMLField)mapping.getField()).setIsTypedTextField(true);
@@ -2269,7 +2268,9 @@ public class MappingsGenerator {
 	                  mapping.setGetMethodName("getValue");
 	                  if(nextElement.getDefaultValue() != null) {
 	                      mapping.setNullValue(nextElement.getDefaultValue());
+	                      mapping.getNullPolicy().setNullRepresentedByXsiNil(true);
 	                  }
+	                  
 
 	                  if(helper.isBuiltInJavaType(nextElement.getJavaType())){
 	                      Class attributeClassification = null;

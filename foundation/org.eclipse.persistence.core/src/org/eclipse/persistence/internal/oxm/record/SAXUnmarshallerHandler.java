@@ -286,19 +286,16 @@ public class SAXUnmarshallerHandler implements ContentHandler {
             unmarshalRecord.setXMLReader(this.getXMLReader());
             unmarshalRecord.setAttributes(atts);
 
-            if(atts != null && null == atts.getValue(XMLConstants.SCHEMA_INSTANCE_URL, XMLConstants.SCHEMA_NIL_ATTRIBUTE)) {
-                unmarshalRecord.setUnmarshalNamespaceResolver(unmarshalNamespaceResolver);
-                
-                unmarshalRecord.startDocument();
-                unmarshalRecord.initializeRecord(null);
-                xmlReader.setContentHandler(unmarshalRecord);
-                xmlReader.setLexicalHandler(unmarshalRecord);
-                unmarshalRecord.startElement(namespaceURI, localName, qName, atts);
-            } else {
-                unmarshalRecord.setRootElementName(qName);
-                unmarshalRecord.setLocalName(localName);
-                unmarshalRecord.setRootElementNamespaceUri(namespaceURI);
+            if(atts != null && null != atts.getValue(XMLConstants.SCHEMA_INSTANCE_URL, XMLConstants.SCHEMA_NIL_ATTRIBUTE)) {
+                unmarshalRecord.setNil(true);
             }
+            unmarshalRecord.setUnmarshalNamespaceResolver(unmarshalNamespaceResolver);
+            
+            unmarshalRecord.startDocument();
+            unmarshalRecord.initializeRecord(null);
+            xmlReader.setContentHandler(unmarshalRecord);
+            xmlReader.setLexicalHandler(unmarshalRecord);
+            unmarshalRecord.startElement(namespaceURI, localName, qName, atts);
 
             // if we located the descriptor via xsi:type attribute, create and 
             // return an XMLRoot object 

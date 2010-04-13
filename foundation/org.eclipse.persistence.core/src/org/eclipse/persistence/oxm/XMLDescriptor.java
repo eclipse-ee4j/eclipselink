@@ -660,6 +660,7 @@ public class XMLDescriptor extends ClassDescriptor {
             xmlRoot.setVersion(unmarshalRecord.getVersion());
             xmlRoot.setSchemaLocation(unmarshalRecord.getSchemaLocation());
             xmlRoot.setNoNamespaceSchemaLocation(unmarshalRecord.getNoNamespaceSchemaLocation());
+            xmlRoot.setNil(unmarshalRecord.isNil());
             return xmlRoot;
         }
         return unmarshalRecord.getCurrentObject();

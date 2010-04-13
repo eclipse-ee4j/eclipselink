@@ -24,6 +24,7 @@ public class XMLRoot {
     protected String noNamespaceSchemaLocation;
     protected QName schemaType;
     protected Class declaredType;
+    protected boolean nil;
 
     public XMLRoot() {
         rootFragment = new XPathFragment();
@@ -114,4 +115,13 @@ public class XMLRoot {
     public Class getDeclaredType() {
         return this.declaredType;
     }
+
+    public boolean isNil() {
+        return nil || rootObject == null;
+    }
+
+    public void setNil(boolean nil) {
+        this.nil = nil;
+    }
+
 }

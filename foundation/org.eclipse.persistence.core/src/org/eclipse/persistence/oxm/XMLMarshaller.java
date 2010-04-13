@@ -856,6 +856,7 @@ public class XMLMarshaller {
         
         String schemaLocation = getSchemaLocation();
         String noNsSchemaLocation = getNoNamespaceSchemaLocation();
+        boolean isNil = false;
         if (isXMLRoot) {
             object = root.getObject();
             if (root.getSchemaLocation() != null) {
@@ -865,10 +866,11 @@ public class XMLMarshaller {
                 noNsSchemaLocation = root.getNoNamespaceSchemaLocation();
             }
             marshalRecord.setLeafElementType(root.getSchemaType());
+            isNil = root.isNil();
         }
            
         String xsiPrefix = null;
-        if ((null != getSchemaLocation()) || (null != getNoNamespaceSchemaLocation())) {
+        if ((null != getSchemaLocation()) || (null != getNoNamespaceSchemaLocation()) || (isNil)) {
             xsiPrefix = nr.resolveNamespaceURI(XMLConstants.SCHEMA_INSTANCE_URL);
             if (null == xsiPrefix) {
                 xsiPrefix = XMLConstants.SCHEMA_INSTANCE_PREFIX;
@@ -900,6 +902,9 @@ public class XMLMarshaller {
             if (null != noNsSchemaLocation) {
                 marshalRecord.attribute(XMLConstants.SCHEMA_INSTANCE_URL, XMLConstants.NO_NS_SCHEMA_LOCATION, xsiPrefix + XMLConstants.COLON + XMLConstants.NO_NS_SCHEMA_LOCATION, noNsSchemaLocation);
             }
+            if (isNil) {
+                marshalRecord.attribute(XMLConstants.SCHEMA_INSTANCE_URL, XMLConstants.SCHEMA_NIL_ATTRIBUTE, xsiPrefix + XMLConstants.COLON + XMLConstants.SCHEMA_NIL_ATTRIBUTE, "true");
+            }
 
             marshalRecord.namespaceDeclarations(nr);
             
@@ -913,10 +918,10 @@ public class XMLMarshaller {
         if (treeObjectBuilder != null) {
             treeObjectBuilder.buildRow(marshalRecord, object, session, this, rootFragment, WriteType.UNDEFINED);
         } else if (isXMLRoot) {
-            if(null == object) {
-                marshalRecord.attribute(XMLConstants.XMLNS_URL, XMLConstants.SCHEMA_INSTANCE_PREFIX, XMLConstants.XMLNS + XMLConstants.COLON + XMLConstants.SCHEMA_INSTANCE_PREFIX, XMLConstants.SCHEMA_INSTANCE_URL);
-                marshalRecord.attribute(XMLConstants.SCHEMA_INSTANCE_URL, XMLConstants.SCHEMA_NIL_ATTRIBUTE, XMLConstants.SCHEMA_INSTANCE_PREFIX + XMLConstants.COLON + XMLConstants.SCHEMA_NIL_ATTRIBUTE, "true");
-            } else {
+            //if(null == object) {
+                //marshalRecord.attribute(XMLConstants.XMLNS_URL, XMLConstants.SCHEMA_INSTANCE_PREFIX, XMLConstants.XMLNS + XMLConstants.COLON + XMLConstants.SCHEMA_INSTANCE_PREFIX, XMLConstants.SCHEMA_INSTANCE_URL);
+                //marshalRecord.attribute(XMLConstants.SCHEMA_INSTANCE_URL, XMLConstants.SCHEMA_NIL_ATTRIBUTE, XMLConstants.SCHEMA_INSTANCE_PREFIX + XMLConstants.COLON + XMLConstants.SCHEMA_NIL_ATTRIBUTE, "true");
+            if(object != null) {
             	 if(root.getDeclaredType() != null && root.getObject() != null && root.getDeclaredType() != root.getObject().getClass()) {
         	        	
             		  QName type = (QName)XMLConversionManager.getDefaultJavaTypes().get(object.getClass());

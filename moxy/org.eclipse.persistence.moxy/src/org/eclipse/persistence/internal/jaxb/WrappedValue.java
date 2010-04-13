@@ -16,8 +16,6 @@ package org.eclipse.persistence.internal.jaxb;
 import javax.xml.bind.JAXBElement;
 import javax.xml.namespace.QName;
 
-import org.eclipse.persistence.internal.helper.ClassConstants;
-
 /**
  * INTERNAL:
  * <p><b>Purpose: </b>Provide an interface for asm generated wrapper classes to implement to enable the
@@ -39,9 +37,6 @@ public class WrappedValue extends JAXBElement {
 
     @Override
     public void setValue(Object value) {
-        if(value == null && this.getDeclaredType() == ClassConstants.STRING) {
-            value = "";
-        }
         super.setValue(value);
         setValue = true;
     }

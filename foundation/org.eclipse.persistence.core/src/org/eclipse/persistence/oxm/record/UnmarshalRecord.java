@@ -31,6 +31,7 @@ import org.eclipse.persistence.internal.helper.Helper;
 import org.eclipse.persistence.internal.identitymaps.CacheId;
 import org.eclipse.persistence.internal.identitymaps.CacheKey;
 import org.eclipse.persistence.internal.oxm.ContainerValue;
+import org.eclipse.persistence.internal.oxm.MappingNodeValue;
 import org.eclipse.persistence.internal.oxm.NodeValue;
 import org.eclipse.persistence.internal.oxm.NullCapableValue;
 import org.eclipse.persistence.internal.oxm.Reference;
@@ -45,6 +46,7 @@ import org.eclipse.persistence.internal.oxm.record.UnmappedContentHandlerWrapper
 import org.eclipse.persistence.internal.oxm.record.UnmarshalContext;
 import org.eclipse.persistence.internal.security.PrivilegedNewInstanceFromClass;
 import org.eclipse.persistence.mappings.DatabaseMapping;
+import org.eclipse.persistence.mappings.foundation.AbstractDirectMapping;
 import org.eclipse.persistence.mappings.foundation.AbstractTransformationMapping;
 import org.eclipse.persistence.oxm.NamespaceResolver;
 import org.eclipse.persistence.oxm.XMLConstants;
@@ -380,6 +382,14 @@ public class UnmarshalRecord extends XMLRecord implements ContentHandler, Lexica
 
     public void setUnmarshalContext(UnmarshalContext unmarshalContext) {
         this.unmarshalContext = unmarshalContext;
+    }
+
+    public boolean isNil() {
+        return this.isXsiNil;
+    }
+
+    public void setNil(boolean nil) {
+        this.isXsiNil = nil;
     }
 
     public void startDocument() throws SAXException {
@@ -777,7 +787,17 @@ public class UnmarshalRecord extends XMLRecord implements ContentHandler, Lexica
                             textNode.getUnmarshalNodeValue().endElement(xPathFragment, this);
                         }
                     } else {
-                        isXsiNil = false;
+                        if(textNode.getUnmarshalNodeValue().isMappingNodeValue()) {
+                            DatabaseMapping mapping = ((MappingNodeValue)textNode.getUnmarshalNodeValue()).getMapping();
+                            if(mapping.isAbstractDirectMapping()) {
+                                Object nullValue = ((AbstractDirectMapping)mapping).getNullValue();
+                                if(!("".equals(nullValue))) {
+                                    setAttributeValue(null, mapping);
+                                    this.removeNullCapableValue((NullCapableValue)textNode.getUnmarshalNodeValue());
+                                }
+                            }
+                            isXsiNil = false;
+                        }
                     }
                 }
             }
