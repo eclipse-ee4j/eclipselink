@@ -25,7 +25,7 @@ import org.eclipse.persistence.tools.workbench.utility.node.Node;
 
 import org.eclipse.persistence.indirection.IndirectMap;
 import org.eclipse.persistence.internal.queries.ContainerPolicy;
-import org.eclipse.persistence.internal.queries.DirectMapContainerPolicy;
+import org.eclipse.persistence.internal.queries.MappedKeyMapContainerPolicy;
 import org.eclipse.persistence.oxm.XMLDescriptor;
 import org.eclipse.persistence.oxm.mappings.XMLCompositeObjectMapping;
 
@@ -148,7 +148,7 @@ public final class MWDirectMapContainerPolicy extends MWModel implements MWConta
 	// **************** Runtime Conversion ************************************
 	
 	public ContainerPolicy runtimeContainerPolicy() {
-		DirectMapContainerPolicy containerPolicy = new DirectMapContainerPolicy();
+		MappedKeyMapContainerPolicy containerPolicy = new MappedKeyMapContainerPolicy();
 		containerPolicy.setContainerClassName(getDefaultingContainerClass().getContainerClass().getName());
 		return containerPolicy;
 	}
