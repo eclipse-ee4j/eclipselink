@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <employee>
-  <id>1</id>
-  <lastName>lastName</lastName>
-  <firstName>firstName</firstName>
+  <id>101</id>
+  <lastName>Oracle</lastName>
+  <firstName>Joe</firstName>
 </employee>

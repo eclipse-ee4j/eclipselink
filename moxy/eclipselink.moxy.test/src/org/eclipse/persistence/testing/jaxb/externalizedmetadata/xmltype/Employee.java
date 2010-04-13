@@ -12,11 +12,34 @@
  ******************************************************************************/
 package org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmltype;
 
+import javax.xml.bind.annotation.XmlTransient;
 import javax.xml.bind.annotation.XmlType;
 
 @XmlType(name="my-employee-type", propOrder= {"id", "firstName", "lastName"})
 public class Employee {
-    public String firstName;
-    public String lastName;
-    public int id;
+    public String firstName = "";
+    public String lastName = "";
+    public int id = -1;
+    
+    @XmlTransient
+    public boolean fromFactoryMethod;
+    
+    public boolean equals(Object o) {
+        Employee obj;
+        try {
+            obj = (Employee) o;
+        } catch (ClassCastException cce) {
+            return false;
+        }
+        if (id != obj.id) {
+            return false;
+        }
+        if (!firstName.equals(obj.firstName)) {
+            return false;
+        }
+        if (!lastName.equals(obj.lastName)) {
+            return false;
+        }
+        return true;
+    }
 }

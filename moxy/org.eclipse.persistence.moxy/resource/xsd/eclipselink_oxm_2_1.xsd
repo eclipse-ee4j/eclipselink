@@ -210,6 +210,8 @@
         <xs:complexType>
             <xs:attribute name="name" type="xs:string" default="##default" />
             <xs:attribute name="namespace" type="xs:string" default="##default" />
+            <xs:attribute name="factory-class" type="xs:string" default="javax.xml.bind.annotation.XmlType.DEFAULT" />
+            <xs:attribute name="factory-method" type="xs:string" />
             <xs:attribute name="prop-order">
                 <xs:simpleType>
                     <xs:list itemType="xs:string" />
