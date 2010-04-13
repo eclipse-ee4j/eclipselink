@@ -210,6 +210,9 @@ public class XMLAnyAttributeMapping extends DatabaseMapping implements XMLMappin
         if (!cp.isMappedKeyMapPolicy()) {
             throw DescriptorException.invalidContainerPolicy(cp, this.getClass());
         }
+        if (((MappedKeyMapContainerPolicy)cp).getKeyMapping() == null) {
+            ((MappedKeyMapContainerPolicy)cp).setKeyMapping(new XMLDirectMapping());
+        }
         this.containerPolicy = (MappedKeyMapContainerPolicy) cp;
     }
 
