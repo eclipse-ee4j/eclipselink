@@ -13,11 +13,16 @@
 package org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmlanyelement;
 
 import java.io.File;
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
 import javax.xml.bind.Unmarshaller;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
 
+import org.eclipse.persistence.jaxb.JAXBContext;
 import org.eclipse.persistence.testing.jaxb.externalizedmetadata.ExternalizedMetadataTestCases;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -27,11 +32,15 @@ import org.w3c.dom.Element;
  *
  */
 public class XmlAnyElementTestCases extends ExternalizedMetadataTestCases {
-    private boolean shouldGenerateSchema = true;
-    private MySchemaOutputResolver outputResolver; 
     private static final String CONTEXT_PATH = "org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmlanyelement";
     private static final String PATH = "org/eclipse/persistence/testing/jaxb/externalizedmetadata/xmlanyelement/";
     public static final String RETURN_STRING = "Giggity";
+    public static final String STUFF_STRING_VALUE = "This is some stuff";
+    public static final String STUFF_STRING_VALUE2 = "This is some more stuff";
+    private Class[] employeeClassArray;
+    private Class[] employeeWithListClassArray;
+    private Employee ctrlEmp;
+    private EmployeeWithList ctrlEmpWithList;
     
     /**
      * This is the preferred (and only) constructor.
@@ -40,17 +49,141 @@ public class XmlAnyElementTestCases extends ExternalizedMetadataTestCases {
      */
     public XmlAnyElementTestCases(String name) {
         super(name);
-        outputResolver = new MySchemaOutputResolver();
     }
 
-    private void doSchemaGeneration() {
-        if (shouldGenerateSchema) {
-            outputResolver = generateSchema(CONTEXT_PATH, PATH, 1);
-            // validate schema
-            String controlSchema = PATH + "schema.xsd";
-            compareSchemas(outputResolver.schemaFiles.get(EMPTY_NAMESPACE), new File(controlSchema));
-            shouldGenerateSchema = false;
+    /**
+     * Lazy load the Employee class array.
+     * @return
+     */
+    private Class[] getEmployeeClassArray() {
+        if (employeeClassArray == null) {
+            employeeClassArray = new Class[] { Employee.class };
         }
+        return employeeClassArray;
+    }
+
+    /**
+     * Lazy load the EmployeeWithList class array.
+     * @return
+     */
+    private Class[] getEmployeeWithListClassArray() {
+        if (employeeWithListClassArray == null) {
+            employeeWithListClassArray = new Class[] { EmployeeWithList.class };
+        }
+        return employeeWithListClassArray;
+    }
+
+    /**
+     * Lazy load the control Employee.
+     * @return
+     */
+    private Employee getControlEmployee() {
+        if (ctrlEmp == null) {
+            ctrlEmp = new Employee();
+            ctrlEmp.a = 1;
+            ctrlEmp.b = "3";
+            Element elt = null;
+            try {
+                Document doc = DocumentBuilderFactory.newInstance().newDocumentBuilder().newDocument();
+                elt = doc.createElement(MyDomAdapter.STUFF_STR);
+                elt.appendChild(doc.createTextNode(STUFF_STRING_VALUE));
+            } catch (ParserConfigurationException e) {
+                e.printStackTrace();
+            }
+            ctrlEmp.stuff = elt;
+        }
+        return ctrlEmp;
+    }
+    
+    /**
+     * Lazy load the control Employee.
+     * @return
+     */
+    private EmployeeWithList getControlEmployeeWithList() {
+        if (ctrlEmpWithList == null) {
+            ctrlEmpWithList = new EmployeeWithList();
+            ctrlEmpWithList.a = 1;
+            ctrlEmpWithList.b = "3";
+            ctrlEmpWithList.stuff = new ArrayList<Object>();
+            Element elt1 = null;
+            Element elt2 = null;
+            try {
+                Document doc = DocumentBuilderFactory.newInstance().newDocumentBuilder().newDocument();
+                elt1 = doc.createElement(MyDomAdapter.STUFF_STR);
+                elt1.appendChild(doc.createTextNode(STUFF_STRING_VALUE));
+                elt2 = doc.createElement(MyDomAdapter.STUFF_STR);
+                elt2.appendChild(doc.createTextNode(STUFF_STRING_VALUE2));
+            } catch (ParserConfigurationException e) {
+                e.printStackTrace();
+            }
+            ctrlEmpWithList.stuff.add(elt1);
+            ctrlEmpWithList.stuff.add(elt2);
+        }
+        return ctrlEmpWithList;
+    }
+
+    /**
+     * Lazy load the control Employee.
+     * @return
+     */
+    private Employee getControlEmployeeForAdapterTests() {
+        if (ctrlEmp == null) {
+            ctrlEmp = new Employee();
+            ctrlEmp.a = 1;
+            ctrlEmp.b = "3";
+            Dom stuff = new Dom();
+            stuff.stuffStr = STUFF_STRING_VALUE;
+            ctrlEmp.stuff = stuff;
+        }
+        return ctrlEmp;
+    }
+    
+    /**
+     * Lazy load the control Employee.
+     * @return
+     */
+    private EmployeeWithList getControlEmployeeWithListForAdapterTests() {
+        if (ctrlEmpWithList == null) {
+            ctrlEmpWithList = new EmployeeWithList();
+            ctrlEmpWithList.a = 1;
+            ctrlEmpWithList.b = "3";
+            ctrlEmpWithList.stuff = new ArrayList<Object>();
+            Dom stuff = new Dom();
+            stuff.stuffStr = STUFF_STRING_VALUE;
+            ctrlEmpWithList.stuff.add(stuff);
+            stuff = new Dom();
+            stuff.stuffStr = STUFF_STRING_VALUE2;
+            ctrlEmpWithList.stuff.add(stuff);
+        }
+        return ctrlEmpWithList;
+    }
+
+    /**
+     * Tests schema generation for @XmlAnyElement override via 
+     * eclipselink-oxm.xml
+     * 
+     * Positive test.
+     */
+    public void testSchemaGeneration() {
+        String metadataFile = PATH + "eclipselink-oxm-xml-list.xml";
+        JAXBContext jCtx = null;
+        try {
+            jCtx = createContext(getEmployeeWithListClassArray(), CONTEXT_PATH, metadataFile);
+        } catch (JAXBException e) {
+            e.printStackTrace();
+            fail("An unexpected exception occurred creating the JAXBContext: " + e.getMessage());
+        }
+
+        MySchemaOutputResolver outputResolver = new MySchemaOutputResolver();
+        jCtx.generateSchema(outputResolver);
+        
+        // validate schema
+        String controlSchema = PATH + "schema.xsd";
+        compareSchemas(outputResolver.schemaFiles.get(EMPTY_NAMESPACE), new File(controlSchema));
+        // validate instance doc
+        String src = PATH + "employee.xml";
+        String result = validateAgainstSchema(src, EMPTY_NAMESPACE, outputResolver);
+        assertTrue("Schema validation failed unxepectedly: " + result, result == null);
     }    
     
     /**
@@ -62,13 +195,17 @@ public class XmlAnyElementTestCases extends ExternalizedMetadataTestCases {
      */
     public void testDomHandler() {
         String metadataFile = PATH + "eclipselink-oxm-dom-handler.xml";
-        
-        Class[] classesToProcess = new Class[] { Employee.class };
-        MySchemaOutputResolver outputResolver = generateSchemaWithFileName(classesToProcess, CONTEXT_PATH , metadataFile, 1);
+        JAXBContext jCtx = null;
+        try {
+            jCtx = createContext(getEmployeeClassArray(), CONTEXT_PATH, metadataFile);
+        } catch (JAXBException e) {
+            e.printStackTrace();
+            fail("An unexpected exception occurred creating the JAXBContext: " + e.getMessage());
+        }
   
         // test unmarshal
         Employee emp = null;
-        Unmarshaller unmarshaller = jaxbContext.createUnmarshaller();
+        Unmarshaller unmarshaller = jCtx.createUnmarshaller();
         try {
             String src = PATH + "employee.xml";
             emp = (Employee) unmarshaller.unmarshal(getControlDocument(src));
@@ -78,75 +215,78 @@ public class XmlAnyElementTestCases extends ExternalizedMetadataTestCases {
             fail("An unexpected exception occurred unmarshalling the document.");
         }
 
-        assertNotNull("The Employee did not umnmarshal properly: 'stuff.0' is null.", emp.stuff.get(0));
-        assertTrue("The Employee did not umnmarshal properly: expected 'stuff.0' to be [" + RETURN_STRING + "] but was [" + emp.stuff.get(0) + "]", emp.stuff.get(0).equals(RETURN_STRING));
-    }
-
-    /**
-     * Tests @XmlAnyElement override via eclipselink-oxm.xml.  
-     * 
-     * Positive test.
-     */
-    public void testXmlAnyElement() {
-        doSchemaGeneration();
-        String src = PATH + "employee.xml";
-        String result = validateAgainstSchema(src, EMPTY_NAMESPACE, outputResolver);
-        assertTrue("Schema validation failed unxepectedly: " + result, result == null);
+        assertNotNull("The Employee did not umnmarshal properly: 'stuff' is null.", emp.stuff);
+        assertTrue("The Employee did not umnmarshal properly: expected 'stuff' to be [" + RETURN_STRING + "] but was [" + emp.stuff + "]", emp.stuff.equals(RETURN_STRING));
     }
     
     /**
      * Tests @XmlAnyElement via eclipselink-oxm.xml.  Here, a number of
-     * overrides are performed. An unmarshal operation is performed, 
-     * then a marshal operation is performed to ensure the Any is 
-     * processed correctly.
+     * overrides are performed. An unmarshal operation is performed to 
+     * ensure the Any is processed correctly.
      * 
      * Positive test.
      */
-    public void testXmlAnyElementUnmarshalThenMarshal() {
-        doSchemaGeneration();
+    public void testXmlAnyElementUnmarshal() {
+        String metadataFile = PATH + "eclipselink-oxm.xml";
+        JAXBContext jCtx = null;
+        try {
+            jCtx = createContext(getEmployeeClassArray(), CONTEXT_PATH, metadataFile);
+        } catch (JAXBException e) {
+            e.printStackTrace();
+            fail("An unexpected exception occurred creating the JAXBContext: " + e.getMessage());
+        }
 
         // test unmarshal
-        Employee emp = null;
-        Unmarshaller unmarshaller = getJAXBContext().createUnmarshaller();
+        Unmarshaller unmarshaller = jCtx.createUnmarshaller();
         try {
-            String src = PATH + "employee.xml";
-            emp = (Employee) unmarshaller.unmarshal(getControlDocument(src));
+            String src = PATH + "employee-default-ns.xml";
+            Employee emp = (Employee) unmarshaller.unmarshal(getControlDocument(src));
             assertNotNull("The Employee object is null after unmarshal.", emp);
+            assertEquals(getControlEmployee(), emp);
         } catch (Exception e) {
             e.printStackTrace();
             fail("An unexpected exception occurred unmarshalling the document.");
         }
-
-        assertTrue("The Employee did not umnmarshal properly: expected 'a' to be [1] but was [" + emp.a + "]", emp.a == 1);
-        assertTrue("The Employee did not umnmarshal properly: expected 'b' to be [\"3\"] but was [\"" + emp.b + "\"]", emp.b.equals("3"));
-        assertNotNull("The Employee did not umnmarshal properly: 'stuff' is null.", emp.stuff);
-        assertTrue("The Employee did not umnmarshal properly: expected size of 'stuff' to be [1] but was [" + emp.stuff.size() + "]", emp.stuff.size() == 1);
-        assertNotNull("The Employee did not umnmarshal properly: 'stuff.0' is null.", emp.stuff.get(0));
-        assertTrue("The Employee did not umnmarshal properly: expected 'stuff.0' to be instance of [Element] but was [" + emp.stuff.get(0) + "]", emp.stuff.get(0) instanceof Element);
+    }
         
+    /**
+     * Tests @XmlAnyElement via eclipselink-oxm.xml.  Here, a number of
+     * overrides are performed. Amarshal operation is performed to ensure 
+     * the Any is processed correctly.
+     * 
+     * Positive test.
+     */
+    public void testXmlAnyElementMarshal() {
+        String metadataFile = PATH + "eclipselink-oxm.xml";
+        JAXBContext jCtx = null;
+        try {
+            jCtx = createContext(getEmployeeClassArray(), CONTEXT_PATH, metadataFile);
+        } catch (JAXBException e) {
+            e.printStackTrace();
+            fail("An unexpected exception occurred creating the JAXBContext: " + e.getMessage());
+        }
+
         Document testDoc = parser.newDocument();
         
         // test marshal
-        Marshaller marshaller = getJAXBContext().createMarshaller();
+        Marshaller marshaller = jCtx.createMarshaller();
         try {
-            marshaller.marshal(emp, testDoc);
+            marshaller.marshal(getControlEmployee(), testDoc);
+            String src = PATH + "employee-default-ns.xml";
+            Document ctrlDoc = parser.newDocument();
+            try {
+                ctrlDoc = getControlDocument(src);
+            } catch (Exception e) {
+                e.printStackTrace();
+                fail("An unexpected exception occurred loading control document [" + src + "].");
+            }
+            assertTrue("The Employee did not marshal correctly - document comparison failed: ", compareDocuments(ctrlDoc, testDoc));
         } catch (JAXBException e) {
             e.printStackTrace();
             fail("An unexpected exception occurred marshalling the Employee.");
         }
-
-        String src = PATH + "employee.xml";
-        Document ctrlDoc = parser.newDocument();
-        try {
-            ctrlDoc = getControlDocument(src);
-        } catch (Exception e) {
-            e.printStackTrace();
-            fail("An unexpected exception occurred loading control document [" + src + "].");
-        }
-
-        assertTrue("The Employee did not marshal correctly - document comparison failed: ", compareDocuments(ctrlDoc, testDoc));
     }
-        
+
     /**
      * Tests lax set to true.  There is a sub-employee element which should be
      * unmarshalled to an Employee, since lax is true and the Employee is 
@@ -156,24 +296,34 @@ public class XmlAnyElementTestCases extends ExternalizedMetadataTestCases {
      */
     public void testLaxTrue() {
         String metadataFile = PATH + "eclipselink-oxm-lax.xml";
-        
-        Class[] classesToProcess = new Class[] { Employee.class };
-        MySchemaOutputResolver outputResolver = generateSchemaWithFileName(classesToProcess, CONTEXT_PATH , metadataFile, 1);
+        JAXBContext jCtx = null;
+        try {
+            jCtx = createContext(getEmployeeClassArray(), CONTEXT_PATH, metadataFile);
+        } catch (JAXBException e) {
+            e.printStackTrace();
+            fail("An unexpected exception occurred creating the JAXBContext: " + e.getMessage());
+        }
       
+        // setup the control Employee
+        Employee ctrlEmp = new Employee();
+        ctrlEmp.a = 1;
+        ctrlEmp.b = "3";
+        Employee emp = new Employee();
+        emp.a = 666;
+        emp.b = "999";
+        ctrlEmp.stuff = emp;
+
         // test unmarshal
-        Employee emp = null;
-        Unmarshaller unmarshaller = jaxbContext.createUnmarshaller();
+        Unmarshaller unmarshaller = jCtx.createUnmarshaller();
         try {
             String src = PATH + "employee-with-employee.xml";
-            emp = (Employee) unmarshaller.unmarshal(getControlDocument(src));
-            assertNotNull("The Employee object is null after unmarshal.", emp);
+            Employee employee = (Employee) unmarshaller.unmarshal(getControlDocument(src));
+            assertNotNull("The Employee object is null after unmarshal.", employee);
+            assertEquals(ctrlEmp, employee);
         } catch (Exception e) {
             e.printStackTrace();
             fail("An unexpected exception occurred unmarshalling the document.");
         }
-
-        assertNotNull("The Employee did not umnmarshal properly: 'stuff.0' is null.", emp.stuff.get(0));
-        assertTrue("The Employee did not umnmarshal properly: expected 'stuff.0' to be an [Employee] but was [" + emp.stuff.get(0) + "]", emp.stuff.get(0) instanceof Employee);
     }
 
     /**
@@ -183,55 +333,167 @@ public class XmlAnyElementTestCases extends ExternalizedMetadataTestCases {
      * Positive test.
      */
     public void testLaxFalse() {
+        String metadataFile = PATH + "eclipselink-oxm.xml";
+        JAXBContext jCtx = null;
+        try {
+            jCtx = createContext(getEmployeeClassArray(), CONTEXT_PATH, metadataFile);
+        } catch (JAXBException e) {
+            e.printStackTrace();
+            fail("An unexpected exception occurred creating the JAXBContext: " + e.getMessage());
+        }
     	
-    	Class[] classesToProcess = new Class[] { Employee.class };    	
-        MySchemaOutputResolver outputResolver = generateSchema(classesToProcess, CONTEXT_PATH , PATH, 1);
-    	
+        // setup the control Employee
+        Element empElt = null;
+        try {
+            Document doc = DocumentBuilderFactory.newInstance().newDocumentBuilder().newDocument();
+            Element aElt = doc.createElement("a");
+            aElt.appendChild(doc.createTextNode("666"));
+            Element bElt = doc.createElement("b");
+            bElt.appendChild(doc.createTextNode("999"));
+            empElt = doc.createElement("employee");
+            empElt.appendChild(aElt);
+            empElt.appendChild(bElt);
+        } catch (ParserConfigurationException e1) {
+            e1.printStackTrace();
+        }
+        Employee ctrlEmp = new Employee();
+        ctrlEmp.a = 1;
+        ctrlEmp.b = "3";
+        ctrlEmp.stuff = empElt;
+
         // test unmarshal
-        Employee emp = null;
-        Unmarshaller unmarshaller = jaxbContext.createUnmarshaller();
+        Unmarshaller unmarshaller = jCtx.createUnmarshaller();
         try {
             String src = PATH + "employee-with-employee.xml";
-            emp = (Employee) unmarshaller.unmarshal(getControlDocument(src));
+            Employee emp = (Employee) unmarshaller.unmarshal(getControlDocument(src));
             assertNotNull("The Employee object is null after unmarshal.", emp);
+            assertEquals(ctrlEmp, emp);
         } catch (Exception e) {
             e.printStackTrace();
             fail("An unexpected exception occurred unmarshalling the document.");
         }
-
-        assertNotNull("The Employee did not umnmarshal properly: 'stuff.0' is null.", emp.stuff.get(0));
-        assertTrue("The Employee did not umnmarshal properly: expected 'stuff.0' to be an [Element] but was [" + emp.stuff.get(0) + "]", emp.stuff.get(0) instanceof Element);
     }
 
     /**
-     * This test can be enabled when we have support for XmlAdapter with XmlAnyElement
+     * Tests AnyObjectMapping.
+     * 
+     * Positive test.
      */
-    public void xtestXmlAdapter() {
+    public void testXmlAdapterMarshalSingle() {
+        String metadataFile = PATH + "eclipselink-oxm-xml-adapter.xml";
+        JAXBContext jCtx = null;
         try {
-            javax.xml.bind.JAXBContext jCtx = javax.xml.bind.JAXBContext.newInstance(new Class[] {Employee.class});
-            //JAXBContext jCtx = (JAXBContext) JAXBContextFactory.createContext(new Class[] { Employee.class }, null);
-            Employee emp = null;
-            Unmarshaller unmarshaller = jCtx.createUnmarshaller();
-            try {
-                String src = PATH + "employee.xml";
-                emp = (Employee) unmarshaller.unmarshal(getControlDocument(src));
-                assertNotNull("The Employee object is null after unmarshal.", emp);
-            } catch (Exception e) {
-                e.printStackTrace();
-                fail("An unexpected exception occurred unmarshalling the document.");
-            }
-            
-            // test marshal
-            Marshaller marshaller = jCtx.createMarshaller();
-            try {
-                marshaller.marshal(emp, System.out);
-            } catch (JAXBException e) {
-                e.printStackTrace();
-                fail("An unexpected exception occurred marshalling the Employee.");
-            }
-             
+            jCtx = createContext(getEmployeeClassArray(), CONTEXT_PATH, metadataFile);
         } catch (JAXBException e) {
             e.printStackTrace();
+            fail("An unexpected exception occurred creating the JAXBContext: " + e.getMessage());
+        }
+
+        Marshaller marshaller = jCtx.createMarshaller();
+        try {
+            Document testDoc = parser.newDocument();
+            marshaller.marshal(getControlEmployeeForAdapterTests(), testDoc);
+            String src = PATH + "employee-default-ns.xml";
+            Document ctrlDoc = parser.newDocument();
+            try {
+                ctrlDoc = getControlDocument(src);
+            } catch (Exception e) {
+                e.printStackTrace();
+                fail("An unexpected exception occurred loading control document [" + src + "].");
+            }
+            assertTrue("Document comparison failed unxepectedly: ", compareDocuments(ctrlDoc, testDoc));
+        } catch (JAXBException e) {
+            e.printStackTrace();
+            fail("An unexpected exception occurred marshalling the Employee: " + e.getMessage());
+        }
+    }
+
+    /**
+     * Tests AnyObjectMapping.
+     * 
+     * Positive test.
+     */
+    public void testXmlAdapterUnmarshalSingle() {
+        String metadataFile = PATH + "eclipselink-oxm-xml-adapter.xml";
+        JAXBContext jCtx = null;
+        try {
+            jCtx = createContext(getEmployeeClassArray(), CONTEXT_PATH, metadataFile);
+        } catch (JAXBException e) {
+            e.printStackTrace();
+            fail("An unexpected exception occurred creating the JAXBContext: " + e.getMessage());
+        }
+
+        Unmarshaller unmarshaller = jCtx.createUnmarshaller();
+        try {
+            String src = PATH + "employee-default-ns.xml";
+            Employee testEmp = (Employee) unmarshaller.unmarshal(getControlDocument(src));
+            assertNotNull("The Employee object is null after unmarshal.", testEmp);
+            assertEquals(getControlEmployeeForAdapterTests(), testEmp);
+        } catch (Exception e) {
+            e.printStackTrace();
+            fail("An unexpected exception occurred unmarshalling the document: " + e.getMessage());
+        }
+    }
+    
+    /**
+     * Tests AnyCollectionMapping.
+     * 
+     * Positive test.
+     */
+    public void testXmlAdapterMarshalCollection() {
+        String metadataFile = PATH + "eclipselink-oxm-xml-adapter-list.xml";
+        JAXBContext jCtx = null;
+        try {
+            jCtx = createContext(getEmployeeWithListClassArray(), CONTEXT_PATH, metadataFile);
+        } catch (JAXBException e) {
+            e.printStackTrace();
+            fail("An unexpected exception occurred creating the JAXBContext: " + e.getMessage());
+        }
+
+        Marshaller marshaller = jCtx.createMarshaller();
+        try {
+            Document testDoc = parser.newDocument();
+            marshaller.marshal(getControlEmployeeWithListForAdapterTests(), testDoc);
+
+            String src = PATH + "employee-with-list.xml";
+            Document ctrlDoc = parser.newDocument();
+            try {
+                ctrlDoc = getControlDocument(src);
+            } catch (Exception e) {
+                e.printStackTrace();
+                fail("An unexpected exception occurred loading control document [" + src + "].");
+            }
+            assertTrue("Document comparison failed unxepectedly: ", compareDocuments(ctrlDoc, testDoc));
+        } catch (JAXBException e) {
+            e.printStackTrace();
+            fail("An unexpected exception occurred marshalling the Employee: " + e.getMessage());
+        }
+    }
+
+    /**
+     * Tests AnyCollectionMapping.
+     * 
+     * Positive test.
+     */
+    public void testXmlAdapterUnmarshalCollection() {
+        String metadataFile = PATH + "eclipselink-oxm-xml-adapter-list.xml";
+        JAXBContext jCtx = null;
+        try {
+            jCtx = createContext(getEmployeeWithListClassArray(), CONTEXT_PATH, metadataFile);
+        } catch (JAXBException e) {
+            e.printStackTrace();
+            fail("An unexpected exception occurred creating the JAXBContext: " + e.getMessage());
+        }
+        
+        Unmarshaller unmarshaller = jCtx.createUnmarshaller();
+        try {
+            String src = PATH + "employee-with-list.xml";
+            EmployeeWithList testEmp = (EmployeeWithList) unmarshaller.unmarshal(getControlDocument(src));
+            assertNotNull("The Employee object is null after unmarshal.", testEmp);
+            assertEquals(getControlEmployeeWithListForAdapterTests(), testEmp);
+        } catch (Exception e) {
+            e.printStackTrace();
+            fail("An unexpected exception occurred unmarshalling the document: " + e.getMessage());
         }
     }
 }

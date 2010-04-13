@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema">
-   <xsd:complexType name="employee">
+   <xsd:complexType name="employeeWithList">
       <xsd:sequence>
          <xsd:element name="a" type="xsd:int"/>
          <xsd:element name="b" type="xsd:string" minOccurs="0"/>
          <xsd:any processContents="skip" namespace="##other" minOccurs="0" maxOccurs="unbounded"/>
       </xsd:sequence>
    </xsd:complexType>
-   <xsd:element name="employee" type="employee"/>
+   <xsd:element name="employee" type="employeeWithList"/>
 </xsd:schema>

@@ -20,19 +20,22 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 
-public final class MyDomAdapter extends XmlAdapter<Element, java.util.List<Object>> {
+public final class MyDomAdapter extends XmlAdapter<Node, Dom> {
+    public static final String STUFF_STR = "stuff";
+    
     public MyDomAdapter() {}
     
-    public Element marshal(java.util.List<Object> arg0) throws Exception {
+    public Node marshal(Dom arg0) throws Exception {
         Document doc = DocumentBuilderFactory.newInstance().newDocumentBuilder().newDocument();
-        Element elt = doc.createElement("stuff");
-        elt.appendChild(doc.createTextNode("667"));
+        Element elt = doc.createElement(STUFF_STR);
+        elt.appendChild(doc.createTextNode(arg0.stuffStr));
         return elt;
     }
 
-    public java.util.List<Object> unmarshal(Element arg0) throws Exception {
-        java.util.List listToReturn = new java.util.ArrayList<Object>();
-        listToReturn.add(arg0);
-        return listToReturn;
+    public Dom unmarshal(Node arg0) throws Exception {
+        Dom stuff = new Dom();
+        Node elt = arg0.getFirstChild();
+        stuff.stuffStr = elt.getNodeValue();
+        return stuff;
     }
 }

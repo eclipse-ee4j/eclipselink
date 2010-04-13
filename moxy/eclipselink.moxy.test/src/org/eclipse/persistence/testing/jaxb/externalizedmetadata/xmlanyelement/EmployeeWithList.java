@@ -8,51 +8,35 @@
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
- * dmccann - October 27/2009 - 2.0 - Initial implementation
+ * dmccann - February 16/2010 - 2.1 - Initial implementation
  ******************************************************************************/
 package org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmlanyelement;
 
-import org.w3c.dom.Element;
-import org.w3c.dom.Node;
-
 @javax.xml.bind.annotation.XmlRootElement
-public class Employee {
+public class EmployeeWithList {
     public int a;
     public String b;
     
     //@javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter(value=org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmlanyelement.MyDomAdapter.class)
     //@javax.xml.bind.annotation.XmlAnyElement(lax=false, value=org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmlanyelement.MyDomHandler.class)
-    public Object stuff;
+    public java.util.List<Object> stuff;
 
-    public Employee() {}
+    public EmployeeWithList() {}
     
     public boolean equals(Object obj) {
-        Employee empObj;
+        EmployeeWithList empObj;
         try {
-            empObj = (Employee) obj;
-        } catch (ClassCastException e) {
-            return false;
-        }
+            empObj = (EmployeeWithList) obj;
+        } catch (ClassCastException e) { return false; }
         
-        if (empObj.stuff == null) {
-            if (this.stuff != null) {
+        if (empObj.stuff.size() != this.stuff.size()) { return false; }
+        // assumes size of list is 2, and order is not relevant
+        for (int i=0; i<2; i++) {
+            Object stuffStr = empObj.stuff.get(i);
+            if (!(stuff.get(0).equals(stuffStr) || stuff.get(1).equals(stuffStr))) {
                 return false;
             }
-            return empObj.a == this.a && empObj.b.equals(this.b);
         }
-        if (this.stuff == null) {
-            return false;
-        }
-
-        // if 'stuff' is an Element, don't bother with comparison
-        if (empObj.stuff instanceof Node) {
-            return empObj.a == this.a && empObj.b.equals(this.b) && this.stuff instanceof Node;
-        }
-        // here 'stuff' should be text or an Employee
-        return empObj.a == this.a && empObj.b.equals(this.b) && empObj.stuff.equals(this.stuff);
-    }
-    
-    public String toString() {
-        return "Employee[a="+a+", b="+b+", stuff="+stuff+"]";
+        return empObj.a == this.a && empObj.b.equals(this.b);
     }
 }
