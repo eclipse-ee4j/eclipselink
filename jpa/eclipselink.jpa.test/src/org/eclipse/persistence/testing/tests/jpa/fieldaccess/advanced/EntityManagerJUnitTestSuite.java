@@ -4590,7 +4590,7 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
         em.refresh(emp);
         
         assertTrue("The employment period was not properly updated.", emp.getPeriod().getStartDate().equals(Date.valueOf("2010-11-14")) && emp.getPeriod().getEndDate().equals(Date.valueOf("2010-11-15")));
-        em.getTransaction().rollback();
+        rollbackTransaction(em);
         descriptor.getEventManager().removeListener(listener);
 
     }
