@@ -73,6 +73,9 @@ public class CursoredStream extends Cursor {
         if ((this.position + 1) <= this.objectCollection.size()) {
             return false;
         }
+        if (this.nextRow != null) {
+            return false;
+        }
         if (isClosed()) {
             return true;
         }
@@ -393,11 +396,11 @@ public class CursoredStream extends Cursor {
 
     protected Object retrieveNextObject() throws DatabaseException {
         while (true) {
-            if (isClosed()) {
-                return null;
-            }
             AbstractRecord row = null;
             if (this.nextRow == null) {
+                if (isClosed()) {
+                    return null;
+                }
                 row = getAccessor().cursorRetrieveNextRow(this.fields, this.resultSet, this.executionSession);
             } else {
                 row = this.nextRow;
@@ -409,9 +412,14 @@ public class CursoredStream extends Cursor {
             }
             // If using 1-m joining need to fetch 1-m rows as well.
             if (this.query.isObjectLevelReadQuery() && ((ObjectLevelReadQuery)this.query).hasJoining()) {
-                JoinedAttributeManager joinManager = ((ObjectLevelReadQuery)this.query).getJoinedAttributeManager();
-                if (joinManager.isToManyJoin()) {
-                    this.nextRow = joinManager.processDataResults(row, this, true);
+                if (!isClosed()) {
+                    JoinedAttributeManager joinManager = ((ObjectLevelReadQuery)this.query).getJoinedAttributeManager();
+                    if (joinManager.isToManyJoin()) {
+                        this.nextRow = joinManager.processDataResults(row, this, true);
+                        if (this.nextRow == null) {
+                            close();
+                        }
+                    }
                 }
             }
             Object object = buildAndRegisterObject(row);
