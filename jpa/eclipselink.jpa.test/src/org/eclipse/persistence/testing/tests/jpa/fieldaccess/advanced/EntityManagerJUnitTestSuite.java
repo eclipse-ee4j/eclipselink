@@ -4681,7 +4681,7 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
     public void updateAttributeWithObjectTest(){
         EntityManagerFactory factory = getEntityManagerFactory("fieldaccess");
         EntityManager em = factory.createEntityManager();
-        ServerSession session = (ServerSession)JpaHelper.getServerSession(factory);
+        ServerSession session = JUnitTestCase.getServerSession("fieldaccess");
         ClassDescriptor descriptor = session.getDescriptor(Employee.class);
         UpdateListener listener = new UpdateListener();
         descriptor.getEventManager().addListener(listener);
