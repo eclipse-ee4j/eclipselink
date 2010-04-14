@@ -690,6 +690,10 @@ public class SessionBroker extends DatabaseSessionImpl {
                 getCommandManager().initialize();
             }
             isLoggedIn = true;
+            if (this.eventManager != null) {
+                this.eventManager.postLogin(this);
+            }
+
         }
     }
 
