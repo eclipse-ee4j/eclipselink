@@ -1,19 +1,19 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
 	<classpathentry kind="src" path="src"/>
-	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/eclipselink.core.test"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/eclipselink.jpa.test"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/org.eclipse.persistence.core"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/org.eclipse.persistence.jpa"/>
-	<classpathentry kind="lib" path="C:/Engineering/EclipseLink/extension.lib.external/spring/cglib-nodep-2.1_3.jar"/>
-	<classpathentry kind="lib" path="C:/Engineering/EclipseLink/extension.lib.external/spring/commons-logging.jar"/>
-	<classpathentry kind="lib" path="C:/Engineering/EclipseLink/extension.lib.external/spring/spring.jar" sourcepath="C:/Engineering/Spring/spring-framework-2.5.6.SEC01/src"/>
-	<classpathentry kind="lib" path="C:/Engineering/EclipseLink/extension.lib.external/spring/spring-agent.jar" sourcepath="C:/Engineering/Spring/spring-framework-2.5.6.SEC01/tiger/src"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/javax.persistence 2.0.0"/>
+	<classpathentry kind="var" path="SPRING_CGLIB_LIB"/>
+	<classpathentry kind="var" path="SPRING_COMMONS_LOGGING_LIB"/>
+	<classpathentry kind="var" path="SPRING_JOTM_CLIENT_LIB"/>
 	<classpathentry kind="lib" path="jpa-spring.jar"/>
-	<classpathentry kind="lib" path="C:/Engineering/EclipseLink/extension.lib.external/spring/spring-test.jar"/>
-	<classpathentry kind="lib" path="C:/Engineering/EclipseLink/extension.lib.external/spring/xapool.jar"/>
-	<classpathentry kind="lib" path="C:/Engineering/EclipseLink/extension.lib.external/spring/jotm-client.jar"/>
+	<classpathentry kind="var" path="SPRING_AGENT_LIB"/>
+	<classpathentry kind="var" path="SPRING_LIB"/>
+	<classpathentry kind="var" path="SPRING_XAPOOL_LIB"/>
+	<classpathentry kind="var" path="SPRING_TEST_LIB"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 	<classpathentry kind="output" path="classes"/>
 </classpath>
