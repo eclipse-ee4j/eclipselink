@@ -40,6 +40,13 @@ public class SAXFragmentBuilder extends SAXDocumentBuilder {
     }
 
     public void startElement(String namespaceURI, String localName, String qName, Attributes atts) throws SAXException {
+
+        if (stringBuffer.length() > 0) {
+            Text text = getInitializedDocument().createTextNode(stringBuffer.toString());
+            Node parent = this.nodes.get(nodes.size() - 1);
+            parent.appendChild(text);
+            stringBuffer.reset();
+        }
         if (null != namespaceURI && namespaceURI.length() == 0) {
             namespaceURI = null;
         }

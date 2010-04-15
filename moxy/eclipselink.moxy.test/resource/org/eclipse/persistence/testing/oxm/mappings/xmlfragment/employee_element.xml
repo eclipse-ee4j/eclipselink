@@ -1,1 +1,1 @@
-<employee><first-name>Jane</first-name><last-name>Doe</last-name><xml-node id="10"><child1>child1text</child1><child2>child2text</child2></xml-node></employee>
+<employee><first-name>Jane</first-name><last-name>Doe</last-name><xml-node id="10">text<child1>child1text</child1><child2>child2text</child2></xml-node></employee>
