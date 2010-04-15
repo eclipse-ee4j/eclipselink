@@ -4566,12 +4566,11 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
     
     // Test for bug fix: 299637 - updateAttributeWithObjectTest with aggregate causes NPE when using field access
     public void updateAttributeWithObjectTest(){
-        EntityManagerFactory factory = getEntityManagerFactory("fieldaccess");
-        EntityManager em = factory.createEntityManager();
         ServerSession session = JUnitTestCase.getServerSession("fieldaccess");
         ClassDescriptor descriptor = session.getDescriptor(Employee.class);
         UpdateListener listener = new UpdateListener();
         descriptor.getEventManager().addListener(listener);
+        EntityManager em = createEntityManager("fieldaccess");
         beginTransaction(em);
         Employee emp = new Employee();
         emp.setFirstName("Mar");
