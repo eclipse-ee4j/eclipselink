@@ -111,6 +111,7 @@ public class MappingTestModel extends TestModel {
         suite.addTest(new DeleteObjectTest(manager.getObject(Computer.class, "example2")));
         suite.addTest(new DeleteObjectTest(manager.getObject(Shipment.class, "example2")));
         suite.addTest(new MTMPrivateOwnedWithValueholderDeleteObjectTest());
+        suite.addTest(new DirectCollectionMappingDeleteNullValueTest());
 
         return suite;
     }

@@ -88,6 +88,7 @@ public class DirectCollectionMapping extends CollectionMapping implements Relati
 
     /** Used for deletion when ChangeSets are used */
     protected transient ModifyQuery changeSetDeleteQuery;
+    protected transient ModifyQuery changeSetDeleteNullQuery; // Bug 306075
     protected transient boolean hasCustomDeleteQuery;
     protected transient boolean hasCustomInsertQuery;
     protected HistoryPolicy historyPolicy;
@@ -474,6 +475,12 @@ public class DirectCollectionMapping extends CollectionMapping implements Relati
         if(this.changeSetDeleteQuery != null) {
             clone.changeSetDeleteQuery = (ModifyQuery)this.changeSetDeleteQuery.clone();
         }
+        
+        // Bug 306075
+        if(this.changeSetDeleteNullQuery != null) {
+            clone.changeSetDeleteNullQuery = (ModifyQuery)this.changeSetDeleteNullQuery.clone();
+        }
+        
         if(this.deleteAtIndexQuery != null) {
             clone.deleteAtIndexQuery = (ModifyQuery)this.deleteAtIndexQuery.clone();
         }
@@ -1074,6 +1081,14 @@ public class DirectCollectionMapping extends CollectionMapping implements Relati
         }
         return changeSetDeleteQuery;
     }
+    
+    // Bug 306075
+    protected ModifyQuery getDeleteNullQuery() {
+        if (changeSetDeleteNullQuery == null) {
+            changeSetDeleteNullQuery = new DataModifyQuery();
+        }
+        return changeSetDeleteNullQuery;
+    }
 
     protected ModifyQuery getDeleteAtIndexQuery() {
         if (deleteAtIndexQuery == null) {
@@ -1363,6 +1378,7 @@ public class DirectCollectionMapping extends CollectionMapping implements Relati
         }
         initializeDeleteAllQuery(session);
         initializeDeleteQuery(session);
+        initializeDeleteNullQuery(session); // Bug 306075
         initializeInsertQuery(session);
         initializeDeleteAtIndexQuery(session);
         initializeUpdateAtIndexQuery(session);
@@ -1445,6 +1461,20 @@ public class DirectCollectionMapping extends CollectionMapping implements Relati
         statement.setTable(getReferenceTable());
         getDeleteQuery().setSQLStatement(statement);
     }
+    
+    // Bug 306075 - for deleting a null value from a collection
+    protected void initializeDeleteNullQuery(AbstractSession session) {
+        if (!getDeleteNullQuery().hasSessionName()) {
+            getDeleteNullQuery().setSessionName(session.getName());
+        }
+
+        SQLDeleteStatement statement = new SQLDeleteStatement();
+        ExpressionBuilder builder = new ExpressionBuilder();
+        Expression expression = createWhereClauseForDeleteNullQuery(builder);
+        statement.setWhereClause(expression);
+        statement.setTable(getReferenceTable());
+        getDeleteNullQuery().setSQLStatement(statement);
+    }
 
     protected void initializeDeleteAtIndexQuery(AbstractSession session) {
         if (!getDeleteAtIndexQuery().hasSessionName()) {
@@ -1511,6 +1541,26 @@ public class DirectCollectionMapping extends CollectionMapping implements Relati
         }
         expression = expression.and(directExp);
         return expression;
+    }
+    
+    // Bug 306075 - for deleting a null value from a collection
+    protected Expression createWhereClauseForDeleteNullQuery(ExpressionBuilder builder) {
+    	Expression directExp = builder.getField(getDirectField()).isNull();
+    	Expression expression = null;
+
+    	// Construct an expression to delete from the relation table.
+    	for (int index = 0; index < getReferenceKeyFields().size(); index++) {
+    		DatabaseField referenceKey = getReferenceKeyFields().get(index);
+    		DatabaseField sourceKey = getSourceKeyFields().get(index);
+
+    		Expression subExp1 = builder.getField(referenceKey);
+    		Expression subExp2 = builder.getParameter(sourceKey);
+    		Expression subExpression = subExp1.equal(subExp2);
+
+    		expression = subExpression.and(expression);
+    	}
+    	expression = expression.and(directExp);
+    	return expression;
     }
 
     /**
@@ -2144,12 +2194,16 @@ public class DirectCollectionMapping extends CollectionMapping implements Relati
             Object object = iterator.next();
             AbstractRecord thisRow = writeQuery.getTranslationRow().clone();
             Object value = getFieldValue(object, writeQuery.getSession());
-            thisRow.add(getDirectField(), value);
 
             // Hey I might actually want to use an inner class here... ok array for now.
             Object[] event = new Object[3];
             event[0] = Delete;
-            event[1] = getDeleteQuery();
+            if (value == null) { // Bug 306075 - for deleting a null value from a collection
+                event[1] = getDeleteNullQuery();
+             } else {
+                thisRow.add(getDirectField(), value);
+                event[1] = getDeleteQuery();
+             }
             event[2] = thisRow;
             writeQuery.getSession().getCommitManager().addDataModificationEvent(this, event);
             Integer count = (Integer)changeRecord.getCommitAddMap().get(object);
@@ -2260,11 +2314,16 @@ public class DirectCollectionMapping extends CollectionMapping implements Relati
             if(indexesAfter == null) {
                 // All copies of the target object deleted - don't need to verify order field contents.
                 AbstractRecord deleteRow = writeQuery.getTranslationRow().clone();
-                deleteRow.add(getDirectField(), value);
+
                 // Hey I might actually want to use an inner class here... ok array for now.
                 Object[] event = new Object[3];
                 event[0] = Delete;
-                event[1] = getDeleteQuery();
+                if (value == null) { // Bug 306075 - for deleting a null value from a collection
+                    event[1] = getDeleteNullQuery();
+                 } else {
+                    deleteRow.add(getDirectField(), value);
+                    event[1] = getDeleteQuery();
+                 }
                 event[2] = deleteRow;
                 writeQuery.getSession().getCommitManager().addDataModificationEvent(this, event);
             } else if(indexesAfter.isEmpty()) {
