@@ -16,6 +16,8 @@ package org.eclipse.persistence.testing.tests.jpa.advanced;
 
 import java.util.List;
 
+import javax.persistence.EntityManager;
+
 import junit.framework.Test;
 import junit.framework.TestSuite;
 
@@ -24,8 +26,8 @@ import org.eclipse.persistence.testing.framework.junit.JUnitTestCase;
 import org.eclipse.persistence.queries.ReportQuery;
 import org.eclipse.persistence.testing.models.jpa.advanced.Address;
 import org.eclipse.persistence.testing.models.jpa.advanced.Employee;
+import org.eclipse.persistence.testing.models.jpa.advanced.HugeProject;
 import org.eclipse.persistence.expressions.ExpressionBuilder;
-import org.eclipse.persistence.testing.models.jpa.advanced.LargeProject;
 import org.eclipse.persistence.testing.models.jpa.advanced.Project;
 
 public class ReportQueryMultipleReturnTestSuite extends JUnitTestCase {
@@ -132,15 +134,38 @@ public class ReportQueryMultipleReturnTestSuite extends JUnitTestCase {
         fail("Failed to throw exception, ReportItems must not have multi-table inheritance.");
     }
     
+    // Changed the test to use HugeProject:
+    // After adding HugeProject as a subclass of LargeProject the test started to fail:
+    // according to testInheritanceMultiTableException,
+    // "ReportItems must not have multi-table inheritance" so the reference class
+    // must be a "leaf" in the inheritance hierarchy - no classes should be derived from it.
     public void testReturnRootObject(){
+        // create HugeProject instance so that the query has something to select
+        EntityManager em = createEntityManager();
+        HugeProject hp = new HugeProject("hp");
+        beginTransaction(em);
+        em.persist(hp);
+        commitTransaction(em);
+        em.close();
+        
         ReportQuery reportQuery = new ReportQuery();
         reportQuery.returnWithoutReportQueryResult();
-        reportQuery.setReferenceClass(LargeProject.class);
-        ExpressionBuilder empbuilder = new ExpressionBuilder();
-        reportQuery.addAttribute("project",empbuilder);
-        List result = (List)getServerSession().executeQuery(reportQuery);
-        Object resultItem = result.get(0);
-        assertTrue("Failed to return Project as expression root correctly, Not A Project", LargeProject.class.isAssignableFrom(resultItem.getClass()));
+        reportQuery.setReferenceClass(HugeProject.class);
+        ExpressionBuilder builder = new ExpressionBuilder();
+        reportQuery.addAttribute("project", builder);
+        try {
+            List result = (List)getServerSession().executeQuery(reportQuery);
+            Object resultItem = result.get(0);
+            assertTrue("Failed to return Project as expression root correctly, Not A HugeProject", HugeProject.class.isAssignableFrom(resultItem.getClass()));
+        } finally {
+            // clean-up
+            em = createEntityManager();
+            beginTransaction(em);
+            hp = em.find(HugeProject.class, hp.getId());
+            em.remove(hp);
+            commitTransaction(em);
+            em.close();
+        }
     }
     
     public static Test suite() {

@@ -22,6 +22,7 @@ import java.util.Vector;
 
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.expressions.Expression;
+import org.eclipse.persistence.indirection.ValueHolder;
 import org.eclipse.persistence.internal.descriptors.ObjectBuilder;
 import org.eclipse.persistence.internal.expressions.QueryKeyExpression;
 import org.eclipse.persistence.internal.helper.Helper;
@@ -361,9 +362,17 @@ public class JoinedAttributeTestHelper {
             if(!isInstantiated1 && !isInstantiated2) {
                 return "";
             } else if(isInstantiated1 && !isInstantiated2) {
-                errorMsg = ":  indirection instantiated != indirection NOT instantiated; ";
+                if(frm.isOneToOneMapping() && value1 instanceof ValueHolder && ((ValueHolder)(value1)).getValue() == null) {
+                    // In OneToOne case if the foreign key of the read object is null then ValueHolder (which is always instantiated) with value null is created 
+                } else {
+                    errorMsg = ":  indirection instantiated != indirection NOT instantiated; ";
+                }
             } else if(!isInstantiated1 && isInstantiated2) {
-                errorMsg = ": indirection NOT instantiated != indirection instantiated; ";
+                if(frm.isOneToOneMapping() && value2 instanceof ValueHolder && ((ValueHolder)(value2)).getValue() == null) {
+                    // In OneToOne case if the foreign key of the read object is null then ValueHolder (which is always instantiated) with value null is created 
+                } else {
+                    errorMsg = ": indirection NOT instantiated != indirection instantiated; ";
+                }
             } else {
                 value1 = frm.getRealAttributeValueFromObject(obj1, session);
                 value2 = frm.getRealAttributeValueFromObject(obj2, session);
