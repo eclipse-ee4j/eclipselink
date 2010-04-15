@@ -64,7 +64,6 @@
     <property name="wdf_test.2.moxy.dir"           value="${wdf_test.2.trunk.dir}/moxy/org.eclipse.persistence.moxy"/>
     <property name="wdf_test.2.core.test.dir"      value="${wdf_test.2.trunk.dir}/foundation/eclipselink.core.test"/>
     <property name="env" environment="env"         value="env"/>
-    <property name="eclipselink.jpa.test"          value="../eclipselink.jpa.test"/>
 
     <!-- Allows a user to overide certain user specific properties. -->
     <property file="${user.home}/build.properties"/>
@@ -219,7 +218,7 @@
     
     <target name="get-server-properties">
         <property file="${user.home}/${server.name}.properties"/>
-        <property file="${eclipselink.jpa.test}/${server.name}.properties"/>
+        <property file="${wdf_test.build.location}/../eclipselink.jpa.test/${server.name}.properties"/>
         <echo message="server.lib=${server.lib}"/>
         <echo message="server.depend=${server.depend}"/>
         <echo message="server.name=${server.name}"/>
@@ -235,7 +234,6 @@
         <filter token="server.user" value="${server.user}"/>
         <filter token="server.pwd" value="${server.pwd}"/>
         <filter token="server.factory" value="${server.factory}"/>
-        <echo message="eclipselink.jpa.test=${eclipselink.jpa.test}"/>
         
         <copy file="${wdf_test.build.location}/../eclipselink.jpa.test/resource/server/jndi.properties" todir="stage" filtering="true"/> 
 
@@ -381,14 +379,14 @@
     </target>
     
     <target name="server-deploy">
-        <ant antfile="${eclipselink.jpa.test}/${server.name}.xml" target="${server.name}-deploy" inheritRefs="true">
+        <ant antfile="${wdf_test.build.location}/../eclipselink.jpa.test/${server.name}.xml" target="${server.name}-deploy" inheritRefs="true">
             <property name="ear.name" value="${ear.name}"/>
             <property name="application.name" value="${application.name}"/>
         </ant>
     </target>
     
     <target name="server-undeploy">
-        <ant antfile="${eclipselink.jpa.test}/${server.name}.xml" target="${server.name}-undeploy" inheritRefs="true">
+        <ant antfile="${wdf_test.build.location}/../eclipselink.jpa.test/${server.name}.xml" target="${server.name}-undeploy" inheritRefs="true">
             <property name="application.name" value="${application.name}"/>
         </ant>
     </target>
