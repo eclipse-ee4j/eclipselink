@@ -556,6 +556,7 @@
                 <exclude name="**/run/**"/>
                 <exclude name="**/*.test/*.jar"/>
                 <exclude name="**/*src.zip"/>
+                <exclude name="**/*.dmp"/>
             </zipfileset>
             <!-- Moxy has some packages that get filtered out... -->
             <zipfileset dir="${basedir}">
