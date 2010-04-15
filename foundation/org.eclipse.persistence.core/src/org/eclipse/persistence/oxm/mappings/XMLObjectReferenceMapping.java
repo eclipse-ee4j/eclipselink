@@ -77,7 +77,11 @@ public class XMLObjectReferenceMapping extends AggregateMapping implements XMLMa
     public void addSourceToTargetKeyFieldAssociation(String srcXPath, String tgtXPath) {
         XMLField srcFld = new XMLField(srcXPath);
         sourceToTargetKeys.add(srcFld);
-        sourceToTargetKeyFieldAssociations.put(srcFld, new XMLField(tgtXPath));
+        if(null == tgtXPath) {
+            sourceToTargetKeyFieldAssociations.put(srcFld, null);
+        } else {
+            sourceToTargetKeyFieldAssociations.put(srcFld, new XMLField(tgtXPath));
+        }
     }
 
     /**    
@@ -97,12 +101,18 @@ public class XMLObjectReferenceMapping extends AggregateMapping implements XMLMa
         if (targetObject == null || getReferenceClass() == null) {
             return null;
         }
-        ClassDescriptor descriptor = getReferenceDescriptor();
+        ClassDescriptor descriptor = referenceDescriptor;
+        if(null == descriptor) {
+            descriptor = session.getClassDescriptor(targetObject);
+        }
         ObjectBuilder objectBuilder = descriptor.getObjectBuilder();
         Object primaryKey = objectBuilder.extractPrimaryKeyFromObject(targetObject, session);
-        int idx = descriptor.getPrimaryKeyFields().indexOf(getSourceToTargetKeyFieldAssociations().get(xmlFld));
-        if (idx == -1) {
-            return null;
+        int idx = 0;
+        if(!(null == referenceClass || ClassConstants.OBJECT == getReferenceClass())) {
+            idx = descriptor.getPrimaryKeyFields().indexOf(getSourceToTargetKeyFieldAssociations().get(xmlFld));
+            if (idx == -1) {
+                return null;
+            }
         }
         if (primaryKey instanceof CacheId) {
             return ((CacheId)primaryKey).getPrimaryKey()[idx];
@@ -133,25 +143,40 @@ public class XMLObjectReferenceMapping extends AggregateMapping implements XMLMa
         // the order in which the primary keys are added to the vector is
         // relevant for cache lookup - it must match the ordering of the 
         // reference descriptor's primary key entries
-        ClassDescriptor clsDescriptor = session.getClassDescriptor(getReferenceClass());
-        Vector pkFieldNames = clsDescriptor.getPrimaryKeyFieldNames();
-        // if reference is null, create a new instance and set it on the resolver
+
         Reference reference = resolver.getReference(this, srcObject);
-        if (reference == null) {
-            CacheId pks = new CacheId(new Object[pkFieldNames.size()]);
-            reference = new Reference(this, srcObject, getReferenceClass(), pks);
-            resolver.addReference(reference);
-            record.reference(reference);
-        }
-        XMLField tgtFld = (XMLField) getSourceToTargetKeyFieldAssociations().get(xmlField);
-        int idx = pkFieldNames.indexOf(tgtFld.getXPath());
-        Object primaryKeys = reference.getPrimaryKey();
-        // fix for bug# 5687430
-        // need to get the actual type of the target (i.e. int, String, etc.) 
-        // and use the converted value when checking the cache.
-        Object value = session.getDatasourcePlatform().getConversionManager().convertObject(object, clsDescriptor.getTypedField(tgtFld).getType());
-        if (value != null) {
-            ((CacheId)primaryKeys).set(idx, value);
+        CacheId primaryKeys;
+        if(null == referenceClass || ClassConstants.OBJECT == referenceClass) {
+            if (reference == null) {
+                // if reference is null, create a new instance and set it on the resolver
+                primaryKeys = new CacheId(new Object[1]);
+                reference = new Reference(this, srcObject, referenceClass, primaryKeys);
+                resolver.addReference(reference);
+                record.reference(reference);
+            }  else {
+                primaryKeys = (CacheId) reference.getPrimaryKey();
+            }
+            primaryKeys.set(0, object);
+        } else {
+            Vector pkFieldNames = referenceDescriptor.getPrimaryKeyFieldNames();
+            // if reference is null, create a new instance and set it on the resolver
+            if (reference == null) {
+                primaryKeys = new CacheId(new Object[pkFieldNames.size()]);
+                reference = new Reference(this, srcObject, referenceClass, primaryKeys);
+                resolver.addReference(reference);
+                record.reference(reference);
+            } else {
+                primaryKeys = (CacheId) reference.getPrimaryKey();
+            }
+            XMLField tgtFld = (XMLField) getSourceToTargetKeyFieldAssociations().get(xmlField);
+            int idx = pkFieldNames.indexOf(tgtFld.getXPath());
+            // fix for bug# 5687430
+            // need to get the actual type of the target (i.e. int, String, etc.) 
+            // and use the converted value when checking the cache.
+            Object value = session.getDatasourcePlatform().getConversionManager().convertObject(object, referenceDescriptor.getTypedField(tgtFld).getType());
+            if (value != null) {
+                primaryKeys.set(idx, value);
+            }
         }
     }
 
@@ -289,13 +314,14 @@ public class XMLObjectReferenceMapping extends AggregateMapping implements XMLMa
      * @see org.eclipse.persistence.oxm.NamespaceResolver
      */
     public void initialize(AbstractSession session) throws DescriptorException {
-        if (getReferenceClass() == null) {
-            if(getReferenceClassName() == null){
-                throw DescriptorException.referenceClassNotSpecified(this);
+        if (null == referenceClass) {
+            if(referenceClassName != null){
+                setReferenceClass(session.getDatasourcePlatform().getConversionManager().convertClassNameToClass(referenceClassName));
             }
-            setReferenceClass(session.getDatasourcePlatform().getConversionManager().convertClassNameToClass(getReferenceClassName()));
         }
-        super.initialize(session);
+        if(!(null == referenceClass || referenceClass == ClassConstants.OBJECT)) {
+            super.initialize(session);
+        }
 
         ReferenceListener listener = new ReferenceListener();
         if (!(session.getEventManager().getListeners().contains(listener))) {
@@ -311,7 +337,12 @@ public class XMLObjectReferenceMapping extends AggregateMapping implements XMLMa
             XMLField targetField = (XMLField) sourceToTargetKeyFieldAssociations.remove(sourceField);
             sourceField = (XMLField) descriptor.buildField(sourceField);
             sourceToTargetKeys.set(index, sourceField);
-            targetField = (XMLField) targetDescriptor.buildField(targetField);
+            if(null != targetField) {
+                if(null == targetDescriptor) {
+                    throw DescriptorException.referenceClassNotSpecified(this);
+                }
+                targetField = (XMLField) targetDescriptor.buildField(targetField);
+            }
             sourceToTargetKeyFieldAssociations.put(sourceField, targetField);
         }
         
@@ -347,21 +378,33 @@ public class XMLObjectReferenceMapping extends AggregateMapping implements XMLMa
         // the order in which the primary keys are added to the vector is
         // relevant for cache lookup - it must match the ordering of the 
         // reference descriptor's primary key entries
-        ClassDescriptor descriptor = sourceQuery.getSession().getClassDescriptor(getReferenceClass());
-        Vector pkFieldNames = descriptor.getPrimaryKeyFieldNames();
-        CacheId primaryKeys = new CacheId(new Object[pkFieldNames.size()]);
+        CacheId primaryKeys;
+        ClassDescriptor descriptor = sourceQuery.getSession().getClassDescriptor(referenceClass);
+        Vector pkFieldNames = null;
+        if(null == descriptor) {
+            primaryKeys = new CacheId(new Object[1]);
+        } else {
+            pkFieldNames = descriptor.getPrimaryKeyFieldNames();
+            primaryKeys = new CacheId(new Object[pkFieldNames.size()]);
+        }
         Iterator keyIt = sourceToTargetKeys.iterator();
         while (keyIt.hasNext()) {
             XMLField keyFld = (XMLField) keyIt.next();
             XMLField tgtFld = (XMLField) getSourceToTargetKeyFieldAssociations().get(keyFld);
-            int idx = pkFieldNames.indexOf(tgtFld.getXPath());
-            if (idx == -1) {
-                continue;
+            Object value;
+            int idx = 0;
+            if(null == tgtFld) {
+               value = databaseRow.get(keyFld);
+            } else {
+                idx = pkFieldNames.indexOf(tgtFld.getXPath());
+                if (idx == -1) {
+                    continue;
+                }
+                // fix for bug# 5687430
+                // need to get the actual type of the target (i.e. int, String, etc.) 
+                // and use the converted value when checking the cache.
+                value = executionSession.getDatasourcePlatform().getConversionManager().convertObject(databaseRow.get(keyFld), descriptor.getTypedField(tgtFld).getType());
             }
-            // fix for bug# 5687430
-            // need to get the actual type of the target (i.e. int, String, etc.) 
-            // and use the converted value when checking the cache.
-            Object value = executionSession.getDatasourcePlatform().getConversionManager().convertObject(databaseRow.get(keyFld), descriptor.getTypedField(tgtFld).getType());
             if (value != null) {
                 primaryKeys.set(idx, value);
             }

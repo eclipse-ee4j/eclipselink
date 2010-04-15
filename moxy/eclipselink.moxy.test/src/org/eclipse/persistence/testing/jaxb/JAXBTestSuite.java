@@ -23,6 +23,9 @@ import org.eclipse.persistence.testing.jaxb.jaxbelement.simple.JAXBElementBase64
 import org.eclipse.persistence.testing.jaxb.jaxbelement.simple.JAXBElementDataHandlerTestCases;
 import org.eclipse.persistence.testing.jaxb.jaxbelement.simple.JAXBElementSimpleTestCases;
 import org.eclipse.persistence.testing.jaxb.xmlidref.XmlIdRefTestCases;
+import org.eclipse.persistence.testing.jaxb.xmlidref.object.XmlIdRefObjectTestCases;
+import org.eclipse.persistence.testing.jaxb.xmlidrefs.XmlIdRefsTestCases;
+import org.eclipse.persistence.testing.jaxb.xmlidrefs.object.XmlIdRefsObjectTestCases;
 import org.eclipse.persistence.testing.jaxb.xmlinlinebinary.XmlInlineBinaryDataTestCases;
 import org.eclipse.persistence.testing.jaxb.xmladapter.XmlAdapterTestSuite;
 import org.eclipse.persistence.testing.jaxb.schemagen.SchemaGenTestSuite;
@@ -69,6 +72,9 @@ public class JAXBTestSuite extends TestCase {
         // suite.addTestSuite(XmlSchemaTypeDateTestCases.class);
         // suite.addTestSuite(XmlSchemaTypeTwoDatesTestCases.class);
         suite.addTestSuite(XmlIdRefTestCases.class);
+        suite.addTestSuite(XmlIdRefObjectTestCases.class);
+        suite.addTestSuite(XmlIdRefsTestCases.class);
+        suite.addTestSuite(XmlIdRefsObjectTestCases.class);
         suite.addTestSuite(XmlInlineBinaryDataTestCases.class);
         suite.addTestSuite(org.eclipse.persistence.testing.jaxb.xmlenum.XmlEnumElementTestCases.class);
         suite.addTestSuite(org.eclipse.persistence.testing.jaxb.xmlenum.XmlEnumAttributeTestCases.class);

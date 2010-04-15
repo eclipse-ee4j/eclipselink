@@ -18,6 +18,7 @@ import org.eclipse.persistence.internal.oxm.record.MarshalContext;
 import org.eclipse.persistence.internal.oxm.record.ObjectMarshalContext;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.oxm.NamespaceResolver;
+import org.eclipse.persistence.oxm.XMLDescriptor;
 import org.eclipse.persistence.oxm.XMLField;
 import org.eclipse.persistence.oxm.mappings.XMLObjectReferenceMapping;
 import org.eclipse.persistence.oxm.record.MarshalRecord;
@@ -157,7 +158,12 @@ public class XMLObjectReferenceMappingNodeValue extends MappingNodeValue {
         if (fieldValue == null) {
             if(null != targetObject) {
                 XMLField fkField = (XMLField) xmlObjectReferenceMapping.getSourceToTargetKeyFieldAssociations().get(xmlField);
-                fieldValue = marshalRecord.getMarshaller().getXMLContext().getValueByXPath(targetObject, fkField.getXPath(), fkField.getNamespaceResolver(), Object.class);
+                if(null == fkField) {
+                    XMLDescriptor targetDescriptor = (XMLDescriptor) session.getDescriptor(targetObject);
+                    fieldValue = marshalRecord.getMarshaller().getXMLContext().getValueByXPath(targetObject, targetDescriptor.getPrimaryKeyFields().get(0).getName(), targetDescriptor.getNamespaceResolver(), Object.class);
+                } else {
+                    fieldValue = marshalRecord.getMarshaller().getXMLContext().getValueByXPath(targetObject, fkField.getXPath(), fkField.getNamespaceResolver(), Object.class);
+                }
             }
             if(null == fieldValue) {
                 return false;

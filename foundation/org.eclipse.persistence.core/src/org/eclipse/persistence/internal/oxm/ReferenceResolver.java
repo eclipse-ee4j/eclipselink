@@ -14,19 +14,28 @@ package org.eclipse.persistence.internal.oxm;
 
 import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Vector;
 
+import org.eclipse.persistence.descriptors.ClassDescriptor;
+import org.eclipse.persistence.exceptions.ConversionException;
+import org.eclipse.persistence.internal.helper.ClassConstants;
 import org.eclipse.persistence.internal.identitymaps.CacheId;
 import org.eclipse.persistence.internal.queries.ContainerPolicy;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.mappings.AttributeAccessor;
+import org.eclipse.persistence.oxm.XMLDescriptor;
+import org.eclipse.persistence.oxm.XMLField;
 import org.eclipse.persistence.oxm.mappings.XMLCollectionReferenceMapping;
+import org.eclipse.persistence.oxm.mappings.XMLInverseReferenceMapping;
 import org.eclipse.persistence.oxm.mappings.XMLObjectReferenceMapping;
 import org.eclipse.persistence.sessions.Session;
 import org.eclipse.persistence.sessions.UnitOfWork;
 
 public class ReferenceResolver {
+
     public static final String KEY = "REFERENCE_RESOLVER";
+
     private ArrayList references;
 
     /**
@@ -73,40 +82,50 @@ public class ReferenceResolver {
      *
      * @param reference
      */
-    private void createPKVectorsFromMap(Reference reference) {
-    	XMLCollectionReferenceMapping mapping = (XMLCollectionReferenceMapping) reference.getMapping();
-    	Vector pks = new Vector();
+    private void createPKVectorsFromMap(Reference reference, XMLCollectionReferenceMapping mapping) {
+        ClassDescriptor referenceDescriptor = mapping.getReferenceDescriptor();
+        Vector pks = new Vector();
+        if(null == referenceDescriptor) {
+            CacheId pkVals = (CacheId) reference.getPrimaryKeyMap().get(null);
+            if(null == pkVals) {
+                return;
+            }
+            for(int x=0;x<pkVals.getPrimaryKey().length; x++) {
+                Object[] values = new Object[1];
+                values[0] = pkVals.getPrimaryKey()[x];
+                pks.add(new CacheId(values));
+            }
+        } else{ 
+            Vector pkFields = referenceDescriptor.getPrimaryKeyFieldNames();
+            if (pkFields.isEmpty()) {
+                return;
+            }
 
-    	Vector pkFields = mapping.getReferenceDescriptor().getPrimaryKeyFieldNames();
-    	if (pkFields.size() <= 0) {
-    		return;
-    	}
+            boolean init = true;
 
-    	CacheId pkVals;
-    	boolean init = true;
+            // for each primary key field name
+            for (Iterator pkFieldNameIt = pkFields.iterator(); pkFieldNameIt.hasNext(); ) {
+                CacheId pkVals = (CacheId) reference.getPrimaryKeyMap().get(pkFieldNameIt.next());
 
-    	// for each primary key field name
-    	for (Iterator pkFieldNameIt = pkFields.iterator(); pkFieldNameIt.hasNext(); ) {
-    		pkVals = (CacheId) reference.getPrimaryKeyMap().get(pkFieldNameIt.next());
+                if (pkVals == null) {
+                    return;
+                }
+                // initialize the list of pk vectors once and only once
+                if (init) {
+                    for (int i=0; i<pkVals.getPrimaryKey().length; i++) {
+                        pks.add(new CacheId(new Object[0]));
+                    }
+                    init = false;
+                }
 
-    		if (pkVals == null) {
-    			return;
-    		}
-    		// initialize the list of pk vectors once and only once
-    		if (init) {
-    			for (int i=0; i<pkVals.getPrimaryKey().length; i++) {
-    				pks.add(new CacheId(new Object[0]));
-    			}
-    			init = false;
-    		}
-
-    		// now add each value for the current target key to it's own vector
-        	for (int i=0; i<pkVals.getPrimaryKey().length; i++) {
-    			Object val = pkVals.getPrimaryKey()[i];
-                        ((CacheId)pks.get(i)).add(val);
-    		}
-    	}
-    	reference.primaryKey = pks;
+                // now add each value for the current target key to it's own vector
+                for (int i=0; i<pkVals.getPrimaryKey().length; i++) {
+                    Object val = pkVals.getPrimaryKey()[i];
+                    ((CacheId)pks.get(i)).add(val);
+                }
+            }
+        }
+        reference.setPrimaryKey(pks);
     }
 
     /**
@@ -118,7 +137,7 @@ public class ReferenceResolver {
         for (int x = 0; x < references.size(); x++) {
             Reference reference = (Reference) references.get(x);
             if (reference.getMapping() == mapping && reference.getSourceObject() == sourceObject) {
-            	return reference;
+                return reference;
             }
         }
         return null;
@@ -131,50 +150,52 @@ public class ReferenceResolver {
     public void resolveReferences(AbstractSession session) {
         for (int x = 0, referencesSize = references.size(); x < referencesSize; x++) {
             Reference reference = (Reference) references.get(x);
-
+            Object referenceSourceObject = reference.getSourceObject();
             if (reference.getMapping() instanceof XMLCollectionReferenceMapping) {
                 XMLCollectionReferenceMapping mapping = (XMLCollectionReferenceMapping) reference.getMapping();
                 ContainerPolicy cPolicy = mapping.getContainerPolicy();
-                Object currentObject = reference.getSourceObject();
                 Object container = null;
                 if (mapping.getReuseContainer()) {
-                    container = mapping.getAttributeAccessor().getAttributeValueFromObject(currentObject);
+                    container = mapping.getAttributeAccessor().getAttributeValueFromObject(referenceSourceObject);
                 } else {
                     container = cPolicy.containerInstance();
                 }
 
                 // create vectors of primary key values - one vector per reference instance
-                createPKVectorsFromMap(reference);
+                createPKVectorsFromMap(reference, mapping);
                 // loop over each pk vector and get object from cache - then add to collection and set on object
                 for (Iterator pkIt = ((Vector)reference.getPrimaryKey()).iterator(); pkIt.hasNext();) {
-                    Object primaryKey = pkIt.next();
-                    Object value = session.getIdentityMapAccessor().getFromIdentityMap(primaryKey, reference.getTargetClass());
-
+                    CacheId primaryKey = (CacheId) pkIt.next();
+                    Object value = getValue(session, reference, primaryKey);
                     if (value != null) {
                         cPolicy.addInto(value, container,  session);
                     }
                 }
                 // for each reference, get the source object and add it to the container policy
                 // when finished, set the policy on the mapping
-                mapping.setAttributeValueInObject(currentObject, container);
-                if(mapping.getInverseReferenceMapping() != null) {
+                mapping.setAttributeValueInObject(referenceSourceObject, container);
+                XMLInverseReferenceMapping inverseReferenceMapping = mapping.getInverseReferenceMapping();
+                if(inverseReferenceMapping != null) {
+                    AttributeAccessor backpointerAccessor = inverseReferenceMapping.getAttributeAccessor();
+                    ContainerPolicy backpointerContainerPolicy = inverseReferenceMapping.getContainerPolicy();
                     Object iterator = cPolicy.iteratorFor(container);
                     while(cPolicy.hasNext(iterator)) {
                         Object next = cPolicy.next(iterator, session);
-                        if(mapping.getInverseReferenceMapping().getContainerPolicy() == null) {
-                            mapping.getInverseReferenceMapping().getAttributeAccessor().setAttributeValueInObject(next, currentObject);
+                        if(backpointerContainerPolicy == null) {
+                            backpointerAccessor.setAttributeValueInObject(next, referenceSourceObject);
                         } else {
-                            Object backpointerContainer = mapping.getInverseReferenceMapping().getAttributeAccessor().getAttributeValueFromObject(next);
+                            Object backpointerContainer = backpointerAccessor.getAttributeValueFromObject(next);
                             if(backpointerContainer == null) {
-                                backpointerContainer = mapping.getInverseReferenceMapping().getContainerPolicy().containerInstance();
-                                mapping.getInverseReferenceMapping().getAttributeAccessor().setAttributeValueInObject(next, backpointerContainer);
+                                backpointerContainer = backpointerContainerPolicy.containerInstance();
+                                backpointerAccessor.setAttributeValueInObject(next, backpointerContainer);
                             }
-                            mapping.getInverseReferenceMapping().getContainerPolicy().addInto(currentObject, backpointerContainer, session);
+                            backpointerContainerPolicy.addInto(referenceSourceObject, backpointerContainer, session);
                         }
                     }
                 }
             } else if (reference.getMapping() instanceof XMLObjectReferenceMapping) {
-                Object value = session.getIdentityMapAccessor().getFromIdentityMap(reference.getPrimaryKey(), reference.getTargetClass());
+                CacheId primaryKey = (CacheId) reference.getPrimaryKey();
+                Object value = getValue(session, reference, primaryKey);
                 XMLObjectReferenceMapping mapping = (XMLObjectReferenceMapping)reference.getMapping();
                 if (value != null) {
                     mapping.setAttributeValueInObject(reference.getSourceObject(), value);
@@ -183,17 +204,19 @@ public class ReferenceResolver {
                     reference.getSetting().setValue(value);
                 }
 
-                if(mapping.getInverseReferenceMapping() != null) {
-                    AttributeAccessor backpointerAccessor = mapping.getInverseReferenceMapping().getAttributeAccessor();                    
-                    if(mapping.getInverseReferenceMapping().getContainerPolicy() == null) {
-                        backpointerAccessor.setAttributeValueInObject(value, reference.getSourceObject());
+                XMLInverseReferenceMapping inverseReferenceMapping = mapping.getInverseReferenceMapping();
+                if(inverseReferenceMapping != null) {
+                    AttributeAccessor backpointerAccessor = inverseReferenceMapping.getAttributeAccessor();
+                    ContainerPolicy backpointerContainerPolicy = inverseReferenceMapping.getContainerPolicy();
+                    if(backpointerContainerPolicy == null) {
+                        backpointerAccessor.setAttributeValueInObject(value, referenceSourceObject);
                     } else {
                         Object backpointerContainer = backpointerAccessor.getAttributeValueFromObject(value);
                         if(backpointerContainer == null) {
-                            backpointerContainer = mapping.getInverseReferenceMapping().getContainerPolicy().containerInstance();
+                            backpointerContainer = backpointerContainerPolicy.containerInstance();
                             backpointerAccessor.setAttributeValueInObject(value, backpointerContainer);
                         }
-                        mapping.getInverseReferenceMapping().getContainerPolicy().addInto(reference.getSourceObject(), backpointerContainer, session);
+                        backpointerContainerPolicy.addInto(reference.getSourceObject(), backpointerContainer, session);
                     }
                 }
             }
@@ -205,6 +228,41 @@ public class ReferenceResolver {
 
         // reset the references list
         references = new ArrayList();
+    }
+
+    private Object getValue(AbstractSession session, Reference reference, CacheId primaryKey) {
+        Class referenceTargetClass = reference.getTargetClass();
+        if(null == referenceTargetClass || referenceTargetClass == ClassConstants.OBJECT) {
+            for(Object entry : session.getDescriptors().values()) {
+                Object value = null;
+                XMLDescriptor targetDescriptor = (XMLDescriptor) entry;
+                List pkFields = targetDescriptor.getPrimaryKeyFields();
+                if(1 == pkFields.size()) {
+                    XMLField pkField = (XMLField) pkFields.get(0);
+                    pkField = (XMLField) targetDescriptor.getTypedField(pkField);
+                    Class targetType = pkField.getType();
+                    if(targetType == ClassConstants.STRING || targetType == ClassConstants.OBJECT) {
+                        value = session.getIdentityMapAccessor().getFromIdentityMap(primaryKey, targetDescriptor.getJavaClass());
+                    } else {
+                        try {
+                            Object[] pkValues = primaryKey.getPrimaryKey();
+                            Object[] convertedPkValues = new Object[pkValues.length];
+                            for(int x=0; x<pkValues.length; x++) {
+                                convertedPkValues[x] = session.getDatasourcePlatform().getConversionManager().convertObject(pkValues[x], targetType);
+                            }
+                            value = session.getIdentityMapAccessor().getFromIdentityMap(new CacheId(convertedPkValues), targetDescriptor.getJavaClass());
+                        } catch(ConversionException e) {
+                        }
+                    }
+                    if(null != value) {
+                        return value;
+                    }
+                }
+            }
+            return null;
+        } else {
+            return session.getIdentityMapAccessor().getFromIdentityMap(primaryKey, referenceTargetClass);
+        }
     }
 
 }

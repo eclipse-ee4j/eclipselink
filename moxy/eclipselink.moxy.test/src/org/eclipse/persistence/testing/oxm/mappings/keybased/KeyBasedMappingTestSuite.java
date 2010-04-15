@@ -17,12 +17,20 @@ import junit.framework.TestCase;
 import junit.framework.TestSuite;
 import org.eclipse.persistence.testing.oxm.mappings.keybased.singletarget.SingleTargetTestCases;
 import org.eclipse.persistence.testing.oxm.mappings.keybased.multipletargets.MultipleTargetTestCases;
+import org.eclipse.persistence.testing.oxm.mappings.keybased.norefclass.NoRefClassTestCases;
+import org.eclipse.persistence.testing.oxm.mappings.keybased.norefclass.ObjectRefClassTestCases;
+import org.eclipse.persistence.testing.oxm.mappings.keybased.norefclass.SingleAttributeTestCases;
+import org.eclipse.persistence.testing.oxm.mappings.keybased.norefclass.SingleElementTestCases;
 
 public class KeyBasedMappingTestSuite extends TestCase {
     public static Test suite() {
         TestSuite suite = new TestSuite("Key-based Mapping Test Suite");
         suite.addTest(SingleTargetTestCases.suite());
         suite.addTest(MultipleTargetTestCases.suite());
+        suite.addTestSuite(NoRefClassTestCases.class);
+        suite.addTestSuite(ObjectRefClassTestCases.class);
+        suite.addTestSuite(SingleElementTestCases.class);
+        suite.addTestSuite(SingleAttributeTestCases.class);
         return suite;
     }
 

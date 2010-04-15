@@ -24,6 +24,7 @@ import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.exceptions.DatabaseException;
 import org.eclipse.persistence.exceptions.DescriptorException;
 import org.eclipse.persistence.internal.descriptors.ObjectBuilder;
+import org.eclipse.persistence.internal.helper.ClassConstants;
 import org.eclipse.persistence.internal.helper.DatabaseField;
 import org.eclipse.persistence.internal.helper.NonSynchronizedVector;
 import org.eclipse.persistence.internal.identitymaps.CacheId;
@@ -118,16 +119,22 @@ public class XMLCollectionReferenceMapping extends XMLObjectReferenceMapping imp
      * key value   
      */
     public Object buildFieldValue(Object targetObject, XMLField xmlFld, AbstractSession session) {
-        if (targetObject == null || getReferenceClass() == null) {
+        if (targetObject == null) {
             return null;
         }
-        ClassDescriptor descriptor = getReferenceDescriptor();
+        ClassDescriptor descriptor = referenceDescriptor;
+        if(null == descriptor) {
+            descriptor = session.getClassDescriptor(targetObject);
+        }
         ObjectBuilder objectBuilder = descriptor.getObjectBuilder();
         Object primaryKey = objectBuilder.extractPrimaryKeyFromObject(targetObject, session);
         XMLField tgtXMLField = (XMLField) getSourceToTargetKeyFieldAssociations().get(xmlFld);
-        int idx = descriptor.getPrimaryKeyFields().indexOf(tgtXMLField);
-        if (idx == -1) {
-            return null;
+        int idx = 0;
+        if(!(null == referenceClass || ClassConstants.OBJECT == referenceClass)) {
+            idx = descriptor.getPrimaryKeyFields().indexOf(tgtXMLField);
+            if (idx == -1) {
+                return null;
+            }
         }
         if (primaryKey instanceof CacheId) {
             return ((CacheId)primaryKey).getPrimaryKey()[idx];
@@ -156,28 +163,52 @@ public class XMLCollectionReferenceMapping extends XMLObjectReferenceMapping imp
 
         Object srcObject = record.getCurrentObject();
         Reference reference = resolver.getReference(this, srcObject);
-        // if reference is null, create a new instance and set it on the resolver
         if (reference == null) {
-            reference = new Reference(this, srcObject, getReferenceClass(), new HashMap());
+            // if reference is null, create a new instance and set it on the resolver
+            reference = new Reference(this, srcObject, referenceClass, new HashMap());
             resolver.addReference(reference);
         }
+        CacheId primaryKeys;
+        if(null == referenceClass || ClassConstants.OBJECT == referenceClass) {
+            HashMap primaryKeyMap = reference.getPrimaryKeyMap();
+            CacheId pks = (CacheId) primaryKeyMap.get(null);
+            if (pks == null){
+                Object[] pkValues = new Object[1];
+                pks = new CacheId(pkValues);
+                primaryKeyMap.put(null, pks);
+            }
+            if(usesSingleNode) {
+                for (StringTokenizer stok = new StringTokenizer((String) object); stok.hasMoreTokens();) {
+                    pks.add(stok.nextToken());
+                }
+            } else {
+                pks.add(object);
+            }
+        } else {
+            XMLField tgtFld = (XMLField) getSourceToTargetKeyFieldAssociations().get(xmlField);
+            String tgtXPath = tgtFld.getXPath();
+            HashMap primaryKeyMap = reference.getPrimaryKeyMap();
+            CacheId pks = (CacheId) primaryKeyMap.get(tgtXPath);
+            ClassDescriptor descriptor = session.getClassDescriptor(referenceClass);
+            if (pks == null){
+                pks = new CacheId(new Object[0]);
+                primaryKeyMap.put(tgtXPath, pks);
+            }
 
-        XMLField tgtFld = (XMLField) getSourceToTargetKeyFieldAssociations().get(xmlField);
-        String tgtXPath = tgtFld.getXPath();        
-        HashMap primaryKeyMap = reference.getPrimaryKeyMap();
-        CacheId pks = (CacheId) primaryKeyMap.get(tgtXPath);
-        ClassDescriptor descriptor = session.getClassDescriptor(getReferenceClass());
-        if (pks == null){
-            pks = new CacheId(new Object[0]);
-            primaryKeyMap.put(tgtXPath, pks);
-        }        
-
-        Class type = descriptor.getTypedField(tgtFld).getType();
-        XMLConversionManager xmlConversionManager = (XMLConversionManager) session.getDatasourcePlatform().getConversionManager();
-        for (StringTokenizer stok = new StringTokenizer((String) object); stok.hasMoreTokens();) {
-            Object value = xmlConversionManager.convertObject(stok.nextToken(), type);
-            if (value != null) {
-                pks.add(value);
+            Class type = descriptor.getTypedField(tgtFld).getType();
+            XMLConversionManager xmlConversionManager = (XMLConversionManager) session.getDatasourcePlatform().getConversionManager();
+            if(usesSingleNode) {
+                for (StringTokenizer stok = new StringTokenizer((String) object); stok.hasMoreTokens();) {
+                    Object value = xmlConversionManager.convertObject(stok.nextToken(), type);
+                    if (value != null) {
+                        pks.add(value);
+                    }
+                }
+            } else {
+                Object value = xmlConversionManager.convertObject(object, type);
+                if (value != null) {
+                    pks.add(value);
+                }
             }
         }
     }
@@ -217,7 +248,9 @@ public class XMLCollectionReferenceMapping extends XMLObjectReferenceMapping imp
             XMLField targetField = (XMLField) sourceToTargetKeyFieldAssociations.remove(sourceField);
             sourceField = (XMLField) descriptor.buildField(sourceField);
             sourceToTargetKeys.set(index, sourceField);
-            targetField = (XMLField) targetDescriptor.buildField(targetField);
+            if(null != targetField) {
+                targetField = (XMLField) targetDescriptor.buildField(targetField);
+            }
             sourceToTargetKeyFieldAssociations.put(sourceField, targetField);
         }
     }
@@ -235,7 +268,7 @@ public class XMLCollectionReferenceMapping extends XMLObjectReferenceMapping imp
         // for each source xmlField, get the value from the row and store
         for (Iterator fieldIt = getFields().iterator(); fieldIt.hasNext();) {
             XMLField fld = (XMLField) fieldIt.next();
-            XMLField tgtFld = (XMLField) getSourceToTargetKeyFieldAssociations().get(fld);
+            //
             Object fieldValue = databaseRow.getValues(fld);
             if ((fieldValue == null) || (fieldValue instanceof String) || !(fieldValue instanceof Vector)) {
                 return cp.containerInstance();
@@ -244,16 +277,26 @@ public class XMLCollectionReferenceMapping extends XMLObjectReferenceMapping imp
             // need to get the actual type of the target (i.e. int, String, etc.) 
             // and use the converted value when checking the cache.
             XMLConversionManager xmlConversionManager = (XMLConversionManager) executionSession.getDatasourcePlatform().getConversionManager();
+            XMLField tgtFld = (XMLField) getSourceToTargetKeyFieldAssociations().get(fld);
             CacheId newValues = new CacheId(new Object[0]);
             for (Iterator valIt = ((Vector) fieldValue).iterator(); valIt.hasNext();) {
                 for (StringTokenizer stok = new StringTokenizer((String) valIt.next()); stok.hasMoreTokens();) {
-                    Object value = xmlConversionManager.convertObject(stok.nextToken(), descriptor.getTypedField(tgtFld).getType());
+                    Object value;
+                    if(null == tgtFld) {
+                        value = stok.nextToken();
+                    } else {
+                        value = xmlConversionManager.convertObject(stok.nextToken(), descriptor.getTypedField(tgtFld).getType());
+                    }
                     if (value != null) {
                         newValues.add(value);
                     }
                 }
             }
-            primaryKeyMap.put(tgtFld.getXPath(), newValues);
+            if(null == tgtFld) {
+                primaryKeyMap.put(null, newValues);
+            } else {
+                primaryKeyMap.put(tgtFld.getXPath(), newValues);
+            }
         }
         // store the Reference instance on the resolver for use during mapping resolution phase
         ReferenceResolver resolver = ReferenceResolver.getInstance(sourceQuery.getSession());

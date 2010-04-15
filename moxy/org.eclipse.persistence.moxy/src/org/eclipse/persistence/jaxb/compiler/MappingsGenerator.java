@@ -433,15 +433,14 @@ public class MappingsGenerator {
                 }
             }else{
                 TypeInfo reference = typeInfo.get(referenceClass.getQualifiedName());
-                if (reference != null) {
-                    if (property.isXmlIdRef()) {
-                        generateXMLObjectReferenceMapping(property, descriptor, namespaceInfo, referenceClass);
+                if(property.isXmlIdRef()) {
+                    generateXMLObjectReferenceMapping(property, descriptor, namespaceInfo, referenceClass);
+                    return;
+                } else if(reference != null) {
+                    if (reference.isEnumerationType()) {
+                        generateDirectEnumerationMapping(property, descriptor, namespaceInfo, (EnumTypeInfo) reference);
                     } else {
-                        if (reference.isEnumerationType()) {
-                            generateDirectEnumerationMapping(property, descriptor, namespaceInfo, (EnumTypeInfo) reference);
-                        } else {
-                            generateCompositeObjectMapping(property, descriptor, namespaceInfo, referenceClass.getQualifiedName());
-                        }
+                        generateCompositeObjectMapping(property, descriptor, namespaceInfo, referenceClass.getQualifiedName());
                     }
                 } else {
                     if (property.isSwaAttachmentRef() || property.isMtomAttachment()) {
@@ -1093,16 +1092,15 @@ public class MappingsGenerator {
             generateAnyCollectionMapping(property, descriptor, namespaceInfo, true);
             return;
         }
-        if (javaClass != null && typeInfo.get(javaClass.getQualifiedName()) != null) {
+        if(property.isXmlIdRef()) {
+            generateXMLCollectionReferenceMapping(property, descriptor, namespaceInfo, javaClass);
+        }
+        else if (javaClass != null && typeInfo.get(javaClass.getQualifiedName()) != null) {
             TypeInfo referenceInfo = typeInfo.get(javaClass.getQualifiedName());
             if (referenceInfo.isEnumerationType()) {
                 generateEnumCollectionMapping(property,  descriptor, namespaceInfo,(EnumTypeInfo) referenceInfo);
             } else {
-                if (property.isXmlIdRef()) {
-                    generateXMLCollectionReferenceMapping(property, descriptor, namespaceInfo, javaClass);
-                } else {
-                    generateCompositeCollectionMapping(property, descriptor, namespaceInfo, javaClass.getQualifiedName());
-                }
+                generateCompositeCollectionMapping(property, descriptor, namespaceInfo, javaClass.getQualifiedName());
             }
         } else if(!property.isAttribute() && javaClass != null && javaClass.getQualifiedName().equals(OBJECT_CLASS_NAME)){
             XMLCompositeCollectionMapping ccMapping = generateCompositeCollectionMapping(property, descriptor, namespaceInfo, null);
@@ -1832,6 +1830,7 @@ public class MappingsGenerator {
         XMLCollectionReferenceMapping mapping = new XMLCollectionReferenceMapping();
         mapping.setAttributeName(property.getPropertyName());
         mapping.setReuseContainer(true);
+        mapping.setUsesSingleNode(property.isXmlList() || property.isAttribute());
         // handle read-only set via metadata
         if (property.isSetReadOnly()) {
             mapping.setIsReadOnly(property.isReadOnly());
@@ -1867,11 +1866,12 @@ public class MappingsGenerator {
 
         // here we need to setup source/target key field associations
         TypeInfo referenceType = typeInfo.get(referenceClass.getQualifiedName());
-        if (referenceType.isIDSet()) {
+        String tgtXPath = null;
+        if (null != referenceType && referenceType.isIDSet()) {
             Property prop = referenceType.getIDProperty();
-            XMLField tgtXPath = getXPathForField(prop, namespaceInfo, !(helper.isAnnotationPresent(prop.getElement(), XmlAttribute.class)));
-            mapping.addSourceToTargetKeyFieldAssociation(srcXPath.getXPath(), tgtXPath.getXPath());
+            tgtXPath = getXPathForField(prop, namespaceInfo, !(helper.isAnnotationPresent(prop.getElement(), XmlAttribute.class))).getXPath();
         }
+        mapping.addSourceToTargetKeyFieldAssociation(srcXPath.getXPath(), tgtXPath);
 
         if(property.getInverseReferencePropertyName() != null) {
             mapping.getInverseReferenceMapping().setAttributeName(property.getInverseReferencePropertyName());
@@ -1942,11 +1942,12 @@ public class MappingsGenerator {
 
         // here we need to setup source/target key field associations
         TypeInfo referenceType = typeInfo.get(referenceClass.getQualifiedName());
-        if (referenceType.isIDSet()) {
+        String tgtXPath = null;
+        if (null != referenceType && referenceType.isIDSet()) {
             Property prop = referenceType.getIDProperty();
-            XMLField tgtXPath = getXPathForField(prop, namespaceInfo, !(helper.isAnnotationPresent(prop.getElement(), XmlAttribute.class)));
-            mapping.addSourceToTargetKeyFieldAssociation(srcXPath.getXPath(), tgtXPath.getXPath());
+            tgtXPath = getXPathForField(prop, namespaceInfo, !(helper.isAnnotationPresent(prop.getElement(), XmlAttribute.class))).getXPath();
         }
+        mapping.addSourceToTargetKeyFieldAssociation(srcXPath.getXPath(), tgtXPath);
         if(property.getInverseReferencePropertyName() != null) {
             mapping.getInverseReferenceMapping().setAttributeName(property.getInverseReferencePropertyName());
             JavaClass backPointerPropertyType = null;
