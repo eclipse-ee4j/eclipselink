@@ -14,6 +14,7 @@ package org.eclipse.persistence.testing.jaxb.externalizedmetadata.mappings.anyob
 
 import java.io.File;
 import java.io.InputStream;
+
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
 import javax.xml.bind.Unmarshaller;
@@ -21,8 +22,6 @@ import javax.xml.bind.Unmarshaller;
 import org.eclipse.persistence.jaxb.JAXBContext;
 import org.eclipse.persistence.testing.jaxb.externalizedmetadata.ExternalizedMetadataTestCases;
 import org.w3c.dom.Document;
-
-import sun.reflect.ReflectionFactory.GetReflectionFactoryAction;
 
 /**
  * Tests XmlAnyObjectMapping via eclipselink-oxm.xml
