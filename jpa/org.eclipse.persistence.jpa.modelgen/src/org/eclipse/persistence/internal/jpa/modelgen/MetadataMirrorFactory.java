@@ -120,16 +120,20 @@ public class MetadataMirrorFactory extends MetadataFactory {
      */
     @Override
     public MetadataClass getMetadataClass(String className) {
-        if (! metadataClassExists(className)) {
-            // By the time this method is called we should have built a 
-            // MetadataClass for all the model elements (and then some) which 
-            // are the only classes we really care about. This is acting like a 
-            // catch all for any jdk classes we didn't visit and just returns a 
-            // MetadataClass with the same class name.
-            addMetadataClass(new MetadataClass(this, className));
+        if (className == null) {
+            return null;
+        } else {
+        	if (! metadataClassExists(className)) {
+        		// By the time this method is called we should have built a 
+        		// MetadataClass for all the model elements (and then some) which 
+        		// are the only classes we really care about. This is acting like a 
+        		// catch all for any jdk classes we didn't visit and just returns a 
+        		// MetadataClass with the same class name.
+        		addMetadataClass(new MetadataClass(this, className));
+        	}
+        	
+        	return getMetadataClasses().get(className);
         }
-        
-        return getMetadataClasses().get(className);
     }
     
     /**
