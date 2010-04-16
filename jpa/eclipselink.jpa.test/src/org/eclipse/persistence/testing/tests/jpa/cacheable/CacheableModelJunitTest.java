@@ -70,7 +70,7 @@ public class CacheableModelJunitTest extends JUnitTestCase {
      */
     public void closeEM(EntityManager em) {
         if (em.isOpen()) {
-            em.close();
+            closeEntityManager(em);
         }
     }
     

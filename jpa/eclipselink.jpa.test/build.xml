@@ -1889,7 +1889,8 @@
         <antcall target="server-test-lob" inheritRefs="true"/>
         <antcall target="server-test-nativeapitest" inheritRefs="true"/>
         <!-- The following model is JPA2.0 specific -->
-        <!--antcall target="server-test-orphanremoval" inheritRefs="true"/-->
+        <!--antcall target="server-test-cacheable" inheritRefs="true"/>
+        <antcall target="server-test-orphanremoval" inheritRefs="true"/-->
         <antcall target="server-test-privateowned" inheritRefs="true"/>
         <antcall target="server-test-relationships" inheritRefs="true"/>
         <antcall target="server-test-sessionbean" inheritRefs="true"/>
@@ -1914,6 +1915,19 @@
             <param name="TEST_NAME" value="eclipselink-advanced-model"/>
             <param name="EAR_NAME" value="eclipselink-advanced-model"/>
             <param name="TEST_SUITE" value="org.eclipse.persistence.testing.tests.jpa.advanced.AdvancedServerTestSuite"/>
+            <param name="eclipselink.jpa.test.dir" value="."/>
+        </antcall>
+    </target>
+
+    <target name="server-test-cacheable">
+        <antcall target="server-run-all" inheritRefs="true">
+            <param name="PERSISTENCE_UNIT_NAME" value="default"/>
+            <param name="MODEL_DIR" value="org/eclipse/persistence/testing/models/jpa/cacheable"/>
+            <param name="MODEL_NAME" value="eclipselink-cacheable-model"/>
+            <param name="TEST_DIR" value="org/eclipse/persistence/testing/tests/jpa/cacheable"/>
+            <param name="TEST_NAME" value="eclipselink-cacheable-model"/>
+            <param name="EAR_NAME" value="eclipselink-cacheable-model"/>
+            <param name="TEST_SUITE" value="org.eclipse.persistence.testing.tests.jpa.cacheable.CacheableModelJunitTest"/>
             <param name="eclipselink.jpa.test.dir" value="."/>
         </antcall>
     </target>
