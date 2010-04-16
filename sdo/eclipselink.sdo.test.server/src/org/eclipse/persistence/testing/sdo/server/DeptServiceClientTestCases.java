@@ -31,6 +31,7 @@ public class DeptServiceClientTestCases extends TestCase {
     public String securityPrincipal;
     public String securityCredentials;
     public String providerUrl;
+    public String sessionBean;
     
     
     public DeptServiceClientTestCases() {
@@ -38,13 +39,14 @@ public class DeptServiceClientTestCases extends TestCase {
         securityPrincipal = System.getProperty("securityPrincipal");
         securityCredentials = System.getProperty("securityCredentials");
         providerUrl = System.getProperty("providerUrl");
+        sessionBean = System.getProperty("sessionBean");
     }
     
     public void testDepartmentService() {
         DeptService svc = null;
         try {
             Context ctx = getInitialContext();
-            svc = (DeptService) ctx.lookup("DeptServiceBean#" + DeptService.class.getName());
+            svc = (DeptService) ctx.lookup(sessionBean);
         } catch (NamingException e) {
             fail("DeptService lookup failed: " + e);
         }
