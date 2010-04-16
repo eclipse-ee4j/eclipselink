@@ -146,7 +146,7 @@ public class ReportQueryMultipleReturnTestSuite extends JUnitTestCase {
         beginTransaction(em);
         em.persist(hp);
         commitTransaction(em);
-        em.close();
+        closeEntityManager(em);
         
         ReportQuery reportQuery = new ReportQuery();
         reportQuery.returnWithoutReportQueryResult();
@@ -164,7 +164,7 @@ public class ReportQueryMultipleReturnTestSuite extends JUnitTestCase {
             hp = em.find(HugeProject.class, hp.getId());
             em.remove(hp);
             commitTransaction(em);
-            em.close();
+            closeEntityManager(em);
         }
     }
     
