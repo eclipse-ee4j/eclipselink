@@ -85,7 +85,7 @@
                 <!--generated-value strategy="SEQUENCE" generator="XML_MERGE_ADDRESS_SEQUENCE_GENERATOR"/-->
                 <generated-value strategy="SEQUENCE" generator="ANN_MERGE_ADDRESS_SEQUENCE_GENERATOR"/>
                 <sequence-generator name="ANN_MERGE_ADDRESS_SEQUENCE_GENERATOR" sequence-name="ANN_MERGE_ADDRESS_SEQ" allocation-size="1"/>
-            </id>>
+            </id>
             <!--basic name="postalCode">
                 <column name="XML_MERGE_P_CODE"/>
             </basic>
