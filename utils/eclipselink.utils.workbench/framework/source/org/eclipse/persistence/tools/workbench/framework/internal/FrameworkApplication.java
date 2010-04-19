@@ -340,7 +340,10 @@ public final class FrameworkApplication
 			throw new RuntimeException(ex);
 		}
 		// once the file handler is built, the lock file is present and open
-		FileHandlerCleanup.register(fileHandler);
+		String version = System.getProperty("java.version");
+		if (version.startsWith("1.4")) {
+			FileHandlerCleanup.register(fileHandler);
+		}
 		fileHandler.setFormatter(new SimpleFormatter());
 		this.logger.addHandler(fileHandler);
 	}
