@@ -384,4 +384,8 @@ public abstract class Sequence implements Serializable, Cloneable {
     public boolean shouldAlwaysOverrideExistingValue(String seqName) {
         return this.shouldAlwaysOverrideExistingValue || shouldAcquireValueAfterInsert();
     }
+    
+    public String toString() {
+        return getClass().getSimpleName() + "(" + getName() + ")";
+    }
 }

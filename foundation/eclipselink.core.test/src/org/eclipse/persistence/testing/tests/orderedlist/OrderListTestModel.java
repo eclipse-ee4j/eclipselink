@@ -202,6 +202,22 @@ public class OrderListTestModel extends TestModel {
      * Cuts the models with invalid configurations, configurations that don't make any difference.
      */
     boolean shouldAddModel(DatabasePlatform platform) {
+        // listOrderField is not used 
+        if(!useListOrderField) {
+            // explicitly asked not to run the model that don't use listOrderField.
+            if(!shouldRunWithoutListOrderField) {
+                return false;
+            }
+            // the model would be identical to OrderCorrectionType.READ
+            if(orderCorrectionType != OrderCorrectionType.READ) {
+                return false;
+            }
+            // the model would be identical to useVarcharOrder==false
+            if(useVarcharOrder) {
+                return false;
+            }
+        }
+
         // H2 has an issue with large outer joins, causes null-pointer in driver.
         //
         // There is an Eclipselink bug: when using old Oracle-style (+) outer joins the inner joins between

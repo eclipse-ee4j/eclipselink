@@ -15,6 +15,7 @@ package org.eclipse.persistence.testing.tests.queries.optimization;
 import java.util.List;
 
 import org.eclipse.persistence.tools.schemaframework.PopulationManager;
+import org.eclipse.persistence.platform.database.DatabasePlatform;
 import org.eclipse.persistence.queries.*;
 import org.eclipse.persistence.annotations.BatchFetchType;
 import org.eclipse.persistence.expressions.*;
@@ -73,19 +74,15 @@ public class QueryOptimizationTestSuite extends TestSuite {
 
         BatchReadingUnitOfWorkInTransactionTest testbb4 = new BatchReadingUnitOfWorkInTransactionTest(batchType);
         addTest(testbb4);
-
-        if (batchType != BatchFetchType.IN) {
-            //adding the OneToMany tests
-            OneToManyBatchReadingTest testbb5 = new OneToManyBatchReadingTest(batchType);
-            addTest(testbb5);
-        }
+        
+        //adding the OneToMany tests
+        OneToManyBatchReadingTest testbb5 = new OneToManyBatchReadingTest(batchType);
+        addTest(testbb5);
         
         addTest(new BatchReadingTest(batchType));
 
-        if (batchType != BatchFetchType.IN) {
-            OneToManyBatchReadingCustomSelectionQueryTest testbb6 = new OneToManyBatchReadingCustomSelectionQueryTest(batchType);
-            addTest(testbb6);
-        }
+        OneToManyBatchReadingCustomSelectionQueryTest testbb6 = new OneToManyBatchReadingCustomSelectionQueryTest(batchType);
+        addTest(testbb6);
 
         ReadAllBatchReadingTest test3 = new ReadAllBatchReadingTest(2);
         test3.setName("ReadAllBatchReadingTestWhereAddressManager-cursor" + batchType);
@@ -122,9 +119,7 @@ public class QueryOptimizationTestSuite extends TestSuite {
         test4.setQuery(query4);
         addTest(test4);
 
-        if (batchType != BatchFetchType.IN) {
-            addTest(new OneToOneBatchReadingTest(batchType));
-        }
+        addTest(new OneToOneBatchReadingTest(batchType));
 
         // Batch testing on 1-M mapping.
         ReadAllTest test5 = new ReadAllTest(org.eclipse.persistence.testing.models.insurance.Policy.class, 4);
@@ -136,19 +131,16 @@ public class QueryOptimizationTestSuite extends TestSuite {
         query5.setSelectionCriteria(new org.eclipse.persistence.expressions.ExpressionBuilder().get("maxCoverage").greaterThan(30000));
         test5.setQuery(query5);
         addTest(test5);
-        
-        if (batchType != BatchFetchType.IN) {
-            addTest(new OneToManyBatchReadingTest(batchType));
-        }
+
+        addTest(new OneToManyBatchReadingTest(batchType));
 
         addTest(new NestedBatchReadingTest(batchType));
         addTest(new AggregateBatchReadingTest(batchType));
         addTest(new BatchReadingBatchReadExpressionTest(batchType));
         addTest(new BatchReadingWithInvalidQueryKeyTest(batchType));
         addTest(new BatchReadValueholderTest(batchType));
-        if (batchType != BatchFetchType.IN) {
-            addTest(new BatchReadingStackOverflowTest(batchType));
-        }
+        
+        addTest(new BatchReadingStackOverflowTest(batchType));
     }
 
     public void addJoinTests() {

@@ -16,12 +16,13 @@ import java.util.Map;
 import java.util.Vector;
 
 import junit.framework.*;
-import junit.extensions.TestSetup;
 
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.descriptors.InheritancePolicy;
 import org.eclipse.persistence.internal.helper.DatabaseField;
 import org.eclipse.persistence.mappings.DatabaseMapping;
+import org.eclipse.persistence.sequencing.NativeSequence;
+import org.eclipse.persistence.sequencing.Sequence;
 import org.eclipse.persistence.testing.framework.junit.JUnitTestCase;
 import org.eclipse.persistence.testing.models.jpa.xml.merge.advanced.*;
 
@@ -47,16 +48,7 @@ public class EntityMappingsMergeAdvancedJUnitTestCase extends JUnitTestCase {
     }
     
     public static Test suite() {
-        TestSuite suite = new TestSuite(EntityMappingsMergeAdvancedJUnitTestCase.class, "Advanced Model");
-
-        return new TestSetup(suite) {
-            
-            protected void setUp(){
-            }
-        
-            protected void tearDown() {
-            }
-        };
+        return new TestSuite(EntityMappingsMergeAdvancedJUnitTestCase.class, "Advanced Model");
     }
     
     public void testInheritanceDiscriminatorFieldValue() {
@@ -137,6 +129,12 @@ public class EntityMappingsMergeAdvancedJUnitTestCase extends JUnitTestCase {
         DatabaseMapping mapping = descriptor.getMappingForAttributeName("lastName");
         assertTrue("No mapping for attribute that was set as @Transient, in a metadata complete entity.", mapping !=null);
         assertTrue("Incorrect mapping for attribute that was set as @Transient, in a metadata complete entity.", mapping.isDirectToFieldMapping());
+    }
+
+    public void testSequenceGenerator(){
+        Sequence sequence = getServerSession().getLogin().getSequence("ANN_MERGE_ADDRESS_SEQ");
+        assertTrue("ANN_MERGE_ADDRESS_SEQ sequence incorrect.", sequence instanceof NativeSequence);
+        assertTrue("ANN_MERGE_ADDRESS_SEQ incorrect allocation size.", sequence.getPreallocationSize() == 1);
     }
     
     public static void main(String[] args) {

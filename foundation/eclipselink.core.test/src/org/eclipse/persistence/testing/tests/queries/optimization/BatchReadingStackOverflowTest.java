@@ -22,6 +22,7 @@ import org.eclipse.persistence.testing.framework.TestCase;
 import org.eclipse.persistence.annotations.BatchFetchType;
 import org.eclipse.persistence.expressions.Expression;
 import org.eclipse.persistence.expressions.ExpressionBuilder;
+import org.eclipse.persistence.queries.ReadAllQuery;
 import org.eclipse.persistence.queries.ReadObjectQuery;
 
 // bug 6690525: STACKOVERFLOWERROR UNDER READALLQUERY.EXECUTE
@@ -37,6 +38,9 @@ public class BatchReadingStackOverflowTest extends TestCase {
     }
     
     protected void setup() throws Throwable {
+        if ((batchType == BatchFetchType.IN) && !getSession().getPlatform().isOracle()) {
+            throwWarning("Nested arrays not supported on this database");
+        }
         // set readBatch to true on managedEmployees mapping
         mappingToDisableBatchReadInReset = (ForeignReferenceMapping)getSession().getDescriptor(Employee.class).getMappingForAttributeName("managedEmployees");
         if(mappingToDisableBatchReadInReset.shouldUseBatchReading()) {
@@ -45,6 +49,9 @@ public class BatchReadingStackOverflowTest extends TestCase {
         } else {
             mappingToDisableBatchReadInReset.setUsesBatchReading(true);
             mappingToDisableBatchReadInReset.setBatchFetchType(batchType);
+            mappingToDisableBatchReadInReset.getSelectionQuery().setIsPrepared(false);
+            ((ReadAllQuery)mappingToDisableBatchReadInReset.getSelectionQuery()).setBatchFetchPolicy(null);
+            mappingToDisableBatchReadInReset.getDescriptor().getObjectBuilder().initializeBatchFetchedAttributes();
         }
 
         // create objects to be used by the test:
@@ -123,6 +130,9 @@ public class BatchReadingStackOverflowTest extends TestCase {
 
         if(mappingToDisableBatchReadInReset != null) {
             mappingToDisableBatchReadInReset.setUsesBatchReading(false);
+            mappingToDisableBatchReadInReset.getSelectionQuery().setIsPrepared(false);
+            ((ReadAllQuery)mappingToDisableBatchReadInReset.getSelectionQuery()).setBatchFetchPolicy(null);
+            mappingToDisableBatchReadInReset.getDescriptor().getObjectBuilder().initializeBatchFetchedAttributes();
             mappingToDisableBatchReadInReset = null;
         }
     }

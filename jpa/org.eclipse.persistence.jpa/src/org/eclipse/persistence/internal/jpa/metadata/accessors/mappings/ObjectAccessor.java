@@ -70,6 +70,7 @@ import org.eclipse.persistence.internal.indirection.WeavedObjectBasicIndirection
 import org.eclipse.persistence.mappings.DatabaseMapping;
 import org.eclipse.persistence.mappings.DirectToFieldMapping;
 import org.eclipse.persistence.mappings.EmbeddableMapping;
+import org.eclipse.persistence.mappings.ManyToOneMapping;
 import org.eclipse.persistence.mappings.ObjectReferenceMapping;
 import org.eclipse.persistence.mappings.OneToOneMapping;
 import org.eclipse.persistence.mappings.RelationTableMechanism;
@@ -239,6 +240,43 @@ public abstract class ObjectAccessor extends RelationshipAccessor {
      */
     protected OneToOneMapping initOneToOneMapping() {
         OneToOneMapping mapping = new OneToOneMapping();
+        mapping.setIsOneToOneRelationship(true);
+        mapping.setIsReadOnly(false);
+        mapping.setIsOptional(isOptional());
+        mapping.setAttributeName(getAttributeName());
+        mapping.setReferenceClassName(getReferenceClassName());
+        mapping.setDerivesId(derivesId());
+        
+        // Process join fetch type.
+        processJoinFetch(getJoinFetch(), mapping);
+        
+        // Process the batch fetch if specified.
+        processBatchFetch(getBatchFetch(), mapping);
+        
+        // Process the orphanRemoval or PrivateOwned
+        processOrphanRemoval(mapping);
+        
+        // Process the indirection.
+        processIndirection(mapping);
+        
+        // Set the getter and setter methods if access is PROPERTY.
+        setAccessorMethods(mapping);
+        
+        // Process the cascade types.
+        processCascadeTypes(mapping);
+        
+        // Process a @ReturnInsert and @ReturnUpdate (to log a warning message)
+        processReturnInsertAndUpdate();
+        
+        return mapping;
+    }
+    
+    /**
+     * INTERNAL:
+     * Initialize a ManyToOneMapping.
+     */
+    protected ManyToOneMapping initManyToOneMapping() {
+        ManyToOneMapping mapping = new ManyToOneMapping();
         mapping.setIsReadOnly(false);
         mapping.setIsOptional(isOptional());
         mapping.setAttributeName(getAttributeName());

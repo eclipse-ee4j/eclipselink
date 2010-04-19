@@ -520,4 +520,25 @@ public class WebLogic_10_Platform extends WebLogic_9_Platform {
         }
     }
     
+    /**
+     * Return the method for the WebLogic JDBC connection wrapper vendorConnection.
+     * WLS 10.3.4.0 added a getVendorConnectionSafe that does not invalidate the connection,
+     * so use this if available.
+     */
+    protected Method getVendorConnectionMethod() {
+        if ((this.vendorConnectionMethod == null) && (!getWebLogicConnectionClass().equals(void.class))) {
+            try {
+                this.vendorConnectionMethod = PrivilegedAccessHelper.getDeclaredMethod(getWebLogicConnectionClass(), "getVendorConnectionSafe", new Class[0]);
+            } catch (NoSuchMethodException not1034) {
+                try {
+                    this.vendorConnectionMethod = PrivilegedAccessHelper.getDeclaredMethod(getWebLogicConnectionClass(), "getVendorConnection", new Class[0]);
+                } catch (NoSuchMethodException exception) {
+                    getDatabaseSession().getSessionLog().logThrowable(SessionLog.WARNING, exception);
+                }
+            }
+        }
+
+        return this.vendorConnectionMethod;
+    }
+    
 }

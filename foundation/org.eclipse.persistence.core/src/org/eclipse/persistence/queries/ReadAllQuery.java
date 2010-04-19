@@ -409,7 +409,7 @@ public class ReadAllQuery extends ObjectLevelReadQuery {
             this.joinedAttributeManager.setDataResults(rows, this.session);
         }
         // Batch fetching in IN requires access to the rows to build the id array.
-        if (hasBatchReadAttributes() && this.batchFetchPolicy.isIN()) {
+        if ((this.batchFetchPolicy != null) && this.batchFetchPolicy.isIN()) {
             this.batchFetchPolicy.setDataResults(rows);
         }
 

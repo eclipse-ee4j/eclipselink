@@ -40,9 +40,10 @@ public class OneToManyBatchReadingCustomSelectionQueryTest extends TestCase {
     }
 
     public void setup() {
-
         getAbstractSession().beginTransaction();
-
+        if ((batchType == BatchFetchType.IN) && !getSession().getPlatform().isOracle()) {
+            throwWarning("Nested arrays not supported on this database");
+        }
     }
 
     public void test() {

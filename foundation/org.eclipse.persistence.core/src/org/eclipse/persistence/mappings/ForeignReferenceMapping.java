@@ -376,13 +376,18 @@ public abstract class ForeignReferenceMapping extends DatabaseMapping {
      * INTERNAL:
      * Extract the value from the batch optimized query, this should be supported by most query types.
      */
-    public Object extractResultFromBatchQuery(DatabaseQuery batchQuery, AbstractRecord sourceRow, AbstractSession session, ObjectLevelReadQuery originalQuery) throws QueryException {
+    public Object extractResultFromBatchQuery(ReadQuery batchQuery, AbstractRecord sourceRow, AbstractSession session, ObjectLevelReadQuery originalQuery) throws QueryException {
         Map<Object, Object> batchedObjects = null;
         Object result = null;
         Object sourceKey = extractBatchKeyFromRow(sourceRow, session);
         if (sourceKey == null) {
             // If the foreign key was null, then just return null.
             return null;
+        }
+        Object cachedObject = checkCacheForBatchKey(sourceRow, sourceKey, batchedObjects, batchQuery, originalQuery, session);
+        if (cachedObject != null) {
+            // If the object is already in the cache, then just return it.
+            return cachedObject;
         }
         // Ensure the query is only executed once.
         synchronized (batchQuery) {
@@ -420,8 +425,7 @@ public abstract class ForeignReferenceMapping extends DatabaseMapping {
                         startIndex = parentRows.indexOf(sourceRow);
                     }
                     List foreignKeyValues = new ArrayList(size);
-                    List foreignKeys = new ArrayList(size);
-                    Set uniqueForeignKeyValues = new HashSet(size);
+                    Set foreignKeys = new HashSet(size);
                     int index = 0;
                     int offset = startIndex;
                     for (int count = 0; count < size; count++) {
@@ -438,14 +442,24 @@ public abstract class ForeignReferenceMapping extends DatabaseMapping {
                             // Ignore null foreign keys.
                             count--;
                         } else {
-                            Object foreignKeyValue = ((CacheId)foreignKey).getPrimaryKey()[0];
-                            // Ensure the same id is not selected twice.
-                            if (uniqueForeignKeyValues.contains(foreignKeyValue)) {
-                                count--;
+                            cachedObject = checkCacheForBatchKey(row, foreignKey, batchedObjects, batchQuery, originalQuery, session);
+                            if (cachedObject != null) {
+                                // Avoid fetching things a cache hit occurs for.
+                                count--;                                
                             } else {
-                                uniqueForeignKeyValues.add(foreignKeyValue);
-                                foreignKeyValues.add(foreignKeyValue);
-                                foreignKeys.add(foreignKey);
+                                // Ensure the same id is not selected twice.
+                                if (foreignKeys.contains(foreignKey)) {
+                                    count--;
+                                } else {
+                                    Object[] key = ((CacheId)foreignKey).getPrimaryKey();
+                                    Object foreignKeyValue = key[0];
+                                    // Support composite keys using nested IN.
+                                    if (key.length > 1) {
+                                        foreignKeyValue = Arrays.asList(key);
+                                    }
+                                    foreignKeyValues.add(foreignKeyValue);
+                                    foreignKeys.add(foreignKey);
+                                }
                             }
                         }
                         index++;
@@ -491,6 +505,16 @@ public abstract class ForeignReferenceMapping extends DatabaseMapping {
      */
     protected Object extractBatchKeyFromRow(AbstractRecord targetRow, AbstractSession session) {
         throw QueryException.batchReadingNotSupported(this, null);
+    }
+
+    /**
+     * INTERNAL:
+     * Check if the target object is in the cache if possible based on the source row.
+     * If in the cache, add the object to the batch results.
+     * Return null if not possible or not in the cache.
+     */
+    protected Object checkCacheForBatchKey(AbstractRecord sourceRow, Object foreignKey, Map batchObjects, ReadQuery batchQuery, ObjectLevelReadQuery originalQuery, AbstractSession session) {
+        return null;
     }
     
     /**

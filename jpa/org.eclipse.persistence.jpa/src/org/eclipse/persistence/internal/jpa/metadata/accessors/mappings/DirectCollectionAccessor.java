@@ -55,6 +55,7 @@ import org.eclipse.persistence.mappings.DirectMapMapping;
 public abstract class DirectCollectionAccessor extends DirectAccessor {
     private String m_joinFetch;
     private String m_batchFetch;
+    private Integer m_batchFetchSize;
     private CollectionTableMetadata m_collectionTable;
    
     /**
@@ -87,6 +88,7 @@ public abstract class DirectCollectionAccessor extends DirectAccessor {
         if (batchFetch != null) {
             // Get attribute string will return the default ""
             m_batchFetch = (String) batchFetch.getAttributeString("value");
+            m_batchFetchSize = (Integer) batchFetch.getAttribute("size");
         }
         
         // Since BasicCollection and ElementCollection look for different
@@ -100,6 +102,22 @@ public abstract class DirectCollectionAccessor extends DirectAccessor {
      */
     public String getBatchFetch() {
         return m_batchFetch;
+    }
+    
+    /**
+     * INTERNAL:
+     * Used for OX mapping.
+     */
+    public Integer getBatchFetchSize() {
+        return m_batchFetchSize;
+    }
+    
+    /**
+     * INTERNAL:
+     * Used for OX mapping.
+     */
+    public void setBatchFetchSize(Integer batchFetchSize) {
+        m_batchFetchSize = batchFetchSize;
     }
     
     /**

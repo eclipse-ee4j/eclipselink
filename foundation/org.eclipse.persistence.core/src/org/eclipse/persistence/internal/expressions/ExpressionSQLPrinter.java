@@ -198,7 +198,14 @@ public class ExpressionSQLPrinter {
             Iterator valuesEnum = values.iterator();
             while (valuesEnum.hasNext()) {
                 Object value = valuesEnum.next();
-                session.getPlatform().appendLiteralToCall(getCall(), getWriter(), value);
+                // Support nested arrays for IN.
+                if (value instanceof Collection) {
+                    printValuelist((Collection)value);
+                } else if (value instanceof Expression) {
+                    ((Expression)value).printSQL(this);
+                } else {
+                    session.getPlatform().appendLiteralToCall(getCall(), getWriter(), value);
+                }
                 if (valuesEnum.hasNext()) {
                     getWriter().write(", ");
                 }

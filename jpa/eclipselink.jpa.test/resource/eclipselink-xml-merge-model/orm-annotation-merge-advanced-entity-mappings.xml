@@ -74,7 +74,7 @@
       </embedded>
     </attributes>
     </entity>
-    <entity name="XMLMergeAddress" class="org.eclipse.persistence.testing.models.jpa.xml.merge.advanced.Address" access="PROPERTY" metadata-complete="true">
+    <entity name="XMLMergeAddress" class="org.eclipse.persistence.testing.models.jpa.xml.merge.advanced.Address" access="PROPERTY">
       <!--table name="CMP3_XML_MERGE_ADDRESS"/>
         <sequence-generator name="XML_MERGE_ADDRESS_SEQUENCE_GENERATOR" sequence-name="XML_MERGE_ADDRESS_SEQ" allocation-size="25"/>
         <named-query name="findAllXMLMergeAddressesByPostalCode" query="SELECT OBJECT(address) FROM XMLMergeAddress address WHERE address.postalCode = :postalcode"/>
@@ -83,7 +83,9 @@
             <id name="id">
                 <column name="XML_MERGE_ADDRESS_ID"/>
                 <!--generated-value strategy="SEQUENCE" generator="XML_MERGE_ADDRESS_SEQUENCE_GENERATOR"/-->
-            </id>
+                <generated-value strategy="SEQUENCE" generator="ANN_MERGE_ADDRESS_SEQUENCE_GENERATOR"/>
+                <sequence-generator name="ANN_MERGE_ADDRESS_SEQUENCE_GENERATOR" sequence-name="ANN_MERGE_ADDRESS_SEQ" allocation-size="1"/>
+            </id>>
             <!--basic name="postalCode">
                 <column name="XML_MERGE_P_CODE"/>
             </basic>

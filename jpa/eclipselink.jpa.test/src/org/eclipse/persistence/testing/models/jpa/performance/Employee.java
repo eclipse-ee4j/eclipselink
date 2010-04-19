@@ -15,11 +15,41 @@ package org.eclipse.persistence.testing.models.jpa.performance;
 import java.util.*;
 import java.io.*;
 
+import javax.persistence.NamedQueries;
+import javax.persistence.NamedQuery;
+import javax.persistence.QueryHint;
+
+import org.eclipse.persistence.config.QueryHints;
+
 /**
  * <p><b>Purpose</b>: Represent a employee of an organization.
  * <p><b>Description</b>: An Employee is a root object in the Employee Demo.
  * It maintains relationships to all of the other objects in the system.
  */
+@NamedQueries({
+    @NamedQuery(
+            name="findAllEmployees",
+            query="Select e from Employee e"),
+    @NamedQuery(
+            name="findAllEmployeesJoin",
+            query="Select e from Employee e join fetch e.address"),
+    @NamedQuery(
+            name="findAllEmployeesBatch",
+            query="Select e from Employee e",
+            hints=@QueryHint(name=QueryHints.BATCH, value="e.address")),
+    @NamedQuery(
+            name="findAllEmployeesBatchEXISTS",
+            query="Select e from Employee e",
+            hints={
+                    @QueryHint(name=QueryHints.BATCH, value="e.address"),
+                    @QueryHint(name=QueryHints.BATCH_TYPE, value="EXISTS")}),
+    @NamedQuery(
+            name="findAllEmployeesBatchIN",
+            query="Select e from Employee e",
+            hints={
+                    @QueryHint(name=QueryHints.BATCH, value="e.address"),
+                    @QueryHint(name=QueryHints.BATCH_TYPE, value="IN")})
+})
 //@org.hibernate.annotations.Cache(usage=org.hibernate.annotations.CacheConcurrencyStrategy.NONSTRICT_READ_WRITE)
 public class Employee implements Serializable {
 

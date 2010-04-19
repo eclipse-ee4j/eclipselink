@@ -67,14 +67,11 @@ public class OneToOneMapping extends ObjectReferenceMapping implements Relationa
     protected transient RelationTableMechanism mechanism;
 
     /**
-     * 266912: Since: EclipseLink 2.0 for the Metamodel API
-     * For 1:1 and m:m mappings - track the original externally defined mapping if different 
-     * Note: This field will provide differentiation for the following 
-     *   external to internal representations for mapping types<br>
-     *   - A OneToManyMapping will be represented by a ManyToManyMapping if unidirectional<br>
-     *   - A ManyToOneMapping will be represented by a OneToOneMapping (without a FK constraint)<br>      
+     * Define if this mapping is really for a OneToOne relationship.
+     * This is a backward compatibility issue, in that before the ManyToOneMapping
+     * was created OneToOneMapping was used for both.
      */
-    protected boolean isDefinedAsManyToOneMapping = false;
+    protected boolean isOneToOneRelationship = false;
     
     /**
      * PUBLIC:
@@ -680,8 +677,8 @@ public class OneToOneMapping extends ObjectReferenceMapping implements Relationa
     protected void postPrepareNestedBatchQuery(ReadQuery batchQuery, ObjectLevelReadQuery query) {
         super.postPrepareNestedBatchQuery(batchQuery, query);
         // Force a distinct to filter out m-1 duplicates.
-        // TODO: Only set if really a m-1, not a 1-1
-        if (!query.isDistinctComputed()) {
+        // Only set if really a m-1, not a 1-1
+        if (!isOneToOneRelationship()) {
             ((ObjectLevelReadQuery)batchQuery).useDistinct();
         }
         if (this.mechanism != null) {
@@ -696,11 +693,19 @@ public class OneToOneMapping extends ObjectReferenceMapping implements Relationa
     @Override
     protected Expression buildBatchCriteria(ExpressionBuilder builder, ObjectLevelReadQuery query) {
         if (this.mechanism == null) {
-            if (this.sourceToTargetKeyFields.size() != 1) {
-                throw QueryException.batchReadingInRequiresSingletonPrimaryKey(query);
+            int size = this.sourceToTargetKeyFields.size();
+            if (size > 1) {
+                // Support composite keys using nested IN.
+                List<Expression> fields = new ArrayList<Expression>(size);
+                for (DatabaseField targetForeignKeyField : this.sourceToTargetKeyFields.values()) {
+                    fields.add(builder.getField(targetForeignKeyField));
+                }
+                return builder.value(fields).in(
+                        builder.getParameter(ForeignReferenceMapping.QUERY_BATCH_PARAMETER));
+            } else {
+                return builder.getField(this.sourceToTargetKeyFields.values().iterator().next()).in(
+                        builder.getParameter(ForeignReferenceMapping.QUERY_BATCH_PARAMETER));
             }
-            return builder.getField(this.sourceToTargetKeyFields.values().iterator().next()).in(
-                    builder.getParameter(ForeignReferenceMapping.QUERY_BATCH_PARAMETER));
         } else {
             return this.mechanism.buildBatchCriteria(builder, query);
         }
@@ -736,6 +741,23 @@ public class OneToOneMapping extends ObjectReferenceMapping implements Relationa
         }
     }
 
+    /**
+     * INTERNAL:
+     * Check if the target object is in the cache if possible based on the target key value.
+     * Return null if the target key is not the primary key, or if the query is refreshing.
+     */
+    @Override
+    protected Object checkCacheForBatchKey(AbstractRecord sourceRow, Object foreignKey, Map batchObjects, ReadQuery batchQuery, ObjectLevelReadQuery originalQuery, AbstractSession session) {
+        if (((ReadAllQuery)batchQuery).shouldRefreshIdentityMapResult() || (!((ReadAllQuery)batchQuery).shouldMaintainCache())) {
+            return null;
+        }
+        // Check the cache using the source row and selection query.
+        Object cachedObject = this.selectionQuery.checkEarlyReturn(session, sourceRow);
+        if ((cachedObject != null) && (batchObjects != null)) {
+            batchObjects.put(foreignKey, cachedObject);
+        }
+        return cachedObject;
+    }
     
     /**
      * INTERNAL:
@@ -1282,12 +1304,22 @@ public class OneToOneMapping extends ObjectReferenceMapping implements Relationa
     }
 
     /**
-     * INTERNAL:
-     * Set whether this mapping was originally defined as a ManyToOne
-     * @param isDefinedAsManyToOneMapping
+     * Return if this mapping is really for a OneToOne relationship.
+     * This is a backward compatibility issue, in that before the ManyToOneMapping
+     * was created OneToOneMapping was used for both.
+     * false means it may be a OneToOne or a ManyToOne (unknown).
      */
-    public void setDefinedAsManyToOneMapping(boolean isDefinedAsManyToOneMapping) {
-        this.isDefinedAsManyToOneMapping = isDefinedAsManyToOneMapping;
+    public boolean isOneToOneRelationship() {
+        return isOneToOneRelationship;
+    }
+    
+    /**
+     * Define if this mapping is really for a OneToOne relationship.
+     * This is a backward compatibility issue, in that before the ManyToOneMapping
+     * was created OneToOneMapping was used for both.
+     */
+    public void setIsOneToOneRelationship(boolean isOneToOneRelationship) {
+        this.isOneToOneRelationship = isOneToOneRelationship;
     }
 
     /**
@@ -1412,16 +1444,7 @@ public class OneToOneMapping extends ObjectReferenceMapping implements Relationa
     public boolean isCascadedLockingSupported() {
         return true;
     }
-    
-    /**
-     * INTERNAL:
-     * Return whether this mapping was originally defined as a ManyToOne
-     * @return
-     */
-     public boolean isDefinedAsManyToOneMapping() {
-         return isDefinedAsManyToOneMapping;
-     }
-     
+         
     /**
      * INTERNAL:
      * Return if this mapping support joining.

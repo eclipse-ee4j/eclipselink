@@ -14,6 +14,7 @@
 
 //import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 //import java.util.List;
 import java.util.Map;
 
@@ -45,6 +46,7 @@ public class JPAPerformanceComparisonModel extends TestModel {
         TestSuite suite = new TestSuite();
         suite.setName("ReadingSuite");
         suite.addTest(buildReadAllVsReadAllResultSet());
+        suite.addTest(buildBatchFetchTest());
         addTest(suite);
     }
 
@@ -334,5 +336,85 @@ public class JPAPerformanceComparisonModel extends TestModel {
         };
         test.setName("ReadAllVsReadAllResultSet");
         return test;
+    }
+    
+
+    
+    /**
+     * Add a test to compare various batch fetching options.
+     */
+    public TestCase buildBatchFetchTest() {
+        PerformanceComparisonTestCase test = new PerformanceComparisonTestCase() {
+            public void setup() {
+                createEntityManager().unwrap(Session.class).getDescriptor(Employee.class).setIsIsolated(true);
+                createEntityManager().unwrap(Session.class).getDescriptor(Employee.class).setUnitOfWorkCacheIsolationLevel(ClassDescriptor.ISOLATE_CACHE_ALWAYS);
+                createEntityManager().unwrap(Session.class).getDescriptor(Address.class).setIsIsolated(true);
+                createEntityManager().unwrap(Session.class).getDescriptor(Address.class).setUnitOfWorkCacheIsolationLevel(ClassDescriptor.ISOLATE_CACHE_ALWAYS);
+                createEntityManager().unwrap(Session.class).getProject().setHasIsolatedClasses(true);
+                
+                if (!getTests().isEmpty()) {
+                    return;
+                }
+                
+                PerformanceComparisonTestCase test = new PerformanceComparisonTestCase() {
+                    public void test() {
+                        testQuery("findAllEmployeesBatch");
+                    }
+                };
+                test.setName("BatchFetchTest");
+                addTest(test);
+                
+                test = new PerformanceComparisonTestCase() {
+                    public void test() {
+                        testQuery("findAllEmployeesBatchEXISTS");
+                    }
+                };
+                test.setName("EXISTSBatchFetchTest");
+                addTest(test);
+                
+                test = new PerformanceComparisonTestCase() {
+                    public void test() {
+                        testQuery("findAllEmployeesBatchIN");
+                    }
+                };
+                test.setName("INBatchFetchTest");
+                addTest(test);
+                
+                test = new PerformanceComparisonTestCase() {
+                    public void test() {
+                        testQuery("findAllEmployeesJoin");
+                    }
+                };
+                test.setName("JoinFetchTest");
+                addTest(test);
+            }
+            
+            public void test() throws Exception {
+                testQuery("findAllEmployees");
+            }
+            
+            public void reset() {
+                createEntityManager().unwrap(Session.class).getDescriptor(Employee.class).setIsIsolated(false);
+                createEntityManager().unwrap(Session.class).getDescriptor(Employee.class).setUnitOfWorkCacheIsolationLevel(ClassDescriptor.ISOLATE_NEW_DATA_AFTER_TRANSACTION);
+                createEntityManager().unwrap(Session.class).getDescriptor(Address.class).setIsIsolated(false);
+                createEntityManager().unwrap(Session.class).getDescriptor(Address.class).setUnitOfWorkCacheIsolationLevel(ClassDescriptor.ISOLATE_NEW_DATA_AFTER_TRANSACTION);
+                createEntityManager().unwrap(Session.class).getProject().setHasIsolatedClasses(false);
+            }
+
+        };
+        test.setName("BatchFetchTest");
+        return test;
+    }
+    
+    /**
+     * Execute the named query and traverse the results.
+     */
+    protected void testQuery(String query) {
+        EntityManager em = getExecutor().createEntityManager();
+        List<Employee> employees = em.createNamedQuery(query).getResultList();
+        for (Employee employee : employees) {
+            employee.getAddress().toString();
+        }
+        em.close();
     }
 }

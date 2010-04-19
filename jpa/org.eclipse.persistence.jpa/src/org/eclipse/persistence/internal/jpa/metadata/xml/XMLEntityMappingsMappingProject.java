@@ -457,6 +457,7 @@ public class XMLEntityMappingsMappingProject extends org.eclipse.persistence.ses
         descriptor.addMapping(getCollectionTableMapping());
         descriptor.addMapping(getJoinFetchMapping());
         descriptor.addMapping(getBatchFetchMapping());
+        descriptor.addMapping(getBatchFetchSizeMapping());
         descriptor.addMapping(getPropertyMapping());
         descriptor.addMapping(getAccessMethodsMapping());
         
@@ -561,6 +562,7 @@ public class XMLEntityMappingsMappingProject extends org.eclipse.persistence.ses
         descriptor.addMapping(getCollectionTableMapping());
         descriptor.addMapping(getJoinFetchMapping());
         descriptor.addMapping(getBatchFetchMapping());
+        descriptor.addMapping(getBatchFetchSizeMapping());
         descriptor.addMapping(getPropertyMapping());
         descriptor.addMapping(getAccessMethodsMapping());
         
@@ -959,6 +961,7 @@ public class XMLEntityMappingsMappingProject extends org.eclipse.persistence.ses
         descriptor.addMapping(getCollectionTableMapping());
         descriptor.addMapping(getJoinFetchMapping());
         descriptor.addMapping(getBatchFetchMapping());
+        descriptor.addMapping(getBatchFetchSizeMapping());
         descriptor.addMapping(getPropertyMapping());
         descriptor.addMapping(getAccessMethodsMapping());
         
@@ -1522,6 +1525,7 @@ public class XMLEntityMappingsMappingProject extends org.eclipse.persistence.ses
         descriptor.addMapping(getCascadeMapping());
         descriptor.addMapping(getJoinFetchMapping());
         descriptor.addMapping(getBatchFetchMapping());
+        descriptor.addMapping(getBatchFetchSizeMapping());
         descriptor.addMapping(getPropertyMapping());
         descriptor.addMapping(getAccessMethodsMapping());
         
@@ -1637,6 +1641,7 @@ public class XMLEntityMappingsMappingProject extends org.eclipse.persistence.ses
         descriptor.addMapping(getCascadeMapping());
         descriptor.addMapping(getJoinFetchMapping());
         descriptor.addMapping(getBatchFetchMapping());
+        descriptor.addMapping(getBatchFetchSizeMapping());
         descriptor.addMapping(getPropertyMapping());
         descriptor.addMapping(getAccessMethodsMapping());
         
@@ -1769,6 +1774,7 @@ public class XMLEntityMappingsMappingProject extends org.eclipse.persistence.ses
         descriptor.addMapping(getPrivateOwnedMapping());
         descriptor.addMapping(getJoinFetchMapping());
         descriptor.addMapping(getBatchFetchMapping());
+        descriptor.addMapping(getBatchFetchSizeMapping());
         descriptor.addMapping(getPropertyMapping());
         descriptor.addMapping(getAccessMethodsMapping());
         
@@ -1900,6 +1906,7 @@ public class XMLEntityMappingsMappingProject extends org.eclipse.persistence.ses
         descriptor.addMapping(getPrivateOwnedMapping());
         descriptor.addMapping(getJoinFetchMapping());
         descriptor.addMapping(getBatchFetchMapping());
+        descriptor.addMapping(getBatchFetchSizeMapping());
         descriptor.addMapping(getPropertyMapping());
         descriptor.addMapping(getAccessMethodsMapping());
         
@@ -2678,6 +2685,18 @@ public class XMLEntityMappingsMappingProject extends org.eclipse.persistence.ses
         mapping.setGetMethodName("getBatchFetch");
         mapping.setSetMethodName("setBatchFetch");
         mapping.setXPath("orm:batch-fetch/text()");
+        return mapping;
+    }
+    
+    /**
+     * INTERNAL:
+     */
+    protected XMLDirectMapping getBatchFetchSizeMapping() {
+        XMLDirectMapping mapping = new XMLDirectMapping();
+        mapping.setAttributeName("m_batchFetchSize");
+        mapping.setGetMethodName("getBatchFetchSize");
+        mapping.setSetMethodName("setBatchFetchSize");
+        mapping.setXPath("orm:batch-fetch-size/text()");
         return mapping;
     }
     

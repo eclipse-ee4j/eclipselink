@@ -28,7 +28,7 @@ import org.eclipse.persistence.internal.jpa.metadata.accessors.classes.ClassAcce
 import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataAccessibleObject;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataAnnotation;
 
-import org.eclipse.persistence.mappings.OneToOneMapping;
+import org.eclipse.persistence.mappings.ManyToOneMapping;
 
 /**
  * INTERNAL:
@@ -88,12 +88,9 @@ public class ManyToOneAccessor extends ObjectAccessor {
      */
     public void process() {
         // Initialize our mapping now with what we found.
-        OneToOneMapping mapping = initOneToOneMapping();
+        ManyToOneMapping mapping = initManyToOneMapping();
         setMapping(mapping);
-        
-        // 266912: If this n:1 accessor is different than the 1:1 mapping -track this
-        mapping.setDefinedAsManyToOneMapping(true);
-        
+                
         // Process the owning keys for this mapping.
         processOwningMappingKeys(mapping);
     }

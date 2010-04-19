@@ -1012,15 +1012,36 @@ public abstract class DatabaseCall extends DatasourceCall {
                     // Process next parameter.
                     Object parameter = parameters.get(parameterIndex);
                     // Parameter expressions are used for nesting and correct mapping conversion of the value.
-                    if (parameter instanceof Collection) {
-                        Collection values = (Collection)parameter;
-                        parametersValues.addAll(values);
-                        int size = values.size();
+                    if (parameter instanceof List) {
+                        List values = (List)parameter;
                         writer.write("(");
-                        for (int index = 0; index < size; index++) {
-                            writer.write("?");
-                            if ((index + 1) < size) {
-                                writer.write(",");                                    
+                        if ((values.size() > 0) && (values.get(0) instanceof List)) {
+                            // Support nested lists.
+                            int size = values.size();
+                            for (int index = 0; index < size; index++) {
+                                List nestedValues = (List)values.get(index);
+                                parametersValues.addAll(nestedValues);
+                                int nestedSize = nestedValues.size();
+                                writer.write("(");
+                                for (int nestedIndex = 0; nestedIndex < nestedSize; nestedIndex++) {
+                                    writer.write("?");
+                                    if ((nestedIndex + 1) < nestedSize) {
+                                        writer.write(",");                                    
+                                    }
+                                }
+                                writer.write(")");
+                                if ((index + 1) < size) {
+                                    writer.write(",");                                    
+                                }
+                            }
+                        } else {
+                            parametersValues.addAll(values);
+                            int size = values.size();
+                            for (int index = 0; index < size; index++) {
+                                writer.write("?");
+                                if ((index + 1) < size) {
+                                    writer.write(",");                                    
+                                }
                             }
                         }
                         writer.write(")");

@@ -931,11 +931,19 @@ public class OneToManyMapping extends CollectionMapping implements RelationalMap
      */
     @Override
     protected Expression buildBatchCriteria(ExpressionBuilder builder, ObjectLevelReadQuery query) {
-        if (this.targetForeignKeyFields.size() != 1) {
-            throw QueryException.batchReadingInRequiresSingletonPrimaryKey(query);
+        int size = this.targetForeignKeyFields.size();
+        if (size > 1) {
+            // Support composite keys using nested IN.
+            List<Expression> fields = new ArrayList<Expression>(size);
+            for (DatabaseField targetForeignKeyField : this.targetForeignKeyFields) {
+                fields.add(builder.getField(targetForeignKeyField));
+            }
+            return builder.value(fields).in(
+                    builder.getParameter(ForeignReferenceMapping.QUERY_BATCH_PARAMETER));
+        } else {
+            return builder.getField(this.targetForeignKeyFields.get(0)).in(
+                    builder.getParameter(ForeignReferenceMapping.QUERY_BATCH_PARAMETER));
         }
-        return builder.getField(this.targetForeignKeyFields.get(0)).in(
-                builder.getParameter(ForeignReferenceMapping.QUERY_BATCH_PARAMETER));
     }
 
     /**

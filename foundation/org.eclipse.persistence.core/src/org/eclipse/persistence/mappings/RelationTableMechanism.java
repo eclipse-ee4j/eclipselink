@@ -13,6 +13,7 @@
  ******************************************************************************/  
 package org.eclipse.persistence.mappings;
 
+import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.List;
 import java.util.Vector;
@@ -322,10 +323,6 @@ public class RelationTableMechanism  implements Cloneable {
      * Return the selection criteria used to IN batch fetching.
      */
     public Expression buildBatchCriteria(ExpressionBuilder builder, ObjectLevelReadQuery query) {
-        if (this.sourceRelationKeyFields.size() != 1) {
-            throw QueryException.batchReadingInRequiresSingletonPrimaryKey(query);
-        }
-
         Expression linkTable = builder.getTable(this.relationTable);
         Expression criteria = null;
         int size = this.targetRelationKeyFields.size();
@@ -334,9 +331,19 @@ public class RelationTableMechanism  implements Cloneable {
             DatabaseField targetKey = this.targetKeyFields.get(index);
             criteria = builder.getField(targetKey).equal(linkTable.getField(relationKey)).and(criteria);
         }
-
-        return criteria.and(linkTable.getField(this.sourceRelationKeyFields.get(0)).in(
-                builder.getParameter(ForeignReferenceMapping.QUERY_BATCH_PARAMETER)));
+        size = this.sourceRelationKeyFields.size();
+        if (size > 1) {
+            // Support composite keys using nested IN.
+            List<Expression> fields = new ArrayList<Expression>(size);
+            for (DatabaseField sourceRelationKeyField : this.sourceRelationKeyFields) {
+                fields.add(linkTable.getField(sourceRelationKeyField));
+            }            
+            return criteria.and(builder.value(fields).in(
+                    builder.getParameter(ForeignReferenceMapping.QUERY_BATCH_PARAMETER)));
+        } else {
+            return criteria.and(linkTable.getField(this.sourceRelationKeyFields.get(0)).in(
+                    builder.getParameter(ForeignReferenceMapping.QUERY_BATCH_PARAMETER)));
+        }
     }
 
     /**

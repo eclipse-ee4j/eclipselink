@@ -88,6 +88,7 @@ public abstract class RelationshipAccessor extends MappingAccessor {
     private String m_fetch;
     private String m_joinFetch;
     private String m_batchFetch;
+    private Integer m_batchFetchSize;
 
     private JoinTableMetadata m_joinTable;
     private List<JoinColumnMetadata> m_joinColumns = new ArrayList<JoinColumnMetadata>();
@@ -123,6 +124,7 @@ public abstract class RelationshipAccessor extends MappingAccessor {
         if (batchFetch != null) {
             // Get attribute string will return the default ""
             m_batchFetch = (String) batchFetch.getAttributeString("value");
+            m_batchFetchSize = (Integer) batchFetch.getAttribute("size");
         }
         
         // Set the private owned if one is present.
@@ -206,6 +208,14 @@ public abstract class RelationshipAccessor extends MappingAccessor {
      */
     public String getBatchFetch() {
         return m_batchFetch;
+    }
+    
+    /**
+     * INTERNAL:
+     * Used for OX mapping.
+     */
+    public Integer getBatchFetchSize() {
+        return m_batchFetchSize;
     }
     
     /**
@@ -496,7 +506,7 @@ public abstract class RelationshipAccessor extends MappingAccessor {
             // Update the target key fields.
             Vector<DatabaseField> targetKeyFields = new Vector<DatabaseField>();
             for (DatabaseField targetKeyField : ownerMechanism.getTargetKeyFields()) {
-                DatabaseField newTargetKeyField = (DatabaseField) targetKeyField.clone();
+                DatabaseField newTargetKeyField = targetKeyField.clone();
                 newTargetKeyField.setTable(getDescriptor().getPrimaryTable());
                 targetKeyFields.add(newTargetKeyField);
             }
@@ -586,6 +596,14 @@ public abstract class RelationshipAccessor extends MappingAccessor {
      */
     public void setBatchFetch(String batchFetch) {
         m_batchFetch = batchFetch;
+    }
+    
+    /**
+     * INTERNAL:
+     * Used for OX mapping.
+     */
+    public void setBatchFetchSize(Integer batchFetchSize) {
+        m_batchFetchSize = batchFetchSize;
     }
     
     /**

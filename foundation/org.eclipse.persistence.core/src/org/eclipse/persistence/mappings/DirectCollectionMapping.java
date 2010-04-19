@@ -964,12 +964,20 @@ public class DirectCollectionMapping extends CollectionMapping implements Relati
      */
     @Override
     public Expression buildBatchCriteria(ExpressionBuilder builder, ObjectLevelReadQuery query) {
-        if (this.referenceKeyFields.size() != 1) {
-            throw QueryException.batchReadingInRequiresSingletonPrimaryKey(query);
+        int size = this.referenceKeyFields.size();
+        Expression table = builder.getTable(this.referenceTable);
+        if (size > 1) {
+            // Support composite keys using nested IN.
+            List<Expression> fields = new ArrayList<Expression>(size);
+            for (DatabaseField referenceKeyField : this.referenceKeyFields) {
+                fields.add(table.getField(referenceKeyField));
+            }
+            return builder.value(fields).in(
+                    builder.getParameter(ForeignReferenceMapping.QUERY_BATCH_PARAMETER));
+        } else {
+            return table.getField(this.referenceKeyFields.get(0)).in(
+                    builder.getParameter(ForeignReferenceMapping.QUERY_BATCH_PARAMETER));
         }
-
-        return builder.getTable(this.referenceTable).getField(this.referenceKeyFields.get(0)).in(
-                builder.getParameter(ForeignReferenceMapping.QUERY_BATCH_PARAMETER));
     }
     
     /**

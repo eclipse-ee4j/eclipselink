@@ -550,11 +550,15 @@ public class MetadataProject {
         // Check if the name is used with a table generator.
         TableGeneratorMetadata tableGenerator = m_tableGenerators.get(name);
         if (tableGenerator != null) {
-            throw ValidationException.conflictingSequenceAndTableGeneratorsSpecified(name, sequenceGenerator.getLocation(), tableGenerator.getLocation());          
+            if (sequenceGenerator.shouldOverride(tableGenerator)) {
+                m_tableGenerators.remove(name);
+            } else {
+                throw ValidationException.conflictingSequenceAndTableGeneratorsSpecified(name, sequenceGenerator.getLocation(), tableGenerator.getLocation());
+            }
         }
             
         for (TableGeneratorMetadata otherTableGenerator : m_tableGenerators.values()) {
-            if (otherTableGenerator.getPkColumnValue().equals(sequenceGenerator.getSequenceName())) {
+            if ((tableGenerator != otherTableGenerator) && otherTableGenerator.getPkColumnValue().equals(sequenceGenerator.getSequenceName())) {
                 // generator name will be used instead of an empty sequence name / pk column name
                 if (otherTableGenerator.getPkColumnValue().length() > 0) {
                     throw ValidationException.conflictingSequenceNameAndTablePkColumnValueSpecified(sequenceGenerator.getSequenceName(), sequenceGenerator.getLocation(), otherTableGenerator.getLocation());
@@ -610,11 +614,15 @@ public class MetadataProject {
         // Check if the generator name is used with a sequence generator.
         SequenceGeneratorMetadata otherSequenceGenerator = m_sequenceGenerators.get(generatorName);
         if (otherSequenceGenerator != null) {
-            throw ValidationException.conflictingSequenceAndTableGeneratorsSpecified(generatorName, otherSequenceGenerator.getLocation(), tableGenerator.getLocation());            
+            if (tableGenerator.shouldOverride(otherSequenceGenerator)) {
+                m_sequenceGenerators.remove(generatorName);
+            } else {
+                throw ValidationException.conflictingSequenceAndTableGeneratorsSpecified(generatorName, otherSequenceGenerator.getLocation(), tableGenerator.getLocation());
+            }
         }
             
         for (SequenceGeneratorMetadata sequenceGenerator : m_sequenceGenerators.values()) {
-            if (sequenceGenerator.getSequenceName().equals(tableGenerator.getPkColumnValue())) {
+            if ((otherSequenceGenerator != sequenceGenerator) && sequenceGenerator.getSequenceName().equals(tableGenerator.getPkColumnValue())) {
                 // generator name will be used instead of an empty sequence name / pk column name
                 if (sequenceGenerator.getSequenceName().length() > 0) {
                     throw ValidationException.conflictingSequenceNameAndTablePkColumnValueSpecified(sequenceGenerator.getSequenceName(), sequenceGenerator.getLocation(), tableGenerator.getLocation());

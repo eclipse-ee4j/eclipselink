@@ -870,6 +870,14 @@ public abstract class DatabaseMapping implements Cloneable, Serializable {
     }
 
     /**
+     * INTERNAL:
+     * Related mapping should implement this method to return true.
+     */
+    public boolean isManyToOneMapping() {
+        return false;
+    }
+
+    /**
      * Return whether the value of this mapping is optional (that is, can be 
      * null). This is a hint and is used when generating DDL.
      */

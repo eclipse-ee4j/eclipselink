@@ -801,7 +801,7 @@ public abstract class CollectionMapping extends ForeignReferenceMapping implemen
      * Extract the value from the batch optimized query, this should be supported by most query types.
      */
     @Override
-    public Object extractResultFromBatchQuery(DatabaseQuery batchQuery, AbstractRecord sourceRow, AbstractSession session, ObjectLevelReadQuery originalQuery) throws QueryException {
+    public Object extractResultFromBatchQuery(ReadQuery batchQuery, AbstractRecord sourceRow, AbstractSession session, ObjectLevelReadQuery originalQuery) throws QueryException {
         Object result = super.extractResultFromBatchQuery(batchQuery, sourceRow, session, originalQuery);
         // The source object might not have any target objects.
         if (result == null) {

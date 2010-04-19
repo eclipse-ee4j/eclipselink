@@ -33,7 +33,6 @@ import org.eclipse.persistence.logging.SessionLog;
 import org.eclipse.persistence.mappings.AttributeAccessor;
 import org.eclipse.persistence.mappings.DatabaseMapping;
 import org.eclipse.persistence.mappings.ManyToManyMapping;
-import org.eclipse.persistence.mappings.OneToOneMapping;
 
 /**
  * <p>
@@ -205,17 +204,12 @@ public abstract class AttributeImpl<X, T> implements Attribute<X, T>, Serializab
                 return PersistentAttributeType.MANY_TO_MANY;
             }
         }
-        
-        /**
-         * EclipseLink internally processes a MANY_TO_ONE as a ONE_TO_ONE without a FK constraint.
-         */
+
+        if (mapping.isManyToOneMapping()) {
+            return PersistentAttributeType.MANY_TO_ONE;
+        }
         if (mapping.isOneToOneMapping()) {
-            // Check for a ManyToOne being processed internally as a OneToOne
-            if(((OneToOneMapping)mapping).isDefinedAsManyToOneMapping()) {
-                return PersistentAttributeType.MANY_TO_ONE;
-            } else {
-                return PersistentAttributeType.ONE_TO_ONE;
-            }
+            return PersistentAttributeType.ONE_TO_ONE;
         }
         // Test coverage required
         return PersistentAttributeType.ELEMENT_COLLECTION;
