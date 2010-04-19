@@ -19,14 +19,12 @@ import java.util.List;
 import junit.framework.Test;
 import junit.framework.TestSuite;
 
-import org.eclipse.persistence.exceptions.QueryException;
 import org.eclipse.persistence.testing.framework.junit.JUnitTestCase;
 import org.eclipse.persistence.queries.ReportQuery;
 import org.eclipse.persistence.testing.models.jpa.advanced.Address;
 import org.eclipse.persistence.testing.models.jpa.advanced.Employee;
 import org.eclipse.persistence.expressions.ExpressionBuilder;
 import org.eclipse.persistence.testing.models.jpa.advanced.LargeProject;
-import org.eclipse.persistence.testing.models.jpa.advanced.Project;
 
 public class ReportQueryMultipleReturnTestSuite extends JUnitTestCase {
     protected boolean m_reset = false;    // reset gets called twice on error
@@ -116,28 +114,12 @@ public class ReportQueryMultipleReturnTestSuite extends JUnitTestCase {
         resultItem = ((Object[])innerResult)[2];
         assertTrue("Failed to return Employees correctly, Not a City", String.class.isAssignableFrom(resultItem.getClass()));
     }
-    
-    public void testInheritanceMultiTableException(){
-        try{
-            ReportQuery reportQuery = new ReportQuery();
-            reportQuery.returnWithoutReportQueryResult();
-            reportQuery.setReferenceClass(Project.class);
-            ExpressionBuilder empbuilder = new ExpressionBuilder();
-            reportQuery.addAttribute("project",empbuilder);
-            List result = (List)getServerSession().executeQuery(reportQuery);
-            result.size();
-        } catch (QueryException ex){
-           return; 
-        }
-        fail("Failed to throw exception, ReportItems must not have multi-table inheritance.");
-    }
-    
+
     public void testReturnRootObject(){
         ReportQuery reportQuery = new ReportQuery();
         reportQuery.returnWithoutReportQueryResult();
         reportQuery.setReferenceClass(LargeProject.class);
-        ExpressionBuilder empbuilder = new ExpressionBuilder();
-        reportQuery.addAttribute("project",empbuilder);
+        reportQuery.addAttribute("project", reportQuery.getExpressionBuilder());
         List result = (List)getServerSession().executeQuery(reportQuery);
         Object resultItem = result.get(0);
         assertTrue("Failed to return Project as expression root correctly, Not A Project", LargeProject.class.isAssignableFrom(resultItem.getClass()));
