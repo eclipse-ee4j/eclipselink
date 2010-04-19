@@ -15,6 +15,7 @@ package org.eclipse.persistence.testing.framework.wdf.server;
 import java.util.List;
 import java.util.Map;
 
+import javax.ejb.Remote;
 import javax.ejb.Stateless;
 import javax.ejb.TransactionManagement;
 import javax.ejb.TransactionManagementType;
@@ -26,8 +27,9 @@ import org.junit.runner.JUnitCore;
  * Implementation  of the server test runner. 
  */
 
-@Stateless
+@Stateless(name="ServerTestRunner", mappedName="ServerTestRunner")
 @TransactionManagement(TransactionManagementType.BEAN)
+@Remote(ServerTestRunner.class)
 public class ServerTestRunnerImpl implements ServerTestRunner {
     
     @Override

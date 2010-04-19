@@ -15,12 +15,9 @@ package org.eclipse.persistence.testing.framework.wdf.server;
 import java.util.List;
 import java.util.Map;
 
-import javax.ejb.Remote;
-
 /**
  * Session bean used to redirect JUnit 4 test execution from client to server
  */
-@Remote
 public interface ServerTestRunner {
     
     /**
