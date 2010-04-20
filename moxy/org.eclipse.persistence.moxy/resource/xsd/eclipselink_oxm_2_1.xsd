@@ -376,6 +376,18 @@
             </xs:complexContent>
         </xs:complexType>
     </xs:element>
+    <xs:element name="xml-inverse-reference" substitutionGroup="java-attribute">
+        <xs:complexType>
+            <xs:complexContent>
+                <xs:extension base="java-attribute">
+                    <xs:all>
+                        <xs:element ref="xml-access-methods" minOccurs="0" />
+                    </xs:all>
+                    <xs:attribute name="mapped-by" type="xs:string" />
+                </xs:extension>
+            </xs:complexContent>
+        </xs:complexType>
+    </xs:element>
     <xs:element name="xml-element-wrapper">
         <xs:complexType>
             <xs:attribute name="name" type="xs:string" default="##default" />

@@ -40,6 +40,7 @@ import org.eclipse.persistence.jaxb.xmlmodel.XmlElementRefs;
 import org.eclipse.persistence.jaxb.xmlmodel.XmlElements;
 import org.eclipse.persistence.jaxb.xmlmodel.XmlEnum;
 import org.eclipse.persistence.jaxb.xmlmodel.XmlEnumValue;
+import org.eclipse.persistence.jaxb.xmlmodel.XmlInverseReference;
 import org.eclipse.persistence.jaxb.xmlmodel.XmlJavaTypeAdapter;
 import org.eclipse.persistence.jaxb.xmlmodel.XmlMap;
 import org.eclipse.persistence.jaxb.xmlmodel.XmlNsForm;
@@ -359,6 +360,8 @@ public class XMLProcessor {
             return processXmlValue((XmlValue) javaAttribute, oldProperty, typeInfo, javaType);
         } else if (javaAttribute instanceof XmlJavaTypeAdapter) {
             return processXmlJavaTypeAdapter((XmlJavaTypeAdapter) javaAttribute, oldProperty);
+        } else if (javaAttribute instanceof XmlInverseReference) {
+            return processXmlInverseReference((XmlInverseReference)javaAttribute, oldProperty);
         }
         getLogger().logWarning("jaxb_metadata_warning_invalid_java_attribute", new Object[] { javaAttribute.getClass() });
         return null;
@@ -376,6 +379,15 @@ public class XMLProcessor {
         return oldProperty;
     }
 
+    private Property processXmlInverseReference(XmlInverseReference xmlInverseReference, Property oldProperty) {
+        oldProperty.setInverseReference(true);
+        oldProperty.setInverseReferencePropertyName(xmlInverseReference.getMappedBy());
+        if(xmlInverseReference.getXmlAccessMethods() != null) {
+            oldProperty.setInverseReferencePropertyGetMethodName(xmlInverseReference.getXmlAccessMethods().getGetMethod());
+            oldProperty.setInverseReferencePropertySetMethodName(xmlInverseReference.getXmlAccessMethods().getSetMethod());
+        }
+        return oldProperty;
+    }
     /**
      * Handle xml-any-attribute.
      * 

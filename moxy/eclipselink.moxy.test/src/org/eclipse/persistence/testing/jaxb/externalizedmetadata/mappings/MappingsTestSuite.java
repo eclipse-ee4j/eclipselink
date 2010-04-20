@@ -25,6 +25,7 @@ import org.eclipse.persistence.testing.jaxb.externalizedmetadata.mappings.compos
 import org.eclipse.persistence.testing.jaxb.externalizedmetadata.mappings.direct.DirectMappingTestCases;
 import org.eclipse.persistence.testing.jaxb.externalizedmetadata.mappings.directcollection.DirectCollectionMappingTestCases;
 import org.eclipse.persistence.testing.jaxb.externalizedmetadata.mappings.objectreference.ObjectReferenceMappingTestCases;
+import org.eclipse.persistence.testing.jaxb.externalizedmetadata.mappings.xmlinversereference.XmlInverseReferenceMappingTestCases;
 
 import junit.framework.Test;
 import junit.framework.TestSuite;
@@ -49,6 +50,7 @@ public class MappingsTestSuite extends TestSuite {
         suite.addTestSuite(DirectCollectionMappingTestCases.class);
         suite.addTestSuite(DirectMappingTestCases.class);
         suite.addTestSuite(ObjectReferenceMappingTestCases.class);
+        suite.addTestSuite(XmlInverseReferenceMappingTestCases.class);
         return suite;
     }
     

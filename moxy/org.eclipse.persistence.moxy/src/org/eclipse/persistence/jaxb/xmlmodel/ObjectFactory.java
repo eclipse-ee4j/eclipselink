@@ -36,6 +36,7 @@ public class ObjectFactory {
 
     private final static QName _XmlJavaTypeAdapter_QNAME = new QName("http://www.eclipse.org/eclipselink/xsds/persistence/oxm", "xml-java-type-adapter");
     private final static QName _XmlAttribute_QNAME = new QName("http://www.eclipse.org/eclipselink/xsds/persistence/oxm", "xml-attribute");
+    private final static QName _XmlInverseReference_QNAME = new QName("http://www.eclipse.org/eclipselink/xsds/persistence/oxm", "xml-inverse-reference");
     private final static QName _JavaAttribute_QNAME = new QName("http://www.eclipse.org/eclipselink/xsds/persistence/oxm", "java-attribute");
     private final static QName _XmlNullPolicy_QNAME = new QName("http://www.eclipse.org/eclipselink/xsds/persistence/oxm", "xml-null-policy");
     private final static QName _XmlElementRefs_QNAME = new QName("http://www.eclipse.org/eclipselink/xsds/persistence/oxm", "xml-element-refs");
@@ -354,6 +355,15 @@ public class ObjectFactory {
     @javax.xml.bind.annotation.XmlElementDecl(namespace = "http://www.eclipse.org/eclipselink/xsds/persistence/oxm", name = "xml-attribute", substitutionHeadNamespace = "http://www.eclipse.org/eclipselink/xsds/persistence/oxm", substitutionHeadName = "java-attribute")
     public JAXBElement<XmlAttribute> createXmlAttribute(XmlAttribute value) {
         return new JAXBElement<XmlAttribute>(_XmlAttribute_QNAME, XmlAttribute.class, null, value);
+    }
+
+    /**
+     * Create an instance of {@link JAXBElement }{@code <}{@link XmlInverseReference }{@code >}}
+     * 
+     */
+    @javax.xml.bind.annotation.XmlElementDecl(namespace = "http://www.eclipse.org/eclipselink/xsds/persistence/oxm", name = "xml-inverse-reference", substitutionHeadNamespace = "http://www.eclipse.org/eclipselink/xsds/persistence/oxm", substitutionHeadName = "java-attribute")
+    public JAXBElement<XmlInverseReference> createXmlInverseReference(XmlInverseReference value) {
+        return new JAXBElement<XmlInverseReference>(_XmlInverseReference_QNAME, XmlInverseReference.class, null, value);
     }
 
     /**

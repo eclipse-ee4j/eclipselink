@@ -40,6 +40,7 @@ import javax.xml.bind.annotation.XmlType;
 @XmlSeeAlso({
     XmlValue.class,
     XmlElementRefs.class,
+    XmlInverseReference.class,
     org.eclipse.persistence.jaxb.xmlmodel.XmlAttribute.class,
     XmlJavaTypeAdapter.class,
     XmlAnyAttribute.class,
