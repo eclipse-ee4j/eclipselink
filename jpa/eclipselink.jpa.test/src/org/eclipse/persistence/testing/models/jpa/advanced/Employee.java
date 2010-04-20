@@ -208,6 +208,8 @@ public class Employee implements Serializable, Cloneable {
     private Collection<Employee> managedEmployees;
     private List<Dealer> dealers;
     
+    private HugeProject hugeProject;
+    
     public Employee () {
         this.normalHours = new Time[2];
         this.overtimeHours = new Time[2];
@@ -734,4 +736,16 @@ public class Employee implements Serializable, Cloneable {
             return getWorkWeek().equals(EnumSet.of(Weekdays.MONDAY, Weekdays.FRIDAY));
         }
     }
+    
+    @OneToOne(fetch=LAZY)
+    @JoinColumn(name="HUGE_PROJ_ID")
+    @Property(name="attributeName", value="hugeProject")
+    public HugeProject getHugeProject() { 
+        return this.hugeProject; 
+    }
+    
+    public void setHugeProject(HugeProject hugeProject) {
+        this.hugeProject = hugeProject;
+    }
+    
 }

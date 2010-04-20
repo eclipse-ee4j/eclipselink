@@ -134,6 +134,8 @@ public class JoinedAttributeAdvancedJunitTest extends JUnitTestCase {
         suite.addTest(new JoinedAttributeAdvancedJunitTest("testTwoUnrelatedResultWithOneToOneJoinsWithExtraItem"));
         // test for Bug 305713 - OuterJoinExpressionHolder order can be incorrect during ansi joins
         suite.addTest(new JoinedAttributeAdvancedJunitTest("testOuterJoinSortingWithOneToOneJoins"));
+        // test for Bug 305713 - OuterJoinExpressionHolder order can be incorrect during ansi joins
+        suite.addTest(new JoinedAttributeAdvancedJunitTest("testFetchOuterJoinSubClass"));
         
         // tests for Bug 274436: Custom QueryKeys fail to auto join.
         suite.addTest(new JoinedAttributeAdvancedJunitTest("testAddressQK"));
@@ -747,6 +749,7 @@ public class JoinedAttributeAdvancedJunitTest extends JUnitTestCase {
         }
     }
     
+    // Bug 305713 - OuterJoinExpressionHolder linearization order can be incorrect during ansi joins 
     public void testOuterJoinSortingWithOneToOneJoins() {
         DatabasePlatform platform = (DatabasePlatform) getDbPlatform();
         boolean previousPrintOuterJoinInWhereClauseValue = platform.shouldPrintOuterJoinInWhereClause();
@@ -797,6 +800,54 @@ public class JoinedAttributeAdvancedJunitTest extends JUnitTestCase {
                 assertEquals(previousPrintOuterJoinInWhereClauseValue, platform.shouldPrintOuterJoinInWhereClause());
             }
         }
+    }
+
+    // Bug 305713 - OuterJoinExpressionHolder linearization order can be incorrect during ansi joins 
+    // Before the fix generated wrong sql: 
+    //   SELECT ... FROM CMP3_EMPLOYEE t1 
+    //   LEFT OUTER JOIN CMP3_ADDRESS t0 ON (t0.ADDRESS_ID = t1.ADDR_ID) 
+    //   LEFT OUTER JOIN (CMP3_PROJECT t6 JOIN CMP3_HPROJECT t8 ON (t8.PROJ_ID = t6.PROJ_ID)) ON (t6.PROJ_ID = t1.HUGE_PROJ_ID) 
+    //   LEFT OUTER JOIN CMP3_DEPT t11 ON (t11.ID = t1.DEPT_ID),
+    //   CMP3_EMPLOYEE t3 
+    //   LEFT OUTER JOIN CMP3_ADDRESS t5 ON (t5.ADDRESS_ID = t3.ADDR_ID) 
+    //   LEFT OUTER JOIN (CMP3_EMPLOYEE t9 JOIN CMP3_SALARY t10 ON (t10.EMP_ID = t9.EMP_ID)) ON (t9.EMP_ID = t8.EVANGELIST_ID), 
+    //   CMP3_LPROJECT t7, CMP3_SALARY t4, CMP3_SALARY t2 
+    //   WHERE ((t2.EMP_ID = t1.EMP_ID) AND ((t3.EMP_ID = t1.MANAGER_EMP_ID) AND (t4.EMP_ID = t3.EMP_ID)))
+    // that failed with: java.sql.SQLSyntaxErrorException: ORA-00904: "T8"."EVANGELIST_ID": invalid identifier.
+    //
+    // After the fix generates correct sql (the only difference is order: LEFT OUTER JOIN on t8.EVANGELIST_ID has moved up):
+    //   SELECT ... FROM CMP3_EMPLOYEE t1
+    //   LEFT OUTER JOIN CMP3_ADDRESS t0 ON (t0.ADDRESS_ID = t1.ADDR_ID)
+    //   LEFT OUTER JOIN (CMP3_PROJECT t6 JOIN CMP3_HPROJECT t8 ON (t8.PROJ_ID = t6.PROJ_ID)) ON (t6.PROJ_ID = t1.HUGE_PROJ_ID) 
+    //   LEFT OUTER JOIN (CMP3_EMPLOYEE t9 JOIN CMP3_SALARY t10 ON (t10.EMP_ID = t9.EMP_ID)) ON (t9.EMP_ID = t8.EVANGELIST_ID) 
+    //   LEFT OUTER JOIN CMP3_DEPT t11 ON (t11.ID = t1.DEPT_ID),
+    //   CMP3_EMPLOYEE t3 
+    //   LEFT OUTER JOIN CMP3_ADDRESS t5 ON (t5.ADDRESS_ID = t3.ADDR_ID), 
+    //   CMP3_LPROJECT t7, CMP3_SALARY t4, CMP3_SALARY t2 
+    //   WHERE ((t2.EMP_ID = t1.EMP_ID) AND ((t3.EMP_ID = t1.MANAGER_EMP_ID) AND (t4.EMP_ID = t3.EMP_ID)))
+    public void testFetchOuterJoinSubClass() {
+        // TODO: currently the test verifies that the query doesn't blow up.
+        // Add control query so that the results could be verified.
+        // Unfortunately executeQueriesAndCompareResults method doesn't work correctly when outer joins mixed with inner joins
+        ReadAllQuery query = new ReadAllQuery(Employee.class);
+        ReadAllQuery controlQuery = (ReadAllQuery)query.clone();
+        
+        ExpressionBuilder eb = query.getExpressionBuilder();        
+        Expression expression = eb.getAllowingNull("address");
+        query.addJoinedAttribute(expression);
+        
+        expression = eb.get("manager");
+        query.addJoinedAttribute(expression);
+        expression = expression.getAllowingNull("address");
+        query.addJoinedAttribute(expression);
+        
+        expression = eb.getAllowingNull("hugeProject");
+        query.addJoinedAttribute(expression);
+        expression = expression.getAllowingNull("evangelist");
+        query.addJoinedAttribute(expression);
+        
+        List results = (List)getDbSession().executeQuery(query);
+        System.out.println();
     }
     
     public void testTwoUnrelatedResultWithOneToOneJoinsWithExtraItem() {
