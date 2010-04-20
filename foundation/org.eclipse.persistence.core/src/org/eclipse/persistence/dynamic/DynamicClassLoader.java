@@ -16,7 +16,9 @@
 package org.eclipse.persistence.dynamic;
 
 //javase imports
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 //EclipseLink imports
@@ -49,6 +51,7 @@ public class DynamicClassLoader extends ClassLoader {
      * permitted but different parent classes or different writer types are not.
      */
     protected Map<String, DynamicClassWriter> classWriters = new HashMap<String, DynamicClassWriter>();
+    protected Map<String, EnumInfo> enumInfoRegistry = new HashMap<String, EnumInfo>();
 
     /**
      * Default writer to use if one is not specified.
@@ -84,6 +87,20 @@ public class DynamicClassLoader extends ClassLoader {
         return getClassWriters().get(className);
     }
 
+    public void addEnum(String className, Object... literalLabels) {
+        EnumInfo enumInfo = enumInfoRegistry.get(className);
+        if (enumInfo == null) {
+            enumInfo = new EnumInfo(className);
+            enumInfoRegistry.put(className, enumInfo);
+        }
+        if (literalLabels != null) {
+            for (Object literalLabel : literalLabels) {
+                enumInfo.addLiteralLabel(literalLabel.toString());
+            }
+        }
+        addClass(className);
+    }
+    
     /**
      * Register a class to be dynamically created using the default
      * {@link DynamicClassWriter}.
@@ -233,4 +250,22 @@ public class DynamicClassLoader extends ClassLoader {
         return dcl;
     }
 
+    public static class EnumInfo {
+        String className;
+        List<String> literalLabels = new ArrayList<String>();
+        public EnumInfo(String className) {
+            this.className = className;
+        }
+        public String getClassName() {
+            return className;
+        }
+        public String[] getLiteralLabels() {
+            return literalLabels.toArray(new String[literalLabels.size()]);
+        }
+        public void addLiteralLabel(String literalLabel) {
+            if (!literalLabels.contains(literalLabel) && literalLabel != null) {
+                literalLabels.add(literalLabel);
+            }
+        }
+    }
 }

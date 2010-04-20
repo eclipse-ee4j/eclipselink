@@ -68,7 +68,16 @@ public class EnumTypeConverter extends ObjectTypeConverter {
         super(mapping);
         m_enumClassName = enumClassName;
     }
+
+
+    public Class getEnumClass() {
+        return m_enumClass;
+    }
     
+    public String getEnumClassName() {
+        return m_enumClassName;
+    }
+
     /**
      * INTERNAL:
      * Convert all the class-name-based settings in this converter to actual 
@@ -76,19 +85,27 @@ public class EnumTypeConverter extends ObjectTypeConverter {
      * that has been built with class names to a project with classes.
      * @param classLoader 
      */
-    public void convertClassNamesToClasses(ClassLoader classLoader){
-        try {
-            if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()){
-                try {
-                    m_enumClass = (Class)AccessController.doPrivileged(new PrivilegedClassForName(m_enumClassName, true, classLoader));
-                } catch (PrivilegedActionException exception) {
-                    throw ValidationException.classNotFoundWhileConvertingClassNames(m_enumClassName, exception.getException());
+    public void convertClassNamesToClasses(ClassLoader classLoader) {
+        // convert if enumClass is null or if different classLoader
+        if (m_enumClass == null || 
+            (m_enumClass != null && !m_enumClass.getClassLoader().equals(classLoader))) {
+            try {
+                if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()){
+                    try {
+                        m_enumClass = (Class)AccessController.doPrivileged(
+                            new PrivilegedClassForName(m_enumClassName, true, classLoader));
+                    } catch (PrivilegedActionException exception) {
+                        throw ValidationException.classNotFoundWhileConvertingClassNames(
+                            m_enumClassName, exception.getException());
+                    }
+                } else {
+                    m_enumClass = PrivilegedAccessHelper.getClassForName(m_enumClassName, true,
+                        classLoader);
                 }
-            } else {
-                m_enumClass = org.eclipse.persistence.internal.security.PrivilegedAccessHelper.getClassForName(m_enumClassName, true, classLoader);
+            } catch (ClassNotFoundException exception){
+                throw ValidationException.classNotFoundWhileConvertingClassNames(m_enumClassName,
+                    exception);
             }
-        } catch (ClassNotFoundException exception){
-            throw ValidationException.classNotFoundWhileConvertingClassNames(m_enumClassName, exception);
         }
     }
     

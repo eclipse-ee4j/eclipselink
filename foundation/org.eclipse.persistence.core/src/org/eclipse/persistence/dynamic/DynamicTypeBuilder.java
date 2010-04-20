@@ -41,6 +41,7 @@ import org.eclipse.persistence.mappings.ForeignReferenceMapping;
 import org.eclipse.persistence.mappings.ManyToManyMapping;
 import org.eclipse.persistence.mappings.OneToManyMapping;
 import org.eclipse.persistence.mappings.OneToOneMapping;
+import org.eclipse.persistence.mappings.converters.EnumTypeConverter;
 import org.eclipse.persistence.mappings.foundation.AbstractDirectMapping;
 import org.eclipse.persistence.platform.database.DatabasePlatform;
 import org.eclipse.persistence.platform.xml.XMLParser;
@@ -470,6 +471,22 @@ public class DynamicTypeBuilder {
     public void configureSequencing(Sequence sequence, String numberName, String numberFieldName) {
         configureSequencing(numberName, numberFieldName);
         getType().getDescriptor().setSequence(sequence);
+    }
+    
+    public DynamicEnumBuilder addEnum(String fieldName, String className, String columnName,
+        DynamicClassLoader dcl) {
+        dcl.addEnum(className, (Object)null);
+        ClassDescriptor desc = getType().getDescriptor();
+        AbstractDirectMapping adm = addDirectMappingForEnum(fieldName, className, columnName);
+        return new DynamicEnumBuilder(className, adm, dcl);
+    }
+
+    protected AbstractDirectMapping addDirectMappingForEnum(String fieldName, String className,
+        String columnName) {
+        DirectToFieldMapping dtfm = addDirectMapping(fieldName, null, columnName);
+        dtfm.setConverter(new EnumTypeConverter(dtfm, className));
+        addMapping(dtfm);
+        return dtfm;
     }
 
     /**
