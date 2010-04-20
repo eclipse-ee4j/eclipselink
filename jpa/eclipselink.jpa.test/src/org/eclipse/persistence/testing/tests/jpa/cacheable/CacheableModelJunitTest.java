@@ -174,33 +174,34 @@ public class CacheableModelJunitTest extends JUnitTestCase {
         TestSuite suite = new TestSuite();
         suite.setName("CacheableModelJunitTest");
 
-        suite.addTest(new CacheableModelJunitTest("testSetup"));
-        suite.addTest(new CacheableModelJunitTest("testCachingOnALL"));
-        suite.addTest(new CacheableModelJunitTest("testCachingOnNONE"));
-        suite.addTest(new CacheableModelJunitTest("testCachingOnENABLE_SELECTIVE"));
-        suite.addTest(new CacheableModelJunitTest("testCachingOnDISABLE_SELECTIVE"));
-        
-        // Test cache retrieve mode of BYPASS and USE through the EM.
-        suite.addTest(new CacheableModelJunitTest("testCreateEntities"));
-        
-        suite.addTest(new CacheableModelJunitTest("testFindWithEMProperties"));
-        suite.addTest(new CacheableModelJunitTest("testFindWithFindProperties"));
-        
-        suite.addTest(new CacheableModelJunitTest("testRefreshWithEMProperties"));
-        suite.addTest(new CacheableModelJunitTest("testRefreshWithRefreshProperties"));
-        
-        // Test various usage scenarios ..
-        suite.addTest(new CacheableModelJunitTest("testRetrieveBYPASSStoreUSE1"));
-        suite.addTest(new CacheableModelJunitTest("testRetrieveBYPASSStoreUSE2"));
-        suite.addTest(new CacheableModelJunitTest("testRetrieveUSEStoreBYPASS1"));
-        suite.addTest(new CacheableModelJunitTest("testRetrieveUSEStoreBYPASS2"));
-        suite.addTest(new CacheableModelJunitTest("testRetrieveBYPASSStoreBYPASS1"));
-        suite.addTest(new CacheableModelJunitTest("testRetrieveBYPASSStoreBYPASS2"));
-        suite.addTest(new CacheableModelJunitTest("testMultipleEMQueries"));
-        suite.addTest(new CacheableModelJunitTest("testEMPropertiesOnCommit1"));
-        suite.addTest(new CacheableModelJunitTest("testEMPropertiesOnCommit2"));
-        suite.addTest(new CacheableModelJunitTest("testInheritanceCacheable"));
-        
+        if (! JUnitTestCase.isJPA10()) {
+            suite.addTest(new CacheableModelJunitTest("testSetup"));
+            suite.addTest(new CacheableModelJunitTest("testCachingOnALL"));
+            suite.addTest(new CacheableModelJunitTest("testCachingOnNONE"));
+            suite.addTest(new CacheableModelJunitTest("testCachingOnENABLE_SELECTIVE"));
+            suite.addTest(new CacheableModelJunitTest("testCachingOnDISABLE_SELECTIVE"));
+            
+            // Test cache retrieve mode of BYPASS and USE through the EM.
+            suite.addTest(new CacheableModelJunitTest("testCreateEntities"));
+            
+            suite.addTest(new CacheableModelJunitTest("testFindWithEMProperties"));
+            suite.addTest(new CacheableModelJunitTest("testFindWithFindProperties"));
+            
+            suite.addTest(new CacheableModelJunitTest("testRefreshWithEMProperties"));
+            suite.addTest(new CacheableModelJunitTest("testRefreshWithRefreshProperties"));
+            
+            // Test various usage scenarios ..
+            suite.addTest(new CacheableModelJunitTest("testRetrieveBYPASSStoreUSE1"));
+            suite.addTest(new CacheableModelJunitTest("testRetrieveBYPASSStoreUSE2"));
+            suite.addTest(new CacheableModelJunitTest("testRetrieveUSEStoreBYPASS1"));
+            suite.addTest(new CacheableModelJunitTest("testRetrieveUSEStoreBYPASS2"));
+            suite.addTest(new CacheableModelJunitTest("testRetrieveBYPASSStoreBYPASS1"));
+            suite.addTest(new CacheableModelJunitTest("testRetrieveBYPASSStoreBYPASS2"));
+            suite.addTest(new CacheableModelJunitTest("testMultipleEMQueries"));
+            suite.addTest(new CacheableModelJunitTest("testEMPropertiesOnCommit1"));
+            suite.addTest(new CacheableModelJunitTest("testEMPropertiesOnCommit2"));
+            suite.addTest(new CacheableModelJunitTest("testInheritanceCacheable"));
+        }
         return suite;
     }
     

@@ -1874,6 +1874,8 @@
     <!-- Run all the JPA tests in the server -->
     <target name="server-test-lrg" depends="clean-test">
         <antcall target="server-test-advanced" inheritRefs="true"/>
+        <!-- The "cacheable" test suite need multiple persistence_unit setting in persistence.xml -->
+        <!--antcall target="server-test-cacheable" inheritRefs="true"/-->
         <antcall target="server-test-criteria" inheritRefs="true"/>
         <antcall target="server-test-datatypes" inheritRefs="true"/>
         <antcall target="server-test-datetime" inheritRefs="true"/>
@@ -1888,9 +1890,7 @@
         <antcall target="server-test-jpql" inheritRefs="true"/>
         <antcall target="server-test-lob" inheritRefs="true"/>
         <antcall target="server-test-nativeapitest" inheritRefs="true"/>
-        <!-- The following model is JPA2.0 specific -->
-        <!--antcall target="server-test-cacheable" inheritRefs="true"/>
-        <antcall target="server-test-orphanremoval" inheritRefs="true"/-->
+        <antcall target="server-test-orphanremoval" inheritRefs="true"/>
         <antcall target="server-test-privateowned" inheritRefs="true"/>
         <antcall target="server-test-relationships" inheritRefs="true"/>
         <antcall target="server-test-sessionbean" inheritRefs="true"/>

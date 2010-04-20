@@ -30,32 +30,32 @@ public class OrphanRemovalJUnitTestCase extends JUnitTestCase {
     
     public static Test suite() {
         TestSuite suite = new TestSuite("Orphan removal suite");
-        
-        // Setup:
-        suite.addTest(new OrphanRemovalJUnitTestCase("testSetup"));
-        
-        // JPA testing:
-        suite.addTest(new OrphanRemovalJUnitTestCase("test12M"));
-        suite.addTest(new OrphanRemovalJUnitTestCase("test12MWithCascade"));
-        suite.addTest(new OrphanRemovalJUnitTestCase("test12MWithCascadeFromOR"));
-        suite.addTest(new OrphanRemovalJUnitTestCase("test12MFromExistingObject"));
-        suite.addTest(new OrphanRemovalJUnitTestCase("test12MFromExistingObjectModification"));
-        
-        suite.addTest(new OrphanRemovalJUnitTestCase("test121WithCascade"));
-        suite.addTest(new OrphanRemovalJUnitTestCase("test121WithCascadeFromOR"));
-        suite.addTest(new OrphanRemovalJUnitTestCase("test121FromExistingObject"));
-        suite.addTest(new OrphanRemovalJUnitTestCase("test121FromExistingObjectModification"));
-        suite.addTest(new OrphanRemovalJUnitTestCase("test121IgnoredFromRemovedExistingObject"));
-        
-        suite.addTest(new OrphanRemovalJUnitTestCase("testEmbeddedWithCascadeFromOR"));
-        suite.addTest(new OrphanRemovalJUnitTestCase("test121ChangeFromExistingObject"));
-        
-        suite.addTest(new OrphanRemovalJUnitTestCase("test121WithCascadeRemoveFromOR"));
-        suite.addTest(new OrphanRemovalJUnitTestCase("test121WithNoCascadePersist"));
-        suite.addTest(new OrphanRemovalJUnitTestCase("test121WithNoCascadeMerge1"));
-        suite.addTest(new OrphanRemovalJUnitTestCase("test121WithNoCascadeMerge2"));
-        suite.addTest(new OrphanRemovalJUnitTestCase("test121WithNoCascadeMerge3"));
-        
+        if (! JUnitTestCase.isJPA10()) {
+            // Setup:
+            suite.addTest(new OrphanRemovalJUnitTestCase("testSetup"));
+            
+            // JPA testing:
+            suite.addTest(new OrphanRemovalJUnitTestCase("test12M"));
+            suite.addTest(new OrphanRemovalJUnitTestCase("test12MWithCascade"));
+            suite.addTest(new OrphanRemovalJUnitTestCase("test12MWithCascadeFromOR"));
+            suite.addTest(new OrphanRemovalJUnitTestCase("test12MFromExistingObject"));
+            suite.addTest(new OrphanRemovalJUnitTestCase("test12MFromExistingObjectModification"));
+            
+            suite.addTest(new OrphanRemovalJUnitTestCase("test121WithCascade"));
+            suite.addTest(new OrphanRemovalJUnitTestCase("test121WithCascadeFromOR"));
+            suite.addTest(new OrphanRemovalJUnitTestCase("test121FromExistingObject"));
+            suite.addTest(new OrphanRemovalJUnitTestCase("test121FromExistingObjectModification"));
+            suite.addTest(new OrphanRemovalJUnitTestCase("test121IgnoredFromRemovedExistingObject"));
+            
+            suite.addTest(new OrphanRemovalJUnitTestCase("testEmbeddedWithCascadeFromOR"));
+            suite.addTest(new OrphanRemovalJUnitTestCase("test121ChangeFromExistingObject"));
+            
+            suite.addTest(new OrphanRemovalJUnitTestCase("test121WithCascadeRemoveFromOR"));
+            suite.addTest(new OrphanRemovalJUnitTestCase("test121WithNoCascadePersist"));
+            suite.addTest(new OrphanRemovalJUnitTestCase("test121WithNoCascadeMerge1"));
+            suite.addTest(new OrphanRemovalJUnitTestCase("test121WithNoCascadeMerge2"));
+            suite.addTest(new OrphanRemovalJUnitTestCase("test121WithNoCascadeMerge3"));
+        }
         return suite;
     }
     
