@@ -540,6 +540,7 @@
                 <include name="${eclipselink.moxy.test}/**"/>
                 <include name="${eclipselink.sdo.test}/**"/>
                 <include name="${eclipselink.sdo.base}/eclipselink.sdo.test.server.wls/**"/>
+                <include name="${eclipselink.sdo.base}/eclipselink.sdo.test.server/**"/>
                 <include name="plugins/eclipselink-jpa-modelgen_*.jar"/>
                 <include name="jpa/eclipselink.jpa.modelgen.test/**"/>
                 <include name="jpa/plugins/javax.validation_*.jar"/>
