@@ -380,8 +380,8 @@ public class XMLEntityMappings extends ORMetadata {
             // Initialize the class with the package from entity mappings.
             MetadataClass entityClass = getMetadataClass(getPackageQualifiedClassName(entity.getClassName()));
             
-            // Initialize the entity with its metadata descriptor and 
-            // project.
+            // Initialize the entity with its metadata descriptor and project.
+            // This initialization must be done before a potential merge below.
             entity.initXMLClassAccessor(entityClass, new MetadataDescriptor(entityClass, entity), m_project, this);
             
             if (allEntities.containsKey(entityClass.getName())) {
@@ -398,8 +398,8 @@ public class XMLEntityMappings extends ORMetadata {
             // Initialize the class with the package from entity mappings.
             MetadataClass embeddableClass = getMetadataClass(getPackageQualifiedClassName(embeddable.getClassName()));
             
-            // Initialize the embeddable with its metadata descriptor and
-            // project.
+            // Initialize the embeddable with its metadata descriptor and project.
+            // This initialization must be done before a potential merge below.
             embeddable.initXMLClassAccessor(embeddableClass, new MetadataDescriptor(embeddableClass, embeddable), m_project, this);
             
             if (allEmbeddables.containsKey(embeddableClass.getName())) {
@@ -415,13 +415,10 @@ public class XMLEntityMappings extends ORMetadata {
         for (MappedSuperclassAccessor mappedSuperclass : getMappedSuperclasses()) {
             // Initialize the class with the package from entity mappings.
             MetadataClass mappedSuperclassClass = getMetadataClass(getPackageQualifiedClassName(mappedSuperclass.getClassName()));
-            
-            // Just set the accessible object on the mapped superclass for now.
-            // Mapped superclasses are reloaded for each entity that inherits
-            // from it. After each reload, the initXMLObjects is called and
-            // ready to be processed there after.
-            mappedSuperclass.setAccessibleObject(mappedSuperclassClass);
-            mappedSuperclass.setEntityMappings(this);
+
+            // Initialize the mapped superclass with a metadata descriptor and project.
+            // This initialization must be done before a potential merge below.
+            mappedSuperclass.initXMLClassAccessor(mappedSuperclassClass, new MetadataDescriptor(mappedSuperclassClass, mappedSuperclass), m_project, this);
             
             if (m_project.hasMappedSuperclass(mappedSuperclassClass)) {
                 // Merge this mapped superclass with the existing one.

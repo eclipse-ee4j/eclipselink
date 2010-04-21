@@ -249,7 +249,7 @@ public class XMLAttributes extends ORMetadata {
     public void merge(ORMetadata metadata) {
         if (metadata != null) {
             // ORMetadata list merging.
-            m_allAccessors = mergeORObjectLists(m_allAccessors, ((XMLAttributes) metadata).getAccessors());
+            m_allAccessors = mergeORObjectLists(getAccessors(), ((XMLAttributes) metadata).getAccessors());
         }
     }
     
