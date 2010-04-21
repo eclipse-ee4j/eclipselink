@@ -31,7 +31,7 @@ import org.w3c.dom.Document;
  *
  */
 public class XmlInverseReferenceMappingTestCases extends ExternalizedMetadataTestCases {
-    private final static String XML_RESOURCE = "org/eclipse/persistence/testing/jaxb/xmlidref/instance.xml";
+    private final static String XML_RESOURCE = "org/eclipse/persistence/testing/jaxb/externalizedmetadata/mappings/xmlinversereference/root.xml";
     private static final String CONTROL_ID = "222";
     private static final String CONTROL_NAME = "Joe Smith";
     private static final String CONTROL_ADD_ID_1 = "199";
@@ -56,7 +56,6 @@ public class XmlInverseReferenceMappingTestCases extends ExternalizedMetadataTes
     public XmlInverseReferenceMappingTestCases(String name) throws Exception {
         super(name);
         createContext(new Class[] {Root.class, Address.class, Employee.class, PhoneNumber.class}, CONTEXT_PATH, PATH + "root-oxm.xml");
-        employeeResolver = generateSchemaWithFileName(new Class[] { Root.class }, CONTEXT_PATH, PATH + "root-oxm.xml", 1);
     }
 
     protected Root getControlObject() {
@@ -168,7 +167,7 @@ public class XmlInverseReferenceMappingTestCases extends ExternalizedMetadataTes
             fail("Marshal operation failed.");
         }
     }
-    public void testCollectionReferenceUnmarshal() {
+    public void testInverseReferenceUnmarshal() {
         // load instance doc
         String src = PATH + "root.xml";
         InputStream iDocStream = loader.getResourceAsStream(src);
@@ -190,8 +189,9 @@ public class XmlInverseReferenceMappingTestCases extends ExternalizedMetadataTes
         }
     }
     
-    public void testCollectionReferenceSchemaGen() {
+    public void testInverseReferenceSchemaGen() {
         // validate employee schema
+        employeeResolver = generateSchemaWithFileName(new Class[] { Root.class }, CONTEXT_PATH, PATH + "root-oxm.xml", 1);
         compareSchemas(employeeResolver.schemaFiles.get(EMPTY_NAMESPACE), new File(PATH + "root.xsd"));
     }
 }
