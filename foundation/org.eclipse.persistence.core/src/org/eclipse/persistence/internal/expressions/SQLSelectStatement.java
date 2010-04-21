@@ -2116,10 +2116,7 @@ public class SQLSelectStatement extends SQLStatement {
                 DatabaseTable alias = this.additionalTargetAliases.get(i);
                 writer.write(table.getQualifiedNameDelimited(printer.getPlatform()));
                 writer.write(" ");
-                if (alias.isDecorated()) {
-                    ((DecoratedDatabaseTable)alias).getAsOfClause().printSQL(printer);
-                    writer.write(" ");
-                }
+
                 outerJoinedAliases.addElement(alias);
                 writer.write(alias.getQualifiedName());
                 if(shouldPrintUpdateClauseForAllTables || (aliasesOfTablesToBeLocked != null && aliasesOfTablesToBeLocked.remove(alias))) {
