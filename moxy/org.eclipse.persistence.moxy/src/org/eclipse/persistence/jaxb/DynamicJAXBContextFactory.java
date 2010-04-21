@@ -21,10 +21,10 @@ import javax.xml.bind.JAXBException;
 import javax.xml.transform.Source;
 import javax.xml.transform.stream.StreamResult;
 
-import org.eclipse.persistence.oxm.NamespaceResolver;
 import org.eclipse.persistence.platform.xml.XMLPlatformFactory;
 import org.eclipse.persistence.platform.xml.XMLTransformer;
 import org.w3c.dom.Node;
+import org.xml.sax.EntityResolver;
 import org.xml.sax.InputSource;
 
 /**
@@ -88,6 +88,10 @@ public class DynamicJAXBContextFactory {
      *      if an error was encountered while creating the <tt>DynamicJAXBContext</tt>.
      */
     public static DynamicJAXBContext createContext(String sessionNames, ClassLoader classLoader, Map<String, ?> properties) throws JAXBException {
+        if (sessionNames == null) {
+            throw new JAXBException(org.eclipse.persistence.exceptions.JAXBException.nullSessionName());
+        }
+
         DynamicJAXBContext dContext = new DynamicJAXBContext();
         dContext.initializeFromSessionsXML(sessionNames, classLoader);
         return dContext;
@@ -109,7 +113,7 @@ public class DynamicJAXBContextFactory {
      * @param schemaDOM
      *      <tt>org.w3c.dom.Node</tt> representing the XML Schema.
      * @param resolver
-     *      An EclipseLink <tt>NamespaceResolver</tt>, used to resolve namespace prefixes.
+     *      An <tt>org.xml.sax.EntityResolver</tt>, used to resolve schema imports.
      * @param classLoader
      *      The application's current class loader, which will be used to first lookup
      *      classes to see if they exist before new <tt>DynamicTypes</tt> are generated.  Can be
@@ -123,9 +127,13 @@ public class DynamicJAXBContextFactory {
      * @throws JAXBException
      *      if an error was encountered while creating the <tt>DynamicJAXBContext</tt>.
      */
-    public static DynamicJAXBContext createContextFromXSD(Node schemaDOM, NamespaceResolver resolver, ClassLoader classLoader, Map<String, ?> properties) throws JAXBException {
+    public static DynamicJAXBContext createContextFromXSD(Node schemaDOM, EntityResolver resolver, ClassLoader classLoader, Map<String, ?> properties) throws JAXBException {
+        if (schemaDOM == null) {
+            throw new JAXBException(org.eclipse.persistence.exceptions.JAXBException.nullNode());
+        }
+
         DynamicJAXBContext dContext = new DynamicJAXBContext();
-        dContext.initializeFromXSDNode(schemaDOM, classLoader);
+        dContext.initializeFromXSDNode(schemaDOM, classLoader, resolver, properties);
 
         return dContext;
     }
@@ -136,7 +144,7 @@ public class DynamicJAXBContextFactory {
      * @param schemaStream
      *      <tt>java.io.InputStream</tt> from which to read the XML Schema.
      * @param resolver
-     *      An EclipseLink <tt>NamespaceResolver</tt>, used to resolve namespace prefixes.
+     *      An <tt>org.xml.sax.EntityResolver</tt>, used to resolve schema imports.
      * @param classLoader
      *      The application's current class loader, which will be used to first lookup
      *      classes to see if they exist before new <tt>DynamicTypes</tt> are generated.  Can be
@@ -150,11 +158,15 @@ public class DynamicJAXBContextFactory {
      * @throws JAXBException
      *      if an error was encountered while creating the <tt>DynamicJAXBContext</tt>.
      */
-    public static DynamicJAXBContext createContextFromXSD(InputStream schemaStream, NamespaceResolver resolver, ClassLoader classLoader, Map<String, ?> properties) throws JAXBException {
+    public static DynamicJAXBContext createContextFromXSD(InputStream schemaStream, EntityResolver resolver, ClassLoader classLoader, Map<String, ?> properties) throws JAXBException {
+        if (schemaStream == null) {
+            throw new JAXBException(org.eclipse.persistence.exceptions.JAXBException.nullInputStream());
+        }
+
         InputSource schemaSource = new InputSource(schemaStream);
 
         DynamicJAXBContext dContext = new DynamicJAXBContext();
-        dContext.initializeFromXSDInputSource(schemaSource, classLoader);
+        dContext.initializeFromXSDInputSource(schemaSource, classLoader, resolver, properties);
 
         return dContext;
     }
@@ -165,7 +177,7 @@ public class DynamicJAXBContextFactory {
      * @param schemaSource
      *      <tt>javax.xml.transform.Source</tt> from which to read the XML Schema.
      * @param resolver
-     *      An EclipseLink <tt>NamespaceResolver</tt>, used to resolve namespace prefixes.
+     *      An <tt>org.xml.sax.EntityResolver</tt>, used to resolve schema imports.
      * @param classLoader
      *      The application's current class loader, which will be used to first lookup
      *      classes to see if they exist before new <tt>DynamicTypes</tt> are generated.  Can be
@@ -179,7 +191,11 @@ public class DynamicJAXBContextFactory {
      * @throws JAXBException
      *      if an error was encountered while creating the <tt>DynamicJAXBContext</tt>.
      */
-    public static DynamicJAXBContext createContextFromXSD(Source schemaSource, NamespaceResolver resolver, ClassLoader classLoader, Map<String, ?> properties) throws JAXBException {
+    public static DynamicJAXBContext createContextFromXSD(Source schemaSource, EntityResolver resolver, ClassLoader classLoader, Map<String, ?> properties) throws JAXBException {
+        if (schemaSource == null) {
+            throw new JAXBException(org.eclipse.persistence.exceptions.JAXBException.nullSource());
+        }
+
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         StreamResult result = new StreamResult(baos);
         XMLTransformer t = XMLPlatformFactory.getInstance().getXMLPlatform().newXMLTransformer();
@@ -188,7 +204,7 @@ public class DynamicJAXBContextFactory {
         InputSource schemaInputSource = new InputSource(bais);
 
         DynamicJAXBContext dContext = new DynamicJAXBContext();
-        dContext.initializeFromXSDInputSource(schemaInputSource, classLoader);
+        dContext.initializeFromXSDInputSource(schemaInputSource, classLoader, resolver, properties);
 
         return dContext;
     }

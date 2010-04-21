@@ -1,10 +1,10 @@
 /*******************************************************************************
  * Copyright (c) 1998, 2010 Oracle. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
@@ -78,7 +78,7 @@ public class JAXBContextFactory {
     public static final String DEFAULT_TARGET_NAMESPACE_KEY = "defaultTargetNamespace";
 
     /**
-     * Create a JAXBContext on the array of Class objects.  The JAXBContext will 
+     * Create a JAXBContext on the array of Class objects.  The JAXBContext will
      * also be aware of classes reachable from the classes in the array.
      */
     public static javax.xml.bind.JAXBContext createContext(Class[] classesToBeBound, Map properties) throws JAXBException {
@@ -93,7 +93,7 @@ public class JAXBContextFactory {
     }
 
     /**
-     * Create a JAXBContext on the array of Class objects.  The JAXBContext will 
+     * Create a JAXBContext on the array of Class objects.  The JAXBContext will
      * also be aware of classes reachable from the classes in the array.
      */
     public static javax.xml.bind.JAXBContext createContext(Class[] classesToBeBound, Map properties, ClassLoader classLoader) throws JAXBException {
@@ -103,7 +103,7 @@ public class JAXBContextFactory {
     }
 
     /**
-     * Create a JAXBContext on context path.  The JAXBContext will 
+     * Create a JAXBContext on context path.  The JAXBContext will
      * also be aware of classes reachable from the classes on the context path.
      */
     public static javax.xml.bind.JAXBContext createContext(String contextPath, ClassLoader classLoader) throws JAXBException {
@@ -111,7 +111,7 @@ public class JAXBContextFactory {
     }
 
     /**
-     * Create a JAXBContext on context path.  The JAXBContext will 
+     * Create a JAXBContext on context path.  The JAXBContext will
      * also be aware of classes reachable from the classes on the context path.
      */
     public static javax.xml.bind.JAXBContext createContext(String contextPath, ClassLoader classLoader, Map properties) throws JAXBException {
@@ -187,10 +187,10 @@ public class JAXBContextFactory {
     }
 
     /**
-     * Create a JAXBContext on the array of Type objects.  The JAXBContext will 
-     * also be aware of classes reachable from the types in the array.  The 
+     * Create a JAXBContext on the array of Type objects.  The JAXBContext will
+     * also be aware of classes reachable from the types in the array.  The
      * preferred means of creating a Type aware JAXBContext is to create the
-     * JAXBContext with an array of TypeMappingInfo objects. 
+     * JAXBContext with an array of TypeMappingInfo objects.
      */
     public static javax.xml.bind.JAXBContext createContext(Type[] typesToBeBound, Map properties, ClassLoader classLoader) throws JAXBException {
         Map<Type, TypeMappingInfo> typeToTypeMappingInfo = new HashMap<Type, TypeMappingInfo>();
@@ -209,8 +209,8 @@ public class JAXBContextFactory {
     }
 
     /**
-     * Create a JAXBContext on the array of TypeMappingInfo objects.  The 
-     * JAXBContext will also be aware of classes reachable from the types in the 
+     * Create a JAXBContext on the array of TypeMappingInfo objects.  The
+     * JAXBContext will also be aware of classes reachable from the types in the
      * array.  This is the preferred means of creating a Type aware JAXBContext.
      */
     public static javax.xml.bind.JAXBContext createContext(TypeMappingInfo[] typesToBeBound, Map properties, ClassLoader classLoader) throws JAXBException {
@@ -342,7 +342,7 @@ public class JAXBContextFactory {
      * It is assumed that the given map's key will be ECLIPSELINK_OXM_XML_KEY, and the value will be
      * Map<String, Source>, where String = package, Source = metadata file
      */
-    private static Map<String, XmlBindings> getXmlBindingsFromProperties(Map properties, ClassLoader classLoader) {
+    static Map<String, XmlBindings> getXmlBindingsFromProperties(Map properties, ClassLoader classLoader) {
         Map<String, XmlBindings> bindings = new HashMap<String, XmlBindings>();
         if (properties != null) {
             Map<String, Source> metadataFiles = null;

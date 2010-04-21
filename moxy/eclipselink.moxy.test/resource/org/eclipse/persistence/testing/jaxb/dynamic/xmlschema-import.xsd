@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:myns="myNamespace" xmlns:bank="bankNamespace" xmlns:xs="http://www.w3.org/2001/XMLSchema" targetNamespace="myNamespace">
+
+    <xs:import schemaLocation="xmlschema-currency" namespace="bankNamespace"/>
+
+    <xs:element name="person" type="myns:person"/>
+
+    <xs:complexType name="person">
+        <xs:sequence>
+            <xs:element name="name" type="xs:string"/>
+            <xs:element name="salary" type="bank:cdn_currency"/>
+        </xs:sequence>
+    </xs:complexType>
+
+</xs:schema>

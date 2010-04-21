@@ -46,6 +46,9 @@ public class DynamicJAXBContextCreationTestCases extends TestCase {
 
     private static final String EXAMPLE_XSD =
         "org/eclipse/persistence/testing/jaxb/dynamic/xmlseealso.xsd";
+    private static final String INVALID_XSD =
+        "org/eclipse/persistence/testing/jaxb/dynamic/invalid.xsd";
+
     private static final String EMPLOYEE_CLASS_NAME =
         "mynamespace.Employee";
 
@@ -73,14 +76,16 @@ public class DynamicJAXBContextCreationTestCases extends TestCase {
 
     public void testNewInstanceClassesError() throws JAXBException {
         Class[] classes = new Class[] { FirstFieldTransformer.class, SecondFieldTransformer.class };
-        JAXBException ex = null;
+
+        JAXBException caughtException = null;
         try {
             DynamicJAXBContext jaxbContext = (DynamicJAXBContext) JAXBContext.newInstance(classes);
         } catch (JAXBException e) {
-            ex = e;
+            caughtException = e;
         }
 
-        assertNotNull("Did not catch exception as expected.", ex);
+        assertNotNull("Did not catch exception as expected.", caughtException);
+        assertEquals("Incorrect exception thrown.", 50038, ((org.eclipse.persistence.exceptions.JAXBException) caughtException.getLinkedException()).getErrorCode());
     }
 
     public void testNewInstanceClassesPropsError() throws JAXBException {
@@ -93,26 +98,51 @@ public class DynamicJAXBContextCreationTestCases extends TestCase {
         }
 
         assertNotNull("Did not catch exception as expected.", ex);
+        assertEquals("Incorrect exception thrown.", 50038, ((org.eclipse.persistence.exceptions.JAXBException) ex.getLinkedException()).getErrorCode());
     }
 
     public void testCreateContextInputStream() throws JAXBException {
-        NamespaceResolver nsResolver = new NamespaceResolver();
-        nsResolver.put("ns0", "myNamespace");
-        nsResolver.put("xsi", XMLConstants.SCHEMA_INSTANCE_URL);
-
         InputStream inputStream = ClassLoader.getSystemResourceAsStream(EXAMPLE_XSD);
 
-        DynamicJAXBContext jaxbContext = DynamicJAXBContextFactory.createContextFromXSD(inputStream, nsResolver, null, null);
+        DynamicJAXBContext jaxbContext = DynamicJAXBContextFactory.createContextFromXSD(inputStream, null, null, null);
 
         DynamicEntity emp = jaxbContext.newDynamicEntity(EMPLOYEE_CLASS_NAME);
         assertNotNull(emp);
     }
 
-    public void testCreateContextNode() throws Exception {
-        NamespaceResolver nsResolver = new NamespaceResolver();
-        nsResolver.put("ns0", "myNamespace");
-        nsResolver.put("xsi", XMLConstants.SCHEMA_INSTANCE_URL);
+    public void testCreateContextInputStreamNull() throws Exception {
+        JAXBException caughtException = null;
+        try {
+            DynamicJAXBContextFactory.createContextFromXSD((InputStream) null, null, null, null);
+        } catch (JAXBException e) {
+            caughtException = e;
+        }
 
+        assertNotNull("Did not catch exception as expected.", caughtException);
+        assertEquals("Incorrect exception thrown.", 50044, ((org.eclipse.persistence.exceptions.JAXBException) caughtException.getLinkedException()).getErrorCode());
+    }
+
+    /*
+    public void testCreateContextInputStreamInvalidSchema() throws Exception {
+        // 'createContextFromXSD' can catch some schema errors (e.g. undeclared namespace), but
+        // other more basic syntax problems (e.g. a "weak correctness check") will end up getting thrown
+        // as a SAXParseException and is uncatchable.
+
+        InputStream inputStream = ClassLoader.getSystemResourceAsStream(INVALID_XSD);
+
+        JAXBException caughtException = null;
+        try {
+            DynamicJAXBContextFactory.createContextFromXSD(inputStream, null, null, null);
+        } catch (JAXBException e) {
+            caughtException = e;
+        }
+
+        assertNotNull("Did not catch exception as expected.", caughtException);
+        assertEquals("Incorrect exception thrown.", 50046, ((org.eclipse.persistence.exceptions.JAXBException) caughtException.getLinkedException()).getErrorCode());
+    }
+    */
+
+    public void testCreateContextNode() throws Exception {
         InputStream inputStream = ClassLoader.getSystemResourceAsStream(EXAMPLE_XSD);
         DocumentBuilderFactory docFactory = DocumentBuilderFactory.newInstance();
         docFactory.setNamespaceAware(true);
@@ -120,17 +150,13 @@ public class DynamicJAXBContextCreationTestCases extends TestCase {
         Document xsdDocument = docBuilder.parse(inputStream);
         Element xsdElement = xsdDocument.getDocumentElement();
 
-        DynamicJAXBContext jaxbContext = DynamicJAXBContextFactory.createContextFromXSD(xsdElement, nsResolver, null, null);
+        DynamicJAXBContext jaxbContext = DynamicJAXBContextFactory.createContextFromXSD(xsdElement, null, null, null);
 
         DynamicEntity emp = jaxbContext.newDynamicEntity(EMPLOYEE_CLASS_NAME);
         assertNotNull(emp);
     }
 
     public void testCreateContextNodeError() throws Exception {
-        NamespaceResolver nsResolver = new NamespaceResolver();
-        nsResolver.put("ns0", "myNamespace");
-        nsResolver.put("xsi", XMLConstants.SCHEMA_INSTANCE_URL);
-
         InputStream inputStream = ClassLoader.getSystemResourceAsStream(EXAMPLE_XSD);
         DocumentBuilderFactory docFactory = DocumentBuilderFactory.newInstance();
         docFactory.setNamespaceAware(true);
@@ -138,37 +164,71 @@ public class DynamicJAXBContextCreationTestCases extends TestCase {
         Document xsdDocument = docBuilder.parse(inputStream);
         Node textNode = xsdDocument.createTextNode("TEXT NODE");
 
-        Exception ex = null;
+        JAXBException caughtException = null;
         try {
-            DynamicJAXBContext jaxbContext = DynamicJAXBContextFactory.createContextFromXSD(textNode, nsResolver, null, null);
-        } catch (org.eclipse.persistence.exceptions.JAXBException e) {
-            ex = e;
+            DynamicJAXBContext jaxbContext = DynamicJAXBContextFactory.createContextFromXSD(textNode, null, null, null);
+        } catch (JAXBException e) {
+            caughtException = e;
         }
 
-        assertNotNull("Did not catch exception as expected.", ex);
+        assertNotNull("Did not catch exception as expected.", caughtException);
+        assertEquals("Incorrect exception thrown.", 50039, ((org.eclipse.persistence.exceptions.JAXBException) caughtException.getLinkedException()).getErrorCode());
+    }
+
+    public void testCreateContextNodeNull() throws Exception {
+        JAXBException caughtException = null;
+        try {
+            DynamicJAXBContextFactory.createContextFromXSD((Node) null, null, null, null);
+        } catch (JAXBException e) {
+            caughtException = e;
+        }
+
+        assertNotNull("Did not catch exception as expected.", caughtException);
+        assertEquals("Incorrect exception thrown.", 50045, ((org.eclipse.persistence.exceptions.JAXBException) caughtException.getLinkedException()).getErrorCode());
     }
 
     public void testCreateContextSource() throws Exception {
-        NamespaceResolver nsResolver = new NamespaceResolver();
-        nsResolver.put("ns0", "myNamespace");
-        nsResolver.put("xsi", XMLConstants.SCHEMA_INSTANCE_URL);
-
         InputStream inputStream = ClassLoader.getSystemResourceAsStream(EXAMPLE_XSD);
         DocumentBuilderFactory docFactory = DocumentBuilderFactory.newInstance();
         docFactory.setNamespaceAware(true);
         Document xsdDocument = docFactory.newDocumentBuilder().parse(inputStream);
         Source domSource = new DOMSource(xsdDocument);
 
-        DynamicJAXBContext jaxbContext = DynamicJAXBContextFactory.createContextFromXSD(domSource, nsResolver, null, null);
+        DynamicJAXBContext jaxbContext = DynamicJAXBContextFactory.createContextFromXSD(domSource, null, null, null);
 
         DynamicEntity emp = jaxbContext.newDynamicEntity(EMPLOYEE_CLASS_NAME);
         assertNotNull(emp);
+    }
+
+    public void testCreateContextSourceNull() throws Exception {
+        JAXBException caughtException = null;
+        try {
+            DynamicJAXBContextFactory.createContextFromXSD((Source) null, null, null, null);
+        } catch (JAXBException e) {
+            caughtException = e;
+        }
+
+        assertNotNull("Did not catch exception as expected.", caughtException);
+        assertEquals("Incorrect exception thrown.", 50043, ((org.eclipse.persistence.exceptions.JAXBException) caughtException.getLinkedException()).getErrorCode());
     }
 
     public void testCreateContextString() throws JAXBException {
         DynamicJAXBContext jaxbContext = DynamicJAXBContextFactory.createContext(SESSION_NAMES, null, null);
         DynamicEntity docWrapper = jaxbContext.newDynamicEntity(DOCWRAPPER_CLASS_NAME);
         assertNotNull(docWrapper);
+    }
+
+    public void testCreateContextStringNull() throws JAXBException {
+        JAXBException caughtException = null;
+
+        try {
+            DynamicJAXBContextFactory.createContext(null, null, null);
+        } catch (JAXBException e) {
+            caughtException = e;
+        }
+
+        assertNotNull("Did not catch exception as expected.", caughtException);
+        assertEquals("Incorrect exception thrown.", 50042, ((org.eclipse.persistence.exceptions.JAXBException) caughtException.getLinkedException()).getErrorCode());
     }
 
 }

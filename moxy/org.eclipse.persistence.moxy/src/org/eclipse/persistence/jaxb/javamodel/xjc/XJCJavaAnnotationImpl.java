@@ -29,6 +29,7 @@ import org.eclipse.persistence.jaxb.javamodel.JavaAnnotation;
 import com.sun.codemodel.JAnnotationArrayMember;
 import com.sun.codemodel.JAnnotationUse;
 import com.sun.codemodel.JAnnotationValue;
+import com.sun.codemodel.JClass;
 import com.sun.codemodel.JDefinedClass;
 import com.sun.codemodel.JStringLiteral;
 
@@ -94,7 +95,7 @@ public class XJCJavaAnnotationImpl implements JavaAnnotation {
                                 JStringLiteral strvalue = (JStringLiteral) value;
                                 valuesArray[i] = strvalue.str;
                             } else {
-                            	// XmlSeeAlso.value = Array of JDefinedClasses
+                                // XmlSeeAlso.value = Array of JDefinedClasses
                                 Field valClField = PrivilegedAccessHelper.getDeclaredField(value.getClass(), "val$cl", true);
                                 JDefinedClass wrappedValue = (JDefinedClass) PrivilegedAccessHelper.getValueFromField(valClField, value);
                                 Class tempDynClass = dynamicClassLoader.createDynamicClass(wrappedValue.fullName());
@@ -112,13 +113,24 @@ public class XJCJavaAnnotationImpl implements JavaAnnotation {
                         JStringLiteral value = (JStringLiteral) objValue;
                         String stringValue = value == null ? null : value.str;
                         components.put(key, stringValue);
-                    }
-                    if (objValue.getClass().getName().contains("JAtom")) {
+                    } else if (objValue.getClass().getName().contains("JAtom")) {
                         // e.g. XmlElement.required = JAtom
                         // Cannot cache this field because JAtom is a protected class.
                         Field whatField = PrivilegedAccessHelper.getDeclaredField(objValue.getClass(), "what", true);
                         String value = (String) PrivilegedAccessHelper.getValueFromField(whatField, objValue);
                         components.put(key, value);
+                    } else if (objValue.getClass().getName().contains("JExpr$1")) {
+                        // XmlJavaTypeAdapter contains a JDefinedClass
+                        Field valClField = PrivilegedAccessHelper.getDeclaredField(objValue.getClass(), "val$cl", true);
+                        JClass wrappedValue = (JClass) PrivilegedAccessHelper.getValueFromField(valClField, objValue);
+                        Object tempDynClass = null;
+                        try {
+                            // Attempt to look up the class normally
+                            tempDynClass = Class.forName(wrappedValue.fullName());
+                        } catch (Exception e) {
+                            tempDynClass = dynamicClassLoader.createDynamicClass(wrappedValue.fullName());
+                        }
+                        components.put(key, tempDynClass);
                     }
                 } else {
                     // e.g. XmlSchema.elementFormDefault = JAnnotationUse$1

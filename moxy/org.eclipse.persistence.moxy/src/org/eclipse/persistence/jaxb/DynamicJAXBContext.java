@@ -12,24 +12,29 @@
  ******************************************************************************/
 package org.eclipse.persistence.jaxb;
 
+import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.StringTokenizer;
+
+import javax.xml.bind.JAXBException;
 
 import org.eclipse.persistence.dynamic.DynamicClassLoader;
 import org.eclipse.persistence.dynamic.DynamicEntity;
 import org.eclipse.persistence.dynamic.DynamicHelper;
 import org.eclipse.persistence.dynamic.DynamicType;
 import org.eclipse.persistence.dynamic.DynamicTypeBuilder;
-import org.eclipse.persistence.exceptions.JAXBException;
 import org.eclipse.persistence.internal.jaxb.JaxbClassLoader;
+import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
 import org.eclipse.persistence.jaxb.compiler.Generator;
 import org.eclipse.persistence.jaxb.javamodel.JavaClass;
 import org.eclipse.persistence.jaxb.javamodel.xjc.XJCJavaClassImpl;
 import org.eclipse.persistence.jaxb.javamodel.xjc.XJCJavaModelImpl;
 import org.eclipse.persistence.jaxb.javamodel.xjc.XJCJavaModelInputImpl;
+import org.eclipse.persistence.jaxb.xmlmodel.XmlBindings;
 import org.eclipse.persistence.oxm.XMLContext;
 import org.eclipse.persistence.sessions.DatabaseSession;
 import org.eclipse.persistence.sessions.Project;
@@ -38,12 +43,16 @@ import org.eclipse.persistence.sessions.factories.XMLSessionConfigLoader;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
+import org.xml.sax.EntityResolver;
 import org.xml.sax.InputSource;
+import org.xml.sax.SAXParseException;
 
+import com.sun.codemodel.ClassType;
 import com.sun.codemodel.JCodeModel;
 import com.sun.codemodel.JDefinedClass;
 import com.sun.codemodel.JPackage;
 import com.sun.tools.xjc.Plugin;
+import com.sun.tools.xjc.api.ErrorListener;
 import com.sun.tools.xjc.api.S2JJAXBModel;
 import com.sun.tools.xjc.api.SchemaCompiler;
 import com.sun.tools.xjc.api.XJC;
@@ -79,11 +88,20 @@ import com.sun.tools.xjc.api.XJC;
 public class DynamicJAXBContext extends org.eclipse.persistence.jaxb.JAXBContext {
 
     private ArrayList<DynamicHelper> helpers;
+    private DynamicClassLoader dClassLoader;
 
     private static final String SYSTEM_ID = "DynamicJAXBContextFactory:createFromXSD";
 
-    DynamicJAXBContext() {
+    private Field JDEFINEDCLASS_ENUMCONSTANTS = null;
+
+    DynamicJAXBContext() throws JAXBException {
         this.helpers = new ArrayList();
+
+        try {
+            JDEFINEDCLASS_ENUMCONSTANTS = PrivilegedAccessHelper.getDeclaredField(JDefinedClass.class, "enumConstantsByName", true);
+        } catch (Exception e) {
+            throw new JAXBException(org.eclipse.persistence.exceptions.JAXBException.errorCreatingDynamicJAXBContext(e));
+        }
     }
 
     /**
@@ -142,6 +160,35 @@ public class DynamicJAXBContext extends org.eclipse.persistence.jaxb.JAXBContext
         return dynamicType.newDynamicEntity();
     }
 
+    /**
+     * Returns the contant named <tt>constantName</tt> from the enum class specified by <tt>enumName</tt>.
+     *
+     * @param enumName
+     *      Java class name of an enum.
+     * @param constantName
+     *      Name of the constant to get from the specified enum.
+     *
+     * @return
+     *      An <tt>Object</tt>, the constant from the specified enum.
+     */
+    public Object getEnumConstant(String enumName, String constantName) throws ClassNotFoundException, JAXBException {
+        Object valueToReturn = null;
+
+        Class enumClass = dClassLoader.loadClass(enumName);
+        Object[] enumConstants = enumClass.getEnumConstants();
+        for (Object enumConstant : enumConstants) {
+            if (enumConstant.toString().equals(constantName)) {
+                valueToReturn = enumConstant;
+            }
+        }
+
+        if (valueToReturn != null) {
+            return valueToReturn;
+        } else {
+            throw new JAXBException(org.eclipse.persistence.exceptions.JAXBException.enumConstantNotFound(enumName + "." + constantName));
+        }
+    }
+
     void initializeFromSessionsXML(String sessionNames, ClassLoader classLoader) {
         if (classLoader == null) {
             classLoader = Thread.currentThread().getContextClassLoader();
@@ -152,6 +199,8 @@ public class DynamicJAXBContext extends org.eclipse.persistence.jaxb.JAXBContext
         } else {
            dynamicClassLoader = new DynamicClassLoader(classLoader);
         }
+
+        dClassLoader = dynamicClassLoader;
 
         StringTokenizer st = new StringTokenizer(sessionNames, ":");
         ArrayList dynamicProjects = new ArrayList(st.countTokens());
@@ -173,7 +222,7 @@ public class DynamicJAXBContext extends org.eclipse.persistence.jaxb.JAXBContext
         }
     }
 
-    void initializeFromXSDNode(Node node, ClassLoader classLoader) {
+    void initializeFromXSDNode(Node node, ClassLoader classLoader, EntityResolver resolver, Map<String, ?> properties) throws JAXBException {
         Element element;
 
         if (node.getNodeType() == Node.DOCUMENT_NODE) {
@@ -181,30 +230,44 @@ public class DynamicJAXBContext extends org.eclipse.persistence.jaxb.JAXBContext
         } else if (node.getNodeType() == Node.ELEMENT_NODE) {
             element = (Element) node;
         } else {
-            throw JAXBException.cannotInitializeFromNode();
+            throw new JAXBException(org.eclipse.persistence.exceptions.JAXBException.cannotInitializeFromNode());
         }
 
         // Use XJC API to parse the schema and generate its JCodeModel
         SchemaCompiler sc = XJC.createSchemaCompiler();
+        sc.setEntityResolver(resolver);
+        sc.setErrorListener(new XJCErrorListener());
         sc.parseSchema(SYSTEM_ID, element);
         S2JJAXBModel model = sc.bind();
+
+        if (model == null) {
+            throw new JAXBException(org.eclipse.persistence.exceptions.JAXBException.xjcBindingError());
+        }
+
         JCodeModel jCodeModel = model.generateCode(new Plugin[0], null);
 
-        initializeFromXJC(jCodeModel, classLoader);
+        initializeFromXJC(jCodeModel, classLoader, properties);
     }
 
-    void initializeFromXSDInputSource(InputSource metadataSource, ClassLoader classLoader) {
+    void initializeFromXSDInputSource(InputSource metadataSource, ClassLoader classLoader, EntityResolver resolver, Map<String, ?> properties) throws JAXBException {
         // Use XJC API to parse the schema and generate its JCodeModel
         SchemaCompiler sc = XJC.createSchemaCompiler();
         metadataSource.setSystemId(SYSTEM_ID);
+        sc.setEntityResolver(resolver);
+        sc.setErrorListener(new XJCErrorListener());
         sc.parseSchema(metadataSource);
         S2JJAXBModel model = sc.bind();
+
+        if (model == null) {
+            throw new JAXBException(org.eclipse.persistence.exceptions.JAXBException.xjcBindingError());
+        }
+
         JCodeModel jCodeModel = model.generateCode(new Plugin[0], null);
 
-        initializeFromXJC(jCodeModel, classLoader);
+        initializeFromXJC(jCodeModel, classLoader, properties);
     }
 
-    void initializeFromXJC(JCodeModel codeModel, ClassLoader classLoader) {
+    void initializeFromXJC(JCodeModel codeModel, ClassLoader classLoader, Map<String, ?> properties) throws JAXBException {
         if (classLoader == null) {
             classLoader = Thread.currentThread().getContextClassLoader();
         }
@@ -217,6 +280,8 @@ public class DynamicJAXBContext extends org.eclipse.persistence.jaxb.JAXBContext
         } else {
            dynamicClassLoader = new DynamicClassLoader(jaxbLoader);
         }
+
+        dClassLoader = dynamicClassLoader;
 
         // Create EclipseLink JavaModel objects for each of XJC's JDefinedClasses
         ArrayList<JDefinedClass> classesToProcess = new ArrayList<JDefinedClass>();
@@ -239,10 +304,16 @@ public class DynamicJAXBContext extends org.eclipse.persistence.jaxb.JAXBContext
 
         JavaClass[] jotClasses = createClassModelFromXJC(classesToProcess, codeModel, dynamicClassLoader);
 
+        // Look for bindings customization file
+        Map<String, XmlBindings> bindings = null;
+        if (properties != null) {
+            bindings = JAXBContextFactory.getXmlBindingsFromProperties(properties, dClassLoader);
+        }
+
         // Use the JavaModel to setup a Generator to generate an EclipseLink project
         XJCJavaModelImpl javaModel = new XJCJavaModelImpl(jaxbLoader, codeModel, dynamicClassLoader);
         XJCJavaModelInputImpl javaModelInput = new XJCJavaModelInputImpl(jotClasses, javaModel);
-        Generator g = new Generator(javaModelInput, null, dynamicClassLoader, null);
+        Generator g = new Generator(javaModelInput, bindings, dynamicClassLoader, null);
 
         Project p = null;
         Project dp = null;
@@ -250,7 +321,7 @@ public class DynamicJAXBContext extends org.eclipse.persistence.jaxb.JAXBContext
             p = g.generateProject();
             dp = DynamicTypeBuilder.loadDynamicProject(p, null, dynamicClassLoader);
         } catch (Exception e) {
-            throw JAXBException.errorCreatingDynamicJAXBContext(e);
+            throw new JAXBException(org.eclipse.persistence.exceptions.JAXBException.errorCreatingDynamicJAXBContext(e));
         }
 
         this.xmlContext = new XMLContext(dp);
@@ -276,7 +347,7 @@ public class DynamicJAXBContext extends org.eclipse.persistence.jaxb.JAXBContext
         return classesToReturn;
     }
 
-    private JavaClass[] createClassModelFromXJC(ArrayList<JDefinedClass> xjcClasses, JCodeModel jCodeModel, DynamicClassLoader dynamicClassLoader) {
+    private JavaClass[] createClassModelFromXJC(ArrayList<JDefinedClass> xjcClasses, JCodeModel jCodeModel, DynamicClassLoader dynamicClassLoader) throws JAXBException {
         try {
             JavaClass[] elinkClasses = new JavaClass[xjcClasses.size()];
 
@@ -285,12 +356,40 @@ public class DynamicJAXBContext extends org.eclipse.persistence.jaxb.JAXBContext
                 XJCJavaClassImpl xjcClass = new XJCJavaClassImpl(definedClass, jCodeModel, dynamicClassLoader);
                 elinkClasses[count] = xjcClass;
                 count++;
+
+                // If this is an enum, trigger a dynamic class generation, because we won't
+                // be creating a descriptor for it
+                if (definedClass.getClassType().equals(ClassType.ENUM)) {
+                    Map enumConstants = (Map) PrivilegedAccessHelper.getValueFromField(JDEFINEDCLASS_ENUMCONSTANTS, definedClass);
+                    Object[] enumValues = enumConstants.keySet().toArray();
+                    dynamicClassLoader.addEnum(definedClass.fullName(), enumValues);
+                }
             }
 
             return elinkClasses;
         } catch (Exception e) {
-            throw JAXBException.errorCreatingDynamicJAXBContext(e);
+            throw new JAXBException(org.eclipse.persistence.exceptions.JAXBException.errorCreatingDynamicJAXBContext(e));
         }
+    }
+
+    private class XJCErrorListener implements ErrorListener {
+
+        public void error(SAXParseException arg0) {
+            throw org.eclipse.persistence.exceptions.JAXBException.errorCreatingDynamicJAXBContext(arg0);
+        }
+
+        public void fatalError(SAXParseException arg0) {
+            throw org.eclipse.persistence.exceptions.JAXBException.errorCreatingDynamicJAXBContext(arg0);
+        }
+
+        public void info(SAXParseException arg0) {
+            throw org.eclipse.persistence.exceptions.JAXBException.errorCreatingDynamicJAXBContext(arg0);
+        }
+
+        public void warning(SAXParseException arg0) {
+            throw org.eclipse.persistence.exceptions.JAXBException.errorCreatingDynamicJAXBContext(arg0);
+        }
+
     }
 
 }

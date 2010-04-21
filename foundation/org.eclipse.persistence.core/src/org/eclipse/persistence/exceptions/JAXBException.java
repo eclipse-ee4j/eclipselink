@@ -70,6 +70,12 @@ public class JAXBException extends EclipseLinkException {
     public static final int CANNOT_CREATE_DYNAMIC_CONTEXT_FROM_CLASSES = 50038;
     public static final int CANNOT_INITIALIZE_FROM_NODE = 50039;
     public static final int ERROR_CREATING_DYNAMICJAXBCONTEXT = 50040;
+    public static final int ENUM_CONSTANT_NOT_FOUND = 50041;
+    public static final int NULL_SESSION_NAME = 50042;
+    public static final int NULL_SOURCE = 50043;
+    public static final int NULL_INPUT_STREAM = 50044;
+    public static final int NULL_NODE = 50045;
+    public static final int XJC_BINDING_ERROR = 50046;
 
     protected JAXBException(String message) {
         super(message);
@@ -520,6 +526,66 @@ public class JAXBException extends EclipseLinkException {
         Object[] args = { };
         JAXBException exception = new JAXBException(ExceptionMessageGenerator.buildMessage(JAXBException.class, ERROR_CREATING_DYNAMICJAXBCONTEXT, args), nestedException);
         exception.setErrorCode(ERROR_CREATING_DYNAMICJAXBCONTEXT);
+        return exception;
+    }
+
+    /**
+     * This exception is thrown if the user tries to get a non-existant enum constant from an enum class.
+     */
+    public static JAXBException enumConstantNotFound(String name) {
+        Object[] args = { name };
+        JAXBException exception = new JAXBException(ExceptionMessageGenerator.buildMessage(JAXBException.class, ENUM_CONSTANT_NOT_FOUND, args));
+        exception.setErrorCode(ENUM_CONSTANT_NOT_FOUND);
+        return exception;
+    }
+
+    /**
+     * This exception is thrown if the user tries bootstrap from sessions.xml but provides a null sessionNames parameter.
+     */
+    public static JAXBException nullSessionName() {
+        Object[] args = { };
+        JAXBException exception = new JAXBException(ExceptionMessageGenerator.buildMessage(JAXBException.class, NULL_SESSION_NAME, args));
+        exception.setErrorCode(NULL_SESSION_NAME);
+        return exception;
+    }
+
+    /**
+     * This exception is thrown if the user tries bootstrap from XML Schema but provides a null Source parameter.
+     */
+    public static JAXBException nullSource() {
+        Object[] args = { };
+        JAXBException exception = new JAXBException(ExceptionMessageGenerator.buildMessage(JAXBException.class, NULL_SOURCE, args));
+        exception.setErrorCode(NULL_SOURCE);
+        return exception;
+    }
+
+    /**
+     * This exception is thrown if the user tries bootstrap from XML Schema but provides a null InputStream parameter.
+     */
+    public static JAXBException nullInputStream() {
+        Object[] args = { };
+        JAXBException exception = new JAXBException(ExceptionMessageGenerator.buildMessage(JAXBException.class, NULL_INPUT_STREAM, args));
+        exception.setErrorCode(NULL_INPUT_STREAM);
+        return exception;
+    }
+
+    /**
+     * This exception is thrown if the user tries bootstrap from XML Schema but provides a null Node parameter.
+     */
+    public static JAXBException nullNode() {
+        Object[] args = { };
+        JAXBException exception = new JAXBException(ExceptionMessageGenerator.buildMessage(JAXBException.class, NULL_NODE, args));
+        exception.setErrorCode(NULL_NODE);
+        return exception;
+    }
+
+    /**
+     * This exception is thrown if XJC was unable to generate a CodeModel.
+     */
+    public static JAXBException xjcBindingError() {
+        Object[] args = { };
+        JAXBException exception = new JAXBException(ExceptionMessageGenerator.buildMessage(JAXBException.class, XJC_BINDING_ERROR, args));
+        exception.setErrorCode(XJC_BINDING_ERROR);
         return exception;
     }
 

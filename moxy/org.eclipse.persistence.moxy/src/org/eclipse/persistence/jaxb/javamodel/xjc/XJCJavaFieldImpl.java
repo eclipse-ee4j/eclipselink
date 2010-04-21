@@ -141,10 +141,14 @@ public class XJCJavaFieldImpl implements JavaField {
             JPrimitiveType pType = (JPrimitiveType) type;
             classToReturn = pType.boxify();
         } else {
-            try {
-                classToReturn = jCodeModel._class(basis != null ? basis.fullName() : type.fullName());
-            } catch (JClassAlreadyExistsException ex) {
-                classToReturn = jCodeModel._getClass(basis != null ? basis.fullName() : type.fullName());
+            if (type.getClass().getName().contains("JArrayClass")) {
+                classToReturn = (JClass) type;
+            } else {
+                try {
+                    classToReturn = jCodeModel._class(basis != null ? basis.fullName() : type.fullName());
+                } catch (JClassAlreadyExistsException ex) {
+                    classToReturn = jCodeModel._getClass(basis != null ? basis.fullName() : type.fullName());
+                }
             }
         }
 
@@ -161,7 +165,11 @@ public class XJCJavaFieldImpl implements JavaField {
             }
         }
 
-        return new XJCJavaClassImpl(classToReturn, jCodeModel, dynamicClassLoader);
+        if (classToReturn instanceof JDefinedClass) {
+            return new XJCJavaClassImpl((JDefinedClass) classToReturn, jCodeModel, dynamicClassLoader);
+        } else {
+            return new XJCJavaClassImpl(classToReturn, jCodeModel, dynamicClassLoader);
+        }
     }
 
     public boolean isFinal() {
@@ -193,7 +201,7 @@ public class XJCJavaFieldImpl implements JavaField {
     }
 
     public boolean isEnumConstant() {
-        throw new UnsupportedOperationException("isEnumConstant");
+        return getOwningClass().isEnum();
     }
 
     public JavaAnnotation getDeclaredAnnotation(JavaClass aClass) {

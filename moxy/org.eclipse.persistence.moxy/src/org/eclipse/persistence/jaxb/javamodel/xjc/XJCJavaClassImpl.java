@@ -116,12 +116,7 @@ public class XJCJavaClassImpl implements JavaClass {
                 return null;
             }
 
-            XJCJavaClassImpl boundClass = null;
-            try {
-                boundClass = new XJCJavaClassImpl(jCodeModel._class(xjcBoundClass.fullName()), jCodeModel, dynamicClassLoader);
-            } catch (JClassAlreadyExistsException ex) {
-                boundClass = new XJCJavaClassImpl(jCodeModel._getClass(xjcBoundClass.fullName()), jCodeModel, dynamicClassLoader);
-            }
+            XJCJavaClassImpl boundClass = new XJCJavaClassImpl(xjcBoundClass, jCodeModel, dynamicClassLoader);
             typeArguments.add(boundClass);
         }
         return typeArguments;
@@ -384,12 +379,13 @@ public class XJCJavaClassImpl implements JavaClass {
         if (javaClass == null) {
             return false;
         }
-        JDefinedClass someClass = null;
+        JClass someClass = null;
 
-        try {
-            someClass = jCodeModel._class(javaClass.getQualifiedName());
-        } catch (JClassAlreadyExistsException ex) {
-            someClass = jCodeModel._getClass(javaClass.getQualifiedName());
+        XJCJavaClassImpl javaClassImpl = (XJCJavaClassImpl) javaClass;
+        if (javaClassImpl.isXJCRefClass()) {
+            someClass = javaClassImpl.xjcRefClass;
+        } else {
+            someClass = javaClassImpl.xjcClass;
         }
 
         return xjcClass.isAssignableFrom(someClass);
@@ -519,6 +515,10 @@ public class XJCJavaClassImpl implements JavaClass {
 
     public Collection getDeclaredAnnotations() {
         throw new UnsupportedOperationException("getDeclaredAnnotations");
+    }
+
+    boolean isXJCRefClass() {
+        return xjcRefClass != null;
     }
 
 }

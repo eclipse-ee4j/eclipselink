@@ -59,7 +59,13 @@ public class JAXBExceptionResource extends ListResourceBundle {
         {"50037", "The java-type with package [{0}] is not allowed in the bindings file keyed on package [{1}]."},
         {"50038", "DynamicJAXBContext can not be created from concrete Classes.  Please use org.eclipse.persistence.jaxb.JAXBContext, or specify org.eclipse.persistence.jaxb.JAXBContextFactory in your jaxb.properties file, to create a context from existing Classes."},
         {"50039", "Error creating DynamicJAXBContext: Node must be an instance of either Document or Element."},
-        {"50040", "Error creating DynamicJAXBContext."}
+        {"50040", "Error creating DynamicJAXBContext."},
+        {"50041", "Enum constant [{0}] not found."},
+        {"50042", "Error creating DynamicJAXBContext: Session name was null."},
+        {"50043", "Error creating DynamicJAXBContext: Source was null."},
+        {"50044", "Error creating DynamicJAXBContext: InputStream was null."},
+        {"50045", "Error creating DynamicJAXBContext: Node was null."},
+        {"50046", "Error creating DynamicJAXBContext: XJC was unable to generate a CodeModel."}
     };
 
     /**
