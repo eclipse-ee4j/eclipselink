@@ -8579,6 +8579,23 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
         // all exclusive connection modes
         String[] exclusiveConnectionModeArray = new String[]{ExclusiveConnectionMode.Transactional, ExclusiveConnectionMode.Isolated, ExclusiveConnectionMode.Always};
         
+        // Workaround for Bug 309881 - problems with CallQueryMechanism.prepareCall method
+        // Because of this bug em.find ignores QueryHints.JDBC_TIMEOUT,
+        // have to set it directly into the Descriptor's ReadObjectQuery.
+        // This should be removed from the test after the bug is fixed.
+        ReadObjectQuery employeeFindQuery = ss.getDescriptor(Employee.class).getQueryManager().getReadObjectQuery(); 
+        int originalQueryTimeout = employeeFindQuery.getQueryTimeout();
+        if(originalQueryTimeout > 0) {
+            ss.setQueryTimeoutDefault(0);
+            employeeFindQuery.setQueryTimeout(0);
+            // The same bug 309881 requires the query to be reprepaired for queryTimeOut to be set on its call
+            employeeFindQuery.setIsPrepared(false);
+            employeeFindQuery.checkPrepare(ss, null);
+        }
+        
+        // currently reconnection is not attempted if query time out is not zero.
+        HashMap noTimeOutHint = new HashMap(1);
+        noTimeOutHint.put(QueryHints.JDBC_TIMEOUT, 0);
         try {
             
             for(int i=0; i<3; i++) {
@@ -8591,7 +8608,7 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
                     emProperties.put(EntityManagerProperties.EXCLUSIVE_CONNECTION_MODE, exclusiveConnectionMode);
                     EntityManager em = createEntityManager(emProperties);
                     
-                    em.find(Employee.class, 1);
+                    em.find(Employee.class, 1, noTimeOutHint);
                     Employee emp = null;
                     boolean hasUnexpectedlyCommitted = false;
                     try{
@@ -8680,6 +8697,17 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
 
         } finally {
 
+            // Workaround for Bug 309881 - problems with CallQueryMechanism.prepareCall method
+            // Because of this bug em.find ignores QueryHints.JDBC_TIMEOUT,
+            // have to set it directly into the Descriptor's ReadObjectQuery.
+            // This should be removed from the test after the bug is fixed.
+            if(originalQueryTimeout > 0) {
+                ss.setQueryTimeoutDefault(originalQueryTimeout);
+                employeeFindQuery.setQueryTimeout(originalQueryTimeout);
+                // The same bug 309881 requires the query to be reprepaired for queryTimeOut to be set on its call
+                employeeFindQuery.setIsPrepared(false);
+                employeeFindQuery.checkPrepare(ss, null);
+            }
             // clear the driver wrapper
             DriverWrapper.clear();
     
