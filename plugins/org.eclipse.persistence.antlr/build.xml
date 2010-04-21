@@ -37,7 +37,7 @@
 
     <!-- Properties usually defined in build.properties, set here to avoid easy redefinition. -->
     <!-- Version properties -->
-    <property name="release.version"               value="2.0.2"/>
+    <property name="release.version"               value="2.0.3"/>
     <!-- Project infrastructure properties -->
     <property name="src.dir"                       value="src"/>
     <property name="antlr.classes.dir"             value="."/>
