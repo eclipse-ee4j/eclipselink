@@ -158,6 +158,21 @@ import static org.eclipse.persistence.annotations.Direction.IN_OUT;
             @ColumnResult(name="country_v"),
             @ColumnResult(name="province_v"),
             @ColumnResult(name="p_code_v")
+        }),
+    @SqlResultSetMapping(
+        name = "address-case-sensitive-map",
+        entities = {
+            @EntityResult(
+                entityClass=Address.class,
+                fields={
+                    @FieldResult(name="id", column="aDdReSs_iD"),
+                    @FieldResult(name="street", column="StReeT"),
+                    @FieldResult(name="city", column="CiTy"),
+                    @FieldResult(name="country", column="CoUnTrY"),
+                    @FieldResult(name="province", column="PrOvInCe"),
+                    @FieldResult(name="postalCode", column="P_cOdE")
+                }
+            )
         })
 })
 public class Address implements Serializable {

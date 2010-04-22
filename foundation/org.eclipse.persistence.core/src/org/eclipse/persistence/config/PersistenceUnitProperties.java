@@ -982,6 +982,22 @@ public class PersistenceUnitProperties {
     public static final String NATIVE_QUERY_UPPERCASE_COLUMNS = "eclipselink.jdbc.uppercase-columns";
 
     /**
+     * The <code>"eclipselink.jpa.uppercase-column-names"</code> property configures JPA processing
+     * to uppercase all column name definitions.  A value of true also sets the 
+     * <code>"eclipselink.jdbc.uppercase-columns"</code> property to true, so that JDBC meta-data
+     * returned from the database is also returned in uppercase, ensuring fields are the same case.  This
+     * gets around situations where user defined fields do not match the case returned by the database for
+     * native queries, simulating case insensitivity.  
+     * <p>
+     * Values (case insensitive):
+     * <ul>
+     * <li>"true" (DEFAULT)
+     * <li>"false"
+     * </ul>
+     */
+    public static final String UPPERCASE_COLUMN_NAMES = "eclipselink.jpa.uppercase-column-names";
+
+    /**
      * The <code>"eclipselink.jdbc.batch-writing"</code> property configures the
      * use of batch writing to optimize transactions with multiple writes.
      * <p>

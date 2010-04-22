@@ -13,6 +13,7 @@
 package org.eclipse.persistence.queries;
 
 
+import org.eclipse.persistence.internal.helper.DatabaseField;
 import org.eclipse.persistence.internal.localization.ExceptionLocalization;
 import org.eclipse.persistence.sessions.DatabaseRecord;
 
@@ -36,13 +37,22 @@ public class FieldResult {
     java.util.Vector fieldResults;
     
     /** Stores the Columns name from the result set that contains the attribute value */
-    protected String columnName;
+    protected DatabaseField column;
     
-    public FieldResult(String attributeName, String column){
-        this.columnName = column;
-        if (attributeName == null || this.columnName == null){
+    public FieldResult(String attributeName, String columnName){
+        if (attributeName == null || columnName == null ){
             throw new IllegalArgumentException(ExceptionLocalization.buildMessage("null_values_for_field_result"));
         }
+        this.column = new DatabaseField(columnName);
+        multipleFieldIdentifiers = attributeName.split("\\.",0);
+        this.attributeName = multipleFieldIdentifiers[0];
+    }
+    
+    public FieldResult(String attributeName, DatabaseField column){
+        if (attributeName == null || column == null || column.getName() == null){
+            throw new IllegalArgumentException(ExceptionLocalization.buildMessage("null_values_for_field_result"));
+        }
+        this.column = column;
         multipleFieldIdentifiers = attributeName.split("\\.",0);
         this.attributeName = multipleFieldIdentifiers[0];
     }
@@ -51,8 +61,8 @@ public class FieldResult {
         return this.attributeName;
     }
     
-    public String getColumnName(){
-        return this.columnName;
+    public DatabaseField getColumn(){
+        return this.column;
     }
     
     /**
@@ -60,7 +70,7 @@ public class FieldResult {
      * This method is a convenience method for extracting values from Results
      */
     public Object getValueFromRecord(DatabaseRecord record){
-        return record.get(this.columnName);
+        return record.get(this.column);
     }
     
     /**

@@ -270,11 +270,7 @@ public class DatabaseAccessor extends DatasourceAccessor {
         try {
             Vector columnNames = getColumnNames(resultSet, session);
             if (fields == null) {// Means fields not known.
-                sortedFields = new Vector(columnNames.size());
-                for (Enumeration columnNamesEnum = columnNames.elements();
-                         columnNamesEnum.hasMoreElements();) {
-                    sortedFields.addElement(new DatabaseField((String)columnNamesEnum.nextElement()));
-                }
+                sortedFields = columnNames;
             } else {
                 sortedFields = sortFields(fields, columnNames);
             }
@@ -1031,7 +1027,7 @@ public class DatabaseAccessor extends DatasourceAccessor {
     }
 
     /**
-     * Return the column names from a result sets meta data.
+     * Return the column names from a result sets meta data as a vector of DatabaseFields.
      * This is required for custom SQL execution only,
      * as generated SQL already knows the fields returned.
      */
@@ -1047,12 +1043,13 @@ public class DatabaseAccessor extends DatasourceAccessor {
             if ((columnName == null) || columnName.equals("")) {
                 columnName = "C" + (index + 1);// Some column may be unnamed.
             }
+            DatabaseField column = new DatabaseField(columnName);
 
             // Force field names to upper case is set.
             if (getPlatform().shouldForceFieldNamesToUpperCase()) {
-                columnName = columnName.toUpperCase();
+                column.toUpperCase();
             }
-            columnNames.addElement(columnName);
+            columnNames.addElement(column);
         }
         return columnNames;
     }
@@ -1556,41 +1553,31 @@ public class DatabaseAccessor extends DatasourceAccessor {
         Vector sortedFields = new Vector(columnNames.size());
         Vector eligableFields = (Vector)fields.clone();// Must clone to allow removing to support the same field twice.
         Enumeration columnNamesEnum = columnNames.elements();
-        boolean valueFound = false;
+        boolean valueFound;
+        DatabaseField field;
+        DatabaseField column;//DatabaseField from the columnNames vector
         while (columnNamesEnum.hasMoreElements()) {
-            String columnName = (String)columnNamesEnum.nextElement();
-
-            DatabaseField field = null;
+            field = null;
+            valueFound = false;
+            column = (DatabaseField)columnNamesEnum.nextElement();
             Enumeration fieldEnum = eligableFields.elements();
             while (fieldEnum.hasMoreElements()) {
                 field = (DatabaseField)fieldEnum.nextElement();
-                if(field != null){
-                    if (DatabasePlatform.shouldIgnoreCaseOnFieldComparisons()) {
-                        if (field.getName().equalsIgnoreCase(columnName)) {
-                            valueFound = true;
-                            sortedFields.addElement(field);
-                            break;
-                        }
-                    } else {
-                        if (field.getName().equals(columnName)) {
-                            valueFound = true;
-                            sortedFields.addElement(field);
-                            break;
-                        }
-                   }
+                if(field != null && field.equals(column)){
+                    valueFound = true;
+                    sortedFields.addElement(field);
+                    break;
                 }
             }
 
             if (valueFound) {
-                // The eligable fields must be maintained as two field can have the same name, but different tables.
+                // The eligible fields must be maintained as two field can have the same name, but different tables.
                 eligableFields.removeElement(field);
             } else {
-                // Need to add a place holder in case the column is not in the fiels vector
+                // Need to add a place holder in case the column is not in the fields vector
                 sortedFields.addElement(new DatabaseField());
             }
-            valueFound = false;
         }
-
         return sortedFields;
     }
 

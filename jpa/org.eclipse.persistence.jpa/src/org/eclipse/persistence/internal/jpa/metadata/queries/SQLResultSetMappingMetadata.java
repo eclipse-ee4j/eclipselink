@@ -17,6 +17,8 @@ package org.eclipse.persistence.internal.jpa.metadata.queries;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.eclipse.persistence.internal.helper.DatabaseField;
+import org.eclipse.persistence.internal.jpa.metadata.MetadataProject;
 import org.eclipse.persistence.internal.jpa.metadata.ORMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataAccessibleObject;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataAnnotation;
@@ -134,7 +136,7 @@ public class SQLResultSetMappingMetadata extends ORMetadata {
      * Process an sql result set mapping metadata into a EclipseLink 
      * SqlResultSetMapping and store it on the session.
      */
-    public void process(AbstractSession session, ClassLoader loader) {        
+    public void process(AbstractSession session, ClassLoader loader, MetadataProject project) {        
         // Initialize a new SqlResultSetMapping (with the metadata name)
         SQLResultSetMapping mapping = new SQLResultSetMapping(getName());
         
@@ -145,12 +147,27 @@ public class SQLResultSetMappingMetadata extends ORMetadata {
             // Process the field results.
             if (eResult.hasFieldResults()) {
                 for (FieldResultMetadata fResult : eResult.getFieldResults()) {
-                    entityResult.addFieldResult(new FieldResult(fResult.getName(), fResult.getColumn()));
+                    FieldResult fieldResult = new FieldResult(fResult.getName(), fResult.getColumn());
+                    if (project.useDelimitedIdentifier()) {
+                        fieldResult.getColumn().setUseDelimiters(true);
+                    } else if (project.getShouldForceFieldNamesToUpperCase() && !fieldResult.getColumn().shouldUseDelimiters()) {
+                        //done directly as this field's name should be in uppercase.
+                        fieldResult.getColumn().setName(fieldResult.getColumn().getName().toUpperCase());
+                    }
+                    entityResult.addFieldResult(fieldResult);
                 }
             }
         
             // Process the discriminator value;
-            entityResult.setDiscriminatorColumn(eResult.getDiscriminatorColumn());
+            if (eResult.getDiscriminatorColumn() !=null){
+                DatabaseField descriminatorField = new DatabaseField(eResult.getDiscriminatorColumn());
+                if (project.useDelimitedIdentifier()) {
+                    descriminatorField.setUseDelimiters(true);
+                } else if (project.getShouldForceFieldNamesToUpperCase() && !descriminatorField.shouldUseDelimiters()){
+                    descriminatorField.setName(descriminatorField.getName().toUpperCase());
+                }
+                entityResult.setDiscriminatorColumn(descriminatorField);
+            }
         
             // Add the result to the SqlResultSetMapping.
             mapping.addResult(entityResult);
@@ -158,7 +175,14 @@ public class SQLResultSetMappingMetadata extends ORMetadata {
         
         // Process the column results.
         for (String columnResult : m_columnResults) {
-            mapping.addResult(new ColumnResult(columnResult));
+            ColumnResult result = new ColumnResult(columnResult);
+            if (project.useDelimitedIdentifier()) {
+                result.getColumn().setUseDelimiters(true);
+            }
+            if (project.getShouldForceFieldNamesToUpperCase()) {
+                result.getColumn().toUpperCase();
+            }
+            mapping.addResult(result);
         }
             
         session.getProject().addSQLResultSetMapping(mapping);

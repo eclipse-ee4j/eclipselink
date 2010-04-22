@@ -390,10 +390,7 @@ public abstract class JUnitTestCase extends TestCase {
                 emfNamedPersistenceUnit = Persistence.createEntityManagerFactory(persistenceUnitName, properties);
                 emfNamedPersistenceUnits.put(persistenceUnitName, emfNamedPersistenceUnit);
 
-                // Force uppercase for Postgres.
-                if (getServerSession(persistenceUnitName).getPlatform().isPostgreSQL()) {
-                    getServerSession(persistenceUnitName).getLogin().setShouldForceFieldNamesToUpperCase(true);
-                }
+                // Force uppercase for Postgres. - no longer needed with fix for 299926: Case insensitive table / column matching 
             }
             return emfNamedPersistenceUnit;
         }

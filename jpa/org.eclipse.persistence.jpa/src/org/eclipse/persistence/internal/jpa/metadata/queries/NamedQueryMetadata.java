@@ -23,6 +23,7 @@ import java.util.Map;
 import org.eclipse.persistence.exceptions.ValidationException;
 import org.eclipse.persistence.internal.jpa.JPAQuery;
 import org.eclipse.persistence.internal.jpa.QueryHintsHandler;
+import org.eclipse.persistence.internal.jpa.metadata.MetadataProject;
 import org.eclipse.persistence.internal.jpa.metadata.ORMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataAccessibleObject;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataAnnotation;
@@ -137,7 +138,7 @@ public class NamedQueryMetadata extends ORMetadata {
     /**
      * INTERNAL:
      */
-    public void process(AbstractSession session, ClassLoader loader) {
+    public void process(AbstractSession session, ClassLoader loader, MetadataProject project) {
         try {
             Map<String, Object> hints = processQueryHints(session);
             session.addJPAQuery(new JPAQuery(getName(), getQuery(), getLockMode(), hints));

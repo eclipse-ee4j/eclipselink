@@ -133,7 +133,7 @@ public class StaticWeaveClassTransformer {
     }
     
     /**
-     * This method builds the classtransformer for the specified perisistence unit.
+     * This method builds the classtransformer for the specified persistence unit.
      */        
     private ClassTransformer buildTransformer(PersistenceUnitInfo unitInfo, Writer logWriter, int logLevel) {
         //persistenceUnitInfo = unitInfo;
@@ -187,7 +187,7 @@ public class StaticWeaveClassTransformer {
         }
 
         // The transformer is capable of altering domain classes to handle a LAZY hint for OneToOne mappings.  It will only
-        // be returned if we we are mean to process these mappings
+        // be returned if we are meant to process these mappings
         return TransformerFactory.createTransformerAndModifyProject(session, entities, privateClassLoader, weaveLazy, weaveChangeTracking, weaveFetchGroups, weaveFetchInternal);
     }
 }

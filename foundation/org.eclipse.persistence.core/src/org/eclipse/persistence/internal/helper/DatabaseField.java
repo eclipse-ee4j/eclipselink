@@ -72,6 +72,12 @@ public class DatabaseField implements Cloneable, Serializable {
     
     protected boolean useDelimiters = false;
     
+    /** Stores the column name as defined prior to toUpper being called.  This allows the exact name returned from JDBC metadata 
+     * to be used for equality checks when compared to fields set to use delimiting should the databasePlatform 
+     * have shouldForceFieldNamesToUpperCase or shouldIgnoreCaseOnFieldComparisons flags set.  
+     */
+    private String originalName;
+
     /**
      * used to represent the value when it has not being defined
      */
@@ -148,7 +154,7 @@ public class DatabaseField implements Cloneable, Serializable {
     /**
      * Determine whether the receiver is equal to a DatabaseField.
      * Return true if the receiver and field have the same name and table.
-     * Also return true if the table of the receiver or field are unspecfied,
+     * Also return true if the table of the receiver or field are unspecified,
      * ie. have no name.
      */
     public boolean equals(Object object) {
@@ -162,7 +168,7 @@ public class DatabaseField implements Cloneable, Serializable {
     /**
      * Determine whether the receiver is equal to a DatabaseField.
      * Return true if the receiver and field have the same name and table.
-     * Also return true if the table of the receiver or field are unspecfied,
+     * Also return true if the table of the receiver or field are unspecified,
      * ie. have no name.
      */
     public boolean equals(DatabaseField field) {
@@ -176,16 +182,30 @@ public class DatabaseField implements Cloneable, Serializable {
             if (getQualifiedName().equals(field.getQualifiedName())) {
                 return true;
             }
-            if (DatabasePlatform.shouldIgnoreCaseOnFieldComparisons()) {
-                if (this.name.equalsIgnoreCase(field.name)) {
-                    if ((getTableName().length() == 0) || (field.getTableName().length() == 0)) {
+            String ourNameToCompare;
+            String fieldNameToCompare;
+            boolean useEqualsIgnoreCase = DatabasePlatform.shouldIgnoreCaseOnFieldComparisons();
+            if (field.shouldUseDelimiters() || shouldUseDelimiters()) {
+                ourNameToCompare = this.getOriginalName();
+                fieldNameToCompare = field.getOriginalName();
+                useEqualsIgnoreCase = false;
+            } else {
+                ourNameToCompare = this.getName();
+                fieldNameToCompare = field.getName();
+            }
+            
+            if (useEqualsIgnoreCase) {
+                if (ourNameToCompare.equalsIgnoreCase(fieldNameToCompare)) {
+                    //getTableName will cause NPE if there isn't a table.  use hasTableName instead
+                    if ((!hasTableName()) || (!field.hasTableName())) {
                         return true;
                     }
                     return (getTable().equals(field.getTable()));
                 }
             } else {
-                if (this.name.equals(field.name)) {
-                    if ((getTableName().length() == 0) || (field.getTableName().length() == 0)) {
+                if (ourNameToCompare.equals(fieldNameToCompare)) {
+                    //getTableName will cause NPE if there isn't a table.  use hasTableName instead
+                    if ((!hasTableName()) || (!field.hasTableName())) {
                         return true;
                     }
                     return (getTable().equals(field.getTable()));
@@ -379,6 +399,7 @@ public class DatabaseField implements Cloneable, Serializable {
     public void resetQualifiedName(String qualifiedName) {
         setIndex(-1);
         int index = qualifiedName.lastIndexOf('.');
+        this.setOriginalName(null);
 
         if (index == -1) {
             setName(qualifiedName);
@@ -450,7 +471,7 @@ public class DatabaseField implements Cloneable, Serializable {
         
         if ((startDelimiter != null) && (endDelimiter != null) && !startDelimiter.equals("")&& !endDelimiter.equals("") && name.startsWith(startDelimiter) && name.endsWith(endDelimiter)){
             this.name = name.substring(startDelimiter.length(), name.length() - endDelimiter.length());
-            useDelimiters = true;
+            this.useDelimiters = true;
         } else {
             this.name = name;
         }
@@ -535,7 +556,38 @@ public class DatabaseField implements Cloneable, Serializable {
     }
     
     public boolean shouldUseDelimiters() {
-        return useDelimiters;
+        return this.useDelimiters;
     }
 
+    /**
+     * INTERNAL:
+     * Forces this field to use uppercase, but stores the original name to be used for comparisons to
+     * delimited fields.  This should only be used for column names returned from JDBC metadata when
+     * the platform has shouldForceFieldNamesToUpperCase set.
+     * 
+     */
+    public void toUpperCase(){
+        if (name!=null) {
+            originalName = name;
+            name = originalName.toUpperCase();
+        }
+    }
+    /**
+     * INTERNAL:
+     * sets the string to be used if compared to a delimited databasefield
+     */
+    public void setOriginalName(String originalName){
+        this.originalName = originalName;
+    }
+    
+    /**
+     * INTERNAL:
+     * gets the string to be used for comparisons when delimiting is used
+     */
+    public String getOriginalName(){
+        if (originalName == null) {
+            return this.getName();
+        }
+        return this.originalName;
+    }
 }

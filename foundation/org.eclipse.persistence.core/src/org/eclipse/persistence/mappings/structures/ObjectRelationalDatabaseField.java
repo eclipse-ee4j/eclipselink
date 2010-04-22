@@ -38,6 +38,7 @@ public class ObjectRelationalDatabaseField extends DatabaseField {
         this.setName(field.getName());
         this.setTable(field.getTable());
         this.setType(field.getType());
+        this.setOriginalName(field.getOriginalName());
         this.setUseDelimiters(field.shouldUseDelimiters());
         if (field.getType() != null) {
             this.setTypeName(field.getType().getName());

@@ -2808,13 +2808,6 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
                         else if ( (true) ) {
                             alt30=2;
                         }
-                        else {
-                            if (backtracking>0) {failed=true; return node;}
-                            NoViableAltException nvae =
-                                new NoViableAltException("450:1: constructorItem returns [Object node] : (n= scalarExpression | n= aggregateExpression );", 30, 50, input);
-                        
-                            throw nvae;
-                        }
                         }
                         break;
                     case IDENT:
@@ -2827,13 +2820,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
                         else if ( (true) ) {
                             alt30=2;
                         }
-                        else {
-                            if (backtracking>0) {failed=true; return node;}
-                            NoViableAltException nvae =
-                                new NoViableAltException("450:1: constructorItem returns [Object node] : (n= scalarExpression | n= aggregateExpression );", 30, 51, input);
-                        
-                            throw nvae;
-                        }
+                       
                         }
                         break;
                     case KEY:
@@ -2845,13 +2832,6 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
                         }
                         else if ( (true) ) {
                             alt30=2;
-                        }
-                        else {
-                            if (backtracking>0) {failed=true; return node;}
-                            NoViableAltException nvae =
-                                new NoViableAltException("450:1: constructorItem returns [Object node] : (n= scalarExpression | n= aggregateExpression );", 30, 52, input);
-                        
-                            throw nvae;
                         }
                         }
                         break;
@@ -2865,13 +2845,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
                         else if ( (true) ) {
                             alt30=2;
                         }
-                        else {
-                            if (backtracking>0) {failed=true; return node;}
-                            NoViableAltException nvae =
-                                new NoViableAltException("450:1: constructorItem returns [Object node] : (n= scalarExpression | n= aggregateExpression );", 30, 53, input);
                         
-                            throw nvae;
-                        }
                         }
                         break;
                     default:
@@ -2908,13 +2882,6 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
                         else if ( (true) ) {
                             alt30=2;
                         }
-                        else {
-                            if (backtracking>0) {failed=true; return node;}
-                            NoViableAltException nvae =
-                                new NoViableAltException("450:1: constructorItem returns [Object node] : (n= scalarExpression | n= aggregateExpression );", 30, 54, input);
-                        
-                            throw nvae;
-                        }
                         }
                         break;
                     case IDENT:
@@ -2926,13 +2893,6 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
                         }
                         else if ( (true) ) {
                             alt30=2;
-                        }
-                        else {
-                            if (backtracking>0) {failed=true; return node;}
-                            NoViableAltException nvae =
-                                new NoViableAltException("450:1: constructorItem returns [Object node] : (n= scalarExpression | n= aggregateExpression );", 30, 55, input);
-                        
-                            throw nvae;
                         }
                         }
                         break;
@@ -2946,13 +2906,6 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
                         else if ( (true) ) {
                             alt30=2;
                         }
-                        else {
-                            if (backtracking>0) {failed=true; return node;}
-                            NoViableAltException nvae =
-                                new NoViableAltException("450:1: constructorItem returns [Object node] : (n= scalarExpression | n= aggregateExpression );", 30, 56, input);
-                        
-                            throw nvae;
-                        }
                         }
                         break;
                     case VALUE:
@@ -2964,13 +2917,6 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
                         }
                         else if ( (true) ) {
                             alt30=2;
-                        }
-                        else {
-                            if (backtracking>0) {failed=true; return node;}
-                            NoViableAltException nvae =
-                                new NoViableAltException("450:1: constructorItem returns [Object node] : (n= scalarExpression | n= aggregateExpression );", 30, 57, input);
-                        
-                            throw nvae;
                         }
                         }
                         break;
@@ -3008,13 +2954,6 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
                         else if ( (true) ) {
                             alt30=2;
                         }
-                        else {
-                            if (backtracking>0) {failed=true; return node;}
-                            NoViableAltException nvae =
-                                new NoViableAltException("450:1: constructorItem returns [Object node] : (n= scalarExpression | n= aggregateExpression );", 30, 58, input);
-                        
-                            throw nvae;
-                        }
                         }
                         break;
                     case IDENT:
@@ -3026,13 +2965,6 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
                         }
                         else if ( (true) ) {
                             alt30=2;
-                        }
-                        else {
-                            if (backtracking>0) {failed=true; return node;}
-                            NoViableAltException nvae =
-                                new NoViableAltException("450:1: constructorItem returns [Object node] : (n= scalarExpression | n= aggregateExpression );", 30, 59, input);
-                        
-                            throw nvae;
                         }
                         }
                         break;
@@ -3046,13 +2978,6 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
                         else if ( (true) ) {
                             alt30=2;
                         }
-                        else {
-                            if (backtracking>0) {failed=true; return node;}
-                            NoViableAltException nvae =
-                                new NoViableAltException("450:1: constructorItem returns [Object node] : (n= scalarExpression | n= aggregateExpression );", 30, 60, input);
-                        
-                            throw nvae;
-                        }
                         }
                         break;
                     case VALUE:
@@ -3064,13 +2989,6 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
                         }
                         else if ( (true) ) {
                             alt30=2;
-                        }
-                        else {
-                            if (backtracking>0) {failed=true; return node;}
-                            NoViableAltException nvae =
-                                new NoViableAltException("450:1: constructorItem returns [Object node] : (n= scalarExpression | n= aggregateExpression );", 30, 61, input);
-                        
-                            throw nvae;
                         }
                         }
                         break;
@@ -3108,13 +3026,6 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
                         else if ( (true) ) {
                             alt30=2;
                         }
-                        else {
-                            if (backtracking>0) {failed=true; return node;}
-                            NoViableAltException nvae =
-                                new NoViableAltException("450:1: constructorItem returns [Object node] : (n= scalarExpression | n= aggregateExpression );", 30, 62, input);
-                        
-                            throw nvae;
-                        }
                         }
                         break;
                     case IDENT:
@@ -3126,13 +3037,6 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
                         }
                         else if ( (true) ) {
                             alt30=2;
-                        }
-                        else {
-                            if (backtracking>0) {failed=true; return node;}
-                            NoViableAltException nvae =
-                                new NoViableAltException("450:1: constructorItem returns [Object node] : (n= scalarExpression | n= aggregateExpression );", 30, 63, input);
-                        
-                            throw nvae;
                         }
                         }
                         break;
@@ -3146,13 +3050,6 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
                         else if ( (true) ) {
                             alt30=2;
                         }
-                        else {
-                            if (backtracking>0) {failed=true; return node;}
-                            NoViableAltException nvae =
-                                new NoViableAltException("450:1: constructorItem returns [Object node] : (n= scalarExpression | n= aggregateExpression );", 30, 64, input);
-                        
-                            throw nvae;
-                        }
                         }
                         break;
                     case VALUE:
@@ -3164,13 +3061,6 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
                         }
                         else if ( (true) ) {
                             alt30=2;
-                        }
-                        else {
-                            if (backtracking>0) {failed=true; return node;}
-                            NoViableAltException nvae =
-                                new NoViableAltException("450:1: constructorItem returns [Object node] : (n= scalarExpression | n= aggregateExpression );", 30, 65, input);
-                        
-                            throw nvae;
                         }
                         }
                         break;
@@ -3208,13 +3098,6 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
                         else if ( (true) ) {
                             alt30=2;
                         }
-                        else {
-                            if (backtracking>0) {failed=true; return node;}
-                            NoViableAltException nvae =
-                                new NoViableAltException("450:1: constructorItem returns [Object node] : (n= scalarExpression | n= aggregateExpression );", 30, 66, input);
-                        
-                            throw nvae;
-                        }
                         }
                         break;
                     case IDENT:
@@ -3226,13 +3109,6 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
                         }
                         else if ( (true) ) {
                             alt30=2;
-                        }
-                        else {
-                            if (backtracking>0) {failed=true; return node;}
-                            NoViableAltException nvae =
-                                new NoViableAltException("450:1: constructorItem returns [Object node] : (n= scalarExpression | n= aggregateExpression );", 30, 67, input);
-                        
-                            throw nvae;
                         }
                         }
                         break;
@@ -3246,13 +3122,6 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
                         else if ( (true) ) {
                             alt30=2;
                         }
-                        else {
-                            if (backtracking>0) {failed=true; return node;}
-                            NoViableAltException nvae =
-                                new NoViableAltException("450:1: constructorItem returns [Object node] : (n= scalarExpression | n= aggregateExpression );", 30, 68, input);
-                        
-                            throw nvae;
-                        }
                         }
                         break;
                     case VALUE:
@@ -3264,13 +3133,6 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
                         }
                         else if ( (true) ) {
                             alt30=2;
-                        }
-                        else {
-                            if (backtracking>0) {failed=true; return node;}
-                            NoViableAltException nvae =
-                                new NoViableAltException("450:1: constructorItem returns [Object node] : (n= scalarExpression | n= aggregateExpression );", 30, 69, input);
-                        
-                            throw nvae;
                         }
                         }
                         break;
@@ -4586,13 +4448,6 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
                         else if ( (true) ) {
                             alt46=2;
                         }
-                        else {
-                            if (backtracking>0) {failed=true; return node;}
-                            NoViableAltException nvae =
-                                new NoViableAltException("638:1: conditionalPrimary returns [Object node] : ( ( LEFT_ROUND_BRACKET conditionalExpression )=> LEFT_ROUND_BRACKET n= conditionalExpression RIGHT_ROUND_BRACKET | n= simpleConditionalExpression );", 46, 92, input);
-                        
-                            throw nvae;
-                        }
                     }
                     else if ( (LA46_46==MINUS) ) {
                         int LA46_93 = input.LA(4);
@@ -4603,13 +4458,6 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
                         else if ( (true) ) {
                             alt46=2;
                         }
-                        else {
-                            if (backtracking>0) {failed=true; return node;}
-                            NoViableAltException nvae =
-                                new NoViableAltException("638:1: conditionalPrimary returns [Object node] : ( ( LEFT_ROUND_BRACKET conditionalExpression )=> LEFT_ROUND_BRACKET n= conditionalExpression RIGHT_ROUND_BRACKET | n= simpleConditionalExpression );", 46, 93, input);
-                        
-                            throw nvae;
-                        }
                     }
                     else if ( (LA46_46==AVG) ) {
                         int LA46_94 = input.LA(4);
@@ -4619,13 +4467,6 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
                         }
                         else if ( (true) ) {
                             alt46=2;
-                        }
-                        else {
-                            if (backtracking>0) {failed=true; return node;}
-                            NoViableAltException nvae =
-                                new NoViableAltException("638:1: conditionalPrimary returns [Object node] : ( ( LEFT_ROUND_BRACKET conditionalExpression )=> LEFT_ROUND_BRACKET n= conditionalExpression RIGHT_ROUND_BRACKET | n= simpleConditionalExpression );", 46, 94, input);
-                        
-                            throw nvae;
                         }
                     }
                     else if ( (LA46_46==MAX) ) {

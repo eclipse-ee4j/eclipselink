@@ -209,7 +209,7 @@ public class MetadataProject {
     // All relationship accessors.
     private HashSet<RelationshipAccessor> m_relationshipAccessors;
     
-    // Root level embeddables accessors. When we pre-process embeddable
+    // Root level embeddable accessors. When we pre-process embeddable
     // accessors we need to process them from the root down so as to set
     // the correct owning descriptor.
     private HashSet<EmbeddableAccessor> m_rootEmbeddableAccessors;
@@ -219,6 +219,11 @@ public class MetadataProject {
      * @since EclipseLink 1.2 for the JPA 2.0 Reference Implementation
      */
     private HashMap<String, MappedSuperclassAccessor> m_metamodelMappedSuperclasses;
+    
+    /** Boolean to specify if we should uppercase all field names.
+    /*  @see PersistenceUnitProperties.UPPERCASE_COLUMN_NAMES
+     */
+    private boolean m_forceFieldNamesToUpperCase = false;
     
     /**
      * INTERNAL:
@@ -877,7 +882,15 @@ public class MetadataProject {
     public Set<EmbeddableAccessor> getRootEmbeddableAccessors() {
         return m_rootEmbeddableAccessors;
     }
-    
+
+    /**
+     * INTERNAL:
+     * Used to uppercase default and user defined column field names
+     */
+    public boolean getShouldForceFieldNamesToUpperCase(){
+        return m_forceFieldNamesToUpperCase;
+    }
+
     /**
      * INTERNAL:
      */
@@ -1105,13 +1118,13 @@ public class MetadataProject {
     public void processQueries(ClassLoader loader) {
         // Step 1 - process the sql result set mappings first.
         for (SQLResultSetMappingMetadata sqlResultSetMapping : m_sqlResultSetMappings.values()) {
-            sqlResultSetMapping.process(m_session, loader);
+            sqlResultSetMapping.process(m_session, loader, this);
         }
         
         // Step 2 - process the named queries second, some may need to validate
         // a sql result set mapping specification.
         for (NamedQueryMetadata query : m_queries.values()) {
-            query.process(m_session, loader);
+            query.process(m_session, loader, this);
         }
     }
     
@@ -1489,6 +1502,15 @@ public class MetadataProject {
         m_mappedSuperclasseAccessors.remove(metadataClass.getName());
     }
     
+    
+    /**
+     * INTERNAL:
+     * Used to uppercase default and user defined column field names
+     */
+    public void setShouldForceFieldNamesToUpperCase(boolean shouldForceFieldNamesToUpperCase){
+        m_forceFieldNamesToUpperCase = shouldForceFieldNamesToUpperCase;
+    }
+
     /** 
      * INTERNAL:
      */

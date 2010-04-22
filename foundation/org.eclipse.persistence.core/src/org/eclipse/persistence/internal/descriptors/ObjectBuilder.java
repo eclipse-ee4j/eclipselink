@@ -171,11 +171,11 @@ public class ObjectBuilder implements Cloneable, Serializable {
                 while (primaryKeyFieldEnum.hasNext()) {
                     DatabaseField primaryKeyField = (DatabaseField)primaryKeyFieldEnum.next();
                     DatabaseField secondaryKeyField = (DatabaseField)secondaryKeyFieldEnum.next();
-                    Object primaryValue = databaseRow.get(primaryKeyField);
+                    Object primaryValue = databaseRow.getIndicatingNoEntry(primaryKeyField);
 
                     // normally the primary key has a value, however if the multiple tables were joined by a foreign
                     // key the foreign key has a value.
-                    if ((primaryValue == null) && (!databaseRow.containsKey(primaryKeyField))) {
+                    if ((primaryValue == AbstractRecord.noEntry)) {
                         if (object != null) {
                             DatabaseMapping mapping = getMappingForField(secondaryKeyField);
                             if (mapping == null) {

@@ -165,13 +165,7 @@ public abstract class AbstractRecord implements Record, Cloneable, Serializable,
      * Check if the field is contained in the row.
      */
     public boolean containsKey(String fieldName) {
-        // Optimized the field creation.
-        if (this.lookupField == null) {
-            this.lookupField = new DatabaseField(fieldName);
-        } else {
-            this.lookupField.resetQualifiedName(fieldName);
-        }
-        return containsKey(this.lookupField);
+        return containsKey(getLookupField(fieldName));
     }
 
     /**
@@ -236,11 +230,22 @@ public abstract class AbstractRecord implements Record, Cloneable, Serializable,
      * If missing null is returned.
      */
     public Object get(String fieldName) {
-        Object value = getIndicatingNoEntry(fieldName);
-        if (value == AbstractRecord.noEntry) {
-            return null;
+        return get(getLookupField(fieldName));
+    }
+    
+    /**
+     * Internal: factored out of getIndicatingNoEntry(String) to reduce complexity and have 
+     * get(string) use get(DatabaseField) instead of getIndicatingNoEntry and then doing an extra check
+     * @param fieldName
+     * @return
+     */
+    protected DatabaseField getLookupField(String fieldName){
+        if (this.lookupField == null) {
+            this.lookupField = new DatabaseField(fieldName);
+        } else {
+            this.lookupField.resetQualifiedName(fieldName);
         }
-        return value;
+        return this.lookupField;
     }
 
     /**
@@ -251,12 +256,7 @@ public abstract class AbstractRecord implements Record, Cloneable, Serializable,
      */
     public Object getIndicatingNoEntry(String fieldName) {
         // Optimized the field creation.
-        if (this.lookupField == null) {
-            this.lookupField = new DatabaseField(fieldName);
-        } else {
-            this.lookupField.resetQualifiedName(fieldName);
-        }
-        return getIndicatingNoEntry(this.lookupField);
+        return getIndicatingNoEntry(getLookupField(fieldName));
     }
 
     /**

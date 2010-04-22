@@ -19,6 +19,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.eclipse.persistence.internal.jpa.EJBQueryImpl;
+import org.eclipse.persistence.internal.jpa.metadata.MetadataProject;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataAccessibleObject;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataAnnotation;
 import org.eclipse.persistence.internal.jpa.metadata.xml.XMLEntityMappings;
@@ -119,14 +120,14 @@ public class NamedStoredProcedureQueryMetadata extends NamedNativeQueryMetadata 
      * INTERNAL:
      */
     @Override
-    public void process(AbstractSession session, ClassLoader loader) {
+    public void process(AbstractSession session, ClassLoader loader, MetadataProject project) {
         // Build the stored procedure call.
         StoredProcedureCall call = new StoredProcedureCall();
         
         // Process the stored procedure parameters.
         List<String> queryArguments = new ArrayList<String>();
         for (StoredProcedureParameterMetadata parameter : m_parameters) {
-            queryArguments.addAll(parameter.process(call));
+            queryArguments.addAll(parameter.process(call, project));
         }
         
         // Process the procedure name.

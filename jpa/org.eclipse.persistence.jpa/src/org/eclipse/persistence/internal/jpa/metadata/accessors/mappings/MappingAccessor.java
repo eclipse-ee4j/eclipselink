@@ -389,7 +389,7 @@ public abstract class MappingAccessor extends MetadataAccessor {
         DatabaseField field = column.getDatabaseField();
            
         // Make sure there is a table name on the field.
-        if (field.getTableName().equals("")) {
+        if (!field.hasTableName()) {
             field.setTable(defaultTable);
         }
           
@@ -1502,7 +1502,7 @@ public abstract class MappingAccessor extends MetadataAccessor {
             DatabaseField fkField = joinColumn.getForeignKeyField();
             setFieldName(fkField, defaultFKFieldName, MetadataLogger.FK_COLUMN);
             // Set the table name if one is not already set.
-            if (fkField.getTableName().equals("")) {
+            if (!fkField.hasTableName()) {
                 fkField.setTable(defaultFKTable);
             }
             if (allReadOnly || !fkField.isReadOnly()){

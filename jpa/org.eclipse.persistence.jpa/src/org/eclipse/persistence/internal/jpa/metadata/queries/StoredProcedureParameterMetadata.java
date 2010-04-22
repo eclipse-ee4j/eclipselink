@@ -18,6 +18,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.eclipse.persistence.annotations.Direction;
+import org.eclipse.persistence.internal.helper.DatabaseField;
+import org.eclipse.persistence.internal.jpa.metadata.MetadataProject;
 import org.eclipse.persistence.internal.jpa.metadata.ORMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataAccessibleObject;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataAnnotation;
@@ -186,7 +188,7 @@ public class StoredProcedureParameterMetadata extends ORMetadata {
     /**
      * INTERNAL:
      */
-    public List<String> process(StoredProcedureCall call) {
+    public List<String> process(StoredProcedureCall call, MetadataProject project) {
         List<String> queryArguments = new ArrayList<String>();
                     
         // Process the procedure parameter name, defaults to the 
@@ -208,7 +210,7 @@ public class StoredProcedureParameterMetadata extends ORMetadata {
                 call.addNamedArgument(procedureParameterName, m_queryParameter, m_jdbcType);
             } else {
                 call.addNamedArgument(procedureParameterName, m_queryParameter);
-            }                            
+            }
             queryArguments.add(m_queryParameter);
         } else if (m_direction.equals(Direction.OUT.name())) {
             if (hasType()) {
@@ -220,6 +222,8 @@ public class StoredProcedureParameterMetadata extends ORMetadata {
             } else {
                 call.addNamedOutputArgument(procedureParameterName, m_queryParameter);
             }
+            //set the project level settings on the argument's database fields
+            setDatabaseFieldSettings((DatabaseField)call.getParameters().lastElement(), project);
         } else if (m_direction.equals(Direction.IN_OUT.name())) {
             if (hasType()) {
                 call.addNamedInOutputArgument(procedureParameterName, m_queryParameter, m_queryParameter, getJavaClass(m_type));
@@ -230,13 +234,31 @@ public class StoredProcedureParameterMetadata extends ORMetadata {
             } else {
                 call.addNamedInOutputArgument(procedureParameterName, m_queryParameter);
             }
-                            
+            //set the project level settings on the argument's out database field
+            Object[] array = (Object[])call.getParameters().lastElement();
+            if (array[0] == array[1]){
+                array[1] = ((DatabaseField)array[1]).clone();
+            }
+            setDatabaseFieldSettings((DatabaseField)array[1], project);
             queryArguments.add(m_queryParameter);
         } else if (m_direction.equals(Direction.OUT_CURSOR.name())) {
             call.useNamedCursorOutputAsResultSet(m_queryParameter);
         }
       
         return queryArguments;    
+    }
+
+    /**
+     * INTERNAL:
+     * set the project level settings on the database fields
+     */
+    protected void setDatabaseFieldSettings(DatabaseField field, MetadataProject project){
+        if (project.useDelimitedIdentifier()) {
+            field.setUseDelimiters(true);
+        } else if (project.getShouldForceFieldNamesToUpperCase() && !field.shouldUseDelimiters()) {
+            //done directly as this field's name should be in uppercase.
+            field.setName(field.getName().toUpperCase());
+        }
     }
     
     /**

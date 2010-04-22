@@ -20,6 +20,7 @@ import java.util.Map;
 
 import org.eclipse.persistence.exceptions.ValidationException;
 import org.eclipse.persistence.internal.jpa.EJBQueryImpl;
+import org.eclipse.persistence.internal.jpa.metadata.MetadataProject;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataAccessibleObject;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataAnnotation;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataClass;
@@ -138,7 +139,7 @@ public class NamedNativeQueryMetadata extends NamedQueryMetadata {
      * INTERNAL:
      */
     @Override
-    public void process(AbstractSession session, ClassLoader loader) {
+    public void process(AbstractSession session, ClassLoader loader, MetadataProject project) {
         Map<String, Object> hints = processQueryHints(session);
 
         if (m_resultClass.isVoid()) {

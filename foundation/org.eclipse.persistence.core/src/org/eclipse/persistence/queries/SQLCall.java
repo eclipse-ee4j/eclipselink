@@ -91,7 +91,7 @@ public class SQLCall extends DatabaseCall implements QueryStringCall {
     /**
      * INTERNAL:
      * Set the data passed through setCustomSQLArgumentType and useCustomSQLCursorOutputAsResultSet methods.
-     * This will return the null if the user did not add the field/type usin the setCustomSQLArgumentType method
+     * This will return the null if the user did not add the field/type using the setCustomSQLArgumentType method
      */
     protected DatabaseField afterTranslateCustomQueryUpdateParameter(DatabaseField field, int index, Integer parameterType, Vector updatedParameters, Vector updatedParameterTypes) {
         for (int j = 0; j < updatedParameters.size(); j++) {

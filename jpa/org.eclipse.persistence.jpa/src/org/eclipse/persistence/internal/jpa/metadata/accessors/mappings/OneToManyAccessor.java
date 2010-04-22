@@ -253,7 +253,7 @@ public class OneToManyAccessor extends CollectionAccessor {
             setFieldName(fkField, defaultFKFieldName, MetadataLogger.FK_COLUMN);
 
             // Set the table name if one is not already set.
-            if (fkField.getTableName().equals("")) {
+            if (!fkField.hasTableName()) {
                 fkField.setTable(getReferenceDescriptor().getPrimaryTable());
             }
             

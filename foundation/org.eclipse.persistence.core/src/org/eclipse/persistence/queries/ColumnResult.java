@@ -12,6 +12,7 @@
  ******************************************************************************/  
 package org.eclipse.persistence.queries;
 
+import org.eclipse.persistence.internal.helper.DatabaseField;
 import org.eclipse.persistence.internal.localization.ExceptionLocalization;
 import org.eclipse.persistence.sessions.DatabaseRecord;
 
@@ -29,17 +30,24 @@ import org.eclipse.persistence.sessions.DatabaseRecord;
 public class ColumnResult extends SQLResult{
     
     /** Stores the Columns name from the result set */
-    protected String columnName;
+    protected DatabaseField column;
     
-    public ColumnResult(String column){
-        this.columnName = column;
-        if (this.columnName == null){
+    public ColumnResult(DatabaseField column){
+        if (column == null || column.getName() == null ){
             throw new IllegalArgumentException(ExceptionLocalization.buildMessage("null_value_for_column_result"));
         }
+        this.column = column;
     }
     
-    public String getColumnName(){
-        return this.columnName;
+    public ColumnResult(String column){
+        if (column == null){
+            throw new IllegalArgumentException(ExceptionLocalization.buildMessage("null_value_for_column_result"));
+        }
+        this.column = new DatabaseField(column);
+    }
+    
+    public DatabaseField getColumn(){
+        return this.column;
     }
     
     /**
@@ -47,7 +55,7 @@ public class ColumnResult extends SQLResult{
      * This method is a convenience method for extracting values from Results
      */
     public Object getValueFromRecord(DatabaseRecord record, ResultSetMappingQuery query){
-        return record.get(this.columnName);
+        return record.get(this.column);
     }
     
     public boolean isColumnResult(){

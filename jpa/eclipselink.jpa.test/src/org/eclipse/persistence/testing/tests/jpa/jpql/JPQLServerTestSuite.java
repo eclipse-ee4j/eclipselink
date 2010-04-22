@@ -34,6 +34,7 @@ public class JPQLServerTestSuite extends TestSuite {
         suite.addTest(JUnitJPQLSimpleTestSuite.suite());
         suite.addTest(JUnitJPQLUnitTestSuite.suite());
         suite.addTest(JUnitJPQLValidationTestSuite.suite());
+        suite.addTest(JUnitNativeQueryTestSuite.suite());
 
         return suite;
     }

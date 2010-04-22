@@ -345,8 +345,8 @@ public class HistoryPolicy implements Cloneable, Serializable {
             Vector sortedTables = org.eclipse.persistence.internal.helper.NonSynchronizedVector.newInstance(unsortedTables.size());
             Vector sortedStartFields = org.eclipse.persistence.internal.helper.NonSynchronizedVector.newInstance(unsortedTables.size());
             Vector sortedEndFields = org.eclipse.persistence.internal.helper.NonSynchronizedVector.newInstance(unsortedTables.size());
-            boolean universalStartField = ((getStartFields().size() == 1) && (((DatabaseField)getStartFields().get(0)).getTableName().equals("")));
-            boolean universalEndField = ((getEndFields().size() == 1) && (((DatabaseField)getEndFields().get(0)).getTableName().equals("")));
+            boolean universalStartField = ((getStartFields().size() == 1) && (!((DatabaseField)getStartFields().get(0)).hasTableName()));
+            boolean universalEndField = ((getEndFields().size() == 1) && (!((DatabaseField)getEndFields().get(0)).hasTableName()));
             DatabaseTable descriptorTable = null;
             HistoricalDatabaseTable historicalTable = null;
             DatabaseField historyField = null;

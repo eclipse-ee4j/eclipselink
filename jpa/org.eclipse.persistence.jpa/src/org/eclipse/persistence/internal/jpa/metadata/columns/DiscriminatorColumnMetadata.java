@@ -109,8 +109,11 @@ public class DiscriminatorColumnMetadata extends MetadataColumn {
         field.setName(MetadataHelper.getName(field.getName(), "DTYPE", loggingCtx, descriptor.getLogger(), annotatedElementName), Helper.getDefaultStartDatabaseDelimiter(), Helper.getDefaultEndDatabaseDelimiter());
         if (useDelimitedIdentifier){
             field.setUseDelimiters(useDelimitedIdentifier);
+        } else if (descriptor.getProject().getShouldForceFieldNamesToUpperCase() && !field.shouldUseDelimiters()) {
+            //done directly as this field's name should be in uppercase.
+            field.setName(field.getName().toUpperCase());
         }
-        
+
         // Set the table.
         field.setTable(descriptor.getPrimaryTable());
 

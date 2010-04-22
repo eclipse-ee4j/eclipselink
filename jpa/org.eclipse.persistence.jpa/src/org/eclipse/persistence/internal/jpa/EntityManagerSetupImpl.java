@@ -69,6 +69,7 @@ import org.eclipse.persistence.sessions.server.ServerSession;
 import org.eclipse.persistence.internal.jpa.metadata.MetadataHelper;
 import org.eclipse.persistence.internal.jpa.metadata.MetadataLogger;
 import org.eclipse.persistence.internal.jpa.metadata.MetadataProcessor;
+import org.eclipse.persistence.internal.jpa.metadata.MetadataProject;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataAsmFactory;
 import org.eclipse.persistence.internal.jpa.metamodel.MetamodelImpl;
 import org.eclipse.persistence.sessions.coordination.RemoteCommandManager;
@@ -863,7 +864,7 @@ public class EntityManagerSetupImpl {
             
             // Cannot start logging until session and log and initialized, so log start of predeploy here.
             session.log(SessionLog.FINEST, SessionLog.PROPERTIES, "predeploy_begin", new Object[]{getPersistenceUnitInfo().getPersistenceUnitName(), session.getName(), state, factoryCount});
-            
+
             if (isSessionLoadedFromSessionsXML) {
                 // Loading session from sessions-xml.
                 session.log(SessionLog.FINEST, SessionLog.PROPERTIES, "loading_session_xml", sessionsXMLStr, sessionName);
@@ -942,6 +943,9 @@ public class EntityManagerSetupImpl {
             if (!isSessionLoadedFromSessionsXML ) {
                 // Create an instance of MetadataProcessor for specified persistence unit info
                 processor = new MetadataProcessor(persistenceUnitInfo, session, privateClassLoader, enableWeaving, weaveEager);
+
+                //bug:299926 - Case insensitive table / column matching with native SQL queries
+                updateCaseSensitivitySettings(predeployProperties, processor.getProject());
                 
                 // Process the Object/relational metadata from XML and annotations.
                 PersistenceUnitProcessor.processORMetadata(processor, throwExceptionOnFail);
@@ -993,12 +997,6 @@ public class EntityManagerSetupImpl {
             throw new PersistenceException(EntityManagerSetupException.predeployFailed(persistenceUnitInfo.getPersistenceUnitName(), ex));
         }
     }
-
-
-    /**
-     * Check the provided map for an object with the given key.  If that object is not available, check the
-     * System properties.  If it is not available from either location, return the default value.
-     */
 
     /**
      * Return the name of the session this SetupImpl is building. The session name is only known at deploy
@@ -1764,6 +1762,26 @@ public class EntityManagerSetupImpl {
                this.session.getProject().getLogin().setShouldForceFieldNamesToUpperCase(false);
            } else {
                this.session.handleException(ValidationException.invalidBooleanValueForProperty(uppercaseString, PersistenceUnitProperties.NATIVE_QUERY_UPPERCASE_COLUMNS));
+           }
+        }
+    }
+
+    /**
+     * Enable or disable forcing field names to be case insensitive.  Implementation of case insensitive column handling relies on setting
+     * both sides to uppercase (the column names from annotations/xml as well as what is returned from the JDBC/statement)
+     * The method needs to be called in deploy stage.  
+     */
+    protected void updateCaseSensitivitySettings(Map m, MetadataProject project){
+        //Set Native SQL flag if it was specified.
+        String insensitiveString = EntityManagerFactoryProvider.getConfigPropertyAsStringLogDebug(PersistenceUnitProperties.UPPERCASE_COLUMN_NAMES, m, "true", session);
+        if (insensitiveString != null) {
+           if (insensitiveString.equalsIgnoreCase("true")) {
+               project.setShouldForceFieldNamesToUpperCase(true);
+               this.session.getProject().getLogin().setShouldForceFieldNamesToUpperCase(true);
+           } else if (insensitiveString.equalsIgnoreCase("false")) {
+               project.setShouldForceFieldNamesToUpperCase(false);
+           } else {
+               this.session.handleException(ValidationException.invalidBooleanValueForProperty(insensitiveString, PersistenceUnitProperties.UPPERCASE_COLUMN_NAMES));
            }
         }
     }

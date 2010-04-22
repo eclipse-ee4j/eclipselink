@@ -646,6 +646,7 @@ public class DefaultTableGenerator {
         resolvedDatabaseField.setNullable(childField.isNullable());
         resolvedDatabaseField.setUpdatable(childField.isUpdatable());
         resolvedDatabaseField.setInsertable(childField.isInsertable());
+        resolvedDatabaseField.setOriginalName(childField.getOriginalName());
         resolvedDatabaseField.setUseDelimiters(childField.shouldUseDelimiters());
         
         String columnDef = childField.getColumnDefinition();

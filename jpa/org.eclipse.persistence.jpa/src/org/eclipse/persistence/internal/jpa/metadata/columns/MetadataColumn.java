@@ -24,7 +24,7 @@ import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataA
 
 /**
  * INTERNAL:
- * Object to process JPA colummn type into EclipseLink database fields.
+ * Object to process JPA column type into EclipseLink database fields.
  * 
  * @author Guy Pelletier
  * @since EclipseLink 1.2

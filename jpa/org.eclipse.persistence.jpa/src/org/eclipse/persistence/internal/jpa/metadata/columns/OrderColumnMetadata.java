@@ -88,10 +88,13 @@ public class OrderColumnMetadata extends DirectColumnMetadata {
             orderField.setName(MetadataHelper.getName(getName(), mapping.getAttributeName() + _ORDER, MetadataLogger.ORDER_COLUMN, descriptor.getLogger(), getAccessibleObject().toString()), Helper.getDefaultStartDatabaseDelimiter(), Helper.getDefaultEndDatabaseDelimiter());
             if (useDelimitedIdentifier){
                 orderField.setUseDelimiters(useDelimitedIdentifier);
+            } else if (descriptor.getProject().getShouldForceFieldNamesToUpperCase() && !orderField.shouldUseDelimiters()) {
+                //done directly as this field's name should be in uppercase.
+                orderField.setName(orderField.getName().toUpperCase());
             }
-            
+
             // We don't set a table, the mapping will figure that out for us at runtime.
-    
+
             // Set the oder field and validation mode on the mapping.
             mapping.setListOrderField(orderField);
             

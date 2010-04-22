@@ -22,7 +22,6 @@ import junit.framework.Test;
 import org.eclipse.persistence.testing.tests.jpa.advanced.AdvancedJPAJunitTest;
 import org.eclipse.persistence.testing.tests.jpa.advanced.AdvancedJunitTest;
 import org.eclipse.persistence.testing.tests.jpa.advanced.CacheImplJUnitTest;
-import org.eclipse.persistence.testing.tests.jpa.advanced.NamedNativeQueryJUnitTest;
 import org.eclipse.persistence.testing.tests.jpa.advanced.CallbackEventJUnitTestSuite;
 import org.eclipse.persistence.testing.tests.jpa.advanced.EntityManagerJUnitTestSuite;
 import org.eclipse.persistence.testing.tests.jpa.advanced.SQLResultSetMappingTestSuite;
@@ -73,6 +72,7 @@ import org.eclipse.persistence.testing.tests.jpa.jpql.JUnitJPQLParameterTestSuit
 import org.eclipse.persistence.testing.tests.jpa.jpql.JUnitJPQLSimpleTestSuite;
 import org.eclipse.persistence.testing.tests.jpa.jpql.JUnitJPQLUnitTestSuite;
 import org.eclipse.persistence.testing.tests.jpa.jpql.JUnitJPQLValidationTestSuite;
+import org.eclipse.persistence.testing.tests.jpa.jpql.JUnitNativeQueryTestSuite;
 import org.eclipse.persistence.testing.tests.jpa.xml.EntityMappingsJUnitTestSuite;
 import org.eclipse.persistence.testing.tests.jpa.cacheable.CacheableModelJunitTest;
 import org.eclipse.persistence.testing.tests.jpa.cascadedeletes.CascadeDeletesJUnitTestSuite;
@@ -91,7 +91,6 @@ public class FullRegressionTestSuite extends TestSuite {
         suite.setName("advanced");
         suite.addTest(LifecycleJUnitTest.suite());        
         suite.addTest(ConcurrencyTest.suite());
-        suite.addTest(NamedNativeQueryJUnitTest.suite());
         suite.addTest(CacheImplJUnitTest.suite());
         suite.addTest(CallbackEventJUnitTestSuite.suite());
         suite.addTest(EntityManagerJUnitTestSuite.suite());
@@ -176,6 +175,7 @@ public class FullRegressionTestSuite extends TestSuite {
         suite.addTest(JUnitJPQLExamplesTestSuite.suite());
         suite.addTest(JUnitJPQLModifyTestSuite.suite());
         suite.addTest(AdvancedQueryTestSuite.suite());
+        suite.addTest(JUnitNativeQueryTestSuite.suite());
         fullSuite.addTest(suite);
 
         // XML model

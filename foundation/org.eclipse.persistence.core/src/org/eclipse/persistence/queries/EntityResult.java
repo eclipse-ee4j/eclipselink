@@ -23,6 +23,7 @@ import org.eclipse.persistence.internal.helper.DatabaseField;
 import org.eclipse.persistence.internal.localization.ExceptionLocalization;
 import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
 import org.eclipse.persistence.internal.security.PrivilegedClassForName;
+import org.eclipse.persistence.internal.sessions.AbstractRecord;
 import org.eclipse.persistence.mappings.DatabaseMapping;
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.exceptions.ValidationException;
@@ -51,7 +52,7 @@ public class EntityResult extends SQLResult {
     /** Stores the column that will contain the value to determine the correct subclass
      * to create if applicable.
      */
-    protected String discriminatorColumn;
+    protected DatabaseField discriminatorColumn;
     
     public EntityResult(Class entityClass){
         this.entityClass = entityClass;
@@ -120,7 +121,7 @@ public class EntityResult extends SQLResult {
      * Returns the column name for the column that will store the value used to
      * determine the subclass type if applicable.
      */
-    public String getDiscriminatorColumn(){
+    public DatabaseField getDiscriminatorColumn(){
         return this.discriminatorColumn;
     }
 
@@ -129,6 +130,13 @@ public class EntityResult extends SQLResult {
      * determine the subclass type if applicable.
      */
     public void setDiscriminatorColumn(String column){
+        if (column == null){
+            return;
+        }
+        this.discriminatorColumn = new DatabaseField(column);
+    }
+    
+    public void setDiscriminatorColumn(DatabaseField column){
         if (column == null){
             return;
         }
@@ -146,18 +154,19 @@ public class EntityResult extends SQLResult {
         ClassDescriptor descriptor = query.getSession().getDescriptor(this.entityClass);
         DatabaseRecord entityRecord = new DatabaseRecord(descriptor.getFields().size());
         if (descriptor.hasInheritance()) {
-            if (this.discriminatorColumn != null) {
-                Object value = record.get(this.discriminatorColumn);
-                if (value == null){
-                    throw QueryException.discriminatorColumnNotSelected(this.discriminatorColumn, query.getSQLResultSetMapping().getName());
-                }
-                entityRecord.put(descriptor.getInheritancePolicy().getClassIndicatorField(), record.get(this.discriminatorColumn));
+            Object value = null;
+            if (this.discriminatorColumn == null) {
+                value = record.get(descriptor.getInheritancePolicy().getClassIndicatorField());
             } else {
-                entityRecord.put(descriptor.getInheritancePolicy().getClassIndicatorField(), record.get(descriptor.getInheritancePolicy().getClassIndicatorField()));
-            }
-            // if the descriptor uses inheritance and multiple types may have been read
-            //get the correct descriptor.
-            if (descriptor.hasInheritance() && descriptor.getInheritancePolicy().shouldReadSubclasses()) {
+                value = record.getIndicatingNoEntry(this.discriminatorColumn);
+                if (value == AbstractRecord.noEntry){
+                    throw QueryException.discriminatorColumnNotSelected(this.discriminatorColumn.getName(), query.getSQLResultSetMapping().getName());
+                }
+            }            
+            entityRecord.put(descriptor.getInheritancePolicy().getClassIndicatorField(), value);
+            
+            // if multiple types may have been read get the correct descriptor.
+            if ( descriptor.getInheritancePolicy().shouldReadSubclasses()) {
                 Class classValue = descriptor.getInheritancePolicy().classFromRow(entityRecord, query.getSession());
                 descriptor = query.getSession().getDescriptor(classValue);
             }
@@ -167,7 +176,7 @@ public class EntityResult extends SQLResult {
             FieldResult fieldResult = (FieldResult)this.getFieldResults().get(mapping.getAttributeName());
             if (fieldResult != null){
                 if (mapping.getFields().size() == 1 ) {
-                    entityRecord.put(mapping.getFields().firstElement(), record.get(fieldResult.getColumnName()));
+                    entityRecord.put(mapping.getFields().firstElement(), record.get(fieldResult.getColumn()));
                 } else if (mapping.getFields().size() >1){
                     getValueFromRecordForMapping(entityRecord,mapping,fieldResult,record);
                 }
@@ -200,7 +209,7 @@ public class EntityResult extends SQLResult {
             if (mapping.isOneToOneMapping()){
                 dbfield = (((OneToOneMapping)mapping).getTargetToSourceKeyFields().get(dbfield));
             }
-            entityRecord.put(dbfield, databaseRecord.get(fieldResult.getColumnName()));
+            entityRecord.put(dbfield, databaseRecord.get(fieldResult.getColumn()));
             return;
         }
         /** This processes each FieldResult stored in the collection of FieldResults individually */
@@ -211,7 +220,7 @@ public class EntityResult extends SQLResult {
              if (mapping.isOneToOneMapping()){
                 dbfield = (((OneToOneMapping)mapping).getTargetToSourceKeyFields().get(dbfield));
             }
-            entityRecord.put(dbfield, databaseRecord.get(tempFieldResult.getColumnName()));
+            entityRecord.put(dbfield, databaseRecord.get(tempFieldResult.getColumn()));
         }
     }
     
