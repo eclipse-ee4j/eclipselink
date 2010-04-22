@@ -1889,6 +1889,7 @@
         <antcall target="server-test-jpaadvancedproperties" inheritRefs="true"/>
         <antcall target="server-test-jpql" inheritRefs="true"/>
         <antcall target="server-test-lob" inheritRefs="true"/>
+        <antcall target="server-test-metamodel" inheritRefs="true"/>
         <antcall target="server-test-nativeapitest" inheritRefs="true"/>
         <antcall target="server-test-orphanremoval" inheritRefs="true"/>
         <antcall target="server-test-privateowned" inheritRefs="true"/>
@@ -2100,6 +2101,19 @@
             <param name="TEST_NAME" value="eclipselink-lob-model"/>
             <param name="EAR_NAME" value="eclipselink-lob-model"/>
             <param name="TEST_SUITE" value="org.eclipse.persistence.testing.tests.jpa.lob.LobJUnitTestCase"/>
+            <param name="eclipselink.jpa.test.dir" value="."/>
+        </antcall>
+    </target>
+
+    <target name="server-test-metamodel">
+        <antcall target="server-run-all" inheritRefs="true">
+            <param name="PERSISTENCE_UNIT_NAME" value="default"/>
+            <param name="MODEL_DIR" value="org/eclipse/persistence/testing/models/jpa/metamodel"/>
+            <param name="MODEL_NAME" value="eclipselink-metamodel-model"/>
+            <param name="TEST_DIR" value="org/eclipse/persistence/testing/tests/jpa/metamodel"/>
+            <param name="TEST_NAME" value="eclipselink-metamodel-model"/>
+            <param name="EAR_NAME" value="eclipselink-metamodel-model"/>
+            <param name="TEST_SUITE" value="org.eclipse.persistence.testing.tests.jpa.metamodel.MetamodelMetamodelTest"/>
             <param name="eclipselink.jpa.test.dir" value="."/>
         </antcall>
     </target>
