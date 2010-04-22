@@ -538,7 +538,7 @@ public abstract class ORMetadata {
         if (existing == null) {
             // There is no existing, no override occurs, just use it!
             return true;
-        } else if (existing.equals(this)) {
+        } else if (existing.equals(this) || existing.getLocation().equals(getLocation())) {
             // The objects are the same. Could be that they user accidently
             // cut and paste from one file to another or that we are processing
             // an object from a mapped superclass which we have already
