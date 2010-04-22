@@ -57,6 +57,10 @@ public class BindingModel {
             anchorIdx = idx + 1;
             idx = sqlString.indexOf("?", anchorIdx);
             argNumber++;
+            // bug 309002 - may be GROUP BY/ORDER BY clauses after last marker
+            if (idx == -1) {
+                sb.append(sqlString.substring(anchorIdx, sqlString.length()));
+            }
         }
         return sb.toString();
     }
