@@ -40,13 +40,17 @@ public class SAXFragmentBuilder extends SAXDocumentBuilder {
     }
 
     public void startElement(String namespaceURI, String localName, String qName, Attributes atts) throws SAXException {
+        boolean bufferContainsOnlyWhitespace = stringBuffer.toString().trim().length() == 0;
+        if (bufferContainsOnlyWhitespace) {
+            stringBuffer.reset();
+        }
 
-        /*if ((stringBuffer.length() > 0) && !(nodes.size() == 1)) {
+        if ((stringBuffer.length() > 0) && !(nodes.size() == 1)) {
             Text text = getInitializedDocument().createTextNode(stringBuffer.toString());
             Node parent = this.nodes.get(nodes.size() - 1);
             parent.appendChild(text);
             stringBuffer.reset();
-        }*/
+        }
         if (null != namespaceURI && namespaceURI.length() == 0) {
             namespaceURI = null;
         }
@@ -74,10 +78,6 @@ public class SAXFragmentBuilder extends SAXDocumentBuilder {
         Element element = getInitializedDocument().createElementNS(namespaceURI, qName);
         Node parentNode = nodes.get(nodes.size() - 1);
 
-        boolean bufferContainsOnlyWhitespace = stringBuffer.toString().trim().length() == 0;
-        if (bufferContainsOnlyWhitespace) {
-            stringBuffer.reset();
-        }
         appendChildNode(parentNode, element);
         nodes.add(element);
 
