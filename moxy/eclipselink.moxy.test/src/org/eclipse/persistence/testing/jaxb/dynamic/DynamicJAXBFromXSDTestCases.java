@@ -47,8 +47,6 @@ import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 import org.xml.sax.SAXParseException;
 
-import com.sun.xml.internal.bind.api.ErrorListener;
-
 public class DynamicJAXBFromXSDTestCases extends TestCase {
 
     private static final String RESOURCE_DIR = "org/eclipse/persistence/testing/jaxb/dynamic/";
