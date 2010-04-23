@@ -100,16 +100,19 @@
 
         <!-- dependency properties -->
         <property name="core.lib"           value="${moxy.2.common.plugins.dir}/org.eclipse.persistence.core_${version.string}.jar"/>
+        <property name="jaxb-api.lib"       value="${moxy.2.common.plugins.dir}/${jaxb-api.jar}"/> 
         <property name="jaxb-xjc.lib"       value="${moxy.2.common.plugins.dir}/${jaxb-xjc.jar}"/>
         <property name="jaxb-impl.lib"      value="${moxy.2.common.plugins.dir}/${jaxb-impl.jar}"/>
-
+        
         <!-- dependency tests -->
         <available file="${core.lib}"                  property="core.bundle.exist"/>
-        <fail message="Cannot find: '${core.lib}'"     unless="core.bundle.exist"/>
+        <fail message="Cannot find core: '${core.lib}'"     unless="core.bundle.exist"/>
+        <available file="${jaxb-api.lib}"              property="jaxb-api.bundle.exist"/>
+        <fail message="Cannot find jaxb-api: '${jaxb-api.lib}'" unless="jaxb-api.bundle.exist"/>
         <available file="${jaxb-xjc.lib}"              property="jaxb-xjc.bundle.exist"/>
+        <fail message="Cannot find jaxb-xjc: '${jaxb-xjc.lib}'" unless="jaxb-xjc.bundle.exist"/>
         <available file="${jaxb-impl.lib}"             property="jaxb-impl.bundle.exist"/>
-        <fail message="Cannot find xjc: '${jaxb-xjc.lib}'" unless="jaxb-xjc.bundle.exist"/>
-        <fail message="Cannot find impl: '${jaxb-impl.lib}'" unless="jaxb-impl.bundle.exist"/>
+        <fail message="Cannot find jaxb-impl: '${jaxb-impl.lib}'" unless="jaxb-impl.bundle.exist"/>
 
         <!-- Check for BND library -->
         <condition property="bnd.lib" value="${extensions.depend.dir}/${bndtool.jar}">
@@ -120,14 +123,9 @@
         </condition>
         <echo message="bnd.lib                     = '${bnd.lib}'"/>
 
-        <!-- Needed because this package is only included in JDK6 and beyond -->
-        <condition property="jaxb-api.lib" value="${jaxb-api.jar}" else="">
-            <contains string="${java.version}" substring="1.5"/>
-        </condition>
-
         <!-- Set Compile Path-->
         <path id="moxy.compile.path">
-            <pathelement path="${moxy.2.common.plugins.dir}/${jaxb-api.lib}"/>
+            <pathelement path="${jaxb-api.lib}"/>
             <pathelement path="${moxy.2.common.plugins.dir}/${asm}"/>
             <pathelement path="${jaxb-xjc.lib}"/>
             <pathelement path="${jaxb-impl.lib}"/>

@@ -63,15 +63,11 @@
         <propertyref prefix="javax.xml"/>
     </propertyset>
 
-    <!-- Needed because this package is only included in JDK6 and beyond -->
-    <condition property="jaxb-api.lib" value="${moxytest.2.common.plugins.dir}/${jaxb-api.jar}" else="">
-        <contains string="${java.version}" substring="1.5"/>
-    </condition>
-    <property name="persistence.lib" value="${moxytest.2.common.plugins.dir}/${unsigned.persistence10.jar}"/>
     <property name="eclipselink.lib" value="${moxytest.2.trunk.dir}/${eclipselink.jar}"/>
-
-    <property name="jaxb-xjc.lib" value="${moxytest.2.common.plugins.dir}/${jaxb-xjc.jar}"/>
-
+    <property name="persistence.lib" value="${moxytest.2.common.plugins.dir}/${unsigned.persistence10.jar}"/>
+    <property name="jaxb-xjc.lib"    value="${moxytest.2.common.plugins.dir}/${jaxb-xjc.jar}"/>
+    <property name="jaxb-api.lib"    value="${moxytest.2.common.plugins.dir}/${jaxb-api.jar}"/>
+    
     <!-- Compile/run paths -->
     <path id="jaxb.compile.path">
         <pathelement path="${jaxb-api.lib}"/>

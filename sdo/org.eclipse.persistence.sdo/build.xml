@@ -90,6 +90,8 @@
         <property name="implementation.vendor" value="${specification.vendor}"/>
 
         <!-- dependency properties -->
+        <property name="jaxb-api.lib"       value="${sdo.2.common.plugins.dir}/${jaxb-api.jar}"/>
+        <property name="commonj.sdo.lib"    value="../plugins/${commonj.sdo.jar}"/>
         <property name="core.lib"           value="${sdo.2.common.plugins.dir}/org.eclipse.persistence.core_${version.string}.jar"/>
         <property name="moxy.lib"           value="${sdo.2.common.plugins.dir}/org.eclipse.persistence.moxy_${version.string}.jar"/>
 
@@ -109,16 +111,11 @@
         </condition>
         <echo message="bnd.lib                     = '${bnd.lib}'"/>
 
-        <!-- Needed because this package is only included in JDK6 and beyond -->
-        <condition property="jaxb-api.lib" value="${jaxb-api.jar}" else="">
-            <contains string="${java.version}" substring="1.5"/>
-        </condition>
-
         <!-- Set Compile Path-->
         <path id="sdo.compile.path">
-            <pathelement path="../plugins/${commonj.sdo.jar}"/>
+            <pathelement path="${commonj.sdo.lib}"/>
             <pathelement path="${sdo.2.common.plugins.dir}/${asm}"/>
-            <pathelement path="${sdo.2.common.plugins.dir}/${jaxb-api.lib}"/>
+            <pathelement path="${jaxb-api.lib}"/>
             <pathelement path="${core.lib}"/>
             <pathelement path="${moxy.lib}"/>
         </path>

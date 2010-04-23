@@ -148,10 +148,10 @@
 
     <path id="javadoc.path">
         <pathelement path="${eclipselink.jar}"/>
-        <pathelement path="${commonj.sdo.jar}"/>
+        <pathelement path="${eclipselink.sdo.plugins}/${commonj.sdo.jar}"/>
         <pathelement path="${eclipselink.plugins}/${antlr}"/>
         <pathelement path="${eclipselink.plugins}/${asm}"/>
-        <pathelement path="${jaxb-api.lib}"/>
+        <pathelement path="${eclipselink.plugins}/${jaxb-api.jar}"/>
         <pathelement path="${eclipselink.plugins}/${persistence10.jar}"/>
         <fileset
             dir="${eclipselink.plugins}"
