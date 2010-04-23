@@ -223,6 +223,7 @@
         <ant antfile="build.xml" dir="${eclipselink.weaving}"          target="clean"/>
         <ant antfile="build.xml" dir="${eclipselink.equinox}"          target="clean"/>
         <ant antfile="build.xml" dir="${eclipselink.moxy}"             target="clean"/>
+        <ant antfile="build.xml" dir="${eclipselink.moxy.dynamic}"     target="clean"/>
         <ant antfile="build.xml" dir="${eclipselink.util.jaxb}"        target="clean"/>
         <ant antfile="build.xml" dir="${eclipselink.sdo}"              target="clean"/>
         <ant antfile="build.xml" dir="${eclipselink.util.dbws}"        target="clean"/>
@@ -253,6 +254,7 @@
         <ant antfile="build.xml" dir="${eclipselink.weaving}"          target="build"/>
         <ant antfile="build.xml" dir="${eclipselink.equinox}"          target="build"/>
         <ant antfile="build.xml" dir="${eclipselink.moxy}"             target="build"/>
+        <ant antfile="build.xml" dir="${eclipselink.moxy.dynamic}"     target="build"/>
         <ant antfile="build.xml" dir="${eclipselink.util.jaxb}"        target="build"/>
         <ant antfile="build.xml" dir="${eclipselink.sdo}"              target="build"/>
         <ant antfile="build.xml" dir="${eclipselink.dbws}"             target="build"/>
@@ -456,6 +458,9 @@
                     javax/persistence/criteria/SetJoin.class,
                     javax/persistence/criteria/Subquery.class
             "/>
+            <fileset
+                dir="${eclipselink.moxy.dynamic}/${classes.dir}"
+                includes="**/*.class,"/>
             <fileset
                 dir="${eclipselink.util.jaxb}/${classes.dir}"
                 includes="**/*.class,"/>
