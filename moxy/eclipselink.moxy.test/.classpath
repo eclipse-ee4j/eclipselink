@@ -11,5 +11,6 @@
 	<classpathentry combineaccessrules="false" kind="src" path="/javax.xml.bind"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/javax.xml.stream"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/org.eclipse.persistence.moxy.dynamic"/>
 	<classpathentry kind="output" path="classes"/>
 </classpath>

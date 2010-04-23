@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<classpath>
+	<classpathentry kind="src" path="src"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/org.eclipse.persistence.moxy"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/org.eclipse.persistence.core"/>
+	<classpathentry kind="var" path="ECLIPSELINK_HOME/utils/eclipselink.utils.jaxb/jaxb-xjc.jar"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/com.sun.xml.bind"/>
+	<classpathentry kind="output" path="bin"/>
+</classpath>
