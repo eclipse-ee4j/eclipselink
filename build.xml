@@ -700,8 +700,6 @@
             <!-- moxy jar's and zips -->
             <zipfileset dir="${eclipselink.plugins}" prefix="eclipselink/jlib/moxy">
                 <include name="${jaxb-api.jar}"/>
-            </zipfileset>
-            <zipfileset dir="${eclipselink.util.jaxb}" prefix="eclipselink/jlib/moxy">
                 <include name="${jaxb-xjc.jar}"/>
                 <include name="${jaxb-impl.jar}"/>
             </zipfileset>

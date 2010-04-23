@@ -70,8 +70,7 @@
     <property name="persistence.lib" value="${moxytest.2.common.plugins.dir}/${unsigned.persistence10.jar}"/>
     <property name="eclipselink.lib" value="${moxytest.2.trunk.dir}/${eclipselink.jar}"/>
 
-    <property name="moxytest.2.utils.jaxb.dir" value="${moxytest.2.trunk.dir}/utils/eclipselink.utils.jaxb"/>
-    <property name="jaxb-xjc.lib" value="${moxytest.2.utils.jaxb.dir}/${jaxb-xjc.jar}"/>
+    <property name="jaxb-xjc.lib" value="${moxytest.2.common.plugins.dir}/${jaxb-xjc.jar}"/>
 
     <!-- Compile/run paths -->
     <path id="jaxb.compile.path">

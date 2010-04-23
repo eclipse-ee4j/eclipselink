@@ -38,23 +38,25 @@
     <!-- (should be set locally, and be destroyed upon return) -->
     <fail message="Not running from '${ant.project.name}' directory" unless="moxy.is.local"/>
 
-    <dirname  property="moxy.build.location" file="${ant.file.org.eclipse.persistence.core}"/>
+    <dirname  property="moxy.build.location_temp" file="${ant.file.org.eclipse.persistence.moxy}"/>
+    <pathconvert targetos="unix" property="moxy.build.location">
+        <path>
+            <pathelement location="${moxy.build.location_temp}"/>
+        </path>
+    </pathconvert>    
     <condition property="moxy.2.base.dir" value="../.." else="..">
-        <contains string="${moxy.build.location}" substring="moxy"/>
+        <contains string="${moxy.build.location}" substring="moxy/${ant.project.name}"/>
     </condition>
     <property name="moxy.2.common.plugins.dir" value="${moxy.2.base.dir}/plugins"/>
     <property name="moxy.2.buildsys.dir" value="${moxy.2.base.dir}/buildsystem"/>
 
-    <echo message="Loading ${user.home}/build.properties..."/>
+    <echo message="Attempting to load ${user.home}/build.properties..."/>
     <property file="${user.home}/build.properties"/>
     <property file="${moxy.build.location}/build.properties"/>
 
     <propertyset id="parser.properties">
         <propertyref prefix="javax.xml"/>
     </propertyset>
-
-    <property name="moxy.2.utils.jaxb.dir" value="${moxy.2.base.dir}/utils/eclipselink.utils.jaxb"/>
-    <property name="jaxb-xjc.lib" value="${moxy.2.utils.jaxb.dir}/${jaxb-xjc.jar}"/>
 
     <!-- Defaults, set var in ${user.home}/build.properties if different version required -->
     <property name="bndtool.jar" value="bnd-0.0.366.jar"/>
@@ -80,7 +82,7 @@
                                                     else="${moxy.build.location}">
             <available file="${moxy.2.base.dir}/../extension.lib.external" type="dir"/>
         </condition>
-        <echo message="extensions.depend.dir        = '${extensions.depend.dir}'"/>
+        <echo message="extensions.depend.dir       = '${extensions.depend.dir}'"/>
 
         <!-- versioning -->
         <!-- These variables  are set in autobuild.xml. A manual build gets defaults -->
@@ -98,10 +100,16 @@
 
         <!-- dependency properties -->
         <property name="core.lib"           value="${moxy.2.common.plugins.dir}/org.eclipse.persistence.core_${version.string}.jar"/>
+        <property name="jaxb-xjc.lib"       value="${moxy.2.common.plugins.dir}/${jaxb-xjc.jar}"/>
+        <property name="jaxb-impl.lib"      value="${moxy.2.common.plugins.dir}/${jaxb-impl.jar}"/>
 
         <!-- dependency tests -->
-        <available file="${core.lib}"               property="core.bundle.exist"/>
-        <fail message="Cannot find: '${core.lib}'"  unless="core.bundle.exist"/>
+        <available file="${core.lib}"                  property="core.bundle.exist"/>
+        <fail message="Cannot find: '${core.lib}'"     unless="core.bundle.exist"/>
+        <available file="${jaxb-xjc.lib}"              property="jaxb-xjc.bundle.exist"/>
+        <available file="${jaxb-impl.lib}"             property="jaxb-impl.bundle.exist"/>
+        <fail message="Cannot find xjc: '${jaxb-xjc.lib}'" unless="jaxb-xjc.bundle.exist"/>
+        <fail message="Cannot find impl: '${jaxb-impl.lib}'" unless="jaxb-impl.bundle.exist"/>
 
         <!-- Check for BND library -->
         <condition property="bnd.lib" value="${extensions.depend.dir}/${bndtool.jar}">
@@ -122,6 +130,7 @@
             <pathelement path="${moxy.2.common.plugins.dir}/${jaxb-api.lib}"/>
             <pathelement path="${moxy.2.common.plugins.dir}/${asm}"/>
             <pathelement path="${jaxb-xjc.lib}"/>
+            <pathelement path="${jaxb-impl.lib}"/>
             <pathelement path="${core.lib}"/>
             <fileset
                 dir="${moxy.2.common.plugins.dir}"

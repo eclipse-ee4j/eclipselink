@@ -40,7 +40,7 @@
         <equals arg1="${ant.java.version}" arg2="1.6"/>
     </condition>
 
-    <dirname  property="jaxbutil.build.location" file="${ant.file.org.eclipse.persistence.core}"/>
+    <dirname  property="jaxbutil.build.location" file="${ant.file.eclipselink.utils.jaxb}"/>
     <condition property="jaxbutil.2.common.plugins.dir" value="../../plugins" else="../plugins">
         <contains string="${jaxbutil.build.location}" substring="util"/>
     </condition>
@@ -50,7 +50,7 @@
     <!-- local property overrides -->
     <property file="${user.home}/build.properties"/>
     <!-- properties checked into SVN -->
-    <property file="./build.properties"/>
+    <property file="${jaxbutil.build.location}/build.properties"/>
 
     <!-- versioning -->
     <!-- These variables  are set in autobuild.xml. A manual build gets defaults -->
@@ -63,9 +63,13 @@
     <property name="version.string" value="${release.version}.qualifier"/>
     <property name="release.designation"  value="EclipseLink DeveloperBuild"/>
 
+    <property name="jaxb-impl.lib" value="${jaxbutil.2.common.plugins.dir}/${jaxb-impl.jar}"/>
+    <property name="jaxb-xjc.lib" value="${jaxbutil.2.common.plugins.dir}/${jaxb-xjc.jar}"/>
+
     <!-- Set Compile Path-->
     <path id="jaxbutil.compile.path">
-        <pathelement path="jaxb-xjc.jar"/>
+        <pathelement path="${jaxb-impl.lib}"/>
+        <pathelement path="${jaxb-xjc.lib}"/>
     </path>
 
     <!-- all -->
