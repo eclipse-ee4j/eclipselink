@@ -342,7 +342,7 @@ public class JAXBContextFactory {
      * It is assumed that the given map's key will be ECLIPSELINK_OXM_XML_KEY, and the value will be
      * Map<String, Source>, where String = package, Source = metadata file
      */
-    static Map<String, XmlBindings> getXmlBindingsFromProperties(Map properties, ClassLoader classLoader) {
+    public static Map<String, XmlBindings> getXmlBindingsFromProperties(Map properties, ClassLoader classLoader) {
         Map<String, XmlBindings> bindings = new HashMap<String, XmlBindings>();
         if (properties != null) {
             Map<String, Source> metadataFiles = null;

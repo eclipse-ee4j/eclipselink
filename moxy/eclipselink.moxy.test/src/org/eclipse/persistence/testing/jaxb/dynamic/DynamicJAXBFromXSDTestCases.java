@@ -37,9 +37,9 @@ import javax.xml.transform.stream.StreamSource;
 import junit.framework.TestCase;
 
 import org.eclipse.persistence.dynamic.DynamicEntity;
-import org.eclipse.persistence.jaxb.DynamicJAXBContext;
-import org.eclipse.persistence.jaxb.DynamicJAXBContextFactory;
 import org.eclipse.persistence.jaxb.JAXBContextFactory;
+import org.eclipse.persistence.jaxb.dynamic.DynamicJAXBContext;
+import org.eclipse.persistence.jaxb.dynamic.DynamicJAXBContextFactory;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 import org.xml.sax.EntityResolver;
@@ -479,7 +479,6 @@ public class DynamicJAXBFromXSDTestCases extends TestCase {
         assertTrue("Unexpected number of elements.", node.getChildNodes().getLength() == 6);
     }
 
-    /*
     public void testXmlId() throws Exception {
         // Tests both XmlId and XmlIdRef
 
@@ -514,7 +513,6 @@ public class DynamicJAXBFromXSDTestCases extends TestCase {
         // If IDREF worked properly, the company element should only contain the id of the company object
         assertEquals("'company' has unexpected number of child nodes.", 1, cNode.getChildNodes().getLength());
     }
-    */
 
     public void testXmlElements() throws Exception {
         InputStream inputStream = ClassLoader.getSystemResourceAsStream(XMLELEMENTS);

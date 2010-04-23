@@ -10,7 +10,7 @@
  * Contributors:
  *     rbarkhouse - initial implementation
  ******************************************************************************/
-package org.eclipse.persistence.jaxb;
+package org.eclipse.persistence.jaxb.dynamic;
 
 import java.lang.reflect.Field;
 import java.util.ArrayList;
@@ -29,6 +29,8 @@ import org.eclipse.persistence.dynamic.DynamicType;
 import org.eclipse.persistence.dynamic.DynamicTypeBuilder;
 import org.eclipse.persistence.internal.jaxb.JaxbClassLoader;
 import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
+import org.eclipse.persistence.jaxb.JAXBContext;
+import org.eclipse.persistence.jaxb.JAXBContextFactory;
 import org.eclipse.persistence.jaxb.compiler.Generator;
 import org.eclipse.persistence.jaxb.javamodel.JavaClass;
 import org.eclipse.persistence.jaxb.javamodel.xjc.XJCJavaClassImpl;
@@ -77,7 +79,7 @@ import com.sun.tools.xjc.api.XJC;
  * </p>
  *
  * @see javax.xml.bind.JAXBContext
- * @see org.eclipse.persistence.jaxb.DynamicJAXBContextFactory
+ * @see org.eclipse.persistence.jaxb.dynamic.DynamicJAXBContextFactory
  * @see org.eclipse.persistence.dynamic.DynamicEntity
  * @see org.eclipse.persistence.dynamic.DynamicType
  *

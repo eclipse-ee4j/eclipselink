@@ -10,7 +10,7 @@
  * Contributors:
  *     rbarkhouse - 2010-03-04 12:22:11 - initial implementation
  ******************************************************************************/
-package org.eclipse.persistence.jaxb;
+package org.eclipse.persistence.jaxb.dynamic;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -21,6 +21,7 @@ import javax.xml.bind.JAXBException;
 import javax.xml.transform.Source;
 import javax.xml.transform.stream.StreamResult;
 
+import org.eclipse.persistence.jaxb.JAXBContext;
 import org.eclipse.persistence.platform.xml.XMLPlatformFactory;
 import org.eclipse.persistence.platform.xml.XMLTransformer;
 import org.w3c.dom.Node;
@@ -57,7 +58,7 @@ import org.xml.sax.InputSource;
  * </code></p>
  *
  * @see javax.xml.bind.JAXBContext
- * @see org.eclipse.persistence.jaxb.DynamicJAXBContext
+ * @see org.eclipse.persistence.jaxb.dynamic.DynamicJAXBContext
  * @see org.eclipse.persistence.dynamic.DynamicEntity
  * @see org.eclipse.persistence.dynamic.DynamicType
  *

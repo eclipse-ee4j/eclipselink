@@ -29,8 +29,8 @@ import javax.xml.transform.dom.DOMSource;
 import junit.framework.TestCase;
 
 import org.eclipse.persistence.dynamic.DynamicEntity;
-import org.eclipse.persistence.jaxb.DynamicJAXBContext;
-import org.eclipse.persistence.jaxb.DynamicJAXBContextFactory;
+import org.eclipse.persistence.jaxb.dynamic.DynamicJAXBContext;
+import org.eclipse.persistence.jaxb.dynamic.DynamicJAXBContextFactory;
 import org.eclipse.persistence.oxm.NamespaceResolver;
 import org.eclipse.persistence.oxm.XMLConstants;
 import org.w3c.dom.Document;
