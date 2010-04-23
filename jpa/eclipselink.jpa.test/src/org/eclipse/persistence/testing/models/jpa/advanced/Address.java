@@ -140,7 +140,7 @@ import static org.eclipse.persistence.annotations.Direction.IN_OUT;
             @EntityResult(
                 entityClass=Address.class,
                 fields={
-                    @FieldResult(name="id", column="address_id_v"),
+                    @FieldResult(name="ID", column="address_id_v"),
                     @FieldResult(name="street", column="street_v"),
                     @FieldResult(name="city", column="city_v"),
                     @FieldResult(name="country", column="country_v"),
@@ -165,7 +165,7 @@ import static org.eclipse.persistence.annotations.Direction.IN_OUT;
             @EntityResult(
                 entityClass=Address.class,
                 fields={
-                    @FieldResult(name="id", column="aDdReSs_iD"),
+                    @FieldResult(name="ID", column="aDdReSs_iD"),
                     @FieldResult(name="street", column="StReeT"),
                     @FieldResult(name="city", column="CiTy"),
                     @FieldResult(name="country", column="CoUnTrY"),
@@ -212,11 +212,11 @@ public class Address implements Serializable {
     @GeneratedValue(generator="ADDRESS_SEQ")
     @SequenceGenerator(name="ADDRESS_SEQ", allocationSize=25)
     @Column(name="ADDRESS_ID")
-    public int getId() { 
+    public int getID() { 
         return id; 
     }
 
-    public void setId(int id) { 
+    public void setID(int id) { 
         this.id = id; 
     }
 

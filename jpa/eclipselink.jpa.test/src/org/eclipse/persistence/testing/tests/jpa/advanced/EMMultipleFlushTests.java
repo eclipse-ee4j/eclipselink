@@ -97,8 +97,8 @@ public class EMMultipleFlushTests extends EntityContainerTestBase  {
         projIDs[0] = projClone1.getId();
         projIDs[1] = projClone2.getId();
        
-        addrIDs[0] = addrClone.getId();
-        addrIDs[1] = addrClone5.getId();
+        addrIDs[0] = addrClone.getID();
+        addrIDs[1] = addrClone5.getID();
        
         
     }

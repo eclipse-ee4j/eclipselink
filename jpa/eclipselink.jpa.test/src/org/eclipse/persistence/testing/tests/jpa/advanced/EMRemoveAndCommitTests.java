@@ -89,7 +89,7 @@ public class EMRemoveAndCommitTests extends EntityContainerTestBase  {
         projIDs[0] = projClone1.getId();
         projIDs[1] = projClone2.getId();
        
-        addrIDs[0] = addrClone.getId();
+        addrIDs[0] = addrClone.getID();
        
         getSession().getIdentityMapAccessor().initializeAllIdentityMaps();
         

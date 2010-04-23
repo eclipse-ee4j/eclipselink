@@ -886,10 +886,10 @@ public class AdvancedJPAJunitTest extends JUnitTestCase {
             // 260263 and 302316: clear the cache or we will end up with a false positive when comparing the entity to itself later
             em.clear();
 
-            Address address2 = (Address) em.createNamedQuery("SProcAddress").setParameter("ADDRESS_ID", address1.getId()).getSingleResult();
+            Address address2 = (Address) em.createNamedQuery("SProcAddress").setParameter("ADDRESS_ID", address1.getID()).getSingleResult();
             assertNotNull("Address returned from stored procedure is null", address2);
             assertFalse("Address returned is the same cached instance that was persisted - the cache must be disabled for this test", address1 == address2); // new 
-            assertTrue("Address not found using stored procedure", (address2.getId() == address1.getId()));
+            assertTrue("Address not found using stored procedure", (address2.getID() == address1.getID()));
             
         } catch (RuntimeException e) {
             if (isTransactionActive(em)){
@@ -932,10 +932,10 @@ public class AdvancedJPAJunitTest extends JUnitTestCase {
             // 260263 and 302316: clear the cache or we will end up with a false positive when comparing the entity to itself later
             em.clear();
             
-            Address address2 = (Address) em.createNamedQuery("SProcAddressWithResultSetMapping").setParameter("address_id_v", address1.getId()).getSingleResult();
+            Address address2 = (Address) em.createNamedQuery("SProcAddressWithResultSetMapping").setParameter("address_id_v", address1.getID()).getSingleResult();
             assertNotNull("Address returned from stored procedure is null", address2);
             assertFalse("Address returned is the same cached instance that was persisted - the cache must be disabled for this test", address1 == address2); // new 
-            assertTrue("Address not found using stored procedure", (address2.getId() == address1.getId()));
+            assertTrue("Address not found using stored procedure", (address2.getID() == address1.getID()));
             
         } catch (RuntimeException e) {
             if (isTransactionActive(em)){
@@ -976,7 +976,7 @@ public class AdvancedJPAJunitTest extends JUnitTestCase {
             commitTransaction(em);
             
             // 260263: we do not need to clear the cache for non-entity returns
-            Object[] values = (Object[]) em.createNamedQuery("SProcAddressWithResultSetFieldMapping").setParameter("address_id_v", address1.getId()).getSingleResult();
+            Object[] values = (Object[]) em.createNamedQuery("SProcAddressWithResultSetFieldMapping").setParameter("address_id_v", address1.getID()).getSingleResult();
             assertTrue("Address data not found or returned using stored procedure", ((values!=null) && (values.length==6)) );
             assertNotNull("No results returned from store procedure call", values[1]);
             assertTrue("Address not found using stored procedure", address1.getStreet().equals(values[1]));
@@ -1019,12 +1019,12 @@ public class AdvancedJPAJunitTest extends JUnitTestCase {
             // 260263 and 302316: clear the cache or we will end up with a false positive when comparing the entity to itself later
             em.clear();
             
-            Query aQuery = em.createNamedQuery("SProcInOut").setParameter("ADDRESS_ID", address1.getId());
+            Query aQuery = em.createNamedQuery("SProcInOut").setParameter("ADDRESS_ID", address1.getID());
             Address address2 = (Address) aQuery.getSingleResult();
         
             assertNotNull("Address returned from stored procedure is null", address2);
             assertFalse("Address returned is the same cached instance that was persisted - the cache must be disabled for this test", address1 == address2); // new 
-            assertTrue("Address not found using stored procedure", address1.getId() == address2.getId());
+            assertTrue("Address not found using stored procedure", address1.getID() == address2.getID());
             assertTrue("Address.street data returned doesn't match persisted address.street", address1.getStreet().equalsIgnoreCase(address2.getStreet()));
             
         } catch (RuntimeException e) {
@@ -1065,11 +1065,11 @@ public class AdvancedJPAJunitTest extends JUnitTestCase {
             commitTransaction(em);
 
             // 260263: we do not need to clear the cache for non-entity returns
-            Query aQuery = em.createNamedQuery("SProcInOutReturningRawData").setParameter("ADDRESS_ID", address1.getId());
+            Query aQuery = em.createNamedQuery("SProcInOutReturningRawData").setParameter("ADDRESS_ID", address1.getID());
             Object[] objectdata = (Object[])aQuery.getSingleResult();
             
             assertTrue("Address data not found or returned using stored procedure", ((objectdata!=null)&& (objectdata.length==2)) );
-            assertTrue("Address Id data returned doesn't match persisted address", (address1.getId() == ((Integer)objectdata[0]).intValue()) );
+            assertTrue("Address Id data returned doesn't match persisted address", (address1.getID() == ((Integer)objectdata[0]).intValue()) );
             assertTrue("Address Street data returned doesn't match persisted address", ( address1.getStreet().equals(objectdata[1] )) );
         } catch (RuntimeException e) {
             if (isTransactionActive(em)){
@@ -1171,7 +1171,7 @@ public class AdvancedJPAJunitTest extends JUnitTestCase {
             commitTransaction(em);
             beginTransaction(em);
 
-            em.createNamedQuery("SProcInOutReturningRawData").setParameter("ADDRESS_ID", address1.getId()).executeUpdate();
+            em.createNamedQuery("SProcInOutReturningRawData").setParameter("ADDRESS_ID", address1.getID()).executeUpdate();
        } catch (RuntimeException exception) {
             if (isTransactionActive(em)){
                 rollbackTransaction(em);

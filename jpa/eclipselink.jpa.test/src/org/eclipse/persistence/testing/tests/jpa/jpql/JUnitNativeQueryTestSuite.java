@@ -83,7 +83,7 @@ public class JUnitNativeQueryTestSuite  extends JUnitTestCase {
                     ", CITY as " + delimiter + "CiTy" +delimiter +
                     ", COUNTRY as " + delimiter + "CoUnTrY" +delimiter +
                     ", VERSION as " + delimiter + "VeRsIoN" +delimiter +
-                    " from CMP3_ADDRESS where ADDRESS_ID = "+expectedAddress.getId()
+                    " from CMP3_ADDRESS where ADDRESS_ID = "+expectedAddress.getID()
                     , Address.class
                     );
             
@@ -102,7 +102,7 @@ public class JUnitNativeQueryTestSuite  extends JUnitTestCase {
                     ", CITY"/* as " + delimiter + "CiTy" +delimiter*/ +
                     ", COUNTRY"/* as " + delimiter + "CoUnTy" +delimiter*/ +
                     ", VERSION"/* as " + delimiter + "VeRsIoN" +delimiter*/ +
-                    " from CMP3_ADDRESS where ADDRESS_ID = "+expectedAddress.getId()
+                    " from CMP3_ADDRESS where ADDRESS_ID = "+expectedAddress.getID()
                     , "address-case-sensitive-map"
                     );
             

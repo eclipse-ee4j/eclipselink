@@ -600,7 +600,7 @@ public class JoinedAttributeAdvancedJunitTest extends JUnitTestCase {
         query.setReferenceClass(Employee.class);
 
         ExpressionBuilder eb = new ExpressionBuilder(Address.class);
-        query.setSelectionCriteria(query.getExpressionBuilder().get("id").equal(emp.getId()).and(eb.get("id").equal(addr.getId())));
+        query.setSelectionCriteria(query.getExpressionBuilder().get("id").equal(emp.getId()).and(eb.get("ID").equal(addr.getID())));
         
         List list = new ArrayList();
         list.add(query.getExpressionBuilder().anyOf("phoneNumbers"));
@@ -619,7 +619,7 @@ public class JoinedAttributeAdvancedJunitTest extends JUnitTestCase {
 
         UpdateAllQuery updall = new UpdateAllQuery(Employee.class);
         updall.addUpdate("address", null);
-        updall.setSelectionCriteria(updall.getExpressionBuilder().get("address").get("id").equal(addr.getId()));
+        updall.setSelectionCriteria(updall.getExpressionBuilder().get("address").get("ID").equal(addr.getID()));
         uow.executeQuery(updall);
         
         uow.commit();
@@ -676,7 +676,7 @@ public class JoinedAttributeAdvancedJunitTest extends JUnitTestCase {
         list.add(query.getExpressionBuilder().anyOf("employees"));
         query.addItem("address", query.getExpressionBuilder(), list);
 
-        query.setSelectionCriteria(query.getExpressionBuilder().get("id").equal(addr.getId()));
+        query.setSelectionCriteria(query.getExpressionBuilder().get("ID").equal(addr.getID()));
         
         
         Vector result = (Vector)getDbSession().executeQuery(query);
@@ -688,7 +688,7 @@ public class JoinedAttributeAdvancedJunitTest extends JUnitTestCase {
 
         UpdateAllQuery updall = new UpdateAllQuery(Employee.class);
         updall.addUpdate("address", null);
-        updall.setSelectionCriteria(updall.getExpressionBuilder().get("address").get("id").equal(addr.getId()));
+        updall.setSelectionCriteria(updall.getExpressionBuilder().get("address").get("ID").equal(addr.getID()));
         uow.executeQuery(updall);
         
         uow.commit();
@@ -738,7 +738,7 @@ public class JoinedAttributeAdvancedJunitTest extends JUnitTestCase {
         query.setReferenceClass(Employee.class);
 
         ExpressionBuilder eb = new ExpressionBuilder(Address.class);
-        query.setSelectionCriteria(query.getExpressionBuilder().get("id").equal(emp.getId()).and(eb.get("id").equal(addr.getId())));
+        query.setSelectionCriteria(query.getExpressionBuilder().get("id").equal(emp.getId()).and(eb.get("ID").equal(addr.getID())));
         
         List list = new ArrayList();
         list.add(query.getExpressionBuilder().get("address"));
@@ -758,7 +758,7 @@ public class JoinedAttributeAdvancedJunitTest extends JUnitTestCase {
 
         updall = new UpdateAllQuery(Employee.class);
         updall.addUpdate("address", null);
-        updall.setSelectionCriteria(updall.getExpressionBuilder().get("address").get("id").equal(addr.getId()));
+        updall.setSelectionCriteria(updall.getExpressionBuilder().get("address").get("ID").equal(addr.getID()));
         uow.executeQuery(updall);
         
         uow.commit();
@@ -889,7 +889,7 @@ public class JoinedAttributeAdvancedJunitTest extends JUnitTestCase {
         query.setReferenceClass(Employee.class);
 
         ExpressionBuilder eb = new ExpressionBuilder(Address.class);
-        query.setSelectionCriteria(query.getExpressionBuilder().get("id").equal(emp.getId()).and(eb.get("id").equal(addr.getId())));
+        query.setSelectionCriteria(query.getExpressionBuilder().get("id").equal(emp.getId()).and(eb.get("ID").equal(addr.getID())));
         
         List list = new ArrayList();
         list.add(query.getExpressionBuilder().get("address"));
@@ -910,7 +910,7 @@ public class JoinedAttributeAdvancedJunitTest extends JUnitTestCase {
 
         updall = new UpdateAllQuery(Employee.class);
         updall.addUpdate("address", null);
-        updall.setSelectionCriteria(updall.getExpressionBuilder().get("address").get("id").equal(addr.getId()));
+        updall.setSelectionCriteria(updall.getExpressionBuilder().get("address").get("ID").equal(addr.getID()));
         uow.executeQuery(updall);
         
         uow.commit();

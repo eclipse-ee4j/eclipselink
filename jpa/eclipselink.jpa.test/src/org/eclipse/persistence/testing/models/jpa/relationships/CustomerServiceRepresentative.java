@@ -47,7 +47,7 @@ public class CustomerServiceRepresentative {
         this.name = name;
     }
     
-    @ManyToMany(cascade=ALL, mappedBy="cSInteractions")
+    @ManyToMany(cascade=ALL, mappedBy="CSInteractions")
     public List<Customer> getCustomers() {
         return customers;
     }

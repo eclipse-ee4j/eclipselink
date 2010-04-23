@@ -1874,8 +1874,8 @@ public class AdvancedQueryTestSuite extends JUnitTestCase {
             Query query = em.createQuery("Select c from Customer c");
             query.setHint(QueryHints.BATCH_SIZE, size);
             query.setHint(QueryHints.BATCH_TYPE, type);
-            query.setHint(QueryHints.BATCH, "e.cSInteractions");
-            query.setHint(QueryHints.BATCH, "e.cCustomers");
+            query.setHint(QueryHints.BATCH, "e.CSInteractions");
+            query.setHint(QueryHints.BATCH, "e.CCustomers");
             List<Customer> results = query.getResultList();
             if (isWeavingEnabled() && counter.getSqlStatements().size() > 3) {
                 fail("Should have been 3 queries but was: " + counter.getSqlStatements().size());
@@ -1911,8 +1911,8 @@ public class AdvancedQueryTestSuite extends JUnitTestCase {
         QuerySQLTracker counter = new QuerySQLTracker(getServerSession());
         try {
             Query query = em.createQuery("Select c from Customer c");
-            query.setHint(QueryHints.LEFT_FETCH, "e.cSInteractions");
-            query.setHint(QueryHints.LEFT_FETCH, "e.cCustomers");
+            query.setHint(QueryHints.LEFT_FETCH, "e.CSInteractions");
+            query.setHint(QueryHints.LEFT_FETCH, "e.CCustomers");
             List<Customer> results = query.getResultList();
             if (isWeavingEnabled() && counter.getSqlStatements().size() > 3) {
                 fail("Should have been 3 queries but was: " + counter.getSqlStatements().size());

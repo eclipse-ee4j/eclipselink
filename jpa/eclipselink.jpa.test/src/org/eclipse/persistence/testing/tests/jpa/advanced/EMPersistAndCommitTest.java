@@ -111,7 +111,7 @@ public class EMPersistAndCommitTest extends EntityContainerTestBase  {
             rollbackTransaction();
             throw new TestErrorException("Exception thrown durring create of address1" + ex);
         }
-        addrIDs[0] = address.getId();
+        addrIDs[0] = address.getID();
         
         try{
             beginTransaction();

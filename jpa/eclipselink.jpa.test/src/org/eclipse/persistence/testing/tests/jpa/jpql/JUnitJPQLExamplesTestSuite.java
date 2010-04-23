@@ -787,7 +787,7 @@ public class JUnitJPQLExamplesTestSuite extends JUnitTestCase {
 
         String ejbqlString = "SELECT DISTINCT e FROM Employee e WHERE e.lastName = '" + empName + "'";
         Employee employee = (Employee)em.createQuery(ejbqlString).getSingleResult();
-        Address addr = em.find(Address.class, employee.getAddress().getId());
+        Address addr = em.find(Address.class, employee.getAddress().getID());
 
         String ejbqlString2 = "SELECT DISTINCT e FROM Employee e WHERE e.lastName = '" + manName + "'";
         Employee manager = (Employee)em.createQuery(ejbqlString2).getSingleResult();

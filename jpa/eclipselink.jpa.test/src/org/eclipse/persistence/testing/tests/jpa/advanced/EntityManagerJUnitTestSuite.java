@@ -716,12 +716,12 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
             //Cache the Address
             em1 = createEntityManager();
             beginTransaction(em1);
-            address = em1.find(Address.class, address.getId());
+            address = em1.find(Address.class, address.getID());
 
             // Delete Address outside of JPA so that the object still stored in the cache.
             em2 = createEntityManager();
             beginTransaction(em2);
-            em2.createNativeQuery("DELETE FROM CMP3_ADDRESS where address_id = ?1").setParameter(1, address.getId()).executeUpdate();
+            em2.createNativeQuery("DELETE FROM CMP3_ADDRESS where address_id = ?1").setParameter(1, address.getID()).executeUpdate();
             commitTransaction(em2);
             
             //Call refresh to invalidate the object
@@ -736,7 +736,7 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
         
         //Verify
         beginTransaction(em1);
-        address=em1.find(Address.class, address.getId());
+        address=em1.find(Address.class, address.getID());
         commitTransaction(em1);
         
         assertNull("The deleted object is still valid in share cache", address);
@@ -2945,7 +2945,7 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
                 em = createEntityManager();
                 clearCache();
                 beginTransaction(em);
-                em.remove(em.find(Address.class, addr.getId()));
+                em.remove(em.find(Address.class, addr.getID()));
                 commitTransaction(em);
             } catch (RuntimeException ex) {
                 // ignore
@@ -3012,7 +3012,7 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
                 em = createEntityManager();
                 clearCache();
                 beginTransaction(em);
-                em.remove(em.find(Address.class, addr.getId()));
+                em.remove(em.find(Address.class, addr.getID()));
                 commitTransaction(em);
             } catch (RuntimeException ex) {
                 // ignore
@@ -3081,7 +3081,7 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
                 em = createEntityManager();
                 clearCache();
                 beginTransaction(em);
-                em.remove(em.find(Address.class, addr.getId()));
+                em.remove(em.find(Address.class, addr.getID()));
                 commitTransaction(em);
             } catch (RuntimeException ex) {
                 // ignore
@@ -5503,7 +5503,7 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
                     for (Address address : results) {
                         if (address != null) {
                             int versionBefore = address.getVersion();    
-                            Address addressAfter = em.find(Address.class, address.getId());
+                            Address addressAfter = em.find(Address.class, address.getID());
                             int versionAfter = addressAfter.getVersion();
                             assertTrue("The version on an address was not updated on the locking query.", (versionAfter - versionBefore) == 1);
                         }
@@ -6442,7 +6442,7 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
         em.persist(employee);
         commitTransaction(em);
         int id = employee.getId();
-        int addressId = address.getId();
+        int addressId = address.getID();
         int managerId = manager.getId();
         
         beginTransaction(em);
@@ -6517,7 +6517,7 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
         em.persist(employee);
         commitTransaction(em);
         int id = employee.getId();
-        int addressId = address.getId();
+        int addressId = address.getID();
         int managerId = manager.getId();
         
         beginTransaction(em);
@@ -6593,7 +6593,7 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
         em.persist(employee);
         commitTransaction(em);
         int id = employee.getId();
-        int addressId = address.getId();
+        int addressId = address.getID();
         int managerId = manager.getId();
         
         em = createEntityManager();
@@ -8179,7 +8179,7 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
         add.setType(new Bungalow());
         em.persist(add);
         commitTransaction(em);
-        int assignedSequenceNumber = add.getId();
+        int assignedSequenceNumber = add.getID();
         
         em.clear();
         getServerSession().getIdentityMapAccessor().initializeAllIdentityMaps();

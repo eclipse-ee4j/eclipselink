@@ -944,7 +944,7 @@ public class JUnitJPQLComplexTestSuite extends JUnitTestCase
         query = em.createQuery("SELECT count(p.number) FROM PhoneNumber p group by p.owner.id");
         query.setMaxResults(500);
         result = query.getResultList();
-        query = em.createQuery("SELECT count(e.id) FROM Employee e group by e.address.id");
+        query = em.createQuery("SELECT count(e.id) FROM Employee e group by e.address.ID");
         query.setMaxResults(500);
         result = query.getResultList();
     }

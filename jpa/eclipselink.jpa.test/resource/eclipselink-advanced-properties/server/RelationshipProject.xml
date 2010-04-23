@@ -108,7 +108,7 @@
                </selection-query>
             </attribute-mapping>
             <attribute-mapping xsi:type="many-to-many-mapping">
-               <attribute-name>cCustomers</attribute-name>
+               <attribute-name>CCustomers</attribute-name>
                <get-method>getCCustomers</get-method>
                <set-method>setCCustomers</set-method>
                <reference-class>org.eclipse.persistence.testing.models.jpa.jpaadvancedproperties.Customer</reference-class>

@@ -158,7 +158,7 @@ public class JUnitDomainObjectComparer
         Iterator itr = addresses.iterator();
         while (itr.hasNext()) {
             Address aTemp = (Address)itr.next();
-            if ((aTemp != null) && aTemp.getId() == addr.getId()) {
+            if ((aTemp != null) && aTemp.getID() == addr.getID()) {
                 return aTemp;
             }
         }

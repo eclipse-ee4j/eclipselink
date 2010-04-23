@@ -2242,7 +2242,6 @@ public class Helper implements Serializable {
      * by default return the name passed in.
      */
     public static String getAttributeNameFromMethodName(String methodName) {
-        String leadingChar = "";
         String restOfName = methodName;
         
         // We're looking at method named 'get' or 'set', therefore,
@@ -2250,14 +2249,12 @@ public class Helper implements Serializable {
         if (methodName.equals(GET_PROPERTY_METHOD_PREFIX) || methodName.equals(IS_PROPERTY_METHOD_PREFIX)) {
             return "";
         } else if (methodName.startsWith(GET_PROPERTY_METHOD_PREFIX)) {
-            leadingChar = methodName.substring(POSITION_AFTER_GET_PREFIX, POSITION_AFTER_GET_PREFIX + 1);
-            restOfName = methodName.substring(POSITION_AFTER_GET_PREFIX + 1);
+            restOfName = methodName.substring(POSITION_AFTER_GET_PREFIX);
         } else if (methodName.startsWith(IS_PROPERTY_METHOD_PREFIX)){
-            leadingChar = methodName.substring(POSITION_AFTER_IS_PREFIX, POSITION_AFTER_IS_PREFIX + 1);
-            restOfName = methodName.substring(POSITION_AFTER_IS_PREFIX + 1);
+            restOfName = methodName.substring(POSITION_AFTER_IS_PREFIX);
         }
-        
-        return leadingChar.toLowerCase().concat(restOfName);
+        //added for bug 234222 - property name generation differs from Introspector.decapitalize
+        return java.beans.Introspector.decapitalize(restOfName);
     }
     
     public static String getDefaultStartDatabaseDelimiter(){

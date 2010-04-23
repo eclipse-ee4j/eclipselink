@@ -39,7 +39,7 @@ public class MMEntityMapValue {
         this.id = id;
     }
     
-    @ManyToMany(cascade=ALL, mappedBy="mTMMap")
+    @ManyToMany(cascade=ALL, mappedBy="MTMMap")
     public List<MapHolder> getHolders() {
         return holders;
     }
