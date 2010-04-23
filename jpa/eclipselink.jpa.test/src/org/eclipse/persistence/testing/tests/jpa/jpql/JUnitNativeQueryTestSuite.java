@@ -46,9 +46,7 @@ public class JUnitNativeQueryTestSuite  extends JUnitTestCase {
         TestSuite suite = new TestSuite();
         suite.setName("NativeQueryTestSuite");
         suite.addTest(new JUnitNativeQueryTestSuite("testSetup"));
-        suite.addTest(new JUnitNativeQueryTestSuite("testNativeQuery"));
-        suite.addTest(new JUnitNativeQueryTestSuite("testNativeQueryOverMultipleTables"));
-        
+        suite.addTest(new JUnitNativeQueryTestSuite("testNativeQuery"));        
         suite.addTest(NamedNativeQueryJUnitTest.suite());
         
         return suite;
