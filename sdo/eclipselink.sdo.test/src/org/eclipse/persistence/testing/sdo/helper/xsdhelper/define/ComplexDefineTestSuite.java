@@ -46,6 +46,7 @@ public class ComplexDefineTestSuite {
         suite.addTestSuite(DefineWithImportsNoSchemaLocationTestCases.class);
         suite.addTestSuite(ComplexImportsAndIncludesTestCases.class);
         suite.addTestSuite(DefineFailsDontRegisterTypesTestCases.class);
+        suite.addTestSuite(SchemaResolverSystemIdTestCases.class);
         return suite;
     }
 }

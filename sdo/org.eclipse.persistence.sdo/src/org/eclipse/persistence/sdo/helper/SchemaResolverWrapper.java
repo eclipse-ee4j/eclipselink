@@ -15,6 +15,10 @@ package org.eclipse.persistence.sdo.helper;
 import java.util.ArrayList;
 import java.util.List;
 import javax.xml.transform.Source;
+import javax.xml.transform.stream.StreamSource;
+
+import org.eclipse.persistence.exceptions.SDOException;
+import org.xml.sax.InputSource;
 
 /**
  * <p><b>Purpose</b>: Allow the contained schema resolver to resolve a schema based on a given namespace and schema location, and
@@ -65,6 +69,24 @@ public class SchemaResolverWrapper {
                 return schemaSource;
             }
         }
+        return null;
+    }
+    
+    /**
+     * 
+     */
+    public Source resolveSchema(String systemId) {
+        if(!addSchemaToList(systemId)) {
+            return null;
+        }
+        try {
+            InputSource source = schemaResolver.resolveEntity(null, systemId);
+            if(source != null) {
+                return new StreamSource(source.getCharacterStream());
+            }
+        } catch(Exception ex) {
+            throw SDOException.errorResolvingSchema(ex);
+        } 
         return null;
     }
 

@@ -87,6 +87,7 @@ public class SDOException extends EclipseLinkException {
     public static final int SDO_JAXB_NO_SCHEMA_CONTEXT = 45204;
     public static final int SDO_JAXB_NO_TYPE_FOR_CLASS_BY_SCHEMA_CONTEXT = 45205;
     public static final int SDO_JAXB_ERROR_CREATING_JAXB_UNMARSHALLER = 45206;
+    public static final int ERROR_RESOLVING_ENTITY = 45207;
 
     protected SDOException(String message) {
         super(message);
@@ -660,6 +661,14 @@ public class SDOException extends EclipseLinkException {
          Object[] args = {};
          SDOException exception = new SDOException(ExceptionMessageGenerator.buildMessage(SDOException.class, SDO_JAXB_ERROR_CREATING_JAXB_UNMARSHALLER, args), jaxbException);
          exception.setErrorCode(SDO_JAXB_ERROR_CREATING_JAXB_UNMARSHALLER);
+         return exception;
+     }
+     
+     public static SDOException errorResolvingSchema(Exception nestedException) {
+         Object[] args = {};
+         SDOException exception = new SDOException(ExceptionMessageGenerator.buildMessage(SDOException.class, ERROR_RESOLVING_ENTITY, args));
+         exception.setErrorCode(ERROR_RESOLVING_ENTITY);
+         exception.setInternalException(nestedException);
          return exception;
      }
 
