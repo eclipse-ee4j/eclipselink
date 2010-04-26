@@ -14,10 +14,12 @@ package org.eclipse.persistence.internal.sessions;
 
 import java.util.*;
 import org.eclipse.persistence.mappings.*;
+import org.eclipse.persistence.internal.databaseaccess.DatasourceCall;
 import org.eclipse.persistence.internal.helper.*;
 import org.eclipse.persistence.queries.*;
 import org.eclipse.persistence.exceptions.*;
 import org.eclipse.persistence.internal.localization.*;
+import org.eclipse.persistence.internal.queries.DatabaseQueryMechanism;
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 
 /**
@@ -51,6 +53,12 @@ public class CommitManager {
     /** Map of modification events used to defer insertion into m-m, dc, join tables. */
     protected Map<DatabaseMapping, List<Object[]>> dataModifications;
     
+    /**
+     * Map of deferred calls groups by their table.
+     * This is used to defer multiple table writes for batching and deadlock avoidance.
+     */
+    protected Map<DatabaseTable, List<Object[]>> deferredCalls;
+    
     /** List of orphaned objects pending deletion. */
     protected List objectsToDelete;  
     
@@ -70,12 +78,24 @@ public class CommitManager {
      * This is done to decrease dependencies and avoid deadlock.
      */
     public void addDataModificationEvent(DatabaseMapping mapping, Object[] event) {
-        // For lack of inner class the array is being called an event.
         if (!getDataModifications().containsKey(mapping)) {
             this.dataModifications.put(mapping, new ArrayList());
         }
-
         this.dataModifications.get(mapping).add(event);
+    }
+
+    /**
+     * Add the data query to be performed at the end of the commit.
+     * This is done to decrease dependencies and avoid deadlock.
+     */
+    public void addDeferredCall(DatabaseTable table, DatasourceCall call, DatabaseQueryMechanism mechanism) {
+        if (!getDeferredCalls().containsKey(table)) {
+            this.deferredCalls.put(table, new ArrayList());
+        }
+        Object[] arguments = new Object[2];
+        arguments[0] = call;
+        arguments[1] = mechanism;        
+        this.deferredCalls.get(table).add(arguments);
     }
 
     /**
@@ -117,16 +137,23 @@ public class CommitManager {
                 }
             }
 
+            if (hasDeferredCalls()) {
+                // Perform all batched up calls, done to avoid dependencies.
+                for (List<Object[]> calls: this.deferredCalls.values()) {
+                    for (Object[] argument : calls) {                        
+                        ((DatabaseQueryMechanism)argument[1]).executeDeferredCall((DatasourceCall)argument[0]);
+                    }
+                }
+            }
+
             if (hasDataModifications()) {
                 // Perform all batched up data modifications, done to avoid dependencies.
-                Iterator mappings = getDataModifications().keySet().iterator();
-                Iterator mappingEvents = getDataModifications().values().iterator();
-                while (mappingEvents.hasNext()) {
-                    List events = (List)mappingEvents.next();
+                for (Map.Entry<DatabaseMapping, List<Object[]>> entry: this.dataModifications.entrySet()) {
+                    List<Object[]> events = entry.getValue();
                     int size = events.size();
-                    DatabaseMapping mapping = (DatabaseMapping)mappings.next();
+                    DatabaseMapping mapping = entry.getKey();
                     for (int index = 0; index < size; index++) {
-                        Object[] event = (Object[])events.get(index);
+                        Object[] event = events.get(index);
                         mapping.performDataModificationEvent(event, getSession());
                     }
                 }
@@ -339,9 +366,24 @@ public class CommitManager {
      */
     protected Map<DatabaseMapping, List<Object[]>> getDataModifications() {
         if (dataModifications == null) {
-            dataModifications = new HashMap(16);
+            dataModifications = new LinkedHashMap();
         }
         return dataModifications;
+    }
+
+    protected boolean hasDeferredCalls() {
+        return ((this.deferredCalls != null) && (!this.deferredCalls.isEmpty()));
+    }
+
+    /**
+     * Used to store calls to be performed at the end of the commit.
+     * This is done for multiple table descriptors to allow batching and avoid deadlock.
+     */
+    protected Map<DatabaseTable, List<Object[]>> getDeferredCalls() {
+        if (this.deferredCalls == null) {
+            this.deferredCalls = new LinkedHashMap();
+        }
+        return this.deferredCalls;
     }
 
     protected boolean hasObjectsToDelete() {
@@ -525,6 +567,7 @@ public class CommitManager {
         this.shallowCommits = null;
         this.objectsToDelete = null;
         this.dataModifications = null;
+        this.deferredCalls = null;
     }
 
     /**

@@ -925,7 +925,7 @@ public class InheritancePolicy implements Serializable, Cloneable {
      */
     public void initialize(AbstractSession session) {
         // Must reset this in the case that a child thinks it wants to read its subclasses.
-        if ((shouldReadSubclasses == null) || shouldReadSubclasses()) {
+        if ((this.shouldReadSubclasses == null) || shouldReadSubclasses()) {
             setShouldReadSubclasses(!getChildDescriptors().isEmpty());
         }
 
@@ -981,6 +981,10 @@ public class InheritancePolicy implements Serializable, Cloneable {
             // Inherit the native connection requirement.
             if (getParentDescriptor().isNativeConnectionRequired()) {
                 getDescriptor().setIsNativeConnectionRequired(true);
+            }
+            
+            if (getParentDescriptor().hasMultipleTableConstraintDependecy()) {
+                getDescriptor().setHasMultipleTableConstraintDependecy(true);
             }
         }
 
@@ -1103,7 +1107,7 @@ public class InheritancePolicy implements Serializable, Cloneable {
     /**
      * INTERNAL:
      * Initialized the inheritance properties that cannot be initialized
-     * unitl after the mappings have been.
+     * until after the mappings have been.
      */
     public void postInitialize(AbstractSession session) {
     }
@@ -1251,9 +1255,13 @@ public class InheritancePolicy implements Serializable, Cloneable {
         }
 
         // Recursively collect all rows from all concrete children and their children.
-        for (ClassDescriptor concreteDescriptor : getChildDescriptors()) {
-            Vector concreteRows = concreteDescriptor.getInheritancePolicy().selectAllRowUsingCustomMultipleTableSubclassRead(query);
-            rows = Helper.concatenateVectors(rows, concreteRows);
+        // If this descriptor did not have a child with its own table, then the concrete select
+        // would have selected them all.
+        if (hasMultipleTableChild() || !shouldReadSubclasses()) {
+            for (ClassDescriptor concreteDescriptor : getChildDescriptors()) {
+                Vector concreteRows = concreteDescriptor.getInheritancePolicy().selectAllRowUsingCustomMultipleTableSubclassRead(query);
+                rows = Helper.concatenateVectors(rows, concreteRows);
+            }
         }
 
         return rows;
@@ -1269,13 +1277,14 @@ public class InheritancePolicy implements Serializable, Cloneable {
     protected Vector selectAllRowUsingDefaultMultipleTableSubclassRead(ReadAllQuery query) throws DatabaseException, QueryException {
         // Get all rows for the given class indicator field
         // The indicator select is prepared in the original query, so can just be executed.
-        Vector classIndicators = ((ExpressionQueryMechanism)query.getQueryMechanism()).selectAllRowsFromTable();
+        List<AbstractRecord> classIndicators = ((ExpressionQueryMechanism)query.getQueryMechanism()).selectAllRowsFromTable();
 
-        Vector classes = new Vector();
-        for (Enumeration rowsEnum = classIndicators.elements(); rowsEnum.hasMoreElements();) {
-            AbstractRecord row = (AbstractRecord)rowsEnum.nextElement();
+        List<Class> classes = new ArrayList<Class>();
+        Set<Class> uniqueClasses = new HashSet<Class>();
+        for (AbstractRecord row : classIndicators) {
             Class concreteClass = classFromRow(row, query.getSession());
-            if (!classes.contains(concreteClass)) {//Ensure unique ** we should do a distinct.. we do
+            if (!uniqueClasses.contains(concreteClass)) { // Ensure unique (a distinct is used, but may have been disabled)
+                uniqueClasses.add(concreteClass);
                 classes.add(concreteClass);
             }
         }
@@ -1293,16 +1302,36 @@ public class InheritancePolicy implements Serializable, Cloneable {
         if (query.hasJoining()) {
             joinedMappingIndexes = new HashMap();
         }
-        for (Enumeration classesEnum = classes.elements(); classesEnum.hasMoreElements();) {
-            Class concreteClass = (Class)classesEnum.nextElement();
+        ClassDescriptor rootDescriptor = query.getDescriptor();
+        for (Class concreteClass : classes) {
+            if (!uniqueClasses.contains(concreteClass)) {
+                continue;
+            }
+            query.getSession().logMessage("" + concreteClass);
+            uniqueClasses.remove(concreteClass);
             ClassDescriptor concreteDescriptor = getDescriptor(concreteClass);
             if (concreteDescriptor == null) {
                 throw QueryException.noDescriptorForClassFromInheritancePolicy(query, concreteClass);
             }
+            InheritancePolicy concretePolicy = concreteDescriptor.getInheritancePolicy();
+            ClassDescriptor parentDescriptor = concretePolicy.getParentDescriptor();
+            // Find the root most parent with its own table.
+            while ((parentDescriptor != null) && (parentDescriptor != rootDescriptor)
+                    && !parentDescriptor.getInheritancePolicy().hasMultipleTableChild() && parentDescriptor.getInheritancePolicy().shouldReadSubclasses()) {
+                concreteDescriptor = parentDescriptor;
+                concreteClass = concreteDescriptor.getJavaClass();
+                uniqueClasses.remove(concreteClass);
+                concretePolicy = concreteDescriptor.getInheritancePolicy();
+                parentDescriptor = concretePolicy.getParentDescriptor();
+                query.getSession().logMessage("Parent:" + concreteClass);
+            }
+            // If this class has children select them all.
+            if (concretePolicy.hasChildren() && !concretePolicy.hasMultipleTableChild()) {
+                removeChildren(concreteDescriptor, uniqueClasses);
+            }
             ReadAllQuery concreteQuery = (ReadAllQuery)query.clone();
             concreteQuery.setReferenceClass(concreteClass);
             concreteQuery.setDescriptor(concreteDescriptor);
-
             Vector concreteRows = ((ExpressionQueryMechanism)concreteQuery.getQueryMechanism()).selectAllRowsFromConcreteTable();
             rows = Helper.concatenateVectors(rows, concreteRows);
             
@@ -1324,6 +1353,16 @@ public class InheritancePolicy implements Serializable, Cloneable {
         }
 
         return rows;
+    }
+
+    /**
+     * Remove all of the subclasses (and so on) from the set of classes.
+     */
+    protected void removeChildren(ClassDescriptor descriptor, Set<Class> classes) {
+        for (ClassDescriptor childDescriptor : descriptor.getInheritancePolicy().getChildDescriptors()) {
+            classes.remove(childDescriptor.getJavaClass());
+            removeChildren(childDescriptor, classes);
+        }
     }
 
     /**

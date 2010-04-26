@@ -19,7 +19,6 @@ import java.util.List;
 import java.util.Vector;
 
 import org.eclipse.persistence.exceptions.DescriptorException;
-import org.eclipse.persistence.exceptions.QueryException;
 import org.eclipse.persistence.expressions.Expression;
 import org.eclipse.persistence.expressions.ExpressionBuilder;
 import org.eclipse.persistence.internal.databaseaccess.DatasourcePlatform;
@@ -522,14 +521,14 @@ public class RelationTableMechanism  implements Cloneable {
             }
         }
         
-        if(mapping.isCollectionMapping()) {
+        if (mapping.isCollectionMapping()) {
             ((CollectionMapping)mapping).getContainerPolicy().initialize(session, getRelationTable());
         }
         
         initializeInsertQuery(session, mapping);
         initializeDeleteQuery(session, mapping);
         
-        if(mapping.extendPessimisticLockScope != ExtendPessimisticLockScope.NONE) {
+        if (mapping.extendPessimisticLockScope != ExtendPessimisticLockScope.NONE) {
             initializeExtendPessipisticLockScope(session, mapping);
         }
     }

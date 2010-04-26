@@ -293,7 +293,10 @@ public abstract class FieldsLockingPolicy implements OptimisticLockingPolicy {
      * It is responsible for initializing the policy;
      */
     public void initialize(AbstractSession session) {
-        //by default everything is lazy initialized
+        // If the version field is not in the primary table, then they cannot be batched together.
+        if (this.descriptor.getTables().size() > 0) {
+            this.descriptor.setHasMultipleTableConstraintDependecy(true);
+        }
     }
 
     /**

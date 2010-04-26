@@ -996,8 +996,8 @@ public class OneToOneMapping extends ObjectReferenceMapping implements Relationa
     public void initialize(AbstractSession session) throws DescriptorException {
         super.initialize(session);
 
-        if(this.mechanism != null) {
-            if(this.mechanism.hasRelationTable()) {
+        if (this.mechanism != null) {
+            if (this.mechanism.hasRelationTable()) {
                 if(!this.foreignKeyFields.isEmpty() || !this.sourceToTargetKeyFields.isEmpty() || !this.targetToSourceKeyFields.isEmpty()) {
                     throw DescriptorException.oneToOneMappingConflict(this.getDescriptor(), this);
                 }
@@ -1011,7 +1011,7 @@ public class OneToOneMapping extends ObjectReferenceMapping implements Relationa
             }
         }
         
-        if(this.mechanism == null) {
+        if (this.mechanism == null) {
             // Must set table of foreign keys.
             for (int index = 0; index < getForeignKeyFields().size(); index++) {
                 DatabaseField foreignKeyField = getForeignKeyFields().get(index);
@@ -1025,6 +1025,26 @@ public class OneToOneMapping extends ObjectReferenceMapping implements Relationa
                     initializeForeignKeysWithDefaults(session);
                 } else {
                     initializeForeignKeys(session);
+                }
+            }
+            
+            // Check if any foreign keys reference a secondary table.
+            if (getReferenceDescriptor().getTables().size() > 1) {
+                DatabaseTable firstTable = getReferenceDescriptor().getTables().get(0);
+                for (DatabaseField field : getSourceToTargetKeyFields().values()) {
+                    if (!field.getTable().equals(firstTable)) {
+                        getReferenceDescriptor().setHasMultipleTableConstraintDependecy(true);
+                    }
+                }
+            }
+            
+            // Check if any foreign keys reference a secondary table.
+            if (getDescriptor().getTables().size() > 1) {
+                DatabaseTable firstTable = getDescriptor().getTables().get(0);
+                for (DatabaseField field : getSourceToTargetKeyFields().keySet()) {
+                    if (!field.getTable().equals(firstTable)) {
+                        getDescriptor().setHasMultipleTableConstraintDependecy(true);
+                    }
                 }
             }
         }
@@ -1041,7 +1061,7 @@ public class OneToOneMapping extends ObjectReferenceMapping implements Relationa
 
         setFields(collectFields());
         
-        if (getReferenceDescriptor() != null && getReferenceDescriptor().hasTablePerClassPolicy()) {
+        if (getReferenceDescriptor().hasTablePerClassPolicy()) {
             // This will do nothing if we have already prepared for this 
             // source mapping or if the source mapping does not require
             // any special prepare logic.

@@ -1257,10 +1257,22 @@ public class AggregateCollectionMapping extends CollectionMapping implements Rel
         getSelectionQuery().setShouldMaintainCache(false);
 
         initializeDeleteAllQuery(session);
-        if(this.listOrderField != null) {
+        if (this.listOrderField != null) {
             initializeUpdateListOrderQuery(session, "");
             initializeUpdateListOrderQuery(session, bulk);
             initializeUpdateListOrderQuery(session, pk);
+        }
+
+        if (getDescriptor() != null) {
+            // Check if any foreign keys reference a secondary table.
+            if (getDescriptor().getTables().size() > 1) {
+                DatabaseTable firstTable = getDescriptor().getTables().get(0);
+                for (DatabaseField field : getSourceKeyFields()) {
+                    if (!field.getTable().equals(firstTable)) {
+                        getDescriptor().setHasMultipleTableConstraintDependecy(true);
+                    }
+                }
+            }
         }
     }
 

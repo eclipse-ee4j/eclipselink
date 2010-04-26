@@ -2684,7 +2684,7 @@ public class XMLEntityMappingsMappingProject extends org.eclipse.persistence.ses
         mapping.setAttributeName("m_batchFetch");
         mapping.setGetMethodName("getBatchFetch");
         mapping.setSetMethodName("setBatchFetch");
-        mapping.setXPath("orm:batch-fetch/text()");
+        mapping.setXPath("orm:batch-fetch/@type");
         return mapping;
     }
     
@@ -2696,7 +2696,7 @@ public class XMLEntityMappingsMappingProject extends org.eclipse.persistence.ses
         mapping.setAttributeName("m_batchFetchSize");
         mapping.setGetMethodName("getBatchFetchSize");
         mapping.setSetMethodName("setBatchFetchSize");
-        mapping.setXPath("orm:batch-fetch-size/text()");
+        mapping.setXPath("orm:batch-fetch-size/@size");
         return mapping;
     }
     

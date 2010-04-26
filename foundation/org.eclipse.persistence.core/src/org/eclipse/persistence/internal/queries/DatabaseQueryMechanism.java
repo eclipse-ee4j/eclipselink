@@ -254,6 +254,14 @@ public abstract class DatabaseQueryMechanism implements Cloneable, Serializable 
     }
 
     /**
+     * Execute the call that was deferred to the commit manager.
+     * This is used to allow multiple table batching and deadlock avoidance.
+     */
+    public void executeDeferredCall(DatasourceCall call) {
+        // Do nothing by default.
+    }
+    
+    /**
      * Check whether the object already exists on the database; then
      * perform an insert or update, as appropriate.
      * This method was moved here, from WriteObjectQuery.execute(),

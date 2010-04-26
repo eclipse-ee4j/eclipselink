@@ -209,21 +209,30 @@ public class ExpressionQueryMechanism extends StatementQueryMechanism {
         Map clonedExpressions = new IdentityHashMap();
         SQLSelectStatement selectStatement = buildBaseSelectStatement(false, clonedExpressions);
 
-        // Case of class with subclasses that also has instances on abstract-multiple table read.	
-        if (getDescriptor().hasInheritance() && getDescriptor().getInheritancePolicy().shouldReadSubclasses()) {
-            Expression concrete = getDescriptor().getInheritancePolicy().getOnlyInstancesExpression();
-            if ((concrete != null) && (selectStatement.getWhereClause() != null)) {
-                selectStatement.setWhereClause(selectStatement.getWhereClause().and(concrete));
-            } else if (concrete != null) {
-                selectStatement.setWhereClause((Expression)concrete.clone());
+        ClassDescriptor descriptor = getDescriptor();
+        InheritancePolicy policy = descriptor.getInheritancePolicy();
+        // The onlyInstances expression is only included on leaf descriptor base select,
+        // so if a root or branch (!shouldReadSubclasses means leaf), then it must be appended.
+        if (policy.shouldReadSubclasses()) {
+            Expression indicatorExpression = null;
+            // If the descriptor is a single table branch, then select the whole branch in a single query.
+            if (this.query.isReadAllQuery() && policy.hasChildren() && !policy.hasMultipleTableChild()) {
+                indicatorExpression = policy.getWithAllSubclassesExpression();
+            } else {
+                indicatorExpression = policy.getOnlyInstancesExpression();                
+            }
+            if ((indicatorExpression != null) && (selectStatement.getWhereClause() != null)) {
+                selectStatement.setWhereClause(selectStatement.getWhereClause().and(indicatorExpression));
+            } else if (indicatorExpression != null) {
+                selectStatement.setWhereClause((Expression)indicatorExpression.clone());
             }
         }
 
         selectStatement.setFields(getSelectionFields(selectStatement, false));
-        selectStatement.normalize(getSession(), getDescriptor(), clonedExpressions);
+        selectStatement.normalize(getSession(), descriptor, clonedExpressions);
         // Allow for joining indexes to be computed to ensure distinct rows.
-        if (((ObjectLevelReadQuery)getQuery()).hasJoining()) {
-            ((ObjectLevelReadQuery)getQuery()).getJoinedAttributeManager().computeJoiningMappingIndexes(false, getSession(), 0);
+        if (((ObjectLevelReadQuery)this.query).hasJoining()) {
+            ((ObjectLevelReadQuery)this.query).getJoinedAttributeManager().computeJoiningMappingIndexes(false, getSession(), 0);
         }
 
         return selectStatement;
@@ -1035,8 +1044,8 @@ public class ExpressionQueryMechanism extends StatementQueryMechanism {
      *  if you are updating this method consider applying a similar update to that method as well.
      */
     protected void prepareDeleteAll(Vector tablesToIgnore) {
-        Vector tablesInInsertOrder;
-        if(tablesToIgnore == null) {
+        List<DatabaseTable> tablesInInsertOrder;
+        if (tablesToIgnore == null) {
             // It's original (not a nested) method call.
             tablesInInsertOrder = getDescriptor().getMultipleTableInsertOrder();
         } else {
@@ -1050,7 +1059,7 @@ public class ExpressionQueryMechanism extends StatementQueryMechanism {
                      tablesEnum.hasNext();) {
                 DatabaseTable table = (DatabaseTable)tablesEnum.next();
                 if(!tablesToIgnore.contains(table)) {
-                    tablesInInsertOrder.addElement(table);
+                    tablesInInsertOrder.add(table);
                 }
             }
         }
@@ -1058,7 +1067,7 @@ public class ExpressionQueryMechanism extends StatementQueryMechanism {
         // cache the flag - used many times
         boolean hasInheritance = getDescriptor().hasInheritance();
         
-        if(!tablesInInsertOrder.isEmpty()) {
+        if (!tablesInInsertOrder.isEmpty()) {
             Expression whereClause = getSelectionCriteria();
             
             SQLCall selectCallForExist = null;
@@ -1141,19 +1150,15 @@ public class ExpressionQueryMechanism extends StatementQueryMechanism {
                 // Add and prepare to a call a delete statement for each table.
                 // In the case of multiple tables, build the sql statements Vector in insert order. When the 
                 // actual SQL calls are sent they are sent in the reverse of this order.
-                for (Enumeration tablesEnum = tablesInInsertOrder.elements(); tablesEnum.hasMoreElements();) {
-                    DatabaseTable table = (DatabaseTable)tablesEnum.nextElement();
-                    
-                    Collection primaryKeyFields = getPrimaryKeyFieldsForTable(table);
-                    
+                for (DatabaseTable table : tablesInInsertOrder) {                    
+                    Collection primaryKeyFields = getPrimaryKeyFieldsForTable(table);                    
                     SQLDeleteStatement deleteStatement;
 
                     // In Employee example, query with reference class:
                     //   Employee will build "EXISTS" for SALARY and "NOT EXISTS" for EMPLOYEE;
                     //   LargeProject will build "EXISTS" for LPROJECT and "NOT EXISTS" for Project.
                     // The situation is a bit more complex if more than two levels of inheritance is involved:
-                    // both "EXISTS" and "NOT EXISTS" used for the "intermediate" (not first and not last) tables.
-                    
+                    // both "EXISTS" and "NOT EXISTS" used for the "intermediate" (not first and not last) tables.                    
                     if(!isSelectCallForNotExistRequired) {
                         // isSelectCallForNotExistRequired == false:
                         // either tablesToIgnore != null: it's a nested method call.
@@ -1169,9 +1174,9 @@ public class ExpressionQueryMechanism extends StatementQueryMechanism {
                         // isSelectCallForNotExistRequired==true: original call, multiple tables.
                         
                         // indicates whether the table is the last in insertion order
-                        boolean isLastTable = table.equals((DatabaseTable)tablesInInsertOrder.lastElement());
+                        boolean isLastTable = table.equals(tablesInInsertOrder.get(tablesInInsertOrder.size() - 1));
                         
-                        if(inheritanceExpression == null) {
+                        if (inheritanceExpression == null) {
                             if(isLastTable) {
                                 // In Employee example, query with reference class Employee calls this for SALARY table;
                                 deleteStatement = buildDeleteAllStatement(table, null, selectCallForExist, selectStatementForExist, null, null, primaryKeyFields);
@@ -1181,7 +1186,7 @@ public class ExpressionQueryMechanism extends StatementQueryMechanism {
                             }
                         } else {
                             // there is inheritance
-                            if(table.equals(getDescriptor().getMultipleTableInsertOrder().firstElement())) {
+                            if (table.equals(getDescriptor().getMultipleTableInsertOrder().get(0))) {
                                 // This is the highest table in inheritance hierarchy - the one that contains conditions
                                 // (usually class indicator fields) that defines the class identity.
                                 // inheritanceExpression is for this table (it doesn't reference any other tables).
@@ -1189,8 +1194,8 @@ public class ExpressionQueryMechanism extends StatementQueryMechanism {
                                 deleteStatement = buildDeleteAllStatement(table, inheritanceExpression, null, null, selectCallForNotExist, selectStatementForNotExist, primaryKeyFields);
                             } else {
                                 ClassDescriptor desc = getHighestDescriptorMappingTable(table);
-                                if(desc == getDescriptor()) {
-                                    if(isLastTable) {
+                                if (desc == getDescriptor()) {
+                                    if (isLastTable) {
                                         // In Employee example, query with reference class LargeProject calls this for LPROJECT table;
                                         deleteStatement = buildDeleteAllStatement(table, null, selectCallForExist, selectStatementForExist, null, null, primaryKeyFields);
                                     } else {
@@ -1473,9 +1478,7 @@ public class ExpressionQueryMechanism extends StatementQueryMechanism {
         // Add and prepare to a call a delete statement for each table.
         // In the case of multiple tables, build the sql statements Vector in insert order. When the 
         // actual SQL calls are sent they are sent in the reverse of this order.
-        for (Enumeration tablesEnum = getDescriptor().getMultipleTableInsertOrder().elements();
-                 tablesEnum.hasMoreElements();) {
-            DatabaseTable table = (DatabaseTable)tablesEnum.nextElement();
+        for (DatabaseTable table : getDescriptor().getMultipleTableInsertOrder()) {
             SQLDeleteStatement deleteStatement = buildDeleteStatement(table);
             if (getDescriptor().getTables().size() > 1) {
                 getSQLStatements().addElement(deleteStatement);
@@ -1506,15 +1509,14 @@ public class ExpressionQueryMechanism extends StatementQueryMechanism {
         }
 
         // Add and prepare to a call a update statement for each table.
-        // In the case of multiple tables, build the sql statements Vector in insert order.
-        for (Enumeration tablesEnum = getDescriptor().getMultipleTableInsertOrder().elements();
-                 tablesEnum.hasMoreElements();) {
-            DatabaseTable table = (DatabaseTable)tablesEnum.nextElement();
-            SQLInsertStatement insertStatement = buildInsertStatement(table);
-            if (getDescriptor().getTables().size() > 1) {
+        // In the case of multiple tables, build the sql statements in insert order.
+        ClassDescriptor descriptor = getDescriptor();
+        if (descriptor.getTables().size() == 1) {
+            setSQLStatement(buildInsertStatement(descriptor.getTables().get(0)));
+        } else {
+            for (DatabaseTable table : descriptor.getMultipleTableInsertOrder()) {
+                SQLInsertStatement insertStatement = buildInsertStatement(table);
                 getSQLStatements().addElement(insertStatement);
-            } else {
-                setSQLStatement(insertStatement);
             }
         }
 
@@ -2233,7 +2235,7 @@ public class ExpressionQueryMechanism extends StatementQueryMechanism {
         Vector statements = org.eclipse.persistence.internal.helper.NonSynchronizedVector.newInstance();
         
         // retrieve rootTable and its primary key fields for composing temporary table
-        DatabaseTable rootTable = getDescriptor().getMultipleTableInsertOrder().firstElement();
+        DatabaseTable rootTable = getDescriptor().getMultipleTableInsertOrder().get(0);
         Collection rootTablePrimaryKeyFields = getPrimaryKeyFieldsForTable(rootTable);
         ClassDescriptor rootDescriptor = getDescriptor();
         if(getDescriptor().hasInheritance()) {
@@ -2294,7 +2296,7 @@ public class ExpressionQueryMechanism extends StatementQueryMechanism {
     private Vector buildDeleteAllStatementsForTempTable(ClassDescriptor descriptor, DatabaseTable rootTable, Collection rootTablePrimaryKeyFields, Vector tablesToIgnore) {
         Vector statements = org.eclipse.persistence.internal.helper.NonSynchronizedVector.newInstance();
         
-        Vector tablesInInsertOrder;
+        List tablesInInsertOrder;
         if(tablesToIgnore == null) {
             // It's original (not a nested) method call.
             tablesInInsertOrder = descriptor.getMultipleTableInsertOrder();
@@ -2308,15 +2310,15 @@ public class ExpressionQueryMechanism extends StatementQueryMechanism {
             for (Iterator tablesEnum = descriptor.getMultipleTableInsertOrder().iterator();
                      tablesEnum.hasNext();) {
                 DatabaseTable table = (DatabaseTable)tablesEnum.next();
-                if(!tablesToIgnore.contains(table)) {
-                    tablesInInsertOrder.addElement(table);
+                if (!tablesToIgnore.contains(table)) {
+                    tablesInInsertOrder.add(table);
                 }
             }
         }
 
-        if(!tablesInInsertOrder.isEmpty()) {
+        if (!tablesInInsertOrder.isEmpty()) {
             Iterator itTables = tablesInInsertOrder.iterator();
-            while(itTables.hasNext()) {
+            while (itTables.hasNext()) {
                 DatabaseTable table = (DatabaseTable)itTables.next();
                 SQLDeleteAllStatementForTempTable deleteStatement 
                     = buildDeleteAllStatementForTempTable(rootTable, rootTablePrimaryKeyFields, table, getPrimaryKeyFieldsForTable(descriptor, table));

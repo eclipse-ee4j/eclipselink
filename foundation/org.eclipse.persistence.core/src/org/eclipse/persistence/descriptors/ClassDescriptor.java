@@ -70,7 +70,7 @@ public class ClassDescriptor implements Cloneable, Serializable {
     protected transient DatabaseTable defaultTable;
     protected List<DatabaseField> primaryKeyFields;
     protected transient Map<DatabaseTable, Map<DatabaseField, DatabaseField>> additionalTablePrimaryKeyFields;
-    protected transient Vector<DatabaseTable> multipleTableInsertOrder;
+    protected transient List<DatabaseTable> multipleTableInsertOrder;
     protected transient Map<DatabaseTable, Set<DatabaseTable>> multipleTableForeignKeys;
     protected transient Vector<DatabaseField> fields;
     protected transient Vector<DatabaseField> allFields;
@@ -155,6 +155,12 @@ public class ClassDescriptor implements Cloneable, Serializable {
 
     /** PERF: Compute and store if the primary key is simple (direct-mapped) to allow fast extraction. */
     protected boolean hasSimplePrimaryKey = false;
+    
+    /**
+     * Defines if any mapping reference a field in a secondary table.
+     * This is used to disable deferring multiple table writes.
+     */
+    protected boolean hasMultipleTableConstraintDependecy = false;
 
     /** Configures how objects will be sent via cache synchronization, if synchronization is enabled. */
     protected int cacheSynchronizationType = SEND_OBJECT_CHANGES;
@@ -872,7 +878,7 @@ public class ClassDescriptor implements Cloneable, Serializable {
         int nParentTables = 0;
         if (isChildDescriptor()) {
             nParentTables = getInheritancePolicy().getParentDescriptor().getTables().size();
-            setMultipleTableInsertOrder((Vector)getInheritancePolicy().getParentDescriptor().getMultipleTableInsertOrder().clone());
+            setMultipleTableInsertOrder(new ArrayList(getInheritancePolicy().getParentDescriptor().getMultipleTableInsertOrder()));
             
             if(nParentTables == getTables().size()) {
                 // all the tables mapped by the parent - nothing to do.
@@ -929,8 +935,8 @@ public class ClassDescriptor implements Cloneable, Serializable {
             if(nParentTables + getMultipleTableInsertOrder().size() == getTables().size()) {
                 // the user specified insert order only for the tables directly mapped by the descriptor,
                 // the inherited tables order must be the same as in parent descriptor
-                Vector childMultipleTableInsertOrder = getMultipleTableInsertOrder(); 
-                setMultipleTableInsertOrder((Vector)getInheritancePolicy().getParentDescriptor().getMultipleTableInsertOrder().clone());
+                List<DatabaseTable> childMultipleTableInsertOrder = getMultipleTableInsertOrder(); 
+                setMultipleTableInsertOrder(new ArrayList(getInheritancePolicy().getParentDescriptor().getMultipleTableInsertOrder()));
                 getMultipleTableInsertOrder().addAll(childMultipleTableInsertOrder);
             }
             
@@ -994,7 +1000,7 @@ public class ClassDescriptor implements Cloneable, Serializable {
      * This helper method creates a matrix that contains insertion order comparison for the tables.
      * Comparison is done for indexes from nStart to tables.size()-1.
      */
-    protected int[][] createTableComparison(Vector tables, int nStart) {
+    protected int[][] createTableComparison(List<DatabaseTable> tables, int nStart) {
         int nTables = tables.size();
         // tableComparison[i][j] indicates the order between i and j tables:
         // -1 i table before j table;
@@ -2136,12 +2142,10 @@ public class ClassDescriptor implements Cloneable, Serializable {
 
     /**
      * INTERNAL:
-     * Returns the Vector of DatabaseTables in the order which INSERTS should take place. This order is
+     * Returns the List of DatabaseTables in the order which INSERTS should take place. This order is
      * determined by the foreign key fields which are specified by the user.
-     *
-     * @return java.util.Vector
      */
-    public Vector<DatabaseTable> getMultipleTableInsertOrder() throws DescriptorException {
+    public List<DatabaseTable> getMultipleTableInsertOrder() throws DescriptorException {
         return multipleTableInsertOrder;
     }
 
@@ -3232,6 +3236,10 @@ public class ClassDescriptor implements Cloneable, Serializable {
                     field.setType(mapping.getFieldClassification(field));
                 }
             }
+            // LOB may require lob writer which needs full row to fetch LOB.
+            if ((field.getType() == ClassConstants.BLOB) || (field.getType() == ClassConstants.CLOB)) {
+                setHasMultipleTableConstraintDependecy(true);
+            }
             field.setIndex(index);
         }        
         // Set cache key type.
@@ -4147,10 +4155,10 @@ public class ClassDescriptor implements Cloneable, Serializable {
 
     /**
      * ADVANCED:
-     * Sets the Vector of DatabaseTables in the order which INSERTS should take place.
+     * Sets the List of DatabaseTables in the order which INSERTS should take place.
      * This is normally computed correctly by , however in advanced cases in it may be overridden.
      */
-    public void setMultipleTableInsertOrder(Vector<DatabaseTable> newValue) {
+    public void setMultipleTableInsertOrder(List<DatabaseTable> newValue) {
         this.multipleTableInsertOrder = newValue;
     }
     
@@ -5776,4 +5784,21 @@ public class ClassDescriptor implements Cloneable, Serializable {
         }
         mappingsPostCalculateChangesOnDeleted.add(mapping);
     }
+
+    /**
+     * Return if any mapping reference a field in a secondary table.
+     * This is used to disable deferring multiple table writes.
+     */
+    public boolean hasMultipleTableConstraintDependecy() {
+        return hasMultipleTableConstraintDependecy;
+    }
+
+    /**
+     * Set if any mapping reference a field in a secondary table.
+     * This is used to disable deferring multiple table writes.
+     */
+    public void setHasMultipleTableConstraintDependecy(boolean hasMultipleTableConstraintDependecy) {
+        this.hasMultipleTableConstraintDependecy = hasMultipleTableConstraintDependecy;
+    }
+    
 }

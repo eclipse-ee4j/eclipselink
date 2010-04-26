@@ -316,19 +316,25 @@ public class DatasourceCallQueryMechanism extends DatabaseQueryMechanism {
         }
 
         if (hasMultipleCalls()) {
-            int size = getCalls().size();
+            int size = this.calls.size();
             for (int index = 0; index < size; index++) {
-                DatasourceCall databseCall = (DatasourceCall)getCalls().get(index);
-                Object result = executeCall(databseCall);
-                // Set the return row if one was returned (Postgres).
-                if (result instanceof AbstractRecord) {
-                    this.query.setProperty("output", result);
-                }
-                if (returnFields != null) {
-                    updateObjectAndRowWithReturnRow(returnFields, index == 0);
-                }
-                if ((index == 0) && usesSequencing && shouldAcquireValueAfterInsert) {
-                    updateObjectAndRowWithSequenceNumber();
+                DatasourceCall databseCall = (DatasourceCall)this.calls.get(index);
+                if ((index > 0) && isExpressionQueryMechanism()
+                        && this.query.shouldCascadeOnlyDependentParts() && !descriptor.hasMultipleTableConstraintDependecy()) {
+                    DatabaseTable table = descriptor.getMultipleTableInsertOrder().get(index);
+                    this.query.getSession().getCommitManager().addDeferredCall(table, databseCall, this);
+                } else {
+                    Object result = executeCall(databseCall);
+                    // Set the return row if one was returned (Postgres).
+                    if (result instanceof AbstractRecord) {
+                        this.query.setProperty("output", result);
+                    }
+                    if (returnFields != null) {
+                        updateObjectAndRowWithReturnRow(returnFields, index == 0);
+                    }
+                    if ((index == 0) && usesSequencing && shouldAcquireValueAfterInsert) {
+                        updateObjectAndRowWithSequenceNumber();
+                    }
                 }
             }
         } else {
@@ -359,6 +365,25 @@ public class DatasourceCallQueryMechanism extends DatabaseQueryMechanism {
         executionSession.getAccessor().flushSelectCalls(executionSession);
     }
 
+    /**
+     * Execute the call that was deferred to the commit manager.
+     * This is used to allow multiple table batching and deadlock avoidance.
+     */
+    public void executeDeferredCall(DatasourceCall call) {
+        Object result = executeCall(call);
+        // Set the return row if one was returned (Postgres).
+        if (result instanceof AbstractRecord) {
+            this.query.setProperty("output", result);
+        }
+        Collection returnFields = null;
+        if (this.query.getDescriptor().hasReturningPolicy()) {
+            returnFields = this.query.getDescriptor().getReturningPolicy().getFieldsToMergeInsert();
+        }
+        if (returnFields != null) {
+            updateObjectAndRowWithReturnRow(returnFields, false);
+        }
+    }
+    
     /**
      * Return true if this is a call query mechanism
      */
@@ -687,28 +712,35 @@ public class DatasourceCallQueryMechanism extends DatabaseQueryMechanism {
      */
     public Integer updateObject() throws DatabaseException {
         Collection returnFields = null;
-        if (getDescriptor().hasReturningPolicy()) {
-            returnFields = getDescriptor().getReturningPolicy().getFieldsToMergeUpdate();
+        ClassDescriptor descriptor = getDescriptor();
+        if (descriptor.hasReturningPolicy()) {
+            returnFields = descriptor.getReturningPolicy().getFieldsToMergeUpdate();
         }
         Integer returnedRowCount = null;
         if (hasMultipleCalls()) {
             int size = this.calls.size();
             for (int index = 0; index < size; index++) {
                 DatasourceCall databseCall = (DatasourceCall)this.calls.get(index);
-                Object result = executeCall(databseCall);
-                // Set the return row if one was returned (Postgres).
-                Integer rowCount;
-                if (result instanceof AbstractRecord) {
-                    this.query.setProperty("output", result);
-                    rowCount = Integer.valueOf(1);
+                if ((index > 0) && isExpressionQueryMechanism()
+                        && this.query.shouldCascadeOnlyDependentParts() && !descriptor.hasMultipleTableConstraintDependecy()) {
+                    DatabaseTable table = descriptor.getMultipleTableInsertOrder().get(index);
+                    this.query.getSession().getCommitManager().addDeferredCall(table, databseCall, this);
                 } else {
-                    rowCount = (Integer)result;
-                }
-                if ((index == 0) || (rowCount.intValue() <= 0)) {// Row count returned must be from first table or zero if any are zero.
-                    returnedRowCount = rowCount;
-                }
-                if (returnFields != null) {
-                    updateObjectAndRowWithReturnRow(returnFields, false);
+                    Object result = executeCall(databseCall);
+                    // Set the return row if one was returned (Postgres).
+                    Integer rowCount;
+                    if (result instanceof AbstractRecord) {
+                        this.query.setProperty("output", result);
+                        rowCount = Integer.valueOf(1);
+                    } else {
+                        rowCount = (Integer)result;
+                    }
+                    if ((index == 0) || (rowCount.intValue() <= 0)) {// Row count returned must be from first table or zero if any are zero.
+                        returnedRowCount = rowCount;
+                    }
+                    if (returnFields != null) {
+                        updateObjectAndRowWithReturnRow(returnFields, false);
+                    }
                 }
             }
         } else {

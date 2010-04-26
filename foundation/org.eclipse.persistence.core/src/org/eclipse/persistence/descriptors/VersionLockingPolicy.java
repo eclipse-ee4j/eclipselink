@@ -372,14 +372,14 @@ public class VersionLockingPolicy implements OptimisticLockingPolicy, Serializab
      * It is responsible for initializing the policy;
      */
     public void initialize(AbstractSession session) {
-        DatabaseMapping mapping = descriptor.getObjectBuilder().getMappingForField(getWriteLockField());
+        DatabaseMapping mapping = this.descriptor.getObjectBuilder().getMappingForField(getWriteLockField());
         if (mapping == null) {
             if (isStoredInObject()) {
-                if (descriptor.getObjectBuilder().getReadOnlyMappingsForField(getWriteLockField()) != null) {
-                    mapping = descriptor.getObjectBuilder().getReadOnlyMappingsForField(getWriteLockField()).get(0);
+                if (this.descriptor.getObjectBuilder().getReadOnlyMappingsForField(getWriteLockField()) != null) {
+                    mapping = this.descriptor.getObjectBuilder().getReadOnlyMappingsForField(getWriteLockField()).get(0);
                     session.getIntegrityChecker().handleError(DescriptorException.mappingCanNotBeReadOnly(mapping));
                 } else {
-                    session.getIntegrityChecker().handleError(OptimisticLockException.mustHaveMappingWhenStoredInObject(descriptor.getJavaClass()));
+                    session.getIntegrityChecker().handleError(OptimisticLockException.mustHaveMappingWhenStoredInObject(this.descriptor.getJavaClass()));
                 }
             } else {
                 return;
@@ -389,8 +389,12 @@ public class VersionLockingPolicy implements OptimisticLockingPolicy, Serializab
             session.getIntegrityChecker().handleError(DescriptorException.mustBeReadOnlyMappingWhenStoredInCache(mapping));
         }
         // PERF: Cache the mapping if direct.
-        if (mapping.isDirectToFieldMapping() && (descriptor.getObjectBuilder().getReadOnlyMappingsForField(getWriteLockField()) == null)) {
+        if (mapping.isDirectToFieldMapping() && (this.descriptor.getObjectBuilder().getReadOnlyMappingsForField(getWriteLockField()) == null)) {
             this.lockMapping = (AbstractDirectMapping)mapping;
+        }
+        // If the version field is not in the primary table, then they cannot be batched together.
+        if ((this.descriptor.getTables().size() > 0) && !getWriteLockField().getTable().equals(this.descriptor.getTables().get(0))) {
+            this.descriptor.setHasMultipleTableConstraintDependecy(true);
         }
     }
 
