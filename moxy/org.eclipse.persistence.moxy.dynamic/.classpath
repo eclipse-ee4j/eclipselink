@@ -4,7 +4,7 @@
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/org.eclipse.persistence.moxy"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/org.eclipse.persistence.core"/>
-	<classpathentry kind="var" path="ECLIPSELINK_HOME/utils/eclipselink.utils.jaxb/jaxb-xjc.jar"/>
+	<classpathentry kind="var" path="ECLIPSELINK_HOME/plugins/com.sun.tools.xjc_2.2.0.jar"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/com.sun.xml.bind"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
