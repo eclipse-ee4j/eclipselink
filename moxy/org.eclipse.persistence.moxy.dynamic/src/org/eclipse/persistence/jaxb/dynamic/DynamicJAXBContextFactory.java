@@ -103,7 +103,7 @@ public class DynamicJAXBContextFactory {
      *
      * @see org.eclipse.persistence.jaxb.JAXBContext
      */
-    public static DynamicJAXBContext createContext(Class[] classes, Map<String, ?> properties) throws JAXBException {
+    public static DynamicJAXBContext createContext(Class<?>[] classes, Map<String, ?> properties) throws JAXBException {
         throw new JAXBException(org.eclipse.persistence.exceptions.JAXBException.cannotCreateDynamicContextFromClasses());
     }
 

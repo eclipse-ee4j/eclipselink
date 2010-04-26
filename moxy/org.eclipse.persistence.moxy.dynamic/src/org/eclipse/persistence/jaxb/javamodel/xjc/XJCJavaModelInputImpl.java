@@ -36,7 +36,7 @@ public class XJCJavaModelInputImpl implements JavaModelInput {
             TypeMappingInfo typeMappingInfo = new TypeMappingInfo();
             Type type = types[i];
             typeMappingInfo.setType(type);
-            jClasses[i] = jModel.getClass((Class) type);
+            jClasses[i] = jModel.getClass((Class<?>) type);
         }
     }
 
@@ -46,11 +46,11 @@ public class XJCJavaModelInputImpl implements JavaModelInput {
         for (int i = 0; i < types.length; i++) {
             TypeMappingInfo typeMappingInfo = types[i];
             Type type = typeMappingInfo.getType();
-            jClasses[i] = jModel.getClass((Class) type);
+            jClasses[i] = jModel.getClass((Class<?>) type);
         }
     }
 
-    public XJCJavaModelInputImpl(Class[] classes, JavaModel javaModel) {
+    public XJCJavaModelInputImpl(Class<?>[] classes, JavaModel javaModel) {
         this.jModel = javaModel;
         this.jClasses = new JavaClass[classes.length];
         for (int i=0; i<classes.length; i++) {

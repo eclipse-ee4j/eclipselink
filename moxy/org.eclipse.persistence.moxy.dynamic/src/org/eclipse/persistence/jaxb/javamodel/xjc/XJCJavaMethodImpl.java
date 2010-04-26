@@ -57,6 +57,7 @@ public class XJCJavaMethodImpl implements JavaMethod {
         this.dynamicClassLoader = loader;
     }
 
+    @SuppressWarnings("unchecked")
     public JavaAnnotation getAnnotation(JavaClass aClass) {
         if (aClass != null) {
             Collection<JAnnotationUse> annotations = null;
@@ -83,7 +84,8 @@ public class XJCJavaMethodImpl implements JavaMethod {
         return null;
     }
 
-    public Collection getAnnotations() {
+    @SuppressWarnings("unchecked")
+    public Collection<JavaAnnotation> getAnnotations() {
         ArrayList<JavaAnnotation> annotationsList = new ArrayList<JavaAnnotation>();
 
         Collection<JAnnotationUse> annotations = null;
@@ -126,6 +128,7 @@ public class XJCJavaMethodImpl implements JavaMethod {
         }
     }
 
+    @SuppressWarnings("unchecked")
     public JavaClass getReturnType() {
         JType type = xjcMethod.type();
 
@@ -148,7 +151,7 @@ public class XJCJavaMethodImpl implements JavaMethod {
             JavaClass[] allParams = getParameterTypes();
 
             for (JavaClass type : allParams) {
-                Class paramClass = Class.forName(type.getPackageName() + "." + type.getName());
+                Class<?> paramClass = Class.forName(type.getPackageName() + "." + type.getName());
                 if (paramClass.newInstance() instanceof ParameterizedType) {
                     return true;
                 }
@@ -159,7 +162,7 @@ public class XJCJavaMethodImpl implements JavaMethod {
         }
     }
 
-    public Collection getActualTypeArguments() {
+    public Collection<Object> getActualTypeArguments() {
         throw new UnsupportedOperationException("getActualTypeArguments");
     }
 
@@ -211,7 +214,7 @@ public class XJCJavaMethodImpl implements JavaMethod {
         throw new UnsupportedOperationException("getDeclaredAnnotation");
     }
 
-    public Collection getDeclaredAnnotations() {
+    public Collection<JavaAnnotation> getDeclaredAnnotations() {
         throw new UnsupportedOperationException("getDeclaredAnnotations");
     }
 

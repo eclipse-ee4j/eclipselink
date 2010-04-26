@@ -93,7 +93,7 @@ public class XJCJavaClassImpl implements JavaClass {
 
     // ========================================================================
 
-    public Collection getActualTypeArguments() {
+    public Collection<JavaClass> getActualTypeArguments() {
         JTypeVar[] typeParams = null;
 
         if (xjcRefClass != null) {
@@ -102,7 +102,7 @@ public class XJCJavaClassImpl implements JavaClass {
             typeParams = xjcClass.typeParams();
         }
 
-        ArrayList<XJCJavaClassImpl> typeArguments = new ArrayList<XJCJavaClassImpl>(typeParams.length);
+        ArrayList<JavaClass> typeArguments = new ArrayList<JavaClass>(typeParams.length);
 
         for (int i = 0; i < typeParams.length; i++) {
             JTypeVar var = typeParams[i];
@@ -148,7 +148,8 @@ public class XJCJavaClassImpl implements JavaClass {
         return new XJCJavaConstructorImpl(constructor, jCodeModel, dynamicClassLoader);
     }
 
-    public Collection getConstructors() {
+    @SuppressWarnings("unchecked")
+    public Collection<JavaConstructor> getConstructors() {
         ArrayList<JavaConstructor> constructors = new ArrayList<JavaConstructor>();
         Iterator<JMethod> it = xjcClass.constructors();
 
@@ -159,7 +160,7 @@ public class XJCJavaClassImpl implements JavaClass {
         return constructors;
     }
 
-    public Collection getDeclaredClasses() {
+    public Collection<JavaClass> getDeclaredClasses() {
         ArrayList<JavaClass> declaredClasses = new ArrayList<JavaClass>();
 
         if (xjcRefClass != null) {
@@ -179,7 +180,7 @@ public class XJCJavaClassImpl implements JavaClass {
         return getConstructor(parameterTypes);
     }
 
-    public Collection getDeclaredConstructors() {
+    public Collection<JavaConstructor> getDeclaredConstructors() {
         return getConstructors();
     }
 
@@ -189,7 +190,7 @@ public class XJCJavaClassImpl implements JavaClass {
         return new XJCJavaFieldImpl(xjcField, jCodeModel, dynamicClassLoader);
     }
 
-    public Collection getDeclaredFields() {
+    public Collection<JavaField> getDeclaredFields() {
         Collection<JFieldVar> xjcFields = xjcClass.fields().values();
         ArrayList<JavaField> fields = new ArrayList<JavaField>(xjcFields.size());
 
@@ -204,7 +205,7 @@ public class XJCJavaClassImpl implements JavaClass {
         return getMethod(name, args);
     }
 
-    public Collection getDeclaredMethods() {
+    public Collection<JavaMethod> getDeclaredMethods() {
         return getMethods();
     }
 
@@ -245,9 +246,9 @@ public class XJCJavaClassImpl implements JavaClass {
         return true;
     }
 
-    public Collection getMethods() {
+    public Collection<JavaMethod> getMethods() {
         Collection<JMethod> xjcMethods = xjcClass.methods();
-        ArrayList<XJCJavaMethodImpl> elinkMethods = new ArrayList<XJCJavaMethodImpl>(xjcMethods.size());
+        ArrayList<JavaMethod> elinkMethods = new ArrayList<JavaMethod>(xjcMethods.size());
 
         for (JMethod xjcMethod : xjcMethods) {
             elinkMethods.add(new XJCJavaMethodImpl(xjcMethod, jCodeModel, dynamicClassLoader));
@@ -452,6 +453,7 @@ public class XJCJavaClassImpl implements JavaClass {
         throw new UnsupportedOperationException("isSynthetic");
     }
 
+    @SuppressWarnings("unchecked")
     public JavaAnnotation getAnnotation(JavaClass aClass) {
         if (xjcRefClass != null) {
             return null;
@@ -488,7 +490,8 @@ public class XJCJavaClassImpl implements JavaClass {
         return null;
     }
 
-    public Collection getAnnotations() {
+    @SuppressWarnings("unchecked")
+    public Collection<JavaAnnotation> getAnnotations() {
         ArrayList<JavaAnnotation> annotationsList = new ArrayList<JavaAnnotation>();
 
         Collection<JAnnotationUse> annotations = null;
@@ -512,7 +515,7 @@ public class XJCJavaClassImpl implements JavaClass {
         throw new UnsupportedOperationException("getDeclaredAnnotation");
     }
 
-    public Collection getDeclaredAnnotations() {
+    public Collection<JavaAnnotation> getDeclaredAnnotations() {
         throw new UnsupportedOperationException("getDeclaredAnnotations");
     }
 

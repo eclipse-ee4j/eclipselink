@@ -58,6 +58,7 @@ public class XJCJavaFieldImpl implements JavaField {
         this.dynamicClassLoader = loader;
     }
 
+    @SuppressWarnings("unchecked")
     public JavaAnnotation getAnnotation(JavaClass aClass) {
         if (aClass != null) {
             Collection<JAnnotationUse> annotations = null;
@@ -84,7 +85,8 @@ public class XJCJavaFieldImpl implements JavaField {
         return null;
     }
 
-    public Collection getAnnotations() {
+    @SuppressWarnings("unchecked")
+    public Collection<JavaAnnotation> getAnnotations() {
         ArrayList<JavaAnnotation> annotationsList = new ArrayList<JavaAnnotation>();
 
         Collection<JAnnotationUse> annotations = null;
@@ -121,6 +123,7 @@ public class XJCJavaFieldImpl implements JavaField {
         return new XJCJavaClassImpl(ownerXJCClass, jCodeModel, dynamicClassLoader);
     }
 
+    @SuppressWarnings("unchecked")
     public JavaClass getResolvedType() {
         JType type = xjcField.type();
         JType basis = null;
@@ -208,7 +211,7 @@ public class XJCJavaFieldImpl implements JavaField {
         return getAnnotation(aClass);
     }
 
-    public Collection getDeclaredAnnotations() {
+    public Collection<JavaAnnotation> getDeclaredAnnotations() {
         return getAnnotations();
     }
 

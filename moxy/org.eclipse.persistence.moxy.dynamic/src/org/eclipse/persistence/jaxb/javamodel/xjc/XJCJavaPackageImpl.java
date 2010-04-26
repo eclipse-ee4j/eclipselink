@@ -45,6 +45,7 @@ public class XJCJavaPackageImpl implements JavaPackage {
         this.dynamicClassLoader = loader;
     }
 
+    @SuppressWarnings("unchecked")
     public JavaAnnotation getAnnotation(JavaClass aClass) {
         if (aClass != null) {
 
@@ -72,7 +73,8 @@ public class XJCJavaPackageImpl implements JavaPackage {
         return null;
     }
 
-    public Collection getAnnotations() {
+    @SuppressWarnings("unchecked")
+    public Collection<JavaAnnotation> getAnnotations() {
         ArrayList<JavaAnnotation> annotationsList = new ArrayList<JavaAnnotation>();
 
         Collection<JAnnotationUse> annotations = null;
@@ -108,7 +110,7 @@ public class XJCJavaPackageImpl implements JavaPackage {
         throw new UnsupportedOperationException("getDeclaredAnnotation");
     }
 
-    public Collection getDeclaredAnnotations() {
+    public Collection<JavaAnnotation> getDeclaredAnnotations() {
         throw new UnsupportedOperationException("getDeclaredAnnotations");
     }
 
