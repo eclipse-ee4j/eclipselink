@@ -58,12 +58,10 @@ public class SchemaResolverSystemIdTestCases extends XSDHelperDefineTestCases {
     
     public static class MySchemaResolver implements SchemaResolver {
 
-        @Override
         public Source resolveSchema(Source sourceXSD, String namespace, String schemaLocation) {
             return null;
         }
 
-        @Override
         public InputSource resolveEntity(String publicId, String systemId) throws SAXException, IOException {
             String schema = "<xsd:schema xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\">" + 
             "<xsd:complexType name=\"employee-type\">" + 
