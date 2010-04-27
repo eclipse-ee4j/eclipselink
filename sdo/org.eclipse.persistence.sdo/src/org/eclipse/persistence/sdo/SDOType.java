@@ -33,8 +33,6 @@ import org.eclipse.persistence.exceptions.SDOException;
 import org.eclipse.persistence.internal.descriptors.InstantiationPolicy;
 import org.eclipse.persistence.internal.descriptors.Namespace;
 import org.eclipse.persistence.internal.helper.Helper;
-import org.eclipse.persistence.internal.oxm.InheritanceNodeValue;
-import org.eclipse.persistence.internal.oxm.TreeObjectBuilder;
 import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
 import org.eclipse.persistence.logging.AbstractSessionLog;
 import org.eclipse.persistence.mappings.DatabaseMapping;
