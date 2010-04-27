@@ -1061,7 +1061,7 @@ public class XMLConversionManager extends ConversionManager implements TimeZoneH
 
         String string= xgc.toXMLFormat();
         string = appendMillis(string, sourceDate.getTime());
-        string = appendTimeZone(string);
+        string = appendTimeZone(string, sourceDate);
         return string;
 
     }
@@ -1111,7 +1111,7 @@ public class XMLConversionManager extends ConversionManager implements TimeZoneH
 
             String string = xgc.toXMLFormat();
             string = appendMillis(string, sourceDate.getTime());
-            return appendTimeZone(string);
+            return appendTimeZone(string, sourceDate);
         }
         if (XMLConstants.G_DAY_QNAME.equals(schemaType)) {
             GregorianCalendar cal = new GregorianCalendar(getTimeZone());
@@ -1226,8 +1226,9 @@ public class XMLConversionManager extends ConversionManager implements TimeZoneH
             xgc.setHour(cal.get(Calendar.HOUR_OF_DAY));
             xgc.setMinute(cal.get(Calendar.MINUTE));
             xgc.setSecond(cal.get(Calendar.SECOND));
-            return xgc.toXMLFormat();
 
+            String string = xgc.toXMLFormat();
+            return appendTimeZone(string, sourceDate);
         } else if (XMLConstants.TIME_QNAME.equals(schemaType)) {
             XMLGregorianCalendar xgc = getDatatypeFactory().newXMLGregorianCalendar();
             GregorianCalendar cal = new GregorianCalendar(getTimeZone());
@@ -1239,7 +1240,7 @@ public class XMLConversionManager extends ConversionManager implements TimeZoneH
             xgc.setSecond(cal.get(Calendar.SECOND));
 
             String string = xgc.toXMLFormat();
-            return appendTimeZone(string);
+            return appendTimeZone(string, sourceDate);
 
         } else if (XMLConstants.G_DAY_QNAME.equals(schemaType)) {
             XMLGregorianCalendar xgc = getDatatypeFactory().newXMLGregorianCalendar();
@@ -1322,7 +1323,7 @@ public class XMLConversionManager extends ConversionManager implements TimeZoneH
         xgc.setSecond(cal.get(Calendar.SECOND));
 
         String string= xgc.toXMLFormat();
-        return appendTimeZone(string);
+        return appendTimeZone(string, sourceTime);
     }
 
     private String stringFromSQLTime(Time sourceTime, QName schemaType) {
@@ -1344,7 +1345,7 @@ public class XMLConversionManager extends ConversionManager implements TimeZoneH
             xgc.setMinute(cal.get(Calendar.MINUTE));
             xgc.setSecond(cal.get(Calendar.SECOND));
             String string= xgc.toXMLFormat();
-            return appendTimeZone(string);
+            return appendTimeZone(string, sourceTime);
 
         } else if (XMLConstants.DATE_QNAME.equals(schemaType)) {
 
@@ -1465,7 +1466,7 @@ public class XMLConversionManager extends ConversionManager implements TimeZoneH
 
         String string= xgc.toXMLFormat();
         string = appendNanos(string, sourceDate);
-        return appendTimeZone(string);
+        return appendTimeZone(string, sourceDate);
     }
 
     /**
@@ -1509,8 +1510,8 @@ public class XMLConversionManager extends ConversionManager implements TimeZoneH
             xgc.setSecond(cal.get(Calendar.SECOND));
 
             String string = xgc.toXMLFormat();
-            return appendNanos(string, sourceDate);
-
+            string = appendNanos(string, sourceDate);
+            return appendTimeZone(string, sourceDate);
         }
         if (XMLConstants.G_DAY_QNAME.equals(schemaType)) {
             XMLGregorianCalendar xgc = getDatatypeFactory().newXMLGregorianCalendar();
@@ -1602,7 +1603,7 @@ public class XMLConversionManager extends ConversionManager implements TimeZoneH
         String string= xgc.toXMLFormat();
 
         string = appendNanos(string, sourceDate);
-        return appendTimeZone(string);
+        return appendTimeZone(string, sourceDate);
     }
 
 private String stringFromXMLGregorianCalendar(XMLGregorianCalendar 
@@ -1829,7 +1830,7 @@ cal, QName schemaTypeQName) {
         return javaTypes;
     }
 
-    private String appendTimeZone(String string) {
+    private String appendTimeZone(String string, Date date) {
         if (!timeZoneQualified) {
             return string;
         }
@@ -1837,7 +1838,7 @@ cal, QName schemaTypeQName) {
         StringBuilder stringBuilder = new StringBuilder(string);
 
         // GMT Time Zone
-        int rawMinuteOffset = getTimeZone().getRawOffset() / 60000;
+        int rawMinuteOffset = getTimeZone().getOffset(date.getTime()) / 60000;
         if (0 == rawMinuteOffset) {
             stringBuilder.append(GMT_SUFFIX);
             return stringBuilder.toString();
