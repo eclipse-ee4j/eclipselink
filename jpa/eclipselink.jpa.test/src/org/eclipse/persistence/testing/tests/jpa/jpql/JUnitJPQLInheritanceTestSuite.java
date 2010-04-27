@@ -12,6 +12,8 @@
  ******************************************************************************/  
 package org.eclipse.persistence.testing.tests.jpa.jpql;
 
+import java.util.List;
+
 import junit.framework.Assert;
 import junit.framework.Test;
 import junit.framework.TestSuite;
@@ -76,6 +78,7 @@ public class JUnitJPQLInheritanceTestSuite extends JUnitTestCase {
         suite.addTest(new JUnitJPQLInheritanceTestSuite("testJoinedInheritanceWithLeftOuterJoin1"));
         suite.addTest(new JUnitJPQLInheritanceTestSuite("testJoinedInheritanceWithLeftOuterJoin2"));
         suite.addTest(new JUnitJPQLInheritanceTestSuite("testJoinedInheritanceWithLeftOuterJoin3"));
+        suite.addTest(new JUnitJPQLInheritanceTestSuite("testComputer"));
         
         return suite;
     }
@@ -231,6 +234,15 @@ public class JUnitJPQLInheritanceTestSuite extends JUnitTestCase {
             em.createQuery(ejbqlString).getResultList();
         } catch (Exception e) {
             fail("Error occurred on a left outer join sql expression on a joined inheritance test: " + e.getCause());
+        }
+    }
+    
+    public void testComputer() {
+        EntityManager em = createEntityManager();
+        String ejbqlString = "SELECT c FROM Computer c";
+        List result = em.createQuery(ejbqlString).getResultList();
+        if (result.size() != 4) {
+            fail("Expected 4 computers got: " + result);
         }
     }
 

@@ -355,4 +355,24 @@ public class InheritanceModelExamples  {
         example.setXyz("abc");
         return example;
     }
+    
+    public static Laptop laptopExample1() {
+        ComputerPK pk = new ComputerPK("Dell", 1001);
+        return new Laptop(pk);
+    }
+    
+    public static Laptop laptopExample2() {
+        ComputerPK pk = new ComputerPK("Apple", 1002);
+        return new Laptop(pk);
+    }
+    
+    public static Desktop desktopExample1() {
+        ComputerPK pk = new ComputerPK("Dell", 1003);
+        return new Desktop(pk);
+    }
+    
+    public static Desktop desktopExample2() {
+        ComputerPK pk = new ComputerPK("Oracle", 1004);
+        return new Desktop(pk);
+    }
 }

@@ -61,6 +61,11 @@ public class InheritancePopulator {
         PopulationManager.getDefaultManager().registerObject(Company.class, InheritanceModelExamples.companyExample1(), "co1");
         PopulationManager.getDefaultManager().registerObject(Company.class, InheritanceModelExamples.companyExample2(), "co2");
         PopulationManager.getDefaultManager().registerObject(Company.class, InheritanceModelExamples.companyExample3(), "co3");
+        
+        PopulationManager.getDefaultManager().registerObject(Computer.class, InheritanceModelExamples.laptopExample1(), "lap1");
+        PopulationManager.getDefaultManager().registerObject(Computer.class, InheritanceModelExamples.laptopExample2(), "lap2");
+        PopulationManager.getDefaultManager().registerObject(Computer.class, InheritanceModelExamples.desktopExample1(), "desk1");
+        PopulationManager.getDefaultManager().registerObject(Computer.class, InheritanceModelExamples.desktopExample2(), "desk2");
     }
     
     
@@ -71,6 +76,7 @@ public class InheritancePopulator {
         PopulationManager.getDefaultManager().addAllObjectsForClass(Person.class, allObjects);
         PopulationManager.getDefaultManager().addAllObjectsForClass(AAA.class, allObjects);
         PopulationManager.getDefaultManager().addAllObjectsForClass(Company.class, allObjects);
+        PopulationManager.getDefaultManager().addAllObjectsForClass(Computer.class, allObjects);
         unitOfWork.registerAllObjects(allObjects);
         unitOfWork.commit();
         

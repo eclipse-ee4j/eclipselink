@@ -2843,70 +2843,65 @@ public class ClassDescriptor implements Cloneable, Serializable {
      * Rebuild the multiple table primary key map.
      */
     public void initializeMultipleTablePrimaryKeyFields() {
-        int additionalTablesSize = getTables().size() - 1;
+        int tableSize = getTables().size();
+        int additionalTablesSize = tableSize - 1;
         boolean isChild = hasInheritance() && getInheritancePolicy().isChildDescriptor();
         if (isChild) {
-            additionalTablesSize = getTables().size() - getInheritancePolicy().getParentDescriptor().getTables().size();
+            additionalTablesSize = tableSize - getInheritancePolicy().getParentDescriptor().getTables().size();
         }
         if (additionalTablesSize < 1) {
             return;
         }
         ExpressionBuilder builder = new ExpressionBuilder();
         Expression joinExpression = getQueryManager().getMultipleTableJoinExpression();
-        for (int index = getTables().size() - additionalTablesSize; index < getTables().size();
-                 index++) {
+        for (int index = tableSize - additionalTablesSize; index < tableSize; index++) {
             DatabaseTable table = getTables().get(index);
-            Map oldKeyMapping = getAdditionalTablePrimaryKeyFields().get(table);
+            Map<DatabaseField, DatabaseField> oldKeyMapping = getAdditionalTablePrimaryKeyFields().get(table);
             if (oldKeyMapping != null) {
                 if (!getQueryManager().hasCustomMultipleTableJoinExpression()) {
+                    Expression keyJoinExpression = null;
                     // Build the multiple table join expression resulting from the fk relationships.
-                    for (Iterator enumtr = oldKeyMapping.keySet().iterator(); enumtr.hasNext();) {
-                        DatabaseField sourceTableField = (DatabaseField)enumtr.next();
-                        DatabaseField targetTableField = (DatabaseField)oldKeyMapping.get(sourceTableField);
-                        DatabaseTable targetTable = targetTableField.getTable();
-
+                    for (Map.Entry<DatabaseField, DatabaseField> entry : oldKeyMapping.entrySet()) {
+                        DatabaseField sourceTableField = entry.getKey();
+                        DatabaseField targetTableField = entry.getValue();
                         // Must add this field to read, so translations work on database row, this could be either.
                         if (!getFields().contains(sourceTableField)) {
-                            getFields().addElement(sourceTableField);
+                            getFields().add(sourceTableField);
                         }
                         if (!getFields().contains(targetTableField)) {
-                            getFields().addElement(targetTableField);
+                            getFields().add(targetTableField);
                         }
-
-                        Expression keyJoinExpression = builder.getField(targetTableField).equal(builder.getField(sourceTableField));
+                        keyJoinExpression = builder.getField(targetTableField).equal(builder.getField(sourceTableField)).and(keyJoinExpression);
                         joinExpression = keyJoinExpression.and(joinExpression);
-                        
-                        getQueryManager().getTablesJoinExpressions().put(targetTable, keyJoinExpression);
-                        if (isChild) {
-                            getInheritancePolicy().addChildTableJoinExpressionToAllParents(targetTable, keyJoinExpression);
-                        }
+                    }
+                    getQueryManager().getTablesJoinExpressions().put(table, keyJoinExpression);
+                    if (isChild) {
+                        getInheritancePolicy().addChildTableJoinExpressionToAllParents(table, keyJoinExpression);
                     }
                 }
             } else {
                 // If the user has specified a custom multiple table join then we do not assume that the secondary tables have identically named pk as the primary table.
                 // No additional fk info was specified so assume the pk field(s) are the named the same in the additional table.
-                Map newKeyMapping = new HashMap(getPrimaryKeyFields().size() + 1);
+                Map newKeyMapping = new HashMap(getPrimaryKeyFields().size());
                 getAdditionalTablePrimaryKeyFields().put(table, newKeyMapping);
 
+                Expression keyJoinExpression = null;
                 // For each primary key field in the primary table, add a pk relationship from the primary table's pk field to the assumed identically named secondary pk field.
-                List primaryKeyFields = getPrimaryKeyFields();
-                for (int pkIndex = 0; pkIndex < primaryKeyFields.size(); pkIndex++) {
-                    DatabaseField primaryKeyField = (DatabaseField)primaryKeyFields.get(pkIndex);
+                for (DatabaseField primaryKeyField : getPrimaryKeyFields()) {
                     DatabaseField secondaryKeyField = primaryKeyField.clone();
                     secondaryKeyField.setTable(table);
                     newKeyMapping.put(primaryKeyField, secondaryKeyField);
                     // Must add this field to read, so translations work on database row.
-                    getFields().addElement(secondaryKeyField);
+                    getFields().add(secondaryKeyField);
 
                     if (!getQueryManager().hasCustomMultipleTableJoinExpression()) {
-                        Expression keyJoinExpression = builder.getField(secondaryKeyField).equal(builder.getField(primaryKeyField));
+                        keyJoinExpression = builder.getField(secondaryKeyField).equal(builder.getField(primaryKeyField)).and(keyJoinExpression);
                         joinExpression = keyJoinExpression.and(joinExpression);
-
-                        getQueryManager().getTablesJoinExpressions().put(table, keyJoinExpression);
-                        if(isChild) {
-                            getInheritancePolicy().addChildTableJoinExpressionToAllParents(table, keyJoinExpression);
-                        }
                     }
+                }
+                getQueryManager().getTablesJoinExpressions().put(table, keyJoinExpression);
+                if (isChild) {
+                    getInheritancePolicy().addChildTableJoinExpressionToAllParents(table, keyJoinExpression);
                 }
             }
         }
@@ -2916,14 +2911,13 @@ public class ClassDescriptor implements Cloneable, Serializable {
         if (getQueryManager().hasCustomMultipleTableJoinExpression()) {
             Map tablesJoinExpressions = SQLSelectStatement.mapTableToExpression(joinExpression, getTables());
             getQueryManager().getTablesJoinExpressions().putAll(tablesJoinExpressions);
-            if(isChild) {
-                for (int index = getTables().size() - additionalTablesSize; index < getTables().size();
-                         index++) {
-                    DatabaseTable table = getTables().elementAt(index);
+            if (isChild) {
+                for (int index = tableSize - additionalTablesSize; index < tableSize; index++) {
+                    DatabaseTable table = getTables().get(index);
                     getInheritancePolicy().addChildTableJoinExpressionToAllParents(table, (Expression)tablesJoinExpressions.get(table));
                 }
             }
-        }
+        }        
     }
 
     /**

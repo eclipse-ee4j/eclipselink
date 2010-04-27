@@ -17,15 +17,25 @@ import javax.persistence.Inheritance;
 import javax.persistence.Entity;
 import javax.persistence.Table;
 import javax.persistence.EmbeddedId;
+
+import org.eclipse.persistence.annotations.Customizer;
+import org.eclipse.persistence.config.DescriptorCustomizer;
+import org.eclipse.persistence.descriptors.ClassDescriptor;
+
 import java.io.Serializable;
 
 @Entity
 @Table(name="CMP3_COMPUTER")
 @Inheritance(strategy=JOINED)
-public class Computer implements Serializable {
+@Customizer(Computer.class)
+public class Computer implements Serializable, DescriptorCustomizer {
     private ComputerPK computerPK;
 
     public Computer() {
+    }
+    
+    public void customize(ClassDescriptor descriptor) {
+        descriptor.getInheritancePolicy().setShouldOuterJoinSubclasses(true);
     }
 
     public Computer(ComputerPK computerPK) {

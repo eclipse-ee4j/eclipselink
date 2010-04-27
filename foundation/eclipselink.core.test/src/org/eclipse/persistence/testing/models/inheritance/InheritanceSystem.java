@@ -37,14 +37,14 @@ public class InheritanceSystem extends TestSystem {
 
         // For using read all subclasses views.
         DatabasePlatform platform = session.getLogin().getPlatform();
-        if (platform.isOracle() || platform.isSybase()/* || platform.isMySQL() Uncomment it when we support MySQL 5*/) {
+        if (platform.isOracle() || platform.isSybase()) {
             ClassDescriptor computerDescriptor = session.getDescriptor(Computer.class);
             ClassDescriptor vehicleDescriptor = session.getDescriptor(Vehicle.class);
             computerDescriptor.getInheritancePolicy().setReadAllSubclassesViewName("AllComputers");
             vehicleDescriptor.getInheritancePolicy().setReadAllSubclassesViewName("AllVehicles");
         }
         
-        // Enable oter-join on AnimalMatt hierarchy.
+        // Enable outer-join on AnimalMatt hierarchy.
         session.getDescriptor(Animal_Matt.class).getInheritancePolicy().setShouldOuterJoinSubclasses(true);
     }
     
