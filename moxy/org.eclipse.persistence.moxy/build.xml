@@ -281,7 +281,7 @@
             failok="false"
             exceptions="true"
             files="./javax.xml.bind.bnd"
-            output="${moxy.2.common.plugins.dir}/javax.xml.bind_2.1.12.v${build.date}${build.time}.jar"/>
-        <copy file="${moxy.2.common.plugins.dir}/${jaxb-api.src.jar}" tofile="${moxy.2.common.plugins.dir}/javax.xml.bind.source_2.1.12.v${build.date}${build.time}.jar" failonerror="false"/>
+            output="${moxy.2.common.plugins.dir}/javax.xml.bind_2.2.0.v${build.date}${build.time}.jar"/>
+        <copy file="${moxy.2.common.plugins.dir}/${jaxb-api.src.jar}" tofile="${moxy.2.common.plugins.dir}/javax.xml.bind.source_2.2.0.v${build.date}${build.time}.jar" failonerror="false"/>
     </target>
 </project>
