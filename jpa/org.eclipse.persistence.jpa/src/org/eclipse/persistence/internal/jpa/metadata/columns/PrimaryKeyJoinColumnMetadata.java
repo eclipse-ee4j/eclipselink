@@ -13,6 +13,8 @@
  *       - 218084: Implement metadata merging functionality between mapping files
  *     06/09/2009-2.0 Guy Pelletier 
  *       - 249037: JPA 2.0 persisting list item index
+ *     04/27/2010-2.1 Guy Pelletier 
+ *       - 309856: MappedSuperclasses from XML are not being initialized properly
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata.columns;
 
@@ -27,6 +29,8 @@ import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataA
  * @since TopLink EJB 3.0 Reference Implementation
  */
 public class PrimaryKeyJoinColumnMetadata extends RelationalColumnMetadata {
+    // Note: Any metadata mapped from XML to this class must be compared in the equals method.
+
     /**
      * INTERNAL:
      * Used for OX mapping.
@@ -40,5 +44,13 @@ public class PrimaryKeyJoinColumnMetadata extends RelationalColumnMetadata {
      */
     public PrimaryKeyJoinColumnMetadata(MetadataAnnotation primaryKeyJoinColumn, MetadataAccessibleObject accessibleObject) {
         super(primaryKeyJoinColumn, accessibleObject);
+    }
+
+    /**
+     * INTERNAL:
+     */
+    @Override
+    public boolean equals(Object objectToCompare) {
+        return super.equals(objectToCompare) && objectToCompare instanceof PrimaryKeyJoinColumnMetadata;
     }
 }

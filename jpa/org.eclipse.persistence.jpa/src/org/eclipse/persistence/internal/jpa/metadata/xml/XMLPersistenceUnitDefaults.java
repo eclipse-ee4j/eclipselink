@@ -17,12 +17,15 @@
  *       - 249329: To remain JPA 1.0 compliant, any new JPA 2.0 annotations should be referenced by name
  *     04/09/2010-2.1 Guy Pelletier 
  *       - 307050: Add defaults for access methods of a VIRTUAL access type
+ *     04/27/2010-2.1 Guy Pelletier 
+ *       - 309856: MappedSuperclasses from XML are not being initialized properly
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata.xml;
 
 import java.util.List;
 
 import org.eclipse.persistence.internal.jpa.metadata.ORMetadata;
+import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataAccessibleObject;
 import org.eclipse.persistence.internal.jpa.metadata.listeners.EntityListenerMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.mappings.AccessMethodsMetadata;
 
@@ -150,6 +153,16 @@ public class XMLPersistenceUnitDefaults extends ORMetadata {
     
     /**
      * INTERNAL:
+     */
+    @Override
+    public void initXMLObject(MetadataAccessibleObject accessibleObject, XMLEntityMappings entityMappings) {
+        super.initXMLObject(accessibleObject, entityMappings);
+        
+        initXMLObject(m_accessMethods, accessibleObject);
+    }
+    
+    /**
+     * INTERNAL:
      * Used for OX mapping.
      */
     public boolean isCascadePersist() {
@@ -174,6 +187,7 @@ public class XMLPersistenceUnitDefaults extends ORMetadata {
             // Primitive boolean merging.
             mergePrimitiveBoolean(m_cascadePersist, persistenceUnitDefaults.isCascadePersist(), persistenceUnitDefaults, "cascade-persist");
             mergePrimitiveBoolean(m_delimitedIdentifiers, persistenceUnitDefaults.isDelimitedIdentifiers(), persistenceUnitDefaults, "delimited-identifiers");
+            
             // Simple object merging.
             m_access = (String) mergeSimpleObjects(m_access, persistenceUnitDefaults.getAccess(), persistenceUnitDefaults, "<access>");
             m_catalog = (String) mergeSimpleObjects(m_catalog, persistenceUnitDefaults.getCatalog(), persistenceUnitDefaults, "<catalog>");

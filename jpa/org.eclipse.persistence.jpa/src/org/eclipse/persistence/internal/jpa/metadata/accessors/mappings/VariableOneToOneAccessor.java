@@ -20,6 +20,8 @@
  *       - 249033: JPA 2.0 Orphan removal   
  *     09/29/2009-2.0 Guy Pelletier 
  *       - 282553: JPA 2.0 JoinTable support for OneToOne and ManyToOne
+ *     04/27/2010-2.1 Guy Pelletier 
+ *       - 309856: MappedSuperclasses from XML are not being initialized properly
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata.accessors.mappings;
 
@@ -52,6 +54,8 @@ import org.eclipse.persistence.mappings.VariableOneToOneMapping;
  * @since EclipseLink 1.0
  */
 public class VariableOneToOneAccessor extends ObjectAccessor {
+    // Note: Any metadata mapped from XML to this class must be compared in the equals method.
+
     public static final String DEFAULT_QUERY_KEY = "id";
     
     private Integer m_lastDiscriminatorIndex;
@@ -133,6 +137,24 @@ public class VariableOneToOneAccessor extends ObjectAccessor {
             
             mapping.addClassNameIndicator(accessor.getJavaClassName(), ++m_lastDiscriminatorIndex);
         } 
+    }
+    
+    /**
+     * INTERNAL:
+     */
+    @Override
+    public boolean equals(Object objectToCompare) {
+        if (super.equals(objectToCompare) && objectToCompare instanceof VariableOneToOneAccessor) {
+            VariableOneToOneAccessor variableOneToOneAccessor = (VariableOneToOneAccessor) objectToCompare;
+            
+            if (! valuesMatch(m_discriminatorColumn, variableOneToOneAccessor.getDiscriminatorColumn())) {
+                return false;
+            }
+            
+            return valuesMatch(m_discriminatorClasses, variableOneToOneAccessor.getDiscriminatorClasses());
+        }
+        
+        return false;
     }
     
     /**

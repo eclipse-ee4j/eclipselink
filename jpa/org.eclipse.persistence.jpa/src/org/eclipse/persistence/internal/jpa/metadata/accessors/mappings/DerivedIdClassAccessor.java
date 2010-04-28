@@ -10,6 +10,8 @@
  * Contributors:
  *     04/24/2009-2.0 Guy Pelletier 
  *       - 270011: JPA 2.0 MappedById support
+ *     04/27/2010-2.1 Guy Pelletier 
+ *       - 309856: MappedSuperclasses from XML are not being initialized properly
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata.accessors.mappings;
 
@@ -24,6 +26,8 @@ import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataA
  * @since EclipseLink 1.2
  */
 public class DerivedIdClassAccessor extends EmbeddedAccessor {
+    // Note: Any metadata mapped from XML to this class must be compared in the equals method.
+
     /**
      * INTERNAL:
      * Constructor called from an Embedabble IdClass.
@@ -32,6 +36,14 @@ public class DerivedIdClassAccessor extends EmbeddedAccessor {
         super(null, accessibleObject, classAccessor);
     }
     
+    /**
+     * INTERNAL:
+     */
+    @Override
+    public boolean equals(Object objectToCompare) {
+        return super.equals(objectToCompare) && objectToCompare instanceof DerivedIdClassAccessor;
+    }
+
     /**
      * INTERNAL:
      * Return true if this accessor is a derived id class accessor. That is,

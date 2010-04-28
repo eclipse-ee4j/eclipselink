@@ -12,6 +12,8 @@
  *       - 218084: Implement metadata merging functionality between mapping files
  *     03/27/2009-2.0 Guy Pelletier 
  *       - 241413: JPA 2.0 Add EclipseLink support for Map type attributes
+ *     04/27/2010-2.1 Guy Pelletier 
+ *       - 309856: MappedSuperclasses from XML are not being initialized properly
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata.converters;
 
@@ -35,7 +37,9 @@ import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataC
  * @since EclipseLink 1.2
  */
 public class TemporalMetadata extends MetadataConverter {
-    private String m_temporal;
+    // Note: Any metadata mapped from XML to this class must be compared in the equals method.
+
+    private String m_temporalType;
     
     /**
      * INTERNAL:
@@ -50,15 +54,28 @@ public class TemporalMetadata extends MetadataConverter {
     public TemporalMetadata(MetadataAnnotation temporal, MetadataAccessibleObject accessibleObject) {
         super(temporal, accessibleObject);
         
-        m_temporal = (String) temporal.getAttribute("value");
+        m_temporalType = (String) temporal.getAttribute("value");
+    }
+    
+    /**
+     * INTERNAL:
+     */
+    @Override
+    public boolean equals(Object objectToCompare) {
+        if (super.equals(objectToCompare) && objectToCompare instanceof TemporalMetadata) {
+            TemporalMetadata enumerated = (TemporalMetadata) objectToCompare;
+            return valuesMatch(m_temporalType, enumerated.getTemporalType());
+        }
+        
+        return false;
     }
     
     /**
      * INTERNAL:
      * Used for OX mapping.
      */
-    public String getTemporal() {
-        return m_temporal;
+    public String getTemporalType() {
+        return m_temporalType;
     }
     
     /**
@@ -79,9 +96,9 @@ public class TemporalMetadata extends MetadataConverter {
     public void process(DatabaseMapping mapping, MappingAccessor accessor, MetadataClass referenceClass, boolean isForMapKey) {
         if (isValidTemporalType(referenceClass)) {
             // Set a TypeConversionConverter on the mapping.
-            if (m_temporal.equals(TemporalType.DATE.name())) {
+            if (m_temporalType.equals(TemporalType.DATE.name())) {
                 setFieldClassification(mapping, java.sql.Date.class, isForMapKey);
-            } else if(m_temporal.equals(TemporalType.TIME.name())) {
+            } else if(m_temporalType.equals(TemporalType.TIME.name())) {
                 setFieldClassification(mapping,java.sql.Time.class, isForMapKey);
             } else {
                 // Through annotation and XML validation, it must be 
@@ -99,7 +116,7 @@ public class TemporalMetadata extends MetadataConverter {
      * INTERNAL:
      * Used for OX mapping.
      */
-    public void setTemporal(String temporalType) {
-        m_temporal = temporalType;
+    public void setTemporalType(String temporalType) {
+        m_temporalType = temporalType;
     }
 }

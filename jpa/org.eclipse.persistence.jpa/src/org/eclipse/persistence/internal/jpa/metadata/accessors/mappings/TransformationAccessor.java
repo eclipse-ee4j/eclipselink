@@ -15,7 +15,9 @@
  *     02/06/2009-2.0 Guy Pelletier 
  *       - 248293: JPA 2.0 Element Collections (part 2)
  *     03/27/2009-2.0 Guy Pelletier 
- *       - 241413: JPA 2.0 Add EclipseLink support for Map type attributes    
+ *       - 241413: JPA 2.0 Add EclipseLink support for Map type attributes
+ *     04/27/2010-2.1 Guy Pelletier 
+ *       - 309856: MappedSuperclasses from XML are not being initialized properly
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata.accessors.mappings;
 
@@ -45,6 +47,8 @@ import org.eclipse.persistence.mappings.TransformationMapping;
  * @since EclipseLink 1.0 
  */
 public class TransformationAccessor extends BasicAccessor {
+    // Note: Any metadata mapped from XML to this class must be compared in the equals method.
+
     private ReadTransformerMetadata m_readTransformer;
     private List<WriteTransformerMetadata> m_writeTransformers;
     
@@ -88,6 +92,24 @@ public class TransformationAccessor extends BasicAccessor {
         }
         
         // TODO: ReturningPolicy
+    }
+    
+    /**
+     * INTERNAL:
+     */
+    @Override
+    public boolean equals(Object objectToCompare) {
+        if (super.equals(objectToCompare) && objectToCompare instanceof TransformationAccessor) {
+            TransformationAccessor transformationAccessor = (TransformationAccessor) objectToCompare;
+            
+            if (! valuesMatch(m_readTransformer, transformationAccessor.getReadTransformer())) {
+                return false;
+            }
+            
+            return valuesMatch(m_writeTransformers, transformationAccessor.getWriteTransformers());
+        }
+        
+        return false;
     }
     
     /**

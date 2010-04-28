@@ -11,6 +11,8 @@
  *     Oracle - initial API and implementation from Oracle TopLink
  *     05/16/2008-1.0M8 Guy Pelletier 
  *       - 218084: Implement metadata merging functionality between mapping files
+ *     04/27/2010-2.1 Guy Pelletier 
+ *       - 309856: MappedSuperclasses from XML are not being initialized properly
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata.cache;
 
@@ -36,6 +38,8 @@ import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataC
  * @since TopLink 11g
  */
 public class CacheMetadata extends ORMetadata {
+    // Note: Any metadata mapped from XML to this class must be compared in the equals method.
+
     protected Boolean m_alwaysRefresh;
     protected Boolean m_disableHits;
     protected Boolean m_shared;
@@ -77,6 +81,52 @@ public class CacheMetadata extends ORMetadata {
         m_size = (Integer) cache.getAttribute("size");
         m_type = (String) cache.getAttribute("type");
         m_refreshOnlyIfNewer = (Boolean) cache.getAttribute("refreshOnlyIfNewer");
+    }
+    
+    /**
+     * INTERNAL:
+     */
+    @Override
+    public boolean equals(Object objectToCompare) {
+        if (objectToCompare instanceof CacheMetadata) {
+            CacheMetadata cache = (CacheMetadata) objectToCompare;
+            
+            if (! valuesMatch(m_alwaysRefresh, cache.getAlwaysRefresh())) {
+                return false;
+            }
+            
+            if (! valuesMatch(m_disableHits, cache.getDisableHits())) {
+                return false;
+            }
+
+            if (! valuesMatch(m_shared, cache.getShared())) {
+                return false;
+            }
+            
+            if (! valuesMatch(m_refreshOnlyIfNewer, cache.getRefreshOnlyIfNewer())) {
+                return false;
+            }
+            
+            if (! valuesMatch(m_coordinationType, cache.getCoordinationType())) {
+                return false;
+            }
+            
+            if (! valuesMatch(m_type, cache.getType())) {
+                return false;
+            }
+            
+            if (! valuesMatch(m_expiry, cache.getExpiry())) {
+                return false;
+            }
+            
+            if (! valuesMatch(m_size, cache.getSize())) {
+                return false;
+            }
+            
+            return valuesMatch(m_expiryTimeOfDay, cache.getExpiryTimeOfDay());
+        }
+        
+        return false;
     }
     
     /**

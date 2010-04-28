@@ -24,6 +24,8 @@
  *       - 303632: Add attribute-type for mapping attributes to EclipseLink-ORM
  *     03/29/2010-2.1 Guy Pelletier 
  *       - 267217: Add Named Access Type to EclipseLink-ORM
+ *     04/27/2010-2.1 Guy Pelletier 
+ *       - 309856: MappedSuperclasses from XML are not being initialized properly
  ******************************************************************************/ 
 package org.eclipse.persistence.internal.jpa.metadata.accessors.mappings;
 
@@ -53,6 +55,8 @@ import org.eclipse.persistence.mappings.DirectMapMapping;
  * @since EclipseLink 1.2
  */
 public abstract class DirectCollectionAccessor extends DirectAccessor {
+    // Note: Any metadata mapped from XML to this class must be compared in the equals method.
+
     private String m_joinFetch;
     private String m_batchFetch;
     private Integer m_batchFetchSize;
@@ -78,13 +82,13 @@ public abstract class DirectCollectionAccessor extends DirectAccessor {
         }
         
         // Set the join fetch if one is present.
-        MetadataAnnotation joinFetch = getAnnotation(JoinFetch.class);            
+        MetadataAnnotation joinFetch = getAnnotation(JoinFetch.class);
         if (joinFetch != null) {
             m_joinFetch = (String) joinFetch.getAttribute("value");
         }
         
-        // Set the batch fetch if one is present.           
-        MetadataAnnotation batchFetch = getAnnotation(BatchFetch.class);            
+        // Set the batch fetch if one is present.
+        MetadataAnnotation batchFetch = getAnnotation(BatchFetch.class);
         if (batchFetch != null) {
             // Get attribute string will return the default ""
             m_batchFetch = (String) batchFetch.getAttributeString("value");
@@ -94,6 +98,32 @@ public abstract class DirectCollectionAccessor extends DirectAccessor {
         // Since BasicCollection and ElementCollection look for different
         // collection tables, we will not initialize/look for one here. Those
         // accessors will be responsible for loading their collection table.
+    }
+    
+    /**
+     * INTERNAL:
+     */
+    @Override
+    public boolean equals(Object objectToCompare) {
+        if (super.equals(objectToCompare) && objectToCompare instanceof DirectCollectionAccessor) {
+            DirectCollectionAccessor directCollectionAccessor = (DirectCollectionAccessor) objectToCompare;
+            
+            if (! valuesMatch(m_joinFetch, directCollectionAccessor.getJoinFetch())) {
+                return false;
+            }
+            
+            if (! valuesMatch(m_batchFetch, directCollectionAccessor.getBatchFetch())) {
+                return false;
+            }
+            
+            if (! valuesMatch(m_batchFetchSize, directCollectionAccessor.getBatchFetchSize())) {
+                return false;
+            }
+            
+            return valuesMatch(m_collectionTable, directCollectionAccessor.getCollectionTable());
+        }
+        
+        return false;
     }
     
     /**

@@ -58,7 +58,6 @@ public class PersistenceUnitReader {
         processingEnv = factory.getProcessingEnvironment();
         persistenceUnits = new ArrayList<PersistenceUnit>();
         
-
         // after initializing our member variables, initialize the pu's.
         initPersistenceUnits(factory);
     }

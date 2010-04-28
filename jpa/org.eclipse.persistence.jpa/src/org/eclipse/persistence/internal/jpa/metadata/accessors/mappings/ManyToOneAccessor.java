@@ -19,6 +19,8 @@
  *       - 270011: JPA 2.0 MappedById support
  *     11/02/2009-2.0 Michael O'Brien
  *       - 266912: JPA 2.0 Metamodel support for m:1 as m:m in DI 96
+ *     04/27/2010-2.1 Guy Pelletier 
+ *       - 309856: MappedSuperclasses from XML are not being initialized properly
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata.accessors.mappings;
 
@@ -38,6 +40,8 @@ import org.eclipse.persistence.mappings.ManyToOneMapping;
  * @since TopLink EJB 3.0 Reference Implementation
  */
 public class ManyToOneAccessor extends ObjectAccessor {
+    // Note: Any metadata mapped from XML to this class must be compared in the equals method.
+    
     /**
      * INTERNAL:
      */
@@ -51,7 +55,15 @@ public class ManyToOneAccessor extends ObjectAccessor {
     public ManyToOneAccessor(MetadataAnnotation manyToOne, MetadataAccessibleObject accessibleObject, ClassAccessor classAccessor) {
         super(manyToOne, accessibleObject, classAccessor);
     }
-
+    
+    /**
+     * INTERNAL:
+     */
+    @Override
+    public boolean equals(Object objectToCompare) {
+        return super.equals(objectToCompare) && objectToCompare instanceof ManyToOneAccessor;
+    }
+    
     /**
      * INTERNAL:
      * Return the logging context for this accessor.

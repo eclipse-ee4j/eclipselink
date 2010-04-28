@@ -12,6 +12,8 @@
  *        - New file introduced for bug 211300. 
  *     05/16/2008-1.0M8 Guy Pelletier 
  *       - 218084: Implement metadata merging functionality between mapping file   
+ *     04/27/2010-2.1 Guy Pelletier 
+ *       - 309856: MappedSuperclasses from XML are not being initialized properly
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata.transformers;
 
@@ -32,6 +34,8 @@ import org.eclipse.persistence.mappings.transformers.AttributeTransformer;
  * @since EclipseLink 1.0 
  */
 public class ReadTransformerMetadata extends ORMetadata {
+    // Note: Any metadata mapped from XML to this class must be compared in the equals method.
+
     private MetadataClass m_transformerClass;
     
     private String m_transformerClassName;
@@ -61,6 +65,24 @@ public class ReadTransformerMetadata extends ORMetadata {
             m_transformerClass = getMetadataClass((String) readTransformer.getAttributeString("transformerClass"));
             m_method = (String) readTransformer.getAttributeString("method");
         }
+    }
+    
+    /**
+     * INTERNAL:
+     */
+    @Override
+    public boolean equals(Object objectToCompare) {
+        if (objectToCompare instanceof ReadTransformerMetadata) {
+            ReadTransformerMetadata readTransformer = (ReadTransformerMetadata) objectToCompare;
+            
+            if (! valuesMatch(m_transformerClassName, readTransformer.getTransformerClassName())) {
+                return false;
+            }
+            
+            return valuesMatch(m_method, readTransformer.getMethod());
+        }
+        
+        return false;
     }
     
     /**

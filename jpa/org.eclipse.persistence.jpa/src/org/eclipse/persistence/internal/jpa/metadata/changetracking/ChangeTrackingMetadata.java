@@ -11,7 +11,9 @@
  *     Guy Pelletier (Oracle), February 28, 2007 
  *        - New file introduced for bug 217880.
  *     05/16/2008-1.0M8 Guy Pelletier 
- *       - 218084: Implement metadata merging functionality between mapping files     
+ *       - 218084: Implement metadata merging functionality between mapping files
+ *     04/27/2010-2.1 Guy Pelletier 
+ *       - 309856: MappedSuperclasses from XML are not being initialized properly
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata.changetracking;
 
@@ -34,6 +36,8 @@ import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataA
  * @since EclipseLink 1.0
  */
 public class ChangeTrackingMetadata extends ORMetadata {
+    // Note: Any metadata mapped from XML to this class must be compared in the equals method.
+
     private String m_type;    
     
     /**
@@ -50,6 +54,19 @@ public class ChangeTrackingMetadata extends ORMetadata {
         super(changeTracking, accessibleObject);
         
         m_type = (String) changeTracking.getAttribute("value");
+    }
+    
+    /**
+     * INTERNAL:
+     */
+    @Override
+    public boolean equals(Object objectToCompare) {
+        if (objectToCompare instanceof ChangeTrackingMetadata) {
+            ChangeTrackingMetadata changeTracking = (ChangeTrackingMetadata) objectToCompare;            
+            return valuesMatch(m_type, changeTracking.getType());
+        }
+        
+        return false;
     }
     
     /**

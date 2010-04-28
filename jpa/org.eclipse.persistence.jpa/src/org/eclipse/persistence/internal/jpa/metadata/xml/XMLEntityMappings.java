@@ -23,6 +23,8 @@
  *       - 303632: Add attribute-type for mapping attributes to EclipseLink-ORM
  *     04/09/2010-2.1 Guy Pelletier 
  *       - 307050: Add defaults for access methods of a VIRTUAL access type
+ *     04/27/2010-2.1 Guy Pelletier 
+ *       - 309856: MappedSuperclasses from XML are not being initialized properly
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata.xml;
 
@@ -72,6 +74,7 @@ public class XMLEntityMappings extends ORMetadata {
     private AccessMethodsMetadata m_accessMethods;
     
     private boolean m_isEclipseLinkORMFile;
+    private boolean m_loadedForCanonicalModel;
     
     private ClassLoader m_loader;
     
@@ -109,6 +112,20 @@ public class XMLEntityMappings extends ORMetadata {
     public XMLEntityMappings() {
         super("<entity-mappings>");
         m_isEclipseLinkORMFile = false;
+        m_loadedForCanonicalModel = false;
+    }
+    
+    /**
+     * INTERNAL:
+     */
+    @Override
+    public boolean equals(Object objectToCompare) {
+        if (objectToCompare instanceof XMLEntityMappings) {
+            XMLEntityMappings entityMappings = (XMLEntityMappings) objectToCompare;
+            return valuesMatch(m_mappingFileNameOrURL, entityMappings.getMappingFileOrURL());
+        }
+        
+        return false;
     }
     
     /**
@@ -439,6 +456,13 @@ public class XMLEntityMappings extends ORMetadata {
     
     /**
      * INTERNAL:
+     */
+    public boolean loadedForCanonicalModel() {
+        return this.m_loadedForCanonicalModel;
+    }
+    
+    /**
+     * INTERNAL:
      * Return a new XMLEntityMappings instance. Used for reloading entities
      * and mapped superclasses.
      */
@@ -734,6 +758,13 @@ public class XMLEntityMappings extends ORMetadata {
      */
     public void setIsEclipseLinkORMFile(boolean isEclipseLinkORMFile) {
         m_isEclipseLinkORMFile = isEclipseLinkORMFile;
+    }
+    
+    /**
+     * INTERNAL:
+     */
+    public void setLoadedForCanonicalModel(boolean loadedForCanonicalModel) {
+        m_loadedForCanonicalModel = loadedForCanonicalModel;
     }
     
     /**

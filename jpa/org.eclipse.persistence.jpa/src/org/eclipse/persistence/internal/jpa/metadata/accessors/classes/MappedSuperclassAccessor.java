@@ -141,6 +141,8 @@ public class MappedSuperclassAccessor extends ClassAccessor {
     private List<SQLResultSetMappingMetadata> m_sqlResultSetMappings = new ArrayList<SQLResultSetMappingMetadata>();
     
     private MetadataClass m_idClass;
+    //private MetadataClass m_parentClass;
+    
     private OptimisticLockingMetadata m_optimisticLocking;
     private PrimaryKeyMetadata m_primaryKey;
     private QueryRedirectorsMetadata m_queryRedirectors;
@@ -149,6 +151,7 @@ public class MappedSuperclassAccessor extends ClassAccessor {
     
     private String m_existenceChecking;
     private String m_idClassName;
+    //private String m_parentClassName;
     private String m_prePersist;
     private String m_postPersist;
     private String m_preRemove;
@@ -285,6 +288,13 @@ public class MappedSuperclassAccessor extends ClassAccessor {
     
     /**
      * INTERNAL:
+     */
+    protected MetadataClass getIdClass() {
+        return m_idClass;
+    }
+    
+    /**
+     * INTERNAL:
      * Used for OX mapping.
      */
     public String getIdClassName() {
@@ -325,19 +335,18 @@ public class MappedSuperclassAccessor extends ClassAccessor {
 
     /**
      * INTERNAL:
-     * Used for OX mapping.
      */
-    public PrimaryKeyMetadata getPrimaryKey() {
-        return m_primaryKey;
-    }
+    //protected MetadataClass getParentClass() {
+      //  return m_parentClass;
+    //}
     
     /**
      * INTERNAL:
      * Used for OX mapping.
      */
-    public QueryRedirectorsMetadata getQueryRedirectors() {
-        return m_queryRedirectors;
-    }
+    //public String getParentClassName() {
+      //  return m_parentClassName;
+    //}
     
     /**
      * INTERNAL:
@@ -399,6 +408,22 @@ public class MappedSuperclassAccessor extends ClassAccessor {
      * INTERNAL:
      * Used for OX mapping.
      */
+    public PrimaryKeyMetadata getPrimaryKey() {
+        return m_primaryKey;
+    }
+    
+    /**
+     * INTERNAL:
+     * Used for OX mapping.
+     */
+    public QueryRedirectorsMetadata getQueryRedirectors() {
+        return m_queryRedirectors;
+    }
+    
+    /**
+     * INTERNAL:
+     * Used for OX mapping.
+     */
     public Boolean getReadOnly() {
         return m_readOnly;
     }
@@ -451,8 +476,7 @@ public class MappedSuperclassAccessor extends ClassAccessor {
         if (m_idClass != null && ! m_idClass.equals(void.class)) {
             getProject().addIdClass(m_idClass.getName());
             // 266912: We store the IdClass (not an EmbeddableId) for use by the Metamodel API
-            getProject().getProject().addMetamodelIdClassMapEntry(
-                    this.getAccessibleObject().getName(), m_idClass.getName());
+            getProject().getProject().addMetamodelIdClassMapEntry(getAccessibleObject().getName(), m_idClass.getName());
         }
     }
     
@@ -484,6 +508,7 @@ public class MappedSuperclassAccessor extends ClassAccessor {
         
         // Simple class object
         m_idClass = initXMLClassName(m_idClassName);
+       //m_parentClass = initXMLClassName(m_parentClassName);
     }
     
     /**
@@ -497,7 +522,14 @@ public class MappedSuperclassAccessor extends ClassAccessor {
     
     /**
      * INTERNAL:
-     * Mapped-superclass level merging details.
+     * Mapped-superclass level merging details. Merging is only done on
+     * accessors from XML. Since entities and embeddables are initialized
+     * before merging, for any class name specifications we can not only merge
+     * the class names but must also merge the initialized classes since we 
+     * do not re-initialize class accessors after a merge. Mapped superclasses 
+     * are not initialized till they are reloaded therefore merging only the 
+     * class names is needed, however merging their respective MetadataClasses 
+     * will do nothing since merging null with null yields null.
      */
     @Override
     public void merge(ORMetadata metadata) {
@@ -512,7 +544,10 @@ public class MappedSuperclassAccessor extends ClassAccessor {
         // Simple object merging.
         m_cacheable = (Boolean) mergeSimpleObjects(m_cacheable, accessor.getCacheable(), accessor, "@cacheable");
         m_readOnly = (Boolean) mergeSimpleObjects(m_readOnly, accessor.getReadOnly(), accessor, "@read-only");
-        m_idClass = (MetadataClass) mergeSimpleObjects(m_idClass, accessor.getIdClassName(), accessor, "<id-class>");
+        m_idClass = (MetadataClass) mergeSimpleObjects(m_idClass, accessor.getIdClass(), accessor, "<id-class>"); 
+        m_idClassName = (String) mergeSimpleObjects(m_idClassName, accessor.getIdClassName(), accessor, "<id-class>");
+        //m_parentClass = (MetadataClass) mergeSimpleObjects(m_parentClass, accessor.getParentClass(), accessor, "<parent-class>");
+        //m_parentClassName = (String) mergeSimpleObjects(m_parentClassName, accessor.getParentClassName(), accessor, "<parent-class>");
         m_prePersist = (String) mergeSimpleObjects(m_prePersist, accessor.getPrePersist(), accessor, "<pre-persist>");
         m_postPersist = (String) mergeSimpleObjects(m_postPersist, accessor.getPostPersist(), accessor, "<post-persist>");
         m_preRemove = (String) mergeSimpleObjects(m_preRemove, accessor.getPreRemove(), accessor, "<pre-remove>");
@@ -1400,6 +1435,13 @@ public class MappedSuperclassAccessor extends ClassAccessor {
     
     /**
      * INTERNAL:
+     */
+    protected void setIdClass(MetadataClass idClass) {
+        m_idClass = idClass;
+    }
+    
+    /**
+     * INTERNAL:
      * Used for OX mapping.
      */
     public void setIdClassName(String idClassName) {
@@ -1437,6 +1479,21 @@ public class MappedSuperclassAccessor extends ClassAccessor {
     public void setOptimisticLocking(OptimisticLockingMetadata optimisticLocking) {
         m_optimisticLocking = optimisticLocking;
     }
+    
+    /**
+     * INTERNAL:
+     */
+    //protected void setParentClass(MetadataClass parentClass) {
+      //  m_parentClass = parentClass;
+    //}
+    
+    /**
+     * INTERNAL:
+     * Used for OX mapping.
+     */
+    //public void setParentClassName(String parentClassName) {
+      //  m_parentClassName = parentClassName;
+    //}
     
     /**
      * INTERNAL:

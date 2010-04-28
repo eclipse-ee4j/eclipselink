@@ -33,6 +33,8 @@
  *       - 303632: Add attribute-type for mapping attributes to EclipseLink-ORM
  *     03/29/2010-2.1 Guy Pelletier 
  *       - 267217: Add Named Access Type to EclipseLink-ORM
+ *     04/27/2010-2.1 Guy Pelletier 
+ *       - 309856: MappedSuperclasses from XML are not being initialized properly
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata.accessors.mappings;
 
@@ -79,6 +81,8 @@ import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataC
  * @since TopLink EJB 3.0 Reference Implementation
  */
 public abstract class RelationshipAccessor extends MappingAccessor {
+    // Note: Any metadata mapped from XML to this class must be compared in the equals method.
+
     private Boolean m_orphanRemoval;
     private boolean m_privateOwned;
     private CascadeMetadata m_cascade;
@@ -200,6 +204,56 @@ public abstract class RelationshipAccessor extends MappingAccessor {
                 mechanism.addTargetRelationKeyField(fkField, pkField);
             }
         }
+    }
+    
+    /**
+     * INTERNAL:
+     */
+    @Override
+    public boolean equals(Object objectToCompare) {
+        if (super.equals(objectToCompare) && objectToCompare instanceof RelationshipAccessor) {
+            RelationshipAccessor relationshipAccessor = (RelationshipAccessor) objectToCompare;
+            
+            if (! valuesMatch(m_orphanRemoval, relationshipAccessor.getOrphanRemoval())) {
+                return false;
+            }
+            
+            if (! valuesMatch(m_privateOwned, relationshipAccessor.isPrivateOwned())) {
+                return false;
+            }
+
+            if (! valuesMatch(m_cascade, relationshipAccessor.getCascade())) {
+                return false;
+            }
+            
+            if (! valuesMatch(m_fetch, relationshipAccessor.getFetch())) {
+                return false;
+            }
+            
+            if (! valuesMatch(m_joinFetch, relationshipAccessor.getJoinFetch())) {
+                return false;
+            }
+            
+            if (! valuesMatch(m_batchFetch, relationshipAccessor.getBatchFetch())) {
+                return false;
+            }
+            
+            if (! valuesMatch(m_batchFetchSize, relationshipAccessor.getBatchFetchSize())) {
+                return false;
+            }
+            
+            if (! valuesMatch(m_joinTable, relationshipAccessor.getJoinTable())) {
+                return false;
+            }
+            
+            if (! valuesMatch(m_joinColumns, relationshipAccessor.getJoinColumns())) {
+                return false;
+            }
+            
+            return valuesMatch(m_targetEntityName, relationshipAccessor.getTargetEntityName());
+        }
+        
+        return false;
     }
     
     /**

@@ -21,6 +21,8 @@
  *       - 241413: JPA 2.0 Add EclipseLink support for Map type attributes
  *     11/06/2009-2.0 Guy Pelletier 
  *       - 286317: UniqueConstraint xml element is changing (plus couple other fixes, see bug)
+ *     04/27/2010-2.1 Guy Pelletier 
+ *       - 309856: MappedSuperclasses from XML are not being initialized properly
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata.accessors.mappings;
 
@@ -49,6 +51,8 @@ import org.eclipse.persistence.internal.jpa.metadata.xml.XMLEntityMappings;
  * @since TopLink 11g
  */
 public abstract class DirectAccessor extends MappingAccessor {
+    // Note: Any metadata mapped from XML to this class must be compared in the equals method.
+    
     private Boolean m_optional;
     private EnumeratedMetadata m_enumerated;
     private LobMetadata m_lob;
@@ -90,6 +94,40 @@ public abstract class DirectAccessor extends MappingAccessor {
         if (isAnnotationPresent(Convert.class)) {
             m_convert = (String) getAnnotation(Convert.class).getAttribute("value");
         }
+    }
+    
+    /**
+     * INTERNAL:
+     */
+    @Override
+    public boolean equals(Object objectToCompare) {
+        if (super.equals(objectToCompare) && objectToCompare instanceof DirectAccessor) {
+            DirectAccessor directAccessor = (DirectAccessor) objectToCompare;
+            
+            if (! valuesMatch(m_optional, directAccessor.getOptional())) {
+                return false;
+            }
+            
+            if (! valuesMatch(m_enumerated, directAccessor.getEnumerated())) {
+                return false;
+            }
+
+            if (! valuesMatch(m_lob, directAccessor.getLob())) {
+                return false;
+            }
+            
+            if (! valuesMatch(m_fetch, directAccessor.getFetch())) {
+                return false;
+            }
+            
+            if (! valuesMatch(m_convert, directAccessor.getConvert())) {
+                return false;
+            }
+            
+            return valuesMatch(m_temporal, directAccessor.getTemporal());
+        }
+        
+        return false;
     }
     
     /**

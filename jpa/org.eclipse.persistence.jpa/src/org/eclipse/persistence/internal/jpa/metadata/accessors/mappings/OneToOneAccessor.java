@@ -21,6 +21,8 @@
  *       - 270011: JPA 2.0 MappedById support
  *     09/29/2009-2.0 Guy Pelletier 
  *       - 282553: JPA 2.0 JoinTable support for OneToOne and ManyToOne
+ *     04/27/2010-2.1 Guy Pelletier 
+ *       - 309856: MappedSuperclasses from XML are not being initialized properly
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata.accessors.mappings;
 
@@ -47,6 +49,8 @@ import org.eclipse.persistence.mappings.RelationTableMechanism;
  * @since TopLink EJB 3.0 Reference Implementation
  */
 public class OneToOneAccessor extends ObjectAccessor {
+    // Note: Any metadata mapped from XML to this class must be compared in the equals method.
+
     private String m_mappedBy;
     
     /**
@@ -68,6 +72,19 @@ public class OneToOneAccessor extends ObjectAccessor {
             m_mappedBy = (String) oneToOne.getAttribute("mappedBy");
             setOrphanRemoval((Boolean) oneToOne.getAttribute("orphanRemoval"));
         }
+    }
+    
+    /**
+     * INTERNAL:
+     */
+    @Override
+    public boolean equals(Object objectToCompare) {
+        if (super.equals(objectToCompare) && objectToCompare instanceof OneToOneAccessor) {
+            OneToOneAccessor oneToOneAccessor = (OneToOneAccessor) objectToCompare;
+            return valuesMatch(m_mappedBy, oneToOneAccessor.getMappedBy());
+        }
+        
+        return false;
     }
     
     /**

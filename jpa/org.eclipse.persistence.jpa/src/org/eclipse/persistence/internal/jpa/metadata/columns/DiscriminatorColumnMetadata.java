@@ -13,6 +13,8 @@
  *       - 218084: Implement metadata merging functionality between mapping files
  *     06/09/2009-2.0 Guy Pelletier 
  *       - 249037: JPA 2.0 persisting list item index
+ *     04/27/2010-2.1 Guy Pelletier 
+ *       - 309856: MappedSuperclasses from XML are not being initialized properly
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata.columns;
 
@@ -32,6 +34,8 @@ import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataA
  * @since TopLink EJB 3.0 Reference Implementation
  */
 public class DiscriminatorColumnMetadata extends MetadataColumn {
+    // Note: Any metadata mapped from XML to this class must be compared in the equals method.
+
     private Integer m_length;
     private String m_discriminatorType;
     
@@ -53,6 +57,24 @@ public class DiscriminatorColumnMetadata extends MetadataColumn {
             m_length = (Integer) discriminatorColumn.getAttribute("length");
             m_discriminatorType = (String) discriminatorColumn.getAttribute("discriminatorType");    
         }
+    }
+    
+    /**
+     * INTERNAL:
+     */
+    @Override
+    public boolean equals(Object objectToCompare) {
+        if (super.equals(objectToCompare) && objectToCompare instanceof DiscriminatorColumnMetadata) {
+            DiscriminatorColumnMetadata discriminatorColumn = (DiscriminatorColumnMetadata) objectToCompare;
+            
+            if (! valuesMatch(m_length, discriminatorColumn.getLength())) {
+                return false;
+            }
+            
+            return valuesMatch(m_discriminatorType, discriminatorColumn.getDiscriminatorType());
+        }
+        
+        return false;
     }
     
     /**

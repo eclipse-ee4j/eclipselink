@@ -13,6 +13,8 @@
  *       - 218084: Implement metadata merging functionality between mapping files
  *     01/28/2009-2.0 Guy Pelletier 
  *       - 248293: JPA 2.0 Element Collections (part 1)
+ *     04/27/2010-2.1 Guy Pelletier 
+ *       - 309856: MappedSuperclasses from XML are not being initialized properly
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata.accessors.classes;
 
@@ -48,6 +50,8 @@ import org.eclipse.persistence.internal.jpa.metadata.xml.XMLEntityMappings;
  * @since EclipseLink 1.0
  */
 public class XMLAttributes extends ORMetadata {
+    // Note: Any metadata mapped from XML to this class must be compared in the equals method.
+
     private EmbeddedIdAccessor m_embeddedId;
     
     private List<BasicAccessor> m_basics;
@@ -73,6 +77,19 @@ public class XMLAttributes extends ORMetadata {
         super("<attributes>");
     }
 
+    /**
+     * INTERNAL:
+     */
+    @Override
+    public boolean equals(Object objectToCompare) {
+        if (objectToCompare instanceof XMLAttributes) {
+            XMLAttributes attributes = (XMLAttributes) objectToCompare;
+            return valuesMatch(getAccessors(), attributes.getAccessors());
+        }
+        
+        return false;
+    }
+    
     /**
      * INTERNAL:
      */

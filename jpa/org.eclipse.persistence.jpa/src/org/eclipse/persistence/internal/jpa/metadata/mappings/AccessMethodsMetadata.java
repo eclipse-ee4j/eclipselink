@@ -18,6 +18,8 @@
  *       - 267217: Add Named Access Type to EclipseLink-ORM
  *     04/09/2010-2.1 Guy Pelletier 
  *       - 307050: Add defaults for access methods of a VIRTUAL access type
+ *     04/27/2010-2.1 Guy Pelletier 
+ *       - 309856: MappedSuperclasses from XML are not being initialized properly
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata.mappings;
 
@@ -34,6 +36,8 @@ import org.eclipse.persistence.internal.jpa.metadata.ORMetadata;
  * @since EclipseLink 1.0M8
  */
 public class AccessMethodsMetadata extends ORMetadata {
+    // Note: Any metadata mapped from XML to this class must be compared in the equals method.
+
     // Access method names are required in XML, therefore will override these
     // default values used for VIRTUAL access defaults.
     String getMethodName = "get";
@@ -54,6 +58,24 @@ public class AccessMethodsMetadata extends ORMetadata {
         accessMethods.setGetMethodName(getGetMethodName());
         accessMethods.setSetMethodName(getSetMethodName());
         return accessMethods;
+    }
+    
+    /**
+     * INTERNAL:
+     */
+    @Override
+    public boolean equals(Object objectToCompare) {
+        if (objectToCompare instanceof AccessMethodsMetadata) {
+            AccessMethodsMetadata accessMethods = (AccessMethodsMetadata) objectToCompare;
+            
+            if (! valuesMatch(getMethodName, accessMethods.getGetMethodName())) {
+                return false;
+            }
+            
+            return valuesMatch(setMethodName, accessMethods.getSetMethodName());
+        }
+        
+        return false;
     }
     
     /**

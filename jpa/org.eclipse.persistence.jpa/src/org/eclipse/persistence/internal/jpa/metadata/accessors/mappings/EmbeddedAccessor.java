@@ -25,6 +25,8 @@
  *       - 278768: JPA 2.0 Association Override Join Table
  *     11/23/2009-2.0 Guy Pelletier 
  *       - 295790: JPA 2.0 adding @MapsId to one entity causes initialization errors in other entities
+ *     04/27/2010-2.1 Guy Pelletier 
+ *       - 309856: MappedSuperclasses from XML are not being initialized properly
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata.accessors.mappings;
 
@@ -58,6 +60,8 @@ import org.eclipse.persistence.mappings.EmbeddableMapping;
  * @since TopLink EJB 3.0 Reference Implementation
  */
 public class EmbeddedAccessor extends MappingAccessor {
+    // Note: Any metadata mapped from XML to this class must be compared in the equals method.
+
     private List<AssociationOverrideMetadata> m_associationOverrides;
     private List<AttributeOverrideMetadata> m_attributeOverrides;
 
@@ -121,6 +125,25 @@ public class EmbeddedAccessor extends MappingAccessor {
     public void addMapsIdAccessor(MappingAccessor mapsIdAccessor) {
         ((AggregateObjectMapping) getMapping()).addMapsIdMapping(mapsIdAccessor.getMapping());
     }
+    
+    /**
+     * INTERNAL:
+     */
+    @Override
+    public boolean equals(Object objectToCompare) {
+        if (super.equals(objectToCompare) && objectToCompare instanceof EmbeddedAccessor) {
+            EmbeddedAccessor embeddedAccessor = (EmbeddedAccessor) objectToCompare;
+            
+            if (! valuesMatch(m_associationOverrides, embeddedAccessor.getAssociationOverrides())) {
+                return false;
+            }
+            
+            return valuesMatch(m_attributeOverrides, embeddedAccessor.getAttributeOverrides());
+        }
+        
+        return false;
+    }
+    
     
     /**
      * INTERNAL:

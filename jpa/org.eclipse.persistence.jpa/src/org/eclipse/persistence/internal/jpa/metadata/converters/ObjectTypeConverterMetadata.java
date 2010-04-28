@@ -15,6 +15,8 @@
  *       - 265359: JPA 2.0 Element Collections - Metadata processing portions
  *     03/27/2009-2.0 Guy Pelletier 
  *       - 241413: JPA 2.0 Add EclipseLink support for Map type attributes
+ *     04/27/2010-2.1 Guy Pelletier 
+ *       - 309856: MappedSuperclasses from XML are not being initialized properly
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata.converters;
 
@@ -49,6 +51,8 @@ import org.eclipse.persistence.mappings.converters.EnumTypeConverter;
  * @since TopLink 11g
  */
 public class ObjectTypeConverterMetadata extends TypeConverterMetadata {
+    // Note: Any metadata mapped from XML to this class must be compared in the equals method.
+
     private List<ConversionValueMetadata> m_conversionValues = new ArrayList<ConversionValueMetadata>();
     private String m_defaultObjectValue;
     
@@ -68,7 +72,7 @@ public class ObjectTypeConverterMetadata extends TypeConverterMetadata {
         
         for (Object conversionValue: (Object[]) objectTypeConverter.getAttributeArray("conversionValues")) {
             m_conversionValues.add(new ConversionValueMetadata((MetadataAnnotation)conversionValue, accessibleObject));
-           }
+        }
         
         m_defaultObjectValue = (String) objectTypeConverter.getAttribute("defaultObjectValue"); 
     }
@@ -78,20 +82,8 @@ public class ObjectTypeConverterMetadata extends TypeConverterMetadata {
      */
     @Override
     public boolean equals(Object objectToCompare) {
-        if (objectToCompare instanceof ObjectTypeConverterMetadata) {
+        if (super.equals(objectToCompare) && objectToCompare instanceof ObjectTypeConverterMetadata) {
             ObjectTypeConverterMetadata objectTypeConverter = (ObjectTypeConverterMetadata) objectToCompare;
-            
-            if (! valuesMatch(getName(), objectTypeConverter.getName())) {
-                return false;
-            }
-            
-            if (! valuesMatch(getDataType(), objectTypeConverter.getDataType())) {
-                return false;
-            }
-            
-            if (! valuesMatch(getObjectType(), objectTypeConverter.getObjectType())) {
-                return false;
-            }
             
             if (! valuesMatch(m_conversionValues, objectTypeConverter.getConversionValues())) {
                 return false;

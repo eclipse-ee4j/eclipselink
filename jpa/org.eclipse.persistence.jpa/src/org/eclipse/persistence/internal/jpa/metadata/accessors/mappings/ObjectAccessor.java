@@ -35,6 +35,8 @@
  *       - 295790: JPA 2.0 adding @MapsId to one entity causes initialization errors in other entities
  *     03/29/2010-2.1 Guy Pelletier 
  *       - 267217: Add Named Access Type to EclipseLink-ORM
+ *     04/27/2010-2.1 Guy Pelletier 
+ *       - 309856: MappedSuperclasses from XML are not being initialized properly
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata.accessors.mappings;
 
@@ -83,8 +85,10 @@ import org.eclipse.persistence.mappings.RelationTableMechanism;
  * @since TopLink EJB 3.0 Reference Implementation
  */
 public abstract class ObjectAccessor extends RelationshipAccessor {
+    // Note: Any metadata mapped from XML to this class must be compared in the equals method.
+
     private Boolean m_id;
-    private Boolean m_isOptional;
+    private Boolean m_optional;
     private List<PrimaryKeyJoinColumnMetadata> m_primaryKeyJoinColumns = new ArrayList<PrimaryKeyJoinColumnMetadata>();
     private String m_mapsId;
     
@@ -103,7 +107,7 @@ public abstract class ObjectAccessor extends RelationshipAccessor {
         super(annotation, accessibleObject, classAccessor);
         
         if (annotation != null) {
-            m_isOptional = (Boolean) annotation.getAttribute("optional");
+            m_optional = (Boolean) annotation.getAttribute("optional");
         }
         
         // Set the primary key join columns if some are present.
@@ -131,6 +135,32 @@ public abstract class ObjectAccessor extends RelationshipAccessor {
         
         // Set the derived id if one is specified.
         m_id = isAnnotationPresent(Id.class);
+    }
+    
+    /**
+     * INTERNAL:
+     */
+    @Override
+    public boolean equals(Object objectToCompare) {
+        if (super.equals(objectToCompare) && objectToCompare instanceof ObjectAccessor) {
+            ObjectAccessor objectAccessor = (ObjectAccessor) objectToCompare;
+            
+            if (! valuesMatch(m_id, objectAccessor.getId())) {
+                return false;
+            }
+            
+            if (! valuesMatch(m_optional, objectAccessor.getOptional())) {
+                return false;
+            }
+
+            if (! valuesMatch(m_primaryKeyJoinColumns, objectAccessor.getPrimaryKeyJoinColumns())) {
+                return false;
+            }
+            
+            return valuesMatch(m_mapsId, objectAccessor.getMapsId());
+        }
+        
+        return false;
     }
     
     /**
@@ -170,7 +200,7 @@ public abstract class ObjectAccessor extends RelationshipAccessor {
      * Used for OX mapping.
      */
     public Boolean getOptional() {
-        return m_isOptional;
+        return m_optional;
     }
     
     /**
@@ -330,7 +360,7 @@ public abstract class ObjectAccessor extends RelationshipAccessor {
      * INTERNAL:
      */
     public boolean isOptional() {
-        return m_isOptional != null && m_isOptional;
+        return m_optional != null && m_optional;
     }
     
     /**
@@ -670,7 +700,7 @@ public abstract class ObjectAccessor extends RelationshipAccessor {
      * Used for OX mapping.
      */
     public void setOptional(Boolean isOptional) {
-        m_isOptional = isOptional;
+        m_optional = isOptional;
     }
     
     /**

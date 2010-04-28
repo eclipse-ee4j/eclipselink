@@ -11,6 +11,8 @@
  *     Oracle - initial API and implementation from Oracle TopLink
  *     05/16/2008-1.0M8 Guy Pelletier 
  *       - 218084: Implement metadata merging functionality between mapping files
+ *     04/27/2010-2.1 Guy Pelletier 
+ *       - 309856: MappedSuperclasses from XML are not being initialized properly
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata.queries;
 
@@ -26,6 +28,8 @@ import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataA
  * @since TopLink EJB 3.0 Reference Implementation
  */
 public class FieldResultMetadata extends ORMetadata {
+    // Note: Any metadata mapped from XML to this class must be compared in the equals method.
+
     // Both the name and column are required in XML and annotations.
     private String m_name;
     private String m_column;
@@ -60,7 +64,6 @@ public class FieldResultMetadata extends ORMetadata {
                 return false;
             }
 
-            
             return valuesMatch(m_column, fieldResult.getColumn());
         }
         

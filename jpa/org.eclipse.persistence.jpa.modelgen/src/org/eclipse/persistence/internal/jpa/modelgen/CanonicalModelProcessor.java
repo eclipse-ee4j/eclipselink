@@ -10,6 +10,8 @@
  * Contributors:
  *     08/10/2009-2.0 Guy Pelletier 
  *       - 267391: JPA 2.0 implement/extend/use an APT tooling library for MetaModel API canonical classes
+ *     04/27/2010-2.1 Guy Pelletier 
+ *       - 309856: MappedSuperclasses from XML are not being initialized properly
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.modelgen;
 
@@ -99,14 +101,17 @@ public class CanonicalModelProcessor extends AbstractProcessor {
             for (MappingAccessor mappingAccessor : accessor.getDescriptor().getAccessors()) {
                 if (! mappingAccessor.isTransient()) {
                     MetadataAnnotatedElement annotatedElement = mappingAccessor.getAnnotatedElement();
-                    MetadataClass rawClass = annotatedElement.getRawClass(mappingAccessor.getDescriptor());
+                    // Must go through the mapping accessor for the raw class
+                    // since it may be a virtual mapping accessor with an
+                    // attribute type.
+                    MetadataClass rawClass = mappingAccessor.getRawClass();
 
                     // NOTE: order of checking is important.
                     String attributeType;
                     String types = className;
                     
                     if (mappingAccessor.isBasic()) {
-                        types = types + ", " + getUnqualifiedType(getBoxedType(annotatedElement), imports);
+                        types = types + ", " + getUnqualifiedType(getBoxedType(annotatedElement, rawClass), imports);
                         attributeType = AttributeType.SingularAttribute.name();
                         imports.put(attributeType, "javax.persistence.metamodel.SingularAttribute");
                     } else {
@@ -154,7 +159,7 @@ public class CanonicalModelProcessor extends AbstractProcessor {
                     }
                         
                     // Add the mapping attribute to the list of attributes for this class.
-                    attributes.add("\tpublic static volatile " + attributeType + "<" + types + "> " + annotatedElement.getAttributeName() + ";\n");
+                    attributes.add("    public static volatile " + attributeType + "<" + types + "> " + annotatedElement.getAttributeName() + ";\n");
                 }
             }
                         
@@ -204,13 +209,14 @@ public class CanonicalModelProcessor extends AbstractProcessor {
     /**
      * INTERNAL:
      */
-    protected String getBoxedType(MetadataAnnotatedElement annotatedElement) {
+    protected String getBoxedType(MetadataAnnotatedElement annotatedElement, MetadataClass rawClass) {
         PrimitiveType primitiveType = (PrimitiveType) annotatedElement.getPrimitiveType();
         if (primitiveType != null) {
             return processingEnv.getTypeUtils().boxedClass(primitiveType).toString();
         }
         
-        return annotatedElement.getType();
+        String type = annotatedElement.getType();
+        return (type == null) ? rawClass.getType() : type;
     }
     
     /**
@@ -245,8 +251,13 @@ public class CanonicalModelProcessor extends AbstractProcessor {
         // Remove any leading and trailing white spaces.
         type = type.trim();
         
+        // Convert any $ (enums, inner classes to valid dot notation for import statement)
+        // org.eclipse.persistence.testing.models.jpa.xml.advanced.ShovelSections$MaterialType
+        type = type.replace("$", ".");
+        
         if (type.contains("void")) {
-            // This case hits when the user defines something like: @BasicCollection public Collection responsibilities;
+            // This case hits when the user defines something like: 
+        	// @BasicCollection public Collection responsibilities;
             return TypeVisitor.GENERIC_TYPE;
         } else if (type.startsWith("java.lang")) {
             return type.substring(type.lastIndexOf(".") + 1);   
@@ -263,13 +274,13 @@ public class CanonicalModelProcessor extends AbstractProcessor {
                 
                 return getUnqualifiedType(raw, imports) + "<" + getUnqualifiedType(generic, imports) + ">";
             } else if (type.indexOf(".") > -1) {
-                String shortClassName = type.substring(type.lastIndexOf(".") + 1);
+            	String shortClassName = type.substring(type.lastIndexOf(".") + 1);
                 
                 // We already have an import for this class, look at it further.
                 if (imports.containsKey(shortClassName)) {
                     if (imports.get(shortClassName).equals(type)) {
-                        // We're hitting the same class from the same package,
-                        // return the short name for this class.
+                        // We're hitting the same class from the same package, 
+                    	// return the short name for this class.
                         return type.substring(type.lastIndexOf(".") + 1);
                     } else {
                         // Same class name different package. Don't hack off the
@@ -286,7 +297,7 @@ public class CanonicalModelProcessor extends AbstractProcessor {
                     }
                     
                     return shortClassName;
-                }
+                }	
             } else {
                 return type;
             }
@@ -355,13 +366,9 @@ public class CanonicalModelProcessor extends AbstractProcessor {
                     // Step 3e - We're set, generate the canonical model classes.
                     generateCanonicalModelClasses(roundEnv, persistenceUnit);
                 }
-                
             } catch (Exception e) {
                 processingEnv.getMessager().printMessage(Kind.ERROR, e.toString());
                 
-                for (StackTraceElement stElement : e.getStackTrace()) {
-                    processingEnv.getMessager().printMessage(Kind.NOTE, stElement.toString());
-                }
                 
                 throw new RuntimeException(e);
             }

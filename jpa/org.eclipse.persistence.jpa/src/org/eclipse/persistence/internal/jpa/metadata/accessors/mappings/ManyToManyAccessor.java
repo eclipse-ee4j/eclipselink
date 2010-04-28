@@ -19,6 +19,8 @@
  *       - 278768: JPA 2.0 Association Override Join Table
  *     09/29/2009-2.0 Guy Pelletier 
  *       - 282553: JPA 2.0 JoinTable support for OneToOne and ManyToOne
+ *     04/27/2010-2.1 Guy Pelletier 
+ *       - 309856: MappedSuperclasses from XML are not being initialized properly
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata.accessors.mappings;
 
@@ -41,6 +43,8 @@ import org.eclipse.persistence.mappings.ManyToManyMapping;
  * @since TopLink EJB 3.0 Reference Implementation
  */
 public class ManyToManyAccessor extends CollectionAccessor {
+    // Note: Any metadata mapped from XML to this class must be compared in the equals method.
+    
     /**
      * INTERNAL:
      * Used for OX mapping.
@@ -58,6 +62,13 @@ public class ManyToManyAccessor extends CollectionAccessor {
         setMappedBy((String) manyToMany.getAttribute("mappedBy"));
     }
     
+    /**
+     * INTERNAL:
+     */
+    @Override
+    public boolean equals(Object objectToCompare) {
+        return super.equals(objectToCompare) && objectToCompare instanceof ManyToManyAccessor;
+    }
     
     /**
      * INTERNAL:

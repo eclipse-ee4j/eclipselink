@@ -31,6 +31,8 @@
  *                      can better determine when to add the MAPPED_SUPERCLASS_RESERVED_PK_NAME
  *                      temporary PK field used to process MappedSuperclasses for the Metamodel API
  *                      during MetadataProject.addMetamodelMappedSuperclass()
+ *     04/27/2010-2.1 Guy Pelletier 
+ *       - 309856: MappedSuperclasses from XML are not being initialized properly
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata.accessors.mappings;
 
@@ -53,6 +55,8 @@ import org.eclipse.persistence.mappings.EmbeddableMapping;
  * @since TopLink EJB 3.0 Reference Implementation
  */
 public class EmbeddedIdAccessor extends EmbeddedAccessor {
+    // Note: Any metadata mapped from XML to this class must be compared in the equals method.
+
     // We store map of fields that are the primary key and add them only at the
     // end of processing since they may change when processing attribute 
     // overrides. They are mapped by attribute name.
@@ -107,6 +111,14 @@ public class EmbeddedIdAccessor extends EmbeddedAccessor {
         }
     }
     
+    /**
+     * INTERNAL:
+     */
+    @Override
+    public boolean equals(Object objectToCompare) {
+        return super.equals(objectToCompare) && objectToCompare instanceof EmbeddedIdAccessor;
+    }
+
     /**
      * INTERNAL:
      */

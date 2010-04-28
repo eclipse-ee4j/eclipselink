@@ -11,6 +11,8 @@
  *     Oracle - initial API and implementation from Oracle TopLink
  *     05/16/2008-1.0M8 Guy Pelletier 
  *       - 218084: Implement metadata merging functionality between mapping files
+ *     04/27/2010-2.1 Guy Pelletier 
+ *       - 309856: MappedSuperclasses from XML are not being initialized properly
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata.cache;
 
@@ -25,6 +27,8 @@ import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataA
  * @since TopLink 11g
  */
 public class TimeOfDayMetadata extends ORMetadata {
+    // Note: Any metadata mapped from XML to this class must be compared in the equals method.
+
     private Integer m_hour;
     private Integer m_millisecond;
     private Integer m_minute;
@@ -47,6 +51,32 @@ public class TimeOfDayMetadata extends ORMetadata {
         m_millisecond = (Integer) timeOfDay.getAttribute("millisecond");
         m_minute = (Integer) timeOfDay.getAttribute("minute");
         m_second = (Integer) timeOfDay.getAttribute("second");
+    }
+    
+    /**
+     * INTERNAL:
+     */
+    @Override
+    public boolean equals(Object objectToCompare) {
+        if (objectToCompare instanceof TimeOfDayMetadata) {
+            TimeOfDayMetadata timeOfDay = (TimeOfDayMetadata) objectToCompare;
+            
+            if (! valuesMatch(m_hour, timeOfDay.getHour())) {
+                return false;
+            }
+            
+            if (! valuesMatch(m_millisecond, timeOfDay.getMillisecond())) {
+                return false;
+            }
+
+            if (! valuesMatch(m_minute, timeOfDay.getMinute())) {
+                return false;
+            }
+            
+            return valuesMatch(m_second, timeOfDay.getSecond());
+        }
+        
+        return false;
     }
     
     /**

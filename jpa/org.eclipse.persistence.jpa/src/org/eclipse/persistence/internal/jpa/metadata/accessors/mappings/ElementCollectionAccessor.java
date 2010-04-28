@@ -30,7 +30,9 @@
  *     11/06/2009-2.0 Guy Pelletier 
  *       - 286317: UniqueConstraint xml element is changing (plus couple other fixes, see bug)
  *     03/08/2010-2.1 Guy Pelletier 
- *       - 303632: Add attribute-type for mapping attributes to EclipseLink-ORM  
+ *       - 303632: Add attribute-type for mapping attributes to EclipseLink-ORM
+ *     04/27/2010-2.1 Guy Pelletier 
+ *       - 309856: MappedSuperclasses from XML are not being initialized properly
  ******************************************************************************/ 
 package org.eclipse.persistence.internal.jpa.metadata.accessors.mappings;
 
@@ -94,6 +96,8 @@ import org.eclipse.persistence.mappings.OneToOneMapping;
  * @since EclipseLink 1.2
  */
 public class ElementCollectionAccessor extends DirectCollectionAccessor implements MappedKeyMapAccessor {
+    // Note: Any metadata mapped from XML to this class must be compared in the equals method.
+
     private ColumnMetadata m_column;
     private ColumnMetadata m_mapKeyColumn;
     
@@ -270,6 +274,76 @@ public class ElementCollectionAccessor extends DirectCollectionAccessor implemen
             
             m_associationOverrides.add(associationOverride);
         }
+    }
+    
+    /**
+     * INTERNAL:
+     */
+    @Override
+    public boolean equals(Object objectToCompare) {
+        if (super.equals(objectToCompare) && objectToCompare instanceof ElementCollectionAccessor) {
+            ElementCollectionAccessor elementCollectionAccessor = (ElementCollectionAccessor) objectToCompare;
+            
+            if (! valuesMatch(m_column, elementCollectionAccessor.getColumn())) {
+                return false;
+            }
+            
+            if (! valuesMatch(m_mapKeyColumn, elementCollectionAccessor.getMapKeyColumn())) {
+                return false;
+            }
+            
+            if (! valuesMatch(m_mapKeyEnumerated, elementCollectionAccessor.getMapKeyEnumerated())) {
+                return false;
+            }
+            
+            if (! valuesMatch(m_associationOverrides, elementCollectionAccessor.getAssociationOverrides())) {
+                return false;
+            }
+            
+            if (! valuesMatch(m_mapKeyAssociationOverrides, elementCollectionAccessor.getMapKeyAssociationOverrides())) {
+                return false;
+            }
+            
+            if (! valuesMatch(m_attributeOverrides, elementCollectionAccessor.getAttributeOverrides())) {
+                return false;
+            }
+            
+            if (! valuesMatch(m_mapKeyAttributeOverrides, elementCollectionAccessor.getMapKeyAttributeOverrides())) {
+                return false;
+            }
+            
+            if (! valuesMatch(m_mapKeyJoinColumns, elementCollectionAccessor.getMapKeyJoinColumns())) {
+                return false;
+            }
+            
+            if (! valuesMatch(m_mapKey, elementCollectionAccessor.getMapKey())) {
+                return false;
+            }
+            
+            if (! valuesMatch(m_orderColumn, elementCollectionAccessor.getOrderColumn())) {
+                return false;
+            }
+            
+            if (! valuesMatch(m_mapKeyConvert, elementCollectionAccessor.getMapKeyConvert())) {
+                return false;
+            }
+            
+            if (! valuesMatch(m_mapKeyClassName, elementCollectionAccessor.getMapKeyClassName())) {
+                return false;
+            }
+            
+            if (! valuesMatch(m_targetClassName, elementCollectionAccessor.getTargetClassName())) {
+                return false;
+            }
+            
+            if (! valuesMatch(m_orderBy, elementCollectionAccessor.getOrderBy())) {
+                return false;
+            }
+            
+            return valuesMatch(m_mapKeyTemporal, elementCollectionAccessor.getMapKeyTemporal());
+        }
+        
+        return false;
     }
     
     /**

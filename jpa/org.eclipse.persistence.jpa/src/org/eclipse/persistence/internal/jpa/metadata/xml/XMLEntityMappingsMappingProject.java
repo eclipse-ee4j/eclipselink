@@ -43,6 +43,8 @@
  *       - 303632: Add attribute-type for mapping attributes to EclipseLink-ORM
  *     04/09/2010-2.1 Guy Pelletier 
  *       - 307050: Add defaults for access methods of a VIRTUAL access type
+ *     04/27/2010-2.1 Guy Pelletier 
+ *       - 309856: MappedSuperclasses from XML are not being initialized properly
  *******************************************************************************/
 package org.eclipse.persistence.internal.jpa.metadata.xml;
 
@@ -1061,6 +1063,7 @@ public class XMLEntityMappingsMappingProject extends org.eclipse.persistence.ses
 
         // Element mappings - must remain in order of definition in XML.
         descriptor.addMapping(getDescriptionMapping());
+        //descriptor.addMapping(getParentClassMapping());
         descriptor.addMapping(getAccessMethodsMapping());
         descriptor.addMapping(getCustomizerMapping());
         descriptor.addMapping(getChangeTrackingMapping());
@@ -1308,9 +1311,9 @@ public class XMLEntityMappingsMappingProject extends org.eclipse.persistence.ses
         descriptor.setJavaClass(EnumeratedMetadata.class);
         
         XMLDirectMapping enumeratedMapping = new XMLDirectMapping();
-        enumeratedMapping.setAttributeName("m_enumerated");
-        enumeratedMapping.setGetMethodName("getEnumerated");
-        enumeratedMapping.setSetMethodName("setEnumerated");
+        enumeratedMapping.setAttributeName("m_enumeratedType");
+        enumeratedMapping.setGetMethodName("getEnumeratedType");
+        enumeratedMapping.setSetMethodName("setEnumeratedType");
         enumeratedMapping.setXPath("text()");
         descriptor.addMapping(enumeratedMapping);
         
@@ -1551,6 +1554,7 @@ public class XMLEntityMappingsMappingProject extends org.eclipse.persistence.ses
 
         // Element mappings - must remain in order of definition in XML.
         descriptor.addMapping(getDescriptionMapping());
+        //descriptor.addMapping(getParentClassMapping());
         descriptor.addMapping(getAccessMethodsMapping());
         descriptor.addMapping(getCustomizerMapping());
         descriptor.addMapping(getChangeTrackingMapping());
@@ -1859,17 +1863,23 @@ public class XMLEntityMappingsMappingProject extends org.eclipse.persistence.ses
         
         XMLDirectMapping validationMapping = new XMLDirectMapping();
         validationMapping.setAttributeName("m_validation");
+        validationMapping.setGetMethodName("getValidation");
+        validationMapping.setSetMethodName("setValidation");
         validationMapping.setXPath("@validation");
         descriptor.addMapping(validationMapping);
         
         XMLDirectMapping cacheKeyMapping = new XMLDirectMapping();
         cacheKeyMapping.setAttributeName("m_cacheKeyType");
+        cacheKeyMapping.setGetMethodName("getCacheKeyType");
+        cacheKeyMapping.setSetMethodName("setCacheKeyType");
         cacheKeyMapping.setXPath("@cache-key-type");
         descriptor.addMapping(cacheKeyMapping);
         
         XMLCompositeCollectionMapping columnsMapping = new XMLCompositeCollectionMapping();
         columnsMapping.setAttributeName("m_columns");
         columnsMapping.setReferenceClass(ColumnMetadata.class);
+        columnsMapping.setGetMethodName("getColumns");
+        columnsMapping.setSetMethodName("setColumns");
         columnsMapping.setXPath("orm:column");
         descriptor.addMapping(columnsMapping);
         
@@ -2369,9 +2379,9 @@ public class XMLEntityMappingsMappingProject extends org.eclipse.persistence.ses
         descriptor.setJavaClass(TemporalMetadata.class);
         
         XMLDirectMapping temporalMapping = new XMLDirectMapping();
-        temporalMapping.setAttributeName("m_temporal");
-        temporalMapping.setGetMethodName("getTemporal");
-        temporalMapping.setSetMethodName("setTemporal");
+        temporalMapping.setAttributeName("m_temporalType");
+        temporalMapping.setGetMethodName("getTemporalType");
+        temporalMapping.setSetMethodName("setTemporalType");
         temporalMapping.setXPath("text()");
         descriptor.addMapping(temporalMapping);
         
@@ -3567,6 +3577,18 @@ public class XMLEntityMappingsMappingProject extends org.eclipse.persistence.ses
         primaryKeyMapping.setReferenceClass(PrimaryKeyMetadata.class);
         primaryKeyMapping.setXPath("orm:primary-key");
         return primaryKeyMapping;
+    }
+    
+    /**
+     * INTERNAL:
+     */
+    protected XMLDirectMapping getParentClassMapping() {
+        XMLDirectMapping parentClassMapping = new XMLDirectMapping();
+        parentClassMapping.setAttributeName("m_parentClassName");
+        parentClassMapping.setGetMethodName("getParentClassName");
+        parentClassMapping.setSetMethodName("setParentClassName");
+        parentClassMapping.setXPath("orm:parent-class");
+        return parentClassMapping;
     }
     
     /**

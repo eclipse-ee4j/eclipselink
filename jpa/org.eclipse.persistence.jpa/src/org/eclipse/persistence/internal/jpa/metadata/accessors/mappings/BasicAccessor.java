@@ -30,7 +30,9 @@
  *     12/2/2009-2.1 Guy Pelletier 
  *       - 296612:  Add current annotation only metadata support of return insert/update to the EclipseLink-ORM.XML Schema
  *     03/08/2010-2.1 Guy Pelletier 
- *       - 303632: Add attribute-type for mapping attributes to EclipseLink-ORM  
+ *       - 303632: Add attribute-type for mapping attributes to EclipseLink-ORM
+ *     04/27/2010-2.1 Guy Pelletier 
+ *       - 309856: MappedSuperclasses from XML are not being initialized properly
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata.accessors.mappings;
 
@@ -80,6 +82,8 @@ import org.eclipse.persistence.mappings.DirectToFieldMapping;
  * @since TopLink EJB 3.0 Reference Implementation
  */
 public class BasicAccessor extends DirectAccessor {
+    // Note: Any metadata mapped from XML to this class must be compared in the equals method.
+
     private Boolean m_mutable;
     private boolean m_returnUpdate;
     private ColumnMetadata m_column;
@@ -102,6 +106,44 @@ public class BasicAccessor extends DirectAccessor {
      */
     public BasicAccessor(String xmlElement) {
         super(xmlElement);
+    }
+    
+    /**
+     * INTERNAL:
+     */
+    @Override
+    public boolean equals(Object objectToCompare) {
+        if (super.equals(objectToCompare) && objectToCompare instanceof BasicAccessor) {
+            BasicAccessor basicAccessor = (BasicAccessor) objectToCompare;
+            
+            if (! valuesMatch(m_mutable, basicAccessor.getMutable())) {
+                return false;
+            }
+            
+            if (! valuesMatch(m_returnUpdate, basicAccessor.isReturnUpdate())) {
+                return false;
+            }
+
+            if (! valuesMatch(m_column, basicAccessor.getColumn())) {
+                return false;
+            }
+            
+            if (! valuesMatch(m_generatedValue, basicAccessor.getGeneratedValue())) {
+                return false;
+            }
+            
+            if (! valuesMatch(m_returnInsert, basicAccessor.getReturnInsert())) {
+                return false;
+            }
+            
+            if (! valuesMatch(m_sequenceGenerator, basicAccessor.getSequenceGenerator())) {
+                return false;
+            }
+            
+            return valuesMatch(m_tableGenerator, basicAccessor.getTableGenerator());
+        }
+        
+        return false;
     }
     
     /**
@@ -245,6 +287,7 @@ public class BasicAccessor extends DirectAccessor {
         }
         
         // Initialize single objects.
+        initXMLObject(m_generatedValue, accessibleObject);
         initXMLObject(m_returnInsert, accessibleObject);
         initXMLObject(m_sequenceGenerator, accessibleObject);
         initXMLObject(m_tableGenerator, accessibleObject);

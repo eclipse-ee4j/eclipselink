@@ -15,6 +15,8 @@
  *       - 270853: testBeerLifeCycleMethodAnnotationIgnored within xml merge testing need to be relocated
  *     01/05/2010-2.1 Guy Pelletier 
  *       - 211324: Add additional event(s) support to the EclipseLink-ORM.XML Schema
+ *     04/27/2010-2.1 Guy Pelletier 
+ *       - 309856: MappedSuperclasses from XML are not being initialized properly
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata.listeners;
 
@@ -62,6 +64,8 @@ import org.eclipse.persistence.internal.security.PrivilegedNewInstanceFromClass;
  * @since TopLink 10.1.3/EJB 3.0 Preview
  */
 public class EntityListenerMetadata extends ORMetadata implements Cloneable {
+    // Note: Any metadata mapped from XML to this class must be compared in the equals method.
+
     private MetadataClass m_entityListenerClass;
     
     protected EntityListener m_listener;
@@ -102,6 +106,48 @@ public class EntityListenerMetadata extends ORMetadata implements Cloneable {
         } catch (CloneNotSupportedException error) {
             throw new InternalError(error.getMessage());
         }
+    }
+    
+    /**
+     * INTERNAL:
+     */
+    @Override
+    public boolean equals(Object objectToCompare) {
+        if (objectToCompare instanceof EntityListenerMetadata) {
+            EntityListenerMetadata entityListener = (EntityListenerMetadata) objectToCompare;
+            
+            if (! valuesMatch(m_className, entityListener.getClassName())) {
+                return false;
+            }
+            
+            if (! valuesMatch(m_postLoad, entityListener.getPostLoad())) {
+                return false;
+            }
+            
+            if (! valuesMatch(m_postPersist, entityListener.getPostPersist())) {
+                return false;
+            }
+            
+            if (! valuesMatch(m_postRemove, entityListener.getPostRemove())) {
+                return false;
+            }
+            
+            if (! valuesMatch(m_postUpdate, entityListener.getPostUpdate())) {
+                return false;
+            }
+            
+            if (! valuesMatch(m_prePersist, entityListener.getPrePersist())) {
+                return false;
+            }
+            
+            if (! valuesMatch(m_preRemove, entityListener.getPreRemove())) {
+                return false;
+            }
+            
+            return valuesMatch(m_preUpdate, entityListener.getPreUpdate());
+        }
+        
+        return false;
     }
     
     /**

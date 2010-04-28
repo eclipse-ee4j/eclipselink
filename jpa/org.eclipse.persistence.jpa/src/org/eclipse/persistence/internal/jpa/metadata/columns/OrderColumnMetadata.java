@@ -10,6 +10,8 @@
  * Contributors:
  *     06/09/2009-2.0 Guy Pelletier 
  *       - 249037: JPA 2.0 persisting list item index
+ *     04/27/2010-2.1 Guy Pelletier 
+ *       - 309856: MappedSuperclasses from XML are not being initialized properly
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata.columns;
 
@@ -32,6 +34,8 @@ import org.eclipse.persistence.mappings.CollectionMapping;
  * @since EclipseLink 1.2
  */
 public class OrderColumnMetadata extends DirectColumnMetadata {
+    // Note: Any metadata mapped from XML to this class must be compared in the equals method.
+
     private static final String _ORDER = "_ORDER";
     
     private String m_correctionType;    
@@ -59,7 +63,6 @@ public class OrderColumnMetadata extends DirectColumnMetadata {
     public boolean equals(Object objectToCompare) {
         if (super.equals(objectToCompare) && objectToCompare instanceof OrderColumnMetadata) {
             OrderColumnMetadata orderColumn = (OrderColumnMetadata) objectToCompare;
-            
             return valuesMatch(m_correctionType, orderColumn.getCorrectionType());
         }
         

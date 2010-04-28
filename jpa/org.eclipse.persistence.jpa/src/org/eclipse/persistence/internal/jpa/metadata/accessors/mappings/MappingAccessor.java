@@ -51,6 +51,8 @@
  *       - 267217: Add Named Access Type to EclipseLink-ORM
  *     04/09/2010-2.1 Guy Pelletier 
  *       - 307050: Add defaults for access methods of a VIRTUAL access type
+ *     04/27/2010-2.1 Guy Pelletier 
+ *       - 309856: MappedSuperclasses from XML are not being initialized properly
  ******************************************************************************/
 package org.eclipse.persistence.internal.jpa.metadata.accessors.mappings;
 
@@ -124,6 +126,8 @@ import org.eclipse.persistence.mappings.foundation.MapKeyMapping;
  * @since EclipseLink 1.0
  */
 public abstract class MappingAccessor extends MetadataAccessor {
+    // Note: Any metadata mapped from XML to this class must be compared in the equals method.
+    
     // Reserved converter names
     private static final String CONVERT_NONE = "none";
     private static final String CONVERT_SERIALIZED = "serialized";
@@ -156,6 +160,20 @@ public abstract class MappingAccessor extends MetadataAccessor {
      */
     protected MappingAccessor(String xmlElement) {
         super(xmlElement);
+    }
+    
+    /**
+     * INTERNAL:
+     */
+    @Override
+    public boolean equals(Object objectToCompare) {
+        if (super.equals(objectToCompare) && objectToCompare instanceof MappingAccessor) {
+            MappingAccessor mappingAccessor = (MappingAccessor) objectToCompare;
+            
+            return valuesMatch(m_attributeType, mappingAccessor.getAttributeType());
+        }
+        
+        return false;
     }
     
     /**

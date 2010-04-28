@@ -11,6 +11,8 @@
  *     Oracle - initial API and implementation from Oracle TopLink
  *     05/16/2008-1.0M8 Guy Pelletier 
  *       - 218084: Implement metadata merging functionality between mapping file
+ *     04/27/2010-2.1 Guy Pelletier 
+ *       - 309856: MappedSuperclasses from XML are not being initialized properly
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata.tables;
 
@@ -30,6 +32,8 @@ import org.eclipse.persistence.internal.jpa.metadata.MetadataLogger;
  * @since TopLink EJB 3.0 Reference Implementation
  */
 public class SecondaryTableMetadata extends TableMetadata {
+    // Note: Any metadata mapped from XML to this class must be compared in the equals method.
+
     private List<PrimaryKeyJoinColumnMetadata> m_primaryKeyJoinColumns = new ArrayList<PrimaryKeyJoinColumnMetadata>();
     
     /**
@@ -50,6 +54,19 @@ public class SecondaryTableMetadata extends TableMetadata {
                 m_primaryKeyJoinColumns.add(new PrimaryKeyJoinColumnMetadata((MetadataAnnotation)primaryKeyJoinColumn, accessibleObject));
             }
         }
+    }
+    
+    /**
+     * INTERNAL:
+     */
+    @Override
+    public boolean equals(Object objectToCompare) {
+        if (super.equals(objectToCompare) && objectToCompare instanceof SecondaryTableMetadata) {
+            SecondaryTableMetadata secondaryTable = (SecondaryTableMetadata) objectToCompare;
+            return valuesMatch(m_primaryKeyJoinColumns, secondaryTable.getPrimaryKeyJoinColumns());
+        }
+        
+        return false;
     }
     
     /**

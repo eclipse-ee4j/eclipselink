@@ -13,6 +13,8 @@
  *       - 218084: Implement metadata merging functionality between mapping files
  *     03/27/2009-2.0 Guy Pelletier 
  *       - 241413: JPA 2.0 Add EclipseLink support for Map type attributes
+ *     04/27/2010-2.1 Guy Pelletier 
+ *       - 309856: MappedSuperclasses from XML are not being initialized properly
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata.converters;
 
@@ -34,6 +36,8 @@ import org.eclipse.persistence.mappings.DatabaseMapping;
  * @since TopLink 11g
  */
 public class ConverterMetadata extends AbstractConverterMetadata {
+    // Note: Any metadata mapped from XML to this class must be compared in the equals method.
+
     private String m_className;
     
     /**
@@ -58,7 +62,7 @@ public class ConverterMetadata extends AbstractConverterMetadata {
      */
     @Override
     public boolean equals(Object objectToCompare) {
-        if (objectToCompare instanceof ConverterMetadata) {
+        if (super.equals(objectToCompare) && objectToCompare instanceof ConverterMetadata) {
             ConverterMetadata converter = (ConverterMetadata) objectToCompare;
             
             if (! valuesMatch(getName(), converter.getName())) {

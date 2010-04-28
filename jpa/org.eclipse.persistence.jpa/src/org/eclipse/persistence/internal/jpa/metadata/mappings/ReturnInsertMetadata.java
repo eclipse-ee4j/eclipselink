@@ -10,6 +10,8 @@
  * Contributors:
  *     12/2/2009-2.1 Guy Pelletier 
  *       - 296612:  Add current annotation only metadata support of return insert/update to the EclipseLink-ORM.XML Schema
+ *     04/27/2010-2.1 Guy Pelletier 
+ *       - 309856: MappedSuperclasses from XML are not being initialized properly
  ******************************************************************************/ 
 package org.eclipse.persistence.internal.jpa.metadata.mappings;
 
@@ -26,6 +28,8 @@ import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataA
  * @since EclipseLink 2.1
  */
 public class ReturnInsertMetadata extends ORMetadata {
+    // Note: Any metadata mapped from XML to this class must be compared in the equals method.
+
     private Boolean m_returnOnly;
 
     /**
@@ -52,6 +56,19 @@ public class ReturnInsertMetadata extends ORMetadata {
         return m_returnOnly;
     }
 
+    /**
+     * INTERNAL:
+     */
+    @Override
+    public boolean equals(Object objectToCompare) {
+        if (objectToCompare instanceof ReturnInsertMetadata) {
+            ReturnInsertMetadata returnInsert = (ReturnInsertMetadata) objectToCompare;
+            return valuesMatch(m_returnOnly, returnInsert.getReturnOnly());
+        }
+        
+        return false;
+    }
+    
     /**
      * INTERNAL:
      */

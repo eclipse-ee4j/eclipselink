@@ -13,6 +13,8 @@
  *       - 218084: Implement metadata merging functionality between mapping files
  *     11/06/2009-2.0 Guy Pelletier 
  *       - 286317: UniqueConstraint xml element is changing (plus couple other fixes, see bug)
+ *     04/27/2010-2.1 Guy Pelletier 
+ *       - 309856: MappedSuperclasses from XML are not being initialized properly
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata.mappings;
 
@@ -32,6 +34,8 @@ import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataA
  * @since EclipseLink 1.0
  */
 public class CascadeMetadata extends ORMetadata {
+    // Note: Any metadata mapped from XML to this class must be compared in the equals method.
+
     private boolean m_cascadeAll;
     private boolean m_cascadePersist;
     private boolean m_cascadeMerge;
@@ -61,6 +65,36 @@ public class CascadeMetadata extends ORMetadata {
         }
     }
 
+    /**
+     * INTERNAL:
+     */
+    @Override
+    public boolean equals(Object objectToCompare) {
+        if (objectToCompare instanceof CascadeMetadata) {
+            CascadeMetadata accessMethods = (CascadeMetadata) objectToCompare;
+            
+            if (! valuesMatch(m_cascadeAll, accessMethods.isCascadeAll())) {
+                return false;
+            }
+            
+            if (! valuesMatch(m_cascadePersist, accessMethods.isCascadePersist())) {
+                return false;
+            }
+            
+            if (! valuesMatch(m_cascadeMerge, accessMethods.isCascadeMerge())) {
+                return false;
+            }
+            
+            if (! valuesMatch(m_cascadeRemove, accessMethods.isCascadeRemove())) {
+                return false;
+            }
+            
+            return valuesMatch(m_cascadeRefresh, accessMethods.isCascadeRefresh());
+        }
+        
+        return false;
+    }
+    
     /**
      * INTERNAL:
      * Used for OX mapping.

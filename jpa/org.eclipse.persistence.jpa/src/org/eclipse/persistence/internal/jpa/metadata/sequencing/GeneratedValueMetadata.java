@@ -11,9 +11,12 @@
  *     Oracle - initial API and implementation from Oracle TopLink
  *     05/16/2008-1.0M8 Guy Pelletier 
  *       - 218084: Implement metadata merging functionality between mapping files
+ *     04/27/2010-2.1 Guy Pelletier 
+ *       - 309856: MappedSuperclasses from XML are not being initialized properly
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata.sequencing;
 
+import org.eclipse.persistence.internal.jpa.metadata.ORMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataAnnotation;
 
 /**
@@ -22,7 +25,9 @@ import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataA
  * @author Guy Pelletier
  * @since TopLink EJB 3.0 Reference Implementation
  */
-public class GeneratedValueMetadata {
+public class GeneratedValueMetadata extends ORMetadata {
+    // Note: Any metadata mapped from XML to this class must be compared in the equals method.
+
     private String m_strategy;
     private String m_generator;
     
@@ -47,19 +52,11 @@ public class GeneratedValueMetadata {
         if (objectToCompare instanceof GeneratedValueMetadata) {
             GeneratedValueMetadata generatedValue = (GeneratedValueMetadata) objectToCompare;
             
-            if (m_generator == null && generatedValue.getGenerator() != null) {
-                return false;
-            } else if (! m_generator.equals(generatedValue.getGenerator())) {
-                return false;
-            }
-                
-            if (m_strategy == null && generatedValue.getStrategy() != null) {
-                return false;
-            } else if (! m_strategy.equals(generatedValue.getStrategy())) {
+            if (! valuesMatch(m_generator, generatedValue.getGenerator())) {
                 return false;
             }
             
-            return true;
+            return valuesMatch(m_strategy, generatedValue.getStrategy());
         }
         
         return false;

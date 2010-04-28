@@ -11,6 +11,8 @@
  *     tware - March 28/2008 - 1.0M7 - Initial implementation
  *     05/16/2008-1.0M8 Guy Pelletier 
  *       - 218084: Implement metadata merging functionality between mapping files
+ *     04/27/2010-2.1 Guy Pelletier 
+ *       - 309856: MappedSuperclasses from XML are not being initialized properly
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata.copypolicy;
 
@@ -30,6 +32,8 @@ import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataA
  * @author tware
  */
 public class CloneCopyPolicyMetadata extends CopyPolicyMetadata {
+    // Note: Any metadata mapped from XML to this class must be compared in the equals method.
+
     private String methodName;
     private String workingCopyMethodName;
     
@@ -49,6 +53,24 @@ public class CloneCopyPolicyMetadata extends CopyPolicyMetadata {
         
         methodName = (String) copyPolicy.getAttribute("method");      
         workingCopyMethodName = (String) copyPolicy.getAttribute("workingCopyMethod");
+    }
+    
+    /**
+     * INTERNAL:
+     */
+    @Override
+    public boolean equals(Object objectToCompare) {
+        if (super.equals(objectToCompare) && objectToCompare instanceof CloneCopyPolicyMetadata) {
+            CloneCopyPolicyMetadata cloneCopyPolicy = (CloneCopyPolicyMetadata) objectToCompare;
+            
+            if (! valuesMatch(methodName, cloneCopyPolicy.getMethodName())) {
+                return false;
+            }
+            
+            return valuesMatch(workingCopyMethodName, cloneCopyPolicy.getWorkingCopyMethodName());
+        }
+        
+        return false;
     }
     
     /**

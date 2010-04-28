@@ -14,6 +14,8 @@
  *       - 218084: Implement metadata merging functionality between mapping files
  *     03/08/2010-2.1 Guy Pelletier 
  *       - 303632: Add attribute-type for mapping attributes to EclipseLink-ORM
+ *     04/27/2010-2.1 Guy Pelletier 
+ *       - 309856: MappedSuperclasses from XML are not being initialized properly
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata.accessors;
 
@@ -32,6 +34,8 @@ import org.eclipse.persistence.internal.jpa.metadata.xml.XMLEntityMappings;
  * @since EclipseLink 1.0 
  */
 public class PropertyMetadata extends ORMetadata {
+    // Note: Any metadata mapped from XML to this class must be compared in the equals method.
+
     private String m_name;
     private String m_value;
     private MetadataClass m_valueType;
@@ -54,6 +58,28 @@ public class PropertyMetadata extends ORMetadata {
         m_name = (String)property.getAttributeString("name");
         m_value = (String)property.getAttributeString("value");
         m_valueType = getMetadataClass((String)property.getAttributeString("valueType"));
+    }
+    
+    /**
+     * INTERNAL:
+     */
+    @Override
+    public boolean equals(Object objectToCompare) {
+        if (objectToCompare instanceof PropertyMetadata) {
+            PropertyMetadata property = (PropertyMetadata) objectToCompare;
+            
+            if (! valuesMatch(m_name, property.getName())) {
+                return false;
+            }
+            
+            if (! valuesMatch(m_value, property.getValue())) {
+                return false;
+            }
+            
+            return valuesMatch(m_valueTypeName, property.getValueTypeName());
+        }
+        
+        return false;
     }
     
     /**

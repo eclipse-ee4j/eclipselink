@@ -21,6 +21,8 @@
  *       - 241413: JPA 2.0 Add EclipseLink support for Map type attributes
  *     11/06/2009-2.0 Guy Pelletier 
  *       - 286317: UniqueConstraint xml element is changing (plus couple other fixes, see bug)
+ *     04/27/2010-2.1 Guy Pelletier 
+ *       - 309856: MappedSuperclasses from XML are not being initialized properly
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata.accessors.mappings;
 
@@ -41,7 +43,9 @@ import org.eclipse.persistence.internal.jpa.metadata.xml.XMLEntityMappings;
  * @author Guy Pelletier
  * @since TopLink 11g
  */
-public class BasicMapAccessor extends BasicCollectionAccessor {    
+public class BasicMapAccessor extends BasicCollectionAccessor {
+    // Note: Any metadata mapped from XML to this class must be compared in the equals method.
+
     private ColumnMetadata m_keyColumn;
     private String m_keyConverter;
     private String m_valueConverter;
@@ -76,6 +80,29 @@ public class BasicMapAccessor extends BasicCollectionAccessor {
         setFetch((String) basicMap.getAttribute("fetch"));
     }
    
+    /**
+     * INTERNAL:
+     */
+    @Override
+    public boolean equals(Object objectToCompare) {
+        if (super.equals(objectToCompare) && objectToCompare instanceof BasicMapAccessor) {
+            
+            BasicMapAccessor basicMapAccessor = (BasicMapAccessor) objectToCompare;
+            
+            if (! valuesMatch(m_keyColumn, basicMapAccessor.getKeyColumn())) {
+                return false;
+            }
+            
+            if (! valuesMatch(m_keyConverter, basicMapAccessor.getKeyConverter())) {
+                return false;
+            }
+            
+            return valuesMatch(m_valueConverter, basicMapAccessor.getValueConverter());
+        }
+        
+        return false;
+    }
+    
     /**
      * INTERNAL:
      */

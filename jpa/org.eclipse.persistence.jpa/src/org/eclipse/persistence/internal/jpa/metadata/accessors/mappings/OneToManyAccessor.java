@@ -25,6 +25,8 @@
  *       - 282553: JPA 2.0 JoinTable support for OneToOne and ManyToOne
  *     11/02/2009-2.0 Michael O'Brien
  *       - 266912: JPA 2.0 Metamodel support for 1:m as 1:1 in DI 96
+ *     04/27/2010-2.1 Guy Pelletier 
+ *       - 309856: MappedSuperclasses from XML are not being initialized properly
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata.accessors.mappings;
 
@@ -60,6 +62,8 @@ import org.eclipse.persistence.mappings.UnidirectionalOneToManyMapping;
  * @since TopLink EJB 3.0 Reference Implementation
  */
 public class OneToManyAccessor extends CollectionAccessor {
+    // Note: Any metadata mapped from XML to this class must be compared in the equals method.
+    
     /**
      * INTERNAL:
      * Used for OX mapping.
@@ -78,6 +82,14 @@ public class OneToManyAccessor extends CollectionAccessor {
         if (oneToMany != null) {
             setOrphanRemoval((Boolean) oneToMany.getAttribute("orphanRemoval"));
         }
+    }
+    
+    /**
+     * INTERNAL:
+     */
+    @Override
+    public boolean equals(Object objectToCompare) {
+        return super.equals(objectToCompare) && objectToCompare instanceof OneToManyAccessor;
     }
     
     /**

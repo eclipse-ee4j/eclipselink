@@ -10,6 +10,8 @@
  * Contributors:
  *     01/19/2010-2.1 Guy Pelletier 
  *       - 211322: Add fetch-group(s) support to the EclipseLink-ORM.XML Schema
+ *     04/27/2010-2.1 Guy Pelletier 
+ *       - 309856: MappedSuperclasses from XML are not being initialized properly
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata.queries;
 
@@ -26,6 +28,8 @@ import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataA
  * @since EclipseLink 2.1
  */
 public class FetchAttributeMetadata extends ORMetadata {
+    // Note: Any metadata mapped from XML to this class must be compared in the equals method.
+
     protected String m_name;
 
     /**
@@ -52,7 +56,6 @@ public class FetchAttributeMetadata extends ORMetadata {
     public boolean equals(Object objectToCompare) {
         if (objectToCompare instanceof FetchAttributeMetadata) {
             FetchAttributeMetadata fetchAttribute = (FetchAttributeMetadata) objectToCompare;
-            
             return valuesMatch(m_name, fetchAttribute.getName());
         }
         

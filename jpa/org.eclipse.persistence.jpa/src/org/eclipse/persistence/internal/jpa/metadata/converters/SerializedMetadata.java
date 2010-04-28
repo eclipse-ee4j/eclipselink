@@ -17,6 +17,8 @@
  *          in support of the custom descriptors holding mappings required by the Metamodel 
  *     03/08/2010-2.1 Guy Pelletier 
  *       - 303632: Add attribute-type for mapping attributes to EclipseLink-ORM
+ *     04/27/2010-2.1 Guy Pelletier 
+ *       - 309856: MappedSuperclasses from XML are not being initialized properly
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata.converters;
 
@@ -40,6 +42,8 @@ import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataC
  * @since EclipseLink 1.2
  */
 public class SerializedMetadata extends MetadataConverter {
+    // Note: Any metadata mapped from XML to this class must be compared in the equals method.
+
     /**
      * INTERNAL:
      */
@@ -59,6 +63,14 @@ public class SerializedMetadata extends MetadataConverter {
         super(converter, accessibleObject);
     }
     
+    /**
+     * INTERNAL:
+     */
+    @Override
+    public boolean equals(Object objectToCompare) {
+        return super.equals(objectToCompare) && objectToCompare instanceof SerializedMetadata;
+    }
+
     /**
      * INTERNAL:
      * Every converter needs to be able to process themselves.

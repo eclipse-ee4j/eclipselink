@@ -11,7 +11,9 @@
  *     08/10/2009-2.0 Guy Pelletier 
  *       - 267391: JPA 2.0 implement/extend/use an APT tooling library for MetaModel API canonical classes 
  *     11/20/2009-2.0 Guy Pelletier/Mitesh Meswani 
- *       - 295376: Improve usability of MetaModel generator       
+ *       - 295376: Improve usability of MetaModel generator
+ *     04/27/2010-2.1 Guy Pelletier 
+ *       - 309856: MappedSuperclasses from XML are not being initialized properly
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.modelgen.objects;
 
@@ -377,6 +379,7 @@ public class PersistenceUnit {
             entityMappings.setLoader(factory.getLoader());
             entityMappings.setProject(project);
             entityMappings.setMetadataFactory(factory);
+            entityMappings.setLoadedForCanonicalModel(true);
         
             // Process the persistence unit metadata if defined.
             entityMappings.processPersistenceUnitMetadata();

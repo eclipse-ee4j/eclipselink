@@ -12,6 +12,8 @@
  *       - 218084: Implement metadata merging functionality between mapping files
  *     03/27/2009-2.0 Guy Pelletier 
  *       - 241413: JPA 2.0 Add EclipseLink support for Map type attributes
+ *     04/27/2010-2.1 Guy Pelletier 
+ *       - 309856: MappedSuperclasses from XML are not being initialized properly
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata.converters;
 
@@ -35,14 +37,16 @@ import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataC
  * @since EclipseLink 1.2
  */
 public class EnumeratedMetadata extends MetadataConverter {
-    private String m_enumerated;
+    // Note: Any metadata mapped from XML to this class must be compared in the equals method.
+
+    private String m_enumeratedType;
     
     /**
      * INTERNAL:
      * Used for defaulting case.
      */
     public EnumeratedMetadata() {
-        m_enumerated = EnumType.ORDINAL.name();
+        m_enumeratedType = EnumType.ORDINAL.name();
     }
     
     /**
@@ -65,15 +69,28 @@ public class EnumeratedMetadata extends MetadataConverter {
     public EnumeratedMetadata(MetadataAnnotation enumerated, MetadataAccessibleObject accessibleObject) {
         super(enumerated, accessibleObject);
         
-        m_enumerated = (String) enumerated.getAttribute("value");
+        m_enumeratedType = (String) enumerated.getAttribute("value");
+    }
+    
+    /**
+     * INTERNAL:
+     */
+    @Override
+    public boolean equals(Object objectToCompare) {
+        if (super.equals(objectToCompare) && objectToCompare instanceof EnumeratedMetadata) {
+            EnumeratedMetadata enumerated = (EnumeratedMetadata) objectToCompare;
+            return valuesMatch(m_enumeratedType, enumerated.getEnumeratedType());
+        }
+        
+        return false;
     }
     
     /**
      * INTERNAL:
      * Used for OX mapping.
      */
-    public String getEnumerated() {
-        return m_enumerated;
+    public String getEnumeratedType() {
+        return m_enumeratedType;
     }
     
     /**
@@ -94,8 +111,8 @@ public class EnumeratedMetadata extends MetadataConverter {
             throw ValidationException.invalidTypeForEnumeratedAttribute(mapping.getAttributeName(), referenceClass, accessor.getJavaClass());
         }
         boolean isOrdinal = true;
-        if (m_enumerated != null) {
-            isOrdinal = m_enumerated.equals(EnumType.ORDINAL.name());
+        if (m_enumeratedType != null) {
+            isOrdinal = m_enumeratedType.equals(EnumType.ORDINAL.name());
         }
         setConverter(mapping, new EnumTypeConverter(mapping, getJavaClass(referenceClass), isOrdinal), isForMapKey);
     }
@@ -104,7 +121,7 @@ public class EnumeratedMetadata extends MetadataConverter {
      * INTERNAL:
      * Used for OX mapping.
      */
-    public void setEnumerated(String enumerated) {
-        m_enumerated = enumerated;
+    public void setEnumeratedType(String enumerated) {
+        m_enumeratedType = enumerated;
     }
 }

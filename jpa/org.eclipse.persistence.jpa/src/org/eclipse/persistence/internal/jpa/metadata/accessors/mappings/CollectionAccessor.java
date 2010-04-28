@@ -39,6 +39,8 @@
  *       - 303632: Add attribute-type for mapping attributes to EclipseLink-ORM
  *     03/29/2010-2.1 Guy Pelletier 
  *       - 267217: Add Named Access Type to EclipseLink-ORM
+ *     04/27/2010-2.1 Guy Pelletier 
+ *       - 309856: MappedSuperclasses from XML are not being initialized properly
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata.accessors.mappings;
 
@@ -97,6 +99,8 @@ import org.eclipse.persistence.mappings.ManyToManyMapping;
  * @since TopLink EJB 3.0 Reference Implementation
  */
 public abstract class CollectionAccessor extends RelationshipAccessor implements MappedKeyMapAccessor {
+    // Note: Any metadata mapped from XML to this class must be compared in the equals method.
+
     // Order by constants
     private static final String ASCENDING = "ASC";
     private static final String DESCENDING = "DESC";
@@ -220,6 +224,64 @@ public abstract class CollectionAccessor extends RelationshipAccessor implements
         if (isAnnotationPresent(MapKeyConvert.class)) {
             m_mapKeyConvert = (String) getAnnotation(MapKeyConvert.class).getAttribute("value");
         }
+    }
+    
+    /**
+     * INTERNAL:
+     */
+    @Override
+    public boolean equals(Object objectToCompare) {
+        if (super.equals(objectToCompare) && objectToCompare instanceof CollectionAccessor) {
+            CollectionAccessor collectionAccessor = (CollectionAccessor) objectToCompare;
+            
+            if (! valuesMatch(m_mapKeyColumn, collectionAccessor.getMapKeyColumn())) {
+                return false;
+            }
+            
+            if (! valuesMatch(m_mapKeyEnumerated, collectionAccessor.getMapKeyEnumerated())) {
+                return false;
+            }
+
+            if (! valuesMatch(m_mapKeyAssociationOverrides, collectionAccessor.getMapKeyAssociationOverrides())) {
+                return false;
+            }
+            
+            if (! valuesMatch(m_mapKeyAttributeOverrides, collectionAccessor.getMapKeyAttributeOverrides())) {
+                return false;
+            }
+            
+            if (! valuesMatch(m_mapKeyJoinColumns, collectionAccessor.getMapKeyJoinColumns())) {
+                return false;
+            }
+            
+            if (! valuesMatch(m_mapKey, collectionAccessor.getMapKey())) {
+                return false;
+            }
+            
+            if (! valuesMatch(m_orderColumn, collectionAccessor.getOrderColumn())) {
+                return false;
+            }
+            
+            if (! valuesMatch(m_mapKeyConvert, collectionAccessor.getMapKeyConvert())) {
+                return false;
+            }
+            
+            if (! valuesMatch(m_mapKeyClassName, collectionAccessor.getMapKeyClassName())) {
+                return false;
+            }
+            
+            if (! valuesMatch(m_mappedBy, collectionAccessor.getMappedBy())) {
+                return false;
+            }
+            
+            if (! valuesMatch(m_orderBy, collectionAccessor.getOrderBy())) {
+                return false;
+            }
+            
+            return valuesMatch(m_mapKeyTemporal, collectionAccessor.getMapKeyTemporal());
+        }
+        
+        return false;
     }
     
     /**

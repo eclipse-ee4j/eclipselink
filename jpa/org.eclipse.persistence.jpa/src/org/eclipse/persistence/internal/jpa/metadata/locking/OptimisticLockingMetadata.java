@@ -11,6 +11,8 @@
  *     Oracle - initial API and implementation from Oracle TopLink
  *     05/16/2008-1.0M8 Guy Pelletier 
  *       - 218084: Implement metadata merging functionality between mapping files
+ *     04/27/2010-2.1 Guy Pelletier 
+ *       - 309856: MappedSuperclasses from XML are not being initialized properly
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata.locking;
 
@@ -35,6 +37,8 @@ import org.eclipse.persistence.internal.jpa.metadata.columns.ColumnMetadata;
  * @since TopLink 11g
  */
 public class OptimisticLockingMetadata extends ORMetadata {
+    // Note: Any metadata mapped from XML to this class must be compared in the equals method.
+
     private Boolean m_cascade;
     private List<ColumnMetadata> m_selectedColumns = new ArrayList<ColumnMetadata>();
     private String m_type;
@@ -58,6 +62,28 @@ public class OptimisticLockingMetadata extends ORMetadata {
         for (Object selectedColumn : (Object[]) optimisticLocking.getAttributeArray("selectedColumns")) {
             m_selectedColumns.add(new ColumnMetadata((MetadataAnnotation)selectedColumn, accessibleObject));
         }
+    }
+    
+    /**
+     * INTERNAL:
+     */
+    @Override
+    public boolean equals(Object objectToCompare) {
+        if (objectToCompare instanceof OptimisticLockingMetadata) {
+            OptimisticLockingMetadata optimisticLocking = (OptimisticLockingMetadata) objectToCompare;
+            
+            if (! valuesMatch(m_cascade, optimisticLocking.getCascade())) {
+                return false;
+            }
+            
+            if (! valuesMatch(m_selectedColumns, optimisticLocking.getSelectedColumns())) {
+                return false;
+            }
+            
+            return valuesMatch(m_type, optimisticLocking.getType());
+        }
+        
+        return false;
     }
     
     /**

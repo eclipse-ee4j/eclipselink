@@ -8,6 +8,14 @@
     </persistence-unit-metadata>
     <package>org.eclipse.persistence.testing.models.jpa.xml.advanced</package>
     <type-converter name="String2String" data-type="String" object-type="String"/>
+    <mapped-superclass class="Person" access="PROPERTY">
+        <attributes>
+            <id name="id">
+                <column name="CUSTOMER_ID"/>
+                <generated-value strategy="TABLE" generator="XML_ADV_CUSTOMER_TABLE_GENERATOR"/>
+            </id>
+        </attributes>
+    </mapped-superclass>
     <mapped-superclass class="org.eclipse.persistence.testing.models.jpa.xml.advanced.fetchgroup.GoalieGear" access="FIELD">
         <fetch-group name="AgeGroup">
             <attribute name="ageGroup"/>

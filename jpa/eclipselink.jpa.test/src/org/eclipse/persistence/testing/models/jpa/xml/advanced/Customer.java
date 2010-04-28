@@ -12,8 +12,7 @@
  ******************************************************************************/  
 package org.eclipse.persistence.testing.models.jpa.xml.advanced;
 
-public class Customer {
-    private Integer id;
+public class Customer extends Person {
     private Integer version;
     private String firstName;
     private String lastName;
@@ -26,10 +25,6 @@ public class Customer {
         this();
         this.firstName = firstName;
         this.lastName = lastName;
-    }
-
-    public Integer getId() { 
-        return id; 
     }
 
     public String getFirstName() { 
@@ -46,10 +41,6 @@ public class Customer {
     
     public Integer getVersion() {
         return version; 
-    }
-
-    public void setId(Integer id) { 
-        this.id = id; 
     }
 
     public void setFirstName(String firstName) { 

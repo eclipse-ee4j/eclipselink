@@ -22,7 +22,9 @@
  *     09/29/2009-2.0 Guy Pelletier 
  *       - 282553: JPA 2.0 JoinTable support for OneToOne and ManyToOne
  *     03/08/2010-2.1 Guy Pelletier 
- *       - 303632: Add attribute-type for mapping attributes to EclipseLink-ORM  
+ *       - 303632: Add attribute-type for mapping attributes to EclipseLink-ORM
+ *     04/27/2010-2.1 Guy Pelletier 
+ *       - 309856: MappedSuperclasses from XML are not being initialized properly
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata.accessors.mappings;
 
@@ -56,6 +58,8 @@ import org.eclipse.persistence.mappings.DirectCollectionMapping;
  */
 @SuppressWarnings("deprecation")
 public class BasicCollectionAccessor extends DirectCollectionAccessor {
+    // Note: Any metadata mapped from XML to this class must be compared in the equals method.
+
     private ColumnMetadata m_valueColumn;
     
     /**
@@ -88,6 +92,19 @@ public class BasicCollectionAccessor extends DirectCollectionAccessor {
         if (isAnnotationPresent(CollectionTable.class)) {
             setCollectionTable(new CollectionTableMetadata(getAnnotation(CollectionTable.class), accessibleObject, false));
         }
+    }
+    
+    /**
+     * INTERNAL:
+     */
+    @Override
+    public boolean equals(Object objectToCompare) {
+        if (super.equals(objectToCompare) && objectToCompare instanceof BasicCollectionAccessor) {
+            BasicCollectionAccessor basicCollectionAccessor = (BasicCollectionAccessor) objectToCompare;
+            return valuesMatch(m_valueColumn, basicCollectionAccessor.getValueColumn());
+        }
+        
+        return false;
     }
     
     /**

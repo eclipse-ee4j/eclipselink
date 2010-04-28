@@ -1502,7 +1502,6 @@ public class MetadataProject {
         m_mappedSuperclasseAccessors.remove(metadataClass.getName());
     }
     
-    
     /**
      * INTERNAL:
      * Used to uppercase default and user defined column field names

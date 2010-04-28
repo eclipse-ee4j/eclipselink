@@ -33,6 +33,8 @@
  *       - 267217: Add Named Access Type to EclipseLink-ORM
  *     04/09/2010-2.1 Guy Pelletier 
  *       - 307050: Add defaults for access methods of a VIRTUAL access type
+ *     04/27/2010-2.1 Guy Pelletier 
+ *       - 309856: MappedSuperclasses from XML are not being initialized properly
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata.accessors;
 
@@ -81,6 +83,8 @@ import org.eclipse.persistence.internal.jpa.metadata.ORMetadata;
  * @since TopLink EJB 3.0 Reference Implementation
  */
 public abstract class MetadataAccessor extends ORMetadata {
+    // Note: Any metadata mapped from XML to this class must be compared in the equals method.
+    
     private AccessMethodsMetadata m_accessMethods;
     
     private List<ConverterMetadata> m_converters = new ArrayList<ConverterMetadata>();
@@ -114,6 +118,48 @@ public abstract class MetadataAccessor extends ORMetadata {
         
         // Look for an explicit access type specification.
         initAccess();
+    }
+    
+    /**
+     * INTERNAL:
+     */
+    @Override
+    public boolean equals(Object objectToCompare) {
+        if (objectToCompare instanceof MetadataAccessor) {
+            MetadataAccessor accessor = (MetadataAccessor) objectToCompare;
+                        
+            if (! valuesMatch(m_accessMethods, accessor.getAccessMethods())) {
+                return false;
+            }
+            
+            if (! valuesMatch(m_converters, accessor.getConverters())) {
+                return false;
+            }
+            
+            if (! valuesMatch(m_objectTypeConverters, accessor.getObjectTypeConverters())) {
+                return false;
+            }
+            
+            if (! valuesMatch(m_structConverters, accessor.getStructConverters())) {
+                return false;
+            }
+            
+            if (! valuesMatch(m_typeConverters, accessor.getTypeConverters())) {
+                return false;
+            }
+            
+            if (! valuesMatch(m_properties, accessor.getProperties())) {
+                return false;
+            }
+           
+            if (! valuesMatch(m_access, accessor.getAccess())) {
+                return false;
+            }
+            
+            return valuesMatch(m_name, accessor.getName());
+        }
+        
+        return false;
     }
     
     /**

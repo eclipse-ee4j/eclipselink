@@ -16,6 +16,8 @@
  *       - 241413: JPA 2.0 Add EclipseLink support for Map type attributes
  *     03/08/2010-2.1 Guy Pelletier 
  *       - 303632: Add attribute-type for mapping attributes to EclipseLink-ORM
+ *     04/27/2010-2.1 Guy Pelletier 
+ *       - 309856: MappedSuperclasses from XML are not being initialized properly
  ******************************************************************************/ 
 package org.eclipse.persistence.internal.jpa.metadata;
 
@@ -90,6 +92,13 @@ public abstract class ORMetadata {
     public ORMetadata(String xmlElement) {
         m_xmlElement = xmlElement;
     }
+    
+    /**
+     * INTERNAL:
+     * For merging to work properly, all ORMetadata must be able to compare
+     * themselves for equality.
+     */
+    public abstract boolean equals(Object objectToCompare);
     
     /**
      * Used for defaulting.
@@ -591,10 +600,18 @@ public abstract class ORMetadata {
                             throw ValidationException.conflictingAnnotations(m_annotation, getLocation(), existing.getAnnotation(), existing.getLocation());
                         }
                     } else {
-                        if (hasIdentifier()) {
-                            throw ValidationException.conflictingNamedXMLElements(getIdentifier(), m_xmlElement, getLocation(), existing.getLocation());
+                        // To this point, if the objects are loaded from the 
+                        // same place and were loaded for the canonical model
+                        // generation, assume the user has changed the xml and
+                        // override it.
+                        if (existing.getLocation().equals(getLocation()) && existing.getEntityMappings().loadedForCanonicalModel()) {
+                            return true;
                         } else {
-                            throw ValidationException.conflictingXMLElements(m_xmlElement, getAccessibleObject(), getLocation(), existing.getLocation());
+                            if (hasIdentifier()) {
+                                throw ValidationException.conflictingNamedXMLElements(getIdentifier(), m_xmlElement, getLocation(), existing.getLocation());
+                            } else {
+                                throw ValidationException.conflictingXMLElements(m_xmlElement, getAccessibleObject(), getLocation(), existing.getLocation());
+                            }
                         }
                     }
                 }

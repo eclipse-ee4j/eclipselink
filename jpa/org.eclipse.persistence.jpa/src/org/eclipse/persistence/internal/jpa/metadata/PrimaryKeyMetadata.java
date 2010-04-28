@@ -9,6 +9,8 @@
  *
  * Contributors:
  *     James Sutherland - initial impl
+ *     04/27/2010-2.1 Guy Pelletier 
+ *       - 309856: MappedSuperclasses from XML are not being initialized properly
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata;
 
@@ -33,24 +35,81 @@ import org.eclipse.persistence.internal.jpa.metadata.columns.ColumnMetadata;
  * @since EclipseLink 1.1
  */
 public class PrimaryKeyMetadata extends ORMetadata {
+    // Note: Any metadata mapped from XML to this class must be compared in the equals method.
+
     private String m_validation;
     private String m_cacheKeyType;
     private List<ColumnMetadata> m_columns = new ArrayList<ColumnMetadata>();
 
+    /**
+     * INTERNAL:
+     */
     public PrimaryKeyMetadata() {
         super("<primary-key>");
     }
 
+    /**
+     * INTERNAL:
+     */
     public PrimaryKeyMetadata(MetadataAnnotation primaryKey, MetadataAccessibleObject accessibleObject) {
         super(primaryKey, accessibleObject);
         
         m_validation = (String) primaryKey.getAttribute("validation");
         
         for (Object selectedColumn : (Object[]) primaryKey.getAttributeArray("columns")) {
-        	m_columns.add(new ColumnMetadata((MetadataAnnotation)selectedColumn, accessibleObject));
+            m_columns.add(new ColumnMetadata((MetadataAnnotation)selectedColumn, accessibleObject));
         }
     }
 
+    /**
+     * INTERNAL:
+     */
+    @Override
+    public boolean equals(Object objectToCompare) {
+        if (objectToCompare instanceof PrimaryKeyMetadata) {
+            PrimaryKeyMetadata primaryKey = (PrimaryKeyMetadata) objectToCompare;
+            
+            if (! valuesMatch(m_validation, primaryKey.getValidation())) {
+                return false;
+            }
+            
+            if (! valuesMatch(m_cacheKeyType, primaryKey.getCacheKeyType())) {
+                return false;
+            }
+            
+            return valuesMatch(m_columns, primaryKey.getColumns());
+        }
+        
+        return false;
+    }
+    
+    /**
+     * INTERNAL:
+     * Used for OX mapping.
+     */
+    public String getCacheKeyType() {
+        return m_cacheKeyType;
+    }
+    
+    /**
+     * INTERNAL:
+     * Used for OX mapping.
+     */
+    public List<ColumnMetadata> getColumns() {
+        return m_columns;
+    }
+    
+    /**
+     * INTERNAL:
+     * Used for OX mapping.
+     */
+    public String getValidation() {
+        return m_validation;
+    }
+    
+    /**
+     * INTERNAL:
+     */
     public boolean hasColumns() {
         return ! m_columns.isEmpty();
     }
@@ -66,15 +125,39 @@ public class PrimaryKeyMetadata extends ORMetadata {
             descriptor.getClassDescriptor().setCacheKeyType(CacheKeyType.valueOf(m_cacheKeyType));
         }
         if (hasColumns()) {
-        	List fields = new ArrayList(m_columns.size());
+            List fields = new ArrayList(m_columns.size());
             for (ColumnMetadata column : m_columns) {
                 if (column.getName().equals("")) {  
                     throw ValidationException.optimisticLockingSelectedColumnNamesNotSpecified(descriptor.getJavaClass());
                 } else {
-                	fields.add(column.getDatabaseField());
+                    fields.add(column.getDatabaseField());
                 }
             }
             descriptor.getClassDescriptor().setPrimaryKeyFields(fields);
         }
+    }
+    
+    /**
+     * INTERNAL:
+     * Used for OX mapping.
+     */
+    public void setCacheKeyType(String cacheKeyType) {
+        m_cacheKeyType = cacheKeyType;
+    }
+    
+    /**
+     * INTERNAL:
+     * Used for OX mapping.
+     */
+    public void setColumns(List<ColumnMetadata> columns) {
+        m_columns = columns;
+    }
+    
+    /**
+     * INTERNAL:
+     * Used for OX mapping.
+     */
+    public void setValidation(String validation) {
+        m_validation = validation;
     }
 }

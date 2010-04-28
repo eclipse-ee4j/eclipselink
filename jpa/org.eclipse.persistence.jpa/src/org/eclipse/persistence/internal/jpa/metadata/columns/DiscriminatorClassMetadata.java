@@ -11,7 +11,9 @@
  *     03/26/2008-1.0M6 Guy Pelletier 
  *       - 211302: Add variable 1-1 mapping support to the EclipseLink-ORM.XML Schema
  *     05/16/2008-1.0M8 Guy Pelletier 
- *       - 218084: Implement metadata merging functionality between mapping files   
+ *       - 218084: Implement metadata merging functionality between mapping files
+ *     04/27/2010-2.1 Guy Pelletier 
+ *       - 309856: MappedSuperclasses from XML are not being initialized properly
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata.columns;
 
@@ -34,6 +36,8 @@ import org.eclipse.persistence.mappings.VariableOneToOneMapping;
  * @since EclipseLink 1.0
  */
 public class DiscriminatorClassMetadata extends ORMetadata {
+    // Note: Any metadata mapped from XML to this class must be compared in the equals method.
+
     private MetadataClass m_value;
     private String m_valueName;
     private String m_discriminator;
@@ -54,6 +58,24 @@ public class DiscriminatorClassMetadata extends ORMetadata {
         
         setDiscriminator((String) discriminatorClass.getAttribute("discriminator"));
         setValue(getMetadataClass((String) discriminatorClass.getAttribute("value")));
+    }
+    
+    /**
+     * INTERNAL:
+     */
+    @Override
+    public boolean equals(Object objectToCompare) {
+        if (objectToCompare instanceof DiscriminatorClassMetadata) {
+            DiscriminatorClassMetadata discriminatorClass = (DiscriminatorClassMetadata) objectToCompare;
+            
+            if (! valuesMatch(m_valueName, discriminatorClass.getValueName())) {
+                return false;
+            }
+            
+            return valuesMatch(m_discriminator, discriminatorClass.getDiscriminator());
+        }
+        
+        return false;
     }
     
     /**
