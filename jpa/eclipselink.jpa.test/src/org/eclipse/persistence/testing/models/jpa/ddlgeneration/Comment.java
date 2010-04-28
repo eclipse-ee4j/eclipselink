@@ -41,14 +41,22 @@ public class Comment {
     @Lob
     @Column(name="PHOTO", length=80000)
     private Byte[] photo;
+    
+    @Lob
+    @Column(name="AUDIO")
+    private Byte[] audio;
 
-	public Comment() {
+    public Comment() {
         super();
     }
     
     public Comment(String text) {
         this();
         this.text = text;
+    }
+    
+    public Byte[] getAudio() {
+        return audio;
     }
     
     public int getId() {
@@ -61,6 +69,10 @@ public class Comment {
 	
     public String getTest() {
         return text;
+    }
+    
+    public void setAudio(Byte[] audio) {
+        this.audio = audio;
     }
     
     public void setId(int id) {

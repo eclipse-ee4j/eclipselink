@@ -45,7 +45,7 @@ public class DBasePlatform extends org.eclipse.persistence.platform.database.Dat
         fieldTypeMapping.put(java.math.BigDecimal.class, new FieldTypeDefinition("NUMBER", 19).setLimits(19, 0, 9));
         fieldTypeMapping.put(Number.class, new FieldTypeDefinition("NUMBER", 19).setLimits(19, 0, 9));
 
-        fieldTypeMapping.put(String.class, new FieldTypeDefinition("CHAR", 255));
+        fieldTypeMapping.put(String.class, new FieldTypeDefinition("CHAR", DEFAULT_VARCHAR_SIZE));
         fieldTypeMapping.put(Character.class, new FieldTypeDefinition("CHAR", 1));
 
         fieldTypeMapping.put(Byte[].class, new FieldTypeDefinition("BINARY"));

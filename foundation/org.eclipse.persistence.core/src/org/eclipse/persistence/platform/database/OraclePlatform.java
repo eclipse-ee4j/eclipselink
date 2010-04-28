@@ -173,7 +173,7 @@ public class OraclePlatform extends org.eclipse.persistence.platform.database.Da
         fieldTypeMapping.put(java.math.BigDecimal.class, new FieldTypeDefinition("NUMBER", 38).setLimits(38, -38, 38));
         fieldTypeMapping.put(Number.class, new FieldTypeDefinition("NUMBER", 38).setLimits(38, -38, 38));
 
-        fieldTypeMapping.put(String.class, new FieldTypeDefinition("VARCHAR2", 255));
+        fieldTypeMapping.put(String.class, new FieldTypeDefinition("VARCHAR2", DEFAULT_VARCHAR_SIZE));
         fieldTypeMapping.put(Character.class, new FieldTypeDefinition("CHAR", 1));
 
         fieldTypeMapping.put(Byte[].class, new FieldTypeDefinition("BLOB", false));

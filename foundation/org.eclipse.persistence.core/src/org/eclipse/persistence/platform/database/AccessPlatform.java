@@ -54,7 +54,7 @@ public class AccessPlatform extends org.eclipse.persistence.platform.database.Da
         fieldTypeMapping.put(java.math.BigDecimal.class, new FieldTypeDefinition("DOUBLE", false));
         fieldTypeMapping.put(Number.class, new FieldTypeDefinition("DOUBLE", false));
 
-        fieldTypeMapping.put(String.class, new FieldTypeDefinition("TEXT", 255));
+        fieldTypeMapping.put(String.class, new FieldTypeDefinition("TEXT", DEFAULT_VARCHAR_SIZE));
         fieldTypeMapping.put(Character.class, new FieldTypeDefinition("TEXT", 1));
         fieldTypeMapping.put(Byte[].class, new FieldTypeDefinition("LONGBINARY", false));
         fieldTypeMapping.put(Character[].class, new FieldTypeDefinition("MEMO", false));

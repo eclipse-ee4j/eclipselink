@@ -117,12 +117,15 @@ public class DatabaseField implements Cloneable, Serializable {
     }
     
     /**
-     * Inits the DDL generation fields. Currently equivalent to the defaults
-     * from the EJB 3.0 spec.
+     * Inits the DDL generation fields with our defaults. Note: we used to 
+     * initialize the length to the JPA default of 255 but since this default 
+     * value should only apply for string fields we set it to 0 to indicate
+     * that it was not specified and rely on the default (255) to come from
+     * individual platforms.
      */
     public void initDDLFields() {
         scale = 0;
-        length = 255;
+        length = 0;
         precision = 0;
         isUnique = false;
         isNullable = true;

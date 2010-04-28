@@ -210,7 +210,7 @@ public class SybasePlatform extends org.eclipse.persistence.platform.database.Da
         fieldTypeMapping.put(java.math.BigDecimal.class, new FieldTypeDefinition("NUMERIC", 38).setLimits(38, -19, 19));
         fieldTypeMapping.put(Number.class, new FieldTypeDefinition("NUMERIC", 38).setLimits(38, -19, 19));
 
-        fieldTypeMapping.put(String.class, new FieldTypeDefinition("VARCHAR", 255));
+        fieldTypeMapping.put(String.class, new FieldTypeDefinition("VARCHAR", DEFAULT_VARCHAR_SIZE));
         fieldTypeMapping.put(Character.class, new FieldTypeDefinition("CHAR", 1));
         fieldTypeMapping.put(Byte[].class, new FieldTypeDefinition("IMAGE", false));
         fieldTypeMapping.put(Character[].class, new FieldTypeDefinition("TEXT", false));

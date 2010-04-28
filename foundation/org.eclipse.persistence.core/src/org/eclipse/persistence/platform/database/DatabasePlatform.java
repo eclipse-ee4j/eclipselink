@@ -28,7 +28,8 @@ package org.eclipse.persistence.platform.database;
  * @since TOPLink/Java 1.0
  */
 public class DatabasePlatform extends org.eclipse.persistence.internal.databaseaccess.DatabasePlatform {
-
+    public static final int DEFAULT_VARCHAR_SIZE = 255;
+    
     public DatabasePlatform() {
     	super();
     }

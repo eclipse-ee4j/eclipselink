@@ -127,15 +127,15 @@ public class MySQLPlatform extends DatabasePlatform {
         fieldTypeMapping.put(java.math.BigDecimal.class, new FieldTypeDefinition("DECIMAL",38));
         fieldTypeMapping.put(Number.class, new FieldTypeDefinition("DECIMAL",38));
 
-        fieldTypeMapping.put(String.class, new FieldTypeDefinition("VARCHAR", 255));
+        fieldTypeMapping.put(String.class, new FieldTypeDefinition("VARCHAR", DEFAULT_VARCHAR_SIZE));
         fieldTypeMapping.put(Character.class, new FieldTypeDefinition("CHAR", 1));
 
-        fieldTypeMapping.put(Byte[].class, new FieldTypeDefinition("BLOB", 64000));
-        fieldTypeMapping.put(Character[].class, new FieldTypeDefinition("TEXT", 64000));
-        fieldTypeMapping.put(byte[].class, new FieldTypeDefinition("BLOB", 64000));
-        fieldTypeMapping.put(char[].class, new FieldTypeDefinition("TEXT", 64000));
-        fieldTypeMapping.put(java.sql.Blob.class, new FieldTypeDefinition("BLOB", 64000));
-        fieldTypeMapping.put(java.sql.Clob.class, new FieldTypeDefinition("TEXT", 64000));
+        fieldTypeMapping.put(Byte[].class, new FieldTypeDefinition("LONGBLOB", false));
+        fieldTypeMapping.put(Character[].class, new FieldTypeDefinition("LONGTEXT", false));
+        fieldTypeMapping.put(byte[].class, new FieldTypeDefinition("LONGBLOB", false));
+        fieldTypeMapping.put(char[].class, new FieldTypeDefinition("LONGTEXT", false));
+        fieldTypeMapping.put(java.sql.Blob.class, new FieldTypeDefinition("LONGBLOB", false));
+        fieldTypeMapping.put(java.sql.Clob.class, new FieldTypeDefinition("LONGTEXT", false));
         
         fieldTypeMapping.put(java.sql.Date.class, new FieldTypeDefinition("DATE", false));
         fieldTypeMapping.put(java.sql.Time.class, new FieldTypeDefinition("TIME", false));
