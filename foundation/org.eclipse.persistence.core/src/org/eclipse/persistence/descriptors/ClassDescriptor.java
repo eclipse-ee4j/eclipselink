@@ -2872,8 +2872,8 @@ public class ClassDescriptor implements Cloneable, Serializable {
                             getFields().add(targetTableField);
                         }
                         keyJoinExpression = builder.getField(targetTableField).equal(builder.getField(sourceTableField)).and(keyJoinExpression);
-                        joinExpression = keyJoinExpression.and(joinExpression);
                     }
+                    joinExpression = keyJoinExpression.and(joinExpression);
                     getQueryManager().getTablesJoinExpressions().put(table, keyJoinExpression);
                     if (isChild) {
                         getInheritancePolicy().addChildTableJoinExpressionToAllParents(table, keyJoinExpression);
@@ -2896,9 +2896,9 @@ public class ClassDescriptor implements Cloneable, Serializable {
 
                     if (!getQueryManager().hasCustomMultipleTableJoinExpression()) {
                         keyJoinExpression = builder.getField(secondaryKeyField).equal(builder.getField(primaryKeyField)).and(keyJoinExpression);
-                        joinExpression = keyJoinExpression.and(joinExpression);
                     }
                 }
+                joinExpression = keyJoinExpression.and(joinExpression);
                 getQueryManager().getTablesJoinExpressions().put(table, keyJoinExpression);
                 if (isChild) {
                     getInheritancePolicy().addChildTableJoinExpressionToAllParents(table, keyJoinExpression);
