@@ -465,7 +465,7 @@ public class MappedKeyMapContainerPolicy extends MapContainerPolicy {
      */
     @Override
     public DatabaseField getDirectKeyField(CollectionMapping baseMapping) {
-        if (((DatabaseMapping)keyMapping).isDirectToFieldMapping()) {
+        if ((keyMapping != null) && ((DatabaseMapping)keyMapping).isDirectToFieldMapping()) {
             return ((DirectToFieldMapping)keyMapping).getField();
         }
         return null;
