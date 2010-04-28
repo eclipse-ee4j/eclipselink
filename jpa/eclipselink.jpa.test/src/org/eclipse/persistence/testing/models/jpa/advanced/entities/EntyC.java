@@ -1,6 +1,5 @@
 package org.eclipse.persistence.testing.models.jpa.advanced.entities;
 
-import static javax.persistence.CascadeType.*;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
