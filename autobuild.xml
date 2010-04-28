@@ -631,7 +631,7 @@
     <target name="populate-p2-update-site" depends="fix-permission">
         <!-- has to be run last, so it can be generic for nightly, or milestone builds -->
         <condition property="p2.archive.to.use" value="${download.dir}/${p2.archive.signed.zip}"
-                                                 else="${download.dir}/${p2.archive.presigned.zip}>
+                                                 else="${download.dir}/${p2.archive.presigned.zip}">
             <isset property="signing.time.limit.exceeded"/>
         </condition>
         <!-- Clean existing repos if it exists (should only be true of a release redo, or the latest milestone or nightly) -->
