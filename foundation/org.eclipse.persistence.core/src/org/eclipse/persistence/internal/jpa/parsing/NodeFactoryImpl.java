@@ -213,10 +213,14 @@ public class NodeFactoryImpl implements NodeFactory {
 
     /** */
     public Object newJoinVariableDecl(int line, int column, boolean outerJoin, 
-                                      Object path, String variable) {
+                                      Object path, String variable, Object downcast) {
         DotNode dotNode = (DotNode)path;
         AttributeNode rightNode = (AttributeNode)dotNode.getRight();
         rightNode.setOuterJoin(outerJoin);
+        if (downcast != null){
+            AttributeNode rightMostNode = (AttributeNode)dotNode.getRightMostNode();
+            rightMostNode.setCastClassName((String)downcast);
+        }
         JoinDeclNode node = new JoinDeclNode();
         node.setPath(dotNode);
         node.setVariableName(variable);

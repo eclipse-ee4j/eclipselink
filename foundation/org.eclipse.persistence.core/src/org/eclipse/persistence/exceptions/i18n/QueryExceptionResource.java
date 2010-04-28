@@ -168,8 +168,9 @@ public class QueryExceptionResource extends ListResourceBundle {
        { "6162", "List order column [{0}] contains wrong values:{2}{1}"},
        { "6163", "index() requires QueryKeyExpression, cannot be applied to [{0}]"},
        { "6164", "index() requires QueryKeyExpression with CollectionMapping that has non-null list order column. [{1}] in does not meet this condition in [{0}]"},
-       { "6165", "Batch fetch using IN requires singleton primary key."}
-
+       { "6165", "Batch fetch using IN requires singleton primary key."},
+       { "6166", "An attempt was made to cast outside of an inheritance hierarchy.  [{0}] does not appear in the class heirarchy for [{1}]. Note: This exception could also indicate you our casting on a Table-Per-Class inheritance relationship which is not supported for casting."},
+       { "6167", "A cast has been invoked on an expression that does not use inheritance: [{0}]."}
     };
 
     /**

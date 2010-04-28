@@ -179,6 +179,8 @@ public class QueryException extends ValidationException {
     public final static int INDEX_REQUIRES_QUERY_KEY_EXPRESSION = 6163;
     public final static int INDEX_REQUIRES_COLLECTION_MAPPING_WITH_LIST_ORDER_FIELD = 6164;
     public final static int BATCH_IN_REQUIRES_SINGLETON_PK = 6165;
+    public final static int COULD_NOT_FIND_CAST_DESCRIPTOR = 6166;
+    public final static int CAST_MUST_USE_INHERITANCE = 6167;
 
     /**
      * INTERNAL:
@@ -1501,5 +1503,22 @@ public class QueryException extends ValidationException {
         queryException.setErrorCode(BATCH_IN_REQUIRES_SINGLETON_PK);
         return queryException;
     }
+    
+    public static QueryException couldNotFindCastDescriptor(Class castClass, Expression base) {
+        Object[] args = { castClass, base };
+
+        QueryException queryException = new QueryException(ExceptionMessageGenerator.buildMessage(QueryException.class, COULD_NOT_FIND_CAST_DESCRIPTOR, args));
+        queryException.setErrorCode(COULD_NOT_FIND_CAST_DESCRIPTOR);
+        return queryException;
+    }
+
+    public static QueryException castMustUseInheritance(Expression base) {
+        Object[] args = { base };
+
+        QueryException queryException = new QueryException(ExceptionMessageGenerator.buildMessage(QueryException.class, CAST_MUST_USE_INHERITANCE, args));
+        queryException.setErrorCode(CAST_MUST_USE_INHERITANCE);
+        return queryException;
+    }
 
 }
+

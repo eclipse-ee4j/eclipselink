@@ -37,6 +37,8 @@ public class AttributeNode extends Node {
 
     /** */
     private DatabaseMapping mapping;
+    
+    private String castClassName = null;
 
     /**
      * Create a new AttributeNode
@@ -72,6 +74,22 @@ public class AttributeNode extends Node {
     public void validate(ParseTreeContext context) {
         // The type is calculated in the parent DotNode.
     }
+    
+    public Expression appendCast(Expression exp, GenerationContext context){
+        if (castClassName == null){
+            return exp;
+        }
+        TypeHelper typeHelper = context.getParseTreeContext().getTypeHelper();
+        Class cast = (Class)typeHelper.resolveSchema(castClassName);
+        return exp.as(cast);
+    }
+    
+    public Object computeActualType(Object initialType, TypeHelper typeHelper){
+        if (castClassName != null){
+            return (Class)typeHelper.resolveSchema(castClassName);
+        }
+        return initialType;
+    }
 
     /** */
     public Expression addToExpression(Expression parentExpression, GenerationContext context) {
@@ -80,8 +98,8 @@ public class AttributeNode extends Node {
             if (context.hasMemberOfNode()) {
                 return parentExpression.noneOf(name, new ExpressionBuilder().equal(context.getMemberOfNode().getLeftExpression()));
             }
-            return outerJoin ? parentExpression.anyOfAllowingNone(name) : 
-                parentExpression.anyOf(name);
+            return outerJoin ? appendCast(parentExpression.anyOfAllowingNone(name), context) : 
+                appendCast(parentExpression.anyOf(name), context);
         } else {
             // check whether collection attribute is required
             if (requiresCollectionAttribute()) {
@@ -91,9 +109,9 @@ public class AttributeNode extends Node {
             }
 
             if (context.shouldUseOuterJoins() || isOuterJoin()) {
-                return parentExpression.getAllowingNull(name);
+                return appendCast(parentExpression.getAllowingNull(name), context);
             } else {
-                return parentExpression.get(name);
+                return appendCast(parentExpression.get(name), context);
             }
         }
     }
@@ -116,6 +134,14 @@ public class AttributeNode extends Node {
         this.name = name;
     }
 
+    public String getCastClassName() {
+        return castClassName;
+    }
+
+    public void setCastClassName(String castClassName) {
+        this.castClassName = castClassName;
+    }
+    
     /** */
     public boolean isOuterJoin() {
         return outerJoin;

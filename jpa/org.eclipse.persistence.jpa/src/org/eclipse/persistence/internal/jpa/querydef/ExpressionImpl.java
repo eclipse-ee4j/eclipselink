@@ -20,7 +20,10 @@ import javax.persistence.criteria.Expression;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.metamodel.Metamodel;
 
+import org.eclipse.persistence.descriptors.ClassDescriptor;
+import org.eclipse.persistence.internal.jpa.metamodel.MetamodelImpl;
 import org.eclipse.persistence.internal.localization.ExceptionLocalization;
+import org.eclipse.persistence.sessions.Project;
 
 /**
  * <p>
@@ -53,6 +56,20 @@ public class ExpressionImpl<X> extends SelectionImpl<X> implements Expression<X>
     }
 
     public <T> Expression<T> as(Class<T> type) {
+        Project project = ((MetamodelImpl)metamodel).getProject();
+        if (project != null){
+            ClassDescriptor descriptor = project.getClassDescriptor(javaType);
+            if (descriptor != null && descriptor.hasInheritance()){
+                descriptor.getInheritancePolicy().getSubclassDescriptor(type);
+                if (descriptor != null){
+                    return buildExpressionForAs(type);
+                }
+            }
+        }
+        return (Expression<T>) this;
+    }
+    
+    protected <T> Expression<T> buildExpressionForAs(Class<T> type) {
         return (Expression<T>) this;
     }
     

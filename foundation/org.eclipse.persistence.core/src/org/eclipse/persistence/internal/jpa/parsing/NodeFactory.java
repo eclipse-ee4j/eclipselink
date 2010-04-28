@@ -96,7 +96,7 @@ public interface NodeFactory {
 
     /** */
     public Object newJoinVariableDecl(int line, int column, boolean outer, 
-                                      Object path, String variable);
+                                      Object path, String variable, Object downcast);
 
     /** */
     public Object newFetchJoin(int line, int column, boolean outer, Object path);

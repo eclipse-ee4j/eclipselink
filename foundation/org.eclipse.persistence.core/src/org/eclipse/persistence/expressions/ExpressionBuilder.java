@@ -195,6 +195,7 @@ public class ExpressionBuilder extends ObjectExpression {
                     throw QueryException.noExpressionBuilderFound(this);
                 }
                 descriptor = getSession().getDescriptor(getQueryClass());
+                descriptor = convertToCastDescriptor(descriptor, getSession());
             }
         }
         return descriptor;
@@ -382,7 +383,7 @@ public class ExpressionBuilder extends ObjectExpression {
      */
     public void setQueryClassAndDescriptor(Class queryClass, ClassDescriptor descriptor) {
         this.queryClass = queryClass;
-        this.descriptor = descriptor;
+        this.descriptor = convertToCastDescriptor(descriptor, session);
     }
 
     /**

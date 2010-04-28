@@ -24,6 +24,7 @@ import org.eclipse.persistence.testing.tests.jpa.advanced.AdvancedJunitTest;
 import org.eclipse.persistence.testing.tests.jpa.advanced.CacheImplJUnitTest;
 import org.eclipse.persistence.testing.tests.jpa.advanced.CallbackEventJUnitTestSuite;
 import org.eclipse.persistence.testing.tests.jpa.advanced.EntityManagerJUnitTestSuite;
+import org.eclipse.persistence.testing.tests.jpa.advanced.QueryCastTestSuite;
 import org.eclipse.persistence.testing.tests.jpa.advanced.SQLResultSetMappingTestSuite;
 import org.eclipse.persistence.testing.tests.jpa.advanced.JoinedAttributeAdvancedJunitTest;
 import org.eclipse.persistence.testing.tests.jpa.advanced.ReportQueryMultipleReturnTestSuite;
@@ -238,6 +239,8 @@ public class FullRegressionTestSuite extends TestSuite {
 //        fullSuite.addTest(BeanValidationJunitTest.suite());
 
         fullSuite.addTest(CascadeDeletesJUnitTestSuite.suite());
+        
+        fullSuite.addTest(QueryCastTestSuite.suite());
 
         return fullSuite;
     }

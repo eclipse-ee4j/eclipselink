@@ -18,6 +18,7 @@ import org.eclipse.persistence.exceptions.*;
 import org.eclipse.persistence.mappings.querykeys.*;
 import org.eclipse.persistence.expressions.*;
 import org.eclipse.persistence.internal.helper.*;
+import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.mappings.DatabaseMapping;
 
@@ -34,8 +35,30 @@ public abstract class ObjectExpression extends DataExpression {
     /** Is this query key to be resolved using an outer join or not. Does not apply to attributes. */
     protected boolean shouldUseOuterJoin;
 
+    protected Class castClass = null;
+
     public ObjectExpression() {
         this.shouldUseOuterJoin = false;
+    }
+    
+    /**
+     * ADVANCED:
+     * Return an expression that allows you to treat its base as if it were a subclass of the class returned by the base
+     * This can only be called on an ExpressionBuilder, the result of expression.get(String), expression.getAllowingNull(String),
+     * the result of expression.anyOf("String") or the result of expression.anyOfAllowingNull("String")
+     * 
+     * downcast does not guarantee the results of the downcast will be of the specified class and should be used in conjunction
+     * with a Expression.type()
+     * <p>Example:
+     * <pre><blockquote>
+     *     TopLink: employee.get("project").as(LargeProject.class).get("budget").equal(1000)
+     *     Java: ((LargeProject)employee.getProjects().get(0)).getBudget() == 1000
+     *     SQL: LPROJ.PROJ_ID (+)= PROJ.PROJ_ID AND L_PROJ.BUDGET = 1000
+     * </blockquote></pre>
+     */
+    public Expression as(Class castClass){
+        setCastClass(castClass);
+        return this;
     }
     
     /**
@@ -149,7 +172,53 @@ public abstract class ObjectExpression extends DataExpression {
         return queryKey;
 
     }
+    
+    /**
+     * INTERNAL
+     * Return the descriptor which contains this query key, look in the inheritance hierarchy 
+     * of rootDescriptor for the descriptor
+     * @param rootDescriptor
+     * @return
+     */
+    public ClassDescriptor convertToCastDescriptor(ClassDescriptor rootDescriptor, AbstractSession session) {
+        if (castClass == null){
+            return rootDescriptor;
+        }
+        
+        if (rootDescriptor.getJavaClass() == castClass){
+           this.descriptor = rootDescriptor;
+            return rootDescriptor;
+        }
 
+        ClassDescriptor castDescriptor = session.getClassDescriptor(castClass);
+        
+        if (castDescriptor == null){
+            throw QueryException.couldNotFindCastDescriptor(castClass, getBaseExpression());
+        }
+        if (castDescriptor.getInheritancePolicy() == null){
+            throw QueryException.castMustUseInheritance(getBaseExpression());
+        }
+        ClassDescriptor parentDescriptor = castDescriptor.getInheritancePolicy().getParentDescriptor();
+        while (parentDescriptor != null){
+            if (parentDescriptor == rootDescriptor){
+                this.descriptor = castDescriptor;
+                return castDescriptor;
+            }
+            parentDescriptor = parentDescriptor.getInheritancePolicy().getParentDescriptor();
+        }
+        
+        ClassDescriptor childDescriptor = rootDescriptor;
+        while (childDescriptor != null){
+            if (childDescriptor == castDescriptor){
+                descriptor = rootDescriptor;
+                return descriptor;
+            }
+            childDescriptor = childDescriptor.getInheritancePolicy().getParentDescriptor();
+        }
+        
+        throw QueryException.couldNotFindCastDescriptor(castClass, getBaseExpression());
+    }
+    
     public QueryKeyExpression derivedExpressionNamed(String attributeName) {
         QueryKeyExpression existing = existingDerivedExpressionNamed(attributeName);
         if (existing != null) {
@@ -187,7 +256,6 @@ public abstract class ObjectExpression extends DataExpression {
             }
         }
         return null;
-
     }
 
     public Expression get(String attributeName, Vector arguments) {
@@ -216,6 +284,10 @@ public abstract class ObjectExpression extends DataExpression {
 
     }
     
+    public Class getCastClass() {
+        return castClass;
+    }
+    
     /**
      * PUBLIC:
      * Return an expression that wraps the inheritance type field in an expression.
@@ -238,7 +310,7 @@ public abstract class ObjectExpression extends DataExpression {
             ForeignReferenceQueryKey queryKey = (ForeignReferenceQueryKey)getQueryKeyOrNull();
             if (queryKey != null) {
                 descriptor = getSession().getDescriptor(queryKey.getReferenceClass());
-                return descriptor;
+                return convertToCastDescriptor(descriptor, getSession());
             }
             if (getMapping() == null) {
                 throw QueryException.invalidQueryKeyInExpression(this);
@@ -249,6 +321,7 @@ public abstract class ObjectExpression extends DataExpression {
             if (getMapping().isVariableOneToOneMapping()) {
                 throw QueryException.cannotQueryAcrossAVariableOneToOneMapping(getMapping(), descriptor);
             }
+            convertToCastDescriptor(descriptor, getSession());
         }
         return descriptor;
 
@@ -421,6 +494,12 @@ public abstract class ObjectExpression extends DataExpression {
         }
     }
 
+    
+    
+    public void setCastClass(Class castClass) {
+        this.castClass = castClass;
+    }
+    
     /**
      * INTERNAL:
      * set the flag indicating whether subclasses should be joined

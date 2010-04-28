@@ -895,7 +895,7 @@ public class InheritancePolicy implements Serializable, Cloneable {
 
     /**
      * INTERNAL:
-     * Checks if the class is invloved in inheritance
+     * Checks if the class is involved in inheritance
      */
     public boolean hasClassIndicator() {
         return getClassIndicatorField() != null;

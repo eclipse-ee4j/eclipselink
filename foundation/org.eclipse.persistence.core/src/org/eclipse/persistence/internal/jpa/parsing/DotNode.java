@@ -72,12 +72,25 @@ public class DotNode extends LogicalOperatorNode implements AliasableNode {
         if (isDeclaredVariable(leftMost, context)) {
             left.validate(context);
             checkNavigation(left, context);
-            Object type = typeHelper.resolveAttribute(left.getType(), name);
+            Object type = null;
+            if (left.isVariableNode()){
+                Node path = (Node)context.pathForVariable(((VariableNode)left).getVariableName());
+                if (path != null){
+                    type = path.getType();
+                    type = typeHelper.resolveAttribute(type, name);
+                }
+            }
+            if (type == null){
+                type = typeHelper.resolveAttribute(left.getType(), name);
+            }
             if (type == null) {
                 // could not resolve attribute
                 throw JPQLException.unknownAttribute(
                     context.getQueryInfo(), right.getLine(), right.getColumn(), 
                     name, typeHelper.getTypeName(left.getType()));
+            }
+            if (right.isAttributeNode()){
+                type = ((AttributeNode)right).computeActualType(type, typeHelper);
             }
             setType(type);
             right.setType(type);
@@ -270,6 +283,17 @@ public class DotNode extends LogicalOperatorNode implements AliasableNode {
             return ((MapKeyNode)left).getLeftMostNode();
         }
         return left;
+    }
+    
+    /**
+     * INTERNAL
+     * Return the right most node of a dot expr, so return 'c' for 'a.b.c'.
+     */
+    public Node getRightMostNode() {
+        if (right.isDotNode()){
+            return ((DotNode)right).getRightMostNode();
+        }
+        return right;
     }
 
     /**

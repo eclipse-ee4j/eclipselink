@@ -168,8 +168,10 @@ public class ExceptionLocalizationResource extends ListResourceBundle {
                                            { "NO_PARAMETER_WITH_INDEX", "No parameter with index : {0} was found within the query: {1}."},
                                            { "PARAMETER_NILL_NOT_FOUND", "Null parameter passed to getParameterValue()"},
                                            { "NO_VALUE_BOUND", "No value was bound to parameter named: {0}"},
-                                           { "NULL_PARAMETER_PASSED_TO_SET_PARAMETER", "Null parameter was passed to 'setParameter'.  Can not index parameters by 'Null'."}
-                                        };
+                                           { "NULL_PARAMETER_PASSED_TO_SET_PARAMETER", "Null parameter was passed to 'setParameter'.  Can not index parameters by 'Null'."},
+                                           { "pathnode_is_primitive_node", "Criteria expression is of primitive type and can not be further navigated."},
+                                           { "pathnode_type_does_not_apply_to_primitive_node", "Criteria expression is of primitive type and can not be further navigated.  Primitive Expressions do not allow 'type'."}
+    };
 
     /**
      * Return the lookup table.

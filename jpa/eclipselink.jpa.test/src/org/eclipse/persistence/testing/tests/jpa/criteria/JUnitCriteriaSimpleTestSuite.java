@@ -19,6 +19,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.math.BigDecimal;
+import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
@@ -33,6 +34,7 @@ import javax.persistence.Tuple;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Join;
 import javax.persistence.criteria.JoinType;
+import javax.persistence.criteria.Path;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.Root;
@@ -57,6 +59,10 @@ import org.eclipse.persistence.sessions.DatabaseSession;
 import org.eclipse.persistence.sessions.Session;
 import org.eclipse.persistence.sessions.UnitOfWork;
 import org.eclipse.persistence.sessions.server.Server;
+import org.eclipse.persistence.testing.models.inheritance.InheritanceTableCreator;
+import org.eclipse.persistence.testing.models.jpa.inheritance.Car;
+import org.eclipse.persistence.testing.models.jpa.inheritance.Person;
+import org.eclipse.persistence.testing.models.jpa.inheritance.SportsCar;
 import org.eclipse.persistence.testing.models.jpa.advanced.Address;
 import org.eclipse.persistence.testing.models.jpa.advanced.AdvancedTableCreator;
 import org.eclipse.persistence.testing.models.jpa.advanced.Employee;
@@ -65,6 +71,10 @@ import org.eclipse.persistence.testing.models.jpa.advanced.LargeProject;
 import org.eclipse.persistence.testing.models.jpa.advanced.PhoneNumber;
 import org.eclipse.persistence.testing.models.jpa.advanced.Project;
 import org.eclipse.persistence.testing.models.jpa.advanced.SmallProject;
+import org.eclipse.persistence.testing.models.jpa.inherited.BeerConsumer;
+import org.eclipse.persistence.testing.models.jpa.inherited.Blue;
+import org.eclipse.persistence.testing.models.jpa.inherited.BlueLight;
+import org.eclipse.persistence.testing.models.jpa.inherited.InheritedTableManager;
 import org.eclipse.persistence.testing.tests.jpa.jpql.JUnitDomainObjectComparer;
 import org.eclipse.persistence.testing.framework.junit.JUnitTestCase;
 
@@ -96,7 +106,6 @@ public class JUnitCriteriaSimpleTestSuite extends JUnitTestCase {
         TestSuite suite = new TestSuite();
         suite.setName("JUnitCriteriaSimpleTestSuite");
         suite.addTest(new JUnitCriteriaSimpleTestSuite("testSetup"));
-        
         suite.addTest(new JUnitCriteriaSimpleTestSuite("simpleJoinFetchTest"));
         suite.addTest(new JUnitCriteriaSimpleTestSuite("simpleJoinFetchTest2"));
         suite.addTest(new JUnitCriteriaSimpleTestSuite("baseTestCase"));
@@ -169,6 +178,9 @@ public class JUnitCriteriaSimpleTestSuite extends JUnitTestCase {
         suite.addTest(new JUnitCriteriaSimpleTestSuite("caseConditionInSelectTest"));
         suite.addTest(new JUnitCriteriaSimpleTestSuite("simpleCoalesceInWhereTest"));
         suite.addTest(new JUnitCriteriaSimpleTestSuite("simpleCoalesceInSelectTest"));
+        suite.addTest(new JUnitCriteriaSimpleTestSuite("largeProjectCastTest"));
+        suite.addTest(new JUnitCriteriaSimpleTestSuite("mapCastTest"));
+        suite.addTest(new JUnitCriteriaSimpleTestSuite("oneToOneCastTest"));
         
         return suite;
     }
@@ -197,7 +209,12 @@ public class JUnitCriteriaSimpleTestSuite extends JUnitTestCase {
         
         //Persist the examples in the database
         employeePopulator.persistExample(session);
+        
+        new InheritedTableManager().replaceTables(session);
+        
+        new InheritanceTableCreator().replaceTables(session);
     }
+
     
     /**
      * Tests 1=1 returns correct result.
@@ -2592,6 +2609,164 @@ public class JUnitCriteriaSimpleTestSuite extends JUnitTestCase {
             rollbackTransaction(em);
             closeEntityManager(em);
         }			
+    }
+    
+    
+    public void largeProjectCastTest() {
+        EntityManager em = createEntityManager();
+
+        ReadAllQuery query = new ReadAllQuery();
+        Expression selectionCriteria = new ExpressionBuilder().anyOf("projects").as(LargeProject.class).get("budget").equal(5000);
+        query.setSelectionCriteria(selectionCriteria);
+        query.setReferenceClass(Employee.class);
+        query.dontUseDistinct(); //gf 1395 changed jpql to not use distinct on joins
+
+        Vector expectedResult = (Vector)getServerSession().executeQuery(query);
+
+        clearCache();
+        
+        //"SELECT e from Employee e join cast(e.project, LargeProject) p where p.budget = 1000
+        CriteriaBuilder qb1 = em.getCriteriaBuilder();
+        CriteriaQuery<Employee> cq1 = qb1.createQuery(Employee.class);
+
+        Root<Employee> empRoot = cq1.from(Employee.class);
+        Join<Employee, Project> join = empRoot.join("projects");
+        Path exp = ((Path)join.as(LargeProject.class)).get("budget");
+        cq1.where(qb1.equal(exp, new Integer(5000)) );
+        beginTransaction(em);
+        try {
+            List result = em.createQuery(cq1).getResultList();
+            Assert.assertTrue("LargeProject cast failed.", comparer.compareObjects(result, expectedResult));
+        } finally {
+            rollbackTransaction(em);
+            closeEntityManager(em);
+        }
+        
+    }
+    
+    public void mapCastTest(){
+        EntityManager em = createEntityManager();
+        beginTransaction(em);
+        
+        BeerConsumer bc1 = new BeerConsumer();
+        bc1.setName("George");
+        em.persist(bc1);
+        Blue blue = new Blue();
+        blue.setUniqueKey(new BigInteger("1"));
+        em.persist(blue);
+        bc1.addBlueBeerToConsume(blue);
+        blue.setBeerConsumer(bc1);
+        
+        BeerConsumer bc2 = new BeerConsumer();
+        bc2.setName("Scott");
+        em.persist(bc2);
+        BlueLight blueLight = new BlueLight();
+        blueLight.setDiscount(10);
+        blueLight.setUniqueKey(new BigInteger("2"));
+        em.persist(blueLight);
+        blueLight.setBeerConsumer(bc2);
+        bc2.addBlueBeerToConsume(blueLight);
+        
+        commitTransaction(em);
+        clearCache();
+        
+        ReadAllQuery query = new ReadAllQuery();
+        Expression selectionCriteria = new ExpressionBuilder().anyOf("blueBeersToConsume").as(BlueLight.class).get("discount").equal(10);
+        query.setSelectionCriteria(selectionCriteria);
+        query.setReferenceClass(BeerConsumer.class);
+        query.dontUseDistinct();
+        
+        Vector expectedResult = (Vector)getServerSession().executeQuery(query);
+        
+        clearCache();
+        
+        //"SELECT e from Employee e join cast(e.project, LargeProject) p where p.budget = 1000
+        CriteriaBuilder qb1 = em.getCriteriaBuilder();
+        CriteriaQuery<BeerConsumer> cq1 = qb1.createQuery(BeerConsumer.class);
+
+        Root<BeerConsumer> root = cq1.from(BeerConsumer.class);
+        Join<BeerConsumer, Blue> join = root.join("blueBeersToConsume");
+        Path exp = ((Path)join.as(BlueLight.class)).get("discount");
+        cq1.where(qb1.equal(exp, new Integer(10)) );
+        try {
+            List result = em.createQuery(cq1).getResultList();
+            Assert.assertTrue("LargeProject cast failed.", comparer.compareObjects(result, expectedResult));
+        } finally {
+            beginTransaction(em);
+            blueLight = em.find(BlueLight.class, blueLight.getId());
+            blueLight.getBeerConsumer().getBlueBeersToConsume().remove(blueLight);
+            blueLight.setBeerConsumer(null);
+            
+            blue = em.find(Blue.class, blue.getId());
+            blue.getBeerConsumer().getBlueBeersToConsume().remove(blue);
+            blue.setBeerConsumer(null);
+            
+            em.remove(blueLight);
+            em.remove(blue);
+            em.remove(bc1);
+            em.remove(bc2);
+            commitTransaction(em);
+            closeEntityManager(em);
+        }
+        
+    }
+    
+    public void oneToOneCastTest(){
+        EntityManager em = createEntityManager();
+        beginTransaction(em);
+        
+        Person rudy = new Person();
+        rudy.setName("Rudy");
+        em.persist(rudy);
+        SportsCar sportsCar = new SportsCar();
+        sportsCar.setMaxSpeed(200);
+        em.persist(sportsCar);
+        rudy.setCar(sportsCar);
+        
+        Person theo = new Person();
+        theo.setName("Theo");
+        em.persist(theo);
+        Car car = new Car();
+        em.persist(car);
+        theo.setCar(car);
+
+        commitTransaction(em);
+        clearCache();
+        
+        ReadAllQuery query = new ReadAllQuery();
+        Expression selectionCriteria = new ExpressionBuilder().get("car").as(SportsCar.class).get("maxSpeed").equal(200);
+        query.setSelectionCriteria(selectionCriteria);
+        query.setReferenceClass(Person.class);
+        query.dontUseDistinct();
+        
+        Vector expectedResult = (Vector)getServerSession().executeQuery(query);
+        
+        clearCache();
+        
+        //"SELECT e from Employee e join cast(e.project, LargeProject) p where p.budget = 1000
+        CriteriaBuilder qb1 = em.getCriteriaBuilder();
+        CriteriaQuery<Person> cq1 = qb1.createQuery(Person.class);
+
+        Root<Person> root = cq1.from(Person.class);
+        Join<Person, Car> join = root.join("car");
+        Path exp = ((Path)join.as(SportsCar.class)).get("maxSpeed");
+        cq1.where(qb1.equal(exp, new Integer(200)) );
+        try {
+            List result = em.createQuery(cq1).getResultList();
+            Assert.assertTrue("OneToOne cast failed.", comparer.compareObjects(result, expectedResult));
+        } finally {
+            beginTransaction(em);
+            rudy = em.find(Person.class, rudy.getId());
+            rudy.setCar(null);
+            
+            theo = em.find(Person.class, theo.getId());
+            theo.setCar(null);
+            
+            em.remove(rudy);
+            em.remove(theo);
+            commitTransaction(em);
+            closeEntityManager(em);
+        }
     }
 }
 

@@ -295,7 +295,26 @@ public abstract class Expression implements Serializable, Cloneable {
         return queryKey;
 
     }
-
+    
+    /**
+     * ADVANCED:
+     * Return an expression that allows you to treat its base as if it were a subclass of the class returned by the base
+     * This can only be called on an ExpressionBuilder, the result of expression.get(String), expression.getAllowingNull(String),
+     * the result of expression.anyOf("String") or the result of expression.anyOfAllowingNull("String")
+     * 
+     * as does not guarantee the results of the downcast will be of the specified class and should be used in conjunction
+     * with a Expression.type()
+     * <p>Example:
+     * <pre><blockquote>
+     *     TopLink: employee.get("project").as(LargeProject.class).get("budget").equal(1000)
+     *     Java: ((LargeProject)employee.getProjects().get(0)).getBudget() == 1000
+     *     SQL: LPROJ.PROJ_ID (+)= PROJ.PROJ_ID AND L_PROJ.BUDGET = 1000
+     * </blockquote></pre>
+     */
+    public Expression as(Class castClass){
+        return null;
+    }
+    
     /**
      * PUBLIC:
      * This can only be used within an ordering expression.

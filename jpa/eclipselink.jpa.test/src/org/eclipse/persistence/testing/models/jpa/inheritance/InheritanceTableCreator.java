@@ -36,6 +36,7 @@ public class InheritanceTableCreator extends TogglingFastTableCreator {
         addTableDefinition(buildFUEL_VEHTable());
         addTableDefinition(buildNONFUEL_VEHTable());
         addTableDefinition(buildSPORTSCARTable());
+        addTableDefinition(buildJALOPYTable());
         addTableDefinition(buildVEHICLETable());
         addTableDefinition(buildPERSONTable());
         addTableDefinition(buildENGINEERTable());
@@ -310,7 +311,36 @@ public class InheritanceTableCreator extends TogglingFastTableCreator {
 
         return table;
     }
+    
+    public TableDefinition buildJALOPYTable() {
+        TableDefinition table = new TableDefinition();
+        table.setName("CMP3_JALOPY");
 
+        FieldDefinition fieldID = new FieldDefinition();
+        fieldID.setName("ID");
+        fieldID.setTypeName("NUMBER");
+        fieldID.setSize(15);
+        fieldID.setSubSize(0);
+        fieldID.setIsPrimaryKey(true);
+        fieldID.setIsIdentity(false);
+        fieldID.setUnique(false);
+        fieldID.setShouldAllowNull(false);
+        fieldID.setForeignKeyFieldName("CMP3_FUEL_VEH.ID");
+        table.addField(fieldID);
+
+        FieldDefinition fieldRUST = new FieldDefinition();
+        fieldRUST.setName("PERCENTRUST");
+        fieldRUST.setTypeName("NUMBER");
+        fieldRUST.setSize(10);
+        fieldRUST.setSubSize(0);
+        fieldRUST.setIsPrimaryKey(false);
+        fieldRUST.setIsIdentity(false);
+        fieldRUST.setUnique(false);
+        fieldRUST.setShouldAllowNull(true);
+        table.addField(fieldRUST);
+
+        return table;
+    }
     public TableDefinition buildCOMPANYTable() {
         TableDefinition table = new TableDefinition();
         table.setName("CMP3_COMPANY");

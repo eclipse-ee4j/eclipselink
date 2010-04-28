@@ -19,6 +19,16 @@ import javax.persistence.Entity;
 public class BlueLight extends Blue {
     public BlueLight() {}
 
+    private int discount = 0;
+    
+    public int getDiscount() {
+        return discount;
+    }
+
+    public void setDiscount(int discount) {
+        this.discount = discount;
+    }
+
     public boolean equals(Object anotherBlueLight) {
         if (anotherBlueLight.getClass() != BlueLight.class) {
             return false;

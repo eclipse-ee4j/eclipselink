@@ -212,6 +212,32 @@ public class QueryKeyExpression extends ObjectExpression {
     }
 
     /**
+     * ADVANCED:
+     * Return an expression that allows you to treat its base as if it were a subclass of the class returned by the base
+     * This can only be called on an ExpressionBuilder, the result of expression.get(String), expression.getAllowingNull(String),
+     * the result of expression.anyOf("String") or the result of expression.anyOfAllowingNull("String")
+     * 
+     * downcast does not guarantee the results of the downcast will be of the specified class and should be used in conjunction
+     * with a Expression.type()
+     * <p>Example:
+     * <pre><blockquote>
+     *     TopLink: employee.get("project").as(LargeProject.class).get("budget").equal(1000)
+     *     Java: ((LargeProject)employee.getProjects().get(0)).getBudget() == 1000
+     *     SQL: LPROJ.PROJ_ID (+)= PROJ.PROJ_ID AND L_PROJ.BUDGET = 1000
+     * </blockquote></pre>
+     */
+    public Expression as(Class castClass){
+        QueryKeyExpression clonedExpression = new QueryKeyExpression(getName(), getBaseExpression());
+        clonedExpression.shouldQueryToManyRelationship = this.shouldQueryToManyRelationship;
+        clonedExpression.shouldUseOuterJoin = this.shouldUseOuterJoin;
+        clonedExpression.hasQueryKey = this.hasQueryKey;
+        clonedExpression.hasMapping = this.hasMapping;
+
+        clonedExpression.setCastClass(castClass);
+        return clonedExpression;
+    }
+    
+    /**
      * INTERNAL:
      * Used for cloning.
      */
@@ -697,6 +723,9 @@ public class QueryKeyExpression extends ObjectExpression {
             }
         }
         printer.printString("\"" + getName() + "\")");
+        if (castClass != null){
+            printer.printString(".cast(" + castClass.getName() + ".class)");
+        }
     }
 
     /**
@@ -718,6 +747,9 @@ public class QueryKeyExpression extends ObjectExpression {
             result.doQueryToManyRelationship();
         }
         result.setSelectIfOrderedBy(selectIfOrderedBy());
+        if (castClass != null){
+            result.setCastClass(castClass);
+        }
         return result;
     }
 
@@ -986,6 +1018,9 @@ public class QueryKeyExpression extends ObjectExpression {
      */
     public void writeDescriptionOn(BufferedWriter writer) throws IOException {
         writer.write(getName());
+        if (castClass != null){
+            writer.write(" (" + castClass.getName() + ") ");
+        }
         writer.write(tableAliasesDescription());
     }
 

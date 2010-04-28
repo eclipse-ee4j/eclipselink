@@ -14,6 +14,7 @@
 
 package org.eclipse.persistence.internal.jpa.querydef;
 
+import javax.persistence.criteria.Expression;
 import javax.persistence.criteria.Fetch;
 import javax.persistence.criteria.From;
 import javax.persistence.criteria.Join;
@@ -84,6 +85,12 @@ public class JoinImpl<Z, X> extends FromImpl<Z, X> implements Join<Z, X>, Fetch<
      */
     public JoinType getJoinType(){
         return joinType;
+    }
+    
+    protected <T> Expression<T> buildExpressionForAs(Class<T> type) {
+        managedType = metamodel.managedType(type);
+        currentNode = currentNode.as(type);
+        return (Expression<T>)this;
     }
 
 }

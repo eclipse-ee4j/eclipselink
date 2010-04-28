@@ -96,7 +96,6 @@ public class JUnitCriteriaSimpleTestSuite extends JUnitTestCase {
         TestSuite suite = new TestSuite();
         suite.setName("JUnitJPQLSimpleTestSuite");
         suite.addTest(new JUnitCriteriaSimpleTestSuite("testSetup"));
-        
         suite.addTest(new JUnitCriteriaSimpleTestSuite("simpleJoinFetchTest"));
         suite.addTest(new JUnitCriteriaSimpleTestSuite("simpleJoinFetchTest2"));
         suite.addTest(new JUnitCriteriaSimpleTestSuite("baseTestCase"));
@@ -261,7 +260,7 @@ public class JUnitCriteriaSimpleTestSuite extends JUnitTestCase {
         Vector expectedResult = (Vector)em.getUnitOfWork().executeQuery(reportQuery);
 
         if (!comparer.compareObjects(result, expectedResult)) {
-            this.fail("simpleJoinFetchTest Failed when using cache, collections do not match: " + result + " expected: " + expectedResult);
+            Assert.fail("simpleJoinFetchTest Failed when using cache, collections do not match: " + result + " expected: " + expectedResult);
         }
 
         //Bypass the cache
@@ -290,7 +289,7 @@ public class JUnitCriteriaSimpleTestSuite extends JUnitTestCase {
         expectedResult = (Vector)em.getUnitOfWork().executeQuery(reportQuery);
 
         if (!comparer.compareObjects(result, expectedResult)) {
-            this.fail("simpleJoinFetchTest Failed when not using cache, collections do not match: " + result + " expected: " + expectedResult);
+            Assert.fail("simpleJoinFetchTest Failed when not using cache, collections do not match: " + result + " expected: " + expectedResult);
         }
     }
 
@@ -1948,7 +1947,7 @@ public class JUnitCriteriaSimpleTestSuite extends JUnitTestCase {
             closeEntityManager(em);
         }
     }
-
+    
     public void smallProjectNOTMemberOfProjectsTest() {
         EntityManager em = createEntityManager();
 

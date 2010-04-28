@@ -449,6 +449,16 @@ public class InheritedTableManager extends TogglingFastTableCreator {
         DTYPE_field.setUnique(false);
         DTYPE_field.setShouldAllowNull(true);
         table.addField(DTYPE_field);
+        
+        FieldDefinition DISCOUNT_field = new FieldDefinition();
+        DISCOUNT_field.setName("DISCOUNT");
+        DISCOUNT_field.setTypeName("NUMERIC");
+        DISCOUNT_field.setSize(15);
+        DISCOUNT_field.setIsPrimaryKey(false);
+        DISCOUNT_field.setUnique(false);
+        DISCOUNT_field.setIsIdentity(false);
+        DISCOUNT_field.setShouldAllowNull(true);
+        table.addField(DISCOUNT_field);
 
         return table;
     }

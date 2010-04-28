@@ -461,6 +461,7 @@ public class ExpressionJUnitTestSuite extends JUnitTestCase {
     /*
      * locate(string, int) feature test
      *   Negative case: tests that locate(string, int) works when the string is not included  (bug 299334)
+     * This test will fail on PostGresql until bug 299334 is fixed
      */
     public void testLocateWithDoubleArgument_Neg() throws Exception {
         Item i = new Item();

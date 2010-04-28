@@ -89,6 +89,7 @@ tokens {
     SUM='sum';
     THEN='then';
     TRAILING='trailing';
+    TREAT='treat';
     TRIM='trim';
     TRUE='true';
     TYPE='type';
@@ -504,10 +505,16 @@ join returns [Object node]
     node = null;
 }
     : outerJoin = joinSpec
-      ( n = joinAssociationPathExpression (AS)? i=IDENT
+      ( n = joinAssociationPathExpression (AS)? i=IDENT 
         {
             $node = factory.newJoinVariableDecl($i.getLine(), $i.getCharPositionInLine(), 
-                                               $outerJoin.outer, $n.node, $i.getText()); 
+                                               $outerJoin.outer, $n.node, $i.getText(), null); 
+        }
+      | 
+       TREAT LEFT_ROUND_BRACKET n = joinAssociationPathExpression AS castClass = IDENT RIGHT_ROUND_BRACKET (AS)? i=IDENT 
+        {
+            $node = factory.newJoinVariableDecl($i.getLine(), $i.getCharPositionInLine(), 
+                                               $outerJoin.outer, $n.node, $i.getText(), $castClass.getText()); 
         }
       | t=FETCH n = joinAssociationPathExpression 
         { 

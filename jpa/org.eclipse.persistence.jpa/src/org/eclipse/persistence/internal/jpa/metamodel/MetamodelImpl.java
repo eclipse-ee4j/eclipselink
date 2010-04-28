@@ -207,7 +207,7 @@ public class MetamodelImpl implements Metamodel, Serializable {
      * that is associated with this Metamodel
      * @return
      */
-    protected Project getProject() {
+    public Project getProject() {
         return this.getSession().getProject();
     }
     /**
