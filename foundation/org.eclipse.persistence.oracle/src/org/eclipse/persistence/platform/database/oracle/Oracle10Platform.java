@@ -15,7 +15,6 @@ package org.eclipse.persistence.platform.database.oracle;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.util.Arrays;
 
 import oracle.jdbc.OraclePreparedStatement;
 
@@ -44,6 +43,7 @@ public class Oracle10Platform extends Oracle9Platform  {
         if (usesNativeBatchWriting() && isStatementPrepared){
             return((OraclePreparedStatement)statement).sendBatch(); 
         }else {
+            @SuppressWarnings("unused")
             int[] results = statement.executeBatch();
             return statement.getUpdateCount();
         }

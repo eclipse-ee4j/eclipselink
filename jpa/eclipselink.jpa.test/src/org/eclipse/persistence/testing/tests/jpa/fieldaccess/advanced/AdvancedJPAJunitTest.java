@@ -17,7 +17,6 @@
 package org.eclipse.persistence.testing.tests.jpa.fieldaccess.advanced;
 
 import java.util.Collection;
-import java.util.HashMap;
 
 import javax.persistence.LockModeType;
 import javax.persistence.EntityManager;
@@ -26,14 +25,10 @@ import javax.persistence.Query;
 
 import junit.framework.*;
 
-import org.eclipse.persistence.config.QueryHints;
 import org.eclipse.persistence.descriptors.ClassDescriptor;
-import org.eclipse.persistence.sessions.UnitOfWork;
 import org.eclipse.persistence.sessions.server.ServerSession;
 import org.eclipse.persistence.mappings.ForeignReferenceMapping;
 import org.eclipse.persistence.internal.jpa.EJBQueryImpl;
-import org.eclipse.persistence.internal.jpa.EntityManagerImpl;
-import org.eclipse.persistence.jpa.JpaEntityManager;
 
 import org.eclipse.persistence.testing.framework.junit.JUnitTestCase;
 import org.eclipse.persistence.testing.models.jpa.fieldaccess.advanced.Address;

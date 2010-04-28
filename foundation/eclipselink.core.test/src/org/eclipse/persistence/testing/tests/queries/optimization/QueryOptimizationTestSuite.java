@@ -15,7 +15,6 @@ package org.eclipse.persistence.testing.tests.queries.optimization;
 import java.util.List;
 
 import org.eclipse.persistence.tools.schemaframework.PopulationManager;
-import org.eclipse.persistence.platform.database.DatabasePlatform;
 import org.eclipse.persistence.queries.*;
 import org.eclipse.persistence.annotations.BatchFetchType;
 import org.eclipse.persistence.expressions.*;

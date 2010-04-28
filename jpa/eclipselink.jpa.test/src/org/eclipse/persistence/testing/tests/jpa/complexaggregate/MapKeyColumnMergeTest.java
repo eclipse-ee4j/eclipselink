@@ -13,8 +13,6 @@
  ******************************************************************************/  
 package org.eclipse.persistence.testing.tests.jpa.complexaggregate;
 
-import org.eclipse.persistence.descriptors.changetracking.ChangeTracker;
-import org.eclipse.persistence.indirection.IndirectMap;
 import org.eclipse.persistence.internal.jpa.EntityManagerImpl;
 import org.eclipse.persistence.testing.models.jpa.complexaggregate.CoachVitals;
 import org.eclipse.persistence.testing.models.jpa.complexaggregate.HockeyCoach;

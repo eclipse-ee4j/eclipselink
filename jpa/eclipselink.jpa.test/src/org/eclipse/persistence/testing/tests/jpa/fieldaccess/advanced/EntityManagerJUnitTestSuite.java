@@ -41,7 +41,6 @@ import javax.persistence.RollbackException;
 
 import junit.framework.*;
 
-import org.eclipse.persistence.jpa.JpaHelper;
 import org.eclipse.persistence.jpa.JpaQuery;
 import org.eclipse.persistence.jpa.JpaEntityManager;
 import org.eclipse.persistence.logging.SessionLog;
