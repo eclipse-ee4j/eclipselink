@@ -51,7 +51,7 @@
             depends="clean, build"
     />
     <target name="build-nightly"    description="Trigger the nightly automated build and lrg tests"
-            depends="clean, build, test-lrg, publish-build, publish-results, test-for-errors"
+            depends="clean, build, test-lrg, publish-build, publish-results, report-test-result"
     />
     <target name="build-milestone"  description="Trigger build, testing, and publishing of a milestone release ('release' is a milestone in this case)"
             depends="promote-init, extract-signed-artifacts, regen-archives, gen-build-for-maven, publish-milestone, populate-p2-update-site, create-tag"
@@ -158,13 +158,13 @@
         <property name="download.dir" value="${eclipselink.root.download.dir}/milestones/${release.version}/${build.type}"/>
 
         <!-- Set p2 repository path appropriately depending upon build target     -->
-        <condition property="p2.repos.dir" value="${eclipselink.root.download.dir}/incremental-updates/nightly/${release.version}">
+        <condition property="p2.repos.dir" value="${eclipselink.root.download.dir}/incremental-updates/nightly/${version.string}">
             <equals arg1="${build.type}" arg2="SNAPSHOT"/>
         </condition>
-        <condition property="p2.repos.dir" value="${eclipselink.root.download.dir}/updates/${release.version}">
+        <condition property="p2.repos.dir" value="${eclipselink.root.download.dir}/updates/${version.string}">
             <equals arg1="${build.type}" arg2="RELEASE"/>
         </condition>
-        <property name="p2.repos.dir" value="${eclipselink.root.download.dir}/incremental-updates/milestone/${release.version}"/>
+        <property name="p2.repos.dir" value="${eclipselink.root.download.dir}/incremental-updates/milestone/${version.string}"/>
         <property name="p2.base.dir" value="${p2.repos.dir}"/>
         <property name="p2.base.url" value="file:${p2.base.dir}"/>
 
@@ -454,6 +454,7 @@
     <target name="fix-permission">
         <chmod file="${build.root.dir}/buildsystem/cleanNightly.sh" perm="ug+x"/>
         <chmod file="${build.root.dir}/buildsystem/buildNightlyList.sh" perm="ug+x"/>
+        <chmod file="${build.root.dir}/buildsystem/buildCompositeP2.sh" perm="ug+x"/>
     </target>
 
     <!-- Antified "cleanNightly.sh" -->
@@ -470,7 +471,7 @@
         </exec>
     </target>
 
-    <target name="test-for-errors">
+    <target name="report-test-result">
         <fail message="Some of the junit tests failed.  See the ${report.dir}/junit-noframes.html file for details." if="junit.failed"/>
     </target>
 
@@ -591,7 +592,7 @@
             <fileset dir="${temp.rebuild.dir}/bundlezip">
                 <include name="eclipselink-jpa-modelgen*.jar"/>
             </fileset>
-      </copy>
+        </copy>
         <!-- get javax.persistence* -->
         <copy todir="${tmp.maven.dir}/${eclipselink.jpa.base}/${plugins.dir}">
             <fileset dir="${temp.rebuild.dir}/bundlezip">
@@ -623,47 +624,30 @@
         <copy todir="${download.dir}" file="${temp.rebuild.dir}/signed/eclipselink.build" failonerror="false"/>
         <!-- Copy for maven to run -->
         <copy todir="${tmp.maven.dir}" file="${basedir}/pom.xml.template"  failonerror="false"/>
-        <copy todir="${tmp.maven.dir}" file="${basedir}/uploadToMaven.xml"  failonerror="false"/>
+        <copy todir="${tmp.maven.dir}" file="${basedir}/uploadToMaven.xml" failonerror="false"/>
         <ant antfile="uploadToMaven.xml" dir="${tmp.maven.dir}" target="upload-maven-all"/>
     </target>
 
-    <target name="populate-p2-update-site" unless="signing.time.limit.exceeded">
+    <target name="populate-p2-update-site" depends="fix-permission">
         <!-- has to be run last, so it can be generic for nightly, or milestone builds -->
+        <condition property="p2.archive.to.use" value="${download.dir}/${p2.archive.signed.zip}"
+                                                 else="${download.dir}/${p2.archive.presigned.zip}>
+            <isset property="signing.time.limit.exceeded"/>
+        </condition>
         <!-- Clean existing repos if it exists (should only be true of a release redo, or the latest milestone or nightly) -->
         <delete dir="${p2.repos.dir}" failonerror="false"/>
         <mkdir dir="${p2.repos.dir}"/>
-        <unzip dest="${p2.repos.dir}/plugins" src="${download.dir}/${eclipselink.plugins.install.prefix}-${version.string}${eclipselink.zip.suffix}">
-            <patternset>
-                <include name="*.jar"/>
-            </patternset>
-        </unzip>
-        <!-- Remove unwanted jars -->
-        <delete>
-            <fileset
-               dir="${p2.repos.dir}/plugins"
-               includes="commonj.sdo_2.1.1.jar,
-                        *dbws*.jar,
-                        *jms*.jar,
-                        javax.persistence_1.0.0.jar,
-                        *resource*.jar,
-                        *servlet*.jar,
-                        *soap*.jar,
-                        *transaction*.jar,
-                        *xml.ws*.jar
-               "
-            />
-        </delete>
-        <!-- populate features -->
-        <unzip dest="${p2.repos.dir}/features" src="${download.dir}/${p2.archive.signed.zip}">
-            <patternset>
-                <include name="features/*.jar"/>
-            </patternset>
-            <mapper type="flatten"/>
-        </unzip>
-        <!-- Generate repository -->
-        <ant antfile="build.xml" dir="${build.root.dir}/features" target="generate-p2-repos">
-            <property name="bundle.installer.exist" value="true"/>
+        <!-- populate update site with feature and bundle jars, then publish repository -->
+        <ant antfile="build.xml" dir="${build.root.dir}/features" target="assemble-repos">
+            <property name="ready-to-go"         value="true"/>
+            <property name="bundle.install.file" value="${download.dir}/${eclipselink.plugins.install.prefix}-${version.string}${eclipselink.zip.suffix}"/>
+            <property name="p2.archive.zip"      value="${p2.archive.to.use}"/>
         </ant>
+        <!-- Regenerate Composite Repos metadata -->
+        <exec executable="/bin/sh" failonerror="false" logError="true" >
+            <arg value="${build.root.dir}/buildsystem/buildCompositeP2.sh"/>
+        </exec>
+        <!-- Can clean-up temp dir now -->  
         <delete dir="${temp.rebuild.dir}" failonerror="false"/>
     </target>
 

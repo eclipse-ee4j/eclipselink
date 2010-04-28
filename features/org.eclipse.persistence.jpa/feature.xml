@@ -18,8 +18,8 @@
    </license>
 
    <url>
-      <update label="%updateSiteName" url="http://download.eclipse.org/rt/eclipselink/updates"/>
-      <discovery label="%secondaryUpdateSiteName" url="http://download.eclipse.org/rt/eclipselink/incremental-updates/milestone"/>
+      <update label="%updateSiteName" url="%primaryUpdateURL"/>
+      <discovery label="%secondaryUpdateSiteName" url="%secondaryUpdateURL"/>
    </url>
 
    <requires>
