@@ -136,7 +136,7 @@ public class SpatialJPQLTestSuite extends JUnitTestCase {
                                                          20, 1, 1, 1 }, 2, 0);
 
         EntityManager em = createEntityManager(STRUCT_CONVERTER_PU);
-        Query query = em.createQuery("SELECT ss FROM SimpleSpatial ss WHERE FUNC('mdsys.sdo_RELATE', ss.jGeometry, :otherGeometry, :params) = 'TRUE' ORDER BY ss.id ASC");
+        Query query = em.createQuery("SELECT ss FROM SimpleSpatial ss WHERE FUNC('mdsys.sdo_RELATE', ss.JGeometry, :otherGeometry, :params) = 'TRUE' ORDER BY ss.id ASC");
         query.setParameter("otherGeometry", rectangle);
         query.setParameter("params", "MASK=ANYINTERACT QUERYTYPE=WINDOW");
         List<Spatial> results = query.getResultList(); 
@@ -163,7 +163,7 @@ public class SpatialJPQLTestSuite extends JUnitTestCase {
         String otherGeometry = "FUNC('mdsys.sdo_geometry', 3, null, null, FUNC('mdsys.sdo_elem_info_array', 1, 3, 3), FUNC('mdsys.sdo_ordinate_array', 1, 1, 20, 20))";
         
         EntityManager em = createEntityManager(STRUCT_CONVERTER_PU);
-        Query query = em.createQuery("SELECT ss FROM SimpleSpatial ss WHERE FUNC('mdsys.sdo_RELATE', ss.jGeometry, "+otherGeometry+", :params) = 'TRUE' ORDER BY ss.id ASC");
+        Query query = em.createQuery("SELECT ss FROM SimpleSpatial ss WHERE FUNC('mdsys.sdo_RELATE', ss.JGeometry, "+otherGeometry+", :params) = 'TRUE' ORDER BY ss.id ASC");
         query.setParameter("params", "MASK=ANYINTERACT QUERYTYPE=WINDOW");
         query.setHint(QueryHints.BIND_PARAMETERS, "false");
         List<Spatial> results = query.getResultList(); 
@@ -189,7 +189,7 @@ public class SpatialJPQLTestSuite extends JUnitTestCase {
         JGeometry circle = JGeometry.createCircle(-10, 0, 0, 10, 10, 0, 0);
 
         EntityManager em = createEntityManager(STRUCT_CONVERTER_PU);
-        Query query = em.createQuery("SELECT ss FROM SimpleSpatial ss WHERE FUNC('mdsys.sdo_RELATE', ss.jGeometry, :otherGeometry, :params) = 'TRUE' ORDER BY ss.id ASC");
+        Query query = em.createQuery("SELECT ss FROM SimpleSpatial ss WHERE FUNC('mdsys.sdo_RELATE', ss.JGeometry, :otherGeometry, :params) = 'TRUE' ORDER BY ss.id ASC");
         query.setParameter("otherGeometry", circle);
         query.setParameter("params", "MASK=ANYINTERACT QUERYTYPE=WINDOW");
         List<Spatial> results = query.getResultList(); 
@@ -218,7 +218,7 @@ public class SpatialJPQLTestSuite extends JUnitTestCase {
                                              0);
 
         EntityManager em = createEntityManager(STRUCT_CONVERTER_PU);
-        Query query = em.createQuery("SELECT ss FROM SimpleSpatial ss WHERE FUNC('mdsys.sdo_RELATE', ss.jGeometry, :otherGeometry, :params) = 'TRUE' ORDER BY ss.id ASC");
+        Query query = em.createQuery("SELECT ss FROM SimpleSpatial ss WHERE FUNC('mdsys.sdo_RELATE', ss.JGeometry, :otherGeometry, :params) = 'TRUE' ORDER BY ss.id ASC");
         query.setParameter("otherGeometry", line);
         query.setParameter("params", "MASK=ANYINTERACT QUERYTYPE=WINDOW");
         List<Spatial> results = query.getResultList(); 
@@ -247,7 +247,7 @@ public class SpatialJPQLTestSuite extends JUnitTestCase {
                                                          20, 1, 1, 1 }, 2, 0);
 
         EntityManager em = createEntityManager(STRUCT_CONVERTER_PU);
-        Query query = em.createQuery("SELECT ss FROM SimpleSpatial ss WHERE FUNC('mdsys.sdo_FILTER', ss.jGeometry, :otherGeometry, :params) = 'TRUE' ORDER BY ss.id ASC");
+        Query query = em.createQuery("SELECT ss FROM SimpleSpatial ss WHERE FUNC('mdsys.sdo_FILTER', ss.JGeometry, :otherGeometry, :params) = 'TRUE' ORDER BY ss.id ASC");
         query.setParameter("otherGeometry", rectangle);
         query.setParameter("params", "QUERYTYPE=WINDOW");
         List<Spatial> results = query.getResultList(); 
@@ -272,7 +272,7 @@ public class SpatialJPQLTestSuite extends JUnitTestCase {
                                                          20, 1, 1, 1 }, 2, 0);
 
         EntityManager em = createEntityManager(STRUCT_CONVERTER_PU);
-        Query query = em.createQuery("SELECT ss FROM SimpleSpatial ss WHERE FUNC('mdsys.sdo_FILTER', ss.jGeometry, :otherGeometry, :params) = 'TRUE' ORDER BY ss.id ASC");
+        Query query = em.createQuery("SELECT ss FROM SimpleSpatial ss WHERE FUNC('mdsys.sdo_FILTER', ss.JGeometry, :otherGeometry, :params) = 'TRUE' ORDER BY ss.id ASC");
         query.setParameter("otherGeometry", rectangle);
         query.setParameter("params", null);
         List<Spatial> results = query.getResultList(); 
@@ -298,7 +298,7 @@ public class SpatialJPQLTestSuite extends JUnitTestCase {
         JGeometry circle = JGeometry.createCircle(-10, 0, 0, 10, 10, 0, 0);
 
         EntityManager em = createEntityManager(STRUCT_CONVERTER_PU);
-        Query query = em.createQuery("SELECT ss FROM SimpleSpatial ss WHERE FUNC('mdsys.sdo_FILTER', ss.jGeometry, :otherGeometry, :params) = 'TRUE' ORDER BY ss.id ASC");
+        Query query = em.createQuery("SELECT ss FROM SimpleSpatial ss WHERE FUNC('mdsys.sdo_FILTER', ss.JGeometry, :otherGeometry, :params) = 'TRUE' ORDER BY ss.id ASC");
         query.setParameter("otherGeometry", circle);
         query.setParameter("params", "QUERYTYPE=WINDOW");
         List<Spatial> results = query.getResultList(); 
@@ -327,7 +327,7 @@ public class SpatialJPQLTestSuite extends JUnitTestCase {
                                              0);
 
         EntityManager em = createEntityManager(STRUCT_CONVERTER_PU);
-        Query query = em.createQuery("SELECT ss FROM SimpleSpatial ss WHERE FUNC('mdsys.sdo_FILTER', ss.jGeometry, :otherGeometry, :params) = 'TRUE' ORDER BY ss.id ASC");
+        Query query = em.createQuery("SELECT ss FROM SimpleSpatial ss WHERE FUNC('mdsys.sdo_FILTER', ss.JGeometry, :otherGeometry, :params) = 'TRUE' ORDER BY ss.id ASC");
         query.setParameter("otherGeometry", line);
         query.setParameter("params", "QUERYTYPE=WINDOW");
         List<Spatial> results = query.getResultList(); 
@@ -355,7 +355,7 @@ public class SpatialJPQLTestSuite extends JUnitTestCase {
                                                          20, 1, 1, 1 }, 2, 0);
 
         EntityManager em = createEntityManager(STRUCT_CONVERTER_PU);
-        Query query = em.createQuery("SELECT ss FROM SimpleSpatial ss WHERE FUNC('mdsys.sdo_WITHIN_DISTANCE', ss.jGeometry, :otherGeometry, :params) = 'TRUE' ORDER BY ss.id ASC");
+        Query query = em.createQuery("SELECT ss FROM SimpleSpatial ss WHERE FUNC('mdsys.sdo_WITHIN_DISTANCE', ss.JGeometry, :otherGeometry, :params) = 'TRUE' ORDER BY ss.id ASC");
         query.setParameter("otherGeometry", rectangle);
         query.setParameter("params", "DISTANCE=10");
         List<Spatial> results = query.getResultList(); 
@@ -379,7 +379,7 @@ public class SpatialJPQLTestSuite extends JUnitTestCase {
                                                          20, 1, 1, 1 }, 2, 0);
 
         EntityManager em = createEntityManager(STRUCT_CONVERTER_PU);
-        Query query = em.createQuery("SELECT ss FROM SimpleSpatial ss WHERE FUNC('mdsys.sdo_WITHIN_DISTANCE', ss.jGeometry, :otherGeometry, :params) = 'TRUE' ORDER BY ss.id ASC");
+        Query query = em.createQuery("SELECT ss FROM SimpleSpatial ss WHERE FUNC('mdsys.sdo_WITHIN_DISTANCE', ss.JGeometry, :otherGeometry, :params) = 'TRUE' ORDER BY ss.id ASC");
         query.setParameter("otherGeometry", rectangle);
         query.setParameter("params", "DISTANCE=10 MAX_RESOLUTION=5");
         List<Spatial> results = query.getResultList(); 
@@ -405,7 +405,7 @@ public class SpatialJPQLTestSuite extends JUnitTestCase {
         JGeometry circle = JGeometry.createCircle(-10, 0, 0, 10, 10, 0, 0);
 
         EntityManager em = createEntityManager(STRUCT_CONVERTER_PU);
-        Query query = em.createQuery("SELECT ss FROM SimpleSpatial ss WHERE FUNC('mdsys.sdo_WITHIN_DISTANCE', ss.jGeometry, :otherGeometry, :params) = 'TRUE' ORDER BY ss.id ASC");
+        Query query = em.createQuery("SELECT ss FROM SimpleSpatial ss WHERE FUNC('mdsys.sdo_WITHIN_DISTANCE', ss.JGeometry, :otherGeometry, :params) = 'TRUE' ORDER BY ss.id ASC");
         query.setParameter("otherGeometry", circle);
         query.setParameter("params", "DISTANCE=10");
         List<Spatial> results = query.getResultList(); 
@@ -434,7 +434,7 @@ public class SpatialJPQLTestSuite extends JUnitTestCase {
                                              0);
 
         EntityManager em = createEntityManager(STRUCT_CONVERTER_PU);
-        Query query = em.createQuery("SELECT ss FROM SimpleSpatial ss WHERE FUNC('mdsys.sdo_WITHIN_DISTANCE', ss.jGeometry, :otherGeometry, :params) = 'TRUE' ORDER BY ss.id ASC");
+        Query query = em.createQuery("SELECT ss FROM SimpleSpatial ss WHERE FUNC('mdsys.sdo_WITHIN_DISTANCE', ss.JGeometry, :otherGeometry, :params) = 'TRUE' ORDER BY ss.id ASC");
         query.setParameter("otherGeometry", line);
         query.setParameter("params", "DISTANCE=10");
         List<Spatial> results = query.getResultList(); 
@@ -459,7 +459,7 @@ public class SpatialJPQLTestSuite extends JUnitTestCase {
         JGeometry circle = JGeometry.createCircle(1, 0, 0, 1, 0, -1, 0);
 
         EntityManager em = createEntityManager(STRUCT_CONVERTER_PU);
-        Query query = em.createQuery("SELECT ss FROM SimpleSpatial ss WHERE FUNC('mdsys.sdo_WITHIN_DISTANCE', ss.jGeometry, :otherGeometry, :params) = 'TRUE' ORDER BY ss.id ASC");
+        Query query = em.createQuery("SELECT ss FROM SimpleSpatial ss WHERE FUNC('mdsys.sdo_WITHIN_DISTANCE', ss.JGeometry, :otherGeometry, :params) = 'TRUE' ORDER BY ss.id ASC");
         query.setParameter("otherGeometry", circle);
         query.setParameter("params", null);
         List<Spatial> results = query.getResultList(); 
@@ -484,7 +484,7 @@ public class SpatialJPQLTestSuite extends JUnitTestCase {
         JGeometry circle = JGeometry.createCircle(10, 0, 0, 10, 0, -10, 0);
 
         EntityManager em = createEntityManager(STRUCT_CONVERTER_PU);
-        Query query = em.createQuery("SELECT ss FROM SimpleSpatial ss WHERE FUNC('mdsys.sdo_WITHIN_DISTANCE', ss.jGeometry, :otherGeometry, :params) = 'TRUE' ORDER BY ss.id ASC");
+        Query query = em.createQuery("SELECT ss FROM SimpleSpatial ss WHERE FUNC('mdsys.sdo_WITHIN_DISTANCE', ss.JGeometry, :otherGeometry, :params) = 'TRUE' ORDER BY ss.id ASC");
         query.setParameter("otherGeometry", circle);
         query.setParameter("params", null);
         List<Spatial> results = query.getResultList(); 
