@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <xs:schema xmlns:myns="myNamespace" xmlns:bank="bankNamespace" xmlns:xs="http://www.w3.org/2001/XMLSchema" targetNamespace="myNamespace">
 
-    <xs:import schemaLocation="xmlschema-currency" namespace="bankNamespace"/>
+    <xs:import namespace="bankNamespace" schemaLocation="xmlschema-currency"/>
 
     <xs:element name="person" type="myns:person"/>
 

@@ -19,14 +19,17 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.StringTokenizer;
+import java.util.Vector;
 
 import javax.xml.bind.JAXBException;
 
+import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.dynamic.DynamicClassLoader;
 import org.eclipse.persistence.dynamic.DynamicEntity;
 import org.eclipse.persistence.dynamic.DynamicHelper;
 import org.eclipse.persistence.dynamic.DynamicType;
 import org.eclipse.persistence.dynamic.DynamicTypeBuilder;
+import org.eclipse.persistence.internal.descriptors.InstantiationPolicy;
 import org.eclipse.persistence.internal.jaxb.JaxbClassLoader;
 import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
 import org.eclipse.persistence.jaxb.JAXBContextFactory;
@@ -93,7 +96,7 @@ public class DynamicJAXBContext extends org.eclipse.persistence.jaxb.JAXBContext
     private ArrayList<DynamicHelper> helpers;
     private DynamicClassLoader dClassLoader;
 
-    private static final String SYSTEM_ID = "DynamicJAXBContextFactory:createFromXSD";
+    private static final String SYSTEM_ID = "";
 
     private Field JDEFINEDCLASS_ENUMCONSTANTS = null;
 
@@ -256,7 +259,9 @@ public class DynamicJAXBContext extends org.eclipse.persistence.jaxb.JAXBContext
     void initializeFromXSDInputSource(InputSource metadataSource, ClassLoader classLoader, EntityResolver resolver, Map<String, ?> properties) throws JAXBException {
         // Use XJC API to parse the schema and generate its JCodeModel
         SchemaCompiler sc = XJC.createSchemaCompiler();
-        metadataSource.setSystemId(SYSTEM_ID);
+        if (metadataSource.getSystemId() == null) {
+            metadataSource.setSystemId(SYSTEM_ID);
+        }
         sc.setEntityResolver(resolver);
         sc.setErrorListener(new XJCErrorListener());
         sc.parseSchema(metadataSource);
@@ -324,6 +329,12 @@ public class DynamicJAXBContext extends org.eclipse.persistence.jaxb.JAXBContext
         Project dp = null;
         try {
             p = g.generateProject();
+            // Clear out InstantiationPolicy because it refers to ObjectFactory, which we won't be using
+            Vector<ClassDescriptor> descriptors = (Vector<ClassDescriptor>) p.getOrderedDescriptors();
+            InstantiationPolicy blankPolicy = new InstantiationPolicy();
+            for (ClassDescriptor classDescriptor : descriptors) {
+                classDescriptor.setInstantiationPolicy(blankPolicy);
+            }
             dp = DynamicTypeBuilder.loadDynamicProject(p, null, dynamicClassLoader);
         } catch (Exception e) {
             throw new JAXBException(org.eclipse.persistence.exceptions.JAXBException.errorCreatingDynamicJAXBContext(e));

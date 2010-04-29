@@ -90,6 +90,15 @@ public class DynamicJAXBFromXSDTestCases extends TestCase {
 
     DynamicJAXBContext jaxbContext;
 
+    static {
+        try {
+            // Disable XJC's schema correctness check.  XSD imports do not seem to work if this is left on.
+            System.setProperty("com.sun.tools.xjc.api.impl.s2j.SchemaCompilerImpl.noCorrectnessCheck", "true");
+        } catch (Exception e) {
+            // Ignore
+        }
+    }
+
     public DynamicJAXBFromXSDTestCases(String name) throws Exception {
         super(name);
     }
@@ -188,7 +197,6 @@ public class DynamicJAXBFromXSDTestCases extends TestCase {
         assertNull("Child node should not have namespace prefix.", childNode.getPrefix());
     }
 
-    /*
     public void testXmlSchemaImport() throws Exception {
         // <xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema">
         //       <xs:import schemaLocation="xmlschema-currency" namespace="bankNamespace"/>
@@ -199,8 +207,20 @@ public class DynamicJAXBFromXSDTestCases extends TestCase {
 
         DynamicEntity person = jaxbContext.newDynamicEntity(PERSON);
         assertNotNull("Could not create Dynamic Entity.", person);
+
+        DynamicEntity salary = jaxbContext.newDynamicEntity(CDN_CURRENCY);
+        assertNotNull("Could not create Dynamic Entity.", salary);
+
+        salary.set("value", "75425.75");
+
+        person.set("name", "Bob Dobbs");
+        person.set("salary", salary);
+
+        Document marshalDoc = DocumentBuilderFactory.newInstance().newDocumentBuilder().newDocument();
+        jaxbContext.createMarshaller().marshal(person, marshalDoc);
+        
+        // Nothing to really test, if the import failed we couldn't have created the salary.
     }
-    */
 
     public void testXmlSeeAlso() throws Exception {
         InputStream inputStream = ClassLoader.getSystemResourceAsStream(XMLSEEALSO);
@@ -657,22 +677,16 @@ public class DynamicJAXBFromXSDTestCases extends TestCase {
     }
 
     private class NoExtensionEntityResolver implements EntityResolver {
-
         public InputSource resolveEntity(String publicId, String systemId) throws SAXException, IOException {
-            //System.out.println("HIT!");
-            //System.out.println("   publicId = " + publicId);
-            //System.out.println("   systemId = " + systemId);
+            // Grab only the filename part from the full path
+            File f = new File(systemId);
 
-            String correctedId = RESOURCE_DIR + systemId + ".xsd";
-
-            //BufferedReader stream = new BufferedReader(new InputStreamReader(ClassLoader.getSystemResourceAsStream(correctedId)));
-            //System.out.println("line is: " + stream.readLine());
+            String correctedId = RESOURCE_DIR + f.getName() + ".xsd";
 
             InputSource is = new InputSource(ClassLoader.getSystemResourceAsStream(correctedId));
-
+            is.setSystemId(correctedId);
             return is;
         }
-
     }
 
 }

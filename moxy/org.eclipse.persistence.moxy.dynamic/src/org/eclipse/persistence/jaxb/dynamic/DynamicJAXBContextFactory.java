@@ -79,7 +79,7 @@ public class DynamicJAXBContextFactory {
      *      classes to see if they exist before new <tt>DynamicTypes</tt> are generated.  Can be
      *      <tt>null</tt>, in which case <tt>Thread.currentThread().getContextClassLoader()</tt> will be used.
      * @param properties
-     *      Map of properties to use when creating a new <tt>DynamicJAXBContext</tt>.
+     *      Map of properties to use when creating a new <tt>DynamicJAXBContext</tt>.  Can be null.
      *
      * @return
      *      A new instance of <tt>DynamicJAXBContext</tt>.
@@ -113,13 +113,13 @@ public class DynamicJAXBContextFactory {
      * @param schemaDOM
      *      <tt>org.w3c.dom.Node</tt> representing the XML Schema.
      * @param resolver
-     *      An <tt>org.xml.sax.EntityResolver</tt>, used to resolve schema imports.
+     *      An <tt>org.xml.sax.EntityResolver</tt>, used to resolve schema imports.  Can be null.
      * @param classLoader
      *      The application's current class loader, which will be used to first lookup
      *      classes to see if they exist before new <tt>DynamicTypes</tt> are generated.  Can be
      *      <tt>null</tt>, in which case <tt>Thread.currentThread().getContextClassLoader()</tt> will be used.
      * @param properties
-     *      Map of properties to use when creating a new <tt>DynamicJAXBContext</tt>.
+     *      Map of properties to use when creating a new <tt>DynamicJAXBContext</tt>.  Can be null.
      *
      * @return
      *      A new instance of <tt>DynamicJAXBContext</tt>.
@@ -144,13 +144,13 @@ public class DynamicJAXBContextFactory {
      * @param schemaStream
      *      <tt>java.io.InputStream</tt> from which to read the XML Schema.
      * @param resolver
-     *      An <tt>org.xml.sax.EntityResolver</tt>, used to resolve schema imports.
+     *      An <tt>org.xml.sax.EntityResolver</tt>, used to resolve schema imports.  Can be null.
      * @param classLoader
      *      The application's current class loader, which will be used to first lookup
      *      classes to see if they exist before new <tt>DynamicTypes</tt> are generated.  Can be
      *      <tt>null</tt>, in which case <tt>Thread.currentThread().getContextClassLoader()</tt> will be used.
      * @param properties
-     *      Map of properties to use when creating a new <tt>DynamicJAXBContext</tt>.
+     *      Map of properties to use when creating a new <tt>DynamicJAXBContext</tt>.  Can be null.
      *
      * @return
      *      A new instance of <tt>DynamicJAXBContext</tt>.
@@ -177,13 +177,13 @@ public class DynamicJAXBContextFactory {
      * @param schemaSource
      *      <tt>javax.xml.transform.Source</tt> from which to read the XML Schema.
      * @param resolver
-     *      An <tt>org.xml.sax.EntityResolver</tt>, used to resolve schema imports.
+     *      An <tt>org.xml.sax.EntityResolver</tt>, used to resolve schema imports.  Can be null.
      * @param classLoader
      *      The application's current class loader, which will be used to first lookup
      *      classes to see if they exist before new <tt>DynamicTypes</tt> are generated.  Can be
      *      <tt>null</tt>, in which case <tt>Thread.currentThread().getContextClassLoader()</tt> will be used.
      * @param properties
-     *      Map of properties to use when creating a new <tt>DynamicJAXBContext</tt>.
+     *      Map of properties to use when creating a new <tt>DynamicJAXBContext</tt>.  Can be null.
      *
      * @return
      *      A new instance of <tt>DynamicJAXBContext</tt>.
@@ -202,6 +202,7 @@ public class DynamicJAXBContextFactory {
         t.transform(schemaSource, result);
         ByteArrayInputStream bais = new ByteArrayInputStream(baos.toByteArray());
         InputSource schemaInputSource = new InputSource(bais);
+        schemaInputSource.setSystemId(schemaSource.getSystemId());
 
         DynamicJAXBContext dContext = new DynamicJAXBContext();
         dContext.initializeFromXSDInputSource(schemaInputSource, classLoader, resolver, properties);
