@@ -786,10 +786,6 @@ public class XMLObjectBuilder extends ObjectBuilder {
               }
           }
 
-          if(referenceDescriptor != null && referenceDescriptor == xmlDescriptor){
-            return false;
-          }
-
           QName leafType = null;
           if(xmlField != null){
               leafType = xmlField.getLeafElementType();
@@ -815,6 +811,9 @@ public class XMLObjectBuilder extends ObjectBuilder {
               }
           }
 
+          if(referenceDescriptor != null && referenceDescriptor == xmlDescriptor){
+              return false;
+          }         
             if (xmlDescriptor.hasInheritance() && !xmlDescriptor.getInheritancePolicy().isRootParentDescriptor()) {
                 XMLField indicatorField = (XMLField) xmlDescriptor.getInheritancePolicy().getClassIndicatorField();
                    if(indicatorField != null && xsiTypeIndicatorField){

@@ -1156,6 +1156,7 @@ public class ObjectPersistenceRuntimeXMLProject extends NamespaceResolvableProje
         parameterMapping.setAttributeName("field");
         parameterMapping.setReferenceClass(DatabaseField.class);
         parameterMapping.setXPath(getPrimaryNamespaceXPath() + "parameter");
+        ((XMLField)parameterMapping.getField()).setLeafElementType(fieldQname);
         descriptor.addMapping(parameterMapping);
 
         XMLCompositeObjectMapping baseMapping = new XMLCompositeObjectMapping();
@@ -1178,6 +1179,7 @@ public class ObjectPersistenceRuntimeXMLProject extends NamespaceResolvableProje
         parameterMapping.setAttributeName("field");
         parameterMapping.setReferenceClass(DatabaseField.class);
         parameterMapping.setXPath(getPrimaryNamespaceXPath() + "field");
+        ((XMLField)parameterMapping.getField()).setLeafElementType(fieldQname);
         descriptor.addMapping(parameterMapping);
 
         XMLCompositeObjectMapping baseMapping = new XMLCompositeObjectMapping();
@@ -2058,6 +2060,7 @@ public class ObjectPersistenceRuntimeXMLProject extends NamespaceResolvableProje
         primaryKeyFieldNamesMapping.setGetMethodName("getPrimaryKeyFields");
         primaryKeyFieldNamesMapping.setSetMethodName("setPrimaryKeyFields");
         primaryKeyFieldNamesMapping.setXPath(getSecondaryNamespaceXPath() + "primary-key/" + getSecondaryNamespaceXPath() + "field");
+        ((XMLField)primaryKeyFieldNamesMapping.getField()).setLeafElementType(fieldQname);
         primaryKeyFieldNamesMapping.useCollectionClass(ArrayList.class);
         descriptor.addMapping(primaryKeyFieldNamesMapping);
 
@@ -2535,6 +2538,7 @@ public class ObjectPersistenceRuntimeXMLProject extends NamespaceResolvableProje
         directFieldMapping.setSetMethodName("setDirectField");
         directFieldMapping.setXPath(getPrimaryNamespaceXPath() + "direct-field");
         directFieldMapping.setReferenceClass(DatabaseField.class);
+        ((XMLField)directFieldMapping.getField()).setLeafElementType(fieldQname);
         descriptor.addMapping(directFieldMapping);
 
         XMLCompositeCollectionMapping sourceToReferenceKeyFieldAssociationsMapping = new XMLCompositeCollectionMapping();
@@ -2599,6 +2603,7 @@ public class ObjectPersistenceRuntimeXMLProject extends NamespaceResolvableProje
         directKeyFieldMapping.setSetMethodName("setDirectKeyField");
         directKeyFieldMapping.setXPath(getPrimaryNamespaceXPath() + "direct-key-field");
         directKeyFieldMapping.setReferenceClass(DatabaseField.class);
+        ((XMLField)directKeyFieldMapping.getField()).setLeafElementType(fieldQname);
         descriptor.addMapping(directKeyFieldMapping);
 
         XMLCompositeObjectMapping keyConverterMapping = new XMLCompositeObjectMapping();
@@ -2634,6 +2639,7 @@ public class ObjectPersistenceRuntimeXMLProject extends NamespaceResolvableProje
         fieldMapping.setGetMethodName("getField");
         fieldMapping.setSetMethodName("setField");
         fieldMapping.setXPath(getPrimaryNamespaceXPath() + "field");
+        ((XMLField)fieldMapping.getField()).setLeafElementType(fieldQname);
         descriptor.addMapping(fieldMapping);
 
         return descriptor;
@@ -2652,7 +2658,8 @@ public class ObjectPersistenceRuntimeXMLProject extends NamespaceResolvableProje
         fieldMapping.setGetMethodName("getField");
         fieldMapping.setSetMethodName("setField");
         fieldMapping.setXPath(getSecondaryNamespaceXPath() + "field");
-        descriptor.addMapping(fieldMapping);
+        ((XMLField)fieldMapping.getField()).setLeafElementType(fieldQname);
+       descriptor.addMapping(fieldMapping);
 
         XMLDirectMapping nullValueMapping = new XMLDirectMapping();
         nullValueMapping.setAttributeName("nullValue");
@@ -2887,6 +2894,7 @@ public class ObjectPersistenceRuntimeXMLProject extends NamespaceResolvableProje
         startFieldNamesMapping.setGetMethodName("getStartFields");
         startFieldNamesMapping.setSetMethodName("setStartFields");
         startFieldNamesMapping.setXPath(getPrimaryNamespaceXPath() + "start-fields/" + getPrimaryNamespaceXPath() + "start-field");
+        ((XMLField)startFieldNamesMapping.getField()).setLeafElementType(fieldQname);
         descriptor.addMapping(startFieldNamesMapping);
 
         XMLCompositeCollectionMapping endFieldNamesMapping = new XMLCompositeCollectionMapping();
@@ -2896,6 +2904,7 @@ public class ObjectPersistenceRuntimeXMLProject extends NamespaceResolvableProje
         endFieldNamesMapping.setGetMethodName("getEndFields");
         endFieldNamesMapping.setSetMethodName("setEndFields");
         endFieldNamesMapping.setXPath(getPrimaryNamespaceXPath() + "end-fields/" + getPrimaryNamespaceXPath() + "end-field");
+        ((XMLField)endFieldNamesMapping.getField()).setLeafElementType(fieldQname);
         descriptor.addMapping(endFieldNamesMapping);
 
         XMLDirectMapping shouldHandleWritesMapping = new XMLDirectMapping();
@@ -3007,6 +3016,7 @@ public class ObjectPersistenceRuntimeXMLProject extends NamespaceResolvableProje
         classIndicatorFieldNameMapping.setGetMethodName("getClassIndicatorField");
         classIndicatorFieldNameMapping.setSetMethodName("setClassIndicatorField");
         classIndicatorFieldNameMapping.setXPath(getPrimaryNamespaceXPath() + "class-indicator-field");
+        ((XMLField)classIndicatorFieldNameMapping.getField()).setLeafElementType(fieldQname);
         descriptor.addMapping(classIndicatorFieldNameMapping);
 
         XMLCompositeCollectionMapping classIndicatorsMapping = new XMLCompositeCollectionMapping();
@@ -3320,6 +3330,7 @@ public class ObjectPersistenceRuntimeXMLProject extends NamespaceResolvableProje
         fieldMapping.setXPath(getPrimaryNamespaceXPath() + "field");
         fieldMapping.setGetMethodName("getField");
         fieldMapping.setSetMethodName("setField");
+        ((XMLField)fieldMapping.getField()).setLeafElementType(fieldQname);
         descriptor.addMapping(fieldMapping);
 
         XMLDirectMapping structureMapping = new XMLDirectMapping();
@@ -3383,6 +3394,7 @@ public class ObjectPersistenceRuntimeXMLProject extends NamespaceResolvableProje
         orderedFieldsMapping.setAttributeName("orderedFields");
         orderedFieldsMapping.setXPath(getPrimaryNamespaceXPath() + "field-order/" + getPrimaryNamespaceXPath() + "field");
         orderedFieldsMapping.setReferenceClass(DatabaseField.class);
+        ((XMLField)orderedFieldsMapping.getField()).setLeafElementType(fieldQname);
         descriptor.addMapping(orderedFieldsMapping);
 
         return descriptor;
@@ -3553,6 +3565,7 @@ public class ObjectPersistenceRuntimeXMLProject extends NamespaceResolvableProje
         foreignKeyFieldNamesMapping.setSetMethodName("setForeignKeyFields");
         foreignKeyFieldNamesMapping.setXPath(getSecondaryNamespaceXPath() + "foreign-key-fields/" + getSecondaryNamespaceXPath() + "field");
         foreignKeyFieldNamesMapping.setReferenceClass(DatabaseField.class);
+        ((XMLField)foreignKeyFieldNamesMapping.getField()).setLeafElementType(fieldQname);
         descriptor.addMapping(foreignKeyFieldNamesMapping);
 
         XMLDirectMapping relationshipPartnerAttributeNameMapping = new XMLDirectMapping();
@@ -3626,6 +3639,7 @@ public class ObjectPersistenceRuntimeXMLProject extends NamespaceResolvableProje
         keyMapping.setSetMethodName("setKey");
         keyMapping.setXPath(getSecondaryNamespaceXPath() + "source-field");
         keyMapping.setReferenceClass(DatabaseField.class);
+        ((XMLField)keyMapping.getField()).setLeafElementType(fieldQname);
         descriptor.addMapping(keyMapping);
 
         XMLCompositeObjectMapping valueMapping = new XMLCompositeObjectMapping();
@@ -3634,6 +3648,7 @@ public class ObjectPersistenceRuntimeXMLProject extends NamespaceResolvableProje
         valueMapping.setSetMethodName("setValue");
         valueMapping.setXPath(getSecondaryNamespaceXPath() + "target-field");
         valueMapping.setReferenceClass(DatabaseField.class);
+        ((XMLField)valueMapping.getField()).setLeafElementType(fieldQname);
         descriptor.addMapping(valueMapping);
 
         return descriptor;
@@ -3672,6 +3687,7 @@ public class ObjectPersistenceRuntimeXMLProject extends NamespaceResolvableProje
         keyMapping.setSetMethodName("setKey");
         keyMapping.setXPath(getPrimaryNamespaceXPath() + "source-field");
         keyMapping.setReferenceClass(DatabaseField.class);
+        ((XMLField)keyMapping.getField()).setLeafElementType(fieldQname);
         descriptor.addMapping(keyMapping);
 
         XMLCompositeObjectMapping valueMapping = new XMLCompositeObjectMapping();
@@ -3680,6 +3696,7 @@ public class ObjectPersistenceRuntimeXMLProject extends NamespaceResolvableProje
         valueMapping.setSetMethodName("setValue");
         valueMapping.setXPath(getPrimaryNamespaceXPath() + "target-field");
         valueMapping.setReferenceClass(DatabaseField.class);
+        ((XMLField)valueMapping.getField()).setLeafElementType(fieldQname);
         descriptor.addMapping(valueMapping);
 
         return descriptor;
@@ -3738,6 +3755,7 @@ public class ObjectPersistenceRuntimeXMLProject extends NamespaceResolvableProje
         fieldMapping.setXPath(getPrimaryNamespaceXPath() + "field");
         fieldMapping.setGetMethodName("getField");
         fieldMapping.setSetMethodName("setField");
+        ((XMLField)fieldMapping.getField()).setLeafElementType(fieldQname);
 
         descriptor.addMapping(fieldMapping);
 
@@ -4046,6 +4064,7 @@ public class ObjectPersistenceRuntimeXMLProject extends NamespaceResolvableProje
         fieldMapping.setGetMethodName("getField");
         fieldMapping.setSetMethodName("setField");
         fieldMapping.setXPath(getPrimaryNamespaceXPath() + "field");
+        ((XMLField)fieldMapping.getField()).setLeafElementType(fieldQname);
         descriptor.addMapping(fieldMapping);
 
         return descriptor;
@@ -4086,6 +4105,7 @@ public class ObjectPersistenceRuntimeXMLProject extends NamespaceResolvableProje
         fieldMapping.setGetMethodName("getField");
         fieldMapping.setSetMethodName("setField");
         fieldMapping.setXPath(getPrimaryNamespaceXPath() + "field");
+        ((XMLField)fieldMapping.getField()).setLeafElementType(fieldQname);
         descriptor.addMapping(fieldMapping);
 
         XMLDirectMapping sourceMapping1 = new XMLDirectMapping();
@@ -4124,6 +4144,7 @@ public class ObjectPersistenceRuntimeXMLProject extends NamespaceResolvableProje
         fieldMapping.setGetMethodName("getField");
         fieldMapping.setSetMethodName("setField");
         fieldMapping.setXPath(getPrimaryNamespaceXPath() + "field");
+        ((XMLField)fieldMapping.getField()).setLeafElementType(fieldQname);
         descriptor.addMapping(fieldMapping);
 
         XMLCompositeObjectMapping containerPolicyMapping = new XMLCompositeObjectMapping();
@@ -4158,6 +4179,7 @@ public class ObjectPersistenceRuntimeXMLProject extends NamespaceResolvableProje
         fieldMapping.setGetMethodName("getField");
         fieldMapping.setSetMethodName("setField");
         fieldMapping.setXPath(getPrimaryNamespaceXPath() + "field");
+        ((XMLField)fieldMapping.getField()).setLeafElementType(fieldQname);
         descriptor.addMapping(fieldMapping);
 
         XMLCompositeObjectMapping containerPolicyMapping = new XMLCompositeObjectMapping();
@@ -4182,6 +4204,7 @@ public class ObjectPersistenceRuntimeXMLProject extends NamespaceResolvableProje
         fieldMapping.setGetMethodName("getField");
         fieldMapping.setSetMethodName("setField");
         fieldMapping.setXPath(getPrimaryNamespaceXPath() + "field");
+        ((XMLField)fieldMapping.getField()).setLeafElementType(fieldQname);
         descriptor.addMapping(fieldMapping);
 
         return descriptor;
@@ -4198,6 +4221,7 @@ public class ObjectPersistenceRuntimeXMLProject extends NamespaceResolvableProje
         fieldMapping.setGetMethodName("getField");
         fieldMapping.setSetMethodName("setField");
         fieldMapping.setXPath(getPrimaryNamespaceXPath() + "field");
+        ((XMLField)fieldMapping.getField()).setLeafElementType(fieldQname);
         descriptor.addMapping(fieldMapping);
 
         return descriptor;
@@ -4237,6 +4261,10 @@ public class ObjectPersistenceRuntimeXMLProject extends NamespaceResolvableProje
         descriptor.getInheritancePolicy().addClassIndicator(XMLField.class, getPrimaryNamespaceXPath() + "node");
         descriptor.getInheritancePolicy().addClassIndicator(XMLUnionField.class, getPrimaryNamespaceXPath() + "union-node");
 
+        XMLSchemaReference reference = new XMLSchemaClassPathReference();
+        reference.setSchemaContext("/"+ getSecondaryNamespaceXPath() + "column");
+        descriptor.setSchemaReference(reference);
+        
         XMLDirectMapping tableMapping = new XMLDirectMapping();
         tableMapping.setAttributeName("table");
         tableMapping.setGetMethodName("getTableName");
@@ -4268,7 +4296,8 @@ public class ObjectPersistenceRuntimeXMLProject extends NamespaceResolvableProje
         fieldMapping.setGetMethodName("getField");
         fieldMapping.setSetMethodName("setField");
         fieldMapping.setXPath(getPrimaryNamespaceXPath() + "field");
-        descriptor.addMapping(fieldMapping);
+        ((XMLField)fieldMapping.getField()).setLeafElementType(fieldQname);
+       descriptor.addMapping(fieldMapping);
 
         XMLCompositeObjectMapping valueConverterMapping = new XMLCompositeObjectMapping();
         valueConverterMapping.setAttributeName("valueConverter");
@@ -4527,6 +4556,7 @@ public class ObjectPersistenceRuntimeXMLProject extends NamespaceResolvableProje
         typeFieldMapping.setSetMethodName("setTypeField");
         typeFieldMapping.setReferenceClass(DatabaseField.class);
         typeFieldMapping.setXPath(getPrimaryNamespaceXPath() + "type-field");
+        ((XMLField)typeFieldMapping.getField()).setLeafElementType(fieldQname);
         descriptor.addMapping(typeFieldMapping);
 
         XMLCompositeCollectionMapping foreignKeyFieldsMapping = new XMLCompositeCollectionMapping();
@@ -4536,6 +4566,7 @@ public class ObjectPersistenceRuntimeXMLProject extends NamespaceResolvableProje
         foreignKeyFieldsMapping.setSetMethodName("setForeignKeyFields");
         foreignKeyFieldsMapping.setXPath(getPrimaryNamespaceXPath() + "foreign-key-fields/" + getPrimaryNamespaceXPath() + "field");
         foreignKeyFieldsMapping.setReferenceClass(DatabaseField.class);
+        ((XMLField)foreignKeyFieldsMapping.getField()).setLeafElementType(new QName(getSecondaryNamespace(), "field"));
         descriptor.addMapping(foreignKeyFieldsMapping);
 
         XMLCompositeCollectionMapping sourceFieldToTargetQueryKeyMapping = new XMLCompositeCollectionMapping();
@@ -4594,6 +4625,7 @@ public class ObjectPersistenceRuntimeXMLProject extends NamespaceResolvableProje
         keyMapping.setSetMethodName("setKey");
         keyMapping.setReferenceClass(DatabaseField.class);
         keyMapping.setXPath(getPrimaryNamespaceXPath() + "source-field");
+        ((XMLField)keyMapping.getField()).setLeafElementType(fieldQname);
         descriptor.addMapping(keyMapping);
 
         XMLDirectMapping valueMapping = new XMLDirectMapping();
@@ -4633,6 +4665,7 @@ public class ObjectPersistenceRuntimeXMLProject extends NamespaceResolvableProje
         versionFieldMapping.setSetMethodName("setWriteLockField");
         versionFieldMapping.setXPath(getPrimaryNamespaceXPath() + "version-field");
         versionFieldMapping.setReferenceClass(DatabaseField.class);
+        ((XMLField)versionFieldMapping.getField()).setLeafElementType(fieldQname);
         descriptor.addMapping(versionFieldMapping);
 
         XMLDirectMapping shouldStoreInCacheMapping = new XMLDirectMapping();
@@ -4657,6 +4690,7 @@ public class ObjectPersistenceRuntimeXMLProject extends NamespaceResolvableProje
         fieldsMapping.setAttributeName("lockFields");
         fieldsMapping.setXPath(getPrimaryNamespaceXPath() + "fields/" + getPrimaryNamespaceXPath() + "field");
         fieldsMapping.setReferenceClass(DatabaseField.class);
+        ((XMLField)fieldsMapping.getField()).setLeafElementType(fieldQname);
         descriptor.addMapping(fieldsMapping);
 
         return descriptor;

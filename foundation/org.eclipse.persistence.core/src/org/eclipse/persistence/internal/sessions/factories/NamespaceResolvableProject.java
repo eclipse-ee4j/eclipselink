@@ -15,6 +15,9 @@ package org.eclipse.persistence.internal.sessions.factories;
 
 //javase imports
 import java.util.Iterator;
+
+import javax.xml.namespace.QName;
+
 import static javax.xml.XMLConstants.W3C_XML_SCHEMA_INSTANCE_NS_URI;
 import static javax.xml.XMLConstants.W3C_XML_SCHEMA_NS_URI;
 
@@ -38,12 +41,14 @@ public abstract class NamespaceResolvableProject extends Project {
         "http://xmlns.oracle.com/ias/xsds/opm";
     
     protected NamespaceResolverWithPrefixes ns;
+    protected QName fieldQname;
     
     public NamespaceResolvableProject() {
         super();
         buildNamespaceResolver();
         buildDescriptors();
         setNamespaceResolverOnDescriptors();
+        fieldQname = new QName(getSecondaryNamespace(), "field");
     }
     public NamespaceResolvableProject(NamespaceResolverWithPrefixes ns) {
         super();

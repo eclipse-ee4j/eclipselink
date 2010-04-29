@@ -20,6 +20,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Vector;
+
 import static java.lang.Integer.MIN_VALUE;
 
 // EclipseLink imports
@@ -540,6 +541,7 @@ public class ObjectPersistenceRuntimeXMLProject_11_1_1 extends ObjectPersistence
         fieldMapping.setGetMethodName("getField");
         fieldMapping.setSetMethodName("setField");
         fieldMapping.setXPath(getPrimaryNamespaceXPath() + "field");
+        ((XMLField)fieldMapping.getField()).setLeafElementType(fieldQname);
         descriptor.addMapping(fieldMapping);
 
         XMLCompositeObjectMapping containerPolicyMapping = new XMLCompositeObjectMapping();
@@ -615,6 +617,7 @@ public class ObjectPersistenceRuntimeXMLProject_11_1_1 extends ObjectPersistence
         sourceToTargetKeysMapping.setReferenceClass(DatabaseField.class);
         sourceToTargetKeysMapping.setAttributeName("sourceToTargetKeys");
         sourceToTargetKeysMapping.setXPath(getPrimaryNamespaceXPath() + "source-to-target-key-fields/" + getPrimaryNamespaceXPath() + "field");
+        ((XMLField)sourceToTargetKeysMapping.getField()).setLeafElementType(fieldQname);
         descriptor.addMapping(sourceToTargetKeysMapping);
 
         return descriptor;
