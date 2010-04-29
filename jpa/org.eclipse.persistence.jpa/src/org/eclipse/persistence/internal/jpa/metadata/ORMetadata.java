@@ -504,7 +504,7 @@ public abstract class ORMetadata {
      * INTERNAL:
      * This method should be called to reload an entity (that was either
      * loaded from XML or an annotation) as a way of cloning it. This is needed
-     * when processing TABLE_PER_CLASS inheritance and when building invidiual
+     * when processing TABLE_PER_CLASS inheritance and when building individual
      * entity accessor's mapped superclass list. 
      */
     protected MappedSuperclassAccessor reloadMappedSuperclass(MappedSuperclassAccessor mappedSuperclass, MetadataDescriptor descriptor) {
