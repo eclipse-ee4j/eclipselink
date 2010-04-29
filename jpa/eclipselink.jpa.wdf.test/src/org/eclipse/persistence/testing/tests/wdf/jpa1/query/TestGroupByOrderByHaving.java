@@ -40,8 +40,9 @@ public class TestGroupByOrderByHaving extends QueryTest {
     }
 
     @Test
+    @ToBeInvestigated
     public void testOrderBy4() {
-        /* 4 */assertInvalidQuery("SELECT c, new com.sap.jpa.example.jpql.Holder(c.id) FROM City c order by c.id");
+        /* 4 */assertInvalidQuery("SELECT c, new  org.eclipse.persistence.testing.models.wdf.jpa1.jpql.Holder(c.id) FROM City c order by c.id");
     }
 
     @Test
@@ -109,7 +110,7 @@ public class TestGroupByOrderByHaving extends QueryTest {
     @ToBeInvestigated
     public void testGroupBy7() {
         // TODO check if query is meaningful
-        assertValidQuery("SELECT c, new com.sap.jpa.example.jpql.Holder(c.id) FROM City c group by c.id");
+        assertValidQuery("SELECT c, new  org.eclipse.persistence.testing.models.wdf.jpa1.jpql.Holder(c.id) FROM City c group by c.id");
     }
 
     @Test
@@ -159,11 +160,11 @@ public class TestGroupByOrderByHaving extends QueryTest {
     @Test
     @ToBeInvestigated
     public void testConstructorGroupBy0() {
-        assertValidQuery("SELECT new com.sap.jpa.example.jpql.Holder(c.id, count(p)) FROM City c, Person p group by c.id");
+        assertValidQuery("SELECT new  org.eclipse.persistence.testing.models.wdf.jpa1.jpql.Holder(c.id, count(p)) FROM City c, Person p group by c.id");
     }
 
     @Test
     public void testConstructorGroupBy1() {
-        /* 25 */assertInvalidQuery("SELECT new com.sap.jpa.example.jpql.Holder(c.tesla, max(c.id)) FROM City c group by c.id");
+        /* 25 */assertInvalidQuery("SELECT new  org.eclipse.persistence.testing.models.wdf.jpa1.jpql.Holder(c.tesla, max(c.id)) FROM City c group by c.id");
     }
 }

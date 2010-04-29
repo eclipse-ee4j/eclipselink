@@ -22,18 +22,17 @@ import javax.persistence.EntityManager;
 import javax.persistence.Query;
 import javax.persistence.TransactionRequiredException;
 
-import org.junit.Test;
-
+import org.eclipse.persistence.testing.framework.wdf.Bugzilla;
+import org.eclipse.persistence.testing.framework.wdf.JPAEnvironment;
+import org.eclipse.persistence.testing.framework.wdf.ToBeInvestigated;
 import org.eclipse.persistence.testing.models.wdf.jpa1.employee.Cubicle;
 import org.eclipse.persistence.testing.models.wdf.jpa1.employee.Department;
 import org.eclipse.persistence.testing.models.wdf.jpa1.employee.Employee;
-import org.eclipse.persistence.testing.models.wdf.jpa1.node.Node;
 import org.eclipse.persistence.testing.models.wdf.jpa1.employee.Project;
 import org.eclipse.persistence.testing.models.wdf.jpa1.employee.Review;
-
-import org.eclipse.persistence.testing.framework.wdf.JPAEnvironment;
-import org.eclipse.persistence.testing.framework.wdf.ToBeInvestigated;
+import org.eclipse.persistence.testing.models.wdf.jpa1.node.Node;
 import org.eclipse.persistence.testing.tests.wdf.jpa1.JPA1Base;
+import org.junit.Test;
 
 public class TestFlush extends JPA1Base {
 
@@ -165,7 +164,7 @@ public class TestFlush extends JPA1Base {
      */
     @SuppressWarnings("unchecked")
     @Test
-    @ToBeInvestigated
+    @Bugzilla(bugid=309681)
     public void testRelationshipToRemoved() {
         JPAEnvironment env = getEnvironment();
         EntityManager em = env.getEntityManager();
@@ -450,7 +449,7 @@ public class TestFlush extends JPA1Base {
      * </ul>
      */
     @Test
-    @ToBeInvestigated
+    @Bugzilla(bugid=309681)
     public void testRelationshipToRemovedLazy() {
         JPAEnvironment env = getEnvironment();
         EntityManager em = env.getEntityManager();
@@ -656,7 +655,6 @@ public class TestFlush extends JPA1Base {
 
     @SuppressWarnings("unchecked")
     @Test
-    @ToBeInvestigated
     public void testTransactionMarkedForRollback() {
         final JPAEnvironment env = getEnvironment();
         final EntityManager em = env.getEntityManager();
@@ -678,7 +676,7 @@ public class TestFlush extends JPA1Base {
     }
 
     @Test
-    @ToBeInvestigated
+    @Bugzilla(bugid=309681)
     public void testChangedEntityIgnoredByFlush() {
         final JPAEnvironment env = getEnvironment();
         final EntityManager em = env.getEntityManager();

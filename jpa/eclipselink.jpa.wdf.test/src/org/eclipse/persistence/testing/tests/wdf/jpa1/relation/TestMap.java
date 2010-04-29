@@ -101,7 +101,6 @@ public class TestMap extends JPA1Base {
     }
 
     @Test
-    @ToBeInvestigated
     public void testColorOffice() {
         final String[] colors = new String[] { "red", "green", "blue" };
         final Integer officeId = Integer.valueOf(3);

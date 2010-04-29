@@ -66,9 +66,8 @@ public class TestConditionalExpressions extends QueryTest {
     }
 
     @Test
-    @ToBeInvestigated
     public void testEnumComparison5() {
-        assertValidQuery("SELECT c FROM City c WHERE c.id IN (SELECT min(c2.id) FROM City c2 WHERE c2.cityEnum = com.sap.jpa.example.jpql.City.CityEnum.BLI)");
+        assertValidQuery("SELECT c FROM City c WHERE c.id IN (SELECT min(c2.id) FROM City c2 WHERE c2.cityEnum = org.eclipse.persistence.testing.models.wdf.jpa1.jpql.City.CityEnum.BLI)");
     }
 
     @Test
@@ -592,7 +591,7 @@ public class TestConditionalExpressions extends QueryTest {
         assertInvalidQuery("select p from Person as p where CURRENT_DATE in (2, 3, 4)");
         assertValidQuery("select p from Person as p where p._float in (2, 3, 4.4, :one)");
         assertInvalidQuery("select p from Person as p where p._float in (2, 'bla', 4.4)");
-        assertInvalidQuery("select p from Person as p where p.city.type in (com.sap.jpa.example.jpql.Metal.DEATH)");
+        assertInvalidQuery("select p from Person as p where p.city.type in (org.eclipse.persistence.testing.models.wdf.jpa1.jpql.Metal.DEATH)");
         assertValidQuery("select p from Person as p where p.city.type in (select c.type from City as c)");
         assertValidQuery("select p from Person as p where p.string in ('2', '3', '4.4', :one)");
         assertValidQuery("select p from Person as p where p.string in ('2', '3', '4.4', :one)");
@@ -600,7 +599,7 @@ public class TestConditionalExpressions extends QueryTest {
         assertInvalidQuery("select p from Person as p where CURRENT_DATE Not in (2, 3, 4)");
         assertValidQuery("select p from Person as p where p._float nOt in (2, 3, 4.4, :one)");
         assertInvalidQuery("select p from Person as p where p._float noT in (2, 'bla', 4.4)");
-        assertInvalidQuery("select p from Person as p where p.city.type not in (com.sap.jpa.example.jpql.Metal.DEATH)");
+        assertInvalidQuery("select p from Person as p where p.city.type not in (org.eclipse.persistence.testing.models.wdf.jpa1.jpql.Metal.DEATH)");
         assertValidQueryExecution("select p from Person as p where p.city.type not in (select c.type from City as c)");
         assertValidQuery("select p from Person as p where p.string not in ('2', '3', '4.4', :one)");
 

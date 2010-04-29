@@ -192,7 +192,6 @@ public class TestArguments extends QueryTest {
 
     @SuppressWarnings("boxing")
     @Test
-    @ToBeInvestigated
     public void testEnumParameters() throws SQLException {
         init();
         EntityManager em = getEnvironment().getEntityManager();

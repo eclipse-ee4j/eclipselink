@@ -102,7 +102,6 @@ public class TestBuiltInFunctionExpressions extends QueryTest {
         /* 14 */assertInvalidQuery("SELECT p FROM Person p where 'a' = substring((select max(p1.string) from Person p1), (select max(p1.integer) from Person p1), (select max(p1.integer) from Person p1))");
     }
 
-    @ToBeInvestigated
     @Test
     public void testTrimHandling15() {
         /* 15 */assertValidQuery("SELECT p FROM Person p where 'a' = trim('a')");
@@ -113,19 +112,16 @@ public class TestBuiltInFunctionExpressions extends QueryTest {
         /* 16 */assertInvalidQuery("SELECT p FROM Person p where 'a' = trim(p)");
     }
 
-    @ToBeInvestigated
     @Test
     public void testTrimHandling17() {
         /* 17 */assertValidQuery("SELECT p FROM Person p where 'a' = trim(p.string)");
     }
 
-    @ToBeInvestigated
     @Test
     public void testTrimHandling18() {
         /* 18 */assertValidQuery("SELECT p FROM Person p where 'a' = trim(:one)");
     }
 
-    @ToBeInvestigated
     @Test
     public void testTrimHandling19() {
         /* 19 */assertValidQuery("SELECT p FROM Person p where 'a' = trim(trim('a'))");
@@ -224,7 +220,6 @@ public class TestBuiltInFunctionExpressions extends QueryTest {
         /* 38 */assertValidQuery("SELECT p FROM Person p where upper(:one) = lower(:one)");
     }
 
-    @ToBeInvestigated
     @Test
     public void testUpperHandling39() {
         /* 39 */assertValidQuery("SELECT p FROM Person p where upper(trim('a')) = lower(trim('a'))");
@@ -267,7 +262,6 @@ public class TestBuiltInFunctionExpressions extends QueryTest {
         /* 46 */assertValidQuery("SELECT p FROM Person p where length(:one) = 666");
     }
 
-    @ToBeInvestigated
     @Test
     public void testLengthHandling47() {
         /* 47 */assertValidQuery("SELECT p FROM Person p where length(trim('a')) = 666");

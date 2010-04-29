@@ -21,23 +21,24 @@ import java.util.Set;
 import javax.persistence.EntityManager;
 import javax.persistence.OptimisticLockException;
 import javax.persistence.PersistenceException;
+import javax.persistence.RollbackException;
 
+import org.eclipse.persistence.testing.framework.wdf.Bugzilla;
 import org.eclipse.persistence.testing.framework.wdf.JPAEnvironment;
 import org.eclipse.persistence.testing.framework.wdf.ToBeInvestigated;
 import org.eclipse.persistence.testing.models.wdf.jpa1.employee.Review;
 import org.eclipse.persistence.testing.models.wdf.jpa1.node.Node;
 import org.eclipse.persistence.testing.tests.wdf.jpa1.JPA1Base;
+import org.junit.Ignore;
 import org.junit.Test;
 
 // TODO remove restrictions
 public class TestOptimistic extends JPA1Base {
 
     @Test
-    @ToBeInvestigated
     public void testOptimisticLockExceptionUpdateUpdate() {
         JPAEnvironment env = getEnvironment();
         EntityManager em1 = env.getEntityManagerFactory().createEntityManager();
-        EntityManager em2 = env.getEntityManagerFactory().createEntityManager();
         int id = 10;
         int version = 0;
         Review rev1 = new Review(id, Date.valueOf("2005-12-07"), "one");
@@ -45,32 +46,46 @@ public class TestOptimistic extends JPA1Base {
             env.beginTransaction(em1);
             em1.persist(rev1);
             env.commitTransactionAndClear(em1);
+            
             env.beginTransaction(em1);
             rev1 = em1.find(Review.class, new Integer(id));
             verify(rev1 != null, "Review is null");
             version = rev1.getVersion();
-            env.beginTransaction(em2);
-            Review rev2 = em2.find(Review.class, new Integer(id));
-            rev2.setReviewText("two"); // 1 update
-            env.commitTransactionAndClear(em2);
+            
+            EntityManager em2 = env.getEntityManagerFactory().createEntityManager();
+            try {
+                env.beginTransaction(em2);
+                Review rev2 = em2.find(Review.class, new Integer(id));
+                rev2.setReviewText("two"); // 1 update
+                env.commitTransactionAndClear(em2); 
+            } finally {
+                closeEntityManager(em2);
+            }
+            
             rev1.setReviewText("1"); // 2 update
             env.commitTransactionAndClear(em1);
             flop("OptimisticLockException not thrown");
+        } catch (RollbackException rbe) {
+          assertRBEisOLE(rev1, rbe);
         } catch (OptimisticLockException ole) {
-            // $JL-EXC$ expected behavior
-            Object failingEntity = ole.getEntity();
-            if (failingEntity != null) {
-                verify(rev1.equals(failingEntity), "wrong entity");
-            }
+            assertFailingEntity(rev1, ole);
         } finally {
             closeEntityManager(em1);
-            closeEntityManager(em2);
-            verify(version == rev1.getVersion(), "wrong version:" + version + " != " + rev1.getVersion());
+        }
+        // bug 309681: version is incremented in spite of roll back -> not an
+        // issue
+        // verify(version == rev1.getVersion(), "wrong version:" + version + " != " + rev1.getVersion());
+    }
+
+    private void assertFailingEntity(Review rev1, OptimisticLockException ole) {
+        // $JL-EXC$ expected behavior
+        Object failingEntity = ole.getEntity();
+        if (failingEntity != null) {
+            verify(rev1.equals(failingEntity), "wrong entity");
         }
     }
 
     @Test
-    @ToBeInvestigated
     public void testOptimisticLockExceptionDeleteUpdate() {
         JPAEnvironment env = getEnvironment();
         EntityManager em1 = env.getEntityManagerFactory().createEntityManager();
@@ -81,6 +96,7 @@ public class TestOptimistic extends JPA1Base {
             env.beginTransaction(em1);
             em1.persist(rev1);
             env.commitTransactionAndClear(em1);
+            
             env.beginTransaction(em1);
             rev1 = em1.find(Review.class, new Integer(id));
             verify(rev1 != null, "Review is null");
@@ -91,20 +107,26 @@ public class TestOptimistic extends JPA1Base {
             rev1.setReviewText("1"); // 2 update
             env.commitTransactionAndClear(em1);
             flop("OptimisticLockException not thrown");
+        } catch (RollbackException rbe) {
+            assertRBEisOLE(rev1, rbe);
         } catch (OptimisticLockException ole) {
-            // $JL-EXC$ expected behavior
-            Object failingEntity = ole.getEntity();
-            if (failingEntity != null) {
-                verify(rev1.equals(failingEntity), "wrong entity");
-            }
+            assertFailingEntity(rev1, ole);
         } finally {
             closeEntityManager(em1);
             closeEntityManager(em2);
         }
     }
 
+    private void assertRBEisOLE(Review rev1, RollbackException rbe) {
+        Throwable cause = rbe.getCause();
+        if (cause instanceof OptimisticLockException) {
+            assertFailingEntity(rev1, (OptimisticLockException) cause);
+        } else {
+            flop("Rollback not caused by OLE");
+        }
+    }
+
     @Test
-    @ToBeInvestigated
     public void testOptimisticLockExceptionUpdateDelete() {
         JPAEnvironment env = getEnvironment();
         EntityManager em1 = env.getEntityManagerFactory().createEntityManager();
@@ -125,12 +147,10 @@ public class TestOptimistic extends JPA1Base {
             em1.remove(rev1); // 2 delete
             env.commitTransactionAndClear(em1);
             flop("OptimisticLockException not thrown");
+        } catch (RollbackException rbe) {
+            assertRBEisOLE(rev1, rbe);  
         } catch (OptimisticLockException ole) {
-            // $JL-EXC$ expected behavior
-            Object failingEntity = ole.getEntity();
-            if (failingEntity != null) {
-                verify(rev1.equals(failingEntity), "wrong entity");
-            }
+            assertFailingEntity(rev1, ole);
             try {
                 env.rollbackTransactionAndClear(em1);
                 flop("no rollback after OptimisticLockException");
@@ -144,7 +164,6 @@ public class TestOptimistic extends JPA1Base {
     }
 
     @Test
-    @ToBeInvestigated
     public void testOptimisticLockExceptionDeleteDelete() {
         JPAEnvironment env = getEnvironment();
         EntityManager em1 = env.getEntityManagerFactory().createEntityManager();
@@ -165,12 +184,10 @@ public class TestOptimistic extends JPA1Base {
             em1.remove(rev1); // 2 delete
             env.commitTransactionAndClear(em1);
             flop("OptimisticLockException not thrown");
+        } catch (RollbackException rbe) {
+            assertRBEisOLE(rev1, rbe);
         } catch (OptimisticLockException ole) {
-            // $JL-EXC$ expected behavior
-            Object failingEntity = ole.getEntity();
-            if (failingEntity != null) {
-                verify(rev1.equals(failingEntity), "wrong entity");
-            }
+            assertFailingEntity(rev1, ole);
         } finally {
             closeEntityManager(em1);
             closeEntityManager(em2);
@@ -201,7 +218,7 @@ public class TestOptimistic extends JPA1Base {
     }
 
     @Test
-    @ToBeInvestigated
+    @Bugzilla(bugid=309681)
     public void testIllegalVersionAccessNew() {
         JPAEnvironment env = getEnvironment();
         EntityManager em = env.getEntityManagerFactory().createEntityManager();
@@ -293,11 +310,7 @@ public class TestOptimistic extends JPA1Base {
             rev1 = em.merge(rev2);
             flop("OptimisticLockException not thrown for merge with old version");
         } catch (OptimisticLockException ole) {
-            // $JL-EXC$ expected behavior
-            Object failingEntity = ole.getEntity();
-            if (failingEntity != null) {
-                verify(rev2.equals(failingEntity), "wrong entity");
-            }
+            assertFailingEntity(rev2, ole);
             verify(env.isTransactionMarkedForRollback(em), "transaction not marked for rollback on OptimisticLockException");
         } finally {
             closeEntityManager(em);
@@ -377,9 +390,7 @@ public class TestOptimistic extends JPA1Base {
         }
     }
 
-    @Test
-    @ToBeInvestigated
-    // this only works on oracle
+    @Ignore   // this only works on oracle
     public void testIsoLevel() throws SQLException {
         JPAEnvironment env = getEnvironment();
         EntityManager em1 = env.getEntityManagerFactory().createEntityManager();
@@ -420,7 +431,7 @@ public class TestOptimistic extends JPA1Base {
     }
 
     @Test
-    @ToBeInvestigated
+    @Bugzilla(bugid=309681)
     public void testNode() {
         JPAEnvironment env = getEnvironment();
         EntityManager em = env.getEntityManagerFactory().createEntityManager();

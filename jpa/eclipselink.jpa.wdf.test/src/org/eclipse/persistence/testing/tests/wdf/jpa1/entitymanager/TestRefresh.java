@@ -20,20 +20,21 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.HashSet;
 import java.util.Set;
+
 import javax.persistence.EntityManager;
 import javax.persistence.EntityNotFoundException;
 import javax.persistence.FlushModeType;
 import javax.persistence.Query;
 import javax.persistence.TransactionRequiredException;
-import org.junit.Test;
 
+import org.eclipse.persistence.testing.framework.wdf.Bugzilla;
+import org.eclipse.persistence.testing.framework.wdf.JPAEnvironment;
 import org.eclipse.persistence.testing.models.wdf.jpa1.employee.Department;
 import org.eclipse.persistence.testing.models.wdf.jpa1.employee.Employee;
 import org.eclipse.persistence.testing.models.wdf.jpa1.employee.Review;
-
 import org.eclipse.persistence.testing.tests.wdf.jpa1.JPA1Base;
-import org.eclipse.persistence.testing.framework.wdf.JPAEnvironment;
-import org.eclipse.persistence.testing.framework.wdf.ToBeInvestigated;
+import org.junit.Ignore;
+import org.junit.Test;
 
 public class TestRefresh extends JPA1Base {
 
@@ -63,7 +64,7 @@ public class TestRefresh extends JPA1Base {
     }
 
     @Test
-    @ToBeInvestigated
+    @Bugzilla(bugid=309681)
     public void testRefreshManagedNew() throws SQLException {
         /*
          * Note: The specification doesn't state explicitly how to behave in this case, so we test our interpretation: - If the
@@ -75,15 +76,6 @@ public class TestRefresh extends JPA1Base {
         int id;
         Department dep;
         try {
-            // case 1: state MANAGED_NEW and does not exist on DB
-            id = 11;
-            dep = new Department(id, "MANAGED_NEW");
-            env.beginTransaction(em);
-            em.persist(dep); // this is now in state MANAGED_NEW, but not on db
-            em.refresh(dep); // nothing should happen
-            verify(em.contains(dep), "Department is not managed");
-            env.commitTransactionAndClear(em);
-            verifyExistenceOnDatabase(id);
             // case 2: state MANAGED_NEW, but exists on DB (inserted in different tx)
             id = 12;
             dep = new Department(id, "MANAGED_NEW");
@@ -107,7 +99,33 @@ public class TestRefresh extends JPA1Base {
     }
 
     @Test
-    @ToBeInvestigated
+    @Bugzilla(bugid=309681)
+    public void testRefreshManagedNewNotOnDB() throws SQLException {
+        /*
+         * Note: The specification doesn't state explicitly how to behave in this case, so we test our interpretation: - If the
+         * entity doesn't exist on the database, nothing is changed - If the entity exists on the database, the data is loaded
+         * and the state changes from FOR_INSERT to FOR_UPDATE (in order to avoid errors at flush time)
+         */
+        final JPAEnvironment env = getEnvironment();
+        final EntityManager em = env.getEntityManager();
+        int id;
+        Department dep;
+        try {
+            // case 1: state MANAGED_NEW and does not exist on DB
+            id = 11;
+            dep = new Department(id, "MANAGED_NEW");
+            env.beginTransaction(em);
+            em.persist(dep); // this is now in state MANAGED_NEW, but not on db
+            em.refresh(dep); // nothing should happen
+            verify(em.contains(dep), "Department is not managed");
+            env.commitTransactionAndClear(em);
+            verifyExistenceOnDatabase(id);
+        } finally {
+            closeEntityManager(em);
+        }
+    }
+
+    @Test
     public void testRefreshManaged() throws SQLException {
         final JPAEnvironment env = getEnvironment();
         final EntityManager em = env.getEntityManager();
@@ -149,6 +167,19 @@ public class TestRefresh extends JPA1Base {
             // verify that original name present on db
             dep = em.find(Department.class, new Integer(id));
             checkDepartment(dep, id, "MANAGED");
+        } finally {
+            closeEntityManager(em);
+        }
+    }
+
+    @Test
+    @Bugzilla(bugid=309681)
+    public void testRefreshManagedCheckContains() throws SQLException {
+        final JPAEnvironment env = getEnvironment();
+        final EntityManager em = env.getEntityManager();
+        int id;
+        Department dep;
+        try {
             // case 3: try to refresh, but record has been deleted on db in a different tx
             /*
              * We expect an EntityNotFoundException. However, the specification does not state explicitly in which state the
@@ -178,7 +209,7 @@ public class TestRefresh extends JPA1Base {
     }
 
     @Test
-    @ToBeInvestigated
+    @Bugzilla(bugid=309681)
     public void testRefreshDeleted() throws SQLException {
         final JPAEnvironment env = getEnvironment();
         final EntityManager em = env.getEntityManager();
@@ -371,8 +402,7 @@ public class TestRefresh extends JPA1Base {
         }
     }
 
-    @Test
-    @ToBeInvestigated
+    @Ignore // @TestProperties(unsupportedEnvironments = { JTANonSharedPCEnvironment.class, ResourceLocalEnvironment.class })
     public void testNoTransaction() {
         final JPAEnvironment env = getEnvironment();
         final EntityManager em = env.getEntityManager();
@@ -439,7 +469,6 @@ public class TestRefresh extends JPA1Base {
     }
 
     @Test
-    @ToBeInvestigated
     public void testTransactionMarkedForRollback() {
         final JPAEnvironment env = getEnvironment();
         final EntityManager em = env.getEntityManager();

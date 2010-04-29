@@ -93,6 +93,7 @@ public class SkipBugzillaTestRunner extends BlockJUnit4ClassRunner {
     final boolean runAllBugzilla;
     final boolean runAllIssues;
     final boolean runAllUnknown;
+    final boolean runOnlyUnknown;
     final Class<? extends DatabasePlatform> databasePlatformClass;
     private final Map<String, String> testProperties;
     
@@ -146,8 +147,13 @@ public class SkipBugzillaTestRunner extends BlockJUnit4ClassRunner {
         String testToBeInvestigatedRun = (String) testProperties.get(TEST_TO_BE_INVESTIGATED_RUN);
         if ("all".equals(testToBeInvestigatedRun)) {
             runAllUnknown = true;
+            runOnlyUnknown = false;
+        } else if ("only".equals(testToBeInvestigatedRun)) {
+            runAllUnknown = false;
+            runOnlyUnknown = true;
         } else {
             runAllUnknown = false;
+            runOnlyUnknown = false;
         }
         
 
@@ -179,6 +185,9 @@ public class SkipBugzillaTestRunner extends BlockJUnit4ClassRunner {
         Method reflectMethod = method.getMethod();
         T a = skipper.getAnnotation(reflectMethod);
         if (a == null) {
+            if (skipper.skipOthers()) {
+                throw new SkipException();
+            }
             return;
         }
 
@@ -239,6 +248,11 @@ public class SkipBugzillaTestRunner extends BlockJUnit4ClassRunner {
             return false;
         }
 
+        @Override
+        public boolean skipOthers() {
+            return false;
+        }
+
     };
 
     private final Skipper<Bugzilla> BUGZILLA_SKIPPER = new Skipper<Bugzilla>() {
@@ -261,6 +275,11 @@ public class SkipBugzillaTestRunner extends BlockJUnit4ClassRunner {
         @Override
         public boolean runThis(Bugzilla t) {
             return t.bugid() == bugid;
+        }
+
+        @Override
+        public boolean skipOthers() {
+            return false;
         }
 
     };
@@ -287,6 +306,11 @@ public class SkipBugzillaTestRunner extends BlockJUnit4ClassRunner {
             return t.issueid() == issueid;
         }
 
+        @Override
+        public boolean skipOthers() {
+            return false;
+        }
+
     };
 
     private final Skipper<ToBeInvestigated> TO_BE_INVESTIGATED_SKIPPER = new Skipper<ToBeInvestigated>() {
@@ -303,12 +327,17 @@ public class SkipBugzillaTestRunner extends BlockJUnit4ClassRunner {
 
         @Override
         public boolean runAll() {
-            return runAllUnknown;
+            return runAllUnknown || runOnlyUnknown;
         }
 
         @Override
         public boolean runThis(ToBeInvestigated t) {
             return false;
+        }
+
+        @Override
+        public boolean skipOthers() {
+            return runOnlyUnknown;
         }
 
     };
@@ -319,6 +348,8 @@ public class SkipBugzillaTestRunner extends BlockJUnit4ClassRunner {
         boolean runAll();
 
         boolean runThis(T t);
+        
+        boolean skipOthers();
 
         Class<? extends DatabasePlatform>[] getDatabases(T t);
     }

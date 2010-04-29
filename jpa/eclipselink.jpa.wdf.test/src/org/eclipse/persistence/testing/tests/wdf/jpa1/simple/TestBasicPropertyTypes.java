@@ -1240,7 +1240,7 @@ public class TestBasicPropertyTypes extends JPA1Base {
     }
 
     @Test
-    @ToBeInvestigated
+    @Bugzilla(bugid=309681)
     public void testNullsPAshort() throws SQLException {
         JPAEnvironment env = getEnvironment();
         EntityManager em = env.getEntityManager();
@@ -1278,7 +1278,7 @@ public class TestBasicPropertyTypes extends JPA1Base {
     }
 
     @Test
-    @ToBeInvestigated
+    @Bugzilla(bugid = 309681)
     public void testNullsPAint() throws SQLException {
         JPAEnvironment env = getEnvironment();
         EntityManager em = env.getEntityManager();

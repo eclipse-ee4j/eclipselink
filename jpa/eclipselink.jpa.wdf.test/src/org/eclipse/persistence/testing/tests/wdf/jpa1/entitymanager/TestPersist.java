@@ -24,15 +24,16 @@ import javax.persistence.TransactionRequiredException;
 
 import junit.framework.Assert;
 
-import org.junit.Test;
-
+import org.eclipse.persistence.testing.framework.wdf.Bugzilla;
 import org.eclipse.persistence.testing.framework.wdf.JPAEnvironment;
 import org.eclipse.persistence.testing.framework.wdf.ToBeInvestigated;
+import org.eclipse.persistence.testing.models.wdf.jpa1.employee.Department;
 import org.eclipse.persistence.testing.models.wdf.jpa1.timestamp.NastyTimestamp;
 import org.eclipse.persistence.testing.models.wdf.jpa1.timestamp.Timestamp;
 import org.eclipse.persistence.testing.models.wdf.jpa1.types.BasicTypesFieldAccess;
-import org.eclipse.persistence.testing.models.wdf.jpa1.employee.Department;
 import org.eclipse.persistence.testing.tests.wdf.jpa1.JPA1Base;
+import org.junit.Ignore;
+import org.junit.Test;
 
 public class TestPersist extends JPA1Base {
 
@@ -233,7 +234,6 @@ public class TestPersist extends JPA1Base {
     }
 
     @Test
-    @ToBeInvestigated
     public void testPersistDetached() throws SQLException {
         /*
          * If X is a detached object, an IllegalArgumentException will be thrown by the persist operation (or the transaction
@@ -353,11 +353,27 @@ public class TestPersist extends JPA1Base {
                 failed = true;
             }
             verify(failed, "persist did succeed on a detached instance.");
+        } finally {
+            closeEntityManager(em);
+        }
+    }
+
+    @Test
+    @Bugzilla(bugid=309681)
+    public void testPersistDeleteExecuted() throws SQLException {
+        /*
+         * If X is a detached object, an IllegalArgumentException will be thrown by the persist operation (or the transaction
+         * commit will fail).
+         */
+        final JPAEnvironment env = getEnvironment();
+        final EntityManager em = env.getEntityManager();
+        int id;
+        try {
             // case 2d: state of known object: DELETE_EXECUTED
             id = 35;
-            dep = new Department(id, "ORIGINAL");
-            detachedDep = new Department(id, "DETACHED");
-            failed = false;
+            Department dep = new Department(id, "ORIGINAL");
+            Department detachedDep = new Department(id, "DETACHED");
+            boolean failed = false;
             env.beginTransaction(em);
             em.persist(dep);
             env.commitTransactionAndClear(em);
@@ -419,8 +435,7 @@ public class TestPersist extends JPA1Base {
         }
     }
 
-    @Test
-    @ToBeInvestigated
+    @Ignore // @TestProperties(unsupportedEnvironments={JTANonSharedPCEnvironment.class, ResourceLocalEnvironment.class})
     public void testNoTransaction() {
         final JPAEnvironment env = getEnvironment();
         final EntityManager em = env.getEntityManager();
@@ -436,8 +451,6 @@ public class TestPersist extends JPA1Base {
     }
 
     @Test
-    @ToBeInvestigated
-    // missing mark for rollback helper
     public void testTransactionMarkedForRollback() {
         final JPAEnvironment env = getEnvironment();
         final EntityManager em = env.getEntityManager();
@@ -511,19 +524,19 @@ public class TestPersist extends JPA1Base {
     }
 
     @Test
-    @ToBeInvestigated
+    @Bugzilla(bugid=309681)
     public void testPersistRemovedEntityWithIdModifiedInPrePersist() {
         verifyPersistRemovedEntityWithIdModifiedInPrePersist(false);
     }
 
     @Test
-    @ToBeInvestigated
+    @Bugzilla(bugid=309681)
     public void testPersistRemovedEntityWithIdModifiedInPrePersistFlushed() {
         verifyPersistRemovedEntityWithIdModifiedInPrePersist(true);
     }
 
     @Test
-    @ToBeInvestigated
+    @Bugzilla(bugid=309681) // nasty timestamp not supported
     public void testNastyTimestampTwice() {
         final JPAEnvironment env = getEnvironment();
         final EntityManager em = env.getEntityManager();

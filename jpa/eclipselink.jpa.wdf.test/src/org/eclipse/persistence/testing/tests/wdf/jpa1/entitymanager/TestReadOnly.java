@@ -16,18 +16,18 @@ package org.eclipse.persistence.testing.tests.wdf.jpa1.entitymanager;
 import javax.persistence.EntityManager;
 import javax.persistence.Query;
 
-import org.junit.Test;
-
+import org.eclipse.persistence.testing.framework.wdf.Bugzilla;
+import org.eclipse.persistence.testing.framework.wdf.JPAEnvironment;
+import org.eclipse.persistence.testing.framework.wdf.Skip;
 import org.eclipse.persistence.testing.models.wdf.jpa1.employee.ReadOnlyEntity;
 import org.eclipse.persistence.testing.models.wdf.jpa1.employee.ReadOnlyEntitySubclass;
-import org.eclipse.persistence.testing.framework.wdf.JPAEnvironment;
-import org.eclipse.persistence.testing.framework.wdf.ToBeInvestigated;
 import org.eclipse.persistence.testing.tests.wdf.jpa1.JPA1Base;
+import org.junit.Test;
 
 public class TestReadOnly extends JPA1Base {
 
     @Test
-    @ToBeInvestigated
+    @Bugzilla(bugid=309681)
     public void testIllegalFieldModification() {
         JPAEnvironment env = getEnvironment();
         EntityManager em = env.getEntityManager();
@@ -55,7 +55,7 @@ public class TestReadOnly extends JPA1Base {
     }
 
     @Test
-    @ToBeInvestigated
+    @Bugzilla(bugid=309681)
     public void testQueryCachedEntity() {
         JPAEnvironment env = getEnvironment();
         EntityManager em = env.getEntityManager();
@@ -85,7 +85,7 @@ public class TestReadOnly extends JPA1Base {
     }
 
     @Test
-    @ToBeInvestigated
+    @Bugzilla(bugid=309681)
     public void testCacheQueriedEntity() {
         JPAEnvironment env = getEnvironment();
         EntityManager em = env.getEntityManager();
@@ -114,7 +114,7 @@ public class TestReadOnly extends JPA1Base {
     }
 
     @Test
-    @ToBeInvestigated
+    @Skip(server=true)
     public void testInheritance() {
         // TODO decide how to handle inheritance
         JPAEnvironment env = getEnvironment();
@@ -129,7 +129,7 @@ public class TestReadOnly extends JPA1Base {
             ReadOnlyEntity upper = em.find(ReadOnlyEntity.class, 2);
             sub.setName("palim");
             env.commitTransactionAndClear(em); // ignore change for subclass if used as superclass
-            getEnvironment().getEntityManagerFactory().getCache().evictAll();
+            getEnvironment().getEntityManagerFactory().getCache().evictAll(); // not supported on JPA 1 server
 
             env.beginTransaction(em);
             upper = em.find(ReadOnlyEntity.class, 2);

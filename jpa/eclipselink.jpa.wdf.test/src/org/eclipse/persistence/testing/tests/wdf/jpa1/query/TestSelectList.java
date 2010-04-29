@@ -73,7 +73,7 @@ public class TestSelectList extends JPA1Base {
         EntityManager em = getEnvironment().getEntityManager();
         try {
             Query query = em
-                    .createQuery("select new com.sap.jpa.example.Middle.MiddleInner.Inner(e.firstname) from Employee e where e.id = 1");
+                    .createQuery("select new org.eclipse.persistence.testing.tests.wdf.jpa1.query.Middle.MiddleInner.Inner(e.firstname) from Employee e where e.id = 1");
             Iterator<?> iter = query.getResultList().iterator();
             verify(iter.hasNext(), " no row found");
             Object object = iter.next();

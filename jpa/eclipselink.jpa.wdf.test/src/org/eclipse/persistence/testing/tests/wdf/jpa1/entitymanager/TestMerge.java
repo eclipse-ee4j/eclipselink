@@ -19,24 +19,25 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceException;
 import javax.persistence.TransactionRequiredException;
 
 import junit.framework.Assert;
 
-import org.junit.Test;
-import org.eclipse.persistence.testing.tests.wdf.jpa1.JPA1Base;
 import org.eclipse.persistence.testing.framework.wdf.AbstractBaseTest;
 import org.eclipse.persistence.testing.framework.wdf.JPAEnvironment;
 import org.eclipse.persistence.testing.framework.wdf.ToBeInvestigated;
-
 import org.eclipse.persistence.testing.models.wdf.jpa1.employee.Department;
 import org.eclipse.persistence.testing.models.wdf.jpa1.employee.Employee;
 import org.eclipse.persistence.testing.models.wdf.jpa1.employee.Hobby;
 import org.eclipse.persistence.testing.models.wdf.jpa1.employee.Review;
 import org.eclipse.persistence.testing.models.wdf.jpa1.timestamp.NastyTimestamp;
 import org.eclipse.persistence.testing.models.wdf.jpa1.timestamp.Timestamp;
+import org.eclipse.persistence.testing.tests.wdf.jpa1.JPA1Base;
+import org.junit.Ignore;
+import org.junit.Test;
 
 public class TestMerge extends JPA1Base {
 
@@ -772,8 +773,7 @@ public class TestMerge extends JPA1Base {
         return contains;
     }
 
-    @Test
-    @ToBeInvestigated
+    @Ignore // @TestProperties(unsupportedEnvironments={JTANonSharedPCEnvironment.class, ResourceLocalEnvironment.class})
     public void testNoTransaction() {
         final JPAEnvironment env = getEnvironment();
         final EntityManager em = env.getEntityManager();
@@ -789,7 +789,6 @@ public class TestMerge extends JPA1Base {
     }
 
     @Test
-    @ToBeInvestigated
     public void testTransactionMarkedForRollback() {
         final JPAEnvironment env = getEnvironment();
         final EntityManager em = env.getEntityManager();

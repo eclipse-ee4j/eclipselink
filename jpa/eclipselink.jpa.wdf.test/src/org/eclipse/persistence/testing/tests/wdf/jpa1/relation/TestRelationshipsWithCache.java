@@ -23,6 +23,7 @@ import java.util.Set;
 import javax.persistence.Cache;
 import javax.persistence.EntityManager;
 
+import org.eclipse.persistence.testing.framework.wdf.Bugzilla;
 import org.eclipse.persistence.testing.framework.wdf.JPAEnvironment;
 import org.eclipse.persistence.testing.framework.wdf.ToBeInvestigated;
 import org.eclipse.persistence.testing.models.wdf.jpa1.employee.Bicycle;
@@ -59,7 +60,7 @@ public class TestRelationshipsWithCache extends JPA1Base {
      * Relationship mapping: ToManyFK, FetchType: eager, owning side: right, cacheable: both
      */
     @Test
-    @ToBeInvestigated
+    @Bugzilla(bugid=309681)
     public void testCostCenterEmployee() {
         final JPAEnvironment env = getEnvironment();
         final EntityManager em = env.getEntityManager();
@@ -131,7 +132,7 @@ public class TestRelationshipsWithCache extends JPA1Base {
      * Relationship mapping: ToOneFK, FetchType: lazy, owning side: left, cacheable: right
      */
     @Test
-    @ToBeInvestigated
+    @Bugzilla(bugid=309681)
     public void testMotorVehicleEmployee() {
         final JPAEnvironment env = getEnvironment();
         final EntityManager em = env.getEntityManager();
@@ -186,7 +187,7 @@ public class TestRelationshipsWithCache extends JPA1Base {
      * Relationship mapping: ToOneFK, FetchType: eager, owning side: right, cacheable: both
      */
     @Test
-    @ToBeInvestigated
+    @Bugzilla(bugid=309681)
     public void testCubicleEmployee() {
         final JPAEnvironment env = getEnvironment();
         final EntityManager em = env.getEntityManager();
@@ -235,7 +236,7 @@ public class TestRelationshipsWithCache extends JPA1Base {
      * Relationship mapping: ToManyJoinTable, FetchType: eager, owning side: left, cacheable: right
      */
     @Test
-    @ToBeInvestigated
+    @Bugzilla(bugid=309681)
     public void testBicycleEmployee() {
         final JPAEnvironment env = getEnvironment();
         final EntityManager em = env.getEntityManager();
@@ -307,7 +308,7 @@ public class TestRelationshipsWithCache extends JPA1Base {
      */
     @SuppressWarnings("unchecked")
     @Test
-    @ToBeInvestigated
+    @Bugzilla(bugid=309681)
     public void testEmployeeProject() {
         final JPAEnvironment env = getEnvironment();
         final EntityManager em = env.getEntityManager();

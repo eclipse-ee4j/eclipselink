@@ -66,7 +66,9 @@ public class Course {
     @JoinTable(name = "TMP_COURSE_EMP", joinColumns = { @JoinColumn(name = "COURSE_ID") }, inverseJoinColumns = { @JoinColumn(name = "EMP_ID") })
     @OrderBy("lastname")
     public List<Employee> getAttendees() {
-        return Collections.unmodifiableList(m_attendees);
+        return m_attendees;
+        // FIXME bugzilla 309681
+//        return Collections.unmodifiableList(m_attendees);
     }
 
     public void setAttendees(final List<Employee> attendees) {
@@ -87,7 +89,7 @@ public class Course {
     }
 
     @PrimaryKeyJoinColumn
-    @OneToOne(cascade = CascadeType.PERSIST)
+    @OneToOne(cascade = CascadeType.PERSIST, optional=true)
     public Material getMaterial() {
         return material;
     }

@@ -21,9 +21,6 @@ import javax.persistence.EntityNotFoundException;
 import javax.persistence.LockModeType;
 import javax.persistence.PersistenceException;
 
-import org.junit.Test;
-
-import org.eclipse.persistence.testing.tests.wdf.jpa1.JPA1Base;
 import org.eclipse.persistence.testing.framework.wdf.AbstractBaseTest;
 import org.eclipse.persistence.testing.framework.wdf.JPAEnvironment;
 import org.eclipse.persistence.testing.framework.wdf.ToBeInvestigated;
@@ -37,6 +34,8 @@ import org.eclipse.persistence.testing.models.wdf.jpa1.employee.Patent;
 import org.eclipse.persistence.testing.models.wdf.jpa1.employee.PatentId;
 import org.eclipse.persistence.testing.models.wdf.jpa1.employee.Review;
 import org.eclipse.persistence.testing.models.wdf.jpa1.node.CascadingNode;
+import org.eclipse.persistence.testing.tests.wdf.jpa1.JPA1Base;
+import org.junit.Test;
 
 public class TestGetReference extends JPA1Base {
     private final Department _dep = new Department(1, "eins");
@@ -471,7 +470,6 @@ public class TestGetReference extends JPA1Base {
     }
 
     @Test
-    @ToBeInvestigated
     public void testMerge() {
         final JPAEnvironment env = getEnvironment();
         final EntityManager em = env.getEntityManager();
@@ -692,7 +690,6 @@ public class TestGetReference extends JPA1Base {
     }
 
     @Test
-    @ToBeInvestigated
     public void testSerializeHollow() throws IOException, ClassNotFoundException {
         final JPAEnvironment env = getEnvironment();
         final EntityManager em = env.getEntityManager();

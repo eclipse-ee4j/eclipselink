@@ -168,7 +168,7 @@ public abstract class AbstractBaseTest {
 
         @Override
         public void markTransactionForRollback(EntityManager em) {
-            throw new UnsupportedOperationException();
+            em.getTransaction().setRollbackOnly();
         }
 
         @Override

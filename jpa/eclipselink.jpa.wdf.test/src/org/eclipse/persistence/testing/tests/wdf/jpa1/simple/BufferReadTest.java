@@ -176,13 +176,13 @@ public class BufferReadTest extends JPA1Base {
             public void prepare() {
                 getEnvironment().beginTransaction(myEm);
                 query = myEm
-                        .createQuery("select new com.sap.jpa.example.Department(d.id, d.name) from Department d where d.id = ?1");
+                        .createQuery("select new org.eclipse.persistence.testing.models.wdf.jpa1.employee.Department(d.id, d.name) from Department d where d.id = ?1");
                 query.setParameter(1, Integer.valueOf(1));
             }
 
             public void tearDown() {
                 if (getEnvironment().isTransactionActive(myEm)) {
-                    myEm.getTransaction().commit();
+                    myEm.getTransaction().rollback();
                 }
                 closeEntityManager(myEm);
             }

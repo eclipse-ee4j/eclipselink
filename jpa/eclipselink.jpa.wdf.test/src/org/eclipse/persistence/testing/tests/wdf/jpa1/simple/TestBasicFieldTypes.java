@@ -1240,7 +1240,7 @@ public class TestBasicFieldTypes extends JPA1Base {
     }
 
     @Test
-    @ToBeInvestigated
+    @Bugzilla(bugid=309681)
     public void testNullsFAshort() throws SQLException {
         JPAEnvironment env = getEnvironment();
         EntityManager em = env.getEntityManager();
@@ -1278,7 +1278,7 @@ public class TestBasicFieldTypes extends JPA1Base {
     }
 
     @Test
-    @ToBeInvestigated
+    @Bugzilla(bugid = 309681)
     public void testNullsFAint() throws SQLException {
         JPAEnvironment env = getEnvironment();
         EntityManager em = env.getEntityManager();

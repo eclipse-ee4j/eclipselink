@@ -32,7 +32,7 @@ public class TestSelectClauses extends QueryTest {
         /* 3 */assertValidQuery("SELECT distinct c.partner FROM Cop c");
         /* 6 */assertValidQuery("select distinct max(c.id) FROM Cop c");
         /* 7 */assertValidQuery("select distinct Object(c) FROM Cop c");
-        /* -- */assertValidQuery("SELECT c FROM Criminal c WHERE c.cType IN ( com.sap.jpa.example.jpql.Criminal.CriminalType.NICE)");
+        /* -- */assertValidQuery("SELECT c FROM Criminal c WHERE c.cType IN (  org.eclipse.persistence.testing.models.wdf.jpa1.jpql.Criminal.CriminalType.NICE)");
         // TODO assure that query is executed on underlying database
         assertValidQueryExecution("SELECT e.department, e.cubicle FROM Employee e");
     }
@@ -50,20 +50,18 @@ public class TestSelectClauses extends QueryTest {
     }
 
     @Test
-    @ToBeInvestigated
     public void testConstructorExpression08() {
-        /* 8 */assertValidQuery("select distinct new com.sap.jpa.example.jpql.Holder(c.id) FROM Cop c");
+        /* 8 */assertValidQuery("select distinct new  org.eclipse.persistence.testing.models.wdf.jpa1.jpql.Holder(c.id) FROM Cop c");
     }
 
     @Test
-    @ToBeInvestigated
     public void testConstructorExpression09() {
-        /* 9 */assertValidQuery("select new com.sap.jpa.example.jpql.Holder(c.id), c1, c2.id, max(c3.id) from Cop c join c.informers c1 join c1.informingCops c2, in (c.attachedCriminals) c3");
+        /* 9 */assertValidQuery("select new  org.eclipse.persistence.testing.models.wdf.jpa1.jpql.Holder(c.id), c1, c2.id, max(c3.id) from Cop c join c.informers c1 join c1.informingCops c2, in (c.attachedCriminals) c3");
     }
 
     @Test
     public void testConstructorExpression10() {
-        /* 10 */assertInvalidQuery("select new com.sap.jpa.example.jpql.Holder_(c.id_), cn, c2._id, max(c3._id) from Cop c join c.informers c1 join c1.informingCops c2, in (c.attachedCriminals) c3");
+        /* 10 */assertInvalidQuery("select new  org.eclipse.persistence.testing.models.wdf.jpa1.jpql.Holder_(c.id_), cn, c2._id, max(c3._id) from Cop c join c.informers c1 join c1.informingCops c2, in (c.attachedCriminals) c3");
     }
 
     @Test

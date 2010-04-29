@@ -99,8 +99,7 @@ public class TestCascadeFlush extends JPA1Base {
      * IllegalArgumentException will be thrown by the persist operation (or the transaction commit will fail).
      */
     @Test
-    @ToBeInvestigated
-    public void testSimpleCascadeToDetached() throws SQLException {
+    public void testSimpleCascadeToDetached1() throws SQLException {
         final JPAEnvironment env = getEnvironment();
         final EntityManager em = env.getEntityManager();
         try {
@@ -127,19 +126,30 @@ public class TestCascadeFlush extends JPA1Base {
             verify(exceptionThrown, "commit did not fail as expected");
             verifyAbsenceFromDatabase(parent.getId());
             verifyExistenceOnDatabase(child.getId());
+        } finally {
+            closeEntityManager(em);
+        }
+    }
+
+    @Test
+    @ToBeInvestigated
+    public void testSimpleCascadeToDetached2a() throws SQLException {
+        final JPAEnvironment env = getEnvironment();
+        final EntityManager em = env.getEntityManager();
+        try {
             // case 2: detached because an object with same pk but different object identity is known by persistence context
             // case 2a: state of known object: new
             CascadingNode existing = new CascadingNode(23, null);
-            parent = new CascadingNode(24, null);
+            CascadingNode parent = new CascadingNode(24, null);
             env.beginTransaction(em);
             em.persist(existing); // known object in state new
             em.persist(parent);
-            child = new CascadingNode(existing.getId(), parent);
+            CascadingNode child = new CascadingNode(existing.getId(), parent);
             child.setParent(null); // to avoid circular cascade
             verify(em.contains(existing), "Existing not contained in persistence context after persist");
             verify(em.contains(parent), "Parent not contained in persistence context after persist");
             verify(!em.contains(child), "Child is already managed");
-            exceptionThrown = false;
+            boolean exceptionThrown = false;
             try {
                 env.commitTransactionAndClear(em);
             } catch (RuntimeException e) {
@@ -151,21 +161,32 @@ public class TestCascadeFlush extends JPA1Base {
             verify(exceptionThrown, "commit did not fail as expected");
             verifyAbsenceFromDatabase(existing.getId());
             verifyAbsenceFromDatabase(parent.getId());
+        } finally {
+            closeEntityManager(em);
+        }
+    }
+
+    @Test
+    @ToBeInvestigated
+    public void testSimpleCascadeToDetached2b() throws SQLException {
+        final JPAEnvironment env = getEnvironment();
+        final EntityManager em = env.getEntityManager();
+        try {
             // case 2b: state of known object: managed
-            existing = new CascadingNode(25, null);
-            parent = new CascadingNode(26, null);
+            CascadingNode existing = new CascadingNode(25, null);
+            CascadingNode parent = new CascadingNode(26, null);
             env.beginTransaction(em);
             em.persist(existing);
             env.commitTransactionAndClear(em);
             env.beginTransaction(em);
             existing = em.find(CascadingNode.class, new Integer(existing.getId())); // known object in state managed
             em.persist(parent);
-            child = new CascadingNode(existing.getId(), parent);
+            CascadingNode child = new CascadingNode(existing.getId(), parent);
             child.setParent(null); // to avoid circular cascade
             verify(em.contains(existing), "Existing not contained in persistence context after find");
             verify(em.contains(parent), "Parent not contained in persistence context after persist");
             verify(!em.contains(child), "Child is already managed");
-            exceptionThrown = false;
+            boolean exceptionThrown = false;
             try {
                 env.commitTransactionAndClear(em);
             } catch (RuntimeException e) {
@@ -177,9 +198,20 @@ public class TestCascadeFlush extends JPA1Base {
             verify(exceptionThrown, "commit did not fail as expected");
             verifyExistenceOnDatabase(existing.getId());
             verifyAbsenceFromDatabase(parent.getId());
+        } finally {
+            closeEntityManager(em);
+        }
+    }
+
+    @Test
+    @ToBeInvestigated
+    public void testSimpleCascadeToDetached2c() throws SQLException {
+        final JPAEnvironment env = getEnvironment();
+        final EntityManager em = env.getEntityManager();
+        try {
             // case 2c: state of known object: deleted
-            existing = new CascadingNode(27, null);
-            parent = new CascadingNode(28, null);
+            CascadingNode existing = new CascadingNode(27, null);
+            CascadingNode parent = new CascadingNode(28, null);
             env.beginTransaction(em);
             em.persist(existing);
             env.commitTransactionAndClear(em);
@@ -187,12 +219,12 @@ public class TestCascadeFlush extends JPA1Base {
             existing = em.find(CascadingNode.class, new Integer(existing.getId()));
             em.remove(existing); // known object in state deleted
             em.persist(parent);
-            child = new CascadingNode(existing.getId(), parent);
+            CascadingNode child = new CascadingNode(existing.getId(), parent);
             child.setParent(null); // to avoid circular cascade
             verify(!em.contains(existing), "Existing contained in persistence context after remove");
             verify(em.contains(parent), "Parent not contained in persistence context after persist");
             verify(!em.contains(child), "Child is already managed");
-            exceptionThrown = false;
+            boolean exceptionThrown = false;
             try {
                 env.commitTransactionAndClear(em);
             } catch (RuntimeException e) {

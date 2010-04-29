@@ -515,7 +515,6 @@ public class TestSelectListTypes extends JPA1Base {
     }
 
     @Test
-    @ToBeInvestigated
     public void testSumBigInteger() {
         validateSum("bigInteger", BigInteger.class);
     }

@@ -13,6 +13,7 @@
 
 package org.eclipse.persistence.testing.tests.wdf.jpa1.relation;
 
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
@@ -30,6 +31,7 @@ import org.eclipse.persistence.testing.models.wdf.jpa1.employee.Course;
 import org.eclipse.persistence.testing.models.wdf.jpa1.employee.Department;
 import org.eclipse.persistence.testing.models.wdf.jpa1.employee.Employee;
 import org.eclipse.persistence.testing.models.wdf.jpa1.employee.Hobby;
+import org.eclipse.persistence.testing.models.wdf.jpa1.employee.Material;
 
 import org.eclipse.persistence.testing.tests.wdf.jpa1.JPA1Base;
 import org.eclipse.persistence.testing.framework.wdf.Issue;
@@ -41,7 +43,8 @@ public class TestList extends JPA1Base {
     private static final Integer EMP_ID_SABINE = Integer.valueOf(44);
 
     @Override
-    protected void setup() {
+    protected void setup()  {
+        
         final JPAEnvironment env = getEnvironment();
         final EntityManager em = env.getEntityManager();
         try {
@@ -65,10 +68,7 @@ public class TestList extends JPA1Base {
         final EntityManager em = env.getEntityManager();
         try {
             env.beginTransaction(em);
-            final Course course = new Course();
-            course.addAttendee(em.find(Employee.class, EMP_ID_DORIS));
-            course.addAttendee(em.find(Employee.class, EMP_ID_SABINE));
-            em.persist(course);
+            final Course course = createAndPersistCourse(em);
             final Long courseId = Long.valueOf(course.getCourseId());
             env.commitTransactionAndClear(em);
             final Course storedCourse = em.find(Course.class, courseId);
@@ -85,6 +85,20 @@ public class TestList extends JPA1Base {
         }
     }
 
+    private Course createAndPersistCourse(final EntityManager em) {
+        final Course course = new Course();
+        course.addAttendee(em.find(Employee.class, EMP_ID_DORIS));
+        course.addAttendee(em.find(Employee.class, EMP_ID_SABINE));
+        em.persist(course);
+        // bug 309681
+        Material material = new Material();
+        course.setMaterial(material);
+        material.setCourse(course);
+        em.persist(material);
+        // bug 309681
+        return course;
+    }
+
     @Test
     @ToBeInvestigated
     public void testDelete() {
@@ -92,10 +106,7 @@ public class TestList extends JPA1Base {
         final EntityManager em = env.getEntityManager();
         try {
             env.beginTransaction(em);
-            final Course course = new Course();
-            course.addAttendee(em.find(Employee.class, EMP_ID_DORIS));
-            course.addAttendee(em.find(Employee.class, EMP_ID_SABINE));
-            em.persist(course);
+            final Course course = createAndPersistCourse(em);
             final Long courseId = Long.valueOf(course.getCourseId());
             env.commitTransactionAndClear(em);
             env.beginTransaction(em);
@@ -115,10 +126,7 @@ public class TestList extends JPA1Base {
         final EntityManager em = env.getEntityManager();
         try {
             env.beginTransaction(em);
-            final Course course = new Course();
-            course.addAttendee(em.find(Employee.class, EMP_ID_DORIS));
-            course.addAttendee(em.find(Employee.class, EMP_ID_SABINE));
-            em.persist(course);
+            final Course course = createAndPersistCourse(em);
             final Long courseId = Long.valueOf(course.getCourseId());
             env.commitTransactionAndClear(em);
             env.beginTransaction(em);
@@ -151,10 +159,7 @@ public class TestList extends JPA1Base {
         final EntityManager em = env.getEntityManager();
         try {
             env.beginTransaction(em);
-            final Course course = new Course();
-            course.addAttendee(em.find(Employee.class, EMP_ID_DORIS));
-            course.addAttendee(em.find(Employee.class, EMP_ID_SABINE));
-            em.persist(course);
+            final Course course = createAndPersistCourse(em);
             final Long courseId = Long.valueOf(course.getCourseId());
             env.commitTransactionAndClear(em);
             env.beginTransaction(em);
@@ -216,10 +221,7 @@ public class TestList extends JPA1Base {
         final EntityManager em = env.getEntityManager();
         try {
             env.beginTransaction(em);
-            final Course course = new Course();
-            course.addAttendee(em.find(Employee.class, EMP_ID_DORIS));
-            course.addAttendee(em.find(Employee.class, EMP_ID_SABINE));
-            em.persist(course);
+            final Course course = createAndPersistCourse(em);
             final Long courseId = Long.valueOf(course.getCourseId());
             env.commitTransactionAndClear(em);
             env.beginTransaction(em);

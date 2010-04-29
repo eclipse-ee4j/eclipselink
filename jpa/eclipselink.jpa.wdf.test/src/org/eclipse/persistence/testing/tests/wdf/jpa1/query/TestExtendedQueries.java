@@ -310,18 +310,17 @@ public class TestExtendedQueries extends JPA1Base {
         }
     }
 
-    @ToBeInvestigated
     @Test
     public void testQueryWithComparisonExpressionAndEnums() throws Exception {
         EntityManager em = getEnvironment().getEntityManager();
         try {
             // test string-mapping of enums
             Query query4 = em
-                    .createQuery("SELECT btfa.id FROM BasicTypesFieldAccess btfa WHERE btfa.enumString = com.sap.jpa.example.UserDefinedEnum.HUGO");
+                    .createQuery("SELECT btfa.id FROM BasicTypesFieldAccess btfa WHERE btfa.enumString = org.eclipse.persistence.testing.models.wdf.jpa1.types.UserDefinedEnum.HUGO");
             query4.getResultList();
             // test ordinal-mapping of enums
             Query query5 = em
-                    .createQuery("SELECT btfa.id FROM BasicTypesFieldAccess btfa WHERE btfa.enumOrdinal = com.sap.jpa.example.UserDefinedEnum.HUGO");
+                    .createQuery("SELECT btfa.id FROM BasicTypesFieldAccess btfa WHERE btfa.enumOrdinal = org.eclipse.persistence.testing.models.wdf.jpa1.types.UserDefinedEnum.HUGO");
             query5.getResultList();
         } finally {
             closeEntityManager(em);
@@ -335,7 +334,7 @@ public class TestExtendedQueries extends JPA1Base {
         try {
             // test string-mapping of enums
             Query query4 = em
-                    .createQuery("SELECT btfa.id FROM BasicTypesFieldAccess btfa WHERE btfa.enumString IN (com.sap.jpa.example.UserDefinedEnum.HUGO, com.sap.jpa.example.UserDefinedEnum.EMIL)");
+                    .createQuery("SELECT btfa.id FROM BasicTypesFieldAccess btfa WHERE btfa.enumString IN (org.eclipse.persistence.testing.models.wdf.jpa1.types.UserDefinedEnum.HUGO, org.eclipse.persistence.testing.models.wdf.jpa1.types.UserDefinedEnum.EMIL)");
             query4.getResultList();
             // test ordinal-mapping of enums
             Query query5 = em

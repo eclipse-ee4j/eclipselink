@@ -22,12 +22,13 @@ import javax.persistence.EntityManager;
 import javax.persistence.PersistenceException;
 import javax.persistence.TransactionRequiredException;
 
+import org.eclipse.persistence.testing.framework.wdf.Bugzilla;
 import org.eclipse.persistence.testing.framework.wdf.JPAEnvironment;
-import org.eclipse.persistence.testing.framework.wdf.ToBeInvestigated;
 import org.eclipse.persistence.testing.models.wdf.jpa1.employee.Cubicle;
 import org.eclipse.persistence.testing.models.wdf.jpa1.employee.CubiclePrimaryKeyClass;
 import org.eclipse.persistence.testing.models.wdf.jpa1.employee.Department;
 import org.eclipse.persistence.testing.tests.wdf.jpa1.JPA1Base;
+import org.junit.Ignore;
 import org.junit.Test;
 
 public class TestRemove extends JPA1Base {
@@ -179,7 +180,6 @@ public class TestRemove extends JPA1Base {
     }
 
     @Test
-    @ToBeInvestigated
     public void testRemoveDetached() {
         /*
          * If X is a detached entity, an IllegalArgumentException will be thrown by the remove operation (or the transaction
@@ -286,35 +286,53 @@ public class TestRemove extends JPA1Base {
                 failed = true;
             }
             verify(failed, "remove succeeded on a detached instance.");
-            // case 2d: state of known object: DELETE_EXECUTED
-            id = 35;
-            dep = new Department(id, "DELETED");
-            detachedDep = new Department(id, "DETACHED");
-            failed = false;
-            env.beginTransaction(em);
-            em.persist(dep);
-            env.commitTransactionAndClear(em);
-            env.beginTransaction(em);
-            dep = em.find(Department.class, new Integer(id));
-            em.remove(dep);
-            em.flush();
-            try {
-                em.remove(detachedDep);
-            } catch (IllegalArgumentException e) {
-                failed = true;
-                env.rollbackTransactionAndClear(em);
-            }
-            try {
-                if (env.isTransactionActive(em)) {
-                    env.commitTransactionAndClear(em);
-                }
-            } catch (PersistenceException e) {
-                failed = true;
-            }
-            verify(failed, "remove succeeded on a detached instance.");
         } finally {
             closeEntityManager(em);
         }
+    }
+    
+    @Test
+    @Bugzilla(bugid=309681) // INTERPRETATION: SAP JPA has special state DELETED_EXECUTED, which EclipseLink hasn't
+    public void testRemoveFlushRemoveAgain() {
+        /*
+         * If X is a detached entity, an IllegalArgumentException will be thrown by the remove operation (or the transaction
+         * commit will fail).
+         */
+        final JPAEnvironment env = getEnvironment();
+        final EntityManager em = env.getEntityManager();
+        int id;
+        Department dep;
+        Department detachedDep;
+        try {
+        // case 2d: state of known object: DELETE_EXECUTED
+        id = 35;
+        dep = new Department(id, "DELETED");
+        detachedDep = new Department(id, "DETACHED");
+        boolean failed = false;
+        env.beginTransaction(em);
+        em.persist(dep);
+        env.commitTransactionAndClear(em);
+        env.beginTransaction(em);
+        dep = em.find(Department.class, new Integer(id));
+        em.remove(dep);
+        em.flush();
+        try {
+            em.remove(detachedDep);
+        } catch (IllegalArgumentException e) {
+            failed = true;
+            env.rollbackTransactionAndClear(em);
+        }
+        try {
+            if (env.isTransactionActive(em)) {
+                env.commitTransactionAndClear(em);
+            }
+        } catch (PersistenceException e) {
+            failed = true;
+        }
+        verify(failed, "remove succeeded on a detached instance.");
+    } finally {
+        closeEntityManager(em);
+    }
     }
 
     @Test
@@ -366,15 +384,14 @@ public class TestRemove extends JPA1Base {
         }
     }
 
-    @Test
-    @ToBeInvestigated
-    // @TestProperties(unsupportedEnvironments={JTANonSharedPCEnvironment.class, ResourceLocalEnvironment.class})
+    @Ignore // @TestProperties(unsupportedEnvironments={JTANonSharedPCEnvironment.class, ResourceLocalEnvironment.class}) 
     public void testNoTransaction() {
         final JPAEnvironment env = getEnvironment();
         final EntityManager em = env.getEntityManager();
         Department dep = new Department(40, "dep40");
         try {
             em.remove(dep);
+            flop("exception not thrown as expected");
         } catch (TransactionRequiredException e) {
             // $JL-EXC$ expected behavior
         } finally {
@@ -383,8 +400,6 @@ public class TestRemove extends JPA1Base {
     }
 
     @Test
-    @ToBeInvestigated
-    // missing helpermethod JUnitTestCase.markTransactionForRollback
     public void testTransactionMarkedForRollback() {
         final JPAEnvironment env = getEnvironment();
         final EntityManager em = env.getEntityManager();

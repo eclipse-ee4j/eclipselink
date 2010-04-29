@@ -24,9 +24,9 @@ import javax.persistence.Query;
 import javax.persistence.TemporalType;
 
 import org.eclipse.persistence.testing.framework.wdf.JPAEnvironment;
-import org.eclipse.persistence.testing.framework.wdf.ToBeInvestigated;
 import org.eclipse.persistence.testing.models.wdf.jpa1.employee.Department;
 import org.eclipse.persistence.testing.tests.wdf.jpa1.JPA1Base;
+import org.junit.Ignore;
 import org.junit.Test;
 
 /**
@@ -341,8 +341,7 @@ public class TestClose extends JPA1Base {
         }
     }
 
-    @Test
-    @ToBeInvestigated
+    @Ignore //  @TestProperties(unsupportedEnvironments = { ResourceLocalAnnotationsEnvironment.class, JTANonSharedPCEnvironment.class, JTASharedPCEnvironment.class })
     // NullPointer
     public void testGetTransactionClosed() {
         final EntityManager em = getEnvironment().getEntityManager();
@@ -404,8 +403,6 @@ public class TestClose extends JPA1Base {
     }
 
     @Test
-    @ToBeInvestigated
-    // NullPointer
     public void testQuery() {
         final EntityManager em = getEnvironment().getEntityManager();
         try {

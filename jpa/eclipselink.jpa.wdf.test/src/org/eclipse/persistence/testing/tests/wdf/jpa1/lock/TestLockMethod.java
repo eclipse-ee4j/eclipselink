@@ -22,10 +22,12 @@ import javax.persistence.EntityManager;
 import javax.persistence.LockModeType;
 import javax.persistence.OptimisticLockException;
 import javax.persistence.PersistenceException;
+import javax.persistence.RollbackException;
 import javax.persistence.TransactionRequiredException;
 
 import junit.framework.Assert;
 
+import org.eclipse.persistence.testing.framework.wdf.Bugzilla;
 import org.eclipse.persistence.testing.framework.wdf.JPAEnvironment;
 import org.eclipse.persistence.testing.framework.wdf.ToBeInvestigated;
 import org.eclipse.persistence.testing.models.wdf.jpa1.employee.Department;
@@ -233,7 +235,7 @@ public class TestLockMethod extends JPA1Base {
     }
 
     @Test
-    @ToBeInvestigated
+    @Bugzilla(bugid=309681)
     public void testLockOldVersion() {
         lockOldVersion(5, LockModeType.READ);
         lockOldVersion(6, LockModeType.WRITE);
@@ -262,9 +264,16 @@ public class TestLockMethod extends JPA1Base {
             em1.lock(dep1, lockMode);
             env.commitTransactionAndClear(em1);
             flop("OptimisticLockException not thrown");
+        } catch (RollbackException rbe) {
+          Throwable cause = rbe.getCause();
+          if (cause instanceof OptimisticLockException) {
+              OptimisticLockException ole = (OptimisticLockException) cause;
+              verify(dep1.equals(ole.getEntity()), "wrong entity");
+          } else {
+              Assert.fail("cause is no OLE");
+          }
         } catch (OptimisticLockException ole) {
             verify(dep1.equals(ole.getEntity()), "wrong entity");
-            Assert.assertTrue(true);
         } finally {
             closeEntityManager(em1);
             closeEntityManager(em2);
@@ -365,7 +374,6 @@ public class TestLockMethod extends JPA1Base {
     }
 
     @Test
-    @ToBeInvestigated
     public void testTransactionMarkedForRollback() {
         final JPAEnvironment env = getEnvironment();
         final EntityManager em = env.getEntityManager();
