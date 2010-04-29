@@ -929,7 +929,7 @@ public class InheritancePolicy implements Serializable, Cloneable {
             setShouldReadSubclasses(!getChildDescriptors().isEmpty());
         }
 
-        if (isChildDescriptor()) {        	
+        if (isChildDescriptor()) {
             getDescriptor().setMappings(Helper.concatenateVectors(getParentDescriptor().getMappings(), getDescriptor().getMappings()));
             getDescriptor().setQueryKeys(Helper.concatenateMaps(getParentDescriptor().getQueryKeys(), getDescriptor().getQueryKeys()));
             addFieldsToParent(getDescriptor().getFields());
@@ -981,10 +981,6 @@ public class InheritancePolicy implements Serializable, Cloneable {
             // Inherit the native connection requirement.
             if (getParentDescriptor().isNativeConnectionRequired()) {
                 getDescriptor().setIsNativeConnectionRequired(true);
-            }
-            
-            if (getParentDescriptor().hasMultipleTableConstraintDependecy()) {
-                getDescriptor().setHasMultipleTableConstraintDependecy(true);
             }
         }
 
@@ -1110,6 +1106,16 @@ public class InheritancePolicy implements Serializable, Cloneable {
      * until after the mappings have been.
      */
     public void postInitialize(AbstractSession session) {
+        if (isChildDescriptor()) {
+            ClassDescriptor parent = getParentDescriptor();
+            while (parent != null) {
+                if (parent.hasMultipleTableConstraintDependecy()) {
+                    getDescriptor().setHasMultipleTableConstraintDependecy(true);
+                    break;
+                }
+                parent = parent.getInheritancePolicy().getParentDescriptor();
+            }            
+        }
     }
 
     /**
