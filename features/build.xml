@@ -320,11 +320,11 @@
     <target name="clear-p2-loc" if="ready-to-go" depends="not-ready-to-go">
         <delete dir="${p2.repos.dir}" failonerror="true"/>
         <echo message="Test without cleaning repos first."/>
-        <mkdir dir="${p2.bundle.dir}"/>
-        <mkdir dir="${p2.feature.dir}"/>
     </target>
 
     <target name="populate-p2-site" if="ready-to-go" depends="init">
+        <mkdir dir="${p2.bundle.dir}"/>
+        <mkdir dir="${p2.feature.dir}"/>
         <!-- populate update site with feature and bundle jars -->
         <unzip dest="${p2.bundle.dir}" src="${bundle.install.file}">
             <patternset>
