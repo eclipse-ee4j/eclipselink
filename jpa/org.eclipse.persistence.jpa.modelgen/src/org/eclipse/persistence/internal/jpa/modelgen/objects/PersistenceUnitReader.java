@@ -12,6 +12,8 @@
  *       - 267391: JPA 2.0 implement/extend/use an APT tooling library for MetaModel API canonical classes
  *     11/20/2009-2.0 Guy Pelletier/Mitesh Meswani 
  *       - 295376: Improve usability of MetaModel generator
+ *     04/29/2010-2.0.3 Guy Pelletier 
+ *       - 311020: Canonical model generator should not throw an exception when no persistence.xml is found
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.modelgen.objects;
 
@@ -100,8 +102,8 @@ public class PersistenceUnitReader {
                 inputStream = new FileInputStream(filename);
             } catch (IOException e) {
                 if (loadingPersistenceXML) {
-                    // If loading the persistence.xml, throw an exception.
-                    throw new RuntimeException("Unable to load persistence.xml : " + ioe.getLocalizedMessage());
+                    // If loading the persistence.xml, log a BIG warning message.
+                    processingEnv.getMessager().printMessage(Kind.NOTE, "The persistence xml file ["+filename+"] was not found. NO GENERATION will occur!! Please ensure a persistence xml file is available either from the CLASS_OUTPUT directory [META-INF/persistence.xml] or using the eclipselink.persistencexml property to specify its location. ");
                 } else {
                     // For any other mapping file log a message.
                     processingEnv.getMessager().printMessage(Kind.NOTE, "File was not found: " + filename); 
@@ -157,14 +159,18 @@ public class PersistenceUnitReader {
         try {
             XMLContext context = PersistenceXMLMappings.createXMLContext();
             inStream = getInputStream(filename, true);
-            PersistenceXML persistenceXML = (PersistenceXML) context.createUnmarshaller().unmarshal(inStream);
+            
+            // If the persistence.xml was not found, then there is nothing to do.
+            if (inStream != null) {
+                PersistenceXML persistenceXML = (PersistenceXML) context.createUnmarshaller().unmarshal(inStream);
 
-            for (SEPersistenceUnitInfo puInfo : persistenceXML.getPersistenceUnitInfos()) {
-                // If no persistence unit list has been specified or one
-                // has been specified and this persistence unit info's name
-                // appears in that list then add it.
-                if (persistenceUnitList == null || persistenceUnitList.contains(puInfo.getPersistenceUnitName())) {
-                    persistenceUnits.add(new PersistenceUnit(puInfo, factory, this));
+                for (SEPersistenceUnitInfo puInfo : persistenceXML.getPersistenceUnitInfos()) {
+                    // If no persistence unit list has been specified or one
+                    // has been specified and this persistence unit info's name
+                    // appears in that list then add it.
+                    if (persistenceUnitList == null || persistenceUnitList.contains(puInfo.getPersistenceUnitName())) {
+                        persistenceUnits.add(new PersistenceUnit(puInfo, factory, this));
+                    }
                 }
             }
         } finally {
