@@ -91,6 +91,7 @@ import org.eclipse.persistence.jaxb.javamodel.JavaField;
 import org.eclipse.persistence.jaxb.javamodel.JavaHasAnnotations;
 import org.eclipse.persistence.jaxb.javamodel.JavaMethod;
 import org.eclipse.persistence.jaxb.javamodel.JavaPackage;
+import org.eclipse.persistence.jaxb.javamodel.reflection.JavaClassImpl;
 import org.eclipse.persistence.jaxb.javamodel.reflection.JavaFieldImpl;
 import org.eclipse.persistence.jaxb.xmlmodel.XmlAccessOrder;
 import org.eclipse.persistence.jaxb.xmlmodel.XmlAccessType;
@@ -123,6 +124,9 @@ public class AnnotationsProcessor {
     private static final String JAVAX_MAIL_INTERNET_MIMEMULTIPART = "javax.mail.internet.MimeMultipart";
     private static final String TYPE_METHOD_NAME = "type";
     private static final String VALUE_METHOD_NAME = "value";
+    private static final String ARRAY_PACKAGE_NAME = "jaxb.dev.java.net.array";
+    private static final String ARRAY_NAMESPACE = "http://jaxb.dev.java.net/array";
+    private static final String ARRAY_CLASS_NAME_SUFFIX = "Array";
     
     private ArrayList<JavaClass> typeInfoClasses;
     private HashMap<String, NamespaceInfo> packageToNamespaceMappings;
@@ -2234,16 +2238,6 @@ public class AnnotationsProcessor {
         return packageNamespace;
     }
 
-    public NamespaceInfo getNamespaceInfoForPackage(String packageName) {
-        NamespaceInfo packageNamespace = packageToNamespaceMappings.get(packageName);
-        if (packageName == null) {
-            packageNamespace = new NamespaceInfo();
-            packageNamespace.setNamespaceResolver(new NamespaceResolver());
-            packageToNamespaceMappings.put(packageName, packageNamespace);
-        }
-        return packageNamespace;
-    }
-
     private void checkForCallbackMethods() {
         for (JavaClass next : typeInfoClasses) {
             if (next == null) {
@@ -2828,342 +2822,113 @@ public class AnnotationsProcessor {
         } else {
             componentClass = arrayClass.getComponentType();
         }
-        if (componentClass.isPrimitive()) {
-            return generatePrimitiveArrayValue(arrayClass, componentClass, typeMappingInfo);
+        if (componentClass.isArray()) {
+            Class nestedArrayClass = generateWrapperForArrayClass(componentClass, typeMappingInfo, xmlElementType);
+            arrayClassesToGeneratedClasses.put(componentClass.getRawName(), nestedArrayClass);
+            return generateArrayValue(arrayClass, componentClass, new JavaClassImpl(nestedArrayClass, null), typeMappingInfo);
         } else {
-            return generateObjectArrayValue(arrayClass, componentClass, typeMappingInfo);
+            return generateArrayValue(arrayClass, componentClass, componentClass, typeMappingInfo);
         }
     }
 
-    private Class generatePrimitiveArrayValue(JavaClass arrayClass, JavaClass componentClass, TypeMappingInfo typeMappingInfo) {
-
-        String packageName = "jaxb.dev.java.net.array";
-
-        NamespaceInfo namespaceInfo = getNamespaceInfoForPackage(packageName);
-        if (namespaceInfo == null) {
-            namespaceInfo = new NamespaceInfo();
-            namespaceInfo.setNamespace("http://jaxb.dev.java.net/array");
-            namespaceInfo.setNamespaceResolver(new NamespaceResolver());
-
-            getPackageToNamespaceMappings().put(packageName, namespaceInfo);
-        }
-        int beginIndex = componentClass.getName().lastIndexOf(".") + 1;
-        String name = componentClass.getName().substring(beginIndex);
-
-        String suggestedClassName = name + "Array";
-        String qualifiedClassName = packageName + "." + suggestedClassName;
-        qualifiedClassName = getNextAvailableClassName(qualifiedClassName);
-        String className = qualifiedClassName.substring(qualifiedClassName.lastIndexOf('.') + 1);
-
-        String primitiveClassName = componentClass.getRawName();
-        Class primitiveClass = getPrimitiveClass(primitiveClassName);
-        componentClass = helper.getJavaClass(getObjectClass(primitiveClass));
-
-        String qualifiedInternalClassName = qualifiedClassName.replace('.', '/');
-
-        Type componentType = Type.getType("L" + componentClass.getRawName().replace('.', '/') + ";");
-
-        ClassWriter cw = new ClassWriter(false);
-        CodeVisitor cv;
-
-        cw.visit(Constants.V1_5, Constants.ACC_PUBLIC + Constants.ACC_SUPER, qualifiedInternalClassName, "org/eclipse/persistence/internal/jaxb/many/PrimitiveArrayValue", null, className.replace(".", "/") + ".java");
-
-        // FIELD ATTRIBUTES
-        RuntimeVisibleAnnotations fieldAttrs1 = new RuntimeVisibleAnnotations();
-        if (typeMappingInfo != null) {
-            java.lang.annotation.Annotation[] annotations = getAnnotations(typeMappingInfo);
-            if (annotations != null) {
-                for (int i = 0; i < annotations.length; i++) {
-                    java.lang.annotation.Annotation nextAnnotation = annotations[i];
-                    if (nextAnnotation != null && !(nextAnnotation instanceof XmlElement) && !(nextAnnotation instanceof XmlJavaTypeAdapter)) {                     
-                        String annotationClassName = nextAnnotation.getClass().getName();
-                        Annotation fieldAttrs1ann0 = new Annotation("L" + annotationClassName + ";");
-                        fieldAttrs1.annotations.add(fieldAttrs1ann0);
-                        for(Method next:nextAnnotation.annotationType().getDeclaredMethods()) {
-                            try {
-                                Object nextValue = next.invoke(nextAnnotation, new Object[]{});
-                                if(nextValue instanceof Class) {
-                                    Type nextType = Type.getType("L" + ((Class)nextValue).getName().replace('.', '/') + ";");
-                                    nextValue = nextType;
-                                }
-                                fieldAttrs1ann0.add(next.getName(), nextValue);
-                            } catch(InvocationTargetException ex) {
-                                //ignore the invocation target exception here.
-                            } catch(IllegalAccessException ex) {
-                                
-                            }
-                        }
-                    }
+    private Class generateArrayValue(JavaClass arrayClass, JavaClass componentClass, JavaClass nestedClass, TypeMappingInfo typeMappingInfo) {
+        String packageName;
+        String qualifiedClassName;
+        if(componentClass.isArray()) {
+            packageName = componentClass.getPackageName();
+            qualifiedClassName = nestedClass.getQualifiedName() + ARRAY_CLASS_NAME_SUFFIX;
+        } else {
+            if(componentClass.isPrimitive()) {
+                packageName = ARRAY_PACKAGE_NAME;
+                qualifiedClassName = packageName + "." + componentClass.getName() + ARRAY_CLASS_NAME_SUFFIX;
+            } else {
+                packageName = ARRAY_PACKAGE_NAME + "." + componentClass.getPackageName();
+                if(componentClass.isMemberClass()) {
+                    qualifiedClassName = ARRAY_PACKAGE_NAME + "." + "org.eclipse.persistence.testing.jaxb.listofobjects.MyInner" + ARRAY_CLASS_NAME_SUFFIX;
+                } else {
+                    qualifiedClassName = ARRAY_PACKAGE_NAME + "." + componentClass.getQualifiedName() + ARRAY_CLASS_NAME_SUFFIX;
                 }
             }
-        }
 
-        SignatureAttribute fieldAttrs2 = new SignatureAttribute("Ljava/util/Collection<L" + componentType.getInternalName() + ";>;");
-        fieldAttrs1.next = fieldAttrs2;
-
-        cw.visitField(Constants.ACC_PUBLIC, "item", "Ljava/util/Collection;", null, fieldAttrs1);
-
-        cv = cw.visitMethod(Constants.ACC_PUBLIC, "<init>", "()V", null, null);
-        cv.visitVarInsn(Constants.ALOAD, 0);
-        cv.visitMethodInsn(Constants.INVOKESPECIAL, "org/eclipse/persistence/internal/jaxb/many/PrimitiveArrayValue", "<init>", "()V");
-        cv.visitInsn(Constants.RETURN);
-        cv.visitMaxs(1, 1);
-
-        // METHOD ATTRIBUTES
-        RuntimeVisibleAnnotations methodAttrs1 = new RuntimeVisibleAnnotations();
-
-        Annotation methodAttrs1ann0 = new Annotation("Ljavax/xml/bind/annotation/XmlTransient;");
-        methodAttrs1.annotations.add(methodAttrs1ann0);
-
-        cv = cw.visitMethod(Constants.ACC_PUBLIC, "getItem", "()Ljava/lang/Object;", null, methodAttrs1);
-        cv.visitVarInsn(Constants.ALOAD, 0);
-        cv.visitFieldInsn(Constants.GETFIELD, qualifiedInternalClassName, "item", "Ljava/util/Collection;");
-        cv.visitMethodInsn(Constants.INVOKEINTERFACE, "java/util/Collection", "iterator", "()Ljava/util/Iterator;");
-        cv.visitVarInsn(Constants.ASTORE, 1);
-        Label l0 = new Label();
-        cv.visitLabel(l0);
-        cv.visitVarInsn(Constants.ALOAD, 0);
-        cv.visitFieldInsn(Constants.GETFIELD, qualifiedInternalClassName, "item", "Ljava/util/Collection;");
-        cv.visitMethodInsn(Constants.INVOKEINTERFACE, "java/util/Collection", "size", "()I");
-        cv.visitIntInsn(Constants.NEWARRAY, getNewArrayConstantForPrimitive(primitiveClassName));
-        cv.visitVarInsn(Constants.ASTORE, 2);
-        cv.visitInsn(Constants.ICONST_0);
-        cv.visitVarInsn(Constants.ISTORE, 3);
-        Label l1 = new Label();
-        cv.visitJumpInsn(Constants.GOTO, l1);
-        Label l2 = new Label();
-        cv.visitLabel(l2);
-        cv.visitVarInsn(Constants.ALOAD, 2);
-        cv.visitVarInsn(Constants.ILOAD, 3);
-        cv.visitVarInsn(Constants.ALOAD, 1);
-        cv.visitMethodInsn(Constants.INVOKEINTERFACE, "java/util/Iterator", "next", "()Ljava/lang/Object;");
-        cv.visitTypeInsn(Constants.CHECKCAST, componentType.getInternalName());
-        cv.visitMethodInsn(Constants.INVOKEVIRTUAL, componentType.getInternalName(), getToPrimitiveStringForObjectClass(primitiveClassName), getReturnTypeFor(primitiveClass));
-
-        int iaStoreOpcode = Type.getType(primitiveClass).getOpcode(Constants.IASTORE);
-        cv.visitInsn(iaStoreOpcode);
-
-        cv.visitIincInsn(3, 1);
-        cv.visitLabel(l1);
-        cv.visitVarInsn(Constants.ILOAD, 3);
-        cv.visitVarInsn(Constants.ALOAD, 2);
-        cv.visitInsn(Constants.ARRAYLENGTH);
-        cv.visitJumpInsn(Constants.IF_ICMPLT, l2);
-        cv.visitVarInsn(Constants.ALOAD, 2);
-        cv.visitInsn(Constants.ARETURN);
-        Label l3 = new Label();
-        cv.visitLabel(l3);
-        // CODE ATTRIBUTE
-
-        LocalVariableTypeTableAttribute cvAttr = new LocalVariableTypeTableAttribute();
-        cv.visitAttribute(cvAttr);
-
-        cv.visitMaxs(3, 4);
-
-        // METHOD ATTRIBUTES
-        methodAttrs1 = new RuntimeVisibleAnnotations();
-
-        methodAttrs1ann0 = new Annotation("Ljavax/xml/bind/annotation/XmlTransient;");
-        methodAttrs1.annotations.add(methodAttrs1ann0);
-
-        cv = cw.visitMethod(Constants.ACC_PUBLIC, "setItem", "(Ljava/lang/Object;)V", null, methodAttrs1);
-        cv.visitTypeInsn(Constants.NEW, "java/util/ArrayList");
-        cv.visitInsn(Constants.DUP);
-        cv.visitMethodInsn(Constants.INVOKESPECIAL, "java/util/ArrayList", "<init>", "()V");
-        cv.visitVarInsn(Constants.ASTORE, 2);
-        l0 = new Label();
-        cv.visitLabel(l0);
-        cv.visitVarInsn(Constants.ALOAD, 1);
-        cv.visitTypeInsn(Constants.CHECKCAST, getCastTypeFor(primitiveClass));
-
-        cv.visitVarInsn(Constants.ASTORE, 3);
-        cv.visitInsn(Constants.ICONST_0);
-        cv.visitVarInsn(Constants.ISTORE, 4);
-        l1 = new Label();
-        cv.visitJumpInsn(Constants.GOTO, l1);
-        l2 = new Label();
-        cv.visitLabel(l2);
-        cv.visitVarInsn(Constants.ALOAD, 3);
-        cv.visitVarInsn(Constants.ILOAD, 4);
-        int iaLoadOpcode = Type.getType(primitiveClass).getOpcode(Constants.IALOAD);
-        cv.visitInsn(iaLoadOpcode);
-        cv.visitVarInsn(Constants.ISTORE, 5);
-        cv.visitVarInsn(Constants.ALOAD, 2);
-        cv.visitTypeInsn(Constants.NEW, componentType.getInternalName());
-        cv.visitInsn(Constants.DUP);
-        cv.visitVarInsn(Constants.ILOAD, 5);
-        cv.visitMethodInsn(Constants.INVOKESPECIAL, componentType.getInternalName(), "<init>", "(" + getShortNameForPrimitive(primitiveClass) + ")V");
-        cv.visitMethodInsn(Constants.INVOKEVIRTUAL, "java/util/ArrayList", "add", "(Ljava/lang/Object;)Z");
-        cv.visitInsn(Constants.POP);
-        cv.visitIincInsn(4, 1);
-        cv.visitLabel(l1);
-        cv.visitVarInsn(Constants.ILOAD, 4);
-        cv.visitVarInsn(Constants.ALOAD, 3);
-        cv.visitInsn(Constants.ARRAYLENGTH);
-        cv.visitJumpInsn(Constants.IF_ICMPLT, l2);
-        cv.visitVarInsn(Constants.ALOAD, 0);
-        cv.visitVarInsn(Constants.ALOAD, 2);
-        cv.visitFieldInsn(Constants.PUTFIELD, qualifiedInternalClassName, "item", "Ljava/util/Collection;");
-        cv.visitInsn(Constants.RETURN);
-        l3 = new Label();
-        cv.visitLabel(l3);
-        // CODE ATTRIBUTE
-
-        cv.visitAttribute(cvAttr);
-
-        cv.visitMaxs(4, 6);
-
-        cw.visitEnd();
-
-        byte[] classBytes = cw.toByteArray();
-
-        return generateClassFromBytes(qualifiedClassName, classBytes);
-    }
-
-    private Class generateObjectArrayValue(JavaClass arrayClass, JavaClass componentClass, TypeMappingInfo typeMappingInfo) {
-
-        String packageName = componentClass.getPackageName();
-        packageName = "jaxb.dev.java.net.array." + packageName;
-
-        if (helper.isBuiltInJavaType(componentClass)) {
-            NamespaceInfo namespaceInfo = getPackageToNamespaceMappings().get(packageName);
-
-            if (namespaceInfo == null) {
-                namespaceInfo = new NamespaceInfo();
-                namespaceInfo.setNamespace("http://jaxb.dev.java.net/array");
-                namespaceInfo.setNamespaceResolver(new NamespaceResolver());
+            if (componentClass.isPrimitive() || helper.isBuiltInJavaType(componentClass)) {
+                NamespaceInfo namespaceInfo = getPackageToNamespaceMappings().get(packageName);
+                if (namespaceInfo == null) {
+                    namespaceInfo = new NamespaceInfo();
+                    namespaceInfo.setNamespace(ARRAY_NAMESPACE);
+                    namespaceInfo.setNamespaceResolver(new NamespaceResolver());
+                    getPackageToNamespaceMappings().put(packageName, namespaceInfo);
+                }
+            } else {
+                NamespaceInfo namespaceInfo = getNamespaceInfoForPackage(componentClass.getPackage());
                 getPackageToNamespaceMappings().put(packageName, namespaceInfo);
             }
-        } else {
-            NamespaceInfo namespaceInfo = getNamespaceInfoForPackage(componentClass.getPackage());
-            getPackageToNamespaceMappings().put(packageName, namespaceInfo);
         }
-
-        
-        String name = componentClass.getName();
-        int dollarIndex = name.indexOf('$'); 
-        if(dollarIndex > -1){
-            name = name.substring(dollarIndex + 1);
-        }
-        int beginIndex = name.lastIndexOf(".") + 1;
-        String suggestedClassName = name.substring(beginIndex) + "Array";
-        String qualifiedClassName = packageName + "." + suggestedClassName;
-        qualifiedClassName = getNextAvailableClassName(qualifiedClassName);
-        String className = qualifiedClassName.substring(qualifiedClassName.lastIndexOf('.') + 1);
 
         String qualifiedInternalClassName = qualifiedClassName.replace('.', '/');
-
-        Type componentType = Type.getType("L" + componentClass.getQualifiedName().replace('.', '/') + ";");
-
-        ClassWriter cw = new ClassWriter(false);
-        CodeVisitor cv;
-
-        cw.visit(Constants.V1_5, Constants.ACC_PUBLIC + Constants.ACC_SUPER, qualifiedInternalClassName, "org/eclipse/persistence/internal/jaxb/many/ObjectArrayValue", null, className.replace('.', '/') + ".java");
-
-        // FIELD ATTRIBUTES        
-        RuntimeVisibleAnnotations fieldAttrs1 = new RuntimeVisibleAnnotations();
-
-        if (typeMappingInfo != null) {
-            java.lang.annotation.Annotation[] annotations = getAnnotations(typeMappingInfo);
-            if (annotations != null) {
-                for (int i = 0; i < annotations.length; i++) {
-                    java.lang.annotation.Annotation nextAnnotation = annotations[i];
-                    if (nextAnnotation != null && !(nextAnnotation instanceof XmlElement) && !(nextAnnotation instanceof XmlJavaTypeAdapter)) {                     
-                        String annotationClassName = nextAnnotation.getClass().getName();
-                        Annotation fieldAttrs1ann0 = new Annotation("L" + annotationClassName + ";");
-                        fieldAttrs1.annotations.add(fieldAttrs1ann0);
-                        for(Method next:nextAnnotation.annotationType().getDeclaredMethods()) {
-                            try {
-                                Object nextValue = next.invoke(nextAnnotation, new Object[]{});
-                                if(nextValue instanceof Class) {
-                                    Type nextType = Type.getType("L" + ((Class)nextValue).getName().replace('.', '/') + ";");
-                                    nextValue = nextType;
-                                }
-                                fieldAttrs1ann0.add(next.getName(), nextValue);
-                            } catch(InvocationTargetException ex) {
-                                //ignore the invocation target exception here.
-                            } catch(IllegalAccessException ex) {
-                                
-                            }
-                        }
-                    }
-                }
-            }
+        String superClassName;
+        if(componentClass.isArray()) {
+            superClassName = "org/eclipse/persistence/internal/jaxb/many/MultiDimensionalArrayValue";
+        } else {
+            superClassName = "org/eclipse/persistence/internal/jaxb/many/ArrayValue";
         }
 
-        SignatureAttribute fieldAttrs2 = new SignatureAttribute("Ljava/util/Collection<L" + componentType.getInternalName() + ";>;");
-        fieldAttrs1.next = fieldAttrs2;
-        cw.visitField(Constants.ACC_PUBLIC, "item", "Ljava/util/Collection;", null, fieldAttrs1);
-
-        cv = cw.visitMethod(Constants.ACC_PUBLIC, "<init>", "()V", null, null);
+        ClassWriter cw = new ClassWriter(false);
+        cw.visit(Constants.V1_5, Constants.ACC_PUBLIC + Constants.ACC_SUPER, qualifiedInternalClassName, superClassName, null, null);
+        CodeVisitor cv = cw.visitMethod(Constants.ACC_PUBLIC, "<init>", "()V", null, null);
         cv.visitVarInsn(Constants.ALOAD, 0);
-        cv.visitMethodInsn(Constants.INVOKESPECIAL, "org/eclipse/persistence/internal/jaxb/many/ObjectArrayValue", "<init>", "()V");
+        cv.visitMethodInsn(Constants.INVOKESPECIAL, superClassName, "<init>", "()V");
         cv.visitInsn(Constants.RETURN);
         cv.visitMaxs(1, 1);
 
-        // METHOD ATTRIBUTES
-        RuntimeVisibleAnnotations methodAttrs1 = new RuntimeVisibleAnnotations();
+        if(componentClass.isArray()) {
+            cv = cw.visitMethod(Constants.ACC_PROTECTED, "adaptedClass", "()Ljava/lang/Class;", null, null);
+            cv.visitLdcInsn(Type.getType("L" + nestedClass.getQualifiedName().replace('.', '/') + ";"));
+            cv.visitInsn(Constants.ARETURN);
+            cv.visitMaxs(1, 1);
+        }
 
-        Annotation methodAttrs1ann0 = new Annotation("Ljavax/xml/bind/annotation/XmlTransient;");
-        methodAttrs1.annotations.add(methodAttrs1ann0);
-
-        cv = cw.visitMethod(Constants.ACC_PUBLIC, "getItem", "()[Ljava/lang/Object;", null, methodAttrs1);
-        cv.visitVarInsn(Constants.ALOAD, 0);
-        cv.visitVarInsn(Constants.ALOAD, 0);
-        cv.visitFieldInsn(Constants.GETFIELD, qualifiedInternalClassName, "item", "Ljava/util/Collection;");
-        cv.visitMethodInsn(Constants.INVOKEVIRTUAL, qualifiedInternalClassName, "convertCollectionToArray", "(Ljava/util/Collection;)[Ljava/lang/Object;");
-        cv.visitInsn(Constants.ARETURN);
-        cv.visitMaxs(2, 1);
-
-        // METHOD ATTRIBUTES
-        methodAttrs1 = new RuntimeVisibleAnnotations();
-
-        methodAttrs1ann0 = new Annotation("Ljavax/xml/bind/annotation/XmlTransient;");
-        methodAttrs1.annotations.add(methodAttrs1ann0);
-
-        cv = cw.visitMethod(Constants.ACC_PUBLIC, "setItem", "([Ljava/lang/Object;)V", null, methodAttrs1);
-        cv.visitVarInsn(Constants.ALOAD, 0);
-        cv.visitVarInsn(Constants.ALOAD, 0);
-        cv.visitVarInsn(Constants.ALOAD, 1);
-        cv.visitMethodInsn(Constants.INVOKEVIRTUAL, qualifiedInternalClassName, "convertArrayToList", "([Ljava/lang/Object;)Ljava/util/List;");
-        cv.visitFieldInsn(Constants.PUTFIELD, qualifiedInternalClassName, "item", "Ljava/util/Collection;");
-        cv.visitInsn(Constants.RETURN);
-        cv.visitMaxs(3, 2);
-
-        // METHOD ATTRIBUTES
-        methodAttrs1 = new RuntimeVisibleAnnotations();
-
-        methodAttrs1ann0 = new Annotation("Ljavax/xml/bind/annotation/XmlTransient;");
-        methodAttrs1.annotations.add(methodAttrs1ann0);
-
-        cv = cw.visitMethod(Constants.ACC_PUBLIC, "getComponentClass", "()Ljava/lang/Class;", null, methodAttrs1);
-        cv.visitLdcInsn(componentType);
+        cv = cw.visitMethod(Constants.ACC_PROTECTED, "componentClass", "()Ljava/lang/Class;", null, null);
+        JavaClass baseComponentClass = getBaseComponentType(componentClass);
+        if(baseComponentClass.isPrimitive()) {
+            cv.visitFieldInsn(Constants.GETSTATIC, getObjectType(baseComponentClass).getQualifiedName().replace('.', '/'), "TYPE", "Ljava/lang/Class;");
+        } else {
+            cv.visitLdcInsn(Type.getType("L" + baseComponentClass.getQualifiedName().replace('.', '/') + ";"));
+        }
         cv.visitInsn(Constants.ARETURN);
         cv.visitMaxs(1, 1);
 
-        cv = cw.visitMethod(Constants.ACC_PUBLIC + Constants.ACC_BRIDGE + Constants.ACC_SYNTHETIC, "getItem", "()Ljava/lang/Object;", null, null);
+        RuntimeVisibleAnnotations getAdaptedValueMethodAnnotations = new RuntimeVisibleAnnotations();
+        Annotation xmlElementAnnotation = new Annotation("Ljavax/xml/bind/annotation/XmlElement;");
+        xmlElementAnnotation.add("name", "item");
+        xmlElementAnnotation.add("type",  Type.getType("L" + getObjectType(nestedClass).getName().replace('.', '/') + ";"));
+        getAdaptedValueMethodAnnotations.annotations.add(xmlElementAnnotation);
+        cv = cw.visitMethod(Constants.ACC_PUBLIC, "getAdaptedValue", "()Ljava/util/List;", null, getAdaptedValueMethodAnnotations);
         cv.visitVarInsn(Constants.ALOAD, 0);
-        cv.visitMethodInsn(Constants.INVOKEVIRTUAL, qualifiedInternalClassName, "getItem", "()[Ljava/lang/Object;");
+        cv.visitFieldInsn(Constants.GETFIELD, qualifiedInternalClassName, "adaptedValue", "Ljava/util/List;");
         cv.visitInsn(Constants.ARETURN);
         cv.visitMaxs(1, 1);
 
-        cv = cw.visitMethod(Constants.ACC_PUBLIC + Constants.ACC_BRIDGE + Constants.ACC_SYNTHETIC, "setItem", "(Ljava/lang/Object;)V", null, null);
-        cv.visitVarInsn(Constants.ALOAD, 0);
-        cv.visitVarInsn(Constants.ALOAD, 1);
-        cv.visitTypeInsn(Constants.CHECKCAST, "[Ljava/lang/Object;");
-        cv.visitMethodInsn(Constants.INVOKEVIRTUAL, qualifiedInternalClassName, "setItem", "([Ljava/lang/Object;)V");
-        cv.visitInsn(Constants.RETURN);
-        cv.visitMaxs(2, 2);
+        return generateClassFromBytes(qualifiedClassName, cw.toByteArray());
+    }
 
-        // CLASS ATRIBUTE
-        SignatureAttribute attr = new SignatureAttribute("Lorg/eclipse/persistence/internal/jaxb/many/ObjectArrayValue<[Ljava/lang/Object;>;");
-        cw.visitAttribute(attr);
+    private JavaClass getBaseComponentType(JavaClass javaClass) {
+        JavaClass componentType = javaClass.getComponentType();
+        if(null == componentType) {
+            return javaClass;
+        }
+        if(!componentType.isArray()) {
+            return componentType;
+        }
+        return getBaseComponentType(componentType);
+    }
 
-        cw.visitEnd();
-
-        byte[] classBytes = cw.toByteArray();
-
-        return generateClassFromBytes(qualifiedClassName, classBytes);
+    private JavaClass getObjectType(JavaClass javaClass) {
+        if(javaClass.isPrimitive()) {
+            String primitiveClassName = javaClass.getRawName();
+            Class primitiveClass = getPrimitiveClass(primitiveClassName);
+            return helper.getJavaClass(getObjectClass(primitiveClass));
+        }
+        return javaClass;
     }
 
     private Class generateCollectionValue(JavaClass collectionClass, TypeMappingInfo typeMappingInfo, Class xmlElementType) {
@@ -3377,45 +3142,6 @@ public class AnnotationsProcessor {
         }
     }
 
-    private String getCastTypeFor(Class primitiveClass) {
-        return "[" + getShortNameForPrimitive(primitiveClass);
-    }
-
-    private String getReturnTypeFor(Class primitiveClass) {
-        return "()" + getShortNameForPrimitive(primitiveClass);
-    }
-
-    private int getNewArrayConstantForPrimitive(String primitiveClassName) {
-        if (primitiveClassName == null) {
-            return 0;
-        }
-        if ("char".equals(primitiveClassName)) {
-            return Constants.T_CHAR;
-        }
-        if ("int".equals(primitiveClassName)) {
-            return Constants.T_INT;
-        }
-        if ("double".equals(primitiveClassName)) {
-            return Constants.T_DOUBLE;
-        }
-        if ("float".equals(primitiveClassName)) {
-            return Constants.T_FLOAT;
-        }
-        if ("long".equals(primitiveClassName)) {
-            return Constants.T_LONG;
-        }
-        if ("short".equals(primitiveClassName)) {
-            return Constants.T_SHORT;
-        }
-        if ("byte".equals(primitiveClassName)) {
-            return Constants.T_BYTE;
-        }
-        if ("boolean".equals(primitiveClassName)) {
-            return Constants.T_BOOLEAN;
-        }
-        return 0;
-    }
-
     private String getNextAvailableClassName(String suggestedName) {
         int counter = 1;
         return getNextAvailableClassName(suggestedName, suggestedName, counter);
@@ -3432,42 +3158,6 @@ public class AnnotationsProcessor {
             }
         }
         return suggestedName;
-    }
-
-    private String getShortNameForPrimitive(Class primitiveClass) {
-        Type thePrimitiveType = Type.getType(primitiveClass);
-        return thePrimitiveType.toString();
-    }
-
-    private String getToPrimitiveStringForObjectClass(String javaClassName) {
-        if (javaClassName == null) {
-            return null;
-        }
-        if ("char".equals(javaClassName)) {
-            return "charValue";
-        }
-        if ("int".equals(javaClassName)) {
-            return "intValue";
-        }
-        if ("double".equals(javaClassName)) {
-            return "doubleValue";
-        }
-        if ("float".equals(javaClassName)) {
-            return "floatValue";
-        }
-        if ("long".equals(javaClassName)) {
-            return "longValue";
-        }
-        if ("short".equals(javaClassName)) {
-            return "shortValue";
-        }
-        if ("byte".equals(javaClassName)) {
-            return "byteValue";
-        }
-        if ("boolean".equals(javaClassName)) {
-            return "booleanValue";
-        }
-        return null;
     }
 
     private Class getPrimitiveClass(String primitiveClassName) {

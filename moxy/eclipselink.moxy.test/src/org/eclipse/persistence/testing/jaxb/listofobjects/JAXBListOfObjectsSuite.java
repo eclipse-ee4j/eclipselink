@@ -36,10 +36,12 @@ public class JAXBListOfObjectsSuite extends TestCase {
 		suite.addTestSuite(JAXBEmployeeArrayTestCases.class);
 		suite.addTestSuite(JAXBEmployeeListTestCases.class);
 		suite.addTestSuite(JAXBIntegerArrayTestCases.class);
+		suite.addTestSuite(JAXBInteger3DArrayTestCases.class);
 		suite.addTestSuite(JAXBIntegerListTestCases.class);
 		suite.addTestSuite(JAXBIntegerMyListTestCases.class);
 		suite.addTestSuite(JAXBIntegerLinkedListTestCases.class);
 		suite.addTestSuite(JAXBIntArrayTestCases.class);
+		suite.addTestSuite(JAXBInt2DArrayTestCases.class);
 		suite.addTestSuite(JAXBIntListTestCases.class);
 		suite.addTestSuite(JAXBCharArrayTestCases.class);
 		suite.addTestSuite(JAXBBooleanArrayTestCases.class);

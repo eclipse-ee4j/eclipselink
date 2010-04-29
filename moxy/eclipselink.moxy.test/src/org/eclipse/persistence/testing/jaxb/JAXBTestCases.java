@@ -19,6 +19,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.StringReader;
 import java.io.StringWriter;
+import java.lang.reflect.Array;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -27,10 +28,10 @@ import java.util.List;
 import java.util.Map;
 
 import javax.xml.bind.JAXBContext;
+import javax.xml.bind.JAXBElement;
 import javax.xml.bind.Marshaller;
 import javax.xml.bind.SchemaOutputResolver;
 import javax.xml.bind.Unmarshaller;
-import javax.xml.bind.JAXBElement;
 import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
 import javax.xml.stream.XMLEventReader;
@@ -49,16 +50,17 @@ import javax.xml.validation.Schema;
 import javax.xml.validation.SchemaFactory;
 import javax.xml.validation.Validator;
 
+import org.eclipse.persistence.jaxb.JAXBContextFactory;
+import org.eclipse.persistence.jaxb.JAXBUnmarshallerHandler;
+import org.eclipse.persistence.jaxb.compiler.Generator;
 import org.eclipse.persistence.oxm.XMLConstants;
 import org.eclipse.persistence.oxm.XMLContext;
 import org.eclipse.persistence.oxm.XMLDescriptor;
 import org.eclipse.persistence.oxm.XMLRoot;
-import org.eclipse.persistence.platform.xml.XMLPlatformFactory;
 import org.eclipse.persistence.platform.xml.SAXDocumentBuilder;
-import org.eclipse.persistence.jaxb.compiler.Generator;
+import org.eclipse.persistence.platform.xml.XMLPlatformFactory;
 import org.eclipse.persistence.sessions.Project;
 import org.eclipse.persistence.testing.oxm.mappings.XMLMappingTestCases;
-import org.eclipse.persistence.jaxb.*;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 import org.xml.sax.InputSource;
@@ -71,7 +73,7 @@ public abstract class JAXBTestCases extends XMLMappingTestCases {
     Generator generator;
     protected ClassLoader classLoader;
     protected Source bindingsFileXSDSource;
-    
+
     public JAXBTestCases(String name) throws Exception {
         super(name);
     }
@@ -80,16 +82,16 @@ public abstract class JAXBTestCases extends XMLMappingTestCases {
         return new XMLContext(project, classLoader);
     }
 
-    public void setUp() throws Exception {    	
+    public void setUp() throws Exception {
         setupParser();
         setupControlDocs();
-        
+
         InputStream bindingsFileXSDInputStream = getClass().getClassLoader().getResourceAsStream("eclipselink_oxm_2_1.xsd");
         if(bindingsFileXSDInputStream == null){
-        	bindingsFileXSDInputStream = getClass().getClassLoader().getResourceAsStream("xsd/eclipselink_oxm_2_1.xsd");
+            bindingsFileXSDInputStream = getClass().getClassLoader().getResourceAsStream("xsd/eclipselink_oxm_2_1.xsd");
         }
         if(bindingsFileXSDInputStream == null){
-        	fail("ERROR LOADING eclipselink_oxm_2_1.xsd");
+            fail("ERROR LOADING eclipselink_oxm_2_1.xsd");
         }
         bindingsFileXSDSource = new StreamSource(bindingsFileXSDInputStream);
     }
@@ -107,40 +109,40 @@ public abstract class JAXBTestCases extends XMLMappingTestCases {
 
     public void setClasses(Class[] newClasses) throws Exception {
 
-        classLoader = Thread.currentThread().getContextClassLoader();   		
+        classLoader = Thread.currentThread().getContextClassLoader();
         jaxbContext = JAXBContextFactory.createContext(newClasses, null, classLoader);
         xmlContext = ((org.eclipse.persistence.jaxb.JAXBContext)jaxbContext).getXMLContext();
         setProject(xmlContext.getSession(0).getProject());
         jaxbMarshaller = jaxbContext.createMarshaller();
-     	jaxbUnmarshaller = jaxbContext.createUnmarshaller();   	
+        jaxbUnmarshaller = jaxbContext.createUnmarshaller();
 
     }
 
     public void setTypes(Type[] newTypes) throws Exception {
-       
-    	classLoader = Thread.currentThread().getContextClassLoader();    	   
-    	
-    	Map props = getProperties();
-    	if(props != null){
-    		Map overrides = (Map) props.get(JAXBContextFactory.ECLIPSELINK_OXM_XML_KEY);
-    		if(overrides != null){
-    			Iterator valuesIter = overrides.values().iterator();
-    			while(valuesIter.hasNext()){
-    				Source theSource = (Source) valuesIter.next();
-    				validateBindingsFileAgainstSchema(theSource);
-    			}
-    		}
-    	}
-    	
+
+        classLoader = Thread.currentThread().getContextClassLoader();
+
+        Map props = getProperties();
+        if(props != null){
+            Map overrides = (Map) props.get(JAXBContextFactory.ECLIPSELINK_OXM_XML_KEY);
+            if(overrides != null){
+                Iterator valuesIter = overrides.values().iterator();
+                while(valuesIter.hasNext()){
+                    Source theSource = (Source) valuesIter.next();
+                    validateBindingsFileAgainstSchema(theSource);
+                }
+            }
+        }
+
         jaxbContext = JAXBContextFactory.createContext(newTypes, props, classLoader);
-	
+
         xmlContext = ((org.eclipse.persistence.jaxb.JAXBContext)jaxbContext).getXMLContext();
         setProject(xmlContext.getSession(0).getProject());
         jaxbMarshaller = jaxbContext.createMarshaller();
         jaxbUnmarshaller = jaxbContext.createUnmarshaller();
     }
 
-    protected Map getProperties() throws Exception{		
+    protected Map getProperties() throws Exception{
         return null;
     }
 
@@ -162,21 +164,21 @@ public abstract class JAXBTestCases extends XMLMappingTestCases {
         instream.close();
         xmlToObjectTest(testObject);
     }
-    
+
     public void testRoundTrip() throws Exception{
-    	if(isUnmarshalTest()) {
-    		InputStream instream = null;
-    		if(writeControlDocumentLocation !=null){
-    			instream = ClassLoader.getSystemResourceAsStream(writeControlDocumentLocation);
-    		}else{
-    			instream = ClassLoader.getSystemResourceAsStream(resourceName);
-    		}
+        if(isUnmarshalTest()) {
+            InputStream instream = null;
+            if(writeControlDocumentLocation !=null){
+                instream = ClassLoader.getSystemResourceAsStream(writeControlDocumentLocation);
+            }else{
+                instream = ClassLoader.getSystemResourceAsStream(resourceName);
+            }
                 Object testObject = jaxbUnmarshaller.unmarshal(instream);
                 instream.close();
                 xmlToObjectTest(testObject);
-            
+
                 objectToXMLStringWriter(testObject);
-        }    	
+        }
     }
 
     public void testObjectToOutputStream() throws Exception {
@@ -201,10 +203,10 @@ public abstract class JAXBTestCases extends XMLMappingTestCases {
         Document testDocument = parser.parse(is);
         stream.close();
         is.close();
-               
+
         objectToXMLDocumentTest(testDocument);
     }
-    
+
     public void testObjectToOutputStreamASCIIEncoding() throws Exception {
         Object objectToWrite = getWriteControlObject();
         ByteArrayOutputStream stream = new ByteArrayOutputStream();
@@ -228,17 +230,17 @@ public abstract class JAXBTestCases extends XMLMappingTestCases {
         Document testDocument = parser.parse(is);
         stream.close();
         is.close();
-               
+
         objectToXMLDocumentTest(testDocument);
     }
-    
-    
+
+
     public void testObjectToXMLStringWriter() throws Exception {
-    	objectToXMLStringWriter(getWriteControlObject());
+        objectToXMLStringWriter(getWriteControlObject());
     }
     public void objectToXMLStringWriter(Object objectToWrite) throws Exception {
         StringWriter writer = new StringWriter();
-        
+
         XMLDescriptor desc = null;
         if (objectToWrite instanceof XMLRoot) {
             desc = (XMLDescriptor)xmlContext.getSession(0).getProject().getDescriptor(((XMLRoot)objectToWrite).getObject().getClass());
@@ -249,7 +251,7 @@ public abstract class JAXBTestCases extends XMLMappingTestCases {
         int sizeBefore = getNamespaceResolverSize(desc);
 
         jaxbMarshaller.marshal(objectToWrite, writer);
-                
+
         int sizeAfter = getNamespaceResolverSize(desc);
 
         assertEquals(sizeBefore, sizeAfter);
@@ -294,7 +296,7 @@ public abstract class JAXBTestCases extends XMLMappingTestCases {
             objectToXMLDocumentTest(testDocument);
         }
     }
-    
+
     public void testObjectToXMLEventWriter() throws Exception {
         if(XML_OUTPUT_FACTORY != null) {
             StringWriter writer = new StringWriter();
@@ -325,7 +327,7 @@ public abstract class JAXBTestCases extends XMLMappingTestCases {
             reader.close();
             objectToXMLDocumentTest(testDocument);
         }
-    }    
+    }
 
     public void testObjectToContentHandler() throws Exception {
         SAXDocumentBuilder builder = new SAXDocumentBuilder();
@@ -373,7 +375,7 @@ public abstract class JAXBTestCases extends XMLMappingTestCases {
             xmlToObjectTest(testObject);
         }
     }
-    
+
     public void testXMLToObjectFromXMLEventReader() throws Exception {
         if(null != XML_INPUT_FACTORY) {
             InputStream instream = ClassLoader.getSystemResourceAsStream(resourceName);
@@ -382,7 +384,7 @@ public abstract class JAXBTestCases extends XMLMappingTestCases {
             instream.close();
             xmlToObjectTest(testObject);
         }
-    }    
+    }
 
     public void testObjectToXMLDocument() throws Exception {
         Object objectToWrite = getWriteControlObject();
@@ -426,26 +428,18 @@ public abstract class JAXBTestCases extends XMLMappingTestCases {
         Object testValue = testObj.getValue();
 
         if(controlValue == null) {
-        	if(testValue == null){
-        		return;
-        	}
-        	fail("Test value should have been null");
-        }else{
-        	if(testValue == null){
-        		fail("Test value should not have been null");	
-        	}
-        }
-        
-        if(controlValue.getClass().isArray()){
-            if(testValue.getClass().isArray()){
-                if(controlValue.getClass().getComponentType().isPrimitive()){
-                    comparePrimitiveArrays(controlValue, testValue);
-                }else{
-                	compareObjectArrays(controlValue, testValue);                   
-                }
-            }else{
-                fail("Expected an array value but was an " + testValue.getClass().getName());
+            if(testValue == null){
+                return;
             }
+            fail("Test value should have been null");
+        }else{
+            if(testValue == null){
+                fail("Test value should not have been null");
+            }
+        }
+
+        if(controlValue.getClass().isArray()){
+            compareArrays(controlValue, testValue);
         }
         else if (controlValue instanceof Collection){
             Collection controlCollection = (Collection)controlValue;
@@ -459,10 +453,10 @@ public abstract class JAXBTestCases extends XMLMappingTestCases {
                 compareValues(nextControl, nextTest);
             }
         }else{
-        	compareValues(controlValue, testValue);
+            compareValues(controlValue, testValue);
         }
     }
-    
+
      protected void compareValues(Object controlValue, Object testValue){
          if(controlValue instanceof Node && testValue instanceof Node) {
              assertXMLIdentical(((Node)controlValue).getOwnerDocument(), ((Node)testValue).getOwnerDocument());
@@ -470,19 +464,26 @@ public abstract class JAXBTestCases extends XMLMappingTestCases {
              assertEquals(controlValue, testValue);
          }
      }
-    
 
-    protected void comparePrimitiveArrays(Object controlValue, Object testValue){
-        fail("NEED TO COMPARE PRIMITIVE ARRAYS");
-    }
-    
-    protected void  compareObjectArrays(Object controlValue, Object testValue){
-        assertEquals(((Object[])controlValue).length,((Object[])testValue).length);
-        for(int i=0; i<((Object[])controlValue).length-1; i++){
-            assertEquals(((Object[])controlValue)[i], ((Object[])testValue)[i]);
+
+    protected void compareArrays(Object controlValue, Object testValue) {
+        assertTrue("Test array is not an Array", testValue.getClass().isArray());
+        int controlSize = Array.getLength(controlValue);
+        assertTrue("Control and test arrays are not the same length", controlSize == Array.getLength(testValue));
+        for(int x=0; x<controlSize; x++) {
+            Object controlItem = Array.get(controlValue, x);
+            Object testItem = Array.get(testValue, x);
+            if(null == controlItem) {
+                assertEquals(null, testItem);
+                Class controlItemClass = controlItem.getClass();
+                if(controlItemClass.isArray()) {
+                    compareArrays(controlItem, testItem);
+                } else {
+                    assertEquals(controlItem, testItem);
+                }
+            }
         }
     }
-
 
     public void testUnmarshallerHandler() throws Exception {
         SAXParserFactory saxParserFactory = SAXParserFactory.newInstance();
@@ -501,56 +502,56 @@ public abstract class JAXBTestCases extends XMLMappingTestCases {
     }
 
     public void testSchemaGen(List<InputStream> controlSchemas) throws Exception {
-    	MySchemaOutputResolver outputResolver = new MySchemaOutputResolver();
-		getJAXBContext().generateSchema(outputResolver);
-		
-		List<File> generatedSchemas = outputResolver.getSchemaFiles();
-		assertEquals(controlSchemas.size(), generatedSchemas.size());
+        MySchemaOutputResolver outputResolver = new MySchemaOutputResolver();
+        getJAXBContext().generateSchema(outputResolver);
 
-		for(int i=0;i<controlSchemas.size(); i++){
-			InputStream nextControlValue = controlSchemas.get(i);						
-			File nextGeneratedValue =generatedSchemas.get(i);
-			
-			assertNotNull("Generated Schema not found.", nextGeneratedValue);
-			
-			Document control = parser.parse(nextControlValue);
-			Document test = parser.parse(nextGeneratedValue);
-			
-			JAXBXMLComparer xmlComparer = new JAXBXMLComparer();	        
-			boolean isEqual = xmlComparer.isSchemaEqual(control, test);
-			if(!isEqual){				
-				logDocument(control);
-				logDocument(test);
-			}
-			assertTrue("generated schema did not match control schema", isEqual);
-		}
+        List<File> generatedSchemas = outputResolver.getSchemaFiles();
+        assertEquals(controlSchemas.size(), generatedSchemas.size());
+
+        for(int i=0;i<controlSchemas.size(); i++){
+            InputStream nextControlValue = controlSchemas.get(i);
+            File nextGeneratedValue =generatedSchemas.get(i);
+
+            assertNotNull("Generated Schema not found.", nextGeneratedValue);
+
+            Document control = parser.parse(nextControlValue);
+            Document test = parser.parse(nextGeneratedValue);
+
+            JAXBXMLComparer xmlComparer = new JAXBXMLComparer();
+            boolean isEqual = xmlComparer.isSchemaEqual(control, test);
+            if(!isEqual){
+                logDocument(control);
+                logDocument(test);
+            }
+            assertTrue("generated schema did not match control schema", isEqual);
+        }
     }
-    
+
     public class MySchemaOutputResolver extends SchemaOutputResolver {
-		// keep a list of processed schemas for the validation phase of the
-		// test(s)
-		public List<File> schemaFiles;
+        // keep a list of processed schemas for the validation phase of the
+        // test(s)
+        public List<File> schemaFiles;
 
-		public MySchemaOutputResolver() {
-			schemaFiles = new ArrayList<File>();
-		}
+        public MySchemaOutputResolver() {
+            schemaFiles = new ArrayList<File>();
+        }
 
-		public Result createOutput(String namespaceURI, String suggestedFileName)throws IOException {
-			File schemaFile = new File(suggestedFileName);
-			if(namespaceURI == null){
-				namespaceURI ="";
-			}
-			schemaFiles.add(schemaFile);
-			return new StreamResult(schemaFile);
-		}		
-		
-		public List<File> getSchemaFiles() {
-			return schemaFiles;
-		}
-	}
+        public Result createOutput(String namespaceURI, String suggestedFileName)throws IOException {
+            File schemaFile = new File(suggestedFileName);
+            if(namespaceURI == null){
+                namespaceURI ="";
+            }
+            schemaFiles.add(schemaFile);
+            return new StreamResult(schemaFile);
+        }
+
+        public List<File> getSchemaFiles() {
+            return schemaFiles;
+        }
+    }
 
     protected void logDocument(Document document){
-   	   try {
+       try {
               TransformerFactory transformerFactory = TransformerFactory.newInstance();
               Transformer transformer = transformerFactory.newTransformer();
               DOMSource source = new DOMSource(document);
@@ -560,27 +561,27 @@ public abstract class JAXBTestCases extends XMLMappingTestCases {
               e.printStackTrace();
           }
    }
-    
+
     /**
      * Validates a given instance doc against the generated schema.
-     * 
+     *
      * @param src
      * @param schemaIndex index in output resolver's list of generated schemas
      * @param outputResolver contains one or more schemas to validate against
      */
     protected void validateBindingsFileAgainstSchema(InputStream src) {
-    	StreamSource ss = new StreamSource(src);
-    	validateBindingsFileAgainstSchema(ss);
+        StreamSource ss = new StreamSource(src);
+        validateBindingsFileAgainstSchema(ss);
     }
 
     protected void validateBindingsFileAgainstSchema(Source src) {
-    	String result = null;
+        String result = null;
         SchemaFactory sFact = SchemaFactory.newInstance(XMLConstants.SCHEMA_URL);
         Schema theSchema;
         try {
             theSchema = sFact.newSchema(bindingsFileXSDSource);
             Validator validator = theSchema.newValidator();
-                                  
+
             validator.validate(src);
         } catch (Exception e) {
             e.printStackTrace();
@@ -591,6 +592,5 @@ public abstract class JAXBTestCases extends XMLMappingTestCases {
         }
         assertTrue("Schema validation failed unxepectedly: " + result, result == null);
     }
-    
-}
 
+}
