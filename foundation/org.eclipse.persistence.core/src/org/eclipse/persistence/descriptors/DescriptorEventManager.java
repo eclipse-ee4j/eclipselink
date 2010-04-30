@@ -486,6 +486,15 @@ public class DescriptorEventManager implements Cloneable, Serializable {
     
     /** 
      * INTERNAL:
+     * Internal event support.  Return true if this event manager has any internal 
+     * listener event listeners.
+     */
+    public boolean hasInternalEventListeners() {
+        return internalListeners != null && internalListeners.size() > 0;
+    }
+
+    /** 
+     * INTERNAL:
      * EJB 3.0 support. Return true if this event manager has any entity 
      * listener event listeners.
      */
@@ -501,7 +510,7 @@ public class DescriptorEventManager implements Cloneable, Serializable {
         setHasAnyEventListeners(false);
         // Initialize the EJB 3.0 supported listeners.
         initializeEJB30EventManagers();
-        if (hasEntityEventListener() || hasEntityListenerEventListeners()) {
+        if (hasEntityEventListener() || hasEntityListenerEventListeners() || hasInternalEventListeners()) {
             setHasAnyEventListeners(true);
         }
         
