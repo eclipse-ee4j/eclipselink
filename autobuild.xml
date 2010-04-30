@@ -158,13 +158,20 @@
         <property name="download.dir" value="${eclipselink.root.download.dir}/milestones/${release.version}/${build.type}"/>
 
         <!-- Set p2 repository path appropriately depending upon build target     -->
-        <condition property="p2.repos.dir" value="${eclipselink.root.download.dir}/nightly-updates/${version.string}">
+        <condition property="p2.composite.root.dir" value="${eclipselink.root.download.dir}/nightly-updates">
             <equals arg1="${build.type}" arg2="SNAPSHOT"/>
         </condition>
-        <condition property="p2.repos.dir" value="${eclipselink.root.download.dir}/updates/${version.string}">
+        <condition property="p2.composite.root.dir" value="${eclipselink.root.download.dir}/updates">
             <equals arg1="${build.type}" arg2="RELEASE"/>
         </condition>
-        <property name="p2.repos.dir" value="${eclipselink.root.download.dir}/milestone-updates/${version.string}_${build.type}"/>
+        <property name="p2.composite.root.dir" value="${eclipselink.root.download.dir}/milestone-updates"/>
+        <condition property="p2.repos.dir" value="${p2.composite.root.dir}/${version.string}">
+            <equals arg1="${build.type}" arg2="SNAPSHOT"/>
+        </condition>
+        <condition property="p2.repos.dir" value="${p2.composite.root.dir}/${version.string}">
+            <equals arg1="${build.type}" arg2="RELEASE"/>
+        </condition>
+        <property name="p2.repos.dir" value="${p2.composite.root.dir}/${version.string}_${build.type}"/>
 
         <!-- generate Release Designation string for manifest                     -->
         <property name="release.designation" value="EclipseLink ${release.version}"/>
@@ -641,13 +648,15 @@
         <mkdir dir="${p2.repos.dir}"/>
         <!-- populate update site with feature and bundle jars, then publish repository -->
         <ant antfile="build.xml" dir="${build.root.dir}/features" target="assemble-repos">
+            <property name="do.composite"        value="true"/>
             <property name="ready-to-go"         value="true"/>
             <property name="bundle.install.file" value="${download.dir}/${eclipselink.plugins.install.prefix}-${version.string}${eclipselink.zip.suffix}"/>
             <property name="p2.archive.zip"      value="${p2.archive.to.use}"/>
         </ant>
         <!-- Regenerate Composite Repos metadata -->
         <exec executable="/bin/sh" failonerror="false" logError="true" >
-            <arg value="${build.root.dir}/buildsystem/buildCompositeP2.sh"/>
+            <arg value="${p2.composite.root.dir}"/>
+            <arg value="${metadata.repos.name}"/>
         </exec>
         <!-- Can clean-up temp dir now -->  
         <delete dir="${temp.rebuild.dir}" failonerror="false"/>
