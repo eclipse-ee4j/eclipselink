@@ -54,6 +54,8 @@ public class ClassDetails {
     protected Boolean usesAttributeAccess = null;
     /** Determine if this class specifically implements a clone method */
     protected boolean implementsCloneMethod = false;
+    /** Determine if a new constructor can be used to bypass setting variables to default values. */
+    protected boolean shouldWeaveConstructorOptimization = true;
     
     public ClassDetails() {
     }
@@ -104,6 +106,10 @@ public class ClassDetails {
     
     public void setShouldWeaveChangeTracking(boolean shouldWeaveChangeTracking) {
         this.shouldWeaveChangeTracking = shouldWeaveChangeTracking;
+    }
+    
+    public void setShouldWeaveConstructorOptimization(boolean shouldWeaveConstructorOptimization) {
+        this.shouldWeaveConstructorOptimization = shouldWeaveConstructorOptimization;
     }
     
     public boolean shouldWeaveFetchGroups() {
@@ -249,6 +255,17 @@ public class ClassDetails {
         return getSuperClassDetails().canWeaveChangeTracking();
     }
     
+    /**   
+     * Returns true if 
+     * Used with field access, and is set to false if transient variables are discovered
+     */
+    public boolean canWeaveConstructorOptimization(){
+        if (!shouldWeaveConstructorOptimization || (getSuperClassDetails() == null)) {
+            return shouldWeaveConstructorOptimization;
+        }
+        return getSuperClassDetails().canWeaveConstructorOptimization();
+    }
+
     /**
      * Returns true if the given class name represents this class, or any
      * superclass that can be navigated to by recursively navigating up the

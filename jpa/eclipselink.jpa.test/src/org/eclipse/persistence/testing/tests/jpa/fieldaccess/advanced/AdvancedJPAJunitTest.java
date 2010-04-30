@@ -34,6 +34,9 @@ import org.eclipse.persistence.testing.models.jpa.fieldaccess.advanced.Equipment
 import org.eclipse.persistence.testing.models.jpa.fieldaccess.advanced.EquipmentCode;
 import org.eclipse.persistence.testing.models.jpa.fieldaccess.advanced.GoldBuyer;
 import org.eclipse.persistence.testing.models.jpa.fieldaccess.advanced.PhoneNumber;
+import org.eclipse.persistence.testing.models.jpa.fieldaccess.advanced.LargeProject;
+import org.eclipse.persistence.testing.models.jpa.fieldaccess.advanced.Project;
+import org.eclipse.persistence.testing.models.jpa.fieldaccess.advanced.SmallProject;
 
 /**
  * This test suite tests TopLink JPA annotations extensions.
@@ -89,6 +92,7 @@ public class AdvancedJPAJunitTest extends JUnitTestCase {
         suite.addTest(new AdvancedJPAJunitTest("testNamedStoredProcedureQuery"));
         suite.addTest(new AdvancedJPAJunitTest("testNamedStoredProcedureQueryInOut"));
         suite.addTest(new AdvancedJPAJunitTest("testNamedStoredProcedureQueryWithRawData"));
+        suite.addTest(new AdvancedJPAJunitTest("testTransientConstructorSetFields"));
         
         // Temporary removal of JPA 2.0 dependency
         //suite.addTest(new AdvancedJPAJunitTest("testPessimisticLockingNamedQuery"));
@@ -120,6 +124,50 @@ public class AdvancedJPAJunitTest extends JUnitTestCase {
         descriptor.setShouldBeReadOnly(shouldBeReadOnly);
 
         clearCache("fieldaccess");
+    }
+    
+    /** test for bug 292385 - Transient fields not initialized for Entities */
+    public void testTransientConstructorSetFields(){
+        EntityManager em = createEntityManager("fieldaccess");
+        
+        Project project = new Project();
+        LargeProject lproject = new LargeProject();
+        SmallProject sproject = new SmallProject();
+        project.setName("TCSetFieldsProject");
+        lproject.setName("TCSetFieldsLProject");
+        sproject.setName("TCSetFieldsSProject");
+        
+        beginTransaction(em);
+        project = em.merge(project);
+        lproject = em.merge(lproject);
+        sproject = em.merge(sproject);
+        this.assertTrue("Project's default constructor wasn't used to create merged entity", project.getFieldOnlySetThroughConstructor()==1);
+        this.assertTrue("LargeProject's default constructor wasn't used to create merged entity", lproject.getFieldOnlySetThroughConstructor()==2);
+        this.assertTrue("Project's default constructor wasn't used to create merged SmallProject", sproject.getFieldOnlySetThroughConstructor()==1);
+        
+        try{
+            em.flush();
+            this.commitTransaction(em);
+            closeEntityManager(em);
+        } catch (RuntimeException e) {
+            if (isTransactionActive(em)){
+                rollbackTransaction(em);
+            }
+            
+            closeEntityManager(em);
+            // Re-throw exception to ensure stacktrace appears in test result.
+            throw e;
+        }
+        em = createEntityManager("fieldaccess");
+ 
+        project = em.find(Project.class, project.getId());
+        lproject = em.find(LargeProject.class, lproject.getId());
+        sproject = em.find(SmallProject.class, sproject.getId());
+        
+        closeEntityManager(em);
+        this.assertTrue("Project's default constructor wasn't used to create managed entity", project.getFieldOnlySetThroughConstructor()==1);
+        this.assertTrue("LargeProject's default constructor wasn't used to create managed entity", lproject.getFieldOnlySetThroughConstructor()==2);
+        this.assertTrue("Project's default constructor wasn't used to create managed SmallProject", sproject.getFieldOnlySetThroughConstructor()==1);
     }
     
     /**
