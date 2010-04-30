@@ -595,23 +595,26 @@ public class MergeManager {
                     updateCacheKeyProperties(unitOfWork, original, clone, objectChangeSet, descriptor);
                 }
             } else {
-                // Invalidate any object that was marked invalid during the change calculation, even if it was new as multiple flushes 
-                // and custom SQL could still produce invalid new objects.
-                if (objectChangeSet.shouldInvalidateObject(original, parent) && (!unitOfWork.isNestedUnitOfWork())) {
-                    parent.getIdentityMapAccessor().invalidateObject(original);
-                    // no need to update cacheKey properties here
-                }
                 
-                if (objectChangeSet.isNew()) {
-                    // PERF: If PersistenceEntity is caching the primary key this must be cleared as the primary key may have changed in new objects.
-                    objectBuilder.clearPrimaryKey(original);
-                }
                 
                 // Regardless if the object is new, old, valid or invalid, merging will ensure there is a stub of an object in the 
                 // shared cache for filling in foreign reference relationships. If merge did not occur in some cases (new  objects, garbage 
                 // collection objects, object read in a transaction) then no object would be in the shared cache and foreign reference 
                 // mappings would be set to null when they should be set to an object.
-                if (objectChangeSet.hasChanges()){
+                if (objectChangeSet.hasChanges()) {
+                    //only attempt to invalidate if we would have merged.  This saves us from a potential deadlock on get
+                    //writeLockValue when we do not own the lock.
+                    if (!objectChangeSet.isNew) {
+                        if (objectChangeSet.shouldInvalidateObject(original, parent) && (!unitOfWork.isNestedUnitOfWork())) {
+                            // Invalidate any object that was marked invalid during the change calculation, even if it was new as multiple flushes 
+                            // and custom SQL could still produce invalid new objects.
+                            parent.getIdentityMapAccessor().invalidateObject(original);
+                            // no need to update cacheKey properties here
+                        }
+                    } else {
+                        // PERF: If PersistenceEntity is caching the primary key this must be cleared as the primary key may have changed in new objects.
+                        objectBuilder.clearPrimaryKey(original);
+                    }
                     //if there are no changes then we just need a reference to the object so skip the merge
                     // saves trying to lock related objects after the fact producing deadlocks
                     objectBuilder.mergeChangesIntoObject(original, objectChangeSet, clone, this, false);
@@ -1033,21 +1036,23 @@ public class MergeManager {
             if (cacheKey == null || !cacheKey.isAcquired()) {
                 Object primaryKey = descriptor.getObjectBuilder().extractPrimaryKeyFromObject(original, unitOfWork);
                 
-                cacheKey = unitOfWork.getParent().getIdentityMapAccessorInstance().acquireLock(primaryKey, original.getClass(), descriptor);
-                locked = true;
+                cacheKey = unitOfWork.getParent().getIdentityMapAccessorInstance().acquireLockNoWait(primaryKey, original.getClass(), true, descriptor);
+                locked = cacheKey != null;
             }
-            try {
-                if (descriptor.usesOptimisticLocking() && descriptor.getOptimisticLockingPolicy().isStoredInCache()) {
-                    cacheKey.setWriteLockValue(unitOfWork.getIdentityMapAccessor().getWriteLockValue(clone));
-                }
-                cacheKey.setObject(original);
-                if (descriptor.getCacheInvalidationPolicy().shouldUpdateReadTimeOnUpdate() || ((objectChangeSet != null) && objectChangeSet.isNew())) {
-                    cacheKey.setReadTime(getSystemTime());
-                }
-                cacheKey.updateAccess();
-            } finally {
-                if (locked) {
-                    cacheKey.release();
+            if (cacheKey != null){ // only work if we are locked.
+                try {
+                    if (descriptor.usesOptimisticLocking() && descriptor.getOptimisticLockingPolicy().isStoredInCache()) {
+                        cacheKey.setWriteLockValue(unitOfWork.getIdentityMapAccessor().getWriteLockValue(clone));
+                    }
+                    cacheKey.setObject(original);
+                    if (descriptor.getCacheInvalidationPolicy().shouldUpdateReadTimeOnUpdate() || ((objectChangeSet != null) && objectChangeSet.isNew())) {
+                        cacheKey.setReadTime(getSystemTime());
+                    }
+                    cacheKey.updateAccess();
+                } finally {
+                    if (locked) {
+                        cacheKey.release();
+                    }
                 }
             }
         }
