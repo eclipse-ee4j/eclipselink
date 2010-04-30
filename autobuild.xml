@@ -654,7 +654,10 @@
             <property name="p2.archive.zip"      value="${p2.archive.to.use}"/>
         </ant>
         <!-- Regenerate Composite Repos metadata -->
+        <echo message="p2.composite.root.dir = '${p2.composite.root.dir}'"/>
+        <echo message="metadata.repos.name   = '${metadata.repos.name}'"/>
         <exec executable="/bin/sh" failonerror="false" logError="true" >
+            <arg value="${build.root.dir}/buildsystem/buildCompositeP2.sh"/>
             <arg value="${p2.composite.root.dir}"/>
             <arg value="${metadata.repos.name}"/>
         </exec>
