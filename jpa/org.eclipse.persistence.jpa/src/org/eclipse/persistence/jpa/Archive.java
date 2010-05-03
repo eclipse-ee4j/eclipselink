@@ -36,8 +36,6 @@ public interface Archive {
     /**
      * Returns an {@link java.util.Iterator} of the file entries. Each String represents
      * a file name relative to the root of the module.
-     * 
-     * This method is used for discovery of Entities and other parts of a persistence unit
      */
     Iterator<String> getEntries();
 
@@ -63,6 +61,11 @@ public interface Archive {
      * @return the URL that this archive represents.
      */
     URL getRootURL();
+
+    /**
+     * @return an input stream on the persistence descriptor.
+     */
+    InputStream getDescriptorStream() throws IOException;
 
     /**
      * Close this archive and associated InputStream.

@@ -30,7 +30,7 @@ import org.eclipse.persistence.jpa.Archive;
  *
  * @author Sanjeeb.Sahoo@Sun.COM
  */
-public class DirectoryArchive implements Archive {
+public class DirectoryArchive extends ArchiveBase implements Archive {
     /*
      * Implementation Note: This class does not have any dependency on either
      * EclipseLink or GlassFish implementation classes. Please retain this separation.
@@ -42,11 +42,6 @@ public class DirectoryArchive implements Archive {
     private File directory;
 
     /**
-     * The URL representation of this archive.
-     */
-    private URL rootURL;
-
-    /**
      * The file entries that this archive contains.
      */
     private List<String> entries = new ArrayList<String>();
@@ -55,12 +50,13 @@ public class DirectoryArchive implements Archive {
     private Logger logger;
 
     @SuppressWarnings("deprecation")
-    public DirectoryArchive(File directory) throws MalformedURLException {
-        this(directory, Logger.global);
+    public DirectoryArchive(File directory, String descriptorLocation) throws MalformedURLException {
+        this(directory, descriptorLocation, Logger.global);
     }
 
-    public DirectoryArchive(File directory, Logger logger)
+    public DirectoryArchive(File directory, String descriptorLocation, Logger logger)
             throws MalformedURLException {
+        super();
         logger.entering("DirectoryArchive", "DirectoryArchive",
                         new Object[]{directory});
         this.logger = logger;
@@ -72,11 +68,12 @@ public class DirectoryArchive implements Archive {
         }
         this.directory = directory;
         rootURL = directory.toURI().toURL();
+        this.descriptorLocation = descriptorLocation;
         logger.logp(Level.FINER, "DirectoryArchive", "DirectoryArchive",
                 "rootURL = {0}", rootURL);
         init(this.directory, this.directory); // initialize entries
     }
-
+    
     private void init(File top, File directory) {
         File[] dirFiles = directory.listFiles();
         for (File file : dirFiles) {
@@ -114,10 +111,6 @@ public class DirectoryArchive implements Archive {
         File f = getFile(entryPath);
         URL url = f.exists() ? f.toURI().toURL() : null;
         return url;
-    }
-
-    public URL getRootURL() {
-        return rootURL;
     }
 
     private File getFile(String entryPath) {

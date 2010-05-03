@@ -32,12 +32,11 @@ import org.eclipse.persistence.jpa.Archive;
  *
  * @author Sanjeeb.Sahoo@Sun.COM
  */
-public class JarInputStreamURLArchive implements Archive {
+public class JarInputStreamURLArchive extends ArchiveBase implements Archive {
     /*
      * Implementation Note: This class does not have any dependency on either
      * EclipseLink or GlassFish implementation classes. Please retain this separation.
      */
-    private URL url;
 
     private List<String> entries = new ArrayList<String>();
 
@@ -45,21 +44,21 @@ public class JarInputStreamURLArchive implements Archive {
     private Logger logger;
 
     @SuppressWarnings("deprecation")
-    public JarInputStreamURLArchive(URL url) throws IOException {
-        this(url, Logger.global);
+    public JarInputStreamURLArchive(URL url, String descriptorLocation) throws IOException {
+        this(url, descriptorLocation, Logger.global);
     }
 
-    public JarInputStreamURLArchive(URL url, Logger logger) throws IOException {
+    public JarInputStreamURLArchive(URL url, String descriptorLocation, Logger logger) throws IOException {
+        super(url, descriptorLocation);
         logger.entering("JarInputStreamURLArchive", "JarInputStreamURLArchive", // NOI18N
                 new Object[]{url});
         this.logger = logger;
-        this.url = url;
         init();
     }
 
     private void init() throws IOException {
         JarInputStream jis = new JarInputStream(
-                new BufferedInputStream(url.openStream()));
+                new BufferedInputStream(rootURL.openStream()));
         try {
             do {
                 ZipEntry ze = jis.getNextEntry();
@@ -84,7 +83,7 @@ public class JarInputStreamURLArchive implements Archive {
             return null;
         }
         JarInputStream jis = new JarInputStream(
-                new BufferedInputStream(url.openStream()));
+                new BufferedInputStream(rootURL.openStream()));
         do {
             ZipEntry ze = jis.getNextEntry();
             if (ze == null) {
@@ -103,12 +102,8 @@ public class JarInputStreamURLArchive implements Archive {
 
     public URL getEntryAsURL(String entryPath) throws IOException {
         URL result = entries.contains(entryPath) ?
-            result = new URL("jar:"+url+"!/"+entryPath) : null; // NOI18N
+            result = new URL("jar:"+rootURL+"!/"+entryPath) : null; // NOI18N
         return result;
-    }
-
-    public URL getRootURL() {
-        return url;
     }
 
     public void close() {

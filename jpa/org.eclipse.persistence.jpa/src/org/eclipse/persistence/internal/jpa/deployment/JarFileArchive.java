@@ -34,34 +34,34 @@ import org.eclipse.persistence.jpa.Archive;
  *
  * @author Sanjeeb.Sahoo@Sun.COM
  */
-public class JarFileArchive implements Archive {
+public class JarFileArchive extends ArchiveBase implements Archive {
     /*
      * Implementation Note: This class does not have any dependency on either
      * EclipseLink or GlassFish implementation classes. Please retain this separation.
      */
     private JarFile jarFile;
 
-    private URL rootURL;
-
     @SuppressWarnings("unused")
     private Logger logger;
 
     @SuppressWarnings("deprecation")
-    public JarFileArchive(JarFile jarFile) throws MalformedURLException {
-        this(jarFile, Logger.global);
+    public JarFileArchive(JarFile jarFile, String descriptorLocation) throws MalformedURLException {
+        this(jarFile, descriptorLocation, Logger.global);
     }
 
-    public JarFileArchive(JarFile jarFile, Logger logger)
+    public JarFileArchive(JarFile jarFile, String descriptorLocation, Logger logger)
             throws MalformedURLException {
+        super(new File(jarFile.getName()).toURI().toURL(), descriptorLocation);
         logger.entering("JarFileArchive", "JarFileArchive", // NOI18N
                 new Object[]{jarFile});
         this.logger = logger;
         this.jarFile = jarFile;
-        rootURL = new File(jarFile.getName()).toURI().toURL();
+        this.descriptorLocation = descriptorLocation;
         logger.logp(Level.FINER, "JarFileArchive", "JarFileArchive", // NOI18N
                 "rootURL = {0}", rootURL); // NOI18N
     }
 
+    
     public Iterator<String> getEntries() {
         Enumeration<JarEntry> jarEntries = jarFile.entries();
         ArrayList<String> result = new ArrayList<String>();
@@ -86,10 +86,6 @@ public class JarFileArchive implements Archive {
     public URL getEntryAsURL(String entryPath) throws IOException {
         return jarFile.getEntry(entryPath)!= null ?
                 new URL("jar:"+rootURL+"!/"+entryPath) : null; // NOI18N
-    }
-
-    public URL getRootURL() {
-        return rootURL;
     }
 
     public void close() {

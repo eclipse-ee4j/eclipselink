@@ -37,6 +37,7 @@ import java.io.UnsupportedEncodingException;
 import org.xml.sax.XMLReader;
 import org.xml.sax.InputSource;
 
+import org.eclipse.persistence.config.PersistenceUnitProperties;
 import org.eclipse.persistence.config.SystemProperties;
 import org.eclipse.persistence.exceptions.PersistenceUnitLoadingException;
 import org.eclipse.persistence.exceptions.XMLParseException;
@@ -60,6 +61,7 @@ import org.eclipse.persistence.jpa.ArchiveFactory;
  * persistence.xml and searching for Entities in a Persistence archive
  */
 public class PersistenceUnitProcessor {    
+    
     /**
      * Entries in a zip file are directory entries using slashes to separate 
      * them. Build a class name using '.' instead of slash and removing the 
@@ -108,7 +110,7 @@ public class PersistenceUnitProcessor {
         }        
         return entityList;
     }
-
+    
     /**
      * Determine the URL path to the persistence unit 
      * @param pxmlURL - Encoded URL containing the pu
@@ -126,11 +128,14 @@ public class PersistenceUnitProcessor {
             // e.g. jar:file:/tmp/a_ear/b.jar!/META-INF/persistence.xml
             JarURLConnection conn =
                     JarURLConnection.class.cast(pxmlURL.openConnection());
-            assert(conn.getJarEntry().getName().equals(
-                    "META-INF/persistence.xml")); // NOI18N
             result = conn.getJarFileURL();
+        // mkeith - add bundle protocol cases
+        } else if ("bundleentry".equals(protocol)) {           
+            result = new URL("bundleentry://" + pxmlURL.getAuthority());
+        } else if ("bundleresource".equals(protocol)) {           
+            result = new URL("bundleresource://" + pxmlURL.getAuthority());
         } else {
-            // some other protocol,
+            // some other protocol
             // e.g. bundleresource://21/META-INF/persistence.xml
             result = new URL(pxmlURL, "../"); // NOI18N
         }
@@ -140,7 +145,7 @@ public class PersistenceUnitProcessor {
 
 
     /**
-     * This method fixes incorret authority attribute
+     * This method fixes incorrect authority attribute
      * that is set by JDK when UNC is used in classpath.
      * See JDK bug #6585937 and GlassFish issue #3209 for more details.
      */
@@ -204,30 +209,62 @@ public class PersistenceUnitProcessor {
      * @param loader the class loader to get the class path from
      */
     public static Set<Archive> findPersistenceArchives(ClassLoader loader){
-        Set<Archive> pars = new HashSet<Archive>();
+        return findPersistenceArchives(loader, PersistenceUnitProperties.ECLIPSELINK_PERSISTENCE_XML_DEFAULT);
+    }
+    
+    /**
+     * Return a list of Archives representing the root of the persistence descriptor. 
+     * It is the caller's responsibility to close all the archives.
+     * 
+     * @param loader the class loader to get the class path from
+     */
+    public static Set<Archive> findPersistenceArchives(ClassLoader loader, String descriptorPath){
+        Archive archive = null;
+
+        Set<Archive> archives = new HashSet<Archive>();
+
+        // See if we are talking about an embedded descriptor
+        int splitPosition = descriptorPath.indexOf("!/");
+
         try {
-            Enumeration<URL> resources = loader.getResources("META-INF/persistence.xml");
-            while (resources.hasMoreElements()){
-                URL pxmlURL = resources.nextElement();
-                URL puRootURL = computePURootURL(pxmlURL);
-                Archive archive = PersistenceUnitProcessor.getArchiveFactory(loader).createArchive(puRootURL);
-                pars.add(archive);
-            }
-        } catch (java.io.IOException exc){
+            // If not embedded descriptor then just use the regular descriptor path
+            if (splitPosition == -1) {
+                Enumeration<URL> resources = loader.getResources(descriptorPath);
+                while (resources.hasMoreElements()){
+
+                    URL descUrl = resources.nextElement();
+                    URL puRootUrl = computePURootURL(descUrl);
+                    archive = PersistenceUnitProcessor.getArchiveFactory(loader).createArchive(puRootUrl, descriptorPath);
+    
+                   // archive = new BundleArchive(puRootUrl, descUrl);
+                    if (archive != null){
+                        archives.add(archive);
+                    }
+                }
+            } else {
+                // It is an embedded archive, so split up the parts
+                String jarPrefixPath = descriptorPath.substring(0, splitPosition);
+                String descPath = descriptorPath.substring(splitPosition+2);
+                // TODO This causes the bundle to be resolved (not what we want)!
+                URL prefixUrl = loader.getResource(jarPrefixPath);
+                archive = PersistenceUnitProcessor.getArchiveFactory(loader).createArchive(prefixUrl, descPath);
+
+                //archive = new BundleJarUrlArchive(prefixUrl, descPath);            
+              /*  if (prefixUrl != null) {
+                    archives.add(archive);
+                }*/
+                if (archive != null){
+                    archives.add(archive);
+                }
+            } 
+        } catch (Exception ex){
             //clean up first
-            for (Archive archive : pars) {
-                archive.close();
+            for (Archive a : archives){
+                a.close();
             }
-            throw PersistenceUnitLoadingException.exceptionSearchingForPersistenceResources(loader, exc);
-        } catch (URISyntaxException exc) {
-            //clean up first
-            for (Archive archive : pars) {
-                archive.close();
-            }
-            throw PersistenceUnitLoadingException.exceptionSearchingForPersistenceResources(loader, exc);
+            throw PersistenceUnitLoadingException.exceptionSearchingForPersistenceResources(loader, ex);
         }
-        
-        return pars;
+        return archives;
     }
 
     public static ArchiveFactory getArchiveFactory(ClassLoader loader){
@@ -302,8 +339,8 @@ public class PersistenceUnitProcessor {
     
     /**
      * Get a list of persistence units from the file or directory at the given 
-     * url. PersistenceUnits are built based on the presence of persistence.xml 
-     * in a META-INF directory at the base of the URL.
+     * url. PersistenceUnits are built based on the presence of a persistence descriptor
+     * *
      * @param archive The url of a jar file or directory to check
      */
     public static List<SEPersistenceUnitInfo> getPersistenceUnits(Archive archive, ClassLoader loader){
@@ -397,9 +434,8 @@ public class PersistenceUnitProcessor {
     public static List<SEPersistenceUnitInfo> processPersistenceArchive(Archive archive, ClassLoader loader){
         URL puRootURL = archive.getRootURL();
         try {
-            InputStream pxmlStream = archive.getEntry("META-INF/persistence.xml"); // NOI18N
-            return processPersistenceXML(puRootURL, pxmlStream, loader);
-        } catch (IOException e) {
+            return processPersistenceXML(puRootURL, archive.getDescriptorStream(), loader);
+          } catch (Exception e) {
             throw PersistenceUnitLoadingException.exceptionLoadingFromUrl(puRootURL.toString(), e);
         }
     }

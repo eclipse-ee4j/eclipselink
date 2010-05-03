@@ -2203,8 +2203,8 @@ public class SQLSelectStatement extends SQLStatement {
                         if (this.hasInheritance) {
                             // right outer join instead. This will give the same
                             // result because the right table has no rows that
-                            // are not in the left table (left table maps to a
-                            // subclass, right table to the main class in an
+                            // are not in the left table (left table maps to the
+                            // main class, right table to a subclass in an
                             // inheritance mapping with a joined subclass
                             // strategy).
                             writer.write(" RIGHT OUTER");

@@ -29,10 +29,19 @@ public interface ArchiveFactory {
 
     /**
      * Return an instance of an implementer of Archive that can process the URL provided
-     * @param url
-     * @return
+     * 
      * @throws URISyntaxException
      * @throws IOException
      */
-    public Archive createArchive(URL url) throws URISyntaxException, IOException;
+    public Archive createArchive(URL rootUrl) throws URISyntaxException, IOException;
+
+    /**
+     * Return an instance of an implementer of Archive that can process the URL provided
+     * This instance will allow access to the persistence descriptor associated with 
+     * this archive through the getDescriptorStream() method
+     * 
+     * @throws URISyntaxException
+     * @throws IOException
+     */
+    public Archive createArchive(URL rootUrl, String descriptorLocation) throws URISyntaxException, IOException;
 }

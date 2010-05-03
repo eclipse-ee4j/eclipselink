@@ -131,7 +131,14 @@ public abstract class JPAInitializer {
      */
     protected SEPersistenceUnitInfo findPersistenceUnitInfoInArchives(String puName, Map m, PersistenceInitializationHelper persistenceHelper) {
         SEPersistenceUnitInfo persistenceUnitInfo = null;
-        final Set<Archive> pars = PersistenceUnitProcessor.findPersistenceArchives(initializationClassloader);
+        // mkeith - get resource name from prop and include in subsequent call
+        String descriptorPath = (String) m.get(PersistenceUnitProperties.ECLIPSELINK_PERSISTENCE_XML);
+        final Set<Archive> pars;
+        if (descriptorPath != null) {
+            pars = PersistenceUnitProcessor.findPersistenceArchives(initializationClassloader, descriptorPath);
+        } else {
+            pars = PersistenceUnitProcessor.findPersistenceArchives(initializationClassloader);
+        }
         for (Archive archive: pars) {
             persistenceUnitInfo = findPersistenceUnitInfoInArchive(puName, archive, m, persistenceHelper);
             if(persistenceUnitInfo != null) {

@@ -52,14 +52,18 @@ public class ArchiveFactoryImpl implements ArchiveFactory {
         this.logger = logger;
     }
 
-    public Archive createArchive(URL url) throws URISyntaxException, IOException {
-        logger.entering("ArchiveFactoryImpl", "createArchive", new Object[]{url});
-        Archive result;
-        String protocol = url.getProtocol();
+    public Archive createArchive(URL rootUrl) throws URISyntaxException, IOException {
+        return createArchive(rootUrl, null);
+    }
+
+    public Archive createArchive(URL rootUrl, String descriptorLocation) throws URISyntaxException, IOException {
+        logger.entering("ArchiveFactoryImpl", "createArchive", new Object[]{rootUrl, descriptorLocation});
+        Archive result = null;
+        String protocol = rootUrl.getProtocol();
         logger.logp(Level.FINER, "ArchiveFactoryImpl", "createArchive", "protocol = {0}", protocol);
         
         if ("file".equals(protocol)) {
-            URI uri = Helper.toURI(url);
+            URI uri = Helper.toURI(rootUrl);
             
             File f;
             try {
@@ -70,19 +74,19 @@ public class ArchiveFactoryImpl implements ArchiveFactory {
             } catch (IllegalArgumentException e) {
                 // Invalid uri for File. Go our back up route of using the 
                 // path from the url.
-                f = new File(url.getPath());
+                f = new File(rootUrl.getPath());
             }
         
             if (f.isDirectory()) {
                 // e.g. file:/tmp/a_ear/ejb_jar
-                result = new DirectoryArchive(f);
+                result = new DirectoryArchive(f, descriptorLocation);
             } else {
                 // e.g. file:/tmp/a_ear/lib/pu.jarlo
                 // It's not a directory. Then it must be a jar file.
-                result = new JarFileArchive(new JarFile(f));
+                result = new JarFileArchive(new JarFile(f), descriptorLocation);
             }
         } else if ("jar".equals(protocol)) { // NOI18N
-            JarURLConnection conn = JarURLConnection.class.cast(url.openConnection());
+            JarURLConnection conn = JarURLConnection.class.cast(rootUrl.openConnection());
             JarEntry je = conn.getJarEntry();
             if (je == null) {
                 // e.g. jar:file:/tmp/a_ear/lib/pu.jar!/
@@ -92,21 +96,21 @@ public class ArchiveFactoryImpl implements ArchiveFactory {
                 // but containers (e.g.) WebLogic return this kind of URL,
                 // so we better handle this in our code to imrove pluggability.
                 // Read the entire jar file.
-                result = new JarFileArchive(conn.getJarFile());
+                result = new JarFileArchive(conn.getJarFile(), descriptorLocation);
             } else if (je.isDirectory()) {
                 // e.g. jar:file:/tmp/a_ear/b.war!/WEB-INF/classes/
                 // entryName [je.getName()] is a directory
-                result = new DirectoryInsideJarURLArchive(url);
+                result = new DirectoryInsideJarURLArchive(rootUrl, descriptorLocation);
             } else {
                 // some URL (e.g.) jar:file:/tmp/a_ear/b.war!/WEB-INF/lib/pu.jar
                 // entryName [je.getName()] is a file, so treat this URL as a
                 // URL from which  a JAR format InputStream can be obtained.
-                result = new JarInputStreamURLArchive(url);
+                result = new JarInputStreamURLArchive(rootUrl, descriptorLocation);
             }
-        } else if (isJarInputStream(url)){
-            result = new JarInputStreamURLArchive(url);
+        } else if (isJarInputStream(rootUrl)){
+            result = new JarInputStreamURLArchive(rootUrl, descriptorLocation);
         } else {
-            result = new URLArchive(url);
+            result = new URLArchive(rootUrl, descriptorLocation);
         }
         logger.exiting("ArchiveFactoryImpl", "createArchive", result);
         return result;

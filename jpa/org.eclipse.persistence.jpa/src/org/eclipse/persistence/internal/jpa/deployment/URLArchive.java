@@ -29,27 +29,23 @@ import org.eclipse.persistence.jpa.Archive;
  *
  * @author Sanjeeb.Sahoo@Sun.COM
  */
-public class URLArchive implements Archive {
+public class URLArchive extends ArchiveBase implements Archive {
     /*
      * Implementation Note: This class does not have any dependency on either
      * EclipseLink or GlassFish implementation classes. Please retain this separation.
      */
 
-    /**
-     * The URL representation of this archive.
-     */
-    private URL url;
-
-    public URLArchive(URL url) {
-        this.url = url;
+    public URLArchive(URL url, String descriptorLocation) {
+        super(url, descriptorLocation);
     }
+
 
     public Iterator<String> getEntries() {
         return Collections.EMPTY_LIST.iterator();
     }
 
     public InputStream getEntry(String entryPath) throws IOException {
-        URL subEntry = new URL(url, entryPath);
+        URL subEntry = new URL(rootURL, entryPath);
         InputStream is = null;
         try {
             is = subEntry.openStream();
@@ -60,7 +56,7 @@ public class URLArchive implements Archive {
     }
 
     public URL getEntryAsURL(String entryPath) throws IOException {
-        URL subEntry = new URL(url, entryPath);
+        URL subEntry = new URL(rootURL, entryPath);
         try {
             InputStream is = subEntry.openStream();
             if (is == null){
@@ -71,10 +67,6 @@ public class URLArchive implements Archive {
             return null; // return null when entry does not exist
         }
         return subEntry;
-    }
-
-    public URL getRootURL() {
-        return url;
     }
 
     public void close() {

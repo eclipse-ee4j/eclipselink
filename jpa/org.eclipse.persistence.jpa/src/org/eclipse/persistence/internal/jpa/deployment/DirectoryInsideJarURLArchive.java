@@ -33,16 +33,13 @@ import org.eclipse.persistence.jpa.Archive;
  *
  * @author Sanjeeb.Sahoo@Sun.COM
  */
-public class DirectoryInsideJarURLArchive  implements Archive {
+public class DirectoryInsideJarURLArchive extends ArchiveBase implements Archive {
     /*
      * Implementation Note: This class does not have any dependency on either
      * EclipseLink or GlassFish implementation classes. Please retain this separation.
      */
 
     private JarFile jarFile;
-
-    // URL representation of this archive
-    private URL rootURL;
 
     // distance from top of the JarFile to the entry
     private String relativeRootPath;
@@ -53,17 +50,19 @@ public class DirectoryInsideJarURLArchive  implements Archive {
     private Logger logger;
 
     @SuppressWarnings("deprecation")
-    public DirectoryInsideJarURLArchive(URL url) throws IOException {
-        this(url, Logger.global);
+    public DirectoryInsideJarURLArchive(URL url, String descriptorLocation) throws IOException {
+        this(url, descriptorLocation, Logger.global);
     }
 
-    public DirectoryInsideJarURLArchive(URL url, Logger logger)
+    public DirectoryInsideJarURLArchive(URL url, String descriptorLocation, Logger logger)
             throws IOException {
+        super();
         logger.entering("DirectoryInsideJarURLArchive", "DirectoryInsideJarURLArchive",  // NOI18N
                 new Object[]{url});
         this.logger = logger;
         assert(url.getProtocol().equals("jar")); // NOI18N
         rootURL = url;
+        this.descriptorLocation = descriptorLocation;
         JarURLConnection conn =
                 JarURLConnection.class.cast(url.openConnection());
         jarFile = conn.getJarFile();
@@ -72,7 +71,7 @@ public class DirectoryInsideJarURLArchive  implements Archive {
         relativeRootPath = conn.getEntryName();
         init();
     }
-
+    
     private void init() {
         for(Enumeration<JarEntry> jarEntries = jarFile.entries();
             jarEntries.hasMoreElements();) {
@@ -103,10 +102,6 @@ public class DirectoryInsideJarURLArchive  implements Archive {
         URL result = entries.contains(entryPath) ?
             new URL("jar:"+rootURL+"!/"+ relativeRootPath + entryPath) : null; // NOI18N
         return result;
-    }
-
-    public URL getRootURL() {
-        return rootURL;
     }
 
     public void close() {
