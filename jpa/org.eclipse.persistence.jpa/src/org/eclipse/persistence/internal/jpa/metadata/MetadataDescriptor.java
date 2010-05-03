@@ -60,6 +60,8 @@
  *                      during MetadataProject.addMetamodelMappedSuperclass()
  *     04/09/2010-2.1 Guy Pelletier 
  *       - 307050: Add defaults for access methods of a VIRTUAL access type
+ *     05/03/2009-1.2.1 Guy Pelletier 
+ *       - 307547:  Exception in order by clause after migrating to eclipselink 1.2 release
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata;
 
@@ -434,27 +436,46 @@ public class MetadataDescriptor {
     
     /**
      * INTERNAL:
-     * This method will first check for an accessor with name equal to 
-     * fieldOrPropertyName (that is, assumes it is a field name). If no accessor
-     * is found than it assumes fieldOrPropertyName is a property name and 
-     * converts it to its corresponding field name and looks for the accessor
-     * again. If still no accessor is found and this descriptor represents an
-     * inheritance subclass, then traverse up the chain to look for that
-     * accessor. Null is returned otherwise.
+     * This method will first check for an accessor with name equal to field or 
+     * property name. If no accessor is found than it assumes the field or 
+     * property name passed in may be a method name and converts it to its 
+     * corresponding property name and looks for the accessor again. If still no 
+     * accessor is found and this descriptor represents an inheritance subclass, 
+     * then traverse up the chain to look for that accessor. Null is returned 
+     * otherwise.
      */
     public MappingAccessor getAccessorFor(String fieldOrPropertyName) {
+        return getAccessorFor(fieldOrPropertyName, true);
+    }
+    
+    /**
+     * INTERNAL:
+     * This method will first check for an accessor with name equal to field or 
+     * property name. If no accessor is found and the checkForMethodName flag is
+     * set to true then we'll attempt to convert a potential method name to its 
+     * corresponding property name and looks for the accessor again. If still no 
+     * accessor is found and this descriptor represents an inheritance subclass, 
+     * then traverse up the chain to look for that accessor. Null is returned 
+     * otherwise.
+     */
+    protected MappingAccessor getAccessorFor(String fieldOrPropertyName, boolean checkForMethodName) {
         MappingAccessor accessor = m_accessors.get(fieldOrPropertyName);
         
         if (accessor == null) {
-            // Perhaps we have a property name ...
-            accessor = m_accessors.get(Helper.getAttributeNameFromMethodName(fieldOrPropertyName));
+            // Perhaps we have a method name. This is value add, and maybe we
+            // really shouldn't do this but it covers the following case:
+            // <order-by>age, getGender DESC</order-by>, where the user
+            // specifies a method name.
+            if (checkForMethodName) {
+                accessor = m_accessors.get(Helper.getAttributeNameFromMethodName(fieldOrPropertyName));
+            }
            
             // If still no accessor and we are an inheritance subclass, check 
             // our parent descriptor. Unless we are within a table per class 
             // strategy in which case, if the mapping doesn't exist within our
             // accessor list, we don't want to deal with it.
             if (accessor == null && isInheritanceSubclass() && ! usesTablePerClassInheritanceStrategy()) {
-                accessor = getInheritanceParentDescriptor().getAccessorFor(fieldOrPropertyName);
+                accessor = getInheritanceParentDescriptor().getAccessorFor(fieldOrPropertyName, checkForMethodName);
             }
         }
         
@@ -462,14 +483,14 @@ public class MetadataDescriptor {
             // We didn't find an accessor on our descriptor (or a parent descriptor), 
             // check our aggregate descriptors now.
             for (MetadataDescriptor embeddableDescriptor : m_embeddableDescriptors) {
-              // If the attribute name employs the dot notation, rip off the first 
-              // bit (up to the first dot and keep burying down the embeddables)
+                // If the attribute name employs the dot notation, rip off the first 
+                // bit (up to the first dot and keep burying down the embeddables)
                 String subAttributeName = new String(fieldOrPropertyName);
                 if (subAttributeName.contains(".")) {
                     subAttributeName = subAttributeName.substring(fieldOrPropertyName.indexOf(".") + 1);
                 }
             
-                accessor = embeddableDescriptor.getAccessorFor(subAttributeName);
+                accessor = embeddableDescriptor.getAccessorFor(subAttributeName, checkForMethodName);
             
                 if (accessor != null) {
                     // Found one, stop looking ...
@@ -1003,7 +1024,7 @@ public class MetadataDescriptor {
      * attribute name.
      */
     public boolean hasAccessorFor(String attributeName) {
-        return getAccessorFor(attributeName) != null;
+    	return getAccessorFor(attributeName, false) != null;
     }
     
     /**

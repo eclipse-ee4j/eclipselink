@@ -9,6 +9,8 @@
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
+ *     05/03/2009-1.2.1 Guy Pelletier 
+ *       - 307547:  Exception in order by clause after migrating to eclipselink 1.2 release
  ******************************************************************************/  
 package org.eclipse.persistence.testing.models.jpa.fieldaccess.advanced;
 
@@ -555,6 +557,36 @@ public class AdvancedTableCreator extends TogglingFastTableCreator {
         fieldFormerEndDate.setIsIdentity(false );
         table.addField(fieldFormerEndDate);
 
+        FieldDefinition fieldISMANAGER = new FieldDefinition();
+        fieldISMANAGER.setName("ISMANAGER");
+        fieldISMANAGER.setTypeName("VARCHAR");
+        fieldISMANAGER.setSize(5);
+        fieldISMANAGER.setShouldAllowNull(true);
+        fieldISMANAGER.setIsPrimaryKey(false);
+        fieldISMANAGER.setUnique(false);
+        fieldISMANAGER.setIsIdentity(false);
+        table.addField(fieldISMANAGER);
+        
+        FieldDefinition fieldGETMANAGER = new FieldDefinition();
+        fieldGETMANAGER.setName("GETMANAGER");
+        fieldGETMANAGER.setTypeName("VARCHAR");
+        fieldGETMANAGER.setSize(5);
+        fieldGETMANAGER.setShouldAllowNull(true);
+        fieldGETMANAGER.setIsPrimaryKey(false);
+        fieldGETMANAGER.setUnique(false);
+        fieldGETMANAGER.setIsIdentity(false);
+        table.addField(fieldGETMANAGER);
+        
+        FieldDefinition fieldSETMANAGER = new FieldDefinition();
+        fieldSETMANAGER.setName("SETMANAGER");
+        fieldSETMANAGER.setTypeName("VARCHAR");
+        fieldSETMANAGER.setSize(40);
+        fieldSETMANAGER.setShouldAllowNull(true);
+        fieldSETMANAGER.setIsPrimaryKey(false);
+        fieldSETMANAGER.setUnique(false);
+        fieldSETMANAGER.setIsIdentity(false);
+        table.addField(fieldSETMANAGER);
+        
 /*        ForeignKeyConstraint foreignKeyEMPLOYEE_ADDRESS = new ForeignKeyConstraint();
         foreignKeyEMPLOYEE_ADDRESS.setName("EMPLOYEE_ADDRESS");
         foreignKeyEMPLOYEE_ADDRESS.setTargetTable("CMP3_FA_ADDRESS");
