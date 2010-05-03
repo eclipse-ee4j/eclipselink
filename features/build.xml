@@ -92,7 +92,7 @@
         <property name="category.qualifier"                 value="${version.string}"/>
 
         <!-- Tool definitions -->
-        <property name="p2.SDK.install.dir" value="C:/eclipseSDK-I20100309-0100/eclipse"/>
+        <property name="p2.SDK.install.dir" value="C:/eclipseSDK-3.6M6/eclipse"/>
         <property name="p2.SDK.plugin.dir" value="${p2.SDK.install.dir}/plugins"/>
         <property name="p2.publisher.jar" value="org.eclipse.equinox.p2.publisher_*.jar"/>
         <property name="p2.launcher.jar" value="org.eclipse.equinox.launcher_*.jar"/>
@@ -182,7 +182,7 @@
     <target name="sign-jars"                     depends="create-sign-zipfile, copy-and-queue-for-sign"/>
     <target name="assemble-repos"                depends="populate-p2-site, publish-p2-repos"/>
     <!-- End ** DO NOT ALTER LIGHTLY ** Block -->
-    
+
     <!-- Feature Targets -->
     <!-- clean -->
     <target name="clean" depends="init" description="Clean all generated content">
@@ -312,7 +312,7 @@
             </and>
         </condition>
     </target>
-    
+
     <target name="not-ready-to-go" unless="ready-to-go" depends="test-ready-to-go">
         <fail message="Bundle Installer or p2 archive not found! Skipping P2 repos generation."/>
     </target>
@@ -357,7 +357,7 @@
     </target>
 
     <target name="publish-p2-repos" depends="init, publish-p2-solitary, publish-p2-child"/>
-    
+
     <target name="create-site-for-generation" unless="do.composite">
         <mkdir dir="${site.dir}"/>
         <delete file="${site.dir}/site.xml" quiet="true"/>
@@ -397,7 +397,7 @@
             <arg line=" -compress -publishArtifacts -configs all" />
         </java>
     </target>
-    
+
     <target name="publish-p2-child" if="do.composite">
         <echo message="java.home        ='${java.home}'"/>
         <echo message="p2.SDK.plugin.dir='${p2.SDK.plugin.dir}'"/>
@@ -472,5 +472,5 @@
             <arg line=" -verbose -raw" />
         </java>
     </target>
-    
+
 </project>
