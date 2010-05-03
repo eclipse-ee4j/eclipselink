@@ -9,6 +9,8 @@
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
+ *     05/03/2009-1.2.1 Guy Pelletier 
+ *       - 307547:  Exception in order by clause after migrating to eclipselink 1.2 release
  ******************************************************************************/  
 package org.eclipse.persistence.testing.tests.jpa.fieldaccess.advanced;
 
@@ -72,6 +74,7 @@ public class AdvancedJPAJunitTest extends JUnitTestCase {
         
         suite.addTest(new AdvancedJPAJunitTest("testJoinFetchAnnotation"));
         suite.addTest(new AdvancedJPAJunitTest("testVerifyEmployeeCustomizerSettings"));
+        suite.addTest(new AdvancedJPAJunitTest("testVerifyEmployeeManagerMappings"));
         
         suite.addTest(new AdvancedJPAJunitTest("testUpdateEmployee"));
         suite.addTest(new AdvancedJPAJunitTest("testVerifyUpdatedEmployee"));
@@ -185,6 +188,25 @@ public class AdvancedJPAJunitTest extends JUnitTestCase {
             fail("A descriptor for the Employee alias was not found.");    
         } else {
             assertFalse("Disable cache hits was true. Customizer should have made it false.", descriptor.shouldDisableCacheHits());
+        }
+        
+        closeEntityManager(em);
+    }
+    
+    /**
+     * Bug 307547: Verifies that a mapping is not omitted from the descriptor after metadata processing.
+     */
+    public void testVerifyEmployeeManagerMappings() {
+    	EntityManager em = createEntityManager("fieldaccess");
+        
+        ClassDescriptor descriptor = getServerSession("fieldaccess").getDescriptorForAlias("Employee");
+            
+        if (descriptor == null) {
+            fail("A descriptor for the Employee alias was not found.");    
+        } else {
+            assertNotNull("The isManager mapping was not found on the Employee descriptor.", descriptor.getMappingForAttributeName("isManager"));
+            assertNotNull("The getManager mapping was not found on the Employee descriptor.", descriptor.getMappingForAttributeName("getManager"));
+            assertNotNull("The setManager mapping was not found on the Employee descriptor.", descriptor.getMappingForAttributeName("setManager"));
         }
         
         closeEntityManager(em);
