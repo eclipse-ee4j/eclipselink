@@ -41,11 +41,11 @@ import org.eclipse.persistence.testing.framework.junit.JUnitTestCase;
 public class TestRunnerBean implements TestRunner {
     
     /** The entity manager for the test is injected and passed to the test server platform. */
-    @PersistenceContext
+    @PersistenceContext(unitName="%%puName%%")
     private EntityManager entityManager;
 
     /** The entity manager factory for the test is injected and passed to the test server platform. */
-    @PersistenceUnit
+    @PersistenceUnit(unitName="%%puName%%")
     private EntityManagerFactory entityManagerFactory;
     
     /**

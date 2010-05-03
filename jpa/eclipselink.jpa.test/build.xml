@@ -1450,6 +1450,48 @@
         </ant>
     </target>
 
+    <target name="prepare-server-sessionbeans">
+        <copy file="${eclipselink.jpa.test}/src/org/eclipse/persistence/testing/framework/server/TestRunnerBean.java" tofile="${eclipselink.jpa.test}/src/org/eclipse/persistence/testing/framework/server/TestRunnerBean.java_original"/>
+        <replace file="${eclipselink.jpa.test}/${src.dir}/org/eclipse/persistence/testing/framework/server/TestRunnerBean.java" token='%%puName%%' value="${PERSISTENCE_UNIT_NAME}"/>
+        <antcall target="prepare-multiple-persistence-units-sessionbeans" inheritRefs="true"/>
+    </target>
+
+    <target name="prepare-multiple-persistence-units-sessionbeans" if="USE_MULTIPLE_PERSISTENCE_UNITS">
+        <copy todir="${eclipselink.jpa.test}/${src.dir}/org/eclipse/persistence/testing/framework/server" overwrite="true">
+            <fileset dir="${eclipselink.jpa.test}/${resource.dir}/server" includes="TestRunner*.java"/>
+        </copy>
+        <replace dir="${eclipselink.jpa.test}/${src.dir}/org/eclipse/persistence/testing/framework/server" token='%%puName1%%' value="${PERSISTENCE_UNIT_NAME1}">
+            <include name="*.java"/>
+        </replace>
+        <replace dir="${eclipselink.jpa.test}/${src.dir}/org/eclipse/persistence/testing/framework/server" token='%%puName2%%' value="${PERSISTENCE_UNIT_NAME2}">
+            <include name="*.java"/>
+        </replace>
+        <replace dir="${eclipselink.jpa.test}/${src.dir}/org/eclipse/persistence/testing/framework/server" token='%%puName3%%' value="${PERSISTENCE_UNIT_NAME3}">
+            <include name="*.java"/>
+        </replace>
+        <replace dir="${eclipselink.jpa.test}/${src.dir}/org/eclipse/persistence/testing/framework/server" token='%%puName4%%' value="${PERSISTENCE_UNIT_NAME4}">
+            <include name="*.java"/>
+        </replace>
+    </target>
+
+    <target name="recover-server-sessionbeans" depends="server-original-sessionbean-existence" if="original.sessionbean.exists"> 
+        <move file="${eclipselink.jpa.test}/src/org/eclipse/persistence/testing/framework/server/TestRunnerBean.java_original" tofile="${eclipselink.jpa.test}/src/org/eclipse/persistence/testing/framework/server/TestRunnerBean.java" overwrite="true"/>     
+        <antcall target="remove-multiple-persistence-units-sessionbeans" inheritRefs="true"/>
+    </target>
+    
+    <target name="server-original-sessionbean-existence">
+        <available file="${eclipselink.jpa.test}/src/org/eclipse/persistence/testing/framework/server/TestRunnerBean.java_original" property="original.sessionbean.exists" value="true" />
+    </target>
+
+    <target name="remove-multiple-persistence-units-sessionbeans" if="USE_MULTIPLE_PERSISTENCE_UNITS">
+        <delete>
+            <fileset dir="${eclipselink.jpa.test}/${src.dir}/org/eclipse/persistence/testing/framework/server" 
+            includes="TestRunner1*.java
+                      TestRunner2*.java
+                      TestRunner3*.java
+                      TestRunner4*.java"/>
+        </delete>
+    </target>
     <!-- Build server test client jar. -->
     <target name="server-build-client-jar" depends="config-trunk, config-flat">
         <property file="${user.home}/${server.name}.properties"/>
@@ -1465,7 +1507,7 @@
             source="${javac.version}"
             target="${javac.version}"
             deprecation="${javac.deprecation}"
-            failonerror="true"
+            failonerror="false"
             includes="org/eclipse/persistence/testing/framework/**">
             <classpath refid="compile.server.path"/>
         </javac>
@@ -1478,7 +1520,7 @@
             source="${javac.version}"
             target="${javac.version}"
             deprecation="${javac.deprecation}"
-            failonerror="true"
+            failonerror="false"
             includes="${TEST_DIR}/**/*.java"
             excludes="org/eclipse/persistence/testing/tests/jpa/criteria/CriteriaServerTestSuite.java">
             <classpath refid="compile.server.path"/>
@@ -1492,7 +1534,7 @@
             source="${javac.version}"
             target="${javac.version}"
             deprecation="${javac.deprecation}"
-            failonerror="true"
+            failonerror="false"
             includes="org/eclipse/persistence/testing/framework/junit/**">
             <classpath refid="compile.server.path"/>
         </javac>
@@ -1523,7 +1565,7 @@
             source="${javac.version}"
             target="${javac.version}"
             deprecation="${javac.deprecation}"
-            failonerror="true"
+            failonerror="false"
             includes="org/eclipse/persistence/testing/framework/**">
             <classpath refid="compile.server.path"/>
         </javac>
@@ -1536,7 +1578,7 @@
             source="${javac.version}"
             target="${javac.version}"
             deprecation="${javac.deprecation}"
-            failonerror="true"
+            failonerror="false"
             includes="${TEST_DIR}/**/*.java"
             excludes="org/eclipse/persistence/testing/tests/jpa/criteria/CriteriaServerTestSuite.java">
             <classpath refid="compile.server.path"/>
@@ -1550,7 +1592,7 @@
             source="${javac.version}"
             target="${javac.version}"
             deprecation="${javac.deprecation}"
-            failonerror="true"
+            failonerror="false"
             includes="org/eclipse/persistence/testing/framework/junit/**,
                 org/eclipse/persistence/testing/framework/AutoVerifyTestCase.java,
                 org/eclipse/persistence/testing/framework/TestCase.java,
@@ -1585,7 +1627,7 @@
             source="${javac.version}"
             target="${javac.version}"
             deprecation="${javac.deprecation}"
-            failonerror="true"
+            failonerror="false"
             includes="${MODEL_DIR}/**/*.java">
             <classpath refid="compile.server.path"/>
         </javac>
@@ -1598,7 +1640,7 @@
             source="${javac.version}"
             target="${javac.version}"
             deprecation="${javac.deprecation}"
-            failonerror="true"
+            failonerror="false"
             includes="${MODEL_DIR2}/*.java">
             <classpath refid="compile.server.path"/>
         </javac>
@@ -1757,11 +1799,12 @@
     </target>
 
     <!-- Build the client jar, ejb jar, and ear. -->
-    <target name="server-build" depends="prepare-non-jta-ds-servertest,server-build-client-jar,server-build-ejb-jar,server-build-ear"/>
+    <target name="server-build" depends="prepare-non-jta-ds-servertest,prepare-server-sessionbeans,server-build-client-jar,server-build-ejb-jar,server-build-ear"/>
 
     <!-- Build, deploy and run a test suite on the server. -->
     <target name="server-run-all" depends="detect-os,set-server-properties">
         <antcall target="server-build" inheritRefs="true"/>
+        <antcall target="recover-server-sessionbeans" inheritRefs="true"/>
         <antcall target="cleanup-non-jta-ds-servertest" inheritRefs="true"/>
         <antcall target="server-deploy" inheritRefs="true">
             <param name="ear.name" value="${EAR_NAME}.ear"/>
@@ -1923,6 +1966,11 @@
     <target name="server-test-cacheable">
         <antcall target="server-run-all" inheritRefs="true">
             <param name="PERSISTENCE_UNIT_NAME" value="default"/>
+            <param name="USE_MULTIPLE_PERSISTENCE_UNITS" value="true"/>
+            <param name="PERSISTENCE_UNIT_NAME1" value="DISABLE_SELECTIVE"/>
+            <param name="PERSISTENCE_UNIT_NAME2" value="ENABLE_SELECTIVE"/>
+            <param name="PERSISTENCE_UNIT_NAME3" value="ALL"/>
+            <param name="PERSISTENCE_UNIT_NAME4" value="NONE"/>
             <param name="MODEL_DIR" value="org/eclipse/persistence/testing/models/jpa/cacheable"/>
             <param name="MODEL_NAME" value="eclipselink-cacheable-model"/>
             <param name="TEST_DIR" value="org/eclipse/persistence/testing/tests/jpa/cacheable"/>
