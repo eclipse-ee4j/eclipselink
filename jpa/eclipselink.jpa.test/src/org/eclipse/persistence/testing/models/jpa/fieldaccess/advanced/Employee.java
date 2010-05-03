@@ -9,6 +9,8 @@
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
+ *     05/03/2009-1.2.1 Guy Pelletier 
+ *       - 307547:  Exception in order by clause after migrating to eclipselink 1.2 release
  ******************************************************************************/  
 package org.eclipse.persistence.testing.models.jpa.fieldaccess.advanced;
 
@@ -172,6 +174,14 @@ public class Employee implements Serializable, Cloneable {
     
     @ManyToOne(cascade=PERSIST, fetch=LAZY)
     private Employee manager;
+    
+    @Basic
+    private String isManager;
+    @Basic
+    private String setManager;
+    @Basic
+    private String getManager;
+    
     
     @Embedded
     @AttributeOverrides({
