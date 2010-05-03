@@ -213,10 +213,12 @@ public final class MWRelationalDirectMapMapping extends MWRelationalDirectContai
 
 		runtimeMapping.setContainerPolicy(this.containerPolicy.runtimeContainerPolicy());
 
-		runtimeMapping.setKeyConverter(getDirectKeyConverter().runtimeConverter(runtimeMapping));		
-
 		if (getDirectKeyColumn() != null) {
 			runtimeMapping.setDirectKeyFieldName(getDirectKeyColumn().qualifiedName());
+		}
+
+		if (!MWConverter.NO_CONVERTER.equals(getDirectKeyConverter().getType())) {
+			runtimeMapping.setKeyConverter(getDirectKeyConverter().runtimeConverter(runtimeMapping));
 		}
 
         return runtimeMapping;
