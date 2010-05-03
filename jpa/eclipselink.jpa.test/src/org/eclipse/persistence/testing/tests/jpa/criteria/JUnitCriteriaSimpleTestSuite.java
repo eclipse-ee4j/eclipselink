@@ -2703,8 +2703,8 @@ public class JUnitCriteriaSimpleTestSuite extends JUnitTestCase {
             
             em.remove(blueLight);
             em.remove(blue);
-            em.remove(bc1);
-            em.remove(bc2);
+            em.remove(blueLight.getBeerConsumer());
+            em.remove(blue.getBeerConsumer());
             commitTransaction(em);
             closeEntityManager(em);
         }
