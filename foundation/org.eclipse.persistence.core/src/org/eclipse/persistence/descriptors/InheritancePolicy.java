@@ -1309,12 +1309,14 @@ public class InheritancePolicy implements Serializable, Cloneable {
             joinedMappingIndexes = new HashMap();
         }
         ClassDescriptor rootDescriptor = query.getDescriptor();
-        for (Class concreteClass : classes) {
+        for (Class concreteClass : classes) {            
             if (!uniqueClasses.contains(concreteClass)) {
                 continue;
             }
             query.getSession().logMessage("" + concreteClass);
+            Set<Class> subclasses = new HashSet<Class>();
             uniqueClasses.remove(concreteClass);
+            subclasses.add(concreteClass);
             ClassDescriptor concreteDescriptor = getDescriptor(concreteClass);
             if (concreteDescriptor == null) {
                 throw QueryException.noDescriptorForClassFromInheritancePolicy(query, concreteClass);
@@ -1327,13 +1329,14 @@ public class InheritancePolicy implements Serializable, Cloneable {
                 concreteDescriptor = parentDescriptor;
                 concreteClass = concreteDescriptor.getJavaClass();
                 uniqueClasses.remove(concreteClass);
+                subclasses.add(concreteClass);
                 concretePolicy = concreteDescriptor.getInheritancePolicy();
                 parentDescriptor = concretePolicy.getParentDescriptor();
                 query.getSession().logMessage("Parent:" + concreteClass);
             }
             // If this class has children select them all.
             if (concretePolicy.hasChildren() && !concretePolicy.hasMultipleTableChild()) {
-                removeChildren(concreteDescriptor, uniqueClasses);
+                removeChildren(concreteDescriptor, uniqueClasses, subclasses);
             }
             ReadAllQuery concreteQuery = (ReadAllQuery)query.clone();
             concreteQuery.setReferenceClass(concreteClass);
@@ -1342,15 +1345,16 @@ public class InheritancePolicy implements Serializable, Cloneable {
             rows = Helper.concatenateVectors(rows, concreteRows);
             
             if (joinedMappingIndexes != null) {
-                Iterator it = concreteQuery.getJoinedAttributeManager().getJoinedMappingIndexes_().entrySet().iterator();
-                while (it.hasNext()) {
-                    Map.Entry entry = (Map.Entry)it.next();
-                    HashMap map = (HashMap)joinedMappingIndexes.get(entry.getKey());
-                    if (map == null) {
-                        map = new HashMap(classes.size());
-                        joinedMappingIndexes.put(entry.getKey(), map);
+                // Need to set mapping index for each select, as each row size is different.
+                for (Map.Entry entry : concreteQuery.getJoinedAttributeManager().getJoinedMappingIndexes_().entrySet()) {
+                    HashMap mappingIndexes = (HashMap)joinedMappingIndexes.get(entry.getKey());
+                    if (mappingIndexes == null) {
+                        mappingIndexes = new HashMap(classes.size());
+                        joinedMappingIndexes.put(entry.getKey(), mappingIndexes);
                     }
-                    map.put(concreteClass, entry.getValue());
+                    for (Class subclass : subclasses) {
+                        mappingIndexes.put(subclass, entry.getValue());
+                    }
                 }
             }
         }
@@ -1364,10 +1368,11 @@ public class InheritancePolicy implements Serializable, Cloneable {
     /**
      * Remove all of the subclasses (and so on) from the set of classes.
      */
-    protected void removeChildren(ClassDescriptor descriptor, Set<Class> classes) {
+    protected void removeChildren(ClassDescriptor descriptor, Set<Class> classes, Set<Class> subclasses) {
         for (ClassDescriptor childDescriptor : descriptor.getInheritancePolicy().getChildDescriptors()) {
             classes.remove(childDescriptor.getJavaClass());
-            removeChildren(childDescriptor, classes);
+            subclasses.add(childDescriptor.getJavaClass());
+            removeChildren(childDescriptor, classes, subclasses);
         }
     }
 

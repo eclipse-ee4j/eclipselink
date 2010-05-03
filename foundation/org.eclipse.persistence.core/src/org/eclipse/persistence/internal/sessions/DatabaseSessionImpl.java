@@ -466,12 +466,6 @@ public class DatabaseSessionImpl extends AbstractSession implements org.eclipse.
                 }
             }
 
-            try {
-                getCommitManager().initializeCommitOrder();
-            } catch (RuntimeException exception) {
-                getIntegrityChecker().handleError(exception);
-            }
-
             if (getIntegrityChecker().hasErrors()) {
                 //CR#4011
                 handleSevere(new IntegrityException(getIntegrityChecker()));
@@ -479,6 +473,8 @@ public class DatabaseSessionImpl extends AbstractSession implements org.eclipse.
         } finally {
             clearIntegrityChecker();
         }
+
+        getCommitManager().initializeCommitOrder();
     }
 
     /**

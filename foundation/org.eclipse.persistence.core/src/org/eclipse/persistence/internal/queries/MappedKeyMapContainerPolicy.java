@@ -487,7 +487,7 @@ public class MappedKeyMapContainerPolicy extends MapContainerPolicy {
      * Get the Converter for the key of this mapping if one exists.
      */
     public Converter getKeyConverter() {
-        if (((DatabaseMapping)keyMapping).isDirectToFieldMapping()) {
+        if ((keyMapping != null) && ((DatabaseMapping)keyMapping).isDirectToFieldMapping()) {
             return ((DirectToFieldMapping)keyMapping).getConverter();
         }
         return null;

@@ -9,7 +9,7 @@
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.testing.tests.feature;
 
 import org.eclipse.persistence.sessions.*;
@@ -29,12 +29,12 @@ public class IntegrityCheckerTest extends AutoVerifyTestCase {
         EmployeeProjectForIntegrityChecker ep = new EmployeeProjectForIntegrityChecker();
         ep.setLogin(getSession().getLogin());
         DatabaseSession ds = ep.createDatabaseSession();
-        ds.dontLogMessages();
+        ds.setSessionLog(getSession().getSessionLog());
         try {
             ds.login();
         } catch (IntegrityException ic) {
-		if (ic.getIntegrityChecker().getCaughtExceptions().size()!=16) {
-			throw new TestErrorException("" + ic.getIntegrityChecker().getCaughtExceptions().size() + "  Not equal to the Number of Exceptions to the excepted 15.");
+            if (ic.getIntegrityChecker().getCaughtExceptions().size() != 15) {
+                throw new TestErrorException("" + ic.getIntegrityChecker().getCaughtExceptions().size() + "  Not equal to the Number of Exceptions to the excepted 15.");
             }
             didErrorOccur = true;
         } finally {

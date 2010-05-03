@@ -9,7 +9,7 @@
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.testing.tests.feature;
 
 import org.eclipse.persistence.testing.framework.*;
@@ -28,14 +28,14 @@ public class ShouldThroughIntegrityCheckerTest extends org.eclipse.persistence.t
         EmployeeProjectForIntegrityChecker project = new EmployeeProjectForIntegrityChecker();
         project.setDatasourceLogin(getSession().getDatasourceLogin());
         DatabaseSession session = new Project(getSession().getDatasourceLogin()).createDatabaseSession();
-        session.dontLogMessages();
+        session.setSessionLog(getSession().getSessionLog());
         boolean caughtError = false;
         try {
             session.login();
             session.addDescriptors(project);
         } catch (IntegrityException integrityException) {
-		if (integrityException.getIntegrityChecker().getCaughtExceptions().size() != 16) {
-			throw new TestErrorException("" + integrityException.getIntegrityChecker().getCaughtExceptions().size() + "  Not equal to the Number of Exceptions to the excepted one.");
+            if (integrityException.getIntegrityChecker().getCaughtExceptions().size() != 15) {
+                throw new TestErrorException("" + integrityException.getIntegrityChecker().getCaughtExceptions().size() + "  Not equal to the Number of Exceptions to the excepted 15.");
             }
             caughtError = true;
         } finally {
