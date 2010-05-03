@@ -46,6 +46,7 @@ public class SimultaneousTestsModel extends TestModel {
 
     public void addTests() {
         addTest(new ConcurrencyTest());
+        addTest(new UpdateCacheKeyPropertiesTest());
         addTest(getReadEmployeeTestSuite());
         addTest(getAboutToUpdateEventTestSuite());
         addTest(getDescriptorQueryManagerAddQueryTest());
