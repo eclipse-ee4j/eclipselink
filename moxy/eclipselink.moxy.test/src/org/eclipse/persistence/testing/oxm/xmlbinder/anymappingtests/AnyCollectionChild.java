@@ -33,6 +33,12 @@ public class AnyCollectionChild {
             if ((content == null) && (((AnyCollectionChild)object).getContent() == null)) {
                 return true;
             }
+            if ((content == null) && (((AnyCollectionChild)object).getContent() != null)) {
+                return false;
+            }
+            if ((content != null) && (((AnyCollectionChild)object).getContent() == null)) {
+                return false;
+            }
             return this.content.equals(((AnyCollectionChild)object).getContent());
         }
         return false;
