@@ -2695,16 +2695,17 @@ public class JUnitCriteriaSimpleTestSuite extends JUnitTestCase {
             beginTransaction(em);
             blueLight = em.find(BlueLight.class, blueLight.getId());
             blueLight.getBeerConsumer().getBlueBeersToConsume().remove(blueLight);
+            em.remove(blueLight.getBeerConsumer());
             blueLight.setBeerConsumer(null);
             
             blue = em.find(Blue.class, blue.getId());
             blue.getBeerConsumer().getBlueBeersToConsume().remove(blue);
+            em.remove(blue.getBeerConsumer());
             blue.setBeerConsumer(null);
             
             em.remove(blueLight);
             em.remove(blue);
-            em.remove(blueLight.getBeerConsumer());
-            em.remove(blue.getBeerConsumer());
+
             commitTransaction(em);
             closeEntityManager(em);
         }
@@ -2742,7 +2743,7 @@ public class JUnitCriteriaSimpleTestSuite extends JUnitTestCase {
         Vector expectedResult = (Vector)getServerSession().executeQuery(query);
         
         clearCache();
-        
+        beginTransaction(em);
         //"SELECT e from Employee e join cast(e.project, LargeProject) p where p.budget = 1000
         CriteriaBuilder qb1 = em.getCriteriaBuilder();
         CriteriaQuery<Person> cq1 = qb1.createQuery(Person.class);
@@ -2755,7 +2756,6 @@ public class JUnitCriteriaSimpleTestSuite extends JUnitTestCase {
             List result = em.createQuery(cq1).getResultList();
             Assert.assertTrue("OneToOne cast failed.", comparer.compareObjects(result, expectedResult));
         } finally {
-            beginTransaction(em);
             rudy = em.find(Person.class, rudy.getId());
             rudy.setCar(null);
             
