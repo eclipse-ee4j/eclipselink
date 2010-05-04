@@ -331,9 +331,8 @@ public class DynamicJAXBContext extends org.eclipse.persistence.jaxb.JAXBContext
             p = g.generateProject();
             // Clear out InstantiationPolicy because it refers to ObjectFactory, which we won't be using
             Vector<ClassDescriptor> descriptors = (Vector<ClassDescriptor>) p.getOrderedDescriptors();
-            InstantiationPolicy blankPolicy = new InstantiationPolicy();
             for (ClassDescriptor classDescriptor : descriptors) {
-                classDescriptor.setInstantiationPolicy(blankPolicy);
+                classDescriptor.setInstantiationPolicy(new InstantiationPolicy());
             }
             dp = DynamicTypeBuilder.loadDynamicProject(p, null, dynamicClassLoader);
         } catch (Exception e) {
