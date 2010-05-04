@@ -108,7 +108,7 @@ public class StaticWeaveClassTransformer {
         }
         Archive archive = null;
         try {
-            archive = (new ArchiveFactoryImpl()).createArchive(inputArchiveURL);
+            archive = (new ArchiveFactoryImpl()).createArchive(inputArchiveURL, PersistenceUnitProperties.ECLIPSELINK_PERSISTENCE_XML_DEFAULT);
             
             List<SEPersistenceUnitInfo> persistenceUnitsList = 
             PersistenceUnitProcessor.processPersistenceArchive(archive, aclassloader);
