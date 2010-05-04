@@ -21,6 +21,7 @@ import org.eclipse.persistence.jaxb.javamodel.JavaMethod;
 import org.eclipse.persistence.jaxb.javamodel.JavaPackage;
 
 import java.lang.annotation.Annotation;
+import java.lang.reflect.AnnotatedElement;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.GenericArrayType;
@@ -52,7 +53,7 @@ public class JavaClassImpl implements JavaClass {
 
     protected ParameterizedType jType;
     protected Class jClass;
-    private JavaModelImpl javaModelImpl;
+    protected JavaModelImpl javaModelImpl;
 
     public JavaClassImpl(Class javaClass, JavaModelImpl javaModelImpl) {
         this.jClass = javaClass;
@@ -105,8 +106,8 @@ public class JavaClassImpl implements JavaClass {
     public JavaAnnotation getAnnotation(JavaClass arg0) {
         if (arg0 != null) {
             Class annotationClass = ((JavaClassImpl) arg0).getJavaClass();
-            if (jClass.isAnnotationPresent(annotationClass)) {
-                return new JavaAnnotationImpl(jClass.getAnnotation(annotationClass));
+            if (getAnnotatedElement().isAnnotationPresent(annotationClass)) {
+                return new JavaAnnotationImpl(getAnnotatedElement().getAnnotation(annotationClass));
             }
         }
         return null;
@@ -114,7 +115,7 @@ public class JavaClassImpl implements JavaClass {
 
     public Collection getAnnotations() {
         ArrayList<JavaAnnotation> annotationCollection = new ArrayList<JavaAnnotation>();
-        Annotation[] annotations = jClass.getAnnotations();
+        Annotation[] annotations = getAnnotatedElement().getAnnotations();
         for (Annotation annotation : annotations) {
             annotationCollection.add(new JavaAnnotationImpl(annotation));
         }
@@ -132,7 +133,7 @@ public class JavaClassImpl implements JavaClass {
 
     public JavaField getDeclaredField(String arg0) {
         try {
-            return new JavaFieldImpl(jClass.getDeclaredField(arg0), javaModelImpl);
+            return getJavaField(jClass.getDeclaredField(arg0));
         } catch (NoSuchFieldException nsfe) {
             return null;
         }
@@ -144,7 +145,7 @@ public class JavaClassImpl implements JavaClass {
                
         for (Field field : fields) {        	
             field.setAccessible(true);
-            fieldCollection.add(new JavaFieldImpl(field, javaModelImpl));
+            fieldCollection.add(getJavaField(field));
         }
         return fieldCollection;
     }
@@ -164,7 +165,7 @@ public class JavaClassImpl implements JavaClass {
             }
         }
         try {
-            return new JavaMethodImpl(jClass.getDeclaredMethod(arg0, params), javaModelImpl);
+            return getJavaMethod(jClass.getDeclaredMethod(arg0, params));
         } catch (NoSuchMethodException nsme) {
             return null;
         }
@@ -174,7 +175,7 @@ public class JavaClassImpl implements JavaClass {
         ArrayList<JavaMethod> methodCollection = new ArrayList<JavaMethod>();
         Method[] methods = jClass.getDeclaredMethods();
         for (Method method : methods) {
-            methodCollection.add(new JavaMethodImpl(method, javaModelImpl));
+            methodCollection.add(getJavaMethod(method));
         }
         return methodCollection;
     }
@@ -237,7 +238,7 @@ public class JavaClassImpl implements JavaClass {
     public JavaField getField(String arg0) {
         try {
             Field field = PrivilegedAccessHelper.getField(jClass, arg0, true);
-            return new JavaFieldImpl(field, javaModelImpl);
+            return getJavaField(field);
         } catch (NoSuchFieldException nsfe) {
             return null;
         }
@@ -247,7 +248,7 @@ public class JavaClassImpl implements JavaClass {
         ArrayList<JavaField> fieldCollection = new ArrayList<JavaField>();
         Field[] fields = PrivilegedAccessHelper.getFields(jClass);
         for (Field field : fields) {
-            fieldCollection.add(new JavaFieldImpl(field, javaModelImpl));
+            fieldCollection.add(getJavaField(field));
         }
         return fieldCollection;
     }
@@ -272,7 +273,7 @@ public class JavaClassImpl implements JavaClass {
         }
         try {
             Method method = PrivilegedAccessHelper.getMethod(jClass, arg0, params, true);
-            return new JavaMethodImpl(method, javaModelImpl);
+            return getJavaMethod(method);
         } catch (NoSuchMethodException nsme) {
             return null;
         }
@@ -282,7 +283,7 @@ public class JavaClassImpl implements JavaClass {
         ArrayList<JavaMethod> methodCollection = new ArrayList<JavaMethod>();
         Method[] methods = PrivilegedAccessHelper.getMethods(jClass);
         for (Method method : methods) {
-            methodCollection.add(new JavaMethodImpl(method, javaModelImpl));
+            methodCollection.add(getJavaMethod(method));
         }
         return methodCollection;
     }
@@ -331,6 +332,14 @@ public class JavaClassImpl implements JavaClass {
         }
         return false;
     }
+    
+    public JavaField getJavaField(Field field) {
+    	return new JavaFieldImpl(field, javaModelImpl);
+    }
+    
+    public JavaMethod getJavaMethod(Method method) {
+    	return new JavaMethodImpl(method, javaModelImpl);
+    }
 
     public JavaClass getOwningClass() {
         return javaModelImpl.getClass(jClass.getEnclosingClass());
@@ -342,6 +351,10 @@ public class JavaClassImpl implements JavaClass {
 
     public boolean isArray() {
         return jClass.isArray();
+    }
+    
+    public AnnotatedElement getAnnotatedElement() {
+    	return jClass;
     }
 
     /**

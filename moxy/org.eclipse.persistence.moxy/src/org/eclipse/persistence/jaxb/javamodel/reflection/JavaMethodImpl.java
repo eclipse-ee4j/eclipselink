@@ -18,6 +18,7 @@ import org.eclipse.persistence.jaxb.javamodel.JavaClass;
 import org.eclipse.persistence.jaxb.javamodel.JavaMethod;
 
 import java.lang.annotation.Annotation;
+import java.lang.reflect.AnnotatedElement;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.lang.reflect.ParameterizedType;
@@ -68,8 +69,8 @@ public class JavaMethodImpl implements JavaMethod {
     public JavaAnnotation getAnnotation(JavaClass arg0) {
         if (arg0 != null) {
             Class annotationClass = ((JavaClassImpl) arg0).getJavaClass();
-            if (jMethod.isAnnotationPresent(annotationClass)) {
-                return new JavaAnnotationImpl(jMethod.getAnnotation(annotationClass));
+            if (getAnnotatedElement().isAnnotationPresent(annotationClass)) {
+                return new JavaAnnotationImpl(getAnnotatedElement().getAnnotation(annotationClass));
             }
         }
         return null;
@@ -77,7 +78,7 @@ public class JavaMethodImpl implements JavaMethod {
 
     public Collection getAnnotations() {
         ArrayList<JavaAnnotation> annotationCollection = new ArrayList<JavaAnnotation>();
-        Annotation[] annotations = jMethod.getAnnotations();
+        Annotation[] annotations = getAnnotatedElement().getAnnotations();
         for (Annotation annotation : annotations) {
             annotationCollection.add(new JavaAnnotationImpl(annotation));
         }
@@ -130,6 +131,9 @@ public class JavaMethodImpl implements JavaMethod {
         return javaModelImpl.getClass(jMethod.getDeclaringClass());
     }
 
+    public AnnotatedElement getAnnotatedElement() {
+    	return jMethod;
+    }
     public boolean isAbstract() {
         return Modifier.isAbstract(getModifiers());
     }

@@ -18,6 +18,7 @@ import org.eclipse.persistence.jaxb.javamodel.JavaClass;
 import org.eclipse.persistence.jaxb.javamodel.JavaField;
 
 import java.lang.annotation.Annotation;
+import java.lang.reflect.AnnotatedElement;
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 import java.lang.reflect.ParameterizedType;
@@ -54,8 +55,8 @@ public class JavaFieldImpl implements JavaField {
     public JavaAnnotation getAnnotation(JavaClass arg0) {
         if (arg0 != null) {
             Class annotationClass = ((JavaClassImpl) arg0).getJavaClass();
-            if (jField.isAnnotationPresent(annotationClass)) {
-                return new JavaAnnotationImpl(jField.getAnnotation(annotationClass));
+            if (getAnnotatedElement().isAnnotationPresent(annotationClass)) {
+                return new JavaAnnotationImpl(getAnnotatedElement().getAnnotation(annotationClass));
             }
         }
         return null;
@@ -63,7 +64,7 @@ public class JavaFieldImpl implements JavaField {
 
     public Collection getAnnotations() {
         ArrayList<JavaAnnotation> annotationCollection = new ArrayList<JavaAnnotation>();
-        Annotation[] annotations = jField.getAnnotations();
+        Annotation[] annotations = getAnnotatedElement().getAnnotations();
         for (Annotation annotation : annotations) {
             annotationCollection.add(new JavaAnnotationImpl(annotation));
         }
@@ -101,6 +102,9 @@ public class JavaFieldImpl implements JavaField {
         return jField.isSynthetic();
     }
     
+    public AnnotatedElement getAnnotatedElement() {
+    	return jField;
+    }
     public Object get(Object obj) throws IllegalAccessException {    	
     	return PrivilegedAccessHelper.getValueFromField(jField, obj);
     }

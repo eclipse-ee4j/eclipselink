@@ -17,6 +17,7 @@ import org.eclipse.persistence.jaxb.javamodel.JavaClass;
 import org.eclipse.persistence.jaxb.javamodel.JavaPackage;
 
 import java.lang.annotation.Annotation;
+import java.lang.reflect.AnnotatedElement;
 import java.util.ArrayList;
 import java.util.Collection;
 
@@ -49,8 +50,8 @@ public class JavaPackageImpl implements JavaPackage {
     public JavaAnnotation getAnnotation(JavaClass arg0) {
         if (arg0 != null) {
             Class annotationClass = ((JavaClassImpl) arg0).getJavaClass();
-            if (jPkg != null && jPkg.isAnnotationPresent(annotationClass)) {
-               return new JavaAnnotationImpl(jPkg.getAnnotation(annotationClass));
+            if (jPkg != null && getAnnotatedElement().isAnnotationPresent(annotationClass)) {
+               return new JavaAnnotationImpl(getAnnotatedElement().getAnnotation(annotationClass));
             }
         }
         return null;
@@ -59,7 +60,7 @@ public class JavaPackageImpl implements JavaPackage {
     public Collection getAnnotations() {
         ArrayList<JavaAnnotation> annotationCollection = new ArrayList<JavaAnnotation>();
         if(jPkg != null){
-            Annotation[] annotations = jPkg.getAnnotations();
+            Annotation[] annotations = getAnnotatedElement().getAnnotations();
             for (Annotation annotation : annotations) {
                 annotationCollection.add(new JavaAnnotationImpl(annotation));
             }
@@ -81,6 +82,10 @@ public class JavaPackageImpl implements JavaPackage {
         }else{
             return null;
         }
+    }
+    
+    public AnnotatedElement getAnnotatedElement() {
+    	return jPkg;
     }
 
 //  ---------------- unimplemented methods ----------------//
