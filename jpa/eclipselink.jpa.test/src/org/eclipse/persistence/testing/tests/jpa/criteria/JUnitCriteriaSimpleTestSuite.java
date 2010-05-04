@@ -2679,7 +2679,8 @@ public class JUnitCriteriaSimpleTestSuite extends JUnitTestCase {
         Vector expectedResult = (Vector)getServerSession().executeQuery(query);
         
         clearCache();
-        
+        beginTransaction(em);
+
         //"SELECT e from Employee e join cast(e.project, LargeProject) p where p.budget = 1000
         CriteriaBuilder qb1 = em.getCriteriaBuilder();
         CriteriaQuery<BeerConsumer> cq1 = qb1.createQuery(BeerConsumer.class);
@@ -2692,7 +2693,7 @@ public class JUnitCriteriaSimpleTestSuite extends JUnitTestCase {
             List result = em.createQuery(cq1).getResultList();
             Assert.assertTrue("LargeProject cast failed.", comparer.compareObjects(result, expectedResult));
         } finally {
-            beginTransaction(em);
+
             blueLight = em.find(BlueLight.class, blueLight.getId());
             blueLight.getBeerConsumer().getBlueBeersToConsume().remove(blueLight);
             em.remove(blueLight.getBeerConsumer());
