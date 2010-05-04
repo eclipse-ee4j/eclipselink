@@ -83,11 +83,14 @@
     <target name="glassfish-install" depends="install-latest-glassfish">
         <copy file="${junit.lib}" todir="${glassfish.home}/domains/domain1/lib"/>
         <copy file="${jdbc.driver.jar}" todir="${glassfish.home}/domains/domain1/lib/ext"/>
-        <copy file="${eclipselink.lib}" todir="${glassfish.home}/domains/domain1/lib"/>
         <copy file="${oracle.extensions.depend.dir}/${oracle.spatial.lib}" todir="${glassfish.home}/domains/domain1/lib"/>
         <copy file="${oracle.extensions.depend.dir}/${oracle.xdb.lib}" todir="${glassfish.home}/domains/domain1/lib"/>
-        <!--copy file="${oracle.extensions.depend.dir}/${oracle.xmlparserv2.lib}" todir="${glassfish.home}/domains/domain1/lib"/-->
+        <antcall target="copy-eclipselink-to-glassfish2" inheritRefs="true"/>
         <antcall target="copy-eclipselink-and-persistence-latest-jars-to-glassfish3" inheritRefs="true"/>
+    </target>
+
+    <target name="copy-eclipselink-to-glassfish2" unless="is.v3">
+        <copy file="${eclipselink.lib}" todir="${glassfish.home}/domains/domain1/lib"/>
     </target>
 
     <target name="copy-eclipselink-and-persistence-latest-jars-to-glassfish3" if="is.v3">
