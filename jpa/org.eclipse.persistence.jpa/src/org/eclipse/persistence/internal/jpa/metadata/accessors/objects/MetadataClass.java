@@ -13,6 +13,8 @@
  *       - 218084: Implement metadata merging functionality between mapping files
  *     03/08/2010-2.1 Guy Pelletier 
  *       - 303632: Add attribute-type for mapping attributes to EclipseLink-ORM
+ *     05/04/2010-2.1 Guy Pelletier 
+ *       - 309373: Add parent class attribute to EclipseLink-ORM
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata.accessors.objects;
 
@@ -54,7 +56,8 @@ public class MetadataClass extends MetadataAnnotatedElement {
     // Method's next is used if multiple method with the same name.
     protected Map<String, MetadataMethod> m_methods;
     
-    protected String m_superclass;
+    protected MetadataClass m_superclass;
+    protected String m_superclassName;
 
     /**
      * Create the metadata class with the class name.
@@ -339,14 +342,18 @@ public class MetadataClass extends MetadataAnnotatedElement {
      * INTERNAL:
      */
     public MetadataClass getSuperclass() {
-        return getMetadataClass(m_superclass);
+        if (m_superclass == null) {
+            m_superclass = getMetadataClass(m_superclassName);
+        }
+        
+        return m_superclass;
     }
 
     /**
      * INTERNAL:
      */
     public String getSuperclassName() {
-        return m_superclass;
+        return m_superclassName;
     }
     
     /**
@@ -493,7 +500,14 @@ public class MetadataClass extends MetadataAnnotatedElement {
     /**
      * INTERNAL:
      */
-    public void setSuperclassName(String superclass) {
+    public void setSuperclass(MetadataClass superclass) {
         m_superclass = superclass;
+    } 
+    
+    /**
+     * INTERNAL:
+     */
+    public void setSuperclassName(String superclass) {
+        m_superclassName = superclass;
     } 
 }

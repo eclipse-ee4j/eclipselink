@@ -773,6 +773,7 @@
     </xsd:sequence>
     <xsd:attribute name="name" type="xsd:string"/>
     <xsd:attribute name="class" type="xsd:string" use="required"/>
+    <xsd:attribute name="parent-class" type="xsd:string"/>
     <xsd:attribute name="access" type="orm:access-type"/>
     <xsd:attribute name="cacheable" type="xsd:boolean"/>
     <xsd:attribute name="metadata-complete" type="xsd:boolean"/>
@@ -2558,6 +2559,7 @@
       <xsd:element name="attributes" type="orm:attributes" minOccurs="0"/>
     </xsd:sequence>
     <xsd:attribute name="class" type="xsd:string" use="required"/>
+    <xsd:attribute name="parent-class" type="xsd:string"/>
     <xsd:attribute name="access" type="orm:access-type"/>
     <xsd:attribute name="cacheable" type="xsd:boolean"/>
     <xsd:attribute name="metadata-complete" type="xsd:boolean"/>

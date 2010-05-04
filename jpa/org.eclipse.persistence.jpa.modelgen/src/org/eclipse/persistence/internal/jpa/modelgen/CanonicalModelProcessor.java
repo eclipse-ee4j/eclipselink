@@ -392,8 +392,7 @@ public class CanonicalModelProcessor extends AbstractProcessor {
         imps.add("javax.persistence.metamodel.StaticMetamodel");
         
         // Import the parent canonical class if need be.
-        MetadataClass cls = (MetadataClass) accessor.getAnnotatedElement();
-        MetadataClass parentCls = cls.getSuperclass();
+        MetadataClass parentCls = accessor.getJavaClass().getSuperclass();
         MetadataProject project = accessor.getProject();
         
         if (project.hasEntity(parentCls) || project.hasEmbeddable(parentCls) || project.hasMappedSuperclass(parentCls)) {

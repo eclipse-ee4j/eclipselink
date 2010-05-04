@@ -53,6 +53,8 @@
  *       - 211323: Add class extractor support to the EclipseLink-ORM.XML Schema
  *     04/09/2010-2.1 Guy Pelletier 
  *       - 307050: Add defaults for access methods of a VIRTUAL access type
+ *     05/04/2010-2.1 Guy Pelletier 
+ *       - 309373: Add parent class attribute to EclipseLink-ORM
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata.accessors.classes;
 
@@ -252,77 +254,76 @@ public class EntityAccessor extends MappedSuperclassAccessor {
         // that were discovered.
         clearMappedSuperclassesAndInheritanceParents();
         
-        EntityAccessor currentAccessor = this;
-        MetadataClass parent = getJavaClass().getSuperclass();
+        EntityAccessor currentEntityAccessor = this;
+        MetadataClass parentClass = getJavaClass().getSuperclass();
         List<String> genericTypes = getJavaClass().getGenericType();
         
         // We keep a list of potential subclass accessors to ensure they 
         // have their root parent descriptor set correctly.
-        List<EntityAccessor> subclassAccessors = new ArrayList<EntityAccessor>();
-        subclassAccessors.add(currentAccessor);
+        List<EntityAccessor> subclassEntityAccessors = new ArrayList<EntityAccessor>();
+        subclassEntityAccessors.add(currentEntityAccessor);
         
-        if ((parent != null) && !parent.isObject()) {
-            while ((parent != null) && !parent.isObject()) {
-                EntityAccessor parentAccessor = getProject().getEntityAccessor(parent.getName());
-            
-                // We found a parent entity.
-                if (parentAccessor != null) {
-                    // Set the immediate parent's descriptor to the current descriptor.
-                    currentAccessor.getDescriptor().setInheritanceParentDescriptor(parentAccessor.getDescriptor());
+        if (parentClass != null && !parentClass.isObject()) {
+            while (parentClass != null && !parentClass.isObject()) {
+                if (getProject().hasEntity(parentClass)) {
+                    // Our parent is an entity.
+                    EntityAccessor parentEntityAccessor = getProject().getEntityAccessor(parentClass);
+                    
+                    // Set the current entity's inheritance parent descriptor.
+                    currentEntityAccessor.getDescriptor().setInheritanceParentDescriptor(parentEntityAccessor.getDescriptor());
                 
-                    // Update the current accessor.
-                    currentAccessor = parentAccessor;
+                    // Update the current entity accessor.
+                    currentEntityAccessor = (EntityAccessor) parentEntityAccessor;
                 
                     // Clear out any previous mapped superclasses and inheritance 
                     // parents that were discovered. We're going to re-discover
                     // them now.
-                    currentAccessor.clearMappedSuperclassesAndInheritanceParents();
+                    currentEntityAccessor.clearMappedSuperclassesAndInheritanceParents();
                 
                     // If we found an entity with inheritance metadata, set the 
                     // root descriptor on its subclasses.
-                    if (currentAccessor.hasInheritance()) {
-                        for (EntityAccessor subclassAccessor : subclassAccessors) {
-                            subclassAccessor.getDescriptor().setInheritanceRootDescriptor(currentAccessor.getDescriptor());
+                    if (currentEntityAccessor.hasInheritance()) {
+                        for (EntityAccessor subclassEntityAccessor : subclassEntityAccessors) {
+                            subclassEntityAccessor.getDescriptor().setInheritanceRootDescriptor(currentEntityAccessor.getDescriptor());
                         }
                     
                         // Clear the subclass list, we'll keep looking but the 
                         // inheritance strategy may have changed so we need to 
                         // build a new list of subclasses.
-                        subclassAccessors.clear();
+                        subclassEntityAccessors.clear();
                     }
                 
                     // Add the descriptor to the subclass list
-                    subclassAccessors.add(currentAccessor);
-                
-                    // Resolve any generic types from the generic parent onto the
-                    // current descriptor.
-                    currentAccessor.resolveGenericTypes(genericTypes, parent);                
+                    subclassEntityAccessors.add(currentEntityAccessor);
                 } else {
-                    // Might be a mapped superclass, check and add as needed.
-                    currentAccessor.addPotentialMappedSuperclass(parent, addMappedSuperclassAccessors);
-                
-                    // Resolve any generic types from the generic parent onto the
-                    // current descriptor.
-                    currentAccessor.resolveGenericTypes(genericTypes, parent);
+                    // Our parent might be a mapped superclass, check and add 
+                    // as needed.
+                    currentEntityAccessor.addPotentialMappedSuperclass(parentClass, addMappedSuperclassAccessors);
                 }
-            
-                // Get the next parent and keep processing ...
-                genericTypes = parent.getGenericType();
-                parent = parent.getSuperclass();
+                
+                // Resolve any generic types from the generic parent onto the 
+                // current entity accessor.
+                currentEntityAccessor.resolveGenericTypes(genericTypes, parentClass);
+                
+                // Grab the generic types from the parent class.
+                genericTypes = parentClass.getGenericType();
+                
+                // Finally, get the next parent and keep processing ...
+                parentClass = parentClass.getSuperclass();  
             }
         } else {
             // Resolve any generic types we have (we may be an inheritance root).
-            currentAccessor.resolveGenericTypes(genericTypes, parent);
+            currentEntityAccessor.resolveGenericTypes(genericTypes, parentClass);
         }
         
         // Set our root descriptor of the inheritance hierarchy on all the 
         // subclass descriptors. The root may not have explicit inheritance 
         // metadata therefore, make the current descriptor of the entity 
         // hierarchy the root.
-        if (! subclassAccessors.isEmpty()) {
-            for (EntityAccessor subclassAccessor : subclassAccessors) {
-                if (subclassAccessor != currentAccessor) {
-                    subclassAccessor.getDescriptor().setInheritanceRootDescriptor(currentAccessor.getDescriptor());
+        if (! subclassEntityAccessors.isEmpty()) {
+            for (EntityAccessor subclassEntityAccessor : subclassEntityAccessors) {
+                if (subclassEntityAccessor != currentEntityAccessor) {
+                    subclassEntityAccessor.getDescriptor().setInheritanceRootDescriptor(currentEntityAccessor.getDescriptor());
                 }
             } 
         }
@@ -516,20 +517,15 @@ public class EntityAccessor extends MappedSuperclassAccessor {
     
     /**
      * INTERNAL:
-     * Pre-process the items of interest on an entity class. The order of 
-     * processing is important, care must be taken if changes must be made.
+     * The pre-process method is called during regular deployment and metadata
+     * processing. 
+     * 
+     * This method will pre-process the items of interest on an entity class. 
+     * The order of processing is important, care must be taken if changes must 
+     * be made. 
      */
     @Override
     public void preProcess() {
-        preProcess(true);
-    }
-    
-    /**
-     * INTERNAL:
-     * Pre-process the items of interest on an entity class. The order of 
-     * processing is important, care must be taken if changes must be made.
-     */
-    public void preProcess(boolean addMappedSuperclassAccessors) {
         setIsPreProcessed();
         
         // If we are not already an inheritance subclass (meaning we were not
@@ -538,7 +534,7 @@ public class EntityAccessor extends MappedSuperclassAccessor {
         // the chain upwards and we can not guarantee which entity will be
         // processed first in an inheritance hierarchy.
         if (! getDescriptor().isInheritanceSubclass()) {
-            discoverMappedSuperclassesAndInheritanceParents(addMappedSuperclassAccessors);
+            discoverMappedSuperclassesAndInheritanceParents(true);
         }
         
         // If we are an inheritance subclass process out root first.
@@ -552,15 +548,17 @@ public class EntityAccessor extends MappedSuperclassAccessor {
             // the default access type.
             EntityAccessor parentAccessor = (EntityAccessor) getDescriptor().getInheritanceParentDescriptor().getClassAccessor();
             if (! parentAccessor.isPreProcessed()) {
-                parentAccessor.preProcess(addMappedSuperclassAccessors);
+                parentAccessor.preProcess();
             }
         }
         
         // Process the correct access type before any other processing.
         processAccessType();
         
-        // Once we have the access type we can look for access methods if need
-        // be.
+        // Process the parent class if access is VIRTUAL.
+        processParentClass();
+        
+        // Process access methods if access is VIRTUAL.
         processAccessMethods();
         
         // Process the metadata complete flag now before we start looking
@@ -577,28 +575,68 @@ public class EntityAccessor extends MappedSuperclassAccessor {
         // Process a cacheable setting.
         processCacheable();
         
-        // For the canonical model generation we do not want to gather the
-        // accessors from the mapped superclasses nor pre-process them. They
-        // will be pre-processed on their own.
-        if (addMappedSuperclassAccessors) {
-            // Pre-process our mapped superclass accessors, this will add their
-            // accessors and converters and further look for a cacheable setting.
-            for (MappedSuperclassAccessor mappedSuperclass : m_mappedSuperclasses) {
-                mappedSuperclass.preProcess();
-            }
+        // Pre-process our mapped superclass accessors, this will add their
+        // accessors and converters and further look for a cacheable setting.
+        for (MappedSuperclassAccessor mappedSuperclass : m_mappedSuperclasses) {
+            mappedSuperclass.preProcess();
         }
         
-        // Finally, add our immediate accessors and converters.
+        // Add the accessors and converters on this entity.
         addAccessors();
         addConverters();
     }
     
     /**
      * INTERNAL:
+     * The pre-process for canonical model method is called (and only called) 
+     * during the canonical model generation. The use of this pre-process allows
+     * us to remove some items from the regular pre-process that do not apply
+     * to the canonical model generation.
      */
     @Override
     public void preProcessForCanonicalModel() {
-        preProcess(false);
+        setIsPreProcessed();
+        
+        // If we are not already an inheritance subclass (meaning we were not
+        // discovered through a subclass entity discovery) then perform
+        // the discovery process before processing any further. We traverse
+        // the chain upwards and we can not guarantee which entity will be
+        // processed first in an inheritance hierarchy.
+        if (! getDescriptor().isInheritanceSubclass()) {
+            discoverMappedSuperclassesAndInheritanceParents(false);
+        }
+        
+        // If we are an inheritance subclass process out root first.
+        if (getDescriptor().isInheritanceSubclass()) {
+            // Ensure our parent accessors are processed first. Top->down.
+            // An inheritance subclass can no longer blindly inherit a default
+            // access type from the root of the inheritance hierarchy since
+            // that root may explicitly set an access type which applies only
+            // to itself. The first entity in the hierarchy (going down) that
+            // does not specify an explicit type will be used to determine
+            // the default access type.
+            EntityAccessor parentAccessor = (EntityAccessor) getDescriptor().getInheritanceParentDescriptor().getClassAccessor();
+            if (! parentAccessor.isPreProcessed()) {
+                parentAccessor.preProcessForCanonicalModel();
+            }
+        }
+        
+        // Process the correct access type before any other processing.
+        processAccessType();
+        
+        // Process the parent class if access is VIRTUAL.
+        processParentClass();
+        
+        // Process the metadata complete flag now before we start looking
+        // for annotations.
+        processMetadataComplete();
+        
+        // Process the exclude default mappings flag now before we start
+        // looking for annotations.
+        processExcludeDefaultMappings();
+        
+        // Finally, add our immediate accessors and converters.
+        addAccessors();
     }
     
     /**
@@ -856,9 +894,11 @@ public class EntityAccessor extends MappedSuperclassAccessor {
      *     entity-mappings setting.    
      * 6 - we have exhausted our search, default to FIELD.
      */
+    @Override
     public void processAccessType() {
-        // 266912: this function has been partially overridden in the MappedSuperclassAccessor parent
-        // do not call the superclass method in MappedSuperclassAccessor
+        // This function has been overridden in the MappedSuperclassAccessor 
+        // parent. Do not call this superclass method.
+        
         // Step 1 - Check for an explicit setting.
         String explicitAccessType = getAccess(); 
         

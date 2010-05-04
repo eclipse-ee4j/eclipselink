@@ -45,6 +45,8 @@
  *       - 307050: Add defaults for access methods of a VIRTUAL access type
  *     04/27/2010-2.1 Guy Pelletier 
  *       - 309856: MappedSuperclasses from XML are not being initialized properly
+ *     05/04/2010-2.1 Guy Pelletier 
+ *       - 309373: Add parent class attribute to EclipseLink-ORM
  *******************************************************************************/
 package org.eclipse.persistence.internal.jpa.metadata.xml;
 
@@ -1063,7 +1065,6 @@ public class XMLEntityMappingsMappingProject extends org.eclipse.persistence.ses
 
         // Element mappings - must remain in order of definition in XML.
         descriptor.addMapping(getDescriptionMapping());
-        //descriptor.addMapping(getParentClassMapping());
         descriptor.addMapping(getAccessMethodsMapping());
         descriptor.addMapping(getCustomizerMapping());
         descriptor.addMapping(getChangeTrackingMapping());
@@ -1147,6 +1148,7 @@ public class XMLEntityMappingsMappingProject extends org.eclipse.persistence.ses
         descriptor.addMapping(nameMapping);
 
         descriptor.addMapping(getClassAttributeMapping());
+        descriptor.addMapping(getParentClassAttributeMapping());
         descriptor.addMapping(getAccessAttributeMapping());
         descriptor.addMapping(getCacheableAttributeMapping());
         descriptor.addMapping(getMetadataCompleteAttributeMapping());
@@ -1554,7 +1556,6 @@ public class XMLEntityMappingsMappingProject extends org.eclipse.persistence.ses
 
         // Element mappings - must remain in order of definition in XML.
         descriptor.addMapping(getDescriptionMapping());
-        //descriptor.addMapping(getParentClassMapping());
         descriptor.addMapping(getAccessMethodsMapping());
         descriptor.addMapping(getCustomizerMapping());
         descriptor.addMapping(getChangeTrackingMapping());
@@ -1595,6 +1596,7 @@ public class XMLEntityMappingsMappingProject extends org.eclipse.persistence.ses
         
         // Attribute mappings.
         descriptor.addMapping(getClassAttributeMapping());
+        descriptor.addMapping(getParentClassAttributeMapping());
         descriptor.addMapping(getAccessAttributeMapping());
         descriptor.addMapping(getCacheableAttributeMapping());
         descriptor.addMapping(getMetadataCompleteAttributeMapping());
@@ -3582,12 +3584,12 @@ public class XMLEntityMappingsMappingProject extends org.eclipse.persistence.ses
     /**
      * INTERNAL:
      */
-    protected XMLDirectMapping getParentClassMapping() {
+    protected XMLDirectMapping getParentClassAttributeMapping() {
         XMLDirectMapping parentClassMapping = new XMLDirectMapping();
         parentClassMapping.setAttributeName("m_parentClassName");
         parentClassMapping.setGetMethodName("getParentClassName");
         parentClassMapping.setSetMethodName("setParentClassName");
-        parentClassMapping.setXPath("orm:parent-class");
+        parentClassMapping.setXPath("@parent-class");
         return parentClassMapping;
     }
     

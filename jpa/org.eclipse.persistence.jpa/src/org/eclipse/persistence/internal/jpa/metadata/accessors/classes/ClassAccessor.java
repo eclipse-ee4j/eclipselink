@@ -49,6 +49,8 @@
  *       - 307050: Add defaults for access methods of a VIRTUAL access type
  *     04/27/2010-2.1 Guy Pelletier 
  *       - 309856: MappedSuperclasses from XML are not being initialized properly
+ *     05/04/2010-2.1 Guy Pelletier 
+ *       - 309373: Add parent class attribute to EclipseLink-ORM
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata.accessors.classes;
 
@@ -147,7 +149,6 @@ public abstract class ClassAccessor extends MetadataAccessor {
     private Boolean m_metadataComplete;
     
     private ChangeTrackingMetadata m_changeTracking;
-    private MetadataClass m_customizerClass;
     
     // Various copy policies. Represented individually to facilitate XML writing.
     private CloneCopyPolicyMetadata m_cloneCopyPolicy;
@@ -158,8 +159,12 @@ public abstract class ClassAccessor extends MetadataAccessor {
     // multiples when dealing with embeddable accessors.
     private List<MetadataDescriptor> m_owningDescriptors = new ArrayList<MetadataDescriptor>();
     
+    private MetadataClass m_customizerClass;
+    private MetadataClass m_parentClass;
+    
     private String m_className;
     private String m_customizerClassName;
+    private String m_parentClassName;
     private String m_description;
     
     private XMLAttributes m_attributes;
@@ -743,8 +748,30 @@ public abstract class ClassAccessor extends MetadataAccessor {
     /**
      * INTERNAL:
      */
+    protected MetadataClass getParentClass() {
+        return m_parentClass;
+    }
+    
+    /**
+     * INTERNAL:
+     * Used for OX mapping.
+     */
+    public String getParentClassName() {
+        return m_parentClassName;
+    }
+    
+    /**
+     * INTERNAL:
+     */
     public boolean hasDerivedId() {
         return ! getDescriptor().getDerivedIdAccessors().isEmpty();
+    }
+    
+    /**
+     * INTERNAL:
+     */
+    protected boolean hasParentClass() {
+        return m_parentClass != null && ! m_parentClass.equals(void.class);
     }
     
     /**
@@ -835,6 +862,7 @@ public abstract class ClassAccessor extends MetadataAccessor {
         
         // Initialize simple class objects.
         m_customizerClass = initXMLClassName(m_customizerClassName);
+        m_parentClass = initXMLClassName(m_parentClassName);
     }
     
     /** 
@@ -874,6 +902,9 @@ public abstract class ClassAccessor extends MetadataAccessor {
         
         // Simple object merging.
         m_customizerClass = (MetadataClass) mergeSimpleObjects(m_customizerClass, accessor.getCustomizerClass(), accessor, "<customizer>");
+        m_customizerClassName = (String) mergeSimpleObjects(m_customizerClassName, accessor.getCustomizerClassName(), accessor, "<customizer>");
+        m_parentClass = (MetadataClass) mergeSimpleObjects(m_parentClass, accessor.getParentClass(), accessor, "<parent-class>");
+        m_parentClassName = (String) mergeSimpleObjects(m_parentClassName, accessor.getParentClassName(), accessor, "<parent-class>");
         m_description = (String) mergeSimpleObjects(m_description, accessor.getDescription(), accessor, "<description>");
         m_metadataComplete = (Boolean) mergeSimpleObjects(m_metadataComplete, accessor.getMetadataComplete(), accessor, "@metadata-complete");
         m_excludeDefaultMappings = (Boolean) mergeSimpleObjects(m_excludeDefaultMappings, accessor.getExcludeDefaultMappings(), accessor, "@exclude-default-mappings");
@@ -893,12 +924,18 @@ public abstract class ClassAccessor extends MetadataAccessor {
     }
     
     /**
-     * INTERNAL: 
+     * INTERNAL:
+     * The pre-process method is called during regular deployment and metadata
+     * processing. 
      */
     public abstract void preProcess();
     
     /**
      * INTERNAL:
+     * The pre-process for canonical model method is called (and only called) 
+     * during the canonical model generation. The use of this pre-process allows
+     * us to remove some items from the regular pre-process that do not apply
+     * to the canonical model generation.
      */
     public abstract void preProcessForCanonicalModel();
     
@@ -919,6 +956,11 @@ public abstract class ClassAccessor extends MetadataAccessor {
         // Now tell the descriptor to process its accessors.
         getDescriptor().processAccessors();
     }
+    
+    /**
+     * INTERNAL:
+     */
+    protected abstract void processAccessType();
     
     /**
      * INTERNAL:
@@ -1073,6 +1115,22 @@ public abstract class ClassAccessor extends MetadataAccessor {
 
     /**
      * INTERNAL:
+     * Process the parent class for VIRTUAL accessors (ignored in other access 
+     * cases). When a parent class is not specified in a VIRTUAL access case,
+     * the superclass will default to Object.class.
+     */
+    protected void processParentClass() {
+        if (usesVirtualAccess()) {
+            if (hasParentClass()) {
+                getJavaClass().setSuperclass(getParentClass());
+            } else {
+                getJavaClass().setSuperclass(getMetadataClass(Object.class));
+            }
+        }
+    }
+    
+    /**
+     * INTERNAL:
      * Adds properties to the descriptor.
      */
     protected void processProperties() {        
@@ -1197,6 +1255,21 @@ public abstract class ClassAccessor extends MetadataAccessor {
      */
     public void setMetadataComplete(Boolean metadataComplete) {
         m_metadataComplete = metadataComplete;
+    }
+    
+    /**
+     * INTERNAL:
+     */
+    protected void setParentClass(MetadataClass parentClass) {
+        m_parentClass = parentClass;
+    }
+    
+    /**
+     * INTERNAL:
+     * Used for OX mapping.
+     */
+    public void setParentClassName(String parentClassName) {
+        m_parentClassName = parentClassName;
     }
     
     /**

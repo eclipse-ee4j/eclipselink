@@ -36,6 +36,8 @@
  *          in support of the custom descriptors holding mappings required by the Metamodel
  *     04/09/2010-2.1 Guy Pelletier 
  *       - 307050: Add defaults for access methods of a VIRTUAL access type
+ *     05/04/2010-2.1 Guy Pelletier 
+ *       - 309373: Add parent class attribute to EclipseLink-ORM
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata.accessors.classes;
 
@@ -194,21 +196,24 @@ public class EmbeddableAccessor extends ClassAccessor {
     
     /**
      * INTERNAL:
-     * Pre-process the embeddable class. This method is called after each
-     * entity of the persistence unit has had an opportunity to pre-process
-     * itself first since we'll rely on owning entities for things like access
-     * type etc. The pre-process will run some validation.
+     * The pre-process method is called during regular deployment and metadata
+     * processing.
+     * 
+     * This method is called after each entity of the persistence unit has had 
+     * an opportunity to pre-process itself first since we'll rely on owning 
+     * entities for things like access type etc. The pre-process will run some 
+     * validation. The order of processing is important, care must be taken if 
+     * changes must be made. 
      */
     @Override
     public void preProcess() {
         setIsPreProcessed();
         
-        // Step 1 - process the embeddable specifics, like access type, 
-        // metadata complete etc. first which we need before proceeding any 
-        // further.
-        
         // Process the access type first.
         processAccessType();
+        
+        // Process the parent class if access is VIRTUAL.
+        processParentClass();
         
         // Process the default access methods after an access type has been 
         // figured out.
@@ -224,18 +229,40 @@ public class EmbeddableAccessor extends ClassAccessor {
             getDescriptor().setIgnoreDefaultMappings(excludeDefaultMappings());
         } 
 
-        // Step 2 - Add the accessors and converters on this embeddable.
+        // Add the accessors and converters on this embeddable.
         addAccessors();
         addConverters();
     }
     
-
     /**
      * INTERNAL:
+     * The pre-process for canonical model method is called (and only called) 
+     * during the canonical model generation. The use of this pre-process allows
+     * us to remove some items from the regular pre-process that do not apply
+     * to the canonical model generation.
      */
     @Override
     public void preProcessForCanonicalModel() {        
-        preProcess();
+        setIsPreProcessed();
+        
+        // Process the access type first.
+        processAccessType();
+        
+        // Process the parent class if access is VIRTUAL.
+        processParentClass();
+        
+        // Set a metadata complete flag if specified.
+        if (getMetadataComplete() != null) {
+            getDescriptor().setIgnoreAnnotations(isMetadataComplete());
+        } 
+        
+        // Set an exclude default mappings flag if specified.
+        if (getExcludeDefaultMappings() != null) {
+            getDescriptor().setIgnoreDefaultMappings(excludeDefaultMappings());
+        } 
+
+        // Add the accessors and converters on this embeddable.
+        addAccessors();
     }
     
     /**
@@ -313,6 +340,7 @@ public class EmbeddableAccessor extends ClassAccessor {
      * embedded by at least one entity, it will not be processed. Therefore,
      * embedding accessors can not be empty at this point.
      */
+    @Override
     protected void processAccessType() {
         // Validate that this embeddable is not used within entities with 
         // conflicting access types when the embeddable doesn't have its own 

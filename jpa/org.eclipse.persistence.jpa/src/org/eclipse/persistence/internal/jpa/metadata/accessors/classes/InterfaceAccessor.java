@@ -13,7 +13,9 @@
  *     05/16/2008-1.0M8 Guy Pelletier 
  *       - 218084: Implement metadata merging functionality between mapping files
  *     03/27/2009-2.0 Guy Pelletier 
- *       - 241413: JPA 2.0 Add EclipseLink support for Map type attributes  
+ *       - 241413: JPA 2.0 Add EclipseLink support for Map type attributes
+ *     05/04/2010-2.1 Guy Pelletier 
+ *       - 309373: Add parent class attribute to EclipseLink-ORM
  ******************************************************************************/
 package org.eclipse.persistence.internal.jpa.metadata.accessors.classes;
 
@@ -82,6 +84,8 @@ public class InterfaceAccessor extends ClassAccessor {
     
     /**
      * INTERNAL:
+     * The pre-process method is called during regular deployment and metadata
+     * processing. 
      */
     @Override
     public void preProcess() {
@@ -90,6 +94,10 @@ public class InterfaceAccessor extends ClassAccessor {
     
     /**
      * INTERNAL:
+     * The pre-process for canonical model method is called (and only called) 
+     * during the canonical model generation. The use of this pre-process allows
+     * us to remove some items from the regular pre-process that do not apply
+     * to the canonical model generation.
      */
     @Override
     public void preProcessForCanonicalModel() {
@@ -102,5 +110,13 @@ public class InterfaceAccessor extends ClassAccessor {
     @Override
     public void process() {
         // Does nothing at this point ... perhaps it will in the future ...
-    }    
+    }
+    
+    /**
+     * INTERNAL:
+     */
+    @Override
+    public void processAccessType() {
+        // Does nothing at this point ... perhaps it will in the future ...
+    }
 }

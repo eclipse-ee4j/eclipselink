@@ -38,6 +38,8 @@
  *       - 296289: Add current annotation metadata support on mapped superclasses to EclipseLink-ORM.XML Schema
  *     01/19/2010-2.1 Guy Pelletier 
  *       - 211322: Add fetch-group(s) support to the EclipseLink-ORM.XML Schema
+ *     05/04/2010-2.1 Guy Pelletier 
+ *       - 309373: Add parent class attribute to EclipseLink-ORM
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata.accessors.classes;
 
@@ -141,8 +143,7 @@ public class MappedSuperclassAccessor extends ClassAccessor {
     private List<SQLResultSetMappingMetadata> m_sqlResultSetMappings = new ArrayList<SQLResultSetMappingMetadata>();
     
     private MetadataClass m_idClass;
-    //private MetadataClass m_parentClass;
-    
+
     private OptimisticLockingMetadata m_optimisticLocking;
     private PrimaryKeyMetadata m_primaryKey;
     private QueryRedirectorsMetadata m_queryRedirectors;
@@ -151,7 +152,6 @@ public class MappedSuperclassAccessor extends ClassAccessor {
     
     private String m_existenceChecking;
     private String m_idClassName;
-    //private String m_parentClassName;
     private String m_prePersist;
     private String m_postPersist;
     private String m_preRemove;
@@ -332,21 +332,6 @@ public class MappedSuperclassAccessor extends ClassAccessor {
     public OptimisticLockingMetadata getOptimisticLocking() {
         return m_optimisticLocking;
     }
-
-    /**
-     * INTERNAL:
-     */
-    //protected MetadataClass getParentClass() {
-      //  return m_parentClass;
-    //}
-    
-    /**
-     * INTERNAL:
-     * Used for OX mapping.
-     */
-    //public String getParentClassName() {
-      //  return m_parentClassName;
-    //}
     
     /**
      * INTERNAL:
@@ -508,7 +493,6 @@ public class MappedSuperclassAccessor extends ClassAccessor {
         
         // Simple class object
         m_idClass = initXMLClassName(m_idClassName);
-       //m_parentClass = initXMLClassName(m_parentClassName);
     }
     
     /**
@@ -546,8 +530,6 @@ public class MappedSuperclassAccessor extends ClassAccessor {
         m_readOnly = (Boolean) mergeSimpleObjects(m_readOnly, accessor.getReadOnly(), accessor, "@read-only");
         m_idClass = (MetadataClass) mergeSimpleObjects(m_idClass, accessor.getIdClass(), accessor, "<id-class>"); 
         m_idClassName = (String) mergeSimpleObjects(m_idClassName, accessor.getIdClassName(), accessor, "<id-class>");
-        //m_parentClass = (MetadataClass) mergeSimpleObjects(m_parentClass, accessor.getParentClass(), accessor, "<parent-class>");
-        //m_parentClassName = (String) mergeSimpleObjects(m_parentClassName, accessor.getParentClassName(), accessor, "<parent-class>");
         m_prePersist = (String) mergeSimpleObjects(m_prePersist, accessor.getPrePersist(), accessor, "<pre-persist>");
         m_postPersist = (String) mergeSimpleObjects(m_postPersist, accessor.getPostPersist(), accessor, "<post-persist>");
         m_preRemove = (String) mergeSimpleObjects(m_preRemove, accessor.getPreRemove(), accessor, "<pre-remove>");
@@ -579,11 +561,19 @@ public class MappedSuperclassAccessor extends ClassAccessor {
     
     /**
      * INTERNAL:
-     * Process the items of interest on a mapped superclass.
+     * The pre-process method is called during regular deployment and metadata
+     * processing. 
+     * 
+     * This method will pre-process the items of interest on this mapped 
+     * superclass for each entity class that inherits from it. The order of 
+     * processing is important, care must be taken if changes must be made.
      */
     @Override
     public void preProcess() {
         setIsPreProcessed();
+        
+        // Process the parent class if access is VIRTUAL.
+        processParentClass();
         
         // Add any id class definition to the project.
         initIdClass();
@@ -598,12 +588,22 @@ public class MappedSuperclassAccessor extends ClassAccessor {
     
     /**
      * INTERNAL:
+     * The pre-process for canonical model method is called (and only called) 
+     * during the canonical model generation. The use of this pre-process allows
+     * us to remove some items from the regular pre-process that do not apply
+     * to the canonical model generation.
      */
     @Override
     public void preProcessForCanonicalModel() {
         setIsPreProcessed();
         
+        // Process the correct access type before any other processing.
         processAccessType();
+        
+        // Process the parent class if access is VIRTUAL.
+        processParentClass();
+        
+        // Add the accessors from this mapped superclass.
         addAccessors();
     }
     
@@ -627,6 +627,7 @@ public class MappedSuperclassAccessor extends ClassAccessor {
      * The overridden function on the subclass must be used in all other cases.
      * @since EclipseLink 1.2 for the JPA 2.0 Reference Implementation
      */
+    @Override
     public void processAccessType() {
         // 266912: Note: this function is a port of the subclass protected EntityAccessor.processAccessType() minus step 1 and 2
         String explicitAccessType = getAccess(); 
@@ -1479,21 +1480,6 @@ public class MappedSuperclassAccessor extends ClassAccessor {
     public void setOptimisticLocking(OptimisticLockingMetadata optimisticLocking) {
         m_optimisticLocking = optimisticLocking;
     }
-    
-    /**
-     * INTERNAL:
-     */
-    //protected void setParentClass(MetadataClass parentClass) {
-      //  m_parentClass = parentClass;
-    //}
-    
-    /**
-     * INTERNAL:
-     * Used for OX mapping.
-     */
-    //public void setParentClassName(String parentClassName) {
-      //  m_parentClassName = parentClassName;
-    //}
     
     /**
      * INTERNAL:

@@ -413,7 +413,7 @@
             <embedded name="sections" attribute-type="ShovelSections"/>
         </attributes>
     </entity>
-    <entity name="XMLShovelDigger" class="ShovelDigger" access="VIRTUAL">
+    <entity name="XMLShovelDigger" class="ShovelDigger" parent-class="ShovelPerson" access="VIRTUAL">
         <table name="XML_SHOVEL_DIGGER"/>
         <table-generator name="XML_SHOVEL_DIGGER_TABLE_GENERATOR" table="CMP3_XML_EMPLOYEE_SEQ" pk-column-name="SEQ_NAME" value-column-name="SEQ_COUNT" pk-column-value="XML_SHOVEL_DIGGER_SEQ"/>
         <attribute-override name="name">
@@ -426,7 +426,7 @@
             </one-to-one>
         </attributes>
     </entity>
-    <entity name="XMLShovelOwner" class="ShovelOwner" access="VIRTUAL">
+    <entity name="XMLShovelOwner" class="ShovelOwner" parent-class="ShovelPerson" access="VIRTUAL">
         <table name="XML_SHOVEL_OWNER"/>
         <table-generator name="XML_SHOVEL_OWNER_TABLE_GENERATOR" table="CMP3_XML_EMPLOYEE_SEQ" pk-column-name="SEQ_NAME" value-column-name="SEQ_COUNT" pk-column-value="XML_SHOVEL_OWNER_SEQ"/>
         <attribute-override name="name">
