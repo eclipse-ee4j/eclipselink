@@ -55,8 +55,8 @@ public class JavaFieldImpl implements JavaField {
     public JavaAnnotation getAnnotation(JavaClass arg0) {
         if (arg0 != null) {
             Class annotationClass = ((JavaClassImpl) arg0).getJavaClass();
-            if (getAnnotatedElement().isAnnotationPresent(annotationClass)) {
-                return new JavaAnnotationImpl(getAnnotatedElement().getAnnotation(annotationClass));
+            if (javaModelImpl.getAnnotationHelper().isAnnotationPresent(getAnnotatedElement(), annotationClass)) {
+                return new JavaAnnotationImpl(javaModelImpl.getAnnotationHelper().getAnnotation(getAnnotatedElement(), annotationClass));
             }
         }
         return null;
@@ -64,7 +64,7 @@ public class JavaFieldImpl implements JavaField {
 
     public Collection getAnnotations() {
         ArrayList<JavaAnnotation> annotationCollection = new ArrayList<JavaAnnotation>();
-        Annotation[] annotations = getAnnotatedElement().getAnnotations();
+        Annotation[] annotations = javaModelImpl.getAnnotationHelper().getAnnotations(getAnnotatedElement());
         for (Annotation annotation : annotations) {
             annotationCollection.add(new JavaAnnotationImpl(annotation));
         }

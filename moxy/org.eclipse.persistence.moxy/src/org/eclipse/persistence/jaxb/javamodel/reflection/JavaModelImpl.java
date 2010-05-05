@@ -37,9 +37,16 @@ import org.eclipse.persistence.jaxb.javamodel.JavaModel;
 public class JavaModelImpl implements JavaModel {
 
     private ClassLoader classLoader;
-
+    private AnnotationHelper annotationHelper;
+    
     public JavaModelImpl(ClassLoader classLoader) {
         this.classLoader = classLoader;
+        this.annotationHelper = new AnnotationHelper();
+    }
+    
+    public JavaModelImpl(ClassLoader classLoader, AnnotationHelper annotationHelper) {
+    	this.classLoader = classLoader;
+    	this.annotationHelper = annotationHelper;
     }
 
     public JavaClass getClass(Class jClass) {
@@ -71,4 +78,7 @@ public class JavaModelImpl implements JavaModel {
         return ((JavaAnnotationImpl) janno).getJavaAnnotation();
     }
 
+    public AnnotationHelper getAnnotationHelper() {
+    	return this.annotationHelper;
+    }
 }

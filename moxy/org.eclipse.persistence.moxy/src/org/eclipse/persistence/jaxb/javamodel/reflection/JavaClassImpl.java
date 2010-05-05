@@ -106,8 +106,8 @@ public class JavaClassImpl implements JavaClass {
     public JavaAnnotation getAnnotation(JavaClass arg0) {
         if (arg0 != null) {
             Class annotationClass = ((JavaClassImpl) arg0).getJavaClass();
-            if (getAnnotatedElement().isAnnotationPresent(annotationClass)) {
-                return new JavaAnnotationImpl(getAnnotatedElement().getAnnotation(annotationClass));
+            if (javaModelImpl.getAnnotationHelper().isAnnotationPresent(getAnnotatedElement(), annotationClass)) {
+                return new JavaAnnotationImpl(this.javaModelImpl.getAnnotationHelper().getAnnotation(getAnnotatedElement(), annotationClass));
             }
         }
         return null;
@@ -115,7 +115,7 @@ public class JavaClassImpl implements JavaClass {
 
     public Collection getAnnotations() {
         ArrayList<JavaAnnotation> annotationCollection = new ArrayList<JavaAnnotation>();
-        Annotation[] annotations = getAnnotatedElement().getAnnotations();
+        Annotation[] annotations = javaModelImpl.getAnnotationHelper().getAnnotations(getAnnotatedElement());
         for (Annotation annotation : annotations) {
             annotationCollection.add(new JavaAnnotationImpl(annotation));
         }
@@ -293,7 +293,7 @@ public class JavaClassImpl implements JavaClass {
     }
 
     public JavaPackage getPackage() {
-        return new JavaPackageImpl(jClass.getPackage());
+        return new JavaPackageImpl(jClass.getPackage(), javaModelImpl);
     }
 
     public String getPackageName() {

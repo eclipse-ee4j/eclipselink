@@ -32,6 +32,7 @@ import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.internal.helper.ConversionManager;
 import org.eclipse.persistence.oxm.XMLContext;
 import org.eclipse.persistence.jaxb.compiler.*;
+import org.eclipse.persistence.jaxb.javamodel.reflection.AnnotationHelper;
 import org.eclipse.persistence.jaxb.javamodel.reflection.JavaModelImpl;
 import org.eclipse.persistence.jaxb.javamodel.reflection.JavaModelInputImpl;
 import org.eclipse.persistence.jaxb.xmlmodel.JavaType;
@@ -76,6 +77,7 @@ public class JAXBContextFactory {
 
     public static final String ECLIPSELINK_OXM_XML_KEY = "eclipselink-oxm-xml";
     public static final String DEFAULT_TARGET_NAMESPACE_KEY = "defaultTargetNamespace";
+    public static final String ANNOTATION_HELPER_KEY = "annotationHelper";
 
     /**
      * Create a JAXBContext on the array of Class objects.  The JAXBContext will
@@ -220,8 +222,10 @@ public class JAXBContextFactory {
          // Check properties map for eclipselink-oxm.xml entries
         Map<String, XmlBindings> xmlBindings = getXmlBindingsFromProperties(properties, classLoader);
         String defaultTargetNamespace = null;
+        AnnotationHelper annotationHelper = null;
         if(properties != null) {
             defaultTargetNamespace = (String)properties.get(DEFAULT_TARGET_NAMESPACE_KEY);
+            annotationHelper = (AnnotationHelper)properties.get(ANNOTATION_HELPER_KEY);
         }
         for (Entry<String, XmlBindings> entry : xmlBindings.entrySet()) {
             typesToBeBound = getXmlBindingsClasses(entry.getValue(), classLoader, typesToBeBound);
@@ -229,7 +233,13 @@ public class JAXBContextFactory {
 
         JaxbClassLoader loader = new JaxbClassLoader(classLoader, typesToBeBound);
         typesToBeBound = updateTypesWithObjectFactory(typesToBeBound, loader);
-        JavaModelInputImpl inputImpl = new JavaModelInputImpl(typesToBeBound, new JavaModelImpl(loader));
+        JavaModelImpl jModel;
+        if(annotationHelper != null) {
+        	jModel = new JavaModelImpl(loader, annotationHelper);
+        } else {
+        	jModel = new JavaModelImpl(loader);
+        }
+        JavaModelInputImpl inputImpl = new JavaModelInputImpl(typesToBeBound, jModel);
         try {
              Generator generator = new Generator(inputImpl, typesToBeBound, inputImpl.getJavaClasses(), null, xmlBindings, classLoader, defaultTargetNamespace);
             return createContext(generator, properties, classLoader, loader, typesToBeBound);
@@ -246,11 +256,20 @@ public class JAXBContextFactory {
     private static JAXBContext createContext(Class[] classesToBeBound, Map properties, ClassLoader classLoader, Map<String, XmlBindings> xmlBindings) throws JAXBException {
         JaxbClassLoader loader = new JaxbClassLoader(classLoader, classesToBeBound);
         String defaultTargetNamespace = null;
+        AnnotationHelper annotationHelper = null;
         if(properties != null) {
             defaultTargetNamespace = (String)properties.get(DEFAULT_TARGET_NAMESPACE_KEY);
+            annotationHelper = (AnnotationHelper)properties.get(ANNOTATION_HELPER_KEY);
         }
+        JavaModelImpl jModel;
+        if(annotationHelper != null) {
+        	jModel = new JavaModelImpl(loader, annotationHelper);
+        } else {
+        	jModel = new JavaModelImpl(loader);
+        }
+        JavaModelInputImpl inputImpl = new JavaModelInputImpl(classesToBeBound, jModel);
         try {
-            Generator generator = new Generator(new JavaModelInputImpl(classesToBeBound, new JavaModelImpl(loader)), xmlBindings, loader, defaultTargetNamespace);
+            Generator generator = new Generator(inputImpl, xmlBindings, loader, defaultTargetNamespace);
             return createContext(generator, properties, classLoader, loader, classesToBeBound);
         } catch (Exception ex) {
             throw new JAXBException(ex.getMessage(), ex);

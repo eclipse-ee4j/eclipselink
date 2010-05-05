@@ -39,9 +39,11 @@ import java.util.Collection;
 public class JavaPackageImpl implements JavaPackage {
 
     protected Package jPkg;
-
-    public JavaPackageImpl(Package javaPackage) {
+    protected JavaModelImpl jModelImpl;
+    
+    public JavaPackageImpl(Package javaPackage, JavaModelImpl javaModelImpl) {
         jPkg = javaPackage;
+        jModelImpl = javaModelImpl;
     }
 
     /**
@@ -50,8 +52,8 @@ public class JavaPackageImpl implements JavaPackage {
     public JavaAnnotation getAnnotation(JavaClass arg0) {
         if (arg0 != null) {
             Class annotationClass = ((JavaClassImpl) arg0).getJavaClass();
-            if (jPkg != null && getAnnotatedElement().isAnnotationPresent(annotationClass)) {
-               return new JavaAnnotationImpl(getAnnotatedElement().getAnnotation(annotationClass));
+            if (jPkg != null && jModelImpl.getAnnotationHelper().isAnnotationPresent(getAnnotatedElement(), annotationClass)) {
+               return new JavaAnnotationImpl(jModelImpl.getAnnotationHelper().getAnnotation(getAnnotatedElement(), annotationClass));
             }
         }
         return null;
@@ -60,7 +62,7 @@ public class JavaPackageImpl implements JavaPackage {
     public Collection getAnnotations() {
         ArrayList<JavaAnnotation> annotationCollection = new ArrayList<JavaAnnotation>();
         if(jPkg != null){
-            Annotation[] annotations = getAnnotatedElement().getAnnotations();
+            Annotation[] annotations = jModelImpl.getAnnotationHelper().getAnnotations(getAnnotatedElement());
             for (Annotation annotation : annotations) {
                 annotationCollection.add(new JavaAnnotationImpl(annotation));
             }
