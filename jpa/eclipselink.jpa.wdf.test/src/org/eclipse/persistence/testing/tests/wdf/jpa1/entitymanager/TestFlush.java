@@ -24,7 +24,6 @@ import javax.persistence.TransactionRequiredException;
 
 import org.eclipse.persistence.testing.framework.wdf.Bugzilla;
 import org.eclipse.persistence.testing.framework.wdf.JPAEnvironment;
-import org.eclipse.persistence.testing.framework.wdf.ToBeInvestigated;
 import org.eclipse.persistence.testing.models.wdf.jpa1.employee.Cubicle;
 import org.eclipse.persistence.testing.models.wdf.jpa1.employee.Department;
 import org.eclipse.persistence.testing.models.wdf.jpa1.employee.Employee;
@@ -164,7 +163,7 @@ public class TestFlush extends JPA1Base {
      */
     @SuppressWarnings("unchecked")
     @Test
-    @Bugzilla(bugid=309681)
+    @Bugzilla(bugid=317760)
     public void testRelationshipToRemoved() {
         JPAEnvironment env = getEnvironment();
         EntityManager em = env.getEntityManager();
@@ -179,16 +178,18 @@ public class TestFlush extends JPA1Base {
             em.persist(emp1);
             em.persist(cub1);
             env.commitTransactionAndClear(em);
+            
             env.beginTransaction(em);
             emp1 = em.find(Employee.class, new Integer(emp1.getId()));
             cub1 = em.find(Cubicle.class, cub1.getId());
+            cub1.setEmployee(null); // added as suggested by Tom
             em.remove(cub1);
-            boolean flushFailed = false;
+            boolean flushOrCommmitFailed = false;
             try {
                 em.flush();
             } catch (IllegalStateException e) {
                 // $JL-EXC$ this is expected behavior
-                flushFailed = true;
+                flushOrCommmitFailed = true;
                 verify(env.isTransactionMarkedForRollback(em),
                         "IllegalStateException during flush did not mark transaction for rollback");
                 env.rollbackTransactionAndClear(em);
@@ -201,10 +202,10 @@ public class TestFlush extends JPA1Base {
                 if (!checkForIllegalStateException(e)) {
                     throw e;
                 }
-                flushFailed = true;
+                flushOrCommmitFailed = true;
             }
             verify(!env.isTransactionActive(em), "Transaction still active");
-            verify(flushFailed, "flush succeeded although there is a relation to an unmanaged entity");
+            verify(flushOrCommmitFailed, "flush succeeded although there is a relation to a removed entity");
             em.clear();
             // case 2: direct relationship Employee -> Project (FOR_DELETE) - n:m
             dep = new Department(104, "dep");
@@ -226,12 +227,12 @@ public class TestFlush extends JPA1Base {
             proj = em.find(Project.class, proj.getId());
             emp1.getProjects().size();
             em.remove(proj);
-            flushFailed = false;
+            flushOrCommmitFailed = false;
             try {
                 em.flush();
             } catch (IllegalStateException e) {
                 // $JL-EXC$ this is expected behavior
-                flushFailed = true;
+                flushOrCommmitFailed = true;
                 verify(env.isTransactionMarkedForRollback(em),
                         "IllegalStateException during flush did not mark transaction for rollback");
                 env.rollbackTransactionAndClear(em);
@@ -244,10 +245,10 @@ public class TestFlush extends JPA1Base {
                 if (!checkForIllegalStateException(e)) {
                     throw e;
                 }
-                flushFailed = true;
+                flushOrCommmitFailed = true;
             }
             verify(!env.isTransactionActive(em), "Transaction still active");
-            verify(flushFailed, "flush succeeded although there is a relation to an unmanaged entity");
+            verify(flushOrCommmitFailed, "flush succeeded although there is a relation to an unmanaged entity");
             em.clear();
             // case 3: indirect relationship Employee -> Project -> Employee (FOR_DELETE)
             dep = new Department(107, "dep");
@@ -277,12 +278,12 @@ public class TestFlush extends JPA1Base {
             emp1.getProjects().size();
             proj.getEmployees().size();
             em.remove(emp2);
-            flushFailed = false;
+            flushOrCommmitFailed = false;
             try {
                 em.flush();
             } catch (IllegalStateException e) {
                 // $JL-EXC$ this is expected behavior
-                flushFailed = true;
+                flushOrCommmitFailed = true;
                 verify(env.isTransactionMarkedForRollback(em),
                         "IllegalStateException during flush did not mark transaction for rollback");
                 env.rollbackTransactionAndClear(em);
@@ -295,10 +296,10 @@ public class TestFlush extends JPA1Base {
                 if (!checkForIllegalStateException(e)) {
                     throw e;
                 }
-                flushFailed = true;
+                flushOrCommmitFailed = true;
             }
             verify(!env.isTransactionActive(em), "Transaction still active");
-            verify(flushFailed, "flush succeeded although there is a relation to an unmanaged entity");
+            verify(flushOrCommmitFailed, "flush succeeded although there is a relation to an unmanaged entity");
             em.clear();
             // case 1b: direct relationship Employee -> Cubicle (DELETE_EXECUTED) - 1:1
             dep = new Department(111, "dep");
@@ -315,12 +316,12 @@ public class TestFlush extends JPA1Base {
             em.remove(cub1);
             em.flush();
             emp1.setCubicle(cub1);
-            flushFailed = false;
+            flushOrCommmitFailed = false;
             try {
                 em.flush();
             } catch (IllegalStateException e) {
                 // $JL-EXC$ this is expected behavior
-                flushFailed = true;
+                flushOrCommmitFailed = true;
                 verify(env.isTransactionMarkedForRollback(em),
                         "IllegalStateException during flush did not mark transaction for rollback");
                 env.rollbackTransactionAndClear(em);
@@ -333,10 +334,10 @@ public class TestFlush extends JPA1Base {
                 if (!checkForIllegalStateException(e)) {
                     throw e;
                 }
-                flushFailed = true;
+                flushOrCommmitFailed = true;
             }
             verify(!env.isTransactionActive(em), "Transaction still active");
-            verify(flushFailed, "flush succeeded although there is a relation to an unmanaged entity");
+            verify(flushOrCommmitFailed, "flush succeeded although there is a relation to an unmanaged entity");
             em.clear();
             // case 2b: direct relationship Employee -> Project (DELETE_EXECUTED) - n:m
             dep = new Department(114, "dep");
@@ -358,12 +359,12 @@ public class TestFlush extends JPA1Base {
             projEmployees = new HashSet<Employee>();
             projEmployees.add(emp1);
             proj.setEmployees(projEmployees);
-            flushFailed = false;
+            flushOrCommmitFailed = false;
             try {
                 em.flush();
             } catch (IllegalStateException e) {
                 // $JL-EXC$ this is expected behavior
-                flushFailed = true;
+                flushOrCommmitFailed = true;
                 verify(env.isTransactionMarkedForRollback(em),
                         "IllegalStateException during flush did not mark transaction for rollback");
                 env.rollbackTransactionAndClear(em);
@@ -376,10 +377,10 @@ public class TestFlush extends JPA1Base {
                 if (!checkForIllegalStateException(e)) {
                     throw e;
                 }
-                flushFailed = true;
+                flushOrCommmitFailed = true;
             }
             verify(!env.isTransactionActive(em), "Transaction still active");
-            verify(flushFailed, "flush succeeded although there is a relation to an unmanaged entity");
+            verify(flushOrCommmitFailed, "flush succeeded although there is a relation to an unmanaged entity");
             em.clear();
             // case 3b: indirect relationship Employee -> Project -> Employee (DELETE_EXECUTED)
             dep = new Department(117, "dep");
@@ -411,12 +412,12 @@ public class TestFlush extends JPA1Base {
             emp2Projects.add(proj);
             emp2.setProjects(emp2Projects);
             projEmployees.add(emp2);
-            flushFailed = false;
+            flushOrCommmitFailed = false;
             try {
                 em.flush();
             } catch (IllegalStateException e) {
                 // $JL-EXC$ this is expected behavior
-                flushFailed = true;
+                flushOrCommmitFailed = true;
                 verify(env.isTransactionMarkedForRollback(em),
                         "IllegalStateException during flush did not mark transaction for rollback");
                 env.rollbackTransactionAndClear(em);
@@ -429,10 +430,10 @@ public class TestFlush extends JPA1Base {
                 if (!checkForIllegalStateException(e)) {
                     throw e;
                 }
-                flushFailed = true;
+                flushOrCommmitFailed = true;
             }
             verify(!env.isTransactionActive(em), "Transaction still active");
-            verify(flushFailed, "flush succeeded although there is a relation to an unmanaged entity");
+            verify(flushOrCommmitFailed, "flush succeeded although there is a relation to an unmanaged entity");
             em.clear();
         } finally {
             closeEntityManager(em);
@@ -449,7 +450,7 @@ public class TestFlush extends JPA1Base {
      * </ul>
      */
     @Test
-    @Bugzilla(bugid=309681)
+    @Bugzilla(bugid=317760)
     public void testRelationshipToRemovedLazy() {
         JPAEnvironment env = getEnvironment();
         EntityManager em = env.getEntityManager();
@@ -469,6 +470,7 @@ public class TestFlush extends JPA1Base {
             em.persist(dep);
             em.persist(emp1);
             env.commitTransactionAndClear(em);
+            
             env.beginTransaction(em);
             dep = em.find(Department.class, new Integer(dep.getId()));
             proj = em.find(Project.class, proj.getId());
@@ -476,6 +478,7 @@ public class TestFlush extends JPA1Base {
             emp1 = em.find(Employee.class, new Integer(emp1.getId()));
             // copy all projects from emp1 to emp2 with out actually touching them
             Employee emp2 = new Employee(203, "aaa", "bbb", dep);
+            proj.addEmployee(emp2); // added as suggested by Tom
             emp2.setProjects(emp1.getProjects());
             em.persist(emp2);
             boolean flushFailed = false;
