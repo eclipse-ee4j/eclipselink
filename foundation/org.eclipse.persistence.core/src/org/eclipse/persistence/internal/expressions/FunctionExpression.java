@@ -61,7 +61,7 @@ public class FunctionExpression extends BaseExpression {
             return false;
         }
         FunctionExpression expression = (FunctionExpression) object;
-        if ((getOperator() != expression.getOperator()) && ((getOperator() == null) || (!getOperator().equals(expression.getOperator())))) {
+        if ((this.operator != expression.getOperator()) && ((this.operator == null) || (!this.operator.equals(expression.getOperator())))) {
             return false;
         }
         List children = getChildren();
@@ -85,8 +85,8 @@ public class FunctionExpression extends BaseExpression {
      */
     public int computeHashCode() {
         int hashCode = super.computeHashCode();
-        if (getOperator() != null) {
-            hashCode = hashCode + getOperator().hashCode();
+        if (this.operator != null) {
+            hashCode = hashCode + this.operator.hashCode();
         }
         List children = getChildren();     
         int size = children.size();
@@ -200,25 +200,30 @@ public class FunctionExpression extends BaseExpression {
      * If the expression in not able to determine if the object conform throw a not supported exception.
      */
     public boolean doesConform(Object object, AbstractSession session, AbstractRecord translationRow, int valueHolderPolicy, boolean isObjectUnregistered) {
+        int selector = this.operator.getSelector();
+        
         // Must check for NOT and negate entire base expression.
-        if (getOperator().getSelector() == ExpressionOperator.Not) {
+        if (selector == ExpressionOperator.Not) {
             return !getBaseExpression().doesConform(object, session, translationRow, valueHolderPolicy, isObjectUnregistered);
         }
 
         // Conform between or in function.
-        if ((getOperator().getSelector() == ExpressionOperator.Between) || (getOperator().getSelector() == ExpressionOperator.NotBetween)
-                ||(getOperator().getSelector() == ExpressionOperator.In) || (getOperator().getSelector() == ExpressionOperator.NotIn)) {
+        if ((selector == ExpressionOperator.Between) || (selector == ExpressionOperator.NotBetween)
+                || (selector == ExpressionOperator.In) || (selector == ExpressionOperator.NotIn) 
+                || (selector == ExpressionOperator.Like) || (selector == ExpressionOperator.NotLike)) {
             // Extract the value from the left side.
             Object leftValue = getBaseExpression().valueFromObject(object, session, translationRow, valueHolderPolicy, isObjectUnregistered);
 
             // Extract the value from the arguments, skip the first child which is the base.
-            Vector rightValue = new Vector(getChildren().size());
-            for (int index = 1; index < getChildren().size(); index++) {
+            int size = this.children.size();
+            Vector rightValue = new Vector(size);
+            for (int index = 1; index < size; index++) {
                 Object valueFromRight;
-                if (getChildren().elementAt(index) instanceof Expression) {
-                    valueFromRight = ((Expression)getChildren().elementAt(index)).valueFromObject(object, session, translationRow, valueHolderPolicy, isObjectUnregistered);
-                } else {      
-                    valueFromRight = getChildren().elementAt(index);
+                Object child = this.children.get(index);
+                if (child instanceof Expression) {
+                    valueFromRight = ((Expression)child).valueFromObject(object, session, translationRow, valueHolderPolicy, isObjectUnregistered);
+                } else {
+                    valueFromRight = child;
                 }
                 //If valueFromRight is a Vector, then there is only one child other than the base, e.g. valueFromRight is a collection of constants.  
                 //Then it should be the vector to be compared with.  Don't add it to another collection.
@@ -226,17 +231,15 @@ public class FunctionExpression extends BaseExpression {
                     rightValue = (Vector)valueFromRight;
                 //Single values should be added to the rightValue, which will be compared with leftValue.
                 } else {
-                    rightValue.addElement(valueFromRight);
+                    rightValue.add(valueFromRight);
                 }
             }
 
             // If left is anyof collection of values, check each one.
             // If the right had an anyof not supported will be thrown from the operator.
             if (leftValue instanceof Vector) {
-                for (Enumeration leftEnum = ((Vector)leftValue).elements();
-                         leftEnum.hasMoreElements();) {
-                    Object tempLeft = leftEnum.nextElement();
-                    if (getOperator().doesRelationConform(tempLeft, rightValue)) {
+                for (Object tempLeft : (Vector)leftValue) {
+                    if (this.operator.doesRelationConform(tempLeft, rightValue)) {
                         return true;
                     }
                 }
@@ -244,18 +247,16 @@ public class FunctionExpression extends BaseExpression {
                 // Only return false if none of the values match.
                 return false;
             } else {
-                return getOperator().doesRelationConform(leftValue, rightValue);
+                return this.operator.doesRelationConform(leftValue, rightValue);
             }
-        } else if ((getOperator().getSelector() == ExpressionOperator.IsNull) || (getOperator().getSelector() == ExpressionOperator.NotNull)) {
+        } else if ((selector == ExpressionOperator.IsNull) || (selector == ExpressionOperator.NotNull)) {
             // Extract the value from the left side.
             Object leftValue = getBaseExpression().valueFromObject(object, session, translationRow, valueHolderPolicy, isObjectUnregistered);
 
             // If left is anyof collection of values, check each one.
             if (leftValue instanceof Vector) {
-                for (Enumeration leftEnum = ((Vector)leftValue).elements();
-                         leftEnum.hasMoreElements();) {
-                    Object tempLeft = leftEnum.nextElement();
-                    if (getOperator().doesRelationConform(tempLeft, null)) {
+                for (Object tempLeft : (Vector)leftValue) {
+                    if (this.operator.doesRelationConform(tempLeft, null)) {
                         return true;
                     }
                 }
@@ -263,7 +264,7 @@ public class FunctionExpression extends BaseExpression {
                 // Only return false if none of the values match.
                 return false;
             } else {
-                return getOperator().doesRelationConform(leftValue, null);
+                return this.operator.doesRelationConform(leftValue, null);
             }
         }
 
@@ -309,13 +310,13 @@ public class FunctionExpression extends BaseExpression {
      * INTERNAL:
      */
     public void initializePlatformOperator(DatabasePlatform platform) {
-        if (getOperator().isComplete()) {
-            platformOperator = getOperator();
+        if (this.operator.isComplete()) {
+            platformOperator = this.operator;
             return;
         }
-        platformOperator = platform.getOperator(getOperator().getSelector());
+        platformOperator = platform.getOperator(this.operator.getSelector());
         if (platformOperator == null) {
-            throw QueryException.invalidOperator(getOperator().toString());
+            throw QueryException.invalidOperator(this.operator.toString());
         }
     }
 
@@ -332,7 +333,7 @@ public class FunctionExpression extends BaseExpression {
             return false;
         }
 
-        int selector = getOperator().getSelector();
+        int selector = this.operator.getSelector();
         if ((selector != ExpressionOperator.IsNull) && (selector != ExpressionOperator.NotNull)) {
             return false;
         }
@@ -404,7 +405,7 @@ public class FunctionExpression extends BaseExpression {
         // For bug 3105559 also must handle aggregates: get("period").isNull();
         Expression foreignKeyJoin = base.getMapping().buildObjectJoinExpression(base, (Object)null, getSession());
 
-        if (getOperator().getSelector() == ExpressionOperator.NotNull) {
+        if (this.operator.getSelector() == ExpressionOperator.NotNull) {
             foreignKeyJoin = foreignKeyJoin.not();
         }
         return foreignKeyJoin.normalize(normalizer);
@@ -467,7 +468,7 @@ public class FunctionExpression extends BaseExpression {
             newChildren.addElement(((Expression)children.elementAt(i)).rebuildOn(newBase));
         }
         newLocalBase.setSelectIfOrderedBy(getBaseExpression().selectIfOrderedBy());
-        FunctionExpression rebuilt = (FunctionExpression) newLocalBase.performOperator(getOperator(), newChildren);
+        FunctionExpression rebuilt = (FunctionExpression) newLocalBase.performOperator(this.operator, newChildren);
         rebuilt.setResultType(this.getResultType()); //copy over result type.
         return rebuilt;
     }
@@ -518,7 +519,7 @@ public class FunctionExpression extends BaseExpression {
 
         // Aply the function to the twisted old base.
         Expression oldBase = (Expression)this.children.elementAt(0);
-        return oldBase.twistedForBaseAndContext(newBase, context).performOperator(getOperator(), newChildren);
+        return oldBase.twistedForBaseAndContext(newBase, context).performOperator(this.operator, newChildren);
     }
 
     /**
@@ -544,7 +545,7 @@ public class FunctionExpression extends BaseExpression {
                 if (baseObject == null) {
                     baseVector.addElement(baseObject);
                 } else {
-                    baseVector.addElement(getOperator().applyFunction(baseObject, arguments));
+                    baseVector.addElement(this.operator.applyFunction(baseObject, arguments));
                 }
             }
             return baseVector;
@@ -553,7 +554,7 @@ public class FunctionExpression extends BaseExpression {
             if (baseValue == null) {
                 return null;
             } else {
-                return getOperator().applyFunction(baseValue, arguments);
+                return this.operator.applyFunction(baseValue, arguments);
             }
         }
     }
@@ -597,7 +598,7 @@ public class FunctionExpression extends BaseExpression {
                 // If the function is anything but min or max, null out the
                 // field type. The type will be calculated based on the
                 // function.
-                int selector = getOperator().getSelector();
+                int selector = this.operator.getSelector();
                 if (selector != ExpressionOperator.Maximum && selector != ExpressionOperator.Minimum) {
                     field.setType(null);
                 }   

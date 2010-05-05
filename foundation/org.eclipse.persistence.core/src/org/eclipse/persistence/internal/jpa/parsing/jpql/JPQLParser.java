@@ -43,9 +43,6 @@ import org.eclipse.persistence.internal.jpa.parsing.jpql.antlr.JPQLParserBuilder
  */
 public abstract class JPQLParser extends org.eclipse.persistence.internal.libraries.antlr.runtime.Parser {
 
-    /** The ANTLR end of file character. */
-    private static final int EOF_CHAR = 65535; // = (char) -1 = EOF
-
     /** List of errors. */
     private List errors = new ArrayList();
 

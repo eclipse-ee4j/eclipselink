@@ -116,7 +116,31 @@ public class PrivilegedAccessHelper {
      * @throws java.lang.NoSuchMethodException
      */
     public static Constructor getConstructorFor(final Class javaClass, final Class[] args, final boolean shouldSetAccessible) throws NoSuchMethodException {
-        Constructor result = javaClass.getConstructor(args);
+        Constructor result = null;
+        try {
+            result = javaClass.getConstructor(args);
+        } catch (NoSuchMethodException missing) {
+            // Search for any constructor with the same number of arguments and assignable types.
+            for (Constructor constructor : javaClass.getConstructors()) {
+                if (constructor.getParameterTypes().length == args.length) {
+                    boolean found = true;
+                    for (int index = 0; index < args.length; index++) {
+                        if ((!constructor.getParameterTypes()[index].isAssignableFrom(args[index]))
+                                && (!args[index].isAssignableFrom(constructor.getParameterTypes()[index]))) {
+                            found = false; 
+                            break;
+                        }
+                    }
+                    if (found) {
+                        result = constructor;
+                        break;
+                    }
+                }
+            }
+            if (result == null) {
+                throw missing;
+            }
+        }
         if (shouldSetAccessible) {
             result.setAccessible(true);
         }

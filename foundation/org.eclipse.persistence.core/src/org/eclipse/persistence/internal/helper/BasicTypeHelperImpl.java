@@ -364,8 +364,7 @@ public class BasicTypeHelperImpl {
 
     /** Returns true if the specified type denotes an orderable type */
     public boolean isOrderableType(Object type) {
-        return isNumericType(type) || isStringType(type) || 
-            isDateClass(type) || isEnumType(type);
+        return true;
     }
 
     /** 

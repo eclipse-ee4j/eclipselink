@@ -340,68 +340,68 @@ public class ExpressionOperator implements Serializable {
      */
     public Object applyFunction(Object source, Vector arguments) {
         if (source instanceof String) {
-            if (getSelector() == ToUpperCase) {
+            if (this.selector == ToUpperCase) {
                 return ((String)source).toUpperCase();
-            } else if (getSelector() == ToLowerCase) {
+            } else if (this.selector == ToLowerCase) {
                 return ((String)source).toLowerCase();
-            } else if ((getSelector() == Concat) && (arguments.size() == 1) && (arguments.elementAt(0) instanceof String)) {
+            } else if ((this.selector == Concat) && (arguments.size() == 1) && (arguments.elementAt(0) instanceof String)) {
                 return ((String)source).concat((String)arguments.elementAt(0));
-            } else if ((getSelector() == Substring) && (arguments.size() == 2) && (arguments.elementAt(0) instanceof Number) && (arguments.elementAt(1) instanceof Number)) {
+            } else if ((this.selector == Substring) && (arguments.size() == 2) && (arguments.elementAt(0) instanceof Number) && (arguments.elementAt(1) instanceof Number)) {
                 // assume the first parameter to be 1-based first index of the substring, the second - substring length.
                 int beginIndexInclusive = ((Number)arguments.elementAt(0)).intValue() - 1;
                 int endIndexExclusive = beginIndexInclusive +  ((Number)arguments.elementAt(1)).intValue();
                 return ((String)source).substring(beginIndexInclusive, endIndexExclusive);
-            } else if ((getSelector() == SubstringSingleArg) && (arguments.size() == 1) && (arguments.elementAt(0) instanceof Number)) {
+            } else if ((this.selector == SubstringSingleArg) && (arguments.size() == 1) && (arguments.elementAt(0) instanceof Number)) {
                 int beginIndexInclusive = ((Number)arguments.elementAt(0)).intValue() - 1;
                 int endIndexExclusive = ((String)source).length();
                 return ((String)source).substring(beginIndexInclusive, endIndexExclusive);
-            } else if (getSelector() == ToNumber) {
+            } else if (this.selector == ToNumber) {
                 return new java.math.BigDecimal((String)source);
-            } else if (getSelector() == Trim) {
+            } else if (this.selector == Trim) {
                 return ((String)source).trim();
-            } else if (getSelector() == Length) {
+            } else if (this.selector == Length) {
                 return Integer.valueOf(((String)source).length());
             }
         } else if (source instanceof Number) {
-            if (getSelector() == Ceil) {
+            if (this.selector == Ceil) {
                 return Double.valueOf(Math.ceil(((Number)source).doubleValue()));
-            } else if (getSelector() == Cos) {
+            } else if (this.selector == Cos) {
                 return Double.valueOf(Math.cos(((Number)source).doubleValue()));
-            } else if (getSelector() == Abs) {
+            } else if (this.selector == Abs) {
                 return Double.valueOf(Math.abs(((Number)source).doubleValue()));
-            } else if (getSelector() == Acos) {
+            } else if (this.selector == Acos) {
                 return Double.valueOf(Math.acos(((Number)source).doubleValue()));
-            } else if (getSelector() == Asin) {
+            } else if (this.selector == Asin) {
                 return Double.valueOf(Math.asin(((Number)source).doubleValue()));
-            } else if (getSelector() == Atan) {
+            } else if (this.selector == Atan) {
                 return Double.valueOf(Math.atan(((Number)source).doubleValue()));
-            } else if (getSelector() == Exp) {
+            } else if (this.selector == Exp) {
                 return Double.valueOf(Math.exp(((Number)source).doubleValue()));
-            } else if (getSelector() == Sqrt) {
+            } else if (this.selector == Sqrt) {
                 return Double.valueOf(Math.sqrt(((Number)source).doubleValue()));
-            } else if (getSelector() == Floor) {
+            } else if (this.selector == Floor) {
                 return Double.valueOf(Math.floor(((Number)source).doubleValue()));
-            } else if (getSelector() == Log) {
+            } else if (this.selector == Log) {
                 return Double.valueOf(Math.log(((Number)source).doubleValue()));
-            } else if ((getSelector() == Power) && (arguments.size() == 1) && (arguments.elementAt(0) instanceof Number)) {
+            } else if ((this.selector == Power) && (arguments.size() == 1) && (arguments.elementAt(0) instanceof Number)) {
                 return Double.valueOf(Math.pow(((Number)source).doubleValue(), (((Number)arguments.elementAt(0)).doubleValue())));
-            } else if (getSelector() == Round) {
+            } else if (this.selector == Round) {
                 return Double.valueOf(Math.round(((Number)source).doubleValue()));
-            } else if (getSelector() == Sin) {
+            } else if (this.selector == Sin) {
                 return Double.valueOf(Math.sin(((Number)source).doubleValue()));
-            } else if (getSelector() == Tan) {
+            } else if (this.selector == Tan) {
                 return Double.valueOf(Math.tan(((Number)source).doubleValue()));
-            } else if ((getSelector() == Greatest) && (arguments.size() == 1) && (arguments.elementAt(0) instanceof Number)) {
+            } else if ((this.selector == Greatest) && (arguments.size() == 1) && (arguments.elementAt(0) instanceof Number)) {
                 return Double.valueOf(Math.max(((Number)source).doubleValue(), (((Number)arguments.elementAt(0)).doubleValue())));
-            } else if ((getSelector() == Least) && (arguments.size() == 1) && (arguments.elementAt(0) instanceof Number)) {
+            } else if ((this.selector == Least) && (arguments.size() == 1) && (arguments.elementAt(0) instanceof Number)) {
                 return Double.valueOf(Math.min(((Number)source).doubleValue(), (((Number)arguments.elementAt(0)).doubleValue())));
-            } else if ((getSelector() == Add) && (arguments.size() == 1) && (arguments.elementAt(0) instanceof Number)) {
+            } else if ((this.selector == Add) && (arguments.size() == 1) && (arguments.elementAt(0) instanceof Number)) {
                 return Double.valueOf(((Number)source).doubleValue() + (((Number)arguments.elementAt(0)).doubleValue()));
-            } else if ((getSelector() == Subtract) && (arguments.size() == 1) && (arguments.elementAt(0) instanceof Number)) {
+            } else if ((this.selector == Subtract) && (arguments.size() == 1) && (arguments.elementAt(0) instanceof Number)) {
                 return Double.valueOf(((Number)source).doubleValue() - (((Number)arguments.elementAt(0)).doubleValue()));
-            } else if ((getSelector() == Divide) && (arguments.size() == 1) && (arguments.elementAt(0) instanceof Number)) {
+            } else if ((this.selector == Divide) && (arguments.size() == 1) && (arguments.elementAt(0) instanceof Number)) {
                 return Double.valueOf(((Number)source).doubleValue() / (((Number)arguments.elementAt(0)).doubleValue()));
-            } else if ((getSelector() == Multiply) && (arguments.size() == 1) && (arguments.elementAt(0) instanceof Number)) {
+            } else if ((this.selector == Multiply) && (arguments.size() == 1) && (arguments.elementAt(0) instanceof Number)) {
                 return Double.valueOf(((Number)source).doubleValue() * (((Number)arguments.elementAt(0)).doubleValue()));
             }
         }
@@ -909,10 +909,8 @@ public class ExpressionOperator implements Serializable {
         }
         // Like
         //conformLike(left, right);
-        else if ((this.selector == Like) || (this.selector == NotLike)) {
-            // The regular expression framework we use to conform like is only supported in
-            // JDK 1.4 and later.  We will ask our JavaPlatform to do this for us.
-            Boolean doesLikeConform = JavaPlatform.conformLike(left, right);
+        else if (((this.selector == Like) || (this.selector == NotLike)) && (right instanceof Vector) && (((Vector)right).size() == 1)) {
+            Boolean doesLikeConform = JavaPlatform.conformLike(left, ((Vector)right).get(0));
             if (doesLikeConform != null) {
                 if (doesLikeConform.booleanValue()) {
                     return this.selector == Like;// Negate for NotLike
@@ -1519,7 +1517,21 @@ public class ExpressionOperator implements Serializable {
      * Create the LIKE operator.
      */
     public static ExpressionOperator like() {
-        return simpleRelation(Like, "LIKE", "like");
+        ExpressionOperator result = new ExpressionOperator();
+        result.setSelector(Like);
+        result.setType(FunctionOperator);
+        Vector v = NonSynchronizedVector.newInstance(3);
+        v.add("");
+        v.add(" LIKE ");
+        v.add("");
+        result.printsAs(v);
+        result.bePrefix();
+        result.setNodeClass(ClassConstants.FunctionExpression_Class);
+        v = NonSynchronizedVector.newInstance(2);
+        v.add(".like(");
+        v.add(")");
+        result.printsJavaAs(v);
+        return result;
     }
 
     /**
@@ -1529,12 +1541,12 @@ public class ExpressionOperator implements Serializable {
     public static ExpressionOperator likeEscape() {
         ExpressionOperator result = new ExpressionOperator();
         result.setSelector(LikeEscape);
-        result.setType(ComparisonOperator);
+        result.setType(FunctionOperator);
         Vector v = org.eclipse.persistence.internal.helper.NonSynchronizedVector.newInstance();
-        v.addElement("(");
+        v.addElement("");
         v.addElement(" LIKE ");
         v.addElement(" ESCAPE ");
-        v.addElement(")");
+        v.addElement("");
         result.printsAs(v);
         result.bePrefix();
         result.setNodeClass(ClassConstants.FunctionExpression_Class);
@@ -1548,15 +1560,16 @@ public class ExpressionOperator implements Serializable {
     public static ExpressionOperator notLikeEscape() {
         ExpressionOperator result = new ExpressionOperator();
         result.setSelector(NotLikeEscape);
-        result.setType(ComparisonOperator);
+        result.setType(FunctionOperator);
         Vector v = org.eclipse.persistence.internal.helper.NonSynchronizedVector.newInstance();
-        v.addElement("(");
+        v.addElement("");
         v.addElement(" NOT LIKE ");
         v.addElement(" ESCAPE ");
-        v.addElement(")");
+        v.addElement("");
         result.printsAs(v);
         result.bePrefix();
         result.setNodeClass(ClassConstants.FunctionExpression_Class);
+        result.setIsBindingSupported(false);
         return result;
     }
 
@@ -1646,9 +1659,9 @@ public class ExpressionOperator implements Serializable {
      */
     public Expression newExpressionForArgument(Expression base, Object singleArgument) {
         if (singleArgument == null) {
-            if (getSelector() == Equal) {
+            if (this.selector == Equal) {
                 return base.isNull();
-            } else if (getSelector() == NotEqual) {
+            } else if (this.selector == NotEqual) {
                 return base.notNull();
             }
         }
@@ -1695,9 +1708,9 @@ public class ExpressionOperator implements Serializable {
      */
     public Expression newExpressionForArgumentWithBaseLast(Expression base, Object singleArgument) {
         if (singleArgument == null) {
-            if (getSelector() == Equal) {
+            if (this.selector == Equal) {
                 return base.isNull();
-            } else if (getSelector() == NotEqual) {
+            } else if (this.selector == NotEqual) {
                 return base.notNull();
             }
         }
@@ -1712,9 +1725,9 @@ public class ExpressionOperator implements Serializable {
      */
     public Expression newExpressionForArguments(Expression base, Vector arguments) {
         if ((arguments.size() == 1) && (arguments.get(0) == null)) {
-            if (getSelector() == Equal) {
+            if (this.selector == Equal) {
                 return base.isNull();
-            } else if (getSelector() == NotEqual) {
+            } else if (this.selector == NotEqual) {
                 return base.notNull();
             }
         }
@@ -1795,7 +1808,21 @@ public class ExpressionOperator implements Serializable {
      * Create the NOTLIKE operator.
      */
     public static ExpressionOperator notLike() {
-        return simpleRelation(NotLike, "NOT LIKE", "notLike");
+        ExpressionOperator result = new ExpressionOperator();
+        result.setSelector(NotLike);
+        result.setType(FunctionOperator);
+        Vector v = NonSynchronizedVector.newInstance();
+        v.add("");
+        v.add(" NOT LIKE ");
+        v.add("");
+        result.printsAs(v);
+        result.bePrefix();
+        result.setNodeClass(ClassConstants.FunctionExpression_Class);
+        v = NonSynchronizedVector.newInstance(2);
+        v.add(".notLike(");
+        v.add(")");
+        result.printsJavaAs(v);
+        return result;
     }
 
     /**
@@ -1886,10 +1913,10 @@ public class ExpressionOperator implements Serializable {
         
         for (final int index : argumentIndices) {
             Expression item = (Expression)items.elementAt(index);
-            if ((getSelector() == Ref) || ((getSelector() == Deref) && (item.isObjectExpression()))) {
+            if ((this.selector == Ref) || ((this.selector == Deref) && (item.isObjectExpression()))) {
                 DatabaseTable alias = ((ObjectExpression)item).aliasForTable(((ObjectExpression)item).getDescriptor().getTables().firstElement());
                 printer.printString(alias.getNameDelimited(printer.getPlatform()));
-            } else if ((getSelector() == Count) && (item.isExpressionBuilder())) {
+            } else if ((this.selector == Count) && (item.isExpressionBuilder())) {
                 printer.printString("*");
             } else {
                 item.printSQL(printer);
@@ -2300,7 +2327,7 @@ public class ExpressionOperator implements Serializable {
         Vector v = org.eclipse.persistence.internal.helper.NonSynchronizedVector.newInstance(2);
         v.addElement("." + javaName + "(");
         v.addElement(")");
-        exOperator.printsJavaAs(v);        
+        exOperator.printsJavaAs(v);
         return exOperator;
     }
 
@@ -2653,10 +2680,10 @@ public class ExpressionOperator implements Serializable {
      */
     public String toString() {
         if ((getDatabaseStrings() == null) || (getDatabaseStrings().length == 0)) {
-            //CR#... Print a useful name for the missing plaftorm operator.
-            return "platform operator - " + getPlatformOperatorName(getSelector());
+            //CR#... Print a useful name for the missing platform operator.
+            return "platform operator - " + getPlatformOperatorName(this.selector);
         } else {
-            return "operator " + getDatabaseStrings()[0];
+            return "operator " + Arrays.asList(getDatabaseStrings());
         }
     }
 

@@ -31,7 +31,6 @@ public class SelectGenerationContext extends GenerationContext {
     //BUG 3105651: If a variable is SELECTed, and it's in an ORDER BY, then 
     //we want the ExpressionBuilder to be instantiated using an empty constructor
     private boolean shouldCheckSelectNodeBeforeResolving = false;
-    private boolean isNotIndicatedInMemberOf = false;
 
     //If a NOT MEMBER OF is encountered, we need to store the MEMBER OF
     //so that the right side of the member of can use the stored expression

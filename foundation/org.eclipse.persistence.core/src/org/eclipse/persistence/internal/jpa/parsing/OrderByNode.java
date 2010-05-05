@@ -12,11 +12,8 @@
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.parsing;
 
-
-// Java imports
 import java.util.*;
 
-// TopLink Imports
 import org.eclipse.persistence.queries.ReadAllQuery;
 import org.eclipse.persistence.queries.ObjectLevelReadQuery;
 
@@ -38,14 +35,6 @@ public class OrderByNode extends MajorNode {
      */
     public OrderByNode() {
         super();
-    }
-
-    /**
-     * INTERNAL
-     * Add an Order By Item to this node
-     */
-    private void addOrderByItem(Object theNode) {
-        getOrderByItems().add(theNode);
     }
 
     /**

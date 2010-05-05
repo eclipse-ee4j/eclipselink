@@ -290,9 +290,10 @@ public class ParseTree {
                 expr = path.generateExpression(generationContext);
                 theQuery.addNonFetchJoinedAttribute(expr);
             } else {
+                // Ignore, assume 'Select 1 from Employee e' or sorts
                 // unused range variable => not supported yet
-                throw JPQLException.notYetImplemented(context.getQueryInfo(),
-                    "Variable [" + variable + "] is defined in a range variable declaration, but not used in the rest of the query.");
+                //throw JPQLException.notYetImplemented(context.getQueryInfo(),
+                //    "Variable [" + variable + "] is defined in a range variable declaration, but not used in the rest of the query.");
             }
         }
     }

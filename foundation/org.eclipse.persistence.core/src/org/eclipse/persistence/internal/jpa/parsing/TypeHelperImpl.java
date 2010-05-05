@@ -117,6 +117,11 @@ public class TypeHelperImpl
         return (desc != null) && !desc.isAggregateDescriptor();
     }
 
+    /** Returns true if the specified type denotes an orderable type */
+    public boolean isOrderableType(Object type) {
+        return !(isEntityClass(type) || isEmbeddable(type));
+    }
+
     /** Returns true if the specified type denotes an embedded class. */
     public boolean isEmbeddable(Object type) {
         ClassDescriptor desc = getDescriptor(type);

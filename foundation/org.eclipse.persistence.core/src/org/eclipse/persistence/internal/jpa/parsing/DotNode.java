@@ -74,7 +74,7 @@ public class DotNode extends LogicalOperatorNode implements AliasableNode {
             checkNavigation(left, context);
             Object type = null;
             if (left.isVariableNode()){
-                Node path = (Node)context.pathForVariable(((VariableNode)left).getVariableName());
+                Node path = context.pathForVariable(((VariableNode)left).getVariableName());
                 if (path != null){
                     type = path.getType();
                     type = typeHelper.resolveAttribute(type, name);

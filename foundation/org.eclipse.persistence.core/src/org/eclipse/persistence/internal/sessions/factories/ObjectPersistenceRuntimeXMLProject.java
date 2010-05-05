@@ -1223,6 +1223,8 @@ public class ObjectPersistenceRuntimeXMLProject extends NamespaceResolvableProje
         XMLDirectMapping operatorMapping = new XMLDirectMapping();
         operatorMapping.setAttributeName("operator");
         ExpressionOperatorConverter operatorConverter = new ExpressionOperatorConverter();
+        operatorConverter.addConversionValue("like", ExpressionOperator.getOperator(Integer.valueOf(ExpressionOperator.Like)));
+        operatorConverter.addConversionValue("notLike", ExpressionOperator.getOperator(Integer.valueOf(ExpressionOperator.NotLike)));
         operatorConverter.addConversionValue("not", ExpressionOperator.getOperator(Integer.valueOf(ExpressionOperator.Not)));
         operatorConverter.addConversionValue("isNull", ExpressionOperator.getOperator(Integer.valueOf(ExpressionOperator.IsNull)));
         operatorConverter.addConversionValue("notNull", ExpressionOperator.getOperator(Integer.valueOf(ExpressionOperator.NotNull)));

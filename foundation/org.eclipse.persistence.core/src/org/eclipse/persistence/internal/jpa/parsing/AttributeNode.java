@@ -86,7 +86,7 @@ public class AttributeNode extends Node {
     
     public Object computeActualType(Object initialType, TypeHelper typeHelper){
         if (castClassName != null){
-            return (Class)typeHelper.resolveSchema(castClassName);
+            return typeHelper.resolveSchema(castClassName);
         }
         return initialType;
     }

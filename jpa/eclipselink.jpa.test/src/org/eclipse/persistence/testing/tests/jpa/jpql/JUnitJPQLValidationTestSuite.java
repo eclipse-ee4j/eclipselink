@@ -127,6 +127,7 @@ public class JUnitJPQLValidationTestSuite extends JUnitTestCase
         suite.addTest(new JUnitJPQLValidationTestSuite("testInvalidSetClause"));
         suite.addTest(new JUnitJPQLValidationTestSuite("testUnsupportedCountDistinctOnOuterJoinedCompositePK"));
         suite.addTest(new JUnitJPQLValidationTestSuite("testInvalidHint"));
+        suite.addTest(new JUnitJPQLValidationTestSuite("invalidCharTest"));
         
         return suite;
     }
@@ -196,7 +197,7 @@ public class JUnitJPQLValidationTestSuite extends JUnitTestCase
         String ejbqlString =  "SELECT OBJECT(emp) FROW Employee emp";
         try 
         {
-            List result = createEntityManager().createQuery(ejbqlString).getResultList();                
+            createEntityManager().createQuery(ejbqlString).getResultList();                
             fail("Recognition Exception must be thrown");
         }        
         
@@ -204,6 +205,21 @@ public class JUnitJPQLValidationTestSuite extends JUnitTestCase
         {
             Assert.assertEquals(JPQLException.syntaxErrorAt, ((JPQLException) ex.getCause()).getErrorCode());
         }              
+    }
+    
+    public void invalidCharTest()
+    {
+        
+        String ejbqlString =  "Select !e from Employee e where ! e = e";
+        try 
+        {
+            createEntityManager().createQuery(ejbqlString).getResultList();                
+            fail("Recognition Exception must be thrown");
+        }        
+        catch(IllegalArgumentException ex)
+        {
+            Assert.assertEquals(JPQLException.unexpectedToken, ((JPQLException) ex.getCause()).getErrorCode());
+        }
     }
     
    public void missingSelectExceptionTest()
@@ -342,7 +358,7 @@ public class JUnitJPQLValidationTestSuite extends JUnitTestCase
     public void malformedJPQLExceptionTest6()
     {
         
-        String ejbqlString =  "SELECT c FROM Customer c WHERE c.name LIKE 1";
+        /*String ejbqlString =  "SELECT c FROM Customer c WHERE c.name LIKE 1";
         
         try 
         {
@@ -354,9 +370,9 @@ public class JUnitJPQLValidationTestSuite extends JUnitTestCase
         {
             Assert.assertEquals(JPQLException.unexpectedToken, ((JPQLException) ex.getCause()).getErrorCode());
             assertTrue("Failed to throw expected IllegalArgumentException for a query having an unexpected keyword 1.", ex.getCause().getMessage().contains("unexpected token [1]"));
-        }         
+        }*/
 
-        ejbqlString =  "SELECT c FROM Customer c WHERE c.name is not nall";
+        String ejbqlString =  "SELECT c FROM Customer c WHERE c.name is not nall";
         
         try 
         {
@@ -713,7 +729,7 @@ public class JUnitJPQLValidationTestSuite extends JUnitTestCase
             fail("Failed to throw expected IllegalArgumentException for a query having an ORDER BY item with a non-existent alias");
         } catch (IllegalArgumentException ex) {
             JPQLException cause = (JPQLException)ex.getCause();
-            Assert.assertEquals(cause.getErrorCode(), JPQLException.nonExistantOrderByAlias);
+            Assert.assertEquals(cause.getErrorCode(), JPQLException.aliasResolutionException);
         }
     }
 

@@ -12,11 +12,8 @@
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.parsing;
 
-// Java imports
 import java.util.*;
 
-// TopLink Imports
-import org.eclipse.persistence.exceptions.JPQLException;
 import org.eclipse.persistence.queries.ReportQuery;
 import org.eclipse.persistence.queries.ObjectLevelReadQuery;
 
@@ -47,26 +44,6 @@ public class GroupByNode extends MajorNode {
             Node item = (Node)i.next();
             item.validate(context);
         }
-
-        List selectExprs = selectNode.getSelectExpressions();
-        // check select expressions
-        for (Iterator i = selectExprs.iterator(); i.hasNext(); ) {
-            Node selectExpr = (Node)i.next();
-            if (!isValidSelectExpr(selectExpr)) {
-                throw JPQLException.invalidSelectForGroupByQuery(
-                    context.getQueryInfo(), 
-                    selectExpr.getLine(), selectExpr.getColumn(), 
-                    selectExpr.getAsString(), getAsString());
-            }
-        }
-    }
-
-    /**
-     * INTERNAL
-     * Add an Group By Item to this node
-     */
-    private void addGroupByItem(Object theNode) {
-        getGroupByItems().add(theNode);
     }
 
     /**
@@ -97,26 +74,6 @@ public class GroupByNode extends MajorNode {
             return ((left == null) || isValidHavingExpr(left)) &&
                 ((right == null) || isValidHavingExpr(right));
         }
-    }
-
-    /** 
-     * INTERNAL
-     * Returns true if the specified expr is a valid SELECT clause expression.
-     */    
-    private boolean isValidSelectExpr(Node expr) {
-        if (expr.isAggregateNode()) {
-            return true;
-        } else if (expr.isConstructorNode()) {
-            List args = ((ConstructorNode)expr).getConstructorItems();
-            for (Iterator i = args.iterator(); i.hasNext(); ) {
-                Node arg = (Node)i.next();
-                if (!isValidSelectExpr(arg)) {
-                    return false;
-                }
-            }
-            return true;
-        }
-        return isGroupbyItem(expr);
     }
 
     /**

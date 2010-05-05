@@ -46,53 +46,52 @@ public class JDK15Platform implements JDKPlatform {
         } else if ((left == null) || (right == null)) {
             return Boolean.FALSE;
         }
-        if (left instanceof String && right instanceof String) {
-            // PERF: First check the pattern cache for the pattern.
-            // Note that the original string is the key, to avoid having to translate it first.
-            Pattern pattern = (Pattern)patternCache.get(right);
-            if (pattern == null) {
-                // Bug 3936427 - Replace regular expression reserved characters with escaped version of those characters
-                // For instance replace ? with \?
-                String convertedRight = ((String)right).replaceAll("\\?", "\\\\?");
-                convertedRight = convertedRight.replaceAll("\\*", "\\\\*");
-                convertedRight = convertedRight.replaceAll("\\.", "\\\\.");
-                convertedRight = convertedRight.replaceAll("\\[", "\\\\[");
-                convertedRight = convertedRight.replaceAll("\\)", "\\\\)");
-                convertedRight = convertedRight.replaceAll("\\(", "\\\\(");
-                convertedRight = convertedRight.replaceAll("\\{", "\\\\{");
-                convertedRight = convertedRight.replaceAll("\\+", "\\\\+");
-                convertedRight = convertedRight.replaceAll("\\^", "\\\\^");
-                convertedRight = convertedRight.replaceAll("\\|", "\\\\|");
+        left = String.valueOf(left);
+        right = String.valueOf(right);
+        // PERF: First check the pattern cache for the pattern.
+        // Note that the original string is the key, to avoid having to translate it first.
+        Pattern pattern = (Pattern)patternCache.get(right);
+        if (pattern == null) {
+            // Bug 3936427 - Replace regular expression reserved characters with escaped version of those characters
+            // For instance replace ? with \?
+            String convertedRight = ((String)right).replaceAll("\\?", "\\\\?");
+            convertedRight = convertedRight.replaceAll("\\*", "\\\\*");
+            convertedRight = convertedRight.replaceAll("\\.", "\\\\.");
+            convertedRight = convertedRight.replaceAll("\\[", "\\\\[");
+            convertedRight = convertedRight.replaceAll("\\)", "\\\\)");
+            convertedRight = convertedRight.replaceAll("\\(", "\\\\(");
+            convertedRight = convertedRight.replaceAll("\\{", "\\\\{");
+            convertedRight = convertedRight.replaceAll("\\+", "\\\\+");
+            convertedRight = convertedRight.replaceAll("\\^", "\\\\^");
+            convertedRight = convertedRight.replaceAll("\\|", "\\\\|");
 
-                // regular expressions to substitute SQL wildcards with regex wildcards
+            // regular expressions to substitute SQL wildcards with regex wildcards
 
-                // Use look behind operators to replace "%" which is not preceded by "\" with ".*"
-                convertedRight = convertedRight.replaceAll("(?<!\\\\)%", ".*");
-                
-                // Use look behind operators to replace "_" which is not preceded by "\" with "."
-                convertedRight = convertedRight.replaceAll("(?<!\\\\)_", ".");   
-                
-                // replace "\%" with "%"
-                convertedRight = convertedRight.replaceAll("\\\\%", "%");
+            // Use look behind operators to replace "%" which is not preceded by "\" with ".*"
+            convertedRight = convertedRight.replaceAll("(?<!\\\\)%", ".*");
+            
+            // Use look behind operators to replace "_" which is not preceded by "\" with "."
+            convertedRight = convertedRight.replaceAll("(?<!\\\\)_", ".");   
+            
+            // replace "\%" with "%"
+            convertedRight = convertedRight.replaceAll("\\\\%", "%");
 
-                // replace "\_" with "_"
-                convertedRight = convertedRight.replaceAll("\\\\_", "_");
+            // replace "\_" with "_"
+            convertedRight = convertedRight.replaceAll("\\\\_", "_");
 
-                pattern = Pattern.compile(convertedRight);
-                // Ensure cache does not grow beyond 100.
-                if (patternCache.size() > 100) {
-                    patternCache.remove(patternCache.keySet().iterator().next());
-                }
-                patternCache.put(right, pattern);
+            pattern = Pattern.compile(convertedRight);
+            // Ensure cache does not grow beyond 100.
+            if (patternCache.size() > 100) {
+                patternCache.remove(patternCache.keySet().iterator().next());
             }
-            boolean match = pattern.matcher((String)left).matches();
-            if (match) {
-                return Boolean.TRUE;
-            } else {
-                return Boolean.FALSE;
-            }
+            patternCache.put(right, pattern);
         }
-        return null;
+        boolean match = pattern.matcher((String)left).matches();
+        if (match) {
+            return Boolean.TRUE;
+        } else {
+            return Boolean.FALSE;
+        }
     }
 
 }

@@ -117,7 +117,7 @@ public class NodeFactoryImpl implements NodeFactory {
         if (identifiers != null){
             for (int i=0;i<identifiers.size();i++){
                 if (identifiers.get(i) != null){
-                    context.registerJoinVariable((String)identifiers.get(i), (Node)selectExprs.get(i), line, column);
+                    context.registerJoinVariable(calculateCanonicalName((String)identifiers.get(i)), (Node)selectExprs.get(i), line, column);
                 }
             }
         }

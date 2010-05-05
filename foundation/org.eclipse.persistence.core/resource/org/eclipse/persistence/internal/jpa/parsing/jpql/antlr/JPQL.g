@@ -327,7 +327,7 @@ scope{
     $selectClause::exprs = new ArrayList();
     $selectClause::idents = new ArrayList();
 }
-    : t=SELECT (DISTINCT { $selectClause::distinct = true; })?
+    : t=SELECT (DISTINCT { $selectClause::distinct = true; })? { setAggregatesAllowed(true); } 
       n = selectItem  
           {
               $selectClause::exprs.add($n.expr);
@@ -341,6 +341,7 @@ scope{
             
            )*
         { 
+            setAggregatesAllowed(false); 
             $node = factory.newSelectClause($t.getLine(), $t.getCharPositionInLine(), 
                                            $selectClause::distinct, $selectClause::exprs, $selectClause::idents); 
         }
@@ -368,7 +369,7 @@ selectExpression returns [Object node]
     | n = constructorExpression  {$node = $n.node;}
     | n = mapEntryExpression {$node = $n.node;}
     ;
-
+        
 mapEntryExpression returns [Object node]
 @init { node = null; }
     : l = ENTRY LEFT_ROUND_BRACKET n = variableAccessOrTypeConstant RIGHT_ROUND_BRACKET { $node = factory.newMapEntry($l.getLine(), $l.getCharPositionInLine(), $n.node);}
@@ -400,19 +401,19 @@ scope{
     $aggregateExpression::distinct = false;
 }
     : t1=AVG LEFT_ROUND_BRACKET (DISTINCT { $aggregateExpression::distinct = true; })?
-        n = stateFieldPathExpression RIGHT_ROUND_BRACKET 
+        n = scalarExpression RIGHT_ROUND_BRACKET 
         { $node = factory.newAvg($t1.getLine(), $t1.getCharPositionInLine(), $aggregateExpression::distinct, $n.node); }
     | t2=MAX LEFT_ROUND_BRACKET (DISTINCT { $aggregateExpression::distinct = true; })? 
-        n = stateFieldPathExpression RIGHT_ROUND_BRACKET
+        n = scalarExpression RIGHT_ROUND_BRACKET
         { $node = factory.newMax($t2.getLine(), $t2.getCharPositionInLine(), $aggregateExpression::distinct, $n.node); }
     | t3=MIN LEFT_ROUND_BRACKET (DISTINCT { $aggregateExpression::distinct = true; })?
-        n = stateFieldPathExpression RIGHT_ROUND_BRACKET
+        n = scalarExpression RIGHT_ROUND_BRACKET
         { $node = factory.newMin($t3.getLine(), $t3.getCharPositionInLine(), $aggregateExpression::distinct, $n.node); }
     | t4=SUM LEFT_ROUND_BRACKET (DISTINCT { $aggregateExpression::distinct = true; })?
-        n = stateFieldPathExpression RIGHT_ROUND_BRACKET
+        n = scalarExpression RIGHT_ROUND_BRACKET
         { $node = factory.newSum($t4.getLine(), $t4.getCharPositionInLine(), $aggregateExpression::distinct, $n.node); }
     | t5=COUNT LEFT_ROUND_BRACKET (DISTINCT { $aggregateExpression::distinct = true; })?
-        n = pathExprOrVariableAccess RIGHT_ROUND_BRACKET
+        n = scalarExpression RIGHT_ROUND_BRACKET
         { $node = factory.newCount($t5.getLine(), $t5.getCharPositionInLine(), $aggregateExpression::distinct, $n.node); }
     ;
 
@@ -683,7 +684,7 @@ betweenExpression [boolean not, Object left] returns [Object node]
     node = null;
 }
     : t=BETWEEN
-        lowerBound = arithmeticExpression AND upperBound = arithmeticExpression
+        lowerBound = scalarOrSubSelectExpression AND upperBound = scalarOrSubSelectExpression
         {
             $node = factory.newBetween($t.getLine(), $t.getCharPositionInLine(),
                                       $not, $left, $lowerBound.node, $upperBound.node);
@@ -705,8 +706,8 @@ scope{
             }
     |   t=IN
         LEFT_ROUND_BRACKET
-        ( itemNode = inItem { $inExpression::items.add($itemNode.node); }
-            ( COMMA itemNode = inItem { $inExpression::items.add($itemNode.node); } )*
+        ( itemNode = scalarOrSubSelectExpression { $inExpression::items.add($itemNode.node); }
+            ( COMMA itemNode = scalarOrSubSelectExpression { $inExpression::items.add($itemNode.node); } )*
             {
                 $node = factory.newIn($t.getLine(), $t.getCharPositionInLine(),
                                      $not, $left, $inExpression::items);
@@ -720,19 +721,11 @@ scope{
         RIGHT_ROUND_BRACKET
     ;
 
-inItem returns [Object node]
-@init { node = null; }
-    : n = literalString {$node = $n.node;}
-    | n = literalNumeric {$node = $n.node;}
-    | n = inputParameter {$node = $n.node;}
-    | n = variableAccessOrTypeConstant {$node = $n.node;}
-    ;
-
 likeExpression [boolean not, Object left] returns [Object node]
 @init {
     node = null;
 }
-    : t=LIKE pattern = likeValue
+    : t=LIKE pattern = scalarOrSubSelectExpression
         (escapeChars = escape)?
         {
             $node = factory.newLike($t.getLine(), $t.getCharPositionInLine(), $not,
@@ -744,14 +737,8 @@ escape returns [Object node]
 @init { 
     node = null; 
 }
-    : t=ESCAPE escapeClause = likeValue
+    : t=ESCAPE escapeClause = scalarExpression
         { $node = factory.newEscape($t.getLine(), $t.getCharPositionInLine(), $escapeClause.node); }
-    ;
-
-likeValue returns [Object node]
-@init { node = null; }
-    : n = literalString {$node = $n.node;}
-    | n = inputParameter {$node = $n.node;}
     ;
 
 nullComparisonExpression [boolean not, Object left] returns [Object node]
@@ -862,6 +849,12 @@ arithmeticPrimary returns [Object node]
 scalarExpression returns [Object node]
 @init {node = null; }
     : n = simpleArithmeticExpression {$node = $n.node;}	
+    | n = nonArithmeticScalarExpression {$node = $n.node;}
+    ;
+    
+scalarOrSubSelectExpression returns [Object node]
+@init {node = null; }
+    : n = arithmeticExpression {$node = $n.node;}	
     | n = nonArithmeticScalarExpression {$node = $n.node;}
     ;
 
@@ -1173,14 +1166,15 @@ trimSpec returns [TrimSpecification trimSpec]
         { $trimSpec = TrimSpecification.BOTH; }
     | // empty rule
     ;
-
+      
+      
 trimChar returns [Object node]
 @init { node = null; }
     : n = literalString {$node = $n.node;}
     | n = inputParameter {$node = $n.node;}
     | // empty rule
     ;
-
+      
 upper returns [Object node]
 @init { node = null; }
     : u=UPPER LEFT_ROUND_BRACKET n = scalarExpression RIGHT_ROUND_BRACKET
@@ -1349,29 +1343,24 @@ scope{
     node = null; 
     $orderByClause::items = new ArrayList();
 }
-    : o=ORDER BY
+    : o=ORDER BY { setAggregatesAllowed(true); } 
         n = orderByItem  { $orderByClause::items.add($n.node); } 
         (COMMA n = orderByItem  { $orderByClause::items.add($n.node); })*
-        { $node = factory.newOrderByClause($o.getLine(), $o.getCharPositionInLine(), $orderByClause::items); }
+        { 
+            setAggregatesAllowed(false);
+            $node = factory.newOrderByClause($o.getLine(), $o.getCharPositionInLine(), $orderByClause::items);
+        }
     ; 
 
 orderByItem returns [Object node]
 @init { node = null; }
-    : n = stateFieldPathExpression
+    : n = scalarExpression
         ( a=ASC 
             { $node = factory.newAscOrdering($a.getLine(), $a.getCharPositionInLine(), $n.node); }
         | d=DESC
             { $node = factory.newDescOrdering($d.getLine(), $d.getCharPositionInLine(), $n.node); }
         | // empty rule
             { $node = factory.newAscOrdering(0, 0, $n.node); }
-        )
-     | i = IDENT
-        ( a=ASC 
-            { $node = factory.newAscOrdering($a.getLine(), $a.getCharPositionInLine(), $i.getText()); }
-        | d=DESC
-            { $node = factory.newDescOrdering($d.getLine(), $d.getCharPositionInLine(), $i.getText()); }
-        | // empty rule
-            { $node = factory.newAscOrdering(0, 0, $i.getText()); }
         )
      ;
 
@@ -1384,16 +1373,11 @@ scope{
     $groupByClause::items = new ArrayList();
 }
     : g=GROUP BY
-        n = groupByItem { $groupByClause::items.add($n.node); }
-        (COMMA n = groupByItem  { $groupByClause::items.add($n.node); } )*
+        n = scalarExpression { $groupByClause::items.add($n.node); }
+        (COMMA n = scalarExpression  { $groupByClause::items.add($n.node); } )*
         { $node = factory.newGroupByClause($g.getLine(), $g.getCharPositionInLine(), $groupByClause::items); }
     ;
 
-groupByItem returns [Object node]
-@init { node = null; }
-    : n = stateFieldPathExpression {$node = $n.node;}
-    | n = variableAccessOrTypeConstant {$node = $n.node;}
-    ;
 
 havingClause returns [Object node]
 @init { node = null; }
@@ -1439,7 +1423,7 @@ IDENT
 
 fragment
 TEXTCHAR
-    : ('a'..'z' | 'A'..'Z' | '_' | '$' | 
+    : ('a'..'z' | 'A'..'Z' | '_' | '$' | '`' | '~' | '@' | '#' | '%' | '^' | '&' | '|' | '[' | ']' | ';'
        c1='\u0080'..'\uFFFE' 
        {
            if (!Character.isJavaIdentifierStart(c1)) {
@@ -1550,6 +1534,7 @@ LESS_THAN_EQUAL_TO
 
 NOT_EQUAL_TO
     : '<>'
+    | '!='
     ;
 
 MULTIPLY

@@ -60,6 +60,7 @@ import org.eclipse.persistence.testing.framework.junit.JUnitTestCase;
 import org.eclipse.persistence.sessions.DatabaseSession;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.testing.models.jpa.advanced.AdvancedTableCreator;
+import org.eclipse.persistence.testing.models.jpa.datatypes.DataTypesTableCreator;
 import org.eclipse.persistence.testing.models.jpa.inherited.Accredidation;
 import org.eclipse.persistence.testing.models.jpa.inherited.Becks;
 import org.eclipse.persistence.testing.models.jpa.inherited.BecksTag;
@@ -211,6 +212,14 @@ public class JUnitJPQLComplexTestSuite extends JUnitTestCase
         suite.addTest(new JUnitJPQLComplexTestSuite("standardFunctionCreateQueryTest"));
         suite.addTest(new JUnitJPQLComplexTestSuite("customFunctionNVLTest"));
         
+        suite.addTest(new JUnitJPQLComplexTestSuite("testFunctionInSelect"));
+        suite.addTest(new JUnitJPQLComplexTestSuite("testFunctionInOrderBy"));
+        suite.addTest(new JUnitJPQLComplexTestSuite("testFunctionInGroupBy"));
+        suite.addTest(new JUnitJPQLComplexTestSuite("testBrackets"));
+        suite.addTest(new JUnitJPQLComplexTestSuite("testComplexBetween"));
+        suite.addTest(new JUnitJPQLComplexTestSuite("testComplexLike"));
+        suite.addTest(new JUnitJPQLComplexTestSuite("testComplexIn"));
+        
         return suite;
     }
     
@@ -247,7 +256,9 @@ public class JUnitJPQLComplexTestSuite extends JUnitTestCase
         //Persist the examples in the database
         partnerLinkPopulator.persistExample(session);
         
-        new InheritedTableManager().replaceTables(getServerSession());
+        new InheritedTableManager().replaceTables(session);
+        
+        new DataTypesTableCreator().replaceTables(session);
     }
     
     public void complexABSTest()
@@ -308,7 +319,7 @@ public class JUnitJPQLComplexTestSuite extends JUnitTestCase
         params.add(-1);
         params.add(0);
         params.add(1);
-        List result = em.createQuery(ejbqlString).setParameter("param", params)/*.setParameter("param2", 0).setParameter("param3", 1)*/.getResultList();
+        em.createQuery(ejbqlString).setParameter("param", params)/*.setParameter("param2", 0).setParameter("param3", 1)*/.getResultList();
     }
     
     public void compexInTest()
@@ -2746,11 +2757,10 @@ public class JUnitJPQLComplexTestSuite extends JUnitTestCase
         
         String errorMsg = "";
         String jpql = null;
-        Query query;
         for(int i=0; i < jpqlString.length; i++) {
             try {
                 jpql = jpqlString[i];
-                query = em.createQuery(jpql);
+                em.createQuery(jpql);
             } catch (Exception ex) {
                 if(shouldPrintJpql) {
                     System.out.println(jpql);
@@ -2814,5 +2824,113 @@ public class JUnitJPQLComplexTestSuite extends JUnitTestCase
             errorMsg = "Failed:\n" + errorMsg;
             fail(errorMsg);
         }
-    }   
+    }
+
+    public void testFunctionInSelect() {
+        EntityManager em = createEntityManager();
+        Query query = em.createQuery("Select UPPER(e.firstName) from Employee e");
+        query.getResultList();
+        query = em.createQuery("Select AVG(e.salary + 10) + 10 from Employee e");
+        query.getResultList();
+        query = em.createQuery("Select ABS(MAX(ABS(e.salary))) + 10 from Employee e");
+        query.getResultList();
+        query = em.createQuery("Select new org.eclipse.persistence.testing.tests.jpa.jpql.JUnitJPQLComplexTestSuite.EmployeeDetail(e.firstName, e.lastName) from Employee e");
+        query.getResultList();
+        query = em.createQuery("Select new org.eclipse.persistence.testing.tests.jpa.jpql.JUnitJPQLComplexTestSuite.EmployeeDetail(UPPER(e.firstName), e.lastName) from Employee e");
+        query.getResultList();
+        query = em.createQuery("Select new org.eclipse.persistence.testing.tests.jpa.jpql.JUnitJPQLComplexTestSuite.EmployeeDetail(MAX(e.firstName), MAX(e.lastName)) from Employee e");
+        query.getResultList();
+        query = em.createQuery("Select 1 from Employee e");
+        query.getResultList();
+        closeEntityManager(em);
+    }
+    
+    public void testFunctionInOrderBy() {
+        EntityManager em = createEntityManager();
+        Query query = em.createQuery("Select e from Employee e order by UPPER(e.firstName)");
+        query.getResultList();
+        query = em.createQuery("Select e from Employee e order by e.salary / 2");
+        query.getResultList();
+        query = em.createQuery("Select COUNT(a) from Employee e join e.address a group by a order by COUNT(a) desc");
+        query.getResultList();
+        query = em.createQuery("SELECT wt FROM WrapperTypes wt order by wt.booleanData");
+        query.getResultList();
+        closeEntityManager(em);
+    }
+    
+    public void testFunctionInGroupBy() {
+        EntityManager em = createEntityManager();
+        Query query = em.createQuery("Select UPPER(e.firstName), COUNT(e) from Employee e group by UPPER(e.firstName)");
+        query.getResultList();
+        query = em.createQuery("Select e from Employee e group by e");
+        query.getResultList();
+        query = em.createQuery("SELECT e FROM Employee e JOIN e.phoneNumbers p GROUP BY e");
+        query.getResultList();
+        query = em.createQuery("SELECT e, COUNT(p) FROM Employee e JOIN e.projects p GROUP BY e HAVING COUNT(p) >= 2");
+        query.getResultList();
+        closeEntityManager(em);
+    }
+    
+    public void testBrackets() {
+        EntityManager em = createEntityManager();
+        Query query = em.createQuery("Select UPPER(e.firstName) from Employee e");
+        query.getResultList();
+        query = em.createQuery("Select UPPER(e.firstName) from Employee e");
+        query.getResultList();
+        query = em.createQuery("Select e from Employee e where ((e.firstName = 'Bob'))");
+        query.getResultList();
+        query = em.createQuery("Select e from Employee e where (((e.firstName = 'Bob') and (not (e.firstName = 'Bob'))))");
+        query.getResultList();
+        query = em.createQuery("Select (1 + 2) from Employee e where (((e.firstName = 'Bob') and (not (e.firstName = 'Bob'))))");
+        query.getResultList();
+        query = em.createQuery("Select (1 + 2) from Employee e where e = e");
+        query.getResultList();
+        query = em.createQuery("Select (1 + 2) * 1 from Employee e where e = e");
+        query.getResultList();
+        query = em.createQuery("Select 1 + (2 * 1) from Employee e where e = e");
+        query.getResultList();
+        closeEntityManager(em);
+    }
+    
+    public void testComplexLike() {
+        EntityManager em = createEntityManager();
+        Query query = em.createQuery("Select e from Employee e where UPPER(e.firstName) like UPPER('b%')");
+        query.getResultList();
+        query = em.createQuery("Select e from Employee e where e.firstName like e.firstName");
+        query.getResultList();
+        query = em.createQuery("Select e from Employee e where e.firstName like (Select e2.firstName from Employee e2 where e = e2)");
+        query.getResultList();
+        query = em.createQuery("Select e from Employee e where e.firstName like UPPER('b%') escape UPPER('_')");
+        query.getResultList();
+        query = em.createQuery("Select e from Employee e where e.salary like '123%'");
+        query.getResultList();
+        query = em.createQuery("Select e from Employee e where e.firstName like 'foox_' escape 'x'");
+        query.getResultList();
+        closeEntityManager(em);
+    }
+    
+    public void testComplexBetween() {
+        EntityManager em = createEntityManager();
+        Query query = em.createQuery("Select e from Employee e where e.firstName between 'L' and 'Z'");
+        query.getResultList();
+        query = em.createQuery("Select e from Employee e where e.firstName between UPPER('L') and UPPER('Z')");
+        query.getResultList();
+        query = em.createQuery("Select e from Employee e where e.salary between 10 and 10000");
+        query.getResultList();
+        query = em.createQuery("Select e from Employee e where e.firstName between (Select e2.firstName from Employee e2 where e = e2) and (Select e3.firstName from Employee e3 where e = e3)");
+        query.getResultList();
+        closeEntityManager(em);
+    }
+    
+    public void testComplexIn() {
+        EntityManager em = createEntityManager();
+        Query query = em.createQuery("Select e from Employee e where e.firstName in (UPPER('L'), LOWER('Z'))");
+        query.getResultList();
+        query = em.createQuery("Select e from Employee e where e.firstName in ((Select e2.firstName from Employee e2 where e = e2), (Select e2.firstName from Employee e3 where e = e3))");
+        query.getResultList();
+        query = em.createQuery("Select e from Employee e where e.firstName in :arg");
+        query.setParameter("arg", Arrays.asList(new int[]{1,2}));
+        query.getResultList();
+        closeEntityManager(em);
+    }
 }

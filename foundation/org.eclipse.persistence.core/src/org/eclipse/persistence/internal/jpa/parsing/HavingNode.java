@@ -37,12 +37,6 @@ public class HavingNode extends MajorNode {
     public void validate(ParseTreeContext context, GroupByNode groupbyNode) {
         if (having != null) {
             having.validate(context);
-            
-            if ((groupbyNode != null) && !groupbyNode.isValidHavingExpr(having)) {
-                throw JPQLException.invalidHavingExpression(
-                    context.getQueryInfo(),  having.getLine(), having.getColumn(),
-                    having.getAsString(), groupbyNode.getAsString());
-            }
         }
     }
     
