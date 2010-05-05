@@ -85,7 +85,12 @@
     -->
 <project name="trunk" default="build" basedir=".">
 
-    <dirname  property="trunk.build.location" file="${ant.file.trunk}"/>
+    <dirname  property="trunk.build.location_temp" file="${ant.file.trunk}"/>
+    <pathconvert targetos="unix" property="trunk.build.location">
+        <path>
+            <pathelement location="${trunk.build.location_temp}"/>
+        </path>
+    </pathconvert>
     <echo message="trunk.build.location = '${trunk.build.location}'"/>
     <property environment="env"/>
     <echo message="env.CLASSPATH        = '${env.CLASSPATH}'"/>
@@ -158,6 +163,9 @@
 
     <!-- Short alias for building the jar. -->
     <target name="jar" depends="package-eclipselink-jar"/>
+
+    <!-- Short alias for building the jar. -->
+    <target name="package-core" depends="dev-package-bundles, package-eclipselink-jar" description="package eclipselink without recompiling (*** dev use only ***)"/>
 
 <!-- ================================================================================= -->
 
@@ -248,6 +256,25 @@
         <ant antfile="build.xml" dir="${eclipselink.util.jaxb}"        target="build"/>
         <ant antfile="build.xml" dir="${eclipselink.sdo}"              target="build"/>
         <ant antfile="build.xml" dir="${eclipselink.dbws}"             target="build"/>
+    </target>
+
+    <!--      *** intended for dev use only ***
+    *    Create runtime components (excluding Tests) from existing classes in project heirarchy.
+    *    note: oracle extension tries to be tricksy and either jars from classes like others,
+    *          or "rejars" from prebuilt bundle if classes dir doesn't exist.
+    * -->
+    <target name="dev-package-bundles" depends="clean-runtime-checkedin">
+        <ant antfile="build.xml" dir="${eclipselink.asm}"              target="build"/>
+        <ant antfile="build.xml" dir="${eclipselink.antlr}"            target="build"/>
+        <ant antfile="build.xml" dir="${eclipselink.core}"             target="jar"/>
+        <ant antfile="build.xml" dir="${eclipselink.extension.oracle}" target="jar"/>
+        <ant antfile="build.xml" dir="${eclipselink.jpa}"              target="jar"/>
+        <ant antfile="build.xml" dir="${eclipselink.modelgen}"         target="jar"/>
+        <ant antfile="build.xml" dir="${eclipselink.weaving}"          target="jar"/>
+        <ant antfile="build.xml" dir="${eclipselink.equinox}"          target="jar"/>
+        <ant antfile="build.xml" dir="${eclipselink.moxy}"             target="jar"/>
+        <ant antfile="build.xml" dir="${eclipselink.sdo}"              target="jar"/>
+        <ant antfile="build.xml" dir="${eclipselink.dbws}"             target="jar"/>
     </target>
 
     <target name="build-persistence20">
@@ -513,6 +540,7 @@
                 <include name="${eclipselink.moxy.test}/**"/>
                 <include name="${eclipselink.sdo.test}/**"/>
                 <include name="${eclipselink.sdo.base}/eclipselink.sdo.test.server.wls/**"/>
+                <include name="${eclipselink.sdo.base}/eclipselink.sdo.test.server/**"/>
                 <include name="plugins/eclipselink-jpa-modelgen_*.jar"/>
                 <include name="jpa/eclipselink.jpa.modelgen.test/**"/>
                 <include name="jpa/plugins/javax.validation_*.jar"/>
@@ -528,6 +556,7 @@
                 <exclude name="**/run/**"/>
                 <exclude name="**/*.test/*.jar"/>
                 <exclude name="**/*src.zip"/>
+                <exclude name="**/*.dmp"/>
             </zipfileset>
             <!-- Moxy has some packages that get filtered out... -->
             <zipfileset dir="${basedir}">

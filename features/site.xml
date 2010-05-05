@@ -4,24 +4,8 @@
       url="@REPOS_URL@">
       This site contains runtime and source features for EclipseLink JPA, MOXy and SDO components
    </description>
-   <feature url="features/org.eclipse.persistence.jpa_@VERSION@.@QUALIFIER@.jar" id="org.eclipse.persistence.jpa" version="@VERSION@.@QUALIFIER@">
-      <category name="EclipseLink"/>
+   <feature url="features/org.eclipse.persistence.sdk_@VERSION@.@QUALIFIER@.jar" id="org.eclipse.persistence.sdk" version="@VERSION@.@QUALIFIER@">
+      <category name="org.eclipse.persistence.sdk.categoryIU"/>
    </feature>
-   <feature url="features/org.eclipse.persistence.moxy_@VERSION@.@QUALIFIER@.jar" id="org.eclipse.persistence.moxy" version="@VERSION@.@QUALIFIER@">
-      <category name="EclipseLink"/>
-   </feature>
-   <feature url="features/org.eclipse.persistence.sdo_@VERSION@.@QUALIFIER@.jar" id="org.eclipse.persistence.sdo" version="@VERSION@.@QUALIFIER@">
-      <category name="EclipseLink"/>
-   </feature>
-   <feature url="features/org.eclipse.persistence.jpa.source_@VERSION@.@QUALIFIER@.jar" id="org.eclipse.persistence.jpa.source" version="@VERSION@.@QUALIFIER@">
-      <category name="EclipseLink Source"/>
-   </feature>
-   <feature url="features/org.eclipse.persistence.moxy.source_@VERSION@.@QUALIFIER@.jar" id="org.eclipse.persistence.moxy.source" version="@VERSION@.@QUALIFIER@">
-      <category name="EclipseLink Source"/>
-   </feature>
-   <feature url="features/org.eclipse.persistence.sdo.source_@VERSION@.@QUALIFIER@.jar" id="org.eclipse.persistence.sdo.source" version="@VERSION@.@QUALIFIER@">
-      <category name="EclipseLink Source"/>
-   </feature>
-   <category-def name="EclipseLink" label="EclipseLink"/>
-   <category-def name="EclipseLink Source" label="EclipseLink Source"/>
+   <category-def name="org.eclipse.persistence.sdk.categoryIU" label="EclipseLink"/>
 </site>
