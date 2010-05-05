@@ -19,6 +19,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import javax.xml.transform.Source;
+import javax.xml.transform.sax.SAXSource;
 import javax.xml.transform.stream.StreamSource;
 
 import org.eclipse.persistence.sdo.helper.SDOXSDHelper;
@@ -40,22 +41,27 @@ public class SchemaResolverSystemIdTestCases extends XSDHelperDefineTestCases {
     public String getSchemaToDefine() {
         return "";
     }
+
     public void testDefine() {
-        //String xsdSchema = getSchema(getSchemaToDefine());
         StreamSource source = new StreamSource("xyz:zxy");
         List types = ((SDOXSDHelper)xsdHelper).define(source, new MySchemaResolver());
-
-        //List types = xsdHelper.define(xsdSchema, getSchemaLocation());
-        log("\nExpected:\n");
-        //List controlTypes = getControlTypes();
-        //log(controlTypes);
-
-        log("\nActual:\n");
-        log(types);
-
-        //compare(getControlTypes(), types);
+        assertEquals(1, types.size());
     }
-    
+
+    public void testSAXSourceDefine() {
+        InputSource inputSource = new InputSource("xyz:zxy");
+        SAXSource source = new SAXSource(inputSource);
+        List types = ((SDOXSDHelper)xsdHelper).define(source, new MySchemaResolver());
+        assertEquals(1, types.size());
+    }
+
+    public void testCustomSourceDefine() {
+        MySource source = new MySource();
+        source.setSystemId("xyz:zxy");
+        List types = ((SDOXSDHelper)xsdHelper).define(source, new MySchemaResolver());
+        assertEquals(1, types.size());
+    }
+
     public static class MySchemaResolver implements SchemaResolver {
 
         public Source resolveSchema(Source sourceXSD, String namespace, String schemaLocation) {
@@ -76,6 +82,21 @@ public class SchemaResolverSystemIdTestCases extends XSDHelperDefineTestCases {
         }
         
     }
+
+    private static class MySource implements Source {
+
+        private String systemId;
+
+        public String getSystemId() {
+            return systemId;
+        }
+
+        public void setSystemId(String systemId) {
+            this.systemId = systemId;
+        }
+
+    }
+
     public List getControlTypes()
     {
       return new ArrayList();

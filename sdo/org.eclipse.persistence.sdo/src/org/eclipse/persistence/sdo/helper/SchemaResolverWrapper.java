@@ -15,7 +15,7 @@ package org.eclipse.persistence.sdo.helper;
 import java.util.ArrayList;
 import java.util.List;
 import javax.xml.transform.Source;
-import javax.xml.transform.stream.StreamSource;
+import javax.xml.transform.sax.SAXSource;
 
 import org.eclipse.persistence.exceptions.SDOException;
 import org.xml.sax.InputSource;
@@ -80,9 +80,9 @@ public class SchemaResolverWrapper {
             return null;
         }
         try {
-            InputSource source = schemaResolver.resolveEntity(null, systemId);
-            if(source != null) {
-                return new StreamSource(source.getCharacterStream());
+            InputSource inputSource = schemaResolver.resolveEntity(null, systemId);
+            if(inputSource != null) {
+                return new SAXSource(inputSource);
             }
         } catch(Exception ex) {
             throw SDOException.errorResolvingSchema(ex);
