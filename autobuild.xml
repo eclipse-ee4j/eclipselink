@@ -182,13 +182,13 @@
         <fail message="${p2.SDK.install.dir} dir not found. Build will fail, aborting now." unless="p2.SDK.install.dir.exist"/>
 
         <!-- generate P2 repository labels                                        -->
-        <condition property="metadata.repos.name" value="&quot;${P2.nightly.repos.name}&quot;">
+        <condition property="metadata.repos.name" value="&quot;${p2.nightly.repos.name}&quot;">
             <equals arg1="${build.type}" arg2="SNAPSHOT"/>
         </condition>
-        <condition property="metadata.repos.name" value="&quot;${P2.release.repos.name}&quot;">
+        <condition property="metadata.repos.name" value="&quot;${p2.release.repos.name}&quot;">
             <equals arg1="${build.type}" arg2="RELEASE"/>
         </condition>
-        <property name="metadata.repos.name" value="&quot;${P2.milestone.repos.name}&quot;"/>
+        <property name="metadata.repos.name" value="&quot;${p2.milestone.repos.name}&quot;"/>
 
         <condition property="artifact.repos.name" value="&quot;EclipseLink Incremental Artifacts&quot;">
             <equals arg1="${build.type}" arg2="SNAPSHOT"/>
