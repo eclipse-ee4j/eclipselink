@@ -197,6 +197,8 @@ public class FormattedWriterRecord extends WriterRecord {
                     attribute(XMLConstants.XMLNS_URL, XMLConstants.EMPTY_STRING,XMLConstants.XMLNS + XMLConstants.COLON + attr.getPrefix(), attr.getNamespaceURI());
                 }
             }
+        } else if (node.getNodeType() == Node.TEXT_NODE) {
+            characters(node.getNodeValue());
         } else {
             try {
                 FormattedWriterRecordContentHandler wrcHandler = new FormattedWriterRecordContentHandler();

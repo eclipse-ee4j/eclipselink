@@ -12,7 +12,9 @@
  ******************************************************************************/
 package org.eclipse.persistence.internal.oxm;
 
+import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
 import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
 
@@ -22,6 +24,7 @@ import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.oxm.NamespaceResolver;
 import org.eclipse.persistence.oxm.XMLConstants;
 import org.eclipse.persistence.oxm.XMLField;
+import org.eclipse.persistence.oxm.XMLMarshaller;
 import org.eclipse.persistence.oxm.mappings.XMLFragmentMapping;
 import org.eclipse.persistence.oxm.record.MarshalRecord;
 import org.eclipse.persistence.oxm.record.UnmarshalRecord;
@@ -35,10 +38,12 @@ import org.eclipse.persistence.sessions.Session;
  */
 public class XMLFragmentMappingNodeValue extends MappingNodeValue implements NullCapableValue {
     private XMLFragmentMapping xmlFragmentMapping;
+    private boolean selfMapping;
 
     public XMLFragmentMappingNodeValue(XMLFragmentMapping xmlFragmentMapping) {
         super();
         this.xmlFragmentMapping = xmlFragmentMapping;
+        this.selfMapping = XPathFragment.SELF_XPATH.equals(xmlFragmentMapping.getXPath());
     }
 
     public boolean isOwningNode(XPathFragment xPathFragment) {
@@ -66,12 +71,53 @@ public class XMLFragmentMappingNodeValue extends MappingNodeValue implements Nul
         return this.marshalSingleValue(xPathFragment, marshalRecord, object, attributeValue, session, namespaceResolver, marshalContext);
     }
 
+    @Override
+    public boolean marshalSelfAttributes(XPathFragment pathFragment, MarshalRecord marshalRecord, Object object, AbstractSession session, NamespaceResolver namespaceResolver, XMLMarshaller marshaller) {
+        Node node = (Node) xmlFragmentMapping.getAttributeValueFromObject(object);
+        NamedNodeMap attributes = node.getAttributes();
+        if(null != attributes) {
+            for(int x=0, attributesLength=attributes.getLength(); x<attributesLength; x++) {
+                Node attribute = attributes.item(x);
+                if(XMLConstants.XMLNS_URL.equals(attribute.getNamespaceURI())) {
+                    String nsResolverPrefix = namespaceResolver.resolveNamespaceURI(attribute.getNodeValue());;
+                    if(attribute.getLocalName().equals(nsResolverPrefix)) {
+                        continue;
+                    }
+                }
+                String namespaceURI = attribute.getNamespaceURI();
+                String localName = attribute.getLocalName();
+                String qualifiedName = localName;
+                if(null != namespaceResolver) {
+                    String prefix = namespaceResolver.resolveNamespaceURI(namespaceURI);
+                    if(null != prefix) {
+                        StringBuilder stringBuilder = new StringBuilder();
+                        stringBuilder.append(prefix);
+                        stringBuilder.append(':');
+                        stringBuilder.append(qualifiedName);
+                        qualifiedName = prefix + ':' + qualifiedName;
+                    }
+                }
+                marshalRecord.attribute(namespaceURI, localName, qualifiedName, attribute.getNodeValue());
+            }
+        }
+        return true;
+    }
+
     public boolean marshalSingleValue(XPathFragment xPathFragment, MarshalRecord marshalRecord, Object object, Object attributeValue, AbstractSession session, NamespaceResolver namespaceResolver, MarshalContext marshalContext) {
         marshalRecord.openStartGroupingElements(namespaceResolver);
         if (!(attributeValue instanceof Node)) {
             return false;
         }
-        marshalRecord.node((Node)attributeValue, namespaceResolver);
+        Node nodeValue = (Node) attributeValue;
+        if(selfMapping) {
+            NodeList childNodes = nodeValue.getChildNodes();
+            for(int x=0,childNodesLength=childNodes.getLength(); x<childNodesLength; x++) {
+                Node node = childNodes.item(x);
+                marshalRecord.node(childNodes.item(x), namespaceResolver);
+            }
+        } else {
+            marshalRecord.node((Node)attributeValue, namespaceResolver);
+        }
         return true;
     }
     
@@ -109,7 +155,12 @@ public class XMLFragmentMappingNodeValue extends MappingNodeValue implements Nul
             unmarshalRecord.setAttributeValue(value, xmlFragmentMapping);
         }
     }
-    
+
+    @Override
+    public void endSelfNodeValue(UnmarshalRecord unmarshalRecord, UnmarshalRecord selfRecord, Attributes atts) {
+        this.endElement(XPathFragment.SELF_FRAGMENT, unmarshalRecord);
+    }
+
     public void attribute(UnmarshalRecord unmarshalRecord, String namespaceURI, String localName, String value) {
         unmarshalRecord.removeNullCapableValue(this);
         if(namespaceURI == null) {
