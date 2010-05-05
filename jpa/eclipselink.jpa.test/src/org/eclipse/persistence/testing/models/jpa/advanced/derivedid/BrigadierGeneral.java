@@ -38,8 +38,8 @@ public class BrigadierGeneral {
     
     @OneToOne(cascade=PERSIST)
     @JoinColumns({
-        @JoinColumn(name="FIRST_NAME", referencedColumnName="F_NAME"),
-        @JoinColumn(name="LAST_NAME", referencedColumnName="L_NAME")
+        @JoinColumn(name="FIRST_NAME", referencedColumnName="f_name"),
+        @JoinColumn(name="LAST_NAME", referencedColumnName="l_name")
     })
     @MapsId("id")
     MajorGeneral majorGeneral;
