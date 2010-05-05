@@ -644,7 +644,16 @@ public class SDOProperty implements Property, Serializable {
             mapping.setConverter(converter);
         }
 
-        // mapping.setShouldInlineBinaryData(true);
+        // Set the null policy on the mapping
+        // Use NullPolicy or IsSetNullPolicy 
+        if (nullable) { // elements only
+            setIsSetNillablePolicyOnMapping(mapping, propertyName);
+        } else {
+            // elements or attributes
+            setIsSetOptionalPolicyOnMapping(mapping, propertyName);
+        }
+        mapping.getNullPolicy().setNullRepresentedByEmptyNode(true);
+
         return mapping;
     }
 
