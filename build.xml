@@ -479,15 +479,16 @@
                 <exclude name="osgi.cmpn_4.1.0.jar"/>
                 <exclude name="javax.ejb_3.0.0.jar"/>
                 <exclude name="org.apache.ant_1.7.0.v20080627-1145.zip"/>
+                <exclude name="com.sun*.jar"/>
+                <exclude name="*dynamic*.jar"/>
             </zipfileset>
             <zipfileset dir=".">
                 <include name="${about-file}"/>
                 <include name="${readme-file}"/>
                 <include name="${license-files}"/>
             </zipfileset>
-            <zipfileset dir="${eclipselink.jpa.plugins}/"  includes="javax.persistence*.jar"/>
-            <zipfileset dir="${eclipselink.moxy.plugins}/" includes="javax.xml.bind*.jar"/>
-            <zipfileset dir="${eclipselink.sdo.plugins}/"  includes="commonj.sdo*2.1.1*.jar"/>
+            <zipfileset dir="${eclipselink.jpa.plugins}/" includes="javax.persistence*.jar" excludes="*preview*.jar"/>
+            <zipfileset dir="${eclipselink.sdo.plugins}/" includes="commonj.sdo*2.1.1*.jar"/>
         </zip>
     </target>
 
