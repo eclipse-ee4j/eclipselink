@@ -636,7 +636,7 @@
 
     <target name="populate-p2-update-site" depends="fix-permission">
         <!-- has to be run last, so it can be generic for nightly, or milestone builds -->
-        <condition property="p2.archive.to.use" value="${build.root.dir}/features/${p2.archive.presigned.zip}">
+        <condition property="p2.archive.to.use" value="${build.root.dir}/features/${p2.archive.presigned.zip}"
                                                  else="${download.dir}/${p2.archive.signed.zip}">
             <equals arg1="${build.type}" arg2="SNAPSHOT"/>
         </condition>
