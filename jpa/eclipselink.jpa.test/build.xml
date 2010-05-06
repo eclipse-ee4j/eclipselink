@@ -179,6 +179,7 @@
 
     <available file="${jpatest.2.common.plugins.dir}/${modelgen.processor.jar}" property="modelgen.jar.exist"/>
 
+    <available file="../../../extension.lib.external/${validation.impl.jar}" property="validate.jar.exist"/>
 
     <target name="set-server-properties">
         <property file="${user.home}/${server.name}.properties"/>
@@ -781,6 +782,13 @@
             <pathelement path="${eclipselink.jpa.test}/${eclipselink.delimited.model}.jar"/>
             <pathelement path="${eclipselink.jpa.test}/${eclipselink.beanvalidation.model}.jar"/>
         </path>
+        <path id="run.bean.validation.classpath">
+            <path refid="run.classpath"/>
+            <pathelement path="../../../extension.lib.external/${validation.impl.jar}"/>
+            <pathelement path="../../../extension.lib.external/${slf4j.api.jar}"/>
+            <pathelement path="../../../extension.lib.external/${slf4j.jdk.jar}"/>
+            <pathelement path="../../../extension.lib.external/${validation.api.jar}"/>
+        </path>
         <path id="run.extended.classpath">
             <pathelement path="${eclipselink.jpa.test}/${classes.dir}"/>
             <path refid="compile.path"/>
@@ -797,7 +805,7 @@
         </path>
          <path id="run.oracle.classpath">
             <path refid="run.classpath"/>
-                        <!-- Currently the Oracle extensions are included to allow running Oracle extensions tests from here. -->
+            <!-- Currently the Oracle extensions are included to allow running Oracle extensions tests from here. -->
             <pathelement path="${eclipselink.extension.oracle.test.dir}/${classes.dir}"/>
             <pathelement path="${eclipselink.extension.oracle.dir}/${classes.dir}"/>
             <pathelement path="${eclipselink.extension.oracle.dir}/eclipselink-extension-oracle.jar"/>
@@ -851,8 +859,21 @@
             <param name="RUN_PATH" value="run.extended.classpath"/>
             <param name="DB_URL" value="${db.url}"/>
         </antcall>
+        <antcall target="run-bean-validation-tests" inheritRefs="true"/>
         <antcall target="oracle-test" inheritRefs="true"/>
         <antcall target="generate-report" inheritRefs="true"/>
+    </target>
+
+    <!-- Runs JPA 2.0 BeanValidation tests, make sure you have validate jar which includes javax.validation.*, validate classes, slfj jdk and api classes under your classpath -->
+    <target name="run-bean-validation-tests" depends="clean-test, config-trunk, config-flat" if="validate.jar.exist">
+        <antcall target="run-test" inheritRefs="true">
+            <param name="TEST_CLASS" value="org.eclipse.persistence.testing.tests.jpa.beanvalidation.BeanValidationJunitTest"/>
+            <param name="TEST_AGENT" value="${test.agent}"/>
+            <param name="TEST_WEAVING" value="${test.weaving}"/>
+            <param name="ORM_TESTING" value="-Dorm.testing=jpa"/>
+            <param name="RUN_PATH" value="run.bean.validation.classpath"/>
+            <param name="DB_URL" value="${db.url}"/>
+        </antcall>
     </target>
 
     <!-- Runs JPA Oracle-specific tests. -->

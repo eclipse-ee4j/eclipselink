@@ -105,7 +105,7 @@ public class BeanValidationJunitTest extends JUnitTestCase {
             // Persist an object with invalid value
             tx.begin();
             Employee e1 = new Employee(100, "name", 1000);
-            Address address = new Address("street", "city", "ca");
+            Address address = new Address("street", "city", "state" /*passing invalid value for state */);
             e1.setAddress(address);
             em.persist(e1);
         } catch (ConstraintViolationException e) {
@@ -113,11 +113,7 @@ public class BeanValidationJunitTest extends JUnitTestCase {
             tx.rollback();
             gotConstraintViolations = true;
         }
-
-        if(!gotConstraintViolations) {
-            System.out.println("Test checkPersistWithInvalidData failed");
-        }
-
+        assertTrue("Did not get Constraint Violation while persisting invalid data ", gotConstraintViolations);
     }
 
     /**
@@ -153,9 +149,7 @@ public class BeanValidationJunitTest extends JUnitTestCase {
             gotConstraintViolations = true;
         }
 
-        if(!gotConstraintViolations) {
-            System.out.println("Test checkPersistWithInvalidData failed");
-        }
+        assertTrue("Did not get Constraint Violation while updating with invalid data ", gotConstraintViolations);
 
     }
 
