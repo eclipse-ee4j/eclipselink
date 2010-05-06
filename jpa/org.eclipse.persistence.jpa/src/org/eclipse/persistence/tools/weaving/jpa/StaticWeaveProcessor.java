@@ -54,6 +54,7 @@ public class StaticWeaveProcessor {
     private URL source;
     private URL target;
     private URL persistenceInfo;
+    private String persistenceXMLLocation;
     private Writer logWriter;
     private ClassLoader classLoader;
     private int logLevel = SessionLog.OFF; 
@@ -139,6 +140,18 @@ public class StaticWeaveProcessor {
         }
     }
 
+    public String getPersistenceXMLLocation() {
+        return persistenceXMLLocation;
+    }
+
+    /**
+     * Set a specific location to look for persistence.xml
+     * by default we will look in META-INF/persistence.xml
+     * @param persistenceXMLLocation
+     */
+    public void setPersistenceXMLLocation(String persistenceXMLLocation) {
+        this.persistenceXMLLocation = persistenceXMLLocation;
+    }
 
     /**
      * Set an explicitly identified the location containing persistence.xml.
@@ -232,9 +245,9 @@ public class StaticWeaveProcessor {
         // Instantiate the classtransformer, we check if the persistenceinfo URL has been specified.
         StaticWeaveClassTransformer classTransformer=null;
         if (persistenceInfo!=null) {
-            classTransformer = new StaticWeaveClassTransformer(persistenceInfo, this.classLoader,this.logWriter,this.logLevel);
+            classTransformer = new StaticWeaveClassTransformer(persistenceInfo, persistenceXMLLocation, this.classLoader,this.logWriter,this.logLevel);
         } else{
-            classTransformer = new StaticWeaveClassTransformer(source, this.classLoader,this.logWriter,this.logLevel);
+            classTransformer = new StaticWeaveClassTransformer(source, persistenceXMLLocation, this.classLoader,this.logWriter,this.logLevel);
         }
 
         // Starting process.

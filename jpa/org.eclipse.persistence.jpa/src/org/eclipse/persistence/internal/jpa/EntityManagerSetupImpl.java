@@ -945,7 +945,7 @@ public class EntityManagerSetupImpl {
                 processor = new MetadataProcessor(persistenceUnitInfo, session, privateClassLoader, enableWeaving, weaveEager);
 
                 //bug:299926 - Case insensitive table / column matching with native SQL queries
-                updateCaseSensitivitySettings(predeployProperties, processor.getProject());
+                EntityManagerSetupImpl.updateCaseSensitivitySettings(predeployProperties, processor.getProject(), session);
                 
                 // Process the Object/relational metadata from XML and annotations.
                 PersistenceUnitProcessor.processORMetadata(processor, throwExceptionOnFail);
@@ -1767,25 +1767,27 @@ public class EntityManagerSetupImpl {
     }
 
     /**
+
+    /**
      * Enable or disable forcing field names to be case insensitive.  Implementation of case insensitive column handling relies on setting
      * both sides to uppercase (the column names from annotations/xml as well as what is returned from the JDBC/statement)
      * The method needs to be called in deploy stage.  
      */
-    protected void updateCaseSensitivitySettings(Map m, MetadataProject project){
+    public static void updateCaseSensitivitySettings(Map m, MetadataProject project, AbstractSession session){
         //Set Native SQL flag if it was specified.
         String insensitiveString = EntityManagerFactoryProvider.getConfigPropertyAsStringLogDebug(PersistenceUnitProperties.UPPERCASE_COLUMN_NAMES, m, "true", session);
         if (insensitiveString != null) {
            if (insensitiveString.equalsIgnoreCase("true")) {
                project.setShouldForceFieldNamesToUpperCase(true);
-               this.session.getProject().getLogin().setShouldForceFieldNamesToUpperCase(true);
+               session.getProject().getLogin().setShouldForceFieldNamesToUpperCase(true);
            } else if (insensitiveString.equalsIgnoreCase("false")) {
                project.setShouldForceFieldNamesToUpperCase(false);
            } else {
-               this.session.handleException(ValidationException.invalidBooleanValueForProperty(insensitiveString, PersistenceUnitProperties.UPPERCASE_COLUMN_NAMES));
+               session.handleException(ValidationException.invalidBooleanValueForProperty(insensitiveString, PersistenceUnitProperties.UPPERCASE_COLUMN_NAMES));
            }
         }
     }
-
+    
     /**
      * Update the default pessimistic lock timeout value. 
      * @param persistenceProperties the properties map

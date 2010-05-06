@@ -26,6 +26,7 @@ import java.util.zip.ZipException;
 import javax.persistence.spi.ClassTransformer;
 import javax.persistence.spi.PersistenceUnitInfo;
 
+import org.eclipse.persistence.internal.jpa.EntityManagerSetupImpl;
 import org.eclipse.persistence.internal.jpa.deployment.ArchiveFactoryImpl;
 import org.eclipse.persistence.internal.jpa.deployment.PersistenceUnitProcessor;
 import org.eclipse.persistence.internal.jpa.deployment.SEPersistenceUnitInfo;
@@ -68,17 +69,17 @@ public class StaticWeaveClassTransformer {
      * Constructs an instance of StaticWeaveClassTransformer.
      */
     public StaticWeaveClassTransformer(URL inputArchiveURL,ClassLoader aclassloader) throws Exception {
-        this(inputArchiveURL,aclassloader,null,SessionLog.OFF);
+        this(inputArchiveURL,null, aclassloader,null,SessionLog.OFF);
     }
     
     /**
      * Constructs an instance of StaticWeaveClassTransformer.
      */
-    public StaticWeaveClassTransformer(URL inputArchiveURL,ClassLoader aclassloader, Writer logWriter, int loglevel) throws URISyntaxException,IOException {
+    public StaticWeaveClassTransformer(URL inputArchiveURL, String persistenceXMLLocation, ClassLoader aclassloader, Writer logWriter, int loglevel) throws URISyntaxException,IOException {
         this.aClassLoader = aclassloader;
         this.logWriter=logWriter;
         this.logLevel=loglevel;
-        buildClassTransformers(inputArchiveURL,aclassloader);
+        buildClassTransformers(inputArchiveURL, persistenceXMLLocation ,aclassloader);
     }
 
 
@@ -100,7 +101,7 @@ public class StaticWeaveClassTransformer {
     /**
      * The method creates classtransformer list corresponding to each persistence unit. 
      */
-    private void buildClassTransformers(URL inputArchiveURL,ClassLoader aclassloader) throws URISyntaxException,IOException{ 
+    private void buildClassTransformers(URL inputArchiveURL, String persistenceXMLLocation, ClassLoader aclassloader) throws URISyntaxException,IOException{ 
         if (classTransformers!=null) {
             return ;
         } else {
@@ -108,7 +109,8 @@ public class StaticWeaveClassTransformer {
         }
         Archive archive = null;
         try {
-            archive = (new ArchiveFactoryImpl()).createArchive(inputArchiveURL, PersistenceUnitProperties.ECLIPSELINK_PERSISTENCE_XML_DEFAULT);
+            
+            archive = (new ArchiveFactoryImpl()).createArchive(inputArchiveURL, persistenceXMLLocation == null ? PersistenceUnitProperties.ECLIPSELINK_PERSISTENCE_XML_DEFAULT : persistenceXMLLocation);
             
             List<SEPersistenceUnitInfo> persistenceUnitsList = 
             PersistenceUnitProcessor.processPersistenceArchive(archive, aclassloader);
@@ -156,6 +158,9 @@ public class StaticWeaveClassTransformer {
         
         // Create an instance of MetadataProcessor for specified persistence unit info
         MetadataProcessor processor = new MetadataProcessor(unitInfo, session, privateClassLoader, true, weaveEager);
+        
+        //bug:299926 - Case insensitive table / column matching with native SQL queries
+        EntityManagerSetupImpl.updateCaseSensitivitySettings(unitInfo.getProperties(), processor.getProject(), session);
         // Process the Object/relational metadata from XML and annotations.
         PersistenceUnitProcessor.processORMetadata(processor, false);
 

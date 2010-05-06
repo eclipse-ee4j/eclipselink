@@ -19,14 +19,17 @@ import java.net.MalformedURLException;
 import java.security.AccessController;
 import java.security.PrivilegedActionException;
 import java.util.Enumeration;
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Iterator;
+import java.util.Map;
 import java.util.Set;
 import java.util.HashSet;
+import java.util.StringTokenizer;
 
 import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
@@ -40,7 +43,9 @@ import org.xml.sax.InputSource;
 import org.eclipse.persistence.config.PersistenceUnitProperties;
 import org.eclipse.persistence.config.SystemProperties;
 import org.eclipse.persistence.exceptions.PersistenceUnitLoadingException;
+import org.eclipse.persistence.exceptions.ValidationException;
 import org.eclipse.persistence.exceptions.XMLParseException;
+import org.eclipse.persistence.internal.jpa.EntityManagerFactoryProvider;
 import org.eclipse.persistence.internal.jpa.deployment.xml.parser.PersistenceContentHandler;
 import org.eclipse.persistence.internal.jpa.deployment.xml.parser.XMLException;
 import org.eclipse.persistence.internal.jpa.deployment.xml.parser.XMLExceptionHandler;
@@ -51,6 +56,7 @@ import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataA
 import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataClass;
 import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
 import org.eclipse.persistence.internal.security.PrivilegedNewInstanceFromClass;
+import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.jpa.Archive;
 import org.eclipse.persistence.jpa.ArchiveFactory;
 
@@ -117,13 +123,24 @@ public class PersistenceUnitProcessor {
      * @return
      * @throws IOException
      */
-    public static URL computePURootURL(URL pxmlURL) throws IOException, URISyntaxException {
+    public static URL computePURootURL(URL pxmlURL, String descriptorLocation) throws IOException, URISyntaxException {
+        StringTokenizer tokenizer = new StringTokenizer(descriptorLocation, "/\\");
+        int descriptorDepth = tokenizer.countTokens() - 1;
         URL result;
         String protocol = pxmlURL.getProtocol();
         if("file".equals(protocol)) { // NOI18N
+            StringBuffer path = new StringBuffer();
+            boolean firstElement = true;
+            for (int i=0;i<descriptorDepth;i++){
+                if (!firstElement){
+                    path.append(File.separator);
+                }
+                path.append("..");
+                firstElement = false;
+            }
             // e.g. file:/tmp/META-INF/persistence.xml
             // 210280: any file url will be assumed to always reference a file (not a directory)
-            result = new URL(pxmlURL, ".."); // NOI18N
+            result = new URL(pxmlURL, path.toString()); // NOI18N
         } else if("jar".equals(protocol)) { // NOI18N
             // e.g. jar:file:/tmp/a_ear/b.jar!/META-INF/persistence.xml
             JarURLConnection conn =
@@ -135,9 +152,12 @@ public class PersistenceUnitProcessor {
         } else if ("bundleresource".equals(protocol)) {           
             result = new URL("bundleresource://" + pxmlURL.getAuthority());
         } else {
+            StringBuffer path = new StringBuffer();
+            for (int i=0;i<descriptorDepth;i++){
+                path.append(".." + File.separator);
+            }
             // some other protocol
-            // e.g. bundleresource://21/META-INF/persistence.xml
-            result = new URL(pxmlURL, "../"); // NOI18N
+            result = new URL(pxmlURL, path.toString()); // NOI18N
         }
         result = fixUNC(result);
         return result;
@@ -209,7 +229,10 @@ public class PersistenceUnitProcessor {
      * @param loader the class loader to get the class path from
      */
     public static Set<Archive> findPersistenceArchives(ClassLoader loader){
-        return findPersistenceArchives(loader, PersistenceUnitProperties.ECLIPSELINK_PERSISTENCE_XML_DEFAULT);
+        // allow alternate persistence location to be specified via system property.  This will allow persistence units
+        // with alternate persistence xml locations to be weaved
+        String descriptorLocation = System.getProperty(PersistenceUnitProperties.ECLIPSELINK_PERSISTENCE_XML, PersistenceUnitProperties.ECLIPSELINK_PERSISTENCE_XML_DEFAULT);
+        return findPersistenceArchives(loader, descriptorLocation);
     }
     
     /**
@@ -233,7 +256,7 @@ public class PersistenceUnitProcessor {
                 while (resources.hasMoreElements()){
 
                     URL descUrl = resources.nextElement();
-                    URL puRootUrl = computePURootURL(descUrl);
+                    URL puRootUrl = computePURootURL(descUrl, descriptorPath);
                     archive = PersistenceUnitProcessor.getArchiveFactory(loader).createArchive(puRootUrl, descriptorPath);
     
                    // archive = new BundleArchive(puRootUrl, descUrl);
@@ -249,10 +272,6 @@ public class PersistenceUnitProcessor {
                 URL prefixUrl = loader.getResource(jarPrefixPath);
                 archive = PersistenceUnitProcessor.getArchiveFactory(loader).createArchive(prefixUrl, descPath);
 
-                //archive = new BundleJarUrlArchive(prefixUrl, descPath);            
-              /*  if (prefixUrl != null) {
-                    archives.add(archive);
-                }*/
                 if (archive != null){
                     archives.add(archive);
                 }
@@ -513,5 +532,5 @@ public class PersistenceUnitProcessor {
        }
        return fullPuName;
    }
-
+   
 }

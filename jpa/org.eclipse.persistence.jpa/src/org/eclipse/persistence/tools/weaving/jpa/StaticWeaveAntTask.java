@@ -67,6 +67,7 @@ public class StaticWeaveAntTask extends Task{
     
     private String source;
     private String persistenceinfo;
+    private String persistencexml;
     private String target;
     private Vector classPaths = new Vector();
     private int logLevel = SessionLog.OFF;
@@ -115,6 +116,10 @@ public class StaticWeaveAntTask extends Task{
     
     public void setPersistenceinfo(String persistenceinfo) {
         this.persistenceinfo = persistenceinfo;
+    }
+    
+    public void setpersistencexml(String persistenceXMLLocation) {
+        this.persistencexml = persistenceXMLLocation;
     }
     
     /**
@@ -195,6 +200,9 @@ public class StaticWeaveAntTask extends Task{
            }
            if (persistenceinfo!=null) {
                weave.setPersistenceInfo(persistenceinfo);
+           }
+           if (persistencexml!=null){
+               weave.setPersistenceXMLLocation(persistencexml);
            }
            if (logWriter!=null) {
                weave.setLog(logWriter);

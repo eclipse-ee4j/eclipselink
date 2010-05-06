@@ -60,6 +60,8 @@ public class StaticWeave {
 
         // The location path containing persistence.xml, null if none was given 
         private String persistenceinfopath;
+        
+        private String persistenceXmlLocation;
 
         // The location path of the target, null if none was given 
         private String target;
@@ -100,6 +102,9 @@ public class StaticWeave {
             if(persistenceinfopath!=null){
                 staticWeaverProcessor.setPersistenceInfo(this.persistenceinfopath);
             }
+            if (persistenceXmlLocation != null){
+                staticWeaverProcessor.setPersistenceXMLLocation(this.persistenceXmlLocation);
+            }
             if(classpaths!=null){
                 staticWeaverProcessor.setClassLoader(getClassLoader());
             }
@@ -116,7 +121,7 @@ public class StaticWeave {
          */
         void processCommandLine() throws Exception
         {
-            if (argv.length < 2 || argv.length>10) {
+            if (argv.length < 2 || argv.length>12) {
                 printUsage();
                 System.exit(1);
             }
@@ -138,6 +143,16 @@ public class StaticWeave {
                            System.exit(1);
                     }
                     persistenceinfopath=argv[i+1];
+                    i++;
+                    continue;
+                }
+                
+                if (argv[i].equalsIgnoreCase("-persistencexml")) {
+                    if ((i + 1) >= argv.length ){
+                           printUsage();
+                           System.exit(1);
+                    }
+                    persistenceXmlLocation=argv[i+1];
                     i++;
                     continue;
                 }
@@ -220,38 +235,44 @@ public class StaticWeave {
             
             // Because we can no longer use Helper.cr() inside of message bundles, we must break
             // up the message into separate lines and use Helper.cr() here instead. (bug6470503)
-    		String messageString = ToStringLocalization.buildMessage("staticweave_commandline_help_message_1of16");
-    		messageString += Helper.cr() + Helper.cr();
-    		messageString += ToStringLocalization.buildMessage("staticweave_commandline_help_message_2of16");
-    		messageString += Helper.cr();
-    		messageString += ToStringLocalization.buildMessage("staticweave_commandline_help_message_3of16");
-    		messageString += Helper.cr();
-    		messageString += ToStringLocalization.buildMessage("staticweave_commandline_help_message_4of16");
-    		messageString += Helper.cr();
-    		messageString += ToStringLocalization.buildMessage("staticweave_commandline_help_message_5of16");
-    		messageString += Helper.cr();
-    		messageString += ToStringLocalization.buildMessage("staticweave_commandline_help_message_6of16");
-    		messageString += Helper.cr();
-    		messageString += ToStringLocalization.buildMessage("staticweave_commandline_help_message_7of16");
-    		messageString += Helper.cr();
-    		messageString += ToStringLocalization.buildMessage("staticweave_commandline_help_message_8of16");
-    		messageString += Helper.cr();
-    		messageString += ToStringLocalization.buildMessage("staticweave_commandline_help_message_9of16");
-    		messageString += Helper.cr();
-    		messageString += ToStringLocalization.buildMessage("staticweave_commandline_help_message_10of16");
-    		messageString += Helper.cr() + Helper.cr();
-    		messageString += ToStringLocalization.buildMessage("staticweave_commandline_help_message_11of16");
-    		messageString += Helper.cr();
-    		messageString += ToStringLocalization.buildMessage("staticweave_commandline_help_message_12of16");
-    		messageString += Helper.cr() + Helper.cr();
-    		messageString += ToStringLocalization.buildMessage("staticweave_commandline_help_message_13of16");
-    		messageString += Helper.cr();
-    		messageString += ToStringLocalization.buildMessage("staticweave_commandline_help_message_14of16");
-    		messageString += Helper.cr();
-    		messageString += ToStringLocalization.buildMessage("staticweave_commandline_help_message_15of16");
-    		messageString += Helper.cr() + Helper.cr();
-    		messageString += ToStringLocalization.buildMessage("staticweave_commandline_help_message_16of16");
-    		messageString += Helper.cr() + Helper.cr();
+            String messageString = ToStringLocalization.buildMessage("staticweave_commandline_help_message_1of19");
+            messageString += Helper.cr() + Helper.cr();
+            messageString += ToStringLocalization.buildMessage("staticweave_commandline_help_message_2of19");
+            messageString += Helper.cr();
+            messageString += ToStringLocalization.buildMessage("staticweave_commandline_help_message_3of19");
+            messageString += Helper.cr();
+            messageString += ToStringLocalization.buildMessage("staticweave_commandline_help_message_4of19");
+            messageString += Helper.cr();
+            messageString += ToStringLocalization.buildMessage("staticweave_commandline_help_message_5of19");
+            messageString += Helper.cr();
+            messageString += ToStringLocalization.buildMessage("staticweave_commandline_help_message_6of19");
+            messageString += Helper.cr();
+            messageString += ToStringLocalization.buildMessage("staticweave_commandline_help_message_7of19");
+            messageString += Helper.cr();
+            messageString += ToStringLocalization.buildMessage("staticweave_commandline_help_message_8of19");
+            messageString += Helper.cr();
+            messageString += ToStringLocalization.buildMessage("staticweave_commandline_help_message_9of19");
+            messageString += Helper.cr();
+            messageString += ToStringLocalization.buildMessage("staticweave_commandline_help_message_10of19");
+            messageString += Helper.cr();
+            messageString += ToStringLocalization.buildMessage("staticweave_commandline_help_message_11of19");
+            messageString += Helper.cr();
+            messageString += ToStringLocalization.buildMessage("staticweave_commandline_help_message_12of19");
+            messageString += Helper.cr();
+            messageString += ToStringLocalization.buildMessage("staticweave_commandline_help_message_13of19");
+            messageString += Helper.cr() + Helper.cr();
+            messageString += ToStringLocalization.buildMessage("staticweave_commandline_help_message_14of19");
+            messageString += Helper.cr();
+            messageString += ToStringLocalization.buildMessage("staticweave_commandline_help_message_15of19");
+            messageString += Helper.cr() + Helper.cr();
+            messageString += ToStringLocalization.buildMessage("staticweave_commandline_help_message_16of19");
+            messageString += Helper.cr();
+            messageString += ToStringLocalization.buildMessage("staticweave_commandline_help_message_17of19");
+            messageString += Helper.cr();
+            messageString += ToStringLocalization.buildMessage("staticweave_commandline_help_message_18of19");
+            messageString += Helper.cr() + Helper.cr();
+            messageString += ToStringLocalization.buildMessage("staticweave_commandline_help_message_19of19");
+            messageString += Helper.cr() + Helper.cr();
             
             o.println(messageString);
         }
