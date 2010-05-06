@@ -33,7 +33,7 @@ import org.eclipse.persistence.testing.models.wdf.jpa1.employee.Department;
 import org.eclipse.persistence.testing.models.wdf.jpa1.employee.Employee;
 import org.eclipse.persistence.testing.models.wdf.jpa1.employee.Hobby;
 import org.eclipse.persistence.testing.models.wdf.jpa1.employee.Review;
-import org.eclipse.persistence.testing.models.wdf.jpa1.timestamp.NastyTimestamp;
+import org.eclipse.persistence.testing.models.wdf.jpa1.timestamp.Nasty;
 import org.eclipse.persistence.testing.models.wdf.jpa1.timestamp.Timestamp;
 import org.eclipse.persistence.testing.tests.wdf.jpa1.JPA1Base;
 import org.junit.Ignore;
@@ -858,50 +858,54 @@ public class TestMerge extends JPA1Base {
     }
 
     @Test
-    @ToBeInvestigated
     public void testNastyTimestampTwice() {
         final JPAEnvironment env = getEnvironment();
         final EntityManager em = env.getEntityManager();
         try {
-            Timestamp timestamp = new NastyTimestamp();
-            verify(timestamp.getId() == null, "id is not null");
+            Nasty nasty = new Nasty();
+            verify(nasty.getId() == null, "id is not null");
             env.beginTransaction(em);
-            em.persist(timestamp);
-            Long value = timestamp.getId();
+            em.persist(nasty);
+            Long value = nasty.getId();
             verify(value != null, "id is null");
             try {
-                em.merge(new NastyTimestamp());
+                em.merge(new Nasty());
+                env.commitTransaction(em);
                 flop("persisting second nasty timestamp succeeded");
             } catch (PersistenceException ex) {
                 Assert.assertTrue(true);
             }
-            env.rollbackTransactionAndClear(em);
+            if (env.isTransactionActive(em)) {
+                env.rollbackTransactionAndClear(em);
+            }
         } finally {
             closeEntityManager(em);
         }
     }
 
     @Test
-    @ToBeInvestigated
     public void testNastyTimestampTwiceNotInitial() {
         final JPAEnvironment env = getEnvironment();
         final EntityManager em = env.getEntityManager();
         try {
-            Timestamp timestamp = new NastyTimestamp();
-            verify(timestamp.getId() == null, "id is not null");
+            Nasty nasty = new Nasty();
+            verify(nasty.getId() == null, "id is not null");
             env.beginTransaction(em);
-            em.persist(timestamp);
-            Long value = timestamp.getId();
+            em.persist(nasty);
+            Long value = nasty.getId();
             verify(value != null, "id is null");
             try {
-                Timestamp t2 = new NastyTimestamp();
-                t2.setId(Long.valueOf(2000));
-                em.merge(t2);
+                Nasty n2 = new Nasty();
+                n2.setId(Long.valueOf(2000));
+                em.merge(n2);
+                env.commitTransaction(em);
                 flop("persisting second nasty timestamp succeeded");
             } catch (PersistenceException ex) {
                 Assert.assertTrue(true);
             }
-            env.rollbackTransactionAndClear(em);
+            if (env.isTransactionActive(em)) {
+                env.rollbackTransactionAndClear(em);
+            }
         } finally {
             closeEntityManager(em);
         }

@@ -71,7 +71,7 @@
 		<class>org.eclipse.persistence.testing.models.wdf.jpa1.node.CascadingNodeDescription</class>
 		<class>org.eclipse.persistence.testing.models.wdf.jpa1.node.Node</class>
 		
-		<class>org.eclipse.persistence.testing.models.wdf.jpa1.timestamp.NastyTimestamp</class>
+		<class>org.eclipse.persistence.testing.models.wdf.jpa1.timestamp.Nasty</class>
 		<class>org.eclipse.persistence.testing.models.wdf.jpa1.timestamp.Timestamp</class>
 		
 		<class>org.eclipse.persistence.testing.models.wdf.jpa1.types.BasicTypesFieldAccess</class>

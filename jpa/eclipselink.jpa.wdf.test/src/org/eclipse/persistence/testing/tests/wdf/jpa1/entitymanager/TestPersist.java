@@ -26,14 +26,15 @@ import junit.framework.Assert;
 
 import org.eclipse.persistence.testing.framework.wdf.Bugzilla;
 import org.eclipse.persistence.testing.framework.wdf.JPAEnvironment;
-import org.eclipse.persistence.testing.framework.wdf.ToBeInvestigated;
 import org.eclipse.persistence.testing.models.wdf.jpa1.employee.Department;
-import org.eclipse.persistence.testing.models.wdf.jpa1.timestamp.NastyTimestamp;
+import org.eclipse.persistence.testing.models.wdf.jpa1.timestamp.Nasty;
 import org.eclipse.persistence.testing.models.wdf.jpa1.timestamp.Timestamp;
 import org.eclipse.persistence.testing.models.wdf.jpa1.types.BasicTypesFieldAccess;
 import org.eclipse.persistence.testing.tests.wdf.jpa1.JPA1Base;
 import org.junit.Ignore;
 import org.junit.Test;
+
+
 
 public class TestPersist extends JPA1Base {
 
@@ -179,10 +180,11 @@ public class TestPersist extends JPA1Base {
             env.beginTransaction(em);
             em.persist(dep);
             env.commitTransactionAndClear(em);
+            
             env.beginTransaction(em);
             dep = em.find(Department.class, new Integer(id1));
             em.remove(dep);
-            // no, the entity should be REMOVED
+            // now, the entity should be REMOVED
             if (flushBeforePersist) {
                 em.flush();
             }
@@ -190,9 +192,11 @@ public class TestPersist extends JPA1Base {
             // now, the entity should be managed again
             dep.setName("REINVIGORATED");
             env.commitTransactionAndClear(em);
+            
             dep = em.find(Department.class, new Integer(id1));
             verify(dep != null, "department not found");
             verify("REINVIGORATED".equals(dep.getName()), "department has wrong name: " + dep.getName());
+            
             // 2. persist a new department, remove it and call persist
             env.beginTransaction(em);
             final int id2 = (flushBeforePersist ? 100 : 0) + 22;
@@ -205,6 +209,7 @@ public class TestPersist extends JPA1Base {
             em.persist(dep);
             dep.setName("REINVIGORATED");
             env.commitTransactionAndClear(em);
+            
             dep = em.find(Department.class, new Integer(id2));
             verify(dep != null, "department not found");
             verify("REINVIGORATED".equals(dep.getName()), "department has wrong name: " + dep.getName());
@@ -505,19 +510,26 @@ public class TestPersist extends JPA1Base {
             env.beginTransaction(em);
             em.persist(timestamp);
             env.commitTransaction(em);
+            
             env.beginTransaction(em);
-            timestamp = em.find(Timestamp.class, timestamp.getId());
+            final Long id1 = timestamp.getId();
+            timestamp = em.find(Timestamp.class, id1);
             em.remove(timestamp);
             if (removeExecuted) {
                 em.flush();
             }
-            try {
-                em.persist(timestamp);
-                flop("persist succeeded");
-            } catch (PersistenceException ex) {
-                Assert.assertTrue(true);
-            }
-            env.rollbackTransactionAndClear(em);
+            
+            em.persist(timestamp);
+            
+            env.commitTransactionAndClear(em);
+            final Long id2 = timestamp.getId();
+            
+            Assert.assertFalse(id2.equals(id1));
+            
+            Assert.assertNull(em.find(Timestamp.class, id1));
+            Assert.assertNotNull(em.find(Timestamp.class, id1));
+
+            
         } finally {
             closeEntityManager(em);
         }
@@ -536,24 +548,26 @@ public class TestPersist extends JPA1Base {
     }
 
     @Test
-    @Bugzilla(bugid=309681) // nasty timestamp not supported
     public void testNastyTimestampTwice() {
         final JPAEnvironment env = getEnvironment();
         final EntityManager em = env.getEntityManager();
         try {
-            Timestamp timestamp = new NastyTimestamp();
-            verify(timestamp.getId() == null, "id is not null");
+            Nasty nasty = new Nasty();
+            verify(nasty.getId() == null, "id is not null");
             env.beginTransaction(em);
-            em.persist(timestamp);
-            Long value = timestamp.getId();
+            em.persist(nasty);
+            Long value = nasty.getId();
             verify(value != null, "id is null");
             try {
-                em.persist(new NastyTimestamp());
+                em.persist(new Nasty());
+                env.commitTransaction(em);
                 flop("persisting second nasty timestamp succeeded");
             } catch (PersistenceException ex) {
                 Assert.assertTrue(true);
             }
-            env.rollbackTransactionAndClear(em);
+            if (env.isTransactionActive(em)) {
+                env.rollbackTransactionAndClear(em);
+            }
         } finally {
             closeEntityManager(em);
         }
