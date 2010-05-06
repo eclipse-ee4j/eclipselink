@@ -14,6 +14,7 @@
 package org.eclipse.persistence.testing.tests.wdf.jpa1.entitymanager;
 
 import java.sql.Connection;
+
 import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -35,13 +36,15 @@ import org.eclipse.persistence.testing.models.wdf.jpa1.employee.Review;
 import org.eclipse.persistence.testing.tests.wdf.jpa1.JPA1Base;
 import org.junit.Ignore;
 import org.junit.Test;
+import static org.junit.Assert.fail;
 
 public class TestRefresh extends JPA1Base {
 
     @Test
     public void testRefreshNew() {
         /*
-         * Refresh on an entity that is not under control of the entity manager should throw an IllegalArgumentException.
+         * Refresh on an entity that is not under control of the entity manager
+         * should throw an IllegalArgumentException.
          */
         final JPAEnvironment env = getEnvironment();
         final EntityManager em = env.getEntityManager();
@@ -64,19 +67,22 @@ public class TestRefresh extends JPA1Base {
     }
 
     @Test
-    @Bugzilla(bugid=309681)
+    @Bugzilla(bugid = 309681)
     public void testRefreshManagedNew() throws SQLException {
         /*
-         * Note: The specification doesn't state explicitly how to behave in this case, so we test our interpretation: - If the
-         * entity doesn't exist on the database, nothing is changed - If the entity exists on the database, the data is loaded
-         * and the state changes from FOR_INSERT to FOR_UPDATE (in order to avoid errors at flush time)
+         * Note: The specification doesn't state explicitly how to behave in
+         * this case, so we test our interpretation: - If the entity doesn't
+         * exist on the database, nothing is changed - If the entity exists on
+         * the database, the data is loaded and the state changes from
+         * FOR_INSERT to FOR_UPDATE (in order to avoid errors at flush time)
          */
         final JPAEnvironment env = getEnvironment();
         final EntityManager em = env.getEntityManager();
         int id;
         Department dep;
         try {
-            // case 2: state MANAGED_NEW, but exists on DB (inserted in different tx)
+            // case 2: state MANAGED_NEW, but exists on DB (inserted in
+            // different tx)
             id = 12;
             dep = new Department(id, "MANAGED_NEW");
             Department depInserted = new Department(id, "INSERTED");
@@ -86,7 +92,8 @@ public class TestRefresh extends JPA1Base {
             verifyExistenceOnDatabase(id);
             // entity is now in state MANAGED_NEW, but record exists on db
             em.refresh(dep);
-            checkDepartment(dep, id, "INSERTED"); // this should now be in state MANAGED
+            checkDepartment(dep, id, "INSERTED"); // this should now be in state
+                                                  // MANAGED
             verify(em.contains(dep), "Department is not managed");
             dep.setName("UPDATED");
             env.commitTransactionAndClear(em);
@@ -99,12 +106,14 @@ public class TestRefresh extends JPA1Base {
     }
 
     @Test
-    @Bugzilla(bugid=309681)
+    @Bugzilla(bugid = 309681)
     public void testRefreshManagedNewNotOnDB() throws SQLException {
         /*
-         * Note: The specification doesn't state explicitly how to behave in this case, so we test our interpretation: - If the
-         * entity doesn't exist on the database, nothing is changed - If the entity exists on the database, the data is loaded
-         * and the state changes from FOR_INSERT to FOR_UPDATE (in order to avoid errors at flush time)
+         * Note: The specification doesn't state explicitly how to behave in
+         * this case, so we test our interpretation: - If the entity doesn't
+         * exist on the database, nothing is changed - If the entity exists on
+         * the database, the data is loaded and the state changes from
+         * FOR_INSERT to FOR_UPDATE (in order to avoid errors at flush time)
          */
         final JPAEnvironment env = getEnvironment();
         final EntityManager em = env.getEntityManager();
@@ -140,7 +149,8 @@ public class TestRefresh extends JPA1Base {
             em.persist(dep);
             env.commitTransactionAndClear(em);
             env.beginTransaction(em);
-            dep = em.find(Department.class, new Integer(id)); // this is now in state MANAGED
+            dep = em.find(Department.class, new Integer(id)); // this is now in
+                                                              // state MANAGED
             dep.setName("UPDATED");
             em.refresh(dep);
             checkDepartment(dep, id, "MANAGED");
@@ -157,7 +167,8 @@ public class TestRefresh extends JPA1Base {
             em.persist(dep);
             env.commitTransactionAndClear(em);
             env.beginTransaction(em);
-            dep = em.find(Department.class, new Integer(id)); // this is now in state MANAGED
+            dep = em.find(Department.class, new Integer(id)); // this is now in
+                                                              // state MANAGED
             updateDepartmentOnDatabase(updatedDep);
             em.refresh(dep);
             checkDepartment(dep, id, "UPDATED");
@@ -173,18 +184,20 @@ public class TestRefresh extends JPA1Base {
     }
 
     @Test
-    @Bugzilla(bugid=309681)
+    @Bugzilla(bugid = 309681)
     public void testRefreshManagedCheckContains() throws SQLException {
         final JPAEnvironment env = getEnvironment();
         final EntityManager em = env.getEntityManager();
         int id;
         Department dep;
         try {
-            // case 3: try to refresh, but record has been deleted on db in a different tx
+            // case 3: try to refresh, but record has been deleted on db in a
+            // different tx
             /*
-             * We expect an EntityNotFoundException. However, the specification does not state explicitly in which state the
-             * managed entity should be after the exception. We are going to remove the entity from the persistence context, so
-             * it is detached afterwards.
+             * We expect an EntityNotFoundException. However, the specification
+             * does not state explicitly in which state the managed entity
+             * should be after the exception. We are going to remove the entity
+             * from the persistence context, so it is detached afterwards.
              */
             id = 23;
             dep = new Department(id, "MANAGED");
@@ -192,7 +205,8 @@ public class TestRefresh extends JPA1Base {
             em.persist(dep);
             env.commitTransactionAndClear(em);
             env.beginTransaction(em);
-            dep = em.find(Department.class, new Integer(id)); // this is now in state MANAGED
+            dep = em.find(Department.class, new Integer(id)); // this is now in
+                                                              // state MANAGED
             deleteDepartmentFromDatabase(id);
             verifyAbsenceFromDatabase(em, id);
             try {
@@ -208,98 +222,51 @@ public class TestRefresh extends JPA1Base {
         }
     }
 
-    @Test
-    @Bugzilla(bugid=309681)
-    public void testRefreshDeleted() throws SQLException {
+    private void doRefreshDeleted(int id, boolean flush) throws SQLException {
         final JPAEnvironment env = getEnvironment();
         final EntityManager em = env.getEntityManager();
-        int id;
-        Department dep;
-        Department updatedDep;
         try {
-            // case 1: undo own changes
-            id = 31;
-            dep = new Department(id, "DELETED");
+            Department dep = new Department(id, "DELETED");
             env.beginTransaction(em);
             em.persist(dep);
             env.commitTransactionAndClear(em);
-            env.beginTransaction(em);
-            dep = em.find(Department.class, new Integer(id));
-            em.remove(dep); // this is now in state DELETED
-            dep.setName("UPDATED");
-            em.refresh(dep);
-            checkDepartment(dep, id, "DELETED");
-            verify(!em.contains(dep), "Department is managed");
-            env.commitTransactionAndClear(em);
-            verifyAbsenceFromDatabase(em, id);
-            // case 2: refresh with data changed on db in a different tx
-            id = 32;
-            dep = new Department(id, "DELETED");
-            updatedDep = new Department(id, "UPDATED");
-            env.beginTransaction(em);
-            em.persist(dep);
-            env.commitTransactionAndClear(em);
-            env.beginTransaction(em);
-            dep = em.find(Department.class, new Integer(id));
-            em.remove(dep); // this is now in state DELETED
-            updateDepartmentOnDatabase(updatedDep);
-            em.refresh(dep);
-            checkDepartment(dep, id, "UPDATED");
-            verify(!em.contains(dep), "Department is managed");
-            env.commitTransactionAndClear(em);
-            verifyAbsenceFromDatabase(em, id);
-            // case 3: try to refresh, but record has been deleted on db in a different tx
-            /*
-             * We expect an EntityNotFoundException. However, the specification does not state explicitly in which state the
-             * managed entity should be after the exception. In our implementation, the entity is kept in the persistence
-             * context in state DELETE_EXECUTED.
-             */
-            id = 33;
-            dep = new Department(id, "DELETED");
-            env.beginTransaction(em);
-            em.persist(dep);
-            env.commitTransactionAndClear(em);
-            env.beginTransaction(em);
-            dep = em.find(Department.class, new Integer(id));
-            em.remove(dep); // this is now in state DELETED
-            deleteDepartmentFromDatabase(id);
-            verifyAbsenceFromDatabase(em, id);
-            try {
-                em.refresh(dep);
-                flop("refresh did not throw EntityNotFoundException");
-            } catch (EntityNotFoundException e) {
-                verify(true, "");
-            }
-            verifyAbsenceFromDatabase(em, id);
-            env.rollbackTransactionAndClear(em);
-            // case 4: try to refresh, but record has been deleted on db by flushing the remove operation
-            id = 34;
-            dep = new Department(id, "DELETED");
-            env.beginTransaction(em);
-            em.persist(dep);
-            env.commitTransactionAndClear(em);
+
             env.beginTransaction(em);
             dep = em.find(Department.class, new Integer(id));
             em.remove(dep);
-            em.flush(); // this is now in state DELETE_EXECUTED
-            verifyAbsenceFromDatabase(em, id);
+            if (flush) {
+                em.flush(); // this is now in state DELETE_EXECUTED
+                verifyAbsenceFromDatabase(em, id);
+            }
             try {
                 em.refresh(dep);
-                flop("refresh did not throw EntityNotFoundException");
-            } catch (EntityNotFoundException e) {
-                verify(true, "");
+                fail("refresh did not throw IllegalArgumentException");
+            } catch (IllegalArgumentException e) {
+                // expected
             }
-            env.rollbackTransactionAndClear(em);
-            verifyExistenceOnDatabase(id);
+            if (env.isTransactionActive(em)) {
+                env.rollbackTransactionAndClear(em);
+            }
         } finally {
             closeEntityManager(em);
         }
     }
 
+    /*
+     * Refreshing an entity in state "removed" should raise an
+     * IllegalArgumentException
+     */
+    @Test
+    public void testRefreshDeleted() throws SQLException {
+        doRefreshDeleted(31, false);
+        doRefreshDeleted(32, true);
+    }
+
     @Test
     public void testRefreshDetached() {
         /*
-         * Refresh on a detached entity should throw an IllegalArgumentException.
+         * Refresh on a detached entity should throw an
+         * IllegalArgumentException.
          */
         final JPAEnvironment env = getEnvironment();
         final EntityManager em = env.getEntityManager();
@@ -307,7 +274,8 @@ public class TestRefresh extends JPA1Base {
         Department dep;
         Department detachedDep;
         try {
-            // case 1: entity exists on DB, but not contained in persistence context
+            // case 1: entity exists on DB, but not contained in persistence
+            // context
             id = 41;
             dep = new Department(id, "DETACHED");
             // firstly, we create a department on the database
@@ -322,7 +290,8 @@ public class TestRefresh extends JPA1Base {
                 verify(true, "");
             }
             env.rollbackTransactionAndClear(em);
-            // case 2: entity is contained in persistence context, but object to be merged has different object identity
+            // case 2: entity is contained in persistence context, but object to
+            // be merged has different object identity
             // case 2a: state of known object: MANAGED_NEW
             id = 42;
             dep = new Department(id, "MANAGED_NEW");
@@ -344,7 +313,8 @@ public class TestRefresh extends JPA1Base {
             em.persist(dep);
             env.commitTransactionAndClear(em);
             env.beginTransaction(em);
-            dep = em.find(Department.class, new Integer(id)); // this is now in state MANAGED
+            dep = em.find(Department.class, new Integer(id)); // this is now in
+                                                              // state MANAGED
             try {
                 em.refresh(detachedDep); // this object is detached
                 flop("refresh did not throw IllegalArgumentException");
@@ -402,7 +372,9 @@ public class TestRefresh extends JPA1Base {
         }
     }
 
-    @Ignore // @TestProperties(unsupportedEnvironments = { JTANonSharedPCEnvironment.class, ResourceLocalEnvironment.class })
+    @Ignore
+    // @TestProperties(unsupportedEnvironments = {
+    // JTANonSharedPCEnvironment.class, ResourceLocalEnvironment.class })
     public void testNoTransaction() {
         final JPAEnvironment env = getEnvironment();
         final EntityManager em = env.getEntityManager();
