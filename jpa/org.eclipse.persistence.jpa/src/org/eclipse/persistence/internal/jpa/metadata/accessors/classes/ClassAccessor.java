@@ -1115,17 +1115,18 @@ public abstract class ClassAccessor extends MetadataAccessor {
 
     /**
      * INTERNAL:
-     * Process the parent class for VIRTUAL accessors (ignored in other access 
-     * cases). When a parent class is not specified in a VIRTUAL access case,
-     * the superclass will default to Object.class.
+     * If the user specified a parent class set it on the metadata class
+     * for this accessor. The parent class is only ever required in a VIRTUAL
+     * case when no java class file is available (otherwise we look at the
+     * class for the parent). 
      */
     protected void processParentClass() {
-        if (usesVirtualAccess()) {
-            if (hasParentClass()) {
-                getJavaClass().setSuperclass(getParentClass());
-            } else {
-                getJavaClass().setSuperclass(getMetadataClass(Object.class));
-            }
+        if (hasParentClass()) {
+            // Set the class the user specified.
+            getJavaClass().setSuperclass(getParentClass());
+        } else if (getJavaClass().getSuperclass() == null) {
+            // Default the superclass to Object.class if no superclass exists.
+            getJavaClass().setSuperclass(getMetadataClass(Object.class));   
         }
     }
     

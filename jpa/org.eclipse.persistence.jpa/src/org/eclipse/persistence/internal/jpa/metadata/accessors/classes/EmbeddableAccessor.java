@@ -209,11 +209,11 @@ public class EmbeddableAccessor extends ClassAccessor {
     public void preProcess() {
         setIsPreProcessed();
         
-        // Process the access type first.
-        processAccessType();
-        
-        // Process the parent class if access is VIRTUAL.
+        // Process the parent class if specified.
         processParentClass();
+        
+        // Process the correct access type before any other processing.
+        processAccessType();
         
         // Process the default access methods after an access type has been 
         // figured out.
@@ -245,11 +245,11 @@ public class EmbeddableAccessor extends ClassAccessor {
     public void preProcessForCanonicalModel() {        
         setIsPreProcessed();
         
-        // Process the access type first.
-        processAccessType();
-        
-        // Process the parent class if access is VIRTUAL.
+        // Process the parent class if specified.
         processParentClass();
+        
+        // Process the correct access type before any other processing.
+        processAccessType();
         
         // Set a metadata complete flag if specified.
         if (getMetadataComplete() != null) {

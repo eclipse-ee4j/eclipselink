@@ -572,7 +572,7 @@ public class MappedSuperclassAccessor extends ClassAccessor {
     public void preProcess() {
         setIsPreProcessed();
         
-        // Process the parent class if access is VIRTUAL.
+        // Process the parent class if specified.
         processParentClass();
         
         // Add any id class definition to the project.
@@ -597,11 +597,11 @@ public class MappedSuperclassAccessor extends ClassAccessor {
     public void preProcessForCanonicalModel() {
         setIsPreProcessed();
         
+        // Process the parent class if specified.
+        processParentClass();
+        
         // Process the correct access type before any other processing.
         processAccessType();
-        
-        // Process the parent class if access is VIRTUAL.
-        processParentClass();
         
         // Add the accessors from this mapped superclass.
         addAccessors();

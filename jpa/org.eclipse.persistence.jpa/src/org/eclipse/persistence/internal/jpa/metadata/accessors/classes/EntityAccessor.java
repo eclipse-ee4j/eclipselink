@@ -263,8 +263,8 @@ public class EntityAccessor extends MappedSuperclassAccessor {
         List<EntityAccessor> subclassEntityAccessors = new ArrayList<EntityAccessor>();
         subclassEntityAccessors.add(currentEntityAccessor);
         
-        if (parentClass != null && !parentClass.isObject()) {
-            while (parentClass != null && !parentClass.isObject()) {
+        if (! parentClass.isObject()) {
+            while (! parentClass.isObject()) {
                 if (getProject().hasEntity(parentClass)) {
                     // Our parent is an entity.
                     EntityAccessor parentEntityAccessor = getProject().getEntityAccessor(parentClass);
@@ -528,6 +528,10 @@ public class EntityAccessor extends MappedSuperclassAccessor {
     public void preProcess() {
         setIsPreProcessed();
         
+        // We must process any parent class specification before discovering
+        // any mapped superclasses or inheritance parents.
+        processParentClass();
+        
         // If we are not already an inheritance subclass (meaning we were not
         // discovered through a subclass entity discovery) then perform
         // the discovery process before processing any further. We traverse
@@ -554,9 +558,6 @@ public class EntityAccessor extends MappedSuperclassAccessor {
         
         // Process the correct access type before any other processing.
         processAccessType();
-        
-        // Process the parent class if access is VIRTUAL.
-        processParentClass();
         
         // Process access methods if access is VIRTUAL.
         processAccessMethods();
@@ -597,6 +598,10 @@ public class EntityAccessor extends MappedSuperclassAccessor {
     public void preProcessForCanonicalModel() {
         setIsPreProcessed();
         
+        // We must process any parent class specification before discovering
+        // any mapped superclasses or inheritance parents.
+        processParentClass();
+        
         // If we are not already an inheritance subclass (meaning we were not
         // discovered through a subclass entity discovery) then perform
         // the discovery process before processing any further. We traverse
@@ -623,9 +628,6 @@ public class EntityAccessor extends MappedSuperclassAccessor {
         
         // Process the correct access type before any other processing.
         processAccessType();
-        
-        // Process the parent class if access is VIRTUAL.
-        processParentClass();
         
         // Process the metadata complete flag now before we start looking
         // for annotations.
