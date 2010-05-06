@@ -181,6 +181,7 @@ public class QueryException extends ValidationException {
     public final static int BATCH_IN_REQUIRES_SINGLETON_PK = 6165;
     public final static int COULD_NOT_FIND_CAST_DESCRIPTOR = 6166;
     public final static int CAST_MUST_USE_INHERITANCE = 6167;
+    public final static int PREPARE_FAILED = 6168;
 
     /**
      * INTERNAL:
@@ -1517,6 +1518,14 @@ public class QueryException extends ValidationException {
 
         QueryException queryException = new QueryException(ExceptionMessageGenerator.buildMessage(QueryException.class, CAST_MUST_USE_INHERITANCE, args));
         queryException.setErrorCode(CAST_MUST_USE_INHERITANCE);
+        return queryException;
+    }
+
+    public static QueryException prepareFailed(Exception error, DatabaseQuery query) {
+        Object[] args = { error };
+
+        QueryException queryException = new QueryException(ExceptionMessageGenerator.buildMessage(QueryException.class, PREPARE_FAILED, args), query, error);
+        queryException.setErrorCode(PREPARE_FAILED);
         return queryException;
     }
 

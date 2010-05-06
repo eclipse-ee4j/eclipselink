@@ -153,6 +153,7 @@ public class TestGroupByOrderByHaving extends QueryTest {
     }
 
     @Test
+    @ToBeInvestigated
     public void testSubQueryGroupBy5() {
         /* 23 */assertInvalidQuery("select _city from City _city where exists(select c.tesla from Cop c group by c.id)");
     }

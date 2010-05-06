@@ -61,6 +61,7 @@ import org.eclipse.persistence.sessions.DatabaseSession;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.testing.models.jpa.advanced.AdvancedTableCreator;
 import org.eclipse.persistence.testing.models.jpa.datatypes.DataTypesTableCreator;
+import org.eclipse.persistence.testing.models.jpa.datatypes.WrapperTypes;
 import org.eclipse.persistence.testing.models.jpa.inherited.Accredidation;
 import org.eclipse.persistence.testing.models.jpa.inherited.Becks;
 import org.eclipse.persistence.testing.models.jpa.inherited.BecksTag;
@@ -2854,7 +2855,9 @@ public class JUnitJPQLComplexTestSuite extends JUnitTestCase
         query = em.createQuery("Select COUNT(a) from Employee e join e.address a group by a order by COUNT(a) desc");
         query.getResultList();
         query = em.createQuery("SELECT wt FROM WrapperTypes wt order by wt.booleanData");
-        query.getResultList();
+        // Cast to ensure that server test compile picks up class.
+        List<WrapperTypes> result = query.getResultList();
+        result.toString();
         closeEntityManager(em);
     }
     
