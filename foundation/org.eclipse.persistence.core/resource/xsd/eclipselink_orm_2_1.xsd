@@ -1828,6 +1828,12 @@
           String name(); 
 
           /**
+           * (Optional) Indicates whether all relationship attributes
+           * specified in the fetch group should be loaded.
+           */
+          boolean load() default true; 
+
+          /**
            * (Required) The list of attributes to fetch.
            */
           FetchAttribute[] attributes();
@@ -1839,6 +1845,7 @@
       <xsd:element name="attribute" type="orm:fetch-attribute" minOccurs="1" maxOccurs="unbounded"/>
     </xsd:sequence>
     <xsd:attribute name="name" type="xsd:string" use="required"/>
+    <xsd:attribute name="load" type="xsd:boolean"/>
   </xsd:complexType>
 
 <!-- **************************************************** -->

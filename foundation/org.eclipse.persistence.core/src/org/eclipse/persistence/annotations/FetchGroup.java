@@ -51,6 +51,12 @@ public @interface FetchGroup {
     String name(); 
 
     /**
+     * (Optional) Indicates whether all relationship attributes
+     * specified in the fetch group should be loaded.
+     */
+    boolean load() default true; 
+
+    /**
      * (Required) The list of attributes to fetch.
      */
     FetchAttribute[] attributes();
