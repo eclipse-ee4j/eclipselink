@@ -95,7 +95,9 @@ public class DynamicClassLoader extends ClassLoader {
         }
         if (literalLabels != null) {
             for (Object literalLabel : literalLabels) {
-                enumInfo.addLiteralLabel(literalLabel.toString());
+                if (literalLabel != null) {
+                    enumInfo.addLiteralLabel(literalLabel.toString());
+                }
             }
         }
         addClass(className);
