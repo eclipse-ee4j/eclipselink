@@ -9,7 +9,6 @@ import java.util.HashSet;
 import java.util.Set;
 
 import javax.persistence.EntityManager;
-import javax.persistence.PersistenceException;
 
 import junit.framework.Assert;
 
@@ -28,7 +27,6 @@ public class TestIdentity extends JPA1Base {
 
     @Test
     @Skip(databases = OraclePlatform.class)
-    @ToBeInvestigated(databases = MySQLPlatform.class)
     public void testPersist() {
         final JPAEnvironment env = getEnvironment();
         final EntityManager em = env.getEntityManager();
@@ -43,6 +41,9 @@ public class TestIdentity extends JPA1Base {
             creatureSet.add(fluppi2);
             em.persist(fluppi1);
             em.persist(fluppi2);
+            
+            em.flush(); // added as suggested by Andrei
+            
             Integer id1 = fluppi1.getId();
             Integer id2 = fluppi2.getId();
             Assert.assertNotNull("id1 null", id1);
@@ -71,13 +72,14 @@ public class TestIdentity extends JPA1Base {
             Assert.assertEquals("missing element", referenceSet.contains(fluppi2), true);
 
         } finally {
+            if (env.isTransactionActive(em)) {
             env.rollbackTransactionAndClear(em);
+            }
         }
     }
 
     @Test
     @Skip(databases = OraclePlatform.class)
-    @ToBeInvestigated(databases = MySQLPlatform.class)
     public void testMerge() {
         final JPAEnvironment env = getEnvironment();
         final EntityManager em = env.getEntityManager();
@@ -85,17 +87,23 @@ public class TestIdentity extends JPA1Base {
             em.getTransaction().begin();
             Creature schnappi1 = new Creature("schnappi");
             schnappi1.setColor("green");
-            em.merge(schnappi1);
+            schnappi1 = em.merge(schnappi1);
+
+            em.flush(); // added as suggested by Andrei
+            
             Integer id = schnappi1.getId();
             Assert.assertNotNull("id null", id);
             em.getTransaction().commit();
+            
             Creature schnappi2 = em.find(Creature.class, id);
             Assert.assertEquals("wrong object name", schnappi1.getName(), schnappi2.getName());
             Assert.assertEquals("wrong object color", schnappi1.getColor(), schnappi2.getColor());
             em.merge(schnappi2);
             Assert.assertEquals("id change", schnappi1.getId(), schnappi2.getId());
         } finally {
-            env.rollbackTransactionAndClear(em);
+            if (env.isTransactionActive(em)) {
+                env.rollbackTransactionAndClear(em);
+            }
         }
     }
 
@@ -128,7 +136,6 @@ public class TestIdentity extends JPA1Base {
 
     @Test
     @Skip(databases = OraclePlatform.class)
-    @ToBeInvestigated(databases = MySQLPlatform.class)
     public void testJoinedSubclass() {
         final JPAEnvironment env = getEnvironment();
         final EntityManager em = env.getEntityManager();
@@ -138,6 +145,9 @@ public class TestIdentity extends JPA1Base {
             unicorn.setStory("once upon a time");
             unicorn.setColor("white");
             em.persist(unicorn);
+            
+            em.flush(); // added as suggested by Andrei
+            
             Integer id = unicorn.getId();
             em.getTransaction().commit();
             MythicalCreature duocorn = em.find(MythicalCreature.class, id);
@@ -146,7 +156,9 @@ public class TestIdentity extends JPA1Base {
             Assert.assertEquals("wrong object story", unicorn.getStory(), duocorn.getStory());
 
         } finally {
-            env.rollbackTransactionAndClear(em);
+            if (env.isTransactionActive(em)) {
+                env.rollbackTransactionAndClear(em);
+            }
         }
     }
 
@@ -170,19 +182,15 @@ public class TestIdentity extends JPA1Base {
     //    
     @Test
     @Skip(databases = OraclePlatform.class)
-    @ToBeInvestigated(databases = MySQLPlatform.class)
     public void testPersistNoTx() {
         final JPAEnvironment env = getEnvironment();
         final EntityManager em = env.getEntityManager();
         try {
             Creature fluppi1 = new Creature("fluppi1");
             fluppi1.setColor("red");
-            try {
                 em.persist(fluppi1);
-                Assert.fail("persist succeeded outside a transaction"); // tests SAP specific behavior
-            } catch (PersistenceException e) {
-                // $JL-EXC$ expected behavior (SAP specific)
-            }
+                env.beginTransaction(em);
+                env.commitTransaction(em);
         } finally {
             if (em.getTransaction().isActive()) {
                 em.getTransaction().rollback();
