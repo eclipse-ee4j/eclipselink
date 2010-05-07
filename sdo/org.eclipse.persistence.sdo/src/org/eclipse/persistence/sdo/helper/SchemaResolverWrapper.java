@@ -15,7 +15,9 @@ package org.eclipse.persistence.sdo.helper;
 import java.util.ArrayList;
 import java.util.List;
 import javax.xml.transform.Source;
+import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.sax.SAXSource;
+import javax.xml.transform.stream.StreamSource;
 
 import org.eclipse.persistence.exceptions.SDOException;
 import org.xml.sax.InputSource;
@@ -48,9 +50,42 @@ public class SchemaResolverWrapper {
     }
 
     /**
+     * Resolve the Source if only a system ID is specified.
+     */
+    public Source resolveSchema(Source sourceXSD) {
+        Source resolvedSchemaSource = null;
+        if(sourceXSD instanceof StreamSource) {
+            StreamSource streamSource = (StreamSource) sourceXSD;
+            if(null == streamSource.getInputStream() && null == streamSource.getReader()) {
+                resolvedSchemaSource = resolveSchema(streamSource.getPublicId(), streamSource.getSystemId());
+            }
+        } else if(sourceXSD instanceof SAXSource) {
+            SAXSource saxSource = (SAXSource) sourceXSD;
+            InputSource inputSource = saxSource.getInputSource(); 
+            if(null == inputSource) {
+               resolvedSchemaSource = resolveSchema(saxSource.getSystemId());
+            } else if(null == inputSource.getByteStream() && null == inputSource.getCharacterStream()){
+                resolvedSchemaSource = resolveSchema(inputSource.getPublicId(), inputSource.getSystemId());
+            }
+        } else if(sourceXSD instanceof DOMSource) {
+            DOMSource domSource = (DOMSource) sourceXSD;
+            if(null == domSource.getNode()) {
+                resolvedSchemaSource = resolveSchema(domSource.getSystemId());
+            }
+        } else if(null != sourceXSD.getSystemId()) {
+            resolvedSchemaSource = resolveSchema(sourceXSD.getSystemId());
+        }
+        if(resolvedSchemaSource != null) {
+            return resolvedSchemaSource;
+        }
+        return sourceXSD;
+    }
+
+    
+    /**
      * Allow the SchemaResolver implementation to attempt to return the referenced Schema based on 
      * given source schema, namespace and schemaLocation values from an import or include.  If the
-     * resolver fails, this method will attemt to resolve the schema 
+     * resolver fails, this method will attempt to resolve the schema 
      * 
      * @param sourceXSD The Source object of the source schema
      * @param namespace The namespace portion of the import/include
@@ -71,16 +106,17 @@ public class SchemaResolverWrapper {
         }
         return null;
     }
-    
-    /**
-     * 
-     */
+
     public Source resolveSchema(String systemId) {
+        return resolveSchema(null, systemId);
+    }
+
+    public Source resolveSchema(String publicId, String systemId) {
         if(!addSchemaToList(systemId)) {
             return null;
         }
         try {
-            InputSource inputSource = schemaResolver.resolveEntity(null, systemId);
+            InputSource inputSource = schemaResolver.resolveEntity(publicId, systemId);
             if(inputSource != null) {
                 return new SAXSource(inputSource);
             }

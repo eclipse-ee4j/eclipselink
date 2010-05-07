@@ -12,6 +12,7 @@
  ******************************************************************************/
 package org.eclipse.persistence.testing.sdo.helper.xsdhelper.define;
 
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.StringReader;
@@ -19,11 +20,16 @@ import java.util.ArrayList;
 import java.util.List;
 
 import javax.xml.transform.Source;
+import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.sax.SAXSource;
 import javax.xml.transform.stream.StreamSource;
 
+import org.eclipse.persistence.platform.xml.XMLParser;
+import org.eclipse.persistence.platform.xml.XMLPlatformFactory;
+import org.eclipse.persistence.sdo.helper.DefaultSchemaResolver;
 import org.eclipse.persistence.sdo.helper.SDOXSDHelper;
 import org.eclipse.persistence.sdo.helper.SchemaResolver;
+import org.w3c.dom.Node;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 
@@ -60,6 +66,49 @@ public class SchemaResolverSystemIdTestCases extends XSDHelperDefineTestCases {
         source.setSystemId("xyz:zxy");
         List types = ((SDOXSDHelper)xsdHelper).define(source, new MySchemaResolver());
         assertEquals(1, types.size());
+    }
+    
+    public void testDOMSourceDefine() {
+        DOMSource source = new DOMSource();
+        source.setSystemId("xyz:zxy");
+        List types = ((SDOXSDHelper)xsdHelper).define(source, new MySchemaResolver());
+        assertEquals(1, types.size());
+    }
+    
+    public void testDefineWithIDAndStream() {
+        String schema = "<xsd:schema xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\">" + 
+        "<xsd:complexType name=\"employee-type\">" + 
+        "<xsd:sequence>" + 
+        "<xsd:element name=\"name\" type=\"xsd:string\"/>" + 
+        "</xsd:sequence>" + 
+        "</xsd:complexType>" + 
+        "<xsd:element name=\"employee\" type=\"employee-type\"/>" +
+        "</xsd:schema>";
+
+        StreamSource source = new StreamSource();
+        source.setSystemId("some-id");
+        source.setInputStream(new ByteArrayInputStream(schema.getBytes()));
+        List types = ((SDOXSDHelper)xsdHelper).define(source, new DefaultSchemaResolver());
+        assertEquals(1, types.size());
+        
+    }
+    
+    public void testDOMSourceWithNodeDefine() {
+        String schema = "<xsd:schema xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\">" + 
+        "<xsd:complexType name=\"employee-type\">" + 
+        "<xsd:sequence>" + 
+        "<xsd:element name=\"name\" type=\"xsd:string\"/>" + 
+        "</xsd:sequence>" + 
+        "</xsd:complexType>" + 
+        "<xsd:element name=\"employee\" type=\"employee-type\"/>" +
+        "</xsd:schema>";
+ 
+        XMLParser parser = XMLPlatformFactory.getInstance().getXMLPlatform().newXMLParser();
+        Node node = parser.parse(new StringReader(schema));
+        DOMSource source = new DOMSource(node, "some-id");
+        List types = ((SDOXSDHelper)xsdHelper).define(source, new DefaultSchemaResolver());
+        assertEquals(1, types.size());
+        
     }
 
     public static class MySchemaResolver implements SchemaResolver {

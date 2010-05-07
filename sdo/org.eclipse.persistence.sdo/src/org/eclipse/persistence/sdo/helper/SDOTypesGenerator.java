@@ -20,7 +20,6 @@ import java.util.Map;
 
 import javax.xml.namespace.QName;
 import javax.xml.transform.Source;
-import javax.xml.transform.stream.StreamSource;
 
 import org.eclipse.persistence.exceptions.SDOException;
 import org.eclipse.persistence.internal.helper.ClassConstants;
@@ -2177,14 +2176,8 @@ public class SDOTypesGenerator {
      */
     public Schema getSchema(Source xsdSource, SchemaResolverWrapper schemaResolverWrapper) {
         try {
-            // check for a system ID. If there is one, hand off to the schema resolver.
-            String systemId = xsdSource.getSystemId();
-            if(systemId != null) {
-                Source resolvedSchemaSource = schemaResolverWrapper.resolveSchema(systemId);
-                if(resolvedSchemaSource != null) {
-                    xsdSource = resolvedSchemaSource;
-                }
-            }
+            xsdSource = schemaResolverWrapper.resolveSchema(xsdSource);
+
             XMLContext context = new XMLContext(getSchemaProject());
             XMLUnmarshaller unmarshaller = context.createUnmarshaller();
             unmarshaller.setEntityResolver(schemaResolverWrapper.getSchemaResolver());
