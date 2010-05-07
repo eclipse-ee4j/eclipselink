@@ -98,11 +98,6 @@ public class XMLChoiceObjectMappingNodeValue extends NodeValue implements NullCa
                 }
                 fragment = fragment.getNextFragment();
             }
-            //if we didn't find a node value associated with this xmlroot, try finding one for the 
-            //value's class
-            if(root.getObject() != null && xmlChoiceMapping.getClassToFieldMappings().get(root.getObject().getClass()) == this.xmlField) {
-                return this.choiceElementNodeValue.marshal(xPathFragment, marshalRecord, object, session, namespaceResolver);
-            }
         } else {
             if(value != null && xmlChoiceMapping.getClassToFieldMappings().get(value.getClass()) == this.xmlField) {
                 return this.choiceElementNodeValue.marshalSingleValue(xPathFragment, marshalRecord, object, value, session, namespaceResolver, marshalContext);
