@@ -329,23 +329,24 @@ public class XRPackager implements DBWSPackager {
     public void closeWebXmlStream(OutputStream webXmlStream) {
     	closeStream(webXmlStream);
     }
-    
-    public OutputStream getProviderClassStream() throws FileNotFoundException {
-        return __nullStream;
-    }
-    public void writeProviderClass(OutputStream codeGenProviderStream, DBWSBuilder builder) {
-    }
-    public void closeProviderClassStream(OutputStream codeGenProviderStream) {
-    	closeStream(codeGenProviderStream);
-    }
+
     
     public OutputStream getProviderSourceStream() throws FileNotFoundException {
         return __nullStream;
     }
-	public void writeProviderSource(OutputStream sourceProviderStream, DBWSBuilder builder) {
+    public OutputStream getProviderClassStream() throws FileNotFoundException {
+        return __nullStream;
     }
     public void closeProviderSourceStream(OutputStream sourceProviderStream) {
         closeStream(sourceProviderStream);
+    }
+    public void closeProviderClassStream(OutputStream codeGenProviderStream) {
+        closeStream(codeGenProviderStream);
+    }
+    @Override
+    public void writeProvider(OutputStream sourceProviderStream,
+        OutputStream codeGenProviderStream, DBWSBuilder builder) {
+        // no-op
     }
     
     protected void closeStream(OutputStream outputStream) {

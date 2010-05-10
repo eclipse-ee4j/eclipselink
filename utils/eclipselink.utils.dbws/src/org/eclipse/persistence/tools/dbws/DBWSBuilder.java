@@ -496,8 +496,7 @@ prompt> java -cp eclipselink.jar:eclipselink-dbwsutils.jar:your_favourite_jdbc_d
         writeAttachmentSchema(swarefStream);
         buildWSDL(wsdlStream, topTransformer);
         writeWebXML(webXmlStream);
-        writeDBWSProviderClass(codeGenProviderStream);
-        writeDBWSProviderSource(sourceProviderStream);
+        generateDBWSProvider(sourceProviderStream, codeGenProviderStream);
         writeSchema(dbwsSchemaStream); // now write out schema
         writeOROXProjects(dbwsOrStream, dbwsOxStream);
         packager.end();
@@ -1127,20 +1126,17 @@ prompt> java -cp eclipselink.jar:eclipselink-dbwsutils.jar:your_favourite_jdbc_d
         packager.closeOxStream(dbwsOxStream);
     }
 
-    protected void writeDBWSProviderClass(OutputStream codeGenProviderStream) {
-        if (!isNullStream(codeGenProviderStream)) {
-            logMessage(FINEST, "writing " + DBWS_PROVIDER_CLASS_FILE);
-        	packager.writeProviderClass(codeGenProviderStream, this);
-            packager.closeProviderClassStream(codeGenProviderStream);
-        }
-    }
-
-    public void writeDBWSProviderSource(OutputStream sourceProviderStream) {
+    protected void generateDBWSProvider(OutputStream sourceProviderStream,
+        OutputStream codeGenProviderStream) {
         if (!isNullStream(sourceProviderStream)) {
-            logMessage(FINEST, "writing " + DBWS_PROVIDER_SOURCE_FILE);
-            packager.writeProviderSource(sourceProviderStream, this);
-            packager.closeProviderSourceStream(sourceProviderStream);
+            logMessage(FINEST, "generating " + DBWS_PROVIDER_SOURCE_FILE);
         }
+        if (!isNullStream(codeGenProviderStream)) {
+            logMessage(FINEST, "generating " + DBWS_PROVIDER_CLASS_FILE);
+        }
+        packager.writeProvider(sourceProviderStream, codeGenProviderStream, this);
+        packager.closeProviderSourceStream(sourceProviderStream);
+        packager.closeProviderClassStream(codeGenProviderStream);
     }
 
     @SuppressWarnings("unchecked")

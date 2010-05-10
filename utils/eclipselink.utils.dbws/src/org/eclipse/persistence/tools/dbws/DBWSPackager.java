@@ -73,13 +73,12 @@ public interface DBWSPackager {
     public void writeWebXml(OutputStream webXmlStream, DBWSBuilder dbwsBuilder);
     public void closeWebXmlStream(OutputStream webXmlStream);
 
-    public OutputStream getProviderClassStream() throws FileNotFoundException;
-	public void writeProviderClass(OutputStream codeGenProviderStream, DBWSBuilder builder);
-    public void closeProviderClassStream(OutputStream codeGenProviderStream);
-
     public OutputStream getProviderSourceStream() throws FileNotFoundException;
-	public void writeProviderSource(OutputStream sourceProviderStream, DBWSBuilder builder);
+    public OutputStream getProviderClassStream() throws FileNotFoundException;
+	public void writeProvider(OutputStream sourceProviderStream, OutputStream codeGenProviderStream,
+	    DBWSBuilder builder);
     public void closeProviderSourceStream(OutputStream sourceProviderStream);
+    public void closeProviderClassStream(OutputStream codeGenProviderStream);
 
     public void setArchiveUse(ArchiveUse archiveUse);
     public String getUsage();

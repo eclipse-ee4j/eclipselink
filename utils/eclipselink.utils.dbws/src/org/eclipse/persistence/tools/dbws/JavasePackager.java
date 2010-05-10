@@ -80,7 +80,7 @@ public class JavasePackager extends ProviderPackager {
     }
     
     /**
-     * by returning null, the ASM-generated _dbws.DDBWProvider class will have a slightly-different
+     * by returning null, the generated _dbws.DDBWProvider class will have a slightly-different
      * class annotation:
      * <pre>
      * @WebServiceProvider(
