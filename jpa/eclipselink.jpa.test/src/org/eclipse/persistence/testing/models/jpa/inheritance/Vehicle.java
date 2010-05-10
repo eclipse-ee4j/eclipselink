@@ -32,6 +32,7 @@ public abstract class Vehicle implements Serializable {
     private Number id;
     private Company owner;
     private Integer passengerCapacity;
+    private VehicleDirectory directory;
 
     public Vehicle() {}
 
@@ -91,6 +92,16 @@ public abstract class Vehicle implements Serializable {
         passengerCapacity = capacity;
     }
 
+    @ManyToOne(cascade=PERSIST, fetch=LAZY)
+    @JoinColumn(name="DIRECTORY_ID", referencedColumnName="ID")
+    public VehicleDirectory getDirectory() {
+        return directory;
+    }
+
+    public void setDirectory(VehicleDirectory directory) {
+        this.directory = directory;
+    }
+    
     /**
      * Return the view for Sybase.
      */

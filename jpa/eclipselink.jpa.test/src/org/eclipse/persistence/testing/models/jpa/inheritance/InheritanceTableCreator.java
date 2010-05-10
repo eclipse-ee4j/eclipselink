@@ -38,6 +38,7 @@ public class InheritanceTableCreator extends TogglingFastTableCreator {
         addTableDefinition(buildSPORTSCARTable());
         addTableDefinition(buildJALOPYTable());
         addTableDefinition(buildVEHICLETable());
+        addTableDefinition(buildVEHICLE_DIRECTORYTable());
         addTableDefinition(buildPERSONTable());
         addTableDefinition(buildENGINEERTable());
         addTableDefinition(buildTIREINFOTable());
@@ -780,6 +781,17 @@ public class InheritanceTableCreator extends TogglingFastTableCreator {
         fieldOWNER_ID.setUnique(false);
         fieldOWNER_ID.setShouldAllowNull(true);
         table.addField(fieldOWNER_ID);
+        
+        FieldDefinition fieldDIRECTORY_ID = new FieldDefinition();
+        fieldDIRECTORY_ID.setName("DIRECTORY_ID");
+        fieldDIRECTORY_ID.setTypeName("NUMBER");
+        fieldDIRECTORY_ID.setSize(15);
+        fieldDIRECTORY_ID.setSubSize(0);
+        fieldDIRECTORY_ID.setIsPrimaryKey(false);
+        fieldDIRECTORY_ID.setIsIdentity(false);
+        fieldDIRECTORY_ID.setUnique(false);
+        fieldDIRECTORY_ID.setShouldAllowNull(true);
+        table.addField(fieldDIRECTORY_ID);
 
         ForeignKeyConstraint foreignKeyVEHICLE_COMPANY = new ForeignKeyConstraint();
         foreignKeyVEHICLE_COMPANY.setName("VEHICLE_COMPANY_FK");
@@ -787,6 +799,43 @@ public class InheritanceTableCreator extends TogglingFastTableCreator {
         foreignKeyVEHICLE_COMPANY.addSourceField("OWNER_ID");
         foreignKeyVEHICLE_COMPANY.addTargetField("ID");
         table.addForeignKeyConstraint(foreignKeyVEHICLE_COMPANY);
+        
+        ForeignKeyConstraint foreignKeyVEHICLE_DIRECTORY = new ForeignKeyConstraint();
+        foreignKeyVEHICLE_DIRECTORY.setName("VEHICLE_DIRECTORY_FK");
+        foreignKeyVEHICLE_DIRECTORY.setTargetTable("CMP3_VEHICLE_DIRECTORY");
+        foreignKeyVEHICLE_DIRECTORY.addSourceField("DIRECTORY_ID");
+        foreignKeyVEHICLE_DIRECTORY.addTargetField("ID");
+        table.addForeignKeyConstraint(foreignKeyVEHICLE_DIRECTORY);
+
+
+        return table;
+    }
+    
+    public TableDefinition buildVEHICLE_DIRECTORYTable() {
+        TableDefinition table = new TableDefinition();
+        table.setName("CMP3_VEHICLE_DIRECTORY");
+
+        FieldDefinition fieldID = new FieldDefinition();
+        fieldID.setName("ID");
+        fieldID.setTypeName("NUMBER");
+        fieldID.setSize(15);
+        fieldID.setSubSize(0);
+        fieldID.setIsPrimaryKey(true);
+        fieldID.setIsIdentity(false);
+        fieldID.setUnique(false);
+        fieldID.setShouldAllowNull(false);
+        table.addField(fieldID);
+
+        FieldDefinition fieldNAME = new FieldDefinition();
+        fieldNAME.setName("NAME");
+        fieldNAME.setTypeName("VARCHAR2");
+        fieldNAME.setSize(15);
+        fieldNAME.setSubSize(0);
+        fieldNAME.setIsPrimaryKey(false);
+        fieldNAME.setIsIdentity(false);
+        fieldNAME.setUnique(false);
+        fieldNAME.setShouldAllowNull(true);
+        table.addField(fieldNAME);
 
         return table;
     }

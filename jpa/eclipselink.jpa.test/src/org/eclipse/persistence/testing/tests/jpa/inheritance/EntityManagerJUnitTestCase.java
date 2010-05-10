@@ -13,6 +13,7 @@
 package org.eclipse.persistence.testing.tests.jpa.inheritance;
 
 import org.eclipse.persistence.testing.framework.junit.JUnitTestCase;
+import org.eclipse.persistence.testing.models.jpa.inheritance.Company;
 import org.eclipse.persistence.testing.models.jpa.inheritance.InheritanceTableCreator;
 import org.eclipse.persistence.testing.models.jpa.inheritance.SportsCar;
 import org.eclipse.persistence.testing.models.jpa.inheritance.Car;
@@ -22,6 +23,8 @@ import org.eclipse.persistence.testing.models.jpa.inheritance.ComputerPK;
 import org.eclipse.persistence.testing.models.jpa.inheritance.Desktop;
 import org.eclipse.persistence.testing.models.jpa.inheritance.Laptop;
 import org.eclipse.persistence.testing.models.jpa.inheritance.TireInfo;
+import org.eclipse.persistence.testing.models.jpa.inheritance.VehicleDirectory;
+
 import junit.framework.Test;
 import junit.framework.TestSuite;
 import javax.persistence.EntityManager;
@@ -134,5 +137,41 @@ public class EntityManagerJUnitTestCase extends JUnitTestCase {
 
         localTire = em.find(TireInfo.class, tireInfo.getId());
         assertTrue("TireInfo was not updated", localTire.getPressure().equals(40));
+    }
+    
+    //https://bugs.eclipse.org/bugs/show_bug.cgi?id=312253
+    // Note: this test will potentially fail in a number of different ways
+    // see the above bug for details of the non-derminism
+    // also: This test only tests the above bug when weaving is disabled
+    // also note: This test is testing for exceptions on the final flush, that
+    // is why where are no asserts
+    public void testMapKeyInheritance(){
+        EntityManager em = createEntityManager();
+        beginTransaction(em);
+
+        VehicleDirectory directory = new VehicleDirectory();
+        directory.setName("MyVehicles");
+        em.persist(directory);
+        
+        Company company = new Company();
+        company.setName("A Blue Company");
+        em.persist(company);
+        em.flush();
+        
+        Car car = new Car();
+        car.setDescription("a Blue Car");
+        car.setOwner(company);
+        em.persist(car);
+        
+        directory.getVehicleDirectory().put(car.getOwner(), car);
+        company.getVehicles().add(car);
+
+        try{
+            em.flush();
+        } catch(RuntimeException e){
+            fail("Exception was thrown while flushing a MapKey with inheritance. " + e.getMessage());
+        }
+        
+        em.getTransaction().rollback();
     }
 }

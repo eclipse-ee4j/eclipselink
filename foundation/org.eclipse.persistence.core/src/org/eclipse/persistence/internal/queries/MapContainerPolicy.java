@@ -25,6 +25,7 @@ import org.eclipse.persistence.internal.security.PrivilegedClassForName;
 import org.eclipse.persistence.internal.security.PrivilegedMethodInvoker;
 import org.eclipse.persistence.internal.security.PrivilegedGetValueFromField;
 import org.eclipse.persistence.internal.sessions.CollectionChangeRecord;
+import org.eclipse.persistence.internal.sessions.MergeManager;
 import org.eclipse.persistence.internal.sessions.ObjectChangeSet;
 import org.eclipse.persistence.internal.sessions.UnitOfWorkChangeSet;
 import org.eclipse.persistence.internal.sessions.UnitOfWorkImpl;
@@ -185,7 +186,15 @@ public class MapContainerPolicy extends InterfaceContainerPolicy {
      */
     @Override
     public void buildChangeSetForNewObjectInCollection(Object object, ClassDescriptor referenceDescriptor, UnitOfWorkChangeSet uowChangeSet, AbstractSession session){
-        ObjectChangeSet changeSet = referenceDescriptor.getObjectBuilder().createObjectChangeSet(((Map.Entry)object).getValue(), uowChangeSet, session);
+        Object value = ((Map.Entry)object).getValue();
+        ClassDescriptor valueDescriptor = referenceDescriptor;
+        if (value != null){
+            ClassDescriptor tempValueDescriptor = session.getDescriptor(value.getClass());
+            if (tempValueDescriptor != null){
+                valueDescriptor = tempValueDescriptor;
+            }
+        }
+        ObjectChangeSet changeSet = valueDescriptor.getObjectBuilder().createObjectChangeSet(((Map.Entry)object).getValue(), uowChangeSet, session);
         Object key = ((Map.Entry)object).getKey();
         changeSet.setNewKey(key);
     }
@@ -288,6 +297,19 @@ public class MapContainerPolicy extends InterfaceContainerPolicy {
     @Override
     public QueryKey createQueryKeyForMapKey(){
         return null;
+    }
+    
+    /**
+     * INTERNAL:
+     * This method will actually potentially wrap an object in two ways.  It will first wrap the object
+     * based on the referenceDescriptor's wrapper policy.  It will also potentially do some wrapping based
+     * on what is required by the container policy.
+     */
+    @Override
+    public Object createWrappedObjectFromExistingWrappedObject(Object wrappedObject, Object parent, ClassDescriptor referenceDescriptor, MergeManager mergeManager){
+        Object key = ((Map.Entry)wrappedObject).getKey();
+        Object value = referenceDescriptor.getObjectBuilder().wrapObject(mergeManager.getTargetVersionOfSourceObject(unwrapIteratorResult(wrappedObject)), mergeManager.getSession());
+        return new Association(key, value);
     }
     
     /**
