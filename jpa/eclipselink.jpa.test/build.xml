@@ -865,7 +865,7 @@
     </target>
 
     <!-- Runs JPA 2.0 BeanValidation tests, make sure you have validate jar which includes javax.validation.*, validate classes, slfj jdk and api classes under your classpath -->
-    <target name="run-bean-validation-tests" depends="clean-test, config-trunk, config-flat" if="validate.jar.exist">
+    <target name="run-bean-validation-tests" depends="config-trunk, config-flat" if="validate.jar.exist">
         <antcall target="run-test" inheritRefs="true">
             <param name="TEST_CLASS" value="org.eclipse.persistence.testing.tests.jpa.beanvalidation.BeanValidationJunitTest"/>
             <param name="TEST_AGENT" value="${test.agent}"/>
