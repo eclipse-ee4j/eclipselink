@@ -13,30 +13,28 @@
 
 package org.eclipse.persistence.testing.tests.wdf.jpa1.relation;
 
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 import java.util.SortedMap;
 import java.util.TreeMap;
+
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceException;
 
 import junit.framework.Assert;
 
-import org.junit.Test;
-
+import org.eclipse.persistence.testing.framework.wdf.Issue;
+import org.eclipse.persistence.testing.framework.wdf.JPAEnvironment;
+import org.eclipse.persistence.testing.framework.wdf.ToBeInvestigated;
 import org.eclipse.persistence.testing.models.wdf.jpa1.employee.Course;
 import org.eclipse.persistence.testing.models.wdf.jpa1.employee.Department;
 import org.eclipse.persistence.testing.models.wdf.jpa1.employee.Employee;
 import org.eclipse.persistence.testing.models.wdf.jpa1.employee.Hobby;
 import org.eclipse.persistence.testing.models.wdf.jpa1.employee.Material;
-
 import org.eclipse.persistence.testing.tests.wdf.jpa1.JPA1Base;
-import org.eclipse.persistence.testing.framework.wdf.Issue;
-import org.eclipse.persistence.testing.framework.wdf.JPAEnvironment;
-import org.eclipse.persistence.testing.framework.wdf.ToBeInvestigated;
+import org.junit.Test;
 
 public class TestList extends JPA1Base {
     private static final Integer EMP_ID_DORIS = Integer.valueOf(43);
@@ -62,7 +60,6 @@ public class TestList extends JPA1Base {
     }
 
     @Test
-    @ToBeInvestigated
     public void testSimpleCourse() {
         final JPAEnvironment env = getEnvironment();
         final EntityManager em = env.getEntityManager();
@@ -90,17 +87,16 @@ public class TestList extends JPA1Base {
         course.addAttendee(em.find(Employee.class, EMP_ID_DORIS));
         course.addAttendee(em.find(Employee.class, EMP_ID_SABINE));
         em.persist(course);
-        // bug 309681
+        // bug 312244
         Material material = new Material();
         course.setMaterial(material);
         material.setCourse(course);
         em.persist(material);
-        // bug 309681
+        // bug 312244
         return course;
     }
 
     @Test
-    @ToBeInvestigated
     public void testDelete() {
         final JPAEnvironment env = getEnvironment();
         final EntityManager em = env.getEntityManager();
@@ -120,7 +116,6 @@ public class TestList extends JPA1Base {
     }
 
     @Test
-    @ToBeInvestigated
     public void testMergeChangedRelation() {
         final JPAEnvironment env = getEnvironment();
         final EntityManager em = env.getEntityManager();
@@ -153,7 +148,6 @@ public class TestList extends JPA1Base {
     }
 
     @Test
-    @ToBeInvestigated
     public void testUpdate() {
         final JPAEnvironment env = getEnvironment();
         final EntityManager em = env.getEntityManager();
@@ -187,16 +181,14 @@ public class TestList extends JPA1Base {
         final SortedMap<String, Employee> attendeeMap = new TreeMap<String, Employee>();
         try {
             env.beginTransaction(em);
-            final Course course = new Course();
-            em.persist(course);
+            final Course course = createAndPersistCourse(em);
             final Long courseId = Long.valueOf(course.getCourseId());
             final Employee employee1 = em.find(Employee.class, EMP_ID_DORIS);
-            course.addAttendee(employee1);
             attendeeMap.put(employee1.getLastName(), employee1);
             final Employee employee2 = em.find(Employee.class, EMP_ID_SABINE);
-            course.addAttendee(employee2);
             attendeeMap.put(employee2.getLastName(), employee2);
             env.commitTransactionAndClear(em);
+            
             env.beginTransaction(em);
             final Course storedCourse = em.find(Course.class, courseId);
             verify(storedCourse != null, "didnt find course again");
@@ -215,7 +207,6 @@ public class TestList extends JPA1Base {
     }
 
     @Test
-    @ToBeInvestigated
     public void testRelationContainsEntities() {
         final JPAEnvironment env = getEnvironment();
         final EntityManager em = env.getEntityManager();

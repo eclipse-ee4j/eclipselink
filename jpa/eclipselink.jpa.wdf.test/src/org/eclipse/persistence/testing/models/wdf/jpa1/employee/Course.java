@@ -14,7 +14,6 @@
 package org.eclipse.persistence.testing.models.wdf.jpa1.employee;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 import javax.persistence.CascadeType;
