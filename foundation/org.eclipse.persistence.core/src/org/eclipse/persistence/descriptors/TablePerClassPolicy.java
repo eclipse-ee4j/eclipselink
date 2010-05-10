@@ -202,6 +202,9 @@ public class TablePerClassPolicy extends InterfacePolicy implements Serializable
      */
     @Override
     protected Object selectAllObjects(ReadAllQuery query) { 
+        if (this.descriptor.isAbstract()) {
+            return query.getContainerPolicy().containerInstance();
+        }
         // If we came from a source mapping the execute the selection query
         // we prepared from it.
         if (selectionQueriesForAllObjects.containsKey(query.getSourceMapping())) {
@@ -217,6 +220,9 @@ public class TablePerClassPolicy extends InterfacePolicy implements Serializable
      */
     @Override
     protected Object selectOneObject(ReadObjectQuery query) throws DescriptorException {
+        if (this.descriptor.isAbstract()) {
+            return null;
+        }
         // If we came from a source mapping the execute the selection query
         // we prepared from it.
         if (selectionQueriesForAllObjects.containsKey(query.getSourceMapping())) {

@@ -75,10 +75,12 @@ public class DDLGenerationJUnitTestSuite extends JUnitTestCase {
             //TODO: Let's add a flag which do not disregard DDL generation errors.
             //TODO: This is required to ensure that DDL generation has succeeded.
             EntityManager em = createEntityManager(DDL_PU);
+            closeEntityManager(em);
             //em.close();
             clearCache(DDL_PU);
             
             EntityManager emDDLTPC = createEntityManager(DDL_TPC_PU);
+            closeEntityManager(emDDLTPC);
             clearCache(DDL_TPC_PU);
         } catch (Throwable t){
             t.printStackTrace();
@@ -111,6 +113,7 @@ public class DDLGenerationJUnitTestSuite extends JUnitTestCase {
             GoldBenefit goldBenefit1 = new GoldBenefit();
             goldBenefit1.setBenefitDescription("Gold benefit 1");
             goldBenefit1.setLuxuryCar(luxuryCar1);
+            goldBenefit1.setCustomer(goldCustomer);
             em.persist(goldBenefit1);
             
             LuxuryCar luxuryCar2 = new LuxuryCar();
@@ -149,7 +152,9 @@ public class DDLGenerationJUnitTestSuite extends JUnitTestCase {
         }
         
         clearCache(DDL_TPC_PU);
-        em = createEntityManager(DDL_TPC_PU);        
+        em = createEntityManager(DDL_TPC_PU);  
+        
+        assertTrue("ReadAll did not find subclasses.", !em.createQuery("Select c from Customer c").getResultList().isEmpty());
         
         GoldCustomer refreshedGoldCustomer = em.find(GoldCustomer.class, goldCustomer.getCustomerId());
         assertTrue("The gold customer read back did not match the original", getServerSession(DDL_TPC_PU).compareObjects(goldCustomer, refreshedGoldCustomer));
@@ -938,7 +943,7 @@ public class DDLGenerationJUnitTestSuite extends JUnitTestCase {
             inventor = em.find(Inventor.class, 1);
             assertTrue("Embeddable is null", inventor.getPatentCollection() != null);
             assertFalse("Collection is empty", inventor.getPatentCollection().getPatents().isEmpty());
-            assertTrue("Target is incorrect", ((Patent)inventor.getPatentCollection().getPatents().get(0)).getId() == 1);
+            assertTrue("Target is incorrect", inventor.getPatentCollection().getPatents().get(0).getId() == 1);
             rollbackTransaction(em);
         } finally {
             closeEntityManager(em);

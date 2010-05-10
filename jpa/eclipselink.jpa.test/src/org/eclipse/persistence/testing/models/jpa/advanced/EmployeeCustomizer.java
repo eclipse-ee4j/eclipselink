@@ -14,11 +14,22 @@ package org.eclipse.persistence.testing.models.jpa.advanced;
 
 import org.eclipse.persistence.config.DescriptorCustomizer;
 import org.eclipse.persistence.descriptors.ClassDescriptor;
+import org.eclipse.persistence.expressions.ExpressionBuilder;
+import org.eclipse.persistence.mappings.querykeys.OneToOneQueryKey;
 
 public class EmployeeCustomizer implements DescriptorCustomizer {
 	public EmployeeCustomizer() {}
     
     public void customize(ClassDescriptor descriptor) {
         descriptor.setShouldDisableCacheHits(false);
+
+        descriptor.addDirectQueryKey("startTime", "START_TIME");
+        
+        OneToOneQueryKey queryKey = new OneToOneQueryKey();
+        queryKey.setName("boss");
+        queryKey.setReferenceClass(Employee.class);
+        ExpressionBuilder builder = new ExpressionBuilder();
+        queryKey.setJoinCriteria(builder.getField("MANAGER_EMP_ID").equal(builder.getParameter("EMP_ID")));
+        descriptor.addQueryKey(queryKey);
     }
 }

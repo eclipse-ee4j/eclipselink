@@ -497,16 +497,5 @@ public class BasicTypeHelperImpl {
         }
         return type;
     }
-
-
-    
-    /**
-     * This inner class is used in JPQL validation to describe the type of an element in a DirectCollectionMapping that
-     * the type is not available in the metadata for.
-     * @author tware
-     *
-     */
-    public class ElementPlaceHolder{
-    }
 }
 

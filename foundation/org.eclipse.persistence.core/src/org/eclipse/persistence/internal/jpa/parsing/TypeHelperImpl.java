@@ -20,6 +20,8 @@ import org.eclipse.persistence.mappings.AggregateMapping;
 import org.eclipse.persistence.mappings.CollectionMapping;
 import org.eclipse.persistence.mappings.DatabaseMapping;
 import org.eclipse.persistence.mappings.DirectCollectionMapping;
+import org.eclipse.persistence.mappings.querykeys.ForeignReferenceQueryKey;
+import org.eclipse.persistence.mappings.querykeys.QueryKey;
 import org.eclipse.persistence.internal.queries.ContainerPolicy;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
@@ -71,7 +73,17 @@ public class TypeHelperImpl
      */ 
     public Object resolveAttribute(Object ownerClass, String attribute) {
         DatabaseMapping mapping = resolveAttributeMapping(ownerClass, attribute);
-        return getType(mapping);
+        if (mapping != null) {
+            return getType(mapping);
+        }
+        QueryKey queryKey = resolveAttributeQueryKey(ownerClass, attribute);
+        if (queryKey == null) {
+            return null;
+        } else if (queryKey.isForeignReferenceQueryKey()) {
+            return ((ForeignReferenceQueryKey)queryKey).getReferenceClass();
+        } else {
+            return Object.class;
+        }
     }
     
     /** Returns the type of the map key for the mapping on ownerClass named attribute
@@ -191,13 +203,19 @@ public class TypeHelperImpl
      * class. The method returns null if the class is not known or if the
      * class does not have an attribute of the specified name.
      */
-    private DatabaseMapping resolveAttributeMapping(Object ownerClass, 
-                                                    String attr) {
-        ClassDescriptor desc = getDescriptor(ownerClass);
-        return (desc == null) ? null : desc.getMappingForAttributeName(attr);
+    private DatabaseMapping resolveAttributeMapping(Object ownerClass, String attribute) {
+        ClassDescriptor descriptor = getDescriptor(ownerClass);
+        return (descriptor == null) ? null : descriptor.getMappingForAttributeName(attribute);
     }
 
-    /** */
+    private QueryKey resolveAttributeQueryKey(Object ownerClass, String attribute) {
+        ClassDescriptor descriptor = getDescriptor(ownerClass);
+        if (descriptor == null) {
+            return null;
+        }
+        return descriptor.getQueryKeyNamed(attribute);
+    }
+
     private Object getType(DatabaseMapping mapping) {
         if (mapping == null) {
             return null;
@@ -206,7 +224,7 @@ public class TypeHelperImpl
         if (mapping.isDirectCollectionMapping()){
             type = ((DirectCollectionMapping)mapping).getDirectField().getType();
             if (type == null){
-                type = BasicTypeHelperImpl.ElementPlaceHolder.class;
+                type = Object.class;
             }
         } else if (mapping.isForeignReferenceMapping()) {
             ClassDescriptor descriptor = mapping.getReferenceDescriptor();

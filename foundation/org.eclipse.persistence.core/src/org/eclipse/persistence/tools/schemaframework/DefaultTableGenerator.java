@@ -46,6 +46,7 @@ import org.eclipse.persistence.mappings.AggregateObjectMapping;
 import org.eclipse.persistence.mappings.DatabaseMapping;
 import org.eclipse.persistence.mappings.DirectCollectionMapping;
 import org.eclipse.persistence.mappings.DirectMapMapping;
+import org.eclipse.persistence.mappings.ForeignReferenceMapping;
 import org.eclipse.persistence.mappings.ManyToManyMapping;
 import org.eclipse.persistence.mappings.OneToManyMapping;
 import org.eclipse.persistence.mappings.OneToOneMapping;
@@ -253,31 +254,26 @@ public class DefaultTableGenerator {
      * This should handle most of the direct/relational mappings except many-to-many and direct
      * collection/map mappings, witch must be down in postInit method.
      */
-    protected void initTableSchema(ClassDescriptor desc) {
-        TableDefinition tblDef = null;
-        DatabaseTable dbTbl = null;
-        Iterator dbTblIter = desc.getTables().iterator();
+    protected void initTableSchema(ClassDescriptor descriptor) {
+        TableDefinition tableDefintion = null;
+        if (descriptor.hasTablePerClassPolicy() && descriptor.isAbstract()) {
+            return;
+        }
 
         //create a table definition for each mapped database table
-        while (dbTblIter.hasNext()) {
-            dbTbl = (DatabaseTable) dbTblIter.next();
-            tblDef = getTableDefFromDBTable(dbTbl);
+        for (DatabaseTable table : descriptor.getTables()) {
+            tableDefintion = getTableDefFromDBTable(table);
         }
 
         //build each field definition and figure out which table it goes
-        Iterator fieldIter = desc.getFields().iterator();
-        DatabaseField dbField = null;
-
-        while (fieldIter.hasNext()) {
-            dbField = (DatabaseField) fieldIter.next();
-
+        for (DatabaseField dbField : descriptor.getFields()) {
             boolean isPKField = false;
 
             //first check if the filed is a pk field in the default table.
-            isPKField = desc.getPrimaryKeyFields().contains(dbField);
+            isPKField = descriptor.getPrimaryKeyFields().contains(dbField);
 
             //then check if the field is a pk field in the secondary table(s), this is only applied to the multiple tables case.
-            Map secondaryKeyMap = desc.getAdditionalTablePrimaryKeyFields().get(dbField.getTable());
+            Map secondaryKeyMap = descriptor.getAdditionalTablePrimaryKeyFields().get(dbField.getTable());
 
             if (secondaryKeyMap != null) {
                 isPKField = isPKField || secondaryKeyMap.containsValue(dbField);
@@ -287,8 +283,8 @@ public class DefaultTableGenerator {
             FieldDefinition fieldDef = getFieldDefFromDBField(dbField, isPKField);
             if (isPKField) {
                 // Check if the generation strategy is IDENTITY
-                String sequenceName = desc.getSequenceNumberName();
-                DatabaseLogin login = project.getLogin();
+                String sequenceName = descriptor.getSequenceNumberName();
+                DatabaseLogin login = this.project.getLogin();
                 Sequence seq = login.getSequence(sequenceName);
                 if(seq instanceof DefaultSequence) {
                     seq = login.getDefaultSequence();
@@ -299,10 +295,10 @@ public class DefaultTableGenerator {
             }
 
             //find the table the field belongs to, and add it to the table, only if not already added.
-            tblDef = tableMap.get(dbField.getTableName());
+            tableDefintion = this.tableMap.get(dbField.getTableName());
 
-            if (!tblDef.getFields().contains(fieldDef)) {
-                tblDef.addField(fieldDef);
+            if (!tableDefintion.getFields().contains(fieldDef)) {
+                tableDefintion.addField(fieldDef);
             }
         }
     }
@@ -321,7 +317,7 @@ public class DefaultTableGenerator {
                 // times for the same table.
                 continue;
             } else if (mapping.isManyToManyMapping()) {
-                buildRelationTableDefinition(((ManyToManyMapping)mapping).getRelationTableMechanism(), ((ManyToManyMapping)mapping).getListOrderField(), mapping.getContainerPolicy());
+                buildRelationTableDefinition((ManyToManyMapping)mapping, ((ManyToManyMapping)mapping).getRelationTableMechanism(), ((ManyToManyMapping)mapping).getListOrderField(), mapping.getContainerPolicy());
             } else if (mapping.isDirectCollectionMapping()) {
                 buildDirectCollectionTableDefinition((DirectCollectionMapping) mapping, desc);
             } else if (mapping.isDirectToFieldMapping()) {
@@ -345,7 +341,7 @@ public class DefaultTableGenerator {
                     if(relationTableMechanism == null) {
                         addForeignKeyFieldToSourceTargetTable((OneToOneMapping) mapping);
                     } else {
-                        buildRelationTableDefinition(relationTableMechanism, null, null);
+                        buildRelationTableDefinition((OneToOneMapping)mapping, relationTableMechanism, null, null);
                     }
                 } else if (mapping.isOneToManyMapping()) {
                     addForeignKeyFieldToSourceTargetTable((OneToManyMapping) mapping);
@@ -391,7 +387,7 @@ public class DefaultTableGenerator {
     /**
      * Build relation table definitions for all many-to-many relationships in a EclipseLink descriptor.
      */
-    private void buildRelationTableDefinition(RelationTableMechanism relationTableMechanism, DatabaseField listOrderField, ContainerPolicy cp) {
+    private void buildRelationTableDefinition(ForeignReferenceMapping mapping, RelationTableMechanism relationTableMechanism, DatabaseField listOrderField, ContainerPolicy cp) {
         //first create relation table
         TableDefinition tblDef = getTableDefFromDBTable(relationTableMechanism.getRelationTable());
 
@@ -399,13 +395,13 @@ public class DefaultTableGenerator {
         Vector srcFkFields = relationTableMechanism.getSourceRelationKeyFields();
         Vector srcKeyFields = relationTableMechanism.getSourceKeyFields();
 
-        buildRelationTableFields(tblDef, srcFkFields, srcKeyFields);
+        buildRelationTableFields(mapping, tblDef, srcFkFields, srcKeyFields);
 
         //add target foreign key fields into the relation table
         Vector targFkFields = relationTableMechanism.getTargetRelationKeyFields();
         Vector targKeyFields = relationTableMechanism.getTargetKeyFields();
         
-        buildRelationTableFields(tblDef, targFkFields, targKeyFields);
+        buildRelationTableFields(mapping, tblDef, targFkFields, targKeyFields);
         
         if (cp != null){
             addFieldsForMappedKeyMapContainerPolicy(cp, tblDef);
@@ -419,7 +415,7 @@ public class DefaultTableGenerator {
     /**
      * Build field definitions and foreign key constraints for all many-to-many relation table.
      */
-    private void buildRelationTableFields(TableDefinition tblDef, Vector fkFields, Vector targetFields) {
+    private void buildRelationTableFields(ForeignReferenceMapping mapping, TableDefinition tblDef, Vector fkFields, Vector targetFields) {
         assert fkFields.size() > 0 && fkFields.size() == targetFields.size();
         
         DatabaseField fkField = null;
@@ -440,7 +436,15 @@ public class DefaultTableGenerator {
         // add a foreign key constraint from fk field to target field
         DatabaseTable targetTable = targetField.getTable();
         TableDefinition targetTblDef = getTableDefFromDBTable(targetTable);
-        
+
+        if (mapping.getDescriptor().hasTablePerClassPolicy()
+                && mapping.getDescriptor().getTablePerClassPolicy().hasChild()) {
+            return;
+        }
+        if (mapping.getReferenceDescriptor().hasTablePerClassPolicy()
+                && mapping.getReferenceDescriptor().getTablePerClassPolicy().hasChild()) {
+            return;
+        }
         addForeignKeyConstraint(tblDef, targetTblDef, fkFieldNames, targetFieldNames);
     }
 
@@ -568,14 +572,20 @@ public class DefaultTableGenerator {
     }
 
     private void addForeignKeyFieldToSourceTargetTable(OneToOneMapping mapping) {        
-        if (!mapping.isForeignKeyRelationship()) {
+        if (!mapping.isForeignKeyRelationship()
+                || (mapping.getReferenceDescriptor().hasTablePerClassPolicy()
+                        && mapping.getReferenceDescriptor().getTablePerClassPolicy().hasChild())) {
             return;
         }
  
         addForeignMappingFkConstraint(mapping.getSourceToTargetKeyFields());
     }
     
-    private void addForeignKeyFieldToSourceTargetTable(OneToManyMapping mapping) {        
+    private void addForeignKeyFieldToSourceTargetTable(OneToManyMapping mapping) {
+        if (mapping.getDescriptor().hasTablePerClassPolicy()
+                && mapping.getDescriptor().getTablePerClassPolicy().hasChild()) {
+            return;
+        }
         addForeignMappingFkConstraint(mapping.getTargetForeignKeysToSourceKeys());
         if(mapping.getListOrderField() != null) {
             getTableDefFromDBTable(mapping.getListOrderField().getTable()).addField(getFieldDefFromDBField(mapping.getListOrderField(), false));

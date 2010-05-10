@@ -418,7 +418,7 @@ public class ReadObjectQuery extends ObjectLevelReadQuery {
         if (this.descriptor.isDescriptorForInterface()  || this.descriptor.hasTablePerClassPolicy()) {
             Object returnValue = this.descriptor.getInterfacePolicy().selectOneObjectUsingMultipleTableSubclassRead(this);
             
-            if (this.descriptor.hasTablePerClassPolicy() && returnValue == null) {
+            if (this.descriptor.hasTablePerClassPolicy() && (!this.descriptor.isAbstract()) && (returnValue == null)) {
                 // let it fall through to query the root.
             } else {
                 this.executionTime = System.currentTimeMillis();

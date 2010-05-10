@@ -21,6 +21,7 @@ import javax.persistence.Id;
 import javax.persistence.Inheritance;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
+import javax.persistence.OneToOne;
 import javax.persistence.Version;
 
 @Entity
@@ -34,12 +35,22 @@ public abstract class Benefit implements Serializable {
     private Integer benefitId;
     @Version
     private Integer version;
+    @OneToOne
+    private Customer customer;
 
     String benefitDescription;
     
     public Benefit() {
     }
 
+    public Customer getCustomer() {
+        return customer;
+    }
+
+    public void setCustomer(Customer customer) {
+        this.customer = customer;
+    }
+    
     public Integer getBenefitId() {
         return benefitId;
     }

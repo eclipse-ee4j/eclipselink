@@ -401,30 +401,34 @@ public class ReadAllQuery extends ObjectLevelReadQuery {
             return returnValue;
         }
 
-        List<AbstractRecord> rows = getQueryMechanism().selectAllRows();
-        this.executionTime = System.currentTimeMillis();
-        
-        // If using 1-m joins, must set all rows.
-        if (hasJoining() && this.joinedAttributeManager.isToManyJoin()) {
-            this.joinedAttributeManager.setDataResults(rows, this.session);
-        }
-        // Batch fetching in IN requires access to the rows to build the id array.
-        if ((this.batchFetchPolicy != null) && this.batchFetchPolicy.isIN()) {
-            this.batchFetchPolicy.setDataResults(rows);
-        }
-
-        if (this.session.isUnitOfWork()) {
-            result = registerResultInUnitOfWork(rows, (UnitOfWorkImpl)this.session, this.translationRow, true);// 
+        if (this.descriptor.hasTablePerClassPolicy() && this.descriptor.isAbstract()) {
+            result = this.containerPolicy.containerInstance();
         } else {
-            result = this.containerPolicy.containerInstance(rows.size());
-            this.descriptor.getObjectBuilder().buildObjectsInto(this, rows, result);
-        }
-
-        if (this.shouldIncludeData) {
-            ComplexQueryResult complexResult = new ComplexQueryResult();
-            complexResult.setResult(result);
-            complexResult.setData(rows);
-            result = complexResult;
+            List<AbstractRecord> rows = getQueryMechanism().selectAllRows();
+            this.executionTime = System.currentTimeMillis();
+            
+            // If using 1-m joins, must set all rows.
+            if (hasJoining() && this.joinedAttributeManager.isToManyJoin()) {
+                this.joinedAttributeManager.setDataResults(rows, this.session);
+            }
+            // Batch fetching in IN requires access to the rows to build the id array.
+            if ((this.batchFetchPolicy != null) && this.batchFetchPolicy.isIN()) {
+                this.batchFetchPolicy.setDataResults(rows);
+            }
+    
+            if (this.session.isUnitOfWork()) {
+                result = registerResultInUnitOfWork(rows, (UnitOfWorkImpl)this.session, this.translationRow, true);// 
+            } else {
+                result = this.containerPolicy.containerInstance(rows.size());
+                this.descriptor.getObjectBuilder().buildObjectsInto(this, rows, result);
+            }
+    
+            if (this.shouldIncludeData) {
+                ComplexQueryResult complexResult = new ComplexQueryResult();
+                complexResult.setResult(result);
+                complexResult.setData(rows);
+                result = complexResult;
+            }
         }
 
         // Add the other (already registered) results and return them.

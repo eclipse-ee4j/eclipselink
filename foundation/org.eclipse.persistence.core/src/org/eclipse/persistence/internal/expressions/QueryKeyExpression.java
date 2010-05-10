@@ -336,8 +336,8 @@ public class QueryKeyExpression extends ObjectExpression {
         } else {
             Vector result = new Vector();
             result.addAll(super.getFields());
-            if (mapping.isCollectionMapping()){
-                List<DatabaseField> fields = mapping.getContainerPolicy().getAdditionalFieldsForJoin((CollectionMapping)mapping);
+            if ((this.mapping != null) && this.mapping.isCollectionMapping()){
+                List<DatabaseField> fields = this.mapping.getContainerPolicy().getAdditionalFieldsForJoin((CollectionMapping)this.mapping);
                 if (fields != null){
                     result.addAll(fields);
                 }

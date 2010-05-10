@@ -32,7 +32,7 @@ import javax.persistence.Version;
 @Inheritance(strategy = InheritanceType.TABLE_PER_CLASS)
 @TableGenerator(name = "keyGen", table = "KEY_GEN", pkColumnName = "ID",
     pkColumnValue = "0", valueColumnName = "PK")
-public class Customer implements Serializable {
+public abstract class Customer implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.TABLE, generator = "keygen")
     private Integer customerId;

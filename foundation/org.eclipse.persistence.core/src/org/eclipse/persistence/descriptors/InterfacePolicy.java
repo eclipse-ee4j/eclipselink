@@ -95,6 +95,14 @@ public class InterfacePolicy implements Serializable {
 
     /**
      * INTERNAL:
+     * Return if there are any child descriptors.
+     */
+    public boolean hasChild() {
+        return this.childDescriptors.size() > 0;
+    }
+
+    /**
+     * INTERNAL:
      * Return all the child descriptors.
      */
     public Vector getChildDescriptors() {

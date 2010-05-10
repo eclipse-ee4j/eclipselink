@@ -220,6 +220,7 @@ public class JUnitJPQLComplexTestSuite extends JUnitTestCase
         suite.addTest(new JUnitJPQLComplexTestSuite("testComplexBetween"));
         suite.addTest(new JUnitJPQLComplexTestSuite("testComplexLike"));
         suite.addTest(new JUnitJPQLComplexTestSuite("testComplexIn"));
+        suite.addTest(new JUnitJPQLComplexTestSuite("testQueryKeys"));
         
         return suite;
     }
@@ -2905,8 +2906,10 @@ public class JUnitJPQLComplexTestSuite extends JUnitTestCase
         query.getResultList();
         query = em.createQuery("Select e from Employee e where e.firstName like UPPER('b%') escape UPPER('_')");
         query.getResultList();
-        query = em.createQuery("Select e from Employee e where e.salary like '123%'");
-        query.getResultList();
+        if (getServerSession().getPlatform().isOracle()) {
+            query = em.createQuery("Select e from Employee e where e.salary like '123%'");
+            query.getResultList();
+        }
         query = em.createQuery("Select e from Employee e where e.firstName like 'foox_' escape 'x'");
         query.getResultList();
         closeEntityManager(em);
@@ -2933,6 +2936,20 @@ public class JUnitJPQLComplexTestSuite extends JUnitTestCase
         query.getResultList();
         query = em.createQuery("Select e from Employee e where e.firstName in :arg");
         query.setParameter("arg", Arrays.asList(new int[]{1,2}));
+        query.getResultList();
+        closeEntityManager(em);
+    }
+    
+    public void testQueryKeys() {
+        EntityManager em = createEntityManager();
+        Query query = em.createQuery("Select e.startTime from Employee e where e.startTime = :time");
+        query.setParameter("time", new java.util.Date());
+        query.getResultList();
+        query = em.createQuery("Select boss from Employee e join e.boss boss");
+        query.getResultList();
+        query = em.createQuery("Select boss from Employee e left join e.boss boss");
+        query.getResultList();
+        query = em.createQuery("Select e from Employee e where e.boss.firstName like '%'");
         query.getResultList();
         closeEntityManager(em);
     }

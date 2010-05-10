@@ -3002,7 +3002,7 @@ public class ClassDescriptor implements Cloneable, Serializable {
      * INTERNAL:
      * Convenience method to return true if the java class from this descriptor is abstract.
      */
-    protected boolean isAbstract() {
+    public boolean isAbstract() {
     	return java.lang.reflect.Modifier.isAbstract(getJavaClass().getModifiers());
     }
     

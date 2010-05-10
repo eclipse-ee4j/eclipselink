@@ -79,6 +79,7 @@ public class JUnitJPQLInheritanceTestSuite extends JUnitTestCase {
         suite.addTest(new JUnitJPQLInheritanceTestSuite("testJoinedInheritanceWithLeftOuterJoin2"));
         suite.addTest(new JUnitJPQLInheritanceTestSuite("testJoinedInheritanceWithLeftOuterJoin3"));
         suite.addTest(new JUnitJPQLInheritanceTestSuite("testComputer"));
+        suite.addTest(new JUnitJPQLInheritanceTestSuite("testAllPeople"));
         
         return suite;
     }
@@ -243,6 +244,15 @@ public class JUnitJPQLInheritanceTestSuite extends JUnitTestCase {
         List result = em.createQuery(ejbqlString).getResultList();
         if (result.size() != 4) {
             fail("Expected 4 computers got: " + result);
+        }
+    }
+    
+    public void testAllPeople() {
+        EntityManager em = createEntityManager();
+        String ejbqlString = "SELECT p FROM Person p order by p.id";
+        List result = em.createQuery(ejbqlString).getResultList();
+        if (result.size() != 8) {
+            fail("Expected 8 people got: " + result);
         }
     }
 
