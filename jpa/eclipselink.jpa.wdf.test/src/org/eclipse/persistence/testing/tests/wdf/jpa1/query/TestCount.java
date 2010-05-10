@@ -31,6 +31,8 @@ import org.eclipse.persistence.testing.models.wdf.jpa1.employee.Project;
 import org.eclipse.persistence.testing.tests.wdf.jpa1.JPA1Base;
 import org.junit.Test;
 
+import static org.junit.Assert.assertEquals;
+
 public class TestCount extends JPA1Base {
 
     private final Set<Department> ALL_DEPARTMENTS = new HashSet<Department>();
@@ -73,7 +75,7 @@ public class TestCount extends JPA1Base {
             Iterator<?> iter = result.iterator();
             verify(iter.hasNext(), "no row found");
             Number count = (Number) iter.next();
-            verify(count.intValue() == expected, "wrong count");
+            assertEquals(expected, count.intValue());
             verify(!iter.hasNext(), "too many rows found");
         } finally {
             closeEntityManager(em);
@@ -94,6 +96,7 @@ public class TestCount extends JPA1Base {
     public void testCountDistinctCompoundKey() {
         verifyCountResult("select count(distinct c) from Cubicle c", 1);
     }
+    
 
     @Test
     @ToBeInvestigated

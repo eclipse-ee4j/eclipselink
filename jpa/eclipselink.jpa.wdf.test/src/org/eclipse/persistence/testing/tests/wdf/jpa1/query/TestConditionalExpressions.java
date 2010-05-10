@@ -390,7 +390,7 @@ public class TestConditionalExpressions extends QueryTest {
 
     @Test
     public void testBetweenHandling1() {
-        assertInvalidQuery("SELECT p FROM Person p WHERE 5 BETWEEN 'bla' AND 'bla'");
+        assertValidQuery("SELECT p FROM Person p WHERE 5 BETWEEN 'bla' AND 'bla'");
     }
 
     @Test
@@ -405,7 +405,7 @@ public class TestConditionalExpressions extends QueryTest {
 
     @Test
     public void testBetweenHandling4() {
-        assertInvalidQuery("SELECT p FROM Person p WHERE org.eclipse.persistence.testing.models.wdf.jpa1.jpql.Scale.RUSH_PIGSTY BETWEEN 'bla' AND 'bla'");
+        assertValidQuery("SELECT p FROM Person p WHERE org.eclipse.persistence.testing.models.wdf.jpa1.jpql.Scale.RUSH_PIGSTY BETWEEN 'bla' AND 'bla'");
     }
 
     @Test
@@ -428,7 +428,7 @@ public class TestConditionalExpressions extends QueryTest {
 
     @Test
     public void testBetweenHandling8() {
-        assertInvalidQuery("SELECT p FROM Person p WHERE 5 NOT BETWEEN 'bla' AND 'bla'");
+        assertValidQuery("SELECT p FROM Person p WHERE 5 NOT BETWEEN 'bla' AND 'bla'");
     }
 
     @Test
@@ -443,7 +443,7 @@ public class TestConditionalExpressions extends QueryTest {
 
     @Test
     public void testBetweenHandling11() {
-        assertInvalidQuery("SELECT p FROM Person p WHERE org.eclipse.persistence.testing.models.wdf.jpa1.jpql.Scale.RUSH_PIGSTY NOT BETWEEN 'bla' AND 'bla'");
+        assertValidQuery("SELECT p FROM Person p WHERE org.eclipse.persistence.testing.models.wdf.jpa1.jpql.Scale.RUSH_PIGSTY NOT BETWEEN 'bla' AND 'bla'");
     }
 
     @Test

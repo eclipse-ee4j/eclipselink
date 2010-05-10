@@ -78,12 +78,12 @@ public class TestGroupByOrderByHaving extends QueryTest {
 
     @Test
     public void testGroupBy1() {
-        /* 10 */assertInvalidQuery("select c, p.id from Person p, Cop c group by c");
+        /* 10 */assertValidQuery("select c, p.id from Person p, Cop c group by c");
     }
 
     @Test
     public void testGroupBy2() {
-        /* 11 */assertInvalidQuery("select c, p.id from Person p, Cop c group by p.id");
+        /* 11 */assertValidQuery("select c, p.id from Person p, Cop c group by p.id");
     }
 
     @Test
@@ -107,7 +107,6 @@ public class TestGroupByOrderByHaving extends QueryTest {
     }
 
     @Test
-    @ToBeInvestigated
     public void testGroupBy7() {
         // TODO check if query is meaningful
         assertValidQuery("SELECT c, new  org.eclipse.persistence.testing.models.wdf.jpa1.jpql.Holder(c.id) FROM City c group by c.id");
@@ -130,13 +129,11 @@ public class TestGroupByOrderByHaving extends QueryTest {
     }
 
     @Test
-    @ToBeInvestigated
     public void testSubQueryGroupBy1() {
         /* 19 */assertValidQuery("select _city from City _city where exists(select c from Cop c group by c, c, c having c.tesla is not null)");
     }
 
     @Test
-    @ToBeInvestigated
     public void testSubQueryGroupBy2() {
         /* 20 */assertValidQuery("select _city from City _city where exists(select c.id from Cop c group by c.id having c.partner.id = 5)");
     }
@@ -147,7 +144,6 @@ public class TestGroupByOrderByHaving extends QueryTest {
     }
 
     @Test
-    @ToBeInvestigated
     public void testSubQueryGroupBy4() {
         /* 22 */assertValidQuery("select _city from City _city where exists(select c from Cop c group by c.id)");
     }
@@ -161,11 +157,11 @@ public class TestGroupByOrderByHaving extends QueryTest {
     @Test
     @ToBeInvestigated
     public void testConstructorGroupBy0() {
-        assertValidQuery("SELECT new  org.eclipse.persistence.testing.models.wdf.jpa1.jpql.Holder(c.id, count(p)) FROM City c, Person p group by c.id");
+        assertValidQuery("SELECT new  org.eclipse.persistence.testing.models.wdf.jpa1.jpql.Holder(count(p)) FROM City c, Person p group by c.id");
     }
 
     @Test
     public void testConstructorGroupBy1() {
-        /* 25 */assertInvalidQuery("SELECT new  org.eclipse.persistence.testing.models.wdf.jpa1.jpql.Holder(c.tesla, max(c.id)) FROM City c group by c.id");
+        /* 25 */assertInvalidQuery("SELECT new  org.eclipse.persistence.testing.models.wdf.jpa1.jpql.Holder(max(c.id)) FROM City c group by c.id");
     }
 }

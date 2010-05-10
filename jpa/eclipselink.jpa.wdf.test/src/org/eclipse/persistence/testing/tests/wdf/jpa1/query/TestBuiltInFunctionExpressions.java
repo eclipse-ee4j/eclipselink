@@ -35,9 +35,8 @@ public class TestBuiltInFunctionExpressions extends QueryTest {
     }
 
     @Test
-    @Skip
     public void testConcatHandling3() {
-        /* 3 */assertInvalidQuery("SELECT p FROM Person p where 'a' = concat(5, 5)");
+        /* 3 */assertValidQuery("SELECT p FROM Person p where 'a' = concat(5, 5)");
     }
 
     @Test
@@ -237,9 +236,8 @@ public class TestBuiltInFunctionExpressions extends QueryTest {
     }
 
     @Test
-    @Skip
     public void testUpperHandling42() {
-        /* 42 */assertInvalidQuery("SELECT p FROM Person p where upper(2*2) = lower(1+1)");
+        /* 42 */assertValidQuery("SELECT p FROM Person p where upper(2*2) = lower(1+1)");
     }
 
     @Test
@@ -279,9 +277,8 @@ public class TestBuiltInFunctionExpressions extends QueryTest {
     }
 
     @Test
-    @Skip
     public void testLengthHandling50() {
-        /* 50 */assertInvalidQuery("SELECT p FROM Person p where length(2*2) = 666");
+        /* 50 */assertValidQuery("SELECT p FROM Person p where length(2*2) = 666");
     }
 
     @Test
