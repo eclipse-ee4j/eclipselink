@@ -89,7 +89,6 @@
         <property name="bundle.working.dir"                 value="${classes.dir}/plugins"/>
         <!-- property name="feature.2.util.dbws"                value="${feature.2.base.dir}/${eclipselink.util.dbws}"/ -->
         <property name="feature.2.jpa.plugins"              value="${feature.2.base.dir}/${eclipselink.jpa.plugins}"/>
-        <property name="category.qualifier"                 value="${version.string}"/>
 
         <!-- Tool definitions -->
         <property name="p2.SDK.install.dir" value="C:/eclipseSDK-3.6M6/eclipse"/>
@@ -103,7 +102,7 @@
 
         <!-- Input definitions -->
         <property name="p2.composite.home.dir"    value="C:/__EL-CompositeRepositoryTest2Site"/>
-        <condition property="p2.repos.dir"        value="${p2.composite.home.dir}/${category.qualifier}"
+        <condition property="p2.repos.dir"        value="${p2.composite.home.dir}/${version.string}"
                                                    else="C:/__EL-RepositorySite">
             <isset property="do.composite"/>
         </condition>
@@ -149,7 +148,6 @@
         <echo message="bundle.working.dir     ='${bundle.working.dir}'"/>
         <!-- echo message="feature.2.util.dbws='${feature.2.util.dbws}'"/ -->
         <echo message="feature.2.jpa.plugins  ='${feature.2.jpa.plugins}'"/>
-        <echo message="category.qualifier     ='${category.qualifier}'"/>
         <echo message=" ---"/>
         <echo message="p2.SDK.install.dir ='${p2.SDK.install.dir}'"/>
         <echo message="p2.publisher.jar   ='${p2.publisher.jar}'"/>
@@ -367,7 +365,6 @@
         <filter token="REPOS_URL"          value="${p2.repos.url}"/>
         <filter token="VERSION"            value="${release.version}"/>
         <filter token="QUALIFIER"          value="${version.qualifier}"/>
-        <filter token="CATEGORY-QUALIFIER" value="${category.qualifier}"/>
         <copy todir="${site.dir}" file="${feature.build.location}/site.xml" filtering="true"/>
     </target>
 
