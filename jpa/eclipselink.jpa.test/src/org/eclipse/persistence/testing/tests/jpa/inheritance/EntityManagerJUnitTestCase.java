@@ -172,6 +172,6 @@ public class EntityManagerJUnitTestCase extends JUnitTestCase {
             fail("Exception was thrown while flushing a MapKey with inheritance. " + e.getMessage());
         }
         
-        em.getTransaction().rollback();
+        rollbackTransaction(em);;
     }
 }
