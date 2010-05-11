@@ -105,7 +105,6 @@ public class TestCount extends JPA1Base {
     }
 
     @Test
-    @ToBeInvestigated
     public void testCount1() {
         verifyCountResult("select count(distinct d) from Department d, Project p", 2);
     }

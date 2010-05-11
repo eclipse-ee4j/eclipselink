@@ -19,7 +19,6 @@ import org.junit.Test;
 public class TestSelectClauses extends QueryTest {
 
     @Test
-    @ToBeInvestigated
     public void testSimpleSelect() {
         /*
          * 00 null, /* 01 null, /* 02 null, /* 03 null, /* 04 "line 1: Path 'c.informers' is not single-valued\n" + "SELECT

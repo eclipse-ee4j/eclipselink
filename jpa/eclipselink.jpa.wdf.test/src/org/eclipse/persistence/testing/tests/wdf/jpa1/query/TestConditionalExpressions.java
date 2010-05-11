@@ -476,7 +476,6 @@ public class TestConditionalExpressions extends QueryTest {
     }
 
     @Test
-    @ToBeInvestigated
     public void testPlatformDependendBetweenHandling3() {
         assertValidQuery("SELECT p FROM Person p WHERE p.sqlTimestamp NOT BETWEEN CURRENT_TIMESTAMP AND p.sqlTimestamp");
     }
@@ -624,7 +623,6 @@ public class TestConditionalExpressions extends QueryTest {
     }
 
     @Test
-    @ToBeInvestigated
     public void testInHandling1() {
         assertValidQuery("select p from Person as p where p.city.type in (org.eclipse.persistence.testing.models.wdf.jpa1.jpql.Scale.RUSH_PIGSTY, org.eclipse.persistence.testing.models.wdf.jpa1.jpql.Scale.STUCK_TURTLE, org.eclipse.persistence.testing.models.wdf.jpa1.jpql.Scale.RUNNING_ELEPHAN, :one)");
     }
@@ -636,7 +634,6 @@ public class TestConditionalExpressions extends QueryTest {
     }
 
     @Test
-    @ToBeInvestigated
     public void testInHandling3() {
         assertValidQuery("select p from Person as p where p.city.type not in (org.eclipse.persistence.testing.models.wdf.jpa1.jpql.Scale.RUSH_PIGSTY, org.eclipse.persistence.testing.models.wdf.jpa1.jpql.Scale.STUCK_TURTLE, org.eclipse.persistence.testing.models.wdf.jpa1.jpql.Scale.RUNNING_ELEPHAN, :one)");
     }
@@ -661,7 +658,6 @@ public class TestConditionalExpressions extends QueryTest {
     }
 
     @Test
-    @ToBeInvestigated
     public void testIsNullHandling2() {
         assertInvalidQuery("select p from Person as p where p is null");
     }
@@ -688,7 +684,6 @@ public class TestConditionalExpressions extends QueryTest {
     }
 
     @Test
-    @ToBeInvestigated
     public void testIsNullHandling7() {
         assertInvalidQuery("select p from Person as p where p is not null");
     }
@@ -797,7 +792,6 @@ public class TestConditionalExpressions extends QueryTest {
     }
 
     @Test
-    @ToBeInvestigated
     public void testMemberOfHandling2() {
         assertInvalidQuery("select p from City c, Person p where p.city.criminals not member OF c.criminals");
     }

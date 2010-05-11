@@ -19,7 +19,6 @@ import org.junit.Test;
 public class TestAggregates extends QueryTest {
 
     @Test
-    @ToBeInvestigated
     public void testAvgHandling1() {
         /*
          * 00 null, /* 01 null, /* 02 "line 1: Path 'c.informers' is not a CMP path\n" +

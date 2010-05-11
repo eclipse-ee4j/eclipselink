@@ -345,7 +345,6 @@ public class TestExtendedQueries extends JPA1Base {
         }
     }
 
-    @ToBeInvestigated
     @Test
     public void testQueryWithAggregateWithHavingExpression() throws Exception {
         EntityManager em = getEnvironment().getEntityManager();

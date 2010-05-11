@@ -157,7 +157,6 @@ public class BufferReadTest extends JPA1Base {
     }
 
     @Test
-    @ToBeInvestigated
     public void testQueryExecuteOnlyOutsideTransactionNew() {
         final JPAEnvironment environment = getEnvironment();
         final EntityManager myEm = environment.getEntityManager();

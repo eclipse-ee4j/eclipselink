@@ -30,6 +30,8 @@ import org.eclipse.persistence.testing.framework.wdf.AbstractBaseTest;
 import org.eclipse.persistence.testing.framework.wdf.JPAEnvironment;
 import org.eclipse.persistence.testing.framework.wdf.ToBeInvestigated;
 
+import static org.junit.Assert.assertTrue;
+
 @SuppressWarnings("unchecked")
 public class TestEmployee_Review extends JPA1Base {
     private final Department _dep = new Department(17, "dep_17");
@@ -133,7 +135,6 @@ public class TestEmployee_Review extends JPA1Base {
     }
 
     @Test
-    @ToBeInvestigated
     public void testNavigateDeserializedEmployeeFails() throws IOException, ClassNotFoundException {
         final JPAEnvironment env = getEnvironment();
         final EntityManager em = env.getEntityManager();
@@ -147,8 +148,11 @@ public class TestEmployee_Review extends JPA1Base {
                 reviews.size();
                 flop("missing persistence exception");
             } catch (PersistenceException ex) {
-                verify(true, "");
+                // OK
+            } catch (RuntimeException ex) {
+                // OK EclipseLink throws ValidationException
             }
+            assertTrue(env.isTransactionActive(em));
             env.rollbackTransactionAndClear(em);
         } finally {
             closeEntityManager(em);

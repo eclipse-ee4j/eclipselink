@@ -609,7 +609,6 @@ public class TestSelectListTypes extends JPA1Base {
     }
 
     @Test
-    @ToBeInvestigated
     public void testMaxBigInteger() {
         validateMax("bigInteger", BigInteger.class);
     }

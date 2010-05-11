@@ -174,7 +174,6 @@ public class TestList extends JPA1Base {
     }
 
     @Test
-    @ToBeInvestigated
     public void testOrderBy() {
         final JPAEnvironment env = getEnvironment();
         final EntityManager em = env.getEntityManager();
