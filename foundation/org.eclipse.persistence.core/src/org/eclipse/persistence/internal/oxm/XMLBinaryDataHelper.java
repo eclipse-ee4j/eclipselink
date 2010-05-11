@@ -30,6 +30,8 @@ import javax.xml.namespace.QName;
 import javax.xml.transform.Source;
 import javax.xml.transform.stream.StreamResult;
 import javax.xml.transform.stream.StreamSource;
+
+import org.eclipse.persistence.exceptions.ConversionException;
 import org.eclipse.persistence.exceptions.XMLMarshalException;
 import org.eclipse.persistence.internal.helper.ClassConstants;
 import org.eclipse.persistence.internal.helper.Helper;
@@ -87,6 +89,7 @@ public class XMLBinaryDataHelper {
         try {
             handler.writeTo(output);
         } catch (IOException ex) {
+            throw ConversionException.couldNotBeConverted(handler, byte[].class, ex);
         }
 
         return new EncodedData(output.toByteArray(), handler.getContentType());
@@ -116,25 +119,16 @@ public class XMLBinaryDataHelper {
             ContentType contentType = new ContentType(value.getContentType());
             String boundary = contentType.getParameter("boundary");
 
-            //output.write(boundary.getBytes());
             output.write(Helper.cr().getBytes());
             output.write(("Content-Type: " + contentType.getBaseType() + "; boundary=\"" + boundary + "\"\n").getBytes());
         } catch (Exception ex) {
-            ex.printStackTrace();
+            throw ConversionException.couldNotBeConverted(value, byte[].class, ex);
         }
 
         try {
-            //value.writeTo(System.out);
             value.writeTo(output);
-
-            /*java.io.InputStreamReader in = new java.io.InputStreamReader(new ByteArrayInputStream(output.toByteArray()));
-            int i = 0;
-            while(i != -1) {
-                System.out.print((char)i);
-                i = in.read();
-            }*/
         } catch (Exception ex) {
-            //handle error
+            throw ConversionException.couldNotBeConverted(value, byte[].class, ex);
         }
         return new EncodedData(output.toByteArray(), value.getContentType());
     }
@@ -154,7 +148,6 @@ public class XMLBinaryDataHelper {
         for (int i = 0; i < data.length; i++) {
             data[i] = bytes[i].byteValue();
         }
-
         return new EncodedData(data, mimeType);
     }
 
@@ -176,9 +169,8 @@ public class XMLBinaryDataHelper {
 
             return new EncodedData(outputStream.toByteArray(), mimeType);
         } catch (Exception ex) {
+            throw ConversionException.couldNotBeConverted(image, byte[].class, ex);
         }
-
-        return new EncodedData(new byte[0], null);
     }
 
     private BufferedImage convertToBufferedImage(Image image) throws IOException {
@@ -214,6 +206,7 @@ public class XMLBinaryDataHelper {
                     return new MimeMultipart(((DataHandler) obj).getDataSource());
                 }
             } catch (Exception ex) {
+                throw ConversionException.couldNotBeConverted(obj, MULTIPART, ex);
             }
         } else if (obj instanceof byte[]) {
             try {
@@ -225,8 +218,7 @@ public class XMLBinaryDataHelper {
                 }
                 return new MimeMultipart(new ByteArrayDataSource((byte[]) obj, "multipart/mixed"));
             } catch (Exception ex) {
-                ex.printStackTrace();
-                return null;
+                throw ConversionException.couldNotBeConverted(obj, MULTIPART, ex);
             }
         } else if (obj instanceof Byte[]) {
             Byte[] objectBytes = (Byte[]) obj;
@@ -237,7 +229,7 @@ public class XMLBinaryDataHelper {
             try {
                 return new MimeMultipart(new ByteArrayDataSource(bytes, "multipart/mixed"));
             } catch (Exception ex) {
-                return null;
+                throw ConversionException.couldNotBeConverted(obj, MULTIPART, ex);
             }
         }
         return null;
@@ -256,14 +248,14 @@ public class XMLBinaryDataHelper {
                     return ImageIO.read(((DataHandler) obj).getInputStream());
                 }
             } catch (Exception ex) {
+                throw ConversionException.couldNotBeConverted(obj, IMAGE, ex);
             }
         } else if (obj instanceof byte[]) {
             ByteArrayInputStream stream = new ByteArrayInputStream((byte[]) obj);
             try {
                 return ImageIO.read(stream);
             } catch (Exception ex) {
-                ex.printStackTrace();
-                return null;
+                throw ConversionException.couldNotBeConverted(obj, IMAGE, ex);
             }
         } else if (obj instanceof Byte[]) {
             Byte[] objectBytes = (Byte[]) obj;
@@ -275,7 +267,7 @@ public class XMLBinaryDataHelper {
             try {
                 return ImageIO.read(stream);
             } catch (Exception ex) {
-                return null;
+                throw ConversionException.couldNotBeConverted(obj, IMAGE, ex);
             }
         }
         return null;
@@ -287,9 +279,8 @@ public class XMLBinaryDataHelper {
             source.writeTo(output);
             return (String) ((XMLConversionManager) session.getDatasourcePlatform().getConversionManager()).convertObject(output.toByteArray(), String.class, schemaTypeQName);
         } catch (Exception ex) {
+            throw ConversionException.couldNotBeConverted(source, ClassConstants.STRING, ex);
         }
-
-        return null;
     }
 
     public String stringFromDataHandler(Object source, QName schemaTypeQName, AbstractSession session) {
@@ -310,14 +301,13 @@ public class XMLBinaryDataHelper {
                 w.write(convertToBufferedImage(image));
                 w.dispose();
             } else {
-                throw new RuntimeException("no encoder for MIME type " + mimeType);
+                throw XMLMarshalException.noEncoderForMimeType(mimeType);
             }
 
             return ((XMLConversionManager) session.getDatasourcePlatform().getConversionManager()).buildBase64StringFromBytes(outputStream.toByteArray());
         } catch (Exception ex) {
+            throw ConversionException.couldNotBeConverted(image, byte[].class, ex);
         }
-
-        return null;
     }
 
     public String stringFromSource(Source source, QName schemaTypeQName, AbstractSession session) {
