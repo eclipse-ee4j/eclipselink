@@ -115,7 +115,7 @@ public class ConcurrencyManager implements Serializable {
      * called with true from the merge process, if true then the refresh will not refresh the object
      */
     public synchronized boolean acquireNoWait(boolean forMerge) throws ConcurrencyException {
-        if ((this.activeThread == null) || (this.activeThread == Thread.currentThread())) {
+        if ( ((this.activeThread == null) || (this.activeThread == Thread.currentThread())) && this.numberOfReaders == 0) {
             //if I own the lock increment depth
             acquire(forMerge);
             return true;
@@ -131,7 +131,7 @@ public class ConcurrencyManager implements Serializable {
      * called with true from the merge process, if true then the refresh will not refresh the object
      */
     public synchronized boolean acquireWithWait(boolean forMerge, int wait) throws ConcurrencyException {
-        if ((this.activeThread == null) || (this.activeThread == Thread.currentThread())) {
+        if (((this.activeThread == null) || (this.activeThread == Thread.currentThread())) && this.numberOfReaders == 0) {
             //if I own the lock increment depth
             acquire(forMerge);
             return true;
@@ -141,7 +141,7 @@ public class ConcurrencyManager implements Serializable {
             } catch (InterruptedException e) {
                 return false;
             }
-            if ((this.activeThread == null) || (this.activeThread == Thread.currentThread())){
+            if ( ((this.activeThread == null) || (this.activeThread == Thread.currentThread())) && this.numberOfReaders == 0){
                 acquire(forMerge);
                 return true;
             }
@@ -157,7 +157,7 @@ public class ConcurrencyManager implements Serializable {
      */
     public synchronized boolean acquireIfUnownedNoWait(boolean forMerge) throws ConcurrencyException {
         // Only acquire lock if active thread is null. Do not check current thread. 
-        if (this.activeThread == null) {
+        if (this.activeThread == null && this.numberOfReaders == 0) {
              // if lock is unowned increment depth
             acquire(forMerge);
             return true;
