@@ -38,7 +38,12 @@
     <!-- (should be set locally, and be destroyed upon return) -->
     <fail message="Not running from '${ant.project.name}' directory" unless="core.is.local"/>
 
-    <dirname  property="core.build.location" file="${ant.file.org.eclipse.persistence.core}"/>
+    <dirname  property="core.build.location_temp" file="${ant.file.org.eclipse.persistence.core}"/>
+    <pathconvert targetos="unix" property="core.build.location">
+        <path>
+            <pathelement location="${core.build.location_temp}"/>
+        </path>
+    </pathconvert>
     <condition property="core.2.base.dir" value="../.." else="..">
         <contains string="${core.build.location}" substring="foundation"/>
     </condition>
@@ -48,7 +53,11 @@
     </condition>
     <property name="core.2.buildsys.dir" value="${core.2.base.dir}/buildsystem"/>
 
-    <echo message="Loading ${user.home}/build.properties..."/>
+    <condition property="custom.properties.message" value="Loading ${user.home}/build.properties..."
+                                                     else="Custom properties file '${user.home}/build.properties' not found to load.">
+        <available file="${user.home}/build.properties"/>
+    </condition>
+    <echo message="${custom.properties.message}"/>
     <property file="${user.home}/build.properties"/>
     <property file="${core.build.location}/build.properties"/>
 
@@ -57,7 +66,7 @@
 
     <!-- Primary Targets: "jar" separate for dev use -->
     <target name="build" depends="clean, compile, jar" description="build ${ant.project.name} component"/>
-    <target name="jar"   depends="generate-manifest, package, bnd-package" description="package ${ant.project.name} component"/>
+    <target name="jar"   depends="bnd-package, package" description="package ${ant.project.name} component"/>
 
     <!-- clean -->
     <target name="clean" description="Clean all generated content">
@@ -101,15 +110,6 @@
         <available file="${persistence.lib}" property="persistence.bundle.exist"/>
         <fail message="Cannot find: '${persistence.lib}'" unless="persistence.bundle.exist"/>
 
-        <!-- Check for BND library -->
-        <condition property="bnd.lib" value="${extensions.depend.dir}/${bndtool.jar}">
-            <available file="${extensions.depend.dir}/${bndtool.jar}"/>
-        </condition>
-        <condition property="bnd.lib" value="${core.2.buildsys.dir}/${bndtool.jar}">
-            <available file="${core.2.buildsys.dir}/${bndtool.jar}"/>
-        </condition>
-        <echo message="bnd.lib                     = '${bnd.lib}'"/>
-
         <!-- Set Compile Path-->
         <path id="core.compile.path">
             <pathelement path="${core.2.common.plugins.dir}/${antlr}"/>
@@ -119,10 +119,49 @@
                 dir="${core.2.common.plugins.dir}"
                 includes="${eclipselink.core.depend}"/>
         </path>
+
+        <!-- Check for BND library -->
+        <property name="alt.manifest.dir"      value="${core.build.location}/META-INF"/>
+        <condition property="bnd.lib" value="${extensions.depend.dir}/${bndtool.jar}">
+            <available file="${extensions.depend.dir}/${bndtool.jar}"/>
+        </condition>
+        <condition property="bnd.lib" value="${core.2.buildsys.dir}/${bndtool.jar}">
+            <available file="${core.2.buildsys.dir}/${bndtool.jar}"/>
+        </condition>
+        <echo message="bnd.lib                     = '${bnd.lib}'"/>
+        <condition property="bld">
+            <or>
+                <isset property="bnd.lib"/>
+                <isset property="nobnd"/>
+            </or>
+        </condition>
+        <condition property="bnd.bld">
+            <and>
+                <isset property="bnd.lib"/>
+                <not>  <isset property="nobnd"/> </not>
+            </and>
+        </condition>
+    </target>
+
+    <target name="fail-on-no-bnd" unless="bld">
+        <echo message="BND tool (${bndtool.jar}) not found in either:"/>
+        <echo message="    the extensions.depend.dir: '${extensions.depend.dir}'"/>
+        <echo message="    or the buildsystem dir:    '${core.2.buildsys.dir}'"/>
+        <echo message=""/>
+        <echo message="if you have a different version, you can define a different"/>
+        <echo message="jarname by adding 'bndtool.jar=bnd-{version}.jar to your'"/>
+        <echo message="${user.home}/build.properties file."/>
+        <echo message=""/>
+        <echo message="You can download BND from http://www.aqute.biz/Code/Download"/>
+        <echo message=""/>
+        <echo message="or if you really need to build NOW, you can use '-Dnobnd=true'"/>
+        <echo message="on the ant command-line. However, the manifests used will be those"/>
+        <echo message="checked-in for development, and will likely have errors."/>
+        <fail message="Missing BND library!"/>
     </target>
 
     <!-- compile -->
-    <target name="compile" depends="init" description="Compile bundle code">
+    <target name="compile" depends="init, fail-on-no-bnd" description="Compile bundle code">
         <mkdir dir="${classes.dir}"/>
         <echo message="Stamping the following values:"/>
         <echo message="version:       '${release.version}'"/>
@@ -170,8 +209,8 @@
     </target>
 
     <!-- package -->
-    <target name="package" unless="bnd.lib" depends="init" description="jar OSGI bundle">
-        <jar jarfile="${core.2.common.plugins.dir}/${ant.project.name}_${version.string}.jar" manifest="${classes.dir}/MANIFEST.MF">
+    <target name="package" if="nobnd" depends="init" description="jar OSGI bundle">
+        <jar jarfile="${core.2.common.plugins.dir}/${ant.project.name}_${version.string}.jar" manifest="${alt.manifest.dir}/MANIFEST.MF">
             <fileset dir="${core.2.base.dir}">
                 <include name="about.html"/>
                 <include name="readme.html"/>
@@ -218,192 +257,7 @@
         <delete file="${classes.dir}/org/eclipse/persistence/Version.java"/>
     </target>
 
-    <target name="generate-manifest" unless="bnd.lib" depends="init" description="Generate the OSGi bundle manifest before jarring">
-        <echo message="Generate the OSGi bundle manifest before jarring..."/>
-        <delete file="${classes.dir}/MANIFEST.MF*" quiet="true"/>
-        <echo message="Manifest-Version: 1.0${line.separator}"                                                                                                 file="${classes.dir}/MANIFEST.MF" append="false"/>
-        <echo message="Specification-Vendor: ${specification.vendor}${line.separator}"                                                                         file="${classes.dir}/MANIFEST.MF" append="true"/>
-        <echo message="Specification-Version: ${release.version}${line.separator}"                                                                             file="${classes.dir}/MANIFEST.MF" append="true"/>
-        <echo message="Implementation-Vendor: ${implementation.vendor}${line.separator}"                                                                       file="${classes.dir}/MANIFEST.MF" append="true"/>
-        <echo message="Implementation-Version: ${version.string}${line.separator}"                                                                             file="${classes.dir}/MANIFEST.MF" append="true"/>
-        <echo message="Bundle-ManifestVersion: 2${line.separator}"                                                                                             file="${classes.dir}/MANIFEST.MF" append="true"/>
-        <echo message="Bundle-Name: EclipseLink Core${line.separator}"                                                                                         file="${classes.dir}/MANIFEST.MF" append="true"/>
-        <echo message="Bundle-SymbolicName: ${ant.project.name}${line.separator}"                                                                              file="${classes.dir}/MANIFEST.MF" append="true"/>
-        <echo message="Bundle-Vendor: ${implementation.vendor}${line.separator}"                                                                               file="${classes.dir}/MANIFEST.MF" append="true"/>
-        <echo message="Bundle-Version: ${version.string}${line.separator}"                                                                                     file="${classes.dir}/MANIFEST.MF" append="true"/>
-        <echo message="Bundle-RequiredExecutionEnvironment: J2SE-1.5${line.separator}"                                                                         file="${classes.dir}/MANIFEST.MF" append="true"/>
-        <echo message="Require-Bundle: org.eclipse.persistence.antlr;bundle-version=&quot;${version.string}&quot;;resolution:=optional,${line.separator}"      file="${classes.dir}/MANIFEST.MF" append="true"/>
-        <echo message=" org.eclipse.persistence.asm;bundle-version=&quot;${version.string}&quot;;resolution:=optional${line.separator}"                        file="${classes.dir}/MANIFEST.MF" append="true"/>
-        <echo message="Export-Package: org.eclipse.persistence;version=&quot;${version.string}&quot;,${line.separator}"                                        file="${classes.dir}/MANIFEST.MF" append="true"/>
-        <echo message=" org.eclipse.persistence.annotations;version=&quot;${version.string}&quot;,${line.separator}"                                           file="${classes.dir}/MANIFEST.MF" append="true"/>
-        <echo message=" org.eclipse.persistence.config;version=&quot;${version.string}&quot;,${line.separator}"                                                file="${classes.dir}/MANIFEST.MF" append="true"/>
-        <echo message=" org.eclipse.persistence.descriptors;version=&quot;${version.string}&quot;,${line.separator}"                                           file="${classes.dir}/MANIFEST.MF" append="true"/>
-        <echo message=" org.eclipse.persistence.descriptors.changetracking;version=&quot;${version.string}&quot;,${line.separator}"                            file="${classes.dir}/MANIFEST.MF" append="true"/>
-        <echo message=" org.eclipse.persistence.descriptors.copying;version=&quot;${version.string}&quot;,${line.separator}"                                   file="${classes.dir}/MANIFEST.MF" append="true"/>
-        <echo message=" org.eclipse.persistence.descriptors.invalidation;version=&quot;${version.string}&quot;,${line.separator}"                              file="${classes.dir}/MANIFEST.MF" append="true"/>
-        <echo message=" org.eclipse.persistence.dynamic;version=&quot;${version.string}&quot;,${line.separator}"                                               file="${classes.dir}/MANIFEST.MF" append="true"/>
-        <echo message=" org.eclipse.persistence.eis;version=&quot;${version.string}&quot;,${line.separator}"                                                   file="${classes.dir}/MANIFEST.MF" append="true"/>
-        <echo message=" org.eclipse.persistence.eis.adapters.jms;version=&quot;${version.string}&quot;,${line.separator}"                                      file="${classes.dir}/MANIFEST.MF" append="true"/>
-        <echo message=" org.eclipse.persistence.eis.adapters.xmlfile;version=&quot;${version.string}&quot;,${line.separator}"                                  file="${classes.dir}/MANIFEST.MF" append="true"/>
-        <echo message=" org.eclipse.persistence.eis.interactions;version=&quot;${version.string}&quot;,${line.separator}"                                      file="${classes.dir}/MANIFEST.MF" append="true"/>
-        <echo message=" org.eclipse.persistence.eis.mappings;version=&quot;${version.string}&quot;,${line.separator}"                                          file="${classes.dir}/MANIFEST.MF" append="true"/>
-        <echo message=" org.eclipse.persistence.exceptions;version=&quot;${version.string}&quot;,${line.separator}"                                            file="${classes.dir}/MANIFEST.MF" append="true"/>
-        <echo message=" org.eclipse.persistence.exceptions.i18n;version=&quot;${version.string}&quot;,${line.separator}"                                       file="${classes.dir}/MANIFEST.MF" append="true"/>
-        <echo message=" org.eclipse.persistence.expressions;version=&quot;${version.string}&quot;,${line.separator}"                                           file="${classes.dir}/MANIFEST.MF" append="true"/>
-        <echo message=" org.eclipse.persistence.expressions.spatial;version=&quot;${version.string}&quot;,${line.separator}"                                   file="${classes.dir}/MANIFEST.MF" append="true"/>
-        <echo message=" org.eclipse.persistence.history;version=&quot;${version.string}&quot;,${line.separator}"                                               file="${classes.dir}/MANIFEST.MF" append="true"/>
-        <echo message=" org.eclipse.persistence.indirection;version=&quot;${version.string}&quot;,${line.separator}"                                           file="${classes.dir}/MANIFEST.MF" append="true"/>
-        <echo message=" org.eclipse.persistence.internal.codegen;version=&quot;${version.string}&quot;,${line.separator}"                                      file="${classes.dir}/MANIFEST.MF" append="true"/>
-        <echo message=" org.eclipse.persistence.internal.databaseaccess;version=&quot;${version.string}&quot;,${line.separator}"                               file="${classes.dir}/MANIFEST.MF" append="true"/>
-        <echo message=" org.eclipse.persistence.internal.descriptors;version=&quot;${version.string}&quot;,${line.separator}"                                  file="${classes.dir}/MANIFEST.MF" append="true"/>
-        <echo message=" org.eclipse.persistence.internal.descriptors.changetracking;version=&quot;${version.string}&quot;,${line.separator}"                   file="${classes.dir}/MANIFEST.MF" append="true"/>
-        <echo message=" org.eclipse.persistence.internal.dynamic;version=&quot;${version.string}&quot;,${line.separator}"                                      file="${classes.dir}/MANIFEST.MF" append="true"/>
-        <echo message=" org.eclipse.persistence.internal.eis.adapters.jms;version=&quot;${version.string}&quot;,${line.separator}"                             file="${classes.dir}/MANIFEST.MF" append="true"/>
-        <echo message=" org.eclipse.persistence.internal.eis.adapters.xmlfile;version=&quot;${version.string}&quot;,${line.separator}"                         file="${classes.dir}/MANIFEST.MF" append="true"/>
-        <echo message=" org.eclipse.persistence.internal.eis.cobol;version=&quot;${version.string}&quot;,${line.separator}"                                    file="${classes.dir}/MANIFEST.MF" append="true"/>
-        <echo message=" org.eclipse.persistence.internal.eis.cobol.helper;version=&quot;${version.string}&quot;,${line.separator}"                             file="${classes.dir}/MANIFEST.MF" append="true"/>
-        <echo message=" org.eclipse.persistence.internal.expressions;version=&quot;${version.string}&quot;,${line.separator}"                                  file="${classes.dir}/MANIFEST.MF" append="true"/>
-        <echo message=" org.eclipse.persistence.internal.helper;version=&quot;${version.string}&quot;,${line.separator}"                                       file="${classes.dir}/MANIFEST.MF" append="true"/>
-        <echo message=" org.eclipse.persistence.internal.helper.linkedlist;version=&quot;${version.string}&quot;,${line.separator}"                            file="${classes.dir}/MANIFEST.MF" append="true"/>
-        <echo message=" org.eclipse.persistence.internal.history;version=&quot;${version.string}&quot;,${line.separator}"                                      file="${classes.dir}/MANIFEST.MF" append="true"/>
-        <echo message=" org.eclipse.persistence.internal.identitymaps;version=&quot;${version.string}&quot;,${line.separator}"                                 file="${classes.dir}/MANIFEST.MF" append="true"/>
-        <echo message=" org.eclipse.persistence.internal.indirection;version=&quot;${version.string}&quot;,${line.separator}"                                  file="${classes.dir}/MANIFEST.MF" append="true"/>
-        <echo message=" org.eclipse.persistence.internal.jpa.parsing;version=&quot;${version.string}&quot;,${line.separator}"                                  file="${classes.dir}/MANIFEST.MF" append="true"/>
-        <echo message=" org.eclipse.persistence.internal.jpa.parsing.jpql;version=&quot;${version.string}&quot;,${line.separator}"                             file="${classes.dir}/MANIFEST.MF" append="true"/>
-        <echo message=" org.eclipse.persistence.internal.jpa.parsing.jpql.antlr;version=&quot;${version.string}&quot;,${line.separator}"                       file="${classes.dir}/MANIFEST.MF" append="true"/>
-        <echo message=" org.eclipse.persistence.internal.localization;version=&quot;${version.string}&quot;,${line.separator}"                                 file="${classes.dir}/MANIFEST.MF" append="true"/>
-        <echo message=" org.eclipse.persistence.internal.localization.i18n;version=&quot;${version.string}&quot;,${line.separator}"                            file="${classes.dir}/MANIFEST.MF" append="true"/>
-        <echo message=" org.eclipse.persistence.internal.oxm;version=&quot;${version.string}&quot;,${line.separator}"                                          file="${classes.dir}/MANIFEST.MF" append="true"/>
-        <echo message=" org.eclipse.persistence.internal.oxm.accessor;version=&quot;${version.string}&quot;,${line.separator}"                                 file="${classes.dir}/MANIFEST.MF" append="true"/>
-        <echo message=" org.eclipse.persistence.internal.oxm.conversion;version=&quot;${version.string}&quot;,${line.separator}"                               file="${classes.dir}/MANIFEST.MF" append="true"/>
-        <echo message=" org.eclipse.persistence.internal.oxm.documentpreservation;version=&quot;${version.string}&quot;,${line.separator}"                     file="${classes.dir}/MANIFEST.MF" append="true"/>
-        <echo message=" org.eclipse.persistence.internal.oxm.record;version=&quot;${version.string}&quot;,${line.separator}"                                   file="${classes.dir}/MANIFEST.MF" append="true"/>
-        <echo message=" org.eclipse.persistence.internal.oxm.record.deferred;version=&quot;${version.string}&quot;,${line.separator}"                          file="${classes.dir}/MANIFEST.MF" append="true"/>
-        <echo message=" org.eclipse.persistence.internal.oxm.record.namespaces;version=&quot;${version.string}&quot;,${line.separator}"                        file="${classes.dir}/MANIFEST.MF" append="true"/>
-        <echo message=" org.eclipse.persistence.internal.oxm.schema;version=&quot;${version.string}&quot;,${line.separator}"                                   file="${classes.dir}/MANIFEST.MF" append="true"/>
-        <echo message=" org.eclipse.persistence.internal.oxm.schema.model;version=&quot;${version.string}&quot;,${line.separator}"                             file="${classes.dir}/MANIFEST.MF" append="true"/>
-        <echo message=" org.eclipse.persistence.internal.platform.database;version=&quot;${version.string}&quot;,${line.separator}"                            file="${classes.dir}/MANIFEST.MF" append="true"/>
-        <echo message=" org.eclipse.persistence.internal.queries;version=&quot;${version.string}&quot;,${line.separator}"                                      file="${classes.dir}/MANIFEST.MF" append="true"/>
-        <echo message=" org.eclipse.persistence.internal.security;version=&quot;${version.string}&quot;,${line.separator}"                                     file="${classes.dir}/MANIFEST.MF" append="true"/>
-        <echo message=" org.eclipse.persistence.internal.sequencing;version=&quot;${version.string}&quot;,${line.separator}"                                   file="${classes.dir}/MANIFEST.MF" append="true"/>
-        <echo message=" org.eclipse.persistence.internal.sessions;version=&quot;${version.string}&quot;,${line.separator}"                                     file="${classes.dir}/MANIFEST.MF" append="true"/>
-        <echo message=" org.eclipse.persistence.internal.sessions.coordination;version=&quot;${version.string}&quot;,${line.separator}"                        file="${classes.dir}/MANIFEST.MF" append="true"/>
-        <echo message=" org.eclipse.persistence.internal.sessions.coordination.broadcast;version=&quot;${version.string}&quot;,${line.separator}"              file="${classes.dir}/MANIFEST.MF" append="true"/>
-        <echo message=" org.eclipse.persistence.internal.sessions.coordination.corba;version=&quot;${version.string}&quot;,${line.separator}"                  file="${classes.dir}/MANIFEST.MF" append="true"/>
-        <echo message=" org.eclipse.persistence.internal.sessions.coordination.corba.sun;version=&quot;${version.string}&quot;,${line.separator}"              file="${classes.dir}/MANIFEST.MF" append="true"/>
-        <echo message=" org.eclipse.persistence.internal.sessions.coordination.jms;version=&quot;${version.string}&quot;,${line.separator}"                    file="${classes.dir}/MANIFEST.MF" append="true"/>
-        <echo message=" org.eclipse.persistence.internal.sessions.coordination.rmi;version=&quot;${version.string}&quot;,${line.separator}"                    file="${classes.dir}/MANIFEST.MF" append="true"/>
-        <echo message=" org.eclipse.persistence.internal.sessions.coordination.rmi.iiop;version=&quot;${version.string}&quot;,${line.separator}"               file="${classes.dir}/MANIFEST.MF" append="true"/>
-        <echo message=" org.eclipse.persistence.internal.sessions.factories;version=&quot;${version.string}&quot;,${line.separator}"                           file="${classes.dir}/MANIFEST.MF" append="true"/>
-        <echo message=" org.eclipse.persistence.internal.sessions.factories.model;version=&quot;${version.string}&quot;,${line.separator}"                     file="${classes.dir}/MANIFEST.MF" append="true"/>
-        <echo message=" org.eclipse.persistence.internal.sessions.factories.model.event;version=&quot;${version.string}&quot;,${line.separator}"               file="${classes.dir}/MANIFEST.MF" append="true"/>
-        <echo message=" org.eclipse.persistence.internal.sessions.factories.model.log;version=&quot;${version.string}&quot;,${line.separator}"                 file="${classes.dir}/MANIFEST.MF" append="true"/>
-        <echo message=" org.eclipse.persistence.internal.sessions.factories.model.login;version=&quot;${version.string}&quot;,${line.separator}"               file="${classes.dir}/MANIFEST.MF" append="true"/>
-        <echo message=" org.eclipse.persistence.internal.sessions.factories.model.platform;version=&quot;${version.string}&quot;,${line.separator}"            file="${classes.dir}/MANIFEST.MF" append="true"/>
-        <echo message=" org.eclipse.persistence.internal.sessions.factories.model.pool;version=&quot;${version.string}&quot;,${line.separator}"                file="${classes.dir}/MANIFEST.MF" append="true"/>
-        <echo message=" org.eclipse.persistence.internal.sessions.factories.model.project;version=&quot;${version.string}&quot;,${line.separator}"             file="${classes.dir}/MANIFEST.MF" append="true"/>
-        <echo message=" org.eclipse.persistence.internal.sessions.factories.model.property;version=&quot;${version.string}&quot;,${line.separator}"            file="${classes.dir}/MANIFEST.MF" append="true"/>
-        <echo message=" org.eclipse.persistence.internal.sessions.factories.model.rcm;version=&quot;${version.string}&quot;,${line.separator}"                 file="${classes.dir}/MANIFEST.MF" append="true"/>
-        <echo message=" org.eclipse.persistence.internal.sessions.factories.model.rcm.command;version=&quot;${version.string}&quot;,${line.separator}"         file="${classes.dir}/MANIFEST.MF" append="true"/>
-        <echo message=" org.eclipse.persistence.internal.sessions.factories.model.sequencing;version=&quot;${version.string}&quot;,${line.separator}"          file="${classes.dir}/MANIFEST.MF" append="true"/>
-        <echo message=" org.eclipse.persistence.internal.sessions.factories.model.session;version=&quot;${version.string}&quot;,${line.separator}"             file="${classes.dir}/MANIFEST.MF" append="true"/>
-        <echo message=" org.eclipse.persistence.internal.sessions.factories.model.transport;version=&quot;${version.string}&quot;,${line.separator}"           file="${classes.dir}/MANIFEST.MF" append="true"/>
-        <echo message=" org.eclipse.persistence.internal.sessions.factories.model.transport.discovery;version=&quot;${version.string}&quot;,${line.separator}" file="${classes.dir}/MANIFEST.MF" append="true"/>
-        <echo message=" org.eclipse.persistence.internal.sessions.factories.model.transport.naming;version=&quot;${version.string}&quot;,${line.separator}"    file="${classes.dir}/MANIFEST.MF" append="true"/>
-        <echo message=" org.eclipse.persistence.internal.sessions.remote;version=&quot;${version.string}&quot;,${line.separator}"                              file="${classes.dir}/MANIFEST.MF" append="true"/>
-        <echo message=" org.eclipse.persistence.internal.weaving;version=&quot;${version.string}&quot;,${line.separator}"                                      file="${classes.dir}/MANIFEST.MF" append="true"/>
-        <echo message=" org.eclipse.persistence.logging;version=&quot;${version.string}&quot;,${line.separator}"                                               file="${classes.dir}/MANIFEST.MF" append="true"/>
-        <echo message=" org.eclipse.persistence.mappings;version=&quot;${version.string}&quot;,${line.separator}"                                              file="${classes.dir}/MANIFEST.MF" append="true"/>
-        <echo message=" org.eclipse.persistence.mappings.converters;version=&quot;${version.string}&quot;,${line.separator}"                                   file="${classes.dir}/MANIFEST.MF" append="true"/>
-        <echo message=" org.eclipse.persistence.mappings.foundation;version=&quot;${version.string}&quot;,${line.separator}"                                   file="${classes.dir}/MANIFEST.MF" append="true"/>
-        <echo message=" org.eclipse.persistence.mappings.querykeys;version=&quot;${version.string}&quot;,${line.separator}"                                    file="${classes.dir}/MANIFEST.MF" append="true"/>
-        <echo message=" org.eclipse.persistence.mappings.structures;version=&quot;${version.string}&quot;,${line.separator}"                                   file="${classes.dir}/MANIFEST.MF" append="true"/>
-        <echo message=" org.eclipse.persistence.mappings.transformers;version=&quot;${version.string}&quot;,${line.separator}"                                 file="${classes.dir}/MANIFEST.MF" append="true"/>
-        <echo message=" org.eclipse.persistence.mappings.xdb;version=&quot;${version.string}&quot;,${line.separator}"                                          file="${classes.dir}/MANIFEST.MF" append="true"/>
-        <echo message=" org.eclipse.persistence.oxm;version=&quot;${version.string}&quot;,${line.separator}"                                                   file="${classes.dir}/MANIFEST.MF" append="true"/>
-        <echo message=" org.eclipse.persistence.oxm.annotations;version=&quot;${version.string}&quot;,${line.separator}"                                       file="${classes.dir}/MANIFEST.MF" append="true"/>
-        <echo message=" org.eclipse.persistence.oxm.attachment;version=&quot;${version.string}&quot;,${line.separator}"                                        file="${classes.dir}/MANIFEST.MF" append="true"/>
-        <echo message=" org.eclipse.persistence.oxm.documentpreservation;version=&quot;${version.string}&quot;,${line.separator}"                              file="${classes.dir}/MANIFEST.MF" append="true"/>
-        <echo message=" org.eclipse.persistence.oxm.mappings;version=&quot;${version.string}&quot;,${line.separator}"                                          file="${classes.dir}/MANIFEST.MF" append="true"/>
-        <echo message=" org.eclipse.persistence.oxm.mappings.converters;version=&quot;${version.string}&quot;,${line.separator}"                               file="${classes.dir}/MANIFEST.MF" append="true"/>
-        <echo message=" org.eclipse.persistence.oxm.mappings.nullpolicy;version=&quot;${version.string}&quot;,${line.separator}"                               file="${classes.dir}/MANIFEST.MF" append="true"/>
-        <echo message=" org.eclipse.persistence.oxm.platform;version=&quot;${version.string}&quot;,${line.separator}"                                          file="${classes.dir}/MANIFEST.MF" append="true"/>
-        <echo message=" org.eclipse.persistence.oxm.record;version=&quot;${version.string}&quot;,${line.separator}"                                            file="${classes.dir}/MANIFEST.MF" append="true"/>
-        <echo message=" org.eclipse.persistence.oxm.schema;version=&quot;${version.string}&quot;,${line.separator}"                                            file="${classes.dir}/MANIFEST.MF" append="true"/>
-        <echo message=" org.eclipse.persistence.oxm.sequenced;version=&quot;${version.string}&quot;,${line.separator}"                                         file="${classes.dir}/MANIFEST.MF" append="true"/>
-        <echo message=" org.eclipse.persistence.oxm.unmapped;version=&quot;${version.string}&quot;,${line.separator}"                                          file="${classes.dir}/MANIFEST.MF" append="true"/>
-        <echo message=" org.eclipse.persistence.platform.database;version=&quot;${version.string}&quot;,${line.separator}"                                     file="${classes.dir}/MANIFEST.MF" append="true"/>
-        <echo message=" org.eclipse.persistence.platform.database.converters;version=&quot;${version.string}&quot;,${line.separator}"                          file="${classes.dir}/MANIFEST.MF" append="true"/>
-        <echo message=" org.eclipse.persistence.platform.database.jdbc;version=&quot;${version.string}&quot;,${line.separator}"                                file="${classes.dir}/MANIFEST.MF" append="true"/>
-        <echo message=" org.eclipse.persistence.platform.database.oracle.plsql;version=&quot;${version.string}&quot;,${line.separator}"                        file="${classes.dir}/MANIFEST.MF" append="true"/>
-        <echo message=" org.eclipse.persistence.platform.server;version=&quot;${version.string}&quot;,${line.separator}"                                       file="${classes.dir}/MANIFEST.MF" append="true"/>
-        <echo message=" org.eclipse.persistence.platform.server.jboss;version=&quot;${version.string}&quot;,${line.separator}"                                 file="${classes.dir}/MANIFEST.MF" append="true"/>
-        <echo message=" org.eclipse.persistence.platform.server.oc4j;version=&quot;${version.string}&quot;,${line.separator}"                                  file="${classes.dir}/MANIFEST.MF" append="true"/>
-        <echo message=" org.eclipse.persistence.platform.server.sunas;version=&quot;${version.string}&quot;,${line.separator}"                                 file="${classes.dir}/MANIFEST.MF" append="true"/>
-        <echo message=" org.eclipse.persistence.platform.server.was;version=&quot;${version.string}&quot;,${line.separator}"                                   file="${classes.dir}/MANIFEST.MF" append="true"/>
-        <echo message=" org.eclipse.persistence.platform.server.wls;version=&quot;${version.string}&quot;,${line.separator}"                                   file="${classes.dir}/MANIFEST.MF" append="true"/>
-        <echo message=" org.eclipse.persistence.platform.xml;version=&quot;${version.string}&quot;,${line.separator}"                                          file="${classes.dir}/MANIFEST.MF" append="true"/>
-        <echo message=" org.eclipse.persistence.platform.xml.jaxp;version=&quot;${version.string}&quot;,${line.separator}"                                     file="${classes.dir}/MANIFEST.MF" append="true"/>
-        <echo message=" org.eclipse.persistence.queries;version=&quot;${version.string}&quot;,${line.separator}"                                               file="${classes.dir}/MANIFEST.MF" append="true"/>
-        <echo message=" org.eclipse.persistence.sequencing;version=&quot;${version.string}&quot;,${line.separator}"                                            file="${classes.dir}/MANIFEST.MF" append="true"/>
-        <echo message=" org.eclipse.persistence.services;version=&quot;${version.string}&quot;,${line.separator}"                                              file="${classes.dir}/MANIFEST.MF" append="true"/>
-        <echo message=" org.eclipse.persistence.services.mbean;version=&quot;${version.string}&quot;,${line.separator}"                                        file="${classes.dir}/MANIFEST.MF" append="true"/>
-        <echo message=" org.eclipse.persistence.services.weblogic;version=&quot;${version.string}&quot;,${line.separator}"                                     file="${classes.dir}/MANIFEST.MF" append="true"/>
-        <echo message=" org.eclipse.persistence.sessions;version=&quot;${version.string}&quot;,${line.separator}"                                              file="${classes.dir}/MANIFEST.MF" append="true"/>
-        <echo message=" org.eclipse.persistence.sessions.broker;version=&quot;${version.string}&quot;,${line.separator}"                                       file="${classes.dir}/MANIFEST.MF" append="true"/>
-        <echo message=" org.eclipse.persistence.sessions.changesets;version=&quot;${version.string}&quot;,${line.separator}"                                   file="${classes.dir}/MANIFEST.MF" append="true"/>
-        <echo message=" org.eclipse.persistence.sessions.coordination;version=&quot;${version.string}&quot;,${line.separator}"                                 file="${classes.dir}/MANIFEST.MF" append="true"/>
-        <echo message=" org.eclipse.persistence.sessions.coordination.broadcast;version=&quot;${version.string}&quot;,${line.separator}"                       file="${classes.dir}/MANIFEST.MF" append="true"/>
-        <echo message=" org.eclipse.persistence.sessions.coordination.corba;version=&quot;${version.string}&quot;,${line.separator}"                           file="${classes.dir}/MANIFEST.MF" append="true"/>
-        <echo message=" org.eclipse.persistence.sessions.coordination.corba.sun;version=&quot;${version.string}&quot;,${line.separator}"                       file="${classes.dir}/MANIFEST.MF" append="true"/>
-        <echo message=" org.eclipse.persistence.sessions.coordination.jms;version=&quot;${version.string}&quot;,${line.separator}"                             file="${classes.dir}/MANIFEST.MF" append="true"/>
-        <echo message=" org.eclipse.persistence.sessions.coordination.rmi;version=&quot;${version.string}&quot;,${line.separator}"                             file="${classes.dir}/MANIFEST.MF" append="true"/>
-        <echo message=" org.eclipse.persistence.sessions.factories;version=&quot;${version.string}&quot;,${line.separator}"                                    file="${classes.dir}/MANIFEST.MF" append="true"/>
-        <echo message=" org.eclipse.persistence.sessions.interceptors;version=&quot;${version.string}&quot;,${line.separator}"                                 file="${classes.dir}/MANIFEST.MF" append="true"/>
-        <echo message=" org.eclipse.persistence.sessions.remote;version=&quot;${version.string}&quot;,${line.separator}"                                       file="${classes.dir}/MANIFEST.MF" append="true"/>
-        <echo message=" org.eclipse.persistence.sessions.remote.corba.sun;version=&quot;${version.string}&quot;,${line.separator}"                             file="${classes.dir}/MANIFEST.MF" append="true"/>
-        <echo message=" org.eclipse.persistence.sessions.remote.rmi;version=&quot;${version.string}&quot;,${line.separator}"                                   file="${classes.dir}/MANIFEST.MF" append="true"/>
-        <echo message=" org.eclipse.persistence.sessions.remote.rmi.iiop;version=&quot;${version.string}&quot;,${line.separator}"                              file="${classes.dir}/MANIFEST.MF" append="true"/>
-        <echo message=" org.eclipse.persistence.sessions.server;version=&quot;${version.string}&quot;,${line.separator}"                                       file="${classes.dir}/MANIFEST.MF" append="true"/>
-        <echo message=" org.eclipse.persistence.tools;version=&quot;${version.string}&quot;,${line.separator}"                                                 file="${classes.dir}/MANIFEST.MF" append="true"/>
-        <echo message=" org.eclipse.persistence.tools.file;version=&quot;${version.string}&quot;,${line.separator}"                                            file="${classes.dir}/MANIFEST.MF" append="true"/>
-        <echo message=" org.eclipse.persistence.tools.profiler;version=&quot;${version.string}&quot;,${line.separator}"                                        file="${classes.dir}/MANIFEST.MF" append="true"/>
-        <echo message=" org.eclipse.persistence.tools.schemaframework;version=&quot;${version.string}&quot;,${line.separator}"                                 file="${classes.dir}/MANIFEST.MF" append="true"/>
-        <echo message=" org.eclipse.persistence.transaction;version=&quot;${version.string}&quot;,${line.separator}"                                           file="${classes.dir}/MANIFEST.MF" append="true"/>
-        <echo message=" org.eclipse.persistence.transaction.jboss;version=&quot;${version.string}&quot;,${line.separator}"                                     file="${classes.dir}/MANIFEST.MF" append="true"/>
-        <echo message=" org.eclipse.persistence.transaction.oc4j;version=&quot;${version.string}&quot;,${line.separator}"                                      file="${classes.dir}/MANIFEST.MF" append="true"/>
-        <echo message=" org.eclipse.persistence.transaction.sunas;version=&quot;${version.string}&quot;,${line.separator}"                                     file="${classes.dir}/MANIFEST.MF" append="true"/>
-        <echo message=" org.eclipse.persistence.transaction.was;version=&quot;${version.string}&quot;,${line.separator}"                                       file="${classes.dir}/MANIFEST.MF" append="true"/>
-        <echo message=" org.eclipse.persistence.transaction.wls;version=&quot;${version.string}&quot;,${line.separator}"                                       file="${classes.dir}/MANIFEST.MF" append="true"/>
-        <echo message=" xsd;version=&quot;${version.string}&quot;${line.separator}"                                                                            file="${classes.dir}/MANIFEST.MF" append="true"/>
-        <echo message="Bundle-ClassPath: .${line.separator}"                                                                                                   file="${classes.dir}/MANIFEST.MF" append="true"/>
-        <echo message="Import-Package: javax.activation;vendor=sun;resolution:=optional,${line.separator}"                                                     file="${classes.dir}/MANIFEST.MF" append="true"/>
-        <echo message=" javax.jms;version=&quot;1.1.0&quot;;resolution:=optional,${line.separator}"                                                            file="${classes.dir}/MANIFEST.MF" append="true"/>
-        <echo message=" javax.mail;resolution:=optional,${line.separator}"                                                                                     file="${classes.dir}/MANIFEST.MF" append="true"/>
-        <echo message=" javax.mail.internet;resolution:=optional,${line.separator}"                                                                            file="${classes.dir}/MANIFEST.MF" append="true"/>
-        <echo message=" javax.persistence;version=&quot;1.0.0&quot;;resolution:=optional,${line.separator}"                                                    file="${classes.dir}/MANIFEST.MF" append="true"/>
-        <echo message=" javax.persistence.spi;version=&quot;1.0.0&quot;;resolution:=optional,${line.separator}"                                                file="${classes.dir}/MANIFEST.MF" append="true"/>
-        <echo message=" javax.resource;version=&quot;1.5.0&quot;;resolution:=optional,${line.separator}"                                                       file="${classes.dir}/MANIFEST.MF" append="true"/>
-        <echo message=" javax.resource.cci;version=&quot;1.5.0&quot;;resolution:=optional,${line.separator}"                                                   file="${classes.dir}/MANIFEST.MF" append="true"/>
-        <echo message=" javax.transaction;version=&quot;1.1.0&quot;;resolution:=optional,${line.separator}"                                                    file="${classes.dir}/MANIFEST.MF" append="true"/>
-        <echo message=" javax.xml.stream;resolution:=optional,${line.separator}"                                                                               file="${classes.dir}/MANIFEST.MF" append="true"/>
-        <echo message=" javax.xml.datatype;resolution:=optional,${line.separator}"                                                                             file="${classes.dir}/MANIFEST.MF" append="true"/>
-        <echo message=" javax.xml.namespace;resolution:=optional,${line.separator}"                                                                            file="${classes.dir}/MANIFEST.MF" append="true"/>
-        <echo message=" javax.xml.transform;resolution:=optional,${line.separator}"                                                                            file="${classes.dir}/MANIFEST.MF" append="true"/>
-        <echo message=" javax.xml.transform.stream;resolution:=optional,${line.separator}"                                                                            file="${classes.dir}/MANIFEST.MF" append="true"/>
-        <echo message=" javax.xml.transform.dom;resolution:=optional,${line.separator}"                                                                            file="${classes.dir}/MANIFEST.MF" append="true"/>
-        <echo message=" javax.xml.transform.sax;resolution:=optional,${line.separator}"                                                                            file="${classes.dir}/MANIFEST.MF" append="true"/>
-        <echo message=" org.xml.sax;resolution:=optional,${line.separator}"                                                                                    file="${classes.dir}/MANIFEST.MF" append="true"/>
-        <echo message=" org.xml.sax.ext;resolution:=optional,${line.separator}"                                                                                file="${classes.dir}/MANIFEST.MF" append="true"/>
-        <echo message=" javax.xml.xpath;resolution:=optional,${line.separator}"                                                                                file="${classes.dir}/MANIFEST.MF" append="true"/>
-        <echo message=" javax.xml.parsers;resolution:=optional,${line.separator}"                                                                                file="${classes.dir}/MANIFEST.MF" append="true"/>
-        <echo message=" javax.naming;resolution:=optional,${line.separator}"                                                                                   file="${classes.dir}/MANIFEST.MF" append="true"/>
-        <echo message=" org.w3c.dom${line.separator}"                                                                                                          file="${classes.dir}/MANIFEST.MF" append="true"/>
-        <echo message="HK2-Bundle-Name: org.eclipse.persistence:${ant.project.name}${line.separator}"                                                          file="${classes.dir}/MANIFEST.MF" append="true"/>
-        <echo message="Premain-Class: org.eclipse.persistence.internal.jpa.deployment.JavaSECMPInitializerAgent${line.separator}"                              file="${classes.dir}/MANIFEST.MF" append="true"/>
-    </target>
-
-    <target name="bnd-package" if="bnd.lib" depends="init">
+    <target name="bnd-package" if="bnd.bld" depends="init">
         <taskdef resource="aQute/bnd/ant/taskdef.properties" classpath="${bnd.lib}"/>
         <bnd
             classpath="${classes.dir}"

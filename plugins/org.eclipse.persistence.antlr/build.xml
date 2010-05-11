@@ -1,3 +1,4 @@
+<?xml version="1.0"?>
 <!--/*******************************************************************************
 * This program and the accompanying materials are made available under the
 * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
@@ -36,8 +37,12 @@
     <!-- (should be set locally, and be destroyed upon return) -->
     <fail message="Not running from '${ant.project.name}' directory" unless="antlr.is.local"/>
 
-    <dirname  property="antlr.build.location" file="${ant.file.org.eclipse.persistence.antlr}"/>
-    <echo message="antlr.build.location = '${antlr.build.location}'"/>
+    <dirname  property="antlr.build.location_temp" file="${ant.file.org.eclipse.persistence.antlr}"/>
+    <pathconvert targetos="unix" property="antlr.build.location">
+        <path>
+            <pathelement location="${antlr.build.location_temp}"/>
+        </path>
+    </pathconvert>
     <property name="antlr.2.base.dir" value="../.."/>
     <property name="antlr.2.common.plugins.dir" value=".."/>
     <property name="antlr.2.buildsys.dir" value="${antlr.2.base.dir}/buildsystem"/>
@@ -48,23 +53,26 @@
     <!-- Project infrastructure properties -->
     <property name="src.dir"                       value="src"/>
     <property name="antlr.classes.dir"             value="."/>
-    <property name="temp.dir"                      value="${antlr.classes.dir}/tmp"/>
 
-    <echo message="Loading ${user.home}/build.properties..."/>
+    <!-- local property overrides -->
+    <condition property="custom.properties.message" value="Loading ${user.home}/build.properties..."
+                                                     else="Custom properties file '${user.home}/build.properties' not found to load.">
+        <available file="${user.home}/build.properties"/>
+    </condition>
+    <echo message="${custom.properties.message}"/>
     <property file="${user.home}/build.properties"/>
 
     <!-- Defaults, set var in ${user.home}/build.properties if different version required -->
     <property name="bndtool.jar" value="bnd-0.0.366.jar"/>
 
     <!-- Primary Targets -->
-    <target name="build" depends="clean, generate-manifest, package, bnd-package" description="package ${ant.project.name}"/>
+    <target name="build" depends="clean, bnd-package, package" description="package ${ant.project.name}"/>
 
     <!-- clean -->
     <target name="clean" description="Clean the build">
-        <delete dir="${temp.dir}" quiet="true"/>
         <delete includeEmptyDirs="true" failonerror="false">
             <fileset dir="${antlr.2.common.plugins.dir}" includes="${ant.project.name}_*.jar, ${ant.project.name}.source_*.jar"/>
-       </delete>
+        </delete>
     </target>
 
     <!-- initialize varables and paths needed for compile -->
@@ -93,6 +101,7 @@
         <property name="implementation.vendor" value="${specification.vendor}"/>
 
         <!-- Check for BND library -->
+        <property name="alt.manifest.dir"      value="${antlr.build.location}/META-INF"/>
         <condition property="bnd.lib" value="${extensions.depend.dir}/${bndtool.jar}">
             <available file="${extensions.depend.dir}/${bndtool.jar}"/>
         </condition>
@@ -100,11 +109,40 @@
             <available file="${antlr.2.buildsys.dir}/${bndtool.jar}"/>
         </condition>
         <echo message="bnd.lib                     = '${bnd.lib}'"/>
+        <condition property="bld">
+            <or>
+                <isset property="bnd.lib"/>
+                <isset property="nobnd"/>
+            </or>
+        </condition>
+        <condition property="bnd.bld">
+            <and>
+                <isset property="bnd.lib"/>
+                <not>  <isset property="nobnd"/> </not>
+            </and>
+        </condition>
+    </target>
+
+    <target name="fail-on-no-bnd" unless="bld">
+        <echo message="BND tool (${bndtool.jar}) not found in either:"/>
+        <echo message="    the extensions.depend.dir: '${extensions.depend.dir}'"/>
+        <echo message="    or the buildsystem dir:    '${antlr.2.buildsys.dir}'"/>
+        <echo message=""/>
+        <echo message="if you have a different version, you can define a different"/>
+        <echo message="jarname by adding 'bndtool.jar=bnd-{version}.jar to your'"/>
+        <echo message="${user.home}/build.properties file."/>
+        <echo message=""/>
+        <echo message="You can download BND from http://www.aqute.biz/Code/Download"/>
+        <echo message=""/>
+        <echo message="or if you really need to build NOW, you can use '-Dnobnd=true'"/>
+        <echo message="on the ant command-line. However, the manifests used will be those"/>
+        <echo message="checked-in for development, and will likely have errors."/>
+        <fail message="Missing BND library!"/>
     </target>
 
     <!-- package -->
-    <target name="package" unless="bnd.lib" depends="init" description="jar OSGI bundle">
-        <jar jarfile="${antlr.2.common.plugins.dir}/${ant.project.name}_${version.string}.jar" manifest="${temp.dir}/MANIFEST.MF">
+    <target name="package" if="nobnd" depends="init" description="jar OSGI bundle">
+        <jar jarfile="${antlr.2.common.plugins.dir}/${ant.project.name}_${version.string}.jar" manifest="${alt.manifest.dir}/MANIFEST.MF">
             <fileset dir="${antlr.2.base.dir}">
                 <include name="about.html"/>
                 <include name="readme.html"/>
@@ -138,28 +176,7 @@
         </jar>
     </target>
 
-    <target name="generate-manifest" unless="bnd.lib" depends="init" description="Generate the OSGi bundle manifest before jarring">
-        <echo message="Generate the OSGi bundle manifest before jarring..."/>
-        <delete file="${temp.dir}/MANIFEST.MF" quiet="true"/>
-        <mkdir dir="${temp.dir}"/>
-        <echo message="Manifest-Version: 1.0${line.separator}"                                                                                           file="${temp.dir}/MANIFEST.MF" append="false"/>
-        <echo message="Specification-Vendor: ${line.separator}"                                                                                          file="${temp.dir}/MANIFEST.MF" append="true"/>
-        <echo message="Specification-Version: ${line.separator}"                                                                                         file="${temp.dir}/MANIFEST.MF" append="true"/>
-        <echo message="Implementation-Vendor: ${implementation.vendor}${line.separator}"                                                                 file="${temp.dir}/MANIFEST.MF" append="true"/>
-        <echo message="Implementation-Version: ${version.string}${line.separator}"                                                                       file="${temp.dir}/MANIFEST.MF" append="true"/>
-        <echo message="Bundle-ManifestVersion: 2${line.separator}"                                                                                       file="${temp.dir}/MANIFEST.MF" append="true"/>
-        <echo message="Bundle-Name: EclipseLink ANTLR${line.separator}"                                                                                  file="${temp.dir}/MANIFEST.MF" append="true"/>
-        <echo message="Bundle-SymbolicName: ${ant.project.name}${line.separator}"                                                                        file="${temp.dir}/MANIFEST.MF" append="true"/>
-        <echo message="Bundle-Vendor: ${implementation.vendor}${line.separator}"                                                                         file="${temp.dir}/MANIFEST.MF" append="true"/>
-        <echo message="Bundle-Version: ${version.string}${line.separator}"                                                                               file="${temp.dir}/MANIFEST.MF" append="true"/>
-        <echo message="Bundle-RequiredExecutionEnvironment: J2SE-1.5${line.separator}"                                                                   file="${temp.dir}/MANIFEST.MF" append="true"/>
-        <echo message="Export-Package: org.eclipse.persistence.internal.libraries.antlr.runtime;version=&quot;${version.string}&quot;,${line.separator}" file="${temp.dir}/MANIFEST.MF" append="true"/>
-        <echo message=" org.eclipse.persistence.internal.libraries.antlr.runtime.tree;version=&quot;${version.string}&quot;${line.separator}"            file="${temp.dir}/MANIFEST.MF" append="true"/>
-        <echo message="Bundle-ClassPath: .${line.separator}"                                                                                             file="${temp.dir}/MANIFEST.MF" append="true"/>
-        <echo message="HK2-Bundle-Name: org.eclipse.persistence:${ant.project.name}${line.separator}"                                                    file="${temp.dir}/MANIFEST.MF" append="true"/>
-    </target>
-
-    <target name="bnd-package" if="bnd.lib" depends="init" >
+    <target name="bnd-package" if="bnd.bld" depends="init, fail-on-no-bnd">
         <taskdef resource="aQute/bnd/ant/taskdef.properties" classpath="${bnd.lib}"/>
         <bnd
             classpath="${antlr.classes.dir}"

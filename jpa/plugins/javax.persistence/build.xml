@@ -37,7 +37,12 @@
     <!-- (should be set locally, and be destroyed upon return) -->
     <fail message="Not running from '${ant.project.name}' directory" unless="jpaproto.is.local"/>
 
-    <dirname  property="jpaproto.build.location" file="${ant.file.javax.persistence}"/>
+    <dirname  property="jpaproto.build.location_temp" file="${ant.file.javax.persistence}"/>
+    <pathconvert targetos="unix" property="jpaproto.build.location">
+        <path>
+            <pathelement location="${jpaproto.build.location_temp}"/>
+        </path>
+    </pathconvert>
     <condition property="jpaproto.2.base.dir" value="../../.." else="..">
         <contains string="${jpaproto.build.location}" substring="jpa"/>
     </condition>
@@ -64,7 +69,12 @@
     <property name="jpaproto.jar"          value="${ant.project.name}_${jpaproto.version}.${jpaproto.qualifier}.jar"/>
     <property name="jpaproto.src.jar"      value="${ant.project.name}.source_${jpaproto.version}.${jpaproto.qualifier}.jar"/>
 
-    <echo message="Loading ${user.home}/build.properties..."/>
+    <!-- local property overrides -->
+    <condition property="custom.properties.message" value="Loading ${user.home}/build.properties..."
+                                                     else="Custom properties file '${user.home}/build.properties' not found to load.">
+        <available file="${user.home}/build.properties"/>
+    </condition>
+    <echo message="${custom.properties.message}"/>
     <property file="${user.home}/build.properties"/>
 
     <!-- Defaults, set var in ${user.home}/build.properties if different version required -->
@@ -72,7 +82,7 @@
 
     <!-- Primary Targets -->
     <target name="build" depends="clean, compile, jar" description="build ${ant.project.name}_${jpaproto.version} component"/>
-    <target name="jar"   depends="generate-manifest, package, bnd-package" description="package ${ant.project.name}_${jpaproto.version} component"/>
+    <target name="jar"   depends="bnd-package, package" description="package ${ant.project.name} component"/>
 
     <!-- clean -->
     <target name="clean" description="Clean all generated content">
@@ -103,7 +113,14 @@
         <property name="javac.deprecation"     value="off"/>
         <property name="javac.version"         value="1.5"/>
 
+        <!-- Set Compile Path-->
+        <path id="jpaproto.compile.path">
+            <pathelement path="${jpaproto.2.common.plugins.dir}/osgi.core.zip"/>
+            <pathelement path="${jpaproto.2.common.plugins.dir}/osgi.cmpn_4.1.0.jar"/>
+        </path>
+
         <!-- Check for BND library -->
+        <property name="alt.manifest.dir"      value="${jpaproto.build.location}/META-INF"/>
         <condition property="bnd.lib" value="${extensions.depend.dir}/${bndtool.jar}">
             <available file="${extensions.depend.dir}/${bndtool.jar}"/>
         </condition>
@@ -111,16 +128,39 @@
             <available file="${jpaproto.2.buildsys.dir}/${bndtool.jar}"/>
         </condition>
         <echo message="bnd.lib                     = '${bnd.lib}'"/>
+        <condition property="bld">
+            <or>
+                <isset property="bnd.lib"/>
+                <isset property="nobnd"/>
+            </or>
+        </condition>
+        <condition property="bnd.bld">
+            <and>
+                <isset property="bnd.lib"/>
+                <not>  <isset property="nobnd"/> </not>
+            </and>
+        </condition>
+    </target>
 
-        <!-- Set Compile Path-->
-        <path id="jpaproto.compile.path">
-            <pathelement path="${jpaproto.2.common.plugins.dir}/osgi.core.zip"/>
-            <pathelement path="${jpaproto.2.common.plugins.dir}/osgi.cmpn_4.1.0.jar"/>
-        </path>
+    <target name="fail-on-no-bnd" unless="bld">
+        <echo message="BND tool (${bndtool.jar}) not found in either:"/>
+        <echo message="    the extensions.depend.dir: '${extensions.depend.dir}'"/>
+        <echo message="    or the buildsystem dir:    '${jpaproto.2.buildsys.dir}'"/>
+        <echo message=""/>
+        <echo message="if you have a different version, you can define a different"/>
+        <echo message="jarname by adding 'bndtool.jar=bnd-{version}.jar to your'"/>
+        <echo message="${user.home}/build.properties file."/>
+        <echo message=""/>
+        <echo message="You can download BND from http://www.aqute.biz/Code/Download"/>
+        <echo message=""/>
+        <echo message="or if you really need to build NOW, you can use '-Dnobnd=true'"/>
+        <echo message="on the ant command-line. However, the manifests used will be those"/>
+        <echo message="checked-in for development, and will likely have errors."/>
+        <fail message="Missing BND library!"/>
     </target>
 
     <!-- compile -->
-    <target name="compile" depends="init" description="Compile bundle code">
+    <target name="compile" depends="init, fail-on-no-bnd" description="Compile bundle code">
         <mkdir dir="${classes.dir}"/>
         <javac srcdir="${src.dir}"
                destdir="${classes.dir}"
@@ -141,8 +181,8 @@
     </target>
 
     <!-- package -->
-    <target name="package" unless="bnd.lib" depends="init" description="jar OSGI bundle">
-        <jar jarfile="${package.dir}/${jpaproto.jar}" duplicate="preserve" manifest="${classes.dir}/MANIFEST.MF">
+    <target name="package" if="nobnd" depends="init" description="jar OSGI bundle">
+        <jar jarfile="${package.dir}/${jpaproto.jar}" duplicate="preserve" manifest="${alt.manifest.dir}/MANIFEST.MF">
             <fileset dir="${jpaproto.2.base.dir}">
                 <include name="about.html"/>
                 <include name="readme.html"/>
@@ -185,31 +225,7 @@
         </jar>
     </target>
 
-    <target name="generate-manifest" unless="bnd.lib" depends="init" description="Generate the OSGi bundle manifest before jarring">
-        <echo message="Generate the OSGi bundle manifest before jarring..."/>
-        <delete file="${classes.dir}/MANIFEST.MF*" quiet="true"/>
-        <echo message="Manifest-Version: 1.0${line.separator}"                                                                           file="${classes.dir}/MANIFEST.MF" append="false"/>
-        <echo message="Specification-Vendor: ${jpaproto.spec.vendor}${line.separator}"                                                     file="${classes.dir}/MANIFEST.MF" append="true"/>
-        <echo message="Specification-Version: ${jpaproto.spec.version}${line.separator}"                                                                      file="${classes.dir}/MANIFEST.MF" append="true"/>
-        <echo message="Implementation-Vendor: ${implementation.vendor}${line.separator}"                                                 file="${classes.dir}/MANIFEST.MF" append="true"/>
-        <echo message="Implementation-Version: ${jpaproto.version}${line.separator}"                                                                    file="${classes.dir}/MANIFEST.MF" append="true"/>
-        <echo message="Bundle-ManifestVersion: 2${line.separator}"                                                                       file="${classes.dir}/MANIFEST.MF" append="true"/>
-        <echo message="Bundle-Name: ${jpaproto.bundle.name}${line.separator}"                                                            file="${classes.dir}/MANIFEST.MF" append="true"/>
-        <echo message="Bundle-SymbolicName: ${ant.project.name}${line.separator}"                                                        file="${classes.dir}/MANIFEST.MF" append="true"/>
-        <echo message="Bundle-Vendor: ${implementation.vendor}${line.separator}"                                                         file="${classes.dir}/MANIFEST.MF" append="true"/>
-        <echo message="Bundle-Version: ${jpaproto.version}.${jpaproto.qualifier}${line.separator}"                                       file="${classes.dir}/MANIFEST.MF" append="true"/>
-        <echo message="Bundle-RequiredExecutionEnvironment: J2SE-1.5${line.separator}"                                                   file="${classes.dir}/MANIFEST.MF" append="true"/>
-        <echo message="Export-Package: javax.persistence;version=&quot;${jpaproto.version}.${jpaproto.qualifier}&quot;,${line.separator}" file="${classes.dir}/MANIFEST.MF" append="true"/>
-        <echo message=" javax.persistence.criteria;version=&quot;${jpaproto.version}.${jpaproto.qualifier}&quot;,${line.separator}"       file="${classes.dir}/MANIFEST.MF" append="true"/>
-        <echo message=" javax.persistence.metamodel;version=&quot;${jpaproto.version}.${jpaproto.qualifier}&quot;,${line.separator}"      file="${classes.dir}/MANIFEST.MF" append="true"/>
-        <echo message=" javax.persistence.spi;version=&quot;${jpaproto.version}.${jpaproto.qualifier}&quot;${line.separator}"             file="${classes.dir}/MANIFEST.MF" append="true"/>
-        <echo message="Bundle-Activator: org.eclipse.persistence.javax.persistence.osgi.Activator${line.separator}"                       file="${classes.dir}/MANIFEST.MF" append="true"/>
-        <echo message="Bundle-ClassPath: .${line.separator}"                                                                              file="${classes.dir}/MANIFEST.MF" append="true"/>
-        <echo message="Import-Package: org.osgi.framework;resolution:=optional,${line.separator}"                                         file="${classes.dir}/MANIFEST.MF" append="true"/>
-        <echo message=" org.osgi.util.tracker;resolution:=optional${line.separator}"                                                      file="${classes.dir}/MANIFEST.MF" append="true"/>
-    </target>
-
-    <target name="bnd-package" if="bnd.lib" depends="init" >
+    <target name="bnd-package" if="bnd.bld" depends="init">
         <taskdef resource="aQute/bnd/ant/taskdef.properties" classpath="${bnd.lib}"/>
         <bnd
             classpath="${classes.dir}"

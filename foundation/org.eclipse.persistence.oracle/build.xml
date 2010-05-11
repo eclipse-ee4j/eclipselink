@@ -43,7 +43,12 @@
     <!-- (should be set locally, and be destroyed upon return) -->
     <fail message="Not running from '${ant.project.name}' directory" unless="oracle.is.local"/>
 
-    <dirname  property="oracle.build.location" file="${ant.file.org.eclipse.persistence.oracle}"/>
+    <dirname  property="oracle.build.location_temp" file="${ant.file.org.eclipse.persistence.oracle}"/>
+    <pathconvert targetos="unix" property="oracle.build.location">
+        <path>
+            <pathelement location="${oracle.build.location_temp}"/>
+        </path>
+    </pathconvert>
     <condition property="oracle.2.base.dir" value="../.." else="..">
         <contains string="${oracle.build.location}" substring="foundation"/>
     </condition>
@@ -54,7 +59,12 @@
     </condition>
     <property name="oracle.2.buildsys.dir" value="${oracle.2.base.dir}/buildsystem"/>
 
-    <echo message="Loading ${user.home}/build.properties..."/>
+    <!-- local property overrides -->
+    <condition property="custom.properties.message" value="Loading ${user.home}/build.properties..."
+                                                     else="Custom properties file '${user.home}/build.properties' not found to load.">
+        <available file="${user.home}/build.properties"/>
+    </condition>
+    <echo message="${custom.properties.message}"/>
     <property file="${user.home}/build.properties"/>
     <!-- Sets default junit.lib and all extensions.depend dir locations to defaults based upon discovered dir heirarchy -->
     <!-- Must be defined after ${user.home}/build.properties is included to allow redefinition -->
@@ -95,8 +105,24 @@
         <property name="release.designation"   value="EclipseLink ${release.version} Build"/>
         <property name="specification.vendor"  value="Eclipse.org - EclipseLink Project"/>
         <property name="implementation.vendor" value="${specification.vendor}"/>
+
+        <!-- Check for BND library -->
+        <property name="alt.manifest.dir"      value="${oracle.build.location}/META-INF"/>
+        <condition property="bnd.lib" value="${extensions.depend.dir}/${bndtool.jar}">
+            <available file="${extensions.depend.dir}/${bndtool.jar}"/>
+        </condition>
+        <condition property="bnd.lib" value="${oracle.2.buildsys.dir}/${bndtool.jar}">
+            <available file="${oracle.2.buildsys.dir}/${bndtool.jar}"/>
+        </condition>
+        <echo message="bnd.lib                     = '${bnd.lib}'"/>
+        <condition property="bld">
+            <or>
+                <isset property="bnd.lib"/>
+                <isset property="nobnd"/>
+            </or>
+        </condition>
     </target>
-    
+
     <!-- initialize varables and paths needed for compile -->
     <!-- the number of properties needed now is too great for lazy loading without a target -->
     <target name="init-compile" depends="init">
@@ -142,35 +168,51 @@
     <target name="init-package" depends="init">
         <!-- Test for recent compile -->
         <available file="${classes.dir}"                  type="dir" property="classes.dir.exist"/>
-        
-        <!-- Check for BND library -->
-        <condition property="bnd.lib" value="${extensions.depend.dir}/${bndtool.jar}">
-            <available file="${extensions.depend.dir}/${bndtool.jar}"/>
+
+        <!-- Check bnd settings -->
+        <condition property="bnd.bld">
+            <and>
+                <isset property="bnd.lib"/>
+                <not>  <isset property="nobnd"/> </not>
+            </and>
         </condition>
-        <condition property="bnd.lib" value="${oracle.2.buildsys.dir}/${bndtool.jar}">
-            <available file="${oracle.2.buildsys.dir}/${bndtool.jar}"/>
-        </condition>
-        <echo message="bnd.lib                     = '${bnd.lib}'"/>
 
         <!-- Check for Oracle compile dependencies -->
         <condition property="package.ok">
             <and>
                 <isset property="oracle.depend.dir.exist"/>
                 <isset property="classes.dir.exist"/>
-                <not>  <isset property="bnd.lib"/> </not>
+                <isset property="nobnd"/>
             </and>
         </condition>
         <condition property="bnd-package.ok">
             <and>
                 <isset property="oracle.depend.dir.exist"/>
                 <isset property="classes.dir.exist"/>
-                <isset property="bnd.lib"/>
+                <isset property="bnd.bld"/>
             </and>
         </condition>
     </target>
 
+    <target name="fail-on-no-bnd" unless="bld">
+        <echo message="BND tool (${bndtool.jar}) not found in either:"/>
+        <echo message="    the extensions.depend.dir: '${extensions.depend.dir}'"/>
+        <echo message="    or the buildsystem dir:    '${oracle.2.buildsys.dir}'"/>
+        <echo message=""/>
+        <echo message="if you have a different version, you can define a different"/>
+        <echo message="jarname by adding 'bndtool.jar=bnd-{version}.jar to your'"/>
+        <echo message="${user.home}/build.properties file."/>
+        <echo message=""/>
+        <echo message="You can download BND from http://www.aqute.biz/Code/Download"/>
+        <echo message=""/>
+        <echo message="or if you really need to build NOW, you can use '-Dnobnd=true'"/>
+        <echo message="on the ant command-line. However, the manifests used will be those"/>
+        <echo message="checked-in for development, and will likely have errors."/>
+        <fail message="Missing BND library!"/>
+    </target>
+
     <!-- compile -->
-    <target name="compile" if="oracle.depend.dir.exist" depends="init-compile" description="Compile bundle code">
+    <target name="compile" if="oracle.depend.dir.exist" depends="init-compile, fail-on-no-bnd" description="Compile bundle code">
         <mkdir dir="${classes.dir}"/>
         <javac srcdir="${src.dir}"
                destdir="${classes.dir}"
@@ -189,10 +231,10 @@
     </target>
 
     <!-- package -->
-    <target name="package" if="package.ok" depends="generate-manifest, bnd-package" description="jar OSGI bundle">
+    <target name="package" if="package.ok" depends="init-package, bnd-package" description="jar OSGI bundle">
         <delete file="${oracle.2.foundation.plugins.dir}/${ant.project.name}.jar*"        quiet="true" failonerror="false"/>
         <delete file="${oracle.2.foundation.plugins.dir}/${ant.project.name}.source.jar*" quiet="true" failonerror="false"/>
-        <jar jarfile="${oracle.2.foundation.plugins.dir}/${ant.project.name}.jar" manifest="${classes.dir}/MANIFEST.MF">
+        <jar jarfile="${oracle.2.foundation.plugins.dir}/${ant.project.name}.jar" manifest="${alt.manifest.dir}/MANIFEST.MF">
             <fileset dir="${oracle.2.base.dir}">
                 <include name="about.html"/>
                 <include name="readme.html"/>
@@ -226,61 +268,10 @@
         </jar>
     </target>
 
-    <target name="generate-manifest" unless="bnd.lib" depends="init-package" description="Generate the OSGi bundle manifest before jarring">
-        <echo message="Generate the OSGi bundle manifest before jarring..."/>
-        <mkdir dir="${classes.dir}"/>
-        <delete file="${classes.dir}/MANIFEST.MF*" quiet="true"/>
-        <echo message="Manifest-Version: 1.0${line.separator}"                                                                                          file="${classes.dir}/MANIFEST.MF" append="false"/>
-        <echo message="Specification-Vendor: ${specification.vendor}${line.separator}"                                                                  file="${classes.dir}/MANIFEST.MF" append="true"/>
-        <echo message="Specification-Version: ${release.version}${line.separator}"                                                                      file="${classes.dir}/MANIFEST.MF" append="true"/>
-        <echo message="Implementation-Vendor: ${implementation.vendor}${line.separator}"                                                                file="${classes.dir}/MANIFEST.MF" append="true"/>
-        <echo message="Implementation-Version: ${version.string}${line.separator}"                                                                      file="${classes.dir}/MANIFEST.MF" append="true"/>
-        <echo message="Bundle-ManifestVersion: 2${line.separator}"                                                                                      file="${classes.dir}/MANIFEST.MF" append="true"/>
-        <echo message="Bundle-Name: EclipseLink Oracle Extensions${line.separator}"                                                                     file="${classes.dir}/MANIFEST.MF" append="true"/>
-        <echo message="Bundle-SymbolicName: ${ant.project.name}${line.separator}"                                                                       file="${classes.dir}/MANIFEST.MF" append="true"/>
-        <echo message="Bundle-Vendor: ${implementation.vendor}${line.separator}"                                                                        file="${classes.dir}/MANIFEST.MF" append="true"/>
-        <echo message="Bundle-Version: ${version.string}${line.separator}"                                                                              file="${classes.dir}/MANIFEST.MF" append="true"/>
-        <echo message="Bundle-RequiredExecutionEnvironment: J2SE-1.5${line.separator}"                                                                  file="${classes.dir}/MANIFEST.MF" append="true"/>
-        <echo message="Fragment-Host: org.eclipse.persistence.core;bundle-version=&quot;${version.string}&quot;${line.separator}"                       file="${classes.dir}/MANIFEST.MF" append="true"/>
-        <echo message="Export-Package: org.eclipse.persistence.eis.adapters.aq;version=&quot;${version.string}&quot;,${line.separator}"                 file="${classes.dir}/MANIFEST.MF" append="true"/>
-        <echo message=" org.eclipse.persistence.internal.eis.adapters.aq;version=&quot;${version.string}&quot;,${line.separator}"                       file="${classes.dir}/MANIFEST.MF" append="true"/>
-        <echo message=" org.eclipse.persistence.internal.platform.database.oracle;version=&quot;${version.string}&quot;,${line.separator}"              file="${classes.dir}/MANIFEST.MF" append="true"/>
-        <echo message=" org.eclipse.persistence.internal.platform.database.oracle.xdb;version=&quot;${version.string}&quot;,${line.separator}"          file="${classes.dir}/MANIFEST.MF" append="true"/>
-        <echo message=" org.eclipse.persistence.platform.database.oracle;version=&quot;${version.string}&quot;,${line.separator}"                       file="${classes.dir}/MANIFEST.MF" append="true"/>
-        <echo message=" org.eclipse.persistence.platform.database.oracle.converters;version=&quot;${version.string}&quot;,${line.separator}"            file="${classes.dir}/MANIFEST.MF" append="true"/>
-        <echo message=" org.eclipse.persistence.platform.xml.xdk;version=&quot;${version.string}&quot;${line.separator}"                                file="${classes.dir}/MANIFEST.MF" append="true"/>
-        <echo message="Bundle-ClassPath: .${line.separator}"                                                                                            file="${classes.dir}/MANIFEST.MF" append="true"/>
-        <echo message="Import-Package: javax.resource;version=&quot;1.5.0&quot;;resolution:=optional,${line.separator}"                                 file="${classes.dir}/MANIFEST.MF" append="true"/>
-        <echo message=" javax.naming;resolution:=optional,${line.separator}"                                                                            file="${classes.dir}/MANIFEST.MF" append="true"/>
-        <echo message=" javax.resource.cci;version=&quot;1.5.0&quot;;resolution:=optional,${line.separator}"                                            file="${classes.dir}/MANIFEST.MF" append="true"/>
-        <echo message=" javax.sql;resolution:=optional,${line.separator}"                                                                               file="${classes.dir}/MANIFEST.MF" append="true"/>
-        <echo message=" javax.xml.parsers;resolution:=optional,${line.separator}"                                                                       file="${classes.dir}/MANIFEST.MF" append="true"/>
-        <echo message=" javax.xml.transform;resolution:=optional,${line.separator}"                                                                     file="${classes.dir}/MANIFEST.MF" append="true"/>
-        <echo message=" javax.xml.transform.dom;resolution:=optional,${line.separator}"                                                                 file="${classes.dir}/MANIFEST.MF" append="true"/>
-        <echo message=" javax.xml.transform.sax;resolution:=optional,${line.separator}"                                                                 file="${classes.dir}/MANIFEST.MF" append="true"/>
-        <echo message=" javax.xml.transform.stream;resolution:=optional,${line.separator}"                                                              file="${classes.dir}/MANIFEST.MF" append="true"/>
-        <echo message=" javax.xml.validation;resolution:=optional,${line.separator}"                                                                    file="${classes.dir}/MANIFEST.MF" append="true"/>
-        <echo message=" oracle.AQ;resolution:=optional,${line.separator}"                                                                               file="${classes.dir}/MANIFEST.MF" append="true"/>
-        <echo message=" oracle.jdbc;resolution:=optional,${line.separator}"                                                                                                  file="${classes.dir}/MANIFEST.MF" append="true"/>
-        <echo message=" oracle.jdbc.internal;resolution:=optional,${line.separator}"                                                                                         file="${classes.dir}/MANIFEST.MF" append="true"/>
-        <echo message=" oracle.jdbc.pool;resolution:=optional,${line.separator}"                                                                                             file="${classes.dir}/MANIFEST.MF" append="true"/>
-        <echo message=" oracle.spatial.geometry;resolution:=optional,${line.separator}"                                                                 file="${classes.dir}/MANIFEST.MF" append="true"/>
-        <echo message=" oracle.sql;resolution:=optional,${line.separator}"                                                                              file="${classes.dir}/MANIFEST.MF" append="true"/>
-        <echo message=" oracle.xdb;resolution:=optional,${line.separator}"                                                                              file="${classes.dir}/MANIFEST.MF" append="true"/>
-        <echo message=" oracle.xdb.dom;resolution:=optional,${line.separator}"                                                                          file="${classes.dir}/MANIFEST.MF" append="true"/>
-        <echo message=" oracle.xml.jaxp;resolution:=optional,${line.separator}"                                                                         file="${classes.dir}/MANIFEST.MF" append="true"/>
-        <echo message=" oracle.xml.parser.schema;resolution:=optional,${line.separator}"                                                                file="${classes.dir}/MANIFEST.MF" append="true"/>
-        <echo message=" oracle.xml.parser.v2;resolution:=optional,${line.separator}"                                                                    file="${classes.dir}/MANIFEST.MF" append="true"/>
-        <echo message=" oracle.xml.util;resolution:=optional,${line.separator}"                                                                         file="${classes.dir}/MANIFEST.MF" append="true"/>
-        <echo message=" org.w3c.dom;resolution:=optional,${line.separator}"                                                                             file="${classes.dir}/MANIFEST.MF" append="true"/>
-        <echo message=" org.xml.sax;resolution:=optional${line.separator}"                                                                              file="${classes.dir}/MANIFEST.MF" append="true"/>
-        <echo message="HK2-Bundle-Name: org.eclipse.persistence:${ant.project.name}${line.separator}"                                                   file="${classes.dir}/MANIFEST.MF" append="true"/>
-    </target>
-
-    <target name="repackage" unless="bnd.lib" depends="generate-manifest, bnd-repackage" description="take existing source and classes from checked in bundles, and repackage with new manifest">
+    <target name="repackage" if="nobnd" depends="init-package, bnd-repackage" description="take existing source and classes from checked in bundles, and repackage with new manifest">
         <delete file="${oracle.2.common.plugins.dir}/${ant.project.name}_${version.string}.jar*"        quiet="true" failonerror="false"/>
         <delete file="${oracle.2.common.plugins.dir}/${ant.project.name}.source_${version.string}.jar*" quiet="true" failonerror="false"/>
-        <jar jarfile="${oracle.2.common.plugins.dir}/${ant.project.name}_${version.string}.jar" manifest="${classes.dir}/MANIFEST.MF" duplicate="preserve">
+        <jar jarfile="${oracle.2.common.plugins.dir}/${ant.project.name}_${version.string}.jar" manifest="${alt.manifest.dir}/MANIFEST.MF" duplicate="preserve">
             <fileset dir="${oracle.2.base.dir}">
                 <include name="about.html"/>
                 <include name="readme.html"/>
@@ -350,7 +341,7 @@
         </jar>
     </target>
 
-    <target name="bnd-repackage" if="bnd.lib" depends="init-package" description="take existing source and classes from checked in bundles, and repackage with new manifest">
+    <target name="bnd-repackage" if="bnd.bld" depends="init-package" description="take existing source and classes from checked in bundles, and repackage with new manifest">
         <delete file="${oracle.2.common.plugins.dir}/${ant.project.name}_${version.string}.jar*"        quiet="true" failonerror="false"/>
         <delete file="${oracle.2.common.plugins.dir}/${ant.project.name}.source_${version.string}.jar*" quiet="true" failonerror="false"/>
         <taskdef resource="aQute/bnd/ant/taskdef.properties" classpath="${bnd.lib}"/>

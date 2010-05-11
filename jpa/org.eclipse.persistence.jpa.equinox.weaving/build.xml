@@ -38,7 +38,12 @@
     <!-- (should be set locally, and be destroyed upon return) -->
     <fail message="Not running from '${ant.project.name}' directory" unless="weaving.is.local"/>
 
-    <dirname property="weaving.build.location" file="${ant.file.org.eclipse.persistence.jpa.equinox.weaving}"/>
+    <dirname property="weaving.build.location_temp" file="${ant.file.org.eclipse.persistence.jpa.equinox.weaving}"/>
+    <pathconvert targetos="unix" property="weaving.build.location">
+        <path>
+            <pathelement location="${weaving.build.location_temp}"/>
+        </path>
+    </pathconvert>
     <condition property="weaving.2.base.dir" value="../.." else="..">
         <contains string="${weaving.build.location}" substring="jpa"/>
     </condition>
@@ -46,7 +51,12 @@
     <property name="weaving.2.buildsys.dir" value="${weaving.2.base.dir}/buildsystem"/>
     <property name="weaving.2.jpa.plugins.dir" value="../plugins"/>
 
-    <echo message="Loading ${user.home}/build.properties..."/>
+    <!-- local property overrides -->
+    <condition property="custom.properties.message" value="Loading ${user.home}/build.properties..."
+                                                     else="Custom properties file '${user.home}/build.properties' not found to load.">
+        <available file="${user.home}/build.properties"/>
+    </condition>
+    <echo message="${custom.properties.message}"/>
     <property file="${user.home}/build.properties"/>
     <property file="${weaving.build.location}/build.properties"/>
 
@@ -56,7 +66,7 @@
 
     <!-- Primary Targets -->
     <target name="build" depends="clean, compile, jar" description="build ${ant.project.name} component"/>
-    <target name="jar"   depends="generate-manifest, package, bnd-package" description="package ${ant.project.name} component"/>
+    <target name="jar"   depends="bnd-package, package" description="package ${ant.project.name} component"/>
 
     <!-- clean -->
     <target name="clean" description="Clean all generated content">
@@ -114,6 +124,21 @@
         <available file="${core.lib}"        property="core.bundle.exist"/>
         <available file="${jpa.lib}"         property="jpa.bundle.exist"/>
 
+        <!-- Check for BND library -->
+        <property name="alt.manifest.dir"      value="${weaving.build.location}/META-INF"/>
+        <condition property="bnd.lib" value="${extensions.depend.dir}/${bndtool.jar}">
+            <available file="${extensions.depend.dir}/${bndtool.jar}"/>
+        </condition>
+        <condition property="bnd.lib" value="${equinox.2.buildsys.dir}/${bndtool.jar}">
+            <available file="${equinox.2.buildsys.dir}/${bndtool.jar}"/>
+        </condition>
+        <echo message="bnd.lib                     = '${bnd.lib}'"/>
+        <condition property="bld">
+            <or>
+                <isset property="bnd.lib"/>
+                <isset property="nobnd"/>
+            </or>
+        </condition>
         <condition property="build.ok">
             <and>
                 <isset property="persistence.bundle.exist"/>
@@ -139,25 +164,6 @@
     </target>
 
     <target name="init" if="build.ok" depends="pre-init, dep-report">
-        <!-- Check for BND library -->
-        <condition property="bnd.lib" value="${extensions.depend.dir}/${bndtool.jar}">
-            <available file="${extensions.depend.dir}/${bndtool.jar}"/>
-        </condition>
-        <condition property="bnd.lib" value="${weaving.2.buildsys.dir}/${bndtool.jar}">
-            <available file="${weaving.2.buildsys.dir}/${bndtool.jar}"/>
-        </condition>
-        <echo message="bnd.lib                     = '${bnd.lib}'"/>
-        <condition property="package.ok">
-            <and>
-                <not>  <isset property="bnd.lib"/> </not>
-            </and>
-        </condition>
-        <condition property="bnd.ok">
-            <and>
-                <isset property="bnd.lib"/>
-            </and>
-        </condition>
-
         <!-- Set Compile Path-->
         <path id="weaving.compile.path">
             <pathelement path="${core.lib}"/>
@@ -166,10 +172,33 @@
             <pathelement path="${persistence.lib}"/>
             <pathelement path="${equinox.lib}"/>
         </path>
+        <condition property="bnd.bld">
+            <and>
+                <isset property="bnd.lib"/>
+                <not>  <isset property="nobnd"/> </not>
+            </and>
+        </condition>
+    </target>
+
+    <target name="fail-on-no-bnd" unless="bld">
+        <echo message="BND tool (${bndtool.jar}) not found in either:"/>
+        <echo message="    the extensions.depend.dir: '${extensions.depend.dir}'"/>
+        <echo message="    or the buildsystem dir:    '${weaving.2.buildsys.dir}'"/>
+        <echo message=""/>
+        <echo message="if you have a different version, you can define a different"/>
+        <echo message="jarname by adding 'bndtool.jar=bnd-{version}.jar to your'"/>
+        <echo message="${user.home}/build.properties file."/>
+        <echo message=""/>
+        <echo message="You can download BND from http://www.aqute.biz/Code/Download"/>
+        <echo message=""/>
+        <echo message="or if you really need to build NOW, you can use '-Dnobnd=true'"/>
+        <echo message="on the ant command-line. However, the manifests used will be those"/>
+        <echo message="checked-in for development, and will likely have errors."/>
+        <fail message="Missing BND library!"/>
     </target>
 
     <!-- compile -->
-    <target name="compile" if="build.ok" depends="init" description="Compile bundle code">
+    <target name="compile" if="build.ok" depends="init, fail-on-no-bnd" description="Compile bundle code">
         <mkdir dir="${classes.dir}"/>
         <javac srcdir="${src.dir}"
                destdir="${classes.dir}"
@@ -188,8 +217,8 @@
     </target>
 
     <!-- package -->
-    <target name="package" if="package.ok" depends="init" description="jar OSGI bundle">
-        <jar jarfile="${weaving.2.common.plugins.dir}/${ant.project.name}_${version.string}.jar" manifest="${classes.dir}/MANIFEST.MF">
+    <target name="package" if="nobnd" depends="init" description="jar OSGI bundle">
+        <jar jarfile="${weaving.2.common.plugins.dir}/${ant.project.name}_${version.string}.jar" manifest="${alt.manifest.dir}/MANIFEST.MF">
             <fileset dir="${weaving.2.base.dir}">
                 <include name="about.html"/>
                 <include name="readme.html"/>
@@ -226,25 +255,7 @@
         </jar>
     </target>
 
-    <target name="generate-manifest" if="package.ok" depends="init" description="Generate the OSGi bundle manifest before jarring">
-        <echo message="Generate the OSGi bundle manifest before jarring..."/>
-        <delete file="${classes.dir}/MANIFEST.MF*" quiet="true"/>
-        <echo message="Manifest-Version: 1.0${line.separator}"                                                                            file="${classes.dir}/MANIFEST.MF" append="false"/>
-        <echo message="Specification-Vendor: ${specification.vendor}${line.separator}"                                                    file="${classes.dir}/MANIFEST.MF" append="true"/>
-        <echo message="Specification-Version: ${release.version}${line.separator}"                                                        file="${classes.dir}/MANIFEST.MF" append="true"/>
-        <echo message="Implementation-Vendor: ${implementation.vendor}${line.separator}"                                                  file="${classes.dir}/MANIFEST.MF" append="true"/>
-        <echo message="Implementation-Version: ${version.string}${line.separator}"                                                        file="${classes.dir}/MANIFEST.MF" append="true"/>
-        <echo message="Bundle-ManifestVersion: 2${line.separator}"                                                                        file="${classes.dir}/MANIFEST.MF" append="true"/>
-        <echo message="Bundle-Name: Dynamic Weaving Fragment for Equinox${line.separator}"                                                file="${classes.dir}/MANIFEST.MF" append="true"/>
-        <echo message="Bundle-SymbolicName: ${ant.project.name}${line.separator}"                                                         file="${classes.dir}/MANIFEST.MF" append="true"/>
-        <echo message="Bundle-Vendor: ${implementation.vendor}${line.separator}"                                                          file="${classes.dir}/MANIFEST.MF" append="true"/>
-        <echo message="Bundle-Version: ${version.string}${line.separator}"                                                                file="${classes.dir}/MANIFEST.MF" append="true"/>
-        <echo message="Bundle-RequiredExecutionEnvironment: J2SE-1.5${line.separator}"                                                    file="${classes.dir}/MANIFEST.MF" append="true"/>
-        <echo message="Fragment-Host: org.eclipse.osgi;extension:=framework;bundle-version=&quot;3.4.0&quot;${line.separator}"            file="${classes.dir}/MANIFEST.MF" append="true"/>
-        <echo message="Export-Package: org.eclipse.persistence.jpa.equinox.weaving;x-internal:=true${line.separator}"                     file="${classes.dir}/MANIFEST.MF" append="true"/>
-    </target>
-
-    <target name="bnd-package" if="bnd.ok" depends="init">
+    <target name="bnd-package" if="bnd.bld" depends="init">
         <taskdef resource="aQute/bnd/ant/taskdef.properties" classpath="${bnd.lib}"/>
         <bnd
             classpath="${classes.dir}"

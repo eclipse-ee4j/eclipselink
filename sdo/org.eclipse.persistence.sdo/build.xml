@@ -38,14 +38,24 @@
     <!-- (should be set locally, and be destroyed upon return) -->
     <fail message="Not running from '${ant.project.name}' directory" unless="sdo.is.local"/>
 
-    <dirname  property="sdo.build.location" file="${ant.file.org.eclipse.persistence.core}"/>
+    <dirname  property="sdo.build.location_temp" file="${ant.file.org.eclipse.persistence.core}"/>
+    <pathconvert targetos="unix" property="sdo.build.location">
+        <path>
+            <pathelement location="${sdo.build.location_temp}"/>
+        </path>
+    </pathconvert>
     <condition property="sdo.2.base.dir" value="../.." else="..">
         <contains string="${sdo.build.location}" substring="sdo"/>
     </condition>
     <property name="sdo.2.common.plugins.dir" value="${sdo.2.base.dir}/plugins"/>
     <property name="sdo.2.buildsys.dir" value="${sdo.2.base.dir}/buildsystem"/>
 
-    <echo message="Loading ${user.home}/build.properties..."/>
+    <!-- local property overrides -->
+    <condition property="custom.properties.message" value="Loading ${user.home}/build.properties..."
+                                                     else="Custom properties file '${user.home}/build.properties' not found to load.">
+        <available file="${user.home}/build.properties"/>
+    </condition>
+    <echo message="${custom.properties.message}"/>
     <property file="${user.home}/build.properties"/>
     <property file="${sdo.build.location}/build.properties"/>
 
@@ -54,7 +64,7 @@
 
     <!-- Primary Targets -->
     <target name="build" depends="clean, compile, jar" description="build ${ant.project.name} component"/>
-    <target name="jar"   depends="generate-manifest, package, bnd-package" description="package ${ant.project.name} component"/>
+    <target name="jar"   depends="bnd-package, package" description="package ${ant.project.name} component"/>
 
     <!-- clean -->
     <target name="clean" description="Clean all generated content">
@@ -97,19 +107,9 @@
 
         <!-- dependency tests -->
         <available file="${core.lib}"        property="core.bundle.exist"/>
-        <available file="${moxy.lib}"        property="moxy.bundle.exist"/>
-
         <fail message="Cannot find: '${core.lib}'"        unless="core.bundle.exist"/>
+        <available file="${moxy.lib}"        property="moxy.bundle.exist"/>
         <fail message="Cannot find: '${moxy.lib}'"        unless="moxy.bundle.exist"/>
-
-        <!-- Check for BND library -->
-        <condition property="bnd.lib" value="${extensions.depend.dir}/${bndtool.jar}">
-            <available file="${extensions.depend.dir}/${bndtool.jar}"/>
-        </condition>
-        <condition property="bnd.lib" value="${sdo.2.buildsys.dir}/${bndtool.jar}">
-            <available file="${sdo.2.buildsys.dir}/${bndtool.jar}"/>
-        </condition>
-        <echo message="bnd.lib                     = '${bnd.lib}'"/>
 
         <!-- Set Compile Path-->
         <path id="sdo.compile.path">
@@ -119,10 +119,49 @@
             <pathelement path="${core.lib}"/>
             <pathelement path="${moxy.lib}"/>
         </path>
+
+        <!-- Check for BND library -->
+        <property name="alt.manifest.dir"      value="${sdo.build.location}/META-INF"/>
+        <condition property="bnd.lib" value="${extensions.depend.dir}/${bndtool.jar}">
+            <available file="${extensions.depend.dir}/${bndtool.jar}"/>
+        </condition>
+        <condition property="bnd.lib" value="${sdo.2.buildsys.dir}/${bndtool.jar}">
+            <available file="${sdo.2.buildsys.dir}/${bndtool.jar}"/>
+        </condition>
+        <echo message="bnd.lib                     = '${bnd.lib}'"/>
+        <condition property="bld">
+            <or>
+                <isset property="bnd.lib"/>
+                <isset property="nobnd"/>
+            </or>
+        </condition>
+        <condition property="bnd.bld">
+            <and>
+                <isset property="bnd.lib"/>
+                <not>  <isset property="nobnd"/> </not>
+            </and>
+        </condition>
+    </target>
+
+    <target name="fail-on-no-bnd" unless="bld">
+        <echo message="BND tool (${bndtool.jar}) not found in either:"/>
+        <echo message="    the extensions.depend.dir: '${extensions.depend.dir}'"/>
+        <echo message="    or the buildsystem dir:    '${sdo.2.buildsys.dir}'"/>
+        <echo message=""/>
+        <echo message="if you have a different version, you can define a different"/>
+        <echo message="jarname by adding 'bndtool.jar=bnd-{version}.jar to your'"/>
+        <echo message="${user.home}/build.properties file."/>
+        <echo message=""/>
+        <echo message="You can download BND from http://www.aqute.biz/Code/Download"/>
+        <echo message=""/>
+        <echo message="or if you really need to build NOW, you can use '-Dnobnd=true'"/>
+        <echo message="on the ant command-line. However, the manifests used will be those"/>
+        <echo message="checked-in for development, and will likely have errors."/>
+        <fail message="Missing BND library!"/>
     </target>
 
     <!-- compile -->
-    <target name="compile" depends="init" description="Compile bundle code">
+    <target name="compile" depends="init, fail-on-no-bnd" description="Compile bundle code">
         <mkdir dir="${classes.dir}"/>
         <javac srcdir="${src.dir}"
                destdir="${classes.dir}"
@@ -141,8 +180,8 @@
     </target>
 
     <!-- package -->
-    <target name="package" unless="bnd.lib" depends="init" description="jar OSGI bundle">
-        <jar jarfile="${sdo.2.common.plugins.dir}/${ant.project.name}_${version.string}.jar" manifest="${classes.dir}/MANIFEST.MF">
+    <target name="package" if="nobnd" depends="init" description="jar OSGI bundle">
+        <jar jarfile="${sdo.2.common.plugins.dir}/${ant.project.name}_${version.string}.jar" manifest="${alt.manifest.dir}/MANIFEST.MF">
             <fileset dir="${sdo.2.base.dir}">
                 <include name="about.html"/>
                 <include name="readme.html"/>
@@ -178,45 +217,7 @@
         </jar>
     </target>
 
-    <target name="generate-manifest" unless="bnd.lib" depends="init" description="Generate the OSGi bundle manifest before jarring">
-        <echo message="Generate the OSGi bundle manifest before jarring..."/>
-        <delete file="${classes.dir}/MANIFEST.MF*" quiet="true"/>
-        <echo message="Manifest-Version: 1.0${line.separator}"                                                      file="${classes.dir}/MANIFEST.MF" append="false"/>
-        <echo message="Specification-Vendor: ${specification.vendor}${line.separator}"                              file="${classes.dir}/MANIFEST.MF" append="true"/>
-        <echo message="Specification-Version: ${release.version}${line.separator}"                                  file="${classes.dir}/MANIFEST.MF" append="true"/>
-        <echo message="Implementation-Vendor: ${implementation.vendor}${line.separator}"                            file="${classes.dir}/MANIFEST.MF" append="true"/>
-        <echo message="Implementation-Version: ${version.string}${line.separator}"                                  file="${classes.dir}/MANIFEST.MF" append="true"/>
-        <echo message="Bundle-ManifestVersion: 2${line.separator}"                                                  file="${classes.dir}/MANIFEST.MF" append="true"/>
-        <echo message="Bundle-Name: EclipseLink SDO${line.separator}"                                               file="${classes.dir}/MANIFEST.MF" append="true"/>
-        <echo message="Bundle-SymbolicName: ${ant.project.name}${line.separator}"                                   file="${classes.dir}/MANIFEST.MF" append="true"/>
-        <echo message="Bundle-Vendor: ${implementation.vendor}${line.separator}"                                    file="${classes.dir}/MANIFEST.MF" append="true"/>
-        <echo message="Bundle-Version: ${version.string}${line.separator}"                                          file="${classes.dir}/MANIFEST.MF" append="true"/>
-        <echo message="Bundle-RequiredExecutionEnvironment: J2SE-1.5${line.separator}"                                                                    file="${classes.dir}/MANIFEST.MF" append="true"/>
-        <echo message="Require-Bundle: org.eclipse.persistence.core;bundle-version=&quot;${version.string}&quot;;visibility:=reexport,${line.separator}" file="${classes.dir}/MANIFEST.MF" append="true"/>
-        <echo message=" org.eclipse.persistence.asm;bundle-version=&quot;${version.string}&quot;,${line.separator}"                                      file="${classes.dir}/MANIFEST.MF" append="true"/>
-        <echo message=" org.eclipse.persistence.moxy;bundle-version=&quot;${version.string}&quot;;resolution:=optional${line.separator}"                 file="${classes.dir}/MANIFEST.MF" append="true"/>
-        <echo message="Export-Package: org.eclipse.persistence.sdo;version=&quot;${version.string}&quot;,${line.separator}"                              file="${classes.dir}/MANIFEST.MF" append="true"/>
-        <echo message=" org.eclipse.persistence.sdo.helper;version=&quot;${version.string}&quot;,${line.separator}"                                      file="${classes.dir}/MANIFEST.MF" append="true"/>
-        <echo message=" org.eclipse.persistence.sdo.helper.delegates;version=&quot;${version.string}&quot;,${line.separator}"                            file="${classes.dir}/MANIFEST.MF" append="true"/>
-        <echo message=" org.eclipse.persistence.sdo.helper.extension;version=&quot;${version.string}&quot;,${line.separator}"                            file="${classes.dir}/MANIFEST.MF" append="true"/>
-        <echo message=" org.eclipse.persistence.sdo.types;version=&quot;${version.string}&quot;,${line.separator}"                                        file="${classes.dir}/MANIFEST.MF" append="true"/>
-        <echo message=" org.eclipse.persistence.sdo.dataobjects;version=&quot;${version.string}&quot;,${line.separator}"                                        file="${classes.dir}/MANIFEST.MF" append="true"/>
-        <echo message=" org.eclipse.persistence.sdo.helper.jaxb;version=&quot;${version.string}&quot;,${line.separator}"                                        file="${classes.dir}/MANIFEST.MF" append="true"/>
-        <echo message=" org.eclipse.persistence.sdo.helper.metadata;version=&quot;${version.string}&quot;${line.separator}"                                        file="${classes.dir}/MANIFEST.MF" append="true"/>
-        <echo message="Bundle-ClassPath: .${line.separator}"                                                                                              file="${classes.dir}/MANIFEST.MF" append="true"/>
-        <echo message="Import-Package: commonj.sdo;version=&quot;2.1.1&quot;,${line.separator}"                                      file="${classes.dir}/MANIFEST.MF" append="true"/>
-        <echo message=" commonj.sdo.helper;version=&quot;2.1.1&quot;,${line.separator}"                                              file="${classes.dir}/MANIFEST.MF" append="true"/>
-        <echo message=" commonj.sdo.impl;version=&quot;2.1.1&quot;,${line.separator}"                                                 file="${classes.dir}/MANIFEST.MF" append="true"/>
-        <echo message=" javax.xml.bind;version=&quot;2.0.0&quot;;resolution:=optional,${line.separator}"                                                 file="${classes.dir}/MANIFEST.MF" append="true"/>
-        <echo message=" javax.xml.bind.annotation;version=&quot;2.0.0&quot;;resolution:=optional,${line.separator}"                                                 file="${classes.dir}/MANIFEST.MF" append="true"/>
-        <echo message=" javax.xml.bind.annotation.adapters;version=&quot;2.0.0&quot;;resolution:=optional,${line.separator}"                                                 file="${classes.dir}/MANIFEST.MF" append="true"/>
-         <echo message=" javax.xml.bind.attachment;version=&quot;2.0.0&quot;;resolution:=optional,${line.separator}"                                                 file="${classes.dir}/MANIFEST.MF" append="true"/>
-        <echo message=" javax.xml.bind.helpers;version=&quot;2.0.0&quot;;resolution:=optional,${line.separator}"                                                 file="${classes.dir}/MANIFEST.MF" append="true"/>
-        <echo message=" javax.xml.bind.util;version=&quot;2.0.0&quot;;resolution:=optional${line.separator}"                                                 file="${classes.dir}/MANIFEST.MF" append="true"/>
-        <echo message="HK2-Bundle-Name: org.eclipse.persistence:${ant.project.name}${line.separator}"                                                     file="${classes.dir}/MANIFEST.MF" append="true"/>
-    </target>
-
-    <target name="bnd-package" if="bnd.lib" depends="init" >
+    <target name="bnd-package" if="bnd.bld" depends="init">
         <taskdef resource="aQute/bnd/ant/taskdef.properties" classpath="${bnd.lib}"/>
         <bnd
             classpath="${classes.dir}"

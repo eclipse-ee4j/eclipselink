@@ -38,7 +38,12 @@
     <!-- (should be set locally, and be destroyed upon return) -->
     <fail message="Not running from '${ant.project.name}' directory" unless="jpa.is.local"/>
 
-    <dirname  property="jpa.build.location" file="${ant.file.org.eclipse.persistence.jpa}"/>
+    <dirname  property="jpa.build.location_temp" file="${ant.file.org.eclipse.persistence.jpa}"/>
+    <pathconvert targetos="unix" property="jpa.build.location">
+        <path>
+            <pathelement location="${jpa.build.location_temp}"/>
+        </path>
+    </pathconvert>
     <condition property="jpa.2.base.dir" value="../.." else="..">
         <contains string="${jpa.build.location}" substring="jpa"/>
     </condition>
@@ -46,7 +51,12 @@
     <property name="jpa.2.buildsys.dir" value="${jpa.2.base.dir}/buildsystem"/>
     <property name="jpa.2.jpa.plugins.dir" value="../plugins"/>
 
-    <echo message="Loading ${user.home}/build.properties..."/>
+    <!-- local property overrides -->
+    <condition property="custom.properties.message" value="Loading ${user.home}/build.properties..."
+                                                     else="Custom properties file '${user.home}/build.properties' not found to load.">
+        <available file="${user.home}/build.properties"/>
+    </condition>
+    <echo message="${custom.properties.message}"/>
     <property file="${user.home}/build.properties"/>
     <property file="${jpa.build.location}/build.properties"/>
 
@@ -55,7 +65,7 @@
 
     <!-- Primary Targets -->
     <target name="build" depends="clean, compile, jar" description="build ${ant.project.name} component"/>
-    <target name="jar"   depends="generate-manifest, package, bnd-package" description="package ${ant.project.name} component"/>
+    <target name="jar"   depends="bnd-package, package" description="package ${ant.project.name} component"/>
 
     <!-- clean -->
     <target name="clean" description="Clean all generated content">
@@ -96,19 +106,10 @@
 
         <!-- dependency tests -->
         <available file="${persistence.lib}" property="persistence.bundle.exist"/>
-        <available file="${core.lib}"          property="core.bundle.exist"/>
+        <available file="${core.lib}"        property="core.bundle.exist"/>
 
         <fail message="Cannot find: '${persistence.lib}'" unless="persistence.bundle.exist"/>
-        <fail message="Cannot find: '${core.lib}'"          unless="core.bundle.exist"/>
-
-        <!-- Check for BND library -->
-        <condition property="bnd.lib" value="${extensions.depend.dir}/${bndtool.jar}">
-            <available file="${extensions.depend.dir}/${bndtool.jar}"/>
-        </condition>
-        <condition property="bnd.lib" value="${jpa.2.buildsys.dir}/${bndtool.jar}">
-            <available file="${jpa.2.buildsys.dir}/${bndtool.jar}"/>
-        </condition>
-        <echo message="bnd.lib                     = '${bnd.lib}'"/>
+        <fail message="Cannot find: '${core.lib}'"        unless="core.bundle.exist"/>
 
         <!-- Set Compile Path-->
         <path id="jpa.compile.path">
@@ -124,10 +125,49 @@
                 dir="${jpa.2.common.plugins.dir}"
                 includes="${eclipselink.core.depend}"/>
         </path>
+
+        <!-- Check for BND library -->
+        <property name="alt.manifest.dir"      value="${jpa.build.location}/META-INF"/>
+        <condition property="bnd.lib" value="${extensions.depend.dir}/${bndtool.jar}">
+            <available file="${extensions.depend.dir}/${bndtool.jar}"/>
+        </condition>
+        <condition property="bnd.lib" value="${jpa.2.buildsys.dir}/${bndtool.jar}">
+            <available file="${jpa.2.buildsys.dir}/${bndtool.jar}"/>
+        </condition>
+        <echo message="bnd.lib                     = '${bnd.lib}'"/>
+        <condition property="bld">
+            <or>
+                <isset property="bnd.lib"/>
+                <isset property="nobnd"/>
+            </or>
+        </condition>
+        <condition property="bnd.bld">
+            <and>
+                <isset property="bnd.lib"/>
+                <not>  <isset property="nobnd"/> </not>
+            </and>
+        </condition>
+    </target>
+
+    <target name="fail-on-no-bnd" unless="bld">
+        <echo message="BND tool (${bndtool.jar}) not found in either:"/>
+        <echo message="    the extensions.depend.dir: '${extensions.depend.dir}'"/>
+        <echo message="    or the buildsystem dir:    '${jpa.2.buildsys.dir}'"/>
+        <echo message=""/>
+        <echo message="if you have a different version, you can define a different"/>
+        <echo message="jarname by adding 'bndtool.jar=bnd-{version}.jar to your'"/>
+        <echo message="${user.home}/build.properties file."/>
+        <echo message=""/>
+        <echo message="You can download BND from http://www.aqute.biz/Code/Download"/>
+        <echo message=""/>
+        <echo message="or if you really need to build NOW, you can use '-Dnobnd=true'"/>
+        <echo message="on the ant command-line. However, the manifests used will be those"/>
+        <echo message="checked-in for development, and will likely have errors."/>
+        <fail message="Missing BND library!"/>
     </target>
 
     <!-- compile -->
-    <target name="compile" depends="init" description="Compile bundle code">
+    <target name="compile" depends="init, fail-on-no-bnd" description="Compile bundle code">
         <mkdir dir="${classes.dir}"/>
         <javac srcdir="${src.dir}"
                destdir="${classes.dir}"
@@ -146,8 +186,8 @@
     </target>
 
     <!-- package -->
-    <target name="package" unless="bnd.lib" depends="init" description="jar OSGI bundle">
-        <jar jarfile="${jpa.2.common.plugins.dir}/${ant.project.name}_${version.string}.jar" duplicate="preserve" manifest="${classes.dir}/MANIFEST.MF">
+    <target name="package" if="nobnd" depends="init" description="jar OSGI bundle">
+        <jar jarfile="${jpa.2.common.plugins.dir}/${ant.project.name}_${version.string}.jar" duplicate="preserve" manifest="${alt.manifest.dir}/MANIFEST.MF">
             <fileset dir="${jpa.2.base.dir}">
                 <include name="about.html"/>
                 <include name="readme.html"/>
@@ -190,72 +230,7 @@
         </jar>
     </target>
 
-    <target name="generate-manifest" unless="bnd.lib" depends="init" description="Generate the OSGi bundle manifest before jarring">
-        <echo message="Generate the OSGi bundle manifest before jarring..."/>
-        <delete file="${classes.dir}/MANIFEST.MF*" quiet="true"/>
-        <echo message="Manifest-Version: 1.0${line.separator}"                                                      file="${classes.dir}/MANIFEST.MF" append="false"/>
-        <echo message="Specification-Vendor: ${specification.vendor}${line.separator}"                              file="${classes.dir}/MANIFEST.MF" append="true"/>
-        <echo message="Specification-Version: ${release.version}${line.separator}"                                  file="${classes.dir}/MANIFEST.MF" append="true"/>
-        <echo message="Implementation-Vendor: ${implementation.vendor}${line.separator}"                            file="${classes.dir}/MANIFEST.MF" append="true"/>
-        <echo message="Implementation-Version: ${version.string}${line.separator}"                                  file="${classes.dir}/MANIFEST.MF" append="true"/>
-        <echo message="Bundle-ManifestVersion: 2${line.separator}"                                                  file="${classes.dir}/MANIFEST.MF" append="true"/>
-        <echo message="Bundle-Name: EclipseLink JPA${line.separator}"                                               file="${classes.dir}/MANIFEST.MF" append="true"/>
-        <echo message="Bundle-SymbolicName: ${ant.project.name}${line.separator}"                                   file="${classes.dir}/MANIFEST.MF" append="true"/>
-        <echo message="Bundle-Vendor: ${implementation.vendor}${line.separator}"                                    file="${classes.dir}/MANIFEST.MF" append="true"/>
-        <echo message="Bundle-Version: ${version.string}${line.separator}"                                          file="${classes.dir}/MANIFEST.MF" append="true"/>
-        <echo message="Bundle-RequiredExecutionEnvironment: J2SE-1.5${line.separator}"                                                                  file="${classes.dir}/MANIFEST.MF" append="true"/>
-        <echo message="Require-Bundle: org.eclipse.persistence.core;bundle-version=&quot;${version.string}&quot;;visibility:=reexport,${line.separator}" file="${classes.dir}/MANIFEST.MF" append="true"/>
-        <echo message=" org.eclipse.persistence.asm;bundle-version=&quot;${version.string}&quot;;resolution:=optional${line.separator}"                 file="${classes.dir}/MANIFEST.MF" append="true"/>
-        <echo message="Export-Package: org.eclipse.persistence.internal.jpa;version=&quot;${version.string}&quot;,${line.separator}"                    file="${classes.dir}/MANIFEST.MF" append="true"/>
-        <echo message=" org.eclipse.persistence.internal.jpa.deployment;version=&quot;${version.string}&quot;,${line.separator}"                        file="${classes.dir}/MANIFEST.MF" append="true"/>
-        <echo message=" org.eclipse.persistence.internal.jpa.deployment.osgi;version=&quot;${version.string}&quot;,${line.separator}"                   file="${classes.dir}/MANIFEST.MF" append="true"/>
-        <echo message=" org.eclipse.persistence.internal.jpa.deployment.xml.parser;version=&quot;${version.string}&quot;,${line.separator}"             file="${classes.dir}/MANIFEST.MF" append="true"/>
-        <echo message=" org.eclipse.persistence.internal.jpa.jdbc;version=&quot;${version.string}&quot;,${line.separator}"                              file="${classes.dir}/MANIFEST.MF" append="true"/>
-        <echo message=" org.eclipse.persistence.internal.jpa.metadata;version=&quot;${version.string}&quot;,${line.separator}"                          file="${classes.dir}/MANIFEST.MF" append="true"/>
-        <echo message=" org.eclipse.persistence.internal.jpa.metadata.accessors;version=&quot;${version.string}&quot;,${line.separator}"                file="${classes.dir}/MANIFEST.MF" append="true"/>
-        <echo message=" org.eclipse.persistence.internal.jpa.metadata.accessors.classes;version=&quot;${version.string}&quot;,${line.separator}"        file="${classes.dir}/MANIFEST.MF" append="true"/>
-        <echo message=" org.eclipse.persistence.internal.jpa.metadata.accessors.mappings;version=&quot;${version.string}&quot;,${line.separator}"       file="${classes.dir}/MANIFEST.MF" append="true"/>
-        <echo message=" org.eclipse.persistence.internal.jpa.metadata.accessors.objects;version=&quot;${version.string}&quot;,${line.separator}"        file="${classes.dir}/MANIFEST.MF" append="true"/>
-        <echo message=" org.eclipse.persistence.internal.jpa.metadata.cache;version=&quot;${version.string}&quot;,${line.separator}"                    file="${classes.dir}/MANIFEST.MF" append="true"/>
-        <echo message=" org.eclipse.persistence.internal.jpa.metadata.changetracking;version=&quot;${version.string}&quot;,${line.separator}"           file="${classes.dir}/MANIFEST.MF" append="true"/>
-        <echo message=" org.eclipse.persistence.internal.jpa.metadata.columns;version=&quot;${version.string}&quot;,${line.separator}"                  file="${classes.dir}/MANIFEST.MF" append="true"/>
-        <echo message=" org.eclipse.persistence.internal.jpa.metadata.converters;version=&quot;${version.string}&quot;,${line.separator}"               file="${classes.dir}/MANIFEST.MF" append="true"/>
-        <echo message=" org.eclipse.persistence.internal.jpa.metadata.copypolicy;version=&quot;${version.string}&quot;,${line.separator}"               file="${classes.dir}/MANIFEST.MF" append="true"/>
-        <echo message=" org.eclipse.persistence.internal.jpa.metadata.inheritance;version=&quot;${version.string}&quot;,${line.separator}"              file="${classes.dir}/MANIFEST.MF" append="true"/>
-        <echo message=" org.eclipse.persistence.internal.jpa.metadata.listeners;version=&quot;${version.string}&quot;,${line.separator}"                file="${classes.dir}/MANIFEST.MF" append="true"/>
-        <echo message=" org.eclipse.persistence.internal.jpa.metadata.locking;version=&quot;${version.string}&quot;,${line.separator}"                  file="${classes.dir}/MANIFEST.MF" append="true"/>
-        <echo message=" org.eclipse.persistence.internal.jpa.metadata.queries;version=&quot;${version.string}&quot;,${line.separator}"                  file="${classes.dir}/MANIFEST.MF" append="true"/>
-        <echo message=" org.eclipse.persistence.internal.jpa.metadata.sequencing;version=&quot;${version.string}&quot;,${line.separator}"               file="${classes.dir}/MANIFEST.MF" append="true"/>
-        <echo message=" org.eclipse.persistence.internal.jpa.metadata.tables;version=&quot;${version.string}&quot;,${line.separator}"                   file="${classes.dir}/MANIFEST.MF" append="true"/>
-        <echo message=" org.eclipse.persistence.internal.jpa.metadata.transformers;version=&quot;${version.string}&quot;,${line.separator}"             file="${classes.dir}/MANIFEST.MF" append="true"/>
-        <echo message=" org.eclipse.persistence.internal.jpa.metadata.xml;version=&quot;${version.string}&quot;,${line.separator}"                      file="${classes.dir}/MANIFEST.MF" append="true"/>
-        <echo message=" org.eclipse.persistence.internal.jpa.transaction;version=&quot;${version.string}&quot;,${line.separator}"                       file="${classes.dir}/MANIFEST.MF" append="true"/>
-        <echo message=" org.eclipse.persistence.jpa;version=&quot;${version.string}&quot;,${line.separator}"                                            file="${classes.dir}/MANIFEST.MF" append="true"/>
-        <echo message=" org.eclipse.persistence.jpa.osgi;version=&quot;${version.string}&quot;,${line.separator}"                                       file="${classes.dir}/MANIFEST.MF" append="true"/>
-        <echo message=" org.eclipse.persistence.tools.weaving.jpa;version=&quot;${version.string}&quot;${line.separator}"                               file="${classes.dir}/MANIFEST.MF" append="true"/>
-        <echo message="Bundle-Activator: org.eclipse.persistence.jpa.osgi.Activator${line.separator}"                                                   file="${classes.dir}/MANIFEST.MF" append="true"/>
-        <echo message="Import-Package: javax.persistence;version=&quot;1.99.4&quot;,${line.separator}"                                                  file="${classes.dir}/MANIFEST.MF" append="true"/>
-        <echo message=" javax.persistence.metamodel;version=&quot;1.99.4&quot;,${line.separator}"                                                       file="${classes.dir}/MANIFEST.MF" append="true"/>
-        <echo message=" javax.persistence.criteria;version=&quot;1.99.4&quot;,${line.separator}"                                                        file="${classes.dir}/MANIFEST.MF" append="true"/>
-        <echo message=" javax.persistence.spi;version=&quot;1.99.4&quot;,${line.separator}"                                                             file="${classes.dir}/MANIFEST.MF" append="true"/>
-        <echo message=" javax.transaction;version=&quot;1.1.0&quot;;resolution:=optional,${line.separator}"                                             file="${classes.dir}/MANIFEST.MF" append="true"/>
-        <echo message=" org.apache.tools.ant;resolution:=optional,${line.separator}"                                                                    file="${classes.dir}/MANIFEST.MF" append="true"/>
-        <echo message=" org.apache.tools.ant.types;resolution:=optional,${line.separator}"                                                              file="${classes.dir}/MANIFEST.MF" append="true"/>
-        <echo message=" org.osgi.framework;resolution:=optional,${line.separator}"                                                                      file="${classes.dir}/MANIFEST.MF" append="true"/>
-        <echo message=" org.osgi.service.packageadmin;resolution:=optional,${line.separator}"                                                           file="${classes.dir}/MANIFEST.MF" append="true"/>
-        <echo message=" org.xml.sax;resolution:=optional,${line.separator}"                                                                             file="${classes.dir}/MANIFEST.MF" append="true"/>
-        <echo message=" javax.xml.validation;resolution:=optional,${line.separator}"                                                                    file="${classes.dir}/MANIFEST.MF" append="true"/>
-        <echo message=" javax.xml.parsers;resolution:=optional,${line.separator}"                                                                       file="${classes.dir}/MANIFEST.MF" append="true"/>
-        <echo message=" javax.xml.transform;resolution:=optional,${line.separator}"                                                                     file="${classes.dir}/MANIFEST.MF" append="true"/>
-        <echo message=" javax.xml.transform.stream;resolution:=optional,${line.separator}"                                                              file="${classes.dir}/MANIFEST.MF" append="true"/>
-        <echo message=" javax.xml.transform.dom;resolution:=optional,${line.separator}"                                                                 file="${classes.dir}/MANIFEST.MF" append="true"/>
-        <echo message=" javax.sql;resolution:=optional,${line.separator}"                                                                               file="${classes.dir}/MANIFEST.MF" append="true"/>
-        <echo message=" javax.validation;resolution:=optional,${line.separator}"                                                                        file="${classes.dir}/MANIFEST.MF" append="true"/>
-        <echo message=" javax.validation.groups;resolution:=optional${line.separator}"                                                                  file="${classes.dir}/MANIFEST.MF" append="true"/>
-        <echo message="HK2-Bundle-Name: org.eclipse.persistence:${ant.project.name}${line.separator}"                                                   file="${classes.dir}/MANIFEST.MF" append="true"/>
-    </target>
-
-    <target name="bnd-package" if="bnd.lib" depends="init">
+    <target name="bnd-package" if="bnd.bld" depends="init">
         <taskdef resource="aQute/bnd/ant/taskdef.properties" classpath="${bnd.lib}"/>
         <bnd
             classpath="${classes.dir}"
