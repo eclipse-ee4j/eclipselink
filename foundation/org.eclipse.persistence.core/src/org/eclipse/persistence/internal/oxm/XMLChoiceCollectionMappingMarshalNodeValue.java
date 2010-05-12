@@ -60,6 +60,10 @@ public class XMLChoiceCollectionMappingMarshalNodeValue extends NodeValue implem
     }
 
     public boolean marshal(XPathFragment xPathFragment, MarshalRecord marshalRecord, Object object, AbstractSession session, NamespaceResolver namespaceResolver) {
+        if(xmlChoiceCollectionMapping.isReadOnly()) {
+            return false;
+        }
+        
         Object value = xmlChoiceCollectionMapping.getAttributeValueFromObject(object);
         if(value == null) {
             return false;

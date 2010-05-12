@@ -245,6 +245,9 @@ public class XMLChoiceCollectionMapping extends DatabaseMapping implements XMLMa
 
     @Override
     public void writeFromObjectIntoRow(Object object, AbstractRecord row, AbstractSession session, WriteType writeType) throws DescriptorException {
+        if(this.isReadOnly()) {
+            return;
+        }
         Object attributeValue = getAttributeValueFromObject(object);
         List<XMLEntry> nestedRows = new ArrayList<XMLEntry>();
         XMLRecord record = (XMLRecord)row;

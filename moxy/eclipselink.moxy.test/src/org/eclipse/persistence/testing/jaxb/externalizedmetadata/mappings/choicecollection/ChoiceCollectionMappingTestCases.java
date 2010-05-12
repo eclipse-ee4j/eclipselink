@@ -161,8 +161,7 @@ public class ChoiceCollectionMappingTestCases extends ExternalizedMetadataTestCa
         try {
             Marshaller marshaller = jaxbContext.createMarshaller();
             Employee ctrlEmp = getControlObject();
-            // NOTE: the following line can be removed when bug# 308538 has been fixed.
-            ctrlEmp.readOnlyThings = null;
+
             marshaller.marshal(ctrlEmp, testDoc);
             //marshaller.marshal(ctrlEmp, System.out);
             assertTrue("Accessor method was not called as expected", ctrlEmp.wasGetCalled);
