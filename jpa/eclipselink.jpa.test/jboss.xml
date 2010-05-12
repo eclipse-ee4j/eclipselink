@@ -145,7 +145,7 @@
         <java classname="org.jboss.Shutdown" 
             fork="true"
             failonerror="false">
-            <arg line="-S -u ${admin.user} -p ${admin.password} ${server.url}"/>
+            <arg line="-S -u ${server.user} -p ${server.pwd} ${server.url}"/>
             <classpath>
                 <fileset dir="${server.lib}" includes="${server.depend}"/>
                 <pathelement location="${jboss.home}/bin/shutdown.jar"/>
