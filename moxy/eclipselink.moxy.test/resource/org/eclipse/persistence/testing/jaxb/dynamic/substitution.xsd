@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema targetNamespace="myNamespace" xmlns:myns="myNamespace" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+
+    <xs:element name="name" type="xs:string"/>
+    <xs:element name="nom" substitutionGroup="myns:name"/>
+
+    <xs:complexType name="person">
+        <xs:sequence>
+            <xs:element ref="myns:name"/>
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:element name="person" type="myns:person"/>
+    <xs:element name="personne" substitutionGroup="myns:person"/>
+
+</xs:schema>

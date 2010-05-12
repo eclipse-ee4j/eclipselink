@@ -12,13 +12,9 @@
  ******************************************************************************/
 package org.eclipse.persistence.testing.jaxb.dynamic;
 
-import java.io.BufferedReader;
-import java.io.DataInputStream;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.lang.reflect.UndeclaredThrowableException;
 import java.math.BigDecimal;
 import java.math.BigInteger;
@@ -46,7 +42,6 @@ import org.w3c.dom.Node;
 import org.xml.sax.EntityResolver;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
-import org.xml.sax.SAXParseException;
 
 public class DynamicJAXBFromXSDTestCases extends TestCase {
 
@@ -76,6 +71,12 @@ public class DynamicJAXBFromXSDTestCases extends TestCase {
     private static final String XMLENUM = RESOURCE_DIR + "xmlenum.xsd";
     private static final String XMLELEMENTDECL = RESOURCE_DIR + "xmlelementdecl.xsd";
     private static final String XMLELEMENTCOLLECTION = RESOURCE_DIR + "xmlelement-collection.xsd";
+    private static final String JAXBCUSTOM = RESOURCE_DIR + "jaxbcustom.xsd";
+    private static final String SUBSTITUTION = RESOURCE_DIR + "substitution.xsd";
+
+    // Test Instance Docs
+    private static final String PERSON_XML = RESOURCE_DIR + "sub-person-en.xml";
+    private static final String PERSONNE_XML = RESOURCE_DIR + "sub-personne-fr.xml";
 
     // Names of types to instantiate
     private static final String PACKAGE = "mynamespace";
@@ -218,7 +219,7 @@ public class DynamicJAXBFromXSDTestCases extends TestCase {
 
         Document marshalDoc = DocumentBuilderFactory.newInstance().newDocumentBuilder().newDocument();
         jaxbContext.createMarshaller().marshal(person, marshalDoc);
-        
+
         // Nothing to really test, if the import failed we couldn't have created the salary.
     }
 
@@ -669,6 +670,104 @@ public class DynamicJAXBFromXSDTestCases extends TestCase {
 
         assertEquals("Root element was not 'individuo' as expected.", "individuo", node.getLocalName());
     }
+
+    public void testSchemaWithJAXBBindings() throws Exception {
+        // jaxbcustom.xsd specifies that the generated package name should be "foo.bar" and
+        // the person type will be named MyPersonType in Java
+
+        InputStream inputStream = ClassLoader.getSystemResourceAsStream(JAXBCUSTOM);
+        jaxbContext = DynamicJAXBContextFactory.createContextFromXSD(inputStream, null, null, null);
+
+        DynamicEntity person = jaxbContext.newDynamicEntity("foo.bar.MyPersonType");
+        assertNotNull("Could not create Dynamic Entity.", person);
+
+        person.set("name", "Bob Dobbs");
+
+        Document marshalDoc = DocumentBuilderFactory.newInstance().newDocumentBuilder().newDocument();
+        jaxbContext.createMarshaller().marshal(person, marshalDoc);
+    }
+
+    public void testSubstitutionGroupsUnmarshal() throws Exception {
+        try {
+            InputStream xsdStream = ClassLoader.getSystemResourceAsStream(SUBSTITUTION);
+            jaxbContext = DynamicJAXBContextFactory.createContextFromXSD(xsdStream, null, null, null);
+
+            InputStream xmlStream = ClassLoader.getSystemResourceAsStream(PERSON_XML);
+            JAXBElement person = (JAXBElement) jaxbContext.createUnmarshaller().unmarshal(xmlStream);
+            assertEquals("Element was not substituted properly: ", new QName("myNamespace", "person"), person.getName());
+            JAXBElement name = (JAXBElement) ((DynamicEntity) person.getValue()).get("name");
+            assertEquals("Element was not substituted properly: ", new QName("myNamespace", "name"), name.getName());
+
+            // ====================================================================
+
+            InputStream xmlStream2 = ClassLoader.getSystemResourceAsStream(PERSONNE_XML);
+            JAXBElement person2 = (JAXBElement) jaxbContext.createUnmarshaller().unmarshal(xmlStream2);
+            assertEquals("Element was not substituted properly: ", new QName("myNamespace", "personne"), person2.getName());
+            JAXBElement name2 = (JAXBElement) ((DynamicEntity) person2.getValue()).get("name");
+            assertEquals("Element was not substituted properly: ", new QName("myNamespace", "nom"), name2.getName());
+        } catch (UndeclaredThrowableException e) {
+            if (e.getUndeclaredThrowable() instanceof NoSuchMethodException) {
+                // We will get NoSuchMethod: XmlElementRef.required() if not running JAXB 2.2
+                // or greater, so just pass in this case.
+                assertTrue(true);
+            }
+        }
+    }
+
+    public void testSubstitutionGroupsMarshal() throws Exception {
+        try {
+            InputStream inputStream = ClassLoader.getSystemResourceAsStream(SUBSTITUTION);
+            jaxbContext = DynamicJAXBContextFactory.createContextFromXSD(inputStream, null, null, null);
+
+            QName personQName = new QName("myNamespace", "person");
+            DynamicEntity person = jaxbContext.newDynamicEntity(PACKAGE + "." + PERSON);
+            JAXBElement<DynamicEntity> personElement = new JAXBElement<DynamicEntity>(personQName, DynamicEntity.class, person);
+            personElement.setValue(person);
+
+            QName nameQName = new QName("myNamespace", "name");
+            JAXBElement<String> nameElement = new JAXBElement<String>(nameQName, String.class, "Marty Friedman");
+
+            person.set("name", nameElement);
+
+            Document marshalDoc = DocumentBuilderFactory.newInstance().newDocumentBuilder().newDocument();
+            jaxbContext.createMarshaller().marshal(personElement, marshalDoc);
+
+            Node node1 = marshalDoc.getDocumentElement();
+            assertEquals("Incorrect element name: ", "person", node1.getLocalName());
+
+            Node node2 = node1.getFirstChild();
+            assertEquals("Incorrect element name: ", "name", node2.getLocalName());
+
+            // ====================================================================
+
+            QName personneQName = new QName("myNamespace", "personne");
+            DynamicEntity personne = jaxbContext.newDynamicEntity(PACKAGE + "." + PERSON);
+            JAXBElement<DynamicEntity> personneElement = new JAXBElement<DynamicEntity>(personneQName, DynamicEntity.class, personne);
+            personneElement.setValue(personne);
+
+            QName nomQName = new QName("myNamespace", "nom");
+            JAXBElement<String> nomElement = new JAXBElement<String>(nomQName, String.class, "Marty Friedman");
+
+            personne.set("name", nomElement);
+
+            Document marshalDoc2 = DocumentBuilderFactory.newInstance().newDocumentBuilder().newDocument();
+            jaxbContext.createMarshaller().marshal(personneElement, marshalDoc2);
+
+            Node node3 = marshalDoc2.getDocumentElement();
+            assertEquals("Incorrect element name: ", "personne", node3.getLocalName());
+
+            Node node4 = node3.getFirstChild();
+            assertEquals("Incorrect element name: ", "nom", node4.getLocalName());
+        } catch (UndeclaredThrowableException e) {
+            if (e.getUndeclaredThrowable() instanceof NoSuchMethodException) {
+                // We will get NoSuchMethod: XmlElementRef.required() if not running JAXB 2.2
+                // or greater, so just pass in this case.
+                assertTrue(true);
+            }
+        }
+    }
+
+    // ====================================================================
 
     private void print(Object o) throws Exception {
         Marshaller marshaller = jaxbContext.createMarshaller();

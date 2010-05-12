@@ -124,7 +124,7 @@ public class JAXBTestSuite extends TestCase {
         
         suite.addTest(org.eclipse.persistence.testing.jaxb.dynamic.DynamicJAXBTestSuite.suite());
         
-        suite.addTestSuite(org.eclipse.persistence.testing.jaxb.substitution.SubstitutionTestCases.class);
+        suite.addTest(org.eclipse.persistence.testing.jaxb.substitution.SubstitutionTestSuite.suite());
         
         return suite;
     }
