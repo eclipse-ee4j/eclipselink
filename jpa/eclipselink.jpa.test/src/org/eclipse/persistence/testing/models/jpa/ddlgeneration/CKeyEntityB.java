@@ -58,8 +58,11 @@ public class CKeyEntityB {
         @JoinColumn(name="FK_SEQ", referencedColumnName="SEQ"),
         @JoinColumn(name="FK_CODE", referencedColumnName="CODE")
     })
-    private List<Comment> comments;
+    private List<Comment<String>> comments;
     
+    @ManyToOne
+    private Comment<String> comment;
+
     public CKeyEntityB() {
     }
 
@@ -114,11 +117,19 @@ public class CKeyEntityB {
     public void setUniqueA(CKeyEntityA uniqueA) {
         this.uniqueA = uniqueA;
     }
-    public List<Comment> getComments() {
+    public List<Comment<String>> getComments() {
         return comments;
     }
 
-    public void setComments(List<Comment> comments) {
+    public void setComments(List<Comment<String>> comments) {
         this.comments = comments;
+    }
+    
+    public Comment<String> getComment() {
+        return comment;
+    }
+
+    public void setComment(Comment<String> comment) {
+        this.comment = comment;
     }
 }

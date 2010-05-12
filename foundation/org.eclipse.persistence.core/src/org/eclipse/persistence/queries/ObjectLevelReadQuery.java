@@ -1816,6 +1816,8 @@ public abstract class ObjectLevelReadQuery extends ObjectBuildingQuery {
             this.isResultSetOptimizedQuery = readQuery.isResultSetOptimizedQuery;
             this.shouldIncludeData = readQuery.shouldIncludeData;
             this.inMemoryQueryIndirectionPolicy = readQuery.inMemoryQueryIndirectionPolicy;
+            this.lockModeType = readQuery.lockModeType;
+            this.defaultBuilder = readQuery.defaultBuilder;
         }
     }
     
@@ -2070,6 +2072,14 @@ public abstract class ObjectLevelReadQuery extends ObjectBuildingQuery {
      */
     public void setAdditionalFields(List<Object> additionalFields) {
         this.additionalFields = additionalFields;
+    }
+
+    /**
+     * PUBLIC:
+     * Return if the cache should be checked.
+     */
+    public boolean shouldCheckCache() {
+        return this.cacheUsage != DoNotCheckCache;
     }
 
     /**

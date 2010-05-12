@@ -1042,7 +1042,6 @@ public class SymfowarePlatform extends DatabasePlatform {
             ExpressionSQLPrinter printer, SQLSelectStatement statement) {
         int max = 0;
 
-        statement.setMaximumAliasLength(getMaxFieldNameSize());
         if (statement.getQuery() != null) {
             max = statement.getQuery().getMaxRows();
         }

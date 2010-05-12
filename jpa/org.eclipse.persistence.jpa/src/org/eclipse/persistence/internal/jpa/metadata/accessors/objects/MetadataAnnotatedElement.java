@@ -301,18 +301,27 @@ public class MetadataAnnotatedElement extends MetadataAccessibleObject {
             // TODO: This is guessing, need to be more logical.
             // Collection<String> -> [Collection, String], get element class.
             String elementClass = m_genericType.get(1);
-            // If size is greater than 4 then assume it is a double generic Map,
-            // Map<T, Phone> -> [Map, T, Z, T, X]
-            if (m_genericType.size() > 4) {
-                elementClass = m_genericType.get(4);
-            } else if (m_genericType.size() > 3) {
-                // If size is greater than 3 then assume it is a generic Map,
-                // Map<T, Phone> -> [Map, T, Z, Phone]
-                elementClass = m_genericType.get(3);
-            } else if (m_genericType.size() > 2) {
-                // If size is greater than 2 then assume it is a Map,
-                // Map<String, Phone> -> [Map, String, Phone]
-                elementClass = m_genericType.get(2);
+            if (m_genericType.size() > 2) {
+                MetadataClass collectionClass = getMetadataClass(m_genericType.get(0));
+                if (collectionClass.extendsInterface(Map.class)) {
+                    // If size is greater than 4 then assume it is a double generic Map,
+                    // Map<T, Phone> -> [Map, T, Z, T, X]
+                    if (m_genericType.size() > 4) {
+                        elementClass = m_genericType.get(4);
+                    } else if (m_genericType.size() == 4) {
+                        // If size is greater than 3 then assume it is a generic Map,
+                        // Map<T, Phone> -> [Map, T, Z, Phone]
+                        elementClass = m_genericType.get(3);
+                    } else if (m_genericType.size() == 3) {
+                        // If size is greater than 2 then assume it is a Map,
+                        // Map<String, Phone> -> [Map, String, Phone]
+                        elementClass = m_genericType.get(2);
+                    }
+                } else if (elementClass.length() == 1) {
+                    // Assume Collection with a generic,
+                    // Collection<T> -> [Collection T Z]
+                    elementClass = m_genericType.get(2);
+                }
             }
             if (elementClass.length() == 1) {
                 // Assume is a generic type variable, find real type.

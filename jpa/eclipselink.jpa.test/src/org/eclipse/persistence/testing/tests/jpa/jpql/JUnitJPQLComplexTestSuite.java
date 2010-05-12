@@ -2897,19 +2897,20 @@ public class JUnitJPQLComplexTestSuite extends JUnitTestCase
     }
     
     public void testComplexLike() {
+        if (!getServerSession().getPlatform().isOracle()) {
+            return;
+        }
         EntityManager em = createEntityManager();
         Query query = em.createQuery("Select e from Employee e where UPPER(e.firstName) like UPPER('b%')");
-        query.getResultList();
-        query = em.createQuery("Select e from Employee e where e.firstName like e.firstName");
         query.getResultList();
         query = em.createQuery("Select e from Employee e where e.firstName like (Select e2.firstName from Employee e2 where e = e2)");
         query.getResultList();
         query = em.createQuery("Select e from Employee e where e.firstName like UPPER('b%') escape UPPER('_')");
         query.getResultList();
-        if (getServerSession().getPlatform().isOracle()) {
-            query = em.createQuery("Select e from Employee e where e.salary like '123%'");
-            query.getResultList();
-        }
+        query = em.createQuery("Select e from Employee e where e.salary like '123%'");
+        query.getResultList();
+        query = em.createQuery("Select e from Employee e where e.firstName like e.firstName");
+        query.getResultList();
         query = em.createQuery("Select e from Employee e where e.firstName like 'foox_' escape 'x'");
         query.getResultList();
         closeEntityManager(em);

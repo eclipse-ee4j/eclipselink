@@ -12,8 +12,11 @@
  ******************************************************************************/  
 package org.eclipse.persistence.internal.expressions;
 
+import java.util.Set;
+
 import org.eclipse.persistence.exceptions.*;
 import org.eclipse.persistence.expressions.*;
+import org.eclipse.persistence.internal.helper.DatabaseField;
 import org.eclipse.persistence.internal.sessions.AbstractRecord;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.descriptors.ClassDescriptor;
@@ -43,10 +46,10 @@ public class LogicalExpression extends CompoundExpression {
      */
     public boolean doesConform(Object object, AbstractSession session, AbstractRecord translationRow, int valueHolderPolicy, boolean objectIsUnregistered) {
         // This should always be and or or.
-        if (getOperator().getSelector() == ExpressionOperator.And) {
-            return getFirstChild().doesConform(object, session, translationRow, valueHolderPolicy, objectIsUnregistered) && getSecondChild().doesConform(object, session, translationRow, valueHolderPolicy, objectIsUnregistered);
-        } else if (getOperator().getSelector() == ExpressionOperator.Or) {
-            return getFirstChild().doesConform(object, session, translationRow, valueHolderPolicy, objectIsUnregistered) || getSecondChild().doesConform(object, session, translationRow, valueHolderPolicy, objectIsUnregistered);
+        if (this.operator.getSelector() == ExpressionOperator.And) {
+            return this.firstChild.doesConform(object, session, translationRow, valueHolderPolicy, objectIsUnregistered) && this.secondChild.doesConform(object, session, translationRow, valueHolderPolicy, objectIsUnregistered);
+        } else if (this.operator.getSelector() == ExpressionOperator.Or) {
+            return this.firstChild.doesConform(object, session, translationRow, valueHolderPolicy, objectIsUnregistered) || this.secondChild.doesConform(object, session, translationRow, valueHolderPolicy, objectIsUnregistered);
         }
 
         throw QueryException.cannotConformExpression();
@@ -59,20 +62,42 @@ public class LogicalExpression extends CompoundExpression {
      * Ensure that the query is querying the exact primary key.
      * Return false if not on the primary key.
      */
+    @Override
     public boolean extractPrimaryKeyValues(boolean requireExactMatch, ClassDescriptor descriptor, AbstractRecord primaryKeyRow, AbstractRecord translationRow) {
         // If this is a primary key expression then it can only have and/or relationships.
-        if (getOperator().getSelector() != ExpressionOperator.And) {
+        if (this.operator.getSelector() != ExpressionOperator.And) {
             // If this is an exact primary key expression it can not have ors.
             // After fixing bug 2782991 this must now work correctly.
-            if (requireExactMatch || (getOperator().getSelector() != ExpressionOperator.Or)) {
+            if (requireExactMatch || (this.operator.getSelector() != ExpressionOperator.Or)) {
                 return false;
             }
         }
-        boolean validExpression = getFirstChild().extractPrimaryKeyValues(requireExactMatch, descriptor, primaryKeyRow, translationRow);
+        boolean validExpression = this.firstChild.extractPrimaryKeyValues(requireExactMatch, descriptor, primaryKeyRow, translationRow);
         if (requireExactMatch && (!validExpression)) {
             return false;
         }
-        return getSecondChild().extractPrimaryKeyValues(requireExactMatch, descriptor, primaryKeyRow, translationRow);
+        return this.secondChild.extractPrimaryKeyValues(requireExactMatch, descriptor, primaryKeyRow, translationRow);
+    }
+
+    /**
+     * INTERNAL:
+     * Return if the expression is not a valid primary key expression and add all primary key fields to the set.
+     */
+    @Override
+    public boolean extractPrimaryKeyFields(boolean requireExactMatch, ClassDescriptor descriptor, Set<DatabaseField> fields) {
+        // If this is a primary key expression then it can only have and/or relationships.
+        if (this.operator.getSelector() != ExpressionOperator.And) {
+            // If this is an exact primary key expression it can not have ors.
+            // After fixing bug 2782991 this must now work correctly.
+            if (requireExactMatch || (this.operator.getSelector() != ExpressionOperator.Or)) {
+                return false;
+            }
+        }
+        boolean validExpression = this.firstChild.extractPrimaryKeyFields(requireExactMatch, descriptor, fields);
+        if (requireExactMatch && (!validExpression)) {
+            return false;
+        }
+        return this.secondChild.extractPrimaryKeyFields(requireExactMatch, descriptor, fields);
     }
 
     /**

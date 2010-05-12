@@ -1523,8 +1523,8 @@ public abstract class DatabaseQuery implements Cloneable, Serializable {
     /**
      * INTERNAL: Copy all setting from the query. This is used to morph queries
      * from one type to the other. By default this calls prepareFromQuery, but
-     * additional properties may be required to be copied as prepareFromQuery o
-     * nly copies properties that affect the SQL.
+     * additional properties may be required to be copied as prepareFromQuery
+     * only copies properties that affect the SQL.
      */
     public void copyFromQuery(DatabaseQuery query) {
         prepareFromQuery(query);
@@ -1543,6 +1543,9 @@ public abstract class DatabaseQuery implements Cloneable, Serializable {
         this.shouldPrepare = query.shouldPrepare;
         this.shouldUseWrapperPolicy = query.shouldUseWrapperPolicy;
         this.properties = query.properties;
+        this.doNotRedirect = query.doNotRedirect;
+        this.shouldRetrieveBypassCache = query.shouldRetrieveBypassCache;
+        this.shouldStoreBypassCache = query.shouldStoreBypassCache;
     }
 
     /**

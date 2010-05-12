@@ -31,13 +31,15 @@ import javax.persistence.TableGenerator;
     valueColumnName = "SEQ_COUNT",
     pkColumnValue = "COMMENT_SEQ"
 )
-public class Comment {
+public class Comment<X> {
     @Id
     @GeneratedValue(strategy = TABLE, generator = "COMMENT_TABLE_GENERATOR")
     private int id;
     
     private String text;
     
+    private X flag;
+
     @Lob
     @Column(name="PHOTO", length=80000)
     private Byte[] photo;
@@ -85,5 +87,13 @@ public class Comment {
     
     public void setTest(String text) {
         this.text = text;
+    }
+    
+    public X getFlag() {
+        return flag;
+    }
+
+    public void setFlag(X flag) {
+        this.flag = flag;
     }
 }

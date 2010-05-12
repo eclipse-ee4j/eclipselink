@@ -1897,6 +1897,23 @@ public class ObjectBuilder implements Cloneable, Serializable {
         }
         return primaryKey;
     }
+    
+    /**
+     * Return if the expression is by primary key.
+     */
+    public boolean isPrimaryKeyExpression(boolean requiresExactMatch, Expression expression, AbstractSession session) {
+        expression.getBuilder().setSession(session.getRootSession(null));
+        Set<DatabaseField> fields = new HashSet(this.descriptor.getPrimaryKeyFields().size());
+        boolean isValid = expression.extractPrimaryKeyFields(requiresExactMatch, this.descriptor, fields);
+        if (requiresExactMatch && (!isValid)) {
+            return false;
+        }
+        // Check that the sizes match.
+        if (fields.size() != this.descriptor.getPrimaryKeyFields().size()) {
+            return false;
+        }        
+        return true;
+    }
 
     /**
      * Extract primary key attribute values from the domainObject.

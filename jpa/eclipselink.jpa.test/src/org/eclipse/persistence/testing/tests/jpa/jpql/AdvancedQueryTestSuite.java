@@ -148,6 +148,7 @@ public class AdvancedQueryTestSuite extends JUnitTestCase {
         suite.addTest(new AdvancedQueryTestSuite("testJoinFetchingPagination"));
         suite.addTest(new AdvancedQueryTestSuite("testMapKeyJoinFetching"));
         suite.addTest(new AdvancedQueryTestSuite("testMapKeyBatchFetching"));
+        suite.addTest(new AdvancedQueryTestSuite("testJPQLCacheHits"));
         return suite;
     }
     
@@ -2272,6 +2273,39 @@ public class AdvancedQueryTestSuite extends JUnitTestCase {
         } finally {
             rollbackTransaction(em);
             closeEntityManager(em);
+            if (counter != null) {
+                counter.remove();
+            }
+        }
+    }
+
+    /**
+     * Test cache hits on pk JPQL queries.
+     */
+    public void testJPQLCacheHits() {
+        EntityManager em = createEntityManager();
+        beginTransaction(em);
+        QuerySQLTracker counter = null;
+        try {
+            // Load an employee into the cache.  
+            Query query = em.createQuery("Select employee from Employee employee");
+            List result = query.getResultList();
+            Employee employee = (Employee)result.get(result.size() - 1);
+
+            // Count SQL.
+            counter = new QuerySQLTracker(getServerSession());
+            // Query by primary key.
+            query = em.createQuery("Select employee from Employee employee where employee.id = :id");
+            query.setParameter("id", employee.getId());
+            Employee queryResult = (Employee)query.getSingleResult();
+            if (!queryResult.getId().equals(employee.getId())) {
+                fail("Employees are not equal: " + employee + ", " + queryResult);
+            }
+            if (counter.getSqlStatements().size() > 0) {
+                fail("Cache hit did not occur: " + counter.getSqlStatements());
+            }
+        } finally {
+            rollbackTransaction(em);
             if (counter != null) {
                 counter.remove();
             }

@@ -568,7 +568,7 @@ public class DDLGenerationJUnitTestSuite extends JUnitTestCase {
             // add comments
             long seq = System.currentTimeMillis(); // just to get unique value :-)
             CKeyEntityB b = new CKeyEntityB(new CKeyEntityBPK(seq, "B1210"));
-            List<Comment> comments = new ArrayList(2);
+            List<Comment<String>> comments = new ArrayList(2);
             comments.add(new Comment("comment 1"));
             comments.add(new Comment("comment 2"));
             b.setComments(comments);

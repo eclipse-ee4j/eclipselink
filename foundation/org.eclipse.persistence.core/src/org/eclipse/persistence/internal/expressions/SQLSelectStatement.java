@@ -55,9 +55,6 @@ public class SQLSelectStatement extends SQLStatement {
     /** Used for "Select Distinct" option. */
     protected short distinctState;
     
-    /** maximum number of characters that can be used in an alias on this platform */
-    protected Integer maximumAliasLength;
-
     /** Order by clause for read all queries. */
     protected List<Expression> orderByExpressions;
 
@@ -1094,12 +1091,6 @@ public class SQLSelectStatement extends SQLStatement {
     public boolean getUseUniqueFieldAliases(){
         return this.useUniqueFieldAliases;
     }
-    /**
-     * Return maximum number of characters allowed in an alias field or null if no limit
-     */
-    public Integer getMaximumAliasLength(){
-        return this.maximumAliasLength;
-    }
 
     protected boolean hasAliasForTable(DatabaseTable table) {
         if (tableAliases != null) {
@@ -1737,14 +1728,6 @@ public class SQLSelectStatement extends SQLStatement {
     }
 
     /**
-     *  If set, unique field aliases will not be generated longer than this value
-     */
-    public void setMaximumAliasLength(Integer maximumAliasLength){
-        this.maximumAliasLength = maximumAliasLength;
-    }
-
-
-    /**
      * INTERNAL:
      * If a distinct has been set the DISTINCT clause will be printed.
      * This is required for batch reading.
@@ -1800,19 +1783,7 @@ public class SQLSelectStatement extends SQLStatement {
     * The alias is automatically truncated
     */
     public String generatedAlias(String fieldName) {
-        final String counterValueString = String.valueOf(getNextFieldCounterValue());
-        final Integer maximumAliasLength = getMaximumAliasLength();
-        if (null != maximumAliasLength) {
-            final int counterValueStringLength = counterValueString.length();
-            final int fieldNameLength = fieldName.length();
-            final int maximumAliasLengthValue = maximumAliasLength.intValue();
-            if ((fieldNameLength + counterValueStringLength) > maximumAliasLengthValue) {
-                // truncate the alias so that appending the counter value doesn't exceed the maximum length
-                return fieldName.substring(0, maximumAliasLengthValue - counterValueStringLength - 1) + counterValueString;
-            }
-        }
-        // If no maximum limit, or if we would not exceed the limit
-        return fieldName + counterValueString;
+        return "a" + String.valueOf(getNextFieldCounterValue());
      }
 
     /**

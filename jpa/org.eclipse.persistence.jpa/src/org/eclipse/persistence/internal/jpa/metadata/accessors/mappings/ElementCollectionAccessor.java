@@ -737,12 +737,12 @@ public class ElementCollectionAccessor extends DirectCollectionAccessor implemen
         for (JoinColumnMetadata joinColumn : getJoinColumns(getCollectionTable().getJoinColumns(), getReferenceDescriptor())) {
             // The default name is the primary key of the owning entity.
             DatabaseField pkField = joinColumn.getPrimaryKeyField();
-            setFieldName(pkField, getDescriptor().getPrimaryKeyFieldName(), MetadataLogger.PK_COLUMN);
-            pkField.setTable(getDescriptor().getPrimaryTable());
+            setFieldName(pkField, getOwningDescriptor().getPrimaryKeyFieldName(), MetadataLogger.PK_COLUMN);
+            pkField.setTable(getOwningDescriptor().getPrimaryTable());
                 
             // The default name is the primary key of the owning entity.
             DatabaseField fkField = joinColumn.getForeignKeyField();
-            setFieldName(fkField, getDescriptor().getAlias() + "_" + getDescriptor().getPrimaryKeyFieldName(), MetadataLogger.FK_COLUMN);
+            setFieldName(fkField, getOwningDescriptor().getAlias() + "_" + getOwningDescriptor().getPrimaryKeyFieldName(), MetadataLogger.FK_COLUMN);
             fkField.setTable(getReferenceDatabaseTable());
                 
             if (mapping.isDirectCollectionMapping()) {
@@ -814,7 +814,7 @@ public class ElementCollectionAccessor extends DirectCollectionAccessor implemen
                     // qualify it with our collection table. Otherwise, default 
                     // a field name translation using the name of the field on 
                     // the mapping.
-                    overrideField = (DatabaseField) directMapping.getField().clone();
+                    overrideField = directMapping.getField().clone();
                     
                     if (nestedAggregateObjectMapping != null && nestedAggregateObjectMapping.getAggregateToSourceFieldNames().containsKey(overrideField.getName())) {
                         overrideField = new DatabaseField(nestedAggregateObjectMapping.getAggregateToSourceFieldNames().get(overrideField.getName()));
@@ -836,7 +836,7 @@ public class ElementCollectionAccessor extends DirectCollectionAccessor implemen
                     
                     if (associationOverride == null) {
                         for (DatabaseField fkField : oneToOneMapping.getForeignKeyFields()) {
-                            DatabaseField collectionTableField = (DatabaseField) fkField.clone();
+                            DatabaseField collectionTableField = fkField.clone();
                             collectionTableField.setTable(getReferenceDatabaseTable());
                             embeddableMapping.addFieldNameTranslation(collectionTableField.getQualifiedName(), fkField.getName());
                         }

@@ -13,6 +13,7 @@
 package org.eclipse.persistence.internal.expressions;
 
 import java.util.*;
+
 import org.eclipse.persistence.exceptions.*;
 import org.eclipse.persistence.mappings.*;
 import org.eclipse.persistence.mappings.foundation.AbstractDirectMapping;
@@ -302,6 +303,106 @@ public class RelationExpression extends CompoundExpression {
         return true;
     }
 
+    /**
+     * INTERNAL:
+     * Return if the expression is not a valid primary key expression and add all primary key fields to the set.
+     */
+    @Override
+    public boolean extractPrimaryKeyFields(boolean requireExactMatch, ClassDescriptor descriptor, Set<DatabaseField> fields) {
+        // If an exact match is required then the operator must be equality.
+        if (requireExactMatch && (!(this.operator.getSelector() == ExpressionOperator.Equal))) {
+            return false;
+        }
+        // If not an exact match only =, <, <=, >=, >,... are allowed but not IN which has a different type
+        if ((!requireExactMatch) && (this.operator.getSelector() == ExpressionOperator.In)) {
+            return false;
+        }
+        DatabaseField field = null;
+        if (!(this.secondChild.isConstantExpression() || this.secondChild.isParameterExpression())
+                && !(this.firstChild.isConstantExpression() || (this.firstChild.isParameterExpression()))) {
+            return false;
+        }
+        // Ensure that the primary key is being queried on.
+        if (this.firstChild.isFieldExpression()) {
+            FieldExpression child = (FieldExpression)this.firstChild;
+            // Only get value for the source object.
+            if (!child.getBaseExpression().isExpressionBuilder()) {
+                return false;
+            }
+            field = child.getField();
+        } else if (this.firstChild.isQueryKeyExpression()) {
+            QueryKeyExpression child = (QueryKeyExpression)this.firstChild;
+            // Only get value for the source object.            
+            if (!child.getBaseExpression().isExpressionBuilder()) {
+                return false;
+            }
+            DatabaseMapping mapping = descriptor.getObjectBuilder().getMappingForAttributeName(child.getName());
+            if (mapping != null) {
+                if (!mapping.isPrimaryKeyMapping()) {
+                    return false;
+                }
+                // Only support referencing limited number of relationship types.            
+                if (mapping.isObjectReferenceMapping() || mapping.isAggregateObjectMapping()) {
+                    for (DatabaseField mappingField : mapping.getFields()) {
+                        if (descriptor.getPrimaryKeyFields().contains(mappingField)) {
+                            fields.add(mappingField);
+                        }                        
+                    }
+                    return true;
+                }
+
+                if (!mapping.isDirectToFieldMapping()) {
+                    return false;
+                }
+                field = ((AbstractDirectMapping)mapping).getField();
+            } else {
+                // Only get field for the source object.
+                field = descriptor.getObjectBuilder().getFieldForQueryKeyName(child.getName());
+            }
+        } else if (this.secondChild.isFieldExpression()) {
+            FieldExpression child = (FieldExpression)this.secondChild;
+            // Only get field for the source object.
+            if (!child.getBaseExpression().isExpressionBuilder()) {
+                return false;
+            }
+            field = child.getField();
+        } else if (this.secondChild.isQueryKeyExpression()) {
+            QueryKeyExpression child = (QueryKeyExpression)this.secondChild;
+            // Only get value for the source object.
+            if (!child.getBaseExpression().isExpressionBuilder()) {
+                return false;
+            }
+            DatabaseMapping mapping = descriptor.getObjectBuilder().getMappingForAttributeName(child.getName());
+            // Only support referencing limited number of relationship types.
+            if (mapping != null) {
+                if (!mapping.isPrimaryKeyMapping()) {
+                    return false;
+                }
+                if (mapping.isObjectReferenceMapping() || mapping.isAggregateObjectMapping()) {
+                    for (DatabaseField mappingField : mapping.getFields()) {
+                        if (descriptor.getPrimaryKeyFields().contains(mappingField)) {
+                            fields.add(mappingField);
+                        }                        
+                    }
+                    return true;
+                }
+                if (!mapping.isDirectToFieldMapping()) {
+                    return false;
+                }
+                field = ((AbstractDirectMapping)mapping).getField();
+            } else {
+                field = descriptor.getObjectBuilder().getFieldForQueryKeyName(child.getName());
+            }
+        } else {
+            return false;
+        }
+        if ((field == null) || (!descriptor.getPrimaryKeyFields().contains(field))) {
+            return false;
+        }
+        fields.add(field);
+        return true;
+    }
+    
     /**
      * Check if the expression is an equal null expression, these must be handle in a special way in SQL.
      */

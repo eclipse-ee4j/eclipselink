@@ -39,6 +39,7 @@ public class ComplexAggregateTableCreator extends org.eclipse.persistence.tools.
         
         addTableDefinition(buildROLETable());
         addTableDefinition(buildPLAYERROLESTable());
+        addTableDefinition(buildHockeyCoach_NICKNAMESTable());
     }
 
     public TableDefinition buildCITYSLICKERTable() {
@@ -270,6 +271,37 @@ public class ComplexAggregateTableCreator extends org.eclipse.persistence.tools.
         fieldTEAMID.setShouldAllowNull(true);
         fieldTEAMID.setForeignKeyFieldName("CMP3_HOCKEY_TEAM.ID");
         table.addField(fieldTEAMID);
+        
+        return table;
+    }
+    
+    public TableDefinition buildHockeyCoach_NICKNAMESTable() {
+        TableDefinition table = new TableDefinition();
+        table.setName("HockeyCoach_NICKNAMES");
+
+        FieldDefinition fieldID = new FieldDefinition();
+        fieldID.setName("HOCKEYCOACH_ID");
+        fieldID.setTypeName("NUMBER");
+        fieldID.setSize(18);
+        fieldID.setSubSize(0);
+        fieldID.setIsPrimaryKey(true);
+        fieldID.setIsIdentity(false);
+        fieldID.setUnique(false);
+        fieldID.setShouldAllowNull(false);
+        fieldID.setForeignKeyFieldName("CMP3_HOCKEY_COACH.ID");
+        table.addField(fieldID);
+        
+        FieldDefinition fieldNICKNAMES = new FieldDefinition();
+        fieldNICKNAMES.setName("NICKNAMES");
+        fieldNICKNAMES.setTypeName("VARCHAR2");
+        fieldNICKNAMES.setSize(20);
+        fieldNICKNAMES.setSubSize(0);
+        fieldNICKNAMES.setIsPrimaryKey(true);
+        fieldNICKNAMES.setIsIdentity(false);
+        fieldNICKNAMES.setUnique(false);
+        fieldNICKNAMES.setShouldAllowNull(false);
+        table.addField(fieldNICKNAMES);
+        
         
         return table;
     }

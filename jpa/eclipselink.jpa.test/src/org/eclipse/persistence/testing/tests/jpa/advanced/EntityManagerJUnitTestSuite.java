@@ -3102,10 +3102,10 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
         beginTransaction(em);
         try {
             Employee emp = new Employee();
-            emp.setFirstName("Douglas");
+            emp.setFirstName("testFlushMode");
             emp.setLastName("McRae");
             em.persist(emp);
-            Query query = em.createQuery("Select e from Employee e where e.id = " + emp.getId());
+            Query query = em.createQuery("Select e from Employee e where e.firstName = 'testFlushMode'");
             if (query.getResultList().size() > 0) {
                 fail("Query triggered flush.");
             }

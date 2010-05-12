@@ -224,7 +224,7 @@ public class LoggingLocalizationResource extends ListResourceBundle {
         { "metadata_default_secondary_table_fk_column", "The secondary table foreign key column name for element [{0}] is being defaulted to: {1}." },
         { "metadata_default_one_to_one_mapping", "The element [{0}] is being defaulted to a one to one mapping." },
         { "metadata_default_one_to_many_mapping", "The element [{0}] is being defaulted to a one to many mapping." },
-        { "metadata_default_variable_one_to_many_mapping", "The element [{0}] is being defaulted to a variable one to one mapping." },
+        { "metadata_default_variable_one_to_one_mapping", "The element [{0}] is being defaulted to a variable one to one mapping." },
         { "metadata_default_one_to_one_reference_class", "The target entity (reference) class for the one to one mapping element [{0}] is being defaulted to: {1}." },
         { "metadata_default_one_to_many_reference_class", "The target entity (reference) class for the one to many mapping element [{0}] is being defaulted to: {1}." },
         { "metadata_default_many_to_one_reference_class", "The target entity (reference) class for the many to one mapping element [{0}] is being defaulted to: {1}." },

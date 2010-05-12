@@ -18,12 +18,14 @@ import static javax.persistence.FetchType.EAGER;
 import javax.persistence.*;
 
 import java.io.Serializable;
+import java.util.Collection;
 
 @Embeddable
 public class CoachVitals implements Serializable {
     private HockeyTeam hockeyTeam;
     private PersonalVitals personalVitals;
-    
+    private Collection<String> nickNames;
+
     public CoachVitals() {}
     
     @OneToOne(fetch=EAGER)
@@ -43,5 +45,14 @@ public class CoachVitals implements Serializable {
     
     public void setPersonalVitals(PersonalVitals personalVitals) {
         this.personalVitals = personalVitals;
+    }
+    
+    @ElementCollection
+    public Collection<String> getNickNames() {
+        return nickNames;
+    }
+
+    public void setNickNames(Collection<String> nickNames) {
+        this.nickNames = nickNames;
     }
 }

@@ -162,7 +162,7 @@ public abstract class DirectCollectionAccessor extends DirectAccessor {
      * INTERNAL:
      */
     protected String getDefaultCollectionTableName() {
-        return getDescriptor().getAlias() + "_" + getDefaultAttributeName(); 
+        return getOwningDescriptor().getAlias() + "_" + getDefaultAttributeName(); 
     }
     
     /**

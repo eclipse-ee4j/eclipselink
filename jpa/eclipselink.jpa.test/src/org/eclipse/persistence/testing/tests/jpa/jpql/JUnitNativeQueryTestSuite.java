@@ -13,13 +13,13 @@
  ******************************************************************************/  
 package org.eclipse.persistence.testing.tests.jpa.jpql;
 
-import java.util.List;
-
+import javax.persistence.EntityManager;
 import javax.persistence.Query;
 
 import junit.framework.Test;
 import junit.framework.TestSuite;
 
+import org.eclipse.persistence.config.QueryHints;
 import org.eclipse.persistence.sessions.DatabaseSession;
 import org.eclipse.persistence.sessions.server.ServerSession;
 import org.eclipse.persistence.testing.framework.junit.JUnitTestCase;
@@ -46,7 +46,8 @@ public class JUnitNativeQueryTestSuite  extends JUnitTestCase {
         TestSuite suite = new TestSuite();
         suite.setName("NativeQueryTestSuite");
         suite.addTest(new JUnitNativeQueryTestSuite("testSetup"));
-        suite.addTest(new JUnitNativeQueryTestSuite("testNativeQuery"));        
+        suite.addTest(new JUnitNativeQueryTestSuite("testNativeQuery"));
+        suite.addTest(new JUnitNativeQueryTestSuite("testNativeQueryHint"));
         suite.addTest(NamedNativeQueryJUnitTest.suite());
         
         return suite;
@@ -69,7 +70,6 @@ public class JUnitNativeQueryTestSuite  extends JUnitTestCase {
     
     //force results to be returned in camel case - any case that is different from what is defined in the Entity's field definitions
     public void testNativeQuery() {
-        List results = null;
         Address expectedAddress = (Address)createEntityManager().createQuery("select a from Address a").getResultList().get(0);
         Address returnedAddress = null;
         ServerSession session = JUnitTestCase.getServerSession();
@@ -110,5 +110,15 @@ public class JUnitNativeQueryTestSuite  extends JUnitTestCase {
         
         this.assertNotNull("no address returned",returnedAddress);
         assertTrue("returned address does not match the expected address", session.compareObjects(returnedAddress, expectedAddress));
+    }
+    
+    // Test that hints work for native queries.
+    public void testNativeQueryHint() {
+        EntityManager em = createEntityManager();
+        Query query = em.createNativeQuery("Select * from CMP3_ADDRESS");
+        query.setHint("somehint", "whatever");
+        query.setHint(QueryHints.BIND_PARAMETERS, "false");
+        query.getResultList();
+        closeEntityManager(em);
     }
 }

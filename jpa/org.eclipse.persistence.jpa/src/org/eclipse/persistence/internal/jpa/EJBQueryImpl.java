@@ -36,6 +36,7 @@ import javax.persistence.TypedQuery;
 
 import org.eclipse.persistence.exceptions.DatabaseException;
 import org.eclipse.persistence.exceptions.QueryException;
+import org.eclipse.persistence.expressions.Expression;
 import org.eclipse.persistence.internal.helper.BasicTypeHelperImpl;
 import org.eclipse.persistence.internal.helper.ClassConstants;
 import org.eclipse.persistence.internal.helper.ConversionManager;
@@ -44,6 +45,7 @@ import org.eclipse.persistence.internal.jpa.parsing.JPQLParseTree;
 import org.eclipse.persistence.internal.jpa.parsing.jpql.JPQLParser;
 import org.eclipse.persistence.internal.jpa.querydef.ParameterExpressionImpl;
 import org.eclipse.persistence.internal.localization.ExceptionLocalization;
+import org.eclipse.persistence.internal.queries.ContainerPolicy;
 import org.eclipse.persistence.internal.queries.JPQLCallQueryMechanism;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.internal.sessions.UnitOfWorkImpl;
@@ -231,7 +233,7 @@ public class EJBQueryImpl<X> implements JpaQuery<X> {
                 if (databaseQuery.isObjectLevelReadQuery()) {
                     // If setting the lock mode returns true, we were unable to
                     // set the lock mode, throw an exception.
-                    if (((ObjectLevelReadQuery) databaseQuery).setLockModeType(lockMode.name(), (AbstractSession) session)) {
+                    if (((ObjectLevelReadQuery) databaseQuery).setLockModeType(lockMode.name(), (AbstractSession)session)) {
                         throw new PersistenceException(ExceptionLocalization.buildMessage("ejb30-wrong-lock_called_without_version_locking-index", null));
                     }
                 } else {
@@ -240,7 +242,24 @@ public class EJBQueryImpl<X> implements JpaQuery<X> {
             }
 
             // Apply any query hints.
-            databaseQuery = applyHints(hints, databaseQuery, classLoader, (AbstractSession) session);
+            databaseQuery = applyHints(hints, databaseQuery, classLoader, (AbstractSession)session);
+
+            // If a primary key query, switch to read-object to allow cache hit.
+            if (databaseQuery.isReadAllQuery() && !databaseQuery.isReportQuery() && ((ReadAllQuery)databaseQuery).shouldCheckCache()) {
+                ReadAllQuery readQuery = (ReadAllQuery)databaseQuery;
+                if ((readQuery.getContainerPolicy().getContainerClass() == ContainerPolicy.getDefaultContainerClass())
+                        && (!readQuery.hasHierarchicalExpressions())) {
+                    databaseQuery.checkDescriptor((AbstractSession)session);
+                    Expression selectionCriteria = databaseQuery.getSelectionCriteria();
+                    if ((selectionCriteria) != null
+                            && databaseQuery.getDescriptor().getObjectBuilder().isPrimaryKeyExpression(true, selectionCriteria, (AbstractSession)session)) {
+                        ReadObjectQuery newQuery = new ReadObjectQuery();
+                        newQuery.copyFromQuery(databaseQuery);
+                        databaseQuery = newQuery;
+                    }
+                }
+            }
+            
             if (isCacheable) {
                 // Prepare query as hint may cause cloning (but not un-prepare
                 // as in read-only).
@@ -635,27 +654,30 @@ public class EJBQueryImpl<X> implements JpaQuery<X> {
         propagateResultProperties();
         // bug:4297903, check container policy class and throw exception if its
         // not the right type
-        if (getDatabaseQueryInternal() instanceof ReadAllQuery) {
+        DatabaseQuery query = getDatabaseQueryInternal();
+        if (query.isReadAllQuery()) {
             Class containerClass = ((ReadAllQuery) getDatabaseQueryInternal()).getContainerPolicy().getContainerClass();
             if (!Helper.classImplementsInterface(containerClass, ClassConstants.Collection_Class)) {
                 throw QueryException.invalidContainerClass(containerClass, ClassConstants.Collection_Class);
             }
-        } else if (getDatabaseQueryInternal() instanceof ReadObjectQuery) {
-            // bug:4300879, no support for ReadObjectQuery if a collection is
-            // required
-            throw QueryException.incorrectQueryObjectFound(getDatabaseQueryInternal(), ReadAllQuery.class);
-        } else if (!(getDatabaseQueryInternal() instanceof ReadQuery)) {
+        } else if (query.isReadObjectQuery()) {
+            List resultList = new ArrayList();
+            Object result = executeReadQuery();
+            if (result != null) {
+                resultList.add(executeReadQuery());
+            }
+            return resultList;
+        } else if (!query.isReadQuery()) {
             throw new IllegalStateException(ExceptionLocalization.buildMessage("incorrect_query_for_get_result_collection"));
         }
 
         try {
-            Object result = executeReadQuery();
-            return (Collection) result;
-        } catch (LockTimeoutException e) {
-            throw e;
-        } catch (RuntimeException e) {
+            return (Collection) executeReadQuery();
+        } catch (LockTimeoutException exception) {
+            throw exception;
+        } catch (RuntimeException exception) {
             setRollbackOnly();
-            throw e;
+            throw exception;
         }
     }
 
@@ -668,29 +690,33 @@ public class EJBQueryImpl<X> implements JpaQuery<X> {
         try {
             // bug51411440: need to throw IllegalStateException if query
             // executed on closed em
-            entityManager.verifyOpen();
+            this.entityManager.verifyOpen();
             setAsSQLReadQuery();
             propagateResultProperties();
             // bug:4297903, check container policy class and throw exception if
             // its not the right type
-            if (getDatabaseQueryInternal() instanceof ReadAllQuery) {
-                Class containerClass = ((ReadAllQuery) getDatabaseQueryInternal()).getContainerPolicy().getContainerClass();
+            DatabaseQuery query = getDatabaseQueryInternal();
+            if (query.isReadAllQuery()) {
+                Class containerClass = ((ReadAllQuery) query).getContainerPolicy().getContainerClass();
                 if (!Helper.classImplementsInterface(containerClass, ClassConstants.List_Class)) {
                     throw QueryException.invalidContainerClass(containerClass, ClassConstants.List_Class);
                 }
-            } else if (getDatabaseQueryInternal() instanceof ReadObjectQuery) {
-                // bug:4300879, handle ReadObjectQuery returning null
-                throw QueryException.incorrectQueryObjectFound(getDatabaseQueryInternal(), ReadAllQuery.class);
-            } else if (!(getDatabaseQueryInternal() instanceof ReadQuery)) {
+            } else if (query.isReadObjectQuery()) {
+                List resultList = new ArrayList();
+                Object result = executeReadQuery();
+                if (result != null) {
+                    resultList.add(executeReadQuery());
+                }
+                return resultList;
+            } else if (!query.isReadQuery()) {
                 throw new IllegalStateException(ExceptionLocalization.buildMessage("incorrect_query_for_get_result_list"));
             }
-            Object result = executeReadQuery();
-            return (List) result;
-        } catch (LockTimeoutException e) {
-            throw e;
-        } catch (RuntimeException e) {
+            return (List) executeReadQuery();
+        } catch (LockTimeoutException exception) {
+            throw exception;
+        } catch (RuntimeException exception) {
             setRollbackOnly();
-            throw e;
+            throw exception;
         }
     }
 
@@ -713,7 +739,7 @@ public class EJBQueryImpl<X> implements JpaQuery<X> {
             propagateResultProperties();
             // This API is used to return non-List results, so no other validation is done.
             // It could be Cursor or other Collection or Map type.
-            if (!(getDatabaseQueryInternal() instanceof ReadQuery)) {
+            if (!(getDatabaseQueryInternal().isReadQuery())) {
                 throw new IllegalStateException(ExceptionLocalization.buildMessage("incorrect_query_for_get_single_result"));
             }
             Object result = executeReadQuery();
@@ -734,13 +760,13 @@ public class EJBQueryImpl<X> implements JpaQuery<X> {
                 }
                 return (X) result;
             }
-        } catch (LockTimeoutException e) {
-            throw e;
-        } catch (RuntimeException e) {
+        } catch (LockTimeoutException exception) {
+            throw exception;
+        } catch (RuntimeException exception) {
             if (rollbackOnException) {
                 setRollbackOnly();
             }
-            throw e;
+            throw exception;
         }
     }
 

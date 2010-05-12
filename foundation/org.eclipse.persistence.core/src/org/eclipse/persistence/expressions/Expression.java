@@ -1512,6 +1512,14 @@ public abstract class Expression implements Serializable, Cloneable {
 
     /**
      * INTERNAL:
+     * Return if the expression is not a valid primary key expression and add all primary key fields to the set.
+     */
+    public boolean extractPrimaryKeyFields(boolean requireExactMatch, ClassDescriptor descriptor, Set<DatabaseField> fields) {
+        return false;
+    }
+
+    /**
+     * INTERNAL:
      * Create an expression node.
      */
     public static Expression from(Object value, Expression base) {

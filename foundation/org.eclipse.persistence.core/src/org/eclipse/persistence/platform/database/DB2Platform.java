@@ -727,7 +727,6 @@ public class DB2Platform extends org.eclipse.persistence.platform.database.Datab
         int max = 0;
         int firstRow = 0;
 
-        statement.setMaximumAliasLength(getMaxFieldNameSize());
         if (statement.getQuery()!=null){
             max = statement.getQuery().getMaxRows();
             firstRow = statement.getQuery().getFirstResult();

@@ -230,7 +230,7 @@ public class ReadObjectQuery extends ObjectLevelReadQuery {
      * The cache check is done before the prepare as a hit will not require the work to be done.
      */
     protected Object checkEarlyReturnImpl(AbstractSession session, AbstractRecord translationRow) {
-        if (shouldCheckCache() && shouldMaintainCache() && (!shouldRefreshIdentityMapResult())
+        if (shouldCheckCache() && shouldMaintainCache() && (!shouldRefreshIdentityMapResult() && (!shouldRetrieveBypassCache()))
                 && (!(session.isRemoteSession() && (shouldRefreshRemoteIdentityMapResult() || this.descriptor.shouldDisableCacheHitsOnRemote())))
                 && (!(shouldCheckDescriptorForCacheUsage() && this.descriptor.shouldDisableCacheHits())) && (!this.descriptor.isDescriptorForInterface())) {
             Object cachedObject = getQueryMechanism().checkCacheForObject(translationRow, session);
@@ -637,9 +637,9 @@ public class ReadObjectQuery extends ObjectLevelReadQuery {
             if (!shouldPrepare()) {
                 if (this.selectionId != null) {
                     // Row must come from the key.
-                    setTranslationRow(getDescriptor().getObjectBuilder().buildRowFromPrimaryKeyValues(this.selectionId, getSession()));
+                    setTranslationRow(this.descriptor.getObjectBuilder().buildRowFromPrimaryKeyValues(this.selectionId, this.session));
                 } else {//(getSelectionObject() != null)
-                    setTranslationRow(getDescriptor().getObjectBuilder().buildRowForTranslation(this.selectionObject, getSession()));
+                    setTranslationRow(this.descriptor.getObjectBuilder().buildRowForTranslation(this.selectionObject, this.session));
                 }
             }
         }
@@ -648,8 +648,21 @@ public class ReadObjectQuery extends ObjectLevelReadQuery {
             return;
         }
         
+        // PERF: Disable cache check if not a primary key query.
+        if (isExpressionQuery()) {
+            Expression selectionCriteria = getSelectionCriteria();
+            if (selectionCriteria != null) {
+                if (((this.cacheUsage == CheckCacheByPrimaryKey)
+                                && this.descriptor.getObjectBuilder().isPrimaryKeyExpression(false, selectionCriteria, this.session))
+                        || ((this.cacheUsage == CheckCacheByExactPrimaryKey)
+                                && this.descriptor.getObjectBuilder().isPrimaryKeyExpression(true, selectionCriteria, this.session))) {
+                    this.cacheUsage = DoNotCheckCache;
+                }
+            }
+        }
+        
         // If using 1-m joining select all rows.
-        if (hasJoining() && getJoinedAttributeManager().isToManyJoin()) {
+        if ((this.joinedAttributeManager != null) && this.joinedAttributeManager.isToManyJoin()) {
             getQueryMechanism().prepareSelectAllRows();
         } else {
             getQueryMechanism().prepareSelectOneRow();
@@ -864,14 +877,6 @@ public class ReadObjectQuery extends ObjectLevelReadQuery {
         Vector key = new NonSynchronizedVector();
         key.add(selectionKey);
         setSelectionKey(key);
-    }
-
-    /**
-     * PUBLIC:
-     * Return if the cache should be checked.
-     */
-    public boolean shouldCheckCache() {
-        return this.cacheUsage != DoNotCheckCache;
     }
 
     /**

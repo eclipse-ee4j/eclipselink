@@ -691,7 +691,6 @@ public class OraclePlatform extends org.eclipse.persistence.platform.database.Da
         int max = 0;
         int firstRow = 0;
 
-        statement.setMaximumAliasLength(getMaxFieldNameSize());
         if (statement.getQuery()!=null){
             max = statement.getQuery().getMaxRows();
             firstRow = statement.getQuery().getFirstResult();

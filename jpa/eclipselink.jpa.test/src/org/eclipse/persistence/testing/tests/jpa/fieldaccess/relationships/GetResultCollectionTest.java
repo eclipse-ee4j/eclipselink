@@ -142,8 +142,5 @@ public class GetResultCollectionTest extends EntityContainerTestBase {
     if ( expectedException1==null || (expectedException1.getErrorCode()!= QueryException.INVALID_CONTAINER_CLASS)){
         throw new TestErrorException("getResultCollection on query returning a hashtable did not throw expected INVALID_CONTAINER_CLASS QueryException");
     }
-    if ( expectedException2==null || (expectedException2.getErrorCode()!= QueryException.INCORRECT_QUERY_FOUND)){
-        throw new TestErrorException("getResultCollection on ReadObjectQuery did not throw expected INCORRECT_QUERY_FOUND QueryException");
-    }
   }
 }

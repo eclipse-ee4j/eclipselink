@@ -4235,8 +4235,6 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
      */
     protected void registerNotRegisteredNewObjectForPersist(Object newObject, ClassDescriptor descriptor) {
         // Ensure that the registered object is not detached.
-        newObject.getClass();
-
         // Only check existence if validating, as only results in an earlier error.
         if (shouldValidateExistence()) {
             DoesExistQuery existQuery = descriptor.getQueryManager().getDoesExistQuery();
