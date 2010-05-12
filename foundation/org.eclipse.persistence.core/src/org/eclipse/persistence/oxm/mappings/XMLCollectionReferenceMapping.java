@@ -375,6 +375,9 @@ public class XMLCollectionReferenceMapping extends XMLObjectReferenceMapping imp
     @Override
     public void writeFromObjectIntoRow(Object object, AbstractRecord row, AbstractSession session, WriteType writeType) {
         // for each xmlField on this mapping
+        if(this.isReadOnly()) {
+            return;
+        }
         for (Iterator fieldIt = getFields().iterator(); fieldIt.hasNext();) {
             XMLField xmlField = (XMLField) fieldIt.next();
             ContainerPolicy cp = getContainerPolicy();

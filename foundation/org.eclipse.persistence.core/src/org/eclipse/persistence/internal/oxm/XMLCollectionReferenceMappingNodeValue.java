@@ -154,6 +154,9 @@ public class XMLCollectionReferenceMappingNodeValue extends MappingNodeValue imp
      * are retrieved and written out. 
      */
     public boolean marshal(XPathFragment xPathFragment, MarshalRecord marshalRecord, Object object, AbstractSession session, NamespaceResolver namespaceResolver) {
+        if(this.xmlCollectionReferenceMapping.isReadOnly()) {
+            return false;
+        }
         ContainerPolicy cp = xmlCollectionReferenceMapping.getContainerPolicy();
         Object collection = xmlCollectionReferenceMapping.getAttributeAccessor().getAttributeValueFromObject(object);
         if (collection == null) {

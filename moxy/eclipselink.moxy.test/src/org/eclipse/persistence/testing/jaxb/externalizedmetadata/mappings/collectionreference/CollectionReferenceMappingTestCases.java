@@ -241,7 +241,7 @@ public class CollectionReferenceMappingTestCases extends ExternalizedMetadataTes
      *
      * NOTE:  this test can be enabled when bug# 308390 is fixed
      * 
-     *
+     */
     public void testCollectionReferenceReadOnlyMarshal() {
         // setup control document
         String src = PATH + "marshal-read-only.xml";
@@ -271,7 +271,7 @@ public class CollectionReferenceMappingTestCases extends ExternalizedMetadataTes
             e.printStackTrace();
             fail("Marshal operation failed.");
         }
-    }*/
+    }
 
     /**
      * Tests XmlObjectCollectionMapping configuration via eclipselink-oxm.xml.
