@@ -14,15 +14,8 @@
  package org.eclipse.persistence.tools.dbws;
 
 //javase imports
-import java.io.OutputStream;
 
-import org.eclipse.persistence.internal.sessions.factories.model.SessionConfigs;
-import org.eclipse.persistence.internal.sessions.factories.model.log.LogConfig;
-import org.eclipse.persistence.internal.sessions.factories.model.login.DatabaseLoginConfig;
-import org.eclipse.persistence.internal.sessions.factories.model.platform.CustomServerPlatformConfig;
-import org.eclipse.persistence.internal.sessions.factories.model.project.ProjectConfig;
-import org.eclipse.persistence.internal.sessions.factories.model.session.DatabaseSessionConfig;
-import org.eclipse.persistence.internal.sessions.factories.model.session.ServerSessionConfig;
+//EclipseLink imports
 import static org.eclipse.persistence.tools.dbws.DBWSPackager.ArchiveUse.archive;
 
 /**
@@ -34,8 +27,7 @@ import static org.eclipse.persistence.tools.dbws.DBWSPackager.ArchiveUse.archive
  * @author Mike Norman - michael.norman@oracle.com
  * @since EclipseLink 1.x
  */
-public class WeblogicPackager extends WebServicePackager {
-
+public class WeblogicPackager extends WarPackager {
 
     public WeblogicPackager() {
         this(new WarArchiver(),"wls", archive);
@@ -44,44 +36,4 @@ public class WeblogicPackager extends WebServicePackager {
         super(archiver, packagerLabel, useJavaArchive);
     }
 
-    @Override
-    public String getAdditionalUsage() {
-        return " [warFilename]";
-    }
-    
-    @SuppressWarnings("unchecked")
-    @Override
-    public SessionConfigs buildSessionsXML(OutputStream dbwsSessionsStream, DBWSBuilder builder) {
-        SessionConfigs ts = super.buildSessionsXML(dbwsSessionsStream, builder);
-        String dataSource = builder.getDataSource();
-        if (dataSource != null) {
-            DatabaseSessionConfig tmpConfig =
-                (DatabaseSessionConfig)ts.getSessionConfigs().firstElement();
-            ProjectConfig orProject = tmpConfig.getPrimaryProject();
-            LogConfig logConfig = tmpConfig.getLogConfig();
-            String sessionName = tmpConfig.getName();
-            DatabaseSessionConfig orSessionConfig = new ServerSessionConfig();
-            orSessionConfig.setPrimaryProject(orProject);
-            orSessionConfig.setName(sessionName);
-            orSessionConfig.setLogConfig(logConfig);
-            CustomServerPlatformConfig customServerPlatformConfig = new CustomServerPlatformConfig();
-            customServerPlatformConfig.setEnableJTA(true);
-            customServerPlatformConfig.setEnableRuntimeServices(true);
-            customServerPlatformConfig.setServerClassName(
-                "org.eclipse.persistence.platform.server.wls.WebLogic_10_Platform");
-            customServerPlatformConfig.setExternalTransactionControllerClass(
-                "org.eclipse.persistence.transaction.wls.WebLogicTransactionController");
-            orSessionConfig.setServerPlatformConfig(customServerPlatformConfig);
-            DatabaseLoginConfig dlc = new DatabaseLoginConfig();
-            dlc.setPlatformClass(builder.getPlatformClassname());
-            dlc.setExternalConnectionPooling(true);
-            dlc.setExternalTransactionController(true);
-            dlc.setDatasource(dataSource);
-            dlc.setBindAllParameters(true);
-            dlc.setStreamsForBinding(true);
-            orSessionConfig.setLoginConfig(dlc);
-            ts.getSessionConfigs().set(0, orSessionConfig);
-        }
-        return ts;
-    }
 }
