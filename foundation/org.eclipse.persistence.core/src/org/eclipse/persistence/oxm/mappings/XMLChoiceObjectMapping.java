@@ -326,13 +326,14 @@ public class XMLChoiceObjectMapping extends DatabaseMapping implements XMLMappin
         Iterator<XMLMapping> mappings = getChoiceElementMappings().values().iterator();
         while(mappings.hasNext()){
             DatabaseMapping nextMapping = (DatabaseMapping)mappings.next();
-                        
+               
             Converter converter = null;
             if(fieldsToConverters != null) {
                 converter = fieldsToConverters.get(nextMapping.getField());
             }
                         
             if(nextMapping.isAbstractDirectMapping()){
+                ((XMLDirectMapping)nextMapping).setIsWriteOnly(this.isWriteOnly());
                 if(converter != null){
                     ((AbstractDirectMapping)nextMapping).setConverter(converter);
                 }
@@ -344,6 +345,7 @@ public class XMLChoiceObjectMapping extends DatabaseMapping implements XMLMappin
                  }
                 
             }else{
+                ((XMLCompositeObjectMapping)nextMapping).setIsWriteOnly(this.isWriteOnly());
                 if(converter != null){
                     ((AbstractCompositeObjectMapping)nextMapping).setConverter(converter);
                 }

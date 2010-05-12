@@ -101,8 +101,7 @@ public class ChoiceMappingTestCases extends ExternalizedMetadataTestCases {
         // setup control Employee
         Employee ctrlEmp = getControlObject();
         // writeOnlyThing should not be read in
-        // NOTE; the following line can be uncommented when bug# 308531 is fixed
-        //ctrlEmp.writeOnlyThing = null;
+        ctrlEmp.writeOnlyThing = null;
         try {
             Unmarshaller unmarshaller = jaxbContext.createUnmarshaller();
             Employee empObj = (Employee) unmarshaller.unmarshal(iDocStream);
