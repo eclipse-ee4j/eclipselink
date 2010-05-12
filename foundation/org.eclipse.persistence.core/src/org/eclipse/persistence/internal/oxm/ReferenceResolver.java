@@ -164,11 +164,13 @@ public class ReferenceResolver {
                 // create vectors of primary key values - one vector per reference instance
                 createPKVectorsFromMap(reference, mapping);
                 // loop over each pk vector and get object from cache - then add to collection and set on object
-                for (Iterator pkIt = ((Vector)reference.getPrimaryKey()).iterator(); pkIt.hasNext();) {
-                    CacheId primaryKey = (CacheId) pkIt.next();
-                    Object value = getValue(session, reference, primaryKey);
-                    if (value != null) {
-                        cPolicy.addInto(value, container,  session);
+                if(!mapping.isWriteOnly()) {
+                    for (Iterator pkIt = ((Vector)reference.getPrimaryKey()).iterator(); pkIt.hasNext();) {
+                        CacheId primaryKey = (CacheId) pkIt.next();
+                        Object value = getValue(session, reference, primaryKey);
+                        if (value != null) {
+                            cPolicy.addInto(value, container,  session);
+                        }
                     }
                 }
                 // for each reference, get the source object and add it to the container policy

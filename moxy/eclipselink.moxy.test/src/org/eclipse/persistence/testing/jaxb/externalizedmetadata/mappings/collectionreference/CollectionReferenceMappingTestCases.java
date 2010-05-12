@@ -281,7 +281,7 @@ public class CollectionReferenceMappingTestCases extends ExternalizedMetadataTes
      * Positive test.
      *
      * NOTE:  this test can be enabled when bug# 308471 is fixed
-     *
+     */
     public void testCollectionReferenceWriteOnlyUnmarshal() {
         // load instance doc
         String src = PATH + "root.xml";
@@ -308,7 +308,7 @@ public class CollectionReferenceMappingTestCases extends ExternalizedMetadataTes
             e.printStackTrace();
             fail("Unmarshal operation failed.");
         }
-    }*/
+    }
     
     /**
      * Tests XmlCollectionReferenceMapping configuration via eclipselink-oxm.xml.
