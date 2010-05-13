@@ -33,22 +33,32 @@
 *     tware - changes for org.eclipse.persistence.jpa.osgi build
 #******************************************************************************/-->
 <project name="org.eclipse.persistence.jpa.osgi" default="build" basedir=".">
-    <available file="../${ant.project.name}" type="dir" property="equinox.is.local"/>
+    <available file="../${ant.project.name}" type="dir" property="osgi.is.local"/>
     <!-- Test to make sure that the calling script doesn't inherit the variable -->
     <!-- (should be set locally, and be destroyed upon return) -->
-    <fail message="Not running from '${ant.project.name}' directory" unless="equinox.is.local"/>
+    <fail message="Not running from '${ant.project.name}' directory" unless="osgi.is.local"/>
 
-    <dirname property="equinox.build.location" file="${ant.file.org.eclipse.persistence.jpa.osgi}"/>
-    <condition property="equinox.2.base.dir" value="../.." else="..">
-        <contains string="${equinox.build.location}" substring="jpa"/>
+    <dirname property="osgi.build.location_temp" file="${ant.file.org.eclipse.persistence.jpa.osgi}"/>
+    <pathconvert targetos="unix" property="osgi.build.location">
+        <path>
+            <pathelement location="${osgi.build.location_temp}"/>
+        </path>
+    </pathconvert>
+    <condition property="osgi.2.base.dir" value="../.." else="..">
+        <contains string="${osgi.build.location}" substring="jpa"/>
     </condition>
-    <property name="equinox.2.common.plugins.dir" value="${equinox.2.base.dir}/plugins"/>
-    <property name="equinox.2.buildsys.dir" value="${equinox.2.base.dir}/buildsystem"/>
-    <property name="equinox.2.jpa.plugins.dir" value="../plugins"/>
+    <property name="osgi.2.common.plugins.dir" value="${osgi.2.base.dir}/plugins"/>
+    <property name="osgi.2.buildsys.dir" value="${osgi.2.base.dir}/buildsystem"/>
+    <property name="osgi.2.jpa.plugins.dir" value="../plugins"/>
 
-    <echo message="Loading ${user.home}/build.properties..."/>
+    <!-- local property overrides -->
+    <condition property="custom.properties.message" value="Loading ${user.home}/build.properties..."
+                                                     else="Custom properties file '${user.home}/build.properties' not found to load.">
+        <available file="${user.home}/build.properties"/>
+    </condition>
+    <echo message="${custom.properties.message}"/>
     <property file="${user.home}/build.properties"/>
-    <property file="${equinox.build.location}/build.properties"/>
+    <property file="${osgi.build.location}/build.properties"/>
 
     <!-- Defaults, set var in ${user.home}/build.properties if different version required -->
     <property name="bndtool.jar" value="bnd-0.0.366.jar"/>
@@ -56,13 +66,13 @@
 
     <!-- Primary Targets -->
     <target name="build" depends="clean, compile, jar" description="build ${ant.project.name} component"/>
-    <target name="jar"   depends="package, bnd-package" description="package ${ant.project.name} component"/>
+    <target name="jar"   depends="bnd-package, package" description="package ${ant.project.name} component"/>
 
     <!-- clean -->
     <target name="clean" description="Clean all generated content">
         <delete includeEmptyDirs="true" failonerror="false">
             <fileset dir="${classes.dir}"/>
-            <fileset dir="${equinox.2.common.plugins.dir}" includes="${ant.project.name}_*.jar, ${ant.project.name}.source_*.jar"/>
+            <fileset dir="${osgi.2.common.plugins.dir}" includes="${ant.project.name}_*.jar, ${ant.project.name}.source_*.jar"/>
         </delete>
     </target>
 
@@ -72,9 +82,9 @@
     <target name="pre-init">
         <!-- This HAS to be defined after allowing user redefinitions (which will cause the condition not to set anything) -->
         <!-- This tests to make sure the extensions dir exists, if not sets to a existant dummy location -->
-        <condition property="extensions.depend.dir" value="${equinox.2.base.dir}/../extension.lib.external"
-                                                    else="${equinox.build.location}">
-            <available file="${equinox.2.base.dir}/../extension.lib.external" type="dir"/>
+        <condition property="extensions.depend.dir" value="${osgi.2.base.dir}/../extension.lib.external"
+                                                    else="${osgi.build.location}">
+            <available file="${osgi.2.base.dir}/../extension.lib.external" type="dir"/>
         </condition>
         <echo message="extensions.depend.dir        = '${extensions.depend.dir}'"/>
 
@@ -82,11 +92,11 @@
         <condition property="equinox.lib" value="${extensions.depend.dir}/${equinox.jar}">
             <available file="${extensions.depend.dir}/${equinox.jar}"/>
         </condition>
-        <condition property="equinox.lib" value="${equinox.2.jpa.plugins.dir}/${equinox.jar}">
-            <available file="${equinox.2.jpa.plugins.dir}/${equinox.jar}"/>
+        <condition property="equinox.lib" value="${osgi.2.jpa.plugins.dir}/${equinox.jar}">
+            <available file="${osgi.2.jpa.plugins.dir}/${equinox.jar}"/>
         </condition>
-        <condition property="equinox.lib" value="${equinox.2.common.plugins.dir}/${equinox.jar}">
-            <available file="${equinox.2.common.plugins.dir}/${equinox.jar}"/>
+        <condition property="equinox.lib" value="${osgi.2.common.plugins.dir}/${equinox.jar}">
+            <available file="${osgi.2.common.plugins.dir}/${equinox.jar}"/>
         </condition>
         <echo message="equinox.lib                 = '${equinox.lib}'"/>
 
@@ -105,15 +115,30 @@
         <property name="implementation.vendor" value="${specification.vendor}"/>
 
         <!-- dependency properties -->
-        <property name="persistence.lib"      value="${equinox.2.jpa.plugins.dir}/${persistence20.jar}"/>
-        <property name="core.lib"             value="${equinox.2.common.plugins.dir}/org.eclipse.persistence.core_${version.string}.jar"/>
-        <property name="jpa.lib"              value="${equinox.2.common.plugins.dir}/org.eclipse.persistence.jpa_${version.string}.jar"/>
+        <property name="persistence.lib"      value="${osgi.2.jpa.plugins.dir}/${persistence20.jar}"/>
+        <property name="core.lib"             value="${osgi.2.common.plugins.dir}/org.eclipse.persistence.core_${version.string}.jar"/>
+        <property name="jpa.lib"              value="${osgi.2.common.plugins.dir}/org.eclipse.persistence.jpa_${version.string}.jar"/>
 
         <!-- dependency tests -->
         <available file="${persistence.lib}"   property="persistence.bundle.exist"/>
         <available file="${core.lib}"          property="core.bundle.exist"/>
         <available file="${jpa.lib}"           property="jpa.bundle.exist"/>
 
+        <!-- Check for BND library -->
+        <property name="alt.manifest.dir"      value="${osgi.build.location}/META-INF"/>
+        <condition property="bnd.lib" value="${extensions.depend.dir}/${bndtool.jar}">
+            <available file="${extensions.depend.dir}/${bndtool.jar}"/>
+        </condition>
+        <condition property="bnd.lib" value="${osgi.2.buildsys.dir}/${bndtool.jar}">
+            <available file="${osgi.2.buildsys.dir}/${bndtool.jar}"/>
+        </condition>
+        <echo message="bnd.lib                     = '${bnd.lib}'"/>
+        <condition property="bld">
+            <or>
+                <isset property="bnd.lib"/>
+                <isset property="nobnd"/>
+            </or>
+        </condition>
         <condition property="build.ok">
             <and>
                 <isset property="persistence.bundle.exist"/>
@@ -134,42 +159,53 @@
         <echo message="Compile will be skipped..."/>
         <echo message="    Cannot find: '${equinox.jar}'"/>
         <echo message="        In: '${extensions.depend.dir}'"/>
-        <echo message="        or: '${equinox.2.common.plugins.dir}'"/>
-        <echo message="        or: '${equinox.2.jpa.plugins.dir}'"/>
+        <echo message="        or: '${osgi.2.common.plugins.dir}'"/>
+        <echo message="        or: '${osgi.2.jpa.plugins.dir}'"/>
     </target>
 
     <target name="init" if="build.ok" depends="pre-init, dep-report">
-        <!-- Check for BND library -->
-        <condition property="bnd.lib" value="${extensions.depend.dir}/${bndtool.jar}">
-            <available file="${extensions.depend.dir}/${bndtool.jar}"/>
-        </condition>
-        <condition property="bnd.lib" value="${equinox.2.buildsys.dir}/${bndtool.jar}">
-            <available file="${equinox.2.buildsys.dir}/${bndtool.jar}"/>
-        </condition>
-        <echo message="bnd.lib                     = '${bnd.lib}'"/>
-        <condition property="package.ok">
-            <and>
-                <not>  <isset property="bnd.lib"/> </not>
-            </and>
-        </condition>
-        <condition property="bnd.ok">
-            <and>
-                <isset property="bnd.lib"/>
-            </and>
-        </condition>
-
         <!-- Set Compile Path-->
-        <path id="equinox.compile.path">
+        <path id="osgi.compile.path">
             <pathelement path="${core.lib}"/>
             <pathelement path="${jpa.lib}"/>
-            <pathelement path="${equinox.2.common.plugins.dir}/osgi.core.zip"/>
+            <pathelement path="${osgi.2.common.plugins.dir}/osgi.core.zip"/>
             <pathelement path="${persistence.lib}"/>
             <pathelement path="${equinox.lib}"/>
         </path>
+        <condition property="package.ok">
+            <and>
+                <isset property="build.ok"/>
+                <isset property="nobnd"/>
+            </and>
+        </condition>
+        <condition property="bnd.bld">
+            <and>
+                <isset property="build.ok"/>
+                <isset property="bnd.lib"/>
+                <not>  <isset property="nobnd"/> </not>
+            </and>
+        </condition>
+    </target>
+
+    <target name="fail-on-no-bnd" unless="bld">
+        <echo message="BND tool (${bndtool.jar}) not found in either:"/>
+        <echo message="    the extensions.depend.dir: '${extensions.depend.dir}'"/>
+        <echo message="    or the buildsystem dir:    '${osgi.2.buildsys.dir}'"/>
+        <echo message=""/>
+        <echo message="if you have a different version, you can define a different"/>
+        <echo message="jarname by adding 'bndtool.jar=bnd-{version}.jar to your'"/>
+        <echo message="${user.home}/build.properties file."/>
+        <echo message=""/>
+        <echo message="You can download BND from http://www.aqute.biz/Code/Download"/>
+        <echo message=""/>
+        <echo message="or if you really need to build NOW, you can use '-Dnobnd=true'"/>
+        <echo message="on the ant command-line. However, the manifests used will be those"/>
+        <echo message="checked-in for development, and will likely have errors."/>
+        <fail message="Missing BND library!"/>
     </target>
 
     <!-- compile -->
-    <target name="compile" if="build.ok" depends="init" description="Compile bundle code">
+    <target name="compile" if="build.ok" depends="init, fail-on-no-bnd" description="Compile bundle code">
         <mkdir dir="${classes.dir}"/>
         <javac srcdir="${src.dir}"
                destdir="${classes.dir}"
@@ -183,14 +219,14 @@
                failonerror="true"
                memoryMaximumSize="512m"
                fork="true"
-               classpathref="equinox.compile.path"
+               classpathref="osgi.compile.path"
         />
     </target>
 
     <!-- package -->
     <target name="package" if="package.ok" depends="init" description="jar OSGI bundle">
-        <jar jarfile="${equinox.2.common.plugins.dir}/${ant.project.name}_${version.string}.jar" manifest="META-INF/MANIFEST.MF">
-            <fileset dir="${equinox.2.base.dir}">
+        <jar jarfile="${osgi.2.common.plugins.dir}/${ant.project.name}_${version.string}.jar" manifest="${alt.manifest.dir}/MANIFEST.MF">
+            <fileset dir="${osgi.2.base.dir}">
                 <include name="about.html"/>
                 <include name="readme.html"/>
                 <include name="license.*"/>
@@ -199,7 +235,7 @@
                 <include name="org/eclipse/persistence/**/*.class"/>
             </fileset>
         </jar>
-        <jar jarfile="${equinox.2.common.plugins.dir}/${ant.project.name}.source_${version.string}.jar">
+        <jar jarfile="${osgi.2.common.plugins.dir}/${ant.project.name}.source_${version.string}.jar">
              <manifest>
                 <attribute name="Specification-Vendor"   value="${specification.vendor}"/>
                 <attribute name="Specification-Version"  value="${release.version}"/>
@@ -212,7 +248,7 @@
                 <attribute name="Bundle-Version"         value="${version.string}"/>
                 <attribute name="Eclipse-SourceBundle"   value="${ant.project.name};version=&quot;${version.string}&quot;"/>
             </manifest>
-            <fileset dir="${equinox.2.base.dir}">
+            <fileset dir="${osgi.2.base.dir}">
                 <include name="about.html"/>
                 <include name="readme.html"/>
                 <include name="license.*"/>
@@ -223,7 +259,7 @@
         </jar>
     </target>
 
-    <target name="bnd-package" if="bnd.ok" depends="init">
+    <target name="bnd-package" if="bnd.bld" depends="init">
         <taskdef resource="aQute/bnd/ant/taskdef.properties" classpath="${bnd.lib}"/>
         <bnd
             classpath="${classes.dir}"
@@ -232,8 +268,8 @@
             failok="false"
             exceptions="true"
             files="./org.eclipse.persistence.jpa.osgi.bnd"
-            output="${equinox.2.common.plugins.dir}/${ant.project.name}_${version.string}.jar"/>
-        <jar jarfile="${equinox.2.common.plugins.dir}/${ant.project.name}.source_${version.string}.jar">
+            output="${osgi.2.common.plugins.dir}/${ant.project.name}_${version.string}.jar"/>
+        <jar jarfile="${osgi.2.common.plugins.dir}/${ant.project.name}.source_${version.string}.jar">
              <manifest>
                 <attribute name="Specification-Vendor"   value="${specification.vendor}"/>
                 <attribute name="Specification-Version"  value="${release.version}"/>
@@ -246,7 +282,7 @@
                 <attribute name="Bundle-Version"         value="${version.string}"/>
                 <attribute name="Eclipse-SourceBundle"   value="${ant.project.name};version=&quot;${version.string}&quot;"/>
             </manifest>
-            <fileset dir="${equinox.2.base.dir}">
+            <fileset dir="${osgi.2.base.dir}">
                 <include name="about.html"/>
                 <include name="readme.html"/>
                 <include name="license.*"/>

@@ -178,8 +178,15 @@
             <pathelement path="${persistence.lib}"/>
             <pathelement path="${equinox.lib}"/>
         </path>
+        <condition property="package.ok">
+            <and>
+                <isset property="build.ok"/>
+                <isset property="nobnd"/>
+            </and>
+        </condition>
         <condition property="bnd.bld">
             <and>
+                <isset property="build.ok"/>
                 <isset property="bnd.lib"/>
                 <not>  <isset property="nobnd"/> </not>
             </and>
@@ -223,7 +230,7 @@
     </target>
 
     <!-- package -->
-    <target name="package" if="nobnd" depends="init" description="jar OSGI bundle">
+    <target name="package" if="package.ok" depends="init" description="jar OSGI bundle">
         <jar jarfile="${equinox.2.common.plugins.dir}/${ant.project.name}_${version.string}.jar" manifest="${alt.manifest.dir}/MANIFEST.MF">
             <fileset dir="${equinox.2.base.dir}">
                 <include name="about.html"/>
