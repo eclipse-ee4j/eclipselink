@@ -66,8 +66,7 @@ import org.eclipse.persistence.oxm.mappings.nullpolicy.XMLNullRepresentationType
 import org.eclipse.persistence.oxm.schema.XMLSchemaClassPathReference;
 import org.eclipse.persistence.oxm.schema.XMLSchemaReference;
 import org.eclipse.persistence.internal.jaxb.XMLJavaTypeConverter;
-import org.eclipse.persistence.internal.jaxb.many.JAXBObjectArrayAttributeAccessor;
-import org.eclipse.persistence.internal.jaxb.many.JAXBPrimitiveArrayAttributeAccessor;
+import org.eclipse.persistence.internal.jaxb.many.JAXBArrayAttributeAccessor;
 import org.eclipse.persistence.internal.jaxb.many.ManyValue;
 import org.eclipse.persistence.internal.jaxb.many.MapValue;
 import org.eclipse.persistence.internal.jaxb.many.MapValueAttributeAccessor;
@@ -425,8 +424,8 @@ public class MappingsGenerator {
             String referenceClassName = referenceClass.getRawName();
             if(referenceClass.isArray()  && !referenceClassName.equals("byte[]")  && !referenceClassName.equals("java.lang.Byte[]")){
                 JavaClass componentType = referenceClass.getComponentType();
-                TypeInfo reference = typeInfo.get(componentType.getQualifiedName());
-                if(reference !=null){
+                TypeInfo reference = typeInfo.get(componentType.getName());
+                if(reference !=null || componentType.isArray()){
                     generateCompositeCollectionMapping(property, descriptor, namespaceInfo, componentType.getQualifiedName());
                 }else{
                     generateDirectCollectionMapping(property, descriptor, namespaceInfo);
@@ -617,9 +616,15 @@ public class MappingsGenerator {
         }
 
         List<ElementDeclaration> referencedElements = property.getReferencedElements();
-        if (property.getType().isArray()) {
-            JAXBObjectArrayAttributeAccessor accessor = new JAXBObjectArrayAttributeAccessor(mapping.getAttributeAccessor(), mapping.getContainerPolicy());
-            accessor.setComponentClassName(property.getType().getComponentType().getRawName());
+        JavaClass propertyType = property.getType();
+        if (propertyType.isArray()) {
+            JAXBArrayAttributeAccessor accessor = new JAXBArrayAttributeAccessor(mapping.getAttributeAccessor(), mapping.getContainerPolicy(), helper.getClassLoader());
+            accessor.setComponentClassName(property.getType().getComponentType().getName());
+            JavaClass componentType = propertyType.getComponentType();
+            if(componentType.isArray()) {
+                Class adaptedClass = classToGeneratedClasses.get(componentType.getName());
+                accessor.setAdaptedClassName(adaptedClass.getName());
+            }
             mapping.setAttributeAccessor(accessor);
         }
         for (ElementDeclaration element:referencedElements) {
@@ -1478,8 +1483,22 @@ public class MappingsGenerator {
         JavaClass collectionType = property.getType();
 
         if (collectionType.isArray()){
-            JAXBObjectArrayAttributeAccessor accessor = new JAXBObjectArrayAttributeAccessor(mapping.getAttributeAccessor(), mapping.getContainerPolicy());
-            accessor.setComponentClassName(collectionType.getComponentType().getRawName());
+            JAXBArrayAttributeAccessor accessor = new JAXBArrayAttributeAccessor(mapping.getAttributeAccessor(), mapping.getContainerPolicy(), helper.getClassLoader());
+            JavaClass componentType = collectionType.getComponentType();
+            if(componentType.isArray()) {
+                Class adaptedClass = classToGeneratedClasses.get(componentType.getName());
+                referenceClassName = adaptedClass.getName();
+                accessor.setAdaptedClassName(referenceClassName);
+                JavaClass baseComponentType = getBaseComponentType(componentType);
+                if (baseComponentType.isPrimitive()){
+                    Class primitiveClass = XMLConversionManager.getDefaultManager().convertClassNameToClass(baseComponentType.getRawName());
+                    accessor.setComponentClass(primitiveClass);
+                } else {
+                    accessor.setComponentClassName(baseComponentType.getName());
+                }
+            } else {
+                accessor.setComponentClassName(componentType.getName());
+            }
             mapping.setAttributeAccessor(accessor);
             collectionType = jotArrayList;
         } else if (areEquals(collectionType, Collection.class) || areEquals(collectionType, List.class)) {
@@ -1566,9 +1585,9 @@ public class MappingsGenerator {
         JavaClass collectionType = property.getType();
 
         if (collectionType.isArray()){
+            JAXBArrayAttributeAccessor accessor = new JAXBArrayAttributeAccessor(mapping.getAttributeAccessor(), mapping.getContainerPolicy(), helper.getClassLoader());
+            String componentClassName = collectionType.getComponentType().getRawName();
             if (collectionType.getComponentType().isPrimitive()){
-                JAXBPrimitiveArrayAttributeAccessor accessor = new JAXBPrimitiveArrayAttributeAccessor(mapping.getAttributeAccessor(), mapping.getContainerPolicy());
-                String componentClassName = collectionType.getComponentType().getRawName();
                 Class primitiveClass = XMLConversionManager.getDefaultManager().convertClassNameToClass(componentClassName);
                 accessor.setComponentClass(primitiveClass);
                 mapping.setAttributeAccessor(accessor);
@@ -1576,8 +1595,6 @@ public class MappingsGenerator {
                 Class declaredClass = XMLConversionManager.getDefaultManager().getObjectClass(primitiveClass);
                 mapping.setAttributeElementClass(declaredClass);
             } else {
-                JAXBObjectArrayAttributeAccessor accessor = new JAXBObjectArrayAttributeAccessor(mapping.getAttributeAccessor(), mapping.getContainerPolicy());
-                String componentClassName = collectionType.getComponentType().getRawName();
                 accessor.setComponentClassName(componentClassName);
                 mapping.setAttributeAccessor(accessor);
 
@@ -2496,4 +2513,20 @@ public class MappingsGenerator {
 
         return absNullPolicy;
     }
+
+    /**
+     * Return the base component type for a class.  For example, the base 
+     * component type for Integer, Integer[], and Integer[][] are all Integer.
+     */
+    private JavaClass getBaseComponentType(JavaClass javaClass) {
+        JavaClass componentType = javaClass.getComponentType();
+        if(null == componentType) {
+            return javaClass;
+        }
+        if(!componentType.isArray()) {
+            return componentType;
+        }
+        return getBaseComponentType(componentType);
+    }
+
 }

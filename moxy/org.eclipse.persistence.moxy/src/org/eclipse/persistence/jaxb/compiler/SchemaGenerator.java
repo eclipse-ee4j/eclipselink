@@ -19,6 +19,7 @@ import java.util.Collection;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.Map;
 import java.util.Map.Entry;
 
 import javax.xml.bind.annotation.XmlSchemaType;
@@ -66,6 +67,7 @@ public class SchemaGenerator {
     private HashMap<String, NamespaceInfo> packageToNamespaceMappings;
     private HashMap<String, SchemaTypeInfo> schemaTypeInfo;
     private HashMap<String, QName> userDefinedSchemaTypes;
+    private Map<String, Class> arrayClassesToGeneratedClasses;
     
     private static final String JAVAX_ACTIVATION_DATAHANDLER = "javax.activation.DataHandler";
     private static final String JAVAX_MAIL_INTERNET_MIMEMULTIPART = "javax.mail.internet.MimeMultipart";    
@@ -74,12 +76,13 @@ public class SchemaGenerator {
         this.helper = helper;
     }
 
-    public Schema generateSchema(ArrayList<JavaClass> typeInfoClasses, HashMap<String, TypeInfo> typeInfo, HashMap<String, QName> userDefinedSchemaTypes, HashMap<String, NamespaceInfo> packageToNamespaceMappings, HashMap<QName, ElementDeclaration> additionalGlobalElements) {
+    public Schema generateSchema(ArrayList<JavaClass> typeInfoClasses, HashMap<String, TypeInfo> typeInfo, HashMap<String, QName> userDefinedSchemaTypes, HashMap<String, NamespaceInfo> packageToNamespaceMappings, HashMap<QName, ElementDeclaration> additionalGlobalElements, Map<String, Class> arrayClassesToGeneratedClasses) {
         this.typeInfo = typeInfo;
         this.userDefinedSchemaTypes = userDefinedSchemaTypes;
         this.packageToNamespaceMappings = packageToNamespaceMappings;
         this.schemaCount = 0;
         this.schemaTypeInfo = new HashMap<String, SchemaTypeInfo>(typeInfo.size());
+        this.arrayClassesToGeneratedClasses = arrayClassesToGeneratedClasses;
 
         for (JavaClass javaClass : typeInfoClasses) {
             addSchemaComponents(javaClass);
@@ -835,13 +838,24 @@ public class SchemaGenerator {
     }
 
     public QName getSchemaTypeFor(JavaClass javaClass) {
+        String className;
+        if(javaClass.isArray()) {
+            Class wrapperClass = arrayClassesToGeneratedClasses.get(javaClass.getName());
+            if(null == wrapperClass) {
+                className = javaClass.getQualifiedName();
+            } else {
+                className = wrapperClass.getName();
+            }
+        } else {
+            className = javaClass.getQualifiedName();
+        }
         // check user defined types first
-        QName schemaType = (QName) userDefinedSchemaTypes.get(javaClass.getQualifiedName());
+        QName schemaType = (QName) userDefinedSchemaTypes.get(className);
         if (schemaType == null) {
             schemaType = (QName) helper.getXMLToJavaTypeMap().get(javaClass.getRawName());
         }
         if (schemaType == null) {
-            TypeInfo targetInfo = this.typeInfo.get(javaClass.getQualifiedName());
+            TypeInfo targetInfo = this.typeInfo.get(className);
             if (targetInfo != null) {
                 schemaType = new QName(targetInfo.getClassNamespace(), targetInfo.getSchemaTypeName());
             }

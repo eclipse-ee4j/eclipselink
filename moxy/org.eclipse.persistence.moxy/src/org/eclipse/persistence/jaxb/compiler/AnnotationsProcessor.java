@@ -91,7 +91,6 @@ import org.eclipse.persistence.jaxb.javamodel.JavaField;
 import org.eclipse.persistence.jaxb.javamodel.JavaHasAnnotations;
 import org.eclipse.persistence.jaxb.javamodel.JavaMethod;
 import org.eclipse.persistence.jaxb.javamodel.JavaPackage;
-import org.eclipse.persistence.jaxb.javamodel.reflection.JavaClassImpl;
 import org.eclipse.persistence.jaxb.javamodel.reflection.JavaFieldImpl;
 import org.eclipse.persistence.jaxb.xmlmodel.XmlAccessOrder;
 import org.eclipse.persistence.jaxb.xmlmodel.XmlAccessType;
@@ -386,7 +385,7 @@ public class AnnotationsProcessor {
      */
     public Map<String, TypeInfo> preBuildTypeInfo(JavaClass[] javaClasses) {
         for (JavaClass javaClass : javaClasses) {
-            if (javaClass == null || !shouldGenerateTypeInfo(javaClass) || isXmlRegistry(javaClass)) {
+            if (javaClass == null || !shouldGenerateTypeInfo(javaClass) || isXmlRegistry(javaClass) || javaClass.isArray()) {
                 continue;
             }
 
@@ -703,11 +702,16 @@ public class AnnotationsProcessor {
                 if (!helper.isBuiltInJavaType(javaClass.getComponentType())) {
                     extraClasses.add(javaClass.getComponentType());
                 }
-                Class generatedClass = CompilerHelper.getExisitingGeneratedClass(tmi, typeMappingInfoToGeneratedClasses, typeMappingInfoToAdapterClasses,  helper.getClassLoader());                
-                if(generatedClass == null){                                
+               Class generatedClass;
+               if(null == tmi) {
+                   generatedClass = arrayClassesToGeneratedClasses.get(javaClass.getName());
+               } else {
+                   generatedClass = CompilerHelper.getExisitingGeneratedClass(tmi, typeMappingInfoToGeneratedClasses, typeMappingInfoToAdapterClasses,  helper.getClassLoader());
+               }
+                if(generatedClass == null) {
                     generatedClass = generateWrapperForArrayClass(javaClass, tmi, xmlElementType);
                     extraClasses.add(helper.getJavaClass(generatedClass));
-                    arrayClassesToGeneratedClasses.put(javaClass.getRawName(), generatedClass);
+                    arrayClassesToGeneratedClasses.put(javaClass.getName(), generatedClass);
                 }
                 generatedClassesToArrayClasses.put(generatedClass, javaClass);
                 typeMappingInfoToGeneratedClasses.put(tmi, generatedClass);
@@ -1212,14 +1216,17 @@ public class AnnotationsProcessor {
     }
 
     public boolean shouldGenerateTypeInfo(JavaClass javaClass) {
-        if (javaClass == null || javaClass.isPrimitive() || javaClass.isAnnotation() || javaClass.isInterface() || javaClass.isArray()) {
-            return false;
-        }
-        if (javaClass.getRawName().equals("org.eclipse.persistence.internal.jaxb.ArrayWrappedValue")) {
+        if (javaClass == null || javaClass.isPrimitive() || javaClass.isAnnotation() || javaClass.isInterface()) {
             return false;
         }
         if (userDefinedSchemaTypes.get(javaClass.getQualifiedName()) != null) {
             return false;
+        }
+        if (javaClass.isArray()) {
+            String javaClassName = javaClass.getName();
+            if(!(javaClassName.equals(ClassConstants.ABYTE.getName()) || javaClassName.equals(ClassConstants.APBYTE.getName()))) {
+                return true;
+            }
         }
         if (helper.isBuiltInJavaType(javaClass)) {
             return false;
@@ -1348,7 +1355,7 @@ public class AnnotationsProcessor {
         processPropertyAnnotations(info, cls, javaHasAnnotations, property);
 
         ptype = property.getActualType();
-        if (ptype.isPrimitive() || ptype.isArray() && ptype.getComponentType().isPrimitive()) {
+        if (ptype.isPrimitive()) {
             property.setIsRequired(true);
         }
 
@@ -2824,8 +2831,8 @@ public class AnnotationsProcessor {
         }
         if (componentClass.isArray()) {
             Class nestedArrayClass = generateWrapperForArrayClass(componentClass, typeMappingInfo, xmlElementType);
-            arrayClassesToGeneratedClasses.put(componentClass.getRawName(), nestedArrayClass);
-            return generateArrayValue(arrayClass, componentClass, new JavaClassImpl(nestedArrayClass, null), typeMappingInfo);
+            arrayClassesToGeneratedClasses.put(componentClass.getName(), nestedArrayClass);
+            return generateArrayValue(arrayClass, componentClass, helper.getJavaClass(nestedArrayClass), typeMappingInfo);
         } else {
             return generateArrayValue(arrayClass, componentClass, componentClass, typeMappingInfo);
         }
@@ -2844,7 +2851,9 @@ public class AnnotationsProcessor {
             } else {
                 packageName = ARRAY_PACKAGE_NAME + "." + componentClass.getPackageName();
                 if(componentClass.isMemberClass()) {
-                    qualifiedClassName = ARRAY_PACKAGE_NAME + "." + "org.eclipse.persistence.testing.jaxb.listofobjects.MyInner" + ARRAY_CLASS_NAME_SUFFIX;
+                    qualifiedClassName = componentClass.getName();
+                    qualifiedClassName = qualifiedClassName.substring(qualifiedClassName.indexOf('$') + 1);
+                    qualifiedClassName = ARRAY_PACKAGE_NAME + "." + componentClass.getPackageName() + "." + qualifiedClassName + ARRAY_CLASS_NAME_SUFFIX;
                 } else {
                     qualifiedClassName = ARRAY_PACKAGE_NAME + "." + componentClass.getQualifiedName() + ARRAY_CLASS_NAME_SUFFIX;
                 }

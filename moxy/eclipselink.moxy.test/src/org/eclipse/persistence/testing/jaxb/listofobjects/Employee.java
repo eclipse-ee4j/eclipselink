@@ -12,6 +12,8 @@
  ******************************************************************************/
 package org.eclipse.persistence.testing.jaxb.listofobjects;
 
+import java.util.ArrayList;
+
 import javax.xml.bind.annotation.*;
 
 @XmlRootElement(name = "employee-data")
@@ -36,7 +38,7 @@ public class Employee implements Comparable {
 
 	@XmlElement(name = "responsibility")
 	@XmlElementWrapper(name = "responsibilities")
-	public java.util.Collection responsibilities;
+	public java.util.Collection responsibilities = new ArrayList();
 
 	public String get() {
 		return null;

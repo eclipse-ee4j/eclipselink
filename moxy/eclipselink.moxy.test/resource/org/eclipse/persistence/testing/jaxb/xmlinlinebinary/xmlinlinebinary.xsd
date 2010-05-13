@@ -2,9 +2,9 @@
 <xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema">
    <xsd:complexType name="myDataPropertyAnnotation">
       <xsd:sequence>
-         <xsd:element name="bytes" type="xsd:base64Binary"/>
+         <xsd:element minOccurs="0" name="bytes" type="xsd:base64Binary"/>
       </xsd:sequence>
-      <xsd:attribute name="bytesAttr" type="xsd:base64Binary" use="required"/>
+      <xsd:attribute name="bytesAttr" type="xsd:base64Binary"/>
    </xsd:complexType>
    <xsd:element name="my-data" type="myDataPropertyAnnotation"/>
 </xsd:schema>

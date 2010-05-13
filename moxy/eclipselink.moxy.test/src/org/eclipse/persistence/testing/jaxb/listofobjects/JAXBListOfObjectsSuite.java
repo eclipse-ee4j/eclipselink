@@ -59,6 +59,7 @@ public class JAXBListOfObjectsSuite extends TestCase {
 		suite.addTestSuite(JAXBListOfInnerClassTestCases.class);
 		suite.addTestSuite(JAXBArrayOfInnerClassTestCases.class);
 		suite.addTestSuite(JAXBMapOfInnerClassTestCases.class);
+		suite.addTestSuite(MultiDimensionalArrayNonRootTestCases.class);
 		return suite;
 	}
 }
