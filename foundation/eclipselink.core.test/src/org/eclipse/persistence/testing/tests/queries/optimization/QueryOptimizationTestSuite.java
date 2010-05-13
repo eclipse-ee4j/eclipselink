@@ -323,6 +323,7 @@ public class QueryOptimizationTestSuite extends TestSuite {
         addTest(test3);
 
         addTest(new ReadObjectMappingJoinReadingTest());
+        addTest(new MultipleJoinedAttributeQueryTest());
     }
 
     public void addPartialTests() {

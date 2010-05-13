@@ -88,6 +88,9 @@ public class JoinedAttributeManager implements Cloneable, Serializable {
     /** Stores the base builder for resolving joined attributes by name. */
     protected ExpressionBuilder baseExpressionBuilder;
     
+    /** Stores the last used base expression while adding joined attribute expression. */
+    protected Expression lastJoinedAttributeBaseExpression;
+    
     /** Stores the base query. */
     protected ObjectBuildingQuery baseQuery;
     
@@ -133,13 +136,31 @@ public class JoinedAttributeManager implements Cloneable, Serializable {
 
     public void addJoinedAttributeExpression(Expression attributeExpression) {
         if(!getJoinedAttributeExpressions().contains(attributeExpression)) {
+            int baseExpressionIndex = -1;
+            boolean sameBase = false;
             if((attributeExpression instanceof BaseExpression)) {
                 Expression baseExpression = ((BaseExpression)attributeExpression).getBaseExpression();
                 if(baseExpression != null && !baseExpression.isExpressionBuilder()) {
                     addJoinedAttributeExpression(baseExpression);
+                    // EL bug 307497
+                    if (baseExpression != lastJoinedAttributeBaseExpression) {
+                        baseExpressionIndex = getJoinedAttributeExpressions().indexOf(baseExpression);
+                    } else {
+                        sameBase = true;
+                    }
                 }
             }
-            getJoinedAttributeExpressions().add(attributeExpression);
+            
+            // EL bug 307497
+            if (baseExpressionIndex == -1) {
+                getJoinedAttributeExpressions().add(attributeExpression);
+                if (!sameBase) {
+                    lastJoinedAttributeBaseExpression = attributeExpression;
+                }
+            } else {
+                //Add attributeExpression at baseExpressionIndex + 1.
+                getJoinedAttributeExpressions().add(baseExpressionIndex+1, attributeExpression);
+            }
         }
     }
     

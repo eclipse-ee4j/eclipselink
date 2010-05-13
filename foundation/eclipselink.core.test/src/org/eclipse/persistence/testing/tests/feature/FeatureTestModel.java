@@ -71,6 +71,7 @@ public class FeatureTestModel extends TestModel {
         addRequiredSystem(new org.eclipse.persistence.testing.tests.queries.report.ReportQuerySystem());
         addRequiredSystem(new org.eclipse.persistence.testing.tests.queries.options.QueryOptionSystem());
         addRequiredSystem(new org.eclipse.persistence.testing.models.bigbad.BigBadSystem());
+        addRequiredSystem(new org.eclipse.persistence.testing.models.vehicle.VehicleSystem());
         // Force field names to upper case for custom SQL tests on postgres.
         if (getSession().getPlatform().isPostgreSQL()) {
             getSession().getPlatform().setShouldForceFieldNamesToUpperCase(true);
