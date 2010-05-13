@@ -88,6 +88,7 @@
     <property name="jpatest.2.oracletest.dir"     value="${jpatest.build.location}/${jpatest.2.base.dir}/foundation/eclipselink.extension.oracle.test"/>
     <property name="jpatest.2.moxy.dir"           value="${jpatest.build.location}/${jpatest.2.base.dir}/moxy/org.eclipse.persistence.moxy"/>
     <property name="jpatest.2.moxy.plugins.dir"   value="${jpatest.build.location}/${jpatest.2.base.dir}/moxy/plugins"/>
+    <property name="jpatest.2.sdo.plugins.dir"   value="${jpatest.build.location}/${jpatest.2.base.dir}/sdo/plugins"/>
 
     <property name="jpatest.2.plugins.dir" value="${jpatest.2.base.dir}/plugins"/>
     <property name="version.qualifier"     value="qualifier"/>

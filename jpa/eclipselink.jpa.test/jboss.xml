@@ -83,6 +83,7 @@
         <copy file="${junit.lib}" todir="${jboss.server}/lib"/>
         <copy file="${eclipselink.lib}" todir="${jboss.server}/lib"/>
         <copy file="${jdbc.driver.jar}" todir="${jboss.server}/lib"/>
+        <copy file="${jpatest.2.sdo.plugins.dir}/${commonj.sdo.jar}" todir="${jboss.server}/lib" overwrite="true"/>
         <antcall target="copy-eclipselink-persistence-jars-to-domain-lib" inheritRefs="true"/>
     </target>
 
