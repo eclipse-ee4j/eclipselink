@@ -72,7 +72,7 @@ public class XMLEventWriterRecord extends MarshalRecord {
                  if(xmlEventWriter.getNamespaceContext().getNamespaceURI(prefix) == null || !xmlEventWriter.getNamespaceContext().getNamespaceURI(prefix).equals(namespaceURI)) {
                      event = xmlEventFactory.createNamespace(prefix, namespaceURI);
                      try {
-                    	 this.xmlEventWriter.setPrefix(prefix, namespaceURI);
+                         this.xmlEventWriter.setPrefix(prefix, namespaceURI);
                      } catch(XMLStreamException e) {
                          throw XMLMarshalException.marshalException(e);
                      }
@@ -96,17 +96,17 @@ public class XMLEventWriterRecord extends MarshalRecord {
     public void attribute(String namespaceURI, String localName, String name, String value) {
          XMLEvent event;
          if(namespaceURI != null && namespaceURI.equals(XMLConstants.XMLNS_URL)) {
-        	 try {
-	             if(localName.equals(XMLConstants.XMLNS)) {
-	                 event = xmlEventFactory.createNamespace(value);
-	                 xmlEventWriter.setDefaultNamespace(value);
-	             }  else {
-	                  event = xmlEventFactory.createNamespace(localName, value);
-	                  xmlEventWriter.setPrefix(localName, value);
-	             }
-        	 } catch(XMLStreamException e) {
+             try {
+                 if(localName.equals(XMLConstants.XMLNS)) {
+                     event = xmlEventFactory.createNamespace(value);
+                     xmlEventWriter.setDefaultNamespace(value);
+                 }  else {
+                      event = xmlEventFactory.createNamespace(localName, value);
+                      xmlEventWriter.setPrefix(localName, value);
+                 }
+             } catch(XMLStreamException e) {
                  throw XMLMarshalException.marshalException(e);
-        	 }
+             }
          } else {
              NamespaceContext ctx = xmlEventWriter.getNamespaceContext();
              if(namespaceURI == null || namespaceURI.length() == 0) {
@@ -133,7 +133,6 @@ public class XMLEventWriterRecord extends MarshalRecord {
              this.attributes.add(event);
          }
     }
-
 
     private void openAndCloseStartElement() {
         try {
@@ -328,7 +327,6 @@ public class XMLEventWriterRecord extends MarshalRecord {
            }
             prefixMapping = null;
         }
-
     }
 
     public void namespaceDeclarations(NamespaceResolver namespaceResolver) {
