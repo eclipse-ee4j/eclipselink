@@ -587,13 +587,18 @@ public class MergeManager {
                 // If original does not exist then we must merge the entire object.
                 original = unitOfWork.buildOriginal(clone);
                 if (objectChangeSet == null) {
+                    //no changeset so this would not have been locked as part of the 
+                    original = parent.getIdentityMapAccessorInstance().getWriteLockManager().appendLock(descriptor.getObjectBuilder().extractPrimaryKeyFromObject(clone, parent), original, descriptor, this, parent);
                     objectBuilder.mergeIntoObject(original, true, clone, this, false, !descriptor.getCopyPolicy().buildsNewInstance());
                 } else if (!objectChangeSet.isNew()) {
                     // Once the original is created we must put it in the cache and
                     // lock it to prevent a reading thread from creating it as well
                     // there will be no deadlock situation because no other threads
                     // will be able to reference this object.
-                    original = parent.getIdentityMapAccessorInstance().getWriteLockManager().appendLock(objectChangeSet.getPrimaryKeys(), original, descriptor, this, parent);
+                    if (!objectChangeSet.hasChanges()){
+                        //lets make sure we lock this.  If it has changes it will have already been locked.
+                        original = parent.getIdentityMapAccessorInstance().getWriteLockManager().appendLock(objectChangeSet.getPrimaryKeys(), original, descriptor, this, parent);
+                    }
                     objectBuilder.mergeIntoObject(original, true, clone, this, false, !descriptor.getCopyPolicy().buildsNewInstance());
                 } else {
                     objectBuilder.mergeChangesIntoObject(original, objectChangeSet, clone, this, !descriptor.getCopyPolicy().buildsNewInstance());

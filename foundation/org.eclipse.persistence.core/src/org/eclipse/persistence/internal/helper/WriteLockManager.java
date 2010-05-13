@@ -355,7 +355,11 @@ public class WriteLockManager {
             // if there is a problem or all of the locks can not be acquired.
             releaseAllAcquiredLocks(mergeManager);
             throw exception;
-        } finally {
+        }catch (Error error){
+            releaseAllAcquiredLocks(mergeManager);
+            mergeManager.getSession().logThrowable(SessionLog.SEVERE, SessionLog.TRANSACTION, error);
+            throw error;
+        }finally {
             if (mergeManager.getWriteLockQueued() != null) {
                 //the merge manager entered the wait queue and must be cleaned up
                 synchronized(this.prevailingQueue) {
@@ -374,7 +378,7 @@ public class WriteLockManager {
      */
     public Object appendLock(Vector primaryKeys, Object objectToLock, ClassDescriptor descriptor, MergeManager mergeManager, AbstractSession session) {
         CacheKey lockedCacheKey = session.getIdentityMapAccessorInstance().acquireLockNoWait(primaryKeys, descriptor.getJavaClass(), true, descriptor);
-        if (lockedCacheKey == null) {
+            if (lockedCacheKey == null) {
             session.getIdentityMapAccessorInstance().getWriteLockManager().transitionToDeferredLocks(mergeManager);
             lockedCacheKey = session.getIdentityMapAccessorInstance().acquireDeferredLock(primaryKeys, descriptor.getJavaClass(), descriptor);
             Object cachedObject = lockedCacheKey.getObject();
@@ -389,10 +393,14 @@ public class WriteLockManager {
                 // cachekey
                 // for others to find an prevent cycles
             }
-            mergeManager.getAcquiredLocks().add(lockedCacheKey);
+            if (mergeManager.isTransitionedToDeferredLocks()){
+                lockedCacheKey.getMutex().getDeferredLockManager(Thread.currentThread()).getActiveLocks().add(lockedCacheKey.getMutex());
+            }else{
+                 mergeManager.getAcquiredLocks().add(lockedCacheKey);
+            }
             return lockedCacheKey.getObject();
         }
-    }
+            }
 	
     /**
      * INTERNAL:
@@ -442,10 +450,11 @@ public class WriteLockManager {
      * This method will release all acquired locks
      */
     public void releaseAllAcquiredLocks(MergeManager mergeManager) {
-        if (!MergeManager.LOCK_ON_MERGE) {//lockOnMerge is a backdoor and not public
+        if (!MergeManager.LOCK_ON_MERGE) {// lockOnMerge is a backdoor and not
+                                          // public
             return;
         }
-        List acquiredLocks = mergeManager.getAcquiredLocks(); 
+        List acquiredLocks = mergeManager.getAcquiredLocks();
         Iterator locks = acquiredLocks.iterator();
         RuntimeException exception = null;
         while (locks.hasNext()) {
@@ -459,14 +468,14 @@ public class WriteLockManager {
                 } else {
                     cacheKeyToRemove.release();
                 }
-            } catch (RuntimeException e){
-                if (exception == null){
+            } catch (RuntimeException e) {
+                if (exception == null) {
                     exception = e;
                 }
             }
         }
         acquiredLocks.clear();
-        if (exception != null){
+        if (exception != null) {
             throw exception;
         }
     }

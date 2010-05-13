@@ -16,6 +16,7 @@ import java.io.*;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
+import org.eclipse.persistence.config.SystemProperties;
 import org.eclipse.persistence.exceptions.*;
 import org.eclipse.persistence.internal.localization.*;
 import org.eclipse.persistence.internal.identitymaps.CacheKey;
@@ -41,6 +42,9 @@ public class ConcurrencyManager implements Serializable {
     protected volatile transient Thread activeThread;
     public static Map<Thread, DeferredLockManager> deferredLockManagers = initializeDeferredLockManagers();
     protected boolean lockedByMergeManager;
+    
+    protected static boolean shouldTrackStack = System.getProperty(SystemProperties.RECORD_STACK_ON_LOCK) != null;
+    protected Exception stack;
 
     /** Cachekey owner set when ConcurrencyMananger is used within an cachekey on an identity map
      * Used to store the owner so that the object involved can be retrieved from the cachekey
@@ -94,6 +98,9 @@ public class ConcurrencyManager implements Serializable {
         }
         if (this.activeThread == null) {
             this.activeThread = Thread.currentThread();
+            if (shouldTrackStack){
+                this.stack = new Exception();
+            }
         }
         this.lockedByMergeManager = forMerge;
         this.depth++;
@@ -404,6 +411,9 @@ public class ConcurrencyManager implements Serializable {
         }
         if (this.depth == 0) {
             this.activeThread = null;
+            if (shouldTrackStack){
+                this.stack = null;
+            }
             this.lockedByMergeManager = false;
             notifyAll();
         }
@@ -518,7 +528,7 @@ public class ConcurrencyManager implements Serializable {
         this.numberOfWritersWaiting = numberOfWritersWaiting;
     }
     
-    public synchronized void transitionToDeferredLock(){
+    public synchronized void transitionToDeferredLock() {
         Thread currentThread = Thread.currentThread();
         DeferredLockManager lockManager = getDeferredLockManager(currentThread);
         if (lockManager == null) {
@@ -536,4 +546,31 @@ public class ConcurrencyManager implements Serializable {
         Object[] args = { new Integer(getDepth()) };
         return Helper.getShortClassName(getClass()) + ToStringLocalization.buildMessage("nest_level", args);
     }
+
+    public Exception getStack() {
+        return stack;
+    }
+
+    public void setStack(Exception stack) {
+        this.stack = stack;
+    }
+
+    public static boolean shouldTrackStack() {
+        return shouldTrackStack;
+    }
+
+    /**
+     * INTERNAL:
+     * This can be set during debugging to record the stacktrace when a lock is acquired.
+     * Then once IdentityMapAccessor.printIdentityMapLocks() is called the stack call for each
+     * lock will be printed as well.  Because locking issues are usually quite time sensitive setting 
+     * this flag may inadvertently remove the deadlock because of the change in timings.
+     * 
+     * There is also a system level property for this setting. "eclipselink.cache.record-stack-on-lock"
+     * @param shouldTrackStack
+     */
+    public static void setShouldTrackStack(boolean shouldTrackStack) {
+        ConcurrencyManager.shouldTrackStack = shouldTrackStack;
+    }
+    
 }
