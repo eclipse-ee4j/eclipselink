@@ -118,7 +118,7 @@
         <property name="dep.moxy"          value="${dep.grp}org.eclipse.persistence${dep.art}org.eclipse.persistence.moxy${dep.ver}${maven.version}${dep.type}jar${dep.scope}compile${dep.opt}false${dep.foot}"/>
         <property name="dep.sdo"           value="${dep.grp}org.eclipse.persistence${dep.art}org.eclipse.persistence.sdo${dep.ver}${maven.version}${dep.type}jar${dep.scope}compile${dep.opt}false${dep.foot}"/>
         <property name="dep.eclipselink"   value="${dep.grp}org.eclipse.persistence${dep.art}eclipselink${dep.ver}${maven.version}${dep.type}jar${dep.scope}compile${dep.opt}false${dep.foot}"/>
-        <property name="dep.persistence2"  value="${dep.grp}org.eclipse.persistence${dep.art}javax.persistence${dep.ver}2.0.0.v201005141137${dep.type}jar${dep.scope}compile${dep.opt}false${dep.foot}"/>
+        <property name="dep.persistence2"  value="${dep.grp}org.eclipse.persistence${dep.art}javax.persistence${dep.ver}2.0.0.v201005141517${dep.type}jar${dep.scope}compile${dep.opt}false${dep.foot}"/>
         <property name="dep.persistence"   value="${dep.grp}org.eclipse.persistence${dep.art}javax.persistence${dep.ver}1.0.0.${dep.type}jar${dep.scope}compile${dep.opt}false${dep.foot}"/>
 
         <!-- These define the dependency block for a given artifact -->
@@ -155,8 +155,8 @@
             <param name="groupId" value="org.eclipse.persistence"/>
             <param name="artifactId" value="javax.persistence"/>
             <param name="artifactVersion" value="2.0.0"/>
-            <param name="artifact" value="${eclipselink.jpa.base}/${plugins.dir}/javax.persistence_2.0.0.v201005141137.jar"/>
-            <param name="artifactSrc" value="${eclipselink.jpa.base}/${plugins.dir}/javax.persistence.source_2.0.0.v201005141137.jar"/>
+            <param name="artifact" value="${eclipselink.jpa.base}/${plugins.dir}/javax.persistence_2.0.0_v201005141517.jar"/>
+            <param name="artifactSrc" value="${eclipselink.jpa.base}/${plugins.dir}/javax.persistence.source_2.0.0.v201005141517.jar"/>
             <param name="artifactName" value="Javax Persistence API 2.0"/>
             <param name="dependencies" value=""/>
         </antcall>
