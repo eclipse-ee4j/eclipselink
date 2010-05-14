@@ -25,6 +25,7 @@ import org.eclipse.persistence.expressions.Expression;
 import org.eclipse.persistence.expressions.ExpressionBuilder;
 import org.eclipse.persistence.internal.jpa.EntityManagerImpl;
 import org.eclipse.persistence.jpa.JpaQuery;
+import org.eclipse.persistence.jpa.JpaEntityManager;
 import org.eclipse.persistence.queries.ReadAllQuery;
 import org.eclipse.persistence.queries.ReportQuery;
 import org.eclipse.persistence.testing.framework.junit.JUnitTestCase;
@@ -367,7 +368,6 @@ public class QueryCastTestSuite extends JUnitTestCase {
     
     public void testDowncastInSelect(){
         EntityManager em = createEntityManager();
-        
         beginTransaction(em);
         LargeProject proj = new LargeProject();
         proj.setBudget(1000);
@@ -377,19 +377,15 @@ public class QueryCastTestSuite extends JUnitTestCase {
         SmallProject sp = new SmallProject();
         sp.setName("sp1");
         em.persist(sp);
-        
         em.flush();
         
         clearCache();
         em.clear();
-        
         ExpressionBuilder builder = new ExpressionBuilder(Project.class);
         ReportQuery rq = new ReportQuery(Project.class, builder);
-
         rq.addAttribute("project", builder.as(LargeProject.class).get("budget"));
         rq.setSelectionCriteria(builder.type().equal(LargeProject.class));
-        List resultList = (List)((EntityManagerImpl)em).getActiveSession().executeQuery(rq);
-        
+        List resultList = (List)((JpaEntityManager)em.getDelegate()).getActiveSession().executeQuery(rq);
         assertTrue("Incorrect results returned", resultList.size() == 1);
         rollbackTransaction(em);
     }

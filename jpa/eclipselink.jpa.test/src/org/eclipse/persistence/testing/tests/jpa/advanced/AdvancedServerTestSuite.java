@@ -39,7 +39,7 @@ public class AdvancedServerTestSuite extends TestSuite {
         suite.addTest(AdvancedJPAJunitTest.suite());
         suite.addTest(AdvancedJunitTest.suite());
         suite.addTest(AdvancedCompositePKJunitTest.suite());
-
+        suite.addTest(QueryCastTestSuite.suite());
         return suite;
     }
 }
