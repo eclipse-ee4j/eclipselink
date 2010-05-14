@@ -42,7 +42,6 @@ public class XMLEventWriterRecord extends MarshalRecord {
     private boolean isStartElementOpen = false;
     private List attributes;
     private List namespaceDeclarations;
-    private String namespaceURI;
     private XPathFragment xPathFragment;
 
     public XMLEventWriterRecord(XMLEventWriter xmlEventWriter) {
@@ -67,7 +66,7 @@ public class XMLEventWriterRecord extends MarshalRecord {
          } else {
              String prefix = xPathFragment.getPrefix();
              if(prefix == null) {
-                 event = xmlEventFactory.createAttribute(xPathFragment.getPrefix(), namespaceURI, xPathFragment.getLocalName(), value);
+                 event = xmlEventFactory.createAttribute(prefix, namespaceURI, xPathFragment.getLocalName(), value);
              } else {
                  if(xmlEventWriter.getNamespaceContext().getNamespaceURI(prefix) == null || !xmlEventWriter.getNamespaceContext().getNamespaceURI(prefix).equals(namespaceURI)) {
                      event = xmlEventFactory.createNamespace(prefix, namespaceURI);
@@ -95,9 +94,9 @@ public class XMLEventWriterRecord extends MarshalRecord {
 
     public void attribute(String namespaceURI, String localName, String name, String value) {
          XMLEvent event;
-         if(namespaceURI != null && namespaceURI.equals(XMLConstants.XMLNS_URL)) {
+         if(XMLConstants.XMLNS_URL.equals(namespaceURI)) {
              try {
-                 if(localName.equals(XMLConstants.XMLNS)) {
+                 if(XMLConstants.XMLNS.equals(localName)) {
                      event = xmlEventFactory.createNamespace(value);
                      xmlEventWriter.setDefaultNamespace(value);
                  }  else {
@@ -136,7 +135,8 @@ public class XMLEventWriterRecord extends MarshalRecord {
 
     private void openAndCloseStartElement() {
         try {
-             if(namespaceURI == null) {
+            String namespaceURI = xPathFragment.getNamespaceURI();
+             if(null == namespaceURI) {
                  Iterator attributesIterator = null;
                  if(null != attributes) {
                      attributesIterator = attributes.iterator();
@@ -148,12 +148,12 @@ public class XMLEventWriterRecord extends MarshalRecord {
                  xmlEventWriter.add(xmlEventFactory.createStartElement(XMLConstants.EMPTY_STRING, XMLConstants.EMPTY_STRING, xPathFragment.getLocalName(), attributesIterator, namespaceDeclarationsIterator));
                  String defaultNamespace = xmlEventWriter.getNamespaceContext().getNamespaceURI(XMLConstants.EMPTY_STRING);
                  if(defaultNamespace != null && defaultNamespace.length() > 0 ) {
-                     this.xmlEventWriter.setDefaultNamespace(XMLConstants.EMPTY_STRING);
-                     this.xmlEventWriter.add(xmlEventFactory.createNamespace(XMLConstants.EMPTY_STRING));
+                     xmlEventWriter.setDefaultNamespace(XMLConstants.EMPTY_STRING);
+                     xmlEventWriter.add(xmlEventFactory.createNamespace(XMLConstants.EMPTY_STRING));
                  }
              } else {
                  String prefix = xPathFragment.getPrefix();
-                 if(prefix == null) {
+                 if(null == prefix) {
                      prefix = XMLConstants.EMPTY_STRING;
                  }
                  Iterator attributesIterator = null;
@@ -164,8 +164,7 @@ public class XMLEventWriterRecord extends MarshalRecord {
                  if(null != namespaceDeclarations) {
                      namespaceDeclarationsIterator = namespaceDeclarations.iterator();
                  }
-                 XMLEvent startElement = this.xmlEventFactory.createStartElement(prefix, namespaceURI, xPathFragment.getLocalName(), attributesIterator, namespaceDeclarationsIterator);
-                 xmlEventWriter.add(startElement);
+                 xmlEventWriter.add(xmlEventFactory.createStartElement(prefix, namespaceURI, xPathFragment.getLocalName(), attributesIterator, namespaceDeclarationsIterator));
              }
         } catch(XMLStreamException ex) {
             throw XMLMarshalException.marshalException(ex);
@@ -178,8 +177,7 @@ public class XMLEventWriterRecord extends MarshalRecord {
                 openAndCloseStartElement();
                 isStartElementOpen = false;
             }
-            XMLEvent cdataEvent = this.xmlEventFactory.createCData(value);
-            this.xmlEventWriter.add(cdataEvent);
+            xmlEventWriter.add(xmlEventFactory.createCData(value));
         } catch(Exception e) {
             throw XMLMarshalException.marshalException(e);
        }
@@ -191,8 +189,7 @@ public class XMLEventWriterRecord extends MarshalRecord {
                 openAndCloseStartElement();
                 isStartElementOpen = false;
             }
-            XMLEvent charactersEvent = this.xmlEventFactory.createCharacters(value);
-            this.xmlEventWriter.add(charactersEvent);
+            xmlEventWriter.add(xmlEventFactory.createCharacters(value));
         } catch(Exception e) {
             throw XMLMarshalException.marshalException(e);
         }
@@ -207,7 +204,6 @@ public class XMLEventWriterRecord extends MarshalRecord {
             openAndCloseStartElement();
         }
         isStartElementOpen = true;
-        this.namespaceURI = xPathFragment.getNamespaceURI();
         this.xPathFragment = xPathFragment;
         this.attributes = null;
         this.namespaceDeclarations = null;
@@ -220,13 +216,14 @@ public class XMLEventWriterRecord extends MarshalRecord {
                 openAndCloseStartElement();
                 isStartElementOpen = false;
             }
+            String namespaceURI = frag.getNamespaceURI();
+            String localName = frag.getLocalName();
             String prefix = frag.getPrefix();
             if(null == prefix) {
                 prefix = XMLConstants.EMPTY_STRING;
             }
-            XMLEvent startElement = this.xmlEventFactory.createStartElement(prefix, frag.getNamespaceURI(), frag.getLocalName());
-            this.xmlEventWriter.add(startElement);
-            this.xmlEventWriter.add(this.xmlEventFactory.createEndElement(prefix, frag.getNamespaceURI(), frag.getLocalName()));
+            xmlEventWriter.add(xmlEventFactory.createStartElement(prefix, namespaceURI, localName));
+            xmlEventWriter.add(xmlEventFactory.createEndElement(prefix, namespaceURI, localName));
         } catch(Exception e) {
             throw XMLMarshalException.marshalException(e);
         }
@@ -238,8 +235,7 @@ public class XMLEventWriterRecord extends MarshalRecord {
                 openAndCloseStartElement();
                 isStartElementOpen = false;
             }
-            XMLEvent endDoc = this.xmlEventFactory.createEndDocument();
-            this.xmlEventWriter.add(endDoc);
+            xmlEventWriter.add(xmlEventFactory.createEndDocument());
         } catch(Exception e) {
             throw XMLMarshalException.marshalException(e);
         }
@@ -250,14 +246,12 @@ public class XMLEventWriterRecord extends MarshalRecord {
             openAndCloseStartElement();
             isStartElementOpen = false;
         }
-        String namespaceURI = pathFragment.getNamespaceURI();
         String prefix = pathFragment.getPrefix();
-        if(prefix == null) {
+        if(null == prefix) {
             prefix = XMLConstants.EMPTY_STRING;
         }
         try {
-            XMLEvent endElement = this.xmlEventFactory.createEndElement(prefix, namespaceURI, pathFragment.getLocalName());
-            this.xmlEventWriter.add(endElement);
+            xmlEventWriter.add(xmlEventFactory.createEndElement(prefix, xPathFragment.getNamespaceURI(), pathFragment.getLocalName()));
         } catch(Exception e) {
             throw XMLMarshalException.marshalException(e);
         }
@@ -272,7 +266,7 @@ public class XMLEventWriterRecord extends MarshalRecord {
             if(node.getNodeType() == Node.DOCUMENT_NODE) {
                 node = ((Document)node).getDocumentElement();
             }
-            domToXMLEventWriter.writeToEventWriter(node, this.xmlEventWriter);
+            domToXMLEventWriter.writeToEventWriter(node, xmlEventWriter);
         } catch(XMLStreamException e) {
             throw XMLMarshalException.marshalException(e);
         }
@@ -280,15 +274,10 @@ public class XMLEventWriterRecord extends MarshalRecord {
 
     public void startDocument(String encoding, String version) {
         try {
-            XMLEvent startDoc = this.xmlEventFactory.createStartDocument(encoding, version, false);
-            this.xmlEventWriter.add(startDoc);
+            xmlEventWriter.add(this.xmlEventFactory.createStartDocument(encoding, version, false));
         } catch(Exception e) {
             throw XMLMarshalException.marshalException(e);
         }
-    }
-
-    private String getString(String string) {
-        return string;
     }
 
     public void startPrefixMapping(String prefix, String namespaceUri) {
