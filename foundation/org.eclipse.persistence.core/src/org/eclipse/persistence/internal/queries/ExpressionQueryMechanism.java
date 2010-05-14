@@ -903,7 +903,7 @@ public class ExpressionQueryMechanism extends StatementQueryMechanism {
             // Fetch group check, ensure object is fetched.
             if (descriptor.hasFetchGroupManager()) {
                 if (descriptor.getFetchGroupManager().isPartialObject(cachedObject)) {
-                    if (!descriptor.getFetchGroupManager().isObjectValidForFetchGroup(cachedObject, query.getFetchGroup())) {
+                    if (!descriptor.getFetchGroupManager().isObjectValidForFetchGroup(cachedObject, query.getEntityFetchGroup())) {
                         //the cached object is partially fetched, and it's fetch group is not a superset of the one in the query, so the cached object is not valid for the query.
                         cachedObject = null;
                     }
@@ -965,7 +965,7 @@ public class ExpressionQueryMechanism extends StatementQueryMechanism {
         if (owner.hasPartialAttributeExpressions()) {
             return owner.getPartialAttributeSelectionFields(false);
         }
-        if (owner.hasFetchGroup()) {
+        if (owner.hasExecutionFetchGroup()) {
             return owner.getFetchGroupSelectionFields(false);
         }
 

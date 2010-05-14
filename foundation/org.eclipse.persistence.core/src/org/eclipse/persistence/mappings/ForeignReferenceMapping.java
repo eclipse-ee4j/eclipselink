@@ -1701,6 +1701,8 @@ public abstract class ForeignReferenceMapping extends DatabaseMapping {
      * and joining.
      */
     public Object valueFromRow(AbstractRecord row, JoinedAttributeManager joinManager, ObjectBuildingQuery sourceQuery, AbstractSession executionSession) throws DatabaseException {
+        Object result = null;
+        
         // PERF: Direct variable access.
         // If the query uses batch reading, return a special value holder
         // or retrieve the object from the query property.
@@ -1711,8 +1713,33 @@ public abstract class ForeignReferenceMapping extends DatabaseMapping {
         if (shouldUseValueFromRowWithJoin(joinManager, sourceQuery)) {
             return valueFromRowInternalWithJoin(row, joinManager, sourceQuery, executionSession);
         } else {
-            return valueFromRowInternal(row, joinManager, sourceQuery, executionSession);
+            result = valueFromRowInternal(row, joinManager, sourceQuery, executionSession);
         }
+        
+        FetchGroup sourceFG = sourceQuery.getExecutionFetchGroup();
+        if (sourceFG != null) {
+            // Ignoring unknown attributes
+            if (sourceFG.containsAttribute(getAttributeName())) {
+                FetchGroup targetFetchGroup = sourceFG.getGroup(getAttributeName());
+                Object value = result;
+                
+                if (value instanceof IndirectContainer) {
+                    value = ((IndirectContainer) value).getValueHolder();
+                }
+                if (value instanceof UnitOfWorkValueHolder) {
+                    value = ((UnitOfWorkValueHolder) value).getWrappedValueHolder();
+                }
+                if (value instanceof QueryBasedValueHolder) {
+                    QueryBasedValueHolder qbvh = (QueryBasedValueHolder) value;
+                    if (qbvh.getQuery().isObjectLevelReadQuery()) {
+                        ObjectLevelReadQuery olrQuery = (ObjectLevelReadQuery) qbvh.getQuery();
+                        olrQuery.setFetchGroup(targetFetchGroup);
+                    }
+                }
+            }
+        }
+        
+        return result;
     }
     
     /**
@@ -1749,6 +1776,17 @@ public abstract class ForeignReferenceMapping extends DatabaseMapping {
                 targetQuery.checkPrepare(executionSession, row);
             }
             targetQuery = (ReadQuery)targetQuery.clone();
+            if(targetQuery.isObjectLevelReadQuery()) {
+                FetchGroup sourceFG = sourceQuery.getExecutionFetchGroup();
+                if (sourceFG != null) {                    
+                    // Ignoring unknown attributes
+                    if (sourceFG.containsAttribute(getAttributeName())) {
+                        FetchGroup targetFetchGroup = sourceFG.getGroup(getAttributeName());
+                        ObjectLevelReadQuery olrQuery = (ObjectLevelReadQuery)targetQuery;
+                        olrQuery.setFetchGroup(targetFetchGroup);
+                    }
+                }
+            }
             targetQuery.setIsExecutionClone(true);
             targetQuery.setQueryId(sourceQuery.getQueryId());
         }

@@ -9,6 +9,7 @@
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
+ *     dclarke Bug 244124: Enhanced weaving to support extended FetchGroup functionality 
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.weaving;
 
@@ -59,6 +60,7 @@ public class ClassWeaver extends ClassAdapter implements Constants {
     
     // Fetch groups
     public static final String WEAVED_FETCHGROUPS_SHORT_SIGNATURE = "org/eclipse/persistence/internal/weaving/PersistenceWeavedFetchGroups";
+    public static final String FETCHGROUP_TRACKER_SIGNATURE = "Lorg/eclipse/persistence/queries/FetchGroupTracker;";
     public static final String FETCHGROUP_TRACKER_SHORT_SIGNATURE = "org/eclipse/persistence/queries/FetchGroupTracker";
     public static final String FETCHGROUP_SHORT_SIGNATURE = "org/eclipse/persistence/queries/FetchGroup";
     public static final String FETCHGROUP_SIGNATURE = "Lorg/eclipse/persistence/queries/FetchGroup;";
@@ -202,7 +204,7 @@ public class ClassWeaver extends ClassAdapter implements Constants {
      * Add a variable of type PropertyChangeListener to the class.  When this method has been run, the class
      * will contain a variable declaration similar to the following
      * 
-     * private transient _persistence_listener;
+     * private _persistence_listener;
      */
     public void addPropertyChangeListener(boolean attributeAccess){
         cv.visitField(ACC_PROTECTED + ACC_TRANSIENT, "_persistence_listener", PCL_SIGNATURE, null, null);
@@ -484,7 +486,8 @@ public class ClassWeaver extends ClassAdapter implements Constants {
      * the following form:
      *     
      *     public void _persistence_set_variableName((VariableClas) argument) {
-     *          _persistence_get_variableName();   
+     *          _persistence_checkFetchedForSet("variableName");
+     *          _persistence_initialize_variableName_vh();
      *          _persistence_propertyChange("variableName", this.variableName, argument); // if change tracking enabled, wrapping primitives, i.e. new Long(item)
      *          this.variableName = argument;
      *          _persistence_variableName_vh.setValue(variableName); // if lazy enabled
@@ -499,13 +502,30 @@ public class ClassWeaver extends ClassAdapter implements Constants {
         // Get the opcode for the load instruction.  This may be different depending on the type
         int opcode = attributeDetails.getReferenceClassType().getOpcode(Constants.ILOAD);
         
-        // First call the get to ensure the attribute is instantiated correctly,
-        // otherwise setting to null in change tracking will think nothing changed.
-        cv_set.visitVarInsn(ALOAD, 0);
-        // _persistence_get_variableName();
-        cv_set.visitMethodInsn(INVOKEVIRTUAL, classDetails.getClassName(), PERSISTENCE_GET + attribute, "()" + attributeDetails.getReferenceClassType().getDescriptor());
-        
         if (classDetails.shouldWeaveChangeTracking()) {
+            cv_set.visitVarInsn(ALOAD, 0);
+            cv_set.visitLdcInsn(attribute);
+            // _persistence_checkFetchedForSet("variableName");
+            cv_set.visitMethodInsn(INVOKEVIRTUAL, classDetails.getClassName(), "_persistence_checkFetchedForSet", "(Ljava/lang/String;)V");
+
+            if (attributeDetails.weaveValueHolders()) {
+                // _persistence_initialize_variableName_vh();
+                cv_set.visitVarInsn(ALOAD, 0);
+                cv_set.visitMethodInsn(INVOKEVIRTUAL, classDetails.getClassName(), "_persistence_initialize_" + attributeDetails.getAttributeName() + "_vh", "()V");
+                
+                // _persistenc_variableName_vh.getValue();
+                cv_set.visitVarInsn(ALOAD, 0);
+                cv_set.visitVarInsn(ALOAD, 0);
+                cv_set.visitFieldInsn(GETFIELD, classDetails.getClassName(), "_persistence_" + attribute + "_vh", ClassWeaver.VHI_SIGNATURE);
+                cv_set.visitMethodInsn(INVOKEINTERFACE, ClassWeaver.VHI_SHORT_SIGNATURE, "getValue", "()Ljava/lang/Object;");
+                
+                // Add the cast: (<VariableClass>)_persistenc_variableName_vh.getValue()
+                cv_set.visitTypeInsn(CHECKCAST, attributeDetails.getReferenceClassName().replace('.','/'));
+                
+                // add the assignment: this.variableName = (<VariableClass>)_persistenc_variableName_vh.getValue();
+                cv_set.visitFieldInsn(PUTFIELD, classDetails.getClassName(), attribute, attributeDetails.getReferenceClassType().getDescriptor());
+            }
+
             // load the string attribute name as the first argument of the property change call
             cv_set.visitVarInsn(ALOAD, 0);
             cv_set.visitLdcInsn(attribute);
@@ -540,6 +560,24 @@ public class ClassWeaver extends ClassAdapter implements Constants {
             }
             // _persistence_propertyChange("variableName", variableName, argument);
             cv_set.visitMethodInsn(INVOKEVIRTUAL, classDetails.getClassName(), "_persistence_propertyChange", "(Ljava/lang/String;Ljava/lang/Object;Ljava/lang/Object;)V");
+        } else {
+            if (attributeDetails.weaveValueHolders()) {
+                // _persistence_initialize_variableName_vh();
+                cv_set.visitVarInsn(ALOAD, 0);
+                cv_set.visitMethodInsn(INVOKEVIRTUAL, classDetails.getClassName(), "_persistence_initialize_" + attributeDetails.getAttributeName() + "_vh", "()V");
+                
+                // _persistenc_variableName_vh.getValue();
+                cv_set.visitVarInsn(ALOAD, 0);
+                cv_set.visitVarInsn(ALOAD, 0);
+                cv_set.visitFieldInsn(GETFIELD, classDetails.getClassName(), "_persistence_" + attribute + "_vh", ClassWeaver.VHI_SIGNATURE);
+                cv_set.visitMethodInsn(INVOKEINTERFACE, ClassWeaver.VHI_SHORT_SIGNATURE, "getValue", "()Ljava/lang/Object;");
+                
+                // Add the cast: (<VariableClass>)_persistenc_variableName_vh.getValue()
+                cv_set.visitTypeInsn(CHECKCAST, attributeDetails.getReferenceClassName().replace('.','/'));
+                
+                // add the assignment: this.variableName = (<VariableClass>)_persistenc_variableName_vh.getValue();
+                cv_set.visitFieldInsn(PUTFIELD, classDetails.getClassName(), attribute, attributeDetails.getReferenceClassType().getDescriptor());
+            }
         }
         
         // Must set variable after raising change event, so event has old and new value.
@@ -904,7 +942,15 @@ public class ClassWeaver extends ClassAdapter implements Constants {
      *  private Session _persistence_session;
      */
     public void addFetchGroupVariables() {
-        cv.visitField(ACC_PROTECTED + ACC_TRANSIENT, "_persistence_fetchGroup", FETCHGROUP_SIGNATURE, null, null);
+        RuntimeVisibleAnnotations attrs = null;
+        if (isJAXBOnPath()) {
+            try {
+                attrs = new RuntimeVisibleAnnotations();
+                attrs.annotations.add(new Annotation(Type.getDescriptor(Class.forName("javax.xml.bind.annotation.XmlTransient"))));
+            } catch (Exception exception) {}
+        }
+        cv.visitField(ACC_PROTECTED, "_persistence_fetchGroup", FETCHGROUP_SIGNATURE, null, attrs);
+        
         cv.visitField(ACC_PROTECTED + ACC_TRANSIENT, "_persistence_shouldRefreshFetchGroup", PBOOLEAN_SIGNATURE, null, null);
         cv.visitField(ACC_PROTECTED + ACC_TRANSIENT, "_persistence_session", SESSION_SIGNATURE, null, null);
     }
@@ -942,8 +988,15 @@ public class ClassWeaver extends ClassAdapter implements Constants {
      *  }
      *  
      *  public void _persistence_checkFetched(String attribute) {
-     *      if (!_persistence_isAttributeFetched(attribute)) {
-     *          JpaHelper.loadUnfetchedObject(this);
+     *      if (this._persistence_fetchGroup != null) {
+     *          _persistence_fetchGroup.checkFetched(this, attribute);
+     *      }
+     *  }
+     *
+     *  
+     *  public void _persistence_checkSetFetched(String attribute) {
+     *      if (this._persistence_fetchGroup != null) {
+     *          _persistence_fetchGroup.checkFetched(this, attribute);
      *      }
      *  }
      */
@@ -1012,17 +1065,35 @@ public class ClassWeaver extends ClassAdapter implements Constants {
         cv_isAttributeFetched.visitInsn(IRETURN);
         cv_isAttributeFetched.visitMaxs(0 ,0);
         
+        // 244124-dclarke: Modified to use FetchGroup.checkFetched instead of JpaHelper
         CodeVisitor cv_checkFetched = cv.visitMethod(ACC_PUBLIC, "_persistence_checkFetched", "(Ljava/lang/String;)V", null, null);
         cv_checkFetched.visitVarInsn(ALOAD, 0);
-        cv_checkFetched.visitVarInsn(ALOAD, 1);
-        cv_checkFetched.visitMethodInsn(INVOKEVIRTUAL, classDetails.getClassName(), "_persistence_isAttributeFetched", "(Ljava/lang/String;)Z");
+        cv_checkFetched.visitFieldInsn(GETFIELD, classDetails.getClassName(), "_persistence_fetchGroup", FETCHGROUP_SIGNATURE);
         gotoReturn = new Label();
-        cv_checkFetched.visitJumpInsn(IFNE, gotoReturn);
+        cv_checkFetched.visitJumpInsn(IFNULL, gotoReturn);
         cv_checkFetched.visitVarInsn(ALOAD, 0);
-        cv_checkFetched.visitMethodInsn(INVOKESTATIC, "org/eclipse/persistence/jpa/JpaHelper", "loadUnfetchedObject", "(Ljava/lang/Object;)V");
+        cv_checkFetched.visitFieldInsn(GETFIELD, classDetails.getClassName(), "_persistence_fetchGroup", FETCHGROUP_SIGNATURE);
+        cv_checkFetched.visitVarInsn(ALOAD, 0);
+        cv_checkFetched.visitVarInsn(ALOAD, 1);
+        cv_checkFetched.visitMethodInsn(INVOKEVIRTUAL, FETCHGROUP_SHORT_SIGNATURE, "checkFetched", "(" + FETCHGROUP_TRACKER_SIGNATURE + "Ljava/lang/String;)V");
         cv_checkFetched.visitLabel(gotoReturn);
         cv_checkFetched.visitInsn(RETURN);
         cv_checkFetched.visitMaxs(0 ,0);
+        
+        // 244124-dclarke: added _persistence_checkFetchedForSet
+        CodeVisitor cv_checkFetchedForSet = cv.visitMethod(ACC_PUBLIC, "_persistence_checkFetchedForSet", "(Ljava/lang/String;)V", null, null);
+        cv_checkFetchedForSet.visitVarInsn(ALOAD, 0);
+        cv_checkFetchedForSet.visitFieldInsn(GETFIELD, classDetails.getClassName(), "_persistence_fetchGroup", FETCHGROUP_SIGNATURE);
+        gotoReturn = new Label();
+        cv_checkFetchedForSet.visitJumpInsn(IFNULL, gotoReturn);
+        cv_checkFetchedForSet.visitVarInsn(ALOAD, 0);
+        cv_checkFetchedForSet.visitFieldInsn(GETFIELD, classDetails.getClassName(), "_persistence_fetchGroup", FETCHGROUP_SIGNATURE);
+        cv_checkFetchedForSet.visitVarInsn(ALOAD, 0);
+        cv_checkFetchedForSet.visitVarInsn(ALOAD, 1);
+        cv_checkFetchedForSet.visitMethodInsn(INVOKEVIRTUAL, FETCHGROUP_SHORT_SIGNATURE, "checkFetchedForSet", "(" + FETCHGROUP_TRACKER_SIGNATURE + "Ljava/lang/String;)V");
+        cv_checkFetchedForSet.visitLabel(gotoReturn);
+        cv_checkFetchedForSet.visitInsn(RETURN);
+        cv_checkFetchedForSet.visitMaxs(0 ,0);
     }
 
     /**

@@ -17,6 +17,8 @@ import java.util.*;
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.exceptions.*;
 import org.eclipse.persistence.indirection.*;
+import org.eclipse.persistence.internal.queries.AttributeItem;
+import org.eclipse.persistence.internal.queries.AttributeGroup;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.mappings.*;
 
@@ -42,6 +44,14 @@ public abstract class DescriptorIterator {
     protected AbstractSession session;
     protected DatabaseMapping currentMapping;
     protected ClassDescriptor currentDescriptor;
+    protected AttributeItem currentItem;
+    protected AttributeGroup currentGroup;
+    protected boolean usesGroup;
+    /* Ignored if usesGroup is false.
+     * If set to true allows visiting the same object several times - 
+     * as long as currentGroup was different.
+     */
+    protected boolean shouldTrackCurrentGroup;
     protected Object result;// this is a work area, typically used as a Collecting Parm
     protected boolean shouldIterateOverIndirectionObjects;
     protected boolean shouldIterateOverUninstantiatedIndirectionObjects;
@@ -88,6 +98,14 @@ public abstract class DescriptorIterator {
 
     public DatabaseMapping getCurrentMapping() {
         return currentMapping;
+    }
+
+    public AttributeItem getCurrentItem() {
+        return this.currentItem;
+    }
+
+    public AttributeGroup getCurrentGroup() {
+        return this.currentGroup;
     }
 
     /**
@@ -197,16 +215,32 @@ public abstract class DescriptorIterator {
         setCurrentMapping(mapping);
         // aggregate descriptors are passed in because they could be part of an inheritance tree
         setCurrentDescriptor(descriptor);
+        
+        AttributeGroup currentGroupOriginal = null;
+        AttributeItem currentItemOriginal = null;
+        if(this.usesGroup) {
+            currentGroupOriginal = this.currentGroup;
+            currentItemOriginal = this.currentItem;
+            this.currentGroup = this.currentItem.getGroup();
+        }
 
         if (shouldIterateOnAggregates()) {// false by default
             internalIterateAggregateObject(aggregateObject);
             if (shouldBreak()) {
                 setShouldBreak(false);
+                if(this.usesGroup) {
+                    this.currentGroup = currentGroupOriginal;
+                    this.currentItem = currentItemOriginal;
+                }
                 return;
             }
         }
 
         iterateReferenceObjects(aggregateObject);
+        if(this.usesGroup) {
+            this.currentGroup = currentGroupOriginal;
+            this.currentItem = currentItemOriginal;
+        }
     }
 
     /**
@@ -242,7 +276,20 @@ public abstract class DescriptorIterator {
         setCurrentDescriptor(null);
 
         if (shouldIterateOnPrimitives()) {// false by default
+            AttributeGroup currentGroupOriginal = null;
+            AttributeItem currentItemOriginal = null;
+            if(this.usesGroup) {
+                currentGroupOriginal = this.currentGroup;
+                currentItemOriginal = this.currentItem;
+                this.currentGroup = this.currentItem.getGroup();
+            }
+
             internalIteratePrimitive(primitiveValue);
+            
+            if(this.usesGroup) {
+                this.currentGroup = currentGroupOriginal;
+                this.currentItem = currentItemOriginal;
+            }
         }
     }
 
@@ -267,22 +314,54 @@ public abstract class DescriptorIterator {
             return;
         }
 
-        // Check if already processed.
-        if (getVisitedObjects().containsKey(referenceObject)) {
-            return;
+        if(this.usesGroup && this.shouldTrackCurrentGroup) {
+            Set visited = (Set)getVisitedObjects().get(referenceObject);
+            if(visited == null) {
+                visited = new HashSet(1);
+                visited.add(this.currentItem.getGroup());
+                getVisitedObjects().put(referenceObject, visited);
+            } else {
+                if(visited.contains(this.currentItem.getGroup())) {
+                    // source object has been already visited with an equal group
+                    return;
+                } else {
+                    visited.add(this.currentItem.getGroup());
+                }
+            }
+        } else {
+            // Check if already processed.
+            if (getVisitedObjects().containsKey(referenceObject)) {
+                return;
+            }
+    
+            getVisitedObjects().put(referenceObject, referenceObject);
         }
-
-        getVisitedObjects().put(referenceObject, referenceObject);
         setCurrentMapping(mapping);
         setCurrentDescriptor(getDescriptorFor(referenceObject));
+
+        AttributeGroup currentGroupOriginal = null;
+        AttributeItem currentItemOriginal = null;
+        if(this.usesGroup) {
+            currentGroupOriginal = this.currentGroup;
+            currentItemOriginal = this.currentItem;
+            this.currentGroup = this.currentItem.getGroup();
+        }
 
         internalIterateReferenceObject(referenceObject);
         if (shouldBreak()) {
             setShouldBreak(false);
+            if(this.usesGroup) {
+                this.currentGroup = currentGroupOriginal;
+                this.currentItem = currentItemOriginal;
+            }
             return;
         }
 
         iterateReferenceObjects(referenceObject);
+        if(this.usesGroup) {
+            this.currentGroup = currentGroupOriginal;
+            this.currentItem = currentItemOriginal;
+        }
     }
 
     /**
@@ -290,9 +369,49 @@ public abstract class DescriptorIterator {
      * updating the visited stack appropriately.
      */
     protected void iterateReferenceObjects(Object sourceObject) {
+        if(this.usesGroup) {
+            // object is outside of the group - don't iterate over its references
+            if(this.currentGroup == null || !this.currentGroup.hasItems()) {
+                return;
+            }
+        }            
+        
         getVisitedStack().push(sourceObject);
-        getCurrentDescriptor().getObjectBuilder().iterate(this);
+        internalIterateReferenceObjects(sourceObject);
         getVisitedStack().pop();
+    }
+
+    protected void internalIterateReferenceObjects(Object sourceObject) {
+        List<DatabaseMapping> mappings;
+        // Only iterate on relationships if required.
+        if (shouldIterateOnPrimitives()) {
+            mappings = getCurrentDescriptor().getObjectBuilder().getDescriptor().getMappings();
+        } else {
+            ObjectBuilder builder = getCurrentDescriptor().getObjectBuilder().getDescriptor().getObjectBuilder();
+            // PERF: Only process relationships.
+            if (builder.isSimple()) {
+                return;
+            }
+            mappings = builder.getRelationshipMappings();
+        }
+        
+        if(this.usesGroup) {
+            AttributeGroup currentGroupOriginal = this.currentGroup;
+            AttributeItem currentItemOriginal = this.currentItem;
+            for (DatabaseMapping mapping : mappings) {
+                this.currentItem = this.currentGroup.getItem(mapping.getAttributeName());
+                // iterate only over the mappings found in the group
+                if(currentItem != null) {
+                    mapping.iterate(this);
+                    this.currentGroup = currentGroupOriginal;
+                }
+            }
+            this.currentItem = currentItemOriginal;
+        } else {
+            for (DatabaseMapping mapping : mappings) {
+                mapping.iterate(this);
+            }
+        }
     }
 
     /**
@@ -326,6 +445,14 @@ public abstract class DescriptorIterator {
 
     public void setCurrentMapping(DatabaseMapping currentMapping) {
         this.currentMapping = currentMapping;
+    }
+
+    public void setCurrentItem(AttributeItem item) {
+        this.currentItem = item;
+    }
+
+    public void setCurrentGroup(AttributeGroup group) {
+        this.currentGroup = group;
     }
 
     public void setResult(Object result) {
@@ -384,6 +511,10 @@ public abstract class DescriptorIterator {
 
     public void setShouldIterateOverWrappedObjects(boolean shouldIterateOverWrappedObjects) {
         this.shouldIterateOverWrappedObjects = shouldIterateOverWrappedObjects;
+    }
+
+    public void setShouldTrackCurrentGroup(boolean shouldTrackCurrentGroup) {
+        this.shouldTrackCurrentGroup = shouldTrackCurrentGroup;
     }
 
     public void setVisitedObjects(Map visitedObjects) {
@@ -456,16 +587,47 @@ public abstract class DescriptorIterator {
         return shouldIterateOverWrappedObjects;
     }
 
+    public boolean shouldTrackCurrentGroup() {
+        return this.shouldTrackCurrentGroup;
+    }
+
+    public boolean usesGroup() {
+        return this.usesGroup;
+    }
+    
     /**
      * This is the root method called to start the iteration.
      */
     public void startIterationOn(Object sourceObject) {
-        if (getVisitedObjects().containsKey(sourceObject)) {
-            return;
+        startIterationOn(sourceObject, null);
+    }
+    
+    public void startIterationOn(Object sourceObject, AttributeGroup group) {
+        this.usesGroup = group != null;
+        if(this.usesGroup && this.shouldTrackCurrentGroup) {
+            Set visited = (Set)getVisitedObjects().get(sourceObject);
+            if(visited == null) {
+                visited = new HashSet(1);
+                visited.add(group);
+                getVisitedObjects().put(sourceObject, visited);
+            } else {
+                if(visited.contains(group)) {
+                    // source object has been already visited with an equal group
+                    return;
+                } else {
+                    visited.add(group);
+                }
+            }
+        } else {
+            if (getVisitedObjects().containsKey(sourceObject)) {
+                return;
+            }
+            getVisitedObjects().put(sourceObject, sourceObject);
         }
-        getVisitedObjects().put(sourceObject, sourceObject);
         setCurrentMapping(null);
         setCurrentDescriptor(getSession().getDescriptor(sourceObject));
+        setCurrentItem(null);
+        setCurrentGroup(group);
 
         iterate(sourceObject);
 

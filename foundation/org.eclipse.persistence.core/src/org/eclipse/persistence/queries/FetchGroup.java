@@ -9,10 +9,18 @@
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
+ *     05/14/2010-2.1 ailitchev - Bug 244124 - Add Nested FetchGroup 
  ******************************************************************************/  
 package org.eclipse.persistence.queries;
 
-import java.util.*;
+import java.util.Iterator;
+import java.util.Map;
+import java.util.Set;
+
+import org.eclipse.persistence.internal.localization.ExceptionLocalization;
+import org.eclipse.persistence.internal.queries.AttributeGroup;
+import org.eclipse.persistence.internal.queries.AttributeItem;
+import org.eclipse.persistence.internal.queries.EntityFetchGroup;
 
 /**
  * <p><b>Purpose</b>: A fetch group is a performance enhancement that allows a group of
@@ -36,90 +44,150 @@ import java.util.*;
  * @see org.eclipse.persistence.queries.FetchGroup
  * @see org.eclipse.persistence.queries.FetchGroupTracker
  *
- * @author King Wang
+ * @author King Wang, dclarke
  * @since TopLink 10.1.3.
  */
-public class FetchGroup implements java.io.Serializable {
-    /** Fetch group name, default is empty if not set. */
-    private String name;
+public class FetchGroup extends AttributeGroup {
 
-    /** Specified attributes in the group. */
-    private Set attributes;
-
-    /**
-     * Constructor.
+    /* 
+     * Indicates whether LoadGroup corresponding to FetchGroup should be applied to the query.
+     * If set to true then all group's relationship attributes are instantiated. 
      */
+    private boolean shouldLoad;
+    
     public FetchGroup() {
-        this("");
+        super();
     }
 
-    /**
-     * Constructor with a group name.
-     */
     public FetchGroup(String name) {
-        this.name = name;
-        this.attributes = new HashSet(10);
+        super(name);
     }
 
     /**
-     * Return if the attribute is defined in the group.
+     * Return the attribute names on the current FetchGroup. This does not
+     * include the attributes on nested FetchGroups
      */
-    public boolean containsAttribute(String attribute) {
-        return getAttributes().contains(attribute);
+    @Deprecated
+    public Set<String> getAttributes() {
+        return getAttributeNames();
     }
 
     /**
-     * Return attributes defined in the group.
+     * TODO-dclarke Moved fetching functionality from JpaHelper
      */
-    public Set getAttributes() {
-        return attributes;
+    public void checkFetched(FetchGroupTracker entity, String attributeName) {
+        if (attributeName == null || !containsAttribute(attributeName)) {
+            ReadObjectQuery query = new ReadObjectQuery(entity);
+            query.setShouldUseDefaultFetchGroup(false);
+            Object result = entity._persistence_getSession().executeQuery(query);
+            if (result == null) {
+                Object[] args = { query.getSelectionId() };
+                String message = ExceptionLocalization.buildMessage("no_entities_retrieved_for_get_reference", args);
+                throw new javax.persistence.EntityNotFoundException(message);
+            }
+        }
     }
 
     /**
-     * Add an attribute to the group.
+     * Invoked to check if attribute to be set is loaded. If not the entire
+     * object is loaded before the value is set.
      */
-    public synchronized void addAttribute(String attrName) {
-        // Synchronized because pk attributes are added in query prepare.
-        attributes.add(attrName);
+    public void checkFetchedForSet(FetchGroupTracker entity, String attributeName) {
+        if (attributeName == null || !containsAttribute(attributeName)) {
+            ReadObjectQuery query = new ReadObjectQuery(entity);
+            query.setShouldUseDefaultFetchGroup(false);
+            Object result = entity._persistence_getSession().executeQuery(query);
+            if (result == null) {
+                Object[] args = { query.getSelectionId() };
+                String message = ExceptionLocalization.buildMessage("no_entities_retrieved_for_get_reference", args);
+                throw new javax.persistence.EntityNotFoundException(message);
+            }
+        }
     }
 
     /**
-     * Add a set of attributes to the group.
+     * Set this FetchGroup on an entity implementing {@link FetchGroupTracker}.
+     * Since instances of this class are assumed to be shared an
+     * {@link EntityFetchGroup} wrapping this FetchGroup will be set.
      */
-    public void addAttributes(Collection newAttributes) {
-        attributes.addAll(newAttributes);
-    }
+/*    public void setOnEntity(FetchGroupTracker entity) {
+        entity._persistence_setFetchGroup(new EntityFetchGroup(this));
+    }*/
 
-    /**
-     * Remove an attribute from the group.
-     */
-    public void removeAttribute(String attrName) {
-        attributes.remove(attrName);
-    }
-
-    /**
-     * Return the group name.
-     */
-    public String getName() {
-        return name;
-    }
-
-    /**
-     * Set the group name.
-     */
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    /**
-     * INTERNAL:
-     * Return true if this fetch group is a super-set of the passed in fetch group.
-     */
-    public boolean isSupersetOf(FetchGroup anotherGroup) {
-        return (anotherGroup != null) && ((this == anotherGroup) || getAttributes().containsAll(anotherGroup.getAttributes()));
+    public void setShouldLoad(boolean shouldLoad) {
+        this.shouldLoad = shouldLoad;
     }
     
-    public String toString() {
-        return getClass().getSimpleName() + "(" + getAttributes() + ")";
+    public void setShouldLoadAll(boolean shouldLoad) {
+        this.shouldLoad = shouldLoad;
+        if(this.hasItems()) {
+            Iterator<Map.Entry<String, AttributeItem>> it = getItems().entrySet().iterator();
+            while(it.hasNext()) {
+                Map.Entry<String, AttributeItem> entry = it.next();
+                FetchGroup group = (FetchGroup)entry.getValue().getGroup();
+                if(group != null) {
+                    group.setShouldLoadAll(shouldLoad);
+                }
+            }
+        }
+    }
+    
+    public boolean shouldLoad() {
+        return this.shouldLoad;
+    }
+    
+    @Override
+    public FetchGroup newGroup(String name, AttributeGroup parent) {
+        FetchGroup fetchGroup = new FetchGroup(name);
+        if(parent != null) {
+            fetchGroup.setShouldLoad(((FetchGroup)parent).shouldLoad());
+        }
+        return fetchGroup;
+    }
+    
+    public boolean isFetchGroup() {
+        return true;
+    }
+
+    public boolean isEntityFetchGroup() {
+        return false;
+    }
+
+    /*
+     * LoadGroup created with all member groups with shouldLoad set to false dropped.
+     */
+    public LoadGroup toLoadGroupLoadOnly() {
+        if(!this.shouldLoad) {
+            return null;
+        }
+        LoadGroup loadGroup = new LoadGroup(getName());
+        if(this.hasItems()) {
+            Iterator<Map.Entry<String, AttributeItem>> it = getItems().entrySet().iterator();
+            while(it.hasNext()) {
+                Map.Entry<String, AttributeItem> entry = it.next();
+                FetchGroup group = (FetchGroup)entry.getValue().getGroup();
+                if(group != null) {
+                    loadGroup.addAttribute(entry.getKey(), group.toLoadGroupLoadOnly());
+                } else {
+                    loadGroup.addAttribute(entry.getKey());
+                }
+            }
+        }
+        if(!loadGroup.getItems().isEmpty()) {
+            return loadGroup;
+        } else {
+            return null;
+        }
+    }
+    
+    public FetchGroup clone() {
+        return (FetchGroup)super.clone();
+    }    
+
+    /**
+     * Returns FetchGroup corresponding to the passed (possibly nested) attribute.
+     */
+    public FetchGroup getGroup(String attributeNameOrPath) {
+        return (FetchGroup)super.getGroup(attributeNameOrPath);
     }
 }

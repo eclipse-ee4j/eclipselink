@@ -185,15 +185,9 @@ public class JpaHelper {
     /**
      * Load/fetch the unfetched object.  This method is used by the ClassWeaver.
      */
-    public static void loadUnfetchedObject(Object object) {
-        ReadObjectQuery query = new ReadObjectQuery(object);
-        query.setShouldUseDefaultFetchGroup(false);
-        Object result = ((FetchGroupTracker)object)._persistence_getSession().executeQuery(query);
-        if (result == null) {
-            Object[] args = {query.getSelectionId()};
-            String message = ExceptionLocalization.buildMessage("no_entities_retrieved_for_get_reference", args);
-            throw new javax.persistence.EntityNotFoundException(message);
-        }
+    public static void loadUnfetchedObject(FetchGroupTracker entity) {
+        // 244124-dclarke: moved functionality into FetchGroup
+        entity._persistence_getFetchGroup().checkFetched(entity, null);
     }
 
 }

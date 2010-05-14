@@ -145,7 +145,7 @@ public class TransformerFactory {
                     ClassDetails classDetails = createClassDetails(metaClass, weaveValueHoldersForClass, weaveChangeTrackingForClass, weaveFetchGroups, weaveInternal);
                     if (descriptor.isDescriptorTypeAggregate()) {
                         classDetails.setIsEmbedable(true);
-                        classDetails.setShouldWeaveFetchGroups(false);
+// TODO: temp?                        classDetails.setShouldWeaveFetchGroups(false);
                     }
                     List unMappedAttributes = storeAttributeMappings(metaClass, classDetails, descriptor.getMappings(), weaveValueHoldersForClass);
                     classDetailsMap.put(classDetails.getClassName() ,classDetails);

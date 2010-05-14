@@ -54,7 +54,7 @@ public @interface FetchGroup {
      * (Optional) Indicates whether all relationship attributes
      * specified in the fetch group should be loaded.
      */
-    boolean load() default true; 
+    boolean load() default false; 
 
     /**
      * (Required) The list of attributes to fetch.

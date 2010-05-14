@@ -18,30 +18,60 @@
  *         a LockTimeoutException to be thrown if the query fails as a result of
  *         a timeout trying to acquire the lock. A PessimisticLockException is
  *         thrown otherwise.
+ *     05/14/2010-2.1 ailitchev - Bug 244124 - Add Nested FetchGroup 
  ******************************************************************************/  
 package org.eclipse.persistence.queries;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.Vector;
 import java.util.concurrent.ConcurrentHashMap;
 
 import org.eclipse.persistence.annotations.BatchFetchType;
 import org.eclipse.persistence.descriptors.ClassDescriptor;
+import org.eclipse.persistence.descriptors.FetchGroupManager;
 import org.eclipse.persistence.descriptors.VersionLockingPolicy;
-import org.eclipse.persistence.exceptions.*;
-import org.eclipse.persistence.expressions.*;
-import org.eclipse.persistence.history.*;
+import org.eclipse.persistence.exceptions.DatabaseException;
+import org.eclipse.persistence.exceptions.OptimisticLockException;
+import org.eclipse.persistence.exceptions.QueryException;
+import org.eclipse.persistence.expressions.Expression;
+import org.eclipse.persistence.expressions.ExpressionBuilder;
+import org.eclipse.persistence.history.AsOfClause;
 import org.eclipse.persistence.internal.databaseaccess.DatabaseCall;
 import org.eclipse.persistence.internal.descriptors.OptimisticLockingPolicy;
-import org.eclipse.persistence.internal.expressions.*;
-import org.eclipse.persistence.internal.helper.*;
-import org.eclipse.persistence.internal.history.*;
-import org.eclipse.persistence.internal.queries.*;
-import org.eclipse.persistence.mappings.*;
-import org.eclipse.persistence.mappings.querykeys.*;
+import org.eclipse.persistence.internal.expressions.ForUpdateClause;
+import org.eclipse.persistence.internal.expressions.ForUpdateOfClause;
+import org.eclipse.persistence.internal.expressions.MapEntryExpression;
+import org.eclipse.persistence.internal.expressions.ObjectExpression;
+import org.eclipse.persistence.internal.expressions.QueryKeyExpression;
+import org.eclipse.persistence.internal.helper.DatabaseField;
+import org.eclipse.persistence.internal.helper.Helper;
+import org.eclipse.persistence.internal.helper.InvalidObject;
+import org.eclipse.persistence.internal.helper.NonSynchronizedVector;
+import org.eclipse.persistence.internal.history.UniversalAsOfClause;
+import org.eclipse.persistence.internal.queries.DatabaseQueryMechanism;
+import org.eclipse.persistence.internal.queries.EntityFetchGroup;
+import org.eclipse.persistence.internal.queries.ExpressionQueryMechanism;
+import org.eclipse.persistence.internal.queries.JoinedAttributeManager;
+import org.eclipse.persistence.internal.queries.MapContainerPolicy;
+import org.eclipse.persistence.internal.queries.MappedKeyMapContainerPolicy;
+import org.eclipse.persistence.internal.queries.QueryByExampleMechanism;
 import org.eclipse.persistence.internal.sessions.AbstractRecord;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.internal.sessions.UnitOfWorkImpl;
 import org.eclipse.persistence.logging.SessionLog;
+import org.eclipse.persistence.mappings.AggregateObjectMapping;
+import org.eclipse.persistence.mappings.CollectionMapping;
+import org.eclipse.persistence.mappings.DatabaseMapping;
+import org.eclipse.persistence.mappings.ForeignReferenceMapping;
+import org.eclipse.persistence.mappings.querykeys.ForeignReferenceQueryKey;
+import org.eclipse.persistence.mappings.querykeys.QueryKey;
 
 /**
  * <p><b>Purpose</b>:
@@ -106,15 +136,30 @@ public abstract class ObjectLevelReadQuery extends ObjectBuildingQuery {
      */
     protected int inMemoryQueryIndirectionPolicy;
 
-    /** Allow for a query level fetch group to be set. */
+    /**
+     * {@link FetchGroup} specified on this query. When set this FetchGroup will
+     * override the {@link #fetchGroupName} and the use of the descriptor's
+     * {@link FetchGroupManager#getDefaultFetchGroup()}
+     */
     protected FetchGroup fetchGroup;
 
-    /** The pre-defined fetch group name. */
+    /**
+     * Name of {@link FetchGroup} stored in the {@link FetchGroupManager} of the
+     * reference class' descriptor or any of its parent descriptors.
+     */
     protected String fetchGroupName;
 
     /** Flag to turn on/off the use of the default fetch group. */
     protected boolean shouldUseDefaultFetchGroup = true;
+
+    /** Specifies indirection that should be instantiated before returning result */
+    protected LoadGroup loadGroup;
     
+    /**
+     * Derived from fetchGroup, set on all objects returned by the query.
+     */
+    protected EntityFetchGroup entityFetchGroup;
+
     /**
      * Stores the non fetchjoin attributes, these are joins that will be
      * represented in the where clause but not in the select.
@@ -252,8 +297,7 @@ public abstract class ObjectLevelReadQuery extends ObjectBuildingQuery {
         } else if (query.hasOrderByExpressions()) {
             return false;
         }
-        return ((getReferenceClass() == query.getReferenceClass()) || ((getReferenceClass() != null) && getReferenceClass().equals(query.getReferenceClass())))
-            && ((getSelectionCriteria() == query.getSelectionCriteria()) || ((getSelectionCriteria() != null) && getSelectionCriteria().equals(query.getSelectionCriteria())));
+        return ((getReferenceClass() == query.getReferenceClass()) || ((getReferenceClass() != null) && getReferenceClass().equals(query.getReferenceClass()))) && ((getSelectionCriteria() == query.getSelectionCriteria()) || ((getSelectionCriteria() != null) && getSelectionCriteria().equals(query.getSelectionCriteria())));
     }
         
     /**
@@ -366,6 +410,10 @@ public abstract class ObjectLevelReadQuery extends ObjectBuildingQuery {
         // Don't use setters as that will trigger unprepare
         if (this.orderByExpressions != null) {
             cloneQuery.orderByExpressions = new ArrayList<Expression>(this.orderByExpressions);
+        }
+        if (this.fetchGroup != null) {
+            cloneQuery.fetchGroup = (FetchGroup)this.fetchGroup.clone();
+            // don't clone immutable entityFetchGroup
         }
         return cloneQuery;
     }
@@ -986,7 +1034,21 @@ public abstract class ObjectLevelReadQuery extends ObjectBuildingQuery {
             setQueryId(getSession().getNextQueryId());
         }
 
-        return executeObjectLevelReadQuery();
+        Object result = executeObjectLevelReadQuery();
+        if(result != null) {
+            if(this.loadGroup != null) {
+                this.loadGroup.load(result, getSession());
+            } else {
+                FetchGroup executionFetchGroup = this.getExecutionFetchGroup(); 
+                if(executionFetchGroup != null) {
+                    LoadGroup lg = executionFetchGroup.toLoadGroupLoadOnly();
+                    if(lg != null) {
+                        lg.load(result, getSession());
+                    }
+                }
+            }
+        }
+        return result;
     }
 
     /**
@@ -1539,8 +1601,10 @@ public abstract class ObjectLevelReadQuery extends ObjectBuildingQuery {
      * INTERNAL:
      * Return the fields required in the select clause, for fetch group reading.
      */
+    // TODO-244124-dclarke
     public Vector getFetchGroupSelectionFields(boolean isCustomSQL) {
-        Set fetchedFields = new HashSet(getFetchGroup().getAttributes().size() + 2);
+        Set fetchedFields = new HashSet(getExecutionFetchGroup().getItems().size());
+
         // Add required fields.
         fetchedFields.addAll(getDescriptor().getPrimaryKeyFields());
         if (getDescriptor().hasInheritance() && (getDescriptor().getInheritancePolicy().getClassIndicatorField() != null)) {
@@ -1553,7 +1617,7 @@ public abstract class ObjectLevelReadQuery extends ObjectBuildingQuery {
             }
         }
         // Add specified fields.
-        for (Iterator iterator = getFetchGroup().getAttributes().iterator(); iterator.hasNext();) {
+        for (Iterator iterator = getExecutionFetchGroup().getItems().keySet().iterator(); iterator.hasNext();) {
             String attribute = (String)iterator.next();
             DatabaseMapping mapping = getDescriptor().getObjectBuilder().getMappingForAttributeName(attribute);
             if (mapping == null) {
@@ -1564,7 +1628,7 @@ public abstract class ObjectLevelReadQuery extends ObjectBuildingQuery {
         
         // Build field list in the same order as descriptor's fields to ensure field and join indexes match.
         // Put null placeholders in place of non-selected fields.        
-        Vector fields = org.eclipse.persistence.internal.helper.NonSynchronizedVector.newInstance(getFetchGroup().getAttributes().size() + 2);
+        Vector fields = NonSynchronizedVector.newInstance(getExecutionFetchGroup().getItems().size());
         for (Iterator iterator = getDescriptor().getFields().iterator(); iterator.hasNext();) {
             DatabaseField field = (DatabaseField)iterator.next();
             if (fetchedFields.contains(field)) {
@@ -1600,7 +1664,7 @@ public abstract class ObjectLevelReadQuery extends ObjectBuildingQuery {
     public Vector getSelectionFields() {
         if (hasPartialAttributeExpressions()) {
             return getPartialAttributeSelectionFields(true);
-        } else if (hasFetchGroup()) {
+        } else if (this.fetchGroup != null) {
             return getFetchGroupSelectionFields(true);
         } else if (hasJoining()) {
             JoinedAttributeManager joinManager = getJoinedAttributeManager();
@@ -1874,9 +1938,34 @@ public abstract class ObjectLevelReadQuery extends ObjectBuildingQuery {
         buildSelectionCriteria(session);
         checkDescriptor(session);
 
+        Set<String> fetchGroupAttributes = null;
+        FetchGroupManager fetchGroupManager = this.descriptor.getFetchGroupManager();
+        if (!isReportQuery() && fetchGroupManager != null) {
+            if(this.fetchGroup == null) {
+                if(this.fetchGroupName != null) {
+                    this.fetchGroup = fetchGroupManager.getFetchGroup(this.fetchGroupName);
+                }
+            }
+            // that may be either fetchGroup or defaultFetchGroup from descriptor
+            FetchGroup executionFetchGroup = getExecutionFetchGroup();
+            if(executionFetchGroup != null) {
+                if (hasPartialAttributeExpressions()) {
+                    //fetch group does not work with partial attribute reading
+                    throw QueryException.fetchGroupNotSupportOnPartialAttributeReading();
+                }
+                if(this.fetchGroup != null) {
+                    this.descriptor.getFetchGroupManager().addMinimalFetchGroup(this.fetchGroup);
+                    this.entityFetchGroup = fetchGroupManager.getEntityFetchGroup(this.fetchGroup);
+                } else {
+                    this.entityFetchGroup = null;
+                }
+                fetchGroupAttributes = executionFetchGroup.getAttributeNames();
+            }
+        }
+        
         // Add mapping joined attributes.
         if (getQueryMechanism().isExpressionQueryMechanism() && getDescriptor().getObjectBuilder().hasJoinedAttributes()) {
-            getJoinedAttributeManager().processJoinedMappings();
+            getJoinedAttributeManager().processJoinedMappings(fetchGroupAttributes);
             if(getJoinedAttributeManager().hasOrderByExpressions()) {
                 Iterator<Expression> it = getJoinedAttributeManager().getOrderByExpressions().iterator();
                 while(it.hasNext()) {
@@ -1950,7 +2039,7 @@ public abstract class ObjectLevelReadQuery extends ObjectBuildingQuery {
             throw QueryException.cannotCachePartialObjects(this);
         }
 
-        if (this.descriptor.isAggregateDescriptor()) {
+        if (getDescriptor().isAggregateDescriptor()) {
             // Not allowed
             throw QueryException.aggregateObjectCannotBeDeletedOrWritten(this.descriptor, this);
         }
@@ -1963,15 +2052,23 @@ public abstract class ObjectLevelReadQuery extends ObjectBuildingQuery {
             }
         }
 
-        // If fetch group manager is not set in the descriptor and the user attempts to use fetch group in the query dynamiclly, throw exception here.
-        if ((!this.descriptor.hasFetchGroupManager()) && ((getFetchGroup() != null) || (getFetchGroupName() != null))) {
-            throw QueryException.fetchGroupValidOnlyIfFetchGroupManagerInDescriptor(this.descriptor.getJavaClassName(), getName());
-        }
+        // If fetch group manager is not set in the descriptor and the user
+        // attempts to use fetch group in the query dynamically, throw exception
+        // here.
+        // TODO-dclarke: removing unnecessary check
+        /*
+         * if (!getDescriptor().hasFetchGroupManager() && (_getFetchGroup() !=
+         * null || getFetchGroupName() != null)) { throw
+         * QueryException.fetchGroupValidOnlyIfFetchGroupManagerInDescriptor
+         * (getDescriptor().getJavaClassName(), getName()); }
+         */
 
         // Prepare fetch group if applied.
-        if (this.descriptor.hasFetchGroupManager()) {
-            this.descriptor.getFetchGroupManager().prepareQueryWithFetchGroup(this);
-        }
+        // TODO-dclarke: Will not prepare queries where the default FG is on a
+        // parent descriptor
+/*        if (!isReportQuery() && (getDescriptor().hasFetchGroupManager() || hasFetchGroup() || getFetchGroupName() != null)) {
+            this.executionFetchGroup = getDescriptor().getFetchGroupManager().prepareQueryWithFetchGroup(this);
+        }*/
 
         // Validate and prepare join expressions.			
         if (hasJoining()) {
@@ -2442,7 +2539,7 @@ public abstract class ObjectLevelReadQuery extends ObjectBuildingQuery {
      * Return if this is a full object query, not partial nor fetch group.
      */
     public boolean shouldReadAllMappings() {
-        return (!hasPartialAttributeExpressions()) && (!hasFetchGroup());
+        return (!hasPartialAttributeExpressions()) && (this.entityFetchGroup == null);
     }
     
     /**
@@ -2450,15 +2547,16 @@ public abstract class ObjectLevelReadQuery extends ObjectBuildingQuery {
      * Check if the mapping is part of the partial attributes.
      */
     public boolean shouldReadMapping(DatabaseMapping mapping) {
-        if ((!hasPartialAttributeExpressions()) && (!hasFetchGroup())) {
+        if ((!hasPartialAttributeExpressions()) && (this.entityFetchGroup == null)) {
             return true;
         }
 
         String attrName = mapping.getAttributeName();
 
-        //bug 3659145
-        if (hasFetchGroup()) {
-            return isFetchGroupAttribute(attrName);
+        // bug 3659145 TODO - What is this bug ref? dclarke modified this next
+        // if block
+        if(this.entityFetchGroup  != null) {
+            return this.entityFetchGroup.containsAttribute(mapping.getAttributeName());
         }
 
         return isPartialAttribute(attrName);
@@ -2565,58 +2663,58 @@ public abstract class ObjectLevelReadQuery extends ObjectBuildingQuery {
      * Return if a fetch group is set in the query.
      */
     public boolean hasFetchGroup() {
-        return fetchGroup != null;
+        return this.fetchGroup != null;
     }
     
     /**
      * Return the fetch group set in the query.
      * If a fetch group is not explicitly set in the query, default fetch group optionally defined in the descriptor
      * would be used, unless the user explicitly calls query.setShouldUseDefaultFetchGroup(false).
+     * Note that the returned fetchGroup may be updated during preProcess.
+     * @see #getFetchGroup(ClassDescriptor) for named and default FetchGroup
+     *      lookup.
      */
     public FetchGroup getFetchGroup() {
-        return fetchGroup;
+        return this.fetchGroup;
+    }
+
+    /**
+     * Return the load group set in the query.
+     */
+    public LoadGroup getLoadGroup() {
+        return this.loadGroup;
     }
 
     /**
      * INTERNAL:
-     * Initialize fetch group
+     * Returns FetchGroup that will be applied to the query.
+     * Note that the returned fetchGroup may be updated during preProcess.
      */
-    public void initializeFetchGroup() {
-        if (this.fetchGroup != null) {
-            //fetch group already set.
-            return;
+    public FetchGroup getExecutionFetchGroup() {
+        if(this.fetchGroup == null && this.shouldUseDefaultFetchGroup && this.descriptor != null && this.descriptor.hasFetchGroupManager()) {
+            return this.descriptor.getFetchGroupManager().getDefaultFetchGroup();
         }
+        return this.fetchGroup;
+    }
 
-        //not explicitly set dynamically fetch group
-        if (this.fetchGroupName != null) {//set pre-defined named group
-            this.fetchGroup = getDescriptor().getFetchGroupManager().getFetchGroup(this.fetchGroupName);
-            if (this.fetchGroup == null) {
-                // Check the inheritance parents for the fetch group before
-                // throwing an exception.
-                if (getDescriptor().isChildDescriptor()) {
-                    ClassDescriptor parentDescriptor = getDescriptor().getInheritancePolicy().getParentDescriptor();
-                    
-                    while (parentDescriptor != null && this.fetchGroup == null) {
-                        if (parentDescriptor.hasFetchGroupManager()) {
-                            this.fetchGroup = parentDescriptor.getFetchGroupManager().getFetchGroup(this.fetchGroupName);
-                        }
-                        
-                        // Get the next parent.
-                        parentDescriptor = parentDescriptor.getInheritancePolicy().getParentDescriptor();
-                    }
-                }
-                
-                if (this.fetchGroup == null) {
-                    // named fetch group is not defined in the descriptor
-                    throw QueryException.fetchGroupNotDefinedInDescriptor(this.fetchGroupName);
-                }
-            }
-        } else {//not set fetch group at all
-            //use the default fetch group if not explicitly turned off
-            if (shouldUseDefaultFetchGroup()) {
-                this.fetchGroup = getDescriptor().getDefaultFetchGroup();
-            }
+    /**
+     * INTERNAL:
+     * Returns EntityFetchGroup that will be applied to objects returned by the query.
+     * Should not be called before preProcess - may not yet exist.
+     */
+    public EntityFetchGroup getEntityFetchGroup() {
+        if(this.fetchGroup == null && this.shouldUseDefaultFetchGroup && this.descriptor != null && this.descriptor.hasFetchGroupManager()) {
+            return this.descriptor.getFetchGroupManager().getDefaultEntityFetchGroup();
         }
+        return this.entityFetchGroup;
+    }
+    
+    /**
+     * INTERNAL:
+     * Indicates whether a FetchGroup will be applied to the query.
+     */
+    public boolean hasExecutionFetchGroup() {
+        return getExecutionFetchGroup() != null;
     }
 
     /**
@@ -2624,7 +2722,13 @@ public abstract class ObjectLevelReadQuery extends ObjectBuildingQuery {
      */
     public void setFetchGroup(FetchGroup newFetchGroup) {
         this.fetchGroup = newFetchGroup;
-        setIsPrepared(false);
+        
+        if (newFetchGroup != null) {
+            this.fetchGroupName = null;
+            this.shouldUseDefaultFetchGroup = false;
+        }
+        this.entityFetchGroup = null;
+        setIsPrePrepared(false);
     }
 
     /**
@@ -2634,21 +2738,32 @@ public abstract class ObjectLevelReadQuery extends ObjectBuildingQuery {
         //nullify the fetch group reference as one query can only has one fetch group.
         this.fetchGroup = null;
         this.fetchGroupName = groupName;
-        setIsPrepared(false);
+        if(groupName != null) {
+            this.shouldUseDefaultFetchGroup = false;
+        }
+        this.entityFetchGroup = null;
+        setIsPrePrepared(false);
+    }
+
+    /**
+     * Set a load group to the query.
+     */
+    public void setLoadGroup(LoadGroup loadGroup) {
+        this.loadGroup = loadGroup;
     }
 
     /**
      * Return the fetch group name set in the query.
      */
     public String getFetchGroupName() {
-        return fetchGroupName;
+        return this.fetchGroupName;
     }
 
     /**
      * Return false if the query does not use the default fetch group defined in the descriptor level.
      */
     public boolean shouldUseDefaultFetchGroup() {
-        return shouldUseDefaultFetchGroup;
+        return this.shouldUseDefaultFetchGroup;
     }
 
     /**
@@ -2656,19 +2771,16 @@ public abstract class ObjectLevelReadQuery extends ObjectBuildingQuery {
      */
     public void setShouldUseDefaultFetchGroup(boolean shouldUseDefaultFetchGroup) {
         this.shouldUseDefaultFetchGroup = shouldUseDefaultFetchGroup;
-        setIsPrepared(false);
-    }
 
-    /**
-     * INTERNAL:
-     * Return if fetch group attribute.
-     */
-    public boolean isFetchGroupAttribute(String attributeName) {
-        if (getFetchGroup() == null) {
-            //every attribute is fetched already
-            return true;
+        // Clear mutually exclusive FetchGroup configuration
+        if (shouldUseDefaultFetchGroup) {
+            this.fetchGroup = null;
+            this.fetchGroupName = null;
+            this.entityFetchGroup = null;
         }
-        return getFetchGroup().getAttributes().contains(attributeName);
+
+        // Force prepare again so executeFetchGroup is calculated
+        setIsPrePrepared(false);
     }
     
     /**
@@ -2942,5 +3054,22 @@ public abstract class ObjectLevelReadQuery extends ObjectBuildingQuery {
      */
     public void setBatchObjects(Map<Object, Object> batchObjects) {
         getBatchFetchPolicy().setBatchObjects(batchObjects);
+    }
+    
+    public String toString() {
+        String str = super.toString();
+        if(this.fetchGroup != null) {
+            str += '\n' + this.fetchGroup.toString();
+        } else if(this.fetchGroupName != null) {
+            str += '\n' + "FetchGroup(" + this.fetchGroupName + ")";
+        } else if(this.shouldUseDefaultFetchGroup) {
+            if(this.descriptor != null && this.descriptor.hasFetchGroupManager()) {
+                FetchGroup defaultFetchGroup = descriptor.getFetchGroupManager().getDefaultFetchGroup(); 
+                if(defaultFetchGroup != null) {
+                    str += '\n' + "Default " + defaultFetchGroup.toString();
+                }
+            }
+        }
+        return str;
     }
 }

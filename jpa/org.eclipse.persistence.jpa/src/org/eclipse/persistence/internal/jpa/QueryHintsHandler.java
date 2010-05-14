@@ -62,6 +62,7 @@ import org.eclipse.persistence.queries.DeleteAllQuery;
 import org.eclipse.persistence.queries.DirectReadQuery;
 import org.eclipse.persistence.queries.FetchGroup;
 import org.eclipse.persistence.queries.InMemoryQueryIndirectionPolicy;
+import org.eclipse.persistence.queries.LoadGroup;
 import org.eclipse.persistence.queries.ModifyAllQuery;
 import org.eclipse.persistence.queries.ObjectBuildingQuery;
 import org.eclipse.persistence.queries.QueryRedirector;
@@ -257,6 +258,8 @@ public class QueryHintsHandler {
             addHint(new FetchGroupNameHint());
             addHint(new FetchGroupDefaultHint());
             addHint(new FetchGroupAttributeHint());
+            addHint(new FetchGroupLoadHint());
+            addHint(new LoadGroupHint());
             addHint(new ExclusiveHint());
             addHint(new InheritanceJoinHint());
             addHint(new AsOfHint());
@@ -890,6 +893,45 @@ public class QueryHintsHandler {
         }
     }
 
+    protected static class FetchGroupLoadHint extends Hint {
+        FetchGroupLoadHint() {
+            super(QueryHints.FETCH_GROUP_LOAD, HintValues.TRUE);
+            valueArray = new Object[][] { 
+                    {HintValues.FALSE, Boolean.FALSE},
+                    {HintValues.TRUE, Boolean.TRUE}
+                };
+        }
+    
+        DatabaseQuery applyToDatabaseQuery(Object valueToApply, DatabaseQuery query, ClassLoader loader, AbstractSession activeSession) {
+            if (query.isObjectLevelReadQuery()) {
+                FetchGroup fetchGroup = ((ObjectLevelReadQuery)query).getFetchGroup();
+                if (fetchGroup == null) {
+                    fetchGroup = new FetchGroup();
+                    ((ObjectLevelReadQuery)query).setFetchGroup(fetchGroup);
+                }
+                fetchGroup.setShouldLoadAll((Boolean)valueToApply);
+            } else {
+                throw new IllegalArgumentException(ExceptionLocalization.buildMessage("ejb30-wrong-type-for-query-hint",new Object[]{getQueryId(query), name, getPrintValue(valueToApply)}));
+            }
+            return query;
+        }
+    }
+
+    protected static class LoadGroupHint extends Hint {
+        LoadGroupHint() {
+            super(QueryHints.LOAD_GROUP, "");
+        }
+    
+        DatabaseQuery applyToDatabaseQuery(Object valueToApply, DatabaseQuery query, ClassLoader loader, AbstractSession activeSession) {
+            if (query.isObjectLevelReadQuery()) {
+                ((ObjectLevelReadQuery)query).setLoadGroup((LoadGroup)valueToApply);
+            } else {
+                throw new IllegalArgumentException(ExceptionLocalization.buildMessage("ejb30-wrong-type-for-query-hint",new Object[]{getQueryId(query), name, getPrintValue(valueToApply)}));
+            }
+            return query;
+        }
+    }
+    
     /**
      * Define the query cache hint.
      * Only reset the query cache if unset (as other query cache properties may be set first).
