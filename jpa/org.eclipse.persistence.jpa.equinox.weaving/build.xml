@@ -45,7 +45,7 @@
         </path>
     </pathconvert>
     <condition property="weaving.2.base.dir" value="../.." else="..">
-        <contains string="${weaving.build.location}" substring="jpa"/>
+        <contains string="${weaving.build.location}" substring="jpa/${ant.project.name}"/>
     </condition>
     <property name="weaving.2.common.plugins.dir" value="${weaving.2.base.dir}/plugins"/>
     <property name="weaving.2.buildsys.dir" value="${weaving.2.base.dir}/buildsystem"/>

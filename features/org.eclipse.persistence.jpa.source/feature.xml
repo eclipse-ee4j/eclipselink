@@ -65,6 +65,13 @@
          unpack="false"/>
 
    <plugin
+         id="org.eclipse.persistence.jpa.osgi.source"
+         download-size="0"
+         install-size="0"
+         version="@VERSION@.@QUALIFIER@"
+         unpack="false"/>
+
+   <plugin
          id="org.eclipse.persistence.oracle.source"
          download-size="0"
          install-size="0"

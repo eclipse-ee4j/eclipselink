@@ -45,7 +45,7 @@
         </path>
     </pathconvert>
     <condition property="osgi.2.base.dir" value="../.." else="..">
-        <contains string="${osgi.build.location}" substring="jpa"/>
+        <contains string="${osgi.build.location}" substring="jpa/${ant.project.name}"/>
     </condition>
     <property name="osgi.2.common.plugins.dir" value="${osgi.2.base.dir}/plugins"/>
     <property name="osgi.2.buildsys.dir" value="${osgi.2.base.dir}/buildsystem"/>

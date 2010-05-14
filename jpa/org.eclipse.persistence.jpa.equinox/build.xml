@@ -44,7 +44,7 @@
         </path>
     </pathconvert>
     <condition property="equinox.2.base.dir" value="../.." else="..">
-        <contains string="${equinox.build.location}" substring="jpa"/>
+        <contains string="${equinox.build.location}" substring="jpa/${ant.project.name}"/>
     </condition>
     <property name="equinox.2.common.plugins.dir" value="${equinox.2.base.dir}/plugins"/>
     <property name="equinox.2.buildsys.dir" value="${equinox.2.base.dir}/buildsystem"/>

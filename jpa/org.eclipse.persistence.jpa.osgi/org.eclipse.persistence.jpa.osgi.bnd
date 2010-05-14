@@ -9,8 +9,8 @@ Bundle-Vendor: ${implementation.vendor}
 Fragment-Host: org.eclipse.persistence.jpa;bundle-version="${version.string}"
 Bundle-Version: ${version.string}
 Include-Resource:\
- ${equinox.2.base.dir}/about.html,\
- ${equinox.2.base.dir}/readme.html,\
- ${equinox.2.base.dir}/license.html
+ ${osgi.2.base.dir}/about.html,\
+ ${osgi.2.base.dir}/readme.html,\
+ ${osgi.2.base.dir}/license.html
 Import-Package: javax.persistence.*, org.eclipse.osgi.*, org.eclipse.persistence.*, org.osgi.*, *
 Specification-Version: ${release.version}

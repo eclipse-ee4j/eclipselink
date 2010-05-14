@@ -219,6 +219,7 @@
         <ant antfile="build.xml" dir="${eclipselink.extension.oracle}" target="clean"/>
         <ant antfile="build.xml" dir="${eclipselink.dbws}"             target="clean"/>
         <ant antfile="build.xml" dir="${eclipselink.jpa}"              target="clean"/>
+        <ant antfile="build.xml" dir="${eclipselink.osgi}"             target="clean"/>
         <ant antfile="build.xml" dir="${eclipselink.modelgen}"         target="clean"/>
         <ant antfile="build.xml" dir="${eclipselink.weaving}"          target="clean"/>
         <ant antfile="build.xml" dir="${eclipselink.equinox}"          target="clean"/>
@@ -250,6 +251,7 @@
         <ant antfile="build.xml" dir="${eclipselink.core}"             target="build"/>
         <ant antfile="build.xml" dir="${eclipselink.extension.oracle}" target="repackage"/>
         <ant antfile="build.xml" dir="${eclipselink.jpa}"              target="build"/>
+        <ant antfile="build.xml" dir="${eclipselink.osgi}"             target="build"/>
         <ant antfile="build.xml" dir="${eclipselink.modelgen}"         target="build"/>
         <ant antfile="build.xml" dir="${eclipselink.weaving}"          target="build"/>
         <ant antfile="build.xml" dir="${eclipselink.equinox}"          target="build"/>
@@ -271,6 +273,7 @@
         <ant antfile="build.xml" dir="${eclipselink.core}"             target="jar"/>
         <ant antfile="build.xml" dir="${eclipselink.extension.oracle}" target="jar"/>
         <ant antfile="build.xml" dir="${eclipselink.jpa}"              target="jar"/>
+        <ant antfile="build.xml" dir="${eclipselink.osgi}"             target="jar"/>
         <ant antfile="build.xml" dir="${eclipselink.modelgen}"         target="jar"/>
         <ant antfile="build.xml" dir="${eclipselink.weaving}"          target="jar"/>
         <ant antfile="build.xml" dir="${eclipselink.equinox}"          target="jar"/>
