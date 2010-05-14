@@ -11,7 +11,7 @@
  *     tware, ssmith = 1.0 - Activator for EclipseLink persistence
  *     tware = 2.1 moved to org.eclipse.persistence.jpa.osgi fragment
  ******************************************************************************/  
-package org.eclipse.persistence.jpa.osgi.pre_gemini;
+package org.eclipse.persistence.jpa.osgi.eclipselink;
 
 import java.util.Hashtable;
 
@@ -21,7 +21,6 @@ import org.eclipse.persistence.internal.localization.LoggingLocalization;
 import org.eclipse.persistence.logging.AbstractSessionLog;
 import org.eclipse.persistence.logging.SessionLog;
 import org.osgi.framework.Bundle;
-import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.BundleEvent;
 import org.osgi.framework.ServiceReference;
@@ -30,6 +29,13 @@ import org.osgi.service.packageadmin.PackageAdmin;
 
 /**
  * Activator for JPA OSGi service.
+ * 
+ * This Activator recieves forwarded events from the activator in org.eclipse.persistence and allows
+ * EclipseLink's OSGi behavior to occur in an EclipseLink specific manner as defined in our 2.0 release.
+ * 
+ * When the Eclipse Gemini project comes out of incubation that behavior will be decremented and users
+ * will be encouraged to use OSGi JPA in the way defined by the OSGi EE specification
+ * 
  * @author tware
  */
 public class Activator extends org.eclipse.persistence.jpa.osgi.Activator implements SynchronousBundleListener {

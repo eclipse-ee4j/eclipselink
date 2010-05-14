@@ -13,5 +13,5 @@ Include-Resource:\
  ${equinox.2.base.dir}/about.html,\
  ${equinox.2.base.dir}/readme.html,\
  ${equinox.2.base.dir}/license.html
-Import-Package: javax.persistence.*, org.eclipse.osgi.*, org.eclipse.persistence.*, org.osgi.*, *
+Import-Package: javax.persistence.*;jpa=2.0, org.eclipse.osgi.*, org.eclipse.persistence.*, org.osgi.*, *
 Specification-Version: ${release.version}

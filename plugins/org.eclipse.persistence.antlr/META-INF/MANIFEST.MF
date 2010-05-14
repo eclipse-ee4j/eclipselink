@@ -1,10 +1,10 @@
 Manifest-Version: 1.0
 Export-Package: org.eclipse.persistence.internal.libraries.antlr.runti
  me;uses:="org.eclipse.persistence.internal.libraries.antlr.runtime.tr
- ee";version="2.0.0.qualifier",org.eclipse.persistence.internal.librar
+ ee";version="2.1.0.qualifier",org.eclipse.persistence.internal.librar
  ies.antlr.runtime.tree;uses:="org.eclipse.persistence.internal.librar
- ies.antlr.runtime";version="2.0.0.qualifier"
-Implementation-Version: 2.0.0.qualifier
+ ies.antlr.runtime";version="2.1.0.qualifier"
+Implementation-Version: 2.1.0.qualifier
 Tool: Bnd-0.0.366
 DSTAMP: 20091021
 Bundle-Name: EclipseLink ANTLR
@@ -15,7 +15,7 @@ Bundle-RequiredExecutionEnvironment: J2SE-1.5
 HK2-Bundle-Name: org.eclipse.persistence:org.eclipse.persistence.antlr
 Implementation-Vendor: Eclipse.org - EclipseLink Project
 Bundle-Vendor: Eclipse.org - EclipseLink Project
-Bundle-Version: 2.0.0.qualifier
+Bundle-Version: 2.1.0.qualifier
 Bnd-LastModified: 1256135426981
 Bundle-ManifestVersion: 2
 Bundle-SymbolicName: org.eclipse.persistence.antlr

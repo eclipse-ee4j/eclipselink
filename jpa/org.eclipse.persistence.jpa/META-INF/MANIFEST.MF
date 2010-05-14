@@ -2,47 +2,48 @@ Manifest-Version: 1.0
 Specification-Vendor: Eclipse.org - EclipseLink Project
 Specification-Version: 2.0.0
 Implementation-Vendor: Eclipse.org - EclipseLink Project
-Implementation-Version: 2.0.0.qualifier
+Implementation-Version: 2.1.0.qualifier
 Bundle-ManifestVersion: 2
 Bundle-Name: EclipseLink JPA
 Bundle-SymbolicName: org.eclipse.persistence.jpa
 Bundle-Vendor: Eclipse.org - EclipseLink Project
-Bundle-Version: 2.0.0.qualifier
+Bundle-Version: 2.1.0.qualifier
+Bundle-ActivationPolicy: lazy
 Bundle-RequiredExecutionEnvironment: J2SE-1.5
-Require-Bundle: org.eclipse.persistence.core;bundle-version="2.0.0.qualifier";visibility:=reexport,
- org.eclipse.persistence.asm;bundle-version="2.0.0.qualifier";resolution:=optional
-Export-Package: org.eclipse.persistence.internal.jpa;version="2.0.0.qualifier",
- org.eclipse.persistence.internal.jpa.deployment;version="2.0.0.qualifier",
- org.eclipse.persistence.internal.jpa.deployment.osgi;version="2.0.0.qualifier",
- org.eclipse.persistence.internal.jpa.deployment.xml.parser;version="2.0.0.qualifier",
- org.eclipse.persistence.internal.jpa.jdbc;version="2.0.0.qualifier",
- org.eclipse.persistence.internal.jpa.metadata;version="2.0.0.qualifier",
- org.eclipse.persistence.internal.jpa.metadata.accessors;version="2.0.0.qualifier",
- org.eclipse.persistence.internal.jpa.metadata.accessors.classes;version="2.0.0.qualifier",
- org.eclipse.persistence.internal.jpa.metadata.accessors.mappings;version="2.0.0.qualifier",
- org.eclipse.persistence.internal.jpa.metadata.accessors.objects;version="2.0.0.qualifier",
- org.eclipse.persistence.internal.jpa.metadata.cache;version="2.0.0.qualifier",
- org.eclipse.persistence.internal.jpa.metadata.changetracking;version="2.0.0.qualifier",
- org.eclipse.persistence.internal.jpa.metadata.columns;version="2.0.0.qualifier",
- org.eclipse.persistence.internal.jpa.metadata.converters;version="2.0.0.qualifier",
- org.eclipse.persistence.internal.jpa.metadata.copypolicy;version="2.0.0.qualifier",
- org.eclipse.persistence.internal.jpa.metadata.inheritance;version="2.0.0.qualifier",
- org.eclipse.persistence.internal.jpa.metadata.listeners;version="2.0.0.qualifier",
- org.eclipse.persistence.internal.jpa.metadata.locking;version="2.0.0.qualifier",
- org.eclipse.persistence.internal.jpa.metadata.queries;version="2.0.0.qualifier",
- org.eclipse.persistence.internal.jpa.metadata.sequencing;version="2.0.0.qualifier",
- org.eclipse.persistence.internal.jpa.metadata.tables;version="2.0.0.qualifier",
- org.eclipse.persistence.internal.jpa.metadata.transformers;version="2.0.0.qualifier",
- org.eclipse.persistence.internal.jpa.metadata.xml;version="2.0.0.qualifier",
- org.eclipse.persistence.internal.jpa.transaction;version="2.0.0.qualifier",
- org.eclipse.persistence.jpa;version="2.0.0.qualifier",
- org.eclipse.persistence.jpa.osgi;version="2.0.0.qualifier",
- org.eclipse.persistence.tools.weaving.jpa;version="2.0.0.qualifier"
+Require-Bundle: org.eclipse.persistence.core;bundle-version="2.1.0.qualifier";visibility:=reexport,
+ org.eclipse.persistence.asm;bundle-version="2.1.0.qualifier";resolution:=optional
+Export-Package: org.eclipse.persistence.internal.jpa;version="2.1.0.qualifier",
+ org.eclipse.persistence.internal.jpa.deployment;version="2.1.0.qualifier",
+ org.eclipse.persistence.internal.jpa.deployment.osgi;version="2.1.0.qualifier",
+ org.eclipse.persistence.internal.jpa.deployment.xml.parser;version="2.1.0.qualifier",
+ org.eclipse.persistence.internal.jpa.jdbc;version="2.1.0.qualifier",
+ org.eclipse.persistence.internal.jpa.metadata;version="2.1.0.qualifier",
+ org.eclipse.persistence.internal.jpa.metadata.accessors;version="2.1.0.qualifier",
+ org.eclipse.persistence.internal.jpa.metadata.accessors.classes;version="2.1.0.qualifier",
+ org.eclipse.persistence.internal.jpa.metadata.accessors.mappings;version="2.1.0.qualifier",
+ org.eclipse.persistence.internal.jpa.metadata.accessors.objects;version="2.1.0.qualifier",
+ org.eclipse.persistence.internal.jpa.metadata.cache;version="2.1.0.qualifier",
+ org.eclipse.persistence.internal.jpa.metadata.changetracking;version="2.1.0.qualifier",
+ org.eclipse.persistence.internal.jpa.metadata.columns;version="2.1.0.qualifier",
+ org.eclipse.persistence.internal.jpa.metadata.converters;version="2.1.0.qualifier",
+ org.eclipse.persistence.internal.jpa.metadata.copypolicy;version="2.1.0.qualifier",
+ org.eclipse.persistence.internal.jpa.metadata.inheritance;version="2.1.0.qualifier",
+ org.eclipse.persistence.internal.jpa.metadata.listeners;version="2.1.0.qualifier",
+ org.eclipse.persistence.internal.jpa.metadata.locking;version="2.1.0.qualifier",
+ org.eclipse.persistence.internal.jpa.metadata.queries;version="2.1.0.qualifier",
+ org.eclipse.persistence.internal.jpa.metadata.sequencing;version="2.1.0.qualifier",
+ org.eclipse.persistence.internal.jpa.metadata.tables;version="2.1.0.qualifier",
+ org.eclipse.persistence.internal.jpa.metadata.transformers;version="2.1.0.qualifier",
+ org.eclipse.persistence.internal.jpa.metadata.xml;version="2.1.0.qualifier",
+ org.eclipse.persistence.internal.jpa.transaction;version="2.1.0.qualifier",
+ org.eclipse.persistence.jpa;version="2.1.0.qualifier",
+ org.eclipse.persistence.jpa.osgi;version="2.1.0.qualifier",
+ org.eclipse.persistence.tools.weaving.jpa;version="2.1.0.qualifier"
 Bundle-Activator: org.eclipse.persistence.jpa.osgi.Activator
-Import-Package: javax.persistence;version="1.99.4",
- javax.persistence.criteria;version="1.99.4",
- javax.persistence.metamodel;version="1.99.4",
- javax.persistence.spi;version="1.99.4",
+Import-Package: javax.persistence;version="1.1.0";jpa=2.0,
+ javax.persistence.criteria;version="1.1.0";jpa=2.0,
+ javax.persistence.metamodel;version="1.1.0";jpa=2.0,
+ javax.persistence.spi;version="1.1.0";jpa=2.0,
  javax.sql;resolution:=optional,
  javax.transaction;version="1.1.0";resolution:=optional,
  javax.validation;resolution:=optional,

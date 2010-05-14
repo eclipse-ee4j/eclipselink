@@ -1,4 +1,4 @@
-Export-Package: javax.persistence*;version="${jpaproto.version}";-noimport:=true,
+Export-Package: javax.persistence*;version="${jpaproto.version}";jpa=2.0;-noimport:=true,
 Private-Package: org.eclipse.persistence.javax.persistence.osgi*;-noimport:=true,
 Implementation-Version: ${jpaproto.version}
 Specification-Vendor: ${jpaproto.spec.vendor}

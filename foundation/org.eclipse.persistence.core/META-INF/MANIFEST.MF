@@ -12,15 +12,15 @@ Export-Package: org.eclipse.persistence.tools.schemaframework;uses:="o
  rsistence.eis,org.eclipse.persistence.dynamic,org.eclipse.persistence
  .platform.database,org.eclipse.persistence.internal.sequencing,org.ec
  lipse.persistence.expressions,org.eclipse.persistence.internal.expres
- sions";version="2.0.0.qualifier",org.eclipse.persistence.oxm.unmapped
- ;uses:="org.eclipse.persistence.oxm.record,org.xml.sax";version="2.0.
+ sions";version="2.1.0.qualifier",org.eclipse.persistence.oxm.unmapped
+ ;uses:="org.eclipse.persistence.oxm.record,org.xml.sax";version="2.1.
  0.qualifier",org.eclipse.persistence.sessions.coordination.jms;uses:=
  "org.eclipse.persistence.exceptions,javax.naming,org.eclipse.persiste
  nce.internal.sessions.coordination.jms,javax.jms,org.eclipse.persiste
  nce.sessions.coordination.broadcast,org.eclipse.persistence.platform.
  server,org.eclipse.persistence.internal.sessions.coordination,org.ecl
- ipse.persistence.sessions.coordination";version="2.0.0.qualifier",org
- .eclipse.persistence.internal.weaving;version="2.0.0.qualifier",org.e
+ ipse.persistence.sessions.coordination";version="2.1.0.qualifier",org
+ .eclipse.persistence.internal.weaving;version="2.1.0.qualifier",org.e
  clipse.persistence.sessions.server;uses:="org.eclipse.persistence.log
  ging,org.eclipse.persistence.internal.sequencing,org.eclipse.persiste
  nce.internal.sessions,org.eclipse.persistence.sessions,org.eclipse.pe
@@ -29,7 +29,7 @@ Export-Package: org.eclipse.persistence.tools.schemaframework;uses:="o
  es,org.eclipse.persistence.sessions.coordination,org.eclipse.persiste
  nce.internal.localization,org.eclipse.persistence.internal.helper,org
  .eclipse.persistence.sequencing,org.eclipse.persistence.history,org.e
- clipse.persistence.descriptors";version="2.0.0.qualifier",org.eclipse
+ clipse.persistence.descriptors";version="2.1.0.qualifier",org.eclipse
  .persistence.expressions;uses:="org.eclipse.persistence.internal.expr
  essions,org.eclipse.persistence.internal.sessions,org.eclipse.persist
  ence.descriptors,org.eclipse.persistence.exceptions,org.eclipse.persi
@@ -37,11 +37,11 @@ Export-Package: org.eclipse.persistence.tools.schemaframework;uses:="o
  pse.persistence.internal.databaseaccess,org.eclipse.persistence.queri
  es,org.eclipse.persistence.internal.helper,org.eclipse.persistence.pl
  atform.database,org.eclipse.persistence.internal.security";version="2
- .0.0.qualifier",org.eclipse.persistence.platform.xml;uses:="org.xml.s
+ .1.0.qualifier",org.eclipse.persistence.platform.xml;uses:="org.xml.s
  ax,org.eclipse.persistence.internal.oxm,org.w3c.dom,javax.xml.transfo
  rm,javax.xml.validation,org.eclipse.persistence.oxm,org.eclipse.persi
  stence.exceptions,org.eclipse.persistence.exceptions.i18n,org.eclipse
- .persistence.internal.security";version="2.0.0.qualifier",org.eclipse
+ .persistence.internal.security";version="2.1.0.qualifier",org.eclipse
  .persistence.internal.sessions;uses:="org.eclipse.persistence.excepti
  ons,org.eclipse.persistence.sessions,org.eclipse.persistence.internal
  .helper,org.eclipse.persistence.logging,org.eclipse.persistence.inter
@@ -63,36 +63,36 @@ Export-Package: org.eclipse.persistence.tools.schemaframework;uses:="o
  e.descriptors.invalidation,org.eclipse.persistence.descriptors.copyin
  g,org.eclipse.persistence.mappings.foundation,javax.persistence,org.e
  clipse.persistence.config,org.eclipse.persistence.sessions.broker";ve
- rsion="2.0.0.qualifier",org.eclipse.persistence.internal.jpa.parsing;
+ rsion="2.1.0.qualifier",org.eclipse.persistence.internal.jpa.parsing;
  uses:="org.eclipse.persistence.expressions,org.eclipse.persistence.qu
  eries,org.eclipse.persistence.mappings,org.eclipse.persistence.except
  ions,org.eclipse.persistence.internal.sessions,org.eclipse.persistenc
  e.descriptors,org.eclipse.persistence.internal.expressions,org.eclips
  e.persistence.internal.queries,org.eclipse.persistence.internal.local
  ization,org.eclipse.persistence.internal.helper,org.eclipse.persisten
- ce.internal.security";version="2.0.0.qualifier",org.eclipse.persisten
+ ce.internal.security";version="2.1.0.qualifier",org.eclipse.persisten
  ce.mappings.converters;uses:="org.eclipse.persistence.mappings,org.ec
  lipse.persistence.exceptions,org.eclipse.persistence.mappings.foundat
  ion,org.eclipse.persistence.internal.security,org.eclipse.persistence
  .internal.databaseaccess,org.eclipse.persistence.internal.sessions,or
  g.eclipse.persistence.sessions,org.eclipse.persistence.internal.helpe
  r,org.eclipse.persistence.internal.descriptors,org.eclipse.persistenc
- e.descriptors";version="2.0.0.qualifier",org.eclipse.persistence.inte
+ e.descriptors";version="2.1.0.qualifier",org.eclipse.persistence.inte
  rnal.oxm.schema.model;uses:="org.eclipse.persistence.oxm,javax.xml.na
- mespace";version="2.0.0.qualifier",org.eclipse.persistence.platform.d
+ mespace";version="2.1.0.qualifier",org.eclipse.persistence.platform.d
  atabase.oracle.plsql;uses:="org.eclipse.persistence.internal.helper,o
  rg.eclipse.persistence.platform.database.jdbc,org.eclipse.persistence
  .internal.sessions,org.eclipse.persistence.queries,org.eclipse.persis
  tence.sessions,org.eclipse.persistence.platform.database,org.eclipse.
  persistence.internal.databaseaccess,org.eclipse.persistence.mappings.
- structures,org.eclipse.persistence.exceptions";version="2.0.0.qualifi
+ structures,org.eclipse.persistence.exceptions";version="2.1.0.qualifi
  er",org.eclipse.persistence.internal.codegen;uses:="org.eclipse.persi
  stence.internal.helper,org.eclipse.persistence.exceptions,org.eclipse
  .persistence.sessions,org.eclipse.persistence.descriptors";version="2
- .0.0.qualifier",org.eclipse.persistence.internal.sessions.factories.m
+ .1.0.qualifier",org.eclipse.persistence.internal.sessions.factories.m
  odel.login;uses:="org.eclipse.persistence.internal.sessions.factories
  .model.sequencing,org.eclipse.persistence.internal.security";version=
- "2.0.0.qualifier",org.eclipse.persistence.internal.queries;uses:="org
+ "2.1.0.qualifier",org.eclipse.persistence.internal.queries;uses:="org
  .eclipse.persistence.internal.sessions,org.eclipse.persistence.except
  ions,org.eclipse.persistence.internal.expressions,org.eclipse.persist
  ence.expressions,org.eclipse.persistence.internal.databaseaccess,org.
@@ -107,7 +107,7 @@ Export-Package: org.eclipse.persistence.tools.schemaframework;uses:="o
  .eclipse.persistence.sequencing,org.eclipse.persistence.platform.data
  base,org.eclipse.persistence.mappings.querykeys,org.eclipse.persisten
  ce.mappings.converters,org.eclipse.persistence.internal.indirection,o
- rg.eclipse.persistence.annotations";version="2.0.0.qualifier",org.ecl
+ rg.eclipse.persistence.annotations";version="2.1.0.qualifier",org.ecl
  ipse.persistence.history;uses:="org.eclipse.persistence.internal.expr
  essions,org.eclipse.persistence.expressions,org.eclipse.persistence.i
  nternal.helper,org.eclipse.persistence.mappings,org.eclipse.persisten
@@ -116,29 +116,29 @@ Export-Package: org.eclipse.persistence.tools.schemaframework;uses:="o
  rg.eclipse.persistence.descriptors,org.eclipse.persistence.internal.q
  ueries,org.eclipse.persistence.internal.databaseaccess,org.eclipse.pe
  rsistence.internal.descriptors,org.eclipse.persistence.queries";versi
- on="2.0.0.qualifier",org.eclipse.persistence.eis.interactions;uses:="
+ on="2.1.0.qualifier",org.eclipse.persistence.eis.interactions;uses:="
  javax.resource.cci,javax.resource,org.eclipse.persistence.internal.da
  tabaseaccess,org.eclipse.persistence.internal.sessions,org.eclipse.pe
  rsistence.descriptors,org.eclipse.persistence.queries,org.eclipse.per
  sistence.eis,org.eclipse.persistence.internal.helper,org.eclipse.pers
  istence.sessions,org.eclipse.persistence.oxm,org.eclipse.persistence.
  internal.oxm,org.eclipse.persistence.oxm.record,org.w3c.dom,org.eclip
- se.persistence.internal.descriptors";version="2.0.0.qualifier",org.ec
+ se.persistence.internal.descriptors";version="2.1.0.qualifier",org.ec
  lipse.persistence.platform.server.wls;uses:="org.eclipse.persistence.
  logging,org.eclipse.persistence.platform.server,org.eclipse.persisten
  ce.internal.security,org.eclipse.persistence.platform.database,org.ec
  lipse.persistence.sessions,org.eclipse.persistence.transaction.wls,ja
  vax.naming,org.eclipse.persistence.services.mbean,org.eclipse.persist
  ence.internal.sessions,javax.management,org.eclipse.persistence.servi
- ces.weblogic";version="2.0.0.qualifier",org.eclipse.persistence.platf
+ ces.weblogic";version="2.1.0.qualifier",org.eclipse.persistence.platf
  orm.server.was;uses:="org.eclipse.persistence.logging,org.eclipse.per
  sistence.transaction.was,org.eclipse.persistence.platform.server,org.
  eclipse.persistence.internal.security,org.eclipse.persistence.platfor
- m.database,org.eclipse.persistence.sessions";version="2.0.0.qualifier
+ m.database,org.eclipse.persistence.sessions";version="2.1.0.qualifier
  ",org.eclipse.persistence.tools.profiler;uses:="org.eclipse.persisten
  ce.internal.localization,org.eclipse.persistence.internal.sessions,or
  g.eclipse.persistence.queries,org.eclipse.persistence.sessions,org.ec
- lipse.persistence.internal.helper";version="2.0.0.qualifier",org.ecli
+ lipse.persistence.internal.helper";version="2.1.0.qualifier",org.ecli
  pse.persistence.internal.helper;uses:="org.eclipse.persistence.descri
  ptors,org.eclipse.persistence.mappings.querykeys,org.eclipse.persiste
  nce.sessions.server,org.eclipse.persistence.internal.weaving,org.ecli
@@ -155,26 +155,26 @@ Export-Package: org.eclipse.persistence.tools.schemaframework;uses:="o
  nal.security,org.eclipse.persistence,org.eclipse.persistence.internal
  .descriptors,org.eclipse.persistence.mappings,org.eclipse.persistence
  .descriptors.invalidation,org.eclipse.persistence.internal.queries,or
- g.eclipse.persistence.internal.helper.linkedlist";version="2.0.0.qual
+ g.eclipse.persistence.internal.helper.linkedlist";version="2.1.0.qual
  ifier",org.eclipse.persistence.logging;uses:="org.eclipse.persistence
  .exceptions,org.eclipse.persistence.internal.localization,org.eclipse
  .persistence.internal.databaseaccess,org.eclipse.persistence.internal
  .sessions,org.eclipse.persistence.sessions,org.eclipse.persistence.in
- ternal.helper,org.eclipse.persistence.internal.security";version="2.0
+ ternal.helper,org.eclipse.persistence.internal.security";version="2.1
  .0.qualifier",org.eclipse.persistence.internal.sessions.coordination.
  jms;uses:="javax.jms,org.eclipse.persistence.exceptions,org.eclipse.p
  ersistence.internal.sessions.coordination.broadcast,org.eclipse.persi
  stence.sessions.coordination.jms,org.eclipse.persistence.platform.ser
- ver,org.eclipse.persistence.sessions.coordination";version="2.0.0.qua
+ ver,org.eclipse.persistence.sessions.coordination";version="2.1.0.qua
  lifier",org.eclipse.persistence.platform.server.sunas;uses:="org.ecli
  pse.persistence.logging,org.eclipse.persistence.platform.server,org.e
  clipse.persistence.transaction.sunas,org.eclipse.persistence.sessions
- ";version="2.0.0.qualifier",org.eclipse.persistence.oxm.sequenced;use
+ ";version="2.1.0.qualifier",org.eclipse.persistence.oxm.sequenced;use
  s:="org.eclipse.persistence.mappings,org.eclipse.persistence.internal
- .queries,org.eclipse.persistence.internal.sessions";version="2.0.0.qu
+ .queries,org.eclipse.persistence.internal.sessions";version="2.1.0.qu
  alifier",org.eclipse.persistence.sessions.coordination.broadcast;uses
  :="org.eclipse.persistence.internal.sessions.coordination,org.eclipse
- .persistence.sessions.coordination";version="2.0.0.qualifier",org.ecl
+ .persistence.sessions.coordination";version="2.1.0.qualifier",org.ecl
  ipse.persistence.internal.sessions.factories.model.session;uses:="org
  .eclipse.persistence.internal.sessions.factories.model.project,org.ec
  lipse.persistence.internal.sessions.factories.model.login,org.eclipse
@@ -182,14 +182,14 @@ Export-Package: org.eclipse.persistence.tools.schemaframework;uses:="o
  stence.internal.sessions.factories.model.platform,org.eclipse.persist
  ence.internal.sessions.factories.model.rcm,org.eclipse.persistence.in
  ternal.sessions.factories.model.log,org.eclipse.persistence.internal.
- sessions.factories.model.event";version="2.0.0.qualifier",org.eclipse
+ sessions.factories.model.event";version="2.1.0.qualifier",org.eclipse
  .persistence.platform.xml.jaxp;uses:="org.eclipse.persistence.excepti
  ons,org.eclipse.persistence.platform.xml,javax.xml.namespace,javax.xm
  l.transform,javax.xml.parsers,javax.xml.validation,javax.xml.transfor
  m.sax,org.w3c.dom,org.xml.sax,org.eclipse.persistence.oxm,javax.xml.t
  ransform.dom,javax.xml.xpath,javax.xml.transform.stream";version="2.0
  .0.qualifier",org.eclipse.persistence.transaction.jboss;uses:="org.ec
- lipse.persistence.transaction,javax.transaction";version="2.0.0.quali
+ lipse.persistence.transaction,javax.transaction";version="2.1.0.quali
  fier",org.eclipse.persistence.internal.sessions.factories;uses:="org.
  eclipse.persistence.internal.helper,org.eclipse.persistence.mappings,
  org.eclipse.persistence.internal.codegen,org.eclipse.persistence.inte
@@ -238,12 +238,12 @@ Export-Package: org.eclipse.persistence.tools.schemaframework;uses:="o
  .event,org.eclipse.persistence.internal.sessions.factories.model.prop
  erty,org.eclipse.persistence.config,org.eclipse.persistence.sessions.
  factories,org.eclipse.persistence.platform.database.converters,org.ec
- lipse.persistence.oxm.platform";version="2.0.0.qualifier",org.eclipse
+ lipse.persistence.oxm.platform";version="2.1.0.qualifier",org.eclipse
  .persistence.internal.sessions.coordination.corba.sun;uses:="org.omg.
  CORBA_2_3.portable,org.omg.CORBA,org.omg.CORBA.portable,org.eclipse.p
  ersistence.internal.sessions.coordination.corba,org.eclipse.persisten
  ce.sessions.coordination.corba,org.eclipse.persistence.sessions.coord
- ination";version="2.0.0.qualifier",org.eclipse.persistence.sessions.r
+ ination";version="2.1.0.qualifier",org.eclipse.persistence.sessions.r
  emote;uses:="org.eclipse.persistence.exceptions,org.eclipse.persisten
  ce.internal.sessions.remote,org.eclipse.persistence.internal.queries,
  org.eclipse.persistence.internal.identitymaps,org.eclipse.persistence
@@ -252,9 +252,9 @@ Export-Package: org.eclipse.persistence.tools.schemaframework;uses:="o
  tence.internal.helper,org.eclipse.persistence.mappings,org.eclipse.pe
  rsistence.internal.sequencing,org.eclipse.persistence.history,org.ecl
  ipse.persistence.sessions.factories,org.eclipse.persistence.internal.
- descriptors";version="2.0.0.qualifier",org.eclipse.persistence.intern
+ descriptors";version="2.1.0.qualifier",org.eclipse.persistence.intern
  al.oxm.record.namespaces;uses:="javax.xml.stream,javax.xml.namespace"
- ;version="2.0.0.qualifier",org.eclipse.persistence.mappings.foundatio
+ ;version="2.1.0.qualifier",org.eclipse.persistence.mappings.foundatio
  n;uses:="org.eclipse.persistence.mappings,org.eclipse.persistence.int
  ernal.security,org.eclipse.persistence.sessions.changesets,org.eclips
  e.persistence.internal.sessions,org.eclipse.persistence.sessions,org.
@@ -270,7 +270,7 @@ Export-Package: org.eclipse.persistence.tools.schemaframework;uses:="o
  stence.indirection,org.eclipse.persistence.platform.database,org.ecli
  pse.persistence.internal.indirection,org.eclipse.persistence.internal
  .sessions.remote,org.eclipse.persistence.mappings.transformers";versi
- on="2.0.0.qualifier",org.eclipse.persistence.internal.expressions;use
+ on="2.1.0.qualifier",org.eclipse.persistence.internal.expressions;use
  s:="org.eclipse.persistence.internal.databaseaccess,org.eclipse.persi
  stence.expressions,org.eclipse.persistence.exceptions,org.eclipse.per
  sistence.internal.sessions,org.eclipse.persistence.queries,org.eclips
@@ -282,16 +282,16 @@ Export-Package: org.eclipse.persistence.tools.schemaframework;uses:="o
  pse.persistence.platform.database,org.eclipse.persistence.mappings.fo
  undation,org.eclipse.persistence.internal.queries,org.eclipse.persist
  ence.internal.indirection,org.eclipse.persistence.internal.identityma
- ps";version="2.0.0.qualifier",org.eclipse.persistence.internal.sessio
- ns.factories.model.event;version="2.0.0.qualifier",org.eclipse.persis
+ ps";version="2.1.0.qualifier",org.eclipse.persistence.internal.sessio
+ ns.factories.model.event;version="2.1.0.qualifier",org.eclipse.persis
  tence.internal.helper.linkedlist;uses:="org.eclipse.persistence.excep
- tions";version="2.0.0.qualifier",org.eclipse.persistence.sessions.rem
+ tions";version="2.1.0.qualifier",org.eclipse.persistence.sessions.rem
  ote.corba.sun;uses:="org.eclipse.persistence.internal.sessions.remote
  ,org.eclipse.persistence.internal.sessions,org.eclipse.persistence.de
  scriptors,org.eclipse.persistence.sessions,org.eclipse.persistence.qu
  eries,org.eclipse.persistence.sessions.remote,org.omg.CORBA,org.omg.C
- ORBA.portable,org.omg.CORBA_2_3.portable";version="2.0.0.qualifier",o
- rg.eclipse.persistence.internal.oxm.conversion;version="2.0.0.qualifi
+ ORBA.portable,org.omg.CORBA_2_3.portable";version="2.1.0.qualifier",o
+ rg.eclipse.persistence.internal.oxm.conversion;version="2.1.0.qualifi
  er",org.eclipse.persistence.mappings;uses:="org.eclipse.persistence.e
  xpressions,org.eclipse.persistence.sessions.changesets,org.eclipse.pe
  rsistence.internal.sessions,org.eclipse.persistence.sessions,org.ecli
@@ -308,13 +308,13 @@ Export-Package: org.eclipse.persistence.tools.schemaframework;uses:="o
  persistence.mappings.querykeys,org.eclipse.persistence.annotations,or
  g.eclipse.persistence.internal.sessions.remote,org.eclipse.persistenc
  e.mappings.converters,org.eclipse.persistence.history,org.eclipse.per
- sistence.platform.database";version="2.0.0.qualifier",org.eclipse.per
- sistence.internal.sessions.factories.model.project;version="2.0.0.qua
+ sistence.platform.database";version="2.1.0.qualifier",org.eclipse.per
+ sistence.internal.sessions.factories.model.project;version="2.1.0.qua
  lifier",org.eclipse.persistence.oxm.mappings.nullpolicy;uses:="org.ec
  lipse.persistence.internal.sessions,org.eclipse.persistence.oxm,org.e
  clipse.persistence.sessions,org.eclipse.persistence.internal.oxm,org.
  w3c.dom,org.eclipse.persistence.oxm.record,org.xml.sax,org.eclipse.pe
- rsistence.internal.security";version="2.0.0.qualifier",org.eclipse.pe
+ rsistence.internal.security";version="2.1.0.qualifier",org.eclipse.pe
  rsistence.eis.mappings;uses:="org.eclipse.persistence.oxm,org.eclipse
  .persistence.internal.sessions,org.eclipse.persistence.descriptors,or
  g.eclipse.persistence.internal.oxm,org.eclipse.persistence.oxm.record
@@ -326,23 +326,23 @@ Export-Package: org.eclipse.persistence.tools.schemaframework;uses:="o
  g.eclipse.persistence.expressions,org.eclipse.persistence.sessions.ch
  angesets,org.eclipse.persistence.internal.indirection,org.w3c.dom,org
  .eclipse.persistence.internal.identitymaps,org.eclipse.persistence.in
- ternal.databaseaccess";version="2.0.0.qualifier",org.eclipse.persiste
+ ternal.databaseaccess";version="2.1.0.qualifier",org.eclipse.persiste
  nce.internal.history;uses:="org.eclipse.persistence.history,org.eclip
  se.persistence.internal.helper,org.eclipse.persistence.internal.datab
  aseaccess,org.eclipse.persistence.exceptions,org.eclipse.persistence.
  logging,org.eclipse.persistence.platform.server,org.eclipse.persisten
  ce.internal.sessions,org.eclipse.persistence.sessions,org.eclipse.per
  sistence.queries,org.eclipse.persistence.internal.expressions";versio
- n="2.0.0.qualifier",org.eclipse.persistence.oxm.documentpreservation;
+ n="2.1.0.qualifier",org.eclipse.persistence.oxm.documentpreservation;
  uses:="org.w3c.dom,org.eclipse.persistence.oxm.mappings,org.eclipse.p
- ersistence.oxm";version="2.0.0.qualifier",org.eclipse.persistence.ser
+ ersistence.oxm";version="2.1.0.qualifier",org.eclipse.persistence.ser
  vices.mbean;uses:="org.eclipse.persistence.services,org.eclipse.persi
- stence.sessions";version="2.0.0.qualifier",org.eclipse.persistence.se
+ stence.sessions";version="2.1.0.qualifier",org.eclipse.persistence.se
  ssions.remote.rmi;uses:="org.eclipse.persistence.exceptions,org.eclip
  se.persistence.internal.sessions.remote,org.eclipse.persistence.inter
  nal.sessions,org.eclipse.persistence.descriptors,org.eclipse.persiste
  nce.sessions,org.eclipse.persistence.queries,org.eclipse.persistence.
- sessions.remote";version="2.0.0.qualifier",org.eclipse.persistence.ox
+ sessions.remote";version="2.1.0.qualifier",org.eclipse.persistence.ox
  m;uses:="org.eclipse.persistence.platform.xml,org.eclipse.persistence
  .internal.descriptors,org.w3c.dom,org.eclipse.persistence.internal.ox
  m.documentpreservation,org.eclipse.persistence.oxm.documentpreservati
@@ -360,18 +360,18 @@ Export-Package: org.eclipse.persistence.tools.schemaframework;uses:="o
  sions.factories,org.eclipse.persistence.internal.helper,org.eclipse.p
  ersistence.descriptors.copying,org.eclipse.persistence.internal.ident
  itymaps,org.xml.sax.ext,javax.xml.transform.sax,org.eclipse.persisten
- ce.oxm.attachment,javax.xml.transform.stream";version="2.0.0.qualifie
+ ce.oxm.attachment,javax.xml.transform.stream";version="2.1.0.qualifie
  r",org.eclipse.persistence.indirection;uses:="org.eclipse.persistence
  .mappings,org.eclipse.persistence.descriptors.changetracking,org.ecli
  pse.persistence.internal.indirection,org.eclipse.persistence.internal
  .descriptors.changetracking,org.eclipse.persistence.internal.helper,o
  rg.eclipse.persistence.internal.security,org.eclipse.persistence.exce
- ptions,org.eclipse.persistence.internal.localization";version="2.0.0.
+ ptions,org.eclipse.persistence.internal.localization";version="2.1.0.
  qualifier",org.eclipse.persistence.oxm.schema;uses:="org.eclipse.pers
  istence.internal.databaseaccess,org.eclipse.persistence.internal.sess
  ions,org.eclipse.persistence.internal.helper,org.eclipse.persistence.
  exceptions,org.eclipse.persistence.platform.xml,org.eclipse.persisten
- ce.oxm,org.w3c.dom,org.xml.sax,javax.xml.namespace";version="2.0.0.qu
+ ce.oxm,org.w3c.dom,org.xml.sax,javax.xml.namespace";version="2.1.0.qu
  alifier",org.eclipse.persistence.internal.oxm.record.deferred;uses:="
  org.eclipse.persistence.exceptions,org.eclipse.persistence.oxm.unmapp
  ed,org.eclipse.persistence.internal.security,org.eclipse.persistence.
@@ -381,13 +381,13 @@ Export-Package: org.eclipse.persistence.tools.schemaframework;uses:="o
  clipse.persistence.mappings.converters,org.eclipse.persistence.oxm.ma
  ppings.nullpolicy,org.eclipse.persistence.internal.sessions,org.eclip
  se.persistence.sessions,javax.xml.namespace,org.eclipse.persistence.i
- nternal.helper,org.xml.sax.ext";version="2.0.0.qualifier",org.eclipse
+ nternal.helper,org.xml.sax.ext";version="2.1.0.qualifier",org.eclipse
  .persistence.eis.adapters.jms;uses:="org.eclipse.persistence.exceptio
  ns,org.eclipse.persistence.internal.eis.adapters.jms,javax.resource.c
  ci,javax.jms,org.eclipse.persistence.eis,javax.resource,org.eclipse.p
  ersistence.eis.interactions,org.eclipse.persistence.internal.sessions
- ,org.w3c.dom,org.eclipse.persistence.oxm.record";version="2.0.0.quali
- fier",org.eclipse.persistence.internal.localization.i18n;version="2.0
+ ,org.w3c.dom,org.eclipse.persistence.oxm.record";version="2.1.0.quali
+ fier",org.eclipse.persistence.internal.localization.i18n;version="2.1
  .0.qualifier",org.eclipse.persistence.services.weblogic;uses:="javax.
  management.openmbean,org.eclipse.persistence.internal.sessions,org.ec
  lipse.persistence.sessions,org.eclipse.persistence.services.mbean,org
@@ -397,23 +397,23 @@ Export-Package: org.eclipse.persistence.tools.schemaframework;uses:="o
  tform.server,org.eclipse.persistence.internal.identitymaps,org.eclips
  e.persistence.internal.databaseaccess,org.eclipse.persistence.platfor
  m.server.wls,org.eclipse.persistence.tools.profiler,org.eclipse.persi
- stence.internal.helper";version="2.0.0.qualifier",org.eclipse.persist
+ stence.internal.helper";version="2.1.0.qualifier",org.eclipse.persist
  ence.internal.sessions.factories.model;uses:="org.eclipse.persistence
- .internal.sessions.factories.model.session";version="2.0.0.qualifier"
+ .internal.sessions.factories.model.session";version="2.1.0.qualifier"
  ,org.eclipse.persistence.transaction.was;uses:="org.eclipse.persisten
  ce.transaction,org.eclipse.persistence.internal.security,javax.transa
- ction";version="2.0.0.qualifier",org.eclipse.persistence.transaction;
+ ction";version="2.1.0.qualifier",org.eclipse.persistence.transaction;
  uses:="org.eclipse.persistence.exceptions,org.eclipse.persistence.ses
  sions.broker,org.eclipse.persistence.logging,org.eclipse.persistence.
  internal.databaseaccess,org.eclipse.persistence.internal.sequencing,o
  rg.eclipse.persistence.internal.sessions,org.eclipse.persistence.sess
  ions,org.eclipse.persistence.internal.helper,javax.naming,javax.trans
- action";version="2.0.0.qualifier",org.eclipse.persistence.mappings.tr
+ action";version="2.1.0.qualifier",org.eclipse.persistence.mappings.tr
  ansformers;uses:="org.eclipse.persistence.mappings.foundation,org.ecl
  ipse.persistence.sessions,org.eclipse.persistence.mappings,org.eclips
  e.persistence.exceptions,org.eclipse.persistence.internal.security,or
  g.eclipse.persistence.descriptors,org.eclipse.persistence.internal.he
- lper";version="2.0.0.qualifier",org.eclipse.persistence.internal.dyna
+ lper";version="2.1.0.qualifier",org.eclipse.persistence.internal.dyna
  mic;uses:="org.eclipse.persistence.mappings,org.eclipse.persistence.i
  ndirection,org.eclipse.persistence.sessions,org.eclipse.persistence.d
  escriptors,org.eclipse.persistence.exceptions,org.eclipse.persistence
@@ -423,34 +423,34 @@ Export-Package: org.eclipse.persistence.tools.schemaframework;uses:="o
  rsistence.internal.descriptors,org.eclipse.persistence.queries,org.ec
  lipse.persistence.internal.helper,org.eclipse.persistence.internal.se
  curity,org.eclipse.persistence.internal.sessions,org.eclipse.persiste
- nce.internal.indirection";version="2.0.0.qualifier",org.eclipse.persi
+ nce.internal.indirection";version="2.1.0.qualifier",org.eclipse.persi
  stence.internal.platform.database;uses:="org.eclipse.persistence.inte
- rnal.helper";version="2.0.0.qualifier",org.eclipse.persistence.eis.ad
+ rnal.helper";version="2.1.0.qualifier",org.eclipse.persistence.eis.ad
  apters.xmlfile;uses:="org.eclipse.persistence.exceptions,javax.resour
  ce.cci,org.eclipse.persistence.internal.eis.adapters.xmlfile,org.ecli
  pse.persistence.eis,org.eclipse.persistence.sequencing,org.eclipse.pe
  rsistence.eis.interactions,org.eclipse.persistence.oxm,org.eclipse.pe
  rsistence.descriptors,org.eclipse.persistence.queries,org.w3c.dom";ve
- rsion="2.0.0.qualifier",org.eclipse.persistence.sessions.coordination
+ rsion="2.1.0.qualifier",org.eclipse.persistence.sessions.coordination
  ;uses:="org.eclipse.persistence.internal.sessions,org.eclipse.persist
  ence.exceptions,org.eclipse.persistence.platform.server,org.eclipse.p
  ersistence.internal.sessions.coordination,org.eclipse.persistence.int
  ernal.localization,org.eclipse.persistence.sessions.coordination.rmi,
  org.eclipse.persistence.sessions,org.eclipse.persistence.internal.hel
  per,javax.naming,org.eclipse.persistence.internal.security";version="
- 2.0.0.qualifier",org.eclipse.persistence.internal.sessions.coordinati
+ 2.1.0.qualifier",org.eclipse.persistence.internal.sessions.coordinati
  on.broadcast;uses:="org.eclipse.persistence.exceptions,org.eclipse.pe
  rsistence.sessions.coordination.broadcast,org.eclipse.persistence.int
  ernal.sessions.coordination,org.eclipse.persistence.internal.helper,o
- rg.eclipse.persistence.sessions.coordination";version="2.0.0.qualifie
+ rg.eclipse.persistence.sessions.coordination";version="2.1.0.qualifie
  r",org.eclipse.persistence.sequencing;uses:="org.eclipse.persistence.
  internal.databaseaccess,org.eclipse.persistence.internal.sessions,org
  .eclipse.persistence.exceptions,org.eclipse.persistence.queries,org.e
  clipse.persistence.internal.helper,org.eclipse.persistence.sessions,o
- rg.eclipse.persistence.sessions.server";version="2.0.0.qualifier",org
+ rg.eclipse.persistence.sessions.server";version="2.1.0.qualifier",org
  .eclipse.persistence.internal.security;uses:="javax.crypto.spec,org.e
  clipse.persistence.internal.helper,javax.crypto,org.eclipse.persisten
- ce.exceptions";version="2.0.0.qualifier",org.eclipse.persistence.inte
+ ce.exceptions";version="2.1.0.qualifier",org.eclipse.persistence.inte
  rnal.indirection;uses:="org.eclipse.persistence.indirection,org.eclip
  se.persistence.mappings,org.eclipse.persistence.internal.sessions,org
  .eclipse.persistence.descriptors,org.eclipse.persistence.sessions.rem
@@ -462,7 +462,7 @@ Export-Package: org.eclipse.persistence.tools.schemaframework;uses:="o
  se.persistence.internal.security,org.eclipse.persistence.internal.loc
  alization,org.eclipse.persistence.eis.mappings,org.eclipse.persistenc
  e.sessions,org.eclipse.persistence.descriptors.changetracking";versio
- n="2.0.0.qualifier",org.eclipse.persistence.internal.oxm;uses:="javax
+ n="2.1.0.qualifier",org.eclipse.persistence.internal.oxm;uses:="javax
  .activation,org.eclipse.persistence.mappings,org.eclipse.persistence.
  internal.sessions,org.eclipse.persistence.oxm,org.eclipse.persistence
  .sessions,org.eclipse.persistence.internal.oxm.record,org.eclipse.per
@@ -485,12 +485,12 @@ Export-Package: org.eclipse.persistence.tools.schemaframework;uses:="o
  rvation,org.eclipse.persistence.expressions,org.eclipse.persistence.i
  nternal.identitymaps,org.eclipse.persistence.eis,org.eclipse.persiste
  nce.internal.security,org.eclipse.persistence.internal.oxm.documentpr
- eservation";version="2.0.0.qualifier",org.eclipse.persistence.session
+ eservation";version="2.1.0.qualifier",org.eclipse.persistence.session
  s.coordination.corba.sun;uses:="org.eclipse.persistence.exceptions,or
  g.eclipse.persistence.internal.sessions.coordination.corba,org.omg.CO
  RBA,org.eclipse.persistence.sessions.coordination.corba,org.eclipse.p
  ersistence.internal.sessions.coordination.corba.sun,org.eclipse.persi
- stence.sessions.coordination";version="2.0.0.qualifier",org.eclipse.p
+ stence.sessions.coordination";version="2.1.0.qualifier",org.eclipse.p
  ersistence.exceptions;uses:="org.eclipse.persistence.exceptions.i18n,
  org.eclipse.persistence.internal.helper,org.eclipse.persistence.inter
  nal.databaseaccess,org.eclipse.persistence.internal.sessions,org.ecli
@@ -502,7 +502,7 @@ Export-Package: org.eclipse.persistence.tools.schemaframework;uses:="o
  istence.platform.database,org.eclipse.persistence.mappings.querykeys,
  org.eclipse.persistence.expressions,javax.xml.namespace,org.eclipse.p
  ersistence.internal.identitymaps,org.eclipse.persistence.oxm";version
- ="2.0.0.qualifier",org.eclipse.persistence.oxm.mappings;uses:="org.ec
+ ="2.1.0.qualifier",org.eclipse.persistence.oxm.mappings;uses:="org.ec
  lipse.persistence.mappings,org.eclipse.persistence.platform.xml,org.e
  clipse.persistence.internal.sessions,org.eclipse.persistence.oxm,org.
  eclipse.persistence.sessions,org.eclipse.persistence.descriptors,org.
@@ -517,8 +517,8 @@ Export-Package: org.eclipse.persistence.tools.schemaframework;uses:="o
  org.eclipse.persistence.mappings.converters,javax.activation,org.ecli
  pse.persistence.internal.security,org.eclipse.persistence.mappings.fo
  undation,org.eclipse.persistence.oxm.mappings.nullpolicy,org.eclipse.
- persistence.mappings.transformers";version="2.0.0.qualifier",org.ecli
- pse.persistence;version="2.0.0.qualifier",org.eclipse.persistence.dyn
+ persistence.mappings.transformers";version="2.1.0.qualifier",org.ecli
+ pse.persistence;version="2.1.0.qualifier",org.eclipse.persistence.dyn
  amic;uses:="org.eclipse.persistence.exceptions,org.eclipse.persistenc
  e.sessions,org.eclipse.persistence.platform.database,org.eclipse.pers
  istence.internal.helper,org.eclipse.persistence.internal.dynamic,org.
@@ -531,15 +531,15 @@ Export-Package: org.eclipse.persistence.tools.schemaframework;uses:="o
  l,org.eclipse.persistence.internal.sessions.factories,org.w3c.dom,org
  .eclipse.persistence.mappings.foundation,org.eclipse.persistence.desc
  riptors.changetracking,org.eclipse.persistence.internal.databaseacces
- s,org.eclipse.persistence.sessions.factories";version="2.0.0.qualifie
+ s,org.eclipse.persistence.sessions.factories";version="2.1.0.qualifie
  r",org.eclipse.persistence.internal.sessions.coordination.corba;uses:
  ="org.eclipse.persistence.exceptions,org.eclipse.persistence.internal
  .sessions.coordination,org.omg.CORBA,org.eclipse.persistence.internal
- .helper,org.eclipse.persistence.sessions.coordination";version="2.0.0
+ .helper,org.eclipse.persistence.sessions.coordination";version="2.1.0
  .qualifier",org.eclipse.persistence.internal.sessions.coordination;us
  es:="org.eclipse.persistence.exceptions,org.eclipse.persistence.platf
  orm.server,org.eclipse.persistence.sessions.coordination,org.eclipse.
- persistence.internal.sessions";version="2.0.0.qualifier",org.eclipse.
+ persistence.internal.sessions";version="2.1.0.qualifier",org.eclipse.
  persistence.sessions.factories;uses:="org.eclipse.persistence.config,
  org.eclipse.persistence.mappings,org.eclipse.persistence.oxm.mappings
  ,org.eclipse.persistence.internal.codegen,org.eclipse.persistence.oxm
@@ -564,19 +564,19 @@ Export-Package: org.eclipse.persistence.tools.schemaframework;uses:="o
  .factories.model,org.eclipse.persistence.tools.schemaframework,org.xm
  l.sax,org.eclipse.persistence.platform.xml,org.eclipse.persistence.ox
  m.platform,org.w3c.dom,org.eclipse.persistence.internal.localization"
- ;version="2.0.0.qualifier",org.eclipse.persistence.sessions.intercept
+ ;version="2.1.0.qualifier",org.eclipse.persistence.sessions.intercept
  ors;uses:="org.eclipse.persistence.internal.identitymaps,org.eclipse.
  persistence.internal.sessions,org.eclipse.persistence.descriptors,org
  .eclipse.persistence.internal.helper,org.eclipse.persistence.sessions
- ";version="2.0.0.qualifier",org.eclipse.persistence.internal.oxm.docu
+ ";version="2.1.0.qualifier",org.eclipse.persistence.internal.oxm.docu
  mentpreservation;uses:="org.eclipse.persistence.oxm.documentpreservat
  ion,org.eclipse.persistence.internal.sessions,org.eclipse.persistence
  .oxm,org.eclipse.persistence.descriptors,org.eclipse.persistence.sess
  ions,org.eclipse.persistence.internal.oxm,org.w3c.dom,org.eclipse.per
  sistence.oxm.record,org.eclipse.persistence.oxm.mappings,org.eclipse.
  persistence.internal.identitymaps,org.eclipse.persistence.internal.de
- scriptors";version="2.0.0.qualifier",org.eclipse.persistence.internal
- .sessions.factories.model.rcm.command;version="2.0.0.qualifier",org.e
+ scriptors";version="2.1.0.qualifier",org.eclipse.persistence.internal
+ .sessions.factories.model.rcm.command;version="2.1.0.qualifier",org.e
  clipse.persistence.services;uses:="org.eclipse.persistence.internal.i
  dentitymaps,org.eclipse.persistence.internal.security,org.eclipse.per
  sistence.internal.databaseaccess,org.eclipse.persistence.internal.ses
@@ -584,20 +584,20 @@ Export-Package: org.eclipse.persistence.tools.schemaframework;uses:="o
  nce.platform.database,org.eclipse.persistence.descriptors,org.eclipse
  .persistence.sessions,org.eclipse.persistence.internal.helper,org.ecl
  ipse.persistence.sessions.server,org.eclipse.persistence.internal.hel
- per.linkedlist,org.eclipse.persistence.tools.profiler";version="2.0.0
+ per.linkedlist,org.eclipse.persistence.tools.profiler";version="2.1.0
  .qualifier",org.eclipse.persistence.annotations;uses:="javax.persiste
- nce";version="2.0.0.qualifier",org.eclipse.persistence.transaction.su
+ nce";version="2.1.0.qualifier",org.eclipse.persistence.transaction.su
  nas;uses:="org.eclipse.persistence.transaction,javax.transaction";ver
- sion="2.0.0.qualifier",org.eclipse.persistence.sessions.coordination.
+ sion="2.1.0.qualifier",org.eclipse.persistence.sessions.coordination.
  corba;uses:="org.eclipse.persistence.exceptions,javax.naming,org.ecli
  pse.persistence.internal.sessions.coordination.corba,org.eclipse.pers
  istence.internal.sessions.coordination,org.omg.CORBA,org.eclipse.pers
  istence.internal.helper,org.eclipse.persistence.sessions.coordination
- ";version="2.0.0.qualifier",org.eclipse.persistence.oxm.platform;uses
+ ";version="2.1.0.qualifier",org.eclipse.persistence.oxm.platform;uses
  :="org.eclipse.persistence.oxm,org.eclipse.persistence.internal.oxm.r
  ecord,org.eclipse.persistence.internal.databaseaccess,org.eclipse.per
  sistence.internal.oxm,org.eclipse.persistence.internal.helper";versio
- n="2.0.0.qualifier",org.eclipse.persistence.descriptors;uses:="org.ec
+ n="2.1.0.qualifier",org.eclipse.persistence.descriptors;uses:="org.ec
  lipse.persistence.internal.sessions,org.eclipse.persistence.internal.
  descriptors,org.eclipse.persistence.queries,org.eclipse.persistence.i
  nternal.helper,org.eclipse.persistence.mappings,org.eclipse.persisten
@@ -613,19 +613,19 @@ Export-Package: org.eclipse.persistence.tools.schemaframework;uses:="o
  ons,org.eclipse.persistence.mappings.foundation,org.eclipse.persisten
  ce.descriptors.changetracking,org.eclipse.persistence.internal.querie
  s,org.eclipse.persistence.sessions.changesets,org.eclipse.persistence
- .internal.identitymaps";version="2.0.0.qualifier",org.eclipse.persist
+ .internal.identitymaps";version="2.1.0.qualifier",org.eclipse.persist
  ence.internal.sessions.factories.model.transport;uses:="org.eclipse.p
  ersistence.internal.sessions.factories.model.transport.naming,org.ecl
  ipse.persistence.internal.sessions.factories.model.transport.discover
- y";version="2.0.0.qualifier",org.eclipse.persistence.internal.eis.cob
+ y";version="2.1.0.qualifier",org.eclipse.persistence.internal.eis.cob
  ol.helper;uses:="org.eclipse.persistence.internal.eis.cobol";version=
- "2.0.0.qualifier",org.eclipse.persistence.internal.sessions.factories
+ "2.1.0.qualifier",org.eclipse.persistence.internal.sessions.factories
  .model.transport.naming;uses:="org.eclipse.persistence.internal.secur
- ity";version="2.0.0.qualifier",org.eclipse.persistence.internal.eis.c
+ ity";version="2.1.0.qualifier",org.eclipse.persistence.internal.eis.c
  obol;uses:="org.eclipse.persistence.exceptions,org.eclipse.persistenc
  e.sessions,org.eclipse.persistence.internal.helper,org.eclipse.persis
- tence.internal.eis.cobol.helper";version="2.0.0.qualifier",org.eclips
- e.persistence.internal.localization;version="2.0.0.qualifier",org.ecl
+ tence.internal.eis.cobol.helper";version="2.1.0.qualifier",org.eclips
+ e.persistence.internal.localization;version="2.1.0.qualifier",org.ecl
  ipse.persistence.internal.identitymaps;uses:="org.eclipse.persistence
  .descriptors,org.eclipse.persistence.internal.helper,org.eclipse.pers
  istence.exceptions,org.eclipse.persistence.sessions,org.eclipse.persi
@@ -635,7 +635,7 @@ Export-Package: org.eclipse.persistence.tools.schemaframework;uses:="o
  eclipse.persistence.internal.localization,org.eclipse.persistence.des
  criptors.changetracking,org.eclipse.persistence.internal.databaseacce
  ss,org.eclipse.persistence.internal.descriptors,org.eclipse.persisten
- ce.sessions.factories,org.eclipse.persistence.queries";version="2.0.0
+ ce.sessions.factories,org.eclipse.persistence.queries";version="2.1.0
  .qualifier",org.eclipse.persistence.internal.oxm.record;uses:="org.ec
  lipse.persistence.oxm.mappings,org.eclipse.persistence.internal.oxm,o
  rg.eclipse.persistence.internal.oxm.record.deferred,org.eclipse.persi
@@ -652,24 +652,24 @@ Export-Package: org.eclipse.persistence.tools.schemaframework;uses:="o
  l.stream,javax.xml.stream.events,org.eclipse.persistence.mappings,jav
  ax.xml.parsers,javax.xml.transform.dom,javax.xml.transform.stream,jav
  ax.xml.transform.sax,org.eclipse.persistence.oxm.unmapped,org.eclipse
- .persistence.oxm.sequenced";version="2.0.0.qualifier",org.eclipse.per
+ .persistence.oxm.sequenced";version="2.1.0.qualifier",org.eclipse.per
  sistence.transaction.wls;uses:="org.eclipse.persistence.transaction,j
- avax.transaction";version="2.0.0.qualifier",org.eclipse.persistence.o
- xm.attachment;uses:="javax.activation";version="2.0.0.qualifier",org.
+ avax.transaction";version="2.1.0.qualifier",org.eclipse.persistence.o
+ xm.attachment;uses:="javax.activation";version="2.1.0.qualifier",org.
  eclipse.persistence.tools.file;uses:="org.eclipse.persistence.interna
- l.helper";version="2.0.0.qualifier",org.eclipse.persistence.internal.
- sessions.factories.model.platform;version="2.0.0.qualifier",org.eclip
+ l.helper";version="2.1.0.qualifier",org.eclipse.persistence.internal.
+ sessions.factories.model.platform;version="2.1.0.qualifier",org.eclip
  se.persistence.internal.sessions.factories.model.transport.discovery;
- version="2.0.0.qualifier",org.eclipse.persistence.internal.sequencing
+ version="2.1.0.qualifier",org.eclipse.persistence.internal.sequencing
  ;uses:="org.eclipse.persistence.sessions.server,org.eclipse.persisten
  ce.internal.sessions,org.eclipse.persistence.exceptions,org.eclipse.p
  ersistence.internal.databaseaccess,org.eclipse.persistence.sessions,o
  rg.eclipse.persistence.internal.sessions.remote,org.eclipse.persisten
  ce.sessions.broker,org.eclipse.persistence.sessions.remote,org.eclips
  e.persistence.sequencing,org.eclipse.persistence.descriptors,org.ecli
- pse.persistence.internal.helper";version="2.0.0.qualifier",org.eclips
+ pse.persistence.internal.helper";version="2.1.0.qualifier",org.eclips
  e.persistence.sessions.changesets;uses:="org.eclipse.persistence.sess
- ions";version="2.0.0.qualifier",org.eclipse.persistence.sessions;uses
+ ions";version="2.1.0.qualifier",org.eclipse.persistence.sessions;uses
  :="org.eclipse.persistence.exceptions,org.eclipse.persistence.sequenc
  ing,org.eclipse.persistence.internal.localization,org.eclipse.persist
  ence.internal.databaseaccess,org.eclipse.persistence.platform.databas
@@ -683,18 +683,18 @@ Export-Package: org.eclipse.persistence.tools.schemaframework;uses:="o
  .internal.identitymaps,org.eclipse.persistence.sessions.server,org.ec
  lipse.persistence.logging,org.eclipse.persistence.history,org.eclipse
  .persistence.sessions.factories,org.eclipse.persistence.sessions.chan
- gesets";version="2.0.0.qualifier",org.eclipse.persistence.internal.se
+ gesets";version="2.1.0.qualifier",org.eclipse.persistence.internal.se
  ssions.coordination.rmi.iiop;uses:="javax.rmi,org.eclipse.persistence
  .internal.helper,org.eclipse.persistence.internal.sessions.coordinati
  on.rmi,org.eclipse.persistence.sessions.coordination,org.omg.CORBA,or
  g.omg.CORBA_2_3.portable,org.omg.CORBA.portable,javax.rmi.CORBA";vers
- ion="2.0.0.qualifier",org.eclipse.persistence.internal.sessions.facto
+ ion="2.1.0.qualifier",org.eclipse.persistence.internal.sessions.facto
  ries.model.pool;uses:="org.eclipse.persistence.internal.sessions.fact
- ories.model.login";version="2.0.0.qualifier",org.eclipse.persistence.
+ ories.model.login";version="2.1.0.qualifier",org.eclipse.persistence.
  platform.server.jboss;uses:="org.eclipse.persistence.logging,org.ecli
  pse.persistence.platform.server,org.eclipse.persistence.transaction.j
  boss,org.eclipse.persistence.sessions,javax.persistence.spi,org.eclip
- se.persistence.internal.helper";version="2.0.0.qualifier",org.eclipse
+ se.persistence.internal.helper";version="2.1.0.qualifier",org.eclipse
  .persistence.internal.descriptors;uses:="org.eclipse.persistence.mapp
  ings,org.eclipse.persistence.internal.expressions,org.eclipse.persist
  ence.expressions,org.eclipse.persistence.internal.sessions,org.eclips
@@ -711,36 +711,36 @@ Export-Package: org.eclipse.persistence.tools.schemaframework;uses:="o
  tence.sessions.remote,org.eclipse.persistence.descriptors.invalidatio
  n,org.eclipse.persistence.descriptors.copying,org.eclipse.persistence
  .mappings.foundation,org.eclipse.persistence.descriptors.changetracki
- ng";version="2.0.0.qualifier",org.eclipse.persistence.platform.databa
+ ng";version="2.1.0.qualifier",org.eclipse.persistence.platform.databa
  se.jdbc;uses:="org.eclipse.persistence.internal.helper,org.eclipse.pe
  rsistence.platform.database.oracle.plsql,org.eclipse.persistence.inte
  rnal.sessions,org.eclipse.persistence.queries,org.eclipse.persistence
- .platform.database,org.eclipse.persistence.sessions";version="2.0.0.q
+ .platform.database,org.eclipse.persistence.sessions";version="2.1.0.q
  ualifier",org.eclipse.persistence.platform.database.converters;versio
- n="2.0.0.qualifier",org.eclipse.persistence.internal.jpa.parsing.jpql
+ n="2.1.0.qualifier",org.eclipse.persistence.internal.jpa.parsing.jpql
  .antlr;uses:="org.eclipse.persistence.internal.libraries.antlr.runtim
  e,org.eclipse.persistence.internal.jpa.parsing.jpql,org.eclipse.persi
- stence.internal.jpa.parsing";version="2.0.0.qualifier",org.eclipse.pe
- rsistence.internal.sessions.factories.model.log;version="2.0.0.qualif
+ stence.internal.jpa.parsing";version="2.1.0.qualifier",org.eclipse.pe
+ rsistence.internal.sessions.factories.model.log;version="2.1.0.qualif
  ier",org.eclipse.persistence.mappings.querykeys;uses:="org.eclipse.pe
  rsistence.descriptors,org.eclipse.persistence.internal.helper,org.ecl
  ipse.persistence.internal.expressions,org.eclipse.persistence.express
  ions,org.eclipse.persistence.exceptions,org.eclipse.persistence.inter
- nal.security";version="2.0.0.qualifier",org.eclipse.persistence.oxm.a
- nnotations;version="2.0.0.qualifier",org.eclipse.persistence.platform
+ nal.security";version="2.1.0.qualifier",org.eclipse.persistence.oxm.a
+ nnotations;version="2.1.0.qualifier",org.eclipse.persistence.platform
  .database;uses:="org.eclipse.persistence.exceptions,org.eclipse.persi
  stence.tools.schemaframework,org.eclipse.persistence.internal.databas
  eaccess,org.eclipse.persistence.expressions,org.eclipse.persistence.i
  nternal.sessions,org.eclipse.persistence.queries,org.eclipse.persiste
  nce.internal.expressions,org.eclipse.persistence.internal.helper,org.
- eclipse.persistence.sessions";version="2.0.0.qualifier",org.eclipse.p
+ eclipse.persistence.sessions";version="2.1.0.qualifier",org.eclipse.p
  ersistence.exceptions.i18n;uses:="org.eclipse.persistence.internal.he
- lper";version="2.0.0.qualifier",org.eclipse.persistence.mappings.xdb;
+ lper";version="2.1.0.qualifier",org.eclipse.persistence.mappings.xdb;
  uses:="org.eclipse.persistence.exceptions,org.eclipse.persistence.map
  pings,org.eclipse.persistence.internal.queries,org.eclipse.persistenc
  e.platform.xml,org.eclipse.persistence.internal.sessions,org.eclipse.
  persistence.queries,org.eclipse.persistence.internal.helper,org.eclip
- se.persistence.internal.platform.database,org.w3c.dom";version="2.0.0
+ se.persistence.internal.platform.database,org.w3c.dom";version="2.1.0
  .qualifier",org.eclipse.persistence.oxm.record;uses:="org.eclipse.per
  sistence.exceptions,org.xml.sax.ext,org.eclipse.persistence.oxm,org.e
  clipse.persistence.internal.oxm,org.eclipse.persistence.internal.oxm.
@@ -755,25 +755,25 @@ Export-Package: org.eclipse.persistence.tools.schemaframework;uses:="o
  ns,org.eclipse.persistence.internal.oxm.record.namespaces,org.eclipse
  .persistence.oxm.mappings,org.eclipse.persistence.mappings.foundation
  ,org.eclipse.persistence.queries,javax.xml.stream,javax.xml.stream.ev
- ents";version="2.0.0.qualifier",org.eclipse.persistence.internal.sess
+ ents";version="2.1.0.qualifier",org.eclipse.persistence.internal.sess
  ions.coordination.rmi;uses:="org.eclipse.persistence.sessions.coordin
  ation,org.eclipse.persistence.internal.helper,org.eclipse.persistence
  .exceptions,org.eclipse.persistence.internal.sessions.coordination";v
- ersion="2.0.0.qualifier",org.eclipse.persistence.internal.jpa.parsing
+ ersion="2.1.0.qualifier",org.eclipse.persistence.internal.jpa.parsing
  .jpql;uses:="org.eclipse.persistence.internal.libraries.antlr.runtime
  ,org.eclipse.persistence.internal.jpa.parsing.jpql.antlr,org.eclipse.
  persistence.exceptions,org.eclipse.persistence.internal.jpa.parsing,o
  rg.eclipse.persistence.internal.sessions,org.eclipse.persistence.sess
  ions,org.eclipse.persistence.queries,org.eclipse.persistence.internal
- .helper";version="2.0.0.qualifier",org.eclipse.persistence.transactio
+ .helper";version="2.1.0.qualifier",org.eclipse.persistence.transactio
  n.oc4j;uses:="org.eclipse.persistence.transaction,javax.transaction";
- version="2.0.0.qualifier",org.eclipse.persistence.platform.server;use
+ version="2.1.0.qualifier",org.eclipse.persistence.platform.server;use
  s:="org.eclipse.persistence.sessions,org.eclipse.persistence.logging,
  org.eclipse.persistence.exceptions,org.eclipse.persistence.internal.h
  elper,org.eclipse.persistence.internal.databaseaccess,org.eclipse.per
  sistence.internal.sessions,javax.persistence.spi,org.eclipse.persiste
  nce.internal.security,org.eclipse.persistence.platform.database,org.e
- clipse.persistence.internal.localization";version="2.0.0.qualifier",o
+ clipse.persistence.internal.localization";version="2.1.0.qualifier",o
  rg.eclipse.persistence.internal.databaseaccess;uses:="org.eclipse.per
  sistence.exceptions,org.eclipse.persistence.internal.sequencing,org.e
  clipse.persistence.internal.sessions,org.eclipse.persistence.queries,
@@ -785,10 +785,10 @@ Export-Package: org.eclipse.persistence.tools.schemaframework;uses:="o
  ence.internal.expressions,org.eclipse.persistence.internal.queries,or
  g.eclipse.persistence.sequencing,org.eclipse.persistence.tools.schema
  framework,org.eclipse.persistence.platform.database.converters,org.ec
- lipse.persistence.expressions";version="2.0.0.qualifier",org.eclipse.
+ lipse.persistence.expressions";version="2.1.0.qualifier",org.eclipse.
  persistence.transaction.jotm;uses:="org.eclipse.persistence.transacti
  on,org.eclipse.persistence.internal.security,javax.transaction";versi
- on="2.0.0.qualifier",org.eclipse.persistence.eis;uses:="javax.resourc
+ on="2.1.0.qualifier",org.eclipse.persistence.eis;uses:="javax.resourc
  e.cci,org.w3c.dom,org.eclipse.persistence.exceptions,javax.resource,o
  rg.eclipse.persistence.eis.interactions,org.eclipse.persistence.inter
  nal.databaseaccess,org.eclipse.persistence.internal.sessions,org.ecli
@@ -804,21 +804,21 @@ Export-Package: org.eclipse.persistence.tools.schemaframework;uses:="o
  ctories,org.eclipse.persistence.mappings.converters,javax.xml.namespa
  ce,org.eclipse.persistence.oxm.mappings,org.eclipse.persistence.mappi
  ngs.foundation,org.eclipse.persistence.internal.queries,org.eclipse.p
- ersistence.sequencing";version="2.0.0.qualifier",org.eclipse.persiste
- nce.tools;version="2.0.0.qualifier",org.eclipse.persistence.internal.
+ ersistence.sequencing";version="2.1.0.qualifier",org.eclipse.persiste
+ nce.tools;version="2.1.0.qualifier",org.eclipse.persistence.internal.
  eis.adapters.jms;uses:="javax.resource.cci,org.eclipse.persistence,or
  g.eclipse.persistence.exceptions,javax.jms,org.eclipse.persistence.ei
- s,javax.naming";version="2.0.0.qualifier",org.eclipse.persistence.ses
+ s,javax.naming";version="2.1.0.qualifier",org.eclipse.persistence.ses
  sions.coordination.rmi;uses:="javax.naming,org.eclipse.persistence.in
  ternal.sessions.coordination.rmi.iiop,org.eclipse.persistence.interna
  l.sessions.coordination.rmi,org.eclipse.persistence.exceptions,org.ec
  lipse.persistence.internal.sessions.coordination,javax.rmi,org.eclips
- e.persistence.sessions.coordination";version="2.0.0.qualifier",org.ec
+ e.persistence.sessions.coordination";version="2.1.0.qualifier",org.ec
  lipse.persistence.internal.eis.adapters.xmlfile;uses:="javax.resource
  .cci,org.eclipse.persistence,org.eclipse.persistence.exceptions,javax
  .naming,javax.resource,org.eclipse.persistence.internal.sessions,org.
  eclipse.persistence.oxm,org.eclipse.persistence.eis,org.eclipse.persi
- stence.internal.helper,org.w3c.dom";version="2.0.0.qualifier",org.ecl
+ stence.internal.helper,org.w3c.dom";version="2.1.0.qualifier",org.ecl
  ipse.persistence.mappings.structures;uses:="org.eclipse.persistence.m
  appings,org.eclipse.persistence.internal.sessions,org.eclipse.persist
  ence.internal.queries,org.eclipse.persistence.sessions.changesets,org
@@ -828,27 +828,27 @@ Export-Package: org.eclipse.persistence.tools.schemaframework;uses:="o
  tform.database,org.eclipse.persistence.descriptors,org.eclipse.persis
  tence.internal.expressions,org.eclipse.persistence.internal.databasea
  ccess,org.eclipse.persistence.internal.descriptors,org.eclipse.persis
- tence.queries,org.eclipse.persistence.sessions";version="2.0.0.qualif
+ tence.queries,org.eclipse.persistence.sessions";version="2.1.0.qualif
  ier",org.eclipse.persistence.internal.oxm.accessor;uses:="org.eclipse
  .persistence.mappings,org.eclipse.persistence.descriptors.changetrack
- ing,org.eclipse.persistence.indirection";version="2.0.0.qualifier",or
+ ing,org.eclipse.persistence.indirection";version="2.1.0.qualifier",or
  g.eclipse.persistence.internal.descriptors.changetracking;uses:="org.
  eclipse.persistence.internal.sessions,org.eclipse.persistence.descrip
  tors,org.eclipse.persistence.exceptions,org.eclipse.persistence.mappi
  ngs,org.eclipse.persistence.mappings.foundation,org.eclipse.persisten
  ce.descriptors.changetracking,org.eclipse.persistence.sessions.change
  sets,org.eclipse.persistence.internal.descriptors,org.eclipse.persist
- ence.internal.helper";version="2.0.0.qualifier",org.eclipse.persisten
+ ence.internal.helper";version="2.1.0.qualifier",org.eclipse.persisten
  ce.expressions.spatial;uses:="org.eclipse.persistence.internal.expres
- sions,org.eclipse.persistence.expressions";version="2.0.0.qualifier",
+ sions,org.eclipse.persistence.expressions";version="2.1.0.qualifier",
  org.eclipse.persistence.descriptors.invalidation;uses:="org.eclipse.p
- ersistence.internal.identitymaps";version="2.0.0.qualifier",org.eclip
+ ersistence.internal.identitymaps";version="2.1.0.qualifier",org.eclip
  se.persistence.descriptors.copying;uses:="org.eclipse.persistence.exc
  eptions,org.eclipse.persistence.internal.descriptors,org.eclipse.pers
  istence.queries,org.eclipse.persistence.sessions,org.eclipse.persiste
  nce.descriptors,org.eclipse.persistence.internal.security,org.eclipse
  .persistence.internal.sessions,org.eclipse.persistence.internal.helpe
- r";version="2.0.0.qualifier",org.eclipse.persistence.internal.session
+ r";version="2.1.0.qualifier",org.eclipse.persistence.internal.session
  s.remote;uses:="org.eclipse.persistence.internal.sessions,org.eclipse
  .persistence.sessions,org.eclipse.persistence.descriptors,org.eclipse
  .persistence.queries,org.eclipse.persistence.sessions.remote,org.ecli
@@ -861,11 +861,11 @@ Export-Package: org.eclipse.persistence.tools.schemaframework;uses:="o
  istence.sessions.changesets,org.eclipse.persistence.platform.database
  ,org.eclipse.persistence.sessions.factories,org.eclipse.persistence.i
  ndirection,org.eclipse.persistence.internal.indirection,org.eclipse.p
- ersistence.internal.sequencing";version="2.0.0.qualifier",org.eclipse
+ ersistence.internal.sequencing";version="2.1.0.qualifier",org.eclipse
  .persistence.platform.server.oc4j;uses:="org.eclipse.persistence.tran
  saction.oc4j,org.eclipse.persistence.platform.server,org.eclipse.pers
  istence.internal.databaseaccess,org.eclipse.persistence.sessions,org.
- eclipse.persistence.platform.database";version="2.0.0.qualifier",org.
+ eclipse.persistence.platform.database";version="2.1.0.qualifier",org.
  eclipse.persistence.sessions.broker;uses:="org.eclipse.persistence.lo
  gging,org.eclipse.persistence.sessions.server,org.eclipse.persistence
  .internal.sequencing,org.eclipse.persistence.internal.sessions,org.ec
@@ -874,8 +874,8 @@ Export-Package: org.eclipse.persistence.tools.schemaframework;uses:="o
  org.eclipse.persistence.internal.identitymaps,org.eclipse.persistence
  .history,org.eclipse.persistence.internal.databaseaccess,org.eclipse.
  persistence.queries,org.eclipse.persistence.sessions.coordination";ve
- rsion="2.0.0.qualifier",org.eclipse.persistence.internal.sessions.fac
- tories.model.sequencing;version="2.0.0.qualifier",org.eclipse.persist
+ rsion="2.1.0.qualifier",org.eclipse.persistence.internal.sessions.fac
+ tories.model.sequencing;version="2.1.0.qualifier",org.eclipse.persist
  ence.internal.oxm.schema;uses:="org.eclipse.persistence.mappings,org.
  eclipse.persistence.oxm.mappings.nullpolicy,org.eclipse.persistence.o
  xm,org.eclipse.persistence.descriptors,org.eclipse.persistence.sessio
@@ -884,26 +884,26 @@ Export-Package: org.eclipse.persistence.tools.schemaframework;uses:="o
  ence.internal.oxm.schema.model,javax.xml.namespace,org.eclipse.persis
  tence.exceptions,org.eclipse.persistence.oxm.mappings,javax.xml.trans
  form,org.eclipse.persistence.internal.descriptors,org.eclipse.persist
- ence.internal.helper";version="2.0.0.qualifier",org.eclipse.persisten
+ ence.internal.helper";version="2.1.0.qualifier",org.eclipse.persisten
  ce.sessions.remote.rmi.iiop;uses:="org.eclipse.persistence.exceptions
  ,org.eclipse.persistence.internal.sessions.remote,org.eclipse.persist
  ence.internal.sessions,org.eclipse.persistence.descriptors,org.eclips
  e.persistence.sessions,org.eclipse.persistence.queries,org.eclipse.pe
  rsistence.sessions.remote,javax.rmi,org.omg.CORBA,org.omg.CORBA_2_3.p
- ortable,org.omg.CORBA.portable,javax.rmi.CORBA";version="2.0.0.qualif
+ ortable,org.omg.CORBA.portable,javax.rmi.CORBA";version="2.1.0.qualif
  ier",org.eclipse.persistence.internal.sessions.factories.model.rcm;us
  es:="org.eclipse.persistence.internal.sessions.factories.model.rcm.co
  mmand,org.eclipse.persistence.internal.sessions.factories.model.trans
- port";version="2.0.0.qualifier",org.eclipse.persistence.descriptors.c
+ port";version="2.1.0.qualifier",org.eclipse.persistence.descriptors.c
  hangetracking;uses:="org.eclipse.persistence.mappings,org.eclipse.per
  sistence.sessions.changesets,org.eclipse.persistence.internal.descrip
  tors,org.eclipse.persistence.internal.sessions,org.eclipse.persistenc
  e.descriptors,org.eclipse.persistence.internal.descriptors.changetrac
  king,org.eclipse.persistence.exceptions,org.eclipse.persistence.queri
- es";version="2.0.0.qualifier",org.eclipse.persistence.internal.sessio
- ns.factories.model.property;version="2.0.0.qualifier",org.eclipse.per
+ es";version="2.1.0.qualifier",org.eclipse.persistence.internal.sessio
+ ns.factories.model.property;version="2.1.0.qualifier",org.eclipse.per
  sistence.config;uses:="org.eclipse.persistence.descriptors,org.eclips
- e.persistence.sessions";version="2.0.0.qualifier",org.eclipse.persist
+ e.persistence.sessions";version="2.1.0.qualifier",org.eclipse.persist
  ence.queries;uses:="org.eclipse.persistence.internal.queries,org.ecli
  pse.persistence.internal.databaseaccess,org.eclipse.persistence.inter
  nal.localization,org.eclipse.persistence.sessions,org.eclipse.persist
@@ -921,7 +921,7 @@ Export-Package: org.eclipse.persistence.tools.schemaframework;uses:="o
  ction,org.eclipse.persistence.internal.history,org.eclipse.persistenc
  e.mappings.querykeys,org.eclipse.persistence.platform.database,org.ec
  lipse.persistence.mappings.foundation,org.eclipse.persistence.mapping
- s.structures";version="2.0.0.qualifier",org.eclipse.persistence.oxm.m
+ s.structures";version="2.1.0.qualifier",org.eclipse.persistence.oxm.m
  appings.converters;uses:="org.eclipse.persistence.oxm,org.eclipse.per
  sistence.sessions,org.eclipse.persistence.mappings.converters,org.ecl
  ipse.persistence.mappings,org.eclipse.persistence.internal.security,o
@@ -929,7 +929,7 @@ Export-Package: org.eclipse.persistence.tools.schemaframework;uses:="o
  s,org.eclipse.persistence.oxm.mappings,org.eclipse.persistence.intern
  al.queries,org.eclipse.persistence.internal.databaseaccess,org.eclips
  e.persistence.internal.helper,org.eclipse.persistence.descriptors";ve
- rsion="2.0.0.qualifier"
+ rsion="2.1.0.qualifier"
 Private-Package: .,xsd
 Bundle-ClassPath: .
 Tool: Bnd-0.0.366
@@ -938,19 +938,19 @@ TODAY: October 21 2009
 TSTAMP: 1307
 Bundle-RequiredExecutionEnvironment: J2SE-1.5
 HK2-Bundle-Name: org.eclipse.persistence:org.eclipse.persistence.core
-Require-Bundle: org.eclipse.persistence.antlr;bundle-version="2.0.0.qu
+Require-Bundle: org.eclipse.persistence.antlr;bundle-version="2.1.0.qu
  alifier";resolution:=optional,   org.eclipse.persistence.asm;bundle-v
- ersion="2.0.0.qualifier";resolution:=optional
+ ersion="2.1.0.qualifier";resolution:=optional
 Implementation-Vendor: Eclipse.org - EclipseLink Project
 Bundle-SymbolicName: org.eclipse.persistence.core
-Implementation-Version: 2.0.0.qualifier
+Implementation-Version: 2.1.0.qualifier
 Specification-Vendor: Eclipse.org - EclipseLink Project
 Bundle-Name: EclipseLink Core
 Created-By: 1.6.0_06 (Sun Microsystems Inc.)
 Premain-Class: org.eclipse.persistence.internal.jpa.deployment.JavaSEC
  MPInitializerAgent
 Bundle-Vendor: Eclipse.org - EclipseLink Project
-Bundle-Version: 2.0.0.qualifier
+Bundle-Version: 2.1.0.qualifier
 Bnd-LastModified: 1256144903137
 Bundle-ManifestVersion: 2
 Include-Resource: ../../about.html,../../readme.html,../../license.htm

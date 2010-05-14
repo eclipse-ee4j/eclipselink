@@ -11,14 +11,14 @@ Export-Package: commonj.sdo.impl;uses:="org.eclipse.persistence.sdo.he
  m.schema,org.eclipse.persistence.mappings.converters,org.eclipse.pers
  istence.oxm.mappings,org.eclipse.persistence.sdo.helper.metadata,org.
  eclipse.persistence.mappings.transformers,org.eclipse.persistence.int
- ernal.descriptors";version="2.0.0.qualifier",org.eclipse.persistence.
+ ernal.descriptors";version="2.1.0.qualifier",org.eclipse.persistence.
  sdo.helper.metadata;uses:="org.eclipse.persistence.mappings.foundatio
  n,org.eclipse.persistence.mappings.transformers,org.eclipse.persisten
  ce.oxm,org.eclipse.persistence.descriptors,org.eclipse.persistence.se
  ssions,org.eclipse.persistence.oxm.record,org.eclipse.persistence.map
  pings,org.eclipse.persistence.sdo,commonj.sdo,org.eclipse.persistence
  .sdo.helper,org.eclipse.persistence.oxm.mappings.converters";version=
- "2.0.0.qualifier",org.eclipse.persistence.sdo.helper;uses:="org.eclip
+ "2.1.0.qualifier",org.eclipse.persistence.sdo.helper;uses:="org.eclip
  se.persistence.oxm.mappings,org.eclipse.persistence.sdo,commonj.sdo.h
  elper,commonj.sdo,javax.xml.namespace,org.eclipse.persistence.logging
  ,javax.xml.transform,javax.xml.transform.stream,org.xml.sax,org.eclip
@@ -37,7 +37,7 @@ Export-Package: commonj.sdo.impl;uses:="org.eclipse.persistence.sdo.he
  nternal.oxm.schema,org.eclipse.persistence.internal.databaseaccess,or
  g.eclipse.persistence.sdo.types,org.eclipse.persistence.oxm.unmapped,
  org.eclipse.persistence.internal.oxm.record.namespaces,org.eclipse.pe
- rsistence.internal.oxm.record";version="2.0.0.qualifier",org.eclipse.
+ rsistence.internal.oxm.record";version="2.1.0.qualifier",org.eclipse.
  persistence.sdo.types;uses:="org.eclipse.persistence.mappings,org.ecl
  ipse.persistence.oxm.mappings,org.eclipse.persistence.sdo,commonj.sdo
  ,org.eclipse.persistence.sdo.helper,org.eclipse.persistence.oxm,org.e
@@ -47,7 +47,7 @@ Export-Package: commonj.sdo.impl;uses:="org.eclipse.persistence.sdo.he
  stence.mappings.converters,commonj.sdo.helper,javax.xml.namespace,org
  .eclipse.persistence.sdo.helper.metadata,org.eclipse.persistence.sess
  ions,org.eclipse.persistence.descriptors,org.eclipse.persistence.sdo.
- helper.extension";version="2.0.0.qualifier",org.eclipse.persistence.s
+ helper.extension";version="2.1.0.qualifier",org.eclipse.persistence.s
  do.helper.delegates;uses:="commonj.sdo.helper,org.eclipse.persistence
  .exceptions,org.eclipse.persistence.sdo,commonj.sdo,org.eclipse.persi
  stence.sdo.helper,javax.xml.namespace,org.eclipse.persistence.sdo.typ
@@ -58,12 +58,12 @@ Export-Package: commonj.sdo.impl;uses:="org.eclipse.persistence.sdo.he
  d,org.xml.sax,org.eclipse.persistence.internal.databaseaccess,javax.x
  ml.transform.sax,org.eclipse.persistence.internal.oxm,org.w3c.dom,jav
  ax.xml.transform,javax.xml.transform.stream,org.eclipse.persistence.i
- nternal.descriptors,org.eclipse.persistence.mappings";version="2.0.0.
+ nternal.descriptors,org.eclipse.persistence.mappings";version="2.1.0.
  qualifier",org.eclipse.persistence.sdo.helper.extension;uses:="org.ec
  lipse.persistence.logging,org.eclipse.persistence.sdo,org.eclipse.per
  sistence.internal.helper,commonj.sdo,org.eclipse.persistence.exceptio
  ns,org.eclipse.persistence.sdo.helper,org.eclipse.persistence.interna
- l.oxm,commonj.sdo.helper";version="2.0.0.qualifier",org.eclipse.persi
+ l.oxm,commonj.sdo.helper";version="2.1.0.qualifier",org.eclipse.persi
  stence.sdo.helper.jaxb;uses:="org.eclipse.persistence.logging,org.ecl
  ipse.persistence.sdo.helper,commonj.sdo.helper,org.eclipse.persistenc
  e.sdo,commonj.sdo,org.eclipse.persistence.sdo.helper.delegates,org.ec
@@ -75,11 +75,11 @@ Export-Package: commonj.sdo.impl;uses:="org.eclipse.persistence.sdo.he
  rg.eclipse.persistence.internal.queries,org.eclipse.persistence.sessi
  ons,org.eclipse.persistence.mappings.converters,org.eclipse.persisten
  ce.oxm.mappings,org.eclipse.persistence.internal.databaseaccess,org.e
- clipse.persistence.internal.descriptors";version="2.0.0.qualifier",or
+ clipse.persistence.internal.descriptors";version="2.1.0.qualifier",or
  g.eclipse.persistence.sdo.dataobjects;uses:="org.eclipse.persistence.
- sdo";version="2.0.0.qualifier"
+ sdo";version="2.1.0.qualifier"
 Private-Package: .
-Implementation-Version: 2.0.0.qualifier
+Implementation-Version: 2.1.0.qualifier
 Specification-Vendor: Eclipse.org - EclipseLink Project
 Tool: Bnd-0.0.366
 DSTAMP: 20091021
@@ -89,13 +89,13 @@ Created-By: 1.6.0_06 (Sun Microsystems Inc.)
 TSTAMP: 1356
 Bundle-RequiredExecutionEnvironment: J2SE-1.5
 HK2-Bundle-Name: org.eclipse.persistence:org.eclipse.persistence.sdo
-Require-Bundle: org.eclipse.persistence.core;bundle-version="2.0.0.qua
+Require-Bundle: org.eclipse.persistence.core;bundle-version="2.1.0.qua
  lifier";visibility:=reexport, org.eclipse.persistence.asm;bundle-vers
- ion="2.0.0.qualifier";resolution:=optional, org.eclipse.persistence.m
- oxy;bundle-version="2.0.0.qualifier";resolution:=optional
+ ion="2.1.0.qualifier";resolution:=optional, org.eclipse.persistence.m
+ oxy;bundle-version="2.1.0.qualifier";resolution:=optional
 Implementation-Vendor: Eclipse.org - EclipseLink Project
 Bundle-Vendor: Eclipse.org - EclipseLink Project
-Bundle-Version: 2.0.0.qualifier
+Bundle-Version: 2.1.0.qualifier
 Bnd-LastModified: 1256147789012
 Bundle-ManifestVersion: 2
 Include-Resource: ../../about.html,../../readme.html,../../license.htm
@@ -111,38 +111,38 @@ Import-Package: commonj.sdo;version="2.1.1",
  javax.xml.transform.dom;version="2.0.0";resolution:=optional,
  javax.xml.transform.sax;version="2.0.0";resolution:=optional,
  javax.xml.transform.stream;version="2.0.0";resolution:=optional,
- org.eclipse.persistence.descriptors;version="2.0.0.qualifier",
- org.eclipse.persistence.exceptions;version="2.0.0.qualifier",
- org.eclipse.persistence.internal.databaseaccess;version="2.0.0.qualifier",
- org.eclipse.persistence.internal.descriptors;version="2.0.0.qualifier",
- org.eclipse.persistence.internal.helper;version="2.0.0.qualifier",
+ org.eclipse.persistence.descriptors;version="2.1.0.qualifier",
+ org.eclipse.persistence.exceptions;version="2.1.0.qualifier",
+ org.eclipse.persistence.internal.databaseaccess;version="2.1.0.qualifier",
+ org.eclipse.persistence.internal.descriptors;version="2.1.0.qualifier",
+ org.eclipse.persistence.internal.helper;version="2.1.0.qualifier",
  org.eclipse.persistence.internal.libraries.asm;resolution:=optional,
- org.eclipse.persistence.internal.localization;version="2.0.0.qualifier",
- org.eclipse.persistence.internal.oxm;version="2.0.0.qualifier",
- org.eclipse.persistence.internal.oxm.record;version="2.0.0.qualifier",
- org.eclipse.persistence.internal.oxm.record.namespaces;version="2.0.0.qualifier",
- org.eclipse.persistence.internal.oxm.schema;version="2.0.0.qualifier",
- org.eclipse.persistence.internal.oxm.schema.model;version="2.0.0.qualifier",
- org.eclipse.persistence.internal.queries;version="2.0.0.qualifier",
- org.eclipse.persistence.internal.security;version="2.0.0.qualifier",
- org.eclipse.persistence.internal.sessions;version="2.0.0.qualifier",
- org.eclipse.persistence.jaxb;version="2.0.0.qualifier",
- org.eclipse.persistence.logging;version="2.0.0.qualifier",
- org.eclipse.persistence.mappings;version="2.0.0.qualifier",
- org.eclipse.persistence.mappings.converters;version="2.0.0.qualifier",
- org.eclipse.persistence.mappings.foundation;version="2.0.0.qualifier",
- org.eclipse.persistence.mappings.transformers;version="2.0.0.qualifier",
- org.eclipse.persistence.oxm;version="2.0.0.qualifier",
- org.eclipse.persistence.oxm.mappings;version="2.0.0.qualifier",
- org.eclipse.persistence.oxm.mappings.converters;version="2.0.0.qualifier",
- org.eclipse.persistence.oxm.mappings.nullpolicy;version="2.0.0.qualifier",
- org.eclipse.persistence.oxm.platform;version="2.0.0.qualifier",
- org.eclipse.persistence.oxm.record;version="2.0.0.qualifier",
- org.eclipse.persistence.oxm.schema;version="2.0.0.qualifier",
- org.eclipse.persistence.oxm.sequenced;version="2.0.0.qualifier",
- org.eclipse.persistence.oxm.unmapped;version="2.0.0.qualifier",
- org.eclipse.persistence.platform.xml;version="2.0.0.qualifier",
- org.eclipse.persistence.sessions;version="2.0.0.qualifier",
+ org.eclipse.persistence.internal.localization;version="2.1.0.qualifier",
+ org.eclipse.persistence.internal.oxm;version="2.1.0.qualifier",
+ org.eclipse.persistence.internal.oxm.record;version="2.1.0.qualifier",
+ org.eclipse.persistence.internal.oxm.record.namespaces;version="2.1.0.qualifier",
+ org.eclipse.persistence.internal.oxm.schema;version="2.1.0.qualifier",
+ org.eclipse.persistence.internal.oxm.schema.model;version="2.1.0.qualifier",
+ org.eclipse.persistence.internal.queries;version="2.1.0.qualifier",
+ org.eclipse.persistence.internal.security;version="2.1.0.qualifier",
+ org.eclipse.persistence.internal.sessions;version="2.1.0.qualifier",
+ org.eclipse.persistence.jaxb;version="2.1.0.qualifier",
+ org.eclipse.persistence.logging;version="2.1.0.qualifier",
+ org.eclipse.persistence.mappings;version="2.1.0.qualifier",
+ org.eclipse.persistence.mappings.converters;version="2.1.0.qualifier",
+ org.eclipse.persistence.mappings.foundation;version="2.1.0.qualifier",
+ org.eclipse.persistence.mappings.transformers;version="2.1.0.qualifier",
+ org.eclipse.persistence.oxm;version="2.1.0.qualifier",
+ org.eclipse.persistence.oxm.mappings;version="2.1.0.qualifier",
+ org.eclipse.persistence.oxm.mappings.converters;version="2.1.0.qualifier",
+ org.eclipse.persistence.oxm.mappings.nullpolicy;version="2.1.0.qualifier",
+ org.eclipse.persistence.oxm.platform;version="2.1.0.qualifier",
+ org.eclipse.persistence.oxm.record;version="2.1.0.qualifier",
+ org.eclipse.persistence.oxm.schema;version="2.1.0.qualifier",
+ org.eclipse.persistence.oxm.sequenced;version="2.1.0.qualifier",
+ org.eclipse.persistence.oxm.unmapped;version="2.1.0.qualifier",
+ org.eclipse.persistence.platform.xml;version="2.1.0.qualifier",
+ org.eclipse.persistence.sessions;version="2.1.0.qualifier",
  org.w3c.dom;resolution:=optional,
  org.xml.sax;resolution:=optional
 Specification-Version: 2.0.0

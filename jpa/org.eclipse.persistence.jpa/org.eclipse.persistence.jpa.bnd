@@ -17,7 +17,7 @@ Include-Resource:\
  org/eclipse/persistence/jpa=resource/org/eclipse/persistence/jpa,\
  META-INF/services/javax.persistence.spi.PersistenceProvider=resource/META-INF/services/javax.persistence.spi.PersistenceProvider
 Import-Package:                                                         \
- javax.persistence.*;version="[2.0.0, 2.1)",                           \
+ javax.persistence.*;version="[1.1.0, 2.1)";jpa=2.0,                           \
  javax.sql.*;resolution:=optional,                                      \
  javax.transaction.*;version="1.1.0";resolution:=optional,              \
  javax.xml.*;resolution:=optional,                                      \

@@ -4,22 +4,22 @@ Created-By: 14.2-b01 (Sun Microsystems Inc.)
 Specification-Vendor: Eclipse.org - EclipseLink Project
 Specification-Version: 2.0.0
 Implementation-Vendor: Eclipse.org - EclipseLink Project
-Implementation-Version: 2.0.0.qualifier
+Implementation-Version: 2.1.0.qualifier
 Bundle-ManifestVersion: 2
 Bundle-Name: EclipseLink Oracle Extensions
 Bundle-SymbolicName: org.eclipse.persistence.oracle
 Bundle-Vendor: Eclipse.org - EclipseLink Project
-Bundle-Version: 2.0.0.qualifier
+Bundle-Version: 2.1.0.qualifier
 Bundle-RequiredExecutionEnvironment: J2SE-1.5
-Fragment-Host: org.eclipse.persistence.core;bundle-version="2.0.0.qualifier"
-Export-Package: org.eclipse.persistence.eis.adapters.aq;version="2.0.0
+Fragment-Host: org.eclipse.persistence.core;bundle-version="2.1.0.qualifier"
+Export-Package: org.eclipse.persistence.eis.adapters.aq;version="2.1.0
  .qualifier",org.eclipse.persistence.internal.eis.adapters.aq;ve
- rsion="2.0.0.qualifier",org.eclipse.persistence.internal.platfo
- rm.database.oracle;version="2.0.0.qualifier",org.eclipse.persis
- tence.internal.platform.database.oracle.xdb;version="2.0.0.qualifier",org.eclipse.persistence.platform.database.oracle;version="2.0.
+ rsion="2.1.0.qualifier",org.eclipse.persistence.internal.platfo
+ rm.database.oracle;version="2.1.0.qualifier",org.eclipse.persis
+ tence.internal.platform.database.oracle.xdb;version="2.1.0.qualifier",org.eclipse.persistence.platform.database.oracle;version="2.0.
  0.qualifier",org.eclipse.persistence.platform.database.oracle.c
- onverters;version="2.0.0.qualifier",org.eclipse.persistence.pla
- tform.xml.xdk;version="2.0.0.qualifier"
+ onverters;version="2.1.0.qualifier",org.eclipse.persistence.pla
+ tform.xml.xdk;version="2.1.0.qualifier"
 Bundle-ClassPath: .
 Import-Package: javax.resource;version="1.5.0";resolution:=optional,ja
  vax.naming;resolution:=optional,javax.resource.cci;version="1.5.0";re

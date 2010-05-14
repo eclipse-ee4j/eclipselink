@@ -1,10 +1,10 @@
 Manifest-Version: 1.0
-Export-Package: javax.persistence.spi;uses:="javax.persistence,javax.s
- ql";version="2.0.0",javax.persistence;uses:="javax.persistence.criter
- ia,javax.persistence.metamodel,javax.persistence.spi";version="2.0.0"
- ,javax.persistence.criteria;uses:="javax.persistence.metamodel,javax.
- persistence";version="2.0.0",javax.persistence.metamodel;version="2.0
- .0"
+Export-Package: javax.persistence;version="2.0.1";jpa=2.0;uses:="javax.persistence.criteria,javax.persistence.metamodel,javax.persistence.spi",
+ javax.persistence.criteria;version="2.0.1";jpa=2.0;uses:="javax.persistence.metamodel,javax.persistence",
+ javax.persistence.metamodel;version="2.0.1";jpa=2.0,
+ javax.persistence.spi;version="2.0.1";jpa=2.0;uses:="javax.persistence,javax.sql",
+ org.osgi.jpa;version="1.1.0",
+ org.osgi.service.jpa;version="1.1.0"
 Private-Package: .,org.eclipse.persistence.javax.persistence.osgi
 Implementation-Version: 2.0.0
 Bundle-ClassPath: .
@@ -18,7 +18,7 @@ TSTAMP: 1116
 Bundle-RequiredExecutionEnvironment: J2SE-1.5
 Implementation-Vendor: Eclipse.org - EclipseLink Project
 Bundle-Vendor: Eclipse.org - EclipseLink Project
-Bundle-Version: 2.0.0.v200911041116
+Bundle-Version: 2.0.1.v201005141605
 Bnd-LastModified: 1257351401813
 Bundle-ManifestVersion: 2
 Bundle-Activator: org.eclipse.persistence.javax.persistence.osgi.Activ
