@@ -9,7 +9,9 @@ package org.eclipse.persistence.internal.jpa.metadata.accessors.objects;
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
- *     James Sutherland - initial impl 
+ *     James Sutherland - initial impl
+ *     05/14/2010-2.1 Guy Pelletier 
+ *       - 253083: Add support for dynamic persistence using ORM.xml/eclipselink-orm.xml
  ******************************************************************************/  
 import java.io.IOException;
 import java.io.InputStream;
@@ -76,8 +78,13 @@ public class MetadataAsmFactory extends MetadataFactory {
             Attribute[] attributes = new Attribute[] { new RuntimeVisibleAnnotations(), new RuntimeVisibleParameterAnnotations(), new SignatureAttribute() };
             reader.accept(visitor, attributes, false);
         } catch (Exception exception) {
-            // Some basic types can't be found, so can just be registered (i.e. arrays).
-            addMetadataClass(new MetadataClass(this, className));
+            // Some basic types can't be found, so can just be registered 
+            // (i.e. arrays). Also, VIRTUAL classes may also not exist,
+            // therefore, tag the MetadataClass as loadable false. This will be
+            // used to determine if a class will be dynamically created or not.
+            MetadataClass metadataClass = new MetadataClass(this, className);
+            metadataClass.setIsAccessible(false);
+            addMetadataClass(metadataClass);
         } finally {
             try {
                 if (stream != null) {

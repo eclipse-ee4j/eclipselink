@@ -15,6 +15,8 @@
  *       - 303632: Add attribute-type for mapping attributes to EclipseLink-ORM
  *     05/04/2010-2.1 Guy Pelletier 
  *       - 309373: Add parent class attribute to EclipseLink-ORM
+ *     05/14/2010-2.1 Guy Pelletier 
+ *       - 253083: Add support for dynamic persistence using ORM.xml/eclipselink-orm.xml
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata.accessors.objects;
 
@@ -38,6 +40,7 @@ import org.eclipse.persistence.internal.libraries.asm.Constants;
  * @since TopLink 10.1.3/EJB 3.0 Preview
  */
 public class MetadataClass extends MetadataAnnotatedElement {
+    protected boolean m_isAccessible;
     protected boolean m_isPrimitive;
     protected boolean m_isJDK;
     protected int m_modifiers;
@@ -72,6 +75,7 @@ public class MetadataClass extends MetadataAnnotatedElement {
         // correctly generate model classes.
         setType(name); 
         
+        m_isAccessible = true;
         m_interfaces = new ArrayList<String>();
         m_enclosedClasses = new ArrayList<MetadataClass>();
         m_fields = new HashMap<String, MetadataField>(); 
@@ -386,6 +390,14 @@ public class MetadataClass extends MetadataAnnotatedElement {
     
     /**
      * INTERNAL:
+     * Return true is this class accessible to be found.
+     */
+    public boolean isAccessible() {
+        return m_isAccessible;
+    }
+    
+    /**
+     * INTERNAL:
      * Return if this class is an array type.
      */
     public boolean isArray() {
@@ -481,6 +493,13 @@ public class MetadataClass extends MetadataAnnotatedElement {
      */
     public boolean isVoid() {
         return getName().equals(void.class.getName());
+    }
+    
+    /**
+     * INTERNAL:
+     */
+    public void setIsAccessible(boolean isAccessible) {
+        m_isAccessible = isAccessible;
     }
     
     /**

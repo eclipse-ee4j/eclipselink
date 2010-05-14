@@ -24,6 +24,8 @@
  *     10/21/2009-2.0 Guy Pelletier 
  *       - 290567: mappedbyid support incomplete
  *     cdelahun - Bug 214534: changes to allow JMSPublishingTransportManager configuration through properties
+ *     05/14/2010-2.1 Guy Pelletier 
+ *       - 253083: Add support for dynamic persistence using ORM.xml/eclipselink-orm.xml
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa;
 
@@ -320,13 +322,15 @@ public class EntityManagerSetupImpl {
                 synchronized (session) {
                     if (state == STATE_PREDEPLOYED) {
                         try {
-                            // The project is initially created using class names rather than classes.  This call will make the conversion.
-                            // If the session was loaded from sessions.xml this will also convert the descriptor classes to the correct class loader.
-                            session.getProject().convertClassNamesToClasses(realClassLoader);
-
                             if (!isSessionLoadedFromSessionsXML) {
                                     // listeners and queries require the real classes and are therefore built during deploy using the realClassLoader
                                     processor.setClassLoader(realClassLoader);
+                                    processor.createDynamicClasses();
+                                    
+                                    // The project is initially created using class names rather than classes.  This call will make the conversion.
+                                    // If the session was loaded from sessions.xml this will also convert the descriptor classes to the correct class loader.
+                                    session.getProject().convertClassNamesToClasses(realClassLoader);
+                                    
                                     processor.addEntityListeners();
                                     addBeanValidationListeners(deployProperties, realClassLoader);
                                     processor.addNamedQueries();
@@ -337,6 +341,10 @@ public class EntityManagerSetupImpl {
                                     structConverters = processor.getStructConverters();
                                     
                                     processor = null;
+                            } else {
+                                // The project is initially created using class names rather than classes.  This call will make the conversion.
+                                // If the session was loaded from sessions.xml this will also convert the descriptor classes to the correct class loader.
+                                session.getProject().convertClassNamesToClasses(realClassLoader);
                             }
                     
                             initServerSession(deployProperties);

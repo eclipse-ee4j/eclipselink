@@ -55,6 +55,8 @@
  *       - 307050: Add defaults for access methods of a VIRTUAL access type
  *     05/04/2010-2.1 Guy Pelletier 
  *       - 309373: Add parent class attribute to EclipseLink-ORM
+ *     05/14/2010-2.1 Guy Pelletier 
+ *       - 253083: Add support for dynamic persistence using ORM.xml/eclipselink-orm.xml
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata.accessors.classes;
 
@@ -559,7 +561,10 @@ public class EntityAccessor extends MappedSuperclassAccessor {
         // Process the correct access type before any other processing.
         processAccessType();
         
-        // Process access methods if access is VIRTUAL.
+        // Process a virtual class specification after determining access type. 
+        processVirtualClass();
+        
+        // Process the default access methods after determining access type.
         processAccessMethods();
         
         // Process the metadata complete flag now before we start looking

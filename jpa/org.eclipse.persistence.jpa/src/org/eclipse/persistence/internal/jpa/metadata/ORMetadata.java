@@ -18,6 +18,8 @@
  *       - 303632: Add attribute-type for mapping attributes to EclipseLink-ORM
  *     04/27/2010-2.1 Guy Pelletier 
  *       - 309856: MappedSuperclasses from XML are not being initialized properly
+ *     05/14/2010-2.1 Guy Pelletier 
+ *       - 253083: Add support for dynamic persistence using ORM.xml/eclipselink-orm.xml
  ******************************************************************************/ 
 package org.eclipse.persistence.internal.jpa.metadata;
 
@@ -151,7 +153,7 @@ public abstract class ORMetadata {
         Class primitiveClass = getPrimitiveClassForName(className);
         
         if (primitiveClass == null) {
-            if (getEntityMappings() != null) {
+            if (loadedFromXML()) {
                 return getEntityMappings().getPackageQualifiedClassName(className);
             }
             

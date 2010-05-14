@@ -19,12 +19,19 @@
 package org.eclipse.persistence.jpa.dynamic;
 
 //java eXtension imports
+import java.util.ArrayList;
+import java.util.Collection;
+
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 
 //EclipseLink imports
+import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.dynamic.DynamicHelper;
+import org.eclipse.persistence.dynamic.DynamicType;
+import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.jpa.JpaHelper;
+import org.eclipse.persistence.tools.schemaframework.DynamicSchemaManager;
 
 /**
  * 
@@ -40,5 +47,37 @@ public class JPADynamicHelper extends DynamicHelper {
     public JPADynamicHelper(EntityManager em) {
         super(JpaHelper.getEntityManager(em).getServerSession());
     }
+    
+    /**
+     * Add one or more EntityType instances to a session and optionally generate
+     * needed tables with or without FK constraints.
+     */
+    public void addTypes(boolean createMissingTables, boolean generateFKConstraints, Collection<DynamicType> types) {
+        if (types == null || types.isEmpty()) {
+            throw new IllegalArgumentException("No types provided");
+        }
 
+        Collection<ClassDescriptor> descriptors = new ArrayList<ClassDescriptor>(types.size());
+        
+        for (DynamicType type : types) {
+            if (!type.getDescriptor().requiresInitialization()) {
+                type.getDescriptor().getInstantiationPolicy().initialize((AbstractSession) session);
+            }
+            
+            if (type.getDescriptor().getJavaClassName() != null) {
+                fqClassnameToDescriptor.put(type.getDescriptor().getJavaClassName(), type.getDescriptor());
+            }
+            
+            descriptors.add(type.getDescriptor());
+        }
+
+        session.addDescriptors(descriptors);
+        
+        if (createMissingTables) {
+            if (!getSession().isConnected()) {
+                getSession().login();
+            }
+            new DynamicSchemaManager(session).createTables(generateFKConstraints, types);
+        }
+    }
 }

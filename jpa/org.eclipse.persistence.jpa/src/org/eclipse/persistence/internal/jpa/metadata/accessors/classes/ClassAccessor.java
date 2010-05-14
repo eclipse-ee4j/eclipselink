@@ -51,6 +51,8 @@
  *       - 309856: MappedSuperclasses from XML are not being initialized properly
  *     05/04/2010-2.1 Guy Pelletier 
  *       - 309373: Add parent class attribute to EclipseLink-ORM
+ *     05/14/2010-2.1 Guy Pelletier 
+ *       - 253083: Add support for dynamic persistence using ORM.xml/eclipselink-orm.xml
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata.accessors.classes;
 
@@ -86,6 +88,7 @@ import org.eclipse.persistence.annotations.VariableOneToOne;
 
 import org.eclipse.persistence.exceptions.ValidationException;
 
+import org.eclipse.persistence.internal.helper.Helper;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.PropertyMetadata;
 
 import org.eclipse.persistence.internal.jpa.metadata.accessors.mappings.ElementCollectionAccessor;
@@ -1151,6 +1154,29 @@ public abstract class ClassAccessor extends MetadataAccessor {
         MetadataAnnotation property = getAnnotation(Property.class);
         if (property != null) {
             getDescriptor().addProperty(new PropertyMetadata(property, getAccessibleObject()));
+        }
+    }
+    
+    /**
+     * INTERNAL:
+     * If this class accessor uses VIRTUAL access and is not accessible, add it
+     * to our list of virtual classes that will be dynamically created.
+     */
+    protected void processVirtualClass() {
+        if (usesVirtualAccess() && ! getJavaClass().isAccessible()) {
+            getProject().addVirtualClass(this);
+            
+            // In a dynamic configuration, descriptors are dealt/referenced 
+            // using an alias. JPA does not provide a way of specifying an alias 
+            // for embeddable descriptors and defaulting them in a JPA 
+            // configuration could lead to clashes for similarly named 
+            // embeddables across packages. So for dynamic use cases, this is
+            // currently a limitation, that is, embedabbles must be uniquely
+            // named across the persistence unit.
+            if (isEmbeddableAccessor()) {
+                // Add an alias for this embeddable descriptor.
+                getProject().addAlias(Helper.getShortClassName(getJavaClassName()), getDescriptor());
+            }
         }
     }
     

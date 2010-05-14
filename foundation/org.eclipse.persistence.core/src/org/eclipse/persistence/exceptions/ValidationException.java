@@ -396,6 +396,7 @@ public class ValidationException extends EclipseLinkException {
     // JPA dynamic persistence exceptions.
     public static final int NO_ATTRIBUTE_TYPE_SPECIFICATION = 7326;
     public static final int CONFLICTNG_ACCESS_METHODS_FOR_EMBEDDABLE = 7327;
+    public static final int INVALID_CLASS_LOADER_FOR_DYNAMIC_PERSISTENCE = 7328;
     
     /**
      * INTERNAL:
@@ -1044,6 +1045,14 @@ public class ValidationException extends EclipseLinkException {
 
         ValidationException validationException = new ValidationException(ExceptionMessageGenerator.buildMessage(ValidationException.class, INVALID_CALLBACK_METHOD_NAME, args));
         validationException.setErrorCode(INVALID_CALLBACK_METHOD_NAME);
+        return validationException;
+    }
+
+    public static ValidationException invalidClassLoaderForDynamicPersistence() {
+        Object[] args = { };
+
+        ValidationException validationException = new ValidationException(ExceptionMessageGenerator.buildMessage(ValidationException.class, INVALID_CLASS_LOADER_FOR_DYNAMIC_PERSISTENCE, args));
+        validationException.setErrorCode(INVALID_CLASS_LOADER_FOR_DYNAMIC_PERSISTENCE);
         return validationException;
     }
     

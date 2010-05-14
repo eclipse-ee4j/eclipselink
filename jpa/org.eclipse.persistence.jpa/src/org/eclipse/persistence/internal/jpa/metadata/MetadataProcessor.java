@@ -21,6 +21,8 @@
  *       - 241413: JPA 2.0 Add EclipseLink support for Map type attributes
  *     03/08/2010-2.1 Guy Pelletier 
  *       - 303632: Add attribute-type for mapping attributes to EclipseLink-ORM
+ *     05/14/2010-2.1 Guy Pelletier 
+ *       - 253083: Add support for dynamic persistence using ORM.xml/eclipselink-orm.xml
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata;
 
@@ -114,6 +116,15 @@ public class MetadataProcessor {
      */
     public void addNamedQueries() {
         m_project.processQueries(m_loader);
+    }
+    
+    /**
+     * INTERNAL:
+     * During EntityManagerSetup deploy, using the real class loader we must
+     * create our dynamic classes.
+     */
+    public void createDynamicClasses() {
+        m_project.createDynamicClasses(m_loader);
     }
     
     /**

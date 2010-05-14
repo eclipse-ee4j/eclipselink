@@ -35,6 +35,8 @@
  *       - 307050: Add defaults for access methods of a VIRTUAL access type
  *     04/27/2010-2.1 Guy Pelletier 
  *       - 309856: MappedSuperclasses from XML are not being initialized properly
+ *     05/14/2010-2.1 Guy Pelletier 
+ *       - 253083: Add support for dynamic persistence using ORM.xml/eclipselink-orm.xml
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata.accessors;
 
@@ -267,25 +269,6 @@ public abstract class MetadataAccessor extends ORMetadata {
      */
     public MetadataDescriptor getDescriptor() {
         return m_descriptor;
-    }
-
-    /**
-     * INTERNAL:
-     * Return the fully qualified className using the package (if any) setting
-     * from XML.
-     */
-    protected String getFullyQualifiedClassName(String className) {
-        Class primitiveClass = getPrimitiveClassForName(className);
-        
-        if (primitiveClass == null) {
-            if (loadedFromXML()) {
-                return getEntityMappings().getPackageQualifiedClassName(className);
-            }
-            
-            return className;
-        } else {
-            return primitiveClass.getName();
-        }
     }
     
     /**

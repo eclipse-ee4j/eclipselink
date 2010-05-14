@@ -51,6 +51,8 @@
  *                      during MetadataProject.addMetamodelMappedSuperclass()
  *     04/09/2010-2.1 Guy Pelletier 
  *       - 307050: Add defaults for access methods of a VIRTUAL access type
+ *     05/14/2010-2.1 Guy Pelletier 
+ *       - 253083: Add support for dynamic persistence using ORM.xml/eclipselink-orm.xml
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata;
 
@@ -65,6 +67,7 @@ import java.util.Hashtable;
 import java.util.LinkedHashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import javax.persistence.SharedCacheMode;
@@ -74,6 +77,8 @@ import javax.persistence.spi.PersistenceUnitInfo;
 
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.descriptors.RelationalDescriptor;
+import org.eclipse.persistence.dynamic.DynamicClassLoader;
+import org.eclipse.persistence.dynamic.DynamicType;
 import org.eclipse.persistence.exceptions.ValidationException;
 
 import org.eclipse.persistence.internal.helper.DatabaseTable;
@@ -113,6 +118,7 @@ import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
 import org.eclipse.persistence.internal.security.PrivilegedGetDeclaredMethod;
 import org.eclipse.persistence.internal.security.PrivilegedMethodInvoker;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
+import org.eclipse.persistence.jpa.dynamic.JPADynamicTypeBuilder;
 
 import org.eclipse.persistence.sequencing.Sequence;
 import org.eclipse.persistence.sequencing.TableSequence;
@@ -214,16 +220,15 @@ public class MetadataProject {
     // the correct owning descriptor.
     private HashSet<EmbeddableAccessor> m_rootEmbeddableAccessors;
     
-    /**
-     * All mappedSuperclass accessors, identity is handled by keying on className.
-     * @since EclipseLink 1.2 for the JPA 2.0 Reference Implementation
-     */
+     // All mappedSuperclass accessors, identity is handled by keying on className.
     private HashMap<String, MappedSuperclassAccessor> m_metamodelMappedSuperclasses;
     
-    /** Boolean to specify if we should uppercase all field names.
-    /*  @see PersistenceUnitProperties.UPPERCASE_COLUMN_NAMES
-     */
+    // Boolean to specify if we should uppercase all field names.
+    // @see PersistenceUnitProperties.UPPERCASE_COLUMN_NAMES
     private boolean m_forceFieldNamesToUpperCase = false;
+    
+    // Contains those embeddables and entities that are VIRTUAL (do not exist)
+    private HashSet<ClassAccessor> m_virtualClasses;
     
     /**
      * INTERNAL:
@@ -254,6 +259,7 @@ public class MetadataProject {
         m_mappedSuperclasseAccessors = new HashMap<String, MappedSuperclassAccessor>();
         
         m_idClasses = new HashSet<String>();
+        m_virtualClasses = new HashSet<ClassAccessor>();
         m_accessorsWithCustomizer = new HashSet<ClassAccessor>();
         m_relationshipAccessors = new HashSet<RelationshipAccessor>();
         m_rootEmbeddableAccessors = new HashSet<EmbeddableAccessor>();
@@ -409,8 +415,7 @@ public class MetadataProject {
     public void addInterfaceAccessor(InterfaceAccessor accessor) {
         m_interfaceAccessors.put(accessor.getJavaClassName(), accessor);
         
-        // TODO: Add it directly and avoid the persistence unit defaults and
-        // stuff for now.
+        // Add it directly and avoid the persistence unit defaults and stuff for now.
         m_session.getProject().addDescriptor(accessor.getDescriptor().getClassDescriptor());
     }
     
@@ -641,6 +646,101 @@ public class MetadataProject {
             m_tableGenerators.put(generatorName, tableGenerator);
         }
     }  
+    
+    /**
+     * INTERNAL:
+     * Add virtual class accessor to the project. A virtual class is one that
+     * has VIRTUAL access and the class does not exist on the classpath. 
+     */
+    public void addVirtualClass(ClassAccessor accessor) {
+        m_virtualClasses.add(accessor);
+    }
+    
+    /**
+     * INTERNAL:
+     * Create the dynamic class using JPA metadata processed descriptors. Called 
+     * at deploy time after all metadata processing has completed.
+     */
+    protected void createDynamicClass(MetadataDescriptor descriptor, Map<String, MetadataDescriptor> virtualEntities, DynamicClassLoader dcl) {
+        // Build the virtual class only if we have not already done so.
+        if (! virtualEntities.containsKey(descriptor.getJavaClassName())) {
+            
+            if (descriptor.isInheritanceSubclass()) {
+                // Get the parent descriptor.
+                MetadataDescriptor parentDescriptor = descriptor.getInheritanceParentDescriptor();
+                
+                // Recursively call up the parents.
+                createDynamicClass(parentDescriptor, virtualEntities, dcl);
+                
+                // Create and set the virtual class using the parent class.
+                descriptor.getClassDescriptor().setJavaClass(dcl.createDynamicClass(descriptor.getJavaClassName(), parentDescriptor.getClassDescriptor().getJavaClass()));
+            } else {
+                // Create and set the virtual class on the descriptor
+                descriptor.getClassDescriptor().setJavaClass(dcl.createDynamicClass(descriptor.getJavaClassName()));
+            }
+            
+            // Store the descriptor by java class name.
+            virtualEntities.put(descriptor.getJavaClassName(), descriptor);
+        }
+    }
+    
+    /**
+     * INTERNAL:
+     * Create the dynamic class using JPA metadata processed descriptors. Called 
+     * at deploy time after all metadata processing has completed.
+     */
+    public void createDynamicClasses(ClassLoader loader) {
+        if (! m_virtualClasses.isEmpty()) {
+            if (DynamicClassLoader.class.isAssignableFrom(loader.getClass())) {
+                DynamicClassLoader dcl = (DynamicClassLoader) loader;
+            
+                // Create the dynamic classes.
+                Map<String, MetadataDescriptor> dynamicClasses = new HashMap<String, MetadataDescriptor>();
+                for (ClassAccessor accessor : m_virtualClasses) {
+                    createDynamicClass(accessor.getDescriptor(), dynamicClasses, dcl);
+                }
+            
+                // Create the dynamic types.
+                Map<String, DynamicType> dynamicTypes = new HashMap<String, DynamicType>();
+                for (MetadataDescriptor descriptor : dynamicClasses.values()) {
+                    createDynamicType(descriptor, dynamicTypes, dcl);
+                }
+            } else {
+                // If we have virtual classes that need creation and we do not
+                // have a dynamic class loader throw an exception.
+                throw ValidationException.invalidClassLoaderForDynamicPersistence();
+            }
+        }
+    }
+    
+    /**
+     * INTERNAL:
+     * Create the dynamic types using JPA metadata processed descriptors. Called 
+     * at deploy time after all metadata processing has completed.
+     */
+    protected void createDynamicType(MetadataDescriptor descriptor, Map<String, DynamicType> dynamicTypes, DynamicClassLoader dcl) {
+        // Build the dynamic class only if we have not already done so.
+        if (! dynamicTypes.containsKey(descriptor.getJavaClassName())) {
+            JPADynamicTypeBuilder typeBuilder = null;
+            
+            if (descriptor.isInheritanceSubclass()) {
+                // Get the parent descriptor
+                MetadataDescriptor parentDescriptor = descriptor.getInheritanceParentDescriptor();
+                
+                // Recursively call up the parents.
+                createDynamicType(parentDescriptor, dynamicTypes, dcl);
+                
+                // Create the dynamic type using the parent type.
+                typeBuilder = new JPADynamicTypeBuilder(dcl, descriptor.getClassDescriptor(), dynamicTypes.get(parentDescriptor.getJavaClassName()));
+            } else {
+                // Create the dynamic type
+                typeBuilder = new JPADynamicTypeBuilder(dcl, descriptor.getClassDescriptor(), null);
+            }
+            
+            // Store the type builder by java class name.
+            dynamicTypes.put(descriptor.getJavaClassName(), typeBuilder.getType());
+        }
+    }
     
     /**
      * INTERNAL:

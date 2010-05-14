@@ -19,6 +19,8 @@
 package org.eclipse.persistence.tools.schemaframework;
 
 //EclipseLink imports
+import java.util.Collection;
+
 import org.eclipse.persistence.dynamic.DynamicType;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.sessions.DatabaseSession;
@@ -54,6 +56,14 @@ public class DynamicSchemaManager extends SchemaManager {
     }
     
     public void createTables(boolean generateFKConstraints, DynamicType... entityTypes) {
+        AbstractSession createSession = getSession();
+
+        TableCreator creator = new DefaultTableGenerator(getSession().getProject(), generateFKConstraints).generateFilteredDefaultTableCreator(createSession);
+        creator.setIgnoreDatabaseException(true);
+        creator.createTables((DatabaseSession) getSession(), this);
+    }
+    
+    public void createTables(boolean generateFKConstraints, Collection<DynamicType> entityTypes) {
         AbstractSession createSession = getSession();
 
         TableCreator creator = new DefaultTableGenerator(getSession().getProject(), generateFKConstraints).generateFilteredDefaultTableCreator(createSession);

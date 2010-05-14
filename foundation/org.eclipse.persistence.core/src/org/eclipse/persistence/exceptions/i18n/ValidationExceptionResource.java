@@ -306,6 +306,7 @@ public class ValidationExceptionResource extends ListResourceBundle {
                                            { "7325", "The sql result set mapping [{0}] used with the named query [{1}] from [{2}] is not a recognized sql result set mapping. Ensure the name is correct and that a sql result set mapping with that name exists." },
                                            { "7326", "The attribute [{0}] from the class [{1}] mapped in [{2}] which uses NAME access does not specify an attribute-type. When using NAME access, an attribute-type must be specified. Note: For a one-to-one or a many-to-one, the attribute-type is specified using the target-entity. For a variable-one-to-one it is specified using the target-class." },
                                            { "7327", "The embeddable class [{0}] is used in classes with conflicting access methods. Class [{1}] uses access methods [{2}] and class [{3}] uses access methods [{4}]. When sharing an embeddable object between classes, the access methods of those embedding class must be the same."},
+                                           { "7328", "When using VIRTUAL access a DynamicClassLoader must be provided when creating the entity manager factory using the eclipselink property [eclipselink.classloader]. That is, createEntityManagerFactory(String persistenceUnitName, Map properties) and add a new DynamicClassLoader() to the Map properties."},
                                            
  };
     
