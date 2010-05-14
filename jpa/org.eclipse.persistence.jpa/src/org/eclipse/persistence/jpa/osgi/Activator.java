@@ -35,7 +35,7 @@ public class Activator implements BundleActivator, SynchronousBundleListener {
     public static final String PERSISTENCE_PROVIDER = "javax.persistence.spi.PersistenceProvider";
     public static final String ECLIPSELINK_OSGI_PROVIDER = "org.eclipse.persistence.jpa.osgi.PersistenceProviderOSGi";
     
-    private static BundleContext context;
+    public static BundleContext context;
     
     /**
      * Simply add bundles to our bundle list as they start and remove them as they stop
