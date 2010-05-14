@@ -13,8 +13,7 @@
 package org.eclipse.persistence.config;
 
 /**
- * This class provides the list of System properties that are recognized by EclipseLink for the purpose
- * of creating and using JPA persistence units
+ * This class provides the list of System properties that are recognized by EclipseLink.
  * @author tware
  *
  */
@@ -39,4 +38,17 @@ public class SystemProperties {
      * on the path provided to WEAVING_OUTPUT_PATH will not be overridden.  If this is set to true, they will be
      */
     public static final String WEAVING_SHOULD_OVERWRITE = "eclipselink.weaving.overwrite.existing";
+
+    /**
+     * This property is used in conjunction with
+     * org.eclipse.persistence.sessions.IdentityMapAccessor.printIdentityMapLocks().
+     * Setting this property will cause EclipseLink to record the stack trace of
+     * the lock acquisition and print it along with the identity map locks. This
+     * should only be set if the thread that owns a lock is not 'stuck' but
+     * still owns the lock when a normal printIdentityMapLocks is done.
+     * 
+     * This can also be set in code statically through ConcurrencyManager.setShouldTrackStack(true)
+     */
+
+    public static final String RECORD_STACK_ON_LOCK = "eclipselink.cache.record-stack-on-lock";
 }

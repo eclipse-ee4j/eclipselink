@@ -356,7 +356,11 @@ public class WriteLockManager {
             // if there is a problem or all of the locks can not be acquired.
             releaseAllAcquiredLocks(mergeManager);
             throw exception;
-        } finally {
+        }catch (Error error){
+            releaseAllAcquiredLocks(mergeManager);
+            mergeManager.getSession().logThrowable(SessionLog.SEVERE, SessionLog.TRANSACTION, error);
+            throw error;
+        }finally {
             if (mergeManager.getWriteLockQueued() != null) {
                 //the merge manager entered the wait queue and must be cleaned up
                 synchronized(this.prevailingQueue) {
@@ -390,7 +394,11 @@ public class WriteLockManager {
                 // cachekey
                 // for others to find an prevent cycles
             }
-            mergeManager.getAcquiredLocks().add(lockedCacheKey);
+            if (mergeManager.isTransitionedToDeferredLocks()){
+                lockedCacheKey.getMutex().getDeferredLockManager(Thread.currentThread()).getActiveLocks().add(lockedCacheKey.getMutex());
+            }else{
+                 mergeManager.getAcquiredLocks().add(lockedCacheKey);
+            }
             return lockedCacheKey.getObject();
         }
     }
