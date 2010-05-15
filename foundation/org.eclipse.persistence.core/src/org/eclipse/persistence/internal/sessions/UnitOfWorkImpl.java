@@ -5853,7 +5853,12 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
                 } else {
                     reference = descriptor.getCMPPolicy().createBeanUsingKey(id, this);
                 }
-                descriptor.getFetchGroupManager().getIdEntityFetchGroup().setOnEntity(reference, this);
+                ((FetchGroupTracker)reference)._persistence_setSession(this);
+                FetchGroup fetchGroup = new FetchGroup();
+                for (DatabaseMapping mapping : descriptor.getObjectBuilder().getPrimaryKeyMappings()) {
+                    fetchGroup.addAttribute(mapping.getAttributeName());
+                }
+                ((FetchGroupTracker)reference)._persistence_setFetchGroup(fetchGroup);
                 reference = registerExistingObject(reference);
             }
         } else {

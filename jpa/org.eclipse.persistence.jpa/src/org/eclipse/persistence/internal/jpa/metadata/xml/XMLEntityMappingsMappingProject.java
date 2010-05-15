@@ -1358,14 +1358,7 @@ public class XMLEntityMappingsMappingProject extends org.eclipse.persistence.ses
         
         // Attribute mappings
         descriptor.addMapping(getNameAttributeMapping());
-
-        XMLDirectMapping loadMapping = new XMLDirectMapping();
-        loadMapping.setAttributeName("m_load");
-        loadMapping.setGetMethodName("getLoad");
-        loadMapping.setSetMethodName("setLoad");
-        loadMapping.setXPath("@load");
-        descriptor.addMapping(loadMapping);
-
+        
         return descriptor;
     }
     

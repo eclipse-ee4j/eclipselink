@@ -39,7 +39,6 @@ import org.eclipse.persistence.internal.helper.*;
 import org.eclipse.persistence.internal.identitymaps.*;
 import org.eclipse.persistence.internal.indirection.ProxyIndirectionPolicy;
 import org.eclipse.persistence.internal.queries.ContainerPolicy;
-import org.eclipse.persistence.internal.queries.EntityFetchGroup;
 import org.eclipse.persistence.internal.queries.JoinedAttributeManager;
 import org.eclipse.persistence.internal.sessions.*;
 import org.eclipse.persistence.logging.SessionLog;
@@ -620,8 +619,6 @@ public class ObjectBuilder implements Cloneable, Serializable {
                     }
                     if (clone == null) {
                         clone = unitOfWork.cloneAndRegisterObject(original, parentCacheKey, unitOfWorkCacheKey, concreteDescriptor);
-                        // TODO-dclarke: At this point the clones do not have their fetch-group specified
-                        // relationship attributes loaded
                     }
                     //bug3659327
                     //fetch group manager control fetch group support
@@ -708,9 +705,8 @@ public class ObjectBuilder implements Cloneable, Serializable {
                 concreteDescriptor.getObjectBuilder().buildAttributesIntoObject(domainObject, databaseRow, query, joinManager, false);
                 if (query.shouldMaintainCache() && ! query.shouldStoreBypassCache()) {
                     // Set the fetch group to the domain object, after built.
-                    EntityFetchGroup entityFetchGroup = query.getEntityFetchGroup(); 
-                    if ((entityFetchGroup != null) && concreteDescriptor.hasFetchGroupManager()) {
-                        entityFetchGroup.setOnEntity(domainObject, session);
+                    if ((query.getFetchGroup() != null) && concreteDescriptor.hasFetchGroupManager()) {
+                        concreteDescriptor.getFetchGroupManager().setObjectFetchGroup(domainObject, query.getFetchGroup(), session);
                     }
                 }
                 // PERF: Cache the primary key and cache key if implements PersistenceEntity.
@@ -762,11 +758,11 @@ public class ObjectBuilder implements Cloneable, Serializable {
                             concreteDescriptor.getObjectBuilder().buildAttributesIntoObject(domainObject, databaseRow, query, joinManager, true);
                         }
                     }
-                } else if (concreteDescriptor.hasFetchGroupManager() && query.isObjectLevelReadQuery() && (concreteDescriptor.getFetchGroupManager().isPartialObject(domainObject) && (!concreteDescriptor.getFetchGroupManager().isObjectValidForFetchGroup(domainObject, ((ObjectLevelReadQuery)query).getEntityFetchGroup())))) {
+                } else if (concreteDescriptor.hasFetchGroupManager() && (concreteDescriptor.getFetchGroupManager().isPartialObject(domainObject) && (!concreteDescriptor.getFetchGroupManager().isObjectValidForFetchGroup(domainObject, query.getFetchGroup())))) {
                     cacheHit = false;
                     // The fetched object is not sufficient for the fetch group of the query 
                     // refresh attributes of the query's fetch group.
-                    concreteDescriptor.getFetchGroupManager().unionFetchGroupIntoObject(domainObject, ((ObjectLevelReadQuery)query).getEntityFetchGroup(), session);
+                    concreteDescriptor.getFetchGroupManager().unionFetchGroupIntoObject(domainObject, query.getFetchGroup(), session);
                     concreteDescriptor.getObjectBuilder().buildAttributesIntoObject(domainObject, databaseRow, query, joinManager, false);
                 }
                 // 3655915: a query with join/batch'ing that gets a cache hit
@@ -848,7 +844,7 @@ public class ObjectBuilder implements Cloneable, Serializable {
         //clean all data of the cache object.
         concreteDescriptor.getFetchGroupManager().reset(domainObject);
         //set fetch group reference to the cached object
-        concreteDescriptor.getFetchGroupManager().setObjectFetchGroup(domainObject, query.getEntityFetchGroup(), session);
+        concreteDescriptor.getFetchGroupManager().setObjectFetchGroup(domainObject, query.getFetchGroup(), session);
         // Bug 276362 - set the CacheKey's read time (to re-validate the CacheKey) before buildAttributesIntoObject is called
         cacheKey.setReadTime(query.getExecutionTime());
         //read in the fetch group data only
@@ -1387,7 +1383,7 @@ public class ObjectBuilder implements Cloneable, Serializable {
             boolean wasAClone = workingClone != null;
             boolean isARefresh = query.shouldRefreshIdentityMapResult() || (query.isLockQuery() && (!wasAClone || !query.isClonePessimisticLocked(workingClone, unitOfWork)));
             // Also need to refresh if the clone is a partial object and query requires more than its fetch group.
-            if (wasAClone && descriptor.hasFetchGroupManager() && (descriptor.getFetchGroupManager().isPartialObject(workingClone) && (!descriptor.getFetchGroupManager().isObjectValidForFetchGroup(workingClone, query.getEntityFetchGroup())))) {
+            if (wasAClone && descriptor.hasFetchGroupManager() && (descriptor.getFetchGroupManager().isPartialObject(workingClone) && (!descriptor.getFetchGroupManager().isObjectValidForFetchGroup(workingClone, query.getFetchGroup())))) {
                 isARefresh = true;
             }
             if (wasAClone && (!isARefresh)) {
@@ -1452,15 +1448,14 @@ public class ObjectBuilder implements Cloneable, Serializable {
             // Turn it 'off' to prevent unwanted events.
             policy.dissableEventProcessing(workingClone);
             // Set fetch group before building object if a refresh to avoid fetching during building.
-            FetchGroupManager fetchGroupManager = this.descriptor.getFetchGroupManager();
-            if (isARefresh && fetchGroupManager != null) {
-                fetchGroupManager.setObjectFetchGroup(workingClone, query.getExecutionFetchGroup(), unitOfWork);
+            if (isARefresh && this.descriptor.hasFetchGroupManager()) {
+                this.descriptor.getFetchGroupManager().setObjectFetchGroup(workingClone, query.getFetchGroup(), unitOfWork);
             }
             // Build/refresh the clone from the row.
             buildAttributesIntoWorkingCopyClone(workingClone, query, joinManager, databaseRow, unitOfWork, wasAClone);
             // Set fetch group after building object if not a refresh to avoid checking fetch during building.           
-            if ((!isARefresh) && fetchGroupManager != null) {
-                fetchGroupManager.setObjectFetchGroup(workingClone, query.getExecutionFetchGroup(), unitOfWork);
+            if ((!isARefresh) && this.descriptor.hasFetchGroupManager()) {
+                this.descriptor.getFetchGroupManager().setObjectFetchGroup(workingClone, query.getFetchGroup(), unitOfWork);
             }
             Object backupClone = policy.buildBackupClone(workingClone, this, unitOfWork);
     
@@ -2877,17 +2872,12 @@ public class ObjectBuilder implements Cloneable, Serializable {
         // for GF#1139 Cascade merge operations to relationship mappings even if already registered
         
         // PERF: Avoid synchronized enumerator as is concurrency bottleneck.
-        FetchGroup sourceFetchGroup = null;
-        if(this.descriptor.hasFetchGroupManager()) {
-            sourceFetchGroup = this.descriptor.getFetchGroupManager().getObjectFetchGroup(source);
-        }
         List mappings = this.descriptor.getMappings();
         for (int index = 0; index < mappings.size(); index++) {
             DatabaseMapping mapping = (DatabaseMapping)mappings.get(index);
-            if (((!cascadeOnly && !isTargetCloneOfOriginal) 
+            if ((!cascadeOnly && !isTargetCloneOfOriginal) 
                     || (cascadeOnly && mapping.isForeignReferenceMapping())
-                    || (isTargetCloneOfOriginal && mapping.isCloningRequired()))
-                  && (sourceFetchGroup == null || sourceFetchGroup.containsAttribute(mapping.getAttributeName()))) {
+                    || (isTargetCloneOfOriginal && mapping.isCloningRequired())) {
                 mapping.mergeIntoObject(target, isUnInitialized, source, mergeManager);
             }
         }

@@ -21,7 +21,6 @@ import static javax.persistence.EnumType.STRING;
 
 import org.eclipse.persistence.annotations.BasicCollection;
 import org.eclipse.persistence.annotations.CollectionTable;
-import org.eclipse.persistence.queries.FetchGroupTracker;
 
 /**
  * <p><b>Purpose</b>: Describes an Employee's phone number.
@@ -132,16 +131,14 @@ public class PhoneNumber implements Serializable {
         writer.write("PhoneNumber[");
         writer.write(getType());
         writer.write("]: (");
-        if(!(this instanceof FetchGroupTracker)) {
-            writer.write(getAreaCode());
-            writer.write(") ");
-    
-            int numberLength = this.getNumber().length();
-            writer.write(getNumber().substring(0, Math.min(3, numberLength)));
-            if (numberLength > 3) {
-                writer.write("-");
-                writer.write(getNumber().substring(3, Math.min(7, numberLength)));
-            }
+        writer.write(getAreaCode());
+        writer.write(") ");
+
+        int numberLength = this.getNumber().length();
+        writer.write(getNumber().substring(0, Math.min(3, numberLength)));
+        if (numberLength > 3) {
+            writer.write("-");
+            writer.write(getNumber().substring(3, Math.min(7, numberLength)));
         }
 
         return writer.toString();

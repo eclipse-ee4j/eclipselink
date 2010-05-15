@@ -554,15 +554,12 @@ public class QueryHints {
      * This is an instance of FetchGroup.
      * The query will only fetch the attributes defined in the fetch group, if any other attribute is accessed
      * it will cause the object to be refreshed.
-     * To load all FetchGroup's relationship attributes set the FetchGroup's boolean flag "shouldLoad" to true.
      * FetchGroups are only supported for queries returning objects (only a single alias can be the select clause).
      * Weaving is required to allow usage of fetch groups.
      * @see #FETCH_GROUP_NAME
      * @see #FETCH_GROUP_ATTRIBUTE
      * @see #FETCH_GROUP_DEFAULT
-     * @see #LOAD_GROUP
      * @see org.eclipse.persistence.queries.FetchGroup
-     * @see org.eclipse.persistence.queries.FetchGroup#setShouldLoad
      * @see org.eclipse.persistence.descriptors.FetchGroupManager
      * @see org.eclipse.persistence.queries.ObjectLevelReadQuery#setFetchGroup(org.eclipse.persistence.queries.FetchGroup)
      */
@@ -575,12 +572,10 @@ public class QueryHints {
      * Currently FetchGroups can only be defined on the ClassDescriptor using a DescriptorCustomizer.
      * The query will only fetch the attributes defined in the fetch group, if any other attribute is accessed
      * it will cause the object to be refreshed.
-     * To load all FetchGroup's relationship attributes set the FetchGroup's boolean flag "load" to true.
      * FetchGroups are only supported for queries returning objects (only a single alias can be the select clause).
      * Weaving is required to allow usage of fetch groups.
      * @see #FETCH_GROUP_ATTRIBUTE
      * @see #FETCH_GROUP_DEFAULT
-     * @see #LOAD_GROUP
      * @see org.eclipse.persistence.descriptors.FetchGroupManager
      * @see org.eclipse.persistence.queries.FetchGroup
      * @see org.eclipse.persistence.queries.ObjectLevelReadQuery#setFetchGroupName(String)
@@ -594,33 +589,16 @@ public class QueryHints {
      * The primary key and version are always included.
      * The query will only fetch the attributes defined in the fetch group, if any other attribute is accessed
      * it will cause the object to be refreshed.
-     * To load all FetchGroup's relationship attributes set FETCH_GROUP_LOAD to "true".
      * FetchGroups are only supported for queries returning objects (only a single alias can be the select clause).
      * Weaving is required to allow usage of fetch groups.
      * Only local attributes are supported, nested attributes are not supported.
      * @see #FETCH_GROUP_NAME
      * @see #FETCH_GROUP_DEFAULT
-     * @see #FETCH_GROUP_LOAD
-     * @see #LOAD_GROUP
      * @see org.eclipse.persistence.queries.FetchGroup
      * @see org.eclipse.persistence.queries.ObjectLevelReadQuery#setFetchGroup(org.eclipse.persistence.queries.FetchGroup)
      */
     public static final String FETCH_GROUP_ATTRIBUTE = "eclipselink.fetch-group.attribute";
     
-    /**
-     * "eclipselink.fetch-group.load"
-     * <p>Configures a dynamic fetch group to load (default) or not to load its attributes.
-     * Could be used with FETCH_ATTRIBUTES hint.
-     * To load all FetchGroup's relationship attributes set this hint to "true".
-     * Weaving is required to allow usage of fetch groups.
-     * Valid values are:  HintValues.FALSE, HintValues.TRUE,
-     * "" could be used instead of default value HintValues.TRUE
-     * @see #FETCH_GROUP_ATTRIBUTE
-     * @see org.eclipse.persistence.queries.FetchGroup
-     * @see org.eclipse.persistence.queries.FetchGroup#setShouldLoad(boolean)
-     */
-    public static final String FETCH_GROUP_LOAD = "eclipselink.fetch-group.load";
-
     /**
      * "eclipselink.fetch-group.default"
      * <p>Configures the query not to use the default fetch group.
@@ -638,20 +616,6 @@ public class QueryHints {
      */
     public static final String FETCH_GROUP_DEFAULT = "eclipselink.fetch-group.default";
 
-    /**
-     * "eclipselink.load-group"
-     * <p>Configures the query to use the load group object.
-     * This is an instance of LoadGroup.
-     * Ensures that all reference attributes an the group are loaded.
-     * LoadGroups are only supported for queries returning objects (only a single alias can be the select clause).
-     * @see #FETCH_GROUP_NAME
-     * @see #FETCH_GROUP_ATTRIBUTE
-     * @see #FETCH_GROUP_DEFAULT
-     * @see org.eclipse.persistence.queries.LoadGroup
-     * @see org.eclipse.persistence.queries.ObjectLevelReadQuery#setLoadGroup(org.eclipse.persistence.queries.LoadGroup)
-     */
-    public static final String LOAD_GROUP = "eclipselink.load-group";
-    
     /**
      * "eclipselink.exclusive-connection"
      * <p>Configures the query to use the exclusive (transactional/write) connection.

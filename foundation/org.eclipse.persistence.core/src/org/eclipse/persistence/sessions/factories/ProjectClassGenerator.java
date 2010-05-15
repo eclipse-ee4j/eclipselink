@@ -380,15 +380,14 @@ public class ProjectClassGenerator {
         }
     }
 
-    // TODO-dclarke: Needs to be enhanced to handle nested FetchGroup and FetchItem properties
-    // OR throw an exception when a nested FetchGroup is encountered since the MW does not
-    // supported nested FetchGroup and FetchItem properties
     protected void addFetchGroupLines(NonreflectiveMethodDefinition method, FetchGroup fetchGroup, String fetchGroupIdentifier) {
+        Iterator attributeIter = fetchGroup.getAttributes().iterator();
         method.addLine("FetchGroup " + fetchGroupIdentifier + " = new FetchGroup();");
         if (!fetchGroup.getName().equals("")) {
             method.addLine(fetchGroupIdentifier + ".setName(\"" + fetchGroup.getName() + "\");");
         }
-        for (String attribute: fetchGroup.getAttributeNames()) {
+        while (attributeIter.hasNext()) {
+            String attribute = (String)attributeIter.next();
             method.addLine(fetchGroupIdentifier + ".addAttribute(\"" + attribute + "\");");
         }
     }

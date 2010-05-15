@@ -25,7 +25,6 @@ import org.eclipse.persistence.internal.sessions.UnitOfWorkImpl;
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.indirection.IndirectContainer;
 import org.eclipse.persistence.internal.queries.ContainerPolicy;
-import org.eclipse.persistence.internal.queries.EntityFetchGroup;
 import org.eclipse.persistence.internal.queries.JoinedAttributeManager;
 import org.eclipse.persistence.mappings.CollectionMapping;
 import org.eclipse.persistence.mappings.ForeignReferenceMapping;
@@ -204,33 +203,17 @@ public abstract class ObjectBuildingQuery extends ReadQuery {
     }
 
     /**
-     * INTERNAL:
-     * Indicates whether a FetchGroup will be applied to the query.
+     * Return the fetch group set in the query.
+     * If a fetch group is not explicitly set in the query, default fetch group optionally defined in the descriptor
+     * would be used, unless the user explicitly calls query.setShouldUseDefaultFetchGroup(false).
      */
-    public boolean hasExecutionFetchGroup() {
-        return false;
-    }
-
-    /**
-     * INTERNAL:
-     * Returns FetchGroup that will be applied to the query.
-     * Note that the returned fetchGroup may be updated during preProcess.
-     */
-    public FetchGroup getExecutionFetchGroup() {
+    public FetchGroup getFetchGroup() {
         return null;
     }
 
     /**
-     * INTERNAL:
-     * Returns EntityFetchGroup that will be applied to objects returned by the query.
-     * Should not be called before preProcess - may not yet exist.
-     */
-    public EntityFetchGroup getEntityFetchGroup() {
-        return null;
-    }
-
-    /**
-     * PUBLIC: Return the current locking mode.
+     * PUBLIC:
+     * Return the current locking mode.
      */
     public short getLockMode() {
         if (lockingClause == null) {

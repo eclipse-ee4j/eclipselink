@@ -35,7 +35,6 @@ import org.eclipse.persistence.queries.FetchGroup;
 public class FetchGroupMetadata extends ORMetadata {
     private List<FetchAttributeMetadata> m_fetchAttributes = new ArrayList<FetchAttributeMetadata>();
     private String m_name;
-    private Boolean m_load;
 
     /**
      * INTERNAL:
@@ -43,7 +42,6 @@ public class FetchGroupMetadata extends ORMetadata {
      */
     public FetchGroupMetadata() {
         super("<fetch-group>");
-        m_load = Boolean.FALSE;
     }
 
     /**
@@ -53,7 +51,6 @@ public class FetchGroupMetadata extends ORMetadata {
         super(fetchGroup, accessibleObject);
         
         m_name = (String) fetchGroup.getAttribute("name");
-        m_load = (Boolean) fetchGroup.getAttributeBooleanDefaultFalse("load");
          
         for (Object fetchAttribute : (Object[]) fetchGroup.getAttributeArray("attributes")) { 
             m_fetchAttributes.add(new FetchAttributeMetadata((MetadataAnnotation) fetchAttribute, accessibleObject));
@@ -71,10 +68,6 @@ public class FetchGroupMetadata extends ORMetadata {
             if (! valuesMatch(m_name, fetchGroup.getName())) {
                 return false;
             }
-
-            if (! valuesMatch(m_load, fetchGroup.getLoad())) {
-                return false;
-            }
             
             return valuesMatch(m_fetchAttributes, fetchGroup.getFetchAttributes());
         }
@@ -88,14 +81,6 @@ public class FetchGroupMetadata extends ORMetadata {
      */
     public List<FetchAttributeMetadata> getFetchAttributes() {
         return m_fetchAttributes;
-    }
-
-    /**
-     * INTERNAL:
-     * Used for OX mapping.
-     */
-    public Boolean getLoad() {
-        return m_load;
     }
 
     /**
@@ -149,14 +134,6 @@ public class FetchGroupMetadata extends ORMetadata {
         m_fetchAttributes = attributes;
     }
     
-    /**
-     * INTERNAL:
-     * Used for OX mapping.
-     */
-    public void setLoad(Boolean load) {
-        m_load = load;
-    }
-
     /**
      * INTERNAL:
      * Used for OX mapping.

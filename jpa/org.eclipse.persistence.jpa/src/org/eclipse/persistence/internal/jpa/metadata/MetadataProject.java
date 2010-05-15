@@ -1278,13 +1278,7 @@ public class MetadataProject {
                     allocationSize = Integer.valueOf(50);
                 }
                 
-                Integer initialValue = sequenceGenerator.getInitialValue();
-                if (initialValue == null) {
-                    // Default value, same as annotation default.
-                    initialValue = Integer.valueOf(1);
-                }
-                
-                NativeSequence sequence = new NativeSequence(seqName, allocationSize, initialValue, false);
+                NativeSequence sequence = new NativeSequence(seqName, allocationSize, false);
                 sequence.setQualifier(sequenceGenerator.getQualifier());
                 sequences.put(sequenceGeneratorName, sequence);
                 

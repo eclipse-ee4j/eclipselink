@@ -18,7 +18,6 @@ import java.util.List;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.HashMap;
-import java.util.Set;
 import java.util.Vector;
 
 import org.eclipse.persistence.expressions.Expression;
@@ -34,7 +33,6 @@ import org.eclipse.persistence.internal.sessions.AbstractRecord;
 import org.eclipse.persistence.internal.descriptors.ObjectBuilder;
 import org.eclipse.persistence.internal.expressions.ForUpdateOfClause;
 import org.eclipse.persistence.exceptions.QueryException;
-import org.eclipse.persistence.internal.helper.DatabaseField;
 import org.eclipse.persistence.internal.helper.NonSynchronizedSubVector;
 import org.eclipse.persistence.mappings.DatabaseMapping;
 import org.eclipse.persistence.queries.Cursor;
@@ -255,17 +253,6 @@ public class JoinedAttributeManager implements Cloneable, Serializable {
                     }
                 }
             }
-        } else if (getBaseQuery().hasExecutionFetchGroup() && getBaseQuery().isObjectLevelReadQuery()) {
-            // TODO-dclarke: Use FetchGroup to calculate columns
-            List fields = ((ObjectLevelReadQuery) getBaseQuery()).getFetchGroupSelectionFields(false);
-            
-            // TODO-dclarke: The size of this excluding nulls and non DatabaseFiields (QueryKeyExpression).
-            fieldIndex = 0;
-            for (Object fieldOrExpOrNull : fields) {
-                if (fieldOrExpOrNull != null && fieldOrExpOrNull instanceof DatabaseField) {
-                    fieldIndex++;
-                }
-            }
         } else {
             if (includeAllSubclassFields) {
                 fieldIndex = getDescriptor().getAllFields().size();
@@ -350,18 +337,9 @@ public class JoinedAttributeManager implements Cloneable, Serializable {
                     numberOfFields = 1;
                 }
             } else if (objectExpression.isQueryKeyExpression() && objectExpression.isUsingOuterJoinForMultitableInheritance()) {
-                // TODO-dclarke: Add support for nested FetchGroups handling 
-                // baseQuery as well as default on reference descriptor
                 numberOfFields = descriptor.getAllFields().size();
             } else {
-                // TODO-dclarke: Add support for FetchGroups handling nested on
-                // baseQuery as well as default on reference descriptor
-                if (getBaseQuery().hasExecutionFetchGroup()) {
-                    // TODO ?
-                    numberOfFields = 2;
-                } else {
-                    numberOfFields = descriptor.getFields().size();
-                }
+                numberOfFields = descriptor.getFields().size();
             }
             if (mapping.isCollectionMapping()){
                 // map keys are indexed within the collection's row.  Therefore we use an offset from within the collections row
@@ -700,33 +678,19 @@ public class JoinedAttributeManager implements Cloneable, Serializable {
     /**
      * This method collects the Joined Mappings from the descriptor and initializes them.
      */
-    public void processJoinedMappings() {
-        processJoinedMappings(null);
-    }
-
-    /**
-     * This method collects the Joined Mappings from the descriptor and
-     * initializes them.
-     */
-    public void processJoinedMappings(Set<String> mappingsAllowedToJoin) {
+    public void processJoinedMappings() {    
         ObjectBuilder objectBuilder = getDescriptor().getObjectBuilder();
         if (objectBuilder.hasJoinedAttributes()) {
             List mappingJoinedAttributes = objectBuilder.getJoinedAttributes();
             if (!hasJoinedAttributeExpressions()) {
                 for (int i = 0; i < mappingJoinedAttributes.size(); i++) {
-                    ForeignReferenceMapping mapping = (ForeignReferenceMapping) mappingJoinedAttributes.get(i);
-                    if(mappingsAllowedToJoin == null || mappingsAllowedToJoin.contains(mapping.getAttributeName())) {
-                        addJoinedMapping(mapping);
-                    }
+                    addJoinedMapping((ForeignReferenceMapping)mappingJoinedAttributes.get(i));
                 }
             } else {
                 for (int i = 0; i < mappingJoinedAttributes.size(); i++) {
-                    ForeignReferenceMapping mapping = (ForeignReferenceMapping) mappingJoinedAttributes.get(i);
-                    String attributeName = mapping.getAttributeName();
-                    if (!isAttributeExpressionJoined(attributeName)) {
-                        if(mappingsAllowedToJoin == null || mappingsAllowedToJoin.contains(attributeName)) {
-                            addJoinedMapping(mapping);
-                        }
+                    ForeignReferenceMapping mapping = (ForeignReferenceMapping)mappingJoinedAttributes.get(i);
+                    if (!isAttributeExpressionJoined(mapping.getAttributeName())) {
+                        addJoinedMapping(mapping);
                     }
                 }
             }
