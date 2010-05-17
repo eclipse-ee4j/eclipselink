@@ -320,7 +320,7 @@ public class AdvancedJPAJunitTest extends JUnitTestCase {
             fail("A descriptor for the Employee alias was not found in the default1 PU.");
         } else {            
             assertTrue("Incorrect cache type() setting.", descriptor.getIdentityMapClass().equals(ClassConstants.SoftCacheWeakIdentityMap_Class));
-            assertTrue("Incorrect cache size() setting.", descriptor.getIdentityMapSize() == 730);
+            assertTrue("Incorrect cache size() setting, was: " + descriptor.getIdentityMapSize() + " expected: 730.", descriptor.getIdentityMapSize() == 730);
             assertFalse("Incorrect cache isolated() setting.", descriptor.isIsolated());
             assertFalse("Incorrect cache alwaysRefresh() setting.", descriptor.shouldAlwaysRefreshCache());
             

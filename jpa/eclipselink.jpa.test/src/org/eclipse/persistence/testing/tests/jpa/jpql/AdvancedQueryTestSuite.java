@@ -1217,6 +1217,7 @@ public class AdvancedQueryTestSuite extends JUnitTestCase {
                 queryResult.setLastName("Auger");
                 commitTransaction(em);
                 
+                employee = em.find(Employee.class, employee.getId());
                 assertTrue("The version was not updated on the pessimistic lock.", version1.intValue() < employee.getVersion().intValue());
             } catch (RuntimeException ex) {
                 if (isTransactionActive(em)) {
@@ -1459,7 +1460,8 @@ public class AdvancedQueryTestSuite extends JUnitTestCase {
                 Employee queryResult = (Employee) query.getSingleResult();
                 queryResult.setLastName("Burger");
                 commitTransaction(em);
-                
+
+                employee = em.find(Employee.class, employee.getId());
                 assertTrue("The version was not updated on the pessimistic read lock.", version1.intValue() < employee.getVersion().intValue());
             } catch (RuntimeException ex) {
                 if (isTransactionActive(em)) {
@@ -1536,7 +1538,8 @@ public class AdvancedQueryTestSuite extends JUnitTestCase {
                 Employee queryResult = (Employee) query.getSingleResult();
                 queryResult.setLastName("Burger");
                 commitTransaction(em);
-                
+
+                employee = em.find(Employee.class, employee.getId());
                 assertTrue("The version was not updated on the pessimistic write lock.", version1.intValue() < employee.getVersion().intValue());
             } catch (RuntimeException ex) {
                 if (isTransactionActive(em)) {

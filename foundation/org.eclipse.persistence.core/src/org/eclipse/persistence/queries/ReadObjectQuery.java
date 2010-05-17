@@ -653,9 +653,9 @@ public class ReadObjectQuery extends ObjectLevelReadQuery {
             Expression selectionCriteria = getSelectionCriteria();
             if (selectionCriteria != null) {
                 if (((this.cacheUsage == CheckCacheByPrimaryKey)
-                                && this.descriptor.getObjectBuilder().isPrimaryKeyExpression(false, selectionCriteria, this.session))
+                                && (!this.descriptor.getObjectBuilder().isPrimaryKeyExpression(false, selectionCriteria, this.session)))
                         || ((this.cacheUsage == CheckCacheByExactPrimaryKey)
-                                && this.descriptor.getObjectBuilder().isPrimaryKeyExpression(true, selectionCriteria, this.session))) {
+                                && (!this.descriptor.getObjectBuilder().isPrimaryKeyExpression(true, selectionCriteria, this.session)))) {
                     this.cacheUsage = DoNotCheckCache;
                 }
             }
