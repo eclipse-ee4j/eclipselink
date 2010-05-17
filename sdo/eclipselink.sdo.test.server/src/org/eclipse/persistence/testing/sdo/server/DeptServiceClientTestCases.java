@@ -68,6 +68,7 @@ public class DeptServiceClientTestCases extends TestCase {
             env.put(Context.SECURITY_PRINCIPAL, securityPrincipal);
             env.put(Context.SECURITY_CREDENTIALS, securityCredentials);
             env.put(Context.PROVIDER_URL, providerUrl);
+            env.put(Context.SECURITY_AUTHENTICATION, "none");
             return new InitialContext(env);
         } catch (Exception x) {
             fail("An exception occurred while attempting to get the InitialContext with settings [" + 
