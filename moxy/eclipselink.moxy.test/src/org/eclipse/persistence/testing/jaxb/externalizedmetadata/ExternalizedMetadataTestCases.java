@@ -374,7 +374,7 @@ public class ExternalizedMetadataTestCases extends TestCase {
             e.printStackTrace();
         }
     }
-        
+    
     /**
      * Validates a given instance doc against the generated schema.
      * 
@@ -399,13 +399,36 @@ public class ExternalizedMetadataTestCases extends TestCase {
         }
         return null;
     }
-    
+
+        
     /**
-     * Validates a given instance doc against the generated schema.
+     * Validates a given instance doc against a given schema.
      * 
      * @param src
-     * @param schemaIndex index in output resolver's list of generated schemas
-     * @param outputResolver contains one or more schemas to validate against
+     * @param schema
+     */
+    protected String validateAgainstSchema(String src, String schema) {
+        SchemaFactory sFact = SchemaFactory.newInstance(XMLConstants.SCHEMA_URL);
+        Schema theSchema;
+        try {
+            theSchema = sFact.newSchema(new File(schema));
+            Validator validator = theSchema.newValidator();
+            StreamSource ss = new StreamSource(new File(src));             
+            validator.validate(ss);
+        } catch (Exception e) {
+            //e.printStackTrace();
+            if (e.getMessage() == null) {
+                return "An unknown exception occurred.";
+            }
+            return e.getMessage();
+        }
+        return null;
+    }
+    
+    /**
+     * Validates a given bindings file against the eclipselink oxm schema.
+     * 
+     * @param src
      */
     protected void validateBindingsFileAgainstSchema(InputStream src) {
     	String result = null;

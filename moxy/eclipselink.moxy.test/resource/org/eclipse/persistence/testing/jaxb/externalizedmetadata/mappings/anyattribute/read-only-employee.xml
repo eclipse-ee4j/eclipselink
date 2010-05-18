@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <employee>
    <read-only>
-      <stuff first-name="Joe" last-name="Oracle" />
+      <stuff xmlns:ns0="http://www.example.com/other" ns0:first-name="Joe" ns0:last-name="Oracle" />
    </read-only>
 </employee>

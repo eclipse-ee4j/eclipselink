@@ -40,6 +40,7 @@ public class AnyAttributeMappingTestCases extends ExternalizedMetadataTestCases 
     private static final String FIRST_NAME = "first-name";
     private static final String LAST_NAME = "last-name";
     private static final String STUFF_NS = "http://www.example.com/stuff";
+    private static final String OTHER_NS = "http://www.example.com/other";
     
     /**
      * This is the preferred (and only) constructor.
@@ -56,9 +57,9 @@ public class AnyAttributeMappingTestCases extends ExternalizedMetadataTestCases 
     private Employee getControlObject() {
         Employee ctrlEmp = new Employee();
         HashMap stuff = new HashMap();
-        QName qname = new QName(EMPTY_NAMESPACE, FIRST_NAME);
+        QName qname = new QName(OTHER_NS, FIRST_NAME);
         stuff.put(qname, FNAME);
-        qname = new QName(EMPTY_NAMESPACE, LAST_NAME);
+        qname = new QName(OTHER_NS, LAST_NAME);
         stuff.put(qname, LNAME);
         ctrlEmp.stuff = stuff;
         return ctrlEmp;
@@ -91,6 +92,33 @@ public class AnyAttributeMappingTestCases extends ExternalizedMetadataTestCases 
         compareSchemas(employeeResolver.schemaFiles.get(STUFF_NS), new File(PATH + "stuff.xsd"));
     }
 
+    public void testInstanceDocValidation() {
+        // validate employee.xml
+        String src = PATH + "employee.xml";
+        String result = validateAgainstSchema(src, EMPTY_NAMESPACE, employeeResolver);
+        assertTrue("Instance doc validation (employee.xml) failed unxepectedly: " + result, result == null);
+
+        /*
+        // need to generate a schema for read only
+        MySchemaOutputResolver resolver = generateSchemaWithFileName(new Class[] { Employee.class }, CONTEXT_PATH, PATH + "read-only-employee-oxm.xml", 1);
+        
+        // validate read-only-employee.xml
+        src = PATH + "read-only-employee.xml";
+        result = validateAgainstSchema(src, EMPTY_NAMESPACE, resolver);
+        assertTrue("Instance doc validation (read-only-employee.xml) failed unxepectedly: " + result, result == null);
+        
+        // validate marshal-read-only-employee.xml
+        src = PATH + "marshal-read-only-employee.xml";
+        result = validateAgainstSchema(src, EMPTY_NAMESPACE, resolver);
+        assertTrue("Instance doc validation (marshal-read-only-employee.xml) failed unxepectedly: " + result, result == null);
+        
+        // validate write-only-employee.xml
+        src = PATH + "write-only-employee.xml";
+        result = validateAgainstSchema(src, EMPTY_NAMESPACE, employeeResolver);
+        assertTrue("Instance doc validation (write-only-employee.xml) failed unxepectedly: " + result, result == null);
+        */
+    }
+    
     /**
      * Tests XmlAnyAttributeMapping configuration via eclipselink-oxm.xml.
      * Here an unmarshal operation is performed.  
