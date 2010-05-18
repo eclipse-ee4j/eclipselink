@@ -1082,6 +1082,7 @@ public class XMLProcessor {
         oldProperty.setTransient(false);
         oldProperty.setChoice(false);
         oldProperty.setIsReference(false);
+        oldProperty.setXmlPath(null);
         unsetXmlElementRefs(oldProperty, tInfo);
         unsetXmlElements(oldProperty);
         unsetXmlAnyAttribute(oldProperty, tInfo);

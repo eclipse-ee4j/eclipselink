@@ -100,6 +100,7 @@ import org.eclipse.persistence.oxm.XMLConstants;
 import org.eclipse.persistence.oxm.annotations.XmlContainerProperty;
 import org.eclipse.persistence.oxm.annotations.XmlCustomizer;
 import org.eclipse.persistence.oxm.annotations.XmlInverseReference;
+import org.eclipse.persistence.oxm.annotations.XmlPath;
 
 /**
  * INTERNAL:
@@ -1329,6 +1330,10 @@ public class AnnotationsProcessor {
         property.setPropertyName(propertyName);
         property.setElement(javaHasAnnotations);
         
+        if(helper.isAnnotationPresent(javaHasAnnotations, XmlPath.class)) {
+            XmlPath xmlPath = (XmlPath)helper.getAnnotation(javaHasAnnotations, XmlPath.class);
+            property.setXmlPath(xmlPath.value());
+        }
         // if there is a TypeInfo for ptype check it for transient, otherwise check the class
         TypeInfo pTypeInfo = typeInfo.get(ptype.getQualifiedName());
         if ((pTypeInfo != null && !pTypeInfo.isTransient()) || !helper.isAnnotationPresent(ptype, XmlTransient.class)) {
