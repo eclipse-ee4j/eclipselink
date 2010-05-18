@@ -179,7 +179,7 @@
                     <include name="org.eclipse.persistence.antlr_*"/>
                     <include name="org.eclipse.persistence.jpa.equinox_*"/>
                     <include name="org.eclipse.persistence.jpa.equinox.weaving_*"/>
-                    <include name="org.eclipse.persistence.jpa.osgi*"/>
+                    <include name="org.eclipse.persistence.jpa.osgi_*"/>
                     <include name="org.eclipse.persistence.oracle_*"/>
             </fileset>
             <fileset dir="${eclipselink.jpa.osgi.test}/../plugins">
