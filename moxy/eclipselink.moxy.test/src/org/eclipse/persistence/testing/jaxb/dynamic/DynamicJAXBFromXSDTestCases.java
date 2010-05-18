@@ -202,6 +202,12 @@ public class DynamicJAXBFromXSDTestCases extends TestCase {
         // <xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema">
         //       <xs:import schemaLocation="xmlschema-currency" namespace="bankNamespace"/>
 
+        // Do not run this test if we are not using JDK 1.6
+        String javaVersion = System.getProperty("java.version");
+        if (!(javaVersion.startsWith("1.6"))) {
+            return;
+        }
+
         InputStream inputStream = ClassLoader.getSystemResourceAsStream(XMLSCHEMA_IMPORT);
 
         jaxbContext = DynamicJAXBContextFactory.createContextFromXSD(inputStream, new NoExtensionEntityResolver(), null, null);
