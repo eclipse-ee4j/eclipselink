@@ -351,6 +351,7 @@ public final class SCPluginResourceBundle extends ListResourceBundle {
 		{ "WebSphere_5_1_Platform", "WebSphere 5.1" },
 		{ "WebSphere_6_0_Platform", "WebSphere 6.0" },
 		{ "WebSphere_6_1_Platform", "WebSphere 6.1" },
+		{ "WebSphere_7_Platform", 	"WebSphere 7.0" },
 		{ "JBossPlatform", 			"JBoss" },
 		{ "SunAS9Platform", 		"SunAS 9.0" },
 		{ "SunAS9ServerPlatform", 	"SunAS 9.0" },

@@ -30,6 +30,7 @@ public class ServerPlatformManager extends SCPlatformManager {
     public static final String WEBLOGIC_8_1_ID = "WebLogic_8_1_Platform";
     public static final String WEBLOGIC_7_0_ID = "WebLogic_7_0_Platform";
     public static final String WEBLOGIC_6_1_ID = "WebLogic_6_1_Platform";
+    public static final String WEBSPHERE_7_ID = "WebSphere_7_Platform";
     public static final String WEBSPHERE_6_1_ID = "WebSphere_6_1_Platform";
     public static final String WEBSPHERE_6_0_ID = "WebSphere_6_0_Platform";
     public static final String WEBSPHERE_5_1_ID = "WebSphere_5_1_Platform";
@@ -72,6 +73,7 @@ public class ServerPlatformManager extends SCPlatformManager {
 	    this.addPlatform( WEBLOGIC_9_ID, "org.eclipse.persistence.platform.server.wls.WebLogic_9_Platform");
 	    this.addPlatform( WEBLOGIC_10_ID, "org.eclipse.persistence.platform.server.wls.WebLogic_10_Platform");
 	    this.addPlatform( WEBSPHERE_6_1_ID, "org.eclipse.persistence.platform.server.was.WebSphere_6_1_Platform");
+	    this.addPlatform( WEBSPHERE_7_ID, "org.eclipse.persistence.platform.server.was.WebSphere_7_Platform");
 	    this.addPlatform( JBOSS_ID, "org.eclipse.persistence.platform.server.jboss.JBossPlatform");
 	    this.addPlatform( SUNAS_ID, "org.eclipse.persistence.platform.server.sunas.SunAS9ServerPlatform");
 	    this.addPlatform( CUSTOM_SERVER_ID, "org.eclipse.persistence.platform.server.CustomServerPlatform");
@@ -83,6 +85,7 @@ public class ServerPlatformManager extends SCPlatformManager {
 	    this.addConfig( WEBLOGIC_9_ID, "org.eclipse.persistence.internal.sessions.factories.model.platform.WebLogic_9_PlatformConfig");
 	    this.addConfig( WEBLOGIC_10_ID, "org.eclipse.persistence.internal.sessions.factories.model.platform.WebLogic_10_PlatformConfig");
 	    this.addConfig( WEBSPHERE_6_1_ID, "org.eclipse.persistence.internal.sessions.factories.model.platform.WebSphere_6_1_PlatformConfig");
+	    this.addConfig( WEBSPHERE_7_ID, "org.eclipse.persistence.internal.sessions.factories.model.platform.WebSphere_7_0_PlatformConfig");
 	    this.addConfig( JBOSS_ID, "org.eclipse.persistence.internal.sessions.factories.model.platform.JBossPlatformConfig");
 	    this.addConfig( SUNAS_ID, "org.eclipse.persistence.internal.sessions.factories.model.platform.SunAS9PlatformConfig");
 	    this.addConfig( CUSTOM_SERVER_ID, "org.eclipse.persistence.internal.sessions.factories.model.platform.CustomServerPlatformConfig");
