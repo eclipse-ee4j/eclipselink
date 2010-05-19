@@ -41,6 +41,7 @@ import org.eclipse.persistence.logging.SessionLog;
 import org.eclipse.persistence.logging.SessionLogEntry;
 import org.eclipse.persistence.logging.DefaultSessionLog;
 import org.eclipse.persistence.sessions.DatabaseLogin;
+import org.eclipse.persistence.internal.queries.AttributeGroup;
 import org.eclipse.persistence.internal.sequencing.Sequencing;
 import org.eclipse.persistence.sessions.coordination.CommandProcessor;
 import org.eclipse.persistence.sessions.coordination.CommandManager;
@@ -3973,4 +3974,18 @@ public abstract class AbstractSession implements org.eclipse.persistence.session
    public void setDefaultReferenceMode(ReferenceMode defaultReferenceMode) {
         this.defaultReferenceMode = defaultReferenceMode;
     }
+
+   /**
+    * This method will load the passed object or collection of objects using the passed AttributeGroup.
+    * In case of collection all members should be either objects of the same mapped type
+    * or have a common inheritance hierarchy mapped root class.
+    * The AttributeGroup should correspond to the object type. 
+    * 
+    * @param objectOrCollection
+    */
+   public void load(Object objectOrCollection, AttributeGroup group) {
+       if(objectOrCollection != null && group != null) {
+           group.toLoadGroup().load(objectOrCollection, this);
+       }
+   }
 }

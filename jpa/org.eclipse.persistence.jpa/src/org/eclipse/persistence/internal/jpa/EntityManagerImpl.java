@@ -2305,13 +2305,10 @@ public class EntityManagerImpl implements org.eclipse.persistence.jpa.JpaEntityM
      * The AttributeGroup should correspond to the entity type. 
      * 
      * @param entityOrEntities
-     * @return the instance that the state was merged to
      */
     public void load(Object entityOrEntities, AttributeGroup group) {
         verifyOpen();
-        if(entityOrEntities != null && group != null) {
-            group.toLoadGroup().load(entityOrEntities, getActivePersistenceContext(checkForTransaction(false)));
-        }
+        getActivePersistenceContext(checkForTransaction(false)).load(entityOrEntities, group);
     }
     
     /**
