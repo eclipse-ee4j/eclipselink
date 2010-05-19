@@ -12,7 +12,9 @@
  ******************************************************************************/  
 package org.eclipse.persistence.testing.jaxb.xmlidref;
 
+import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Vector;
 
 import org.eclipse.persistence.testing.jaxb.JAXBTestCases;
@@ -22,6 +24,7 @@ import org.eclipse.persistence.testing.jaxb.JAXBTestCases;
  */
 public class XmlIdRefTestCases extends JAXBTestCases {
     private final static String XML_RESOURCE = "org/eclipse/persistence/testing/jaxb/xmlidref/instance.xml";
+    private final static String XSD_RESOURCE = "org/eclipse/persistence/testing/jaxb/xmlidref/control_schema.xsd";
     private static final String CONTROL_ID = "222";
     private static final String CONTROL_NAME = "Joe Smith";
     private static final String CONTROL_ADD_ID_1 = "199";
@@ -132,5 +135,13 @@ public class XmlIdRefTestCases extends JAXBTestCases {
         root.addresses = rootAddresses;
         root.phoneNumbers = rootPhones;
         return root;
+    }
+    
+    public void testSchemaGen() throws Exception {
+        List<InputStream> controlSchemas = new ArrayList<InputStream>();
+        controlSchemas.add(ClassLoader.getSystemResourceAsStream(XSD_RESOURCE));
+        
+        this.testSchemaGen(controlSchemas);
+        
     }
 }

@@ -352,7 +352,8 @@ public class SchemaGenerator {
                 TypeDefParticle parentCompositor = compositor;
                 boolean isChoice = (parentCompositor instanceof Choice);
                 ComplexType parentType = type;
-                if (!helper.isAnnotationPresent(next.getElement(), XmlTransient.class)) {
+                
+                if (!helper.isAnnotationPresent(next.getElement(), XmlTransient.class) && !next.isInverseReference()) {
                     // deal with xml-path case
                     if (next.getXmlPath() != null) {
                         // create the XPathFragment(s) for the path
