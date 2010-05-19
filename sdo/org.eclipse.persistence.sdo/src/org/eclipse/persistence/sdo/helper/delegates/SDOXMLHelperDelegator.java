@@ -116,6 +116,10 @@ public class SDOXMLHelperDelegator extends AbstractHelperDelegator implements SD
         getXMLHelperDelegate().save(xmlDocument, result, options);
     }
 
+    public void serialize(XMLDocument xmlDocument, OutputStream outputStream, Object options) throws IOException {
+        getXMLHelperDelegate().serialize(xmlDocument, outputStream, options);
+    }
+
     public XMLDocument createDocument(DataObject dataObject, String rootElementURI, String rootElementName) {
         return getXMLHelperDelegate().createDocument(dataObject, rootElementURI, rootElementName);
     }
