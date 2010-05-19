@@ -24,6 +24,7 @@ import org.eclipse.persistence.testing.sdo.helper.jaxbhelper.helpercontext.Helpe
 import org.eclipse.persistence.testing.sdo.helper.jaxbhelper.identity.IdentityTestCases;
 import org.eclipse.persistence.testing.sdo.helper.jaxbhelper.isset.IsSetAndUnsetTestCases;
 import org.eclipse.persistence.testing.sdo.helper.jaxbhelper.jaxb.JAXBTestCases;
+import org.eclipse.persistence.testing.sdo.helper.jaxbhelper.jaxb.inverse.InverseTestCases;
 import org.eclipse.persistence.testing.sdo.helper.jaxbhelper.mappings.MappingsTestCases;
 import org.eclipse.persistence.testing.sdo.helper.jaxbhelper.oppositeproperty.OppositePropertyTestCases;
 import org.eclipse.persistence.testing.sdo.helper.jaxbhelper.xmlhelper.XMLHelperTestCases;
@@ -36,6 +37,7 @@ public class JAXBHelperTestSuite extends TestCase {
         suite.addTestSuite(CopyHelperTestCases.class);
         suite.addTestSuite(HelperContextTestCases.class);
         suite.addTestSuite(JAXBTestCases.class);
+        suite.addTestSuite(InverseTestCases.class);
         suite.addTestSuite(MappingsTestCases.class);
         suite.addTestSuite(OppositePropertyTestCases.class);
         suite.addTestSuite(XMLHelperTestCases.class);
