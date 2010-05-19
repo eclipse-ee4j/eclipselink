@@ -111,6 +111,8 @@ public class AnyAttributeMappingTestCases extends ExternalizedMetadataTestCases 
 
         // generate write only employee schema
         resolver = generateSchemaWithFileName(new Class[] { Employee.class }, CONTEXT_PATH, PATH + "write-only-employee-oxm.xml", 1);
+        // validate write only employee schema
+        compareSchemas(resolver.schemaFiles.get(EMPTY_NAMESPACE), new File(PATH + "write-only-employee.xsd"));
         // validate write-only-employee.xml
         src = PATH + "write-only-employee.xml";
         result = validateAgainstSchema(src, EMPTY_NAMESPACE, resolver);
