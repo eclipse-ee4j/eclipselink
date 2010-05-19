@@ -1301,18 +1301,22 @@ public class SchemaGenerator {
                 currentElement = globalElement;
             }
         }
+        
+        if (!lastFrag || (lastFrag && isAny)) {
+            // if we didn't process a global element, and the current element isn't already in the sequence, add it 
+            if (!currentElementExists && globalElement == null) {
+                currentElement.setName(frag.getLocalName());
+                currentParticle.addElement(currentElement);
+            }
+            // set the correct particle to use/return
+            xpr.particle = currentElement.getComplexType().getTypeDefParticle();
+        }
+        
         // if we're on the last fragment, we're done
         if (lastFrag) {
             return xpr;
         }
-        // if we didn't process a global element, and the current element isn't already in the sequence, add it 
-        if (!currentElementExists && globalElement == null) {
-            currentElement.setName(frag.getLocalName());
-            currentParticle.addElement(currentElement);
-        }
-        // set the correct particle to use/return
-        xpr.particle = currentElement.getComplexType().getTypeDefParticle();
-        
+
         // call back into this method to process the next path element
         return buildSchemaComponentsForXPath(frag.getNextFragment(), xpr, isAny, isChoice);
     }

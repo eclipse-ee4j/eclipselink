@@ -33,8 +33,6 @@ public class AnyAttributeMappingTestCases extends ExternalizedMetadataTestCases 
     private static final String CONTEXT_PATH = "org.eclipse.persistence.testing.jaxb.externalizedmetadata.mappings.anyattribute";
     private static final String PATH = "org/eclipse/persistence/testing/jaxb/externalizedmetadata/mappings/anyattribute/";
     
-    private MySchemaOutputResolver employeeResolver;
-
     private static final String FNAME = "Joe";
     private static final String LNAME = "Oracle";
     private static final String FIRST_NAME = "first-name";
@@ -75,48 +73,48 @@ public class AnyAttributeMappingTestCases extends ExternalizedMetadataTestCases 
     @Override
     public void setUp() throws Exception {
         super.setUp();
-        employeeResolver = generateSchemaWithFileName(new Class[] { Employee.class }, CONTEXT_PATH, PATH + "employee-oxm.xml", 2);
     }
 
     /**
      * Tests schema generation for XmlAnyAttributeMapping via eclipselink-oxm.xml.
-     * Utilizes xml-attribute and xml-element. xml-value is tested separately
-     * below.
+     * Generated schemas and instance documents are validated as well.
      * 
      * Positive test.
      */
-    public void testAnyAttributeSchemaGen() {
+    public void testSchemaGenAndValidation() {
+        // generate employee & stuff schemas
+        MySchemaOutputResolver resolver = generateSchemaWithFileName(new Class[] { Employee.class }, CONTEXT_PATH, PATH + "employee-oxm.xml", 2);
         // validate employee schema
-        compareSchemas(employeeResolver.schemaFiles.get(EMPTY_NAMESPACE), new File(PATH + "employee.xsd"));
+        compareSchemas(resolver.schemaFiles.get(EMPTY_NAMESPACE), new File(PATH + "employee.xsd"));
         // validate stuff schema
-        compareSchemas(employeeResolver.schemaFiles.get(STUFF_NS), new File(PATH + "stuff.xsd"));
-    }
-
-    public void testInstanceDocValidation() {
+        compareSchemas(resolver.schemaFiles.get(STUFF_NS), new File(PATH + "stuff.xsd"));
         // validate employee.xml
         String src = PATH + "employee.xml";
-        String result = validateAgainstSchema(src, EMPTY_NAMESPACE, employeeResolver);
+        String result = validateAgainstSchema(src, EMPTY_NAMESPACE, resolver);
         assertTrue("Instance doc validation (employee.xml) failed unxepectedly: " + result, result == null);
-
-        /*
-        // need to generate a schema for read only
-        MySchemaOutputResolver resolver = generateSchemaWithFileName(new Class[] { Employee.class }, CONTEXT_PATH, PATH + "read-only-employee-oxm.xml", 1);
         
+        // generate read only employee schema
+        resolver = generateSchemaWithFileName(new Class[] { Employee.class }, CONTEXT_PATH, PATH + "read-only-employee-oxm.xml", 1);
+        // validate read only employee schema
+        compareSchemas(resolver.schemaFiles.get(EMPTY_NAMESPACE), new File(PATH + "read-only-employee.xsd"));
         // validate read-only-employee.xml
         src = PATH + "read-only-employee.xml";
         result = validateAgainstSchema(src, EMPTY_NAMESPACE, resolver);
         assertTrue("Instance doc validation (read-only-employee.xml) failed unxepectedly: " + result, result == null);
-        
+
+        // THIS TEST CAN BE ENABLED WHEN BUG 313568 IS RESOLVED
         // validate marshal-read-only-employee.xml
-        src = PATH + "marshal-read-only-employee.xml";
-        result = validateAgainstSchema(src, EMPTY_NAMESPACE, resolver);
-        assertTrue("Instance doc validation (marshal-read-only-employee.xml) failed unxepectedly: " + result, result == null);
-        
+        //src = PATH + "marshal-read-only-employee.xml";
+        //result = validateAgainstSchema(src, EMPTY_NAMESPACE, resolver);
+        //assertTrue("Instance doc validation (marshal-read-only-employee.xml) failed unxepectedly: " + result, result == null);
+        // NOTE THAT marshal-read-only-employee.xml NEEDS TO BE CHANGED AS WELL - PLEASE SEE THAT FILE FOR INFO
+
+        // generate write only employee schema
+        resolver = generateSchemaWithFileName(new Class[] { Employee.class }, CONTEXT_PATH, PATH + "write-only-employee-oxm.xml", 1);
         // validate write-only-employee.xml
         src = PATH + "write-only-employee.xml";
-        result = validateAgainstSchema(src, EMPTY_NAMESPACE, employeeResolver);
+        result = validateAgainstSchema(src, EMPTY_NAMESPACE, resolver);
         assertTrue("Instance doc validation (write-only-employee.xml) failed unxepectedly: " + result, result == null);
-        */
     }
     
     /**
@@ -133,10 +131,17 @@ public class AnyAttributeMappingTestCases extends ExternalizedMetadataTestCases 
             fail("Couldn't load instance doc [" + src + "]");
         }
 
+        JAXBContext jCtx = null;
+        try {
+            jCtx = createContext(new Class[] { Employee.class }, CONTEXT_PATH, PATH + "employee-oxm.xml");
+        } catch (JAXBException e1) {
+            fail("JAXBContext creation failed: " + e1.getMessage());
+        }
+        
         // unmarshal
         Employee ctrlEmp = getControlObject();
         Employee empObj = null;
-        Unmarshaller unmarshaller = jaxbContext.createUnmarshaller();
+        Unmarshaller unmarshaller = jCtx.createUnmarshaller();
         try {
             empObj = (Employee) unmarshaller.unmarshal(iDocStream);
             assertNotNull("Unmarshalled object is null.", empObj);
@@ -165,10 +170,17 @@ public class AnyAttributeMappingTestCases extends ExternalizedMetadataTestCases 
             e.printStackTrace();
             fail("An unexpected exception occurred loading control document [" + src + "].");
         }
+        
+        JAXBContext jCtx = null;
+        try {
+            jCtx = createContext(new Class[] { Employee.class }, CONTEXT_PATH, PATH + "employee-oxm.xml");
+        } catch (JAXBException e1) {
+            fail("JAXBContext creation failed: " + e1.getMessage());
+        }
 
         // test marshal
         Employee ctrlEmp = getControlObject();
-        Marshaller marshaller = jaxbContext.createMarshaller();
+        Marshaller marshaller = jCtx.createMarshaller();
         try {
             marshaller.marshal(ctrlEmp, testDoc);
             //marshaller.marshal(ctrlEmp, System.out);
