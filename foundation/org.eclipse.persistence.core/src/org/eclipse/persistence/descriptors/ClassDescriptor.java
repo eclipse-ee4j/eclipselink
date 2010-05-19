@@ -3257,6 +3257,9 @@ public class ClassDescriptor implements Cloneable, Serializable {
         } else if ((getCacheKeyType() == CacheKeyType.ID_VALUE) && (getPrimaryKeyFields().size() > 1)) {
             session.getIntegrityChecker().handleError(DescriptorException.cannotUseIdValueForCompositeId(this));
         }
+        if (hasFetchGroupManager()) {
+            getFetchGroupManager().postInitialize(session);
+        }
         getObjectBuilder().postInitialize(session);
 
         validateAfterInitialization(session);
@@ -5330,11 +5333,11 @@ public class ClassDescriptor implements Cloneable, Serializable {
      * for managing the fetch group behaviors and operations.
      * To use the fetch group, the domain object must implement FetchGroupTracker interface. Otherwise,
      * a descriptor validation exception would throw during initialization.
-     * NOTE: This is currently only supported in CMP2.
+     *
      * @see org.eclipse.persistence.queries.FetchGroupTracker
      */
     public FetchGroupManager getFetchGroupManager() {
-        return fetchGroupManager;
+        return this.fetchGroupManager;
     }
 
     /**

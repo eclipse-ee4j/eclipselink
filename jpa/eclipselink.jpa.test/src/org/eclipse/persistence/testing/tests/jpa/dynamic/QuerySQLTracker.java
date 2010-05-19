@@ -39,10 +39,12 @@ import java.util.List;
 
 //EclipseLink imports
 import org.eclipse.persistence.internal.helper.Helper;
+import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.logging.DefaultSessionLog;
 import org.eclipse.persistence.logging.SessionLog;
 import org.eclipse.persistence.logging.SessionLogEntry;
 import org.eclipse.persistence.queries.DatabaseQuery;
+import org.eclipse.persistence.queries.FetchGroupTracker;
 import org.eclipse.persistence.sessions.Session;
 import org.eclipse.persistence.sessions.SessionEvent;
 import org.eclipse.persistence.sessions.SessionEventAdapter;
@@ -74,6 +76,15 @@ public class QuerySQLTracker extends SessionEventAdapter {
 		return new QuerySQLTracker(session);
 	}
 
+    public static void uninstall(Session session) {
+        if (session.getSessionLog() instanceof SQLTrackingSessionLog) {
+            SQLTrackingSessionLog trackingLog = (SQLTrackingSessionLog)session.getSessionLog();
+            QuerySQLTracker tracker = trackingLog.getTracker();
+            session.getEventManager().removeListener(tracker);
+            session.setSessionLog(trackingLog.originalLog);
+        }
+    }
+    
 	/**
 	 * Helper method to retrieve a tracker from a session where it was installed
 	 * If the session exists but does not have a tracler installed then an
@@ -175,7 +186,7 @@ public class QuerySQLTracker extends SessionEventAdapter {
 		if (getCurrentResult().query == null) {
 			getCurrentResult().setQuery(event.getQuery());
 		}
-		getCurrentResult().setResult(event.getResult());
+		getCurrentResult().setResult(event.getResult(), event.getSession());
 	}
 
 	protected class QueryResult {
@@ -191,8 +202,13 @@ public class QuerySQLTracker extends SessionEventAdapter {
 			this.query = query;
 		}
 
-		@SuppressWarnings("unchecked")
+        @SuppressWarnings("unchecked")
         protected void setResult(Object queryResult) {
+            setResult(queryResult, null);
+        }
+        
+		@SuppressWarnings("unchecked")
+        protected void setResult(Object queryResult, Session session) {
 			StringWriter writer = new StringWriter();
 			writer.write(Helper.getShortClassName(query));
 			writer.write("[" + System.identityHashCode(query) + "]");
@@ -213,7 +229,23 @@ public class QuerySQLTracker extends SessionEventAdapter {
 						if (index > 0) {
 							writer.write(", ");
 						}
-						writer.write(results[index] + "");
+						boolean writePkOnly = false;
+						Object object = results[index];
+						// if session is provided then may extract pk from object 
+						if(session != null) {
+    						if(object instanceof FetchGroupTracker) {
+    						    FetchGroupTracker tracker = (FetchGroupTracker)object;
+    						    // object.toString may trigger loading of the whole object. To avoid that write the pk only. 
+    						    if(tracker._persistence_getFetchGroup() != null) {
+    						        writePkOnly = true;
+    						    }
+    						}
+						}
+						if(writePkOnly) {
+						    writer.write(Helper.getShortClassName(object) + "("+ session.getDescriptor(object.getClass()).getObjectBuilder().extractPrimaryKeyFromObject(object, (AbstractSession)session) + ")");
+						} else {
+						    writer.write(object + "");
+						}
 					}
 					writer.write("]");
 					resultString = writer.toString();

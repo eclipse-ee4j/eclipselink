@@ -81,6 +81,16 @@ import org.eclipse.persistence.testing.tests.jpa.cascadedeletes.CascadeDeletesJU
 import org.eclipse.persistence.testing.tests.jpa.ddlgeneration.DDLGenerationJUnitTestSuite;
 import org.eclipse.persistence.testing.tests.jpa.delimited.DelimitedPUTestSuite;
 import org.eclipse.persistence.testing.tests.jpa.deployment.CompositeEnumerationTest;
+import org.eclipse.persistence.testing.tests.jpa.fetchgroups.FetchGroupAPITests;
+import org.eclipse.persistence.testing.tests.jpa.fetchgroups.FetchGroupMergeWithCacheTests;
+import org.eclipse.persistence.testing.tests.jpa.fetchgroups.FetchGroupTrackerWeavingTests;
+import org.eclipse.persistence.testing.tests.jpa.fetchgroups.NestedDefaultFetchGroupTests;
+import org.eclipse.persistence.testing.tests.jpa.fetchgroups.NestedFetchGroupTests;
+import org.eclipse.persistence.testing.tests.jpa.fetchgroups.NestedNamedFetchGroupTests;
+import org.eclipse.persistence.testing.tests.jpa.fetchgroups.SimpleDefaultFetchGroupTests;
+import org.eclipse.persistence.testing.tests.jpa.fetchgroups.SimpleFetchGroupTests;
+import org.eclipse.persistence.testing.tests.jpa.fetchgroups.SimpleNamedFetchGroupTests;
+import org.eclipse.persistence.testing.tests.jpa.fetchgroups.SimpleSerializeFetchGroupTests;
 
 public class FullRegressionTestSuite extends TestSuite {
     
@@ -234,6 +244,21 @@ public class FullRegressionTestSuite extends TestSuite {
         fullSuite.addTest(CascadeDeletesJUnitTestSuite.suite());
         
         fullSuite.addTest(QueryCastTestSuite.suite());
+
+        // Fetch Groups tests.
+        suite = new TestSuite();
+        suite.setName("FetchGroups");
+        suite.addTest(FetchGroupAPITests.suite());
+        suite.addTest(FetchGroupTrackerWeavingTests.suite());
+        suite.addTest(SimpleDefaultFetchGroupTests.suite());
+        suite.addTest(SimpleFetchGroupTests.suite());
+        suite.addTest(SimpleNamedFetchGroupTests.suite());
+        suite.addTest(SimpleSerializeFetchGroupTests.suite());
+        suite.addTest(NestedDefaultFetchGroupTests.suite());
+        suite.addTest(NestedFetchGroupTests.suite());
+        suite.addTest(NestedNamedFetchGroupTests.suite());
+        suite.addTest(FetchGroupMergeWithCacheTests.suite());
+        fullSuite.addTest(suite);
 
         return fullSuite;
     }

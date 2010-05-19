@@ -18,6 +18,7 @@ import org.eclipse.persistence.queries.Call;
 import org.eclipse.persistence.queries.DatabaseQuery;
 import org.eclipse.persistence.sessions.*;
 import org.eclipse.persistence.expressions.Expression;
+import org.eclipse.persistence.internal.queries.AttributeGroup;
 import org.eclipse.persistence.sessions.server.ServerSession;
 
 /**
@@ -91,4 +92,11 @@ public interface JpaEntityManager extends javax.persistence.EntityManager {
      */
     javax.persistence.Query createDescriptorNamedQuery(String queryName, Class descriptorClass, List argumentTypes);
 
+    /**
+     * This method will load the passed entity or collection of entities using the passed AttributeGroup.
+     * In case of collection all members should be either entities of the same type
+     * or have a common inheritance hierarchy mapped root class.
+     * The AttributeGroup should correspond to the entity type. 
+     */
+    public void load(Object entityOrEntities, AttributeGroup group);
 }

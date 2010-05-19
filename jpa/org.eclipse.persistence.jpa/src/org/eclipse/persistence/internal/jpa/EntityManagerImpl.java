@@ -44,6 +44,7 @@ import org.eclipse.persistence.internal.identitymaps.CacheId;
 import org.eclipse.persistence.internal.jpa.querydef.CriteriaQueryImpl;
 import org.eclipse.persistence.internal.jpa.transaction.*;
 import org.eclipse.persistence.internal.localization.ExceptionLocalization;
+import org.eclipse.persistence.internal.queries.AttributeGroup;
 import org.eclipse.persistence.internal.sessions.*;
 import org.eclipse.persistence.logging.SessionLog;
 import org.eclipse.persistence.queries.*;
@@ -2294,6 +2295,44 @@ public class EntityManagerImpl implements org.eclipse.persistence.jpa.JpaEntityM
 
         } catch (RuntimeException e) {
             throw e;
+        }
+    }
+    
+    /**
+     * This method will load the passed entity or collection of entities using the passed AttributeGroup.
+     * In case of collection all members should be either entities of the same type
+     * or have a common inheritance hierarchy mapped root class.
+     * The AttributeGroup should correspond to the entity type. 
+     * 
+     * @param entityOrEntities
+     * @return the instance that the state was merged to
+     */
+    public void load(Object entityOrEntities, AttributeGroup group) {
+        verifyOpen();
+        if(entityOrEntities != null && group != null) {
+            group.toLoadGroup().load(entityOrEntities, getActivePersistenceContext(checkForTransaction(false)));
+        }
+    }
+    
+    /**
+     * INTERNAL:
+     * Load/fetch the unfetched object.  This method is used by the ClassWaver..
+     */
+    public static void processUnfetchedAttribute(FetchGroupTracker entity, String attributeName) {
+        String errorMsg = entity._persistence_getFetchGroup().onUnfetchedAttribute(entity, attributeName);
+        if(errorMsg != null) {
+            throw new javax.persistence.EntityNotFoundException(errorMsg);
+        }
+    }
+
+    /**
+     * INTERNAL:
+     * Load/fetch the unfetched object.  This method is used by the ClassWeaver.
+     */
+    public static void processUnfetchedAttributeForSet(FetchGroupTracker entity, String attributeName) {
+        String errorMsg = entity._persistence_getFetchGroup().onUnfetchedAttributeForSet(entity, attributeName);
+        if(errorMsg != null) {
+            throw new javax.persistence.EntityNotFoundException(errorMsg);
         }
     }
 }

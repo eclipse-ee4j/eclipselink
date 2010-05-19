@@ -5224,6 +5224,8 @@ public class ObjectPersistenceRuntimeXMLProject extends NamespaceResolvableProje
         CollectionContainerPolicy containerPolicy = new CollectionContainerPolicy(TreeSet.class);
         fetchGroupAttributeMapping.setContainerPolicy(containerPolicy);
         fetchGroupAttributeMapping.setAttributeName("attributes");
+        fetchGroupAttributeMapping.setGetMethodName("getAttributeNames");
+        fetchGroupAttributeMapping.setSetMethodName("setAttributeNames");
         fetchGroupAttributeMapping.setXPath(getPrimaryNamespaceXPath() + "fetch-group-attributes/" + getPrimaryNamespaceXPath() + "fetch-group-attribute/text()");
         descriptor.addMapping(fetchGroupAttributeMapping);
 

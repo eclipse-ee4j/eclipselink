@@ -182,17 +182,14 @@ public class JpaHelper {
         return new EntityManagerFactoryImpl((ServerSession)sf.getSharedSession()); 
     } 
 
+    
+    
     /**
-     * Load/fetch the unfetched object.  This method is used by the ClassWeaver.
+     * If the object has a fetch group then the whole object is read in.
      */
-    public static void loadUnfetchedObject(Object object) {
-        ReadObjectQuery query = new ReadObjectQuery(object);
-        query.setShouldUseDefaultFetchGroup(false);
-        Object result = ((FetchGroupTracker)object)._persistence_getSession().executeQuery(query);
-        if (result == null) {
-            Object[] args = {query.getSelectionId()};
-            String message = ExceptionLocalization.buildMessage("no_entities_retrieved_for_get_reference", args);
-            throw new javax.persistence.EntityNotFoundException(message);
+    public static void loadUnfetchedObject(FetchGroupTracker entity) {
+        if(entity._persistence_getFetchGroup() != null) {
+            EntityManagerImpl.processUnfetchedAttribute(entity, null);
         }
     }
 

@@ -1741,15 +1741,36 @@ public abstract class ForeignReferenceMapping extends DatabaseMapping {
     protected Object valueFromRowInternal(AbstractRecord row, JoinedAttributeManager joinManager, ObjectBuildingQuery sourceQuery, AbstractSession executionSession) throws DatabaseException {
         // PERF: Direct variable access.
         ReadQuery targetQuery = this.selectionQuery;
+
+        // Copy nested fetch group from the source query 
+        if(targetQuery.getDescriptor().hasFetchGroupManager() && targetQuery.isObjectLevelReadQuery()) {
+            FetchGroup sourceFG = sourceQuery.getExecutionFetchGroup();
+            if (sourceFG != null) {                    
+                // perf: bug#4751950, first prepare the query before cloning.
+                if (targetQuery.shouldPrepare()) {
+                    targetQuery.checkPrepare(executionSession, row);
+                }
+                targetQuery = (ObjectLevelReadQuery)targetQuery.clone();
+                targetQuery.setIsExecutionClone(true);
+                if (sourceFG.containsAttribute(getAttributeName())) {
+                    FetchGroup targetFetchGroup = sourceFG.getGroup(getAttributeName());
+                    ObjectLevelReadQuery olrQuery = (ObjectLevelReadQuery)targetQuery;
+                    olrQuery.setFetchGroup(targetFetchGroup);
+                }
+            }
+        }
+        
         // CR #4365, 3610825 - moved up from the block below, needs to be set with 
         // indirection off. Clone the query and set its id.
         if (!this.indirectionPolicy.usesIndirection()) {
-            // perf: bug#4751950, first prepare the query before cloning.
-            if (targetQuery.shouldPrepare()) {
-                targetQuery.checkPrepare(executionSession, row);
+            if (targetQuery == this.selectionQuery) {
+                // perf: bug#4751950, first prepare the query before cloning.
+                if (targetQuery.shouldPrepare()) {
+                    targetQuery.checkPrepare(executionSession, row);
+                }
+                targetQuery = (ObjectLevelReadQuery)targetQuery.clone();
+                targetQuery.setIsExecutionClone(true);
             }
-            targetQuery = (ReadQuery)targetQuery.clone();
-            targetQuery.setIsExecutionClone(true);
             targetQuery.setQueryId(sourceQuery.getQueryId());
         }
 
