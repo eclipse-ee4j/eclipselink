@@ -1484,7 +1484,7 @@ public class CriteriaBuilderImpl implements CriteriaBuilder, Serializable {
         org.eclipse.persistence.expressions.Expression elemExp =((InternalSelection)elem).getCurrentNode();
 
         subQuery.setExpressionBuilder(elemBuilder);
-        subQuery.retrievePrimaryKeys();
+        subQuery.setShouldRetrieveFirstPrimaryKey(true);
         subQuery.setSelectionCriteria(elemBuilder.equal(collectionExp).and(collectionExp.equal(elemExp)));
 
         return new CompoundExpressionImpl(metamodel, ((InternalSelection)elem).getCurrentNode().notExists(subQuery), buildList(elem, collection), "isNotMemeber");

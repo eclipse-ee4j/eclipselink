@@ -5402,7 +5402,7 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
                             }
                             
                             // Now get the actual derived id mapping from the aggregate and populate it on the aggregate clone.
-                            DatabaseMapping aggregateMapping = derivedIdMapping.getReferenceDescriptor().getMappingForAttributeName(derivesIdMapping.getMapsIdValue());
+                            DatabaseMapping aggregateMapping = derivedIdMapping.getReferenceDescriptor().getObjectBuilder().getMappingForAttributeName(derivesIdMapping.getMapsIdValue());
                             aggregateMapping.setRealAttributeValueInObject(aggregateClone, key);
                         } else {
                             // Case #4b, #5b, #6b from the JPA spec. Our id mapping is the derived id. 

@@ -49,6 +49,11 @@ public class UpdateAllQueryAdvancedJunitTest extends JUnitTestCase {
     }
     
     public void setUp() {
+        if (getServerSession("fieldaccess").getPlatform().isSymfoware()) {
+            warning("UpdateAllQueryAdvancedJunitTest skipped for this platform, "
+                    + "Symfoware doesn't support UpdateAll/DeleteAll on multi-table objects (see rfe 298193).");
+            return;
+        }
         clearCache("fieldaccess");
         super.setUp();
         if(!compare()) {
@@ -77,8 +82,13 @@ public class UpdateAllQueryAdvancedJunitTest extends JUnitTestCase {
         updateProjects.addUpdate("teamLeader", null);
         uow.executeQuery(updateProjects);
     
+        UpdateAllQuery updateDepartment = new UpdateAllQuery(Employee.class);
+        updateDepartment.addUpdate("department", null);
+        uow.executeQuery(updateDepartment);
+    
         uow.executeQuery(new DeleteAllQuery(PhoneNumber.class));
         uow.executeQuery(new DeleteAllQuery(Address.class));
+        uow.executeQuery(new DeleteAllQuery(Department.class));
         uow.executeQuery(new DeleteAllQuery(Employee.class));
         uow.executeQuery(new DeleteAllQuery(Project.class));
 

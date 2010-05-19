@@ -253,11 +253,13 @@
         </attributes>
     </entity>
     <entity class="PhoneNumber">
+        <customizer class="ChangeTrackingCustomizer"/>
         <change-tracking type="ATTRIBUTE"/>
     </entity>
     <entity class="LargeProject" existence-checking="ASSUME_NON_EXISTENCE"/>
     <entity class="SmallProject" existence-checking="ASSUME_EXISTENCE"/>
     <entity class="Project" existence-checking="CHECK_CACHE">
+        <customizer class="ChangeTrackingCustomizer"/>
         <change-tracking type="OBJECT"/>
         <optimistic-locking type="SELECTED_COLUMNS">
             <selected-column name="VERSION"/>

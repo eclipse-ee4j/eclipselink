@@ -183,7 +183,7 @@ public class AttributeNode extends Node {
      */
     public DatabaseMapping resolveMapping(GenerationContext context, Class ownerClass) {
         ClassDescriptor descriptor = context.getSession().getDescriptor(ownerClass);
-        return (descriptor==null) ? null : descriptor.getMappingForAttributeName(getAttributeName());
+        return (descriptor==null) ? null : descriptor.getObjectBuilder().getMappingForAttributeName(getAttributeName());
     }
 
     /**

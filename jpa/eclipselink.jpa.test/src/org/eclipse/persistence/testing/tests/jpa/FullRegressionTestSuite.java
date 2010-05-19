@@ -37,6 +37,7 @@ import org.eclipse.persistence.testing.tests.jpa.advanced.concurrency.LifecycleJ
 import org.eclipse.persistence.testing.tests.jpa.advanced.fetchgroup.AdvancedFetchGroupJunitTest;
 import org.eclipse.persistence.testing.tests.jpa.advanced.ReportQueryAdvancedJUnitTest;
 import org.eclipse.persistence.testing.tests.jpa.advanced.PessimisticLockingExtendedScopeTestSuite;
+import org.eclipse.persistence.testing.tests.jpa.advanced.UpdateAllQueryAdvancedJunitTest;
 
 import org.eclipse.persistence.testing.tests.jpa.inheritance.LifecycleCallbackJunitTest;
 import org.eclipse.persistence.testing.tests.jpa.inheritance.DeleteAllQueryInheritanceJunitTest;
@@ -107,6 +108,7 @@ public class FullRegressionTestSuite extends TestSuite {
         suite.addTest(AdvancedCompositePKJunitTest.suite());
         suite.addTest(AdvancedFetchGroupJunitTest.suite());
         suite.addTest(PessimisticLockingExtendedScopeTestSuite.suite());
+        suite.addTest(UpdateAllQueryAdvancedJunitTest.suite());
         fullSuite.addTest(suite);
 
         // FieldAccess advanced model
@@ -123,6 +125,7 @@ public class FullRegressionTestSuite extends TestSuite {
         suite.addTest(org.eclipse.persistence.testing.tests.jpa.fieldaccess.advanced.OptimisticConcurrencyJUnitTestSuite.suite());
         suite.addTest(org.eclipse.persistence.testing.tests.jpa.fieldaccess.advanced.AdvancedJPAJunitTest.suite());
         suite.addTest(org.eclipse.persistence.testing.tests.jpa.fieldaccess.advanced.AdvancedJunitTest.suite());
+        suite.addTest(org.eclipse.persistence.testing.tests.jpa.fieldaccess.advanced.UpdateAllQueryAdvancedJunitTest.suite());
         suite.addTest(org.eclipse.persistence.testing.tests.jpa.fieldaccess.relationships.UniAndBiDirectionalMappingTestSuite.suite());
         suite.addTestSuite(org.eclipse.persistence.testing.tests.jpa.fieldaccess.relationships.ExpressionJUnitTestSuite.class);
         suite.addTest(org.eclipse.persistence.testing.tests.jpa.fieldaccess.relationships.VirtualAttributeTestSuite.suite());

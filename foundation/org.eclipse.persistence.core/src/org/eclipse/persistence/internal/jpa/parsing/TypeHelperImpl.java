@@ -205,7 +205,7 @@ public class TypeHelperImpl
      */
     private DatabaseMapping resolveAttributeMapping(Object ownerClass, String attribute) {
         ClassDescriptor descriptor = getDescriptor(ownerClass);
-        return (descriptor == null) ? null : descriptor.getMappingForAttributeName(attribute);
+        return (descriptor == null) ? null : descriptor.getObjectBuilder().getMappingForAttributeName(attribute);
     }
 
     private QueryKey resolveAttributeQueryKey(Object ownerClass, String attribute) {
