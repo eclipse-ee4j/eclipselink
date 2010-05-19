@@ -136,9 +136,9 @@ public class NonSynchronizedProperties extends Properties {
 
     @Override
     public String getProperty(String key, String defaultValue) {
-        return super.getProperty(key, defaultValue);
+        String val = getProperty(key);
+        return (val == null) ? defaultValue : val;
     }
-
     @Override
     public String getProperty(String key) {
         Object oval = get(key);
