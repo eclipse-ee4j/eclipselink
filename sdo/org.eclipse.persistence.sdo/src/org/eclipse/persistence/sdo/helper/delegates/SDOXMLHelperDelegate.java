@@ -330,7 +330,7 @@ public class SDOXMLHelperDelegate implements SDOXMLHelper {
     public String save(DataObject dataObject, String rootElementURI, String rootElementName) {
         try {
             StringWriter writer = new StringWriter();
-            save(dataObject, rootElementURI, rootElementName, writer);
+            save(dataObject, rootElementURI, rootElementName, writer, getXmlMarshaller());
             return writer.toString();
         } catch (XMLMarshalException e) {
             throw SDOException.xmlMarshalExceptionOccurred(e, rootElementURI, rootElementName);
@@ -353,7 +353,14 @@ public class SDOXMLHelperDelegate implements SDOXMLHelper {
      */
     public void save(DataObject dataObject, String rootElementURI, String rootElementName, OutputStream outputStream) throws XMLMarshalException, IOException {
         OutputStreamWriter writer = new OutputStreamWriter(outputStream, getXmlMarshaller().getEncoding());
-        save(dataObject, rootElementURI, rootElementName, writer);
+        save(dataObject, rootElementURI, rootElementName, writer, getXmlMarshaller());
+    }
+
+    public void serialize(XMLDocument xmlDocument, OutputStream outputStream, Object options) throws IOException {
+        OutputStreamWriter writer = new OutputStreamWriter(outputStream, getXmlMarshaller().getEncoding());
+        XMLMarshaller xmlMarshaller = getXmlContext().createMarshaller();
+        xmlMarshaller.setMarshalListener(new SDOMarshalListener(xmlMarshaller, (SDOTypeHelper) aHelperContext.getTypeHelper()));
+        save(xmlDocument, writer, options, xmlMarshaller);
     }
 
     /**
@@ -400,12 +407,13 @@ public class SDOXMLHelperDelegate implements SDOXMLHelper {
      *    is not closed or has no container.
      */
     public void save(XMLDocument xmlDocument, Writer outputWriter, Object options) throws IOException {
+        save(xmlDocument, outputWriter, options, getXmlMarshaller());
+    }
+
+    private void save(XMLDocument xmlDocument, Writer outputWriter, Object options, XMLMarshaller anXMLMarshaller) throws IOException {
         if (xmlDocument == null) {
             throw new IllegalArgumentException(SDOException.cannotPerformOperationWithNullInputParameter("save", "xmlDocument"));
         }
-        
-        // get XMLMarshaller once - as we may create a new instance if this helper isDirty=true
-        XMLMarshaller anXMLMarshaller = getXmlMarshaller();
 
         // Ask the SDOXMLDocument if we should include the XML declaration in the resulting XML
         anXMLMarshaller.setFragment(!xmlDocument.isXMLDeclaration());
@@ -522,11 +530,8 @@ public class SDOXMLHelperDelegate implements SDOXMLHelper {
          * @throws IllegalArgumentException if the dataObject tree
          *    is not closed or has no container.
          */
-    private void save(DataObject rootObject, String rootElementURI, String rootElementName, Writer writer) throws XMLMarshalException {
+    private void save(DataObject rootObject, String rootElementURI, String rootElementName, Writer writer, XMLMarshaller anXMLMarshaller) throws XMLMarshalException {
         SDOXMLDocument xmlDocument = (SDOXMLDocument)createDocument(rootObject, rootElementURI, rootElementName);
-
-        // get XMLMarshaller once - as we may create a new instance if this helper isDirty=true
-        XMLMarshaller anXMLMarshaller = getXmlMarshaller();
         
         // Ask the SDOXMLDocument if we should include the XML declaration in the resulting XML
         anXMLMarshaller.setFragment(!xmlDocument.isXMLDeclaration());
