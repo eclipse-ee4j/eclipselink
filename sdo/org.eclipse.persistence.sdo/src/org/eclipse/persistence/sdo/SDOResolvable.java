@@ -23,6 +23,7 @@ import java.util.zip.GZIPInputStream;
 import java.util.zip.GZIPOutputStream;
 
 import org.eclipse.persistence.sdo.helper.SDOHelperContext;
+import org.eclipse.persistence.sdo.helper.SDOXMLHelper;
 
 import commonj.sdo.helper.HelperContext;
 import commonj.sdo.helper.XMLDocument;
@@ -192,7 +193,7 @@ public class SDOResolvable implements ExternalizableDelegator.Resolvable {
                 		theSDODataObject, //
                 		SDOConstants.SDO_URL, // root element URI
                 		SDOConstants.SDO_PREFIX + SDOConstants.SDO_XPATH_NS_SEPARATOR_FRAGMENT + DEFAULT_ROOT_ELEMENT_NAME);
-                aHelperContext.getXMLHelper().save(aDocument, aGZIPOutputStream, null);
+                ((SDOXMLHelper) aHelperContext.getXMLHelper()).serialize(aDocument, aGZIPOutputStream, null);
                 // finished the stream to move compressed data from the Deflater
                 aGZIPOutputStream.finish();
                 // flush the streams

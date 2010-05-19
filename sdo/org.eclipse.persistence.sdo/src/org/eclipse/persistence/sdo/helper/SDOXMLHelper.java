@@ -16,6 +16,7 @@ import commonj.sdo.helper.HelperContext;
 import commonj.sdo.helper.XMLDocument;
 import commonj.sdo.helper.XMLHelper;
 import java.io.IOException;
+import java.io.OutputStream;
 import java.util.List;
 import java.util.TimeZone;
 
@@ -35,6 +36,8 @@ import org.xml.sax.InputSource;
  * </ul>
  */
 public interface SDOXMLHelper extends XMLHelper {
+
+    public void serialize(XMLDocument xmlDocument, OutputStream outputStream, Object options) throws IOException;
 
     /**
      * The specified TimeZone will be used for all String to date object
