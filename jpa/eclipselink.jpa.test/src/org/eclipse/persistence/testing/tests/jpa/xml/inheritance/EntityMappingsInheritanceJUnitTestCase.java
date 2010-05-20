@@ -24,12 +24,7 @@ import javax.persistence.Query;
 
 import junit.framework.*;
 
-import org.eclipse.persistence.descriptors.ClassDescriptor;
-import org.eclipse.persistence.internal.helper.DatabaseField;
-import org.eclipse.persistence.mappings.DatabaseMapping;
-import org.eclipse.persistence.mappings.OneToOneMapping;
 import org.eclipse.persistence.sessions.DatabaseSession;
-import org.eclipse.persistence.sessions.server.ServerSession;
 
 import org.eclipse.persistence.testing.models.jpa.xml.inheritance.MacBook;
 import org.eclipse.persistence.testing.models.jpa.xml.inheritance.MacBookPro;
