@@ -1306,6 +1306,7 @@ public class SchemaGenerator {
             // if we didn't process a global element, and the current element isn't already in the sequence, add it 
             if (!currentElementExists && globalElement == null) {
                 currentElement.setName(frag.getLocalName());
+                currentElement.setMinOccurs(Occurs.ZERO);
                 currentParticle.addElement(currentElement);
             }
             // set the correct particle to use/return

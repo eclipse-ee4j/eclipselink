@@ -3,7 +3,7 @@
    <xsd:import schemaLocation="schema1.xsd" namespace="http://www.example.com/projects"/>
    <xsd:complexType name="employee">
       <xsd:sequence>
-         <xsd:element name="projects">
+         <xsd:element name="projects" minOccurs="0">
             <xsd:complexType>
                <xsd:sequence>
                   <xsd:element ref="prj:project" minOccurs="0"/>
@@ -11,10 +11,10 @@
             </xsd:complexType>
          </xsd:element>
          <xsd:element name="project-id" type="xsd:int" default="999"/>
-         <xsd:element name="info">
+         <xsd:element name="info" minOccurs="0">
             <xsd:complexType>
                <xsd:sequence>
-                  <xsd:element name="personal-info">
+                  <xsd:element name="personal-info" minOccurs="0">
                      <xsd:complexType>
                         <xsd:sequence>
                            <xsd:element name="first-name" type="xsd:string" minOccurs="0"/>
@@ -25,7 +25,7 @@
                </xsd:sequence>
             </xsd:complexType>
          </xsd:element>
-         <xsd:element name="pieces-of-data">
+         <xsd:element name="pieces-of-data" minOccurs="0">
             <xsd:complexType>
                <xsd:sequence>
                   <xsd:element name="data" type="xsd:string" minOccurs="0" maxOccurs="unbounded"/>

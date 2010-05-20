@@ -3,10 +3,10 @@
    <xsd:import schemaLocation="schema1.xsd" namespace="http://www.example.com/stuff"/>
    <xsd:complexType name="employee">
       <xsd:sequence>
-         <xsd:element name="things">
+         <xsd:element name="things" minOccurs="0">
             <xsd:complexType>
                <xsd:sequence>
-                  <xsd:element name="junk">
+                  <xsd:element name="junk" minOccurs="0">
                      <xsd:complexType>
                         <xsd:sequence>
                            <xsd:element ref="s:stuff" minOccurs="0"/>

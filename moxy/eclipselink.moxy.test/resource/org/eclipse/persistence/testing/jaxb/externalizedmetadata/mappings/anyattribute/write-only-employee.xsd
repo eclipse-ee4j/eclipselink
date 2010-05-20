@@ -2,10 +2,10 @@
 <xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema">
    <xsd:complexType name="employee">
       <xsd:sequence>
-         <xsd:element name="write-only">
+         <xsd:element name="write-only" minOccurs="0">
             <xsd:complexType>
                <xsd:sequence>
-                  <xsd:element name="stuff">
+                  <xsd:element name="stuff" minOccurs="0">
                      <xsd:complexType>
                         <xsd:sequence/>
                         <xsd:anyAttribute processContents="skip" namespace="##other"/>

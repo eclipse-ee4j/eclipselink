@@ -26,11 +26,11 @@
    </xsd:complexType>
    <xsd:complexType name="employee">
       <xsd:sequence>
-         <xsd:element name="info">
+         <xsd:element name="info" minOccurs="0">
             <xsd:complexType>
                <xsd:sequence>
                   <xsd:element ref="c:contact-info" minOccurs="0"/>
-                  <xsd:element name="contact-info">
+                  <xsd:element name="contact-info" minOccurs="0">
                      <xsd:complexType>
                         <xsd:sequence>
                            <xsd:element name="phone" type="ns0:phone" minOccurs="0" maxOccurs="unbounded"/>

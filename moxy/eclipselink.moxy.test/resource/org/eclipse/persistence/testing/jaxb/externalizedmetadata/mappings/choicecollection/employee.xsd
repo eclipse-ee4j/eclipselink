@@ -3,7 +3,7 @@
    <xsd:complexType name="employee">
       <xsd:sequence>
          <xsd:choice maxOccurs="unbounded">
-            <xsd:element name="things">
+            <xsd:element name="things" minOccurs="0">
                <xsd:complexType>
                   <xsd:choice maxOccurs="unbounded">
                      <xsd:element name="my-integer" type="xsd:int" minOccurs="0"/>

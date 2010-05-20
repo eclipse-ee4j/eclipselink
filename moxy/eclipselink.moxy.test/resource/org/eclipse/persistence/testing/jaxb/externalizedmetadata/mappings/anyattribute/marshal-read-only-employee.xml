@@ -1,6 +1,2 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <employee/>
-<!-- 
-When bug 313568 is resolved the above line can be replaced by the following one:
-<employee><read-only><stuff/></read-only></employee>
--->

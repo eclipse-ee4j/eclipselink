@@ -6,14 +6,14 @@
    </xsd:complexType>
    <xsd:complexType name="root">
       <xsd:sequence>
-         <xsd:element name="employees">
+         <xsd:element name="employees" minOccurs="0">
             <xsd:complexType>
                <xsd:sequence>
                   <xsd:element name="employee" type="employee" minOccurs="0" maxOccurs="unbounded"/>
                </xsd:sequence>
             </xsd:complexType>
          </xsd:element>
-         <xsd:element name="addresses">
+         <xsd:element name="addresses" minOccurs="0">
             <xsd:complexType>
                <xsd:sequence>
                   <xsd:element name="address" type="address" minOccurs="0" maxOccurs="unbounded"/>
@@ -24,10 +24,10 @@
    </xsd:complexType>
    <xsd:complexType name="employee">
       <xsd:sequence>
-         <xsd:element name="contact-info">
+         <xsd:element name="contact-info" minOccurs="0">
             <xsd:complexType>
                <xsd:sequence>
-                  <xsd:element name="work-address">
+                  <xsd:element name="work-address" minOccurs="0">
                      <xsd:complexType>
                         <xsd:sequence/>
                         <xsd:attribute name="work-address-id" type="xsd:IDREF"/>

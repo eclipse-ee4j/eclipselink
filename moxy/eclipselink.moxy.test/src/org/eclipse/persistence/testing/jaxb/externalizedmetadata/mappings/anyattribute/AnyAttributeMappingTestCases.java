@@ -100,9 +100,9 @@ public class AnyAttributeMappingTestCases extends ExternalizedMetadataTestCases 
 
         // THIS TEST CAN BE ENABLED WHEN BUG 313568 IS RESOLVED
         // validate marshal-read-only-employee.xml
-        //src = PATH + "marshal-read-only-employee.xml";
-        //result = validateAgainstSchema(src, EMPTY_NAMESPACE, resolver);
-        //assertTrue("Instance doc validation (marshal-read-only-employee.xml) failed unxepectedly: " + result, result == null);
+        src = PATH + "marshal-read-only-employee.xml";
+        result = validateAgainstSchema(src, EMPTY_NAMESPACE, resolver);
+        assertTrue("Instance doc validation (marshal-read-only-employee.xml) failed unxepectedly: " + result, result == null);
         // NOTE THAT marshal-read-only-employee.xml NEEDS TO BE CHANGED AS WELL - PLEASE SEE THAT FILE FOR INFO
 
         // generate write only employee schema
@@ -256,7 +256,6 @@ public class AnyAttributeMappingTestCases extends ExternalizedMetadataTestCases 
         Marshaller marshaller = jCtx.createMarshaller();
         try {
             marshaller.marshal(ctrlEmp, testDoc);
-            //marshaller.marshal(ctrlEmp, System.out);
             assertTrue("Document comparison failed unxepectedly: ", compareDocuments(ctrlDoc, testDoc));
         } catch (JAXBException e) {
             e.printStackTrace();

@@ -4,7 +4,7 @@
    <xsd:element name="contact-info">
       <xsd:complexType>
          <xsd:sequence>
-            <xsd:element name="addresses">
+            <xsd:element name="addresses" minOccurs="0">
                <xsd:complexType>
                   <xsd:sequence>
                      <xsd:element name="address" type="ns1:address" minOccurs="0" maxOccurs="unbounded"/>

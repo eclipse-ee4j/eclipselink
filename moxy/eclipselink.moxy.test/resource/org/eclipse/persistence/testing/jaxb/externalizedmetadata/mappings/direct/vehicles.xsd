@@ -3,7 +3,7 @@
    <xsd:import schemaLocation="schema1.xsd" namespace="http://www.example.com/vehicles"/>
    <xsd:complexType name="car">
       <xsd:sequence>
-         <xsd:element name="features">
+         <xsd:element name="features" minOccurs="0">
             <xsd:complexType>
                <xsd:sequence>
                   <xsd:element ref="v:horsepower" minOccurs="0"/>
@@ -14,7 +14,7 @@
    </xsd:complexType>
    <xsd:complexType name="truck">
       <xsd:sequence>
-         <xsd:element name="features">
+         <xsd:element name="features" minOccurs="0">
             <xsd:complexType>
                <xsd:sequence>
                   <xsd:element ref="v:torque" minOccurs="0"/>

@@ -95,10 +95,9 @@ public class AnyCollectionMappingTestCases extends ExternalizedMetadataTestCases
 
         // THIS TEST CAN BE ENABLED WHEN BUG 313568 IS RESOLVED
         // validate marshal-read-only-employee.xml
-        //src = PATH + "marshal-read-only-employee.xml";
-        //result = validateAgainstSchema(src, EMPTY_NAMESPACE, resolver);
-        //assertTrue("Instance doc validation (marshal-read-only-employee.xml) failed unxepectedly: " + result, result == null);
-        // NOTE THAT marshal-read-only-employee.xml NEEDS TO BE CHANGED AS WELL - PLEASE SEE THAT FILE FOR INFO
+        src = PATH + "marshal-read-only-employee.xml";
+        result = validateAgainstSchema(src, EMPTY_NAMESPACE, resolver);
+        assertTrue("Instance doc validation (marshal-read-only-employee.xml) failed unxepectedly: " + result, result == null);
 
         // generate write only employee schema
         resolver = generateSchemaWithFileName(new Class[] { Employee.class }, CONTEXT_PATH, PATH + "write-only-employee-oxm.xml", 1);
