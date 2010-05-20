@@ -4,5 +4,5 @@
 	<classpathentry excluding="**/.svn/**" kind="src" path="src"/>
 	<classpathentry kind="con" path="org.eclipse.pde.core.requiredPlugins"/>
 	<classpathentry kind="lib" path="resource"/>
-	<classpathentry kind="output" path="classes"/>
+	<classpathentry kind="output" path="classes-eclipse"/>
 </classpath>
