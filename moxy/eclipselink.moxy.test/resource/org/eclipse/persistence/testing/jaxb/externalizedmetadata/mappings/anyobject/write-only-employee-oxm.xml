@@ -4,7 +4,7 @@
         <java-type name="org.eclipse.persistence.testing.jaxb.externalizedmetadata.mappings.anyobject.Employee">
             <xml-root-element name="employee" />
             <java-attributes>
-                <xml-any-element java-attribute="stuff" xml-path="write-only/stuff" xml-mixed="true" write-only="true" />
+                <xml-any-element java-attribute="stuff" xml-path="things/write-only/stuff" xml-mixed="true" write-only="true" />
             </java-attributes>
         </java-type>
     </java-types>

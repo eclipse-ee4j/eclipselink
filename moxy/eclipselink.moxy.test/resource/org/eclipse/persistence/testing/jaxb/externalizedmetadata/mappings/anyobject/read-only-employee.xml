@@ -1,6 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <employee>
   <read-only>
-      <stuff>Some Stuff</stuff>
+    <stuff>
+      <ns0:other xmlns:ns0="http://www.example.com/other">Some Stuff</ns0:other>
+    </stuff>
   </read-only>
 </employee>

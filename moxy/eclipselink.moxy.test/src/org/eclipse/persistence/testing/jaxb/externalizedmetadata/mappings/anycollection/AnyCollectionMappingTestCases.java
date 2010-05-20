@@ -33,8 +33,6 @@ public class AnyCollectionMappingTestCases extends ExternalizedMetadataTestCases
     private static final String CONTEXT_PATH = "org.eclipse.persistence.testing.jaxb.externalizedmetadata.mappings.anycollection";
     private static final String PATH = "org/eclipse/persistence/testing/jaxb/externalizedmetadata/mappings/anycollection/";
     
-    private MySchemaOutputResolver employeeResolver;
-
     private static final String STUFF = "Some Stuff";
     private static final String STUFF_NS = "http://www.example.com/stuff";
     private static final int ID = 101;
@@ -61,30 +59,55 @@ public class AnyCollectionMappingTestCases extends ExternalizedMetadataTestCases
     }
     
     /**
-     * This method's primary purpose id to generate schema(s). Validation of
-     * generated schemas will occur in the testXXXGen method(s) below. Note that
-     * the JAXBContext is created from this call and is required for
-     * marshal/unmarshal, etc. tests.
      * 
      */
     @Override
     public void setUp() throws Exception {
         super.setUp();
-        employeeResolver = generateSchemaWithFileName(new Class[] { Employee.class }, CONTEXT_PATH, PATH + "employee-oxm.xml", 2);
     }
 
     /**
-     * Tests schema generation for XmlAnyCollectionMapping via eclipselink-oxm.xml.
-     * Utilizes xml-attribute and xml-element. xml-value is tested separately
-     * below.
+     * Tests schema generation and instance document validation for XmlAnyCollectionMapping 
+     * via eclipselink-oxm.xml.
      * 
      * Positive test.
      */
-    public void testAnyCollectionSchemaGen() {
+    public void testSchemaGenAndValidation() {
+        // generate employee and stuff schemas
+        MySchemaOutputResolver resolver = generateSchemaWithFileName(new Class[] { Employee.class }, CONTEXT_PATH, PATH + "employee-oxm.xml", 2);
         // validate employee schema
-        compareSchemas(employeeResolver.schemaFiles.get(EMPTY_NAMESPACE), new File(PATH + "employee.xsd"));
+        compareSchemas(resolver.schemaFiles.get(EMPTY_NAMESPACE), new File(PATH + "employee.xsd"));
         // validate stuff schema
-        compareSchemas(employeeResolver.schemaFiles.get(STUFF_NS), new File(PATH + "stuff.xsd"));
+        compareSchemas(resolver.schemaFiles.get(STUFF_NS), new File(PATH + "stuff.xsd"));
+        // validate employee.xml
+        String src = PATH + "employee.xml";
+        String result = validateAgainstSchema(src, EMPTY_NAMESPACE, resolver);
+        assertTrue("Instance doc validation (employee.xml) failed unxepectedly: " + result, result == null);
+
+        // generate read only employee schema
+        resolver = generateSchemaWithFileName(new Class[] { Employee.class }, CONTEXT_PATH, PATH + "read-only-employee-oxm.xml", 1);
+        // validate read only employee schema
+        compareSchemas(resolver.schemaFiles.get(EMPTY_NAMESPACE), new File(PATH + "read-only-employee.xsd"));
+        // validate read-only-employee.xml
+        src = PATH + "read-only-employee.xml";
+        result = validateAgainstSchema(src, EMPTY_NAMESPACE, resolver);
+        assertTrue("Instance doc validation (read-only-employee.xml) failed unxepectedly: " + result, result == null);
+
+        // THIS TEST CAN BE ENABLED WHEN BUG 313568 IS RESOLVED
+        // validate marshal-read-only-employee.xml
+        //src = PATH + "marshal-read-only-employee.xml";
+        //result = validateAgainstSchema(src, EMPTY_NAMESPACE, resolver);
+        //assertTrue("Instance doc validation (marshal-read-only-employee.xml) failed unxepectedly: " + result, result == null);
+        // NOTE THAT marshal-read-only-employee.xml NEEDS TO BE CHANGED AS WELL - PLEASE SEE THAT FILE FOR INFO
+
+        // generate write only employee schema
+        resolver = generateSchemaWithFileName(new Class[] { Employee.class }, CONTEXT_PATH, PATH + "write-only-employee-oxm.xml", 1);
+        // validate write only employee schema
+        compareSchemas(resolver.schemaFiles.get(EMPTY_NAMESPACE), new File(PATH + "write-only-employee.xsd"));
+        // validate write-only-employee.xml
+        src = PATH + "write-only-employee.xml";
+        result = validateAgainstSchema(src, EMPTY_NAMESPACE, resolver);
+        assertTrue("Instance doc validation (write-only-employee.xml) failed unxepectedly: " + result, result == null);
     }
 
     /**
@@ -101,10 +124,17 @@ public class AnyCollectionMappingTestCases extends ExternalizedMetadataTestCases
             fail("Couldn't load instance doc [" + src + "]");
         }
 
+        JAXBContext jCtx = null;
+        try {
+            jCtx = createContext(new Class[] { Employee.class }, CONTEXT_PATH, PATH + "employee-oxm.xml");
+        } catch (JAXBException e1) {
+            fail("JAXBContext creation failed: " + e1.getMessage());
+        }
+
         // unmarshal
         Employee ctrlEmp = getControlObject();
         Employee empObj = null;
-        Unmarshaller unmarshaller = jaxbContext.createUnmarshaller();
+        Unmarshaller unmarshaller = jCtx.createUnmarshaller();
         try {
             empObj = (Employee) unmarshaller.unmarshal(iDocStream);
             assertNotNull("Unmarshalled object is null.", empObj);
@@ -134,9 +164,16 @@ public class AnyCollectionMappingTestCases extends ExternalizedMetadataTestCases
             fail("An unexpected exception occurred loading control document [" + src + "].");
         }
 
+        JAXBContext jCtx = null;
+        try {
+            jCtx = createContext(new Class[] { Employee.class }, CONTEXT_PATH, PATH + "employee-oxm.xml");
+        } catch (JAXBException e1) {
+            fail("JAXBContext creation failed: " + e1.getMessage());
+        }
+
         // test marshal
         Employee ctrlEmp = getControlObject();
-        Marshaller marshaller = jaxbContext.createMarshaller();
+        Marshaller marshaller = jCtx.createMarshaller();
         try {
             marshaller.marshal(ctrlEmp, testDoc);
             //marshaller.marshal(ctrlEmp, System.out);

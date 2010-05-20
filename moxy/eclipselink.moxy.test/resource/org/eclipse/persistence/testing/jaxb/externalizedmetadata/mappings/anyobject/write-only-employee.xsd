@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+   <xsd:complexType name="employee">
+      <xsd:sequence>
+         <xsd:element name="things">
+            <xsd:complexType>
+               <xsd:sequence>
+                  <xsd:element name="write-only">
+                     <xsd:complexType>
+                        <xsd:sequence>
+                           <xsd:element name="stuff">
+                              <xsd:complexType mixed="true">
+                                 <xsd:sequence>
+                                    <xsd:any processContents="skip" namespace="##other" />
+                                 </xsd:sequence>
+                              </xsd:complexType>
+                           </xsd:element>
+                        </xsd:sequence>
+                     </xsd:complexType>
+                  </xsd:element>
+               </xsd:sequence>
+            </xsd:complexType>
+         </xsd:element>
+      </xsd:sequence>
+   </xsd:complexType>
+   <xsd:element name="employee" type="employee"/>
+</xsd:schema>

@@ -64,10 +64,6 @@ public class AnyAttributeMappingTestCases extends ExternalizedMetadataTestCases 
     }
     
     /**
-     * This method's primary purpose id to generate schema(s). Validation of
-     * generated schemas will occur in the testXXXGen method(s) below. Note that
-     * the JAXBContext is created from this call and is required for
-     * marshal/unmarshal, etc. tests.
      * 
      */
     @Override

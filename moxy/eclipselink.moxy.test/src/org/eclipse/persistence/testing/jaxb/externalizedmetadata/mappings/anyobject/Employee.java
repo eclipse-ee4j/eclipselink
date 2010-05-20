@@ -12,6 +12,9 @@
  ******************************************************************************/
 package org.eclipse.persistence.testing.jaxb.externalizedmetadata.mappings.anyobject;
 
+import org.w3c.dom.Element;
+import org.w3c.dom.Node;
+
 public class Employee {
     public Object stuff;
 
@@ -44,9 +47,28 @@ public class Employee {
             if (empObj.stuff != null) {
                 return false;
             }
-        } else if (!stuff.equals(empObj.stuff)) {
-            return false;
+        } else {
+            if (empObj.stuff == null) {
+                return false;
+            }
+            // 'stuff' should be an Element
+            if (this.stuff instanceof Node) {
+                if (!(empObj.stuff instanceof Node)) {
+                    return false;
+                }
+                // just make sure each has the same number of child nodes 
+                try {
+                    Element elt = (Element) this.stuff;
+                    Element empelt = (Element) empObj.stuff;
+                    if (elt.getChildNodes().getLength() != empelt.getChildNodes().getLength()) {
+                        return false;
+                    }
+                } catch (Exception x) {
+                    return false;
+                }
+            }
         }
+
         return true;
     }
 }
