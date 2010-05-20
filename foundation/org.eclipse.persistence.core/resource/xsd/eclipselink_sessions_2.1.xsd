@@ -9,6 +9,8 @@
  Contributors:
      Oracle - initial API and implementation from Oracle TopLink
      tware - update version number to 2.0
+     pkrogh- update version number to 2.1
+     agoerler - add Net weaver support
 *****************************************************************************/  
 -->
 <!-- 
@@ -19,7 +21,7 @@ of this file are typically located as: 'META-INF/sessions.xml'
  -->
 
 <xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema"
-    elementFormDefault="qualified" version="2.0">
+    elementFormDefault="qualified" version="2.1">
     <xsd:element name="sessions">
         <xsd:annotation>
             <xsd:documentation>
@@ -309,6 +311,11 @@ of this file are typically located as: 'META-INF/sessions.xml'
         </xsd:complexContent>
     </xsd:complexType>
     <xsd:complexType name="jboss-platform">
+        <xsd:complexContent>
+            <xsd:extension base="server-platform" />
+        </xsd:complexContent>
+    </xsd:complexType>
+    <xsd:complexType name="netweaver-71-platform">
         <xsd:complexContent>
             <xsd:extension base="server-platform" />
         </xsd:complexContent>

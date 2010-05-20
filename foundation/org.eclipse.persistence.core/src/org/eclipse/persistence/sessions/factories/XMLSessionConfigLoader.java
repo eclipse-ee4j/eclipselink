@@ -79,7 +79,7 @@ public class XMLSessionConfigLoader {
     /** Used to store the entity resolver to validate the XML schema when parsing. */
     protected PersistenceEntityResolver entityResolver;
 
-    public static final String ECLIPSELINK_SESSIONS_SCHEMA = "xsd/eclipselink_sessions_2.0.xsd";
+    public static final String ECLIPSELINK_SESSIONS_SCHEMA = "xsd/eclipselink_sessions_2.1.xsd";
     protected static final String DEFAULT_RESOURCE_NAME = "sessions.xml";
     protected static final String DEFAULT_RESOURCE_NAME_IN_META_INF = "META-INF/sessions.xml";
 
