@@ -53,6 +53,8 @@
  *       - 307050: Add defaults for access methods of a VIRTUAL access type
  *     04/27/2010-2.1 Guy Pelletier 
  *       - 309856: MappedSuperclasses from XML are not being initialized properly
+ *     05/19/2010-2.1 Guy Pelletier 
+ *       - 313574: Lower case primary key column association does not work when upper casing flag is set to true       
  ******************************************************************************/
 package org.eclipse.persistence.internal.jpa.metadata.accessors.mappings;
 
@@ -514,7 +516,17 @@ public abstract class MappingAccessor extends MetadataAccessor {
                 // However, in this case I think that is ok since in theory we 
                 // are writing out the correct value that EclipseLink needs to 
                 // form valid queries.
-                joinColumn.setReferencedColumnName(descriptor.getPrimaryKeyJoinColumnAssociation(joinColumn.getReferencedColumnName()));
+                String referencedColumnName = joinColumn.getReferencedColumnName();
+                // The referenced column name in a variable one to one case is a 
+                // query key name and not a column name so bypass any of this
+                // code.
+                if (referencedColumnName != null && !isVariableOneToOne()) {
+                    if (getProject().getShouldForceFieldNamesToUpperCase()) {
+                        referencedColumnName = referencedColumnName.toUpperCase();
+                    }
+                    
+                    joinColumn.setReferencedColumnName(descriptor.getPrimaryKeyJoinColumnAssociation(referencedColumnName));
+                }
             }
         }
         

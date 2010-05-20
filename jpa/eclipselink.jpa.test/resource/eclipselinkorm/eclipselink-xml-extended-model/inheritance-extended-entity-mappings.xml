@@ -246,6 +246,12 @@
                     <cascade-persist/>
                 </cascade>
             </many-to-one>
+            <many-to-one name="boat" target-entity="Boat" fetch="LAZY" optional="false">
+                <join-column name="BOAT_ID" referenced-column-name="boat_id"/>
+                <cascade>
+                    <cascade-persist/>
+                </cascade>
+            </many-to-one>
             <many-to-one name="bestFriend" target-entity="Engineer" fetch="LAZY" optional="false">
                 <join-column name="FRIEND_ID"/>
                 <cascade>

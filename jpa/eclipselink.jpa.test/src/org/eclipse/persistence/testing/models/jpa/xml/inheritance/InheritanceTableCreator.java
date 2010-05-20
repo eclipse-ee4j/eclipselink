@@ -424,6 +424,17 @@ public class InheritanceTableCreator extends org.eclipse.persistence.tools.schem
         fieldCAR_ID.setShouldAllowNull(true);
         fieldCAR_ID.setForeignKeyFieldName("CMP3_XML_FUEL_VEH.ID");
         table.addField(fieldCAR_ID);
+        
+        FieldDefinition fieldBOAT_ID = new FieldDefinition();
+        fieldBOAT_ID.setName("BOAT_ID");
+        fieldBOAT_ID.setTypeName("NUMBER");
+        fieldBOAT_ID.setSize(15);
+        fieldBOAT_ID.setSubSize(0);
+        fieldBOAT_ID.setIsPrimaryKey(false);
+        fieldBOAT_ID.setIsIdentity(false);
+        fieldBOAT_ID.setUnique(false);
+        fieldBOAT_ID.setShouldAllowNull(true);
+        table.addField(fieldBOAT_ID);
 
         return table;
     }

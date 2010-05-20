@@ -24,13 +24,19 @@ import javax.persistence.Query;
 
 import junit.framework.*;
 
+import org.eclipse.persistence.descriptors.ClassDescriptor;
+import org.eclipse.persistence.internal.helper.DatabaseField;
+import org.eclipse.persistence.mappings.DatabaseMapping;
+import org.eclipse.persistence.mappings.OneToOneMapping;
 import org.eclipse.persistence.sessions.DatabaseSession;
+import org.eclipse.persistence.sessions.server.ServerSession;
 
 import org.eclipse.persistence.testing.models.jpa.xml.inheritance.MacBook;
 import org.eclipse.persistence.testing.models.jpa.xml.inheritance.MacBookPro;
 import org.eclipse.persistence.testing.models.jpa.xml.inheritance.Boat;
 import org.eclipse.persistence.testing.models.jpa.xml.inheritance.Bus;
 import org.eclipse.persistence.testing.models.jpa.xml.inheritance.Company;
+import org.eclipse.persistence.testing.models.jpa.xml.inheritance.Person;
 import org.eclipse.persistence.testing.models.jpa.xml.inheritance.SportsCar;
 import org.eclipse.persistence.testing.models.jpa.xml.inheritance.InheritanceTableCreator;
 import org.eclipse.persistence.testing.models.jpa.xml.inheritance.InheritanceModelExamples;
@@ -88,6 +94,7 @@ public class EntityMappingsInheritanceJUnitTestCase extends JUnitTestCase {
         suite.addTest(new EntityMappingsInheritanceJUnitTestCase("testDeleteBusFueledVehicle", persistenceUnit));
         suite.addTest(new EntityMappingsInheritanceJUnitTestCase("testDeleteFueledVehicle", persistenceUnit));
         suite.addTest(new EntityMappingsInheritanceJUnitTestCase("testDeleteNonFueledVehicle", persistenceUnit));
+        suite.addTest(new EntityMappingsInheritanceJUnitTestCase("testPKJoinColumnAssociation", persistenceUnit));
         
         if (persistenceUnit.equals("extended-inheritance")) {
             suite.addTest(new EntityMappingsInheritanceJUnitTestCase("testAppleComputers", persistenceUnit));
@@ -435,4 +442,30 @@ public class EntityMappingsInheritanceJUnitTestCase extends JUnitTestCase {
         assertTrue("Error updating NonFueledVehicle [Boat]", newBoat.getOwner().getName().equals("XYZ"));
     }
 
+    public void testPKJoinColumnAssociation() {
+        EntityManager em = createEntityManager(m_persistenceUnit);
+        
+        beginTransaction(em);
+        try {
+            Boat boat = new Boat();
+            boat.setModel("Sprint");
+            boat.setPassengerCapacity(99);
+            em.persist(boat);
+            
+            Person person = new Person();
+            person.setBoat(boat);
+            person.setName("boat owner");
+            em.persist(person);
+            
+            commitTransaction(em);
+        } catch (RuntimeException e) {
+            if (isTransactionActive(em)){
+                rollbackTransaction(em);
+            }
+            
+            fail("Error on commit: " + e.getCause());
+        } finally {
+            closeEntityManager(em);
+        }
+    }
 }

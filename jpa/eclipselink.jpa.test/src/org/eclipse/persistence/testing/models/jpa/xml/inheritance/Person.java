@@ -29,6 +29,7 @@ public class Person implements Serializable {
     public Number id;
     public String name;
     public Car car;
+    public Boat boat;
     public Engineer bestFriend;
     public Lawyer representitive;
 
@@ -40,6 +41,14 @@ public class Person implements Serializable {
         this.id = id; 
     }
 
+	public Boat getBoat() {
+        return boat;
+    }
+	
+	public void setBoat(Boat boat) {
+	    this.boat = boat;
+	}
+	
     public Car getCar() {
         return car;
     }
