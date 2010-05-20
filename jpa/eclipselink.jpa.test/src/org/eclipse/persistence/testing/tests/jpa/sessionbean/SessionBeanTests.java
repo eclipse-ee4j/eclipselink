@@ -92,7 +92,7 @@ public class SessionBeanTests extends JUnitTestCase {
     // WAS
     "org.eclipse.persistence.testing.models.jpa.sessionbean.EmployeeService",
     // jboss
-    "EmployeeService/remote",
+    "eclipselink-sessionbean-model/EmployeeServiceBean/remote-org.eclipse.persistence.testing.models.jpa.sessionbean.EmployeeService",
     // NetWeaver
     "JavaEE/servertest/REMOTE/EmployeeServiceBean/org.eclipse.persistence.testing.models.jpa.sessionbean.EmployeeService" };
 

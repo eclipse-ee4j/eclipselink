@@ -94,7 +94,7 @@ public class NativeAPITests extends JUnitTestCase {
     // WAS
     "org.eclipse.persistence.testing.models.nativeapitest.EmployeeService",
     // jboss
-    "EmployeeService/remote",
+    "eclipselink-nativeapitest-model/EmployeeServiceBean/remote-org.eclipse.persistence.testing.models.nativeapitest.EmployeeService",
     // NetWeaver
     "JavaEE/servertest/REMOTE/EmployeeServiceBean/org.eclipse.persistence.testing.models.nativeapitest.EmployeeService" };
 
