@@ -418,21 +418,21 @@ public class NestedFetchGroupTests extends BaseFetchGroupTests {
         for (Employee emp : emps) {
             managerIds.add(emp.getManager().getId());
         }
-        int nManagersWithDepartment = 0;
+        HashSet departmentIds = new HashSet();
         for (Employee emp : emps) {
             if(managerIds.contains(emp.getId())) {
                 // this employee is also a manager of one of the emps, therefore it doesn't have fetch group
                 assertNull(((FetchGroupTracker)emp)._persistence_getFetchGroup());
                 if(emp.getDepartment() != null) {
                     // non-null department is selected in a separate sql due to:
-                    // Bug 307881 - Join attribute defined on mapping is not fetched in nested query 
-                    nManagersWithDepartment++;
+                    // Bug 307881 - Join attribute defined on mapping is not fetched in nested query
+                    departmentIds.add(emp.getDepartment().getId());
                 }
             } else {
                 assertFetched(emp, fg);
             }
         }
-        assertEquals(numSelect, 1 + nManagersWithDepartment);
+        assertEquals(numSelect, 1 + departmentIds.size());
     }
     
     @Test
