@@ -21,6 +21,7 @@ import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
 import javax.xml.bind.Unmarshaller;
 
+import org.eclipse.persistence.jaxb.JAXBContext;
 import org.eclipse.persistence.testing.jaxb.externalizedmetadata.ExternalizedMetadataTestCases; 
 import org.w3c.dom.Document;
 
@@ -32,12 +33,9 @@ public class BinaryDataCollectionMappingTestCases extends ExternalizedMetadataTe
     private static final String CONTEXT_PATH = "org.eclipse.persistence.testing.jaxb.externalizedmetadata.mappings.binarydatacollection";
     private static final String PATH = "org/eclipse/persistence/testing/jaxb/externalizedmetadata/mappings/binarydatacollection/";
     
-    private MySchemaOutputResolver resolver;
-    
     private static final byte[] BYTES0123 = new byte[] { 0, 1, 2, 3 };
     private static final byte[] BYTES1234 = new byte[] { 1, 2, 3, 4 };
     private static final byte[] BYTES2345 = new byte[] { 2, 3, 4, 5 };
-
 
     /**
      * This is the preferred (and only) constructor.
@@ -49,15 +47,10 @@ public class BinaryDataCollectionMappingTestCases extends ExternalizedMetadataTe
     }
     
     /**
-     * This method's primary purpose id to generate schema(s). Validation of
-     * generated schemas will occur in the testXXXGen method(s) below. Note that
-     * the JAXBContext is created from this call and is required for
-     * marshal/unmarshal, etc. tests.
      * 
      */
     public void setUp() throws Exception {
         super.setUp();
-        resolver = generateSchemaWithFileName(new Class[] { MyData.class }, CONTEXT_PATH, PATH + "mydata-oxm.xml", 1);
     }
 
 
@@ -88,9 +81,20 @@ public class BinaryDataCollectionMappingTestCases extends ExternalizedMetadataTe
      * Verify schema generation was correct.
      * 
      */
-    public void testBinaryDataCollectionSchemaGen() {
+    public void testSchemaGenAndValidation() {
+        // generate schema
+        MySchemaOutputResolver resolver = generateSchemaWithFileName(new Class[] { MyData.class }, CONTEXT_PATH, PATH + "mydata-oxm.xml", 1);
         // validate the schema
         compareSchemas(resolver.schemaFiles.get(EMPTY_NAMESPACE), new File(PATH + "mydata.xsd"));
+        // validate mydata.xml
+        String src = PATH + "mydata.xml";
+        String result = validateAgainstSchema(src, EMPTY_NAMESPACE, resolver);
+        assertTrue("Instance doc validation (mydata.xml) failed unxepectedly: " + result, result == null);
+        
+        // validate write-mydata.xml
+        src = PATH + "write-mydata.xml";
+        result = validateAgainstSchema(src, EMPTY_NAMESPACE, resolver);
+        assertTrue("Instance doc validation (write-mydata.xml) failed unxepectedly: " + result, result == null);
     }
     
     /**
@@ -106,11 +110,19 @@ public class BinaryDataCollectionMappingTestCases extends ExternalizedMetadataTe
         if (iDocStream == null) {
             fail("Couldn't load instance doc [" + PATH + "mydata.xml" + "]");
         }
+
+        JAXBContext jCtx = null;
+        try {
+            jCtx = createContext(new Class[] { MyData.class }, CONTEXT_PATH, PATH + "mydata-oxm.xml");
+        } catch (JAXBException e1) {
+            fail("JAXBContext creation failed: " + e1.getMessage());
+        }
+
         MyData ctrlData = getControlObject();
         // writeOnlyBytes will not be read in
         ctrlData.writeOnlyBytes = null;
         try {
-            Unmarshaller unmarshaller = jaxbContext.createUnmarshaller();
+            Unmarshaller unmarshaller = jCtx.createUnmarshaller();
             MyData myObj = (MyData) unmarshaller.unmarshal(iDocStream);
             assertNotNull("Unmarshalled object is null.", myObj);
             assertTrue("Accessor method was not called as expected", myObj.wasSetCalled);
@@ -139,9 +151,17 @@ public class BinaryDataCollectionMappingTestCases extends ExternalizedMetadataTe
             e.printStackTrace();
             fail("An unexpected exception occurred loading control document [" + src + "].");
         }
+
+        JAXBContext jCtx = null;
+        try {
+            jCtx = createContext(new Class[] { MyData.class }, CONTEXT_PATH, PATH + "mydata-oxm.xml");
+        } catch (JAXBException e1) {
+            fail("JAXBContext creation failed: " + e1.getMessage());
+        }
+
         try {
             MyData ctrlData = getControlObject();
-            Marshaller marshaller = jaxbContext.createMarshaller();
+            Marshaller marshaller = jCtx.createMarshaller();
             marshaller.marshal(ctrlData, testDoc);
             //marshaller.marshal(ctrlData, System.out);
             assertTrue("Accessor method was not called as expected", ctrlData.wasGetCalled);

@@ -42,7 +42,7 @@ public class DateTestCases extends SchemaGenTestCases {
         JAXBContext jaxbContext = JAXBContext.newInstance(Employee.class);
         StringOutputResolver sor = new StringOutputResolver();
         jaxbContext.generateSchema(sor);
-        System.out.println(sor.getSchema());
+        //System.out.println(sor.getSchema());
 
         Employee employee = new Employee();
         employee.setUtilDateProperty(new java.util.Date());

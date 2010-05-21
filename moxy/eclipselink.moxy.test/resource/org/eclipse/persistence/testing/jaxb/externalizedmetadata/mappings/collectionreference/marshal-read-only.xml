@@ -2,8 +2,8 @@
 <document-root>
     <employee/>
     <addresses>
-        <address aid="100" />
-        <address aid="101" />
-        <address aid="102" />
+        <address aid="a100" />
+        <address aid="a101" />
+        <address aid="a102" />
     </addresses>
 </document-root>

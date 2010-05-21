@@ -160,7 +160,7 @@ public class XmlInverseReferenceMappingTestCases extends ExternalizedMetadataTes
         Marshaller marshaller = jaxbContext.createMarshaller();
         try {
             marshaller.marshal(ctrlObj, testDoc);
-            marshaller.marshal(ctrlObj, System.out);
+            //marshaller.marshal(ctrlObj, System.out);
             assertTrue("Document comparison failed unxepectedly: ", compareDocuments(ctrlDoc, testDoc));
         } catch (JAXBException e) {
             e.printStackTrace();
