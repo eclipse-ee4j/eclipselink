@@ -356,6 +356,13 @@ public class SchemaGenerator {
                 if (!helper.isAnnotationPresent(next.getElement(), XmlTransient.class) && !next.isInverseReference()) {
                     // deal with xml-path case
                     if (next.getXmlPath() != null) {
+                        // '.' xml-path requires special handling
+                        if (next.getXmlPath().equals(".")) {
+                            TypeInfo info = (TypeInfo) typeInfo.get(next.getActualType().getQualifiedName());
+                            addToSchemaType(info, info.getPropertyList(), compositor, type, info.getSchema());
+                            continue;
+                        }
+                        
                         // create the XPathFragment(s) for the path
                         XMLField xfld = new XMLField(next.getXmlPath());
                         xfld.setNamespaceResolver(currentSchema.getNamespaceResolver());

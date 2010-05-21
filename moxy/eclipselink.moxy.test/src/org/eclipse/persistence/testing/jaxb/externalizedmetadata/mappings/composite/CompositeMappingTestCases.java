@@ -55,7 +55,7 @@ public class CompositeMappingTestCases extends ExternalizedMetadataTestCases {
     private static final String PHONE_2 = "613.288.0002";
     private static final String PRIVATE_NUMBER = "000.000.0000";
     private static final String FOO_NAME = "myfoo";
-    private static final int DEPT_ID = 101;
+    private static final String DEPT_ID = "101";
     private static final String DEPT_NAME = "Sanitation";
     private static final String EMPLOYEES_NS = "http://www.example.com/employees"; 
     private static final String CONTACTS_NS = "http://www.example.com/contacts"; 
@@ -82,7 +82,6 @@ public class CompositeMappingTestCases extends ExternalizedMetadataTestCases {
         super.setUp();
         employeeResolver = generateSchemaWithFileName(new Class[] { Employee.class }, CONTEXT_PATH, PATH + "employee-oxm.xml", 2);
     }
-
 
     /**
      * Return the control Employee.
@@ -139,11 +138,21 @@ public class CompositeMappingTestCases extends ExternalizedMetadataTestCases {
         return emp;
     }
     
-    public void testEmployeeSchemaGen() {
+    public void testSchemaGenAndValidation() {
         // validate employee schema
         compareSchemas(employeeResolver.schemaFiles.get(EMPLOYEES_NS), new File(PATH + "employee.xsd"));
         // validate contacts schema
         compareSchemas(employeeResolver.schemaFiles.get(CONTACTS_NS), new File(PATH + "contacts.xsd"));
+        
+        // validate employee.xml
+        String src = PATH + "employee.xml";
+        String result = validateAgainstSchema(src, EMPLOYEES_NS, employeeResolver);
+        assertTrue("Instance doc validation (employee.xml) failed unxepectedly: " + result, result == null);
+
+        // validate write-employee.xml
+        src = PATH + "write-employee.xml";
+        result = validateAgainstSchema(src, EMPLOYEES_NS, employeeResolver);
+        assertTrue("Instance doc validation (write-employee.xml) failed unxepectedly: " + result, result == null);
     }
     
     /**
@@ -209,99 +218,6 @@ public class CompositeMappingTestCases extends ExternalizedMetadataTestCases {
         } catch (JAXBException e) {
             e.printStackTrace();
             fail("Marshal operation failed.");
-        }
-    }
-
-    // THE FOLLOWING CODE CAN BE USED TO GENERATE DEPLOYMENT XML FOR DOCUMENTATION PURPOSES. //
-
-    public void xtestDeploymentXML() {
-        XMLProjectWriter.write(new EmployeeProject(), "employee.xml");
-    }
-
-    class EmployeeProject extends Project {
-        public EmployeeProject() {
-            addDescriptor(getEmployeeDescriptor());
-            addDescriptor(getFooDescriptor());
-        }
-
-        XMLDescriptor getEmployeeDescriptor() {
-            // setup mappings
-            XMLCompositeObjectMapping fooMapping = new XMLCompositeObjectMapping();
-            fooMapping.setAttributeName("foo");
-            fooMapping.setXPath(".");
-
-            XMLCompositeObjectMapping homeAddressMapping = new XMLCompositeObjectMapping();
-            homeAddressMapping.setAttributeName("homeAddress");
-            homeAddressMapping.setXPath("info/contact-info/home-address");
-
-            XMLCompositeObjectMapping workAddressMapping = new XMLCompositeObjectMapping();
-            workAddressMapping.setAttributeName("workAddress");
-            workAddressMapping.setXPath("info/contact-info/work-address");
-
-            XMLCompositeObjectMapping alternateAddressMapping = new XMLCompositeObjectMapping();
-            alternateAddressMapping.setAttributeName("alternateAddress");
-            alternateAddressMapping.setXPath("info/contact-info/alternate-address");
-            alternateAddressMapping.setIsReadOnly(true);
-            
-            XMLCompositeObjectMapping phone1Mapping = new XMLCompositeObjectMapping();
-            phone1Mapping.setAttributeName("phone1");
-            phone1Mapping.setXPath("info/contact-info/phone[1]");
-            
-            XMLCompositeObjectMapping phone2Mapping = new XMLCompositeObjectMapping();
-            phone2Mapping.setAttributeName("phone2");
-            phone2Mapping.setXPath("info/contact-info/phone[2]");
-            
-            XMLCompositeObjectMapping privatePhoneMapping = new XMLCompositeObjectMapping();
-            privatePhoneMapping.setAttributeName("privatePhone");
-            privatePhoneMapping.setXPath("private-phone");
-            privatePhoneMapping.setIsWriteOnly(true);
-            
-            XMLCompositeObjectMapping departmentMapping = new XMLCompositeObjectMapping();
-            departmentMapping.setAttributeName("department");
-            departmentMapping.setXPath(".");
-            departmentMapping.setSetMethodName("setDepartment");
-            departmentMapping.setGetMethodName("getDepartment");
-            
-            XMLCompositeObjectMapping aDepartmentMapping = new XMLCompositeObjectMapping();
-            aDepartmentMapping.setAttributeName("aDept");
-            aDepartmentMapping.setXPath("a-dept");
-            aDepartmentMapping.setSetMethodName("setADept");
-            aDepartmentMapping.setGetMethodName("getADept");
-            NullPolicy absNullPolicy = new NullPolicy();
-            absNullPolicy.setNullRepresentedByEmptyNode(false);
-            absNullPolicy.setNullRepresentedByXsiNil(false);
-            absNullPolicy.setMarshalNullRepresentation(XMLNullRepresentationType.EMPTY_NODE);
-            aDepartmentMapping.setNullPolicy(absNullPolicy);
-
-            // setup descriptor
-            XMLDescriptor descriptor = new XMLDescriptor();
-            descriptor.setJavaClass(Employee.class);
-            descriptor.setDefaultRootElement("employee");
-            //descriptor.setNamespaceResolver(namespaceResolver);
-            descriptor.addMapping(fooMapping);
-            descriptor.addMapping(homeAddressMapping);
-            descriptor.addMapping(workAddressMapping);
-            descriptor.addMapping(alternateAddressMapping);
-            descriptor.addMapping(phone1Mapping);
-            descriptor.addMapping(phone2Mapping);
-            descriptor.addMapping(privatePhoneMapping);
-            descriptor.addMapping(departmentMapping);
-            descriptor.addMapping(aDepartmentMapping);
-            return descriptor;
-        }
-        
-        XMLDescriptor getFooDescriptor() {
-            // setup mappings
-            XMLDirectMapping foodataMapping = new XMLDirectMapping();
-            foodataMapping.setAttributeName("foodata");
-            foodataMapping.setXPath("@foodata");
-            // setup descriptor
-            XMLDescriptor descriptor = new XMLDescriptor();
-            descriptor.setJavaClass(Foo.class);
-            descriptor.setDefaultRootElement("foo");
-            //descriptor.setNamespaceResolver(namespaceResolver);
-            descriptor.addMapping(foodataMapping);
-            return descriptor;
         }
     }
 }

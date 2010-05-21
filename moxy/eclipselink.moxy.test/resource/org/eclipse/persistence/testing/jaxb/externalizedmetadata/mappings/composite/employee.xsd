@@ -16,7 +16,7 @@
    </xsd:complexType>
    <xsd:complexType name="department">
       <xsd:sequence>
-         <xsd:element name="deptId" type="xsd:int"/>
+         <xsd:element name="deptId" type="xsd:string" minOccurs="0"/>
          <xsd:element name="deptName" type="xsd:string" minOccurs="0"/>
       </xsd:sequence>
    </xsd:complexType>
@@ -40,11 +40,12 @@
                </xsd:sequence>
             </xsd:complexType>
          </xsd:element>
-         <xsd:element name="foo" type="ns0:foo" minOccurs="0"/>
          <xsd:element name="private-phone" type="ns0:phone" minOccurs="0"/>
-         <xsd:element name="department" type="ns0:department" minOccurs="0"/>
+         <xsd:element name="deptId" type="xsd:string" minOccurs="0"/>
+         <xsd:element name="deptName" type="xsd:string" minOccurs="0"/>
          <xsd:element name="a-dept" type="ns0:department" minOccurs="0"/>
       </xsd:sequence>
+      <xsd:attribute name="foodata" type="xsd:string"/>
    </xsd:complexType>
    <xsd:element name="employee" type="ns0:employee"/>
 </xsd:schema>

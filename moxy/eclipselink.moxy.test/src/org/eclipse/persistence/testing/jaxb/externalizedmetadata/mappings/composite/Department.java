@@ -13,7 +13,7 @@
 package org.eclipse.persistence.testing.jaxb.externalizedmetadata.mappings.composite;
 
 public class Department {
-    public int deptId = -1;
+    public String deptId = "-1";
     public String deptName = "";
 
     public boolean equals(Object obj) {
@@ -26,6 +26,6 @@ public class Department {
             return false;
         }
         
-        return (deptName.equals(dObj.deptName) && deptId == dObj.deptId);
+        return (deptName.equals(dObj.deptName) && deptId.equals(dObj.deptId));
     }
 }
