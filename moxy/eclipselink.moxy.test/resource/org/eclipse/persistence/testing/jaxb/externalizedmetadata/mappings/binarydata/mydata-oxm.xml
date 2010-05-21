@@ -4,7 +4,7 @@
 		<java-type name="org.eclipse.persistence.testing.jaxb.externalizedmetadata.mappings.binarydata.MyData">
             <xml-root-element name="my-data" />
             <java-attributes>
-                <xml-attribute java-attribute="bytes" xml-path="@mybytes">
+                <xml-attribute java-attribute="bytes" xml-path="data/@mybytes">
                     <xml-access-methods get-method="getBytes" set-method="setBytes" />
                 </xml-attribute>
                 <xml-attribute java-attribute="readOnlyBytes" xml-path="@my-read-only-bytes" read-only="true" />

@@ -51,7 +51,7 @@ public class XMLBinaryDataMappingNodeValue extends NodeValue implements NullCapa
     }
 
     public boolean isOwningNode(XPathFragment xPathFragment) {
-        return (xPathFragment.getNextFragment() == null) || xPathFragment.getNextFragment().isAttribute();
+        return (xPathFragment.getNextFragment() == null) || xPathFragment.isAttribute();
     }
 
     public XMLBinaryDataMappingNodeValue(XMLBinaryDataMapping mapping) {

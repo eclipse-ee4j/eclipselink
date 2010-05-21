@@ -65,7 +65,7 @@ public class XMLBinaryDataCollectionMappingNodeValue extends MappingNodeValue im
     }
 
     public boolean isOwningNode(XPathFragment xPathFragment) {
-        return xPathFragment.getNextFragment() == null || xPathFragment.getNextFragment().isAttribute();
+        return xPathFragment.getNextFragment() == null || xPathFragment.isAttribute();
     }
 
     public boolean marshal(XPathFragment xPathFragment, MarshalRecord marshalRecord, Object object, AbstractSession session, NamespaceResolver namespaceResolver) {

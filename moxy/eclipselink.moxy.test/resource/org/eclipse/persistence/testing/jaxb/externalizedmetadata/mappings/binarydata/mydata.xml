@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<my-data mybytes="AAECAw==" my-read-only-bytes="AQIDBA==">
+<my-data my-read-only-bytes="AQIDBA==">
+  <data mybytes="AAECAw=="/>
   <write-only-bytes>AgMEBQ==</write-only-bytes>
 </my-data>

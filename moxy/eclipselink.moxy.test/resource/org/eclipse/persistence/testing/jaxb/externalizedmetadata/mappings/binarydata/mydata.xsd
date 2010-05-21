@@ -2,9 +2,14 @@
 <xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema">
    <xsd:complexType name="myData">
       <xsd:sequence>
+         <xsd:element name="data" minOccurs="0">
+            <xsd:complexType>
+               <xsd:sequence/>
+               <xsd:attribute name="mybytes" type="xsd:base64Binary"/>
+            </xsd:complexType>
+         </xsd:element>
          <xsd:element name="write-only-bytes" type="xsd:base64Binary"/>
       </xsd:sequence>
-      <xsd:attribute name="mybytes" type="xsd:base64Binary"/>
       <xsd:attribute name="my-read-only-bytes" type="xsd:base64Binary"/>
    </xsd:complexType>
    <xsd:element name="my-data" type="myData"/>
