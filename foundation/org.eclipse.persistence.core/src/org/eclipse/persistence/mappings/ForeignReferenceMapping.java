@@ -552,6 +552,17 @@ public abstract class ForeignReferenceMapping extends DatabaseMapping {
                 }
             }
         } else {
+            if(nestedQuery.getDescriptor().hasFetchGroupManager()) {
+                FetchGroup sourceFG = baseQuery.getExecutionFetchGroup();
+                if (sourceFG != null) {                    
+                    if (sourceFG.containsAttribute(getAttributeName())) {
+                        FetchGroup targetFetchGroup = sourceFG.getGroup(getAttributeName());
+                        nestedQuery.setFetchGroup(targetFetchGroup);
+                        nestedQuery.prepareFetchGroup();
+                    }
+                }
+            }
+            
             List nestedJoins = extractNestedExpressions(joinManager.getJoinedAttributeExpressions(), nestedQuery.getExpressionBuilder(), false);
             if (nestedJoins.size() > 0) {
                 // Recompute the joined indexes based on the nested join expressions.
@@ -559,6 +570,7 @@ public abstract class ForeignReferenceMapping extends DatabaseMapping {
                 nestedQuery.getJoinedAttributeManager().setJoinedAttributeExpressions_(nestedJoins);
                 // the next line sets isToManyJoinQuery flag
                 nestedQuery.getJoinedAttributeManager().prepareJoinExpressions(session);
+                nestedQuery.getJoinedAttributeManager().computeJoiningMappingQueries(session);
                 nestedQuery.getJoinedAttributeManager().computeJoiningMappingIndexes(true, session, 0);
             } else if (nestedQuery.hasJoining()) {
                 // Clear any mapping level joins.
@@ -578,7 +590,7 @@ public abstract class ForeignReferenceMapping extends DatabaseMapping {
         nestedQuery.setShouldMaintainCache(baseQuery.shouldMaintainCache());
         nestedQuery.setShouldRefreshIdentityMapResult(baseQuery.shouldRefreshIdentityMapResult());
 
-        // For flashback: Must still propogate all properties, as the
+        // For flashback: Must still propagate all properties, as the
         // attributes of this joined attribute may be read later too.
         if (baseQuery.isObjectLevelReadQuery() && ((ObjectLevelReadQuery)baseQuery).hasAsOfClause()) {
             nestedQuery.setAsOfClause(((ObjectLevelReadQuery)baseQuery).getAsOfClause());

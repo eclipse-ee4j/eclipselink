@@ -94,4 +94,8 @@ public class AttributeItem implements Serializable {
     public String toString() {        
         return getClass().getSimpleName() + "(" + getAttributeName() + ")" + (this.group!=null ? " => " + this.group.toString() : "");
     }
+
+    public String toStringNoClassName() {        
+        return getAttributeName() + (this.group!=null ? " => " + this.group.toString() : "");
+    }
 }

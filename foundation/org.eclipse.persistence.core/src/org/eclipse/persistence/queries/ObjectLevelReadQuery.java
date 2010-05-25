@@ -45,13 +45,13 @@ import org.eclipse.persistence.expressions.ExpressionBuilder;
 import org.eclipse.persistence.history.AsOfClause;
 import org.eclipse.persistence.internal.databaseaccess.DatabaseCall;
 import org.eclipse.persistence.internal.descriptors.OptimisticLockingPolicy;
+import org.eclipse.persistence.internal.expressions.FieldExpression;
 import org.eclipse.persistence.internal.expressions.ForUpdateClause;
 import org.eclipse.persistence.internal.expressions.ForUpdateOfClause;
 import org.eclipse.persistence.internal.expressions.MapEntryExpression;
 import org.eclipse.persistence.internal.expressions.ObjectExpression;
 import org.eclipse.persistence.internal.expressions.QueryKeyExpression;
 import org.eclipse.persistence.internal.helper.DatabaseField;
-import org.eclipse.persistence.internal.helper.Helper;
 import org.eclipse.persistence.internal.helper.InvalidObject;
 import org.eclipse.persistence.internal.helper.NonSynchronizedVector;
 import org.eclipse.persistence.internal.history.UniversalAsOfClause;
@@ -607,6 +607,12 @@ public abstract class ObjectLevelReadQuery extends ObjectBuildingQuery {
      * add a partial attribute which is of the same type as the class being queried.
      * <p><b>Example</b>: query.addPartialAttribute("firstName")
      * @see #addPartialAttribute(Expression)
+     * @deprecated since EclipseLink 2.1, partial attributes replaced by fetch groups.
+     * @see FetchGroup
+     * Example:
+     * FetchGroup fetchGroup = new FetchGroup();
+     * fetchGroup.addAttribute("address.city"); 
+     * query.setFetchGroup(fetchGroup);
      */
     public void addPartialAttribute(String attributeName) {
         addPartialAttribute(getExpressionBuilder().get(attributeName));
@@ -614,19 +620,46 @@ public abstract class ObjectLevelReadQuery extends ObjectBuildingQuery {
 
     /**
      * INTERNAL:
-     * Iterate through a list of joined expressions and add the fields they represent to a list
-     * of fields.
+     * The method adds to the passed input vector the
+     * fields or expressions corresponding to the passed join expression.
      */
-    protected void addSelectionFieldsForJoinedExpressions(List fields, List joinedExpressions) {
-        for (int index = 0; index < joinedExpressions.size(); index++) {
-            ObjectExpression objectExpression = (ObjectExpression)joinedExpressions.get(index);
-
+    protected void addSelectionFieldsForJoinedExpression(List fields, boolean isCustomSQL, Expression expression) {
+        if(isCustomSQL) {
             // Expression may not have been initialized.
-            ExpressionBuilder builder = objectExpression.getBuilder();
+            ExpressionBuilder builder = expression.getBuilder();
             builder.setSession(getSession().getRootSession(null));
             builder.setQueryClass(getReferenceClass());
-            ClassDescriptor descriptor = objectExpression.getMapping().getReferenceDescriptor();
-            fields.addAll(descriptor.getAllFields());
+        }
+        ForeignReferenceMapping mapping = (ForeignReferenceMapping)((QueryKeyExpression)expression).getMapping();
+        ClassDescriptor referenceDescriptor = mapping.getReferenceDescriptor();
+
+        // Add the fields defined by the nested fetch group - if it exists.
+        if(referenceDescriptor != null && referenceDescriptor.hasFetchGroupManager()) {
+            ObjectLevelReadQuery nestedQuery = getJoinedAttributeManager().getJoinedMappingQueries_().get(mapping);
+            nestedQuery = getJoinedAttributeManager().getNestedJoinedMappingQuery(expression);
+            FetchGroup nestedFetchGroup = nestedQuery.getExecutionFetchGroup();
+            if(nestedFetchGroup != null) {
+                Vector<DatabaseField> nestedFields = nestedQuery.getFetchGroupSelectionFields(mapping);
+                for(Object field : nestedFields) {
+                    if(field instanceof DatabaseField) {
+                        fields.add(new FieldExpression((DatabaseField)field, expression));
+                    } else {
+                        // must be expression
+                        fields.add(field);
+                    }
+                }
+                return;
+            }
+        }
+
+        if(isCustomSQL) {
+            if(referenceDescriptor != null) {
+                fields.addAll(referenceDescriptor.getAllFields());
+            } else {
+                fields.add(expression);
+            }
+        } else {
+            fields.add(expression);
         }
     }
 
@@ -1606,10 +1639,12 @@ public abstract class ObjectLevelReadQuery extends ObjectBuildingQuery {
     
     /**
      * INTERNAL:
-     * Return the fields required in the select clause, for fetch group reading.
+     * Return the set of fields required in the select clause, for fetch group reading.
      */
-    // TODO-244124-dclarke
-    public Vector getFetchGroupSelectionFields(boolean isCustomSQL) {
+    public Set<DatabaseField> getFetchGroupNonNestedFieldsSet() {
+        return getFetchGroupNonNestedFieldsSet(null);
+    }
+    public Set<DatabaseField> getFetchGroupNonNestedFieldsSet(DatabaseMapping nestedMapping) {
         Set fetchedFields = new HashSet(getExecutionFetchGroup().getItems().size());
 
         // Add required fields.
@@ -1632,34 +1667,68 @@ public abstract class ObjectLevelReadQuery extends ObjectBuildingQuery {
             }
             fetchedFields.addAll(mapping.getFields());
         }
+        if ((nestedMapping != null) && nestedMapping.isCollectionMapping()) {
+            List<DatabaseField> additionalFields = nestedMapping.getContainerPolicy().getAdditionalFieldsForJoin((CollectionMapping)nestedMapping);
+            if(additionalFields != null) {
+                fetchedFields.addAll(additionalFields);
+            }
+        }
+        return fetchedFields;
+    }
+    
+    /**
+     * INTERNAL:
+     * Return the fields required in the select clause, for fetch group reading.
+     */
+    public Vector getFetchGroupSelectionFields() {
+        return getFetchGroupSelectionFields(null);
+    }
+
+    /**
+     * INTERNAL:
+     * Return the fields required in the select clause, for fetch group reading.
+     * Top level (not nested) passes null instead of nestedMapping.
+     */
+    protected Vector getFetchGroupSelectionFields(DatabaseMapping nestedMapping) {
+        Set fetchedFields = getFetchGroupNonNestedFieldsSet(nestedMapping);
         
-        // Build field list in the same order as descriptor's fields to ensure field and join indexes match.
-        // Put null placeholders in place of non-selected fields.        
+        // Build field list in the same order as descriptor's fields so that the fields printed in the usual order in SELECT clause.
         Vector fields = NonSynchronizedVector.newInstance(getExecutionFetchGroup().getItems().size());
         for (Iterator iterator = getDescriptor().getFields().iterator(); iterator.hasNext();) {
             DatabaseField field = (DatabaseField)iterator.next();
             if (fetchedFields.contains(field)) {
                 fields.add(field);
-            } else {
-                fields.add(null);
             }
-        }
-        
-        // Add joined fields.
-        if (hasJoining()) {
-            if (isCustomSQL) {
-                addSelectionFieldsForJoinedExpressions(fields, getJoinedAttributeManager().getJoinedAttributeExpressions());
-                addSelectionFieldsForJoinedExpressions(fields, getJoinedAttributeManager().getJoinedMappingExpressions());
-            } else {
-                fields.addAll(getJoinedAttributeManager().getJoinedAttributeExpressions());
-                fields.addAll(getJoinedAttributeManager().getJoinedMappingExpressions());
-            }
-        }
-        if (hasAdditionalFields()) {
-            // Add additional fields, use for batch reading m-m.
-            fields.addAll(getAdditionalFields());
         }
         return fields;
+    }
+
+    /**
+     * INTERNAL:
+     * The method adds to the passed input vector the
+     * fields or expressions corresponding to the joins.
+     */
+    public void addJoinSelectionFields(Vector fields, boolean isCustomSQL) {
+        // executiveFetchGroup is used for warnings only - always null if no warnings logged
+        FetchGroup executionFetchGroup = null;
+        if(session.shouldLog(SessionLog.WARNING, SessionLog.QUERY)) {
+            executionFetchGroup = getExecutionFetchGroup();
+        }
+        for(Expression expression : getJoinedAttributeManager().getJoinedAttributeExpressions()) {
+            addSelectionFieldsForJoinedExpression(fields, isCustomSQL, expression);
+            // executiveFetchGroup is used for warnings only - always null if no warnings logged
+            if(executionFetchGroup != null) {
+                String nestedAttributeName = ((QueryKeyExpression)expression).getNestedAttributeName();
+                if(nestedAttributeName != null) {
+                    if(!executionFetchGroup.containsAttribute(nestedAttributeName)) {
+                        getSession().log(SessionLog.WARNING, SessionLog.QUERY, "query_has_joined_attribute_outside_fetch_group", new Object[]{toString(), nestedAttributeName});
+                    }
+                }
+            }
+        }
+        for(Expression expression : getJoinedAttributeManager().getJoinedMappingExpressions()) {
+            addSelectionFieldsForJoinedExpression(fields, isCustomSQL, expression);
+        }
     }
 
     /**
@@ -1671,18 +1740,25 @@ public abstract class ObjectLevelReadQuery extends ObjectBuildingQuery {
     public Vector getSelectionFields() {
         if (hasPartialAttributeExpressions()) {
             return getPartialAttributeSelectionFields(true);
-        } else if (this.fetchGroup != null) {
-            return getFetchGroupSelectionFields(true);
-        } else if (hasJoining()) {
-            JoinedAttributeManager joinManager = getJoinedAttributeManager();
-            Vector fields = NonSynchronizedVector.newInstance(getDescriptor().getAllFields().size() + joinManager.getJoinedAttributeExpressions().size() + joinManager.getJoinedMappingExpressions().size());
-            Helper.addAllToVector(fields, getDescriptor().getAllFields());
-            addSelectionFieldsForJoinedExpressions(fields, joinManager.getJoinedAttributeExpressions());
-            addSelectionFieldsForJoinedExpressions(fields, joinManager.getJoinedMappingExpressions());
-            return fields;
         }
-        return getDescriptor().getAllFields();
+
+        Vector fields = null;
+        if (getExecutionFetchGroup() != null) {
+            fields = getFetchGroupSelectionFields();
+        } else {
+            fields = (Vector)getDescriptor().getAllFields().clone();
+        }
+        // Add joined fields.
+        if (hasJoining()) {
+            addJoinSelectionFields(fields, true);
+        }
+        if (hasAdditionalFields()) {
+            // Add additional fields, use for batch reading m-m.
+            fields.addAll(getAdditionalFields());
+        }
+        return fields;
     }
+ 
  
     /**
      * PUBLIC:
@@ -1937,15 +2013,9 @@ public abstract class ObjectLevelReadQuery extends ObjectBuildingQuery {
     
     /**
      * INTERNAL:
-     * Prepare the receiver for execution in a session.
+     * Add mandatory attributes to fetch group, create entityFetchGroup.
      */
-    protected void prePrepare() throws QueryException {
-        // For bug 3136413/2610803 building the selection criteria from an EJBQL string or
-        // an example object is done just in time.
-        buildSelectionCriteria(session);
-        checkDescriptor(session);
-
-        Set<String> fetchGroupAttributes = null;
+    public void prepareFetchGroup() throws QueryException {
         FetchGroupManager fetchGroupManager = this.descriptor.getFetchGroupManager();
         if (!isReportQuery() && fetchGroupManager != null) {
             if(this.fetchGroup == null) {
@@ -1966,13 +2036,27 @@ public abstract class ObjectLevelReadQuery extends ObjectBuildingQuery {
                 } else {
                     this.entityFetchGroup = null;
                 }
-                fetchGroupAttributes = executionFetchGroup.getAttributeNames();
             }
+        } else {
+            this.fetchGroup = null;
         }
+    }
+    
+    /**
+     * INTERNAL:
+     * Prepare the receiver for execution in a session.
+     */
+    protected void prePrepare() throws QueryException {
+        // For bug 3136413/2610803 building the selection criteria from an EJBQL string or
+        // an example object is done just in time.
+        buildSelectionCriteria(session);
+        checkDescriptor(session);
+
+        prepareFetchGroup();
         
         // Add mapping joined attributes.
         if (getQueryMechanism().isExpressionQueryMechanism() && getDescriptor().getObjectBuilder().hasJoinedAttributes()) {
-            getJoinedAttributeManager().processJoinedMappings(fetchGroupAttributes);
+            getJoinedAttributeManager().processJoinedMappings();
             if(getJoinedAttributeManager().hasOrderByExpressions()) {
                 Iterator<Expression> it = getJoinedAttributeManager().getOrderByExpressions().iterator();
                 while(it.hasNext()) {

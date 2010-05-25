@@ -205,7 +205,7 @@ public class ClassWeaver extends ClassAdapter implements Constants {
      * Add a variable of type PropertyChangeListener to the class.  When this method has been run, the class
      * will contain a variable declaration similar to the following
      * 
-     * private _persistence_listener;
+     * private transient _persistence_listener;
      */
     public void addPropertyChangeListener(boolean attributeAccess){
         cv.visitField(ACC_PROTECTED + ACC_TRANSIENT, "_persistence_listener", PCL_SIGNATURE, null, null);
@@ -504,10 +504,12 @@ public class ClassWeaver extends ClassAdapter implements Constants {
         int opcode = attributeDetails.getReferenceClassType().getOpcode(Constants.ILOAD);
         
         if (classDetails.shouldWeaveChangeTracking()) {
-            cv_set.visitVarInsn(ALOAD, 0);
-            cv_set.visitLdcInsn(attribute);
-            // _persistence_checkFetchedForSet("variableName");
-            cv_set.visitMethodInsn(INVOKEVIRTUAL, classDetails.getClassName(), "_persistence_checkFetchedForSet", "(Ljava/lang/String;)V");
+            if (classDetails.shouldWeaveFetchGroups()) {
+                cv_set.visitVarInsn(ALOAD, 0);
+                cv_set.visitLdcInsn(attribute);
+                // _persistence_checkFetchedForSet("variableName");
+                cv_set.visitMethodInsn(INVOKEVIRTUAL, classDetails.getClassName(), "_persistence_checkFetchedForSet", "(Ljava/lang/String;)V");
+            }
 
             if (attributeDetails.weaveValueHolders()) {
                 // _persistence_initialize_variableName_vh();

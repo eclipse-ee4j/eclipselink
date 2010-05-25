@@ -202,6 +202,7 @@ public class MethodWeaver extends CodeAdapter implements Constants {
      *  }
      *  
      *  2. Modifies setter methods to store old value of attribute
+     *  If weaving for fetch groups:
      *  
      *  if(_persistence_listener != null)
      *      // for Objects
@@ -213,6 +214,14 @@ public class MethodWeaver extends CodeAdapter implements Constants {
      *      _persistence_checkFetchedForSet("attributeName");
      *  _persistence_propertyChange("attributeName", oldAttribute, argument);
      *  
+     *  otherwise (not weaving for fetch groups):
+     *  
+     *      // for Objects
+     *      AttributeType oldAttribute = getAttribute()
+     *      // for primitives
+     *      AttributeWrapperType oldAttribute = new AttributeWrapperType(getAttribute());
+     *          e.g. Double oldAttribute = new Double(getAttribute());
+     *  _persistence_propertyChange("attributeName", oldAttribute, argument);
      */
     public void weaveBeginningOfMethodIfRequired() {
         if (this.methodStarted){
@@ -273,73 +282,104 @@ public class MethodWeaver extends CodeAdapter implements Constants {
             attributeDetails = tcw.classDetails.getSetterMethodToAttributeDetails().get(methodName);
             boolean isSetMethod = (attributeDetails != null) && this.methodDescriptor.equals(attributeDetails.getSetterMethodSignature());
             if (isSetMethod  && !attributeDetails.hasField() && tcw.classDetails.shouldWeaveChangeTracking()) {
-                // if this is a primitive, get the wrapper class
-                String wrapper = ClassWeaver.wrapperFor(attributeDetails.getReferenceClassType().getSort());
-                
-                cv.visitInsn(ACONST_NULL);
-                if (wrapper != null){
-                    cv.visitVarInsn(ASTORE, 3);
+                if(tcw.classDetails.shouldWeaveFetchGroups()) {
+                    // if this is a primitive, get the wrapper class
+                    String wrapper = ClassWeaver.wrapperFor(attributeDetails.getReferenceClassType().getSort());
+                    
+                    cv.visitInsn(ACONST_NULL);
+                    if (wrapper != null){
+                        cv.visitVarInsn(ASTORE, 3);
+                    } else {
+                        cv.visitVarInsn(ASTORE, 2);
+                    }
+    
+                    cv.visitVarInsn(ALOAD, 0);
+                    cv.visitFieldInsn(GETFIELD, tcw.classDetails.getClassName(), "_persistence_listener", "Ljava/beans/PropertyChangeListener;");
+                    Label l0 = new Label();
+                    cv.visitJumpInsn(IFNULL, l0);
+    
+                    /**
+                     * The code below constructs the following code
+                     * 
+                     * AttributeType oldAttribute = getAttribute() // for Objects
+                     * 
+                     * AttributeWrapperType oldAttribute = new AttributeWrapperType(getAttribute()); // for primitives
+                     */                
+                    // 1st part of invoking constructor for primitives to wrap them
+                    if (wrapper != null) {
+                        cv.visitTypeInsn(NEW, wrapper);
+                        cv.visitInsn(DUP);
+                    }
+                    
+                    // Call the getter
+                    // getAttribute()
+                    cv.visitVarInsn(ALOAD, 0);
+                    cv.visitMethodInsn(INVOKEVIRTUAL, tcw.classDetails.getClassName(), attributeDetails.getGetterMethodName(), "()" + attributeDetails.getReferenceClassType().getDescriptor());               
+                    if (wrapper != null){
+                        // 2nd part of using constructor.
+                        cv.visitMethodInsn(INVOKESPECIAL, wrapper, "<init>", "(" + attributeDetails.getReferenceClassType().getDescriptor() + ")V");
+                        cv.visitVarInsn(ASTORE, 3);
+                    } else {
+                        // store the result
+                        cv.visitVarInsn(ASTORE, 2);
+                    }
+                    
+                    Label l1 = new Label();
+                    cv.visitJumpInsn(GOTO, l1);
+                    cv.visitLabel(l0);
+                    cv.visitVarInsn(ALOAD, 0);
+                    
+                    cv.visitLdcInsn(attributeDetails.getAttributeName());
+                    cv.visitMethodInsn(INVOKEVIRTUAL, tcw.classDetails.getClassName(), "_persistence_checkFetchedForSet", "(Ljava/lang/String;)V");
+                    cv.visitLabel(l1);
+                    
+                    cv.visitVarInsn(ALOAD, 0);
+                    cv.visitLdcInsn(attributeDetails.getAttributeName());
+                    
+                    if (wrapper != null) {
+                        cv.visitVarInsn(ALOAD, 3);
+                        cv.visitTypeInsn(NEW, wrapper);
+                        cv.visitInsn(DUP);
+                    } else {
+                        cv.visitVarInsn(ALOAD, 2);
+                    }
+                    // get an appropriate load opcode for the type
+                    int opcode = attributeDetails.getReferenceClassType().getOpcode(Constants.ILOAD);
+                    cv.visitVarInsn(opcode, 1);
+                    if (wrapper != null){
+                        cv.visitMethodInsn(INVOKESPECIAL, wrapper, "<init>", "(" + attributeDetails.getReferenceClassType().getDescriptor() + ")V");
+                    }
+                    cv.visitMethodInsn(INVOKEVIRTUAL, tcw.classDetails.getClassName(), "_persistence_propertyChange", "(Ljava/lang/String;Ljava/lang/Object;Ljava/lang/Object;)V");
                 } else {
-                    cv.visitVarInsn(ASTORE, 2);
+                    /**
+                     * The code below constructs the following code
+                     * 
+                     * AttributeType oldAttribute = getAttribute() // for Objects
+                     * 
+                     * AttributeWrapperType oldAttribute = new AttributeWrapperType(getAttribute()); // for primitives
+                     */                
+                    // if this is a primitive, get the wrapper class
+                    String wrapper = ClassWeaver.wrapperFor(attributeDetails.getReferenceClassType().getSort());
+                    
+                    // 1st part of invoking constructor for primitives to wrap them
+                    if (wrapper != null) {
+                        cv.visitTypeInsn(NEW, wrapper);
+                        cv.visitInsn(DUP);
+                    }
+                    
+                    // Call the getter
+                    // getAttribute()
+                    cv.visitVarInsn(ALOAD, 0);
+                    cv.visitMethodInsn(INVOKEVIRTUAL, tcw.classDetails.getClassName(), attributeDetails.getGetterMethodName(), "()" + attributeDetails.getReferenceClassType().getDescriptor());               
+                    if (wrapper != null){
+                        // 2nd part of using constructor.
+                        cv.visitMethodInsn(INVOKESPECIAL, wrapper, "<init>", "(" + attributeDetails.getReferenceClassType().getDescriptor() + ")V");
+                        cv.visitVarInsn(ASTORE, 3);
+                    } else {
+                        // store the result
+                        cv.visitVarInsn(ASTORE, 2);
+                    }
                 }
-
-                cv.visitVarInsn(ALOAD, 0);
-                cv.visitFieldInsn(GETFIELD, tcw.classDetails.getClassName(), "_persistence_listener", "Ljava/beans/PropertyChangeListener;");
-                Label l0 = new Label();
-                cv.visitJumpInsn(IFNULL, l0);
-
-                /**
-                 * The code below constructs the following code
-                 * 
-                 * AttributeType oldAttribute = getAttribute() // for Objects
-                 * 
-                 * AttributeWrapperType oldAttribute = new AttributeWrapperType(getAttribute()); // for primitives
-                 */                
-                // 1st part of invoking constructor for primitives to wrap them
-                if (wrapper != null) {
-                    cv.visitTypeInsn(NEW, wrapper);
-                    cv.visitInsn(DUP);
-                }
-                
-                // Call the getter
-                // getAttribute()
-                cv.visitVarInsn(ALOAD, 0);
-                cv.visitMethodInsn(INVOKEVIRTUAL, tcw.classDetails.getClassName(), attributeDetails.getGetterMethodName(), "()" + attributeDetails.getReferenceClassType().getDescriptor());               
-                if (wrapper != null){
-                    // 2nd part of using constructor.
-                    cv.visitMethodInsn(INVOKESPECIAL, wrapper, "<init>", "(" + attributeDetails.getReferenceClassType().getDescriptor() + ")V");
-                    cv.visitVarInsn(ASTORE, 3);
-                } else {
-                    // store the result
-                    cv.visitVarInsn(ASTORE, 2);
-                }
-                
-                Label l1 = new Label();
-                cv.visitJumpInsn(GOTO, l1);
-                cv.visitLabel(l0);
-                cv.visitVarInsn(ALOAD, 0);
-                
-                cv.visitLdcInsn(attributeDetails.getAttributeName());
-                cv.visitMethodInsn(INVOKEVIRTUAL, tcw.classDetails.getClassName(), "_persistence_checkFetchedForSet", "(Ljava/lang/String;)V");
-                cv.visitLabel(l1);
-                
-                cv.visitVarInsn(ALOAD, 0);
-                cv.visitLdcInsn(attributeDetails.getAttributeName());
-                
-                if (wrapper != null) {
-                    cv.visitVarInsn(ALOAD, 3);
-                    cv.visitTypeInsn(NEW, wrapper);
-                    cv.visitInsn(DUP);
-                } else {
-                    cv.visitVarInsn(ALOAD, 2);
-                }
-                // get an appropriate load opcode for the type
-                int opcode = attributeDetails.getReferenceClassType().getOpcode(Constants.ILOAD);
-                cv.visitVarInsn(opcode, 1);
-                if (wrapper != null){
-                    cv.visitMethodInsn(INVOKESPECIAL, wrapper, "<init>", "(" + attributeDetails.getReferenceClassType().getDescriptor() + ")V");
-                }
-                cv.visitMethodInsn(INVOKEVIRTUAL, tcw.classDetails.getClassName(), "_persistence_propertyChange", "(Ljava/lang/String;Ljava/lang/Object;Ljava/lang/Object;)V");
             }
         }
     }

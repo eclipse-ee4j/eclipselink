@@ -376,6 +376,7 @@ public class LoggingLocalizationResource extends ListResourceBundle {
         { "jmx_mbean_runtime_services_threadpool_initialize_failed", "Failed to initialize MBean threadPoolRuntime: {0}" },
         { "jmx_mbean_runtime_services_get_executethreadruntime_object_failed", "Version of WebLogic does not support executeThreadRuntime - using ClassLoader: {0}" },
         { "nested_entity_manager_flush_not_executed_pre_query_changes_may_be_pending", "The class {0} is already flushing. The query will be executed without further changes being written to the database.  If the query is conditional upon changed data the changes may not be reflected in the results.  Users should issue a flush() call upon completion of the dependent changes and prior to this flush() to ensure correct results." },
+        { "query_has_joined_attribute_outside_fetch_group", "{0} has joined attribute {1} that is not included into the fetch group. That will cause the whole object to be read."},
         // MESSAGES end        
         
         
@@ -636,6 +637,7 @@ public class LoggingLocalizationResource extends ListResourceBundle {
         { "jmx_mbean_runtime_services_threadpool_initialize_failed.MSGID", "TOP-50231"},
         { "jmx_mbean_runtime_services_get_executethreadruntime_object_failed.MSGID", "TOP-50232"},        
         { "nested_entity_manager_flush_not_executed_pre_query_changes_may_be_pending.MSGID", "TOP-50233"},
+        { "query_has_joined_attribute_outside_fetch_group.MSGID", "TOP-50234"},
         // JAXB Metadata Logging Messages
         { "jaxb_metadata_warning_ignoring_java_attribute", "Ignoring attribute [{0}] on class [{1}] as no Property was generated for it."},
         { "jaxb_metadata_warning_invalid_bound_type", "The bound type [{0}] for adapter class [{1}] is invalid, and will be ignored."},

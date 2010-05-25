@@ -965,23 +965,22 @@ public class ExpressionQueryMechanism extends StatementQueryMechanism {
         if (owner.hasPartialAttributeExpressions()) {
             return owner.getPartialAttributeSelectionFields(false);
         }
-        if (owner.hasExecutionFetchGroup()) {
-            return owner.getFetchGroupSelectionFields(false);
-        }
 
-        ExpressionBuilder base = statement.getExpressionBuilder();
-        // All fields are required if all subclass field are need, this is for view selects, or where parent and children share a single table.
-        Vector fields;
-        if (includeAllSubclassFields) {
-            fields = (Vector)getDescriptor().getAllFields().clone();
+        Vector fields = null;
+        if (owner.getExecutionFetchGroup() != null) {
+            fields = owner.getFetchGroupSelectionFields();
         } else {
-            fields = org.eclipse.persistence.internal.helper.NonSynchronizedVector.newInstance();
-            fields.add(base);
+            if (includeAllSubclassFields) {
+                fields = (Vector)getDescriptor().getAllFields().clone();
+            } else {
+                fields = org.eclipse.persistence.internal.helper.NonSynchronizedVector.newInstance();
+                ExpressionBuilder base = statement.getExpressionBuilder();
+                fields.add(base);
+            }
         }
         // Add joined fields.
         if (owner.hasJoining()) {
-            fields.addAll(owner.getJoinedAttributeManager().getJoinedAttributeExpressions());
-            fields.addAll(owner.getJoinedAttributeManager().getJoinedMappingExpressions());
+            owner.addJoinSelectionFields(fields, false);
         }
         if (owner.hasAdditionalFields()) {
             // Add additional fields, use for batch reading m-m.

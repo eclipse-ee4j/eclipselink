@@ -258,7 +258,7 @@ public class AttributeGroup implements Serializable, Cloneable {
      * attribute names defining the path.
      */
     protected String[] convert(String... nameOrPath) {
-        if (nameOrPath == null || nameOrPath.length == 0 || (nameOrPath.length == 1 && (nameOrPath[0] == null || nameOrPath[0].isEmpty()))) {
+        if (nameOrPath == null || nameOrPath.length == 0 || (nameOrPath.length == 1 && (nameOrPath[0] == null || nameOrPath[0].length() == 0))) {
             // TODO - improve error?
             throw new IllegalArgumentException("Inavlid name or path: " + (nameOrPath.length == 1 ? nameOrPath[0] : null));
         }
@@ -316,7 +316,11 @@ public class AttributeGroup implements Serializable, Cloneable {
     }
 
     public String toString() {
-        return getClass().getSimpleName()+"(" + getName() + "){"+ toStringItems() +"}";
+        return getClass().getSimpleName()+"(" + getName() + ")"+toStringAdditionalInfo()+"{"+ toStringItems() +"}";
+    }
+    
+    public String toStringAdditionalInfo() {
+        return "";
     }
     
     protected String toStringItems() {
@@ -325,11 +329,12 @@ public class AttributeGroup implements Serializable, Cloneable {
             Iterator<AttributeItem> it = this.items.values().iterator();
             boolean isFirst = true;
             while(it.hasNext()) {
-                if(!isFirst) {
-                    str += ", ";
+                if(isFirst) {
                     isFirst = false;
+                } else {
+                    str += ", ";
                 }
-                str += it.next().toString();
+                str += it.next().toStringNoClassName();
             }
         }
         return str;

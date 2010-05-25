@@ -34,10 +34,10 @@ import org.eclipse.persistence.internal.sessions.AbstractRecord;
 import org.eclipse.persistence.internal.descriptors.ObjectBuilder;
 import org.eclipse.persistence.internal.expressions.ForUpdateOfClause;
 import org.eclipse.persistence.exceptions.QueryException;
-import org.eclipse.persistence.internal.helper.DatabaseField;
 import org.eclipse.persistence.internal.helper.NonSynchronizedSubVector;
 import org.eclipse.persistence.mappings.DatabaseMapping;
 import org.eclipse.persistence.queries.Cursor;
+import org.eclipse.persistence.queries.FetchGroup;
 import org.eclipse.persistence.queries.ObjectBuildingQuery;
 import org.eclipse.persistence.queries.ObjectLevelReadQuery;
 import org.eclipse.persistence.sessions.DatabaseRecord;
@@ -255,17 +255,8 @@ public class JoinedAttributeManager implements Cloneable, Serializable {
                     }
                 }
             }
-        } else if (getBaseQuery().hasExecutionFetchGroup() && getBaseQuery().isObjectLevelReadQuery()) {
-            // TODO-dclarke: Use FetchGroup to calculate columns
-            List fields = ((ObjectLevelReadQuery) getBaseQuery()).getFetchGroupSelectionFields(false);
-            
-            // TODO-dclarke: The size of this excluding nulls and non DatabaseFiields (QueryKeyExpression).
-            fieldIndex = 0;
-            for (Object fieldOrExpOrNull : fields) {
-                if (fieldOrExpOrNull != null && fieldOrExpOrNull instanceof DatabaseField) {
-                    fieldIndex++;
-                }
-            }
+        } else if (getBaseQuery().hasExecutionFetchGroup()) {
+            fieldIndex = ((ObjectLevelReadQuery)getBaseQuery()).getFetchGroupNonNestedFieldsSet().size();
         } else {
             if (includeAllSubclassFields) {
                 fieldIndex = getDescriptor().getAllFields().size();
@@ -349,18 +340,21 @@ public class JoinedAttributeManager implements Cloneable, Serializable {
                 if (mapping.isDirectCollectionMapping()) {
                     numberOfFields = 1;
                 }
-            } else if (objectExpression.isQueryKeyExpression() && objectExpression.isUsingOuterJoinForMultitableInheritance()) {
-                // TODO-dclarke: Add support for nested FetchGroups handling 
-                // baseQuery as well as default on reference descriptor
-                numberOfFields = descriptor.getAllFields().size();
             } else {
-                // TODO-dclarke: Add support for FetchGroups handling nested on
-                // baseQuery as well as default on reference descriptor
-                if (getBaseQuery().hasExecutionFetchGroup()) {
-                    // TODO ?
-                    numberOfFields = 2;
+                ObjectLevelReadQuery nestedQuery = null;
+                FetchGroup fetchGroup = null;
+                if(descriptor.hasFetchGroupManager()) {
+                    nestedQuery = getNestedJoinedMappingQuery(objectExpression);
+                    fetchGroup = nestedQuery.getExecutionFetchGroup();
+                }
+                if(fetchGroup != null) {
+                    numberOfFields = nestedQuery.getFetchGroupNonNestedFieldsSet(mapping).size();
                 } else {
-                    numberOfFields = descriptor.getFields().size();
+                    if (objectExpression.isQueryKeyExpression() && objectExpression.isUsingOuterJoinForMultitableInheritance()) {
+                        numberOfFields = descriptor.getAllFields().size();
+                    } else {
+                        numberOfFields = descriptor.getFields().size();
+                    }
                 }
             }
             if (mapping.isCollectionMapping()){
@@ -614,6 +608,35 @@ public class JoinedAttributeManager implements Cloneable, Serializable {
     }
 
     /**
+     * INTERNAL:
+     * Returns the nested query corresponding to the expression.
+     * The passed expression should be either join mapping or joined attribute expression.
+     */
+    public ObjectLevelReadQuery getNestedJoinedMappingQuery(Expression expression) {
+        // the first element of the list is the passed expression,
+        // next one is its base, ...
+        // the last one's base is ExpressionBuilder.
+        BaseExpression currentExpression = (BaseExpression)expression; 
+        ArrayList<Expression> expressionBaseList = new ArrayList();
+        do {
+            expressionBaseList.add(currentExpression);
+            currentExpression = (BaseExpression)currentExpression.getBaseExpression();
+        } while(!currentExpression.isExpressionBuilder());
+        
+        // the last expression in the list is not nested - its mapping should have corresponding nestedQuery.
+        DatabaseMapping currentMapping = ((QueryKeyExpression)expressionBaseList.get(expressionBaseList.size() - 1)).getMapping();
+        ObjectLevelReadQuery nestedQuery = getJoinedMappingQueries_().get(currentMapping);
+        
+        // unless the passed expression was not nested, repeat moving up the list.
+        // the last step is the passed expression (first on the list) getting nested query corresponding to its mapping.
+        for(int i = expressionBaseList.size() - 2; i >= 0; i--) {
+            currentMapping = ((QueryKeyExpression)expressionBaseList.get(i)).getMapping();
+            nestedQuery = nestedQuery.getJoinedAttributeManager().getJoinedMappingQueries_().get(currentMapping);
+        }
+        return nestedQuery;
+    }
+
+    /**
      * Set the joined mapping queries, used optimize joining, only compute the nested queries once.
      */
     public void setJoinedMappingQueries_(Map joinedMappingQueries) {
@@ -699,23 +722,21 @@ public class JoinedAttributeManager implements Cloneable, Serializable {
 
     /**
      * This method collects the Joined Mappings from the descriptor and initializes them.
-     */
-    public void processJoinedMappings() {
-        processJoinedMappings(null);
-    }
-
-    /**
-     * This method collects the Joined Mappings from the descriptor and initializes them.
      * Excludes the mapping that are not in the passed mappingsAllowedToJoin set (if it's not null). 
      */
-    public void processJoinedMappings(Set<String> mappingsAllowedToJoin) {
+    public void processJoinedMappings() {
+        Set<String> fetchGroupAttributes = null;
+        FetchGroup fetchGroup = getBaseQuery().getExecutionFetchGroup();
+        if(fetchGroup != null) {
+            fetchGroupAttributes = fetchGroup.getAttributeNames();
+        }
         ObjectBuilder objectBuilder = getDescriptor().getObjectBuilder();
         if (objectBuilder.hasJoinedAttributes()) {
             List mappingJoinedAttributes = objectBuilder.getJoinedAttributes();
             if (!hasJoinedAttributeExpressions()) {
                 for (int i = 0; i < mappingJoinedAttributes.size(); i++) {
                     ForeignReferenceMapping mapping = (ForeignReferenceMapping) mappingJoinedAttributes.get(i);
-                    if(mappingsAllowedToJoin == null || mappingsAllowedToJoin.contains(mapping.getAttributeName())) {
+                    if(fetchGroupAttributes == null || fetchGroupAttributes.contains(mapping.getAttributeName())) {
                         addJoinedMapping(mapping);
                     }
                 }
@@ -724,7 +745,7 @@ public class JoinedAttributeManager implements Cloneable, Serializable {
                     ForeignReferenceMapping mapping = (ForeignReferenceMapping) mappingJoinedAttributes.get(i);
                     String attributeName = mapping.getAttributeName();
                     if (!isAttributeExpressionJoined(attributeName)) {
-                        if(mappingsAllowedToJoin == null || mappingsAllowedToJoin.contains(attributeName)) {
+                        if(fetchGroupAttributes == null || fetchGroupAttributes.contains(attributeName)) {
                             addJoinedMapping(mapping);
                         }
                     }

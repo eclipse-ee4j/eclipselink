@@ -29,6 +29,7 @@ import org.eclipse.persistence.exceptions.QueryException;
 import org.eclipse.persistence.indirection.IndirectContainer;
 import org.eclipse.persistence.indirection.ValueHolderInterface;
 import org.eclipse.persistence.internal.queries.AttributeItem;
+import org.eclipse.persistence.internal.queries.EntityFetchGroup;
 import org.eclipse.persistence.jpa.JpaHelper;
 import org.eclipse.persistence.mappings.DatabaseMapping;
 import org.eclipse.persistence.mappings.ForeignReferenceMapping;
@@ -171,8 +172,11 @@ public class FetchGroupAssert {
 
         FetchGroupTracker tracker = (FetchGroupTracker) entity;
         assertNotNull("FetchGroup on entity is null", tracker._persistence_getFetchGroup());
-        // assertEquals("FetchGroup on entity does not equal provided",
-        // fetchGroup, tracker._persistence_getFetchGroup());
+        FetchGroup groupToCompare = fetchGroup;
+        if(!fetchGroup.isEntityFetchGroup()) {
+            groupToCompare = new EntityFetchGroup(fetchGroup);
+        }
+        assertTrue("FetchGroup on entity does not equal provided", tracker._persistence_getFetchGroup().equals(groupToCompare));
 
         Server session = JpaHelper.getServerSession(emf);
         assertNotNull(session);
@@ -187,7 +191,8 @@ public class FetchGroupAssert {
                 assertTrue("Optimistic version mapping not fetched: " + entity, tracker._persistence_isAttributeFetched(mapping.getAttributeName()));
             } else if (tracker._persistence_getFetchGroup().containsAttribute(mapping.getAttributeName())) {
                 assertTrue(tracker._persistence_isAttributeFetched(mapping.getAttributeName()));
-                AttributeItem attrFI = tracker._persistence_getFetchGroup().getItem(mapping.getAttributeName());
+                // EntityFetchGroup never has nested fetch groups. 
+/*                AttributeItem attrFI = tracker._persistence_getFetchGroup().getItem(mapping.getAttributeName());
                 if (attrFI.getGroup() != null) {
                     Object value = mapping.getAttributeValueFromObject(entity);
                     if (value instanceof IndirectContainer) {
@@ -205,7 +210,7 @@ public class FetchGroupAssert {
                     if (value != null) {
                         assertFetched(emf, value, (FetchGroup)attrFI.getGroup());
                     }
-                }
+                }*/
             } else { // Should not be fetched
                 assertFalse(tracker._persistence_isAttributeFetched(mapping.getAttributeName()));
             }

@@ -5843,7 +5843,7 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
             }
         }
         // If the class supports fetch groups then return a un-fetched instance.
-        if (ClassConstants.FetchGroupTracker_class.isAssignableFrom(theClass)) {
+        if (descriptor.hasFetchGroupManager()) {
             reference = getIdentityMapAccessor().getFromIdentityMap(primaryKey, theClass);
             if (reference == null) {
                 if ((id instanceof List) || (id instanceof CacheId) || (descriptor.getCMPPolicy() != null)) {

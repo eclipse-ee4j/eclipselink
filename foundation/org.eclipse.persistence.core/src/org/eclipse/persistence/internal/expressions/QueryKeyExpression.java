@@ -411,6 +411,30 @@ public class QueryKeyExpression extends ObjectExpression {
 
     /**
      * INTERNAL:
+     * Returns nested attribute name or null
+     */
+    public String getNestedAttributeName() {
+        if(getMapping() != null) {
+            String attributeName = getMapping().getAttributeName();
+            if(getBaseExpression().isExpressionBuilder()) {
+                return attributeName;
+            } else if (getBaseExpression().isQueryKeyExpression()) {
+                String nestedAttributeName = ((QueryKeyExpression)getBaseExpression()).getNestedAttributeName();
+                if(nestedAttributeName == null) {
+                    return null;
+                } else {
+                    return nestedAttributeName + '.' + attributeName;
+                }
+            } else {
+                return null;
+            }
+        } else {
+            return null;
+        }
+    }
+    
+    /**
+     * INTERNAL:
      */
     public Vector getOwnedTables() {
         if ((getMapping() != null) && getMapping().isNestedTableMapping()) {
