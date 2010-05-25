@@ -1,5 +1,5 @@
 @REM User MUST set DRIVER_CLASSPATH to point to their desired driver jar(s), such as JDBC and J2C.  For example:
-@REM DRIVER_CLASSPATH=c:\some_dir\jdbc\ojdbc14.jar;c:\some_other_dir\j2c\aqapi.jar
+@REM set DRIVER_CLASSPATH=c:\some_dir\jdbc\ojdbc14.jar;c:\some_other_dir\j2c\aqapi.jar
 @REM 
 @REM Note: DRIVER_CLASSPATH should NOT contain any classes for your persistent business objects - these are 
 @REM configured in the Mapping Workbench project.

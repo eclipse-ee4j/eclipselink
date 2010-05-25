@@ -1,11 +1,11 @@
-@REM User MUST set DRIVER_CLASSPATH to point to their desired JDBC driver jar(s).
-@REM For example:
-@REM DRIVER_CLASSPATH=/some/directory/mysql-connector-java-5.1.6-bin.jar
-@REM 
-set DRIVER_CLASSPATH=C:\oracle\product\11.1.0\db\jdbc\lib\ojdbc6_g.jar
+@REM User MUST set DRIVER_CLASSPATH to point to their desired driver jar(s), such as JDBC and J2C.  For example:
+@REM set DRIVER_CLASSPATH=c:\some_dir\jdbc\ojdbc14.jar;c:\some_other_dir\j2c\aqapi.jar
 
 @REM User MUST set JAVA_HOME to point a JavaSE 6 JDK installation
-set JAVA_HOME=C:\jdk1.6-current
+@REM set JAVA_HOME=
+if "%JAVA_HOME%"=="" (
+    goto :EOF
+) 
 
 @REM Please do not change any of the following lines:
 
