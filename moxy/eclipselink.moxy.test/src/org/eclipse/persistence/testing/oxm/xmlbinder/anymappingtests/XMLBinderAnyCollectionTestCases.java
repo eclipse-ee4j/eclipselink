@@ -90,7 +90,7 @@ public class XMLBinderAnyCollectionTestCases extends OXTestCase {
         
         AnyCollectionRoot root = (AnyCollectionRoot)binder.unmarshal(sourceDocument);
         
-        Element elem = sourceDocument.createElementNS("", "child");
+        Element elem = sourceDocument.createElement("child");
         Node text = sourceDocument.createTextNode("New Child");
         elem.appendChild(text);
         sourceDocument.getDocumentElement().appendChild(elem);
