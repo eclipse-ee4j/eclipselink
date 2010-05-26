@@ -157,6 +157,9 @@ public abstract class ObjectLevelReadQuery extends ObjectBuildingQuery {
     
     /**
      * Derived from fetchGroup, set on all objects returned by the query.
+     * Should neither be altered nor accessed directly, always through getEntityFetchGroup method:
+     * in case entityFetchGroup is null getEntityFetchGroup method may return
+     * defaultEntityFetchGroup cached on descriptor's FetchGroupManager.  
      */
     protected EntityFetchGroup entityFetchGroup;
 
@@ -2630,7 +2633,7 @@ public abstract class ObjectLevelReadQuery extends ObjectBuildingQuery {
      * Return if this is a full object query, not partial nor fetch group.
      */
     public boolean shouldReadAllMappings() {
-        return (!hasPartialAttributeExpressions()) && (this.entityFetchGroup == null);
+        return (!hasPartialAttributeExpressions()) && (getEntityFetchGroup() == null);
     }
     
     /**
@@ -2638,16 +2641,13 @@ public abstract class ObjectLevelReadQuery extends ObjectBuildingQuery {
      * Check if the mapping is part of the partial attributes.
      */
     public boolean shouldReadMapping(DatabaseMapping mapping) {
-        if ((!hasPartialAttributeExpressions()) && (this.entityFetchGroup == null)) {
-            return true;
-        }
-
         String attrName = mapping.getAttributeName();
 
         // bug 3659145 TODO - What is this bug ref? dclarke modified this next
         // if block
-        if(this.entityFetchGroup  != null) {
-            return this.entityFetchGroup.containsAttribute(mapping.getAttributeName());
+        EntityFetchGroup entityFG = getEntityFetchGroup(); 
+        if(entityFG  != null) {
+            return entityFG.containsAttribute(mapping.getAttributeName());
         }
 
         return isPartialAttribute(attrName);

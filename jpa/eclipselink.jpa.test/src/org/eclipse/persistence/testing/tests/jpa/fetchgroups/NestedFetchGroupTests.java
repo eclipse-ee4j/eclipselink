@@ -24,6 +24,8 @@ import org.eclipse.persistence.config.QueryHints;
 import org.eclipse.persistence.internal.jpa.EntityManagerImpl;
 import org.eclipse.persistence.internal.queries.EntityFetchGroup;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
+import org.eclipse.persistence.jpa.JpaHelper;
+import org.eclipse.persistence.logging.SessionLog;
 import org.eclipse.persistence.queries.FetchGroup;
 import org.eclipse.persistence.queries.FetchGroupTracker;
 import org.eclipse.persistence.queries.LoadGroup;
@@ -405,6 +407,9 @@ public class NestedFetchGroupTests extends BaseFetchGroupTests {
     public void dynamicHierarchicalFetchGroup_JOIN_FETCH() throws Exception {
 
         EntityManager em = createEntityManager();
+        
+        //**temp
+        JpaHelper.getEntityManager(em).getServerSession().log(SessionLog.FINE, SessionLog.QUERY, "dynamicHierarchicalFetchGroup_JOIN_FETCH begin", (Object[])null, null, false);
 
         Query query = em.createQuery("SELECT e FROM Employee e JOIN FETCH e.manager WHERE e.lastName LIKE :LNAME AND e.manager.lastName <> e.lastName");
         query.setParameter("LNAME", "%");
@@ -458,11 +463,17 @@ public class NestedFetchGroupTests extends BaseFetchGroupTests {
 //**temp        assertEquals(1, getQuerySQLTracker(em).getTotalSQLSELECTCalls());
         //**temp
         assertEquals(nSql, getQuerySQLTracker(em).getTotalSQLSELECTCalls());
+
+        //**temp
+        JpaHelper.getEntityManager(em).getServerSession().log(SessionLog.FINE, SessionLog.QUERY, "dynamicHierarchicalFetchGroup_JOIN_FETCH end", (Object[])null, null, false);
     }
     
    @Test
    public void managerNestedFetchGroupWithJoinFetch() {
         EntityManager em = createEntityManager();
+
+        //**temp
+        JpaHelper.getEntityManager(em).getServerSession().log(SessionLog.FINE, SessionLog.QUERY, "managerNestedFetchGroupWithJoinFetch begin", (Object[])null, null, false);
 
         Query query = em.createQuery("SELECT e FROM Employee e WHERE e.manager.manager IS NOT NULL");
         FetchGroup managerFG = new FetchGroup();
@@ -520,6 +531,9 @@ public class NestedFetchGroupTests extends BaseFetchGroupTests {
             assertNoFetchGroup(phone);
         }
         assertEquals(nSql, getQuerySQLTracker(em).getTotalSQLSELECTCalls());
+
+        //**temp
+        JpaHelper.getEntityManager(em).getServerSession().log(SessionLog.FINE, SessionLog.QUERY, "managerNestedFetchGroupWithJoinFetch end", (Object[])null, null, false);
     }
 
    @Test

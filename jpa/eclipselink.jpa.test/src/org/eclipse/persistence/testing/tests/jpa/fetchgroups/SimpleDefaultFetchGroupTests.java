@@ -237,13 +237,17 @@ public class SimpleDefaultFetchGroupTests extends BaseFetchGroupTests {
             query.setHint(QueryHints.FETCH_GROUP, fg);
         }
         Employee emp = (Employee)query.getSingleResult();
-        int nSqlToAdd = 0;
+        int nSql = 2;
         if(!addAddressToFetchGroup) {
-            // an extra sql generated when the whole employee object instantiated to set address 
-            nSqlToAdd++;
+            // An extra sql to read employee's Address - 
+            // because address attribute is not in the fetch group the Address object was not built
+            // by join fetch - though the db row for address was read in.
+            //
+            // yet another extra sql generated when the whole employee object is read when address is set. 
+            nSql = nSql + 2;
         }
 
-        assertEquals(2 + nSqlToAdd, getQuerySQLTracker(em).getTotalSQLSELECTCalls());
+        assertEquals(nSql, getQuerySQLTracker(em).getTotalSQLSELECTCalls());
         if(addAddressToFetchGroup) {
             assertFetched(emp, fg);
         } else {
@@ -255,22 +259,25 @@ public class SimpleDefaultFetchGroupTests extends BaseFetchGroupTests {
         emp.getSalary();
 
         assertNoFetchGroup(emp);
-        assertEquals(3, getQuerySQLTracker(em).getTotalSQLSELECTCalls());
+        if(addAddressToFetchGroup) {
+            nSql++;
+        }
+        assertEquals(nSql, getQuerySQLTracker(em).getTotalSQLSELECTCalls());
 
         assertNoFetchGroup(emp.getAddress());
-        assertEquals(3, getQuerySQLTracker(em).getTotalSQLSELECTCalls());
+        assertEquals(nSql, getQuerySQLTracker(em).getTotalSQLSELECTCalls());
 
         for (PhoneNumber phone : emp.getPhoneNumbers()) {
             assertDefaultFetched(phone);
         }
-        assertEquals(4, getQuerySQLTracker(em).getTotalSQLSELECTCalls());
+        assertEquals(++nSql, getQuerySQLTracker(em).getTotalSQLSELECTCalls());
 
         if (emp.getManager() != null) {
             assertDefaultFetched(emp.getManager());
-            assertEquals(5, getQuerySQLTracker(em).getTotalSQLSELECTCalls());
+            assertEquals(++nSql, getQuerySQLTracker(em).getTotalSQLSELECTCalls());
         } else {
             // If manager_id field is null then getManager() does not trigger an sql.
-            assertEquals(4, getQuerySQLTracker(em).getTotalSQLSELECTCalls());
+            assertEquals(nSql, getQuerySQLTracker(em).getTotalSQLSELECTCalls());
         }
     }
 

@@ -376,7 +376,7 @@ public class LoggingLocalizationResource extends ListResourceBundle {
         { "jmx_mbean_runtime_services_threadpool_initialize_failed", "Failed to initialize MBean threadPoolRuntime: {0}" },
         { "jmx_mbean_runtime_services_get_executethreadruntime_object_failed", "Version of WebLogic does not support executeThreadRuntime - using ClassLoader: {0}" },
         { "nested_entity_manager_flush_not_executed_pre_query_changes_may_be_pending", "The class {0} is already flushing. The query will be executed without further changes being written to the database.  If the query is conditional upon changed data the changes may not be reflected in the results.  Users should issue a flush() call upon completion of the dependent changes and prior to this flush() to ensure correct results." },
-        { "query_has_joined_attribute_outside_fetch_group", "{0} has joined attribute {1} that is not included into the fetch group. That will cause the whole object to be read."},
+        { "query_has_joined_attribute_outside_fetch_group", "{0}: joined attribute [{1}] is not included into the fetch group. The joined attribute data (though read from the database) will be ignored. A new sql will be executed to read again the object referenced by the joined attribute; and yet another sql to read the whole main object (because of setting the value to the attribute outside the fetch group). Either include the fetched attribute into the fetch group or remove it."},
         // MESSAGES end        
         
         
