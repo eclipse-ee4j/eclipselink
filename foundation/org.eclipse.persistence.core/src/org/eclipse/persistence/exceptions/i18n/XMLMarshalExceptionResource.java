@@ -48,7 +48,8 @@ public class XMLMarshalExceptionResource extends ListResourceBundle {
                                            { "25023", "No descriptor found while unmarshalling element mapped to attribute {0}." },
                                            { "25024", "An error occurred instantiating the UnmappedContentHandler class {0}." },
                                            { "25025", "The UnmappedContentHandler class {0} set on the XMLUnmarshaller must implement org.eclipse.persistence.oxm.unmapped.UnmappedContentHandler." },
-                                           { "25026", "Unable to update node [{0}], object not found in cache." }                                           
+                                           { "25026", "Unable to update node [{0}], object not found in cache." },
+                                           { "25027", "Unable to retrieve attachment with cid {0} because no AttachmentUnmarshaller was set."}
                                           
     };
 

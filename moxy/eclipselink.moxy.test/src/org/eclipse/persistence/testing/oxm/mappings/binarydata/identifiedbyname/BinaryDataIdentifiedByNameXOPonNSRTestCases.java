@@ -85,5 +85,14 @@ public class BinaryDataIdentifiedByNameXOPonNSRTestCases extends XMLMappingTestC
         assertTrue(attachmentUnmarshaller.getAttachmentAsDataHandlerWasCalled());
     }
     
+    public void testNullAttachmentUnmarshaller() throws Exception {
+        xmlUnmarshaller.setAttachmentUnmarshaller(null);
+        try {
+            this.testXMLToObjectFromInputStream();
+        } catch(org.eclipse.persistence.exceptions.XMLMarshalException ex) {
+            assertTrue(ex.getErrorCode() == org.eclipse.persistence.exceptions.XMLMarshalException.NO_ATTACHMENT_UNMARSHALLER_SET);
+        }
+    }
+    
     
 }

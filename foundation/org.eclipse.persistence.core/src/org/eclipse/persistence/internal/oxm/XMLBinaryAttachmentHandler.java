@@ -14,6 +14,7 @@ package org.eclipse.persistence.internal.oxm;
 
 import javax.activation.DataHandler;
 
+import org.eclipse.persistence.exceptions.XMLMarshalException;
 import org.eclipse.persistence.internal.oxm.record.XMLReader;
 import org.eclipse.persistence.mappings.converters.Converter;
 import org.eclipse.persistence.oxm.XMLConstants;
@@ -89,6 +90,11 @@ public class XMLBinaryAttachmentHandler extends UnmarshalRecord {
             	attributeClassification = ((XMLBinaryDataCollectionMapping)mapping).getAttributeElementClass();
             } else {
                 attributeClassification = mapping.getAttributeClassification();
+            }
+            if(attachmentUnmarshaller == null) {
+                //if there's no attachment unmarshaller, it isn't possible to retrieve
+                //the attachment. Throw an exception.
+                throw XMLMarshalException.noAttachmentUnmarshallerSet(this.c_id);
             }
             if(attributeClassification.equals(XMLBinaryDataHelper.getXMLBinaryDataHelper().DATA_HANDLER)) {
                 data = attachmentUnmarshaller.getAttachmentAsDataHandler(this.c_id);
