@@ -368,7 +368,7 @@ public class SchemaGenerator {
                         xfld.setNamespaceResolver(currentSchema.getNamespaceResolver());
                         xfld.initialize();
                         // build the schema components for the xml-path
-                        XmlPathResult xpr = buildSchemaComponentsForXPath(xfld.getXPathFragment(), new XmlPathResult(parentCompositor, currentSchema), (next.isAny() || next.isAnyAttribute()), isChoice);
+                        XmlPathResult xpr = buildSchemaComponentsForXPath(xfld.getXPathFragment(), new XmlPathResult(parentCompositor, currentSchema), (next.isAny() || next.isAnyAttribute()), isChoice, next);
                         parentCompositor = xpr.particle;
                         currentSchema = xpr.schema;
                         // if the schema component is null there is nothing to do
@@ -1236,7 +1236,7 @@ public class SchemaGenerator {
      * @param isChoice
      * @return
      */
-    protected XmlPathResult buildSchemaComponentsForXPath(XPathFragment frag, XmlPathResult xpr, boolean isAny, boolean isChoice) {
+    protected XmlPathResult buildSchemaComponentsForXPath(XPathFragment frag, XmlPathResult xpr, boolean isAny, boolean isChoice, Property next) {
         TypeDefParticle currentParticle = xpr.particle;
         Schema workingSchema = xpr.schema;
         // each nested choice on a collection will be unbounded
@@ -1245,12 +1245,15 @@ public class SchemaGenerator {
         // don't process the last frag; that will be handled by the calling method if necessary
         // note that we may need to process the last frag if it has a namespace or is an 'any'
         boolean lastFrag = (frag.getNextFragment() == null || frag.getNextFragment().nameIsText());
+        
+        
+        
         // if the element is already in the sequence we don't want the calling method to add a second one
         if (lastFrag && (elementExistsInParticle(frag.getLocalName(), frag.getShortName(), currentParticle) != null)) {
             xpr.particle = null;
             return xpr;
         }
-
+        
         // if the current element exists, use it; otherwise create a new one
         Element currentElement = elementExistsInParticle(frag.getLocalName(), frag.getShortName(), currentParticle);
         boolean currentElementExists = (currentElement != null);
@@ -1277,8 +1280,42 @@ public class SchemaGenerator {
         if (fragUri != null) {
             Schema fragSchema = getSchemaForNamespace(fragUri);
             String targetNS = workingSchema.getTargetNamespace();
+            
+            // handle Attribute case
+            if (frag.isAttribute()) {
+                if ((fragSchema.isAttributeFormDefault() && !fragUri.equals(targetNS)) || (!fragSchema.isAttributeFormDefault() && fragUri.length() > 0)) {
+                    // must generate a global attribute and create a reference to it
+                    // if the global attribute exists, use it; otherwise create a new one
+                    Attribute globalAttribute = null;
+                    globalAttribute = (Attribute) fragSchema.getTopLevelAttributes().get(frag.getLocalName());
+                    if (globalAttribute == null) {
+                        globalAttribute = createGlobalAttribute(frag, workingSchema, fragSchema, next);
+                    }
+                    // add the attribute ref to the current element
+                    String attributeRefName;
+                    if (fragUri.equals(targetNS)) {
+                        String prefix = fragSchema.getNamespaceResolver().resolveNamespaceURI(fragUri);
+                        attributeRefName = prefix + ":" + frag.getLocalName();
+                    } else {
+                        attributeRefName = frag.getShortName();
+                    }
+                    // 
+                    if (currentParticle.getOwner() instanceof ComplexType) {
+                        createRefAttribute(attributeRefName, (ComplexType)currentParticle.getOwner());
+                    }
+
+                    // set the frag's schema as it may be different than the current schema
+                    xpr.schema = fragSchema;
+                    // ref case - indicate to the calling method that there's nothing to do
+                    xpr.particle = null;
+                }
+                // since we are dealing with an attribute, we are on the last fragment; return
+                return xpr;
+            }
+            
+            // here we are dealing with an Element
             if ((fragSchema.isElementFormDefault() && !fragUri.equals(targetNS)) || (!fragSchema.isElementFormDefault() && fragUri.length() > 0)) {
-                // must generate a global element are create a reference to it
+                // must generate a global element and create a reference to it
                 // if the global element exists, use it; otherwise create a new one
                 globalElement = (Element) fragSchema.getTopLevelElements().get(frag.getLocalName());
                 if (globalElement == null) {
@@ -1286,7 +1323,7 @@ public class SchemaGenerator {
                 }
                 // if the current element doesn't exist set a ref and add it to the sequence
                 if (!currentElementExists) {
-                    currentElement = createRefElement(frag, currentParticle);
+                    currentElement = createRefElement(frag.getShortName(), currentParticle);
                     currentElementExists = true;
                 }
                 // set the frag's schema as it may be different than the current schema
@@ -1326,7 +1363,7 @@ public class SchemaGenerator {
         }
 
         // call back into this method to process the next path element
-        return buildSchemaComponentsForXPath(frag.getNextFragment(), xpr, isAny, isChoice);
+        return buildSchemaComponentsForXPath(frag.getNextFragment(), xpr, isAny, isChoice, next);
     }
     
     /**
@@ -1363,6 +1400,37 @@ public class SchemaGenerator {
     }
     
     /**
+     * Create a global attribute.  An import is added if necessary.  This method
+     * will typically be called when processing an XPath and a prefixed path
+     * element is encountered tha requires an attribute ref.
+     * 
+     * @param frag
+     * @param workingSchema
+     * @param fragSchema
+     * @param next
+     * @return
+     */
+    public Attribute createGlobalAttribute(XPathFragment frag, Schema workingSchema, Schema fragSchema, Property next) {
+        Attribute gAttribute = new Attribute();
+        gAttribute.setName(frag.getLocalName());
+        
+        JavaClass javaType = next.getActualType();
+        String typeName = getTypeName(next, javaType, fragSchema);
+        // may need to qualify the type
+        if (typeName != null && !typeName.contains(":")) {
+            String prefix = getPrefixForNamespace(fragSchema.getTargetNamespace(), fragSchema.getNamespaceResolver());
+            if (prefix != null) {
+                typeName = prefix + ":" + typeName;
+            }
+        }
+        gAttribute.setType(typeName);
+        
+        fragSchema.getTopLevelAttributes().put(gAttribute.getName(), gAttribute);
+        addImportIfRequired(workingSchema, fragSchema, frag.getNamespaceURI());
+        return gAttribute;
+    }
+
+    /**
      * Create a global element.  An import is added if necessary.  This method
      * will typically be called when processing an XPath and a prefixed path
      * element is encountered the requires an element ref.
@@ -1395,25 +1463,46 @@ public class SchemaGenerator {
     }
 
     /**
-     * Create a reference element.  This method will typically be called when 
-     * processing an XPath and a prefixed path element is encountered that 
-     * requires an element ref.
+     * Create an element reference and add it to a given particle. This 
+     * method will typically be called when processing an XPath and a 
+     * prefixed path element is encountered that requires an element ref.
      * 
-     * @param frag
+     * @param elementRefName
      * @param particle
      * @return
      */
-    public Element createRefElement(XPathFragment frag, TypeDefParticle particle) {
+    public Element createRefElement(String elementRefName, TypeDefParticle particle) {
         Element refElement = new Element();
         // ref won't have a complex type                    
         refElement.setComplexType(null);
         refElement.setMinOccurs(Occurs.ZERO);
         refElement.setMaxOccurs(Occurs.ONE);
-        refElement.setRef(frag.getShortName());
+        refElement.setRef(elementRefName);
         particle.addElement(refElement);
         return refElement;
     }
 
+    /**
+     * Create an attribute reference and add it to a given complex type.
+     * This method will typically be called when processing an XPath 
+     * and a prefixed path element is encountered that requires an 
+     * attribute ref.
+     * 
+     * @param attributeRefName
+     * @param owningComplexType
+     * @return
+     */
+    public Attribute createRefAttribute(String attributeRefName, ComplexType owningComplexType) {
+        Attribute refAttribute = new Attribute();
+        refAttribute.setRef(attributeRefName);
+        if (owningComplexType.getSimpleContent() != null) {
+            owningComplexType.getSimpleContent().getExtension().getOrderedAttributes().add(refAttribute);
+        } else {
+            owningComplexType.getOrderedAttributes().add(refAttribute);
+        }
+        return refAttribute;
+    }
+    
     /**
      * This class will typically be used when processing an xml-path.  It will hold the 
      * TypeDefParticle (all, sequence, choice) and schema that are to be used by the 

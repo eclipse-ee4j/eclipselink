@@ -12,7 +12,7 @@
                 <xml-attribute java-attribute="mgrId" xml-path="projects/prj:project/@prj:managerId" />
                 <xml-element java-attribute="firstName" xml-path="info/personal-info/first-name/text()" />
                 <xml-element java-attribute="lastName" xml-path="info/personal-info/last-name/text()" />
-                <xml-element java-attribute="projectName" xml-path="projects/prj:project/text()">
+                <xml-element java-attribute="projectName" xml-path="projects/prj:project/name/text()">
                     <xml-access-methods get-method="getProject" set-method="setProject" />
                 </xml-element>
                 <xml-element java-attribute="data2" xml-path="pieces-of-data/data[2]/text()" />

@@ -15,26 +15,18 @@ package org.eclipse.persistence.testing.jaxb.externalizedmetadata.mappings.direc
 import java.io.File;
 import java.io.InputStream;
 import java.math.BigDecimal;
-import java.util.HashMap;
-import java.util.Map;
 
-import javax.xml.bind.JAXBElement;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
 import javax.xml.bind.Unmarshaller;
-import javax.xml.transform.Source;
-import javax.xml.transform.stream.StreamSource;
 
 import org.eclipse.persistence.jaxb.JAXBContext;
-import org.eclipse.persistence.jaxb.JAXBContextFactory;
 import org.eclipse.persistence.oxm.NamespaceResolver;
 import org.eclipse.persistence.oxm.XMLDescriptor;
 import org.eclipse.persistence.oxm.mappings.XMLDirectMapping;
-import org.eclipse.persistence.oxm.mappings.nullpolicy.AbstractNullPolicy;
 import org.eclipse.persistence.oxm.mappings.nullpolicy.IsSetNullPolicy;
 import org.eclipse.persistence.oxm.mappings.nullpolicy.NullPolicy;
 import org.eclipse.persistence.oxm.mappings.nullpolicy.XMLNullRepresentationType;
-import org.eclipse.persistence.sessions.Project;
 import org.eclipse.persistence.sessions.factories.XMLProjectWriter;
 import org.eclipse.persistence.testing.jaxb.externalizedmetadata.ExternalizedMetadataTestCases;
 import org.w3c.dom.Document;
@@ -59,7 +51,6 @@ public class DirectMappingTestCases extends ExternalizedMetadataTestCases {
     private static final String PRIVATE_DATA = "This is some private data";
     private static final String EMPLOYEES_NS = "http://www.example.com/employees";
     private static final String PROJECTS_NS = "http://www.example.com/projects";
-    private MySchemaOutputResolver employeeResolver;
     private static final String CURRENCY = "CAD";
     private static final double PRICE = 123.456;
 
@@ -104,20 +95,49 @@ public class DirectMappingTestCases extends ExternalizedMetadataTestCases {
      */
     public void setUp() throws Exception {
         super.setUp();
-        employeeResolver = generateSchemaWithFileName(new Class[] { Employee.class }, CONTEXT_PATH, PATH + "eclipselink-oxm.xml", 2);
     }
 
     /**
      * Tests schema generation for XmlDirectMapping via eclipselink-oxm.xml.
      * Utilizes xml-attribute and xml-element. xml-value is tested separately
-     * below.
+     * below.  Instance doc validation is done here as well.
      * 
      * Positive test.
      */
-    public void testDirectMappingSchemaGen() {
-        // validate schemas
+    public void testSchemaGenAndValidation() {
+        // generate employee and project schemas
+        MySchemaOutputResolver resolver = generateSchemaWithFileName(new Class[] { Employee.class }, CONTEXT_PATH, PATH + "eclipselink-oxm.xml", 2);
+        // validate employees schema
         String controlSchema = PATH + "employees.xsd";
-        compareSchemas(employeeResolver.schemaFiles.get(EMPLOYEES_NS), new File(controlSchema));
+        compareSchemas(resolver.schemaFiles.get(EMPLOYEES_NS), new File(controlSchema));
+        // validate projects schema
+        controlSchema = PATH + "projects.xsd";
+        compareSchemas(resolver.schemaFiles.get(PROJECTS_NS), new File(controlSchema));
+
+        // validate employee.xml
+        String src = PATH + "employee.xml";
+        String result = validateAgainstSchema(src, EMPLOYEES_NS, resolver);
+        assertTrue("Instance doc validation (employee.xml) failed unxepectedly: " + result, result == null);
+
+        /*
+        // validate write-employee.xml
+        src = PATH + "write-employee.xml";
+        result = validateAgainstSchema(src, EMPLOYEES_NS, resolver);
+        assertTrue("Instance doc validation (write-employee.xml) failed unxepectedly: " + result, result == null);
+
+        /*
+        // generate vehicles schema
+        resolver = generateSchemaWithFileName(new Class[] { Car.class, Truck.class }, CONTEXT_PATH, PATH + "vehicles-oxm.xml", 2);
+        // validate vehicles schema
+        controlSchema = PATH + "vehicles.xsd";
+        compareSchemas(resolver.schemaFiles.get(EMPTY_NAMESPACE), new File(controlSchema));
+        
+        // generate team schema
+        resolver = generateSchemaWithFileName(new Class[] { Team.class }, CONTEXT_PATH, PATH + "team-oxm.xml", 3);
+        // validate vehicles schema
+        controlSchema = PATH + "team.xsd";
+        compareSchemas(resolver.schemaFiles.get(EMPTY_NAMESPACE), new File(controlSchema));
+        */
     }
 
     /**
@@ -128,6 +148,15 @@ public class DirectMappingTestCases extends ExternalizedMetadataTestCases {
      * Positive test.
      */
     public void testDirectMappingUnmarshal() {
+        // create the JAXBContext
+        JAXBContext jCtx = null;
+        try {
+            jCtx = createContext(new Class[] { Employee.class }, CONTEXT_PATH, PATH + "eclipselink-oxm.xml");
+        } catch (JAXBException e1) {
+            e1.printStackTrace();
+            fail("JAXBContext creation failed");
+        }
+
         // load instance doc
         String src = PATH + "employee.xml";
         InputStream iDocStream = loader.getResourceAsStream(src);
@@ -142,7 +171,7 @@ public class DirectMappingTestCases extends ExternalizedMetadataTestCases {
         // JAXB will default a null String to "" 
         ctrlEmp.someString = "";
 
-        Unmarshaller unmarshaller = jaxbContext.createUnmarshaller();
+        Unmarshaller unmarshaller = jCtx.createUnmarshaller();
         try {
             Employee empObj = (Employee) unmarshaller.unmarshal(iDocStream);
             assertNotNull("Unmarshalled object is null.", empObj);
@@ -163,6 +192,15 @@ public class DirectMappingTestCases extends ExternalizedMetadataTestCases {
      * Positive test.
      */
     public void testDirectMappingMarshal() {
+        // create the JAXBContext
+        JAXBContext jCtx = null;
+        try {
+            jCtx = createContext(new Class[] { Employee.class }, CONTEXT_PATH, PATH + "eclipselink-oxm.xml");
+        } catch (JAXBException e1) {
+            e1.printStackTrace();
+            fail("JAXBContext creation failed");
+        }
+
         // load instance doc
         String src = PATH + "write-employee.xml";
 
@@ -177,7 +215,7 @@ public class DirectMappingTestCases extends ExternalizedMetadataTestCases {
         }
 
         // test marshal
-        Marshaller marshaller = jaxbContext.createMarshaller();
+        Marshaller marshaller = jCtx.createMarshaller();
         try {
             Employee ctrlEmp = getControlObject();
             ctrlEmp.setSomeString(null);
@@ -269,176 +307,6 @@ public class DirectMappingTestCases extends ExternalizedMetadataTestCases {
         } catch (JAXBException e) {
             e.printStackTrace();
             fail("Marshal operation failed.");
-        }
-    }
-    
-    public void testVehiclesSchemaGen() {
-        try {
-            String metadataFile = PATH + "vehicles-oxm.xml";
-            MySchemaOutputResolver oResolver = new MySchemaOutputResolver(); 
-            oResolver = generateSchemaWithFileName(new Class[] { Car.class, Truck.class }, CONTEXT_PATH, metadataFile, 2);
-            // validate schema
-            String controlSchema = PATH + "vehicles.xsd";
-            compareSchemas(oResolver.schemaFiles.get(EMPTY_NAMESPACE), new File(controlSchema));
-        } catch (Exception e) {
-            fail("An exception occurred creating the JAXBContext: " + e.getMessage());
-        }
-    }
-
-    public void testTeamSchemaGen() {
-        try {
-            String metadataFile = PATH + "team-oxm.xml";
-            MySchemaOutputResolver oResolver = new MySchemaOutputResolver(); 
-            oResolver = generateSchemaWithFileName(new Class[] { Team.class }, CONTEXT_PATH, metadataFile, 3);
-            // validate schema
-            String controlSchema = PATH + "team.xsd";
-            compareSchemas(oResolver.schemaFiles.get(EMPTY_NAMESPACE), new File(controlSchema));
-        } catch (Exception e) {
-            fail("An exception occurred creating the JAXBContext: " + e.getMessage());
-        }
-    }
-
-    // THE FOLLOWING CODE CAN BE USED TO GENERATE DEPLOYMENT XML FOR DOCUMENTATION PURPOSES. //
-
-    public void xtestDeploymentXML() {
-        XMLProjectWriter.write(new EmployeeProject(), "employee.xml");
-        XMLProjectWriter.write(new PriceProject(), "price.xml");
-    }
-
-    class EmployeeProject extends Project {
-        public EmployeeProject() {
-            addDescriptor(getEmployeeDescriptor());
-        }
-
-        XMLDescriptor getEmployeeDescriptor() {
-            // setup direct mappings
-            XMLDirectMapping idMapping = new XMLDirectMapping();
-            idMapping.setAttributeName("empId");
-            idMapping.setXPath("@id");
-
-            XMLDirectMapping firstNameMapping = new XMLDirectMapping();
-            firstNameMapping.setAttributeName("firstName");
-            firstNameMapping.setXPath("info/personal-info/first-name/text()");
-
-            XMLDirectMapping lastNameMapping = new XMLDirectMapping();
-            lastNameMapping.setAttributeName("lastName");
-            lastNameMapping.setXPath("info/personal-info/last-name/text()");
-
-            XMLDirectMapping mgrIdMapping = new XMLDirectMapping();
-            mgrIdMapping.setAttributeName("mgrId");
-            mgrIdMapping.setXPath("projects/prj:project/@prj:managerId");
-
-            XMLDirectMapping projectNameMapping = new XMLDirectMapping();
-            projectNameMapping.setAttributeName("projectName");
-            projectNameMapping.setXPath("projects/prj:project/text()");
-            projectNameMapping.setSetMethodName("setProject");
-            projectNameMapping.setGetMethodName("getProject");
-
-            XMLDirectMapping data1Mapping = new XMLDirectMapping();
-            data1Mapping.setAttributeName("data1");
-            data1Mapping.setXPath("pieces-of-data/data[1]");
-
-            XMLDirectMapping data2Mapping = new XMLDirectMapping();
-            data2Mapping.setAttributeName("data2");
-            data2Mapping.setXPath("pieces-of-data/data[2]");
-
-            XMLDirectMapping salaryMapping = new XMLDirectMapping();
-            salaryMapping.setAttributeName("salary");
-            salaryMapping.setXPath("@salary");
-            salaryMapping.setIsReadOnly(true);
-
-            XMLDirectMapping privateDataMapping = new XMLDirectMapping();
-            privateDataMapping.setAttributeName("privateData");
-            privateDataMapping.setXPath("private-data");
-            privateDataMapping.setIsWriteOnly(true);
-
-            XMLDirectMapping charDataMapping = new XMLDirectMapping();
-            charDataMapping.setAttributeName("characterData");
-            charDataMapping.setXPath("character-data");
-            charDataMapping.setIsCDATA(true);
-
-            XMLDirectMapping projectIdMapping = new XMLDirectMapping();
-            projectIdMapping.setAttributeName("projectId");
-            projectIdMapping.setXPath("project-id");
-            projectIdMapping.setNullValue(-1);
-
-            XMLDirectMapping someStringMapping = new XMLDirectMapping();
-            someStringMapping.setAttributeName("someString");
-            someStringMapping.setXPath("some-string");
-            someStringMapping.setGetMethodName("getSomeString");
-            someStringMapping.setSetMethodName("setSomeString");
-            IsSetNullPolicy aNullPolicy = new IsSetNullPolicy();
-            aNullPolicy.setNullRepresentedByEmptyNode(false);
-            aNullPolicy.setNullRepresentedByXsiNil(true);
-            aNullPolicy.setMarshalNullRepresentation(XMLNullRepresentationType.XSI_NIL);
-            aNullPolicy.setIsSetMethodName("isSetSomeString");
-            aNullPolicy.setIsSetParameterTypes(new Class[] { java.lang.Boolean.class });
-            aNullPolicy.setIsSetParameters(new Object[] { "true" });
-            someStringMapping.setNullPolicy(aNullPolicy);
-
-            XMLDirectMapping aStringMapping = new XMLDirectMapping();
-            aStringMapping.setAttributeName("aString");
-            aStringMapping.setXPath("a-string");
-            aStringMapping.setGetMethodName("getAString");
-            aStringMapping.setSetMethodName("setAString");
-            NullPolicy absNullPolicy = new NullPolicy();
-            absNullPolicy.setNullRepresentedByEmptyNode(false);
-            absNullPolicy.setNullRepresentedByXsiNil(false);
-            absNullPolicy.setMarshalNullRepresentation(XMLNullRepresentationType.EMPTY_NODE);
-            someStringMapping.setNullPolicy(absNullPolicy);
-
-            // setup namespace resolver
-            NamespaceResolver namespaceResolver = new NamespaceResolver();
-            namespaceResolver.setDefaultNamespaceURI("http://www.example.com/employees");
-            namespaceResolver.put("prj", "http://www.example.com/projects");
-
-            // setup descriptor
-            XMLDescriptor descriptor = new XMLDescriptor();
-            descriptor.setJavaClass(Employee.class);
-            descriptor.setDefaultRootElement("employee");
-            descriptor.setNamespaceResolver(namespaceResolver);
-            descriptor.addMapping(idMapping);
-            descriptor.addMapping(firstNameMapping);
-            descriptor.addMapping(lastNameMapping);
-            descriptor.addMapping(mgrIdMapping);
-            descriptor.addMapping(projectNameMapping);
-            descriptor.addMapping(data1Mapping);
-            descriptor.addMapping(data2Mapping);
-            descriptor.addMapping(salaryMapping);
-            descriptor.addMapping(privateDataMapping);
-            descriptor.addMapping(charDataMapping);
-            descriptor.addMapping(projectIdMapping);
-            descriptor.addMapping(someStringMapping);
-            descriptor.addMapping(aStringMapping);
-
-            return descriptor;
-        }
-    }
-    
-    class PriceProject extends Project {
-        public PriceProject() {
-            addDescriptor(getPriceDescriptor());
-        }
-
-        XMLDescriptor getPriceDescriptor() {
-            // setup direct mappings
-            XMLDirectMapping priceMapping = new XMLDirectMapping();
-            priceMapping.setAttributeName("price");
-            priceMapping.setXPath("price-data");
-            priceMapping.setIsReadOnly(true);
-            priceMapping.setSetMethodName("setPrice");
-
-            XMLDirectMapping currencyMapping = new XMLDirectMapping();
-            currencyMapping.setAttributeName("currency");
-            currencyMapping.setXPath("@currency");
-
-            // setup descriptor
-            XMLDescriptor descriptor = new XMLDescriptor();
-            descriptor.setJavaClass(Price.class);
-            descriptor.setDefaultRootElement("price-data");
-            descriptor.addMapping(priceMapping);
-            descriptor.addMapping(currencyMapping);
-            return descriptor;
         }
     }
 }

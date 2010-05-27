@@ -1,15 +1,17 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ns0:employee id="66" salary="123456.78" xmlns:ns0="http://www.example.com/employees" xmlns:prj="http://www.example.com/projects" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
     <projects>
-        <prj:project prj:managerId="99">XML External Metadata Support</prj:project>
+        <prj:project prj:managerId="99">
+            <name>XML External Metadata Support</name>
+        </prj:project>
     </projects>
+    <project-id/>
     <info>
         <personal-info>
             <first-name>Joe</first-name>
             <last-name>Oracle</last-name>
         </personal-info>
     </info>
-    <project-id/>
     <pieces-of-data>
         <data>data one</data>
         <data>data two</data>
