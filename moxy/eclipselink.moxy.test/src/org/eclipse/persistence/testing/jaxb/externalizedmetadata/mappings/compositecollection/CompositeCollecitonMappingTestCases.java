@@ -19,18 +19,7 @@ import java.util.List;
 
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
-import javax.xml.bind.Unmarshaller;
 
-import org.eclipse.persistence.jaxb.JAXBContext;
-import org.eclipse.persistence.oxm.NamespaceResolver;
-import org.eclipse.persistence.oxm.XMLDescriptor;
-import org.eclipse.persistence.oxm.mappings.XMLCompositeCollectionMapping;
-import org.eclipse.persistence.oxm.mappings.XMLCompositeObjectMapping;
-import org.eclipse.persistence.oxm.mappings.XMLDirectMapping;
-import org.eclipse.persistence.oxm.mappings.nullpolicy.NullPolicy;
-import org.eclipse.persistence.oxm.mappings.nullpolicy.XMLNullRepresentationType;
-import org.eclipse.persistence.sessions.Project;
-import org.eclipse.persistence.sessions.factories.XMLProjectWriter;
 import org.eclipse.persistence.testing.jaxb.externalizedmetadata.ExternalizedMetadataTestCases;
 import org.w3c.dom.Document;
 
@@ -143,11 +132,21 @@ public class CompositeCollecitonMappingTestCases extends ExternalizedMetadataTes
         return emp;
     }
     
-    public void testEmployeeSchemaGen() {
+    public void testSchemaGenAndValidation() {
         // validate employee schema
         compareSchemas(employeeResolver.schemaFiles.get(EMPLOYEES_NS), new File(PATH + "employee.xsd"));
         // validate contacts schema
         compareSchemas(employeeResolver.schemaFiles.get(CONTACTS_NS), new File(PATH + "contacts.xsd"));
+        
+        // validate employee.xml
+        String src = PATH + "employee.xml";
+        String result = validateAgainstSchema(src, EMPLOYEES_NS, employeeResolver);
+        assertTrue("Instance doc validation (employee.xml) failed unxepectedly: " + result, result == null);
+
+        // validate write-employee.xml
+        src = PATH + "write-employee.xml";
+        result = validateAgainstSchema(src, EMPLOYEES_NS, employeeResolver);
+        assertTrue("Instance doc validation (write-employee.xml) failed unxepectedly: " + result, result == null);
     }
     
     /**
