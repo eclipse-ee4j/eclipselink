@@ -40,6 +40,16 @@ public class Price {
             return false;
         }
         
+        if (price == null) {
+            if (pObj.price != null) {
+                return false;
+            }
+            return this.currency.equals(pObj.currency);
+        } else {
+            if (pObj.price == null) {
+                return false;
+            }
+        }
         return this.currency.equals(pObj.currency) && this.price.equals(pObj.price);
     }
 }

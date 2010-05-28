@@ -113,31 +113,36 @@ public class DirectMappingTestCases extends ExternalizedMetadataTestCases {
         // validate projects schema
         controlSchema = PATH + "projects.xsd";
         compareSchemas(resolver.schemaFiles.get(PROJECTS_NS), new File(controlSchema));
-
         // validate employee.xml
         String src = PATH + "employee.xml";
         String result = validateAgainstSchema(src, EMPLOYEES_NS, resolver);
         assertTrue("Instance doc validation (employee.xml) failed unxepectedly: " + result, result == null);
-
-        /*
         // validate write-employee.xml
         src = PATH + "write-employee.xml";
         result = validateAgainstSchema(src, EMPLOYEES_NS, resolver);
         assertTrue("Instance doc validation (write-employee.xml) failed unxepectedly: " + result, result == null);
 
-        /*
         // generate vehicles schema
         resolver = generateSchemaWithFileName(new Class[] { Car.class, Truck.class }, CONTEXT_PATH, PATH + "vehicles-oxm.xml", 2);
         // validate vehicles schema
         controlSchema = PATH + "vehicles.xsd";
         compareSchemas(resolver.schemaFiles.get(EMPTY_NAMESPACE), new File(controlSchema));
-        
+
         // generate team schema
         resolver = generateSchemaWithFileName(new Class[] { Team.class }, CONTEXT_PATH, PATH + "team-oxm.xml", 3);
         // validate vehicles schema
         controlSchema = PATH + "team.xsd";
         compareSchemas(resolver.schemaFiles.get(EMPTY_NAMESPACE), new File(controlSchema));
-        */
+
+        // generate price schema
+        resolver = generateSchemaWithFileName(new Class[] { Price.class }, CONTEXT_PATH, PATH + "eclipselink-oxm-xml-value.xml", 1);
+        // validate price schema
+        controlSchema = PATH + "price.xsd";
+        compareSchemas(resolver.schemaFiles.get(EMPTY_NAMESPACE), new File(controlSchema));
+        // validate price.xml
+        src = PATH + "price.xml";
+        result = validateAgainstSchema(src, EMPTY_NAMESPACE, resolver);
+        assertTrue("Instance doc validation (price.xml) failed unxepectedly: " + result, result == null);
     }
 
     /**
@@ -254,13 +259,14 @@ public class DirectMappingTestCases extends ExternalizedMetadataTestCases {
 
         // setup control Price
         Price ctrlPrice = getControlPriceObject();
+        // write-only so nothing should be set for price
+        ctrlPrice.price = null;
 
         Unmarshaller unmarshaller = jCtx.createUnmarshaller();
         try {
             Price priceObj = (Price) unmarshaller.unmarshal(iDocStream);
             assertNotNull("Unmarshalled object is null.", priceObj);
             assertTrue("Unmarshal failed:  Price objects are not equal", ctrlPrice.equals(priceObj));
-            assertTrue("Accessor method was not called as expected", priceObj.wasSetCalled);
         } catch (JAXBException e) {
             e.printStackTrace();
             fail("Unmarshal operation failed.");
@@ -285,7 +291,7 @@ public class DirectMappingTestCases extends ExternalizedMetadataTestCases {
         }
 
         // load instance doc
-        String src = PATH + "price-write.xml";
+        String src = PATH + "price.xml";
 
         // setup control document
         Document testDoc = parser.newDocument();
@@ -304,6 +310,7 @@ public class DirectMappingTestCases extends ExternalizedMetadataTestCases {
             marshaller.marshal(ctrlPrice, testDoc);
             //marshaller.marshal(ctrlPrice, System.out);
             assertTrue("Document comparison failed unxepectedly: ", compareDocuments(ctrlDoc, testDoc));
+            assertTrue("Accessor method was not called as expected", ctrlPrice.wasGetCalled);
         } catch (JAXBException e) {
             e.printStackTrace();
             fail("Marshal operation failed.");

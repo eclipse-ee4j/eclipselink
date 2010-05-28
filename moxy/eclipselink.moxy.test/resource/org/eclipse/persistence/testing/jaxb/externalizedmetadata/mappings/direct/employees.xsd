@@ -34,7 +34,7 @@
          </xsd:element>
          <xsd:element name="private-data" type="xsd:string" minOccurs="0"/>
          <xsd:element name="character-data" type="xsd:string" minOccurs="0"/>
-         <xsd:element name="some-string" type="xsd:string" minOccurs="0"/>
+         <xsd:element name="some-string" type="xsd:string" minOccurs="0" nillable="true"/>
          <xsd:element name="a-string" type="xsd:string" minOccurs="0"/>
       </xsd:sequence>
       <xsd:attribute name="id" type="xsd:int"/>
