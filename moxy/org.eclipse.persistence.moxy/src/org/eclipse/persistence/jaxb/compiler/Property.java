@@ -27,6 +27,7 @@ import org.eclipse.persistence.jaxb.xmlmodel.XmlElementRef;
 import org.eclipse.persistence.jaxb.xmlmodel.XmlElementWrapper;
 import org.eclipse.persistence.jaxb.xmlmodel.XmlElements;
 import org.eclipse.persistence.jaxb.xmlmodel.XmlJavaTypeAdapter;
+import org.eclipse.persistence.jaxb.xmlmodel.XmlMarshalNullRepresentation;
 
 /**
  *  INTERNAL:
@@ -961,5 +962,26 @@ public class Property {
      */
     public boolean isSetNullPolicy() {
         return nullPolicy != null;
+    }
+    
+    /**
+     * Indicates if nillable='true' should be set on a given schema component.
+     * This will typically be called by SchemaGenerator.
+     * The value returned will be true if one of the following is true:
+     * 
+     * - isNillable
+     * - isSetNullPolicy && xsi-nil-represents-null == 'true'
+     * - isSetNullPolicy && null-representation-for-xml == 'XSI_NIL'
+     * 
+     * @return
+     */
+    public boolean shouldSetNillable() {
+        if (isNillable()) {
+            return true;
+        }
+        if (isSetNullPolicy()) {
+            return (getNullPolicy().isXsiNilRepresentsNull() || getNullPolicy().getNullRepresentationForXml() == XmlMarshalNullRepresentation.XSI_NIL);
+        }
+        return false;
     }
 }

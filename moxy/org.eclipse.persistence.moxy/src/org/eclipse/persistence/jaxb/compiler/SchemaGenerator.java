@@ -623,7 +623,9 @@ public class SchemaGenerator {
                             element.setMinOccurs(next.isRequired() ? Occurs.ONE : Occurs.ZERO);
                         }
                         // handle nillable
-                        element.setNillable(next.isNillable());
+                        if (next.shouldSetNillable()) {
+                            element.setNillable(true);
+                        }
                         // handle defaultValue
                         if (next.isSetDefaultValue()) {
                             element.setDefaultValue(next.getDefaultValue());
@@ -1239,14 +1241,13 @@ public class SchemaGenerator {
     protected XmlPathResult buildSchemaComponentsForXPath(XPathFragment frag, XmlPathResult xpr, boolean isAny, boolean isChoice, Property next) {
         TypeDefParticle currentParticle = xpr.particle;
         Schema workingSchema = xpr.schema;
+        
         // each nested choice on a collection will be unbounded
         boolean isUnbounded = (currentParticle.getMaxOccurs() != null && currentParticle.getMaxOccurs()==Occurs.UNBOUNDED);
         
         // don't process the last frag; that will be handled by the calling method if necessary
         // note that we may need to process the last frag if it has a namespace or is an 'any'
         boolean lastFrag = (frag.getNextFragment() == null || frag.getNextFragment().nameIsText());
-        
-        
         
         // if the element is already in the sequence we don't want the calling method to add a second one
         if (lastFrag && (elementExistsInParticle(frag.getLocalName(), frag.getShortName(), currentParticle) != null)) {
