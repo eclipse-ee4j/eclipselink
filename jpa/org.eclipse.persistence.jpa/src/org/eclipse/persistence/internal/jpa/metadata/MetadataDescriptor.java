@@ -1361,6 +1361,17 @@ public class MetadataDescriptor {
     
     /**
      * INTERNAL:
+     * Record whether this descriptor uses property access. This information is used to
+     * modify the behavior of some of our weaving features
+     */
+    public void setAccessTypeOnClassDescriptor(String accessType){
+        if (accessType.equals(MetadataConstants.PROPERTY)){
+            m_descriptor.usePropertyAccess();
+        }
+    }
+    
+    /**
+     * INTERNAL:
      */
     public void setAlias(String alias) {
         m_descriptor.setAlias(alias);

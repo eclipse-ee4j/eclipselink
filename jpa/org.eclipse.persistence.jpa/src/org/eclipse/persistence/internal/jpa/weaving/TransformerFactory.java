@@ -110,6 +110,9 @@ public class TransformerFactory {
         List stillUnMappedMappings = null;
         ClassDetails superClassDetails = createClassDetails(superClz, weaveValueHolders, weaveChangeTracking, weaveFetchGroups, weaveInternal);
         superClassDetails.setIsMappedSuperClass(true);
+        if (!initialDescriptor.usesPropertyAccess()){
+            superClassDetails.useAttributeAccess();
+        }
         if (!classDetailsMap.containsKey(superClassDetails.getClassName())){
             stillUnMappedMappings = storeAttributeMappings(superClz, superClassDetails, unMappedAttributes, weaveValueHolders);
             classDetailsMap.put(superClassDetails.getClassName() ,superClassDetails);
@@ -146,6 +149,9 @@ public class TransformerFactory {
                     if (descriptor.isDescriptorTypeAggregate()) {
                         classDetails.setIsEmbedable(true);
                         classDetails.setShouldWeaveFetchGroups(false);
+                    }
+                    if (!descriptor.usesPropertyAccess()){
+                        classDetails.useAttributeAccess();
                     }
                     List unMappedAttributes = storeAttributeMappings(metaClass, classDetails, descriptor.getMappings(), weaveValueHoldersForClass);
                     classDetailsMap.put(classDetails.getClassName() ,classDetails);

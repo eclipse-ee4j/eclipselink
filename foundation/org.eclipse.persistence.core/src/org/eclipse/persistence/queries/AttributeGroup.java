@@ -10,7 +10,7 @@
  * Contributors:
  *     05/19/2010-2.1 ailitchev - Bug 244124 - Add Nested FetchGroup 
  ******************************************************************************/  
-package org.eclipse.persistence.internal.queries;
+package org.eclipse.persistence.queries;
 
 import java.io.Serializable;
 import java.io.StringWriter;
@@ -20,8 +20,7 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
 
-import org.eclipse.persistence.queries.FetchGroup;
-import org.eclipse.persistence.queries.LoadGroup;
+import org.eclipse.persistence.internal.queries.AttributeItem;
 
 /**
  * <b>Purpose</b>: Base class for FetchGroup and LoadGroup.

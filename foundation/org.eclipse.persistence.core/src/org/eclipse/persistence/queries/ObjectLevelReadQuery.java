@@ -2019,29 +2019,39 @@ public abstract class ObjectLevelReadQuery extends ObjectBuildingQuery {
      * Add mandatory attributes to fetch group, create entityFetchGroup.
      */
     public void prepareFetchGroup() throws QueryException {
-        FetchGroupManager fetchGroupManager = this.descriptor.getFetchGroupManager();
-        if (!isReportQuery() && fetchGroupManager != null) {
-            if(this.fetchGroup == null) {
-                if(this.fetchGroupName != null) {
-                    this.fetchGroup = fetchGroupManager.getFetchGroup(this.fetchGroupName);
+        if (!isReportQuery()) {
+            FetchGroupManager fetchGroupManager = this.descriptor.getFetchGroupManager();
+            if (fetchGroupManager != null) {
+                if(this.fetchGroup == null) {
+                    if(this.fetchGroupName != null) {
+                        this.fetchGroup = fetchGroupManager.getFetchGroup(this.fetchGroupName);
+                    }
                 }
-            }
-            // that may be either fetchGroup or defaultFetchGroup from descriptor
-            FetchGroup executionFetchGroup = getExecutionFetchGroup();
-            if(executionFetchGroup != null) {
-                if (hasPartialAttributeExpressions()) {
-                    //fetch group does not work with partial attribute reading
-                    throw QueryException.fetchGroupNotSupportOnPartialAttributeReading();
+                // that may be either fetchGroup or defaultFetchGroup from descriptor
+                FetchGroup executionFetchGroup = getExecutionFetchGroup();
+                if(executionFetchGroup != null) {
+                    if (hasPartialAttributeExpressions()) {
+                        //fetch group does not work with partial attribute reading
+                        throw QueryException.fetchGroupNotSupportOnPartialAttributeReading();
+                    }
+                    if(this.fetchGroup != null) {
+                        this.descriptor.getFetchGroupManager().addMinimalFetchGroup(this.fetchGroup);
+                        this.entityFetchGroup = fetchGroupManager.getEntityFetchGroup(this.fetchGroup);
+                    } else {
+                        this.entityFetchGroup = null;
+                    }
                 }
-                if(this.fetchGroup != null) {
-                    this.descriptor.getFetchGroupManager().addMinimalFetchGroup(this.fetchGroup);
-                    this.entityFetchGroup = fetchGroupManager.getEntityFetchGroup(this.fetchGroup);
-                } else {
-                    this.entityFetchGroup = null;
+            } else {
+                // FetchGroupManager is null
+                if(this.fetchGroup != null || this.fetchGroupName != null) {
+                    throw QueryException.fetchGroupValidOnlyIfFetchGroupManagerInDescriptor(getDescriptor().getJavaClassName(), getName());
                 }
             }
         } else {
-            this.fetchGroup = null;
+            // It's a ReportQuery
+            if(this.fetchGroup != null || this.fetchGroupName != null) {
+                throw QueryException.fetchGroupNotSupportOnReportQuery();
+            }
         }
     }
     
@@ -2145,24 +2155,6 @@ public abstract class ObjectLevelReadQuery extends ObjectBuildingQuery {
                 throw QueryException.historicalQueriesOnlySupportedOnOracle();
             }
         }
-
-        // If fetch group manager is not set in the descriptor and the user
-        // attempts to use fetch group in the query dynamically, throw exception
-        // here.
-        // TODO-dclarke: removing unnecessary check
-        /*
-         * if (!getDescriptor().hasFetchGroupManager() && (_getFetchGroup() !=
-         * null || getFetchGroupName() != null)) { throw
-         * QueryException.fetchGroupValidOnlyIfFetchGroupManagerInDescriptor
-         * (getDescriptor().getJavaClassName(), getName()); }
-         */
-
-        // Prepare fetch group if applied.
-        // TODO-dclarke: Will not prepare queries where the default FG is on a
-        // parent descriptor
-/*        if (!isReportQuery() && (getDescriptor().hasFetchGroupManager() || hasFetchGroup() || getFetchGroupName() != null)) {
-            this.executionFetchGroup = getDescriptor().getFetchGroupManager().prepareQueryWithFetchGroup(this);
-        }*/
 
         // Validate and prepare join expressions.			
         if (hasJoining()) {
@@ -3002,7 +2994,18 @@ public abstract class ObjectLevelReadQuery extends ObjectBuildingQuery {
                     DatabaseMapping mapping = batchedMappings.get(index);
                     if ((mapping != null) && mapping.isForeignReferenceMapping()) {
                         // A nested query must be built to pass to the descriptor that looks like the real query execution would.
-                        ReadQuery nestedQuery = ((ForeignReferenceMapping)mapping).prepareNestedBatchQuery(this);    
+                        ReadQuery nestedQuery = ((ForeignReferenceMapping)mapping).prepareNestedBatchQuery(this);
+                        // Set nested fetch group
+                        if(nestedQuery.isObjectLevelReadQuery() && nestedQuery.getDescriptor().hasFetchGroupManager()) {
+                            FetchGroup sourceFG = getExecutionFetchGroup();
+                            if (sourceFG != null) {                    
+                                FetchGroup targetFetchGroup = sourceFG.getGroup(mapping.getAttributeName());
+                                if (targetFetchGroup != null) {
+                                    ((ObjectLevelReadQuery)nestedQuery).setFetchGroup(targetFetchGroup);
+                                    nestedQuery.checkPrepare(getSession(), getTranslationRow());
+                                }
+                            }
+                        }
                         // Register the nested query to be used by the mapping for all the objects.
                         this.batchFetchPolicy.getMappingQueries().put(mapping, nestedQuery);
                     }
@@ -3049,6 +3052,17 @@ public abstract class ObjectLevelReadQuery extends ObjectBuildingQuery {
                 if ((mapping != null) && mapping.isForeignReferenceMapping()) {
                     // A nested query must be built to pass to the descriptor that looks like the real query execution would.
                     ReadQuery nestedQuery = ((ForeignReferenceMapping)mapping).prepareNestedBatchQuery(this);    
+                    // Set nested fetch group
+                    if(nestedQuery.isObjectLevelReadQuery() && nestedQuery.getDescriptor().hasFetchGroupManager()) {
+                        FetchGroup sourceFG = getExecutionFetchGroup();
+                        if (sourceFG != null) {                    
+                            FetchGroup targetFetchGroup = sourceFG.getGroup(mapping.getAttributeName());
+                            if (targetFetchGroup != null) {
+                                ((ObjectLevelReadQuery)nestedQuery).setFetchGroup(targetFetchGroup);
+                                nestedQuery.checkPrepare(getSession(), getTranslationRow());
+                            }
+                        }
+                    }
                     // Register the nested query to be used by the mapping for all the objects.
                     this.batchFetchPolicy.getMappingQueries().put(mapping, nestedQuery);
                 }

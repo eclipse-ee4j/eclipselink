@@ -52,7 +52,7 @@ public class ClassDetails {
     /** Determine if a JPA "embedable" (aggregate). */
     protected boolean isEmbedable = false;
     /** Determine if class uses attribute access, lazily initialized. */
-    protected Boolean usesAttributeAccess = null;
+    protected boolean usesAttributeAccess = false;
     /** Determine if this class specifically implements a clone method */
     protected boolean implementsCloneMethod = false;
     /** Determine if a new constructor can be used to bypass setting variables to default values. */
@@ -209,24 +209,11 @@ public class ClassDetails {
      * This method assumes it is called when this class details is completely initialized.
      */
     public boolean usesAttributeAccess() {
-        if (this.usesAttributeAccess != null){
-            return this.usesAttributeAccess.booleanValue();
-        } else {
-            Iterator i = this.attributesMap.values().iterator();
-            while (i.hasNext()){
-                AttributeDetails details = (AttributeDetails)i.next();
-                if (details.isMappedWithAttributeAccess()){
-                    this.usesAttributeAccess = Boolean.TRUE;
-                    return true;
-                }
-            }
-            if (getSuperClassDetails() != null){
-                return getSuperClassDetails().usesAttributeAccess();
-            } else {
-                this.usesAttributeAccess = Boolean.FALSE;
-                return false;
-            }
-        }
+        return usesAttributeAccess;
+    }
+    
+    public void useAttributeAccess(){
+        usesAttributeAccess = true;
     }
     
     public AttributeDetails getAttributeDetailsFromClassOrSuperClass(String attributeName){

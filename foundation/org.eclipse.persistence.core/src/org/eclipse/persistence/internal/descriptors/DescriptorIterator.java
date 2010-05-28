@@ -18,9 +18,9 @@ import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.exceptions.*;
 import org.eclipse.persistence.indirection.*;
 import org.eclipse.persistence.internal.queries.AttributeItem;
-import org.eclipse.persistence.internal.queries.AttributeGroup;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.mappings.*;
+import org.eclipse.persistence.queries.AttributeGroup;
 
 /**
  * This class provides a generic way of using the descriptor information

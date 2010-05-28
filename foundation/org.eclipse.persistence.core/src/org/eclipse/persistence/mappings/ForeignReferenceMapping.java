@@ -143,12 +143,29 @@ public abstract class ForeignReferenceMapping extends DatabaseMapping {
                     batchQuery = queries.get(this);
                 }
             }
+            boolean isNew = false;
             if (batchQuery == null) {
                 batchQuery = prepareNestedBatchQuery(query);
                 batchQuery.setIsExecutionClone(true);
+                isNew = true;
             } else {
                 batchQuery = (ReadQuery)batchQuery.clone();
                 batchQuery.setIsExecutionClone(true);
+            }
+            // Set nested fetch group
+            if(batchQuery.isObjectLevelReadQuery() && batchQuery.getDescriptor().hasFetchGroupManager()) {
+                FetchGroup sourceFG = query.getExecutionFetchGroup();
+                if (sourceFG != null) {                    
+                    FetchGroup targetFetchGroup = sourceFG.getGroup(getAttributeName());
+                    if (targetFetchGroup != null) {
+                        if(isNew) {
+                            batchQuery = (ReadQuery)batchQuery.clone();
+                            batchQuery.setIsExecutionClone(true);
+                        }
+                        ((ObjectLevelReadQuery)batchQuery).setFetchGroup(targetFetchGroup);
+                        batchQuery.checkPrepare(query.getSession(), query.getTranslationRow());
+                    }
+                }
             }
             query.setProperty(this, batchQuery);
         }
@@ -555,8 +572,8 @@ public abstract class ForeignReferenceMapping extends DatabaseMapping {
             if(nestedQuery.getDescriptor().hasFetchGroupManager()) {
                 FetchGroup sourceFG = baseQuery.getExecutionFetchGroup();
                 if (sourceFG != null) {                    
-                    if (sourceFG.containsAttribute(getAttributeName())) {
-                        FetchGroup targetFetchGroup = sourceFG.getGroup(getAttributeName());
+                    FetchGroup targetFetchGroup = sourceFG.getGroup(getAttributeName());
+                    if (targetFetchGroup != null) {
                         nestedQuery.setFetchGroup(targetFetchGroup);
                         nestedQuery.prepareFetchGroup();
                     }
@@ -1755,19 +1772,18 @@ public abstract class ForeignReferenceMapping extends DatabaseMapping {
         ReadQuery targetQuery = this.selectionQuery;
 
         // Copy nested fetch group from the source query 
-        if(targetQuery.getDescriptor().hasFetchGroupManager() && targetQuery.isObjectLevelReadQuery()) {
+        if(targetQuery.isObjectLevelReadQuery() && targetQuery.getDescriptor().hasFetchGroupManager()) {
             FetchGroup sourceFG = sourceQuery.getExecutionFetchGroup();
             if (sourceFG != null) {                    
-                // perf: bug#4751950, first prepare the query before cloning.
-                if (targetQuery.shouldPrepare()) {
-                    targetQuery.checkPrepare(executionSession, row);
-                }
-                targetQuery = (ObjectLevelReadQuery)targetQuery.clone();
-                targetQuery.setIsExecutionClone(true);
-                if (sourceFG.containsAttribute(getAttributeName())) {
-                    FetchGroup targetFetchGroup = sourceFG.getGroup(getAttributeName());
-                    ObjectLevelReadQuery olrQuery = (ObjectLevelReadQuery)targetQuery;
-                    olrQuery.setFetchGroup(targetFetchGroup);
+                FetchGroup targetFetchGroup = sourceFG.getGroup(getAttributeName());
+                if(targetFetchGroup != null) {
+                    // perf: bug#4751950, first prepare the query before cloning.
+                    if (targetQuery.shouldPrepare()) {
+                        targetQuery.checkPrepare(executionSession, row);
+                    }
+                    targetQuery = (ObjectLevelReadQuery)targetQuery.clone();
+                    targetQuery.setIsExecutionClone(true);
+                    ((ObjectLevelReadQuery)targetQuery).setFetchGroup(targetFetchGroup);
                 }
             }
         }

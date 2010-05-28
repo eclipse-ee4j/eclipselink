@@ -14,6 +14,8 @@ package org.eclipse.persistence.internal.queries;
 
 import java.io.Serializable;
 
+import org.eclipse.persistence.queries.AttributeGroup;
+
 /**
  * <b>Purpose</b>: Elements stored in AttributeGroup
  * 

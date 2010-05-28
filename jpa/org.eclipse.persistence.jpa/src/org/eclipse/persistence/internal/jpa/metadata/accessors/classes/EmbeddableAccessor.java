@@ -379,6 +379,8 @@ public class EmbeddableAccessor extends ClassAccessor {
             }
             
             getLogger().logConfigMessage(MetadataLogger.ACCESS_TYPE, getDescriptor().getDefaultAccess(), getJavaClass());
+            
+            getDescriptor().setAccessTypeOnClassDescriptor(this.getAccessType());
         } 
     }
 }

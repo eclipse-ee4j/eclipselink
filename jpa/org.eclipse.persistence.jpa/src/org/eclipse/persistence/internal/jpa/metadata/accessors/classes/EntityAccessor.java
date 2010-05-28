@@ -978,6 +978,8 @@ public class EntityAccessor extends MappedSuperclassAccessor {
         if (explicitAccessType == null) {
             getLogger().logConfigMessage(MetadataLogger.ACCESS_TYPE, defaultAccessType, getJavaClass());
         }
+        
+        getDescriptor().setAccessTypeOnClassDescriptor(this.getAccessType());
     }
         
     /**

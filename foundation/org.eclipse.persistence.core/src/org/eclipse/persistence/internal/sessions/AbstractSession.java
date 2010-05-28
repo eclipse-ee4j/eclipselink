@@ -41,7 +41,6 @@ import org.eclipse.persistence.logging.SessionLog;
 import org.eclipse.persistence.logging.SessionLogEntry;
 import org.eclipse.persistence.logging.DefaultSessionLog;
 import org.eclipse.persistence.sessions.DatabaseLogin;
-import org.eclipse.persistence.internal.queries.AttributeGroup;
 import org.eclipse.persistence.internal.sequencing.Sequencing;
 import org.eclipse.persistence.sessions.coordination.CommandProcessor;
 import org.eclipse.persistence.sessions.coordination.CommandManager;

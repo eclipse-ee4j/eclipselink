@@ -946,7 +946,11 @@ public class ClassWeaver extends ClassAdapter implements Constants {
      */
     public void addFetchGroupVariables() {
         RuntimeVisibleAnnotations attrs = null;
-        if (isJAXBOnPath()) {
+        
+        // Only add javax.persistence.Transient annotation if attribute access is being used
+        if (classDetails.usesAttributeAccess()){
+            attrs = getTransientAnnotation();
+        } else if (isJAXBOnPath()) {
             try {
                 attrs = new RuntimeVisibleAnnotations();
                 attrs.annotations.add(new Annotation(Type.getDescriptor(Class.forName("javax.xml.bind.annotation.XmlTransient"))));

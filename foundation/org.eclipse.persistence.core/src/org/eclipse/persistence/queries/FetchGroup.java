@@ -18,7 +18,6 @@ import java.util.Map;
 import java.util.Set;
 
 import org.eclipse.persistence.internal.localization.ExceptionLocalization;
-import org.eclipse.persistence.internal.queries.AttributeGroup;
 import org.eclipse.persistence.internal.queries.AttributeItem;
 
 /**

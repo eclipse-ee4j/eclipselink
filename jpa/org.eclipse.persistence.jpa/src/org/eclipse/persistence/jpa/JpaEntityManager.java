@@ -14,11 +14,11 @@ package org.eclipse.persistence.jpa;
 
 import java.util.List;
 
+import org.eclipse.persistence.queries.AttributeGroup;
 import org.eclipse.persistence.queries.Call;
 import org.eclipse.persistence.queries.DatabaseQuery;
 import org.eclipse.persistence.sessions.*;
 import org.eclipse.persistence.expressions.Expression;
-import org.eclipse.persistence.internal.queries.AttributeGroup;
 import org.eclipse.persistence.sessions.server.ServerSession;
 
 /**

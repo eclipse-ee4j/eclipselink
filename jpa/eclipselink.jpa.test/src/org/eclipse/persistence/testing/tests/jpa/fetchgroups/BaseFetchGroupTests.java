@@ -69,6 +69,15 @@ public abstract class BaseFetchGroupTests extends JUnitTestCase {
         super(name);
     }
 
+    /*
+     * Fetch Group tests require weaving.
+     */
+    public void runBare() throws Throwable {
+        if (isWeavingEnabled()) {
+            super.runBare();
+        }
+    }
+
     /**
      * Any FetchGroups setup in test cases are removed.
      * Descriptors should not be isolated.
