@@ -24,9 +24,12 @@ import java.util.Map;
 import javax.xml.namespace.QName;
 
 import org.eclipse.persistence.exceptions.SDOException;
+import org.eclipse.persistence.oxm.NamespaceResolver;
+import org.eclipse.persistence.oxm.XMLConstants;
 import org.eclipse.persistence.oxm.XMLDescriptor;
 import org.eclipse.persistence.oxm.XMLField;
 import org.eclipse.persistence.oxm.mappings.XMLDirectMapping;
+import org.eclipse.persistence.oxm.mappings.XMLTransformationMapping;
 import org.eclipse.persistence.oxm.schema.XMLSchemaURLReference;
 import org.eclipse.persistence.sdo.SDOConstants;
 import org.eclipse.persistence.sdo.SDOProperty;
@@ -36,6 +39,8 @@ import org.eclipse.persistence.sdo.helper.SDOMethodAttributeAccessor;
 import org.eclipse.persistence.sdo.helper.SDOTypeHelper;
 import org.eclipse.persistence.sdo.helper.SDOXMLHelper;
 import org.eclipse.persistence.sdo.helper.extension.SDOUtil;
+import org.eclipse.persistence.sdo.helper.metadata.NamespaceURITransformer;
+import org.eclipse.persistence.sdo.helper.metadata.QNameTransformer;
 import org.eclipse.persistence.sessions.Project;
 
 import commonj.sdo.Type;
@@ -45,6 +50,9 @@ import commonj.sdo.Type;
  * @author rbarkhou
  */
 public class SDOWrapperType extends SDOType implements Type {
+
+    private static final String ATTRIBUTE_NAME = "value";
+    private static final String XPATH = "text()";
 
     private String typeName;
     private Map<QName, XMLDescriptor> descriptorsMap;
@@ -128,19 +136,38 @@ public class SDOWrapperType extends SDOType implements Type {
     private void initializeDescriptor(XMLDescriptor aDescriptor, QName aQName, Type aPropertyType, SDOProperty aValueProperty) {
         aDescriptor.setNamespaceResolver(null);
 
-        XMLDirectMapping mapping = new XMLDirectMapping();
-        mapping.setAttributeName("value");
-        mapping.setXPath("text()");
-
-        mapping.setAttributeClassification(aPropertyType.getInstanceClass());
-
-        ((XMLField) mapping.getField()).setSchemaType(aQName);
-
         SDOMethodAttributeAccessor accessor = null;
         accessor = new SDOMethodAttributeAccessor(aValueProperty);
-        mapping.setAttributeAccessor(accessor);
 
-        aDescriptor.addMapping(mapping);
+        if (XMLConstants.QNAME_QNAME.equals(aQName)) {
+            XMLTransformationMapping mapping = new XMLTransformationMapping();
+            mapping.setAttributeName(ATTRIBUTE_NAME);
+
+            QNameTransformer transformer = new QNameTransformer("text()");
+            mapping.setAttributeTransformer(transformer);
+            mapping.addFieldTransformer(XPATH, transformer);
+
+            NamespaceResolver nsr = new NamespaceResolver();
+            nsr.setDefaultNamespaceURI(XMLConstants.XMLNS_URL);
+            XMLField field = new XMLField();
+            field.setNamespaceResolver(nsr);
+            field.setXPath("@" + XMLConstants.XMLNS);
+            mapping.addFieldTransformer(field, new NamespaceURITransformer());
+
+            mapping.setAttributeAccessor(accessor);
+            aDescriptor.addMapping(mapping);
+        } else {
+            XMLDirectMapping mapping = new XMLDirectMapping();
+            mapping.setAttributeName(ATTRIBUTE_NAME);
+            mapping.setXPath(XPATH);
+
+            mapping.setAttributeClassification(aPropertyType.getInstanceClass());
+
+            ((XMLField) mapping.getField()).setSchemaType(aQName);
+
+            mapping.setAttributeAccessor(accessor);
+            aDescriptor.addMapping(mapping);
+        }
 
         aDescriptor.setIsWrapper(true);
     }

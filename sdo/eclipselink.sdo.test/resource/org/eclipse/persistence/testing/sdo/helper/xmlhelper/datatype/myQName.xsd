@@ -1,0 +1,17 @@
+<?xml version="1.0"?>
+<schema xmlns="http://www.w3.org/2001/XMLSchema" xmlns:ns0="myQName-NS" targetNamespace="myQName-NS" elementFormDefault="qualified">
+    <simpleType name="myQName-Type">
+        <restriction base="QName"/>
+    </simpleType>
+
+    <element name="simple-root" type="ns0:myQName-Type"/>
+
+    <element name="complex-root">
+        <complexType>
+            <sequence>
+                <element name="child" type="ns0:myQName-Type"/>
+            </sequence>
+            <attribute name="attr" type="ns0:myQName-Type"/>
+        </complexType>
+    </element>
+</schema>

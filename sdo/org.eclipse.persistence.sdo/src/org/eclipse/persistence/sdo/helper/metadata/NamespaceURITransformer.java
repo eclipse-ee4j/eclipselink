@@ -44,7 +44,10 @@ public class NamespaceURITransformer implements FieldTransformer {
         int index = value.lastIndexOf(HASH);
         if (index > -1) {
             String namespaceURI = value.substring(0, index);
-
+            if(null == namespaceResolver) {
+                // If there is no NamespaceResolver, then assume the URI is in the default namespace
+                return namespaceURI;
+            }
             String prefix = namespaceResolver.resolveNamespaceURI(namespaceURI);
             if (prefix == null) {
                 return namespaceURI;

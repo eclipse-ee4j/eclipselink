@@ -161,7 +161,7 @@ public class SDOTypeHelperDelegate implements SDOTypeHelper {
         SDO_STRING_WRAPPER = new SDOWrapperType(SDOConstants.SDO_STRING, SDOConstants.STRING, this, XMLConstants.STRING_QNAME);
         SDO_STRINGS_WRAPPER = new SDOWrapperType(SDOConstants.SDO_STRINGS, SDOConstants.STRINGS, this, XMLConstants.STRING_QNAME);
         SDO_TIME_WRAPPER = new SDOWrapperType(SDOConstants.SDO_TIME, SDOConstants.TIME, this, XMLConstants.TIME_QNAME);
-        SDO_URI_WRAPPER = new SDOWrapperType(SDOConstants.SDO_URI, SDOConstants.URI, this, XMLConstants.ANY_URI_QNAME);
+        SDO_URI_WRAPPER = new SDOWrapperType(SDOConstants.SDO_URI, SDOConstants.URI, this, new QName[] {XMLConstants.ANY_URI_QNAME, XMLConstants.QNAME_QNAME});
         SDO_YEAR_WRAPPER = new SDOWrapperType(SDOConstants.SDO_YEAR, SDOConstants.YEAR, this, XMLConstants.G_YEAR_QNAME);
         SDO_YEARMONTH_WRAPPER = new SDOWrapperType(SDOConstants.SDO_YEARMONTH, SDOConstants.YEARMONTH, this, XMLConstants.G_YEAR_MONTH_QNAME);
         SDO_YEARMONTHDAY_WRAPPER = new SDOWrapperType(SDOConstants.SDO_YEARMONTHDAY, SDOConstants.YEARMONTHDAY, this, XMLConstants.DATE_QNAME);

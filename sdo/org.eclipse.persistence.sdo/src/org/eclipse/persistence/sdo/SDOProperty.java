@@ -546,7 +546,7 @@ public class SDOProperty implements Property, Serializable {
                         if(isSubstitutable()) {
                             xmlMapping = buildXMLChoiceObjectMapping(mappingUri);
                         } else {
-                            if (getXsdType() != null && getXsdType().equals(XMLConstants.QNAME_QNAME)) {
+                            if(XMLConstants.QNAME_QNAME.equals(xsdType)) {
                                 xmlMapping = buildXMLTransformationMapping(mappingUri);
                             } else {
                                 xmlMapping = buildXMLDirectMapping(mappingUri);
@@ -685,7 +685,13 @@ public class SDOProperty implements Property, Serializable {
         mapping.setAttributeName(getName());
 
         String xpath = getQualifiedXPath(mappingUri, true);
-        String xpathMinusText = xpath.substring(0, xpath.lastIndexOf("/text()"));
+        String xpathMinusText;
+        int indexOfTextXPath = xpath.lastIndexOf("/text()");
+        if (indexOfTextXPath < 0) {
+            xpathMinusText = xpath;
+        } else {
+            xpathMinusText = xpath.substring(0, indexOfTextXPath);
+        }
         QNameTransformer transformer = new QNameTransformer(xpath);
 
         mapping.setAttributeTransformer(transformer);

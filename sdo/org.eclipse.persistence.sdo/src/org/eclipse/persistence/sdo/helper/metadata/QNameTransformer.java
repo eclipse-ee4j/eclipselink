@@ -17,6 +17,7 @@ import org.eclipse.persistence.mappings.transformers.AttributeTransformer;
 import org.eclipse.persistence.mappings.transformers.FieldTransformer;
 import org.eclipse.persistence.oxm.NamespaceResolver;
 import org.eclipse.persistence.oxm.XMLDescriptor;
+import org.eclipse.persistence.oxm.XMLField;
 import org.eclipse.persistence.oxm.record.XMLRecord;
 import org.eclipse.persistence.sessions.Record;
 import org.eclipse.persistence.sessions.Session;
@@ -31,17 +32,17 @@ public class QNameTransformer implements AttributeTransformer, FieldTransformer 
     private static final String DEFAULT_NAMESPACE_PREFIX = "";
 
     AbstractTransformationMapping transformationMapping;
-    private NamespaceResolver namespaceResolver;
-    private String xPath;
+    private XMLField xPath;
 
     public QNameTransformer(String xPath) {
         super();
-        this.xPath = xPath;
+        this.xPath = new XMLField(xPath);
     }
 
     public void initialize(AbstractTransformationMapping mapping) {
         transformationMapping = mapping;
-        namespaceResolver = ((XMLDescriptor) mapping.getDescriptor()).getNamespaceResolver();
+        NamespaceResolver namespaceResolver = ((XMLDescriptor) mapping.getDescriptor()).getNamespaceResolver();
+        xPath.setNamespaceResolver(namespaceResolver);
     }
 
     public Object buildAttributeValue(Record record, Object object, Session session) {
@@ -85,16 +86,18 @@ public class QNameTransformer implements AttributeTransformer, FieldTransformer 
         if (index > -1) {
             String namespaceURI = value.substring(0, index);
             String localName = value.substring(index + 1);
-            
-            String prefix = namespaceResolver.resolveNamespaceURI(namespaceURI);
-            if (prefix == null) {
-                if (namespaceURI.equals(namespaceResolver.getDefaultNamespaceURI())) {
-                    return localName;
+            String prefix = null;
+            NamespaceResolver namespaceResolver = xPath.getNamespaceResolver();
+            if(null != namespaceResolver) {
+                prefix = namespaceResolver.resolveNamespaceURI(namespaceURI);
+                if (prefix == null) {
+                    if (namespaceURI.equals(namespaceResolver.getDefaultNamespaceURI())) {
+                        return localName;
+                    }
                 }
-                
-                prefix = QNAME_NAMESPACE_PREFIX;
+                return prefix + COLON + localName;
             }
-            return prefix + COLON + localName;
+            return localName;
         } else {
             return value;
         }
