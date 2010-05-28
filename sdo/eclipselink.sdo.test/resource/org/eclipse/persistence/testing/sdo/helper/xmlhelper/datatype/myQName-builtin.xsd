@@ -1,0 +1,13 @@
+<?xml version="1.0"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns="myQName-NS" targetNamespace="myQName-NS" elementFormDefault="qualified">
+    <xs:element name="simple-root" type="xs:QName"/>
+
+    <xs:element name="complex-root">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element name="child" type="xs:QName"/>
+            </xs:sequence>
+            <xs:attribute name="attr" type="xs:QName"/>
+        </xs:complexType>
+    </xs:element>
+</xs:schema>

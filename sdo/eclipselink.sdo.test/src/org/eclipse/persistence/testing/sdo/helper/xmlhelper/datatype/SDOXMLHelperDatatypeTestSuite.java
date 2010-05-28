@@ -46,6 +46,7 @@ public class SDOXMLHelperDatatypeTestSuite {
 		suite.addTest(new TestSuite(SDOXMLHelperDatatypeMonthTestCases.class));
 		suite.addTest(new TestSuite(SDOXMLHelperDatatypeMonthDayTestCases.class));
 		suite.addTest(new TestSuite(SDOXMLHelperDatatypeObjectTestCases.class));
+		suite.addTest(new TestSuite(SDOXMLHelperDatatypeQNameTestCases.class));
 		suite.addTest(new TestSuite(SDOXMLHelperDatatypeShortTestCases.class));
 		suite.addTest(new TestSuite(SDOXMLHelperDatatypeStringTestCases.class));
 		suite.addTest(new TestSuite(SDOXMLHelperDatatypeStringsTestCases.class));
