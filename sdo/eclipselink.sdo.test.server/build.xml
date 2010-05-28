@@ -168,6 +168,7 @@
         </junitreport>
     </target>
 
+    <!-- Tests redeploy scenario -->
     <target name="test" depends="build-app-ear,create-ejb-stubs">
         <antcall target="server-deploy" inheritRefs="true">
             <param name="ear.name" value="deptApp.ear"/>
@@ -184,7 +185,26 @@
             <test name="org.eclipse.persistence.testing.sdo.server.DeptServiceClientTestSuite" haltonfailure="no" todir="${report.dir}"/>
         </junit>
         <antcall target="server-undeploy" inheritRefs="true">
-            <param name="application.name" value="deptApp.ear"/>
+            <param name="application.name" value="deptApp"/>
+        </antcall>
+        <!-- Sleep to ensure undeploy is completed before redeploy-->
+        <sleep seconds="120"/>
+        <antcall target="server-deploy" inheritRefs="true">
+            <param name="ear.name" value="deptApp.ear"/>
+            <param name="application.name" value="deptApp"/>
+        </antcall>
+        <junit printsummary="yes" haltonfailure="no" failureproperty="junit.failed" fork="yes" showoutput="true" maxmemory="256m" tempdir="${tmp.dir}" dir="${classes.dir}">
+            <sysproperty key="initialCtxFactory" value="${server.factory}"/>
+            <sysproperty key="securityPrincipal" value="${server.user}"/>
+            <sysproperty key="securityCredentials" value="${server.pwd}"/>
+            <sysproperty key="providerUrl" value="${server.url}"/>
+            <sysproperty key="sessionBean" value="${session.bean}"/>
+            <classpath refid="sdotest.run.against.jar.path"/>
+            <formatter type="xml"/>
+            <test name="org.eclipse.persistence.testing.sdo.server.DeptServiceClientTestSuite" haltonfailure="no" todir="${report.dir}"/>
+        </junit>
+        <antcall target="server-undeploy" inheritRefs="true">
+            <param name="application.name" value="deptApp"/>
         </antcall>
         <antcall target="generate-report" inheritRefs="true"/>
     </target>
