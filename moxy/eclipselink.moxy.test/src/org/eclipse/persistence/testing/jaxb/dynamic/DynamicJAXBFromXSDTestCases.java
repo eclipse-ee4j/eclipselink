@@ -161,8 +161,14 @@ public class DynamicJAXBFromXSDTestCases extends TestCase {
         // but the root node's attribute and child node should not.
         assertNotNull("Root node did not have namespace prefix as expected.", node.getPrefix());
 
-        Node attr = node.getAttributes().item(0);
-        assertNull("Attribute should not have namespace prefix.", attr.getPrefix());
+        // Do not test attribute prefix with the Oracle xmlparserv2, it qualifies attributes by default.
+        DocumentBuilderFactory builderFactory = DocumentBuilderFactory.newInstance();
+        if (builderFactory.getClass().getPackage().getName().contains("oracle")) {
+            return;
+        } else {
+            Node attr = node.getAttributes().item(0);
+            assertNull("Attribute should not have namespace prefix (" + attr.getPrefix() + ").", attr.getPrefix());
+        }
 
         Node childNode = node.getChildNodes().item(0);
         assertNull("Child node should not have namespace prefix.", childNode.getPrefix());
@@ -205,6 +211,12 @@ public class DynamicJAXBFromXSDTestCases extends TestCase {
         // Do not run this test if we are not using JDK 1.6
         String javaVersion = System.getProperty("java.version");
         if (!(javaVersion.startsWith("1.6"))) {
+            return;
+        }
+
+        // Do not run this test with the Oracle xmlparserv2, it will not properly hit the EntityResolver
+        DocumentBuilderFactory builderFactory = DocumentBuilderFactory.newInstance();
+        if (builderFactory.getClass().getPackage().getName().contains("oracle")) {
             return;
         }
 
@@ -778,7 +790,7 @@ public class DynamicJAXBFromXSDTestCases extends TestCase {
     private void print(Object o) throws Exception {
         Marshaller marshaller = jaxbContext.createMarshaller();
         marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, Boolean.TRUE);
-        marshaller.marshal(o, System.out);
+        marshaller.marshal(o, System.err);
     }
 
     private class NoExtensionEntityResolver implements EntityResolver {

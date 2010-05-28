@@ -23,6 +23,7 @@ import javax.xml.bind.Unmarshaller;
 import javax.xml.bind.UnmarshalException;
 
 import javax.xml.bind.ValidationEventHandler;
+import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.transform.Source;
 import javax.xml.transform.stream.StreamSource;
 
@@ -67,7 +68,16 @@ public class UnmarshallValidationTestCases extends TestCase {
     }
 
     public void testIgnoreOneError() throws Exception {
-        unmarshaller.setEventHandler(new CustomErrorValidationEventHandler());
+        // First check which parser we are using.  Xerxes will throw 1 error in this case,
+        // but Oracle xmlparserv2 will throw 2.
+
+        int numberOfErrorsToIgnore = 1;
+        DocumentBuilderFactory builderFactory = DocumentBuilderFactory.newInstance();
+        if (builderFactory.getClass().getPackage().getName().contains("oracle")) {
+            numberOfErrorsToIgnore = 2;
+        }
+
+        unmarshaller.setEventHandler(new CustomErrorValidationEventHandler(numberOfErrorsToIgnore));
         InputStream stream = ClassLoader.getSystemResourceAsStream(SINGLE_ERROR_XML);
         try {
             Object o = unmarshaller.unmarshal(stream);

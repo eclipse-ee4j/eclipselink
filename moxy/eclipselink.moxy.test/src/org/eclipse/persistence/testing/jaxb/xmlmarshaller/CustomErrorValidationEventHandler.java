@@ -18,19 +18,27 @@ import javax.xml.bind.ValidationEvent;
 public class CustomErrorValidationEventHandler implements ValidationEventHandler {
 
     private int errorCount = 0;
-    
+    private int ignore = 1;
+
+    public CustomErrorValidationEventHandler() {
+    }
+
+    public CustomErrorValidationEventHandler(int numberOfErrorsToIgnore) {
+        ignore = numberOfErrorsToIgnore;
+    }
+
     public boolean handleEvent(ValidationEvent event) {
         if (event.getSeverity() != ValidationEvent.ERROR) {
             return false;
         }
 
         errorCount++;
-        
-        if (errorCount == 1) {
+
+        if (errorCount <= ignore) {
             return true;
         }
-        
+
         return false;
     }
-    
+
 }
