@@ -105,12 +105,21 @@ public class DirectCollectionMappingTestCases extends ExternalizedMetadataTestCa
      * Tests schema generation for XmlDirectMapping via eclipselink-oxm.xml.
      * Utilizes xml-attribute and xml-element. xml-value is tested separately
      * below.
+     * Instance documents will be validated here as well.
      * 
      * Positive test.
      */
-    public void testDirectCollecitonSchemaGen() {
+    public void testSchemaGenAndValidation() {
         // validate schemas
         compareSchemas(employeeResolver.schemaFiles.get(EMPTY_NAMESPACE), new File(PATH + "employees.xsd"));
+        // validate employee.xml
+        String src = PATH + "employee.xml";
+        String result = validateAgainstSchema(src, EMPTY_NAMESPACE, employeeResolver);
+        assertTrue("Instance doc validation (employee.xml) failed unxepectedly: " + result, result == null);
+        // validate write-employee.xml
+        src = PATH + "write-employee.xml";
+        result = validateAgainstSchema(src, EMPTY_NAMESPACE, employeeResolver);
+        assertTrue("Instance doc validation (write-employee.xml) failed unxepectedly: " + result, result == null);
     }
 
     /**

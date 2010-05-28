@@ -32,21 +32,21 @@ import org.w3c.dom.Document;
  */
 public class XmlInverseReferenceMappingTestCases extends ExternalizedMetadataTestCases {
     private final static String XML_RESOURCE = "org/eclipse/persistence/testing/jaxb/externalizedmetadata/mappings/xmlinversereference/root.xml";
-    private static final String CONTROL_ID = "222";
+    private static final String CONTROL_ID = "a222";
     private static final String CONTROL_NAME = "Joe Smith";
-    private static final String CONTROL_ADD_ID_1 = "199";
+    private static final String CONTROL_ADD_ID_1 = "a199";
     private static final String CONTROL_ADD_STREET_1 = "Some Other St.";
     private static final String CONTROL_ADD_CITY_1 = "Anyothertown";
     private static final String CONTROL_ADD_COUNTRY_1 = "Canada";
     private static final String CONTROL_ADD_ZIP_1 = "X0X0X0";
-    private static final String CONTROL_ADD_ID_2 = "99";
+    private static final String CONTROL_ADD_ID_2 = "a99";
     private static final String CONTROL_ADD_STREET_2 = "Some St.";
     private static final String CONTROL_ADD_CITY_2 = "Anytown";
     private static final String CONTROL_ADD_COUNTRY_2 = "Canada";
     private static final String CONTROL_ADD_ZIP_2 = "X0X0X0";
-    private static final String CONTROL_PHONE_ID_1 = "123";
+    private static final String CONTROL_PHONE_ID_1 = "a123";
     private static final String CONTROL_PHONE_NUM_1 = "613-123-4567";
-    private static final String CONTROL_PHONE_ID_2 = "456";
+    private static final String CONTROL_PHONE_ID_2 = "a456";
     private static final String CONTROL_PHONE_NUM_2 = "613-234-5678";
 
     private static final String CONTEXT_PATH = "org.eclipse.persistence.testing.jaxb.externalizedmetadata.mappings.xmlinversereference";
@@ -55,7 +55,6 @@ public class XmlInverseReferenceMappingTestCases extends ExternalizedMetadataTes
     
     public XmlInverseReferenceMappingTestCases(String name) throws Exception {
         super(name);
-        createContext(new Class[] {Root.class, Address.class, Employee.class, PhoneNumber.class}, CONTEXT_PATH, PATH + "root-oxm.xml");
     }
 
     protected Root getControlObject() {
@@ -143,6 +142,26 @@ public class XmlInverseReferenceMappingTestCases extends ExternalizedMetadataTes
         return root;
     }
     
+    /**
+     * The schema is generated here.  Note that schema generation will create the 
+     * JAXBContext.
+     *  
+     */
+    @Override
+    public void setUp() throws Exception {
+        super.setUp();        
+        employeeResolver = generateSchemaWithFileName(new Class[] { Root.class }, CONTEXT_PATH, PATH + "root-oxm.xml", 1);
+    }
+
+    public void testSchemaGenAndValidation() {
+        // validate root schema
+        compareSchemas(employeeResolver.schemaFiles.get(EMPTY_NAMESPACE), new File(PATH + "root.xsd"));
+        // validate root.xml
+        String src = PATH + "root.xml";
+        String result = validateAgainstSchema(src, EMPTY_NAMESPACE, employeeResolver);
+        assertTrue("Instance doc validation (root.xml) failed unxepectedly: " + result, result == null);
+    }
+
     public void testInverseReferenceMarshal() {
         // setup control document
         String src = PATH + "root.xml";
@@ -167,6 +186,7 @@ public class XmlInverseReferenceMappingTestCases extends ExternalizedMetadataTes
             fail("Marshal operation failed.");
         }
     }
+    
     public void testInverseReferenceUnmarshal() {
         // load instance doc
         String src = PATH + "root.xml";
@@ -187,11 +207,5 @@ public class XmlInverseReferenceMappingTestCases extends ExternalizedMetadataTes
             e.printStackTrace();
             fail("Unmarshal operation failed.");
         }
-    }
-    
-    public void testInverseReferenceSchemaGen() {
-        // validate employee schema
-        employeeResolver = generateSchemaWithFileName(new Class[] { Root.class }, CONTEXT_PATH, PATH + "root-oxm.xml", 1);
-        compareSchemas(employeeResolver.schemaFiles.get(EMPTY_NAMESPACE), new File(PATH + "root.xsd"));
     }
 }

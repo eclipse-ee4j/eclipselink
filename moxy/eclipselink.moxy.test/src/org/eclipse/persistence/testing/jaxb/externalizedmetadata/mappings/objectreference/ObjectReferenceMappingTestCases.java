@@ -32,12 +32,9 @@ import org.w3c.dom.Document;
 public class ObjectReferenceMappingTestCases extends ExternalizedMetadataTestCases {
     private static final String CONTEXT_PATH = "org.eclipse.persistence.testing.jaxb.externalizedmetadata.mappings.objectreference";
     private static final String PATH = "org/eclipse/persistence/testing/jaxb/externalizedmetadata/mappings/objectreference/";
-    
-    private MySchemaOutputResolver employeeResolver;
-
-    private static final String ADD_ID1 = "100";
-    private static final String ADD_ID2 = "101";
-    private static final String ADD_ID3 = "102";
+    private static final String ADD_ID1 = "a100";
+    private static final String ADD_ID2 = "a101";
+    private static final String ADD_ID3 = "a102";
 
     /**
      * This is the preferred (and only) constructor.
@@ -105,28 +102,51 @@ public class ObjectReferenceMappingTestCases extends ExternalizedMetadataTestCas
     }
 
     /**
-     * This method's primary purpose id to generate schema(s). Validation of
-     * generated schemas will occur in the testXXXGen method(s) below. Note that
-     * the JAXBContext is created from this call and is required for
-     * marshal/unmarshal, etc. tests.
      * 
      */
     @Override
     public void setUp() throws Exception {
-        super.setUp();
-        employeeResolver = generateSchemaWithFileName(new Class[] { Root.class }, CONTEXT_PATH, PATH + "root-oxm.xml", 1);
+        super.setUp();        
     }
 
     /**
      * Tests schema generation for XmlObjectReferenceMapping via eclipselink-oxm.xml.
      * Utilizes xml-attribute and xml-element. xml-value is tested separately
      * below.
+     * Instance document validation is performed here as well. 
      * 
      * Positive test.
      */
-    public void testObjectReferenceSchemaGen() {
+    public void testSchemaGenAndValidation() {
+        // generate root schema
+        MySchemaOutputResolver resolver = generateSchemaWithFileName(new Class[] { Root.class }, CONTEXT_PATH, PATH + "root-oxm.xml", 1);
         // validate employee schema
-        compareSchemas(employeeResolver.schemaFiles.get(EMPTY_NAMESPACE), new File(PATH + "root.xsd"));
+        compareSchemas(resolver.schemaFiles.get(EMPTY_NAMESPACE), new File(PATH + "root.xsd"));
+        // validate root.xml
+        String src = PATH + "root.xml";
+        String result = validateAgainstSchema(src, EMPTY_NAMESPACE, resolver);
+        assertTrue("Instance doc validation (root.xml) failed unxepectedly: " + result, result == null);
+        
+        // generate write-only schema
+        resolver = generateSchemaWithFileName(new Class[] { Root.class }, CONTEXT_PATH, PATH + "write-only-oxm.xml", 1);
+        // validate write-only schema
+        compareSchemas(resolver.schemaFiles.get(EMPTY_NAMESPACE), new File(PATH + "root.xsd"));
+        // validate root.xml
+        result = validateAgainstSchema(src, EMPTY_NAMESPACE, resolver);
+        assertTrue("Instance doc validation (root.xml) failed unxepectedly: " + result, result == null);
+
+        // generate read-only schema
+        resolver = generateSchemaWithFileName(new Class[] { Root.class }, CONTEXT_PATH, PATH + "read-only-oxm.xml", 1);
+        // validate read-only schema
+        compareSchemas(resolver.schemaFiles.get(EMPTY_NAMESPACE), new File(PATH + "root.xsd"));
+        // validate root.xml
+        result = validateAgainstSchema(src, EMPTY_NAMESPACE, resolver);
+        assertTrue("Instance doc validation (root.xml) failed unxepectedly: " + result, result == null);
+        // validate marshal-read-only.xml
+        src = PATH + "marshal-read-only.xml";
+        result = validateAgainstSchema(src, EMPTY_NAMESPACE, resolver);
+        assertTrue("Instance doc validation (marshal-read-only.xml) failed unxepectedly: " + result, result == null);
+
     }
 
     /**
@@ -136,6 +156,13 @@ public class ObjectReferenceMappingTestCases extends ExternalizedMetadataTestCas
      * Positive test.
      */
     public void testObjectReferenceUnmarshal() {
+        JAXBContext jCtx = null;
+        try {
+            jCtx = createContext(new Class[] { Root.class }, CONTEXT_PATH, PATH + "root-oxm.xml");
+        } catch (JAXBException e1) {
+            fail("JAXBContext creation failed: " + e1.getMessage());
+        }
+
         // load instance doc
         String src = PATH + "root.xml";
         InputStream iDocStream = loader.getResourceAsStream(src);
@@ -146,7 +173,7 @@ public class ObjectReferenceMappingTestCases extends ExternalizedMetadataTestCas
         // unmarshal
         Root ctrlObj = getControlObject();
         Root root = null;
-        Unmarshaller unmarshaller = jaxbContext.createUnmarshaller();
+        Unmarshaller unmarshaller = jCtx.createUnmarshaller();
         try {
             root = (Root) unmarshaller.unmarshal(iDocStream);
             assertNotNull("Unmarshalled object is null.", root);
@@ -165,6 +192,13 @@ public class ObjectReferenceMappingTestCases extends ExternalizedMetadataTestCas
      * Positive test.
      */
     public void testObjectReferenceMarshal() {
+        JAXBContext jCtx = null;
+        try {
+            jCtx = createContext(new Class[] { Root.class }, CONTEXT_PATH, PATH + "root-oxm.xml");
+        } catch (JAXBException e1) {
+            fail("JAXBContext creation failed: " + e1.getMessage());
+        }
+
         // setup control document
         String src = PATH + "root.xml";
         Document testDoc = parser.newDocument();
@@ -178,7 +212,7 @@ public class ObjectReferenceMappingTestCases extends ExternalizedMetadataTestCas
 
         // test marshal
         Root ctrlObj = getControlObject();
-        Marshaller marshaller = jaxbContext.createMarshaller();
+        Marshaller marshaller = jCtx.createMarshaller();
         try {
             marshaller.marshal(ctrlObj, testDoc);
             //marshaller.marshal(ctrlObj, System.out);

@@ -1,28 +1,28 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <root>
-	<employee id="222" address-id="199">
+	<employee id="a222" address-id="a199">
 		<name>Joe Smith</name>
-		<phone-id>123</phone-id>
-		<phone-id>456</phone-id>
+		<phone-id>a123</phone-id>
+		<phone-id>a456</phone-id>
 	</employee>
-	<address aid="199">
+	<address aid="a199">
 		<street>Some Other St.</street>
 		<city>Anyothertown</city>
 		<country>Canada</country>
 		<zip>X0X0X0</zip>
 	</address>
-	<address aid="99">
+	<address aid="a99">
 		<street>Some St.</street>
 		<city>Anytown</city>
 		<country>Canada</country>
 		<zip>X0X0X0</zip>
 	</address>
 	<phone-number>
-	  <id>123</id>
+	  <id>a123</id>
 	  <number>613-123-4567</number>
 	</phone-number>
 	<phone-number>
-	  <id>456</id>
+	  <id>a456</id>
 	  <number>613-234-5678</number>
 	</phone-number>
 </root>
