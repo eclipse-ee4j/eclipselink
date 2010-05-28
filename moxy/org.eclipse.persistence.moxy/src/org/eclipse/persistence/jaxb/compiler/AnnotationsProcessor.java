@@ -625,6 +625,20 @@ public class AnnotationsProcessor {
                 JavaClass[] jClassArray = new JavaClass[] { propertyType };
                 buildNewTypeInfo(jClassArray);
             }
+            
+            if(property.isMap()) {
+                JavaClass keyType = property.getKeyType();
+                if(shouldGenerateTypeInfo(keyType)) {
+                    JavaClass[] jClassArray = new JavaClass[] { keyType };
+                    buildNewTypeInfo(jClassArray);
+                }
+                
+                JavaClass valueType = property.getValueType();
+                if(shouldGenerateTypeInfo(valueType)) {
+                    JavaClass[] jClassArray = new JavaClass[] { valueType };
+                    buildNewTypeInfo(jClassArray);
+                }
+            }
         }
     }
 

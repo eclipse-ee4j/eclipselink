@@ -1419,7 +1419,8 @@ public class MappingsGenerator {
     private DatabaseMapping generateMappingForType(JavaClass theType, String attributeName){
         DatabaseMapping mapping;
         boolean typeIsObject =  theType.getRawName().equals(OBJECT_CLASS_NAME);
-        if (typeInfo.containsKey(theType.getQualifiedName()) || typeIsObject) {
+        TypeInfo info = typeInfo.get(theType.getQualifiedName());
+        if ((info != null && !(info.isEnumerationType())) || typeIsObject) {
             mapping = new XMLCompositeObjectMapping();
             mapping.setAttributeName(attributeName);
             ((XMLCompositeObjectMapping)mapping).setXPath(attributeName);
@@ -1441,6 +1442,9 @@ public class MappingsGenerator {
                 schemaType = (QName) helper.getXMLToJavaTypeMap().get(theType);
             }
             ((XMLField)((XMLDirectMapping)mapping).getField()).setSchemaType(schemaType);
+            if(info != null && info.isEnumerationType()) {
+                ((XMLDirectMapping)mapping).setConverter(buildJAXBEnumTypeConverter(mapping, (EnumTypeInfo)info));
+            }
         }
         return mapping;
     }
