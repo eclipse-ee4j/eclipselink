@@ -27,7 +27,7 @@ Import-Package:                                                           \
  javax.mail.*;resolution:=optional,                                       \
  javax.management.*;resolution:=optional,                                 \
  javax.naming.*;resolution:=optional,                                     \
- javax.persistence.*;resolution:=optional;version="1.0.0",                \
+ javax.persistence.*;resolution:=optional;version="1.1.0";jpa="2.0",                \
  javax.rmi.*;resolution:=optional,                                        \
  javax.sql.*;resolution:=optional,                                        \
  javax.resource.*;resolution:=optional;version="1.5.0",                   \
