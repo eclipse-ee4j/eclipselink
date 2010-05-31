@@ -34,8 +34,7 @@ public class XJCJavaModelImpl implements JavaModel {
         this.dynamicClassLoader = dynLoader;
     }
 
-    @SuppressWarnings("unchecked")
-    public JavaClass getClass(Class jClass) {
+    public JavaClass getClass(Class<?> jClass) {
         if (jClass == null) {
             return null;
         }
@@ -59,8 +58,7 @@ public class XJCJavaModelImpl implements JavaModel {
         return this.classLoader;
     }
 
-    @SuppressWarnings("unchecked")
-    public Annotation getAnnotation(JavaAnnotation annotation, Class jClass) {
+    public Annotation getAnnotation(JavaAnnotation annotation, Class<?> jClass) {
         return ((XJCJavaAnnotationImpl) annotation).getJavaAnnotation();
     }
 

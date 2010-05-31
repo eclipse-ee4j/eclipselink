@@ -49,7 +49,7 @@ public class JavaModelImpl implements JavaModel {
     	this.annotationHelper = annotationHelper;
     }
 
-    public JavaClass getClass(Class jClass) {
+    public JavaClass getClass(Class<?> jClass) {
         try {
             JavaClass javaClass = new JavaClassImpl(jClass, this);
             if(classLoader instanceof JaxbClassLoader) {
@@ -74,7 +74,7 @@ public class JavaModelImpl implements JavaModel {
         return this.classLoader;
     }
 
-    public Annotation getAnnotation(JavaAnnotation janno, Class jClass) {
+    public Annotation getAnnotation(JavaAnnotation janno, Class<?> jClass) {
         return ((JavaAnnotationImpl) janno).getJavaAnnotation();
     }
 

@@ -27,8 +27,8 @@ package org.eclipse.persistence.jaxb.javamodel;
  * @since Oracle TopLink 11.1.1.0.0
  */
 public interface JavaModel {
-    public JavaClass getClass(Class jClass);
+    public JavaClass getClass(Class<?> jClass);
     public JavaClass getClass(String classname);
     public ClassLoader getClassLoader();
-    public java.lang.annotation.Annotation getAnnotation(JavaAnnotation janno, Class jClass);
+    public java.lang.annotation.Annotation getAnnotation(JavaAnnotation janno, Class<?> jClass);
 }
