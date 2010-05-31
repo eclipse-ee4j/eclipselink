@@ -15,6 +15,8 @@
  *       - 290567: mappedbyid support incomplete
  *     11/23/2009-2.0 Guy Pelletier 
  *       - 295790: JPA 2.0 adding @MapsId to one entity causes initialization errors in other entities
+ *     05/31/2010-2.1 Guy Pelletier 
+ *       - 314941: multiple joinColumns without referenced column names defined, no error
  ******************************************************************************/  
 
 package org.eclipse.persistence.testing.models.jpa.advanced.compositepk;
@@ -32,6 +34,7 @@ public class CompositePKTableCreator extends TogglingFastTableCreator {
         addTableDefinition(buildSCIENTISTTable());
         addTableDefinition(buildDEPARTMENTTable());
         addTableDefinition(buildDEPT_ADMINTable());
+        addTableDefinition(buildDEPT_COMPETENCYTable());
         addTableDefinition(buildCUBICLETable());
         addTableDefinition(buildSARGEANTTable());
         addTableDefinition(buildMASTERCORPORALTable());
@@ -398,6 +401,63 @@ public class CompositePKTableCreator extends TogglingFastTableCreator {
         fieldPOOL_ID.setUnique(false);
         fieldPOOL_ID.setIsIdentity(false);
         table.addField(fieldPOOL_ID);
+
+        return table;   
+    }
+    
+    public static TableDefinition buildDEPT_COMPETENCYTable() {
+        TableDefinition table = new TableDefinition();
+        table.setName("DEPT_COMPETENCIES");
+
+        FieldDefinition NAME_field = new FieldDefinition();
+        NAME_field.setName("NAME");
+        NAME_field.setTypeName("VARCHAR");
+        NAME_field.setSize(40);
+        NAME_field.setShouldAllowNull(false);
+        NAME_field.setIsPrimaryKey(true);
+        NAME_field.setUnique(false);
+        NAME_field.setIsIdentity(false);
+        table.addField(NAME_field);
+    
+        FieldDefinition ROLE_field = new FieldDefinition();
+        ROLE_field.setName("DROLE");
+        ROLE_field.setTypeName("VARCHAR");
+        ROLE_field.setSize(40);
+        ROLE_field.setShouldAllowNull(false);
+        ROLE_field.setIsPrimaryKey(true);
+        ROLE_field.setUnique(false);
+        ROLE_field.setIsIdentity(false);
+        table.addField(ROLE_field);
+    
+        FieldDefinition LOCATION_field = new FieldDefinition();
+        LOCATION_field.setName("LOCATION");
+        LOCATION_field.setTypeName("VARCHAR");
+        LOCATION_field.setSize(40);
+        LOCATION_field.setShouldAllowNull(false);
+        LOCATION_field.setIsPrimaryKey(true);
+        LOCATION_field.setUnique(false);
+        LOCATION_field.setIsIdentity(false);
+        table.addField(LOCATION_field);
+        
+        FieldDefinition DESCRIP_field = new FieldDefinition();
+        DESCRIP_field.setName("DESCRIP");
+        DESCRIP_field.setTypeName("VARCHAR");
+        DESCRIP_field.setSize(40);
+        DESCRIP_field.setShouldAllowNull(true);
+        DESCRIP_field.setIsPrimaryKey(false);
+        DESCRIP_field.setUnique(false);
+        DESCRIP_field.setIsIdentity(false);
+        table.addField(DESCRIP_field);
+        
+        FieldDefinition RATING_field = new FieldDefinition();
+        RATING_field.setName("RATING");
+        RATING_field.setTypeName("NUMERIC");
+        RATING_field.setSize(10);
+        RATING_field.setShouldAllowNull(true);
+        RATING_field.setIsPrimaryKey(false);
+        RATING_field.setUnique(false);
+        RATING_field.setIsIdentity(false);
+        table.addField(RATING_field);
 
         return table;   
     }

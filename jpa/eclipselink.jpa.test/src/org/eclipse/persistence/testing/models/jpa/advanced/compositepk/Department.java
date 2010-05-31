@@ -9,14 +9,17 @@
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
+ *     05/31/2010-2.1 Guy Pelletier 
+ *       - 314941: multiple joinColumns without referenced column names defined, no error
  ******************************************************************************/  
-
 package org.eclipse.persistence.testing.models.jpa.advanced.compositepk;
 
 import java.util.Vector;
 import java.util.Collection;
 
+import javax.persistence.CollectionTable;
 import javax.persistence.Column;
+import javax.persistence.ElementCollection;
 import javax.persistence.Id;
 import javax.persistence.Table;
 import javax.persistence.Entity;
@@ -35,73 +38,88 @@ public class Department {
     private String location;
     private Collection<Scientist> scientists;
     private Collection<Office> offices;
+    private Collection<Competency> competencies;
 
     public Department() {
         scientists = new Vector<Scientist>();
         offices = new Vector<Office>();
-    }
-
-    @Id
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    @Id
-    @Column(name="DROLE")
-    public String getRole() {
-        return role;
-    }
-
-    public void setRole(String role) {
-        this.role = role;
-    }
-
-    @Id
-    public String getLocation() {
-        return location;
-    }
-
-    public void setLocation(String location) {
-        this.location = location;
-    }
-
-    @OneToMany(fetch=EAGER, mappedBy="department")
-    @OrderBy // will default to Scientists composite pk.
-    public Collection<Scientist> getScientists() {
-        return scientists;
-    }
-
-    public void setScientists(Collection<Scientist> scientists) {
-        this.scientists = scientists;
+        competencies = new Vector<Competency>();
     }
     
-
-    @OneToMany(mappedBy="department")
-    public Collection<Office> getOffices() {
-        return offices;
+    public void addCompetency(Competency competency) {
+        competencies.add(competency);
     }
-
-    public void setOffices(Collection<Office> offices) {
-        this.offices = offices;
-    }
-
+    
     public Scientist addScientist(Scientist scientist) {
         scientists.add(scientist);
         scientist.setDepartment(this);
         return scientist;
     }
 
+    @ElementCollection
+    @CollectionTable(name="DEPT_COMPETENCIES")
+    public Collection<Competency> getCompetencies() {
+        return competencies;
+    }
+    
+    @Id
+    public String getLocation() {
+        return location;
+    }
+    
+    @Id
+    public String getName() {
+        return name;
+    }
+
+    @OneToMany(mappedBy="department")
+    public Collection<Office> getOffices() {
+        return offices;
+    }
+    
+    public DepartmentPK getPK() {
+        return new DepartmentPK(name, role, location);
+    }
+    
+    @Id
+    @Column(name="DROLE")
+    public String getRole() {
+        return role;
+    }
+    
+    @OneToMany(fetch=EAGER, mappedBy="department")
+    @OrderBy // will default to Scientists composite pk.
+    public Collection<Scientist> getScientists() {
+        return scientists;
+    }
+    
     public Scientist removeScientist(Scientist scientist) {
         scientists.remove(scientist);
         scientist.setDepartment(null);
         return scientist;
     }
     
-    public DepartmentPK getPK() {
-        return new DepartmentPK(name, role, location);
+    public void setCompetencies(Collection<Competency> competencies) {
+        this.competencies = competencies;
+    }
+    
+    public void setLocation(String location) {
+        this.location = location;
+    }
+    
+    public void setName(String name) {
+        this.name = name;
+    }
+    
+    public void setOffices(Collection<Office> offices) {
+        this.offices = offices;
+    }
+    
+    public void setRole(String role) {
+        this.role = role;
+    }
+
+    public void setScientists(Collection<Scientist> scientists) {
+        this.scientists = scientists;
     }
 }

@@ -15,6 +15,8 @@
  *       - 290567: mappedbyid support incomplete
  *     11/23/2009-2.0 Guy Pelletier 
  *       - 295790: JPA 2.0 adding @MapsId to one entity causes initialization errors in other entities
+ *     05/31/2010-2.1 Guy Pelletier 
+ *       - 314941: multiple joinColumns without referenced column names defined, no error
  ******************************************************************************/  
 package org.eclipse.persistence.testing.tests.jpa.advanced.compositepk;
 
@@ -30,6 +32,7 @@ import javax.persistence.EntityManager;
 import junit.framework.*;
 
 import org.eclipse.persistence.testing.framework.junit.JUnitTestCase;
+import org.eclipse.persistence.testing.models.jpa.advanced.compositepk.Competency;
 import org.eclipse.persistence.testing.models.jpa.advanced.compositepk.Cubicle;
 import org.eclipse.persistence.testing.models.jpa.advanced.compositepk.JuniorScientist;
 import org.eclipse.persistence.testing.models.jpa.advanced.compositepk.Office;
@@ -152,6 +155,12 @@ public class AdvancedCompositePKJunitTest extends JUnitTestCase {
             department.setName("DEPT A");
             department.setRole("ROLE A");
             department.setLocation("LOCATION A");
+            
+            Competency competency = new Competency();
+            competency.description = "Manage groups";
+            competency.rating = 9;
+            department.addCompetency(competency);
+            
             em.persist(department);
             
             commitTransaction(em);

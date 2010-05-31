@@ -33,6 +33,8 @@
  *       - 303632: Add attribute-type for mapping attributes to EclipseLink-ORM
  *     04/27/2010-2.1 Guy Pelletier 
  *       - 309856: MappedSuperclasses from XML are not being initialized properly
+ *     05/31/2010-2.1 Guy Pelletier 
+ *       - 314941: multiple joinColumns without referenced column names defined, no error
  ******************************************************************************/ 
 package org.eclipse.persistence.internal.jpa.metadata.accessors.mappings;
 
@@ -734,7 +736,7 @@ public class ElementCollectionAccessor extends DirectCollectionAccessor implemen
         
         // Add all the joinColumns (reference key fields) to the mapping. Join 
         // column validation is performed in the processJoinColumns call.
-        for (JoinColumnMetadata joinColumn : getJoinColumns(getCollectionTable().getJoinColumns(), getReferenceDescriptor())) {
+        for (JoinColumnMetadata joinColumn : getJoinColumns(getCollectionTable().getJoinColumns(), getOwningDescriptor())) {
             // The default name is the primary key of the owning entity.
             DatabaseField pkField = joinColumn.getPrimaryKeyField();
             setFieldName(pkField, getOwningDescriptor().getPrimaryKeyFieldName(), MetadataLogger.PK_COLUMN);
