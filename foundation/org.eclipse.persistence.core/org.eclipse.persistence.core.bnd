@@ -10,6 +10,7 @@ Implementation-Version: ${version.string}
 Specification-Vendor: ${specification.vendor}
 Bundle-Name: EclipseLink Core
 Premain-Class: org.eclipse.persistence.internal.jpa.deployment.JavaSECMPInitializerAgent
+Eclipse-ExtensibleAPI: true
 Bundle-Vendor: ${implementation.vendor}
 Bundle-Version: ${version.string}
 Include-Resource:\
