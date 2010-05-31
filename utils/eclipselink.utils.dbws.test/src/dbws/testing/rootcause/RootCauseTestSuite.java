@@ -271,7 +271,7 @@ public class RootCauseTestSuite extends ProviderHelper implements Provider<SOAPM
             public Object getAttributeValueFromObject(Object object) {
               return ((Invocation)object).getParameters();
             }
-            @SuppressWarnings("unchecked")
+            @SuppressWarnings({"unchecked", "rawtypes"})
             @Override
             public void setAttributeValueInObject(Object object, Object value) {
                 Invocation invocation = (Invocation)object;
@@ -449,6 +449,10 @@ public class RootCauseTestSuite extends ProviderHelper implements Provider<SOAPM
         catch (SOAPFaultException sfe) {
             assertTrue("incorrect SOAPFaultException",
                 sfe.getMessage().contains("EclipseLink-25008"));
+        }
+        // just for debugging, keep 'response' variable alive after try-catch
+        if (response != null) {
+            response.hashCode(); 
         }
     }
 }

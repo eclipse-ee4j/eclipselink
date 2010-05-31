@@ -227,7 +227,7 @@ public class WebServiceTestSuite extends ProviderHelper {
             public Object getAttributeValueFromObject(Object object) {
               return ((Invocation)object).getParameters();
             }
-            @SuppressWarnings("unchecked")
+            @SuppressWarnings({"unchecked", "rawtypes"})
             @Override
             public void setAttributeValueInObject(Object object, Object value) {
                 Invocation invocation = (Invocation)object;

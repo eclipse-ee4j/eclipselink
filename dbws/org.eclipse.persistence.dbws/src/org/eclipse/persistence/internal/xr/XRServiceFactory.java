@@ -129,6 +129,7 @@ import static org.eclipse.persistence.oxm.XMLConstants.ANY_QNAME;
  *   &lt;/query&gt;
  * &lt;/dbws&gt;
  */
+@SuppressWarnings({"unchecked", "rawtypes"})
 public class XRServiceFactory  {
 
     public XRServiceAdapter xrService;
@@ -202,7 +203,6 @@ public class XRServiceFactory  {
     /**
      * <p>INTERNAL:
      */
-    @SuppressWarnings("unchecked")
     public void buildSessions() {
         ClassLoader projectLoader = new XRDynamicClassLoader(parentClassLoader);
         SessionManager sessionManager = SessionManager.getManager();
@@ -259,7 +259,6 @@ public class XRServiceFactory  {
     /**
      * <p>INTERNAL:
      */
-    @SuppressWarnings("unchecked")
     public void buildDescriptorIndex() {
         for (Iterator i = xrService.oxSession.getProject().getOrderedDescriptors().iterator();
             i.hasNext();) {
@@ -300,7 +299,6 @@ public class XRServiceFactory  {
     /**
      * <p>INTERNAL:
      */
-    @SuppressWarnings("unchecked")
     protected void logoutSessions() {
         SessionManager manager = SessionManager.getManager();
         Map sessions = manager.getSessions();

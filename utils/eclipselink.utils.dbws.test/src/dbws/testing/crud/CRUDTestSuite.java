@@ -101,7 +101,7 @@ public class CRUDTestSuite extends DBWSTestSuite {
           "<name>crud1</name>" +
         "</crud_tableType>";
 
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings({"unchecked", "rawtypes"})
     @Test
     public void test2_readAll() {
         Invocation invocation = new Invocation("findAll_crud_tableType");
@@ -136,7 +136,7 @@ public class CRUDTestSuite extends DBWSTestSuite {
           "</crud_tableType>" +
         "</all>";
 
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings({"unchecked", "rawtypes"})
     @Test
     public void test3_findByName() {
         Invocation invocation = new Invocation("findByName");

@@ -95,7 +95,6 @@ public class AdvancedJDBCOXDescriptorBuilder extends PublisherDefaultListener {
         stac.push(new ReturnArgHelper("", returnType));
     }
 
-    @SuppressWarnings("unchecked")
     @Override
     public void handleSqlType(String sqlTypeName, int typecode, String targetTypeName) {
         if (!stac.isEmpty()) {
@@ -125,7 +124,7 @@ public class AdvancedJDBCOXDescriptorBuilder extends PublisherDefaultListener {
                             xdesc.getNamespaceResolver().put(SCHEMA_PREFIX, W3C_XML_SCHEMA_NS_URI);
                         }
                         else {
-                            Class attributeClass = (Class)XMLConversionManager.getDefaultXMLTypes().
+                            Class<?> attributeClass = (Class<?>)XMLConversionManager.getDefaultXMLTypes().
                                 get(qnameFromDatabaseType);
                             if (attributeClass == null) {
                                 attributeClass =  Object_Class;

@@ -118,8 +118,7 @@ public class UserArguments extends ViewRowFactory implements ViewRow {
             + "," + TYPE_OWNER + "," + TYPE_NAME + "," + TYPE_SUBNAME + "," + OBJECT_ID;
     }
 
-    @SuppressWarnings("unchecked")
-    public static void orderByPosition(ArrayList rows) {
+    public static void orderByPosition(ArrayList<ViewRow> rows) {
         for (int i = 0; i < rows.size() - 1; i++) {
             UserArguments rowi = (UserArguments)rows.get(i);
             int minIdx = i;
@@ -132,15 +131,14 @@ public class UserArguments extends ViewRowFactory implements ViewRow {
                 }
             }
             if (i != minIdx) {
-                Object tmp = rows.get(i);
+                ViewRow tmp = rows.get(i);
                 rows.set(i, rows.get(minIdx));
                 rows.set(minIdx, tmp);
             }
         }
     }
 
-    @SuppressWarnings("unchecked")
-    public static void orderBySequence(ArrayList rows) {
+    public static void orderBySequence(ArrayList<ViewRow> rows) {
         for (int i = 0; i < rows.size() - 1; i++) {
             UserArguments rowi = (UserArguments)rows.get(i);
             int minIdx = i;
@@ -153,7 +151,7 @@ public class UserArguments extends ViewRowFactory implements ViewRow {
                 }
             }
             if (i != minIdx) {
-                Object tmp = rows.get(i);
+                ViewRow tmp = rows.get(i);
                 rows.set(i, rows.get(minIdx));
                 rows.set(minIdx, tmp);
             }

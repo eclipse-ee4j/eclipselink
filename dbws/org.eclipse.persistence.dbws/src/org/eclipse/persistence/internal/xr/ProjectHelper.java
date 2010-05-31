@@ -45,13 +45,13 @@ import static org.eclipse.persistence.internal.xr.XRDynamicEntity.XR_FIELD_INFO_
  * This API only supports EclipseLink 1.x format deployment XML
  */
 
+@SuppressWarnings({"unchecked", "rawtypes"})
 public class ProjectHelper {
     /**
      * INTERNAL: Fix the given EclipseLink OR and OX projects so that the
      * descriptors for all generated sub-classes of XRDynamicEntity have the correct
      * AttributeAccessors.
      */
-    @SuppressWarnings("unchecked")
     public static void fixOROXAccessors(Project orProject, Project oxProject) {
         for (Iterator i = orProject.getDescriptors().values().iterator(); i.hasNext();) {
             ClassDescriptor desc = (ClassDescriptor)i.next();

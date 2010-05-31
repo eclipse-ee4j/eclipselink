@@ -63,12 +63,11 @@ import static org.eclipse.persistence.internal.xr.sxf.SimpleXMLFormat.DEFAULT_SI
 import static org.eclipse.persistence.internal.xr.sxf.SimpleXMLFormat.DEFAULT_SIMPLE_XML_TAG;
 import static org.eclipse.persistence.oxm.XMLConstants.BOOLEAN_QNAME;
 
-@SuppressWarnings("serial")
+@SuppressWarnings({"serial", "unchecked", "rawtypes"})
 public class DBWSModelProject extends Project {
 
     public NamespaceResolver ns;
 
-    @SuppressWarnings("unchecked")
     public DBWSModelProject() {
         setName("DBWSModelProject");
 
@@ -121,7 +120,6 @@ public class DBWSModelProject extends Project {
             public Object getAttributeValueFromObject(Object object) {
                 return ((XRServiceModel)object).getOperationsList();
             }
-            @SuppressWarnings("unchecked")
             public void setAttributeValueInObject(Object object, Object value) {
                 Vector v = (Vector)value;
                 XRServiceModel dbwsModel = (XRServiceModel)object;

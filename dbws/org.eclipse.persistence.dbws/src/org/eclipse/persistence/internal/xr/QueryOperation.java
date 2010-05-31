@@ -74,7 +74,7 @@ import static org.eclipse.persistence.oxm.XMLConstants.TIME_QNAME;
  * @author Mike Norman - michael.norman@oracle.com
  * @since EclipseLink 1.x
  */
-@SuppressWarnings("serial")
+@SuppressWarnings({"serial", "unchecked", "rawtypes"})
 public class QueryOperation extends Operation {
 
     protected Result result;
@@ -315,7 +315,6 @@ public class QueryOperation extends Operation {
      *
      * @see  {@link Operation}
      */
-    @SuppressWarnings("unchecked")
     @Override
     public Object invoke(XRServiceAdapter xrService, Invocation invocation) {
 
@@ -355,7 +354,6 @@ public class QueryOperation extends Operation {
         return value;
     }
 
-    @SuppressWarnings("unchecked")
     public Object createSimpleXMLFormat(XRServiceAdapter xrService, Object value) {
         XMLRoot xmlRoot = new XMLRoot();
         SimpleXMLFormat simpleXMLFormat = result.getSimpleXMLFormat();

@@ -36,12 +36,11 @@ import org.eclipse.persistence.oxm.mappings.XMLCompositeCollectionMapping;
 import org.eclipse.persistence.oxm.mappings.XMLDirectMapping;
 import org.eclipse.persistence.sessions.Project;
 
-@SuppressWarnings("serial")
+@SuppressWarnings({"serial", "unchecked", "rawtypes"})
 public class DBWSBuilderModelProject extends Project {
 
     protected NamespaceResolver ns;
 
-    @SuppressWarnings("unchecked")
     public DBWSBuilderModelProject() {
         setName("DBWSBuilderModelProject");
 

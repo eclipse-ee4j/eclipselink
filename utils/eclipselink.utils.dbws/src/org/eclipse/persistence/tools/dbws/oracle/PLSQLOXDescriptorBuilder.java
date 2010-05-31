@@ -193,7 +193,7 @@ public class PLSQLOXDescriptorBuilder extends PublisherDefaultListener {
             descriptorMap.put(recordAlias, xdesc);
         }
     }
-    @SuppressWarnings("unchecked")
+
     @Override
     public void endPlsqlRecordField(String fieldName, int idx) {
         ListenerHelper top = stac.pop();
@@ -271,7 +271,7 @@ public class PLSQLOXDescriptorBuilder extends PublisherDefaultListener {
                     xdesc.getNamespaceResolver().put(SCHEMA_PREFIX, W3C_XML_SCHEMA_NS_URI);
                 }
                 else {
-                    Class attributeClass = (Class)XMLConversionManager.getDefaultXMLTypes().
+                    Class<?> attributeClass = (Class<?>)XMLConversionManager.getDefaultXMLTypes().
                         get(qnameFromDatabaseType);
                     if (attributeClass == null) {
                         attributeClass =  Object_Class;

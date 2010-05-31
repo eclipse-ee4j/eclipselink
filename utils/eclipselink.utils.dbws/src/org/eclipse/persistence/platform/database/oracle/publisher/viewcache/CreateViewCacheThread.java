@@ -15,13 +15,12 @@ package org.eclipse.persistence.platform.database.oracle.publisher.viewcache;
 import java.util.ArrayList;
 import static org.eclipse.persistence.platform.database.oracle.publisher.viewcache.ViewCache.PARAMETER_USER;
 
-@SuppressWarnings("unchecked")
 public class CreateViewCacheThread extends Thread {
 
-    ArrayList m_viewCacheParameters;
+    ArrayList<String> m_viewCacheParameters;
     ViewCache m_viewCache;
 
-    CreateViewCacheThread(ViewCache viewCache, ArrayList viewCacheParameters) {
+    CreateViewCacheThread(ViewCache viewCache, ArrayList<String> viewCacheParameters) {
         m_viewCache = viewCache;
         m_viewCacheParameters = viewCacheParameters;
     }
@@ -33,7 +32,7 @@ public class CreateViewCacheThread extends Thread {
             }
             else {
                 for (int i = 0; i < m_viewCacheParameters.size(); i++) {
-                    m_viewCache.fetch((String)m_viewCacheParameters.get(i), null);
+                    m_viewCache.fetch(m_viewCacheParameters.get(i), null);
                 }
             }
         }

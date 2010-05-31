@@ -880,7 +880,7 @@ prompt> java -cp eclipselink.jar:eclipselink-dbwsutils.jar:your_favourite_jdbc_d
         oxProject.setLogin(xmlLogin);
     }
 
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings({"unchecked", "rawtypes"})
     protected void buildOROXProjectsForAdvancedPLSQLProcedure(ProcedureOperationModel procOpModel) {
         /*
          * Walk-thru sqlType, building PLSQLCollection/PLSQLrecord helper objects,
@@ -1167,8 +1167,8 @@ prompt> java -cp eclipselink.jar:eclipselink-dbwsutils.jar:your_favourite_jdbc_d
             SchemaModelGeneratorProperties sgProperties = new SchemaModelGeneratorProperties();
             // set element form default to qualified for target namespace
             sgProperties.addProperty(getTargetNamespace(), ELEMENT_FORM_QUALIFIED_KEY, true);
-            Map schemaMap = schemaGenerator.generateSchemas(descriptorsToProcess, sgProperties);
-            Schema s = (Schema)schemaMap.get(getTargetNamespace());
+            Map<String, Schema> schemaMap = schemaGenerator.generateSchemas(descriptorsToProcess, sgProperties);
+            Schema s = schemaMap.get(getTargetNamespace());
             // check existing schema for any top-level ComplexTypes
             if (schema != null && s != null) {
                 Map<String, ComplexType> topLevelComplexTypes = schema.getTopLevelComplexTypes();
@@ -1210,7 +1210,7 @@ prompt> java -cp eclipselink.jar:eclipselink-dbwsutils.jar:your_favourite_jdbc_d
         }
     }
 
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings("rawtypes")
     protected void buildDBWSModel(NamingConventionTransformer nct, OutputStream dbwsServiceStream) {
 
         if (!isNullStream(dbwsServiceStream)) {
@@ -1489,7 +1489,7 @@ prompt> java -cp eclipselink.jar:eclipselink-dbwsutils.jar:your_favourite_jdbc_d
         properties.put(URL_KEY, url);
     }
 
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings({"unchecked", "rawtypes"})
     public Connection getConnection() {
         if (conn == null ) {
             String driverClassName = getDriver();
@@ -1575,7 +1575,7 @@ prompt> java -cp eclipselink.jar:eclipselink-dbwsutils.jar:your_favourite_jdbc_d
         properties.put(PLATFORM_CLASSNAME_KEY, platformClassname);
 
     }
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings({"unchecked", "rawtypes"})
     public DatabasePlatform getDatabasePlatform() {
         String platformClassname = getPlatformClassname();
         try {

@@ -151,7 +151,7 @@ public class AdvancedJDBCTestSuite extends BuilderTestSuite {
             "region").getObjectBuilder().buildNewInstance();
         regionEntity.set("reg_id", BigDecimal.valueOf(5));
         regionEntity.set("reg_name", "this is a test");
-        Vector v = new NonSynchronizedVector();
+        @SuppressWarnings("rawtypes") Vector v = new NonSynchronizedVector();
         v.add(regionEntity);
         Object o = ds.executeQuery(vrq, v);
         assertTrue("incorrect return type from StoredFunctionCall",
@@ -371,7 +371,7 @@ public class AdvancedJDBCTestSuite extends BuilderTestSuite {
         empAddressEntity.set("suburb", "Centrepointe");
         empAddressEntity.set("addr_region", regionEntity);
         empAddressEntity.set("postcode", BigDecimal.valueOf(12));
-        Vector v = new NonSynchronizedVector();
+        @SuppressWarnings("rawtypes") Vector v = new NonSynchronizedVector();
         v.add(empAddressEntity);
         Object o = ds.executeQuery(vrq, v);
         assertTrue("incorect return type from StoredFunctionCall", o instanceof XRDynamicEntity);
@@ -714,7 +714,7 @@ public class AdvancedJDBCTestSuite extends BuilderTestSuite {
         empObjectEntity.set("address", empAddressEntity);
         empObjectEntity.set("employee_name", "Mike Norman");
         empObjectEntity.set("date_of_hire", new java.sql.Date(System.currentTimeMillis()));
-        Vector v = new NonSynchronizedVector();
+        @SuppressWarnings("rawtypes") Vector v = new NonSynchronizedVector();
         v.add(empObjectEntity);
         Object o = ds.executeQuery(vrq, v);
         assertTrue("incorect return type from StoredFunctionCall", o instanceof XRDynamicEntity);
@@ -1145,26 +1145,26 @@ public class AdvancedJDBCTestSuite extends BuilderTestSuite {
         // test query
         DatabaseSession ds = fixUp(EMP_ARRAY_OR_PROJECT);
         DatabaseQuery vrq = ds.getQuery("buildEmpArray");
-        Vector args = new NonSynchronizedVector();
+        @SuppressWarnings("rawtypes") Vector args = new NonSynchronizedVector();
         args.add(Integer.valueOf(3));
         Object o = ds.executeQuery(vrq, args);
         assertTrue("return value not correct type", o instanceof XRDynamicEntity);
         XRDynamicEntity returnValue = (XRDynamicEntity)o;
         Object o2 = returnValue.get("items");
         assertTrue("return value array not correct type", o2 instanceof ArrayList);
-        ArrayList empInfo = (ArrayList)o2;
+        ArrayList<XRDynamicEntity> empInfo = (ArrayList<XRDynamicEntity>)o2;
         assertTrue("return value array wrong size", empInfo.size() == 3);
-        XRDynamicEntity emp1 = (XRDynamicEntity)empInfo.get(0);
+        XRDynamicEntity emp1 = empInfo.get(0);
         assertTrue("return value array first element id wrong value",
             emp1.get("id").equals(BigDecimal.valueOf(1)));
         assertTrue("return value array first element name wrong value",
             emp1.get("name").equals("entry 1"));
-        XRDynamicEntity emp2 = (XRDynamicEntity)empInfo.get(1);
+        XRDynamicEntity emp2 = empInfo.get(1);
         assertTrue("return value array second element id wrong value",
             emp2.get("id").equals(BigDecimal.valueOf(2)));
         assertTrue("return value array second element name wrong value",
             emp2.get("name").equals("entry 2"));
-        XRDynamicEntity emp3 = (XRDynamicEntity)empInfo.get(2);
+        XRDynamicEntity emp3 = empInfo.get(2);
         assertTrue("return value array third element id wrong value",
             emp3.get("id").equals(BigDecimal.valueOf(3)));
         assertTrue("return value array second element name wrong value",
@@ -1353,7 +1353,7 @@ public class AdvancedJDBCTestSuite extends BuilderTestSuite {
         // test query
         DatabaseSession ds = fixUp(SF_TBL1_OR_PROJECT);
         DatabaseQuery vrq = ds.getQuery("sfTbl1");
-        Vector args = new NonSynchronizedVector();
+        @SuppressWarnings("rawtypes") Vector args = new NonSynchronizedVector();
         args.add(Integer.valueOf(3));
         Object o = ds.executeQuery(vrq, args);
         assertTrue("return value not correct type", o instanceof XRDynamicEntity);
@@ -1509,7 +1509,7 @@ public class AdvancedJDBCTestSuite extends BuilderTestSuite {
         // test query
         DatabaseSession ds = fixUp(TBL5_OR_PROJECT);
         DatabaseQuery vrq = ds.getQuery("tbl5");
-        Vector args = new NonSynchronizedVector();
+        @SuppressWarnings("rawtypes") Vector args = new NonSynchronizedVector();
         args.add(Integer.valueOf(3));
         Object o = ds.executeQuery(vrq, args);
         assertTrue("return value not correct type", o instanceof XRDynamicEntity);
@@ -1735,7 +1735,7 @@ public class AdvancedJDBCTestSuite extends BuilderTestSuite {
         // test query
         DatabaseSession ds = fixUp(ARECORD_OR_PROJECT);
         DatabaseQuery vrq = ds.getQuery("buildARecord");
-        Vector args = new NonSynchronizedVector();
+        @SuppressWarnings("rawtypes") Vector args = new NonSynchronizedVector();
         int num = 3;
         args.add(Integer.valueOf(num));
         Object o = ds.executeQuery(vrq, args);
@@ -2140,7 +2140,7 @@ public class AdvancedJDBCTestSuite extends BuilderTestSuite {
         // test query
         DatabaseSession ds = fixUp(CRECORD_OR_PROJECT);
         DatabaseQuery vrq = ds.getQuery("buildCRecord");
-        Vector args = new NonSynchronizedVector();
+        @SuppressWarnings("rawtypes") Vector args = new NonSynchronizedVector();
         int num = 3;
         args.add(Integer.valueOf(num));
         Object o = ds.executeQuery(vrq, args);
@@ -2468,8 +2468,8 @@ public class AdvancedJDBCTestSuite extends BuilderTestSuite {
         SchemaModelGeneratorProperties sgProperties = new SchemaModelGeneratorProperties();
         // set element form default to qualified for target namespace
         sgProperties.addProperty(nameSpace, ELEMENT_FORM_QUALIFIED_KEY, true);
-        Map schemaMap = schemaGenerator.generateSchemas(descriptors, sgProperties);
-        Schema s = (Schema)schemaMap.get(nameSpace);
+        Map<String, Schema> schemaMap = schemaGenerator.generateSchemas(descriptors, sgProperties);
+        Schema s = schemaMap.get(nameSpace);
         Document schema = xmlPlatform.createDocument();
         new XMLContext(new SchemaModelProject()).createMarshaller().marshal(s, schema);
         Document controlSchema = xmlParser.parse(new StringReader(oxSchema));

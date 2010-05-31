@@ -263,6 +263,7 @@ public class ProviderHelper extends XRServiceFactory {
             public Object getAttributeValueFromObject(Object object) {
               return ((Invocation)object).getParameters();
             }
+            @SuppressWarnings({"unchecked", "rawtypes"})
             @Override
             public void setAttributeValueInObject(Object object, Object value) {
                 Invocation invocation = (Invocation)object;
@@ -385,7 +386,7 @@ public class ProviderHelper extends XRServiceFactory {
         responseWriter.initialize();
     }
 
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings({"unchecked", "rawtypes"})
     public SOAPMessage invoke(SOAPMessage request) {
         Map<String,DataHandler> attachments = null;
         if (mtomEnabled) {
@@ -562,7 +563,7 @@ public class ProviderHelper extends XRServiceFactory {
                  }
                  QName argQName = argTypePrefix == null ? new QName(nameSpaceURI, argType) :
                      new QName(nameSpaceURI, argType, argTypePrefix);
-                 Class clz = SCHEMA_2_CLASS.get(argQName);
+                 Class<?> clz = SCHEMA_2_CLASS.get(argQName);
                  if (clz != null) {
                    argValue = ((XMLConversionManager)dbwsAdapter.getOXSession().getDatasourcePlatform().
                      getConversionManager()).convertObject(argValue, clz, argQName);

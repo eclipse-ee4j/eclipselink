@@ -65,7 +65,7 @@ public class InlineBinaryTestSuite extends DBWSTestSuite {
         DBWSTestSuite.setUp();
     }
     
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings({"unchecked", "rawtypes"})
     @Test
     public void findAll() {
         Invocation invocation = new Invocation("findAll_inlinebinaryType");
