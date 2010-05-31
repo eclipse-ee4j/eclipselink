@@ -36,7 +36,7 @@ public class SelectionCriteriaInTargetOneToOneTest extends AutoVerifyTestCase {
         //Add an amendmend method to Employee
         MappingSystem mappingSystem = new MappingSystem();
         project = mappingSystem.project;
-        ClassDescriptor descriptor = (ClassDescriptor)project.getDescriptors().get(Employee.class);
+        ClassDescriptor descriptor = project.getDescriptors().get(Employee.class);
         descriptor.setAmendmentClass(MappingSystem.class);
         descriptor.setAmendmentMethodName("modifyTargetOneToOneMappingDescriptor");
         descriptor.applyAmendmentMethod();

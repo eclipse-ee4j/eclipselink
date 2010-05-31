@@ -32,7 +32,7 @@ public class VariableOneToOneMappingUniquePKTest extends ProjectClassGeneratorRe
     protected void setup() {
         getSession().getIdentityMapAccessor().initializeAllIdentityMaps();
 
-        descriptorToModify = (ClassDescriptor)project.getDescriptors().get(Employee.class);
+        descriptorToModify = project.getDescriptors().get(Employee.class);
         VariableOneToOneMapping typeMapping = new VariableOneToOneMapping();
         typeMapping.setAttributeName("test");
         typeMapping.setReferenceClass(Employee.class);

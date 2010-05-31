@@ -12,7 +12,6 @@
  ******************************************************************************/  
 package org.eclipse.persistence.testing.tests.aggregate;
 
-import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.sessions.*;
 import org.eclipse.persistence.expressions.*;
 import org.eclipse.persistence.testing.framework.*;
@@ -50,7 +49,7 @@ public class AggregateInheritanceTypeFieldTestCase extends org.eclipse.persisten
         Transport transport = Transport.example1();
         Transport transportClone = (Transport)uow.registerNewObject(transport);
         uow.commitAndResume();
-        ((ClassDescriptor)uow.getProject().getDescriptors().get(Transport.class)).getEventManager().addListener(this.listener);
+        (uow.getProject().getDescriptors().get(Transport.class)).getEventManager().addListener(this.listener);
         transportId = transportClone.getId();
         uow.commit();
         // An update should not occur since we did not change the transport

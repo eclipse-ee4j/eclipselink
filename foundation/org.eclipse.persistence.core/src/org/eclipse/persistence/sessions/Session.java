@@ -132,7 +132,6 @@ public interface Session {
      * ADVANCED:
      * Add a pre-defined not yet parsed JPQL String/query to the session to be parsed 
      * after descriptors are initialized.
-     * @see #getAllQueries()
      */
     public void addJPAQuery(DatabaseQuery query);
 
@@ -423,14 +422,13 @@ public interface Session {
      * ADVANCED:
      * Return all registered descriptors.
      */
-    public Map getDescriptors();
+    public Map<Class, ClassDescriptor> getDescriptors();
 
     /**
      * ADVANCED:
      * Return all pre-defined not yet parsed EJBQL queries.
-     * @see #getAllQueries()
      */
-    public List getJPAQueries();
+    public List<DatabaseQuery> getJPAQueries();
     
     /**
      * PUBLIC:
@@ -541,7 +539,7 @@ public interface Session {
      * ADVANCED:
      * Allow for user defined properties.
      */
-    public Map getProperties();
+    public Map<Object, Object> getProperties();
 
     /**
      * ADVANCED:
@@ -553,7 +551,7 @@ public interface Session {
      * ADVANCED:
      * Return all pre-defined queries.
      */
-    public Map getQueries();
+    public Map<String, List<DatabaseQuery>> getQueries();
 
     /**
      * PUBLIC:
@@ -954,4 +952,12 @@ public interface Session {
      * These are disable by default for performance reasons.
      */
     public void setIsFinalizersEnabled(boolean isFinalizersEnabled);
+    
+    /**
+     * PUBLIC:
+     * Set the default query timeout for this session.
+     * This timeout will apply to any queries that do not have a timeout set,
+     * and that do not have a default timeout defined in their descriptor.
+     */
+    public void setQueryTimeoutDefault(int queryTimeoutDefault);
 }

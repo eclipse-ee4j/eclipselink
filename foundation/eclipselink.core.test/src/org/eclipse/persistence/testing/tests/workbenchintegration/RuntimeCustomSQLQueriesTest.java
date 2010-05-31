@@ -37,7 +37,7 @@ public class RuntimeCustomSQLQueriesTest extends AutoVerifyTestCase {
     protected void setup() {
         // Modify the employee project to use custom SQL queries
         EmployeeProject project = new EmployeeProject();
-        ClassDescriptor addressDescriptor = (ClassDescriptor)project.getDescriptors().get(Address.class);
+        ClassDescriptor addressDescriptor = project.getDescriptors().get(Address.class);
 
         addressDescriptor.getQueryManager().setInsertSQLString(INSERT_SQL);
         addressDescriptor.getQueryManager().setReadObjectSQLString(READ_OBJECT_SQL);
@@ -52,7 +52,7 @@ public class RuntimeCustomSQLQueriesTest extends AutoVerifyTestCase {
     protected void test() {
         // test run time project that should contains cusomtom sql queries
         Project project = XMLProjectReader.read(PROJECT_FILE, getClass().getClassLoader());
-        ClassDescriptor addressDescriptor = (ClassDescriptor)project.getDescriptors().get(Address.class);
+        ClassDescriptor addressDescriptor = project.getDescriptors().get(Address.class);
 
         if (!addressDescriptor.getQueryManager().getInsertSQLString().equals(RuntimeCustomSQLQueriesTest.INSERT_SQL)) {
             throw new TestErrorException("Custom insert SQL for Address is not equal to " + RuntimeCustomSQLQueriesTest.INSERT_SQL);

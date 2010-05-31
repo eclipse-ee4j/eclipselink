@@ -42,13 +42,13 @@ public class MappingSystem extends TestSystem {
     public void addDescriptors(DatabaseSession session) {
         DatabasePlatform platform = session.getLogin().getPlatform();
 
-        ClassDescriptor empDescriptor = ((ClassDescriptor) project.getDescriptors().get(Employee.class));
+        ClassDescriptor empDescriptor = (project.getDescriptors().get(Employee.class));
         Employee.addToDescriptor(empDescriptor);
         
-        ClassDescriptor hardwareDescriptor = ((ClassDescriptor) project.getDescriptors().get(Hardware.class));
+        ClassDescriptor hardwareDescriptor = (project.getDescriptors().get(Hardware.class));
         Hardware.addToDescriptor(hardwareDescriptor);
         
-        ClassDescriptor monitorDescriptor = ((ClassDescriptor) project.getDescriptors().get(Monitor.class));
+        ClassDescriptor monitorDescriptor = (project.getDescriptors().get(Monitor.class));
         Monitor.addToDescriptor(monitorDescriptor);
         
         // If on Access exclude the jobDescription mapping
@@ -72,7 +72,7 @@ public class MappingSystem extends TestSystem {
 
         // Add the keyboard project - tests constraints.
         (session).addDescriptors(keyboardProject);
-        ClassDescriptor joystickDescriptor = ((ClassDescriptor) keyboardProject.getDescriptors().get(Joystick.class));
+        ClassDescriptor joystickDescriptor = (keyboardProject.getDescriptors().get(Joystick.class));
         joystickDescriptor.addConstraintDependencies(Keyboard.class);
 
         // Add the insert order project.

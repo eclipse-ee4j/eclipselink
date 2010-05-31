@@ -32,6 +32,7 @@ import org.eclipse.persistence.internal.expressions.SQLSelectStatement;
 import org.eclipse.persistence.internal.helper.*;
 import org.eclipse.persistence.internal.queries.ContainerPolicy;
 import org.eclipse.persistence.internal.queries.JoinedAttributeManager;
+import org.eclipse.persistence.internal.queries.MappedKeyMapContainerPolicy;
 import org.eclipse.persistence.internal.sessions.*;
 import org.eclipse.persistence.mappings.DatabaseMapping;
 import org.eclipse.persistence.mappings.converters.*;
@@ -1079,15 +1080,17 @@ public abstract class AbstractDirectMapping extends DatabaseMapping  implements 
      * Making any mapping changes necessary to use a the mapping as a map key prior to initializing the mapping.
      */
     public void preinitializeMapKey(DatabaseTable table) throws DescriptorException {
-        keyTableForMapKey = table;
+        this.keyTableForMapKey = table;
     }
-
+    
     /**
      * INTERNAL:
-     * Allow the selectionQuery to be modified when this MapComponentMapping is used as the value in a Map.
+     * Making any mapping changes necessary to use a the mapping as a map key after initializing the mapping.
      */
-    public void postInitializeMapValueSelectionQuery(ReadQuery selectionQuery, AbstractSession session){
-        ((SQLSelectStatement)((DataReadQuery)selectionQuery).getSQLStatement()).normalize(session, null);
+    public void postInitializeMapKey(MappedKeyMapContainerPolicy policy) {
+        if (getField().getType() == null) {
+            getField().setType(getFieldClassification(getField()));
+        }
     }
     
     /**
@@ -1097,7 +1100,7 @@ public abstract class AbstractDirectMapping extends DatabaseMapping  implements 
      * that are not read-only.
      */
     public boolean requiresDataModificationEventsForMapKey(){
-        return !isReadOnly() && isUpdatable;
+        return !isReadOnly() && this.isUpdatable;
     }
     
     /**

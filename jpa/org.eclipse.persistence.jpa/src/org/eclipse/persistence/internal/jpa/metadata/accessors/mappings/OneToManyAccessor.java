@@ -207,7 +207,7 @@ public class OneToManyAccessor extends CollectionAccessor {
                    // point and can avoid the cloning)
                    if (getDescriptor().usesTablePerClassInheritanceStrategy() && ! pkField.getTable().equals(getDescriptor().getPrimaryTable())) {
                        // We need to update the pk field to be to our table.
-                       pkField = (DatabaseField) pkField.clone();
+                       pkField = pkField.clone();
                        pkField.setTable(getDescriptor().getPrimaryTable());
                    }
                 

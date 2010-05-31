@@ -32,7 +32,7 @@ public class GetReadAllSubclassesViewIsNotNullTest extends ProjectClassGenerator
         getSession().getIdentityMapAccessor().initializeAllIdentityMaps();
 
         descriptorToModify = 
-                (ClassDescriptor)project.getDescriptors().get(org.eclipse.persistence.testing.models.employee.domain.Project.class);
+                project.getDescriptors().get(org.eclipse.persistence.testing.models.employee.domain.Project.class);
         descriptorToModify.getInheritancePolicy().setReadAllSubclassesViewName("Testing  getReadAllSubclassesView ()");
     }
 }

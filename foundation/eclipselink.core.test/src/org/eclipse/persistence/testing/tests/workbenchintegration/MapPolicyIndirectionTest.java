@@ -32,7 +32,7 @@ public class MapPolicyIndirectionTest extends ProjectClassGeneratorResultFileTes
         getSession().getIdentityMapAccessor().initializeAllIdentityMaps();
 
         ClassDescriptor descriptorToModify = 
-            (ClassDescriptor)project.getDescriptors().get(((IndirectMapProject)project).orderClass());
+            project.getDescriptors().get(((IndirectMapProject)project).orderClass());
 
         ((org.eclipse.persistence.mappings.CollectionMapping)descriptorToModify.getMappingForAttributeName("salesReps")).useTransparentMap("getKey");
         ((org.eclipse.persistence.mappings.CollectionMapping)descriptorToModify.getMappingForAttributeName("salesReps")).useMapClass(org.eclipse.persistence.testing.models.directmap.IndirectMapSubclass.class, 

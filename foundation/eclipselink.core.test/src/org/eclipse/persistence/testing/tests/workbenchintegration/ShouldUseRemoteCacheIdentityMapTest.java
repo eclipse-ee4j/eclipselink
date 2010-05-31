@@ -32,7 +32,7 @@ public class ShouldUseRemoteCacheIdentityMapTest extends ProjectClassGeneratorRe
     protected void setup() {
         getSession().getIdentityMapAccessor().initializeAllIdentityMaps();
 
-        descriptorToModify = (ClassDescriptor)project.getDescriptors().get(Employee.class);
+        descriptorToModify = project.getDescriptors().get(Employee.class);
         descriptorToModify.useRemoteCacheIdentityMap();
     }
 }

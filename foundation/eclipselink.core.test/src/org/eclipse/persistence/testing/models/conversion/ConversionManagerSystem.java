@@ -31,14 +31,14 @@ public class ConversionManagerSystem extends TestSystem {
 
         // If on Access, Oracle or DB2, remove the byte array mapping
         if (platform.isAccess() || platform.isOracle()) {
-            ClassDescriptor objDescriptor = ((ClassDescriptor)project.getDescriptors().get(ConversionDataObject.class));
+            ClassDescriptor objDescriptor = (project.getDescriptors().get(ConversionDataObject.class));
             objDescriptor.getMappings().removeElement(objDescriptor.getMappingForAttributeName("aPByteArray"));
         }
 
         if (platform.isDB2()) {
             // Bug 2719624 - This mapping is added so we can use DB2 to test our handling of Nanoseconds
             // DB2 handles nanoseconds at a level of precision and consistency that allows us to easily test.
-            ClassDescriptor objDescriptor = ((ClassDescriptor)project.getDescriptors().get(ConversionDataObject.class));
+            ClassDescriptor objDescriptor = (project.getDescriptors().get(ConversionDataObject.class));
 
             // SECTION: DIRECTTOFIELDMAPPING
             org.eclipse.persistence.mappings.DirectToFieldMapping directtofieldmapping28 = new org.eclipse.persistence.mappings.DirectToFieldMapping();

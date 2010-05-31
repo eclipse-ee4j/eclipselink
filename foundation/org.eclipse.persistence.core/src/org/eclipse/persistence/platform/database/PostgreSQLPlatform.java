@@ -313,11 +313,11 @@ public class PostgreSQLPlatform extends DatabasePlatform {
         ExpressionOperator operator = new ExpressionOperator();
         operator.setSelector(ExpressionOperator.Locate2);
         Vector v = NonSynchronizedVector.newInstance(2);
-        v.addElement("(STRPOS(SUBSTRING(");
-        v.addElement(" FROM ");
-        v.addElement("), ");
-        v.addElement(") + (");
-        v.addElement(" - 1))");
+        v.add("COALESCE(NULLIF(STRPOS(SUBSTRING(");
+        v.add(" FROM ");
+        v.add("), ");
+        v.add("), 0) - 1 + ");
+        v.add(", 0)");        
         operator.printsAs(v);
         operator.bePrefix();
         int[] argumentIndices = new int[4];

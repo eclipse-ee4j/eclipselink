@@ -32,7 +32,7 @@ public class GetClassExtractionMethodNameIsNotNullTest extends ProjectClassGener
         getSession().getIdentityMapAccessor().initializeAllIdentityMaps();
 
         descriptorToModify = 
-                (ClassDescriptor)project.getDescriptors().get(org.eclipse.persistence.testing.models.employee.domain.Project.class);
+                project.getDescriptors().get(org.eclipse.persistence.testing.models.employee.domain.Project.class);
         descriptorToModify.getInheritancePolicy().setClassExtractionMethodName("Testing getClassExractionMethodName()");
     }
 }

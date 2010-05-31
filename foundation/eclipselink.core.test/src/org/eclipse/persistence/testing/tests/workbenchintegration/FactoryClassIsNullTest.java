@@ -31,7 +31,7 @@ public class FactoryClassIsNullTest extends ProjectClassGeneratorResultFileTest 
 
     protected void setup() {
         getSession().getIdentityMapAccessor().initializeAllIdentityMaps();
-        descriptorToModify = (ClassDescriptor)project.getDescriptors().get(Employee.class);
+        descriptorToModify = project.getDescriptors().get(Employee.class);
         descriptorToModify.getInstantiationPolicy().useMethodInstantiationPolicy("testMethod");
     }
 }

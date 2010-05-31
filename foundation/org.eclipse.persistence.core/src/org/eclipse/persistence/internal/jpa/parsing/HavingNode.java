@@ -20,10 +20,8 @@
  */
 package org.eclipse.persistence.internal.jpa.parsing;
 
-// TopLink Imports
 import org.eclipse.persistence.queries.ReportQuery;
 import org.eclipse.persistence.queries.ObjectLevelReadQuery;
-import org.eclipse.persistence.exceptions.JPQLException;
 import org.eclipse.persistence.expressions.Expression;
 
 public class HavingNode extends MajorNode {

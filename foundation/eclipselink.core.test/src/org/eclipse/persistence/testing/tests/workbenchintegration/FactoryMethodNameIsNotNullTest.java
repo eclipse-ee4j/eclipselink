@@ -32,7 +32,7 @@ public class FactoryMethodNameIsNotNullTest extends ProjectClassGeneratorResultF
     protected void setup() {
         getSession().getIdentityMapAccessor().initializeAllIdentityMaps();
 
-        descriptorToModify = (ClassDescriptor)project.getDescriptors().get(Employee.class);
+        descriptorToModify = project.getDescriptors().get(Employee.class);
         // just passing in any class (mind you not a a Factory class)
         descriptorToModify.getInstantiationPolicy().useFactoryInstantiationPolicy(Employee.class, "TestMethod", 
                                                                                   "TestFactoryMethodName");

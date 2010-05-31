@@ -2455,6 +2455,10 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
     }
 
     public void testQueryTimeOut() {
+        if (getServerSession("fieldaccess").getPlatform().isPostgreSQL()) {
+            warning("PostgreSQL does not support query timeout.");
+            return;
+        }
         EntityManager em = getEntityManagerFactory("fieldaccess").createEntityManager();
         Query query = em.createQuery("SELECT d FROM Department d");
         ObjectLevelReadQuery olrQuery = (ObjectLevelReadQuery)((EJBQueryImpl)query).getDatabaseQuery();
@@ -4709,7 +4713,6 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
     // listener for updateAttributeWithObjectTest - Test for bug fix: 299637 - updateAttributeWithObjectTest
     private class UpdateListener extends DescriptorEventAdapter {
         public void aboutToUpdate(DescriptorEvent event) {
-            Employee myclass = (Employee)event.getObject();
             EmploymentPeriod period = new EmploymentPeriod();
             period.setStartDate(Date.valueOf("2010-11-14"));
             period.setEndDate(Date.valueOf("2010-11-15"));

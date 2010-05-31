@@ -12,12 +12,8 @@
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.parsing;
 
-
-// Java stuff
 import java.util.*;
 
-// TopLink stuff
-import org.eclipse.persistence.exceptions.JPQLException;
 import org.eclipse.persistence.expressions.*;
 import org.eclipse.persistence.queries.*;
 import org.eclipse.persistence.internal.localization.*;

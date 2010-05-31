@@ -14,7 +14,6 @@
 package org.eclipse.persistence.testing.models.interfaces;
 
 import org.eclipse.persistence.sessions.*;
-import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.testing.framework.*;
 import org.eclipse.persistence.tools.schemaframework.*;
 
@@ -24,7 +23,7 @@ public class InterfaceWithoutTablesSystem extends TestSystem {
     }
 
     public void addDescriptors(DatabaseSession session) {
-        Admendments.addToManagerialJobDescriptor((ClassDescriptor)project.getDescriptors().get(ManagerialJob.class));
+        Admendments.addToManagerialJobDescriptor(project.getDescriptors().get(ManagerialJob.class));
         session.addDescriptors(project);
     }
 

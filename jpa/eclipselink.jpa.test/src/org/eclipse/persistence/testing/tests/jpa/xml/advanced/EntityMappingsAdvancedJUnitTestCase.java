@@ -279,6 +279,10 @@ public class EntityMappingsAdvancedJUnitTestCase extends JUnitTestCase {
      * Verifies that the change tracking metadata is correctly processed.
      */
     public void testPhoneNumberChangeTrackingPolicy() {
+        if (!JUnitTestCase.isWeavingEnabled()) {
+            return;
+        }
+        
         ServerSession session = JUnitTestCase.getServerSession(m_persistenceUnit);
         ClassDescriptor descriptor = session.getDescriptor(PhoneNumber.class);
      
@@ -290,6 +294,10 @@ public class EntityMappingsAdvancedJUnitTestCase extends JUnitTestCase {
      * Verifies that the change tracking metadata is correctly processed.
      */
     public void testProjectChangeTrackingPolicy() {
+        if (!JUnitTestCase.isWeavingEnabled()) {
+            return;
+        }
+        
         ServerSession session = JUnitTestCase.getServerSession(m_persistenceUnit);
         ClassDescriptor descriptor = session.getDescriptor(Project.class);
      

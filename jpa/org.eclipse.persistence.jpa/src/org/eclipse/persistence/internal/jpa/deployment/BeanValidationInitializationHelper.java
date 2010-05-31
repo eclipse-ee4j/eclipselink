@@ -42,7 +42,7 @@ public interface BeanValidationInitializationHelper {
             //Check user/environment has specified the validator factory
             if (validatorFactory != null) {
                 // We could obtain a validator factory => Bean Validation API is available at runtime. It is ok to cast now
-                ValidatorFactory beanValidatorFactory = (ValidatorFactory) validatorFactory;
+                ValidatorFactory beanValidatorFactory = validatorFactory;
 
                 Class[] groupPrePersit = translateValidationGroups(
                         (String) puProperties.get(PersistenceUnitProperties.VALIDATION_GROUP_PRE_PERSIST), appClassLoader) ;

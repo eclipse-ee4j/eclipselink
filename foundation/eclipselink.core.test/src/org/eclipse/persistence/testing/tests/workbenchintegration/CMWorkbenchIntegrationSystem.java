@@ -36,7 +36,7 @@ public class CMWorkbenchIntegrationSystem extends ConversionManagerSystem {
     public CMWorkbenchIntegrationSystem() {
         super();
         
-        ClassDescriptor descriptor = (ClassDescriptor) project.getDescriptors().get(ConversionDataObject.class);
+        ClassDescriptor descriptor = project.getDescriptors().get(ConversionDataObject.class);
         addNamedQueries(descriptor.getQueryManager());
         
         buildProject();

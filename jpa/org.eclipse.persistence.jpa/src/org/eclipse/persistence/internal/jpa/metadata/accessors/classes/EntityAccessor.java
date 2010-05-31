@@ -275,7 +275,7 @@ public class EntityAccessor extends MappedSuperclassAccessor {
                     currentEntityAccessor.getDescriptor().setInheritanceParentDescriptor(parentEntityAccessor.getDescriptor());
                 
                     // Update the current entity accessor.
-                    currentEntityAccessor = (EntityAccessor) parentEntityAccessor;
+                    currentEntityAccessor = parentEntityAccessor;
                 
                     // Clear out any previous mapped superclasses and inheritance 
                     // parents that were discovered. We're going to re-discover

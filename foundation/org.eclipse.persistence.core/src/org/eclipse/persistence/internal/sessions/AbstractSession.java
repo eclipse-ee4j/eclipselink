@@ -102,10 +102,10 @@ public abstract class AbstractSession implements org.eclipse.persistence.session
     transient protected Platform platform;
 
     /** Stores predefine reusable queries.*/
-    transient protected Map queries;
+    transient protected Map<String, List<DatabaseQuery>> queries;
 
     /** Stores predefined not yet parsed JPQL queries.*/
-    transient protected List jpaQueries;
+    transient protected List<DatabaseQuery> jpaQueries;
 
     /** Resolves referential integrity on commits. */
     transient protected CommitManager commitManager;
@@ -132,7 +132,7 @@ public abstract class AbstractSession implements org.eclipse.persistence.session
     transient protected SessionEventManager eventManager;
 
     /** Allow for user defined properties. */
-    protected Map properties;
+    protected Map<Object, Object> properties;
 
     /** Delegate that handles synchronizing a UnitOfWork with an external transaction. */
     transient protected ExternalTransactionController externalTransactionController;
@@ -363,7 +363,6 @@ public abstract class AbstractSession implements org.eclipse.persistence.session
     /**
      * INTERNAL:
      * Return all pre-defined not yet parsed EJBQL queries.
-     * @see #getAllQueries()
      */
     public void addJPAQuery(DatabaseQuery query) {
         getJPAQueries().add(query);
@@ -1527,6 +1526,12 @@ public abstract class AbstractSession implements org.eclipse.persistence.session
         return pessimisticLockTimeoutDefault;
     }
 
+    /**
+     * PUBLIC:
+     * Return the default query timeout for this session.
+     * This timeout will apply to any queries that do not have a timeout set,
+     * and that do not have a default timeout defined in their descriptor.
+     */
     public int getQueryTimeoutDefault() {
         return queryTimeoutDefault;
     }
@@ -1646,7 +1651,7 @@ public abstract class AbstractSession implements org.eclipse.persistence.session
         if (this.descriptors != null) {
             descriptor = this.descriptors.get(theClass);
         } else {
-            descriptor = (ClassDescriptor)this.project.getDescriptors().get(theClass);
+            descriptor = this.project.getDescriptors().get(theClass);
         }
 
         if (descriptor == null) {
@@ -1659,7 +1664,7 @@ public abstract class AbstractSession implements org.eclipse.persistence.session
                 if (this.eventManager != null) {
                     this.eventManager.missingDescriptor(theClass);
                 }
-                descriptor = (ClassDescriptor)getDescriptors().get(theClass);
+                descriptor = getDescriptors().get(theClass);
     
                 if (descriptor == null) {
                     // This allows for the correct descriptor to be found if the class implements an interface,
@@ -1718,16 +1723,15 @@ public abstract class AbstractSession implements org.eclipse.persistence.session
      * ADVANCED:
      * Return all registered descriptors.
      */
-    public Map getDescriptors() {
+    public Map<Class, ClassDescriptor> getDescriptors() {
         return this.project.getDescriptors();
     }
 
     /**
      * ADVANCED:
-     * Return all pre-defined not yet parsed EJBQL queries.
-     * @see #getAllQueries()
+     * Return all pre-defined not yet parsed JPQL queries.
      */
-    public List getJPAQueries() {
+    public List<DatabaseQuery> getJPAQueries() {
         // PERF: lazy init, not normally required.
         if (jpaQueries == null) {
             jpaQueries = new Vector();
@@ -1740,14 +1744,12 @@ public abstract class AbstractSession implements org.eclipse.persistence.session
      * Process the JPA named queries into EclipseLink Session queries.
      */
     public void processJPAQueries() {
-        List queries = getJPAQueries();
-        for (Iterator iterator = queries.iterator(); iterator.hasNext();) {
-            DatabaseQuery jpaQuery = (DatabaseQuery)iterator.next();
+        for (DatabaseQuery jpaQuery : getJPAQueries()) {
             jpaQuery.checkPrepare(this, null);
             DatabaseQuery databaseQuery = (DatabaseQuery)jpaQuery.getProperty("databasequery");
             addQuery(databaseQuery.getName(), databaseQuery);
         }
-        queries.clear();
+        getJPAQueries().clear();
     }
 
     /**
@@ -2068,9 +2070,8 @@ public abstract class AbstractSession implements org.eclipse.persistence.session
     /**
      * ADVANCED:
      * Return all pre-defined queries.
-     * @see #getAllQueries()
      */
-    public Map getQueries() {
+    public Map<String, List<DatabaseQuery>> getQueries() {
         // PERF: lazy init, not normally required.
         if (queries == null) {
             queries = new HashMap(5);
@@ -2079,13 +2080,13 @@ public abstract class AbstractSession implements org.eclipse.persistence.session
     }
 
     /**
-     * PUBLIC:
+     * INTERNAL:
      * Return the pre-defined queries in this session.
      * A single vector containing all the queries is returned.
      *
      * @see #getQueries()
      */
-    public Vector getAllQueries() {
+    public List<DatabaseQuery> getAllQueries() {
         Vector allQueries = new Vector();
         for (Iterator vectors = getQueries().values().iterator(); vectors.hasNext();) {
             allQueries.addAll((Vector)vectors.next());
@@ -3039,7 +3040,13 @@ public abstract class AbstractSession implements org.eclipse.persistence.session
         this.pessimisticLockTimeoutDefault = pessimisticLockTimeoutDefault;
     }
 
-     public void setQueryTimeoutDefault(int queryTimeoutDefault) {
+    /**
+     * PUBLIC:
+     * Set the default query timeout for this session.
+     * This timeout will apply to any queries that do not have a timeout set,
+     * and that do not have a default timeout defined in their descriptor.
+     */
+    public void setQueryTimeoutDefault(int queryTimeoutDefault) {
         this.queryTimeoutDefault = queryTimeoutDefault;
     }
 
@@ -3073,7 +3080,7 @@ public abstract class AbstractSession implements org.eclipse.persistence.session
      * Set the user defined properties by shallow copying the propertiesMap.
      * @param propertiesMap
      */
-    public void setProperties(Map propertiesMap) {
+    public void setProperties(Map<Object, Object> propertiesMap) {
         if (null == propertiesMap) {
             // Keep current behavior and set properties map to null
             properties = propertiesMap;
@@ -3097,7 +3104,7 @@ public abstract class AbstractSession implements org.eclipse.persistence.session
         getProperties().put(propertyName, propertyValue);
     }
 
-    protected void setQueries(Map queries) {
+    protected void setQueries(Map<String, List<DatabaseQuery>> queries) {
         this.queries = queries;
     }
 

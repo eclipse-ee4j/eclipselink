@@ -153,7 +153,7 @@ public class OneToOneAccessor extends ObjectAccessor {
                         
                         for (DatabaseField fkField : ownerMapping.getSourceToTargetKeyFields().keySet()) {
                             // We need to update the pk field to be to our table.
-                            DatabaseField pkField = (DatabaseField) ownerMapping.getSourceToTargetKeyFields().get(fkField).clone();
+                            DatabaseField pkField = ownerMapping.getSourceToTargetKeyFields().get(fkField).clone();
                             pkField.setTable(getDescriptor().getPrimaryTable());
                             sourceToTargetKeyFields.put(fkField, pkField);
                             targetToSourceKeyFields.put(pkField, fkField);

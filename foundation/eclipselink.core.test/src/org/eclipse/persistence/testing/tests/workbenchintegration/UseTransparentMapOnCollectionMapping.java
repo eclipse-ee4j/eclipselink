@@ -43,7 +43,7 @@ public class UseTransparentMapOnCollectionMapping extends ProjectClassGeneratorR
     protected void setup() {
         getSession().getIdentityMapAccessor().initializeAllIdentityMaps();
 
-        descriptorToModify = (ClassDescriptor)project.getDescriptors().get(Employee.class);
+        descriptorToModify = project.getDescriptors().get(Employee.class);
         policy = new TransparentIndirectionPolicy();
         mapPolicy = new MapContainerPolicy();
         for (Enumeration mappingsEnum = (descriptorToModify.getMappings()).elements(); 

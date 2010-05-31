@@ -32,7 +32,7 @@ public class GetAboutToUpdateSelectorIsNotNullTest extends ProjectClassGenerator
     protected void setup() {
         getSession().getIdentityMapAccessor().initializeAllIdentityMaps();
 
-        descriptorToModify = (ClassDescriptor)project.getDescriptors().get(Employee.class);
+        descriptorToModify = project.getDescriptors().get(Employee.class);
         descriptorToModify.getEventManager().setAboutToUpdateSelector("TestAboutToUpdate");
     }
 }

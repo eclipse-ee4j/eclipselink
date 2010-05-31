@@ -66,8 +66,6 @@ import org.eclipse.persistence.mappings.converters.Converter;
 import org.eclipse.persistence.mappings.converters.SerializedObjectConverter;
 import org.eclipse.persistence.mappings.converters.TypeConversionConverter;
 
-
-
 /**
  * DefaultTableGenerator is a utility class used to generate a default table schema for a EclipseLink project object.
  *
@@ -706,7 +704,7 @@ public class DefaultTableGenerator {
 
                 if ((fieldType == null) || (!fieldType.isPrimitive() && (fieldTypeDef  == null))) {
                     //TODO: log a warning for inaccessible type or not convertable type.
-                    AbstractSessionLog.getLog().log(SessionLog.FINEST, "field_type_set_to_java_lang_string", dbField.getQualifiedName(), fieldType);
+                    AbstractSessionLog.getLog().log(SessionLog.CONFIG, "field_type_set_to_java_lang_string", dbField.getQualifiedName(), fieldType);
 
                     //set the default type (lang.String) to all un-resolved java type, like null, Number, util.Date, NChar/NType, Calendar
                     //sql.Blob/Clob, Object, or unknown type). Please refer to bug 4352820.

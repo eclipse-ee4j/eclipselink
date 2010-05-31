@@ -666,7 +666,8 @@ public class MappedKeyMapContainerPolicy extends MapContainerPolicy {
      */
     @Override
     public void postInitialize(AbstractSession session) {
-        ((DatabaseMapping)keyMapping).postInitialize(session);
+        ((DatabaseMapping)this.keyMapping).postInitialize(session);
+        this.keyMapping.postInitializeMapKey(this);
     }
 
     /**

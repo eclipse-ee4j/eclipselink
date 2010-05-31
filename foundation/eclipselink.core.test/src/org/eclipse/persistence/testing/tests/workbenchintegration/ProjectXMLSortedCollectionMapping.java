@@ -56,7 +56,7 @@ public class ProjectXMLSortedCollectionMapping extends TestCase {
         try{
             Project writeToProject = new EmployeeProject();
             
-            ClassDescriptor descriptorToModify = (ClassDescriptor)writeToProject.getDescriptors().get(Employee.class);
+            ClassDescriptor descriptorToModify = writeToProject.getDescriptors().get(Employee.class);
             DatabaseMapping mappingToModify = descriptorToModify.getMappingForAttributeName("projects");
     
             if (mappingToModify.isForeignReferenceMapping()) {
@@ -80,7 +80,7 @@ public class ProjectXMLSortedCollectionMapping extends TestCase {
         if (exception != null){
             throw new TestErrorException("There is problem when read project back from project.xml",exception);
         }
-        ClassDescriptor readBackDescriptor = (ClassDescriptor)readBackProject.getDescriptors().get(Employee.class);
+        ClassDescriptor readBackDescriptor = readBackProject.getDescriptors().get(Employee.class);
         DatabaseMapping readBackMapping = readBackDescriptor.getMappingForAttributeName("projects");
         CollectionMapping collectionMapping = (CollectionMapping)readBackMapping;
         ContainerPolicy containerPolciy = collectionMapping.getContainerPolicy();

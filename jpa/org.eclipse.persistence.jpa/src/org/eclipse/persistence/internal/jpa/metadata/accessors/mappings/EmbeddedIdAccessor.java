@@ -182,7 +182,7 @@ public class EmbeddedIdAccessor extends EmbeddedAccessor {
                         // Set a table if one is not specified. Because embeddables 
                         // can be re-used we must deal with clones and not change 
                         // the original fields.
-                        DatabaseField clone = (DatabaseField) field.clone();
+                        DatabaseField clone = field.clone();
                         if (clone.getTableName().equals("")) {
                             clone.setTable(owningDescriptor.getPrimaryTable());
                         }

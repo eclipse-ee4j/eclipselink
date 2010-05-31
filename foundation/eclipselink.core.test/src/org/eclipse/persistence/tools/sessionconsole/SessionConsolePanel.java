@@ -24,6 +24,7 @@ import javax.swing.table.*;
 import org.eclipse.persistence.internal.helper.*;
 import org.eclipse.persistence.internal.identitymaps.*;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
+import org.eclipse.persistence.logging.SessionLog;
 import org.eclipse.persistence.mappings.*;
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.queries.*;
@@ -3218,6 +3219,17 @@ public class SessionConsolePanel extends JPanel implements ActionListener,
         int logLevel = getLogLevelChoice().getSelectedIndex();
         if (logLevel != getSession().getLogLevel()) {
             getSession().setLogLevel(logLevel);
+            if (logLevel > SessionLog.FINEST) {
+                getSession().getSessionLog().setShouldPrintConnection(false);
+                getSession().getSessionLog().setShouldPrintDate(false);
+                getSession().getSessionLog().setShouldPrintSession(false);
+                getSession().getSessionLog().setShouldPrintThread(false);
+            } else {
+                getSession().getSessionLog().setShouldPrintConnection(true);
+                getSession().getSessionLog().setShouldPrintDate(true);
+                getSession().getSessionLog().setShouldPrintSession(true);
+                getSession().getSessionLog().setShouldPrintThread(true);
+            }
             // Also update all sessions in session manager.
             Iterator iterator = SessionManager.getManager().getSessions().values().iterator();
             while (iterator.hasNext()) {

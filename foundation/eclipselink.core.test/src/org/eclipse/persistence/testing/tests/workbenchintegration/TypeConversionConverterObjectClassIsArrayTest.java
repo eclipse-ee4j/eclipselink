@@ -44,7 +44,7 @@ public class TypeConversionConverterObjectClassIsArrayTest extends ProjectClassG
 
 	public void setup() {
 		getSession().getIdentityMapAccessor().initializeAllIdentityMaps();
-		descriptor = (ClassDescriptor)project.getDescriptors().get(org.eclipse.persistence.testing.models.employee.domain.Employee.class);
+		descriptor = project.getDescriptors().get(org.eclipse.persistence.testing.models.employee.domain.Employee.class);
 
 		mapping = new DirectToFieldMapping();
 		mapping.setAttributeName("someData");

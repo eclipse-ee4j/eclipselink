@@ -32,14 +32,14 @@ public class IsIsolatedTest extends ProjectClassGeneratorResultFileTest {
     public void setup() {
         getSession().getIdentityMapAccessor().initializeAllIdentityMaps();
 
-        descriptorToModify = (ClassDescriptor)project.getDescriptors().get(Employee.class);
+        descriptorToModify = project.getDescriptors().get(Employee.class);
         descriptorToModify.setIsIsolated(true);
     }
 
     public void reset() {
         super.reset();
 
-        descriptorToModify = (ClassDescriptor)project.getDescriptors().get(Employee.class);
+        descriptorToModify = project.getDescriptors().get(Employee.class);
         descriptorToModify.setIsIsolated(false);
     }
 }

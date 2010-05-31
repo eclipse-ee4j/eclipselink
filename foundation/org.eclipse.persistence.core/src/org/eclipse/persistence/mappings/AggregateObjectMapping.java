@@ -25,6 +25,7 @@ import org.eclipse.persistence.expressions.*;
 import org.eclipse.persistence.internal.helper.*;
 import org.eclipse.persistence.internal.queries.ContainerPolicy;
 import org.eclipse.persistence.internal.queries.JoinedAttributeManager;
+import org.eclipse.persistence.internal.queries.MappedKeyMapContainerPolicy;
 import org.eclipse.persistence.internal.sessions.*;
 import org.eclipse.persistence.internal.descriptors.DescriptorIterator;
 import org.eclipse.persistence.internal.descriptors.ObjectBuilder;
@@ -1258,17 +1259,16 @@ public class AggregateObjectMapping extends AggregateMapping implements Relation
      * INTERNAL:
      * Making any mapping changes necessary to use a the mapping as a map key prior to initializing the mapping
      */
-    public void preinitializeMapKey(DatabaseTable table) throws DescriptorException {
+    public void preinitializeMapKey(DatabaseTable table) {
         setTableForAggregateMappingKey(table);
     }
-
     
     /**
      * INTERNAL:
-     * Allow the selectionQuery to be modified when this MapComponentMapping is used as the value in a Map
+     * Making any mapping changes necessary to use a the mapping as a map key after initializing the mapping.
      */
-    public void postInitializeMapValueSelectionQuery(ReadQuery selectionQuery, AbstractSession session){
-        selectionQuery.setShouldMaintainCache(false);
+    public void postInitializeMapKey(MappedKeyMapContainerPolicy policy) {
+        return;
     }
     
     /**
@@ -1276,7 +1276,7 @@ public class AggregateObjectMapping extends AggregateMapping implements Relation
      * Build an aggregate object from the specified return row and put it
      * in the specified target object.
      * Return row is merged into object after execution of insert or update call
-     * accordiing to ReturningPolicy.
+     * according to ReturningPolicy.
      */
     public Object readFromReturnRowIntoObject(AbstractRecord row, Object targetObject, ReadObjectQuery query, Collection handledMappings) throws DatabaseException {
         Object aggregate = getAttributeValueFromObject(targetObject);

@@ -189,7 +189,9 @@ public class JUnitJPQLComplexAggregateTestSuite extends JUnitTestCase
         rq.setReferenceClass(Employee.class);
         rq.setSelectionCriteria(exp);
         rq.dontRetrievePrimaryKeys();
-        if (!getServerSession().getPlatform().isSymfoware()) {
+        if ((getServerSession().getPlatform().isSymfoware() || getServerSession().getPlatform().isDerby())) {
+            warning("Distinct on aggregate function not supported by " + getServerSession().getPlatform());
+        } else {
             // the following line uncovers a bug where 'AVG(t1.SALARY)' is
             // listed in the generated select list twice. As it is also in the
             // ORDER BY clause, Symfoware complains that it does not know which
@@ -208,7 +210,10 @@ public class JUnitJPQLComplexAggregateTestSuite extends JUnitTestCase
         
         
         String ejbqlString = "SELECT emp.gender, AVG(DISTINCT emp.salary) sal FROM Employee emp WHERE emp.lastName = \"Smith\" group by emp.gender order by sal";
-        
+
+        if ((getServerSession().getPlatform().isSymfoware() || getServerSession().getPlatform().isDerby())) {
+            ejbqlString = "SELECT emp.gender, AVG(emp.salary) sal FROM Employee emp WHERE emp.lastName = \"Smith\" group by emp.gender order by sal";
+        }
         Vector expectedResultVector = (Vector) getServerSession().executeQuery(rq);
         
         clearCache();

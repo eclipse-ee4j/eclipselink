@@ -36,7 +36,7 @@ public class NamedQueryLinesGetEJBQLStringIsNotNullTest extends ProjectClassGene
     protected void setup() {
         getSession().getIdentityMapAccessor().initializeAllIdentityMaps();
 
-        descriptorToModify = (ClassDescriptor)project.getDescriptors().get(Employee.class);
+        descriptorToModify = project.getDescriptors().get(Employee.class);
         ReadObjectQuery testReadQuery = new ReadObjectQuery();
         JPQLCall testCall = new JPQLCall("testString");
         testReadQuery.setName("testQueryName");

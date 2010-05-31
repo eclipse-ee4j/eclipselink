@@ -37,7 +37,7 @@ public class SetReferenceClassTest extends AutoVerifyTestCase {
         this.testQuery = new ReadObjectQuery(PhoneNumber.class);
         this.testQuery.setSelectionCriteria(new ExpressionBuilder().get("owner").get("firstName").equal("Bob"));
         this.testQuery.setName("bug 3037982 test Query");
-        this.employeeDescriptor = (ClassDescriptor)getSession().getProject().getDescriptors().get(Employee.class);
+        this.employeeDescriptor = getSession().getProject().getDescriptors().get(Employee.class);
     }
 
     public void test() {

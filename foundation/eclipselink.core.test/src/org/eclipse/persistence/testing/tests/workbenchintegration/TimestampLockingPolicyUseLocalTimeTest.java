@@ -37,7 +37,7 @@ public class TimestampLockingPolicyUseLocalTimeTest extends ProjectClassGenerato
         getSession().getIdentityMapAccessor().initializeAllIdentityMaps();
         project = new org.eclipse.persistence.testing.models.employee.relational.EmployeeProject();
 
-        descriptorToModify = (ClassDescriptor)project.getDescriptors().get(Employee.class);
+        descriptorToModify = project.getDescriptors().get(Employee.class);
         TimestampLockingPolicy lockingTestPolicy = new TimestampLockingPolicy();
         lockingTestPolicy.setUsesServerTime(false);
         lockingTestPolicy.useLocalTime();

@@ -36,7 +36,7 @@ public class UseCollectionClassOnMappingTest extends ProjectClassGeneratorResult
     protected void setup() {
         getSession().getIdentityMapAccessor().initializeAllIdentityMaps();
 
-        descriptorToModify = (ClassDescriptor)project.getDescriptors().get(Employee.class);
+        descriptorToModify = project.getDescriptors().get(Employee.class);
         mappingToModify = descriptorToModify.getMappingForAttributeName("projects");
 
         if (mappingToModify.isForeignReferenceMapping()) {

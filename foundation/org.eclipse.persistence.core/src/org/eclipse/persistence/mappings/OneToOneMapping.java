@@ -24,6 +24,7 @@ import org.eclipse.persistence.internal.identitymaps.*;
 import org.eclipse.persistence.internal.indirection.ProxyIndirectionPolicy;
 import org.eclipse.persistence.internal.queries.ContainerPolicy;
 import org.eclipse.persistence.internal.queries.JoinedAttributeManager;
+import org.eclipse.persistence.internal.queries.MappedKeyMapContainerPolicy;
 import org.eclipse.persistence.internal.sessions.*;
 import org.eclipse.persistence.sessions.DatabaseRecord;
 import org.eclipse.persistence.queries.*;
@@ -1166,12 +1167,17 @@ public class OneToOneMapping extends ObjectReferenceMapping implements Relationa
     public void preinitializeMapKey(DatabaseTable table) throws DescriptorException {
         keyTableForMapKey = table;
     }
-
+    
     /**
      * INTERNAL:
-     * Allow the selectionQuery to be modified when this MapComponentMapping is used as the value in a Map
+     * Need to set the field type for the foreign key fields for a map key, as the fields are not contained in any descriptor.
      */
-    public void postInitializeMapValueSelectionQuery(ReadQuery selectionQuery, AbstractSession session){
+    public void postInitializeMapKey(MappedKeyMapContainerPolicy policy) {
+        for (DatabaseField foreignKey : getSourceToTargetKeyFields().keySet()) {
+            if (foreignKey.getType() == null) {
+                foreignKey.setType(getFieldClassification(foreignKey));
+            }
+        }
     }
     
     /**

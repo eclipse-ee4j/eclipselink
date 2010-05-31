@@ -38,7 +38,7 @@ public class QueryManagerHasReadObjectQueryIsSQLCallQueryTest extends ProjectCla
         getSession().getIdentityMapAccessor().initializeAllIdentityMaps();
         project = new org.eclipse.persistence.testing.models.employee.relational.EmployeeProject();
 
-        descriptorToModify = (ClassDescriptor)project.getDescriptors().get(Employee.class);
+        descriptorToModify = project.getDescriptors().get(Employee.class);
         ReadObjectQuery testReadQuery = new ReadObjectQuery();
         SQLCall testCall = new SQLCall();
         testReadQuery.setCall(testCall); // setting the SQLCall on ReadObject

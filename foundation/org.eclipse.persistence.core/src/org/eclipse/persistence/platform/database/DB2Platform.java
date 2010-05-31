@@ -434,6 +434,8 @@ public class DB2Platform extends org.eclipse.persistence.platform.database.Datab
         addOperator(ExpressionOperator.simpleFunction(ExpressionOperator.ToChar, "CHAR"));
         addOperator(ExpressionOperator.simpleFunction(ExpressionOperator.DateToString, "CHAR"));
         addOperator(ExpressionOperator.simpleFunction(ExpressionOperator.ToDate, "DATE"));
+        addOperator(ltrim2Operator());
+        addOperator(rtrim2Operator());
     }
 
     @Override
@@ -523,11 +525,55 @@ public class DB2Platform extends org.eclipse.persistence.platform.database.Datab
         exOperator.setType(ExpressionOperator.FunctionOperator);
         exOperator.setSelector(ExpressionOperator.Concat);
         Vector v = new Vector(5);
-        v.addElement("VARCHAR(");
-        v.addElement(" || ");
-        v.addElement(")");
+        v.add("VARCHAR(");
+        v.add(" || ");
+        v.add(")");
         exOperator.printsAs(v);
         exOperator.bePrefix();
+        exOperator.setNodeClass(ClassConstants.FunctionExpression_Class);
+        return exOperator;
+    }
+
+    /**
+     * INTERNAL:
+     * The 2 arg LTRIM operator is of the form .... TRIM (LEADING, <operand2> FROM <operand1> )
+     */
+    private ExpressionOperator ltrim2Operator() {
+        ExpressionOperator exOperator = new ExpressionOperator();
+        exOperator.setType(ExpressionOperator.FunctionOperator);
+        exOperator.setSelector(ExpressionOperator.LeftTrim2);
+        Vector v = new Vector(5);
+        v.add("TRIM(LEADING ");
+        v.add(" FROM ");
+        v.add(")");
+        exOperator.printsAs(v);
+        exOperator.bePrefix();
+        int[] argumentIndices = new int[2];
+        argumentIndices[0] = 1;
+        argumentIndices[1] = 0;
+        exOperator.setArgumentIndices(argumentIndices);
+        exOperator.setNodeClass(ClassConstants.FunctionExpression_Class);
+        return exOperator;
+    }
+
+    /**
+     * INTERNAL:
+     * The 2 arg RTRIM operator is of the form .... TRIM (TRAILING, <operand2> FROM <operand1> )
+     */
+    private ExpressionOperator rtrim2Operator() {
+        ExpressionOperator exOperator = new ExpressionOperator();
+        exOperator.setType(ExpressionOperator.FunctionOperator);
+        exOperator.setSelector(ExpressionOperator.RightTrim2);
+        Vector v = new Vector(5);
+        v.add("TRIM(TRAILING ");
+        v.add(" FROM ");
+        v.add(")");
+        exOperator.printsAs(v);
+        exOperator.bePrefix();
+        int[] argumentIndices = new int[2];
+        argumentIndices[0] = 1;
+        argumentIndices[1] = 0;
+        exOperator.setArgumentIndices(argumentIndices);
         exOperator.setNodeClass(ClassConstants.FunctionExpression_Class);
         return exOperator;
     }

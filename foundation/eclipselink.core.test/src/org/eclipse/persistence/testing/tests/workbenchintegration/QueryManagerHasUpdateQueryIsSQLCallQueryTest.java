@@ -36,7 +36,7 @@ public class QueryManagerHasUpdateQueryIsSQLCallQueryTest extends ProjectClassGe
     protected void setup() {
         getSession().getIdentityMapAccessor().initializeAllIdentityMaps();
 
-        descriptorToModify = (ClassDescriptor)project.getDescriptors().get(Employee.class);
+        descriptorToModify = project.getDescriptors().get(Employee.class);
         UpdateObjectQuery testReadQuery = new UpdateObjectQuery();
         SQLCall testCall = new SQLCall();
         testReadQuery.setCall(testCall); // setting the SQLCall on ReadObjectQuery

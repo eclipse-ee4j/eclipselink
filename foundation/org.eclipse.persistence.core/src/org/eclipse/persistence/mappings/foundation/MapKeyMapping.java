@@ -226,12 +226,17 @@ public interface MapKeyMapping extends MapComponentMapping {
      */
     public Map extractIdentityFieldsForQuery(Object key, AbstractSession session);
 
-
     /**
      * INTERNAL:
      * Making any mapping changes necessary to use a the mapping as a map key prior to initializing the mapping
      */
     public void preinitializeMapKey(DatabaseTable table) throws DescriptorException;
+    
+    /**
+     * INTERNAL:
+     * Making any mapping changes necessary to use a the mapping as a map key after initializing the mapping
+     */
+    public void postInitializeMapKey(MappedKeyMapContainerPolicy policy) throws DescriptorException;
     
     /**
      * INTERNAL:

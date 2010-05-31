@@ -52,7 +52,7 @@ public class InheritanceViewPrepareTest extends AutoVerifyTestCase {
         arguments.add(null);
         List result = (List)getSession().executeQuery(query, arguments);
         arguments = new Vector(1);
-        arguments.add(new Long(0));
+        arguments.add("0");
         result = (List)getSession().executeQuery(query, arguments);
     }
 

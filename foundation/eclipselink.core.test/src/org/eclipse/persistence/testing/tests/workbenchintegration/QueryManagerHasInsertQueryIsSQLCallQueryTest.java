@@ -38,7 +38,7 @@ public class QueryManagerHasInsertQueryIsSQLCallQueryTest extends ProjectClassGe
         getSession().getIdentityMapAccessor().initializeAllIdentityMaps();
         project = new org.eclipse.persistence.testing.models.employee.relational.EmployeeProject();
 
-        descriptorToModify = (ClassDescriptor)project.getDescriptors().get(Employee.class);
+        descriptorToModify = project.getDescriptors().get(Employee.class);
         InsertObjectQuery testReadQuery = new InsertObjectQuery();
         SQLCall testCall = new SQLCall();
         testReadQuery.setCall(testCall); // setting the SQLCall on ReadObjectQuery

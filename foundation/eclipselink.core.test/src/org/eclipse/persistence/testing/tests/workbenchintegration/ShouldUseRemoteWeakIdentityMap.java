@@ -33,7 +33,7 @@ public class ShouldUseRemoteWeakIdentityMap extends ProjectClassGeneratorResultF
     protected void setup() {
         getSession().getIdentityMapAccessor().initializeAllIdentityMaps();
 
-        descriptorToModify = (ClassDescriptor)project.getDescriptors().get(Employee.class);
+        descriptorToModify = project.getDescriptors().get(Employee.class);
         descriptorToModify.useRemoteWeakIdentityMap();
     }
 }

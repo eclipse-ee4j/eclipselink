@@ -39,7 +39,7 @@ public class EventListenerCollectionTest extends org.eclipse.persistence.testing
         project = new EmployeeProject();
 
         ClassDescriptor descriptor =
-            (ClassDescriptor)project.getDescriptors().get(Employee.class);
+            project.getDescriptors().get(Employee.class);
 
         descriptor.getEventManager().addListener(new DescriptorEventAdapter());
     }
@@ -51,7 +51,7 @@ public class EventListenerCollectionTest extends org.eclipse.persistence.testing
 
     public void verify() {
         ClassDescriptor descriptor =
-            (ClassDescriptor)project.getDescriptors().get(Employee.class);
+            project.getDescriptors().get(Employee.class);
 
         java.util.Vector listeners = descriptor.getEventManager().getEventListeners();
 

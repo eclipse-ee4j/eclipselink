@@ -48,7 +48,7 @@ public class RedirectorOnDescriptorTest extends TestCase {
         getSession().getIdentityMapAccessor().initializeIdentityMaps();
         getAbstractSession().beginTransaction();
 
-        descriptor = (ClassDescriptor)getSession().getProject().getDescriptors().get(Employee.class);
+        descriptor = getSession().getProject().getDescriptors().get(Employee.class);
 
         // Read Object
         readObjectQuery = descriptor.getQueryManager().getReadObjectQuery();

@@ -37,7 +37,7 @@ public class OneToOneMappingShouldVerifyDeleteTest extends ProjectClassGenerator
     protected void setup() {
         getSession().getIdentityMapAccessor().initializeAllIdentityMaps();
 
-        descriptorToModify = (ClassDescriptor)project.getDescriptors().get(Employee.class);
+        descriptorToModify = project.getDescriptors().get(Employee.class);
         for (Enumeration mappingsEnum = (descriptorToModify.getMappings()).elements(); 
              mappingsEnum.hasMoreElements(); ) {
             mappingToModify = (DatabaseMapping)mappingsEnum.nextElement();

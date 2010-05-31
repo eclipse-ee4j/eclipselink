@@ -50,8 +50,6 @@
  *******************************************************************************/
 package org.eclipse.persistence.internal.jpa.metadata.xml;
 
-import java.util.Collection;
-
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 
 import org.eclipse.persistence.internal.jpa.metadata.PrimaryKeyMetadata;
@@ -247,8 +245,8 @@ public class XMLEntityMappingsMappingProject extends org.eclipse.persistence.ses
         //namespaceResolver.put("xsd", "http://www.w3.org/2001/XMLSchema");
         namespaceResolver.put("orm", ormNamespace);
 
-        for (XMLDescriptor descriptor : (Collection<XMLDescriptor>) getDescriptors().values()) {
-            descriptor.setNamespaceResolver(namespaceResolver);
+        for (ClassDescriptor descriptor : getDescriptors().values()) {
+            ((XMLDescriptor)descriptor).setNamespaceResolver(namespaceResolver);
         }
         
         XMLLogin xmlLogin = new XMLLogin();

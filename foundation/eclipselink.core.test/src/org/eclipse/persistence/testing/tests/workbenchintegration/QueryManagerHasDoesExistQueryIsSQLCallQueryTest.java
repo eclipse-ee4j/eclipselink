@@ -38,7 +38,7 @@ public class QueryManagerHasDoesExistQueryIsSQLCallQueryTest extends ProjectClas
     protected void setup() {
         getSession().getIdentityMapAccessor().initializeAllIdentityMaps();
 
-        descriptorToModify = (ClassDescriptor)project.getDescriptors().get(Employee.class);
+        descriptorToModify = project.getDescriptors().get(Employee.class);
         DoesExistQuery testReadQuery = new DoesExistQuery();
         SQLCall testCall = new SQLCall();
         testReadQuery.setCall(testCall); // setting the SQLCall on ReadObjectQuery

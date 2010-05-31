@@ -41,7 +41,7 @@ public class CollectionMappingIsMapPolicyTest extends ProjectClassGeneratorResul
     protected void setup() {
         getSession().getIdentityMapAccessor().initializeAllIdentityMaps();
 
-        descriptorToModify = (ClassDescriptor)project.getDescriptors().get(Employee.class);
+        descriptorToModify = project.getDescriptors().get(Employee.class);
         policy = new MapContainerPolicy();
         for (Enumeration mappingsEnum = (descriptorToModify.getMappings()).elements(); 
              mappingsEnum.hasMoreElements(); ) {

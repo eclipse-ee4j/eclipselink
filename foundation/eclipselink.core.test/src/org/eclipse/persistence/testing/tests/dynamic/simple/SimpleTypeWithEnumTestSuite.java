@@ -148,7 +148,7 @@ public class SimpleTypeWithEnumTestSuite {
 
     @Test
     public void verifyDefaultValuesFromDescriptor() throws Exception {
-        DynamicType simpleType = (DynamicType)dynamicHelper.getType("Simple");
+        DynamicType simpleType = dynamicHelper.getType("Simple");
         assertNotNull(simpleType);
 
         DynamicEntity simpleInstance = (DynamicEntity) simpleType.getDescriptor().getObjectBuilder().buildNewInstance();

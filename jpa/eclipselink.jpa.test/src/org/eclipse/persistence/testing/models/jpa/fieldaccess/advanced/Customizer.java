@@ -19,6 +19,8 @@ import org.eclipse.persistence.config.DescriptorCustomizer;
 import org.eclipse.persistence.config.SessionCustomizer;
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.sessions.Session;
+import org.eclipse.persistence.sessions.SessionEvent;
+import org.eclipse.persistence.sessions.SessionEventAdapter;
 
 /**
  * Session and descriptor customizer.
@@ -35,6 +37,14 @@ public class Customizer implements SessionCustomizer, DescriptorCustomizer {
             num = numberOfCalls.intValue();
         }
         sessionCalls.put(sessionName, new Integer(num + 1));
+
+        session.getEventManager().addListener(new SessionEventAdapter() {
+            public void postLogin(SessionEvent event) {
+                if (event.getSession().getPlatform().isPostgreSQL()) {
+                    event.getSession().setQueryTimeoutDefault(0);
+                }
+            }
+        });
     }
     
     public void customize(ClassDescriptor descriptor) {

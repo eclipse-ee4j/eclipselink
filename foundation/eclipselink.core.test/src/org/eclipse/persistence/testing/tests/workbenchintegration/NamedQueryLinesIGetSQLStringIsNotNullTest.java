@@ -36,7 +36,7 @@ public class NamedQueryLinesIGetSQLStringIsNotNullTest extends ProjectClassGener
     protected void setup() {
         getSession().getIdentityMapAccessor().initializeAllIdentityMaps();
 
-        descriptorToModify = (ClassDescriptor)project.getDescriptors().get(Employee.class);
+        descriptorToModify = project.getDescriptors().get(Employee.class);
         ReadObjectQuery testReadQuery = new ReadObjectQuery();
         SQLCall testCall = new SQLCall("testString");
         testReadQuery.setName("testQueryName");

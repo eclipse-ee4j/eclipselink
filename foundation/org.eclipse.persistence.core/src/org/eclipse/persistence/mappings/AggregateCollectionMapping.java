@@ -1971,7 +1971,16 @@ public class AggregateCollectionMapping extends CollectionMapping implements Rel
             }
             
             getReferenceDescriptor().postInitialize(session);
-        } 
+        }
+        
+        // Need to set the types on the foreign key fields, as not mapped in the object.
+        for (int index = 0; index < getSourceKeyFields().size(); index++) {
+            DatabaseField foreignKey = getSourceKeyFields().get(index);
+            DatabaseField targetKey = getTargetForeignKeyFields().get(index);
+            if (targetKey.getType() == null) {
+                targetKey.setType(getDescriptor().getObjectBuilder().getFieldClassification(foreignKey));
+            }
+        }
     }
 
     /**

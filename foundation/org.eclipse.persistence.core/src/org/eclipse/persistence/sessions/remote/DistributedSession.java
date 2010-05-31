@@ -179,7 +179,7 @@ public abstract class DistributedSession extends AbstractSession {
      * Return the table descriptor specified for the class.
      */
     public ClassDescriptor getDescriptor(Class domainClass) {
-        ClassDescriptor descriptor = (ClassDescriptor)getDescriptors().get(domainClass);
+        ClassDescriptor descriptor = getDescriptors().get(domainClass);
 
         // If the descriptor is null then this means that descriptor must now be read from the server.
         if (descriptor == null) {
@@ -199,7 +199,7 @@ public abstract class DistributedSession extends AbstractSession {
      * Return the descriptor.
      */
     public ClassDescriptor getDescriptorCorrespondingTo(ClassDescriptor descriptor) {
-        return (ClassDescriptor)getDescriptors().get(descriptor.getJavaClass());
+        return getDescriptors().get(descriptor.getJavaClass());
     }
 
     /**

@@ -34,7 +34,7 @@ public class CopyPolicyBuildsNewInstanceTest extends ProjectClassGeneratorResult
     protected void setup() {
         getSession().getIdentityMapAccessor().initializeAllIdentityMaps();
 
-        descriptorToModify = (ClassDescriptor)project.getDescriptors().get(Employee.class);
+        descriptorToModify = project.getDescriptors().get(Employee.class);
         CloneCopyPolicy policy = new CloneCopyPolicy();
         policy.setMethodName("TestInstance");
         descriptorToModify.setCopyPolicy(policy);

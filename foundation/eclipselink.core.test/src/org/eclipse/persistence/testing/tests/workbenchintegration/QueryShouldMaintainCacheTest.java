@@ -44,7 +44,7 @@ public class QueryShouldMaintainCacheTest extends AutoVerifyTestCase {
     public void setup() {
         project = new EmployeeProject();
         ClassDescriptor descriptor = 
-            (ClassDescriptor)project.getDescriptors().get(org.eclipse.persistence.testing.models.employee.domain.Employee.class);
+            project.getDescriptors().get(org.eclipse.persistence.testing.models.employee.domain.Employee.class);
 
         descriptor.disableCacheHits();
 
@@ -68,7 +68,7 @@ public class QueryShouldMaintainCacheTest extends AutoVerifyTestCase {
 
     public void verify() {
         ClassDescriptor descriptor = 
-            (ClassDescriptor)project.getDescriptors().get(org.eclipse.persistence.testing.models.employee.domain.Employee.class);
+            project.getDescriptors().get(org.eclipse.persistence.testing.models.employee.domain.Employee.class);
 
         // Here we test the maintainCache setting.  This should override any other settings.
         ReadObjectQuery query = (ReadObjectQuery)descriptor.getQueryManager().getQuery("TrueQuery");

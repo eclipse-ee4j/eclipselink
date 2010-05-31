@@ -15,7 +15,6 @@ package org.eclipse.persistence.testing.tests.aggregate;
 import java.util.Vector;
 
 import org.eclipse.persistence.sessions.*;
-import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.descriptors.DescriptorEvent;
 import org.eclipse.persistence.descriptors.DescriptorEventManager;
 import org.eclipse.persistence.testing.framework.*;
@@ -32,7 +31,7 @@ public class AggregateEventTestCase extends org.eclipse.persistence.testing.fram
     public void reset() {
         rollbackTransaction();
         getSession().getIdentityMapAccessor().initializeAllIdentityMaps();
-        ((ClassDescriptor)getSession().getProject().getDescriptors().get(Employee.class)).getEventManager().removeListener(this.listener);
+        (getSession().getProject().getDescriptors().get(Employee.class)).getEventManager().removeListener(this.listener);
     }
 
     public void setup() {
@@ -42,7 +41,7 @@ public class AggregateEventTestCase extends org.eclipse.persistence.testing.fram
     public void test() {
         DatabaseSession session = (DatabaseSession)getSession();
         this.listener = new AggregateEventListener();
-        ((ClassDescriptor)session.getProject().getDescriptors().get(AddressDescription.class)).getEventManager().addListener(this.listener);
+        (session.getProject().getDescriptors().get(AddressDescription.class)).getEventManager().addListener(this.listener);
 
         UnitOfWork uow = session.acquireUnitOfWork();
         Employee emp = Employee.example1();

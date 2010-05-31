@@ -56,7 +56,7 @@ public class EmployeeCustomSQLMWIntegrationSystem extends EmployeeCustomSQLSyste
     public org.eclipse.persistence.sessions.Project getInitialProject() {
         org.eclipse.persistence.sessions.Project initialProject = new EmployeeProject();
         employeeDescriptor = 
-                (ClassDescriptor)initialProject.getDescriptors().get(org.eclipse.persistence.testing.models.employee.domain.Employee.class);
+                initialProject.getDescriptors().get(org.eclipse.persistence.testing.models.employee.domain.Employee.class);
         addQueries();
         return initialProject;
     }

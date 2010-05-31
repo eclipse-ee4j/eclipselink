@@ -919,7 +919,7 @@ public class EntityManagerImpl implements org.eclipse.persistence.jpa.JpaEntityM
             if (entity == null) {
                 throw new IllegalArgumentException(ExceptionLocalization.buildMessage("not_an_entity", new Object[] { entity }));
             }
-            ClassDescriptor descriptor = (ClassDescriptor) this.serverSession.getDescriptors().get(entity.getClass());
+            ClassDescriptor descriptor = this.serverSession.getDescriptors().get(entity.getClass());
             if (descriptor == null || descriptor.isAggregateDescriptor() || descriptor.isAggregateCollectionDescriptor()) {
                 throw new IllegalArgumentException(ExceptionLocalization.buildMessage("not_an_entity", new Object[] { entity }));
             }
@@ -2074,7 +2074,7 @@ public class EntityManagerImpl implements org.eclipse.persistence.jpa.JpaEntityM
             if (entity == null) {
                 throw new IllegalArgumentException(ExceptionLocalization.buildMessage("not_an_entity", new Object[] { entity }));
             }
-            ClassDescriptor descriptor = (ClassDescriptor) this.serverSession.getDescriptors().get(entity.getClass());
+            ClassDescriptor descriptor = this.serverSession.getDescriptors().get(entity.getClass());
             if (descriptor == null || descriptor.isAggregateDescriptor() || descriptor.isAggregateCollectionDescriptor()) {
                 throw new IllegalArgumentException(ExceptionLocalization.buildMessage("not_an_entity", new Object[] { entity }));
             }

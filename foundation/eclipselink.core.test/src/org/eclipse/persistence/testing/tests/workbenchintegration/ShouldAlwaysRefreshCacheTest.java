@@ -31,7 +31,7 @@ public class ShouldAlwaysRefreshCacheTest extends ProjectClassGeneratorResultFil
 
     protected void setup() {
         getSession().getIdentityMapAccessor().initializeAllIdentityMaps();
-        descriptorToModify = (ClassDescriptor)project.getDescriptors().get(Employee.class);
+        descriptorToModify = project.getDescriptors().get(Employee.class);
         descriptorToModify.alwaysRefreshCache();
     }
 }

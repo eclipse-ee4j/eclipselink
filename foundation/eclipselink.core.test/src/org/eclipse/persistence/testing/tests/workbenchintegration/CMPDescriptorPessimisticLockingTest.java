@@ -39,8 +39,8 @@ CMPDescriptorPessimisticLockingTest extends AutoVerifyTestCase {
     protected void setup() {
         // Modify the employee project to use custom SQL queries
         EmployeeProject project = new EmployeeProject();
-        ClassDescriptor employeeDescriptor = (ClassDescriptor)project.getDescriptors().get(Employee.class);
-        ClassDescriptor addressDescriptor = (ClassDescriptor)project.getDescriptors().get(Address.class);
+        ClassDescriptor employeeDescriptor = project.getDescriptors().get(Employee.class);
+        ClassDescriptor addressDescriptor = project.getDescriptors().get(Address.class);
 
         employeeDescriptor.setCMPPolicy(new CMPPolicy());
         addressDescriptor.setCMPPolicy(new CMPPolicy());
@@ -57,8 +57,8 @@ CMPDescriptorPessimisticLockingTest extends AutoVerifyTestCase {
     protected void test() {
         // test run time project that should contains cusomtom sql queries
         Project project = XMLProjectReader.read(PROJECT_FILE, getClass().getClassLoader());
-        ClassDescriptor employeeDescriptor = (ClassDescriptor)project.getDescriptors().get(Employee.class);
-        ClassDescriptor addressDescriptor = (ClassDescriptor)project.getDescriptors().get(Address.class);
+        ClassDescriptor employeeDescriptor = project.getDescriptors().get(Employee.class);
+        ClassDescriptor addressDescriptor = project.getDescriptors().get(Address.class);
 
         if (!employeeDescriptor.hasPessimisticLockingPolicy()) {
             throw new TestErrorException("'Employee descriptor was not written or read correctly");

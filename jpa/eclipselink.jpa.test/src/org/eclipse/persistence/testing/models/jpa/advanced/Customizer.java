@@ -46,6 +46,14 @@ public class Customizer implements SessionCustomizer, DescriptorCustomizer {
         
         //**temp
         session.getEventManager().addListener(new AcquireReleaseListener());
+
+        session.getEventManager().addListener(new SessionEventAdapter() {
+            public void postLogin(SessionEvent event) {
+                if (event.getSession().getPlatform().isPostgreSQL()) {
+                    event.getSession().setQueryTimeoutDefault(0);
+                }
+            }
+        });
     }
     
     public void customize(ClassDescriptor descriptor) {

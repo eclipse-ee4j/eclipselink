@@ -56,7 +56,7 @@ public class Employee1 implements Serializable {
      * Amend the Employee1 descriptor with a join expression to join the multiple tables in the database.
      */
     public static void amendEmployee1WithFKInfo(DatabaseSessionImpl session) {
-        ClassDescriptor descriptor = (ClassDescriptor)new LegacyTestProject().getDescriptors().get(Employee1.class);
+        ClassDescriptor descriptor = new LegacyTestProject().getDescriptors().get(Employee1.class);
         amendEmployee1WithFKInfo(descriptor);
         // Insert new descriptor.
         session.addDescriptor(descriptor);
@@ -67,7 +67,7 @@ public class Employee1 implements Serializable {
      * Amend the Employee1 descriptor with a join expression to join the multiple tables in the database.
      */
     public static void amendEmployee1WithJoinOnly(DatabaseSessionImpl aSession) {
-        ClassDescriptor descriptor = (ClassDescriptor)new LegacyTestProject().getDescriptors().get(Employee1.class);
+        ClassDescriptor descriptor = new LegacyTestProject().getDescriptors().get(Employee1.class);
 
         // Setup the join from the employee table to the address table using a custom join expression and 
         // specifying the table insert order.
@@ -99,7 +99,7 @@ public class Employee1 implements Serializable {
      * Amend the Employee1 descriptor with a join expression to join the multiple tables in the database.
      */
     public static void amendEmployee1WithJoinWithInsert(DatabaseSessionImpl aSession) {
-        ClassDescriptor descriptor = (ClassDescriptor)new LegacyTestProject().getDescriptors().get(Employee1.class);
+        ClassDescriptor descriptor = new LegacyTestProject().getDescriptors().get(Employee1.class);
 
         amendEmployee1WithJoinWithInsert(descriptor);
 

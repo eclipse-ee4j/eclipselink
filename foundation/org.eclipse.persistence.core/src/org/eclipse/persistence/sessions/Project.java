@@ -538,14 +538,14 @@ public class Project implements Serializable, Cloneable {
         if (theClass == null) {
             return null;
         }
-        return (ClassDescriptor)getDescriptors().get(theClass);
+        return getDescriptors().get(theClass);
     }
 
     /**
      * PUBLIC:
      * Return the descriptors.
      */
-    public Map getDescriptors() {
+    public Map<Class, ClassDescriptor> getDescriptors() {
         // Lazy initialize class references from orderedDescriptors when reading from XML.
         if (descriptors.isEmpty() && (!orderedDescriptors.isEmpty())) {
             for (Iterator iterator = orderedDescriptors.iterator(); iterator.hasNext();) {
