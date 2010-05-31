@@ -27,6 +27,7 @@ import org.eclipse.persistence.queries.FetchGroupTracker;
  * <p><b>Purpose</b>: Describes an Employee's phone number.
  *    <p><b>Description</b>: Used in a 1:M relationship from an employee.
  */
+@SuppressWarnings("deprecation")
 @IdClass(org.eclipse.persistence.testing.models.jpa.advanced.PhoneNumberPK.class)
 @Entity
 @Table(name="CMP3_PHONENUMBER")

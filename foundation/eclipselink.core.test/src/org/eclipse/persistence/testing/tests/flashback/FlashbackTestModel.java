@@ -287,6 +287,7 @@ public class FlashbackTestModel extends TestModel {
      * Note if go back too far, or before the last time a table was altered, an
      * exception will result.
      */
+    @SuppressWarnings("deprecation")
     public void calculateTimestampHopefully() {
         if (getTimestamp() != null) {
             return;

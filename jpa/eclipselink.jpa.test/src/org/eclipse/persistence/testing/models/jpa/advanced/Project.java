@@ -30,6 +30,7 @@ import org.eclipse.persistence.annotations.ExistenceChecking;
  * This class in used to test inheritance.
  * The field names intentionally do not match the property names to test method weaving.
  */
+@SuppressWarnings("deprecation")
 @Entity
 @Table(name="CMP3_PROJECT")
 @Inheritance(strategy=JOINED)

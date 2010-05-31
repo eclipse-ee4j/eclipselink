@@ -29,6 +29,7 @@ import org.eclipse.persistence.annotations.CollectionTable;
  * <p><b>Description</b>: Used in a 1:M relationship from an employee.
  * Test @PrimaryKey support with composite primary key.
  */
+@SuppressWarnings("deprecation")
 @Entity(name="PhoneNumber")
 @Table(name="CMP3_FA_PHONENUMBER")
 @PrimaryKey(columns={@Column(name="OWNER_ID"),@Column(name="TYPE")})

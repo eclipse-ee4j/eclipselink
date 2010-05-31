@@ -71,6 +71,7 @@ import static org.eclipse.persistence.annotations.OptimisticLockingType.VERSION_
  * which means they should be processed (their mappings are not defined in the
  * XML)
  */
+@SuppressWarnings("deprecation")
 @Entity
 @EntityListeners(org.eclipse.persistence.testing.models.jpa.advanced.EmployeeListener.class)
 @Table(name="CMP3_EMPLOYEE")

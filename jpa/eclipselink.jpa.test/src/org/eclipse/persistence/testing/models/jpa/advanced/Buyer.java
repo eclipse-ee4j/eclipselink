@@ -38,6 +38,7 @@ import org.eclipse.persistence.annotations.PrivateOwned;
  * Buyer object.
  * Used to test optimistic field locking, events, converters and basic-maps.
  */
+@SuppressWarnings("deprecation")
 @Entity
 @Table(
     name="CMP3_BUYER",

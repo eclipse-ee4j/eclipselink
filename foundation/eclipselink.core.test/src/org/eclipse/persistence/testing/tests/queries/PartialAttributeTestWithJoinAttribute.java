@@ -23,6 +23,7 @@ import org.eclipse.persistence.mappings.OneToOneMapping;
  * A partial attribute query where the partial attribute is also joined should
  * not result in a null pointer exception.
  */
+@SuppressWarnings("deprecation")
 public class PartialAttributeTestWithJoinAttribute extends TestCase {
     protected int joinFetch;
 

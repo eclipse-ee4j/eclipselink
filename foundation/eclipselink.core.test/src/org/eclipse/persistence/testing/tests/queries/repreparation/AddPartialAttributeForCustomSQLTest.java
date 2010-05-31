@@ -19,6 +19,7 @@ import org.eclipse.persistence.testing.framework.*;
 import org.eclipse.persistence.testing.models.employee.domain.*;
 import org.eclipse.persistence.expressions.*;
 
+@SuppressWarnings("deprecation")
 public class AddPartialAttributeForCustomSQLTest extends TestCase {
     static String lastName = "AddPartialAttributeForCustomSQLTest";
     

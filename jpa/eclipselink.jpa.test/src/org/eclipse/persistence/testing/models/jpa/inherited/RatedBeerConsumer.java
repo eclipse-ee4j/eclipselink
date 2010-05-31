@@ -55,6 +55,7 @@ import org.eclipse.persistence.annotations.OrderCorrection;
 
 import static org.eclipse.persistence.annotations.OrderCorrectionType.EXCEPTION;
 
+@SuppressWarnings("deprecation")
 @MappedSuperclass
 @Access(FIELD)
 public abstract class RatedBeerConsumer<X, Y, Z> extends BeerConsumer<String> {

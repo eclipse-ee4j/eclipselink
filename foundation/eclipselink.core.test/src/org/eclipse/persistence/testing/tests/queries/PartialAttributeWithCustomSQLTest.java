@@ -23,6 +23,7 @@ import org.eclipse.persistence.testing.models.employee.domain.*;
  * some partial attribute expressions to the query. The query is not cached.
  * @author dminsky
  */
+@SuppressWarnings("deprecation")
 public class PartialAttributeWithCustomSQLTest extends TestCase {
 
     protected Exception caughtException;

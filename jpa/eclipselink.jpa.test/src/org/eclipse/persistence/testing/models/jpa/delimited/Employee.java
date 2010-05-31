@@ -48,6 +48,7 @@ import static org.eclipse.persistence.annotations.OptimisticLockingType.VERSION_
  * Employees have a many-to-many relationship with Projects through the
  * projects attribute.
  */
+@SuppressWarnings("deprecation")
 @Entity
 @Table(name="\"CMP3_DEL_EMPLOYEE\"")
 @SecondaryTable(name="CMP3_DEL_SALARY")

@@ -22,6 +22,7 @@ import org.eclipse.persistence.exceptions.*;
  * Ensure that when a non-existant partial attribute is specified in a query, the
  * correct exception is thrown.
  */
+@SuppressWarnings("deprecation")
 public class IncorrectPartialAttributeTest extends TestCase {
     protected boolean correctException = true;
 

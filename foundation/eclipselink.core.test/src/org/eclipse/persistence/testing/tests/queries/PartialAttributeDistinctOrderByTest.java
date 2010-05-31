@@ -21,6 +21,7 @@ import org.eclipse.persistence.testing.framework.TestErrorException;
 import org.eclipse.persistence.testing.models.employee.domain.Employee;
 
 // test for bug 260986
+@SuppressWarnings("deprecation")
 public class PartialAttributeDistinctOrderByTest extends AutoVerifyTestCase{
     
     protected Exception exception = null;

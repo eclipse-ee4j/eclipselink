@@ -18,6 +18,7 @@ import org.eclipse.persistence.queries.*;
 import org.eclipse.persistence.testing.framework.*;
 import org.eclipse.persistence.testing.models.employee.domain.*;
 
+@SuppressWarnings("deprecation")
 public class AddPartialAttributeTest extends TestCase {
     private ReadAllQuery query;
     private Vector employees;

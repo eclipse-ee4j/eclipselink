@@ -26,6 +26,7 @@ public class PartialAttributeQueryCacheTest extends NamedQueryQueryCacheTest {
         setDescription("Ensure queries using partial attributes can use query caching.");
     }
 
+    @SuppressWarnings("deprecation")
     public ReadQuery getQueryForTest() {
         ReadAllQuery testQuery = (ReadAllQuery)super.getQueryForTest();
         testQuery.addPartialAttribute("firstName");

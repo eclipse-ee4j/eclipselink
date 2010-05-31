@@ -22,6 +22,7 @@ import org.eclipse.persistence.queries.*;
 /**
  * Bug 5501751: USING GETALLOWINGNULL() WITH ADDPARTIALATTRIBUTE() BROKEN IN 10.1.3
  */
+@SuppressWarnings("deprecation")
 public class FourPartialAttributeTestsWithJoinAttribute extends TestCase {
 
     static String lastName = "PartialAttributeTest";

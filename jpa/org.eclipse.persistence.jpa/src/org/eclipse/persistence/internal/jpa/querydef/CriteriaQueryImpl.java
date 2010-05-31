@@ -484,6 +484,7 @@ public class CriteriaQueryImpl<T> extends AbstractQueryImpl<T> implements Criter
     /**
      * Translates from the criteria query to a EclipseLink Database Query.
      */
+    @SuppressWarnings("deprecation")
     protected ObjectLevelReadQuery createCompoundQuery() {
         ObjectLevelReadQuery query = null;
         if (this.queryResult == ResultType.UNKNOWN) {

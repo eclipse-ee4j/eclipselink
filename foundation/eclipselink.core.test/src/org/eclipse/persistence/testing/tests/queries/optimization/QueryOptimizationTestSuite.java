@@ -27,6 +27,7 @@ import org.eclipse.persistence.testing.models.ownership.ObjectA;
 /**
  * Test query optimization features, joining, batch reading, partial object reading.
  */
+@SuppressWarnings("deprecation")
 public class QueryOptimizationTestSuite extends TestSuite {
     public QueryOptimizationTestSuite() {
         setDescription("This suite tests query optimization, aggregation and batch reading.");
