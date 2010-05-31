@@ -880,7 +880,7 @@ prompt> java -cp eclipselink.jar:eclipselink-dbwsutils.jar:your_favourite_jdbc_d
         oxProject.setLogin(xmlLogin);
     }
 
-    @SuppressWarnings({"unchecked", "rawtypes"})
+    @SuppressWarnings("unchecked")
     protected void buildOROXProjectsForAdvancedPLSQLProcedure(ProcedureOperationModel procOpModel) {
         /*
          * Walk-thru sqlType, building PLSQLCollection/PLSQLrecord helper objects,
@@ -1039,8 +1039,7 @@ prompt> java -cp eclipselink.jar:eclipselink-dbwsutils.jar:your_favourite_jdbc_d
             orProject.getQueries().addAll(newQueries);
         }
     }
-    
-    @SuppressWarnings("unchecked")
+
     protected void writeOROXProjects(OutputStream dbwsOrStream, OutputStream dbwsOxStream) {
         boolean writeORProject = false;
         if (dbTables.size() > 0) {
@@ -1210,7 +1209,7 @@ prompt> java -cp eclipselink.jar:eclipselink-dbwsutils.jar:your_favourite_jdbc_d
         }
     }
 
-    @SuppressWarnings("rawtypes")
+    @SuppressWarnings({"unchecked", "rawtypes"})
     protected void buildDBWSModel(NamingConventionTransformer nct, OutputStream dbwsServiceStream) {
 
         if (!isNullStream(dbwsServiceStream)) {
@@ -1335,9 +1334,6 @@ prompt> java -cp eclipselink.jar:eclipselink-dbwsutils.jar:your_favourite_jdbc_d
         }
     }
 
-    //TODO - refactor common stuff in buildXXXConfig
-    
-    @SuppressWarnings("unchecked")
     protected ProjectConfig buildORProjectConfig() {
         ProjectConfig orProjectConfig = null;
         boolean useProjectXML = false;
@@ -1386,7 +1382,6 @@ prompt> java -cp eclipselink.jar:eclipselink-dbwsutils.jar:your_favourite_jdbc_d
         return orProjectConfig;
     }
 
-    @SuppressWarnings("unchecked")
     protected ProjectConfig buildOXProjectConfig() {
         ProjectConfig oxProjectConfig = null;
         boolean useProjectXML = false;

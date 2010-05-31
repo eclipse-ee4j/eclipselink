@@ -102,7 +102,6 @@ public class DBWSBuilderModelProject extends Project {
                 }
                 return associations;
             }
-            @SuppressWarnings("unchecked")
             @Override
             public void setAttributeValueInObject(Object object, Object value)
                 throws DescriptorException {

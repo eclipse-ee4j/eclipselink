@@ -263,7 +263,7 @@ public class ProviderHelper extends XRServiceFactory {
             public Object getAttributeValueFromObject(Object object) {
               return ((Invocation)object).getParameters();
             }
-            @SuppressWarnings({"unchecked", "rawtypes"})
+            @SuppressWarnings({"rawtypes"})
             @Override
             public void setAttributeValueInObject(Object object, Object value) {
                 Invocation invocation = (Invocation)object;

@@ -441,7 +441,6 @@ public class UpdateFaultTestSuite extends ProviderHelper implements Provider<SOA
         part.setContent(domSource);
         Dispatch<SOAPMessage> dispatch = testService.createDispatch(portQName, SOAPMessage.class,
             Service.Mode.MESSAGE);
-        @SuppressWarnings("unused")
         SOAPMessage response = null;
         try {
             response = dispatch.invoke(request);

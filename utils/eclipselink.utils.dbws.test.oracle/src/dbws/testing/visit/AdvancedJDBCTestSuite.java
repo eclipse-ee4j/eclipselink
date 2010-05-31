@@ -2441,8 +2441,7 @@ public class AdvancedJDBCTestSuite extends BuilderTestSuite {
         boolean nodeEqual = comparer.isNodeEqual(controlDoc, resultDoc);
         assertTrue("control document not same as instance document", nodeEqual);
     }
-    
-    @SuppressWarnings("unchecked")
+
     protected void testOxProject(ProcedureOperationModel pModel, String projectName,
         String nameSpace, String oxProject, String oxSchema) {
         OracleHelper.buildStoredProcedure(conn, username, ora11Platform, pModel);
