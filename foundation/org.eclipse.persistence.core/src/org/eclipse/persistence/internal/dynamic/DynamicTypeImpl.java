@@ -106,7 +106,7 @@ public class DynamicTypeImpl implements DynamicType {
     }
 
     public DatabaseMapping getMapping(String propertyName) {
-        DatabaseMapping mapping = getDescriptor().getObjectBuilder().getMappingForAttributeName(propertyName);
+        DatabaseMapping mapping = getDescriptor().getMappingForAttributeName(propertyName);
 
         if (mapping == null) {
             throw DynamicException.invalidPropertyName(this, propertyName);
