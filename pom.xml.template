@@ -26,10 +26,18 @@
     </mailingList>
   </mailingLists>
   <licenses>
-      <license>
-        <name>Eclipse Public License - v 1.0</name>
-        <url>http://www.eclipse.org/legal/epl-v10.html</url>
-      </license>
+    <license>
+      <name>Eclipse Public License v1.0</name>
+      <url>http://www.eclipse.org/legal/epl-v10.html</url>
+      <distribution>repo</distribution>
+      <comments>Standard Eclipse Licence</comments>
+    </license>
+    <license>
+      <name>Eclipse Distribution License v. 1.0</name>
+      <url>http://www.eclipse.org/org/documents/edl-v10.php</url>
+      <distribution>repo</distribution>
+      <comments>Standard Eclipse Distribution License</comments>
+    </license>
   </licenses>
   @dependencies@
 </project>
