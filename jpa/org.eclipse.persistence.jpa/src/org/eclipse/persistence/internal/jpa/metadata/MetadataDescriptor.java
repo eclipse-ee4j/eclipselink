@@ -73,7 +73,6 @@ import java.util.Map;
 
 import org.eclipse.persistence.annotations.ExistenceType;
 import org.eclipse.persistence.descriptors.CMPPolicy;
-import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.descriptors.RelationalDescriptor;
 import org.eclipse.persistence.descriptors.ReturningPolicy;
 import org.eclipse.persistence.descriptors.DescriptorEventListener;
@@ -140,7 +139,7 @@ public class MetadataDescriptor {
     private Boolean m_usesCascadedOptimisticLocking;
     
     private ClassAccessor m_classAccessor;
-    private ClassDescriptor m_descriptor;
+    private RelationalDescriptor m_descriptor;
     private DatabaseTable m_primaryTable;
     // The embedded id accessor for this descriptor if one exists.
     private EmbeddedIdAccessor m_embeddedIdAccessor;
@@ -579,7 +578,7 @@ public class MetadataDescriptor {
      * INTERNAL:
      * Return the RelationalDescriptor instance associated with this MetadataDescriptor
      */
-    public ClassDescriptor getClassDescriptor() {
+    public RelationalDescriptor getClassDescriptor() {
         return m_descriptor;
     }
     
@@ -1366,7 +1365,7 @@ public class MetadataDescriptor {
      */
     public void setAccessTypeOnClassDescriptor(String accessType){
         if (accessType.equals(MetadataConstants.PROPERTY)){
-            m_descriptor.usePropertyAccess();
+            m_descriptor.usePropertyAccessForWeaving();
         }
     }
     
@@ -1434,7 +1433,7 @@ public class MetadataDescriptor {
      * INTERNAL:
      * Set the RelationalDescriptor instance associated with this MetadataDescriptor
      */
-    public void setDescriptor(ClassDescriptor descriptor) {
+    public void setDescriptor(RelationalDescriptor descriptor) {
         m_descriptor = descriptor;
     }
     

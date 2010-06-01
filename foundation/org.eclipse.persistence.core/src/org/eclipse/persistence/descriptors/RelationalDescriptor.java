@@ -47,7 +47,12 @@ import org.eclipse.persistence.exceptions.*;
  * @see InterfacePolicy
  */
 public class RelationalDescriptor extends ClassDescriptor {
-
+    
+    /** This flag stores whether this descriptor is using Property access based on JPA semantics.  It is used to modify
+     * the behavior of our weaving functionality as it pertains to adding annotations to fields
+     */
+    protected boolean weavingUsesPropertyAccess = false;
+    
     /**
      * PUBLIC:
      * Return a new descriptor.
@@ -117,6 +122,26 @@ public class RelationalDescriptor extends ClassDescriptor {
      */
     public void setTableQualifier(String tableQualifier) {
         super.setTableQualifier(tableQualifier);
+    }
+    
+    
+    /**
+     * INTERNAL:
+     * Return whether this descriptor uses property access. This information is used to
+     * modify the behavior of some of our weaving features
+     */
+    public boolean usesPropertyAccessForWeaving(){
+        return weavingUsesPropertyAccess;
+    }
+    
+
+    /**
+     * INTERNAL:
+     * Record that this descriptor uses property access. This information is used to
+     * modify the behavior of some of our weaving features
+     */
+    public void usePropertyAccessForWeaving(){
+        weavingUsesPropertyAccess = true;
     }
     
 }

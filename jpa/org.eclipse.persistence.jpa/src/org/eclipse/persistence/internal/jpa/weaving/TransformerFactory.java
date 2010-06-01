@@ -20,6 +20,7 @@ import org.eclipse.persistence.indirection.ValueHolderInterface;
 import org.eclipse.persistence.logging.SessionLog;
 import org.eclipse.persistence.mappings.*;
 import org.eclipse.persistence.descriptors.ClassDescriptor;
+import org.eclipse.persistence.descriptors.RelationalDescriptor;
 import org.eclipse.persistence.sessions.Session;
 import org.eclipse.persistence.sessions.Project;
 import org.eclipse.persistence.internal.indirection.BasicIndirectionPolicy;
@@ -90,7 +91,7 @@ public class TransformerFactory {
      * We assume that if a mapping exists, the attribute must either be mapped from the owning
      * class or from a superclass.
      */
-    public void addClassDetailsForMappedSuperClasses(MetadataClass clz, ClassDescriptor initialDescriptor, ClassDetails classDetails, Map classDetailsMap, List unMappedAttributes, boolean weaveChangeTracking){
+    public void addClassDetailsForMappedSuperClasses(MetadataClass clz, RelationalDescriptor initialDescriptor, ClassDetails classDetails, Map classDetailsMap, List unMappedAttributes, boolean weaveChangeTracking){
         // This class has inheritance to a mapped entity rather than a MappedSuperClass
         if (initialDescriptor.getInheritancePolicyOrNull() != null && initialDescriptor.getInheritancePolicyOrNull().getParentClass() != null){
             return;
@@ -110,7 +111,7 @@ public class TransformerFactory {
         List stillUnMappedMappings = null;
         ClassDetails superClassDetails = createClassDetails(superClz, weaveValueHolders, weaveChangeTracking, weaveFetchGroups, weaveInternal);
         superClassDetails.setIsMappedSuperClass(true);
-        if (!initialDescriptor.usesPropertyAccess()){
+        if (!initialDescriptor.usesPropertyAccessForWeaving()){
             superClassDetails.useAttributeAccess();
         }
         if (!classDetailsMap.containsKey(superClassDetails.getClassName())){
@@ -136,7 +137,8 @@ public class TransformerFactory {
             // scan thru list building details of persistent classes
             for (MetadataClass metaClass : entityClasses) {
                 // check to ensure that class is present in project
-                ClassDescriptor descriptor = findDescriptor(session.getProject(), metaClass.getName());
+                // this will be a relational descriptor because MetadataClass only describes relational descriptors
+                RelationalDescriptor descriptor = (RelationalDescriptor)findDescriptor(session.getProject(), metaClass.getName());
                 if (descriptor == null) {
                     log(SessionLog.FINER, WEAVER_CLASS_NOT_IN_PROJECT, new Object[]{metaClass.getName()});
                 } else {
@@ -150,7 +152,7 @@ public class TransformerFactory {
                         classDetails.setIsEmbedable(true);
                         classDetails.setShouldWeaveFetchGroups(false);
                     }
-                    if (!descriptor.usesPropertyAccess()){
+                    if (!descriptor.usesPropertyAccessForWeaving()){
                         classDetails.useAttributeAccess();
                     }
                     List unMappedAttributes = storeAttributeMappings(metaClass, classDetails, descriptor.getMappings(), weaveValueHoldersForClass);

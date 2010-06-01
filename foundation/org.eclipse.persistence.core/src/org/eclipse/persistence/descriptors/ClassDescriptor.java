@@ -235,11 +235,6 @@ public class ClassDescriptor implements Cloneable, Serializable {
     /** stores fields that are written by Map key mappings so they can be checked for multiple writable mappings */
     protected transient List<DatabaseField> additionalWritableMapKeyFields;
     
-    /** This flag stores whether this descriptor is using Property access based on JPA semantics.  It is used to modify
-     * the behavior of our weaving functionality as it pertains to adding annotations to fields
-     */
-    protected boolean usesPropertyAcess = false;
-    
     /**
      * PUBLIC:
      * Return a new descriptor.
@@ -5081,15 +5076,6 @@ public class ClassDescriptor implements Cloneable, Serializable {
     }
     
     /**
-     * INTERNAL:
-     * Record that this descriptor uses property access. This information is used to
-     * modify the behavior of some of our weaving features
-     */
-    public void usePropertyAccess(){
-        usesPropertyAcess = true;
-    }
-    
-    /**
      * PUBLIC:
      * Set the class of identity map to be the cache identity map.
      * This map caches the LRU instances read from the database.
@@ -5189,15 +5175,6 @@ public class ClassDescriptor implements Cloneable, Serializable {
      */
     public boolean usesOptimisticLocking() {
         return (optimisticLockingPolicy != null);
-    }
-    
-    /**
-     * INTERNAL:
-     * Return whether this descriptor uses property access. This information is used to
-     * modify the behavior of some of our weaving features
-     */
-    public boolean usesPropertyAccess(){
-        return usesPropertyAcess;
     }
     
     /**
