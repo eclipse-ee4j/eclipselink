@@ -22,7 +22,7 @@ public class OptimisticLockingInsertTest extends AutoVerifyTestCase {
     LockObject originalObject;
 
     public OptimisticLockingInsertTest(LockObject domainObject) {
-        setName(getName() + "(" + domainObject + ")");
+        setName(getName() + "(" + domainObject.getClass() + ")");
         setDescription("This test verifies that an object is inserted properly");
         originalObject = domainObject;
     }

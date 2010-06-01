@@ -29,7 +29,7 @@ public class UpdateDeepOwnershipTest extends ComplexUpdateTest {
         if (usesUnitOfWork) {
             testName = testName + "with UOW, ";
         }
-        testName = testName + originalObject + ")";
+        testName = testName + originalObject.getClass() + ")";
 
         setName(testName);
         setDescription("This tests changing deeply private parts of an object for update.");

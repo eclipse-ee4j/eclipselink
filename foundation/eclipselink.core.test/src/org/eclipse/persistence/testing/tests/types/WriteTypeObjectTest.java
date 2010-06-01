@@ -32,7 +32,7 @@ public class WriteTypeObjectTest extends WriteObjectTest {
     }
 
     public String getName() {
-        return originalObject.toString();
+        return "WriteTypeObjectTest(" + originalObject.getClass() + ")";
     }
 
     protected Object getObjectFromDatabase() {

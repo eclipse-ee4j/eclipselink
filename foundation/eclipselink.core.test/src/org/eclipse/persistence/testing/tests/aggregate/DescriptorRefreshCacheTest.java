@@ -33,7 +33,7 @@ public class DescriptorRefreshCacheTest extends ReadObjectTest {
      */
     public DescriptorRefreshCacheTest(Object originalObject) {
         setOriginalObject(originalObject);
-        setName("DescriptorRefreshCacheTest(" + originalObject + ")");
+        setName("DescriptorRefreshCacheTest(" + originalObject.getClass() + ")");
         setDescription("This test case tests refresh cache hit property on descriptor.");
     }
 

@@ -32,7 +32,7 @@ public class InsertObjectTest extends WriteObjectTest {
 
     public InsertObjectTest(Object originalObject) {
         this.originalObject = originalObject;
-        setName("InsertObjectTest(" + originalObject + ")");
+        setName("InsertObjectTest(" + originalObject.getClass() + ")");
         setDescription("The test inserting of the intended object, '" + originalObject + "', from the database and checks if it was inserted properly");
     }
 

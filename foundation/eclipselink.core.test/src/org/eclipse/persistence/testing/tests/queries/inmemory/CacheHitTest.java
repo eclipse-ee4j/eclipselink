@@ -32,7 +32,7 @@ public class CacheHitTest extends TestCase {
 
     public CacheHitTest(Object originalObject) {
         this();
-        setName(getName() + "(" + originalObject.toString() + ")");
+        setName(getName() + "(" + originalObject.getClass() + ")");
         this.originalObject = originalObject;
     }
 

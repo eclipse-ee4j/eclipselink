@@ -35,7 +35,7 @@ public class DeleteObjectTest extends TransactionalTestCase {
 
     public DeleteObjectTest(Object originalObject) {
         setOriginalObject(originalObject);
-        setName("DeleteObjectTest(" + originalObject + ")");
+        setName("DeleteObjectTest(" + originalObject.getClass() + ")");
         setDescription("The test deletion of the intended object, '" + originalObject + "', from the database and checks if it was deleted properly");
     }
 

@@ -71,7 +71,7 @@ public class WriteObjectTest extends TransactionalTestCase {
 
     public WriteObjectTest(Object originalObject) {
         this.originalObject = originalObject;
-        setName(getName() + "(" + originalObject + ")");
+        setName(getName() + "(" + originalObject.getClass() + ")");
         setDescription(
             "The test writing of the intended object, '"+originalObject
             +"', from the database and checks if it was inserted properly");

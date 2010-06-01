@@ -41,7 +41,7 @@ public class UnitOfWorkBasicUpdateObjectTest extends WriteObjectTest {
 
     public UnitOfWorkBasicUpdateObjectTest(Object originalObject) {
         this.originalObject = originalObject;
-        setName(getName() + "(" + originalObject + ")");
+        setName(getName() + "(" + originalObject.getClass() + ")");
         setDescription(
             "The test writing (using UnitOfWork) of the intended object, '"+
             originalObject+"', from the database and checks if it was inserted "+

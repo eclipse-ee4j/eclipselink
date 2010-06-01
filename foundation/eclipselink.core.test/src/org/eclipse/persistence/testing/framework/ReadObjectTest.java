@@ -39,7 +39,12 @@ public class ReadObjectTest extends AutoVerifyTestCase {
 
     public ReadObjectTest(Object originalObject) {
         setOriginalObject(originalObject);
-        setName("ReadObjectTest(" + originalObject + ")");
+        if (originalObject == null) {
+            setName("ReadObjectTest(null)");
+        }
+        else {
+            setName("ReadObjectTest(" + originalObject.getClass() + ")");
+        }
         setDescription("The test reads the intended object, '" + originalObject + "', from the database and checks if it was read properly");
     }
 
