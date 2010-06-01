@@ -429,7 +429,7 @@
         <exec executable="${svn.exec}" failonerror="false" logError="true">
             <arg value="commit"/>
             <arg value="-m ${version.string}"/>
-            <arg value="${build.root.dir}/${eclipselink.jar}"/>
+            <arg value="${build.root.dir}/${eclipselink.jar.name}"/>
             <arg value="${build.root.dir}/${eclipselink.src.install.prefix}${eclipselink.zip.suffix}"/>
         </exec>
         <ant antfile="uploadToMaven.xml" dir="${build.root.dir}" target="upload-maven-all"/>
@@ -550,8 +550,8 @@
             </patternset>
         </unzip>
         <!-- Force overwrite of original content -->
-        <!-- copy todir="${temp.rebuild.dir}/install/eclipselink/utils/dbws" file="${signed.jar.path}/${dbws-util.jar}"   failonerror="false"/>
-        <copy todir="${temp.rebuild.dir}/install/eclipselink/jlib"       file="${signed.jar.path}/${eclipselink.jar}" failonerror="false"/ -->
+        <!-- copy todir="${temp.rebuild.dir}/install/eclipselink/utils/dbws" file="${signed.jar.path}/${dbws-util.jar.name}"   failonerror="false"/>
+        <copy todir="${temp.rebuild.dir}/install/eclipselink/jlib"       file="${signed.jar.path}/${eclipselink.jar.name}" failonerror="false"/ -->
         <!-- Rezip EclipseLink Installer Zip -->
         <!-- zip destfile="${temp.rebuild.dir}/${eclipselink.install.prefix}-${version.string}${eclipselink.zip.suffix}" update="true">
             <zipfileset dir="${temp.rebuild.dir}/install" includes="**/*" />
@@ -587,7 +587,7 @@
         <!-- get eclipselink source zip -->
         <copy file="${promote.source.dir}/${eclipselink.src.install.prefix}-${version.string}${eclipselink.zip.suffix}" tofile="${tmp.maven.dir}/${eclipselink.src.install.prefix}${eclipselink.zip.suffix}" failonerror="false"/>
         <!-- get eclipselink.jar (from temp InstallerZip location, so will work if signed or unsigned) -->
-        <copy todir="${tmp.maven.dir}" file="${temp.rebuild.dir}/install/eclipselink/jlib/${eclipselink.jar}"/>
+        <copy todir="${tmp.maven.dir}" file="${temp.rebuild.dir}/install/eclipselink/jlib/${eclipselink.jar.name}"/>
         <!-- get bundles -->
         <copy todir="${tmp.maven.dir}/${plugins.dir}">
             <fileset dir="${signed.jar.path}/${plugins.dir}">

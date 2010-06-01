@@ -102,7 +102,7 @@
 
         <!-- Input definitions -->
         <property name="p2.composite.home.dir"    value="C:/__EL-CompositeRepositoryTest2Site"/>
-        <condition property="p2.repos.dir"        value="${p2.composite.home.dir}/${category.qualifier}"
+        <condition property="p2.repos.dir"        value="${p2.composite.home.dir}/${version.string}"
                                                    else="C:/__EL-RepositorySite">
             <isset property="do.composite"/>
         </condition>
@@ -119,14 +119,14 @@
         <!-- Output definitions -->
         <property name="p2.repos.url"             value="file:/${p2.repos.dir}"/> <!-- DO NOT Override this one -->
         <property name="p2.mirror.url"            value="file:/${p2.mirror.dir}"/> <!-- DO NOT Override this one -->
-        <property name="P2.release.repos.name"    value="EclipseLink Repository"/>
-        <property name="P2.milestone.repos.name"  value="EclipseLink Milestone Repository"/>
-        <property name="P2.nightly.repos.name"    value="EclipseLink Nightly Build Repository"/>
-        <property name="P2.release.repos.url"     value="http://download.eclipse.org/rt/eclipselink/updates"/>
-        <property name="P2.milestone.repos.url"   value="http://download.eclipse.org/rt/eclipselink/incremental-updates/milestone"/>
-        <property name="P2.nightly.repos.url"     value="http://download.eclipse.org/rt/eclipselink/incremental-updates/nightly"/>
-        <property name="metadata.repos.name"     value="&quot;${P2.release.repos.name}&quot;"/>
-        <property name="artifact.repos.name"     value="&quot;EclipseLink Artifacts&quot;"/>
+        <property name="p2.release.repos.name"    value="EclipseLink Repository"/>
+        <property name="p2.milestone.repos.name"  value="EclipseLink Milestone Repository"/>
+        <property name="p2.nightly.repos.name"    value="EclipseLink Nightly Build Repository"/>
+        <property name="p2.release.repos.url"     value="http://download.eclipse.org/rt/eclipselink/updates"/>
+        <property name="p2.milestone.repos.url"   value="http://download.eclipse.org/rt/eclipselink/incremental-updates/milestone"/>
+        <property name="p2.nightly.repos.url"     value="http://download.eclipse.org/rt/eclipselink/incremental-updates/nightly"/>
+        <property name="metadata.repos.name"      value="&quot;${p2.release.repos.name}&quot;"/>
+        <property name="artifact.repos.name"      value="&quot;EclipseLink Artifacts&quot;"/>
 
         <echo message="ant.project.name            ='${ant.project.name}'"/>
         <echo message="feature.build.location      ='${feature.build.location}'"/>
@@ -211,10 +211,10 @@
         <filter token="QUALIFIER"       value="${version.qualifier}"/>
         <!--       Filters for feature.properties files             -->
         <filter token="PROVIDER"        value="${specification.vendor}"/>
-        <filter token="REPOS_NAME"      value="${P2.release.repos.name}"/>
-        <filter token="MILESTONE_REPOS" value="${P2.milestone.repos.name}"/>
-        <filter token="PRIME_UPDATE_URL" value="${P2.release.repos.url}"/> <!-- should be helios update? -->
-        <filter token="SECOND_UPDATE_URL" value="${P2.milestone.repos.url}"/> <!-- should be eclipselink release p2? -->
+        <filter token="REPOS_NAME"      value="${p2.release.repos.name}"/>
+        <filter token="MILESTONE_REPOS" value="${p2.milestone.repos.name}"/>
+        <filter token="PRIME_UPDATE_URL" value="${p2.release.repos.url}"/> <!-- should be helios update? -->
+        <filter token="SECOND_UPDATE_URL" value="${p2.milestone.repos.url}"/> <!-- should be eclipselink release p2? -->
         <copy todir="${classes.dir}" filtering="true">
             <fileset dir="${feature.build.location}">
                 <include name="**/feature*.*"/>
@@ -336,14 +336,15 @@
                 includes="
                           *dbws*.jar,
                           *jms*.jar,
+                          eclipselink*.jar,
                           javax.persistence*1.*.jar,
+                          *preview*.jar,
                           *javax.resource*.jar,
                           *javax.transaction*.jar,
                           javax.xml.bind.source*.jar,
                           *modelgen*.jar,
                           *servlet*.jar,
                           *soap*.jar,
-                          *transaction*.jar,
                           *xml.ws*.jar"
             />
         </delete>
