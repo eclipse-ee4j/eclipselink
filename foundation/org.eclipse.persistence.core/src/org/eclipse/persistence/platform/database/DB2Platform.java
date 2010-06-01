@@ -539,21 +539,22 @@ public class DB2Platform extends org.eclipse.persistence.platform.database.Datab
      * The 2 arg LTRIM operator is of the form .... TRIM (LEADING, <operand2> FROM <operand1> )
      */
     private ExpressionOperator ltrim2Operator() {
-        ExpressionOperator exOperator = new ExpressionOperator();
-        exOperator.setType(ExpressionOperator.FunctionOperator);
-        exOperator.setSelector(ExpressionOperator.LeftTrim2);
+        ExpressionOperator operator = new ExpressionOperator();
+        operator.setType(ExpressionOperator.FunctionOperator);
+        operator.setSelector(ExpressionOperator.LeftTrim2);
         Vector v = new Vector(5);
         v.add("TRIM(LEADING ");
         v.add(" FROM ");
         v.add(")");
-        exOperator.printsAs(v);
-        exOperator.bePrefix();
+        operator.printsAs(v);
+        operator.bePrefix();
         int[] argumentIndices = new int[2];
         argumentIndices[0] = 1;
         argumentIndices[1] = 0;
-        exOperator.setArgumentIndices(argumentIndices);
-        exOperator.setNodeClass(ClassConstants.FunctionExpression_Class);
-        return exOperator;
+        operator.setArgumentIndices(argumentIndices);
+        operator.setNodeClass(ClassConstants.FunctionExpression_Class);
+        operator.setIsBindingSupported(false);
+        return operator;
     }
 
     /**
@@ -561,21 +562,22 @@ public class DB2Platform extends org.eclipse.persistence.platform.database.Datab
      * The 2 arg RTRIM operator is of the form .... TRIM (TRAILING, <operand2> FROM <operand1> )
      */
     private ExpressionOperator rtrim2Operator() {
-        ExpressionOperator exOperator = new ExpressionOperator();
-        exOperator.setType(ExpressionOperator.FunctionOperator);
-        exOperator.setSelector(ExpressionOperator.RightTrim2);
+        ExpressionOperator operator = new ExpressionOperator();
+        operator.setType(ExpressionOperator.FunctionOperator);
+        operator.setSelector(ExpressionOperator.RightTrim2);
         Vector v = new Vector(5);
         v.add("TRIM(TRAILING ");
         v.add(" FROM ");
         v.add(")");
-        exOperator.printsAs(v);
-        exOperator.bePrefix();
+        operator.printsAs(v);
+        operator.bePrefix();
         int[] argumentIndices = new int[2];
         argumentIndices[0] = 1;
         argumentIndices[1] = 0;
-        exOperator.setArgumentIndices(argumentIndices);
-        exOperator.setNodeClass(ClassConstants.FunctionExpression_Class);
-        return exOperator;
+        operator.setArgumentIndices(argumentIndices);
+        operator.setNodeClass(ClassConstants.FunctionExpression_Class);
+        operator.setIsBindingSupported(false);
+        return operator;
     }
 
     /**
