@@ -154,6 +154,8 @@ public class IdentityMapTestSuite extends TestSuite {
         //bug 3095146
         suite.addTest(new CreateCacheKeyWeakIdentityMapTest());
         suite.addTest(new InsertWeakIdentityMapTest());
+        
+        suite.addTest(new IdentityWeakHashMapConcurrentModTest());
 
         return suite;
     }

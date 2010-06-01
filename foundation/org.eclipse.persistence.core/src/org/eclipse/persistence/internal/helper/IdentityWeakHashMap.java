@@ -316,14 +316,21 @@ public class IdentityWeakHashMap<K,V> extends AbstractMap<K,V> implements Map<K,
         return null;
     }
     
-    protected boolean removeEntry(WeakEntry o) {
+    protected boolean removeEntry(WeakEntry o, boolean userModification) {
 
         WeakEntry[] copyOfEntries = entries;
         int index = (o.hash & 0x7FFFFFFF) % copyOfEntries.length;
         for (WeakEntry e = copyOfEntries[index], prev = null; e != null;
                  prev = e, e = e.next) {
             if (e == o) {
-                modCount++;
+                // if this method was called as a result of a user action,
+                // increment the modification count
+                // this method is also called by our cleanup code and 
+                // that code should not cause a concurrent modification
+                // exception
+                if (userModification){
+                    modCount++;
+                }
                 if (prev != null) {
                     prev.next = e.next;
                 } else {
@@ -374,7 +381,9 @@ public class IdentityWeakHashMap<K,V> extends AbstractMap<K,V> implements Map<K,
     protected void cleanUp(){
         WeakEntryReference reference = (WeakEntryReference)referenceQueue.poll();
         while (reference != null){
-            removeEntry(reference.owner);
+            // remove the entry but do not increment the modcount
+            // since this is not a user action
+            removeEntry(reference.owner, false);
             reference = (WeakEntryReference)referenceQueue.poll();
         }
     }
@@ -531,7 +540,9 @@ public class IdentityWeakHashMap<K,V> extends AbstractMap<K,V> implements Map<K,
                                 return false;
                             }
                             WeakEntry entry = (WeakEntry)o;
-                            return removeEntry(entry);
+                            // remove the entry but and increment the modcount
+                            // because this is a user action
+                            return removeEntry(entry, true);
                         }
 
                         public int size() {
