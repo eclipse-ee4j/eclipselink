@@ -143,7 +143,8 @@ echo "results stored in: '${tmp}'"
 HOME_DIR=/shared/rt/eclipselink
 BOOTSTRAP_BLDFILE=bootstrap.xml
 UD2M_BLDFILE=uploadDepsToMaven.xml
-JAVA_HOME=/shared/common/ibm-java-jdk-ppc-60
+#JAVA_HOME=/shared/common/ibm-java-jdk-ppc-60
+JAVA_HOME=/shared/common/ibm-java-ppc64-60-SR7
 ANT_HOME=/shared/common/apache-ant-1.7.0
 LOG_DIR=${HOME_DIR}/logs
 BRANCH_PATH=${HOME_DIR}/${BRANCH}trunk
@@ -432,9 +433,10 @@ echo "Post-build Processing Starting..."
 MAIL_EXEC=/bin/mail
 MAILFROM=eric.gwin@oracle.com
 MAILLIST="ejgwin@gmail.com"
-SUCC_MAILLIST="eric.gwin@oracle.com"
+SUCC_MAILLIST="eric.gwin@oracle.com edwin.tang@oracle.com"
 FAIL_MAILLIST="eclipselink-dev@eclipse.org ejgwin@gmail.com"
 PARSE_RESULT_FILE=${tmp}/raw-summary.txt
+COMPILE_RESULT_FILE=${tmp}/compile-error-summary.txt
 SORTED_RESULT_FILE=${tmp}/sorted-summary.txt
 TESTDATA_FILE=${tmp}/testsummary-${BRANCH_NM}_${TARG_NM}.txt
 SVN_LOG_FILE=${tmp}/svnlog-${BRANCH_NM}_${TARG_NM}.txt
@@ -486,6 +488,10 @@ then
         cat ${DATED_LOG} | grep -n 'Errors: [0-9]' | tr -d ' ' | tr ',' ':' >> ${PARSE_RESULT_FILE}
         cat ${PARSE_RESULT_FILE} | sort -n -t: > ${SORTED_RESULT_FILE}
 
+        ## Capture any 'allowed' compiler errors
+        ##
+        cat ${DATED_LOG} | grep -n '[javac]*errors' > ${COMPILE_RESULT_FILE}
+        
         ## make sure TESTDATA_FILE is empty
         ##
         if [ -f ${TESTDATA_FILE} ]
@@ -549,6 +555,10 @@ then
     ##
     if [ -f ${MAILBODY} ]; then rm ${MAILBODY}; fi
     echo "Build summary for ${BUILD_STR}" > ${MAILBODY}
+    echo "-----------------------------------" >> ${MAILBODY}
+    echo "Non-critical compilation issues (if any) repoted in" >> ${MAILBODY}
+    echo "the format [BUILDLOG_LINE#: NUMBER_OF_ERRORS]:" >> ${MAILBODY}
+    cat ${COMPILE_RESULT_FILE} >> ${MAILBODY}
     echo "-----------------------------------" >> ${MAILBODY}
     if [ \( -f ${TESTDATA_FILE} \) -a \( -n ${TESTDATA_FILE} \) ]
     then
