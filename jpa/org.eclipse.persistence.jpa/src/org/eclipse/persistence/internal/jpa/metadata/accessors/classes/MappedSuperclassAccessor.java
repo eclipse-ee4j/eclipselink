@@ -40,6 +40,8 @@
  *       - 211322: Add fetch-group(s) support to the EclipseLink-ORM.XML Schema
  *     05/04/2010-2.1 Guy Pelletier 
  *       - 309373: Add parent class attribute to EclipseLink-ORM
+ *     06/01/2010-2.1 Guy Pelletier 
+ *       - 315195: Add new property to avoid reading XML during the canonical model generation
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata.accessors.classes;
 
@@ -602,6 +604,11 @@ public class MappedSuperclassAccessor extends ClassAccessor {
         
         // Process the correct access type before any other processing.
         processAccessType();
+        
+        // Before gathering our accessors, clear any accessors previously 
+        // gathered. When generating the canonical model the accessors need 
+        // to be re-gathered in each compile round.
+        getDescriptor().clearAccessors();
         
         // Add the accessors from this mapped superclass.
         addAccessors();

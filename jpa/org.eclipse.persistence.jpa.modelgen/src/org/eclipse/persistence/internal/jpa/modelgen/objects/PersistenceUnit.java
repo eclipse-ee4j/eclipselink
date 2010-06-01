@@ -14,6 +14,8 @@
  *       - 295376: Improve usability of MetaModel generator
  *     04/27/2010-2.1 Guy Pelletier 
  *       - 309856: MappedSuperclasses from XML are not being initialized properly
+ *     06/01/2010-2.1 Guy Pelletier 
+ *       - 315195: Add new property to avoid reading XML during the canonical model generation
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.modelgen.objects;
 
@@ -78,7 +80,7 @@ public class PersistenceUnit {
         // Ask the factory for the project and processing environment
         processingEnv = factory.getProcessingEnvironment();
         project = factory.getMetadataProject(persistenceUnitInfo);
-
+        
         // Init our OX mapped properties into a map.
         initPersistenceUnitProperties();
         
@@ -89,10 +91,12 @@ public class PersistenceUnit {
     
     /**
      * INTERNAL:
+     * Add an element decorated with an Embeddable annotation.
+     * 
      * The possibilities here:
      * 1 - New element and not exclude unlisted classes - add it
      * 2 - New element but exclude unlisted classes - ignore it.
-     * 3 - Existing element, but accessor loaded from XML (it's a new accessor then) - don't touch it
+     * 3 - Existing element, but accessor loaded from XML - don't touch it
      * 4 - Existing element, but accessor loaded from Annotations - add new accessor overriding the old.
      */
     public void addEmbeddableAccessor(Element element) {
@@ -147,10 +151,12 @@ public class PersistenceUnit {
     
     /**
      * INTERNAL:
+     * Add an element decorated with an Entity annotation.
+     * 
      * The possibilities here:
      * 1 - New element and not exclude unlisted classes - add it
      * 2 - New element but exclude unlisted classes - ignore it.
-     * 3 - Existing element, loaded from XML - don't touch it (it's already a new un-processed accessor)
+     * 3 - Existing element, loaded from XML - don't touch it
      * 4 - Existing element, loaded from Annotations - add new accessor overriding the old.
      */
     public void addEntityAccessor(Element element) {
@@ -172,7 +178,7 @@ public class PersistenceUnit {
                     // override it!
                     project.addEntityAccessor(new EntityAccessor(metadataClass.getAnnotation(Entity.class), metadataClass, project));
                 }
-            }
+            }     
         } else if (! excludeUnlistedClasses(metadataClass)) {
             // add it!
             project.addEntityAccessor(new EntityAccessor(metadataClass.getAnnotation(Entity.class), metadataClass, project));
@@ -181,10 +187,12 @@ public class PersistenceUnit {
     
     /**
      * INTERNAL:
+     * Add an element decorated with a MappedSuperclass annotation.
+     * 
      * The possibilities here:
      * 1 - New element and not exclude unlisted classes - add it
      * 2 - New element but exclude unlisted classes - ignore it.
-     * 3 - Existing element, but accessor loaded from XML (it's a new accessor then) - don't touch it
+     * 3 - Existing element, but accessor loaded from XML - don't touch it
      * 4 - Existing element, but accessor loaded from Annotations - add new accessor overridding the old.
      */
     public void addMappedSuperclassAccessor(Element element) {
@@ -432,7 +440,7 @@ public class PersistenceUnit {
     
     /**
      * INTERNAL:
-     * Steps are important here, so don't change them. 
+     * Steps are important here, so don't change them.
      */
     public void preProcessForCanonicalModel() {
         // 1 - Pre-Process the list of entities first. This will discover/build 
@@ -442,7 +450,10 @@ public class PersistenceUnit {
             // That is, an inheritance subclass will tell its parents to 
             // pre-process. So don't pre-process it again.
             if (shouldPreProcess(entityAccessor)) {
-                //m_processingEnv.getMessager().printMessage(Kind.NOTE, "Pre-processing entity: " + entityAccessor.getJavaClassName());
+                // Update the accessible object in case it changed.
+                entityAccessor.setAccessibleObject(factory.getMetadataClass(entityAccessor.getAccessibleObjectName()));
+                
+                // Pre-process the accessor now.
                 entityAccessor.preProcessForCanonicalModel();
             }
         }
@@ -450,7 +461,10 @@ public class PersistenceUnit {
         // 2 - Pre-Process the list of mapped superclasses.
         for (MappedSuperclassAccessor mappedSuperclassAccessor : project.getMappedSuperclasses()) {
             if (shouldPreProcess(mappedSuperclassAccessor)) {
-                //m_processingEnv.getMessager().printMessage(Kind.NOTE, "Pre-processing mapped-superclass: " + mappedSuperclassAccessor.getJavaClassName());
+                // Update the accessible object first, in case it changed.
+                mappedSuperclassAccessor.setAccessibleObject(factory.getMetadataClass(mappedSuperclassAccessor.getAccessibleObjectName()));
+                
+                // Pre-process the accessor now.
                 mappedSuperclassAccessor.preProcessForCanonicalModel();
             }
         }
@@ -460,7 +474,10 @@ public class PersistenceUnit {
         // an owning descriptor (used to determine access type).
         for (EmbeddableAccessor embeddableAccessor : project.getRootEmbeddableAccessors()) {
             if (shouldPreProcess(embeddableAccessor)) {
-                //m_processingEnv.getMessager().printMessage(Kind.NOTE, "Pre-processing embeddable: " + embeddableAccessor.getJavaClassName());
+                // Update the accessible object first, in case it changed.
+                embeddableAccessor.setAccessibleObject(factory.getMetadataClass(embeddableAccessor.getAccessibleObjectName()));
+                
+                // Pre-process the accessor now.
                 embeddableAccessor.preProcessForCanonicalModel();
             }
         }
@@ -471,7 +488,10 @@ public class PersistenceUnit {
         // embeddable)
         for (EmbeddableAccessor embeddableAccessor : project.getEmbeddableAccessors()) {
             if (shouldPreProcess(embeddableAccessor)) {
-                //m_processingEnv.getMessager().printMessage(Kind.NOTE, "Pre-processing embeddable: " + embeddableAccessor.getJavaClassName());
+                // Update the accessible object first, in case it changed.
+                embeddableAccessor.setAccessibleObject(factory.getMetadataClass(embeddableAccessor.getAccessibleObjectName()));
+                
+                // Pre-process the accessor now.
                 embeddableAccessor.preProcessForCanonicalModel();
             }
         }
@@ -479,9 +499,32 @@ public class PersistenceUnit {
     
     /**
      * INTERNAL:
+     * If it is not already pre-processed or is included in the round elements
+     * (presumably because something changed), then pre-process the accessor.
+     * You may get a previously loaded and processed XML class accessor that
+     * may have had a change made to its associated class with the load xml
+     * flag turned off. Therefore we must make sure we preProcess the accessor
+     * again. Since inheritance classes can be fast tracked we keep the factory
+     * round element processing list since we want to avoid processing an
+     * inheritance parent several times now only because it is part of the 
+     * round elements. The first inheritance child will fast track the 
+     * pre-processing of the parent if it hasn't already been done so. 
      */
     protected boolean shouldPreProcess(ClassAccessor accessor) {
-        return ! accessor.isPreProcessed() && factory.isRoundElement((MetadataClass) accessor.getAccessibleObject());
+        MetadataClass cls = (MetadataClass) accessor.getAccessibleObject();
+        
+        if (! accessor.isPreProcessed() || ! factory.isPreProcessedRoundElement(cls)) {
+            // If it is a non pre-processed round element this will set the 
+            // pre-processed flag to true. If it is not a round element, e.g.
+            // a VIRTUAL class this will set nothing and we need not worry about 
+            // it since the user will not be able to modify the class if it does 
+            // exist hence can never be a round element and we can solely rely
+            // on the accessor pre-processed flag.
+            factory.setIsPreProcessedRoundElement(cls);
+            return true;
+        }
+        
+        return false;
     }
     
     /**

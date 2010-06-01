@@ -9,12 +9,14 @@
  *
  * Contributors:
  *     08/10/2009-2.0 Guy Pelletier 
- *       - 267391: JPA 2.0 implement/extend/use an APT tooling library for MetaModel API canonical classes 
+ *       - 267391: JPA 2.0 implement/extend/use an APT tooling library for MetaModel API canonical classes
+ *     06/01/2010-2.1 Guy Pelletier 
+ *       - 315195: Add new property to avoid reading XML during the canonical model generation
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.modelgen;
 
+import java.util.Collection;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 
@@ -31,6 +33,7 @@ import org.eclipse.persistence.internal.jpa.metadata.MetadataProject;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataFactory;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataClass;
 import org.eclipse.persistence.internal.jpa.modelgen.MetadataMirrorFactory;
+import org.eclipse.persistence.internal.jpa.modelgen.objects.PersistenceUnit;
 import org.eclipse.persistence.internal.jpa.modelgen.visitors.ElementVisitor;
 import org.eclipse.persistence.sessions.DatabaseLogin;
 import org.eclipse.persistence.sessions.Project;
@@ -45,10 +48,14 @@ import org.eclipse.persistence.sessions.server.ServerSession;
  */
 public class MetadataMirrorFactory extends MetadataFactory {
     private ElementVisitor<MetadataClass, MetadataClass> elementVisitor;
-    private HashSet<MetadataClass> roundElements;
+    private HashMap<MetadataClass, Boolean> roundElements;
     
-    // Per persistence unit.
+    // Thing to note: persistence units can be reloaded. We do not however
+    // reload their associated projects. Once the project is created, it remains 
+    // around for the lifecycle of the compiler.
+    private Map<String, PersistenceUnit> persistenceUnits;
     private Map<String, MetadataProject> metadataProjects;
+    
     private Map<Element, MetadataClass> metadataClassesFromElements;
     
     private ProcessingEnvironment processingEnv;
@@ -65,9 +72,17 @@ public class MetadataMirrorFactory extends MetadataFactory {
      */
     protected MetadataMirrorFactory(MetadataLogger logger, ClassLoader loader) {
         super(logger, loader);
-        roundElements = new HashSet<MetadataClass>();
+        roundElements = new HashMap<MetadataClass, Boolean>();
+        persistenceUnits = new HashMap<String, PersistenceUnit>();
         metadataProjects = new HashMap<String, MetadataProject>();
         metadataClassesFromElements = new HashMap<Element, MetadataClass>();
+    }
+    
+    /**
+     * INTERNAL:
+     */
+    public void addPersistenceUnit(SEPersistenceUnitInfo puInfo, PersistenceUnit persistenceUnit) {
+        persistenceUnits.put(puInfo.getPersistenceUnitName(), persistenceUnit);
     }
     
     /**
@@ -173,10 +188,24 @@ public class MetadataMirrorFactory extends MetadataFactory {
     /**
      * INTERNAL:
      */
+    public Collection<PersistenceUnit> getPersistenceUnits() {
+        return persistenceUnits.values();
+    }
+    
+    /**
+     * INTERNAL:
+     */
     public ProcessingEnvironment getProcessingEnvironment() {
         return processingEnv;
     }
 
+    /**
+     * INTERNAL:
+     */
+    public boolean isPreProcessedRoundElement(MetadataClass cls) {
+        return isRoundElement(cls) && roundElements.get(cls);
+    }
+    
     /**
      * INTENAL:
      */
@@ -188,7 +217,18 @@ public class MetadataMirrorFactory extends MetadataFactory {
      * INTENAL:
      */
     public boolean isRoundElement(MetadataClass cls) {
-        return roundElements.contains(cls);
+        return roundElements.containsKey(cls);
+    }
+    
+    /**
+     * INTERNAL:
+     */
+    @Override
+    public void resolveGenericTypes(MetadataClass child, List<String> genericTypes, MetadataClass parent, MetadataDescriptor descriptor) {
+        // Our metadata factory does not and can not resolve the types since
+        // we are writing static attributes on our generated class. This 
+        // factory will use types of "? extends Object". So don't need to
+        // resolve anything here. No work is good work!
     }
     
     /**
@@ -213,7 +253,7 @@ public class MetadataMirrorFactory extends MetadataFactory {
         for (Element element : roundEnvironment.getRootElements()) {
             if (element.getAnnotation(javax.annotation.Generated.class) == null) { 
                 processingEnv.getMessager().printMessage(Kind.NOTE, "Building metadata class for round element: " + element);
-                roundElements.add(buildMetadataClass(element));
+                roundElements.put(buildMetadataClass(element), false);
             }
         }
     }
@@ -221,12 +261,10 @@ public class MetadataMirrorFactory extends MetadataFactory {
     /**
      * INTERNAL:
      */
-    @Override
-    public void resolveGenericTypes(MetadataClass child, List<String> genericTypes, MetadataClass parent, MetadataDescriptor descriptor) {
-        // Our metadata factory does not and can not resolve the types since
-        // we are writing static attributes on our generated class. This 
-        // factory will use types of "? extends Object". So don't need to
-        // resolve anything here. No work is good work!
+    public void setIsPreProcessedRoundElement(MetadataClass cls) {
+        if (isRoundElement(cls)) {
+            roundElements.put(cls, true);
+        }
     }
 }
 

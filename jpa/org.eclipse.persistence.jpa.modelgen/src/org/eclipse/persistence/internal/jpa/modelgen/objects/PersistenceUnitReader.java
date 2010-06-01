@@ -14,15 +14,16 @@
  *       - 295376: Improve usability of MetaModel generator
  *     04/29/2010-2.0.3 Guy Pelletier 
  *       - 311020: Canonical model generator should not throw an exception when no persistence.xml is found
+ *     06/01/2010-2.1 Guy Pelletier 
+ *       - 315195: Add new property to avoid reading XML during the canonical model generation
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.modelgen.objects;
 
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashSet;
-import java.util.List;
 import java.util.StringTokenizer;
 
 import javax.annotation.processing.ProcessingEnvironment;
@@ -42,6 +43,8 @@ import org.eclipse.persistence.oxm.XMLContext;
 
 import static org.eclipse.persistence.config.PersistenceUnitProperties.ECLIPSELINK_PERSISTENCE_XML;
 import static org.eclipse.persistence.config.PersistenceUnitProperties.ECLIPSELINK_PERSISTENCE_XML_DEFAULT;
+import static org.eclipse.persistence.internal.jpa.modelgen.CanonicalModelProperties.CANONICAL_MODEL_LOAD_XML;
+import static org.eclipse.persistence.internal.jpa.modelgen.CanonicalModelProperties.CANONICAL_MODEL_LOAD_XML_DEFAULT;
 
 /**
  * Used to read persistence units through the java annotation processing API. 
@@ -50,18 +53,23 @@ import static org.eclipse.persistence.config.PersistenceUnitProperties.ECLIPSELI
  * @since EclipseLink 1.2
  */
 public class PersistenceUnitReader {
+    protected MetadataMirrorFactory factory;
     protected ProcessingEnvironment processingEnv;
-    protected List<PersistenceUnit> persistenceUnits;
     
     /**
      * INTERNAL:
      */
     public PersistenceUnitReader(MetadataMirrorFactory factory) throws IOException {
+        this.factory = factory;
         processingEnv = factory.getProcessingEnvironment();
-        persistenceUnits = new ArrayList<PersistenceUnit>();
         
-        // after initializing our member variables, initialize the pu's.
-        initPersistenceUnits(factory);
+        // As a performance enhancement to avoid reloading and merging XML
+        // metadata for every compile round, the user may choose to turn off
+        // the XML loading by setting the load XML flag to false. 
+        if (Boolean.valueOf(CanonicalModelProperties.getOption(CANONICAL_MODEL_LOAD_XML, CANONICAL_MODEL_LOAD_XML_DEFAULT, processingEnv.getOptions()))) {
+            // after initializing our member variables, initialize the pu's.
+            initPersistenceUnits();
+        }
     }
     
     /**
@@ -139,14 +147,14 @@ public class PersistenceUnitReader {
     /**
      * INTERNAL:
      */
-    public List<PersistenceUnit> getPersistenceUnits() {
-        return persistenceUnits;
+    public Collection<PersistenceUnit> getPersistenceUnits() {
+        return factory.getPersistenceUnits();
     }
     
     /**
      * INTERNAL:
      */
-    protected void initPersistenceUnits(MetadataMirrorFactory factory) {
+    protected void initPersistenceUnits() {
         for (String optionKey : processingEnv.getOptions().keySet()) {
             processingEnv.getMessager().printMessage(Kind.OTHER, "Found Option : " + optionKey + ", with value: " + processingEnv.getOptions().get(optionKey));
         }
@@ -169,7 +177,7 @@ public class PersistenceUnitReader {
                     // has been specified and this persistence unit info's name
                     // appears in that list then add it.
                     if (persistenceUnitList == null || persistenceUnitList.contains(puInfo.getPersistenceUnitName())) {
-                        persistenceUnits.add(new PersistenceUnit(puInfo, factory, this));
+                        factory.addPersistenceUnit(puInfo, new PersistenceUnit(puInfo, factory, this));
                     }
                 }
             }

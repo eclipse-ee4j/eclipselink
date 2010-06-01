@@ -10,6 +10,8 @@
  * Contributors:
  *     08/10/2009-2.0 Guy Pelletier 
  *       - 267391: JPA 2.0 implement/extend/use an APT tooling library for MetaModel API canonical classes
+ *     06/01/2010-2.1 Guy Pelletier 
+ *       - 315195: Add new property to avoid reading XML during the canonical model generation
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.modelgen;
 
@@ -49,6 +51,17 @@ public abstract class CanonicalModelProperties {
      */
     public static final String CANONICAL_MODEL_SUB_PACKAGE = "eclipselink.canonicalmodel.subpackage";
     public static String CANONICAL_MODEL_SUB_PACKAGE_DEFAULT = "";
+    
+    /**
+     * This optional property can be used a performance enhancement between
+     * compile rounds. It is used to avoid reloading XML metadata on each
+     * compile which may only contain a single class etc. The default value
+     * is true and should be left as such for the initial generation to capture
+     * the XML metadata. Afterwards users may choose to set this flag if no
+     * changes to XML are expected thereafter.
+     */
+    public static final String CANONICAL_MODEL_LOAD_XML = "eclipselink.canonicalmodel.load_xml";
+    public static final String CANONICAL_MODEL_LOAD_XML_DEFAULT = "true";
     
     /**
      * INTERNAL:

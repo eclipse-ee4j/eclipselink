@@ -57,6 +57,8 @@
  *       - 309373: Add parent class attribute to EclipseLink-ORM
  *     05/14/2010-2.1 Guy Pelletier 
  *       - 253083: Add support for dynamic persistence using ORM.xml/eclipselink-orm.xml
+ *     06/01/2010-2.1 Guy Pelletier 
+ *       - 315195: Add new property to avoid reading XML during the canonical model generation
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata.accessors.classes;
 
@@ -641,6 +643,11 @@ public class EntityAccessor extends MappedSuperclassAccessor {
         // Process the exclude default mappings flag now before we start
         // looking for annotations.
         processExcludeDefaultMappings();
+        
+        // Before gathering our accessors, clear any accessors previously 
+        // gathered. When generating the canonical model the accessors need 
+        // to be re-gathered in each compile round.
+        getDescriptor().clearAccessors();
         
         // Finally, add our immediate accessors and converters.
         addAccessors();

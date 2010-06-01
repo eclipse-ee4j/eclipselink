@@ -62,6 +62,8 @@
  *       - 307050: Add defaults for access methods of a VIRTUAL access type
  *     05/03/2009-1.2.1 Guy Pelletier 
  *       - 307547:  Exception in order by clause after migrating to eclipselink 1.2 release
+ *     06/01/2010-2.1 Guy Pelletier 
+ *       - 315195: Add new property to avoid reading XML during the canonical model generation
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata;
 
@@ -250,7 +252,7 @@ public class MetadataDescriptor {
         // ValueHolderInterface. This may be very legacy and no longer needed
         // but for the canonical model processing it's much cleaner if this
         // accessor does not show up in the accessors list. NOTE: processing
-        // avoidance of this accessor was previously in in 
+        // avoidance of this accessor was previously in
         // RelationshipAccessor.processRelationship().
         if (accessor.isRelationship() && ((RelationshipAccessor) accessor).isValueHolderInterface()) {
             return;
@@ -264,14 +266,13 @@ public class MetadataDescriptor {
         }
         
         // Check if we already processed an EmbeddedId for this Entity or MappedSuperclass.
-        if (accessor.isEmbeddedId() && this.hasEmbeddedId()) {
-            throw ValidationException.multipleEmbeddedIdAnnotationsFound(getJavaClass(), 
-                    accessor.getAttributeName(), this.getEmbeddedIdAttributeName());
+        if (accessor.isEmbeddedId() && hasEmbeddedId()) {
+            throw ValidationException.multipleEmbeddedIdAnnotationsFound(getJavaClass(), accessor.getAttributeName(), this.getEmbeddedIdAttributeName());
         } 
         
         // 300051: store the single EmbeddedIdAccessor for use by hasEmbeddedId in MetadataProject.addMetamodelMappedSuperclass()
-        if(accessor.isEmbeddedId()) {
-            this.setEmbeddedIdAccessor((EmbeddedIdAccessor)accessor); 
+        if (accessor.isEmbeddedId()) {
+            setEmbeddedIdAccessor((EmbeddedIdAccessor)accessor); 
         }
     }
     
@@ -424,6 +425,21 @@ public class MetadataDescriptor {
      */
     public void addTable(DatabaseTable table) {
         m_descriptor.addTable(table);
+    }
+    
+    /**
+     * INTERNAL:
+     * This method is called only for canonical model generation during the 
+     * pre-processing stage. Canonical model generation needs to rebuild its 
+     * accessor list from one compile round to another within Eclipse. This 
+     * should not be called otherwise.
+     * 
+     * Anything that is set in the addAccessor(MappingAccessor) method should 
+     * be cleared here.
+     */
+    public void clearAccessors() {
+        m_accessors.clear();
+        m_embeddedIdAccessor = null;
     }
     
     /**
