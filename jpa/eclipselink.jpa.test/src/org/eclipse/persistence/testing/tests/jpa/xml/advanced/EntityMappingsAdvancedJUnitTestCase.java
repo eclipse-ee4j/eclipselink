@@ -279,7 +279,7 @@ public class EntityMappingsAdvancedJUnitTestCase extends JUnitTestCase {
      * Verifies that the change tracking metadata is correctly processed.
      */
     public void testPhoneNumberChangeTrackingPolicy() {
-        if (!JUnitTestCase.isWeavingEnabled()) {
+        if (!JUnitTestCase.isWeavingEnabled(m_persistenceUnit)) {
             return;
         }
         
@@ -294,7 +294,7 @@ public class EntityMappingsAdvancedJUnitTestCase extends JUnitTestCase {
      * Verifies that the change tracking metadata is correctly processed.
      */
     public void testProjectChangeTrackingPolicy() {
-        if (!JUnitTestCase.isWeavingEnabled()) {
+        if (!JUnitTestCase.isWeavingEnabled(m_persistenceUnit)) {
             return;
         }
         
