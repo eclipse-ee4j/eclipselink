@@ -747,7 +747,7 @@ public class MappingsGenerator {
             jaxbElementRootConverter.setNestedConverter(new DomHandlerConverter(property.getDomHandlerClassName()));
         }
 
-        if (property.isLax()) {
+        if (property.isLax() || property.isReference()) {
             mapping.setKeepAsElementPolicy(UnmarshalKeepAsElementPolicy.KEEP_UNKNOWN_AS_ELEMENT);
         } else {
             mapping.setKeepAsElementPolicy(UnmarshalKeepAsElementPolicy.KEEP_ALL_AS_ELEMENT);
