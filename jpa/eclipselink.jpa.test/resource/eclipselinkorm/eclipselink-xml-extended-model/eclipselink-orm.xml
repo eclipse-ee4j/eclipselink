@@ -57,11 +57,11 @@
             <id name="id">
                 <column name="EMP_ID"/>
                 <generated-value strategy="TABLE" generator="XML_EMPLOYEE_TABLE_GENERATOR"/>
-                <convert>String2String</convert>
                 <property name="attributeName" value="id"/>
             </id>
             <basic name="firstName" access="FIELD">
                 <column name="F_NAME"/>
+                <convert>String2String</convert>
                 <property name="attributeName" value="firstName"/>
             </basic>
             <basic name="lastName" access="FIELD">
@@ -209,10 +209,10 @@
             <transformation name="overtimeHours" mutable="false">
                 <read-transformer transformer-class="AdvancedReadTransformer"/>
                 <write-transformer transformer-class="AdvancedWriteTransformer">
-                    <column name="START_OVERTIME"/>
+                    <column name="START_OVERTIME" column-definition="TIME"/>
                 </write-transformer>
                 <write-transformer transformer-class="AdvancedWriteTransformer">
-                    <column name="END_OVERTIME"/>
+                    <column name="END_OVERTIME" column-definition="TIME"/>
                 </write-transformer>
                 <property name="attributeName" value="overtimeHours"/>
             </transformation>
