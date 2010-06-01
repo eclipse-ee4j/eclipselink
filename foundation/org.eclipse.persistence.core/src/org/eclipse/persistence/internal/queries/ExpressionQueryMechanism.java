@@ -966,16 +966,14 @@ public class ExpressionQueryMechanism extends StatementQueryMechanism {
             return owner.getPartialAttributeSelectionFields(false);
         }
 
-        Vector fields = null;
+        Vector fields = NonSynchronizedVector.newInstance();
         if (owner.getExecutionFetchGroup() != null) {
-            fields = owner.getFetchGroupSelectionFields();
+            fields.addAll(owner.getFetchGroupSelectionFields());
         } else {
             if (includeAllSubclassFields) {
-                fields = (Vector)getDescriptor().getAllFields().clone();
+                fields.addAll(getDescriptor().getAllFields());
             } else {
-                fields = org.eclipse.persistence.internal.helper.NonSynchronizedVector.newInstance();
-                ExpressionBuilder base = statement.getExpressionBuilder();
-                fields.add(base);
+                fields.add(statement.getExpressionBuilder());
             }
         }
         // Add joined fields.

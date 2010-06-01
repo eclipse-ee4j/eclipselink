@@ -99,10 +99,22 @@ public class FetchGroup extends AttributeGroup {
         return onUnfetchedAttribute(entity, attributeName);
     }
 
+    /** 
+     * Set a flag indicating whether LoadGroup corresponding to FetchGroup should be applied to the query.
+     * If set to true then all group's relationship attributes are instantiated. 
+     */
     public void setShouldLoad(boolean shouldLoad) {
         this.shouldLoad = shouldLoad;
     }
     
+    /** 
+     * Calls setShoulLoad method recursively on all nested fetch groups.
+     * If a nested fetch group is created using addAttribute(String attributeNameOrPath)
+     * then the value for its shouldLoad flag is copied from the containing fetch group.
+     * However if a nested fetch group is added using addAttribute(String attributeNameOrPath, AttributeGroup group)
+     * shouldLoad flag value of the added nested fetch group remains unchanged.
+     * Use this method to set the same shouldLoad value for the main as well as to all nested fetch groups. 
+     */
     public void setShouldLoadAll(boolean shouldLoad) {
         this.shouldLoad = shouldLoad;
         if(this.hasItems()) {
@@ -117,6 +129,10 @@ public class FetchGroup extends AttributeGroup {
         }
     }
     
+    /** 
+     * Indicates whether LoadGroup corresponding to FetchGroup should be applied to the query.
+     * If set to true then all group's relationship attributes are instantiated. 
+     */
     public boolean shouldLoad() {
         return this.shouldLoad;
     }
@@ -130,6 +146,7 @@ public class FetchGroup extends AttributeGroup {
         return fetchGroup;
     }
     
+    @Override
     public boolean isFetchGroup() {
         return true;
     }
@@ -165,6 +182,7 @@ public class FetchGroup extends AttributeGroup {
         }
     }
     
+    @Override
     public FetchGroup clone() {
         return (FetchGroup)super.clone();
     }    
@@ -172,6 +190,7 @@ public class FetchGroup extends AttributeGroup {
     /**
      * Returns FetchGroup corresponding to the passed (possibly nested) attribute.
      */
+    @Override
     public FetchGroup getGroup(String attributeNameOrPath) {
         return (FetchGroup)super.getGroup(attributeNameOrPath);
     }

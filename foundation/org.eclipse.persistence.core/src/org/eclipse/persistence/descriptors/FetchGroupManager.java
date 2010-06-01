@@ -63,10 +63,10 @@ public class FetchGroupManager implements Cloneable {
     // full fetch group - contains all attributes, none of them nested.
     private FetchGroup fullFetchGroup;
     
-    // minimal fetch group - contains primary key attribute(s) and version
+    // minimal fetch group - contains primary key attribute(s) and version.
     private FetchGroup minimalFetchGroup;
     
-    // identity fetch group - contains primary key attribute(s) only
+    // identity fetch group - contains primary key attribute(s) only.
     private EntityFetchGroup idEntityFetchGroup;
     
     //ref to the descriptor
@@ -119,22 +119,43 @@ public class FetchGroupManager implements Cloneable {
         return this.defaultFetchGroup;
     }
 
+    /**
+     * INTERNAL:
+     * Returns EntityFetchGroup corresponding to default FetchGroup.
+     */
     public EntityFetchGroup getDefaultEntityFetchGroup() {
         return this.defaultEntityFetchGroup;
     }
 
+    /**
+     * PUBLIC:
+     * Returns clone of the minimal fetch group.
+     * Could be used as a starting point for a new user-defined fetch group.
+     */
     public FetchGroup createMinimalFetchGroup() {
         return this.minimalFetchGroup.clone();
     }
 
+    /**
+     * PUBLIC:
+     * Indicates whether the passed fetch group is minimal. 
+     */
     public boolean isMinimalFetchGroup(FetchGroup fetchGroup) {
         return this.minimalFetchGroup.equals(fetchGroup);
     }
 
+    /**
+     * INTERNAL:
+     * Returns EntityFetchGroup corresponding to primary key attribute(s).
+     */
     public EntityFetchGroup getIdEntityFetchGroup() {
         return this.idEntityFetchGroup;
     }
 
+    /**
+     * INTERNAL:
+     * Add primary key and version attributes to the passed fetch group.
+     */
     public void addMinimalFetchGroup(FetchGroup fetchGroup) {
         Iterator<String> it = this.minimalFetchGroup.getAttributeNames().iterator();
         while(it.hasNext()) {
@@ -145,18 +166,36 @@ public class FetchGroupManager implements Cloneable {
         }
     }
     
+    /**
+     * PUBLIC:
+     * Returns clone of the default fetch group.
+     * Could be used as a starting point for a new user-defined fetch group.
+     */
     public FetchGroup createDefaultFetchGroup() {
         return this.defaultFetchGroup.clone();
     }
 
+    /**
+     * PUBLIC:
+     * Returns clone of the full fetch group - contains all the attributes, no nesting.
+     * Could be used as a starting point for a new user-defined fetch group.
+     */
     public FetchGroup createFullFetchGroup() {
         return this.fullFetchGroup.clone();
     }
 
+    /**
+     * PUBLIC:
+     * Indicates whether the passed fetch group contains all the attributes, no nesting.
+     */
     public boolean isFullFetchGroup(FetchGroup fetchGroup) {
         return this.fullFetchGroup.equals(fetchGroup);
     }
 
+    /**
+     * INTERNAL:
+     * Returns entity fetch group corresponding to the passed set of attributes.
+     */
     public EntityFetchGroup getEntityFetchGroup(Set<String> attributeNames) {
         EntityFetchGroup entityFetchGroup = this.entityFetchGroups.get(attributeNames);
         if(entityFetchGroup == null) {
@@ -171,6 +210,10 @@ public class FetchGroupManager implements Cloneable {
         return entityFetchGroup;
     }
     
+    /**
+     * INTERNAL:
+     * Returns entity fetch group corresponding to the passed fetch group.
+     */
     public EntityFetchGroup getEntityFetchGroup(FetchGroup fetchGroup) {
         EntityFetchGroup entityFetchGroup = this.entityFetchGroups.get(fetchGroup.getAttributeNames());
         if(entityFetchGroup == null) {
@@ -432,6 +475,7 @@ public class FetchGroupManager implements Cloneable {
 
     /**
      * INTERNAL:
+     * Return FetchGroup held by the object.
      */
     public FetchGroup getObjectFetchGroup(Object domainObject) {
         if (domainObject != null) {
@@ -442,6 +486,7 @@ public class FetchGroupManager implements Cloneable {
     
     /**
      * INTERNAL:
+     * Set fetch group into the object.
      */
     public void setObjectFetchGroup(Object source, FetchGroup fetchGroup, AbstractSession session) {
         FetchGroupTracker tracker = (FetchGroupTracker)source;
@@ -611,10 +656,18 @@ public class FetchGroupManager implements Cloneable {
         }
     }
     
+    /**
+     * PUBLIC:
+     * Set whether defaultFetchGroup should be copied from the parent if not set.
+     */
     public void setShouldUseInheritedDefaultFetchGroup(boolean shouldUseInheritedDefaultFetchGroup) {
         this.shouldUseInheritedDefaultFetchGroup = shouldUseInheritedDefaultFetchGroup;
     }
     
+    /**
+     * PUBLIC:
+     * Indicates whether defaultFetchGroup should be copied from the parent if not set.
+     */
     public boolean shouldUseInheritedDefaultFetchGroup() {
         return this.shouldUseInheritedDefaultFetchGroup;
     }

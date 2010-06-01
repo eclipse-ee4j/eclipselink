@@ -44,6 +44,7 @@ public class LoadGroup extends AttributeGroup {
         return new LoadGroup(name);
     }
     
+    @Override
     public boolean isLoadGroup() {
         return true;
     }
@@ -76,6 +77,7 @@ public class LoadGroup extends AttributeGroup {
         }
     }
     
+    @Override
     public LoadGroup clone() {
         return (LoadGroup)super.clone();
     }
@@ -83,6 +85,7 @@ public class LoadGroup extends AttributeGroup {
     /**
      * Returns LoadGroup corresponding to the passed (possibly nested) attribute.
      */
+    @Override
     public LoadGroup getGroup(String attributeNameOrPath) {
         return (LoadGroup)super.getGroup(attributeNameOrPath);
     }

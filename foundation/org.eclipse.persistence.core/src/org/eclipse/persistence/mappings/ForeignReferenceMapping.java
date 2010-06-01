@@ -143,29 +143,12 @@ public abstract class ForeignReferenceMapping extends DatabaseMapping {
                     batchQuery = queries.get(this);
                 }
             }
-            boolean isNew = false;
             if (batchQuery == null) {
                 batchQuery = prepareNestedBatchQuery(query);
                 batchQuery.setIsExecutionClone(true);
-                isNew = true;
             } else {
                 batchQuery = (ReadQuery)batchQuery.clone();
                 batchQuery.setIsExecutionClone(true);
-            }
-            // Set nested fetch group
-            if(batchQuery.isObjectLevelReadQuery() && batchQuery.getDescriptor().hasFetchGroupManager()) {
-                FetchGroup sourceFG = query.getExecutionFetchGroup();
-                if (sourceFG != null) {                    
-                    FetchGroup targetFetchGroup = sourceFG.getGroup(getAttributeName());
-                    if (targetFetchGroup != null) {
-                        if(isNew) {
-                            batchQuery = (ReadQuery)batchQuery.clone();
-                            batchQuery.setIsExecutionClone(true);
-                        }
-                        ((ObjectLevelReadQuery)batchQuery).setFetchGroup(targetFetchGroup);
-                        batchQuery.checkPrepare(query.getSession(), query.getTranslationRow());
-                    }
-                }
             }
             query.setProperty(this, batchQuery);
         }
@@ -769,6 +752,17 @@ public abstract class ForeignReferenceMapping extends DatabaseMapping {
         batchQuery.setBatchFetchSize(query.getBatchFetchPolicy().getSize());
         // Allow subclasses to further prepare.
         postPrepareNestedBatchQuery(batchQuery, query);
+        
+        // Set nested fetch group.
+        if(batchQuery.getDescriptor().hasFetchGroupManager()) {
+            FetchGroup sourceFG = query.getExecutionFetchGroup();
+            if (sourceFG != null) {                    
+                FetchGroup targetFetchGroup = sourceFG.getGroup(getAttributeName());
+                if (targetFetchGroup != null) {
+                    ((ObjectLevelReadQuery)batchQuery).setFetchGroup(targetFetchGroup);
+                }
+            }
+        }
         
         if (batchQuery.shouldPrepare()) {
             batchQuery.checkPrepare(query.getSession(), query.getTranslationRow());

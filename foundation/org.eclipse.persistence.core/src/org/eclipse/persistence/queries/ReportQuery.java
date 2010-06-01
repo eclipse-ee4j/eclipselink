@@ -1041,6 +1041,17 @@ public class ReportQuery extends ReadAllQuery {
             
     /**
      * INTERNAL:
+     * ReportQuery doesn't support fetch groups.
+     */
+    @Override
+    public void prepareFetchGroup() throws QueryException {
+        if(this.fetchGroup != null || this.fetchGroupName != null) {
+            throw QueryException.fetchGroupNotSupportOnReportQuery();
+        }
+    }
+    
+    /**
+     * INTERNAL:
      * Prepare the query from the prepared query.
      * This allows a dynamic query to prepare itself directly from a prepared query instance.
      * This is used in the EJBQL parse cache to allow preparsed queries to be used to prepare
