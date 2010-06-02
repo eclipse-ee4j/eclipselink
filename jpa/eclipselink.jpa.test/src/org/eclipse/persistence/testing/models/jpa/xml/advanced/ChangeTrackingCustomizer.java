@@ -15,7 +15,6 @@ package org.eclipse.persistence.testing.models.jpa.xml.advanced;
 import org.eclipse.persistence.config.DescriptorCustomizer;
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.descriptors.changetracking.DeferredChangeDetectionPolicy;
-import org.eclipse.persistence.testing.framework.junit.JUnitTestCase;
 
 /**
  * This customizer will revert change tracking to deferred if weaving was not used.
@@ -25,7 +24,7 @@ public class ChangeTrackingCustomizer implements DescriptorCustomizer {
     public ChangeTrackingCustomizer() {}
     
     public void customize(ClassDescriptor descriptor) {
-        if (!JUnitTestCase.isWeavingEnabled()) {
+        if (System.getProperty("TEST_NO_WEAVING") != null) {
             descriptor.setObjectChangePolicy(new DeferredChangeDetectionPolicy());
         }
     }
