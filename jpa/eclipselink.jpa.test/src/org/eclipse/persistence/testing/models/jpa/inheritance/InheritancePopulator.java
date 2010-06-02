@@ -47,7 +47,8 @@ public class InheritancePopulator {
         PopulationManager.getDefaultManager().getRegisteredObjects().remove(Person.class);
 
         PopulationManager.getDefaultManager().registerObject(Person.class, InheritanceModelExamples.personExample1(), "e1");
-        PopulationManager.getDefaultManager().registerObject(Person.class, InheritanceModelExamples.personExample2(), "e2");
+        Engineer engineer = InheritanceModelExamples.personExample2();
+        PopulationManager.getDefaultManager().registerObject(Person.class, engineer, "e2");
         PopulationManager.getDefaultManager().registerObject(Person.class, InheritanceModelExamples.personExample3(), "e3");
         PopulationManager.getDefaultManager().registerObject(Person.class, InheritanceModelExamples.personExample4(), "e4");
         PopulationManager.getDefaultManager().registerObject(Person.class, InheritanceModelExamples.personExample5(), "e5");
@@ -58,7 +59,10 @@ public class InheritancePopulator {
         PopulationManager.getDefaultManager().registerObject(AAA.class, InheritanceModelExamples.cccExample1(), "c1");
         PopulationManager.getDefaultManager().registerObject(AAA.class, InheritanceModelExamples.cccExample1(), "c2");
 
-        PopulationManager.getDefaultManager().registerObject(Company.class, InheritanceModelExamples.companyExample1(), "co1");
+        Company company = InheritanceModelExamples.companyExample1();
+        engineer.setCompany(company);
+        
+        PopulationManager.getDefaultManager().registerObject(Company.class, company, "co1");
         PopulationManager.getDefaultManager().registerObject(Company.class, InheritanceModelExamples.companyExample2(), "co2");
         PopulationManager.getDefaultManager().registerObject(Company.class, InheritanceModelExamples.companyExample3(), "co3");
         

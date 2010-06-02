@@ -484,6 +484,8 @@ public abstract class ForeignReferenceMapping extends DatabaseMapping {
                     for (Object foreignKey : foreignKeys) {
                         batchedObjects.put(foreignKey, Helper.NULL_VALUE);
                     }
+                } else if (batchQuery.isReadAllQuery() && ((ReadAllQuery)batchQuery).getBatchFetchPolicy().isIN()) {
+                    throw QueryException.originalQueryMustUseBatchIN(this, originalQuery);
                 }
                 executeBatchQuery(batchQuery, batchedObjects, session, translationRow);
                 batchQuery.setSession(null);

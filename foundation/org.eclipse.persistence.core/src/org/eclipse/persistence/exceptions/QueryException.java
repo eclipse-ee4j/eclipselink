@@ -182,6 +182,7 @@ public class QueryException extends ValidationException {
     public final static int COULD_NOT_FIND_CAST_DESCRIPTOR = 6166;
     public final static int CAST_MUST_USE_INHERITANCE = 6167;
     public final static int PREPARE_FAILED = 6168;
+    public final static int ORIGINAL_QUERY_MUST_USE_IN = 6169;
 
     /**
      * INTERNAL:
@@ -1529,5 +1530,13 @@ public class QueryException extends ValidationException {
         return queryException;
     }
 
+    public static QueryException originalQueryMustUseBatchIN(DatabaseMapping mapping, DatabaseQuery query) {
+        Object[] args = { mapping };
+
+        QueryException queryException = new QueryException(ExceptionMessageGenerator.buildMessage(QueryException.class, ORIGINAL_QUERY_MUST_USE_IN, args), query);
+        queryException.setErrorCode(ORIGINAL_QUERY_MUST_USE_IN);
+        return queryException;
+    }
+    
 }
 

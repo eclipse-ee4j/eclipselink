@@ -1168,38 +1168,33 @@ public class QueryHintsHandler {
         }
     
         DatabaseQuery applyToDatabaseQuery(Object valueToApply, DatabaseQuery query, ClassLoader loader, AbstractSession activeSession) {
-            if (query.isReadAllQuery() && !query.isReportQuery()) {
-                ReadAllQuery raq = (ReadAllQuery)query;
+            if (query.isObjectLevelReadQuery() && !query.isReportQuery()) {
+                ObjectLevelReadQuery objectQuery = (ObjectLevelReadQuery)query;
                 StringTokenizer tokenizer = new StringTokenizer((String)valueToApply, ".");
                 if (tokenizer.countTokens() < 2){
                     throw QueryException.queryHintDidNotContainEnoughTokens(query, QueryHints.BATCH, valueToApply);
                 }
-                // ignore the first token since we are assuming read all query
+                // ignore the first token since we are assuming an alias to the primary class
                 // e.g. In e.phoneNumbers we will assume "e" refers to the base of the query
                 String previousToken = tokenizer.nextToken();
-                raq.checkDescriptor(activeSession);
-                ClassDescriptor descriptor = raq.getDescriptor();
-                Expression expression = raq.getExpressionBuilder();
-                while (tokenizer.hasMoreTokens()){
+                objectQuery.checkDescriptor(activeSession);
+                ClassDescriptor descriptor = objectQuery.getDescriptor();
+                Expression expression = objectQuery.getExpressionBuilder();
+                while (tokenizer.hasMoreTokens()) {
                     String token = tokenizer.nextToken();
-                    ForeignReferenceMapping frMapping = null;
                     DatabaseMapping mapping = descriptor.getObjectBuilder().getMappingForAttributeName(token);
-                    if (mapping == null){
-                        throw QueryException.queryHintNavigatedNonExistantRelationship(query, QueryHints.BATCH, valueToApply, previousToken + "." + token);
-                    } else if (!mapping.isForeignReferenceMapping()){
+                    if (mapping == null) {
+                        // Allow batching of subclass mappings.
+                        if (!descriptor.hasInheritance()) {
+                            throw QueryException.queryHintNavigatedNonExistantRelationship(query, QueryHints.BATCH, valueToApply, previousToken + "." + token);
+                        }
+                    } else if (!mapping.isForeignReferenceMapping() && !mapping.isAggregateObjectMapping()) {
                         throw QueryException.queryHintNavigatedIllegalRelationship(query, QueryHints.BATCH, valueToApply, previousToken + "." + token);
-                    } else {
-                        frMapping = (ForeignReferenceMapping)mapping;
                     }
-                    descriptor = frMapping.getReferenceDescriptor();
-                    if (frMapping.isCollectionMapping()){
-                        expression = expression.anyOf(token);
-                    } else {
-                        expression = expression.get(token);
-                    }
+                    expression = expression.get(token);
                     previousToken = token;
                 }
-                raq.addBatchReadAttribute(expression);
+                objectQuery.addBatchReadAttribute(expression);
             } else {
                 throw new IllegalArgumentException(ExceptionLocalization.buildMessage("ejb30-wrong-type-for-query-hint",new Object[]{getQueryId(query), name, getPrintValue(valueToApply)}));
             }

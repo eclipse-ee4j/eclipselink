@@ -50,6 +50,9 @@ import org.eclipse.persistence.sessions.server.ServerSession;
 
 import org.eclipse.persistence.testing.framework.junit.JUnitTestCase;
 import org.eclipse.persistence.testing.framework.QuerySQLTracker;
+import org.eclipse.persistence.testing.models.jpa.inheritance.Engineer;
+import org.eclipse.persistence.testing.models.jpa.inheritance.InheritancePopulator;
+import org.eclipse.persistence.testing.models.jpa.inheritance.InheritanceTableCreator;
 import org.eclipse.persistence.testing.models.jpa.advanced.Buyer;
 import org.eclipse.persistence.testing.models.jpa.advanced.Department;
 import org.eclipse.persistence.testing.models.jpa.advanced.Employee;
@@ -57,6 +60,7 @@ import org.eclipse.persistence.testing.models.jpa.advanced.Address;
 import org.eclipse.persistence.testing.models.jpa.advanced.EmployeePopulator;
 import org.eclipse.persistence.testing.models.jpa.advanced.AdvancedTableCreator;
 import org.eclipse.persistence.testing.models.jpa.advanced.Employee.Gender;
+import org.eclipse.persistence.testing.models.jpa.inheritance.Person;
 import org.eclipse.persistence.testing.models.jpa.relationships.Customer;
 import org.eclipse.persistence.testing.models.jpa.relationships.RelationshipsExamples;
 import org.eclipse.persistence.testing.models.jpa.relationships.RelationshipsTableManager;
@@ -134,6 +138,7 @@ public class AdvancedQueryTestSuite extends JUnitTestCase {
         suite.addTest(new AdvancedQueryTestSuite("testBatchFetchingPagination"));
         suite.addTest(new AdvancedQueryTestSuite("testBatchFetchingPagination2"));
         suite.addTest(new AdvancedQueryTestSuite("testBatchFetchingReadObject"));
+        suite.addTest(new AdvancedQueryTestSuite("testBatchFetchingInheritance"));
         suite.addTest(new AdvancedQueryTestSuite("testBasicMapBatchFetchingJOIN"));
         suite.addTest(new AdvancedQueryTestSuite("testBasicMapBatchFetchingEXISTS"));
         suite.addTest(new AdvancedQueryTestSuite("testBasicMapBatchFetchingIN"));
@@ -173,6 +178,13 @@ public class AdvancedQueryTestSuite extends JUnitTestCase {
         new RelationshipsTableManager().replaceTables(session);
         //populate the relationships model and persist as well
         new RelationshipsExamples().buildExamples(session);
+        
+        new InheritanceTableCreator().replaceTables(session);
+        InheritancePopulator inheritancePopulator = new InheritancePopulator();
+        inheritancePopulator.buildExamples();
+        
+        //Persist the examples in the database
+        inheritancePopulator.persistExample(session);
     }
     
     /**
@@ -2134,6 +2146,44 @@ public class AdvancedQueryTestSuite extends JUnitTestCase {
             }
             clearCache();
             verifyObject(result);
+        } finally {
+            rollbackTransaction(em);
+            closeEntityManager(em);
+            if (counter != null) {
+                counter.remove();
+            }
+        }
+    }
+    
+    /**
+     * Test batch fetching on inheritance.
+     */
+    public void testBatchFetchingInheritance() {
+        clearCache();
+        EntityManager em = createEntityManager();
+        beginTransaction(em);
+        // Count SQL.
+        QuerySQLTracker counter = new QuerySQLTracker(getServerSession());
+        try {
+            Query query = em.createQuery("Select p from Person p");
+            query.setHint(QueryHints.BATCH_TYPE, BatchFetchType.IN);
+            query.setHint(QueryHints.BATCH, "p.company");
+            List<Person> result = query.getResultList();
+            if (isWeavingEnabled() && counter.getSqlStatements().size() != 5) {
+                fail("Should have been 5 query but was: " + counter.getSqlStatements().size());
+            }
+            for (Person person : result) {
+                if (person instanceof Engineer) {
+                    ((Engineer)person).getCompany();
+                }
+            }
+            if (isWeavingEnabled() && counter.getSqlStatements().size() > 5) {
+                fail("Should have been 5 queries but was: " + counter.getSqlStatements().size());
+            }
+            clearCache();
+            for (Person person : result) {
+                verifyObject(person);
+            }
         } finally {
             rollbackTransaction(em);
             closeEntityManager(em);
