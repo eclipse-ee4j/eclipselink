@@ -1940,7 +1940,7 @@
     <target name="server-test-lrg" depends="clean-test">
         <antcall target="server-test-advanced" inheritRefs="true"/>
         <!-- The "cacheable" test suite need multiple persistence_unit setting in persistence.xml -->
-        <!--antcall target="server-test-cacheable" inheritRefs="true"/-->
+        <antcall target="server-test-cacheable" inheritRefs="true"/>
         <antcall target="server-test-criteria" inheritRefs="true"/>
         <antcall target="server-test-datatypes" inheritRefs="true"/>
         <antcall target="server-test-datetime" inheritRefs="true"/>
@@ -1994,7 +1994,7 @@
             <param name="PERSISTENCE_UNIT_NAME2" value="ENABLE_SELECTIVE"/>
             <param name="PERSISTENCE_UNIT_NAME3" value="ALL"/>
             <param name="PERSISTENCE_UNIT_NAME4" value="NONE"/>
-            <param name="MODEL_DIR" value="org/eclipse/persistence/testing/models/jpa/cacheable"/>
+            <param name="MODEL_DIR" value="org/eclipse/persistence/testing/models/jpa/xml/cacheable"/>
             <param name="MODEL_NAME" value="eclipselink-cacheable-model"/>
             <param name="TEST_DIR" value="org/eclipse/persistence/testing/tests/jpa/cacheable"/>
             <param name="TEST_NAME" value="eclipselink-cacheable-model"/>
