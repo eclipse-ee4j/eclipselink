@@ -34,10 +34,10 @@ public abstract class CanonicalModelProperties {
     
     /**
      * This optional property specifies the suffix that will be added to the 
-     * end of the class name of any canonical model class generated. By default 
-     * the suffix value is "_". If this property is specified the value must be 
-     * a non-empty string that contains valid characters for use in a Java class 
-     * name.
+     * end of the class name of any canonical model class generated. The suffix
+     * defaults to "_" unless a prefix is specified. If this property is
+     * specified, the value must be a non-empty string that contains valid
+     * characters for use in a Java class name.
      */
     public static final String CANONICAL_MODEL_SUFFIX = "eclipselink.canonicalmodel.suffix";
     public static String CANONICAL_MODEL_SUFFIX_DEFAULT = "_";
