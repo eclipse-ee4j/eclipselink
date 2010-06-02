@@ -17,6 +17,10 @@ import java.io.IOException;
 import java.util.Vector;
 import javax.activation.DataHandler;
 
+import org.eclipse.persistence.internal.helper.ConversionManager;
+
+import com.sun.org.apache.xml.internal.security.utils.Base64;
+
 
 public class EmployeeWithByteArrayObject {
     public static final int DEFAULT_ID = 123;
@@ -74,7 +78,7 @@ public class EmployeeWithByteArrayObject {
             for (int i = 0; i < getPhotos().size(); i++) {
                 Object next = getPhotos().elementAt(i);
                 if (next != null) {
-                    returnString += (next + " ");
+                    returnString += (next + "\n" + "-->" + (Base64.encode((byte[])ConversionManager.getDefaultManager().convertObject(next, byte[].class))));
                 } else {
                     returnString += ("null_item" + " ");
                 }
