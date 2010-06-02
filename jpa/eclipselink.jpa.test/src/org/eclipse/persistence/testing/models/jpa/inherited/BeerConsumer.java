@@ -244,7 +244,7 @@ public class BeerConsumer<T> implements ChangeTracker, Cloneable{
     
     @OneToMany(mappedBy="beerConsumer", cascade=ALL)
     // MapKeyClass to be picked up
-    @AttributeOverride(name="number", column=@Column(name="TAG_NUMBER"))
+    @AttributeOverride(name="key.number", column=@Column(name="TAG_NUMBER"))
     public Map<CoronaTag, Corona> getCoronaBeersToConsume() {
         return coronaBeersToConsume;
     }

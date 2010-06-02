@@ -178,13 +178,13 @@ public abstract class CollectionAccessor extends RelationshipAccessor implements
         // Process the attribute overrides first.
         if (isAnnotationPresent(AttributeOverrides.class)) {
             for (Object attributeOverride : (Object[]) getAnnotation(AttributeOverrides.class).getAttributeArray("value")) {
-                m_mapKeyAttributeOverrides.add(new AttributeOverrideMetadata((MetadataAnnotation)attributeOverride, accessibleObject));
+                addAttributeOverride(new AttributeOverrideMetadata((MetadataAnnotation)attributeOverride, accessibleObject));
             }
         }
         
         // Process the single attribute override second.  
         if (isAnnotationPresent(AttributeOverride.class)) {
-            m_mapKeyAttributeOverrides.add(new AttributeOverrideMetadata(getAnnotation(AttributeOverride.class), accessibleObject));
+            addAttributeOverride(new AttributeOverrideMetadata(getAnnotation(AttributeOverride.class), accessibleObject));
         }
         
         // Set the association overrides if some are present.
@@ -192,13 +192,13 @@ public abstract class CollectionAccessor extends RelationshipAccessor implements
         // Process the attribute overrides first.
         if (isAnnotationPresent(AssociationOverrides.class)) {
             for (Object associationOverride : (Object[]) getAnnotation(AssociationOverrides.class).getAttributeArray("value")) {
-                m_mapKeyAssociationOverrides.add(new AssociationOverrideMetadata((MetadataAnnotation)associationOverride, accessibleObject));
+                addAssociationOverride(new AssociationOverrideMetadata((MetadataAnnotation)associationOverride, accessibleObject));
             }
         }
         
         // Process the single attribute override second.  
         if (isAnnotationPresent(AssociationOverride.class)) {
-            m_mapKeyAssociationOverrides.add(new AssociationOverrideMetadata(getAnnotation(AssociationOverride.class), accessibleObject));
+            addAssociationOverride(new AssociationOverrideMetadata(getAnnotation(AssociationOverride.class), accessibleObject));
         }
         
         // Set the order column if one is defined.
@@ -224,6 +224,33 @@ public abstract class CollectionAccessor extends RelationshipAccessor implements
         if (isAnnotationPresent(MapKeyConvert.class)) {
             m_mapKeyConvert = (String) getAnnotation(MapKeyConvert.class).getAttribute("value");
         }
+    }
+    
+    /**
+     * INTERNAL:
+     * Add the association override to our map key attribute overrides list. If
+     * it uses the 'key.' notation rip it off, otherwise use what is specified.
+     */
+    protected void addAssociationOverride(AssociationOverrideMetadata associationOverride) {
+        if (associationOverride.getName().startsWith(KEY_DOT_NOTATION)) {
+            associationOverride.setName(associationOverride.getName().substring(KEY_DOT_NOTATION.length()));
+        }
+        
+        m_mapKeyAssociationOverrides.add(associationOverride);
+    }
+    
+    
+    /**
+     * INTERNAL:
+     * Add the attribute override to our map key attribute overrides list. If
+     * it uses the 'key.' notation rip it off, otherwise use what is specified.
+     */
+    protected void addAttributeOverride(AttributeOverrideMetadata attributeOverride) {
+        if (attributeOverride.getName().startsWith(KEY_DOT_NOTATION)) {
+            attributeOverride.setName(attributeOverride.getName().substring(KEY_DOT_NOTATION.length()));
+        } 
+            
+        m_mapKeyAttributeOverrides.add(attributeOverride);
     }
     
     /**
