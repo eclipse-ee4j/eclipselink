@@ -62,7 +62,7 @@ public class ClientSessionIdentityMapAccessor extends IdentityMapAccessor {
      * The client session does not have a local identity map, so this has no effect and should not be used.
      */
     public void initializeIdentityMap(Class theClass) {
-        ;// Do nothing	
+        // Do nothing	
     }
 
     /**
@@ -70,7 +70,7 @@ public class ClientSessionIdentityMapAccessor extends IdentityMapAccessor {
      * The client session does not have a local identity map, so this has no effect and should not be used.
      */
     public void initializeIdentityMaps() {
-        ;// Do nothing	
+        // Do nothing	
     }
 
     /**

@@ -184,7 +184,16 @@ public class CacheExpiryTestSuite extends TestSuite {
         addTest(new CacheExpiryUnitOfWorkReadTest());
         addTest(new UnitOfWorkCreateObjectReadTimeTest());
         addTest(new SessionCreateObjectReadTimeTest());
+        
+        /*
+        * 312503: JPA 2.0 CacheImpl behaviour change when recurse flag=false
+        * We only invalidate the subtree from the class parameter down when the recurse flag=false
+        * Previously only the class itself was invalidated
+        * The behaviour when the recurse flag is true is unaffected - the entire rooted (above) tree is still invalidated
+        */        
+        // invalidate the entire rooted tree
         addTest(new InvalidateClassRecurseOptionTest(true));
+        // invalidate the subtree
         addTest(new InvalidateClassRecurseOptionTest(false));
         addTest(new InvalidateAllTest());
         addTest(new PrimaryKeyQueryInUOWTest());

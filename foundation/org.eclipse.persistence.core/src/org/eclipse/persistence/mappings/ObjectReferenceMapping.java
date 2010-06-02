@@ -1071,6 +1071,8 @@ public abstract class ObjectReferenceMapping extends ForeignReferenceMapping {
      * list of PKs of the target entities. This method is used in combination
      * with the CachedValueHolder to store references to PK's to be loaded from
      * a cache instead of a query.
+     * @see ContainerPolicy.buildReferencesPKList()
+     * @see MappedKeyMapContainerPolicy()
      */
     public Object[] buildReferencesPKList(Object entity, Object attribute, AbstractSession session) {
         ClassDescriptor referenceDescriptor = getReferenceDescriptor();

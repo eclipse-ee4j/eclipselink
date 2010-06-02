@@ -360,7 +360,7 @@ public interface Session {
      * ADVANCED:
      * Return the descriptor specified for the class.
      * If the class does not have a descriptor but implements an interface that is also implemented
-     * by one of the classes stored in the hashtable, that descriptor will be stored under the
+     * by one of the classes stored in the map, that descriptor will be stored under the
      * new class.
      */
     public ClassDescriptor getClassDescriptor(Class theClass);

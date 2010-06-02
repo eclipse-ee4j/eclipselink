@@ -9,6 +9,10 @@
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
+ *     31/05/2010-2.1 Michael O'Brien
+ *         - 312503: invalidateClass(Class, recurseFlag) - when recurseFlag=false
+ *         (non-default) will now invalidate the implementing subtree
+ *           from [Class] down.  Previously only the single Class inside the tree was invalidated.
  ******************************************************************************/  
 package org.eclipse.persistence.internal.sessions;
 
@@ -805,7 +809,7 @@ public class IdentityMapAccessor implements org.eclipse.persistence.sessions.Ide
     /**
      * ADVANCED:
      * Set all of the objects of a specific class to be invalid in the cache.
-     * Will set the recurse on inheritance to true.
+     * Will set the recurseAndInvalidateToParentRoot flag on inheritance to true.
      */
     public void invalidateClass(Class myClass) {
         invalidateClass(myClass, true);
@@ -815,24 +819,25 @@ public class IdentityMapAccessor implements org.eclipse.persistence.sessions.Ide
      * ADVANCED:
      * Set all of the objects of a specific class to be invalid in the cache.
      * User can set the recurse flag to false if they do not want to invalidate
-     * all the classes within an inheritance tree.
+     * all the classes within an inheritance tree and instead invalidate the subtree rooted at myClass.
+     * @param myClass - the class where we start invalidation
+     * @param recurseAndInvalidateToParentRoot - default is true where we invalidate
+     *   up the inheritance tree to the root descriptor
      */
-    public void invalidateClass(Class myClass, boolean recurse) {
+    public void invalidateClass(Class myClass, boolean recurseAndInvalidateToParentRoot) {
         //forward the call to getIdentityMap locally in case subclasses overload
-        IdentityMap identityMap = this.getIdentityMap(myClass);
+        IdentityMap identityMap = this.getIdentityMap(myClass); // will always return the root IdentityMap
 
         //bug 227430: Deadlock in IdentityMapAccessor. 
         //removed synchronization that would result in deadlock
-        //no need to synchronize as changes to identity map will not aversely
-        //affect this code
+        //no need to synchronize as changes to identity map will not aversely affect this code
         //bug 275724: IdentityMapAccessor.invalidateClass() should not check ReadLock when invalidating
         Enumeration keys = identityMap.keys(false); // do not check readlock
-
         while (keys.hasMoreElements()) {
             CacheKey key = (CacheKey)keys.nextElement();
             Object obj = key.getObject();
-
-            if (recurse || ((obj != null) && obj.getClass().equals(myClass))) {
+            // 312503: When recurse is false we also invalidate all assignable implementing subclasses of [obj]
+            if (recurseAndInvalidateToParentRoot || ((obj != null) && (null != myClass) && myClass.isAssignableFrom(obj.getClass()))) {
                 key.setInvalidationState(CacheKey.CACHE_KEY_INVALID);
             }
         }

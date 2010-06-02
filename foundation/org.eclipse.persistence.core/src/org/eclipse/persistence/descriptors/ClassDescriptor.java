@@ -5302,8 +5302,10 @@ public class ClassDescriptor implements Cloneable, Serializable {
 
     /**
      * ADVANCED:
-     * Return the cmp descriptor that holds cmp specific information.  This will be
-     * null if not being used.
+     * Return the cmp descriptor that holds cmp specific information.  
+     * A null return will mean that the descriptor does not represent an Entity,
+     * however it may still represent a MappedSuperclass.
+     * It will be null if it is not being used.
      */
     public CMPPolicy getCMPPolicy() {
         return cmpPolicy;

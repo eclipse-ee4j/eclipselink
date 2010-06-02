@@ -925,7 +925,7 @@ public class InheritancePolicy implements Serializable, Cloneable {
 
     /**
      * INTERNAL:
-     * Initialized the inheritance properties of the descriptor once the mappings are initialized.
+     * Initialize the inheritance properties of the descriptor once the mappings are initialized.
      * This is done before formal postInitialize during the end of mapping initialize.
      */
     public void initialize(AbstractSession session) {

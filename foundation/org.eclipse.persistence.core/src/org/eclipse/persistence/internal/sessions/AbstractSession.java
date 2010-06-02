@@ -1434,7 +1434,7 @@ public abstract class AbstractSession implements org.eclipse.persistence.session
 
     /**
      * INTERNAL:
-     * Returns the alias descriptors hashtable.
+     * Returns the alias descriptors Map.
      */
     public Map getAliasDescriptors() {
         return project.getAliasDescriptors();
@@ -1598,7 +1598,7 @@ public abstract class AbstractSession implements org.eclipse.persistence.session
      * ADVANCED:
      * Return the descriptor specified for the class.
      * If the class does not have a descriptor but implements an interface that is also implemented
-     * by one of the classes stored in the hashtable, that descriptor will be stored under the
+     * by one of the classes stored in the map, that descriptor will be stored under the
      * new class. If a descriptor does not exist for the Class parameter, null is returned.
      * If the passed Class parameter is null, then null will be returned.
      */
@@ -1635,7 +1635,7 @@ public abstract class AbstractSession implements org.eclipse.persistence.session
      * ADVANCED:
      * Return the descriptor specified for the class.
      * If the class does not have a descriptor but implements an interface that is also implemented
-     * by one of the classes stored in the hashtable, that descriptor will be stored under the
+     * by one of the classes stored in the map, that descriptor will be stored under the
      * new class. If the passed Class is null, null will be returned.
      */
     public ClassDescriptor getDescriptor(Class theClass) {

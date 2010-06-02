@@ -449,6 +449,7 @@ public class MetadataProject {
      * RelationalDescriptor objects that relate to concrete Entities.
      * <p>
      *  This method is referenced by EntityAccessor.addPotentialMappedSuperclass()
+     *  during an initial predeploy() and later during a deploy()
      *  </p>
      * @param metadataClass - the wrapped java class that the MappedSuperclass represents
      * @param accessor - The mappedSuperclass accessor for the field on the mappedSuperclass<p>
@@ -459,6 +460,7 @@ public class MetadataProject {
         String className = metadataClass.getName();
         
         // check for an existing entry before proceeding - as a Map.put() will replace the existing accessor
+        // this code is run first through predeploy() and second through deploy()
         if (null != className && ! m_metamodelMappedSuperclasses.containsKey(className)) {
             MetadataDescriptor metadataDescriptor = accessor.getDescriptor();
             

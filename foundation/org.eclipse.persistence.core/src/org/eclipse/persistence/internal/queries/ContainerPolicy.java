@@ -57,6 +57,7 @@ import org.eclipse.persistence.mappings.DatabaseMapping;
  * @since TOPLink/Java 1.2
  */
 public abstract class ContainerPolicy implements Cloneable, Serializable {
+    private static final long serialVersionUID = 6971791021041582975L;
 
     /**
      * Allow the default collection class to be set.
@@ -273,6 +274,8 @@ public abstract class ContainerPolicy implements Cloneable, Serializable {
      * This method will access the target relationship and create a list of information to rebuild the collection.
      * This method is used in combination with the CachedValueHolder to store references to PK's to be loaded
      * from a cache instead of a query.
+     * @see ContainerPolicy.buildReferencesPKList()
+     * @see MappedKeyMapContainerPolicy.buildReferencesPKList()
      */
     public Object[] buildReferencesPKList(Object container, AbstractSession session){
         Object[] result = new Object[this.sizeFor(container)];
@@ -391,6 +394,7 @@ public abstract class ContainerPolicy implements Cloneable, Serializable {
      * By default if they are the same class, they are considered equal.
      * This is used for query parse caching.
      */
+    @Override
     public boolean equals(Object object) {
         return (object != null) && (getClass().equals(object.getClass()));
     }
@@ -419,6 +423,7 @@ public abstract class ContainerPolicy implements Cloneable, Serializable {
     public void cascadeRegisterNewIfRequired(Object object, UnitOfWorkImpl uow, Map visitedObjects) {
     }
     
+    @Override
     public Object clone() {
         try {
             return super.clone();
@@ -1473,6 +1478,7 @@ public abstract class ContainerPolicy implements Cloneable, Serializable {
         throw QueryException.methodNotValid(this, "sizeFor(Object container)");
     }
 
+    @Override
     public String toString() {
         return Helper.getShortClassName(this.getClass()) + "(" + toStringInfo() + ")";
     }

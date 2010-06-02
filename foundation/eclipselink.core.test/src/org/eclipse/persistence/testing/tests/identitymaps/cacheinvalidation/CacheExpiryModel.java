@@ -16,7 +16,7 @@ import org.eclipse.persistence.testing.framework.TestModel;
 
 public class CacheExpiryModel extends TestModel {
     public CacheExpiryModel() {
-        setDescription("This model tests the TopLink Cache Expiry feature.");
+        setDescription("This model tests the EclipseLink Cache Expiry feature.");
     }
 
     public void addRequiredSystems() {

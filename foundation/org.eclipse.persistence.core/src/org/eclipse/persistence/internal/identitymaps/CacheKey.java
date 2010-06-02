@@ -370,7 +370,7 @@ public class CacheKey implements Serializable, Cloneable {
      * Set the value of the invalidationState Variable
      * The possible values are from an enumeration of constants
      * CHECK_INVALIDATION_POLICY - The invalidation policy is must be checked for this cache key's sate
-     * CACHE_KEY_INVALID - This cache key has been labeled invalid.
+     * CACHE_KEY_INVALID - This cache key has been labelled invalid.
      */
     public void setInvalidationState(int invalidationState) {
         this.invalidationState = invalidationState;

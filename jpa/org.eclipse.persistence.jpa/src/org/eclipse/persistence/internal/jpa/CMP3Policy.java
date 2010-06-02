@@ -72,12 +72,12 @@ public class CMP3Policy extends CMPPolicy {
     /**
      * INTERNAL: 
      * Add the read only mappings for the given field to the allMappings list.
-     * @param descriptor
+     * @param aDescriptor
      * @param field
      * @param allMappings
      */
-    protected void addWritableMapping(ClassDescriptor descriptor, DatabaseField field, List allMappings) {
-        DatabaseMapping writableMapping = descriptor.getObjectBuilder().getMappingForField(field);
+    protected void addWritableMapping(ClassDescriptor aDescriptor, DatabaseField field, List allMappings) {
+        DatabaseMapping writableMapping = aDescriptor.getObjectBuilder().getMappingForField(field);
         
         if (writableMapping != null) {
             // Since it may be another aggregate mapping, add it to 
@@ -90,12 +90,12 @@ public class CMP3Policy extends CMPPolicy {
     /**
      * INTERNAL:
      * Add the writable mapping for the given field to the allMappings list.
-     * @param descriptor
+     * @param aDescriptor
      * @param field
      * @param allMappings
      */
-    protected void addReadOnlyMappings(ClassDescriptor descriptor, DatabaseField field, List allMappings) {
-        List readOnlyMappings = descriptor.getObjectBuilder().getReadOnlyMappingsForField(field);
+    protected void addReadOnlyMappings(ClassDescriptor aDescriptor, DatabaseField field, List allMappings) {
+        List readOnlyMappings = aDescriptor.getObjectBuilder().getReadOnlyMappingsForField(field);
         
         if (readOnlyMappings != null) {
             allMappings.addAll(readOnlyMappings);
@@ -112,18 +112,18 @@ public class CMP3Policy extends CMPPolicy {
     public void convertClassNamesToClasses(ClassLoader classLoader){
         if(getPKClassName() != null){
             try{
-                Class pkClass = null;
+                Class aPKClass = null;
                 if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()){
                     try {
-                        pkClass = (Class)AccessController.doPrivileged(new PrivilegedClassForName(getPKClassName(), true, classLoader));
+                        aPKClass = (Class)AccessController.doPrivileged(new PrivilegedClassForName(getPKClassName(), true, classLoader));
                     } catch (PrivilegedActionException exception) {
                         throw new IllegalArgumentException(ExceptionLocalization.buildMessage("pk_class_not_found", new Object[] {this.pkClassName}), exception.getException());
                         
                     }
                 } else {
-                    pkClass = org.eclipse.persistence.internal.security.PrivilegedAccessHelper.getClassForName(getPKClassName(), true, classLoader);
+                    aPKClass = org.eclipse.persistence.internal.security.PrivilegedAccessHelper.getClassForName(getPKClassName(), true, classLoader);
                 }
-                setPKClass(pkClass);
+                setPKClass(aPKClass);
             } catch (ClassNotFoundException exc){
                 throw new IllegalArgumentException(ExceptionLocalization.buildMessage("pk_class_not_found", new Object[] {this.pkClassName}), exc);
             }
@@ -211,9 +211,9 @@ public class CMP3Policy extends CMPPolicy {
                     DatabaseField targetKey = refmapping.getSourceToTargetKeyFields().get(pkElementArray[index].getDatabaseField());
                     CMPPolicy refPolicy = refmapping.getReferenceDescriptor().getCMPPolicy();
                     if (refPolicy.isCMP3Policy()){
-                        Class pkClass = refPolicy.getPKClass();
-                        if ((pkClass != null) && (pkClass != fieldValue.getClass()) && (!pkClass.isAssignableFrom(fieldValue.getClass()))) {
-                            throw new IllegalArgumentException(ExceptionLocalization.buildMessage("invalid_pk_class", new Object[] { pkClass, fieldValue.getClass() }));
+                        Class aPKClass = refPolicy.getPKClass();
+                        if ((aPKClass != null) && (aPKClass != fieldValue.getClass()) && (!aPKClass.isAssignableFrom(fieldValue.getClass()))) {
+                            throw new IllegalArgumentException(ExceptionLocalization.buildMessage("invalid_pk_class", new Object[] { aPKClass, fieldValue.getClass() }));
                         }
                         fieldValue = ((CMP3Policy)refPolicy).getPkValueFromKeyForField(fieldValue, targetKey, session);
                     }
@@ -307,12 +307,12 @@ public class CMP3Policy extends CMPPolicy {
      */
     protected KeyElementAccessor[] initializePrimaryKeyFields(Class keyClass, AbstractSession session) {
         KeyElementAccessor[] pkAttributes = null;
-        ClassDescriptor descriptor = this.getDescriptor();
+        ClassDescriptor aDescriptor = this.getDescriptor();
 
         fieldToAccessorMap = new HashMap<DatabaseField,KeyElementAccessor>();
-        int numberOfIDFields = descriptor.getPrimaryKeyFields().size();
+        int numberOfIDFields = aDescriptor.getPrimaryKeyFields().size();
         pkAttributes = new KeyElementAccessor[numberOfIDFields];
-        Iterator attributesIter = descriptor.getPrimaryKeyFields().iterator();
+        Iterator attributesIter = aDescriptor.getPrimaryKeyFields().iterator();
         
         // Used fields in case it is an embedded class
         for (int i = 0; attributesIter.hasNext(); i++) {
@@ -322,8 +322,8 @@ public class CMP3Policy extends CMPPolicy {
             // having multiple sections of duplicate code we'll just add the writable mapping directly 
             // to the list.
             List allMappings = new ArrayList(1);
-            addReadOnlyMappings(descriptor, field, allMappings);
-            addWritableMapping(descriptor, field, allMappings);
+            addReadOnlyMappings(aDescriptor, field, allMappings);
+            addWritableMapping(aDescriptor, field, allMappings);
             
             // This exception will be used to determine if the element (field or method) from 
             // the mapping was found on the key class was found or not and throw an exception otherwise.
@@ -337,7 +337,7 @@ public class CMP3Policy extends CMPPolicy {
                 
                 // So here is the ugly check to see if we want to further look at this mapping as part of 
                 // the id or not.
-                if (descriptor.hasDerivedId() && ! mapping.derivesId()) {
+                if (aDescriptor.hasDerivedId() && ! mapping.derivesId()) {
                     // If the mapping is not a derived id, then we need to keep looking for the mapping that 
                     // is marked as the derived id mapping. However, in a mapped by id case, we may have 
                     // 'extra' non-derived id fields within the embeddable class (and the writable mapping 

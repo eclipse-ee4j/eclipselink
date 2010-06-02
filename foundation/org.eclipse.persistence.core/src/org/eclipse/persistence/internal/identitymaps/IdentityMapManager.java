@@ -871,7 +871,7 @@ public class IdentityMapManager implements Serializable, Cloneable {
      * @param returnNullIfNoMap if true return null if no map, otherwise create one.
      */
     public IdentityMap getIdentityMap(ClassDescriptor descriptor, boolean returnNullIfNoMap) {
-        // Ensure that an im is only used for the root descriptor for inheritance.
+        // Ensure that an identitymap is only used for the root descriptor for inheritance.
         // This is required to obtain proper cache hits.
         if (descriptor.hasInheritance()) {
             descriptor = descriptor.getInheritancePolicy().getRootParentDescriptor();

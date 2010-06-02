@@ -261,6 +261,8 @@ public class MappedKeyMapContainerPolicy extends MapContainerPolicy {
      * INTERNAL:
      * This method will access the target relationship and create a list of information to rebuild the collection.
      * For the MapContainerPolicy this return will consist of an array with serial Map entry key and value elements.
+     * @see ObjectReferenceMapping.buildReferencesPKList
+     * @see ContainerPolicy.buildReferencesPKList
      */
     @Override
     public Object[] buildReferencesPKList(Object container, AbstractSession session){

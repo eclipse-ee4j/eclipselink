@@ -284,10 +284,9 @@ public class RepeatableWriteUnitOfWork extends UnitOfWorkImpl {
         if (this.classesToBeInvalidated != null) {
             // get identityMap of the parent ServerSession
             IdentityMapAccessor accessor = this.getParentIdentityMapSession(null, false, true).getIdentityMapAccessor();
-            Iterator<Class> iterator = this.classesToBeInvalidated.iterator();
-            while (iterator.hasNext()) {
-               accessor.invalidateClass(iterator.next(), false);
-            }
+            for(Class classToBeInvalidated : classesToBeInvalidated) {
+                accessor.invalidateClass(classToBeInvalidated, false); // 312503: invalidate subtree rooted at classToBeInvalidated
+            }            
             this.classesToBeInvalidated = null;
         }
         super.mergeChangesIntoParent();

@@ -543,7 +543,7 @@ public class Project implements Serializable, Cloneable {
 
     /**
      * PUBLIC:
-     * Return the descriptors.
+     * Return the descriptors in a ClassDescriptors Map keyed on the Java class.
      */
     public Map<Class, ClassDescriptor> getDescriptors() {
         // Lazy initialize class references from orderedDescriptors when reading from XML.
@@ -559,7 +559,7 @@ public class Project implements Serializable, Cloneable {
     /**
      * INTERNAL:
      * Return the descriptors in the order added.
-     * Used to maitain consistent order in XML.
+     * Used to maintain consistent order in XML.
      */
     public Vector getOrderedDescriptors() {
         return orderedDescriptors;

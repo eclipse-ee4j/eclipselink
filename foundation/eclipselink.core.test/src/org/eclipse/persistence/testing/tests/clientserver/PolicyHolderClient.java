@@ -29,7 +29,7 @@ public class PolicyHolderClient extends Client2 {
             for (int i = 0; i < 1; i++) {
                 Policy policy = (Policy)this.clientSession.readObject(org.eclipse.persistence.testing.models.insurance.Policy.class, exp);
                 if ((policy == null) || (policy.getPolicyHolder() == null) || policy.getPolicyHolder().getLastName().equals("")) {
-                    throw new TestWarningException("Client/Server dead lock test fails as null is retruned");
+                    throw new TestWarningException("Client/Server dead lock test fails as null is returned");
                 }
             }
         } catch (Exception exception) {
