@@ -69,13 +69,30 @@ public class UserSetContextMapTestCases extends SDOHelperContextTestCases {
      * Test should serialize/deserialize successfully/
      */
     public void testResolveWithHelperContextSetInUserMap() {
-    	SDOHelperContext.putHelperContext(Thread.currentThread().getContextClassLoader(), localCtx);
-    	serialize(localDObj, FILE_NAME);
+        //First overwrite the existing context with an empty one
+        SDOHelperContext.putHelperContext(Thread.currentThread().getContextClassLoader(), new SDOHelperContext());
+        String xsdString = getXSDString(CONTEXT1_DATAOBJECT_XSD_PATH);
+        localCtx = new SDOHelperContext("customId");
+        localCtx.getXSDHelper().define(xsdString);
+        localDObj = load(CONTEXT1_DATAOBJECT_XML_PATH, localCtx);
+
+        SDOHelperContext.putHelperContext(Thread.currentThread().getContextClassLoader(), localCtx);
+        
+        serialize(localDObj, FILE_NAME);
         SDODataObject dobj = (SDODataObject) deserialize(FILE_NAME);
         String dobjImplClassName = dobj.getType().getInstanceClassName();
     	assertTrue("Expected ["+implClassname+"] but was ["+dobjImplClassName+"]", dobjImplClassName.equals(implClassname));
     	SDOHelperContext.removeHelperContext(Thread.currentThread().getContextClassLoader());
     }
+    
+    public void testResolveWithLocalHelperContextSetInUserMap() {
+        SDOHelperContext.putHelperContext(Thread.currentThread().getContextClassLoader(), localCtx);
+        serialize(localDObj, FILE_NAME);
+        SDODataObject dobj = (SDODataObject) deserialize(FILE_NAME);
+        String dobjImplClassName = dobj.getType().getInstanceClassName();
+        assertTrue("Expected ["+implClassname+"] but was ["+dobjImplClassName+"]", dobjImplClassName.equals(implClassname));
+        SDOHelperContext.removeHelperContext(Thread.currentThread().getContextClassLoader());
+    }    
     
     /**
      * We do not set the loader/helper context pair in the SDOHelperContext

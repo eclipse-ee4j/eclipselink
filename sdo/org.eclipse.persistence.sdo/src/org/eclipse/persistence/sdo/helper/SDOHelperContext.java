@@ -76,7 +76,7 @@ public class SDOHelperContext implements HelperContext {
     // Each application will have its own helper context - it is assumed that application 
     // names/loaders are unique within each active server instance
     private static ConcurrentHashMap<HelperContextMapKey, ConcurrentHashMap<String, HelperContext>> helperContexts = new ConcurrentHashMap<HelperContextMapKey, ConcurrentHashMap<String, HelperContext>>();
-    private static WeakHashMap<ClassLoader, WeakReference<HelperContext>> userSetHelperContexts = new WeakHashMap<ClassLoader, WeakReference<HelperContext>>();
+    private static WeakHashMap<ClassLoader, WeakHashMap<String, WeakReference<HelperContext>>> userSetHelperContexts = new WeakHashMap<ClassLoader, WeakHashMap<String, WeakReference<HelperContext>>>();
 
     // Application server identifiers
     private static String OC4J_CLASSLOADER_NAME = "oracle";
@@ -279,7 +279,12 @@ public class SDOHelperContext implements HelperContext {
         if (key == null || value == null) {
             return;
         }
-        userSetHelperContexts.put(key, new WeakReference<HelperContext>(value));
+        WeakHashMap<String, WeakReference<HelperContext>> currentMap = userSetHelperContexts.get(key);
+        if(currentMap == null) {
+            currentMap = new WeakHashMap<String, WeakReference<HelperContext>>();
+            userSetHelperContexts.put(key, currentMap);
+        }
+        currentMap.put(((SDOHelperContext)value).getIdentifier(), new WeakReference(value));
     }
     
     /**
@@ -290,21 +295,26 @@ public class SDOHelperContext implements HelperContext {
      * @param key class loader
      * @return HelperContext for the given key if key exists in the map, otherwise null
      */
-    private static HelperContext getHelperContext(ClassLoader key) {
+    private static HelperContext getUserSetHelperContext(String identifier, ClassLoader key) {
         if (key == null) {
             return null;
         }
-        WeakReference<HelperContext> wRef = userSetHelperContexts.get(key);
-        if (wRef == null) {
+        WeakHashMap<String, WeakReference<HelperContext>> currentMap = userSetHelperContexts.get(key);
+        if(currentMap == null) {
             return null;
         }
-        return wRef.get();
+        WeakReference<HelperContext> ref = currentMap.get(identifier);
+        if(ref == null) {
+            return null;
+        }
+        return ref.get();
     }
     
     /**
      * INTERNAL:
      * Remove a ClassLoader/HelperContext key/value pair from the Thread 
-     * HelperContext map.
+     * HelperContext map. If there are multiple local helper contexts associated
+     * with this ClassLoader, they will all be removed from the map.
      * 
      * @param key class loader
      */
@@ -313,6 +323,21 @@ public class SDOHelperContext implements HelperContext {
             return;
         }
         userSetHelperContexts.remove(key);
+    }
+    
+    /**
+     * INTERNAL
+     * @param identifier the specific identifier of the HelperContext to be removed. "" for a Global helper
+     * @param key the ClassLoader associated with the HelperContext to be removed
+     */
+    public static void removeHelperContext(String identifier, ClassLoader key) {
+        if(key == null) {
+            return;
+        }
+        WeakHashMap<String, WeakReference<HelperContext>> currentMap = userSetHelperContexts.get(key);
+        if(currentMap != null) {
+            currentMap.remove(key);
+        }
     }
 
     /**
@@ -330,7 +355,7 @@ public class SDOHelperContext implements HelperContext {
     public static HelperContext getHelperContext() {
         ClassLoader contextClassLoader = Thread.currentThread().getContextClassLoader();
         // check the map for contextClassLoader and return it if it exists
-        HelperContext hCtx = getHelperContext(contextClassLoader);
+        HelperContext hCtx = getUserSetHelperContext(GLOBAL_HELPER_IDENTIFIER, contextClassLoader);
         if (hCtx != null) {
             return hCtx;
         }
@@ -342,6 +367,12 @@ public class SDOHelperContext implements HelperContext {
      * one if it does not already exist.
      */
     public static HelperContext getHelperContext(String identifier) {
+        ClassLoader contextClassLoader = Thread.currentThread().getContextClassLoader();
+        // check the map for contextClassLoader and return it if it exists
+        HelperContext hCtx = getUserSetHelperContext(identifier, contextClassLoader);
+        if(hCtx != null) {
+            return hCtx;
+        }
         ConcurrentMap<String, HelperContext> contextMap = getContextMap();
         HelperContext helperContext = contextMap.get(identifier);
         if (null == helperContext) {
