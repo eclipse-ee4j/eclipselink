@@ -12,11 +12,9 @@ import javax.persistence.EntityManager;
 
 import junit.framework.Assert;
 
-import org.eclipse.persistence.platform.database.MySQLPlatform;
 import org.eclipse.persistence.platform.database.OraclePlatform;
 import org.eclipse.persistence.testing.framework.wdf.JPAEnvironment;
 import org.eclipse.persistence.testing.framework.wdf.Skip;
-import org.eclipse.persistence.testing.framework.wdf.ToBeInvestigated;
 import org.eclipse.persistence.testing.models.wdf.jpa1.myst.Cave;
 import org.eclipse.persistence.testing.models.wdf.jpa1.myst.Creature;
 import org.eclipse.persistence.testing.models.wdf.jpa1.myst.MythicalCreature;
@@ -26,7 +24,7 @@ import org.junit.Test;
 public class TestIdentity extends JPA1Base {
 
     @Test
-    @Skip(databases = OraclePlatform.class)
+    @Skip(databases = OraclePlatform.class, databaseNames="org.eclipse.persistence.platform.database.MaxDBPlatform")
     public void testPersist() {
         final JPAEnvironment env = getEnvironment();
         final EntityManager em = env.getEntityManager();
@@ -79,7 +77,7 @@ public class TestIdentity extends JPA1Base {
     }
 
     @Test
-    @Skip(databases = OraclePlatform.class)
+    @Skip(databases = OraclePlatform.class, databaseNames="org.eclipse.persistence.platform.database.MaxDBPlatform")
     public void testMerge() {
         final JPAEnvironment env = getEnvironment();
         final EntityManager em = env.getEntityManager();
@@ -135,7 +133,7 @@ public class TestIdentity extends JPA1Base {
     // }
 
     @Test
-    @Skip(databases = OraclePlatform.class)
+    @Skip(databases = OraclePlatform.class, databaseNames="org.eclipse.persistence.platform.database.MaxDBPlatform")
     public void testJoinedSubclass() {
         final JPAEnvironment env = getEnvironment();
         final EntityManager em = env.getEntityManager();
@@ -181,7 +179,7 @@ public class TestIdentity extends JPA1Base {
     // }
     //    
     @Test
-    @Skip(databases = OraclePlatform.class)
+    @Skip(databases = OraclePlatform.class, databaseNames="org.eclipse.persistence.platform.database.MaxDBPlatform")
     public void testPersistNoTx() {
         final JPAEnvironment env = getEnvironment();
         final EntityManager em = env.getEntityManager();

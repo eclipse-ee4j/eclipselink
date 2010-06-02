@@ -200,16 +200,29 @@ public class SkipBugzillaTestRunner extends BlockJUnit4ClassRunner {
         }
 
         Class<? extends DatabasePlatform>[] databases = skipper.getDatabases(a);
-        if (databases == null || databases.length == 0) {
+        String[] databaseNames = skipper.getDatabaseNames(a);
+        
+        if ((databases == null || databases.length == 0) && (databaseNames == null || databaseNames.length == 0)) {
             // all databases are unsupported
             throw new SkipException();
         }
 
         if (databasePlatformClass != null) {
-            for (Class<? extends DatabasePlatform> clazz : databases) {
-                if (clazz.isAssignableFrom(databasePlatformClass)) {
-                    // the current database platform is not supported
-                    throw new SkipException();
+            if (databases != null) {
+                for (Class<? extends DatabasePlatform> clazz : databases) {
+                    if (clazz.isAssignableFrom(databasePlatformClass)) {
+                        // the current database platform is not supported
+                        throw new SkipException();
+                    }
+                }
+            }
+
+            if (databaseNames != null) {
+                for (String name : databaseNames) {
+                    if (databasePlatformClass.getName().equals(name)) {
+                        // the current database platform is not supported
+                        throw new SkipException();
+                    }
                 }
             }
         }
@@ -253,6 +266,11 @@ public class SkipBugzillaTestRunner extends BlockJUnit4ClassRunner {
             return false;
         }
 
+        @Override
+        public String[] getDatabaseNames(Skip skip) {
+            return skip.databaseNames();
+        }
+
     };
 
     private final Skipper<Bugzilla> BUGZILLA_SKIPPER = new Skipper<Bugzilla>() {
@@ -280,6 +298,11 @@ public class SkipBugzillaTestRunner extends BlockJUnit4ClassRunner {
         @Override
         public boolean skipOthers() {
             return false;
+        }
+
+        @Override
+        public String[] getDatabaseNames(Bugzilla t) {
+            return t.databaseNames();
         }
 
     };
@@ -311,6 +334,11 @@ public class SkipBugzillaTestRunner extends BlockJUnit4ClassRunner {
             return false;
         }
 
+        @Override
+        public String[] getDatabaseNames(Issue t) {
+            return t.databaseNames();
+        }
+
     };
 
     private final Skipper<ToBeInvestigated> TO_BE_INVESTIGATED_SKIPPER = new Skipper<ToBeInvestigated>() {
@@ -340,6 +368,11 @@ public class SkipBugzillaTestRunner extends BlockJUnit4ClassRunner {
             return runOnlyUnknown;
         }
 
+        @Override
+        public String[] getDatabaseNames(ToBeInvestigated t) {
+            return t.databaseNames();
+        }
+
     };
 
     private interface Skipper<T extends Annotation> {
@@ -352,6 +385,8 @@ public class SkipBugzillaTestRunner extends BlockJUnit4ClassRunner {
         boolean skipOthers();
 
         Class<? extends DatabasePlatform>[] getDatabases(T t);
+        
+        String[] getDatabaseNames(T t);
     }
 
 

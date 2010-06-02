@@ -25,7 +25,12 @@ import org.eclipse.persistence.platform.database.DatabasePlatform;
 public @interface ToBeInvestigated {
 
     /**
-     * The databases on which this test should be skipped. Default: skip on all databases
+     * The database platform classes on which this test should be skipped. Default: skip on all databases
      */
     Class<? extends DatabasePlatform>[] databases() default {};
+    
+    /**
+     * The fully qualified names of the database platforms on which this test should be skipped. Default: skip on all databases.
+     */
+    String[] databaseNames() default {};
 }

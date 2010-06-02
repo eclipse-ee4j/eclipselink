@@ -31,7 +31,7 @@ import org.junit.Test;
 public class TestSequence extends JPA1Base {
 
     @Test
-    @Skip(databases = MySQLPlatform.class)
+    @Skip(databaseNames = "org.eclipse.persistence.platform.database.MySQLPlatform")
     public void testPersist() {
         JPAEnvironment env = getEnvironment();
         EntityManager em = env.getEntityManager();
