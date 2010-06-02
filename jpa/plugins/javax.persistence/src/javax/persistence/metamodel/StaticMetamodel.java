@@ -33,7 +33,7 @@ import java.lang.annotation.Target;
 public @interface StaticMetamodel {
 
     /** 
-     * Class being modeled by the annotated class.
+     * Class being modelled by the annotated class.
      */
     Class<?> value();
 }

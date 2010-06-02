@@ -36,7 +36,7 @@ import org.eclipse.persistence.annotations.FetchGroup;
 @DiscriminatorColumn(name="GEAR_TYPE")
 @DiscriminatorValue("HOG")
 @FetchGroup(name="MSRP", attributes={@FetchAttribute(name="msrp")})
-public abstract class HockeyGear {
+public abstract class HockeyGear extends Gear {
     @Basic
     @Column(name="MSRP")
     public Double msrp;

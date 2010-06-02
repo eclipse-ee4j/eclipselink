@@ -44,8 +44,8 @@ public abstract class TypeImpl<X> implements Type<X>, Serializable {
     
     protected TypeImpl(Class<X> javaClass) {
         // 303063: secondary check for case where descriptor has no java class set - should never happen but should be warned about
-        if(null == javaClass) {
-            AbstractSessionLog.getLog().log(SessionLog.FINEST, "metamodel_typeImpl_javaClass_should_not_be_null", this);
+        if(null == javaClass) { 
+            AbstractSessionLog.getLog().log(SessionLog.FINEST, "metamodel_typeImpl_javaClass_should_not_be_null", this); // exporting (this) outside the constructor breaks concurrency
         }        
         this.javaClass = javaClass;
     }

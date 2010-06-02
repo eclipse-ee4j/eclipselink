@@ -30,7 +30,7 @@ public interface Attribute<X, Y> {
 	     /** Many-to-one association */
 	     MANY_TO_ONE, 
 
-     	     /** One-to-one association */
+     	 /** One-to-one association */
 	     ONE_TO_ONE, 
 	     
 	     /** Basic attribute */

@@ -42,6 +42,10 @@
  *     08/19/2009-2.0  mobrien - 266912: ManagedType.getDeclaredX() leaks members into entity-entity hierarchy  
  *       - see design issue #61
  *       http://wiki.eclipse.org/EclipseLink/Development/JPA_2.0/metamodel_api#DI_61:_20090820:_ManagedType.getDeclaredX.28.29_leaks_members_into_entity-entity_hierarchy
+ *     06/01/2010-2.1  mobrien - 315287: Handle BasicType as inheritance root for ManagedTypes  
+ *       - see design issue #103
+ *       http://wiki.eclipse.org/EclipseLink/Development/JPA_2.0/metamodel_api#DI_103:_20100601:_315287:_Handle_BasicType_as_inheritance_root_for_ManagedTypes
+ *       
  ******************************************************************************/
 package org.eclipse.persistence.internal.jpa.metamodel;
 
@@ -747,6 +751,7 @@ public abstract class ManagedTypeImpl<X> extends TypeImpl<X> implements ManagedT
      * INTERNAL:
      * Return the ManagedType that represents the superType (superclass) of 
      * the current ManagedType.
+     * If the superType is a BasicType - return null
      * 
      * @return ManagedType supertype or null if no superclass
      */
@@ -756,9 +761,9 @@ public abstract class ManagedTypeImpl<X> extends TypeImpl<X> implements ManagedT
         // Get the superType if it exists (without using IdentifiableType.superType)
         Class aSuperClass = this.getJavaType().getSuperclass();
         // The superclass for top-level types will be Object - which we will leave as a null supertype on the type
-        if(null != aSuperClass && aSuperClass != ClassConstants.OBJECT) {
-            // Get the managedType from the metamodel
-            aSuperType = (ManagedTypeImpl<?>)this.getMetamodel().managedType(aSuperClass);            
+        if(null != aSuperClass && aSuperClass != ClassConstants.OBJECT &&
+                this.getMetamodel().getType(aSuperClass).isManagedType()) { // 315287: return null for BasicType
+                aSuperType = (ManagedTypeImpl<?>)this.getMetamodel().managedType(aSuperClass);
         }
         return aSuperType;
     }
@@ -1053,11 +1058,11 @@ public abstract class ManagedTypeImpl<X> extends TypeImpl<X> implements ManagedT
          *     Exit(false) as soon as attribute is found in a superType - without continuing to the root
          *     continue as long as we find an attribute in the superType (essentially only MappedSuperclass parents)          
          **/
-        Attribute anAttribute = this.getMembers().get(attributeName);
+        Attribute anAttribute = this.getMembers().get(attributeName); 
         ManagedTypeImpl<?> aSuperType = getManagedSuperType();        
         
         // Base Case: If we are at the root, check for the attribute and return results immediately
-        if(null == aSuperType) {
+        if(null == aSuperType) { // 315287: the superType will be null if the root is a BasicType (non-Entity|non-MappedSuperclass)
             if(null == anAttribute && null != firstLevelAttribute) { 
                 return true; 
             } else {
