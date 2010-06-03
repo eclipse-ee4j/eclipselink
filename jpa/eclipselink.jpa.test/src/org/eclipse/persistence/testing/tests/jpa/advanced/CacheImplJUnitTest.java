@@ -791,5 +791,5 @@ public class CacheImplJUnitTest extends JUnitTestCase {
     }
     
     // 20100422: 248780: CacheImpl refactor for non-Entity classes
-    public static int ID_TEST_BASE = 3694; // change this value during iterative testing
+    public static int ID_TEST_BASE = 3698; // change this value during iterative testing
 }

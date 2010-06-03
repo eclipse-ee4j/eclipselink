@@ -10,7 +10,7 @@
  * Contributors:
  *     12/04/2008 - 2.0 Darani Yallapragada 
  *       - 248780: Initial contribution for JPA 2.0
- *     04/22/2010 - 2.1 Michael O'Brien 
+ *     06/03/2010 - 2.1 Michael O'Brien 
  *       - 248780: Refactor Cache Implementation surrounding evict()
  *         Fix evict() to handle non-Entity classes
  *         Refactor to get IdentityMapAccessor state through EMF reference
@@ -86,8 +86,7 @@ public class CacheImpl implements JpaCache {
      */
     private void evictAssignableEntitySuperclass(Class possibleSuperclass, Object id) {
         // just remove the parent entity
-        for(Object aDescriptor : getSession().getDescriptors().values()) { // Refactor this to return a ClassDescriptor when Project uses generics
-            ClassDescriptor candidateAssignableDescriptor = (ClassDescriptor)aDescriptor;
+        for(ClassDescriptor candidateAssignableDescriptor : getSession().getDescriptors().values()) {
             // In EclipseLink we need only remove the root descriptor that is assignable from this possibleSubclass because the recurse flag defaults to true in invalidateClass()
             // what if we have 2 roots (don't check for !candidateAssignableDescriptor.isChildDescriptor())
             if(!candidateAssignableDescriptor.isAggregateDescriptor() && // a !Embeddable check
