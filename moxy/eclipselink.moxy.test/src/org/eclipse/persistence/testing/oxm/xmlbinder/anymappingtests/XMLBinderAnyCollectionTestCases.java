@@ -83,7 +83,7 @@ public class XMLBinderAnyCollectionTestCases extends OXTestCase {
         assertXMLIdentical(controlDocument, binder.getXMLNode(root).getOwnerDocument());
     }
     
- 
+/*
     public void testUpdateObjectRoot() throws Exception {
         Document sourceDocument = parse("org/eclipse/persistence/testing/oxm/xmlbinder/anymappingtests/anycollectionupdateobject.xml");
         AnyCollectionRoot controlRoot = getControlRoot();
@@ -98,7 +98,7 @@ public class XMLBinderAnyCollectionTestCases extends OXTestCase {
         
         assertTrue(root.equals(controlRoot));
     }
-    
+*/
     public void testUpdateObjectChild() throws Exception {
         Document sourceDocument = parse("org/eclipse/persistence/testing/oxm/xmlbinder/anymappingtests/anycollectionupdateobject.xml");
         AnyCollectionChild controlChild = getControlChild();
