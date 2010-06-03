@@ -25,7 +25,7 @@ import org.eclipse.persistence.internal.indirection.*;
 import org.eclipse.persistence.internal.sessions.*;
 import org.eclipse.persistence.queries.*;
 import org.eclipse.persistence.sessions.remote.*;
-import org.eclipse.persistence.sessions.ObjectCopyingPolicy;
+import org.eclipse.persistence.sessions.CopyGroup;
 import org.eclipse.persistence.sessions.Project;
 
 /**
@@ -81,13 +81,14 @@ public abstract class ObjectReferenceMapping extends ForeignReferenceMapping {
      * Copy of the attribute of the object.
      * This is NOT used for unit of work but for templatizing an object.
      */
-    public void buildCopy(Object copy, Object original, ObjectCopyingPolicy policy) {
-        Object attributeValue = getRealAttributeValueFromObject(original, policy.getSession());
-        if ((attributeValue != null) && (policy.shouldCascadeAllParts() || (policy.shouldCascadePrivateParts() && isPrivateOwned()))) {
-            attributeValue = policy.getSession().copyObject(attributeValue, policy);
+    @Override
+    public void buildCopy(Object copy, Object original, CopyGroup group) {
+        Object attributeValue = getRealAttributeValueFromObject(original, group.getSession());
+        if ((attributeValue != null) && (group.shouldCascadeAllParts() || (group.shouldCascadePrivateParts() && isPrivateOwned()) || group.shouldCascadeTree())) {
+            attributeValue = group.getSession().copyInternal(attributeValue, group);
         } else if (attributeValue != null) {
             // Check for copy of part, i.e. back reference.
-            Object copyValue = policy.getCopies().get(attributeValue);
+            Object copyValue = group.getCopies().get(attributeValue);
             if (copyValue != null) {
                 attributeValue = copyValue;
             }

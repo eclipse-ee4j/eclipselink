@@ -194,4 +194,14 @@ public class FetchGroup extends AttributeGroup {
     public FetchGroup getGroup(String attributeNameOrPath) {
         return (FetchGroup)super.getGroup(attributeNameOrPath);
     }
+
+    @Override
+    public AttributeItem addAttribute(String attributeNameOrPath, AttributeGroup group) {
+        return super.addAttribute(attributeNameOrPath, (group != null ? group.toFetchGroup() : null));
+    }
+
+    public AttributeItem addAttribute(String attributeNameOrPath, FetchGroup group) {
+        return super.addAttribute(attributeNameOrPath, group);
+    }
+
 }

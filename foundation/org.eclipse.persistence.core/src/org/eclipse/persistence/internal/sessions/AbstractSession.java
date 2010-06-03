@@ -31,6 +31,7 @@ import org.eclipse.persistence.internal.databaseaccess.Accessor;
 import org.eclipse.persistence.internal.databaseaccess.Platform;
 import org.eclipse.persistence.internal.descriptors.*;
 import org.eclipse.persistence.exceptions.*;
+import org.eclipse.persistence.sessions.CopyGroup;
 import org.eclipse.persistence.sessions.ObjectCopyingPolicy;
 import org.eclipse.persistence.sessions.SessionProfiler;
 import org.eclipse.persistence.sessions.SessionEventManager;
@@ -740,15 +741,88 @@ public abstract class AbstractSession implements org.eclipse.persistence.session
 
     /**
      * PUBLIC:
+     * Return a complete copy of the object or of collection of objects.
+     * In case of collection all members should be either entities of the same type
+     * or have a common inheritance hierarchy mapped root class.
+     * This can be used to obtain a scratch copy of an object,
+     * or for templatizing an existing object into another new object.
+     * The object and all of its privately owned parts will be copied.
+     *
+     * @see #copy(Object, CopyGroup)
+     */
+    public Object copy(Object originalObjectOrObjects) {
+        return copy(originalObjectOrObjects, new CopyGroup());
+    }
+
+    /**
+     * PUBLIC:
+     * Return a complete copy of the object or of collection of objects.
+     * In case of collection all members should be either entities of the same type
+     * or have a common inheritance hierarchy mapped root class.
+     * This can be used to obtain a scratch copy of an object,
+     * or for templatizing an existing object into another new object.
+     * If there are no attributes in the group 
+     * then the object and all of its privately owned parts will be copied.
+     * Otherwise only the attributes included into the group will be copied.
+     */
+    public Object copy(Object originalObjectOrObjects, AttributeGroup group) {
+        if (originalObjectOrObjects == null) {
+            return null;
+        }
+
+        CopyGroup copyGroup = group.toCopyGroup();
+        copyGroup.setSession(this);
+        if(originalObjectOrObjects instanceof Collection) {
+            // it's a collection - make sure all elements use the same instance of CopyGroup.
+            Collection originalCollection = (Collection)originalObjectOrObjects;
+            Collection copies;
+            if(originalCollection instanceof List) {
+                copies = new ArrayList();
+            } else {
+                copies = new HashSet();
+            }
+            Iterator it = originalCollection.iterator();
+            while(it.hasNext()) {
+                copies.add(copyInternal(it.next(), copyGroup));
+            }
+            return copies;
+        }
+
+        // it's not a collection
+        return copyInternal(originalObjectOrObjects, copyGroup);
+    }
+
+    /**
+     * INTERNAL:
+     */
+    public Object copyInternal(Object originalObject, CopyGroup copyGroup) {
+        if (originalObject == null) {
+            return null;
+        }
+
+        ClassDescriptor descriptor = getDescriptor(originalObject);
+        if (descriptor == null) {
+            return originalObject;
+        }
+
+        return descriptor.getObjectBuilder().copyObject(originalObject, copyGroup);
+    }
+
+    /**
+     * PUBLIC:
      * Return a complete copy of the object.
      * This can be used to obtain a scratch copy of an object,
      * or for templatizing an existing object into another new object.
      * The object and all of its privately owned parts will be copied, the object's primary key will be reset to null.
      *
      * @see #copyObject(Object, ObjectCopyingPolicy)
+     * @deprecated since EclipseLink 2.1, replaced by copy(Object)
+     * @see #copy(Object)
      */
     public Object copyObject(Object original) {
-        return copyObject(original, new ObjectCopyingPolicy());
+        CopyGroup copyGroup = new CopyGroup();
+        copyGroup.setShouldResetPrimaryKey(true);
+        return copy(original, copyGroup);
     }
 
     /**
@@ -757,19 +831,11 @@ public abstract class AbstractSession implements org.eclipse.persistence.session
      * This can be used to obtain a scratch copy of an object,
      * or for templatizing an existing object into another new object.
      * The object copying policy allow for the depth, and reseting of the primary key to null, to be specified.
+     * @deprecated since EclipseLink 2.1, replaced by copy(Object, AttributeGroup)
+     * @see #copy(Object, AttributeGroup)
      */
     public Object copyObject(Object original, ObjectCopyingPolicy policy) {
-        if (original == null) {
-            return null;
-        }
-
-        ClassDescriptor descriptor = getDescriptor(original);
-        if (descriptor == null) {
-            return original;
-        }
-
-        policy.setSession(this);
-        return descriptor.getObjectBuilder().copyObject(original, policy);
+        return copy(original, policy);
     }
 
     /**

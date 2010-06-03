@@ -30,7 +30,7 @@ import org.eclipse.persistence.internal.security.PrivilegedClassForName;
 import org.eclipse.persistence.internal.sessions.*;
 import org.eclipse.persistence.queries.*;
 import org.eclipse.persistence.sessions.remote.*;
-import org.eclipse.persistence.sessions.ObjectCopyingPolicy;
+import org.eclipse.persistence.sessions.CopyGroup;
 import org.eclipse.persistence.internal.queries.JoinedAttributeManager;
 
 /**
@@ -188,20 +188,21 @@ public abstract class AggregateMapping extends DatabaseMapping {
      * Copy of the attribute of the object.
      * This is NOT used for unit of work but for templatizing an object.
      */
-    public void buildCopy(Object copy, Object original, ObjectCopyingPolicy policy) {
+    @Override
+    public void buildCopy(Object copy, Object original, CopyGroup group) {
         Object attributeValue = getAttributeValueFromObject(original);
-        setAttributeValueInObject(copy, buildCopyOfAttributeValue(attributeValue, policy));
+        setAttributeValueInObject(copy, buildCopyOfAttributeValue(attributeValue, group));
     }
 
     /**
      * Copy of the attribute of the object.
      * This is NOT used for unit of work but for templatizing an object.
      */
-    protected Object buildCopyOfAttributeValue(Object attributeValue, ObjectCopyingPolicy policy) {
+    protected Object buildCopyOfAttributeValue(Object attributeValue, CopyGroup group) {
         if (attributeValue == null) {
             return null;
         }
-        return getObjectBuilder(attributeValue, policy.getSession()).copyObject(attributeValue, policy);
+        return getObjectBuilder(attributeValue, group.getSession()).copyObject(attributeValue, group);
     }
 
     /**

@@ -35,7 +35,7 @@ import org.eclipse.persistence.internal.sessions.remote.*;
 import org.eclipse.persistence.internal.sessions.*;
 import org.eclipse.persistence.queries.*;
 import org.eclipse.persistence.sessions.remote.*;
-import org.eclipse.persistence.sessions.ObjectCopyingPolicy;
+import org.eclipse.persistence.sessions.CopyGroup;
 import org.eclipse.persistence.sessions.Project;
 
 /**
@@ -204,7 +204,7 @@ public abstract class DatabaseMapping implements Cloneable, Serializable {
      * Copy of the attribute of the object.
      * This is NOT used for unit of work but for templatizing an object.
      */
-    public void buildCopy(Object copy, Object original, ObjectCopyingPolicy policy) {
+    public void buildCopy(Object copy, Object original, CopyGroup group) {
     }
 
     /**

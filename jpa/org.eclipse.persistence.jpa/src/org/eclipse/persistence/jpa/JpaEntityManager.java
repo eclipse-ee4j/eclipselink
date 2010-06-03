@@ -99,4 +99,12 @@ public interface JpaEntityManager extends javax.persistence.EntityManager {
      * The AttributeGroup should correspond to the entity type. 
      */
     public void load(Object entityOrEntities, AttributeGroup group);
+
+    /**
+     * This method will return copy the passed entity using the passed AttributeGroup.
+     * In case of collection all members should be either entities of the same type
+     * or have a common inheritance hierarchy mapped root class.
+     * The AttributeGroup should correspond to the entity type. 
+     */
+    public Object copy(Object entityOrEntities, AttributeGroup group);
 }

@@ -18,6 +18,7 @@ import java.util.Iterator;
 
 import org.eclipse.persistence.internal.descriptors.DescriptorIterator;
 import org.eclipse.persistence.internal.descriptors.ObjectBuilder;
+import org.eclipse.persistence.internal.queries.AttributeItem;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.mappings.DatabaseMapping;
 
@@ -88,5 +89,14 @@ public class LoadGroup extends AttributeGroup {
     @Override
     public LoadGroup getGroup(String attributeNameOrPath) {
         return (LoadGroup)super.getGroup(attributeNameOrPath);
+    }
+
+    @Override
+    public AttributeItem addAttribute(String attributeNameOrPath, AttributeGroup group) {
+        return super.addAttribute(attributeNameOrPath, (group != null ? group.toLoadGroup() : null));
+    }
+
+    public AttributeItem addAttribute(String attributeNameOrPath, LoadGroup group) {
+        return super.addAttribute(attributeNameOrPath, group);
     }
  }

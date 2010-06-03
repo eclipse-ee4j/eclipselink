@@ -39,6 +39,7 @@ import org.eclipse.persistence.internal.helper.*;
 import org.eclipse.persistence.internal.identitymaps.*;
 import org.eclipse.persistence.internal.indirection.ProxyIndirectionPolicy;
 import org.eclipse.persistence.internal.queries.ContainerPolicy;
+import org.eclipse.persistence.internal.queries.EntityFetchGroup;
 import org.eclipse.persistence.internal.queries.JoinedAttributeManager;
 import org.eclipse.persistence.internal.sessions.*;
 import org.eclipse.persistence.logging.SessionLog;
@@ -48,7 +49,7 @@ import org.eclipse.persistence.mappings.foundation.*;
 import org.eclipse.persistence.queries.*;
 import org.eclipse.persistence.mappings.querykeys.*;
 import org.eclipse.persistence.sessions.remote.*;
-import org.eclipse.persistence.sessions.ObjectCopyingPolicy;
+import org.eclipse.persistence.sessions.CopyGroup;
 import org.eclipse.persistence.sessions.SessionProfiler;
 import org.eclipse.persistence.sessions.DatabaseRecord;
 
@@ -764,7 +765,7 @@ public class ObjectBuilder implements Cloneable, Serializable {
                     cacheHit = false;
                     // The fetched object is not sufficient for the fetch group of the query 
                     // refresh attributes of the query's fetch group.
-                    concreteDescriptor.getFetchGroupManager().unionFetchGroupIntoObject(domainObject, query.getEntityFetchGroup(), session);
+                    concreteDescriptor.getFetchGroupManager().unionEntityFetchGroupIntoObject(domainObject, query.getEntityFetchGroup(), session);
                     concreteDescriptor.getObjectBuilder().buildAttributesIntoObject(domainObject, databaseRow, query, joinManager, false);
                 }
                 // 3655915: a query with join/batch'ing that gets a cache hit
@@ -1741,54 +1742,160 @@ public class ObjectBuilder implements Cloneable, Serializable {
      * This is NOT used for unit of work but for templatizing an object.
      * The depth and primary key reseting are passed in.
      */
-    public Object copyObject(Object original, ObjectCopyingPolicy policy) {
-        Object copy = policy.getCopies().get(original);
-        if (copy != null) {
-            return copy;
-        }
-
-        copy = instantiateClone(original, policy.getSession());
-        policy.getCopies().put(original, copy);
-
-        // PERF: Avoid synchronized enumerator as is concurrency bottleneck.
-        List mappings = getCloningMappings();
-        int size = mappings.size();
-        for (int index = 0; index < size; index++) {
-            ((DatabaseMapping)mappings.get(index)).buildCopy(copy, original, policy);
-        }
-
-        if (policy.shouldResetPrimaryKey() && (!(this.descriptor.isDescriptorTypeAggregate()))) {
-            // Do not reset if any of the keys is mapped through a 1-1, i.e. back reference id has already changed.
-            boolean hasOneToOne = false;
-            List primaryKeyMappings = getPrimaryKeyMappings();
-            size = primaryKeyMappings.size();
-            for (int index = 0; index < size; index++) {
-                if (((DatabaseMapping)primaryKeyMappings.get(index)).isOneToOneMapping()) {
-                    hasOneToOne = true;
+    public Object copyObject(Object original, CopyGroup copyGroup) {
+        Object copy = copyGroup.getCopies().get(original);
+        if(copyGroup.shouldCascadeTree()) {
+            FetchGroupManager fetchGroupManager = getDescriptor().getFetchGroupManager();
+            if(fetchGroupManager != null) {
+                // Entity fetch group currently set on copyObject
+                EntityFetchGroup existingEntityFetchGroup = null;
+                if (copy != null) {
+                    Object[] copyArray = (Object[])copy;
+                    // copy of the original
+                    copy = copyArray[0];
+                    // A set of CopyGroups that have visited.
+                    Set<CopyGroup> visitedCopyGroups = (Set<CopyGroup>)copyArray[1];
+                    
+                    if(visitedCopyGroups.contains(copyGroup)) {
+                        // original has been already visited with this copyGroup - leave
+                        return copy;
+                    } else {
+                        visitedCopyGroups.add(copyGroup);
+                    }
+                    
+                    existingEntityFetchGroup = fetchGroupManager.getObjectEntityFetchGroup(copy);
                 }
-            }
-            if (!hasOneToOne) {
-                for (int index = 0; index < size; index++) {
-                    DatabaseMapping mapping = (DatabaseMapping)primaryKeyMappings.get(index);
+                
+                // Entity fetch group that will be assigned to copyObject
+                EntityFetchGroup newEntityFetchGroup = null;
+                // Attributes to be visited - only reference mappings will be visited.
+                // If null then all attributes should be visited.
+                Set<String> attributesToVisit = copyGroup.getAttributeNames();
+                // Attributes to be copied
+                Set<String> attributesToCopy = attributesToVisit;
+                boolean shouldCopyAllAttributes = false;
+                boolean shouldAssignNewEntityFetchGroup = false;
+                if(copy != null && existingEntityFetchGroup == null) {
+                    // all attributes have been already copied
+                    attributesToCopy = null;
+                } else {
+                    // Entity fetch group corresponding to copyPolicy.
+                    // Note that empty, or null, or containing all arguments attributesToCopy
+                    // results in copyGroupFetchGroup = null;
+                    EntityFetchGroup copyGroupEntityFetchGroup = fetchGroupManager.getEntityFetchGroup(attributesToCopy);
+                    if(copyGroupEntityFetchGroup == null) {
+                        // all attributes will be copied
+                        shouldCopyAllAttributes = true;
+                    }
 
-                    // Only null out direct mappings, as others will be nulled in the respective objects.
-                    if (mapping.isDirectToFieldMapping()) {
-                        Object nullValue = ((AbstractDirectMapping)mapping).getAttributeValue(null, policy.getSession());
-                        mapping.setAttributeValueInObject(copy, nullValue);
-                    } else if (mapping.isTransformationMapping()) {
-                        mapping.setAttributeValueInObject(copy, null);
+                    if(copy != null) {
+                        if(copyGroupEntityFetchGroup != null) {
+                            if(!existingEntityFetchGroup.getAttributeNames().containsAll(attributesToCopy)) {
+                                // Entity fetch group that will be assigned to copy object
+                                newEntityFetchGroup = fetchGroupManager.flatUnionFetchGroups(existingEntityFetchGroup, copyGroupEntityFetchGroup);
+                                shouldAssignNewEntityFetchGroup = true;
+                            }
+                            attributesToCopy = new HashSet(attributesToCopy);
+                            attributesToCopy.removeAll(existingEntityFetchGroup.getAttributeNames());
+                        }
+                    } else {
+                        // copy does not exist - create it
+                        copy = copyGroup.getSession().getDescriptor(original).getObjectBuilder().buildNewInstance();
+                        Set<CopyGroup> visitedCopyGroups = new HashSet();
+                        visitedCopyGroups.add(copyGroup);
+                        copyGroup.getCopies().put(original, new Object[]{copy, visitedCopyGroups});
+                        newEntityFetchGroup = copyGroupEntityFetchGroup;
+                        shouldAssignNewEntityFetchGroup = true;
+                    }
+                }
+                if(shouldAssignNewEntityFetchGroup) {
+                    fetchGroupManager.setObjectFetchGroup(copy, newEntityFetchGroup, null);
+                }
+
+                for (DatabaseMapping mapping : getDescriptor().getMappings()) {
+                    String name = mapping.getAttributeName();
+                    boolean shouldCopy = shouldCopyAllAttributes || (attributesToCopy != null && attributesToCopy.contains(name));
+                    boolean shouldVisit = attributesToVisit == null || attributesToVisit.contains(name);
+                    if(shouldCopy || shouldVisit) {
+                        // unless it's a reference mapping pass copyGroup - just to carry the session.
+                        CopyGroup mappingCopyGroup = copyGroup;
+                        if(mapping.isForeignReferenceMapping()) {
+                            ForeignReferenceMapping frMapping = (ForeignReferenceMapping)mapping;
+                            ClassDescriptor referenceDescriptor = frMapping.getReferenceDescriptor();
+                            if(referenceDescriptor != null) {
+                                mappingCopyGroup = copyGroup.getGroup(name);
+                                if(mappingCopyGroup == null) {
+                                    FetchGroupManager referenceFetchGroupManager = referenceDescriptor.getFetchGroupManager();
+                                    if(referenceFetchGroupManager != null) {
+                                        mappingCopyGroup = referenceFetchGroupManager.getNonReferenceEntityFetchGroup().toCopyGroup(); 
+                                    } else {
+                                        // TODO: would that work?
+                                        mappingCopyGroup = new CopyGroup();
+                                        mappingCopyGroup.dontCascade();
+                                    }
+                                    mappingCopyGroup.setCopies(copyGroup.getCopies());
+                                }
+                                mappingCopyGroup.setSession(copyGroup.getSession());
+                            }
+                        }
+                        // TODO: optimization - redefine buildCopy to take shouldCopy and don't copy if not required.
+                        mapping.buildCopy(copy, original, mappingCopyGroup);
+                    }
+                }
+            } else {
+                // fetchGroupManager == null
+                // TODO
+            }
+
+        } else {
+            // ! copyGroup.shouldCascadeTree()
+            if (copy != null) {
+                return copy;
+            }
+    
+            copy = instantiateClone(original, copyGroup.getSession());
+            copyGroup.getCopies().put(original, copy);
+    
+            // PERF: Avoid synchronized enumerator as is concurrency bottleneck.
+            List mappings = getCloningMappings();
+            int size = mappings.size();
+            for (int index = 0; index < size; index++) {
+                ((DatabaseMapping)mappings.get(index)).buildCopy(copy, original, copyGroup);
+            }
+    
+            if (copyGroup.shouldResetPrimaryKey() && (!(this.descriptor.isDescriptorTypeAggregate()))) {
+                // Do not reset if any of the keys is mapped through a 1-1, i.e. back reference id has already changed.
+                boolean hasOneToOne = false;
+                List primaryKeyMappings = getPrimaryKeyMappings();
+                size = primaryKeyMappings.size();
+                for (int index = 0; index < size; index++) {
+                    if (((DatabaseMapping)primaryKeyMappings.get(index)).isOneToOneMapping()) {
+                        hasOneToOne = true;
+                    }
+                }
+                if (!hasOneToOne) {
+                    for (int index = 0; index < size; index++) {
+                        DatabaseMapping mapping = (DatabaseMapping)primaryKeyMappings.get(index);
+    
+                        // Only null out direct mappings, as others will be nulled in the respective objects.
+                        if (mapping.isDirectToFieldMapping()) {
+                            Object nullValue = ((AbstractDirectMapping)mapping).getAttributeValue(null, copyGroup.getSession());
+                            mapping.setAttributeValueInObject(copy, nullValue);
+                        } else if (mapping.isTransformationMapping()) {
+                            mapping.setAttributeValueInObject(copy, null);
+                        }
                     }
                 }
             }
-        }
-
-        // PERF: Avoid events if no listeners.
-        if (this.descriptor.getEventManager().hasAnyEventListeners()) {
-            org.eclipse.persistence.descriptors.DescriptorEvent event = new org.eclipse.persistence.descriptors.DescriptorEvent(copy);
-            event.setSession(policy.getSession());
-            event.setOriginalObject(original);
-            event.setEventCode(DescriptorEventManager.PostCloneEvent);
-            this.descriptor.getEventManager().executeEvent(event);
+    
+            // PERF: Avoid events if no listeners.
+            if (this.descriptor.getEventManager().hasAnyEventListeners()) {
+                org.eclipse.persistence.descriptors.DescriptorEvent event = new org.eclipse.persistence.descriptors.DescriptorEvent(copy);
+                event.setSession(copyGroup.getSession());
+                event.setOriginalObject(original);
+                event.setEventCode(DescriptorEventManager.PostCloneEvent);
+                this.descriptor.getEventManager().executeEvent(event);
+            }
         }
 
         return copy;
@@ -2875,10 +2982,10 @@ public class ObjectBuilder implements Cloneable, Serializable {
         // for GF#1139 Cascade merge operations to relationship mappings even if already registered
         
         FetchGroup sourceFetchGroup = null;
-        FetchGroup targetFetchGroup = null;
+//        FetchGroup targetFetchGroup = null;
         if(this.descriptor.hasFetchGroupManager()) {
             sourceFetchGroup = this.descriptor.getFetchGroupManager().getObjectFetchGroup(source);
-            targetFetchGroup = this.descriptor.getFetchGroupManager().getObjectFetchGroup(target);
+//            targetFetchGroup = this.descriptor.getFetchGroupManager().getObjectFetchGroup(target);
         }
         // PERF: Avoid synchronized enumerator as is concurrency bottleneck.
         List mappings = this.descriptor.getMappings();

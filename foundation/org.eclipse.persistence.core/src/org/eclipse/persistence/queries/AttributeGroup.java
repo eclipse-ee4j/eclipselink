@@ -21,6 +21,7 @@ import java.util.Map;
 import java.util.Set;
 
 import org.eclipse.persistence.internal.queries.AttributeItem;
+import org.eclipse.persistence.sessions.CopyGroup;
 
 /**
  * <b>Purpose</b>: Base class for FetchGroup and LoadGroup.
@@ -372,6 +373,31 @@ public class AttributeGroup implements Serializable, Cloneable {
             }
         }
         return fetchGroup;
+    }
+    
+    public boolean isCopyGroup() {
+        return false;
+    }
+
+    public CopyGroup toCopyGroup() {
+        if(isCopyGroup()) {
+            return (CopyGroup)this;
+        }
+        CopyGroup copyGroup = new CopyGroup(getName());
+        copyGroup.cascadeTree();
+        if(this.hasItems()) {
+            Iterator<Map.Entry<String, AttributeItem>> it = getItems().entrySet().iterator();
+            while(it.hasNext()) {
+                Map.Entry<String, AttributeItem> entry = it.next();
+                AttributeGroup group = entry.getValue().getGroup();
+                if(group == null) {
+                    copyGroup.addAttribute(entry.getKey());
+                } else {
+                    copyGroup.addAttribute(entry.getKey(), group.toCopyGroup());
+                }
+            }
+        }
+        return copyGroup;
     }
     
     public boolean isLoadGroup() {

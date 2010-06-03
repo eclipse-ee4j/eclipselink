@@ -12,8 +12,10 @@
  ******************************************************************************/
 package org.eclipse.persistence.testing.tests.jpa.fetchgroups;
 
-import java.util.HashSet;
+import java.util.IdentityHashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 import javax.persistence.EntityManager;
 import javax.persistence.Query;
@@ -21,9 +23,11 @@ import javax.persistence.Query;
 import junit.framework.TestSuite;
 
 import org.eclipse.persistence.config.QueryHints;
+import org.eclipse.persistence.internal.helper.IdentityHashSet;
 import org.eclipse.persistence.internal.jpa.EntityManagerImpl;
 import org.eclipse.persistence.internal.queries.EntityFetchGroup;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
+import org.eclipse.persistence.jpa.JpaHelper;
 import org.eclipse.persistence.queries.FetchGroup;
 import org.eclipse.persistence.queries.FetchGroupTracker;
 import org.eclipse.persistence.queries.LoadGroup;
@@ -61,9 +65,9 @@ public class NestedFetchGroupTests extends BaseFetchGroupTests {
         suite.addTest(new NestedFetchGroupTests("dynamicFetchGroup_EmployeeAddressEmptyPhone"));
         suite.addTest(new NestedFetchGroupTests("dynamicFetchGroup_EmployeeAddressEmptyPhoneLoad"));
         suite.addTest(new NestedFetchGroupTests("dynamicHierarchicalFetchGroup"));
-// commented out until merge with cache is fixed
-//        suite.addTest(new NestedFetchGroupTests("dynamicHierarchicalFetchGroup_JOIN_FETCH"));
-        suite.addTest(new NestedFetchGroupTests("managerDoubleNestedFetchGroupWithJoinFetch"));
+//**temp        suite.addTest(new NestedFetchGroupTests("dynamicHierarchicalFetchGroup_JOIN_FETCH"));
+        suite.addTest(new NestedFetchGroupTests("dynamicHierarchicalFetchGroup_JOIN_FETCH_Copy"));
+//**temp        suite.addTest(new NestedFetchGroupTests("managerDoubleNestedFetchGroupWithJoinFetch"));
         suite.addTest(new NestedFetchGroupTests("managerTripleNestedFetchGroupWithJoinFetch"));
         suite.addTest(new NestedFetchGroupTests("allNestedFetchGroupWithJoinFetch"));
         suite.addTest(new NestedFetchGroupTests("joinFetchDefaultFetchGroup"));
@@ -406,6 +410,15 @@ public class NestedFetchGroupTests extends BaseFetchGroupTests {
 
     @Test
     public void dynamicHierarchicalFetchGroup_JOIN_FETCH() throws Exception {
+        internalDynamicHierarchicalFetchGroup_JOIN_FETCH(false);
+    }
+
+    @Test
+    public void dynamicHierarchicalFetchGroup_JOIN_FETCH_Copy() throws Exception {
+        internalDynamicHierarchicalFetchGroup_JOIN_FETCH(true);
+    }
+
+    void internalDynamicHierarchicalFetchGroup_JOIN_FETCH(boolean useCopy) throws Exception {
 
         EntityManager em = createEntityManager();
         
@@ -426,41 +439,127 @@ public class NestedFetchGroupTests extends BaseFetchGroupTests {
         // applied to the manager of a selected Employee who is not selected as an Employee
         FetchGroup managerFG = new EntityFetchGroup(new String[]{"id", "version", "firstName", "salary", "manager"});
         // applied to the object which is both selected as an Employee and the manager of another selected Employee
-        FetchGroup employeeManagerFG = employeeDescriptor.getFetchGroupManager().unionFetchGroups(employeeFG, managerFG); 
+        FetchGroup employeeManagerFG = employeeDescriptor.getFetchGroupManager().flatUnionFetchGroups(employeeFG, managerFG); 
+        
+        // used in useCopy case only
+        FetchGroup employeeManagerManagerFG = null;
+        if(useCopy) {
+            employeeManagerManagerFG = employeeDescriptor.getFetchGroupManager().flatUnionFetchGroups(new EntityFetchGroup("manager"), employeeDescriptor.getFetchGroupManager().getNonReferenceEntityFetchGroup()); 
+        }
         
         List<Employee> emps = query.getResultList();
-
-//**temp        assertEquals(1, getQuerySQLTracker(em).getTotalSQLSELECTCalls());
-        //**temp
-        int nSql = getQuerySQLTracker(em).getTotalSQLSELECTCalls();
-
-        HashSet<Integer> employeeIds = new HashSet();
-        HashSet<Integer> managerIds = new HashSet();
-        for (Employee emp : emps) {
-            managerIds.add(emp.getManager().getId());
-            employeeIds.add(emp.getId());
+        
+        if(useCopy) {
+/*            for(Employee emp : emps) {
+                int idHashCode =  System.identityHashCode(emp);
+                System.out.println(emp.getFirstName() + '\t' + idHashCode);
+            }*/
+            emps = (List)JpaHelper.getEntityManager(em).copy(emps, fg);
         }
-        HashSet departmentIds = new HashSet();
+
+        // Sets of managed Employees keyed by their manager
+        Map<Employee, Set<Employee>> managedEmployeesByManager = new IdentityHashMap();
         for (Employee emp : emps) {
-            if(managerIds.contains(emp.getId())) {
-                // employee is a manager of on of selected employees
-                assertFetched(emp, employeeManagerFG);
-            } else {
-                // employee is NOT a manager of on of selected employees
-                assertFetched(emp, employeeFG);
+            Employee manager = emp.getManager(); 
+            Set<Employee> managedEmployees = managedEmployeesByManager.get(manager);
+            if(managedEmployees == null) {
+                managedEmployees = new IdentityHashSet();
+                managedEmployeesByManager.put(manager, managedEmployees);
             }
+            managedEmployees.add(emp);
+        }
+
+        for (Employee emp : emps) {
+            Set<Employee> managedEmployees = managedEmployeesByManager.get(emp);
             Employee manager = emp.getManager();
-            if(employeeIds.contains(manager.getId())) {
-                // the manager is one of selected employees
-                assertFetched(manager, employeeManagerFG);                
+            if(managedEmployees == null) {
+                // employee is NOT a manager of any of the selected employees:
+                assertFetched(emp, employeeFG);
+
+                Set<Employee> managedByManagerEmployees = managedEmployeesByManager.get(manager); 
+                // indicates whether one of manager's managed employees is a manager itself
+                boolean isManagersManager = false;
+                for(Employee managedEmp : managedByManagerEmployees) {
+                    if(managedEmployeesByManager.containsKey(managedEmp)) {
+                        isManagersManager = true;
+                        break;
+                    }
+                }
+                if(isManagersManager) {
+                    if(useCopy) {
+                        // for at least one of the selected employees manager is manager's manager:
+                        //   someSelectedEmp.getManager().getManager() == manager
+                        // That means for someSelectedEmp emp is defined by {manager.manager} FetchGroup's item,
+                        // which means NonReferenceEntityFetchGroup (only non-reference attributes + pk)
+                        // for another employee it's just a manager - which means it should include "manager":
+                        // employeeManagerManagerFG is the union of these two EntityFetchGroups.
+                        assertFetched(manager, employeeManagerManagerFG);
+                    } else {
+                        // for at least one of the selected employees manager is manager's manager:
+                        //   someSelectedEmp.getManager().getManager() == manager
+                        // That means for someSelectedEmp emp is defined by {manager.manager} FetchGroup's item,
+                        // which means no fetch group should be used. 
+                        assertNoFetchGroup(manager);
+                    }
+                } else {
+                    // it's not manager's manager
+                    if(emps.contains(manager)) {
+                        // it's a manager of one of the selected Employees, and selected itself.
+                        assertFetched(manager, employeeManagerFG);
+                    } else {
+                        // it's a manager of one of the selected Employees, but not selected itself.
+                        assertFetched(manager, managerFG);
+                    }
+                }
             } else {
-                // the manager is NOT one of selected employees
-                assertFetched(manager, managerFG);                
-            }
+                // employee is a manager of at least one of the selected employees
+                // indicates whether one of emp's managed employees is a manager itself
+                boolean isManagersManager = false;
+                for(Employee managedEmp : managedEmployees) {
+                    if(managedEmployeesByManager.containsKey(managedEmp)) {
+                        isManagersManager = true;
+                        break;
+                    }
+                }
+                
+                if(isManagersManager) {
+                    if(useCopy) {
+                        // for at least one of the selected employees manager is manager's manager:
+                        //   someSelectedEmp.getManager().getManager() == manager
+                        // That means for someSelectedEmp emp is defined by {manager.manager} FetchGroup's item,
+                        // which means NonReferenceEntityFetchGroup (only non-reference attributes + pk)
+                        // for another employee it's just a manager - which means it should include "manager":
+                        // employeeManagerManagerFG is the union of these two EntityFetchGroups.
+                        assertFetched(emp, employeeManagerManagerFG);
+                    } else {
+                        // for at least one of the selected employees emp is manager's manager:
+                        //   someSelectedEmp.getManager().getManager() == emp
+                        // That means for someSelectedEmp emp is defined by {manager.manager} FetchGroup's item,
+                        // which means no fetch group should be used. 
+                        assertNoFetchGroup(emp);
+                    }
+                } else {
+                    // it's selected employee, manager of some selected employee, but not manager's manager
+                    assertFetched(emp, employeeManagerFG);
+                }
+                
+                if(useCopy) {
+                    // for at least one of the selected employees manager is manager's manager:
+                    //   someSelectedEmp.getManager().getManager() == manager
+                    // That means for someSelectedEmp emp is defined by {manager.manager} FetchGroup's item,
+                    // which means NonReferenceEntityFetchGroup (only non-reference attributes + pk)
+                    // for another employee it's just a manager - which means it should include "manager":
+                    // employeeManagerManagerFG is the union of these two EntityFetchGroups.
+                    assertFetched(manager, employeeManagerManagerFG);
+                } else {
+                    // for at least one of the selected employees manager is manager's manager:
+                    //   someSelectedEmp.getManager().getManager() == manager
+                    // That means for someSelectedEmp emp.getManager() is defined by {manager.manager} FetchGroup's item,
+                    // which means no fetch group should be used. 
+                    assertNoFetchGroup(manager);
+                }
+            }            
         }
-//**temp        assertEquals(1, getQuerySQLTracker(em).getTotalSQLSELECTCalls());
-        //**temp
-        assertEquals(nSql, getQuerySQLTracker(em).getTotalSQLSELECTCalls());
     }
     
    @Test

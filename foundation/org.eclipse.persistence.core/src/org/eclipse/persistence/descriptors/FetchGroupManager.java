@@ -69,6 +69,10 @@ public class FetchGroupManager implements Cloneable {
     // identity fetch group - contains primary key attribute(s) only.
     private EntityFetchGroup idEntityFetchGroup;
     
+    // non relational fetch group - contains intersection of non-relational attributes
+    // and defaultEntityFetchGroup.
+    private EntityFetchGroup nonReferenceEntityFetchGroup;
+    
     //ref to the descriptor
     private ClassDescriptor descriptor;
     
@@ -154,6 +158,15 @@ public class FetchGroupManager implements Cloneable {
 
     /**
      * INTERNAL:
+     * Returns EntityFetchGroup corresponding to non relational attributes
+     * intersected with defaultFetchGroup.
+     */
+    public EntityFetchGroup getNonReferenceEntityFetchGroup() {
+        return this.nonReferenceEntityFetchGroup;
+    }
+    
+    /**
+     * INTERNAL:
      * Add primary key and version attributes to the passed fetch group.
      */
     public void addMinimalFetchGroup(FetchGroup fetchGroup) {
@@ -197,6 +210,9 @@ public class FetchGroupManager implements Cloneable {
      * Returns entity fetch group corresponding to the passed set of attributes.
      */
     public EntityFetchGroup getEntityFetchGroup(Set<String> attributeNames) {
+        if(attributeNames == null || attributeNames.isEmpty()) { 
+            return null;
+        }
         EntityFetchGroup entityFetchGroup = this.entityFetchGroups.get(attributeNames);
         if(entityFetchGroup == null) {
             entityFetchGroup = new EntityFetchGroup(attributeNames);
@@ -204,7 +220,7 @@ public class FetchGroupManager implements Cloneable {
             if(entityFetchGroup.equals(this.fullFetchGroup)) {
                 return null;
             }
-            this.entityFetchGroups.put(attributeNames, entityFetchGroup);
+            this.entityFetchGroups.put(entityFetchGroup.getAttributeNames(), entityFetchGroup);
         }
         
         return entityFetchGroup;
@@ -215,17 +231,10 @@ public class FetchGroupManager implements Cloneable {
      * Returns entity fetch group corresponding to the passed fetch group.
      */
     public EntityFetchGroup getEntityFetchGroup(FetchGroup fetchGroup) {
-        EntityFetchGroup entityFetchGroup = this.entityFetchGroups.get(fetchGroup.getAttributeNames());
-        if(entityFetchGroup == null) {
-            entityFetchGroup = new EntityFetchGroup(fetchGroup);
-            // EntityFetchGroup that contains all attributes is equivalent to no fetch group
-            if(entityFetchGroup.equals(this.fullFetchGroup)) {
-                return null;
-            }
-            this.entityFetchGroups.put(entityFetchGroup.getAttributeNames(), entityFetchGroup);
+        if(fetchGroup == null) {
+            return null;
         }
-        
-        return entityFetchGroup;
+        return getEntityFetchGroup(fetchGroup.getAttributeNames());
     }
     
     /**
@@ -300,6 +309,9 @@ public class FetchGroupManager implements Cloneable {
                 }
             }
             this.defaultFetchGroup = newDefaultFetchGroup;
+            if(this.entityFetchGroups != null) {
+                initNonReferenceEntityFetchGroup();
+            }
         }
     }
 
@@ -355,7 +367,7 @@ public class FetchGroupManager implements Cloneable {
 
         // Update fetch group in clone as the union of two,
         // do this first to avoid fetching during method access.
-        FetchGroup union = unionFetchGroups(fetchGroupInObject, fetchGroupInClone);
+        EntityFetchGroup union = flatUnionFetchGroups(fetchGroupInObject, fetchGroupInClone);
         // Finally, update clone's fetch group reference.
         setObjectFetchGroup(workingClone, union, uow);
         if (workingClone != backupClone) {
@@ -439,8 +451,8 @@ public class FetchGroupManager implements Cloneable {
      * INTERNAL:
      * Union the fetch group of the domain object with the new fetch group.
      */
-    public void unionFetchGroupIntoObject(Object source, FetchGroup newFetchGroup, AbstractSession session) {
-        setObjectFetchGroup(source, unionFetchGroups(((FetchGroupTracker)source)._persistence_getFetchGroup(), newFetchGroup), session);
+    public void unionEntityFetchGroupIntoObject(Object source, EntityFetchGroup newEntityFetchGroup, AbstractSession session) {
+        setObjectFetchGroup(source, flatUnionFetchGroups(((FetchGroupTracker)source)._persistence_getFetchGroup(), newEntityFetchGroup), session);
     }
 
     /**
@@ -467,6 +479,27 @@ public class FetchGroupManager implements Cloneable {
 
     /**
      * INTERNAL:
+     * Union two fetch groups as EntityFetchGroups.
+     * Ignores all nested attributes.
+     */
+    public EntityFetchGroup flatUnionFetchGroups(FetchGroup first, FetchGroup second) {
+        if ((first == null) || (second == null)) {
+            return null;
+        }
+
+        //return the superset if applied
+        if (first == second) {
+            return getEntityFetchGroup(first);
+        }
+
+        Set<String> unionAttributeNames = new HashSet();
+        unionAttributeNames.addAll(first.getAttributeNames());
+        unionAttributeNames.addAll(second.getAttributeNames());
+        return getEntityFetchGroup(unionAttributeNames);
+    }
+
+    /**
+     * INTERNAL:
      * Reset object attributes to the default values.
      */
     public void reset(Object source) {
@@ -480,6 +513,23 @@ public class FetchGroupManager implements Cloneable {
     public FetchGroup getObjectFetchGroup(Object domainObject) {
         if (domainObject != null) {
             return ((FetchGroupTracker)domainObject)._persistence_getFetchGroup();
+        }
+        return null;
+    }
+    
+    /**
+     * INTERNAL:
+     * Return FetchGroup held by the object.
+     */
+    public EntityFetchGroup getObjectEntityFetchGroup(Object domainObject) {
+        if (domainObject != null) {
+            FetchGroup fetchGroup = ((FetchGroupTracker)domainObject)._persistence_getFetchGroup();
+            if(fetchGroup != null) {
+                if(fetchGroup.isEntityFetchGroup()) {
+                    return (EntityFetchGroup)fetchGroup;
+                }
+                return getEntityFetchGroup(fetchGroup);
+            }
         }
         return null;
     }
@@ -592,7 +642,9 @@ public class FetchGroupManager implements Cloneable {
         if(this.fetchGroups != null) {
             Iterator<FetchGroup> it = this.fetchGroups.values().iterator();
             while(it.hasNext()) {
-                getEntityFetchGroup(it.next());
+                FetchGroup fetchGroup = it.next();
+                addMinimalFetchGroup(fetchGroup);
+                getEntityFetchGroup(fetchGroup);
             }
         }
     }
@@ -642,6 +694,21 @@ public class FetchGroupManager implements Cloneable {
             addMinimalFetchGroup(this.defaultFetchGroup);
             this.defaultEntityFetchGroup = getEntityFetchGroup(this.defaultFetchGroup);
         }
+        initNonReferenceEntityFetchGroup();
+    }
+    
+    protected void initNonReferenceEntityFetchGroup() {
+        FetchGroup nonReferenceFetchGroup = new FetchGroup();
+        for (DatabaseMapping mapping : getDescriptor().getMappings()) {
+            if(!mapping.isForeignReferenceMapping()) {
+                String name = mapping.getAttributeName();
+                if(this.defaultEntityFetchGroup == null || this.defaultEntityFetchGroup.containsAttribute(name)) {
+                    nonReferenceFetchGroup.addAttribute(name);
+                }
+            }
+        }
+        this.addMinimalFetchGroup(nonReferenceFetchGroup);
+        this.nonReferenceEntityFetchGroup = getEntityFetchGroup(nonReferenceFetchGroup);
     }
     
     /**

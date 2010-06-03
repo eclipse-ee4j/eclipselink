@@ -28,7 +28,7 @@ import org.eclipse.persistence.mappings.*;
 import org.eclipse.persistence.mappings.converters.Converter;
 import org.eclipse.persistence.queries.*;
 import org.eclipse.persistence.sessions.remote.*;
-import org.eclipse.persistence.sessions.ObjectCopyingPolicy;
+import org.eclipse.persistence.sessions.CopyGroup;
 
 public abstract class AbstractCompositeCollectionMapping extends AggregateMapping implements ContainerMapping {
 
@@ -104,7 +104,7 @@ public abstract class AbstractCompositeCollectionMapping extends AggregateMappin
      * Copy of the attribute of the object.
      * This is NOT used for unit of work but for templatizing an object.
      */
-    protected Object buildCopyOfAttributeValue(Object attributeValue, ObjectCopyingPolicy policy) {
+    protected Object buildCopyOfAttributeValue(Object attributeValue, CopyGroup group) {
         ContainerPolicy cp = this.getContainerPolicy();
         if (attributeValue == null) {
             return cp.containerInstance();
@@ -112,8 +112,8 @@ public abstract class AbstractCompositeCollectionMapping extends AggregateMappin
 
         Object attributeValueCopy = cp.containerInstance(cp.sizeFor(attributeValue));
         for (Object iter = cp.iteratorFor(attributeValue); cp.hasNext(iter);) {
-            Object copyElement = super.buildCopyOfAttributeValue(cp.next(iter, policy.getSession()), policy);
-            cp.addInto(copyElement, attributeValueCopy, policy.getSession());
+            Object copyElement = super.buildCopyOfAttributeValue(cp.next(iter, group.getSession()), group);
+            cp.addInto(copyElement, attributeValueCopy, group.getSession());
         }
         return attributeValueCopy;
     }

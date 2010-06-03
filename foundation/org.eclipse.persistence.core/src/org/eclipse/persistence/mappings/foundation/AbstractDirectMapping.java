@@ -40,7 +40,7 @@ import org.eclipse.persistence.mappings.querykeys.DirectQueryKey;
 import org.eclipse.persistence.mappings.querykeys.QueryKey;
 import org.eclipse.persistence.queries.*;
 import org.eclipse.persistence.sessions.remote.*;
-import org.eclipse.persistence.sessions.ObjectCopyingPolicy;
+import org.eclipse.persistence.sessions.CopyGroup;
 import org.eclipse.persistence.sessions.Project;
 import org.eclipse.persistence.sessions.Session;
 import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
@@ -261,8 +261,8 @@ public abstract class AbstractDirectMapping extends DatabaseMapping  implements 
      * This is NOT used for unit of work but for templatizing an object.
      */
     @Override
-    public void buildCopy(Object copy, Object original, ObjectCopyingPolicy policy) {
-        buildCloneValue(original, copy, policy.getSession());
+    public void buildCopy(Object copy, Object original, CopyGroup group) {
+        buildCloneValue(original, copy, group.getSession());
     }
 
     /**

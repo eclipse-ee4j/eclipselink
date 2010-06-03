@@ -34,8 +34,8 @@ import org.eclipse.persistence.internal.sessions.remote.*;
 import org.eclipse.persistence.internal.sessions.*;
 import org.eclipse.persistence.queries.*;
 import org.eclipse.persistence.sessions.remote.*;
+import org.eclipse.persistence.sessions.CopyGroup;
 import org.eclipse.persistence.sessions.DatabaseRecord;
-import org.eclipse.persistence.sessions.ObjectCopyingPolicy;
 import org.eclipse.persistence.sessions.Project;
 
 /**
@@ -210,23 +210,23 @@ public abstract class CollectionMapping extends ForeignReferenceMapping implemen
      * This is NOT used for unit of work but for templatizing an object.
      */
     @Override
-    public void buildCopy(Object copy, Object original, ObjectCopyingPolicy policy) {
-        Object attributeValue = getRealCollectionAttributeValueFromObject(original, policy.getSession());
+    public void buildCopy(Object copy, Object original, CopyGroup group) {
+        Object attributeValue = getRealCollectionAttributeValueFromObject(original, group.getSession());
         Object valuesIterator = this.containerPolicy.iteratorFor(attributeValue);
         attributeValue = this.containerPolicy.containerInstance(this.containerPolicy.sizeFor(attributeValue));
         while (this.containerPolicy.hasNext(valuesIterator)) {
-            Object originalValue = this.containerPolicy.next(valuesIterator, policy.getSession());
+            Object originalValue = this.containerPolicy.next(valuesIterator, group.getSession());
             Object copyValue = originalValue;
-            if (policy.shouldCascadeAllParts() || (policy.shouldCascadePrivateParts() && isPrivateOwned())) {
-                copyValue = policy.getSession().copyObject(originalValue, policy);
+            if (group.shouldCascadeAllParts() || (group.shouldCascadePrivateParts() && isPrivateOwned()) || group.shouldCascadeTree()) {
+                copyValue = group.getSession().copyInternal(originalValue, group);
             } else {
                 // Check for backrefs to copies.
-                copyValue = policy.getCopies().get(originalValue);
+                copyValue = group.getCopies().get(originalValue);
                 if (copyValue == null) {
                     copyValue = originalValue;
                 }
             }
-            this.containerPolicy.addInto(copyValue, attributeValue, policy.getSession());
+            this.containerPolicy.addInto(copyValue, attributeValue, group.getSession());
         }
         setRealAttributeValueInObject(copy, attributeValue);
     }

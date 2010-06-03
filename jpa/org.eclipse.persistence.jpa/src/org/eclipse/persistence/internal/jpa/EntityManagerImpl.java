@@ -45,12 +45,14 @@ import org.eclipse.persistence.internal.jpa.querydef.CriteriaQueryImpl;
 import org.eclipse.persistence.internal.jpa.transaction.*;
 import org.eclipse.persistence.internal.localization.ExceptionLocalization;
 import org.eclipse.persistence.internal.sessions.*;
+import org.eclipse.persistence.jpa.JpaEntityManager;
 import org.eclipse.persistence.logging.SessionLog;
 import org.eclipse.persistence.queries.*;
 import org.eclipse.persistence.sessions.*;
 import org.eclipse.persistence.sessions.factories.ReferenceMode;
 import org.eclipse.persistence.sessions.factories.SessionManager;
 import org.eclipse.persistence.sessions.server.ConnectionPolicy;
+import org.eclipse.persistence.sessions.server.Server;
 import org.eclipse.persistence.sessions.server.ServerSession;
 
 /**
@@ -2277,11 +2279,11 @@ public class EntityManagerImpl implements org.eclipse.persistence.jpa.JpaEntityM
      */
     public <T> T unwrap(Class<T> cls) {
         try {
-            if (cls.equals(org.eclipse.persistence.sessions.UnitOfWork.class)) {
+            if (cls.equals(UnitOfWork.class) || cls.equals(UnitOfWorkImpl.class) || cls.equals(RepeatableWriteUnitOfWork.class)) {
                 return (T) this.getUnitOfWork();
-            } else if (cls.equals(org.eclipse.persistence.jpa.JpaEntityManager.class)) {
+            } else if (cls.equals(JpaEntityManager.class)) {
                 return (T) this;
-            } else if (cls.equals(org.eclipse.persistence.sessions.Session.class)) {
+            } else if (cls.equals(Session.class) || cls.equals(Server.class) || cls.equals(ServerSession.class) || cls.equals(AbstractSession.class)) {            
                 return (T) this.getServerSession();
             } else if (cls.equals(java.sql.Connection.class)) {
                 UnitOfWorkImpl unitOfWork = (UnitOfWorkImpl) this.getUnitOfWork();
@@ -2308,6 +2310,19 @@ public class EntityManagerImpl implements org.eclipse.persistence.jpa.JpaEntityM
     public void load(Object entityOrEntities, AttributeGroup group) {
         verifyOpen();
         getActivePersistenceContext(checkForTransaction(false)).load(entityOrEntities, group);
+    }
+    
+    /**
+     * This method will return copy the passed entity using the passed AttributeGroup.
+     * In case of collection all members should be either entities of the same type
+     * or have a common inheritance hierarchy mapped root class.
+     * The AttributeGroup should correspond to the entity type. 
+     * 
+     * @param entityOrEntities
+     */
+    public Object copy(Object entityOrEntities, AttributeGroup group) {
+        verifyOpen();
+        return getActivePersistenceContext(checkForTransaction(false)).copy(entityOrEntities, group);
     }
     
     /**

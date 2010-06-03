@@ -42,7 +42,7 @@ import org.eclipse.persistence.internal.sessions.*;
 import org.eclipse.persistence.mappings.converters.*;
 import org.eclipse.persistence.queries.*;
 import org.eclipse.persistence.sessions.remote.*;
-import org.eclipse.persistence.sessions.ObjectCopyingPolicy;
+import org.eclipse.persistence.sessions.CopyGroup;
 import org.eclipse.persistence.sessions.DatabaseRecord;
 
 /**
@@ -386,8 +386,8 @@ public class DirectCollectionMapping extends CollectionMapping implements Relati
      * This is NOT used for unit of work but for templatizing an object.
      */
     @Override
-    public void buildCopy(Object copy, Object original, ObjectCopyingPolicy policy) {
-        Object attributeValue = getRealCollectionAttributeValueFromObject(original, policy.getSession());
+    public void buildCopy(Object copy, Object original, CopyGroup group) {
+        Object attributeValue = getRealCollectionAttributeValueFromObject(original, group.getSession());
         attributeValue = getContainerPolicy().cloneFor(attributeValue);
         setRealAttributeValueInObject(copy, attributeValue);
     }

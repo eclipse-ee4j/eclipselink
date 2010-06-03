@@ -34,7 +34,7 @@ import org.eclipse.persistence.mappings.DatabaseMapping;
 import org.eclipse.persistence.mappings.transformers.*;
 import org.eclipse.persistence.queries.*;
 import org.eclipse.persistence.sessions.remote.*;
-import org.eclipse.persistence.sessions.ObjectCopyingPolicy;
+import org.eclipse.persistence.sessions.CopyGroup;
 import org.eclipse.persistence.sessions.Project;
  
 /**
@@ -316,7 +316,8 @@ public abstract class AbstractTransformationMapping extends DatabaseMapping {
      * Copy of the attribute of the object.
      * This is NOT used for unit of work but for templatizing an object.
      */
-    public void buildCopy(Object copy, Object original, ObjectCopyingPolicy policy) {
+    @Override
+    public void buildCopy(Object copy, Object original, CopyGroup group) {
         // If mapping is a no-attribute transformation mapping, do nothing
         if (isWriteOnly()) {
             return;
@@ -332,8 +333,8 @@ public abstract class AbstractTransformationMapping extends DatabaseMapping {
         if (isReadOnly() || !isMutable()) {
             clonedAttributeValue = attributeValue;
         } else {
-        	AbstractRecord row = this.buildPhantomRowFrom(original, policy.getSession());
-            clonedAttributeValue = invokeAttributeTransformer(row, copy, policy.getSession());
+        	AbstractRecord row = this.buildPhantomRowFrom(original, group.getSession());
+            clonedAttributeValue = invokeAttributeTransformer(row, copy, group.getSession());
         }
  
         setAttributeValueInObject(copy, clonedAttributeValue);

@@ -23,7 +23,7 @@ import org.eclipse.persistence.mappings.converters.*;
 import org.eclipse.persistence.oxm.XMLField;
 import org.eclipse.persistence.queries.*;
 import org.eclipse.persistence.sessions.remote.*;
-import org.eclipse.persistence.sessions.ObjectCopyingPolicy;
+import org.eclipse.persistence.sessions.CopyGroup;
 
 /**
  * <code>AbstractCompositeDirectCollectionMapping</code> consolidates the behavior of mappings that
@@ -163,7 +163,8 @@ public abstract class AbstractCompositeDirectCollectionMapping extends DatabaseM
      * Copy of the attribute of the object.
      * This is NOT used for unit of work but for templatizing an object.
      */
-    public void buildCopy(Object copy, Object original, ObjectCopyingPolicy policy) {
+    @Override
+    public void buildCopy(Object copy, Object original, CopyGroup group) {
         Object attributeValue = getAttributeValueFromObject(original);
         if (attributeValue == null) {
             attributeValue = getContainerPolicy().containerInstance();

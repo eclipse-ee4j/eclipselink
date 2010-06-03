@@ -156,12 +156,40 @@ public interface Session {
 
     /**
      * PUBLIC:
+     * Return a complete copy of the object or of collection of objects.
+     * In case of collection all members should be either entities of the same type
+     * or have a common inheritance hierarchy mapped root class.
+     * This can be used to obtain a scratch copy of an object,
+     * or for templatizing an existing object into another new object.
+     * The object and all of its privately owned parts will be copied.
+     *
+     * @see #copy(Object, CopyGroup)
+     */
+    public Object copy(Object originalObjectOrObjects);
+
+    /**
+     * PUBLIC:
+     * Return a complete copy of the object or collection of objects.
+     * In case of collection all members should be either entities of the same type
+     * or have a common inheritance hierarchy mapped root class.
+     * This can be used to obtain a scratch copy of an object,
+     * or for templatizing an existing object into another new object.
+     * If there are no attributes in the group 
+     * then the object and all of its privately owned parts will be copied.
+     * Otherwise only the attributes included into the group will be copied.
+     */
+    public Object copy(Object originalObjectOrObjects, AttributeGroup group);
+
+    /**
+     * PUBLIC:
      * Return a complete copy of the object.
      * This can be used to obtain a scratch copy of an object,
      * or for templatizing an existing object into another new object.
      * The object and all of its privately owned parts will be copied, the object's primary key will be reset to null.
      *
      * @see #copyObject(Object, ObjectCopyingPolicy)
+     * @deprecated since EclipseLink 2.1, replaced by copy(Object)
+     * @see #copy(Object)
      */
     public Object copyObject(Object original);
 
@@ -171,6 +199,8 @@ public interface Session {
      * This can be used to obtain a scratch copy of an object,
      * or for templatizing an existing object into another new object.
      * The object copying policy allow for the depth, and reseting of the primary key to null, to be specified.
+     * @deprecated since EclipseLink 2.1, replaced by copy(Object, AttributeGroup)
+     * @see #copy(Object, AttributeGroup)
      */
     public Object copyObject(Object original, ObjectCopyingPolicy policy);
 
