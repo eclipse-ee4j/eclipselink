@@ -534,7 +534,7 @@
         <copy todir="${eclipselink.jpa.test}/${build.dir}/${eclipselink.ddl.generation.model}">
             <fileset dir="${eclipselink.jpa.test}/${classes.dir}"
                      includes="org/eclipse/persistence/testing/models/jpa/ddlgeneration/**,
-                                org/eclipse/persistence/testing/models/jpa/xml/merge/inherited**"/>
+                                org/eclipse/persistence/testing/models/jpa/xml/merge/inherited/**"/>
         </copy>
         <jar jarfile="${eclipselink.jpa.test}/${eclipselink.ddl.generation.model}.jar">
             <fileset dir="${eclipselink.jpa.test}/${build.dir}/${eclipselink.ddl.generation.model}">
@@ -596,7 +596,7 @@
         <copy todir="${eclipselink.jpa.test}/${build.dir}/${eclipselink.xml.merge.model}">
             <fileset dir="${eclipselink.jpa.test}/${classes.dir}"
                      includes="org/eclipse/persistence/testing/models/jpa/xml/merge/**"
-                     excludes="org/eclipse/persistence/testing/models/jpa/xml/merge/inhertied/**"/>
+                     excludes="org/eclipse/persistence/testing/models/jpa/xml/merge/inherited/**"/>
         </copy>
         <jar jarfile="${eclipselink.jpa.test}/${eclipselink.xml.merge.model}.jar">
             <fileset dir="${eclipselink.jpa.test}/${build.dir}/${eclipselink.xml.merge.model}">
