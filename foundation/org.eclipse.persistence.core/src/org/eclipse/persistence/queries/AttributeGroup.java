@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2010 Oracle. All rights reserved.
+ * Copyright (c) 2010 Oracle. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -8,8 +8,8 @@
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
- *     05/19/2010-2.1 ailitchev - Bug 244124 - Add Nested FetchGroup 
- ******************************************************************************/  
+ *     ailitchev - Bug 244124 - Added AttributeGroup base class for nesting 
+ ******************************************************************************/
 package org.eclipse.persistence.queries;
 
 import java.io.Serializable;
@@ -24,14 +24,37 @@ import org.eclipse.persistence.internal.queries.AttributeItem;
 import org.eclipse.persistence.sessions.CopyGroup;
 
 /**
- * <b>Purpose</b>: Base class for FetchGroup and LoadGroup.
+ * <b>Purpose</b>: An AttributeGroup represents a set of mappings and nested
+ * AttributeGroups for relationship mappings for an entity type.
+ * <b>Responsibilities</b>:
+ * <ul>
+ * <li>Defines which attributes should be fetched from the database within a
+ * {@link FetchGroup}.
+ * <li>Define which relationship attributes should be populated in a resulting
+ * entity graph within a {@link LoadGroup}
+ * <li>Define which attributes should be copied within a {@link CopyGroup}
+ * </ul>
+ * <p>
+ * To reference nested attributes a dot ('.') notation is used to reference
+ * related attributes. All attribute names provided are assumed to be correct
+ * until processed against the mappings during usage of the group.
+ * 
+ * @see FetchGroup
+ * @see LoadGroup
+ * @see CopyGroup
  * 
  * @author ailitchev
  * @since EclipseLink 2.1
  */
 public class AttributeGroup implements Serializable, Cloneable {
+
+    /**
+     * Name of the group. This is used in subclasses where the groups are stored
+     * and can be used within a query by name as with FetchGroup. For dynamic
+     * groups the name has no functional value.
+     */
     private String name;
-    
+
     /**
      * Specified attributes in the group mapped to their AttributeItems
      */
@@ -42,20 +65,20 @@ public class AttributeGroup implements Serializable, Cloneable {
     }
 
     public AttributeGroup() {
-        this.name = "";
+        this("");
     }
 
     /*
      * Subclass may create different types.
      */
-    public AttributeItem newItem(AttributeGroup group, String attrName) {
+    protected AttributeItem newItem(AttributeGroup group, String attrName) {
         return new AttributeItem(group, attrName);
     }
 
     /*
      * Subclass may create different types.
      */
-    public AttributeGroup newGroup(String name, AttributeGroup parent) {
+    protected AttributeGroup newGroup(String name, AttributeGroup parent) {
         return new AttributeGroup(name);
     }
 
@@ -71,13 +94,14 @@ public class AttributeGroup implements Serializable, Cloneable {
         return getItems().keySet();
     }
 
+    // XXX-dclarke: Should this be public?
     public void setAttributeNames(Set attributeNames) {
         Iterator it = attributeNames.iterator();
-        while(it.hasNext()) {
-            this.addAttribute((String)it.next());
+        while (it.hasNext()) {
+            this.addAttribute((String) it.next());
         }
     }
-    
+
     public boolean hasItems() {
         return this.items != null && !this.items.isEmpty();
     }
@@ -100,7 +124,8 @@ public class AttributeGroup implements Serializable, Cloneable {
 
     /**
      * Add an basic attribute or nested attribute with each String representing
-     * an attribute on the path to what needs to be included in the AttributeGroup.
+     * an attribute on the path to what needs to be included in the
+     * AttributeGroup.
      * <p>
      * Example: <code>
      *    group.addAttribute("firstName");<br>
@@ -130,26 +155,27 @@ public class AttributeGroup implements Serializable, Cloneable {
     }
 
     /**
-     * Returns AttributeGroup corresponding to the passed (possibly nested) attribute.
+     * Returns AttributeGroup corresponding to the passed (possibly nested)
+     * attribute.
      */
     public AttributeGroup getGroup(String attributeNameOrPath) {
         AttributeItem item = getItem(convert(attributeNameOrPath), false);
-        if(item != null) {
+        if (item != null) {
             return item.getGroup();
         }
         return null;
     }
-    
+
     /**
-     * TODO
+     * Lookup the {@link AttributeItem}for the provided attribute name or path.
      * 
-     * @param attributeNameOrPath
-     * @return
+     * @return item or null
+     * @throws IllegalArgumentException if name is not valid attribute name or path
      */
     public AttributeItem getItem(String attributeNameOrPath) {
         return getItem(convert(attributeNameOrPath), false);
     }
-    
+
     /**
      * Locate the AttributeGroup where the leaf attribute in the path should be
      * applied to.
@@ -185,6 +211,7 @@ public class AttributeGroup implements Serializable, Cloneable {
                 if (!create) {
                     return null;
                 }
+                //XXX-dclarke: Converting the attribute[] into a string and then re-parsing it seems odd
                 AttributeGroup newGroup = newGroup(toStringPath(attributePath, index), currentGroup);
                 item.setGroup(newGroup);
             }
@@ -206,32 +233,34 @@ public class AttributeGroup implements Serializable, Cloneable {
     }
 
     /**
-     * Return true if this AttributeGroup is a super-set of the passed in AttributeGroup.
+     * Return true if this AttributeGroup is a super-set of the passed in
+     * AttributeGroup.
      */
     public boolean isSupersetOf(AttributeGroup anotherGroup) {
-        // TODO: should handle the case when the current group has all attributes - then its equivalent to null
-        if(anotherGroup == null) {
+        // TODO: should handle the case when the current group has all
+        // attributes - then its equivalent to null
+        if (anotherGroup == null) {
             return false;
         }
-        if(anotherGroup != this) {
-            if(hasItems()) {
-                if(anotherGroup.hasItems()) {
+        if (anotherGroup != this) {
+            if (hasItems()) {
+                if (anotherGroup.hasItems()) {
                     Iterator<Map.Entry<String, AttributeItem>> otherItemEntries = anotherGroup.getItems().entrySet().iterator();
-                    while(otherItemEntries.hasNext()) {
+                    while (otherItemEntries.hasNext()) {
                         Map.Entry<String, AttributeItem> otherItemEntry = otherItemEntries.next();
                         String otherAttributeName = otherItemEntry.getKey();
                         AttributeItem item = this.items.get(otherAttributeName);
-                        if(item == null) {
+                        if (item == null) {
                             return false;
                         }
                         AttributeGroup group = item.getGroup();
                         AttributeGroup otherGroup = otherItemEntry.getValue().getGroup();
-                        if(group != null) {
-                            if(!group.isSupersetOf(otherGroup)) {
+                        if (group != null) {
+                            if (!group.isSupersetOf(otherGroup)) {
                                 return false;
                             }
                         } else {
-                            if(otherGroup != null) {
+                            if (otherGroup != null) {
                                 return true;
                             }
                         }
@@ -240,13 +269,13 @@ public class AttributeGroup implements Serializable, Cloneable {
                 } else {
                     return true;
                 }
-             } else {
-                 if(anotherGroup.hasItems()) {
-                     return false;
-                 } else {
-                     return true;
-                 }
-             }
+            } else {
+                if (anotherGroup.hasItems()) {
+                    return false;
+                } else {
+                    return true;
+                }
+            }
         } else {
             return true;
         }
@@ -256,6 +285,8 @@ public class AttributeGroup implements Serializable, Cloneable {
      * Convert a provided name or path which could be a single attributeName, a
      * single string with dot separated attribute names, or an array of
      * attribute names defining the path.
+     * 
+     * @throws IllegalArgumentException if name is not valid attribute name or path
      */
     protected String[] convert(String... nameOrPath) {
         if (nameOrPath == null || nameOrPath.length == 0 || (nameOrPath.length == 1 && (nameOrPath[0] == null || nameOrPath[0].length() == 0))) {
@@ -288,23 +319,23 @@ public class AttributeGroup implements Serializable, Cloneable {
     @Override
     public boolean equals(Object obj) {
         if (this != obj) {
-            if(obj == null) {
+            if (obj == null) {
                 return false;
             }
             AttributeGroup anotherGroup = null;
             try {
-                anotherGroup = (AttributeGroup)obj;
+                anotherGroup = (AttributeGroup) obj;
             } catch (ClassCastException cce) {
                 return false;
             }
-            if(hasItems()) {
-               if(anotherGroup.hasItems()) {
-                   return getItems().equals(anotherGroup.getItems());
-               } else {
-                   return false;
-               }
+            if (hasItems()) {
+                if (anotherGroup.hasItems()) {
+                    return getItems().equals(anotherGroup.getItems());
+                } else {
+                    return false;
+                }
             } else {
-                if(anotherGroup.hasItems()) {
+                if (anotherGroup.hasItems()) {
                     return false;
                 } else {
                     return true;
@@ -316,20 +347,20 @@ public class AttributeGroup implements Serializable, Cloneable {
     }
 
     public String toString() {
-        return getClass().getSimpleName()+"(" + getName() + ")"+toStringAdditionalInfo()+"{"+ toStringItems() +"}";
+        return getClass().getSimpleName() + "(" + getName() + ")" + toStringAdditionalInfo() + "{" + toStringItems() + "}";
     }
-    
+
     public String toStringAdditionalInfo() {
         return "";
     }
-    
+
     protected String toStringItems() {
         String str = "";
-        if(this.items != null) {
+        if (this.items != null) {
             Iterator<AttributeItem> it = this.items.values().iterator();
             boolean isFirst = true;
-            while(it.hasNext()) {
-                if(isFirst) {
+            while (it.hasNext()) {
+                if (isFirst) {
                     isFirst = false;
                 } else {
                     str += ", ";
@@ -339,7 +370,7 @@ public class AttributeGroup implements Serializable, Cloneable {
         }
         return str;
     }
-    
+
     static protected String toStringPath(String[] attributePath, int position) {
         StringWriter writer = new StringWriter();
         for (int index = 0; index <= position; index++) {
@@ -350,22 +381,22 @@ public class AttributeGroup implements Serializable, Cloneable {
         }
         return writer.toString();
     }
-    
+
     public boolean isFetchGroup() {
         return false;
     }
 
     public FetchGroup toFetchGroup() {
-        if(isFetchGroup()) {
-            return (FetchGroup)this;
+        if (isFetchGroup()) {
+            return (FetchGroup) this;
         }
         FetchGroup fetchGroup = new FetchGroup(getName());
-        if(this.hasItems()) {
+        if (this.hasItems()) {
             Iterator<Map.Entry<String, AttributeItem>> it = getItems().entrySet().iterator();
-            while(it.hasNext()) {
+            while (it.hasNext()) {
                 Map.Entry<String, AttributeItem> entry = it.next();
                 AttributeGroup group = entry.getValue().getGroup();
-                if(group == null) {
+                if (group == null) {
                     fetchGroup.addAttribute(entry.getKey());
                 } else {
                     fetchGroup.addAttribute(entry.getKey(), group.toFetchGroup());
@@ -374,23 +405,23 @@ public class AttributeGroup implements Serializable, Cloneable {
         }
         return fetchGroup;
     }
-    
+
     public boolean isCopyGroup() {
         return false;
     }
 
     public CopyGroup toCopyGroup() {
-        if(isCopyGroup()) {
-            return (CopyGroup)this;
+        if (isCopyGroup()) {
+            return (CopyGroup) this;
         }
         CopyGroup copyGroup = new CopyGroup(getName());
         copyGroup.cascadeTree();
-        if(this.hasItems()) {
+        if (this.hasItems()) {
             Iterator<Map.Entry<String, AttributeItem>> it = getItems().entrySet().iterator();
-            while(it.hasNext()) {
+            while (it.hasNext()) {
                 Map.Entry<String, AttributeItem> entry = it.next();
                 AttributeGroup group = entry.getValue().getGroup();
-                if(group == null) {
+                if (group == null) {
                     copyGroup.addAttribute(entry.getKey());
                 } else {
                     copyGroup.addAttribute(entry.getKey(), group.toCopyGroup());
@@ -399,22 +430,22 @@ public class AttributeGroup implements Serializable, Cloneable {
         }
         return copyGroup;
     }
-    
+
     public boolean isLoadGroup() {
         return false;
     }
-    
+
     public LoadGroup toLoadGroup() {
-        if(this.isLoadGroup()) {
-            return (LoadGroup)this;
+        if (this.isLoadGroup()) {
+            return (LoadGroup) this;
         }
         LoadGroup loadGroup = new LoadGroup(getName());
-        if(this.hasItems()) {
+        if (this.hasItems()) {
             Iterator<Map.Entry<String, AttributeItem>> it = getItems().entrySet().iterator();
-            while(it.hasNext()) {
+            while (it.hasNext()) {
                 Map.Entry<String, AttributeItem> entry = it.next();
                 AttributeGroup group = entry.getValue().getGroup();
-                if(group == null) {
+                if (group == null) {
                     loadGroup.addAttribute(entry.getKey());
                 } else {
                     loadGroup.addAttribute(entry.getKey(), group.toLoadGroup());
@@ -423,11 +454,11 @@ public class AttributeGroup implements Serializable, Cloneable {
         }
         return loadGroup;
     }
-    
+
     public AttributeGroup clone() {
         AttributeGroup clone;
         try {
-            clone = (AttributeGroup)super.clone();
+            clone = (AttributeGroup) super.clone();
         } catch (CloneNotSupportedException ex) {
             // should never happen
             throw new InternalError();
@@ -435,19 +466,19 @@ public class AttributeGroup implements Serializable, Cloneable {
 
         // all attributes and nested groups should be cloned, too
         clone.items = null;
-        if(hasItems()) {
+        if (hasItems()) {
             Iterator<Map.Entry<String, AttributeItem>> it = getItems().entrySet().iterator();
-            while(it.hasNext()) {
+            while (it.hasNext()) {
                 Map.Entry<String, AttributeItem> entry = it.next();
                 AttributeGroup group = entry.getValue().getGroup();
-                if(group != null) {
+                if (group != null) {
                     clone.addAttribute(entry.getKey(), group.clone());
                 } else {
                     clone.addAttribute(entry.getKey());
                 }
             }
         }
-        
+
         return clone;
     }
 }

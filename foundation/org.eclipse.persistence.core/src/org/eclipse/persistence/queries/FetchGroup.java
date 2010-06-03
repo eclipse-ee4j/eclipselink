@@ -9,8 +9,8 @@
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- *     05/19/2010-2.1 ailitchev - Bug 244124 - Add Nested FetchGroup 
- ******************************************************************************/  
+ *     ailitchev - Bug 244124 in 2.1 - Add AttributeGroup for nesting and LoadGroup support  
+ ******************************************************************************/
 package org.eclipse.persistence.queries;
 
 import java.util.Iterator;
@@ -21,35 +21,78 @@ import org.eclipse.persistence.internal.localization.ExceptionLocalization;
 import org.eclipse.persistence.internal.queries.AttributeItem;
 
 /**
- * <p><b>Purpose</b>: A fetch group is a performance enhancement that allows a group of
- * attributes of an object to be loaded on demand, which means that the data for an attribute
- * might not loaded from the underlying data source until an explicit access call for the
- * attribute first occurs. It avoids the wasteful practice of loading up all data of the object's
- * attributes, in which the user is interested in only partial of them.
+ * A FetchGroup is a performance enhancement that allows a group of attributes
+ * of an object to be loaded on demand, which means that the data for an
+ * attribute might not loaded from the underlying data source until an explicit
+ * access call for the attribute first occurs. It avoids loading all data of the
+ * object's attributes, in which the user is interested in only a subset of
+ * them. A great deal of caution and careful system use case analysis should be
+ * use when using the fetch group feature, as the extra round-trip would well
+ * offset the gain from the deferred loading in many cases.
  * <p>
- * A great deal of caution and careful system use case analysis should be use when using the fetch
- * group feature, as the extra round-trip would well offset the gain from the deferred loading in
- * many cases.
+ * FetchGroup usage is only possible when an entity class implements the
+ * {@link FetchGroupTracker} interface so that the FetchGroup can be stored in
+ * the entity. The entity must also use the provided check methods to ensure the
+ * attributes are loaded prior to use. In general this support is enabled
+ * through weaving of the entity classes. If an entity class does not implement
+ * {@link FetchGroupTracker} no FetchGroup functionality will be supported and
+ * attempted use of a FetchGroup in a query will not result in the expected
+ * behavior.
  * <p>
- * EclipseLink fetch group support is twofold: the pre-defined fetch groups at the descriptor level; and
- * dynamic (use case) fetch groups at the query level.
+ * FetchGroups are defined in 3 ways:
+ * <ul>
+ * <li>A {@link FetchGroupManager#getDefaultFetchGroup()} is created and stored
+ * on the {@link FetchGroupManager} during metadata processing if any of the
+ * basic ({@link DirectToFieldMapping}) are configured to be loaded directly.
+ * <li>A named FetchGroup can be defined and added to the
+ * {@link FetchGroupManager}. For JPA users this can be accomplished using
+ * annotation (@FetchGroup) or in an eclipselink-orm.xml. For JPA and native
+ * users named groups can be defined in code and added to the
+ * {@link FetchGroupManager#addFetchGroup(FetchGroup)}. Adding named groups in
+ * code is typically done in a {@link DescriptorCustomizer}and should be done
+ * before the session is initialized at login. To use a named FetchGroup on a
+ * query the native {@link ObjectLevelReadQuery#setFetchGroupName(String)} can
+ * be used of for JPA users the {@link QueryHints#FETCH_GROUP_NAME} an be used.
+ * <li>A dynamic FetchGroup can be created within the application and used on a
+ * query. For native API usage this is done using
+ * {@link ObjectLevelReadQuery#setFetchGroup(FetchGroup)} while JPA users
+ * generally use the {@link QueryHints#FETCH_GROUP}.
+ * </ul>
  * <p>
- * Every query can has at most one fetch group. There is an optional pre-defined default fetch group
- * at the descriptor level. If set, and the query has no fetch group being set, the default fetch group
- * would be used, unless query.setShouldUseDefaultFetchGroup(false) is also called. In the latter case,
- * the full object will be fetched after the query execution.
- *
- * @see org.eclipse.persistence.queries.FetchGroup
- * @see org.eclipse.persistence.queries.FetchGroupTracker
- *
- * @author King Wang, dclarke
- * @since TopLink 10.1.3.
+ * When a query is executed only one FetchGroup will be used. The order of
+ * precedence is:
+ * <ol>
+ * <li>If a FetchGroup is specified on a query it will be used.
+ * <li>If no FetchGroup is specified but a FetchGroup name is specified and the
+ * FetchGroupManager has a group by this name it will be used.
+ * <li>If neither a FetchGroup nor a FetchGroup name is specified on the query
+ * an the FetchGroupManager has a default group then it will be used.
+ * <li>If none of these conditions are met then no FetchGroup will be used when
+ * executing a query. <br/>
+ * <i>Note: This includes the execution of queries to populate lazy and eager
+ * relationships.
+ * <p>
+ * <b>Loading:</b> A FetchGroup can optionally specify that it needs its
+ * included relationships loaded. This can be done using
+ * {@link #setShouldLoad(boolean)} and {@link #setShouldLoadAll(boolean)} as
+ * well as the corresponding configurations in the @FetchGroup annotation and
+ * the <fetch-group> element in the eclipselink-orm.xml. When this si configured
+ * the FetchGroup will also function as a {@link LoadGroup} causing all of its
+ * specified relationships to be populated prior to returning the results form
+ * the query execution.
+ * 
+ * @see FetchGroupManager
+ * @see QueryHints#FETCH_GROUP
+ * @see LoadGroup
+ * 
+ * @author King Wang, dclarke, ailitchev
+ * @since TopLink 10.1.3
  */
 public class FetchGroup extends AttributeGroup {
 
-    /** 
-     * Indicates whether LoadGroup corresponding to FetchGroup should be applied to the query.
-     * If set to true then all group's relationship attributes are instantiated. 
+    /**
+     * Indicates whether this group should be also used as a {@link LoadGroup}
+     * when processing the query result.
      */
     private boolean shouldLoad;
     
@@ -64,6 +107,8 @@ public class FetchGroup extends AttributeGroup {
     /**
      * Return the attribute names on the current FetchGroup. This does not
      * include the attributes on nested FetchGroups
+     * 
+     * @deprecated Use {@link AttributeGroup#getAttributeNames()}
      */
     @Deprecated
     public Set<String> getAttributes() {
@@ -76,6 +121,10 @@ public class FetchGroup extends AttributeGroup {
      * Returns an error message in case javax.persistence.EntityNotFoundException 
      * should be thrown by the calling method,
      * null otherwise.
+     * <p>
+     * This method is typically only invoked through woven code in the
+     * persistence object introduced when {@link FetchGroupTracker} is woven
+     * into the entity.
      */
     public String onUnfetchedAttribute(FetchGroupTracker entity, String attributeName) {
         ReadObjectQuery query = new ReadObjectQuery(entity);
@@ -94,26 +143,36 @@ public class FetchGroup extends AttributeGroup {
      * Returns an error message in case javax.persistence.EntityNotFoundException 
      * should be thrown by the calling method,
      * null otherwise.
+     * <p>
+     * This method is typically only invoked through woven code in the
+     * persistence object introduced when {@link FetchGroupTracker} is woven
+     * into the entity.
      */
     public String onUnfetchedAttributeForSet(FetchGroupTracker entity, String attributeName) {
         return onUnfetchedAttribute(entity, attributeName);
     }
 
-    /** 
-     * Set a flag indicating whether LoadGroup corresponding to FetchGroup should be applied to the query.
-     * If set to true then all group's relationship attributes are instantiated. 
+    /**
+     * Configure this group to also act as a {@link LoadGroup} when set to true
+     * and load all of the specified relationships so that the entities returned
+     * from the query where this group was used have the requested relationships
+     * populated. All subsequent attributes added to this group that create a
+     * nested group will have this value applied to them.
+     * 
+     * @see #setShouldLoadAll(boolean) to configure {@link #shouldLoad()} on
+     *      nested groups
      */
     public void setShouldLoad(boolean shouldLoad) {
         this.shouldLoad = shouldLoad;
     }
     
-    /** 
-     * Calls setShoulLoad method recursively on all nested fetch groups.
-     * If a nested fetch group is created using addAttribute(String attributeNameOrPath)
-     * then the value for its shouldLoad flag is copied from the containing fetch group.
-     * However if a nested fetch group is added using addAttribute(String attributeNameOrPath, AttributeGroup group)
-     * shouldLoad flag value of the added nested fetch group remains unchanged.
-     * Use this method to set the same shouldLoad value for the main as well as to all nested fetch groups. 
+    /**
+     * Configure this group to also act as a {@link LoadGroup} the same as
+     * {@link #setShouldLoad(boolean)}. Additionally this method will apply the
+     * provided boolean value to all nested groups already added.
+     * 
+     * @see #setShouldLoad(boolean) to only configure this grup without
+     *      effecting existing nested groups.
      */
     public void setShouldLoadAll(boolean shouldLoad) {
         this.shouldLoad = shouldLoad;
@@ -129,16 +188,17 @@ public class FetchGroup extends AttributeGroup {
         }
     }
     
-    /** 
-     * Indicates whether LoadGroup corresponding to FetchGroup should be applied to the query.
-     * If set to true then all group's relationship attributes are instantiated. 
+    /**
+     * @return true if this group will be used as a {@link LoadGroup}when
+     *         processing the results of a query to force the specified
+     *         relationships to be loaded.
      */
     public boolean shouldLoad() {
         return this.shouldLoad;
     }
     
     @Override
-    public FetchGroup newGroup(String name, AttributeGroup parent) {
+    protected FetchGroup newGroup(String name, AttributeGroup parent) {
         FetchGroup fetchGroup = new FetchGroup(name);
         if(parent != null) {
             fetchGroup.setShouldLoad(((FetchGroup)parent).shouldLoad());
