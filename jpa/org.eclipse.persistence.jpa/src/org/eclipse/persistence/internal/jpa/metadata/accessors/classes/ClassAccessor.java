@@ -333,7 +333,7 @@ public abstract class ClassAccessor extends MetadataAccessor {
      */
     protected void addAccessorFields(boolean processingInverse) {
         for (MetadataField metadataField : getJavaClass().getFields().values()) {
-            if (metadataField.isAnnotationPresent(Transient.class, getDescriptor())) {
+            if (metadataField.isAnnotationPresent(Transient.class, getDescriptor()) || metadataField.shouldBeIgnored()) {
                 if (!metadataField.areAnnotationsCompatibleWithTransient(getDescriptor())) {
                     throw ValidationException.mappingAnnotationsAppliedToTransientAttribute(metadataField);
                 }

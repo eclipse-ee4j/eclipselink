@@ -16,6 +16,7 @@ package org.eclipse.persistence.internal.jpa.weaving;
 import java.util.*;
 
 import org.eclipse.persistence.internal.helper.Helper;
+import org.eclipse.persistence.internal.jpa.EntityManagerImpl;
 import org.eclipse.persistence.internal.libraries.asm.*;
 import org.eclipse.persistence.internal.libraries.asm.commons.*;
 import org.eclipse.persistence.internal.libraries.asm.attrs.RuntimeVisibleAnnotations;
@@ -956,7 +957,7 @@ public class ClassWeaver extends ClassAdapter implements Constants {
                 attrs.annotations.add(new Annotation(Type.getDescriptor(Class.forName("javax.xml.bind.annotation.XmlTransient"))));
             } catch (Exception exception) {}
         }
-        cv.visitField(ACC_PROTECTED, "_persistence_fetchGroup", FETCHGROUP_SIGNATURE, null, attrs);
+        cv.visitField(ACC_PROTECTED, EntityManagerImpl.PERSITENCE_FETCH_GROUP_WEAVED_FIELD_NAME, FETCHGROUP_SIGNATURE, null, attrs);
         
         cv.visitField(ACC_PROTECTED + ACC_TRANSIENT, "_persistence_shouldRefreshFetchGroup", PBOOLEAN_SIGNATURE, null, null);
         cv.visitField(ACC_PROTECTED + ACC_TRANSIENT, "_persistence_session", SESSION_SIGNATURE, null, null);

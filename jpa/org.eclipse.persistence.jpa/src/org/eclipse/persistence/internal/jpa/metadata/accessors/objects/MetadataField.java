@@ -18,6 +18,7 @@
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata.accessors.objects;
 
+import org.eclipse.persistence.internal.jpa.EntityManagerImpl;
 import org.eclipse.persistence.internal.jpa.metadata.MetadataConstants;
 import org.eclipse.persistence.internal.jpa.metadata.MetadataDescriptor;
 import org.eclipse.persistence.internal.jpa.metadata.MetadataLogger;
@@ -86,5 +87,14 @@ public class MetadataField extends MetadataAnnotatedElement {
      */
     public void setDeclaringClass(MetadataClass declaringClass) {
         this.declaringClass = declaringClass;
+    }
+    
+    /**
+     * INTERNAL
+     * Some fields should automatically be ignored, return true if this field should be ignored
+     * @return
+     */
+    public boolean shouldBeIgnored(){
+        return (getName() != null) && (getName().equals(EntityManagerImpl.PERSITENCE_FETCH_GROUP_WEAVED_FIELD_NAME));
     }
 }

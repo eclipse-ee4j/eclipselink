@@ -151,6 +151,8 @@ public class EntityManagerImpl implements org.eclipse.persistence.jpa.JpaEntityM
     
     protected boolean commitWithoutPersistRules;
     
+    public static final String PERSITENCE_FETCH_GROUP_WEAVED_FIELD_NAME = "_persistence_fetchGroup";
+    
     abstract static class PropertyProcessor {
         abstract void process(String name, Object value, EntityManagerImpl em);
     }
