@@ -443,11 +443,18 @@ public class EntityManagerFactoryImpl implements EntityManagerFactory, Persisten
         this.shouldValidateExistence = shouldValidateExistence;
     }
 
+    /**
+     * Access the cache that is associated with the entity manager 
+     * factory (the "second level cache").
+     * @return instance of the <code>Cache</code> interface
+     * @throws IllegalStateException if the entity manager factory has been closed
+     * @see javax.persistence.EntityManagerFactory#getCache()
+     * @since Java Persistence 2.0
+     */
     public Cache getCache() {
         verifyOpen();
-        if (myCache == null) {
-            ServerSession session = this.getServerSession();
-            myCache = new CacheImpl(this, session.getIdentityMapAccessor());
+        if (null == myCache) {
+            myCache = new CacheImpl(this);
         }
         return myCache;
     }
@@ -542,20 +549,6 @@ public class EntityManagerFactoryImpl implements EntityManagerFactory, Persisten
     }
 
     /**
-     * Returns the id of the entity. A generated id is not guaranteed to be
-     * available until after the database insert has occurred. Returns null if
-     * the entity does not yet have an id
-     * 
-     * @param entity
-     * @return id of the entity
-     * @throws IllegalStateException
-     *             if the entity is found not to be an entity.
-     */
-    public Object getIdentifier(Object entity) {
-        return EntityManagerFactoryImpl.getIdentifier(entity, serverSession);
-    }
-
-    /**
      * Determine the load state of a given persistent attribute of an entity
      * belonging to the persistence unit.
      * 
@@ -646,15 +639,30 @@ public class EntityManagerFactoryImpl implements EntityManagerFactory, Persisten
      * @throws IllegalStateException
      *             if the entity is found not to be an entity.
      */
+    public Object getIdentifier(Object entity) {
+        return EntityManagerFactoryImpl.getIdentifier(entity, serverSession);
+    }
+    
+    /**
+     * Returns the id of the entity. A generated id is not guaranteed to be
+     * available until after the database insert has occurred. Returns null if
+     * the entity does not yet have an id
+     * 
+     * @param entity
+     * @return id of the entity
+     * @throws IllegalStateException
+     *             if the entity is found not to be an entity.
+     */
     public static Object getIdentifier(Object entity, AbstractSession session) {
         ClassDescriptor descriptor = session.getDescriptor(entity);
         if (descriptor == null) {
-            throw new IllegalArgumentException(ExceptionLocalization.buildMessage("jpa_persistence_util_non_persistent_class ", new Object[] { entity }));
+            throw new IllegalArgumentException(ExceptionLocalization.buildMessage("jpa_persistence_util_non_persistent_class", new Object[] { entity }));
         }
         if (descriptor.getCMPPolicy() != null) {
             return descriptor.getCMPPolicy().createPrimaryKeyInstance(entity, session);
         } else {
-            throw new IllegalArgumentException(ExceptionLocalization.buildMessage("jpa_persistence_util_non_persistent_class ", new Object[] { entity }));
+            // 308950: Alternatively, CacheImpl.getId(entity) handles a null CMPPolicy case for weaved and unweaved domain object
+            throw new IllegalArgumentException(ExceptionLocalization.buildMessage("jpa_persistence_util_non_persistent_class", new Object[] { entity }));
         }
     }
 

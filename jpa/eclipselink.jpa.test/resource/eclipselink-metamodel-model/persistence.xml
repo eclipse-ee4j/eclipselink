@@ -20,8 +20,10 @@
         <!-- 300051: added to test @EmbeddedId:CPUEmbeddedId directly on @MappedSuperclass:CPU -->
         <class>org.eclipse.persistence.testing.models.jpa.metamodel.MultiCoreCPU</class>
         <class>org.eclipse.persistence.testing.models.jpa.metamodel.Core</class>
+        <!-- 248780: Refactor Cache Implementation surrounding evict() and MappedSuperclass support -->        
         <exclude-unlisted-classes>false</exclude-unlisted-classes>
         <properties>
+             <property name="eclipselink.weaving" value="false"/>        
              <property name="eclipselink.session-name" value="metamodel"/>
         </properties>
     </persistence-unit>

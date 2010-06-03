@@ -31,7 +31,7 @@ import javax.persistence.OneToMany;
 import javax.persistence.TableGenerator;
 
 @MappedSuperclass
-public abstract class Person implements Serializable {
+public class Person implements Serializable { //  changed from abstract to concrete for 248780   
     @Id
     @GeneratedValue(strategy=TABLE, generator="PERSON_MM_TABLE_GENERATOR")
     @TableGenerator(

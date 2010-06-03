@@ -501,6 +501,7 @@
             <fileset dir="${eclipselink.jpa.test}/resource/${eclipselink.annotation.model}" includes="*.xml"/>
         </copy>
         <copy todir="${eclipselink.jpa.test}/${build.dir}/${eclipselink.annotation.model}">
+            <!-- 248780: exclude copies of classes from this eclipselink-annotation-model.jar if weaving is disabled in any other jar -->        	
             <fileset dir="${eclipselink.jpa.test}/${classes.dir}"
                      includes="org/eclipse/persistence/testing/models/"
                      excludes="org/eclipse/persistence/testing/models/jpa/xml/**
@@ -510,6 +511,7 @@
                                org/eclipse/persistence/testing/models/jpa/fieldaccess/advanced/**
                                org/eclipse/persistence/testing/models/jpa/jpaadvancedproperties/**
                                org/eclipse/persistence/testing/models/jpa/fieldaccess/advanced/**
+                               org/eclipse/persistence/testing/models/jpa/metamodel/**            	
                                org/eclipse/persistence/testing/models/jpa/beanvalidation/**
                                org/eclipse/persistence/testing/models/weaving/**"/>
         </copy>

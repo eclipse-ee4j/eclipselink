@@ -18,6 +18,13 @@ package org.eclipse.persistence.testing.models.jpa.metamodel;
 import javax.persistence.Entity;
 import javax.persistence.Table;
 
+/**
+ * A MappedSuperclass can extend an Entity in an inheritance tree such as
+ * Entity -- MappedSuperclass -- Entity
+ * See the following references
+ * http://wiki.eclipse.org/EclipseLink/Development/JPA_2.0/cache_api#Test_Model_1
+ */
+
 @Entity(name="LocationMetamodel")
 @Table(name="CMP3_MM_GALACTIC")//LOCATION")
 public class Location extends CoordinateMS implements java.io.Serializable {

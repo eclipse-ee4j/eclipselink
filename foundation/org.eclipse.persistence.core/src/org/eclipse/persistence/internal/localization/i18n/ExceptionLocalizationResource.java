@@ -170,9 +170,12 @@ public class ExceptionLocalizationResource extends ListResourceBundle {
                                            { "NO_VALUE_BOUND", "No value was bound to parameter named: {0}"},
                                            { "NULL_PARAMETER_PASSED_TO_SET_PARAMETER", "Null parameter was passed to 'setParameter'.  Can not index parameters by 'Null'."},
                                            { "pathnode_is_primitive_node", "Criteria expression is of primitive type and can not be further navigated."},
-                                           { "pathnode_type_does_not_apply_to_primitive_node", "Criteria expression is of primitive type and can not be further navigated.  Primitive Expressions do not allow 'type'."}
-    };
-
+                                           { "pathnode_type_does_not_apply_to_primitive_node", "Criteria expression is of primitive type and can not be further navigated.  Primitive Expressions do not allow 'type'."},
+                                           { "cache_impl_class_has_no_descriptor_is_not_a_persistent_type", "The class [{0}] is not a persistent type - it has no associated descriptor."},                                           
+                                           { "cache_impl_object_has_no_descriptor_is_not_a_persistent_type", "The object [{0}] is not of a persistent type - it has no associated descriptor."}, //
+                                           { "cache_impl_object_descriptor_has_no_cmppolicy_set", "The object [{0}] with descriptor [{1}] does not have a CMPPolicy set, we are unable to return an Id."}, //
+                                           { "cache_descriptor_has_no_cmppolicy_set_cannot_create_primary_key", "The class [{0}] with descriptor [{1}] does not have a CMPPolicy set, we are unable create a primary key instance for the id type [{2}]."}                                           
+                                        };
     /**
      * Return the lookup table.
      */

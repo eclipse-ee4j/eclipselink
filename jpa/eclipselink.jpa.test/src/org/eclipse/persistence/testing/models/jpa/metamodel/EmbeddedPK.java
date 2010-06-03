@@ -41,6 +41,7 @@ public class EmbeddedPK implements Serializable {
     //@Column(name = "PK_PART2", nullable = false)
     //private int pk_part2;
 
+
     public EmbeddedPK() {
     }
     
@@ -53,6 +54,14 @@ public class EmbeddedPK implements Serializable {
         return ((EmbeddedPK)anEmbeddedPK).pk_part1 == this.pk_part1;                
     }
 
+    public int getPk_part1() {
+        return pk_part1;
+    }
+
+    public void setPk_part1(int pkPart1) {
+        pk_part1 = pkPart1;
+    }
+    
     @Override
     public int hashCode() {
         return 9232 * pk_part1;

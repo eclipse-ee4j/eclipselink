@@ -32,7 +32,7 @@ import javax.persistence.Version;
 @Inheritance(strategy=JOINED)
 @Entity(name="GalacticMetamodel")
 @Table(name="CMP3_MM_GALACTIC")
-public class GalacticPosition implements java.io.Serializable {
+public class GalacticPosition extends Position implements java.io.Serializable {
 /*    @Id
     @GeneratedValue(strategy=TABLE, generator="GALACTIC_MM_TABLE_GENERATOR")
     @TableGenerator(

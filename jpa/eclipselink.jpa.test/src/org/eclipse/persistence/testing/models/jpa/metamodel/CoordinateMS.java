@@ -17,6 +17,12 @@ package org.eclipse.persistence.testing.models.jpa.metamodel;
 
 import javax.persistence.MappedSuperclass;
 
+/**
+ * A MappedSuperclass can extend an Entity in an inheritance tree such as
+ * Entity -- MappedSuperclass -- Entity
+ * See the following references
+ * http://wiki.eclipse.org/EclipseLink/Development/JPA_2.0/cache_api#Test_Model_1
+ */
 @MappedSuperclass
 public class CoordinateMS extends GalacticPosition {
 
