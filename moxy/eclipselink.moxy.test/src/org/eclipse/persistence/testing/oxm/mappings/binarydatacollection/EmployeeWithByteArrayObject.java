@@ -76,7 +76,10 @@ public class EmployeeWithByteArrayObject {
             for (int i = 0; i < getPhotos().size(); i++) {
                 Object next = getPhotos().elementAt(i);
                 if (next != null) {
-                    returnString += (next + "\n" + "-->" + new String(Base64.base64Encode(((byte[])ConversionManager.getDefaultManager().convertObject(next, byte[].class)))));
+                    returnString += next + " ";
+                    if(next instanceof Byte[]) {
+                        returnString = "\n" + "-->" + new String(Base64.base64Encode(((byte[])ConversionManager.getDefaultManager().convertObject(next, byte[].class))));
+                    }
                 } else {
                     returnString += ("null_item" + " ");
                 }
