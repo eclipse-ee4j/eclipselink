@@ -28,7 +28,7 @@ public class CoachVitals implements Serializable {
 
     public CoachVitals() {}
     
-    @OneToOne(fetch=EAGER)
+    @OneToOne(fetch=javax.persistence.FetchType.LAZY)
     @JoinColumn(name="TEAM_ID", referencedColumnName="ID")    
     public HockeyTeam getHockeyTeam() {
         return hockeyTeam;

@@ -1699,7 +1699,7 @@ public class ClassDescriptor implements Cloneable, Serializable {
     public List<DatabaseField> getAdditionalWritableMapKeyFields() {
         return additionalWritableMapKeyFields;
     }
-    
+
     /**
      * PUBLIC:
      * Get the alias
@@ -3245,7 +3245,7 @@ public class ClassDescriptor implements Cloneable, Serializable {
             if ((getPrimaryKeyFields().size() > 1) || getObjectBuilder().isXMLObjectBuilder()) {
                 setCacheKeyType(CacheKeyType.CACHE_ID);
             } else if (getPrimaryKeyFields().size() == 1) {
-                Class type = getObjectBuilder().getFieldClassification(getPrimaryKeyFields().get(0));
+                Class type = getObjectBuilder().getPrimaryKeyClassifications().get(0);
                 if ((type == null) || type.isArray()) {
                     setCacheKeyType(CacheKeyType.CACHE_ID);
                 } else {
@@ -5074,7 +5074,7 @@ public class ClassDescriptor implements Cloneable, Serializable {
     public void useNoIdentityMap() {
         setIdentityMapClass(ClassConstants.NoIdentityMap_Class);
     }
-    
+
     /**
      * PUBLIC:
      * Set the class of identity map to be the cache identity map.

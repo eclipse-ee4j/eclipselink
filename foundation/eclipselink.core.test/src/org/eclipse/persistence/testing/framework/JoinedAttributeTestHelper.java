@@ -56,16 +56,15 @@ public class JoinedAttributeTestHelper {
      *   pass controlQuery and queryWithJoins to this method.
      */
     public static String executeQueriesAndCompareResults(ObjectLevelReadQuery controlQuery, ObjectLevelReadQuery queryWithJoins, AbstractSession session) {
-        
+        session.logMessage("JoinedAttributeTestHelper: executing queryWithJoins:");
+        session.getIdentityMapAccessor().initializeAllIdentityMaps();
+        Object result = session.executeQuery(queryWithJoins);
         session.logMessage("JoinedAttributeTestHelper: getting control result:");
         Object controlResult = getControlResultsFromControlQuery(controlQuery, queryWithJoins, session);
         String errorMsg = "";
-        session.logMessage("JoinedAttributeTestHelper: executing queryWithJoins:");
         if (controlResult instanceof Collection) {
-            Collection result = (Collection)session.executeQuery(queryWithJoins);
-            errorMsg = compareCollections((Collection)controlResult, result, controlQuery.getDescriptor(), session);
+            errorMsg = compareCollections((Collection)controlResult, (Collection)result, controlQuery.getDescriptor(), session);
         } else {
-            Object result = session.executeQuery(queryWithJoins);
             errorMsg = compareObjects(controlResult, result, session);
         }
         return errorMsg;
@@ -80,7 +79,7 @@ public class JoinedAttributeTestHelper {
      */
     public static Object getControlResultsFromControlQuery (ObjectLevelReadQuery controlQuery, ObjectLevelReadQuery queryWithJoins, AbstractSession session){
         int valueHolderPolicy = InMemoryQueryIndirectionPolicy.SHOULD_TRIGGER_INDIRECTION;
-
+        session.getIdentityMapAccessor().initializeAllIdentityMaps();
         // Need to execute the control query twice, once to determine objects excluded from outjoins,
         // and once to instantiate indirection on only those objects not excluded (otherwise may instantiate indirection differently than join query).
         Object controlResult = session.executeQuery(controlQuery);

@@ -373,6 +373,12 @@ public abstract class DatabaseMapping implements Cloneable, Serializable {
     protected List<Expression> extractNestedExpressions(List<Expression> expressions, ExpressionBuilder newRoot, boolean rootExpressionsAllowed) {
         List<Expression> nestedExpressions = new ArrayList(expressions.size());
 
+        /*
+         * need to work on all expressions with at least 2 nestings off the base expression builder, excluding 
+         * aggregateObjectMapping expressions from the count (only ForeignReferenceMapping expressions count).  For those 
+         * expressions, If the expression closest to to the Builder is for this mapping, that expression is rebuilt using
+         * newRoot and added to the nestedExpressions list.  
+         */
         for (Expression next : expressions) {
             // The expressionBuilder can be one of the locked expressions in
             // the ForUpdateOfClause.
@@ -380,11 +386,24 @@ public abstract class DatabaseMapping implements Cloneable, Serializable {
                 continue;
             }
             QueryKeyExpression expression = (QueryKeyExpression)next;
-            QueryKeyExpression base = expression;
+            ObjectExpression base = expression;
             boolean afterBase = false;
-            while (!base.getBaseExpression().isExpressionBuilder()) {
-                afterBase = true;
-                base = (QueryKeyExpression)base.getBaseExpression();
+            boolean done = false;
+            
+            ObjectExpression prevExpression = base;
+            while (!base.getBaseExpression().isExpressionBuilder()&& !done) {
+                base = (ObjectExpression)base.getBaseExpression();
+                while (!base.isExpressionBuilder() && base.getMapping().isAggregateObjectMapping()){
+                    base = (ObjectExpression)base.getBaseExpression();
+                }
+                if (base.isExpressionBuilder()){
+                    done = true;
+                    //use the one closest to the expression builder that wasn't an aggregate
+                    base = prevExpression;
+                } else {
+                    prevExpression = base;
+                    afterBase = true;
+                }
             }
             if (afterBase && base.getName().equals(getAttributeName())) {
                 nestedExpressions.add(expression.rebuildOn(base, newRoot));

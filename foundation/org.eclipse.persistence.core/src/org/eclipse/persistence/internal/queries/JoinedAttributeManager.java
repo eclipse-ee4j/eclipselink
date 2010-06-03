@@ -53,6 +53,12 @@ import org.eclipse.persistence.sessions.DatabaseRecord;
  */
 
 public class JoinedAttributeManager implements Cloneable, Serializable {
+    
+    /** Stores AggregateObjectMapping expressions used within local join expressions */
+    protected List<DatabaseMapping> joinedAggregateMappings = new ArrayList(0);
+    
+    /** indexed list of mappings corresponding to */
+    protected List<DatabaseMapping> joinedAttributeMappings = new ArrayList(0);
 
     /** Stores the joined attributes added through the query */
     protected List<Expression> joinedAttributeExpressions;
@@ -60,8 +66,8 @@ public class JoinedAttributeManager implements Cloneable, Serializable {
     /** Stores the joined attributes as specified in the descriptor */
     protected List<Expression> joinedMappingExpressions;
     
-    /** PERF: Cache the local joined attribute names. */
-    protected List<String> joinedAttributes;
+    /** PERF: Cache the local joined attribute expressions. */
+    protected List<Expression> joinedAttributes;
     
     /** Used to determine if -m joining has been used. */
     protected boolean isToManyJoin = false;
@@ -132,37 +138,13 @@ public class JoinedAttributeManager implements Cloneable, Serializable {
         this.shouldFilterDuplicates = shouldFilterDuplicates;
     }
     
-    public void addJoinedAttribute(String attributeExpression) {
+    public void addJoinedAttribute(Expression attributeExpression) {
         this.getJoinedAttributes().add(attributeExpression);
     }
 
     public void addJoinedAttributeExpression(Expression attributeExpression) {
         if(!getJoinedAttributeExpressions().contains(attributeExpression)) {
-            int baseExpressionIndex = -1;
-            boolean sameBase = false;
-            if((attributeExpression instanceof BaseExpression)) {
-                Expression baseExpression = ((BaseExpression)attributeExpression).getBaseExpression();
-                if(baseExpression != null && !baseExpression.isExpressionBuilder()) {
-                    addJoinedAttributeExpression(baseExpression);
-                    // EL bug 307497
-                    if (baseExpression != lastJoinedAttributeBaseExpression) {
-                        baseExpressionIndex = getJoinedAttributeExpressions().indexOf(baseExpression);
-                    } else {
-                        sameBase = true;
-                    }
-                }
-            }
-            
-            // EL bug 307497
-            if (baseExpressionIndex == -1) {
-                getJoinedAttributeExpressions().add(attributeExpression);
-                if (!sameBase) {
-                    lastJoinedAttributeBaseExpression = attributeExpression;
-                }
-            } else {
-                //Add attributeExpression at baseExpressionIndex + 1.
-                getJoinedAttributeExpressions().add(baseExpressionIndex+1, attributeExpression);
-            }
+            getJoinedAttributeExpressions().add(attributeExpression);
         }
     }
     
@@ -199,7 +181,7 @@ public class JoinedAttributeManager implements Cloneable, Serializable {
             joinManager.joinedMappingExpressions = new ArrayList<Expression>(this.joinedMappingExpressions);
         }
         if (this.joinedAttributes != null) {
-            joinManager.joinedAttributes = new ArrayList<String>(this.joinedAttributes);
+            joinManager.joinedAttributes = new ArrayList<Expression>(this.joinedAttributes);
         }
         if (this.joinedMappingIndexes != null) {
             joinManager.joinedMappingIndexes = new HashMap<DatabaseMapping, Object>(this.joinedMappingIndexes);
@@ -207,11 +189,17 @@ public class JoinedAttributeManager implements Cloneable, Serializable {
         if (this.joinedMappingQueries != null) {
             joinManager.joinedMappingQueries = new HashMap<DatabaseMapping, ObjectLevelReadQuery>(this.joinedMappingQueries);
         }
-        if(this.orderByExpressions != null) {
+        if (this.orderByExpressions != null) {
             joinManager.orderByExpressions = new ArrayList<Expression>(this.orderByExpressions);
         }
-        if(this.additionalFieldExpressions != null) {
+        if (this.additionalFieldExpressions != null) {
             joinManager.additionalFieldExpressions = new ArrayList<Expression>(this.additionalFieldExpressions);
+        }
+        if (this.joinedAttributeMappings != null) {
+            joinManager.joinedAttributeMappings = new ArrayList<DatabaseMapping>(this.joinedAttributeMappings);
+        }
+        if (this.joinedAggregateMappings !=null) {
+            joinManager.joinedAggregateMappings = new ArrayList<DatabaseMapping>(this.joinedAggregateMappings);
         }
         return joinManager;
     }
@@ -230,6 +218,8 @@ public class JoinedAttributeManager implements Cloneable, Serializable {
         this.joinedMappingQueryClones = null;
         this.orderByExpressions = null;
         this.additionalFieldExpressions = null;
+        this.joinedAttributeMappings = null;
+        this.joinedAggregateMappings = null;
     }
 
     /**
@@ -283,20 +273,19 @@ public class JoinedAttributeManager implements Cloneable, Serializable {
             if (objectExpression.getBuilder().getQueryClass() == null){
                 objectExpression.getBuilder().setQueryClass(descriptor.getJavaClass());
             }
-            
-            // PERF: Cache join attribute names.
-            ObjectExpression baseExpression = objectExpression;
-            while (!baseExpression.getBaseExpression().isExpressionBuilder()) {
-                baseExpression = (ObjectExpression)baseExpression.getBaseExpression();
-            }
-            this.addJoinedAttribute(baseExpression.getName());
-            
-            // Ignore nested
-            if ((objectExpression.getBaseExpression() == objectExpression.getBuilder()) && objectExpression.getMapping().isForeignReferenceMapping()) {
-                ForeignReferenceMapping mapping = (ForeignReferenceMapping)objectExpression.getMapping();
+            //get the first expression after the builder that is not an aggregate, and populate the aggregateMapping list if there are aggregates
+            ObjectExpression baseExpression = getFirstNonAggregateExpressionAfterExpressionBuilder(objectExpression, getJoinedAggregateMappings());
 
+            // PERF: Cache local join attribute Expression.
+            this.addJoinedAttribute(baseExpression);
+            
+            DatabaseMapping mapping = baseExpression.getMapping();
+            this.getJoinedAttributeMappings().add(mapping);
+            
+            // focus on the base expression.  Nested queries will handle nested expressions, and only need to be processed once
+            if (mapping.isForeignReferenceMapping() && !getJoinedMappingQueries_().containsKey(mapping)) {
                 // A nested query must be built to pass to the descriptor that looks like the real query execution would.
-                ObjectLevelReadQuery nestedQuery = mapping.prepareNestedJoins(this, readQuery, session);
+                ObjectLevelReadQuery nestedQuery = ((ForeignReferenceMapping)mapping).prepareNestedJoins(this, readQuery, session);
                 if (nestedQuery != null) {
                     // Register the nested query to be used by the mapping for all the objects.
                     getJoinedMappingQueries_().put(mapping, nestedQuery);
@@ -313,7 +302,8 @@ public class JoinedAttributeManager implements Cloneable, Serializable {
      */
     public void computeJoiningMappingQueries(AbstractSession session) {
         if (hasJoinedExpressions()) {
-            this.joinedAttributes = new ArrayList<String>(getJoinedAttributeExpressions().size() + getJoinedMappingExpressions().size());
+            this.joinedAttributeMappings = new ArrayList<DatabaseMapping>(getJoinedAttributeExpressions().size() + getJoinedMappingExpressions().size());
+            this.joinedAttributes = new ArrayList<Expression>(getJoinedAttributeExpressions().size() + getJoinedMappingExpressions().size());
             setJoinedMappingQueries_(new HashMap(getJoinedAttributeExpressions().size() + getJoinedMappingExpressions().size()));
             computeNestedQueriesForJoinedExpressions(getJoinedAttributeExpressions(), session, (ObjectLevelReadQuery)this.baseQuery);
             computeNestedQueriesForJoinedExpressions(getJoinedMappingExpressions(), session, (ObjectLevelReadQuery)this.baseQuery);
@@ -324,13 +314,16 @@ public class JoinedAttributeManager implements Cloneable, Serializable {
      * This method is used when computing the indexes for joined mappings.
      * It iterates through a list of join expressions and adds an index that represents where the
      * fields represented by that expression will appear in the row returned by a read query.
+     * computeNestedQueriesForJoinedExpressions must be already called.
      */
     protected int computeIndexesForJoinedExpressions(List joinedExpressions, int currentIndex, AbstractSession session) {
         for (int index = 0; index < joinedExpressions.size(); index++) {
             ObjectExpression objectExpression = (ObjectExpression)joinedExpressions.get(index);
             DatabaseMapping mapping = objectExpression.getMapping();
-            // Ignore nested
-            if ((objectExpression.getBaseExpression() == objectExpression.getBuilder()) && (mapping != null) && mapping.isForeignReferenceMapping()) {
+            // only store the index if this is the local expression to avoid it being added multiple times
+            //This means the base local expression must be first on the list, followed by nested expressions
+            ObjectExpression localExpression = getFirstNonAggregateExpressionAfterExpressionBuilder(objectExpression, new ArrayList(1));
+            if ((localExpression == objectExpression) && (mapping != null) && mapping.isForeignReferenceMapping()) {
                 getJoinedMappingIndexes_().put(mapping, Integer.valueOf(currentIndex));
             }
             ClassDescriptor descriptor = mapping.getReferenceDescriptor();
@@ -367,6 +360,23 @@ public class JoinedAttributeManager implements Cloneable, Serializable {
     }
 
     /**
+     * Get the list of additional field expressions.
+     */
+    public List<Expression> getAdditionalFieldExpressions() {
+        if (this.additionalFieldExpressions == null){
+            this.additionalFieldExpressions = new ArrayList<Expression>();
+        }
+        return additionalFieldExpressions;
+    }
+
+    /**
+     * Get the list of additional field expressions.
+     */
+    public List<Expression> getAdditionalFieldExpressions_() {
+        return additionalFieldExpressions;
+    }
+
+    /**
      * Returns the base expression builder for this query.
      */
     public ExpressionBuilder getBaseExpressionBuilder(){
@@ -395,20 +405,33 @@ public class JoinedAttributeManager implements Cloneable, Serializable {
     }
     
     /**
-     * Get the list of additional field expressions.
+     * INTERNAL:
+     * Parses an expression to return the first non-AggregateObjectMapping expression after the base ExpressionBuilder.
+     * 
+     * @param fullExpression
+     * @param aggregateMappingsEncountered - collection of aggregateObjectMapping expressions encountered in the returned expression
+     *  between the first expression and the ExpressionBuilder
+     * @return first non-AggregateObjectMapping expression after the base ExpressionBuilder from the fullExpression
      */
-    public List<Expression> getAdditionalFieldExpressions() {
-        if (this.additionalFieldExpressions == null){
-            this.additionalFieldExpressions = new ArrayList<Expression>();
+    protected ObjectExpression getFirstNonAggregateExpressionAfterExpressionBuilder(ObjectExpression fullExpression, List aggregateMappingsEncountered){
+        boolean done = false;
+        ObjectExpression baseExpression = fullExpression;
+        ObjectExpression prevExpression = fullExpression;
+        while (!baseExpression.getBaseExpression().isExpressionBuilder()&& !done) {
+            baseExpression = (ObjectExpression)baseExpression.getBaseExpression();
+            while (!baseExpression.isExpressionBuilder() && baseExpression.getMapping().isAggregateObjectMapping()){
+                aggregateMappingsEncountered.add(baseExpression.getMapping());
+                baseExpression = (ObjectExpression)baseExpression.getBaseExpression();
+            }
+            if (baseExpression.isExpressionBuilder()){
+                done = true;
+                //use the one closest to the expression builder that wasn't an aggregate
+                baseExpression = prevExpression;
+            } else {
+                prevExpression = baseExpression;
+            }
         }
-        return additionalFieldExpressions;
-    }
-
-    /**
-     * Get the list of additional field expressions.
-     */
-    public List<Expression> getAdditionalFieldExpressions_() {
-        return additionalFieldExpressions;
+        return baseExpression;
     }
 
     /**
@@ -428,13 +451,13 @@ public class JoinedAttributeManager implements Cloneable, Serializable {
     /**
      * Return the attributes that must be joined.
      */
-    public List<String> getJoinedAttributes() {
-        if (this.joinedAttributes == null){
-            this.joinedAttributes = new ArrayList<String>();
+    public List<DatabaseMapping> getJoinedAggregateMappings() {
+        if (this.joinedAggregateMappings == null){
+            this.joinedAggregateMappings = new ArrayList<DatabaseMapping>();
         }
-        return this.joinedAttributes;
+        return joinedAggregateMappings;
     }
-    
+
     /**
      * Return the attributes that must be joined.
      */
@@ -444,7 +467,27 @@ public class JoinedAttributeManager implements Cloneable, Serializable {
         }
         return joinedAttributeExpressions;
     }
-    
+
+    /**
+     * Return the attributes that must be joined.
+     */
+    public List<DatabaseMapping> getJoinedAttributeMappings() {
+        if (this.joinedAttributeMappings == null){
+            this.joinedAttributeMappings = new ArrayList<DatabaseMapping>();
+        }
+        return this.joinedAttributeMappings;
+    }
+
+    /**
+     * Return the attributes that must be joined.
+     */
+    public List<Expression> getJoinedAttributes() {
+        if (this.joinedAttributes == null){
+            this.joinedAttributes = new ArrayList<Expression>();
+        }
+        return this.joinedAttributes;
+    }
+
     /**
      * Get the list of expressions that represent elements that are joined because of their
      * mapping for this query.
@@ -509,6 +552,38 @@ public class JoinedAttributeManager implements Cloneable, Serializable {
     public List<Expression> getOrderByExpressions_() {
         return orderByExpressions;
     }
+    
+    /**
+     * INTERNAL: 
+     *  Helper method to get the value from the clone for the expression passed in, triggering joins on
+     *  all intermediate steps.  
+     *  Example expression "emp.project.pk" with a clone Employee will trigger indirection and return
+     *  the project pk value.  
+     * @param session
+     * @param clone
+     * @param expression
+     * @return
+     */
+    public Object getValueFromObjectForExpression(AbstractSession session, Object clone, ObjectExpression expression){
+        if (!expression.isExpressionBuilder()){
+            //can only operate over querykeys representing aggregate Objects.  Indirection should not be needed
+            Object baseValue = this.getValueFromObjectForExpression(session, clone, (ObjectExpression)expression.getBaseExpression());
+            if ( baseValue == null ) {
+                return null;
+            }
+            DatabaseMapping mapping = expression.getMapping();
+            Object attributeValue = mapping.getRealAttributeValueFromObject(baseValue, session);
+            if (attributeValue != null) {
+                if (mapping.isForeignReferenceMapping() && (((ForeignReferenceMapping)mapping).getIndirectionPolicy().usesTransparentIndirection())) {
+                    //getRealAttributeValueFromObject does not trigger transparent indirection, but instantiateObject will (it calls size on it)
+                    ((ForeignReferenceMapping)mapping).getIndirectionPolicy().instantiateObject(baseValue, attributeValue);
+                }
+            }
+            return attributeValue;
+            
+        }
+        return clone;
+    }
 
     /**
      * Return if there are orderBy expressions.
@@ -534,22 +609,43 @@ public class JoinedAttributeManager implements Cloneable, Serializable {
     /**
      * Return if the attribute is specified for joining.
      */
-    public boolean isAttributeJoined(ClassDescriptor mappingDescriptor, String attributeName) {
+    public boolean isAttributeJoined(ClassDescriptor mappingDescriptor, DatabaseMapping attributeMapping) {
         // Since aggregates share the same query as their parent, must avoid the aggregate thinking
-        // the parents mappings is for it, (queries only share if the aggregate was not joined).
-        if (mappingDescriptor.isAggregateDescriptor() && (mappingDescriptor != getDescriptor())) {
-            return false;
-        }
+        // the parents mappings is for it, (queries only share if the aggregate was not joined). 
+        //This isn't taking into account inheritance - a query on a child may use/join parent level mappings
         if (this.hasJoinedAttributes()) {
-            return this.joinedAttributes.contains(attributeName);
-        }
-        return isAttributeExpressionJoined(attributeName) || isAttributeMappingJoined(attributeName);
+            //if it has joined attributes, the other collections must also be set and so don't need to be checked
+            if (attributeMapping.isAggregateMapping()){
+                return this.getJoinedAggregateMappings().contains(attributeMapping);
+            } else {
+                return this.getJoinedAttributeMappings().contains(attributeMapping);
+            }}
+        return isAttributeExpressionJoined(attributeMapping) || isAttributeMappingJoined(attributeMapping);
     }
 
     /**
      * Iterate through a list of expressions searching for the given attribute name.
-     * Return true if it is found, false otherwise.
+     * Return true if it is found, false otherwise.  Only use if the query was preprepared so that join expressions
+     * were processed.  
      */
+    protected boolean isMappingInJoinedExpressionList(DatabaseMapping attributeMapping, List joinedExpressionList) {
+        for (Iterator joinEnum = joinedExpressionList.iterator(); joinEnum.hasNext();) {
+            List aggregateMappings = new ArrayList();
+            ObjectExpression expression = getFirstNonAggregateExpressionAfterExpressionBuilder((ObjectExpression)joinEnum.next(), aggregateMappings);
+            if (attributeMapping.isAggregateObjectMapping() && aggregateMappings.contains(attributeMapping)) {
+                return true;
+            } else if (attributeMapping.equals(expression.getMapping())) {//expression may not have been processed yet     
+                return true;
+            }
+        }
+        return false;
+    }
+    
+
+   /**
+    * Iterate through a list of expressions searching for the given attribute name.
+    * Return true if it is found, false otherwise.
+    */
     protected boolean isAttributeNameInJoinedExpressionList(String attributeName, List joinedExpressionList) {
         for (Iterator joinEnum = joinedExpressionList.iterator(); joinEnum.hasNext();) {
             QueryKeyExpression expression = (QueryKeyExpression)joinEnum.next();
@@ -566,15 +662,15 @@ public class JoinedAttributeManager implements Cloneable, Serializable {
     /**
      * Return if the attribute is specified for joining.
      */
-    protected boolean isAttributeExpressionJoined(String attributeName) {
-        return isAttributeNameInJoinedExpressionList(attributeName, getJoinedAttributeExpressions());
+    protected boolean isAttributeExpressionJoined(DatabaseMapping attributeMapping) {
+        return isMappingInJoinedExpressionList(attributeMapping, getJoinedAttributeExpressions());
     }
 
     /**
      * Return whether the given attribute is joined as a result of a join on a mapping
      */
-    protected boolean isAttributeMappingJoined(String attributeName) {
-        return isAttributeNameInJoinedExpressionList(attributeName, getJoinedMappingExpressions());
+    protected boolean isAttributeMappingJoined(DatabaseMapping attributeMapping) {
+        return isAttributeNameInJoinedExpressionList(attributeMapping.getAttributeName(), getJoinedMappingExpressions());
     }
 
     /**
@@ -616,11 +712,15 @@ public class JoinedAttributeManager implements Cloneable, Serializable {
         // the first element of the list is the passed expression,
         // next one is its base, ...
         // the last one's base is ExpressionBuilder.
-        BaseExpression currentExpression = (BaseExpression)expression; 
+        ObjectExpression currentExpression = (ObjectExpression)expression; 
         ArrayList<Expression> expressionBaseList = new ArrayList();
         do {
-            expressionBaseList.add(currentExpression);
-            currentExpression = (BaseExpression)currentExpression.getBaseExpression();
+            //skip aggregates since they do not have nested query objects added to JoinedMappingQueries, instead
+            //reference mappings on aggregates are added to the parent's joinAttributeManager
+            if (!currentExpression.getMapping().isAggregateObjectMapping()){
+                expressionBaseList.add(currentExpression);
+            }
+            currentExpression = (ObjectExpression)currentExpression.getBaseExpression();
         } while(!currentExpression.isExpressionBuilder());
         
         // the last expression in the list is not nested - its mapping should have corresponding nestedQuery.
@@ -671,20 +771,64 @@ public class JoinedAttributeManager implements Cloneable, Serializable {
     public void prepareJoinExpressions(AbstractSession session) {
         // The prepareJoinExpression check for outer-joins to set this to true.
         setIsOuterJoinedAttributeQuery(false);
+        Expression lastJoinedAttributeBaseExpression = null;
+        List groupedExpressionList = new ArrayList(getJoinedAttributeExpressions().size());
         for (int index = 0; index < getJoinedAttributeExpressions().size(); index++) {
             Expression expression = getJoinedAttributeExpressions().get(index);
-            if(expression.isObjectExpression()) {
-                ((ObjectExpression)expression).setShouldUseOuterJoinForMultitableInheritance(true);
-            }
             prepareJoinExpression(expression, session);
+            //EL bug 307497: break base expressions out onto the list and sort/group expressions by base expression  
+            lastJoinedAttributeBaseExpression = addExpressionAndBaseToGroupedList(expression, groupedExpressionList, lastJoinedAttributeBaseExpression);
         }
+        //use the grouped list instead of the original
+        this.setJoinedAttributeExpressions_(groupedExpressionList);
         for (int index = 0; index < getJoinedMappingExpressions().size(); index++) {
             Expression expression = getJoinedMappingExpressions().get(index);
-            if(expression.isObjectExpression()) {
-                ((ObjectExpression)expression).setShouldUseOuterJoinForMultitableInheritance(true);
-            }
             prepareJoinExpression(expression, session);
         }
+    }
+    
+    /**
+     * adds expression and its base expressions recursively to the expressionList in groups, so that an expression is never listed before
+     * its base expression
+     * @param expression
+     * @param expressionlist
+     * @param lastJoinedAttributeBaseExpression
+     * @return
+     */
+    protected Expression addExpressionAndBaseToGroupedList(Expression expression, List expressionlist, Expression lastJoinedAttributeBaseExpression){
+        if(!expressionlist.contains(expression)) {
+            int baseExpressionIndex = -1;
+            boolean sameBase = false;//better than using instanceof BaseExpression.  If its not an objectExpression, it will get an exception in prepare anyway
+            if((expression.isObjectExpression())) {
+                Expression baseExpression = ((BaseExpression)expression).getBaseExpression();
+                //filter out aggregate expressions between this and the next node.
+                while (!baseExpression.isExpressionBuilder() && ((QueryKeyExpression)baseExpression).getMapping().isAggregateMapping()){
+                    baseExpression = ((BaseExpression)baseExpression).getBaseExpression();
+                }
+                
+                if(baseExpression != null && !baseExpression.isExpressionBuilder()) {
+                    addExpressionAndBaseToGroupedList(baseExpression, expressionlist, lastJoinedAttributeBaseExpression);
+                    // EL bug 307497
+                    if (baseExpression != lastJoinedAttributeBaseExpression) {
+                        baseExpressionIndex = getJoinedAttributeExpressions().indexOf(baseExpression);
+                    } else {
+                        sameBase = true;
+                    }
+                }
+            }
+            
+            // EL bug 307497
+            if (baseExpressionIndex == -1) {
+                expressionlist.add(expression);
+                if (!sameBase) {
+                    lastJoinedAttributeBaseExpression = expression;
+                }
+            } else {
+                //Add attributeExpression at baseExpressionIndex + 1.
+                expressionlist.add(baseExpressionIndex+1, expression);
+            }
+        }
+        return lastJoinedAttributeBaseExpression;
     }
 
     /**
@@ -710,6 +854,9 @@ public class JoinedAttributeManager implements Cloneable, Serializable {
         // Search if any of the expression traverse a 1-m.
         ObjectExpression baseExpression = objectExpression;
         while (!baseExpression.isExpressionBuilder()) {
+            //pulled from prepareJoinExpressions
+            baseExpression.setShouldUseOuterJoinForMultitableInheritance(true);
+            
             if (((QueryKeyExpression)baseExpression).shouldQueryToManyRelationship()) {
                 setIsToManyJoinQuery(true);
             }
@@ -724,7 +871,7 @@ public class JoinedAttributeManager implements Cloneable, Serializable {
      * This method collects the Joined Mappings from the descriptor and initializes them.
      * Excludes the mapping that are not in the passed mappingsAllowedToJoin set (if it's not null). 
      */
-    public void processJoinedMappings() {
+    public void processJoinedMappings(AbstractSession session) {
         Set<String> fetchGroupAttributes = null;
         FetchGroup fetchGroup = getBaseQuery().getExecutionFetchGroup();
         if(fetchGroup != null) {
@@ -733,20 +880,26 @@ public class JoinedAttributeManager implements Cloneable, Serializable {
         ObjectBuilder objectBuilder = getDescriptor().getObjectBuilder();
         if (objectBuilder.hasJoinedAttributes()) {
             List mappingJoinedAttributes = objectBuilder.getJoinedAttributes();
+            Expression joinMappingExpression = null;
             if (!hasJoinedAttributeExpressions()) {
                 for (int i = 0; i < mappingJoinedAttributes.size(); i++) {
                     ForeignReferenceMapping mapping = (ForeignReferenceMapping) mappingJoinedAttributes.get(i);
                     if(fetchGroupAttributes == null || fetchGroupAttributes.contains(mapping.getAttributeName())) {
-                        addJoinedMapping(mapping);
+                        Expression expression = addJoinedMapping(mapping);
+                        if (expression != null) {
+                            prepareJoinExpression(expression, session);
+                        }
                     }
                 }
             } else {
                 for (int i = 0; i < mappingJoinedAttributes.size(); i++) {
                     ForeignReferenceMapping mapping = (ForeignReferenceMapping) mappingJoinedAttributes.get(i);
-                    String attributeName = mapping.getAttributeName();
-                    if (!isAttributeExpressionJoined(attributeName)) {
-                        if(fetchGroupAttributes == null || fetchGroupAttributes.contains(attributeName)) {
-                            addJoinedMapping(mapping);
+                    if (!isAttributeExpressionJoined(mapping)) {
+                        if(fetchGroupAttributes == null || fetchGroupAttributes.contains(mapping.getAttributeName())) {
+                            Expression expression = addJoinedMapping(mapping);
+                            if (expression != null) {
+                                prepareJoinExpression(expression, session);
+                            }
                         }
                     }
                 }
@@ -755,11 +908,11 @@ public class JoinedAttributeManager implements Cloneable, Serializable {
     }
     
     /**
-     * Add the mapping join fetch.
+     * Add the mapping for join fetch and return the expression being used.  
      */
-    public void addJoinedMapping(ForeignReferenceMapping mapping) {
+    public Expression addJoinedMapping(ForeignReferenceMapping mapping) {
+        Expression joinMappingExpression = null;
         if (mapping.isCollectionMapping()) {
-            Expression joinMappingExpression = null;
             if (mapping.isInnerJoinFetched()) {
                 joinMappingExpression = getBaseExpressionBuilder().anyOf(mapping.getAttributeName());
             } else if (mapping.isOuterJoinFetched()) {
@@ -770,11 +923,13 @@ public class JoinedAttributeManager implements Cloneable, Serializable {
             }
         } else {
             if (mapping.isInnerJoinFetched()) {
-                addJoinedMappingExpression(getBaseExpressionBuilder().get(mapping.getAttributeName()));
+                joinMappingExpression = getBaseExpressionBuilder().get(mapping.getAttributeName());
             } else if (mapping.isOuterJoinFetched()) {
-                addJoinedMappingExpression(getBaseExpressionBuilder().getAllowingNull(mapping.getAttributeName()));
-            }            
+                joinMappingExpression = getBaseExpressionBuilder().getAllowingNull(mapping.getAttributeName());
+            }
+            addJoinedMappingExpression(joinMappingExpression);
         }
+        return joinMappingExpression;
     }
     
     /**
@@ -788,6 +943,8 @@ public class JoinedAttributeManager implements Cloneable, Serializable {
         this.joinedMappingIndexes = null;
         this.joinedMappingQueries = null;
         this.dataResults = null;
+        this.joinedAttributeMappings = null;
+        this.joinedAggregateMappings = null;
     }
     
     /**

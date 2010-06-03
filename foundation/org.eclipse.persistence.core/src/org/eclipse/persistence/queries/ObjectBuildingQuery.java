@@ -23,12 +23,10 @@ import org.eclipse.persistence.internal.sessions.MergeManager;
 import org.eclipse.persistence.exceptions.ValidationException;
 import org.eclipse.persistence.internal.sessions.UnitOfWorkImpl;
 import org.eclipse.persistence.descriptors.ClassDescriptor;
-import org.eclipse.persistence.indirection.IndirectContainer;
 import org.eclipse.persistence.internal.queries.ContainerPolicy;
 import org.eclipse.persistence.internal.queries.EntityFetchGroup;
 import org.eclipse.persistence.internal.queries.JoinedAttributeManager;
 import org.eclipse.persistence.mappings.CollectionMapping;
-import org.eclipse.persistence.mappings.ForeignReferenceMapping;
 
 /**
  * <p><b>Purpose</b>:
@@ -422,7 +420,7 @@ public abstract class ObjectBuildingQuery extends ReadQuery {
             triggerJoinExpressions(unitOfWork, joinManager, clone, concreteDescriptor);
         }
     }
-    
+
     /**
      * INTERNAL:
      * Fetch/trigger indirection on the clone passed in, based on join expressions in the joinManager.
@@ -436,17 +434,17 @@ public abstract class ObjectBuildingQuery extends ReadQuery {
         if (concreteDescriptor == null) {
             concreteDescriptor = unitOfWork.getDescriptor(clone.getClass());
         }
-        for (int index = 0; index < size; index++) {
-            DatabaseMapping mapping = concreteDescriptor.getObjectBuilder().getMappingForAttributeName(joinManager.getJoinedAttributes().get(index));
+        for (int index = 0; index < size; index++) {//since a's descriptor won't have a mapping for 'b'. 
+            //baseExpression will be first relationship expression after the ExpressionBuilder, and may include aggregate intermediaries
+            QueryKeyExpression baseExpression = (QueryKeyExpression)joinManager.getJoinedAttributes().get(index);
+            DatabaseMapping mapping = joinManager.getJoinedAttributeMappings().get(index);
+
             if (mapping != null) {
-                Object attributeValue = mapping.getRealAttributeValueFromObject(clone, unitOfWork);
+                Object attributeValue = joinManager.getValueFromObjectForExpression(unitOfWork, clone, baseExpression);
                 if (attributeValue != null) {
-                    if (mapping.isForeignReferenceMapping() && (((ForeignReferenceMapping)mapping).getIndirectionPolicy().usesTransparentIndirection())) {
-                        ((IndirectContainer)attributeValue).getValueHolder().getValue();
-                    }
                     //recurse through the mapping if the expression's base isn't the base expressionBuilder
                     QueryKeyExpression queryKeyExpression = (QueryKeyExpression)joinExpressions.get(index);
-                    if (!queryKeyExpression.getBaseExpression().isExpressionBuilder()) {
+                    if (baseExpression != queryKeyExpression) {
                         ObjectLevelReadQuery nestedQuery = null;
                         if (joinManager.getJoinedMappingQueryClones() == null) {
                             if (joinManager.getJoinedMappingQueries_() != null) {
@@ -456,6 +454,7 @@ public abstract class ObjectBuildingQuery extends ReadQuery {
                             nestedQuery = joinManager.getJoinedMappingQueryClones().get(mapping);
                         }
 
+                        //use the nestedQuery to trigger joins remaining for this expression (base onward)
                         if ((nestedQuery != null) && (nestedQuery.getJoinedAttributeManager() != null)) {
                             if (!mapping.isCollectionMapping()) {
                                 triggerJoinExpressions(unitOfWork, nestedQuery.getJoinedAttributeManager(), attributeValue, null);

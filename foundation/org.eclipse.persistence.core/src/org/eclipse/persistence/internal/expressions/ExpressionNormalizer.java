@@ -39,7 +39,7 @@ public class ExpressionNormalizer {
 
     public void addAdditionalExpression(Expression theExpression) {
         // This change puts a null check into every call, but is printing additional
-        // expressions in a meaningfull order worth it?
+        // expressions in a meaningful order worth it?
         additionalExpression = (additionalExpression == null) ? theExpression : additionalExpression.and(theExpression);
     }
 

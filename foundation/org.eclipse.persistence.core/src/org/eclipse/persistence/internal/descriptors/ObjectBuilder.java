@@ -775,16 +775,20 @@ public class ObjectBuilder implements Cloneable, Serializable {
                     int size = joinExpressions.size();
                     for (int index = 0; index < size; index++) {
                         QueryKeyExpression queryKeyExpression = (QueryKeyExpression)joinExpressions.get(index);
-                        // Only worry about immediate attributes.
-                        if (queryKeyExpression.getBaseExpression().isExpressionBuilder()) {
-                            DatabaseMapping mapping = getMappingForAttributeName(queryKeyExpression.getName());
+                        QueryKeyExpression baseExpression = (QueryKeyExpression)joinManager.getJoinedAttributes().get(index);
+                        DatabaseMapping mapping = joinManager.getJoinedAttributeMappings().get(index);
+                        
+                        // Only worry about immediate (excluding aggregates) foreign reference mapping attributes.
+                        if (queryKeyExpression == baseExpression) {
+                            //get the intermediate objects between this expression node and the base builder
+                            Object intermediateValue = joinManager.getValueFromObjectForExpression(query.getExecutionSession(), domainObject, (ObjectExpression)baseExpression.getBaseExpression());
                             if (mapping == null) {
                                 throw ValidationException.missingMappingForAttribute(concreteDescriptor, queryKeyExpression.getName(), toString());
                             } else {
                                 // Bug 4230655 - do not replace instantiated valueholders.
-                                Object attributeValue = mapping.getAttributeValueFromObject(domainObject);
+                                Object attributeValue = mapping.getAttributeValueFromObject(intermediateValue);
                                 if ((attributeValue != null) && mapping.isForeignReferenceMapping() && ((ForeignReferenceMapping)mapping).usesIndirection() && (!((ForeignReferenceMapping)mapping).getIndirectionPolicy().objectIsInstantiated(attributeValue))) {
-                                    mapping.readFromRowIntoObject(databaseRow, joinManager, domainObject, query, query.getExecutionSession());
+                                    mapping.readFromRowIntoObject(databaseRow, joinManager, intermediateValue, query, query.getExecutionSession());
                                 }
                             }
                         }
@@ -3093,10 +3097,11 @@ public class ObjectBuilder implements Cloneable, Serializable {
     }
 
     /**
+     * INTERNAL:
      * Set primary key classifications.
      * These are used to ensure a consistent type for the pk values.
      */
-    protected void setPrimaryKeyClassifications(List<Class> primaryKeyClassifications) {
+    public void setPrimaryKeyClassifications(List<Class> primaryKeyClassifications) {
         this.primaryKeyClassifications = primaryKeyClassifications;
     }
 

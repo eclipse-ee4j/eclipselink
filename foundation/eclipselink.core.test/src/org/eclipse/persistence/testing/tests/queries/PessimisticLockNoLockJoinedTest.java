@@ -35,7 +35,7 @@ public PessimisticLockNoLockJoinedTest() {
 public void test () throws Exception
 {
     if (!(getSession().getPlatform().isOracle() || getSession().getPlatform().isSQLServer())) {
-		throw new TestWarningException("This test only runs on Oracle wears writes do not block reads.");
+		throw new TestWarningException("This test only runs on Oracle where writes do not block reads.");
 	}
 		
 	uow = getSession().acquireUnitOfWork();

@@ -57,6 +57,7 @@ public class TableIsNotPresentInDatabaseTest extends ExceptionTest {
             table.setName("Bad_Table"); //change name of table to cause error
             getSession().getIntegrityChecker().getTables().remove(table); //ensure table does not exist
             //   descriptor.getTables().remove(table);//if you remove it from this vector, it will not check it.
+            descriptor.initialize((AbstractSession)getSession());//primary keys need to be initialized for postInit to work
             descriptor.postInitialize((AbstractSession)getSession());
             //    descriptor.checkDatabase(getSession()); //error thrown inside this method
 

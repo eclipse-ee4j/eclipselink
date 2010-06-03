@@ -254,7 +254,6 @@ public class ClassDetails {
         return getSuperClassDetails().canWeaveConstructorOptimization();
     }
 
-
     /**
      * Returns true if the given class name represents this class, or any
      * superclass that can be navigated to by recursively navigating up the

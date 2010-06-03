@@ -638,8 +638,7 @@ public abstract class ObjectLevelReadQuery extends ObjectBuildingQuery {
 
         // Add the fields defined by the nested fetch group - if it exists.
         if(referenceDescriptor != null && referenceDescriptor.hasFetchGroupManager()) {
-            ObjectLevelReadQuery nestedQuery = getJoinedAttributeManager().getJoinedMappingQueries_().get(mapping);
-            nestedQuery = getJoinedAttributeManager().getNestedJoinedMappingQuery(expression);
+            ObjectLevelReadQuery nestedQuery = getJoinedAttributeManager().getNestedJoinedMappingQuery(expression);
             FetchGroup nestedFetchGroup = nestedQuery.getExecutionFetchGroup();
             if(nestedFetchGroup != null) {
                 List<DatabaseField> nestedFields = nestedQuery.getFetchGroupSelectionFields(mapping);
@@ -2053,11 +2052,16 @@ public abstract class ObjectLevelReadQuery extends ObjectBuildingQuery {
         buildSelectionCriteria(session);
         checkDescriptor(session);
 
+        // Validate and prepare join expressions.           
+        if (hasJoining()) {
+            getJoinedAttributeManager().prepareJoinExpressions(session);
+        }
+
         prepareFetchGroup();
-        
+
         // Add mapping joined attributes.
         if (getQueryMechanism().isExpressionQueryMechanism() && getDescriptor().getObjectBuilder().hasJoinedAttributes()) {
-            getJoinedAttributeManager().processJoinedMappings();
+            getJoinedAttributeManager().processJoinedMappings(session);
             if(getJoinedAttributeManager().hasOrderByExpressions()) {
                 Iterator<Expression> it = getJoinedAttributeManager().getOrderByExpressions().iterator();
                 while(it.hasNext()) {
@@ -2091,7 +2095,7 @@ public abstract class ObjectLevelReadQuery extends ObjectBuildingQuery {
                 }
             }
         }
-        
+
         // modify query for locking only if locking has not been configured
         if (isDefaultLock()) {
             setWasDefaultLockMode(true);
@@ -2144,11 +2148,6 @@ public abstract class ObjectLevelReadQuery extends ObjectBuildingQuery {
             }
         }
 
-        // Validate and prepare join expressions.			
-        if (hasJoining()) {
-            getJoinedAttributeManager().prepareJoinExpressions(getSession());
-        }
-
         // Validate and prepare partial attribute expressions.
         if (hasPartialAttributeExpressions()) {
             for (int index = 0; index < getPartialAttributeExpressions().size(); index++) {
@@ -2167,7 +2166,7 @@ public abstract class ObjectLevelReadQuery extends ObjectBuildingQuery {
             setShouldOuterJoinSubclasses(getMaxRows()>0 || getFirstResult()>0 || (this.descriptor != null && 
                     this.descriptor.hasInheritance() && this.descriptor.getInheritancePolicy().shouldOuterJoinSubclasses()) );
         }
-        
+
         // Ensure the subclass call cache is initialized if a multiple table inheritance descriptor.
         // This must be initialized in the query before it is cloned, and never cloned.
         if ((!shouldOuterJoinSubclasses()) && this.descriptor.hasInheritance() && this.descriptor.getInheritancePolicy().requiresMultipleTableSubclassRead()) {
@@ -2957,7 +2956,7 @@ public abstract class ObjectLevelReadQuery extends ObjectBuildingQuery {
         }
         return this.batchFetchPolicy.isAttributeBatchRead(mappingDescriptor, attributeName);
     }
-        
+
     /**
      * INTERNAL:
      * Used to optimize joining by pre-computing the nested join queries for the mappings.
@@ -3000,7 +2999,7 @@ public abstract class ObjectLevelReadQuery extends ObjectBuildingQuery {
             computeNestedQueriesForBatchReadExpressions(batchReadAttributeExpressions);
         }
     }
-    
+
     /**
      * INTERNAL:
      * This method is used when computing the nested queries for batch read mappings.
@@ -3077,7 +3076,7 @@ public abstract class ObjectLevelReadQuery extends ObjectBuildingQuery {
         }
         getBatchReadAttributeExpressions().add(attributeExpression);
     }
-    
+
     /**
      * PUBLIC:
      * Set the batch fetch type for the query.
@@ -3090,7 +3089,7 @@ public abstract class ObjectLevelReadQuery extends ObjectBuildingQuery {
     public void setBatchFetchType(BatchFetchType type) {
         getBatchFetchPolicy().setType(type);
     }
-    
+
     /**
      * PUBLIC:
      * Set the batch fetch size for the query.
@@ -3119,7 +3118,7 @@ public abstract class ObjectLevelReadQuery extends ObjectBuildingQuery {
     public void setBatchObjects(Map<Object, Object> batchObjects) {
         getBatchFetchPolicy().setBatchObjects(batchObjects);
     }
-    
+
     public String toString() {
         String str = super.toString();
         if(this.fetchGroup != null) {

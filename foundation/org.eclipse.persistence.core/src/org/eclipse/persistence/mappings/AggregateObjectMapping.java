@@ -295,16 +295,25 @@ public class AggregateObjectMapping extends AggregateMapping implements Relation
             ObjectLevelReadQuery objectQuery = (ObjectLevelReadQuery)sourceQuery;
             ObjectLevelReadQuery nestedObjectQuery = (ObjectLevelReadQuery)nestedQuery;
             String attributeName = getAttributeName();
-            if ((objectQuery.isPartialAttribute(attributeName) || ((joinManager != null) && joinManager.isAttributeJoined(this.descriptor, attributeName)))) {
+            if ((objectQuery.isPartialAttribute(attributeName) || ((joinManager != null) && joinManager.isAttributeJoined(this.descriptor, this)))) {
                 // A nested query must be built to pass to the descriptor that looks like the real query execution would.
                 nestedObjectQuery = (ObjectLevelReadQuery)objectQuery.deepClone();
                 // Must cascade the nested partial/join expression and filter the nested ones.
                 if (objectQuery.hasPartialAttributeExpressions()) {
                     nestedObjectQuery.setPartialAttributeExpressions(extractNestedExpressions(objectQuery.getPartialAttributeExpressions(), nestedObjectQuery.getExpressionBuilder(), false));
-                } else {
-                    nestedObjectQuery.getJoinedAttributeManager().setJoinedAttributeExpressions_(extractNestedExpressions(joinManager.getJoinedAttributeExpressions(), joinManager.getBaseExpressionBuilder(), false));
+                } else if ( nestedObjectQuery.getJoinedAttributeManager().isToManyJoin()) {
+                    // need the data results to build the child object(s).
+                    List dataResults = new ArrayList();
+                    //setDataResults does processing and calculations (such as DataResultsByPrimaryKey) that we do not want to do on the 
+                    //actual data, but it has no other direct set method 
+                    nestedObjectQuery.getJoinedAttributeManager().setDataResults(dataResults, executionSession);
+                    //set the dataResults and DataResultsByPrimaryKey directly from the parent 
+                    dataResults.addAll(joinManager.getDataResults_());
+                    nestedObjectQuery.getJoinedAttributeManager().getDataResultsByPrimaryKey().putAll(joinManager.getDataResultsByPrimaryKey());
                 }
                 nestedObjectQuery.setDescriptor(descriptor);
+                //need to use the new joinManager which has the proper aggregate descriptor set
+                joinManager = nestedObjectQuery.getJoinedAttributeManager();
             }
             if (objectQuery.isAttributeBatchRead(this.descriptor, attributeName)) {
                 // A nested query must be built to pass to the descriptor that looks like the real query execution would.
@@ -1250,7 +1259,13 @@ public class AggregateObjectMapping extends AggregateMapping implements Relation
                     && getReferenceDescriptor().getObjectChangePolicy().getClass().equals(AttributeChangeTrackingPolicy.class)) {
                 getReferenceDescriptor().setObjectChangePolicy(new ObjectChangeTrackingPolicy());
             }
-            
+
+            //need to set the primary key classification as the mappings for the pk fields might not be available
+            if (getReferenceDescriptor().isAggregateDescriptor()){
+                getReferenceDescriptor().getObjectBuilder().setPrimaryKeyClassifications(this.getDescriptor().getObjectBuilder().getPrimaryKeyClassifications());
+                getReferenceDescriptor().setHasSimplePrimaryKey(this.getDescriptor().hasSimplePrimaryKey());
+            }
+
             getReferenceDescriptor().postInitialize(session);
         } 
     }

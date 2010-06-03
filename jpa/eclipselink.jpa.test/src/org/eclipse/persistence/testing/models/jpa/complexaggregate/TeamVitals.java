@@ -40,7 +40,7 @@ public class TeamVitals implements Serializable {
         return position;
     }
     
-    @OneToOne(fetch=EAGER)
+    @OneToOne(fetch=LAZY)
 	@JoinColumn(name="TEAM_ID", referencedColumnName="ID")    
     public HockeyTeam getHockeyTeam() {
         return hockeyTeam;

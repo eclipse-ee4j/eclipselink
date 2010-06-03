@@ -168,8 +168,8 @@ public class ReportItem implements Cloneable, java.io.Serializable {
                 this.joinedAttributeManager.setBaseExpressionBuilder(query.getExpressionBuilder());
             }
             if (hasJoining()) {
-                this.joinedAttributeManager.processJoinedMappings();
                 this.joinedAttributeManager.prepareJoinExpressions(query.getSession());
+                this.joinedAttributeManager.processJoinedMappings(query.getSession());
                 this.joinedAttributeManager.computeJoiningMappingQueries(query.getSession());
             }
         }

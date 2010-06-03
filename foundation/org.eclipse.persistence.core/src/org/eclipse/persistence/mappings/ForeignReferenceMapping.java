@@ -1746,7 +1746,7 @@ public abstract class ForeignReferenceMapping extends DatabaseMapping {
      * or valueFromRowInternal (false)
      */
     protected boolean shouldUseValueFromRowWithJoin(JoinedAttributeManager joinManager, ObjectBuildingQuery sourceQuery) {
-        return ((joinManager != null) && (joinManager.isAttributeJoined(this.descriptor, getAttributeName()))) || sourceQuery.hasPartialAttributeExpressions();
+        return ((joinManager != null) && (joinManager.isAttributeJoined(this.descriptor, this))) || sourceQuery.hasPartialAttributeExpressions();
     }
     
     /**

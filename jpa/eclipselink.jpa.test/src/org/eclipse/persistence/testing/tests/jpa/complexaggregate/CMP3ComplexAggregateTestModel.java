@@ -33,5 +33,6 @@ public class CMP3ComplexAggregateTestModel extends CMP3TestModel {
         addTest(new AggregatePrimaryKeyOrderByTest());
         addTest(new NestedAggregateTest());
         addTest(new AggregateReadOnlyMapKeyTest());
+        addTest(new ComplexAggregateJoin());
     }
 }
