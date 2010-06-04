@@ -28,11 +28,13 @@ import javax.persistence.EntityManager;
 import junit.framework.Test;
 import junit.framework.TestSuite;
 import org.eclipse.persistence.testing.models.jpa.advanced.*;
+import org.eclipse.persistence.testing.models.jpa.advanced.fetchgroup.AdvancedFetchGroupTableCreator;
 import org.eclipse.persistence.testing.models.jpa.advanced.fetchgroup.ChestProtector;
 import org.eclipse.persistence.testing.models.jpa.advanced.fetchgroup.Gear;
 import org.eclipse.persistence.testing.models.jpa.advanced.fetchgroup.GoalieGear;
 import org.eclipse.persistence.testing.models.jpa.advanced.fetchgroup.NonPersistedSubclassOfChestProtector;
 import org.eclipse.persistence.testing.models.jpa.advanced.fetchgroup.Pads;
+import org.eclipse.persistence.testing.models.jpa.cacheable.CacheableTableCreator;
 import org.eclipse.persistence.testing.models.jpa.metamodel.Manufacturer;
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.internal.jpa.CMP3Policy;
@@ -78,9 +80,7 @@ public class CacheImplJUnitTest extends JUnitTestCase {
         suite.addTest(new CacheImplJUnitTest("testEvictContains"));
         suite.addTest(new CacheImplJUnitTest("testCacheAPI"));
         // 20100322: 248780: CacheImpl refactor for non-Entity classes
-        // 315714: comment out 10 new tests requiring setup() table creation - until it is added to setup()
-        // Tests fail to create tables when run outside of ant or before the metamodel and fetchgroup tests
-        /*
+        // the following external test models are used [AdvancedFetchGroupTableCreator, CacheableTableCreator]
         suite.addTest(new CacheImplJUnitTest("testEvictClass_MappedSuperclass_RemovesAssignableSubclasses"));
         suite.addTest(new CacheImplJUnitTest("testEvictClassObject_MappedSuperclass_RemovesAssignableSubclasses"));
         suite.addTest(new CacheImplJUnitTest("testEvictClass_JavaLangClass_hasNoEffect"));
@@ -89,8 +89,11 @@ public class CacheImplJUnitTest extends JUnitTestCase {
         
         suite.addTest(new CacheImplJUnitTest("testGetId_fromUnmanagedMappedSuperclass_handles_null_descriptor"));
         suite.addTest(new CacheImplJUnitTest("testGetId_fromUnsupportedJavaLangInteger_throwsIAE_on_null_descriptor"));
-        // Run these tests last as they modify the state of the ClassDescriptor permanently to verify variant corner use cases
-        suite.addTest(new CacheImplJUnitTest("testGetId_fromNativeMappedSuperclass_handles_null_cmp3policy_weaving_on"));       
+        // Run these tests last as they modify the state of the ClassDescriptor permanently to verify variant corner use cases        
+        suite.addTest(new CacheImplJUnitTest("testGetId_fromNativeMappedSuperclass_handles_null_cmp3policy_weaving_on"));
+        // 315714: comment out 3 of the 10 new tests requiring setup() table creation - until the metamodel one is added to setup()
+        // Tests fail to create tables when run outside of ant or before the metamodel model is created
+        /*
         suite.addTest(new CacheImplJUnitTest("testGetId_fromNativeMappedSuperclass_handles_null_cmp3policy_and_null_pk_with_weaving_on"));
         suite.addTest(new CacheImplJUnitTest("testGetId_fromNativeMappedSuperclass_handles_null_cmp3policy_and_null_pk_with_weaving_off"));
         */
@@ -103,6 +106,9 @@ public class CacheImplJUnitTest extends JUnitTestCase {
      */
     public void testSetup() {
         new AdvancedTableCreator().replaceTables(JUnitTestCase.getServerSession());
+        new AdvancedFetchGroupTableCreator().replaceTables(JUnitTestCase.getServerSession());
+        new CacheableTableCreator().replaceTables(JUnitTestCase.getServerSession());
+        // 315714: metamodel model requires a table creator now that we are persisting with it
         clearCache();
     }
     
@@ -794,5 +800,5 @@ public class CacheImplJUnitTest extends JUnitTestCase {
     }
     
     // 20100422: 248780: CacheImpl refactor for non-Entity classes
-    public static int ID_TEST_BASE = 3706; // change this value during iterative testing
+    public static int ID_TEST_BASE = 3710; // change this value during iterative testing
 }
