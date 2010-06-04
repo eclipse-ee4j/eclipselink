@@ -133,20 +133,21 @@
             <available file="${oracle.2.base.dir}/../extension.lib.external" type="dir"/>
         </condition>
         <echo message="extensions.depend.dir        = '${extensions.depend.dir}'"/>
+        <echo message="oracle.extensions.depend.dir = '${oracle.extensions.depend.dir}'"/>
 
         <!-- dependency properties -->
         <!-- Core has no jpa 2.0 specific compile dependency: use below instead to test assertion -->
         <!-- property name="persistence.lib"    value="${oracle.2.common.plugins.dir}/${persistence10.jar}"/ -->
-        <property name="persistence.lib"    value="${oracle.2.jpa.plugins.dir}/${persistence20.jar}"/>
-        <property name="core.lib"             value="${oracle.2.common.plugins.dir}/org.eclipse.persistence.core_${version.string}.jar"/>
+        <property name="persistence.lib"  value="${oracle.2.jpa.plugins.dir}/${persistence20.jar}"/>
+        <property name="core.lib"         value="${oracle.2.common.plugins.dir}/org.eclipse.persistence.core_${version.string}.jar"/>
 
         <!-- dependency tests -->
-        <available file="${persistence.lib}"                       property="persistence.bundle.exist"/>
+        <available file="${persistence.lib}"                         property="persistence.bundle.exist"/>
         <available file="${core.lib}"                                property="core.bundle.exist"/>
         <available file="${oracle.extensions.depend.dir}" type="dir" property="oracle.depend.dir.exist"/>
 
         <fail message="Cannot find: '${persistence.lib}'"      unless="persistence.bundle.exist"/>
-        <fail message="Cannot find: '${core.lib}'"               unless="core.bundle.exist"/>
+        <fail message="Cannot find: '${core.lib}'"             unless="core.bundle.exist"/>
         <!-- Set Compile Path-->
         <!-- Need multiple extensions dir includes because different systems are defaulting to different locations -->
         <path id="oracle.compile.path">
