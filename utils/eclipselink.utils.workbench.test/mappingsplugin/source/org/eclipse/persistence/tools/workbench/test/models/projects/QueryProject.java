@@ -476,8 +476,6 @@ public class QueryProject extends RelationalTestProject
         reportQuery.addAttributeItem("managerName", queryables.iterator()).setFunction(MWReportAttributeItem.VARIANCE_FUNCTION);
         queryables.add(firstNameQueryable);
         queryables.add(managerQueryable);
-
-        reportQuery.addAttributeItem("managerName", queryables.iterator()).setFunction("customFunction");
     }
 
     protected void createReportQuery2() {
