@@ -234,7 +234,7 @@
                 </cascade>
             </many-to-one>
             <many-to-one name="boat" target-entity="Boat" fetch="LAZY" optional="false">
-                <join-column name="BOAT_ID" referenced-column-name="boat_id"/>
+                <join-column name="BOAT_ID" referenced-column-name="BOAT_ID"/>
                 <cascade>
                     <cascade-persist/>
                 </cascade>

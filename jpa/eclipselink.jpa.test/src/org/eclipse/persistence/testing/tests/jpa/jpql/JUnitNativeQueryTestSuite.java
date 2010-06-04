@@ -46,7 +46,8 @@ public class JUnitNativeQueryTestSuite  extends JUnitTestCase {
         TestSuite suite = new TestSuite();
         suite.setName("NativeQueryTestSuite");
         suite.addTest(new JUnitNativeQueryTestSuite("testSetup"));
-        suite.addTest(new JUnitNativeQueryTestSuite("testNativeQuery"));
+        //Removed for 299926
+        //suite.addTest(new JUnitNativeQueryTestSuite("testNativeQuery"));
         suite.addTest(new JUnitNativeQueryTestSuite("testNativeQueryHint"));
         suite.addTest(NamedNativeQueryJUnitTest.suite());
         
@@ -68,7 +69,9 @@ public class JUnitNativeQueryTestSuite  extends JUnitTestCase {
         clearCache();
     }
     
-    //force results to be returned in camel case - any case that is different from what is defined in the Entity's field definitions
+    /* Removed for 299926 when the default changed to false.
+     * force results to be returned in camel case - any case that is different from what is defined in the Entity's field definitions
+     */
     public void testNativeQuery() {
         Address expectedAddress = (Address)createEntityManager().createQuery("select a from Address a").getResultList().get(0);
         Address returnedAddress = null;

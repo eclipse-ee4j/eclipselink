@@ -991,8 +991,8 @@ public class PersistenceUnitProperties {
      * <p>
      * Values (case insensitive):
      * <ul>
-     * <li>"true" (DEFAULT)
-     * <li>"false"
+     * <li>"true"
+     * <li>"false" (DEFAULT)
      * </ul>
      */
     public static final String UPPERCASE_COLUMN_NAMES = "eclipselink.jpa.uppercase-column-names";
