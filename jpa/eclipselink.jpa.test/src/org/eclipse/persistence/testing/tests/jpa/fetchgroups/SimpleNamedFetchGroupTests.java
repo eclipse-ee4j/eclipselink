@@ -197,7 +197,6 @@ public class SimpleNamedFetchGroupTests extends BaseFetchGroupTests {
 
         Query query = em.createQuery("SELECT e FROM Employee e WHERE e.id = :ID");
         query.setParameter("ID", minimumEmployeeId(em));
-        query.setHint(QueryHints.FETCH_GROUP, null);
 
         Employee emp = (Employee) query.getSingleResult();
 
@@ -233,7 +232,6 @@ public class SimpleNamedFetchGroupTests extends BaseFetchGroupTests {
 
         Query query = em.createQuery("SELECT e FROM Employee e WHERE e.id = :ID");
         query.setParameter("ID", minimumEmployeeId(em));
-        query.setHint(QueryHints.FETCH_GROUP, null);
 
         List<Employee> emps = query.getResultList();
 

@@ -73,7 +73,7 @@ public class NestedFetchGroupTests extends BaseFetchGroupTests {
         suite.addTest(new NestedFetchGroupTests("joinFetchDefaultFetchGroup"));
         suite.addTest(new NestedFetchGroupTests("joinFetchOutsideOfFetchGroup"));
         suite.addTest(new NestedFetchGroupTests("simpleNestedFetchGroupWithBatch"));
-        suite.addTest(new NestedFetchGroupTests("loadPlan"));
+        suite.addTest(new NestedFetchGroupTests("simpleLoadGroup"));
         
         return suite;
     }
@@ -446,6 +446,30 @@ public class NestedFetchGroupTests extends BaseFetchGroupTests {
         if(useCopy) {
             employeeManagerManagerFG = employeeDescriptor.getFetchGroupManager().flatUnionFetchGroups(new EntityFetchGroup("manager"), employeeDescriptor.getFetchGroupManager().getNonReferenceEntityFetchGroup()); 
         }
+        
+        /*
+         * These are the first names of Employees involved; --> means "managed by".
+         * All the employees here are returned by the query except Jill and Sarah-loo (they got no manager).
+         * 
+         * Sarah ------>Bob -------> John ----> Jim-bob ---> Jill ---> null
+         * Charles -----^   Marius ----^
+         * 
+         * Nancy ------> Sarah-loo ---> null
+         * 
+         * Sarah, Charles, Nancy should have employeeFG;
+         * Sarah-loo - managerFG;
+         * Bob, Marius - employeeManagerFG;
+         * John, Jim-bob should have a union of three fetch groups: {firstName,lastName,manager}, {firstName,salary,manager}, {manager}
+         * Jill should have a union of two groups:  {firstName,salary,manager}, {manager}
+         * The result for all three of them is the same:
+         *   in read case (useCopy == false) it should be null (no fetch group), because defaultFetchGroup is null;
+         *   in copy case (useCopy == true) it should be a union of "manager" and all non relational attributes (NonReferenceEntityFetchGroup).
+         * That's how leaf reference attribute is treated: 
+         *   default fetch group for read;
+         *   NonReferenceEntityFetchGroup (see FetchGroupManager) for copy.
+         * In this test defaultFetchGroup (null) / NonReferenceEntityFetchGroup comes from {manager},
+         *   in useCopy == true case additional manager comes from another fetch group (they all contain manager).
+         */
         
         List<Employee> emps = query.getResultList();
         
@@ -845,18 +869,18 @@ public class NestedFetchGroupTests extends BaseFetchGroupTests {
    }
    
    @Test
-    public void loadPlan() {
+    public void simpleLoadGroup() {
         EntityManager em = createEntityManager();
         
         Query query = em.createQuery("SELECT e FROM Employee e WHERE e.gender = :GENDER");
         query.setParameter("GENDER", Gender.Female);        
         List<Employee> employees = query.getResultList();
         
-        LoadGroup plan = new LoadGroup();
-        plan.addAttribute("address");
-        plan.addAttribute("phoneNumbers");
-        plan.addAttribute("manager.projects");
-        plan.load(employees, (AbstractSession)((EntityManagerImpl)em.getDelegate()).getActiveSession());
+        LoadGroup group = new LoadGroup();
+        group.addAttribute("address");
+        group.addAttribute("phoneNumbers");
+        group.addAttribute("manager.projects");
+        ((AbstractSession)((EntityManagerImpl)em.getDelegate()).getActiveSession()).load(employees, group);
 
         int numSelectBefore = getQuerySQLTracker(em).getTotalSQLSELECTCalls();
         

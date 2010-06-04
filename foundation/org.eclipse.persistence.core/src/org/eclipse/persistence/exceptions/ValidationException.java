@@ -398,6 +398,11 @@ public class ValidationException extends EclipseLinkException {
     public static final int CONFLICTNG_ACCESS_METHODS_FOR_EMBEDDABLE = 7327;
     public static final int INVALID_CLASS_LOADER_FOR_DYNAMIC_PERSISTENCE = 7328;
     
+    // fetch groups
+    public static final int FETCH_GROUP_HAS_UNMAPPED_ATTRIBUTE = 7329;
+    public static final int FETCH_GROUP_HAS_WRONG_REFERENCE_ATTRIBUTE = 7330;
+    public static final int FETCH_GROUP_HAS_WRONG_REFERENCE_CLASS = 7331;
+    
     /**
      * INTERNAL:
      * EclipseLink exceptions should only be thrown by EclipseLink.
@@ -2808,5 +2813,40 @@ public class ValidationException extends EclipseLinkException {
         validationException.setErrorCode(COLLECTION_REMOVE_EVENT_WITH_NO_INDEX);
         return validationException;
     }
+    
+    /**
+     * PUBLIC:
+     * Fetch group has an attribute that doesn't have corresponding mapping.
+     */
+    public static ValidationException fetchGroupHasUnmappedAttribute(FetchGroup fetchGroup, String attributeName) {
+        Object[] args = { fetchGroup,  attributeName };
 
+        ValidationException validationException = new ValidationException(ExceptionMessageGenerator.buildMessage(ValidationException.class, FETCH_GROUP_HAS_UNMAPPED_ATTRIBUTE, args));
+        validationException.setErrorCode(FETCH_GROUP_HAS_UNMAPPED_ATTRIBUTE);
+        return validationException;
+    }
+
+    /**
+     * PUBLIC:
+     * Fetch group has an attribute that references nested fetch group but the corresponding mapping is either not ForeignReferenceMapping or does not have reference descriptor.
+     */
+    public static ValidationException fetchGroupHasWrongReferenceAttribute(FetchGroup fetchGroup, String attributeName) {
+        Object[] args = { fetchGroup,  attributeName };
+
+        ValidationException validationException = new ValidationException(ExceptionMessageGenerator.buildMessage(ValidationException.class, FETCH_GROUP_HAS_WRONG_REFERENCE_ATTRIBUTE, args));
+        validationException.setErrorCode(FETCH_GROUP_HAS_WRONG_REFERENCE_ATTRIBUTE);
+        return validationException;
+    }
+
+    /**
+     * PUBLIC:
+     * Fetch group has an attribute that references nested fetch group but target class does not support fetch groups..
+     */
+    public static ValidationException fetchGroupHasWrongReferenceClass(FetchGroup fetchGroup, String attributeName) {
+        Object[] args = { fetchGroup,  attributeName };
+
+        ValidationException validationException = new ValidationException(ExceptionMessageGenerator.buildMessage(ValidationException.class, FETCH_GROUP_HAS_WRONG_REFERENCE_CLASS, args));
+        validationException.setErrorCode(FETCH_GROUP_HAS_WRONG_REFERENCE_CLASS);
+        return validationException;
+    }
 }

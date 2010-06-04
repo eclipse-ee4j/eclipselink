@@ -73,6 +73,7 @@ public class SimpleSerializeFetchGroupTests extends BaseFetchGroupTests {
         suite.addTest(new SimpleSerializeFetchGroupTests("verifyUnfetchedAttributes"));
         suite.addTest(new SimpleSerializeFetchGroupTests("verifyFetchedRelationshipAttributes"));
         suite.addTest(new SimpleSerializeFetchGroupTests("simpleSerializeAndMerge"));
+        suite.addTest(new SimpleSerializeFetchGroupTests("partialMerge"));
         
         return suite;
     }
@@ -709,6 +710,7 @@ public class SimpleSerializeFetchGroupTests extends BaseFetchGroupTests {
         fetchGroup.addAttribute("lastName");
         fetchGroup.addAttribute("address.country");
         fetchGroup.addAttribute("phoneNumbers.areaCode");
+        fetchGroup.addAttribute("phoneNumbers.owner.id");
         fetchGroup.setShouldLoad(true);
         query.setHint(QueryHints.FETCH_GROUP, fetchGroup);
         Employee emp = (Employee)query.getSingleResult();
@@ -719,16 +721,41 @@ public class SimpleSerializeFetchGroupTests extends BaseFetchGroupTests {
         beginTransaction(em);
         try {
             empSerialized = serialize(emp);
+            
+            assertFetched(empSerialized, fetchGroup);
             empSerialized.setFirstName("newFirstName");
             empSerialized.setLastName("newLastName");
+            
+            // salary is not in the original fetchGroup
             empSerialized.setSalary(newSalary);
+            FetchGroup extendedFetchGroup = (FetchGroup)fetchGroup.clone();
+            extendedFetchGroup.addAttribute("salary");
+            assertFetched(empSerialized, extendedFetchGroup);
+            
             empSerialized.getAddress().setCountry("newCountry");
+            assertFetched(empSerialized.getAddress(), fetchGroup.getGroup("address"));
+            // address.city is not in the original fetchGroup
             empSerialized.getAddress().setCity("newCity");
+            extendedFetchGroup.addAttribute("address.city");
+            assertFetched(empSerialized.getAddress(), extendedFetchGroup.getGroup("address"));
+            
+            // phoneNumbers.number is not in the original fetchGroup
+            extendedFetchGroup.addAttribute("phoneNumbers.number");            
             for(PhoneNumber phone : empSerialized.getPhoneNumbers()) {
                 phone.setAreaCode("000");
+                assertFetched(phone, fetchGroup.getGroup("phoneNumbers"));
+                // phoneNumbers.number is not in the original fetchGroup
                 phone.setNumber("0000000");
+                assertFetched(phone, extendedFetchGroup.getGroup("phoneNumbers"));
             }
+
             empDeserialized = serialize(empSerialized);
+            assertFetched(empDeserialized, extendedFetchGroup);
+            assertFetched(empDeserialized.getAddress(), extendedFetchGroup.getGroup("address"));
+            for(PhoneNumber phone : empDeserialized.getPhoneNumbers()) {
+                assertFetched(phone, extendedFetchGroup.getGroup("phoneNumbers"));
+            }
+
             empMerged = em.merge(empDeserialized);
     
             // verify merged in em
@@ -741,6 +768,19 @@ public class SimpleSerializeFetchGroupTests extends BaseFetchGroupTests {
                 assertEquals("000", phone.getAreaCode());
                 assertEquals("0000000", phone.getNumber());
             }
+            
+            // verify that the attributes outside of the fetch group not nullified.
+            assertEquals(empOriginal.getGender(), empMerged.getGender());
+            if(empOriginal.getDepartment() != null) {
+                assertEquals(empOriginal.getDepartment().getId(), empMerged.getDepartment().getId());
+            }
+            if(empOriginal.getPeriod() != null) {
+                assertEquals(empOriginal.getPeriod().getStartDate(), empMerged.getPeriod().getStartDate());
+                assertEquals(empOriginal.getPeriod().getEndDate(), empMerged.getPeriod().getEndDate());
+            }
+            assertEquals(empOriginal.getPayScale(), empMerged.getPayScale());
+            assertEquals(empOriginal.getStartTime(), empMerged.getStartTime());
+            assertEquals(empOriginal.getEndTime(), empMerged.getEndTime());
             commitTransaction(em);                
         } finally {
             if(isTransactionActive(em)) {
@@ -779,6 +819,7 @@ public class SimpleSerializeFetchGroupTests extends BaseFetchGroupTests {
             assertEquals("0000000", phone.getNumber());
         }
     
+        // clean up
         beginTransaction(em);
         try {
             empDb.setFirstName(empOriginal.getFirstName());
@@ -875,6 +916,45 @@ public class SimpleSerializeFetchGroupTests extends BaseFetchGroupTests {
         }
     }*/
     
+    public void partialMerge() throws Exception {
+        EntityManager em = createEntityManager();
+        // Search for an Employee with an Address and Phone Numbers 
+        TypedQuery<Employee> query = em.createQuery("SELECT e FROM Employee e WHERE e.address IS NOT NULL AND e.id IN (SELECT MIN(p.id) FROM PhoneNumber p)", Employee.class);
+        
+        // Load only its names and phone Numbers
+        FetchGroup fetchGroup = new FetchGroup();
+        fetchGroup.addAttribute("firstName");
+        fetchGroup.addAttribute("lastName");
+        FetchGroup phonesFG = phoneDescriptor.getFetchGroupManager().createFullFetchGroup();
+        // that ensures the owner is not instantiated
+        phonesFG.addAttribute("owner.id");
+        phonesFG.removeAttribute("status");
+        phonesFG.setShouldLoad(true);
+        fetchGroup.addAttribute("phoneNumbers", phonesFG);
+        
+        // Make sure the FetchGroup also forces the relationships to be loaded
+        fetchGroup.setShouldLoad(true);
+        query.setHint(QueryHints.FETCH_GROUP, fetchGroup);
+        
+        Employee emp = query.getSingleResult();
+        
+        // Detach Employee through Serialization
+        Employee detachedEmp = (Employee) SerializationHelper.clone(emp);
+        // Modify the detached Employee inverting the names, adding a phone number, and setting the salary
+        detachedEmp.setFirstName(emp.getLastName());
+        detachedEmp.setLastName(emp.getFirstName());
+        detachedEmp.addPhoneNumber(new PhoneNumber("TEST", "999", "999999"));
+        // NOte that salary was not part of the original FetchGroupdetachedEmp.setSalary(1);
+        detachedEmp.setSalary(1);
+        
+        beginTransaction(em);
+        // Merge the detached employee
+        em.merge(detachedEmp);
+        // Flush the changes to the database
+        em.flush();
+        rollbackTransaction(em);
+    }
+
     private <T> T serialize(Serializable entity) throws IOException, ClassNotFoundException {
         byte[] bytes = SerializationHelper.serialize(entity);
         return (T) SerializationHelper.deserialize(bytes);

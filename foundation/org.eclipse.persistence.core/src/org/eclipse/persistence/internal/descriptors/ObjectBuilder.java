@@ -1821,6 +1821,7 @@ public class ObjectBuilder implements Cloneable, Serializable {
                     boolean shouldCopy = shouldCopyAllAttributes || (attributesToCopy != null && attributesToCopy.contains(name));
                     boolean shouldVisit = attributesToVisit == null || attributesToVisit.contains(name);
                     if(shouldCopy || shouldVisit) {
+                        boolean isVisiting = false;
                         // unless it's a reference mapping pass copyGroup - just to carry the session.
                         CopyGroup mappingCopyGroup = copyGroup;
                         if(mapping.isForeignReferenceMapping()) {
@@ -1831,7 +1832,8 @@ public class ObjectBuilder implements Cloneable, Serializable {
                                 if(mappingCopyGroup == null) {
                                     FetchGroupManager referenceFetchGroupManager = referenceDescriptor.getFetchGroupManager();
                                     if(referenceFetchGroupManager != null) {
-                                        mappingCopyGroup = referenceFetchGroupManager.getNonReferenceEntityFetchGroup().toCopyGroup(); 
+                                        mappingCopyGroup = referenceFetchGroupManager.getNonReferenceEntityFetchGroup().toCopyGroup();
+                                        isVisiting = true;
                                     } else {
                                         // TODO: would that work?
                                         mappingCopyGroup = new CopyGroup();
@@ -1842,8 +1844,10 @@ public class ObjectBuilder implements Cloneable, Serializable {
                                 mappingCopyGroup.setSession(copyGroup.getSession());
                             }
                         }
-                        // TODO: optimization - redefine buildCopy to take shouldCopy and don't copy if not required.
-                        mapping.buildCopy(copy, original, mappingCopyGroup);
+                        if(shouldCopy || isVisiting) {
+                            // TODO: optimization: (even when isVisiting == true) redefine buildCopy to take shouldCopy and don't copy if not required.
+                            mapping.buildCopy(copy, original, mappingCopyGroup);
+                        }
                     }
                 }
             } else {
@@ -2986,10 +2990,15 @@ public class ObjectBuilder implements Cloneable, Serializable {
         // for GF#1139 Cascade merge operations to relationship mappings even if already registered
         
         FetchGroup sourceFetchGroup = null;
-//        FetchGroup targetFetchGroup = null;
+        FetchGroup targetFetchGroup = null;
         if(this.descriptor.hasFetchGroupManager()) {
             sourceFetchGroup = this.descriptor.getFetchGroupManager().getObjectFetchGroup(source);
-//            targetFetchGroup = this.descriptor.getFetchGroupManager().getObjectFetchGroup(target);
+            targetFetchGroup = this.descriptor.getFetchGroupManager().getObjectFetchGroup(target);
+            if(targetFetchGroup != null) {
+                if(!targetFetchGroup.isSupersetOf(sourceFetchGroup)) {
+                    targetFetchGroup.onUnfetchedAttribute((FetchGroupTracker)target, null);
+                }
+            }
         }
         // PERF: Avoid synchronized enumerator as is concurrency bottleneck.
         List mappings = this.descriptor.getMappings();

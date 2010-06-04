@@ -23,13 +23,17 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import org.eclipse.persistence.descriptors.changetracking.ObjectChangePolicy;
 import org.eclipse.persistence.exceptions.DescriptorException;
+import org.eclipse.persistence.exceptions.ValidationException;
+import org.eclipse.persistence.internal.descriptors.ObjectBuilder;
 import org.eclipse.persistence.internal.helper.ClassConstants;
 import org.eclipse.persistence.internal.helper.DatabaseField;
 import org.eclipse.persistence.internal.helper.Helper;
+import org.eclipse.persistence.internal.queries.AttributeItem;
 import org.eclipse.persistence.internal.queries.EntityFetchGroup;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.internal.sessions.UnitOfWorkImpl;
 import org.eclipse.persistence.mappings.DatabaseMapping;
+import org.eclipse.persistence.mappings.ForeignReferenceMapping;
 import org.eclipse.persistence.queries.FetchGroup;
 import org.eclipse.persistence.queries.FetchGroupTracker;
 
@@ -181,6 +185,61 @@ public class FetchGroupManager implements Cloneable {
     
     /**
      * PUBLIC:
+     * Add primary key and version attributes to the passed fetch group
+     * and all the fetch group it contains.
+     * Also verifies that all the attributes have corresponding mappings.
+     * Could be used for fetch group preparation and validation.
+     * Called by ObjectLevelReadQuery prepareFetchgroup method.
+     */
+    public void prepareAndVerify(FetchGroup fetchGroup) {
+        prepareAndVerifyInternal(fetchGroup, "");
+    }
+    
+    /**
+     * INTERNAL:
+     * Add primary key and version attributes to the passed fetch group
+     * and all the fetch group it contains.
+     * Also verifies that all the attributes have corresponding mappings.
+     */
+    protected void prepareAndVerifyInternal(FetchGroup fetchGroup, String attributePrefix) {
+        addMinimalFetchGroup(fetchGroup);
+        ObjectBuilder builder = this.descriptor.getObjectBuilder(); 
+        Iterator<Map.Entry<String, AttributeItem>> it = fetchGroup.getItems().entrySet().iterator();
+        while(it.hasNext()) {
+            Map.Entry<String, AttributeItem> entry = it.next();
+            String name = entry.getKey();
+            DatabaseMapping mapping = builder.getMappingForAttributeName(name);
+            if(mapping != null) {
+                FetchGroup nestedFetchGroup = (FetchGroup)entry.getValue().getGroup();
+                if(nestedFetchGroup != null) {
+                   if(mapping.isForeignReferenceMapping()) {
+                       ClassDescriptor referenceDescriptor = ((ForeignReferenceMapping)mapping).getReferenceDescriptor();
+                       if(referenceDescriptor != null) {
+                           FetchGroupManager nestedFetchGroupManager = referenceDescriptor.getFetchGroupManager();
+                           if(nestedFetchGroupManager != null) {
+                               nestedFetchGroupManager.prepareAndVerifyInternal(nestedFetchGroup, attributePrefix + name + '.');
+                           } else {
+                               // target descriptor does not support fetch groups
+                               throw ValidationException.fetchGroupHasWrongReferenceClass(fetchGroup, name);
+                           }
+                       } else {
+                           // no reference descriptor found
+                           throw ValidationException.fetchGroupHasWrongReferenceAttribute(fetchGroup, name);
+                       }
+                   } else {
+                       // no reference mapping found
+                       throw ValidationException.fetchGroupHasWrongReferenceAttribute(fetchGroup, name);
+                   }
+                }
+            } else {
+                // no mapping found
+                throw ValidationException.fetchGroupHasUnmappedAttribute(fetchGroup, name);
+            }
+        }
+    }
+    
+    /**
+     * PUBLIC:
      * Returns clone of the default fetch group.
      * Could be used as a starting point for a new user-defined fetch group.
      */
@@ -299,9 +358,9 @@ public class FetchGroupManager implements Cloneable {
         if(this.defaultFetchGroup != newDefaultFetchGroup) {
             if(this.entityFetchGroups != null) {
                 if(newDefaultFetchGroup != null) {
-                    // minimalFecthGroup is set during initialization
-                    if(this.minimalFetchGroup != null) {
-                        addMinimalFetchGroup(newDefaultFetchGroup);
+                    if(this.descriptor.isFullyInitialized()) {
+                        // don't do that before descriptors are initialized.
+                        prepareAndVerify(newDefaultFetchGroup);
                         this.defaultEntityFetchGroup = this.getEntityFetchGroup(newDefaultFetchGroup);
                     }
                 } else {
@@ -636,17 +695,7 @@ public class FetchGroupManager implements Cloneable {
         // Now minimalFetchGroup contains PrimaryKey plus locking field - getEntityFetchGroup call ensures
         // that corresponding EntityFetchGroup is cached in entityFetchGroups map.
         // Note that the new EntityFetchGroup is not created if there is no locking field.
-        getEntityFetchGroup(this.minimalFetchGroup);
-        
-        // Create and cache EntityFetchGroups for named fetch groups.
-        if(this.fetchGroups != null) {
-            Iterator<FetchGroup> it = this.fetchGroups.values().iterator();
-            while(it.hasNext()) {
-                FetchGroup fetchGroup = it.next();
-                addMinimalFetchGroup(fetchGroup);
-                getEntityFetchGroup(fetchGroup);
-            }
-        }
+        getEntityFetchGroup(this.minimalFetchGroup);        
     }
     
     /**
@@ -660,6 +709,17 @@ public class FetchGroupManager implements Cloneable {
             // initialize already threw exception here
             return;
         }
+
+        // Create and cache EntityFetchGroups for named fetch groups.
+        if(this.fetchGroups != null) {
+            Iterator<FetchGroup> it = this.fetchGroups.values().iterator();
+            while(it.hasNext()) {
+                FetchGroup fetchGroup = it.next();
+                prepareAndVerify(fetchGroup);
+                getEntityFetchGroup(fetchGroup);
+            }
+        }
+        
         if(this.defaultFetchGroup == null) {
             // Look up default fetch group set by user on parent descriptors
             if(this.descriptor.isChildDescriptor() && this.shouldUseInheritedDefaultFetchGroup) {
@@ -691,7 +751,7 @@ public class FetchGroupManager implements Cloneable {
             }
         }
         if(this.defaultFetchGroup != null) {
-            addMinimalFetchGroup(this.defaultFetchGroup);
+            prepareAndVerify(this.defaultFetchGroup);
             this.defaultEntityFetchGroup = getEntityFetchGroup(this.defaultFetchGroup);
         }
         initNonReferenceEntityFetchGroup();

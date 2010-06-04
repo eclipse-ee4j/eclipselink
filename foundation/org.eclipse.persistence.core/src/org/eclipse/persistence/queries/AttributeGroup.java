@@ -68,14 +68,14 @@ public class AttributeGroup implements Serializable, Cloneable {
         this("");
     }
 
-    /*
+    /**
      * Subclass may create different types.
      */
     protected AttributeItem newItem(AttributeGroup group, String attrName) {
         return new AttributeItem(group, attrName);
     }
 
-    /*
+    /**
      * Subclass may create different types.
      */
     protected AttributeGroup newGroup(String name, AttributeGroup parent) {
@@ -102,10 +102,16 @@ public class AttributeGroup implements Serializable, Cloneable {
         }
     }
 
+    /**
+     * Indicates whether the group has at least one attribute.
+     */
     public boolean hasItems() {
         return this.items != null && !this.items.isEmpty();
     }
 
+    /**
+     * INTERNAL:
+     */
     public Map<String, AttributeItem> getItems() {
         if (this.items == null) {
             this.items = new HashMap();
@@ -123,7 +129,7 @@ public class AttributeGroup implements Serializable, Cloneable {
     }
 
     /**
-     * Add an basic attribute or nested attribute with each String representing
+     * Add a basic attribute or nested attribute with each String representing
      * an attribute on the path to what needs to be included in the
      * AttributeGroup.
      * <p>
@@ -135,14 +141,30 @@ public class AttributeGroup implements Serializable, Cloneable {
      * @param attrPathOrName
      *            A simple attribute, array or attributes forming a path
      */
-    public AttributeItem addAttribute(String attributeNameOrPath) {
-        return addAttribute(attributeNameOrPath, null);
+    public void addAttribute(String attributeNameOrPath) {
+        addAttribute(attributeNameOrPath, null);
     }
 
-    public AttributeItem addAttribute(String attributeNameOrPath, AttributeGroup group) {
+    /**
+     * Add a basic attribute or nested attribute with each String representing
+     * an attribute on the path to what needs to be included in the
+     * AttributeGroup.
+     * <p>
+     * Example: <code>
+     *    group.addAttribute("firstName", group1);<br>
+     *    group.addAttribute("manager.address", group2);
+     * </code>
+     * 
+     * Note that existing group corresponding to attributeNameOrPath
+     * will be overridden with the passed group. 
+     * 
+     * @param attrPathOrName
+     *            A simple attribute, array or attributes forming a path
+     * @param group - an AttributeGroup to be added.
+     */
+    public void addAttribute(String attributeNameOrPath, AttributeGroup group) {
         AttributeItem item = getItem(convert(attributeNameOrPath), true);
         item.setGroup(group);
-        return item;
     }
 
     /**
@@ -167,6 +189,7 @@ public class AttributeGroup implements Serializable, Cloneable {
     }
 
     /**
+     * INTERNAL:
      * Lookup the {@link AttributeItem}for the provided attribute name or path.
      * 
      * @return item or null
@@ -350,10 +373,16 @@ public class AttributeGroup implements Serializable, Cloneable {
         return getClass().getSimpleName() + "(" + getName() + ")" + toStringAdditionalInfo() + "{" + toStringItems() + "}";
     }
 
-    public String toStringAdditionalInfo() {
+    /**
+     * Used by toString to print additional info for derived classes.
+     */
+    protected String toStringAdditionalInfo() {
         return "";
     }
 
+    /**
+     * Used by toString to print attribute items.
+     */
     protected String toStringItems() {
         String str = "";
         if (this.items != null) {

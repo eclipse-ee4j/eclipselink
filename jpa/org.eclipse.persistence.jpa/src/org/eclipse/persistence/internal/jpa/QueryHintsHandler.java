@@ -54,6 +54,7 @@ import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.logging.SessionLog;
 import org.eclipse.persistence.mappings.ForeignReferenceMapping;
 import org.eclipse.persistence.mappings.DatabaseMapping;
+import org.eclipse.persistence.queries.AttributeGroup;
 import org.eclipse.persistence.queries.CursorPolicy;
 import org.eclipse.persistence.queries.CursoredStreamPolicy;
 import org.eclipse.persistence.queries.DataModifyQuery;
@@ -866,7 +867,11 @@ public class QueryHintsHandler {
     
         DatabaseQuery applyToDatabaseQuery(Object valueToApply, DatabaseQuery query, ClassLoader loader, AbstractSession activeSession) {
             if (query.isObjectLevelReadQuery()) {
-                ((ObjectLevelReadQuery)query).setFetchGroup((FetchGroup)valueToApply);
+                if(valueToApply != null) {
+                    ((ObjectLevelReadQuery)query).setFetchGroup(((AttributeGroup)valueToApply).toFetchGroup());
+                } else {
+                    ((ObjectLevelReadQuery)query).setFetchGroup(null);
+                }
             } else {
                 throw new IllegalArgumentException(ExceptionLocalization.buildMessage("ejb30-wrong-type-for-query-hint",new Object[]{getQueryId(query), name, getPrintValue(valueToApply)}));
             }
@@ -925,7 +930,11 @@ public class QueryHintsHandler {
     
         DatabaseQuery applyToDatabaseQuery(Object valueToApply, DatabaseQuery query, ClassLoader loader, AbstractSession activeSession) {
             if (query.isObjectLevelReadQuery()) {
-                ((ObjectLevelReadQuery)query).setLoadGroup((LoadGroup)valueToApply);
+                if(valueToApply != null) {
+                    ((ObjectLevelReadQuery)query).setLoadGroup(((AttributeGroup)valueToApply).toLoadGroup());
+                } else {
+                    ((ObjectLevelReadQuery)query).setLoadGroup(null);
+                }
             } else {
                 throw new IllegalArgumentException(ExceptionLocalization.buildMessage("ejb30-wrong-type-for-query-hint",new Object[]{getQueryId(query), name, getPrintValue(valueToApply)}));
             }

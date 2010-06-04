@@ -41,6 +41,7 @@ import org.eclipse.persistence.sessions.Project;
 import org.eclipse.persistence.logging.SessionLog;
 import org.eclipse.persistence.logging.SessionLogEntry;
 import org.eclipse.persistence.logging.DefaultSessionLog;
+import org.eclipse.persistence.mappings.DatabaseMapping;
 import org.eclipse.persistence.sessions.DatabaseLogin;
 import org.eclipse.persistence.internal.sequencing.Sequencing;
 import org.eclipse.persistence.sessions.coordination.CommandProcessor;
@@ -748,7 +749,7 @@ public abstract class AbstractSession implements org.eclipse.persistence.session
      * or for templatizing an existing object into another new object.
      * The object and all of its privately owned parts will be copied.
      *
-     * @see #copy(Object, CopyGroup)
+     * @see #copy(Object, AttributeGroup)
      */
     public Object copy(Object originalObjectOrObjects) {
         return copy(originalObjectOrObjects, new CopyGroup());
@@ -4056,8 +4057,34 @@ public abstract class AbstractSession implements org.eclipse.persistence.session
     * @param objectOrCollection
     */
    public void load(Object objectOrCollection, AttributeGroup group) {
-       if(objectOrCollection != null && group != null) {
-           group.toLoadGroup().load(objectOrCollection, this);
+       if(objectOrCollection == null || group == null) {
+           return;
+       }
+       LoadGroup loadGroup = group.toLoadGroup();
+       DescriptorIterator iterator = new DescriptorIterator() {
+           public void iterate(Object object) {
+               if(this.getCurrentGroup() != null) {
+                   ObjectBuilder builder = getCurrentDescriptor().getObjectBuilder();
+                   Iterator<String> it = getCurrentGroup().getAttributeNames().iterator();
+                   while(it.hasNext()) {
+                       DatabaseMapping mapping = builder.getMappingForAttributeName(it.next());
+                       // instantiate indirection
+                       mapping.instantiateAttribute(object, session);
+                   }
+               }
+           }
+       };
+       iterator.setSession(this);
+       iterator.setVisitedObjects(new IdentityHashMap());
+       iterator.setShouldTrackCurrentGroup(true);
+       
+       if(objectOrCollection instanceof Collection) {
+           Iterator it = ((Collection)objectOrCollection).iterator();
+           while(it.hasNext()) {
+               iterator.startIterationOn(it.next(), loadGroup);
+           }
+       } else {
+           iterator.startIterationOn(objectOrCollection, loadGroup);
        }
    }
 }

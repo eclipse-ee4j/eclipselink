@@ -174,7 +174,9 @@ public class ExceptionLocalizationResource extends ListResourceBundle {
                                            { "cache_impl_class_has_no_descriptor_is_not_a_persistent_type", "The class [{0}] is not a persistent type - it has no associated descriptor."},                                           
                                            { "cache_impl_object_has_no_descriptor_is_not_a_persistent_type", "The object [{0}] is not of a persistent type - it has no associated descriptor."}, //
                                            { "cache_impl_object_descriptor_has_no_cmppolicy_set", "The object [{0}] with descriptor [{1}] does not have a CMPPolicy set, we are unable to return an Id."}, //
-                                           { "cache_descriptor_has_no_cmppolicy_set_cannot_create_primary_key", "The class [{0}] with descriptor [{1}] does not have a CMPPolicy set, we are unable create a primary key instance for the id type [{2}]."}                                           
+                                           { "cache_descriptor_has_no_cmppolicy_set_cannot_create_primary_key", "The class [{0}] with descriptor [{1}] does not have a CMPPolicy set, we are unable create a primary key instance for the id type [{2}]."},                                           
+                                           { "cannot_update_entity_fetch-group", "Attempt to add or remove attribute [(1)] to (0) - EntityFetchGroup object is immutable."},                                           
+                                           { "cannot_get_unfetched_attribute", "Cannot get unfetched attribute [(1)] from detached object (0)."}                                           
                                         };
     /**
      * Return the lookup table.

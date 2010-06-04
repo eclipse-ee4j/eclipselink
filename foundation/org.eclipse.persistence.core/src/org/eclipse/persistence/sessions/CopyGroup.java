@@ -16,7 +16,6 @@ package org.eclipse.persistence.sessions;
 import java.util.*;
 
 import org.eclipse.persistence.internal.localization.*;
-import org.eclipse.persistence.internal.queries.AttributeItem;
 import org.eclipse.persistence.queries.AttributeGroup;
 
 /**
@@ -204,7 +203,7 @@ public class CopyGroup extends AttributeGroup {
     /**
      * INTERNAL:
      */
-    public String toStringAdditionalInfo() {
+    protected String toStringAdditionalInfo() {
         String depthString = "";
         if (shouldCascadeAllParts()) {
             depthString = "CASCADE_ALL_PARTS";
@@ -220,17 +219,17 @@ public class CopyGroup extends AttributeGroup {
     }
 
     @Override
-    public AttributeItem addAttribute(String attributeNameOrPath, AttributeGroup group) {
-        return super.addAttribute(attributeNameOrPath, (group != null ? group.toCopyGroup() : null));
+    public void addAttribute(String attributeNameOrPath, AttributeGroup group) {
+        super.addAttribute(attributeNameOrPath, (group != null ? group.toCopyGroup() : null));
     }
 
-    public AttributeItem addAttribute(String attributeNameOrPath, CopyGroup group) {
+    public void addAttribute(String attributeNameOrPath, CopyGroup group) {
         cascadeTree();
         if(group != null) {
             group.setCopies(getCopies());
             group.cascadeTree();
         }
-        return super.addAttribute(attributeNameOrPath, group);
+        super.addAttribute(attributeNameOrPath, group);
     }
 
     @Override

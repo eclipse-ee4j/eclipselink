@@ -16,6 +16,7 @@ package org.eclipse.persistence.internal.queries;
 import java.util.Collection;
 import java.util.Iterator;
 
+import org.eclipse.persistence.internal.localization.ExceptionLocalization;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.queries.AttributeGroup;
 import org.eclipse.persistence.queries.FetchGroup;
@@ -74,9 +75,8 @@ public class EntityFetchGroup extends FetchGroup {
     }
     
     @Override
-    public AttributeItem addAttribute(String attributeNameOrPath, AttributeGroup group) {
-        // TODO
-        throw new IllegalStateException("Cannot add attribute to EntityFetchGroup");
+    public void addAttribute(String attributeNameOrPath, AttributeGroup group) {
+        throw new IllegalStateException(ExceptionLocalization.buildMessage("cannot_update_entity_fetch-group", new Object[]{this, attributeNameOrPath}));
     }
 
     /**
@@ -89,8 +89,7 @@ public class EntityFetchGroup extends FetchGroup {
         if (entity._persistence_getSession() != null) {
             return super.onUnfetchedAttribute(entity, attributeName);
         }
-        // TODO
-        throw new IllegalStateException( "Cannot get unfetched attribute: " + attributeName);
+        throw new IllegalStateException(ExceptionLocalization.buildMessage("cannot_get_unfetched_attribute", new Object[]{entity, attributeName}));
     }
 
     /**
@@ -110,8 +109,7 @@ public class EntityFetchGroup extends FetchGroup {
 
     @Override
     public void removeAttribute(String attributeNameOrPath) {
-        // TODO
-        throw new IllegalStateException("Cannot remove attribute from EntityFetchGroup");
+        throw new IllegalStateException(ExceptionLocalization.buildMessage("cannot_update_entity_fetch-group", new Object[]{this, attributeNameOrPath}));
     }
 
     /**
@@ -127,4 +125,16 @@ public class EntityFetchGroup extends FetchGroup {
     public boolean isEntityFetchGroup() {
         return true;
     }
+    
+    /**
+     * Return true if this EntityFetchGroup is a super-set of the passed in
+     * EntityFetchGroup.
+     */
+    public boolean isSupersetOf(EntityFetchGroup anotherGroup) {
+        if (anotherGroup == null) {
+            return false;
+        }
+        return this.getAttributeNames().containsAll(anotherGroup.getAttributeNames());
+    }
+
 }

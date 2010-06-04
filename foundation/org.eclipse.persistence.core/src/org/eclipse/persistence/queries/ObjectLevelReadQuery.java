@@ -1074,13 +1074,13 @@ public abstract class ObjectLevelReadQuery extends ObjectBuildingQuery {
         Object result = executeObjectLevelReadQuery();
         if(result != null) {
             if(this.loadGroup != null) {
-                this.loadGroup.load(result, getSession());
+                getSession().load(result, this.loadGroup);
             } else {
                 FetchGroup executionFetchGroup = this.getExecutionFetchGroup(); 
                 if(executionFetchGroup != null) {
                     LoadGroup lg = executionFetchGroup.toLoadGroupLoadOnly();
                     if(lg != null) {
-                        lg.load(result, getSession());
+                        getSession().load(result, lg);
                     }
                 }
             }
@@ -1642,7 +1642,7 @@ public abstract class ObjectLevelReadQuery extends ObjectBuildingQuery {
         return getFetchGroupNonNestedFieldsSet(null);
     }
     public Set<DatabaseField> getFetchGroupNonNestedFieldsSet(DatabaseMapping nestedMapping) {
-        Set fetchedFields = new HashSet(getExecutionFetchGroup().getItems().size());
+        Set fetchedFields = new HashSet(getExecutionFetchGroup().getAttributeNames().size());
 
         // Add required fields.
         fetchedFields.addAll(getDescriptor().getPrimaryKeyFields());
@@ -1656,7 +1656,7 @@ public abstract class ObjectLevelReadQuery extends ObjectBuildingQuery {
             }
         }
         // Add specified fields.
-        for (Iterator iterator = getExecutionFetchGroup().getItems().keySet().iterator(); iterator.hasNext();) {
+        for (Iterator iterator = getExecutionFetchGroup().getAttributeNames().iterator(); iterator.hasNext();) {
             String attribute = (String)iterator.next();
             DatabaseMapping mapping = getDescriptor().getObjectBuilder().getMappingForAttributeName(attribute);
             if (mapping == null) {
@@ -2028,7 +2028,7 @@ public abstract class ObjectLevelReadQuery extends ObjectBuildingQuery {
                     throw QueryException.fetchGroupNotSupportOnPartialAttributeReading();
                 }
                 if(this.fetchGroup != null) {
-                    this.descriptor.getFetchGroupManager().addMinimalFetchGroup(this.fetchGroup);
+                    this.descriptor.getFetchGroupManager().prepareAndVerify(this.fetchGroup);
                     this.entityFetchGroup = fetchGroupManager.getEntityFetchGroup(this.fetchGroup);
                 } else {
                     this.entityFetchGroup = null;

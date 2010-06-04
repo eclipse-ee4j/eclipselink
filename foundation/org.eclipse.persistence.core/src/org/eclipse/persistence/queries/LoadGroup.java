@@ -12,16 +12,6 @@
  ******************************************************************************/  
 package org.eclipse.persistence.queries;
 
-import java.util.Collection;
-import java.util.IdentityHashMap;
-import java.util.Iterator;
-
-import org.eclipse.persistence.internal.descriptors.DescriptorIterator;
-import org.eclipse.persistence.internal.descriptors.ObjectBuilder;
-import org.eclipse.persistence.internal.queries.AttributeItem;
-import org.eclipse.persistence.internal.sessions.AbstractSession;
-import org.eclipse.persistence.mappings.DatabaseMapping;
-
 /**
  * <b>Purpose</b>: Used to load specified relationship attributes and nested
  * relationship attributes.
@@ -57,34 +47,6 @@ public class LoadGroup extends AttributeGroup {
         return true;
     }
     
-    public void load(Object object, AbstractSession session) {
-        DescriptorIterator iterator = new DescriptorIterator() {
-            public void iterate(Object object) {
-                if(this.getCurrentGroup() != null) {
-                    ObjectBuilder builder = this.getCurrentDescriptor().getObjectBuilder();
-                    Iterator<String> it = this.getCurrentGroup().getItems().keySet().iterator();
-                    while(it.hasNext()) {
-                        DatabaseMapping mapping = builder.getMappingForAttributeName(it.next());
-                        // instantiate indirection
-                        mapping.instantiateAttribute(object, session);
-                    }
-                }
-            }
-        };
-        iterator.setSession(session);
-        iterator.setVisitedObjects(new IdentityHashMap());
-        iterator.setShouldTrackCurrentGroup(true);
-        
-        if(object instanceof Collection) {
-            Iterator it = ((Collection)object).iterator();
-            while(it.hasNext()) {
-                iterator.startIterationOn(it.next(), this);
-            }
-        } else {
-            iterator.startIterationOn(object, this);
-        }
-    }
-    
     @Override
     public LoadGroup clone() {
         return (LoadGroup)super.clone();
@@ -99,11 +61,11 @@ public class LoadGroup extends AttributeGroup {
     }
 
     @Override
-    public AttributeItem addAttribute(String attributeNameOrPath, AttributeGroup group) {
-        return super.addAttribute(attributeNameOrPath, (group != null ? group.toLoadGroup() : null));
+    public void addAttribute(String attributeNameOrPath, AttributeGroup group) {
+        super.addAttribute(attributeNameOrPath, (group != null ? group.toLoadGroup() : null));
     }
 
-    public AttributeItem addAttribute(String attributeNameOrPath, LoadGroup group) {
-        return super.addAttribute(attributeNameOrPath, group);
+    public void addAttribute(String attributeNameOrPath, LoadGroup group) {
+        super.addAttribute(attributeNameOrPath, group);
     }
  }

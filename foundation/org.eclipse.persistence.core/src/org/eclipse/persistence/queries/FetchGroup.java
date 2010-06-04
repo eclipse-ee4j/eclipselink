@@ -256,12 +256,12 @@ public class FetchGroup extends AttributeGroup {
     }
 
     @Override
-    public AttributeItem addAttribute(String attributeNameOrPath, AttributeGroup group) {
-        return super.addAttribute(attributeNameOrPath, (group != null ? group.toFetchGroup() : null));
+    public void addAttribute(String attributeNameOrPath, AttributeGroup group) {
+        super.addAttribute(attributeNameOrPath, (group != null ? group.toFetchGroup() : null));
     }
 
-    public AttributeItem addAttribute(String attributeNameOrPath, FetchGroup group) {
-        return super.addAttribute(attributeNameOrPath, group);
+    public void addAttribute(String attributeNameOrPath, FetchGroup group) {
+        super.addAttribute(attributeNameOrPath, group);
     }
 
 }

@@ -2289,10 +2289,14 @@ public class EntityManagerImpl implements org.eclipse.persistence.jpa.JpaEntityM
                 return (T) this.getServerSession();
             } else if (cls.equals(java.sql.Connection.class)) {
                 UnitOfWorkImpl unitOfWork = (UnitOfWorkImpl) this.getUnitOfWork();
-                if (!unitOfWork.isInTransaction()) {
+                if(unitOfWork.isInTransaction() || unitOfWork.getParent().isExclusiveIsolatedClientSession()) {
+                    return (T) unitOfWork.getAccessor().getConnection();
+                }
+                if (checkForTransaction(false) != null) { 
                     unitOfWork.beginEarlyTransaction();
                     return (T) unitOfWork.getAccessor().getConnection();
                 }
+                return null;
             }
             throw new PersistenceException(ExceptionLocalization.buildMessage("Provider-does-not-support-the-call", null));
 
