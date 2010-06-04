@@ -21,9 +21,9 @@ import org.eclipse.persistence.internal.helper.Helper;
 
 public class DirectToXMLAttributeIdentifiedByNameSpecialCharactersTestCases extends OXTestCase {
     private final static int CONTROL_ID = 123;
-    private final static String CONTROL_FIRST_NAME = "A<B&C<";
+    private final static String CONTROL_FIRST_NAME = "A<\"B&C<";
     private final static String CONTROL_LAST_NAME = null;
-    private final static String CONTROL_XML = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>" + Helper.cr() + "<employee id=\"123\" first-name=\"A&lt;B&amp;C&lt;\"/>";
+    private final static String CONTROL_XML = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>" + Helper.cr() + "<employee id=\"123\" first-name=\"A&lt;&quot;B&amp;C&lt;\"/>";
     private XMLMarshaller xmlMarshaller;
 
     public DirectToXMLAttributeIdentifiedByNameSpecialCharactersTestCases(String name) {
