@@ -345,7 +345,7 @@ public class Project60IOManager {
 		topLinkProject.addDescriptor(org.eclipse.persistence.tools.workbench.mappingsmodel.query.relational.MWLiteralArgument.buildDescriptor());
 		topLinkProject.addDescriptor(org.eclipse.persistence.tools.workbench.mappingsmodel.query.relational.MWQueryableArgument.buildDescriptor());
 		topLinkProject.addDescriptor(org.eclipse.persistence.tools.workbench.mappingsmodel.query.relational.MWQueryableArgumentElement.buildDescriptor());
-		topLinkProject.addDescriptor(org.eclipse.persistence.tools.workbench.mappingsmodel.query.relational.MWQueryFormat.legacy60BuildDescriptor());
+		topLinkProject.addDescriptor(org.eclipse.persistence.tools.workbench.mappingsmodel.query.relational.MWQueryFormat.buildDescriptor());
 		topLinkProject.addDescriptor(org.eclipse.persistence.tools.workbench.mappingsmodel.query.relational.MWRelationalQueryManager.legacy60BuildDescriptor());
 		topLinkProject.addDescriptor(org.eclipse.persistence.tools.workbench.mappingsmodel.query.relational.MWQueryParameterArgument.buildDescriptor());
 		topLinkProject.addDescriptor(org.eclipse.persistence.tools.workbench.mappingsmodel.query.relational.MWSQLQueryFormat.buildDescriptor());
