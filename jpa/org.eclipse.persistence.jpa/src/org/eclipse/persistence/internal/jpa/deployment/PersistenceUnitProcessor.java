@@ -19,7 +19,6 @@ import java.net.MalformedURLException;
 import java.security.AccessController;
 import java.security.PrivilegedActionException;
 import java.util.Enumeration;
-import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
@@ -129,7 +128,7 @@ public class PersistenceUnitProcessor {
             boolean firstElement = true;
             for (int i=0;i<descriptorDepth;i++){
                 if (!firstElement){
-                    path.append(File.separator);
+                    path.append("/"); // 315097 URL use standard separators
                 }
                 path.append("..");
                 firstElement = false;
@@ -150,7 +149,7 @@ public class PersistenceUnitProcessor {
         } else {
             StringBuffer path = new StringBuffer();
             for (int i=0;i<descriptorDepth;i++){
-                path.append(".." + File.separator);
+                path.append("../"); // 315097 URL use standard separators
             }
             // some other protocol
             result = new URL(pxmlURL, path.toString()); // NOI18N
