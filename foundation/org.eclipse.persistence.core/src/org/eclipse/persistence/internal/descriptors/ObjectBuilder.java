@@ -1828,16 +1828,17 @@ public class ObjectBuilder implements Cloneable, Serializable {
                             ForeignReferenceMapping frMapping = (ForeignReferenceMapping)mapping;
                             ClassDescriptor referenceDescriptor = frMapping.getReferenceDescriptor();
                             if(referenceDescriptor != null) {
+                                isVisiting = true;
                                 mappingCopyGroup = copyGroup.getGroup(name);
                                 if(mappingCopyGroup == null) {
                                     FetchGroupManager referenceFetchGroupManager = referenceDescriptor.getFetchGroupManager();
                                     if(referenceFetchGroupManager != null) {
                                         mappingCopyGroup = referenceFetchGroupManager.getNonReferenceEntityFetchGroup().toCopyGroup();
-                                        isVisiting = true;
                                     } else {
                                         // TODO: would that work?
                                         mappingCopyGroup = new CopyGroup();
                                         mappingCopyGroup.dontCascade();
+                                        isVisiting = false;
                                     }
                                     mappingCopyGroup.setCopies(copyGroup.getCopies());
                                 }
