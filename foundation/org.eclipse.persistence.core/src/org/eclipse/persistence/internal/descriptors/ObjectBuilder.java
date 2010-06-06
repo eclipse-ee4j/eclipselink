@@ -1753,6 +1753,25 @@ public class ObjectBuilder implements Cloneable, Serializable {
         if(copyGroup.shouldCascadeTree()) {
             FetchGroupManager fetchGroupManager = getDescriptor().getFetchGroupManager();
             if(fetchGroupManager != null) {
+                // by default add primary key attribute(s) if not already in the group
+                if(!copyGroup.shouldResetPrimaryKey()) {
+                    for(DatabaseMapping mapping : getPrimaryKeyMappings()) {
+                        String name = mapping.getAttributeName();
+                        if(!copyGroup.containsAttribute(name)) {
+                           copyGroup.addAttribute(name); 
+                        }
+                    }
+                }
+                
+                // by default version attribute if not already in the group
+                if(!copyGroup.shouldResetVersion()) {
+                    if(this.lockAttribute != null) {
+                        if(!copyGroup.containsAttribute(this.lockAttribute)) {
+                           copyGroup.addAttribute(this.lockAttribute); 
+                        }
+                    }
+                }
+
                 // Entity fetch group currently set on copyObject
                 EntityFetchGroup existingEntityFetchGroup = null;
                 if (copy != null) {
@@ -1775,25 +1794,6 @@ public class ObjectBuilder implements Cloneable, Serializable {
                 // Entity fetch group that will be assigned to copyObject
                 EntityFetchGroup newEntityFetchGroup = null;
                 
-                // by default add primary key attribute(s) if not already in the group
-                if(!copyGroup.shouldResetPrimaryKey()) {
-                    for(DatabaseMapping mapping : getPrimaryKeyMappings()) {
-                        String name = mapping.getAttributeName();
-                        if(!copyGroup.containsAttribute(name)) {
-                           copyGroup.addAttribute(name); 
-                        }
-                    }
-                }
-                
-                // by default version attribute if not already in the group
-                if(!copyGroup.shouldResetVersion()) {
-                    if(this.lockAttribute != null) {
-                        if(!copyGroup.containsAttribute(this.lockAttribute)) {
-                           copyGroup.addAttribute(this.lockAttribute); 
-                        }
-                    }
-                }
-
                 // Attributes to be visited - only reference mappings will be visited.
                 // If null then all attributes should be visited.
                 Set<String> attributesToVisit = copyGroup.getAttributeNames();

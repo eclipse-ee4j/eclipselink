@@ -356,19 +356,18 @@ public class FetchGroupManager implements Cloneable {
      */
     public void setDefaultFetchGroup(FetchGroup newDefaultFetchGroup) {
         if(this.defaultFetchGroup != newDefaultFetchGroup) {
-            if(this.entityFetchGroups != null) {
+            if(this.descriptor.isFullyInitialized()) {
+                // don't do that before descriptors are initialized.
                 if(newDefaultFetchGroup != null) {
-                    if(this.descriptor.isFullyInitialized()) {
-                        // don't do that before descriptors are initialized.
-                        prepareAndVerify(newDefaultFetchGroup);
-                        this.defaultEntityFetchGroup = this.getEntityFetchGroup(newDefaultFetchGroup);
-                    }
+                    prepareAndVerify(newDefaultFetchGroup);
+                    this.defaultEntityFetchGroup = this.getEntityFetchGroup(newDefaultFetchGroup);
                 } else {
                     this.defaultEntityFetchGroup = null;
                 }
             }
             this.defaultFetchGroup = newDefaultFetchGroup;
-            if(this.entityFetchGroups != null) {
+            if(this.descriptor.isFullyInitialized()) {
+                // don't do that before descriptors are initialized.
                 initNonReferenceEntityFetchGroup();
             }
         }
