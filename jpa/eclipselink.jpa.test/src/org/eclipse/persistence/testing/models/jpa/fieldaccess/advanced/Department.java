@@ -31,7 +31,6 @@ import javax.persistence.Table;
 import javax.persistence.TableGenerator;
 
 import static javax.persistence.CascadeType.PERSIST;
-import static javax.persistence.FetchType.EAGER;
 import static javax.persistence.GenerationType.TABLE;
 
 import org.eclipse.persistence.annotations.PrivateOwned;
@@ -61,9 +60,9 @@ public class Department implements Serializable {
     private Integer id;
     private String name;
     
-    @OneToMany(fetch=EAGER, mappedBy="department")
+    @OneToMany(mappedBy="department")
     private Collection<Employee> employees;
-    @OneToMany(fetch=EAGER, cascade=PERSIST)
+    @OneToMany(cascade=PERSIST)
     private Collection<Employee> managers;
     @OneToMany(mappedBy="department")
     @MapKey

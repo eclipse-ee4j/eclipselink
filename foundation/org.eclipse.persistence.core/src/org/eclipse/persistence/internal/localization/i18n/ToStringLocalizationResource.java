@@ -37,7 +37,7 @@ public class ToStringLocalizationResource extends ListResourceBundle {
                                            { "server_name", "server name" },
                                            { "database_name", "database name" },
                                            { "datasource_URL", "datasource URL" },
-                                           { "depth_reset_key", "(depth = {0}, reset key = {1})" },
+                                           { "depth_reset_key", "(depth = {0}, reset key = {1}, reset version = {2})" },
                                            { "pooled", "pooled" },
                                            { "login", "login" },
                                            { "lazy", "lazy" },

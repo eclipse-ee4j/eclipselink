@@ -99,6 +99,8 @@ public class ObjectBuilder implements Cloneable, Serializable {
     protected AbstractDirectMapping sequenceMapping;
     /** indicates whether part of primary key is unmapped - may happen only in case AggregateObject or AggregateCollection descriptor. */
     protected boolean mayHaveNullInPrimaryKey;
+    /** attribute name corresponding to optimistic lock field, set only if optimistic locking is used */
+    protected String lockAttribute; 
 
     public ObjectBuilder(ClassDescriptor descriptor) {
         this.mappingsByField = new HashMap(20);
@@ -1772,6 +1774,26 @@ public class ObjectBuilder implements Cloneable, Serializable {
                 
                 // Entity fetch group that will be assigned to copyObject
                 EntityFetchGroup newEntityFetchGroup = null;
+                
+                // by default add primary key attribute(s) if not already in the group
+                if(!copyGroup.shouldResetPrimaryKey()) {
+                    for(DatabaseMapping mapping : getPrimaryKeyMappings()) {
+                        String name = mapping.getAttributeName();
+                        if(!copyGroup.containsAttribute(name)) {
+                           copyGroup.addAttribute(name); 
+                        }
+                    }
+                }
+                
+                // by default version attribute if not already in the group
+                if(!copyGroup.shouldResetVersion()) {
+                    if(this.lockAttribute != null) {
+                        if(!copyGroup.containsAttribute(this.lockAttribute)) {
+                           copyGroup.addAttribute(this.lockAttribute); 
+                        }
+                    }
+                }
+
                 // Attributes to be visited - only reference mappings will be visited.
                 // If null then all attributes should be visited.
                 Set<String> attributesToVisit = copyGroup.getAttributeNames();
@@ -2669,6 +2691,16 @@ public class ObjectBuilder implements Cloneable, Serializable {
                 setSequenceMapping((AbstractDirectMapping)sequenceMapping);
             }
         }
+        if(this.descriptor.usesOptimisticLocking()) {
+            DatabaseField lockField = this.descriptor.getOptimisticLockingPolicy().getWriteLockField();
+            if (lockField != null) {
+                DatabaseMapping lockMapping = getDescriptor().getObjectBuilder().getMappingForField(lockField);
+                if (lockMapping != null) {
+                    this.lockAttribute = lockMapping.getAttributeName();
+                }
+            }
+        }
+
     }
     
     public boolean isPrimaryKeyComponentInvalid(Object keyValue) {
@@ -3284,5 +3316,9 @@ public class ObjectBuilder implements Cloneable, Serializable {
     
     public boolean isXMLObjectBuilder() {
         return false;
+    }
+    
+    public String getLockAttribute() {
+        return this.lockAttribute;
     }
 }

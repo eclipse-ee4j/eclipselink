@@ -10,7 +10,7 @@
  * Contributors:
  *     05/19/2010-2.1 ailitchev - Bug 244124 - Add Nested FetchGroup 
  ******************************************************************************/
-package org.eclipse.persistence.testing.tests.jpa.fetchgroups;
+package org.eclipse.persistence.testing.tests.jpa.fieldaccess.fetchgroups;
 
 import java.io.IOException;
 import java.io.Serializable;
@@ -34,8 +34,8 @@ import org.eclipse.persistence.jpa.JpaEntityManager;
 import org.eclipse.persistence.queries.AttributeGroup;
 import org.eclipse.persistence.queries.FetchGroup;
 import org.eclipse.persistence.sessions.CopyGroup;
-import org.eclipse.persistence.testing.models.jpa.advanced.Employee;
-import org.eclipse.persistence.testing.models.jpa.advanced.PhoneNumber;
+import org.eclipse.persistence.testing.models.jpa.fieldaccess.advanced.Employee;
+import org.eclipse.persistence.testing.models.jpa.fieldaccess.advanced.PhoneNumber;
 
 import org.junit.Test;
 
@@ -123,7 +123,7 @@ public class SimpleSerializeFetchGroupTests extends BaseFetchGroupTests {
 
     @Test
     public void findMinimalFetchGroup() throws Exception {
-        EntityManager em = createEntityManager();
+        EntityManager em = createEntityManager("fieldaccess");
         int minId = minimumEmployeeId(em);
 
         assertEquals(1, getQuerySQLTracker(em).getTotalSQLSELECTCalls());
@@ -182,7 +182,7 @@ public class SimpleSerializeFetchGroupTests extends BaseFetchGroupTests {
 
     @Test
     public void findEmptyFetchGroup_setUnfetchedSalary() throws Exception {
-        EntityManager em = createEntityManager();
+        EntityManager em = createEntityManager("fieldaccess");
         int minId = minimumEmployeeId(em);
 
         assertEquals(1, getQuerySQLTracker(em).getTotalSQLSELECTCalls());
@@ -286,7 +286,7 @@ public class SimpleSerializeFetchGroupTests extends BaseFetchGroupTests {
 
     @Test
     public void singleResultEmptyFetchGroup() throws Exception {
-        EntityManager em = createEntityManager();
+        EntityManager em = createEntityManager("fieldaccess");
 
         Query query = em.createQuery("SELECT e FROM Employee e WHERE e.id = :ID");
         query.setParameter("ID", minimumEmployeeId(em));
@@ -344,7 +344,7 @@ public class SimpleSerializeFetchGroupTests extends BaseFetchGroupTests {
      */
     @Test
     public void resultListEmptyFetchGroup() throws Exception {
-        EntityManager em = createEntityManager();
+        EntityManager em = createEntityManager("fieldaccess");
 
         Query query = em.createQuery("SELECT e FROM Employee e WHERE e.id = :ID");
         query.setParameter("ID", minimumEmployeeId(em));
@@ -405,7 +405,7 @@ public class SimpleSerializeFetchGroupTests extends BaseFetchGroupTests {
      */
     @Test
     public void resultListPeriodFetchGroup() throws Exception {
-        EntityManager em = createEntityManager();
+        EntityManager em = createEntityManager("fieldaccess");
 
         Query query = em.createQuery("SELECT e FROM Employee e WHERE e.id = :ID");
         query.setParameter("ID", minimumEmployeeId(em));
@@ -464,7 +464,7 @@ public class SimpleSerializeFetchGroupTests extends BaseFetchGroupTests {
 
     @Test
     public void managerFetchGroup() throws Exception {
-        EntityManager em = createEntityManager();
+        EntityManager em = createEntityManager("fieldaccess");
 
         // Use q query since find will only use default fetch group
 //        Query query = em.createQuery("SELECT e FROM Employee e WHERE e.id = :ID");
@@ -513,7 +513,7 @@ public class SimpleSerializeFetchGroupTests extends BaseFetchGroupTests {
 
     @Test
     public void managerFetchGroupWithJoinFetch() throws Exception {
-        EntityManager em = createEntityManager();
+        EntityManager em = createEntityManager("fieldaccess");
 
 //        int minId = minimumEmployeeId(em);
 //        assertEquals(1, getQuerySQLTracker(em).getTotalSQLSELECTCalls());
@@ -561,7 +561,7 @@ public class SimpleSerializeFetchGroupTests extends BaseFetchGroupTests {
 
     @Test
     public void employeeNamesFetchGroup() throws Exception {
-        EntityManager em = createEntityManager();
+        EntityManager em = createEntityManager("fieldaccess");
 
         int minId = minimumEmployeeId(em);
         assertEquals(1, getQuerySQLTracker(em).getTotalSQLSELECTCalls());
@@ -614,7 +614,7 @@ public class SimpleSerializeFetchGroupTests extends BaseFetchGroupTests {
 
     @Test
     public void joinFetchEmployeeAddressWithDynamicFetchGroup() {
-        EntityManager em = createEntityManager();
+        EntityManager em = createEntityManager("fieldaccess");
 
         Query query = em.createQuery("SELECT e FROM Employee e JOIN FETCH e.address");
 
@@ -630,9 +630,9 @@ public class SimpleSerializeFetchGroupTests extends BaseFetchGroupTests {
 
     @Test
     public void joinFetchEmployeeAddressPhoneWithDynamicFetchGroup() {
-        EntityManager em = createEntityManager();
+        EntityManager em = createEntityManager("fieldaccess");
 
-        Query query = em.createQuery("SELECT e FROM Employee e JOIN FETCH e.address WHERE e.id IN (SELECT p.id FROM PhoneNumber p)");
+        Query query = em.createQuery("SELECT e FROM Employee e JOIN FETCH e.address WHERE e.id IN (SELECT p.owner.id FROM PhoneNumber p)");
 
         FetchGroup fetchGroup = new FetchGroup("names");
         fetchGroup.addAttribute("firstName");
@@ -646,9 +646,9 @@ public class SimpleSerializeFetchGroupTests extends BaseFetchGroupTests {
 
     @Test
     public void verifyUnfetchedAttributes() throws Exception {
-        EntityManager em = createEntityManager();
+        EntityManager em = createEntityManager("fieldaccess");
 
-        TypedQuery<Employee> q = em.createQuery("SELECT e FROM Employee e WHERE e.id IN (SELECT MIN(p.id) FROM PhoneNumber p)", Employee.class);
+        TypedQuery<Employee> q = em.createQuery("SELECT e FROM Employee e WHERE e.id IN (SELECT MIN(p.owner.id) FROM PhoneNumber p)", Employee.class);
         FetchGroup fg = new FetchGroup("Employee.empty");
         q.setHint(QueryHints.FETCH_GROUP, fg);
         Employee emp = q.getSingleResult();
@@ -674,7 +674,7 @@ public class SimpleSerializeFetchGroupTests extends BaseFetchGroupTests {
 
     @Test
     public void verifyFetchedRelationshipAttributes() throws Exception {
-        EntityManager em = createEntityManager();
+        EntityManager em = createEntityManager("fieldaccess");
 
         FetchGroup fg = new FetchGroup("Employee.relationships");
         fg.addAttribute("address");
@@ -693,7 +693,7 @@ public class SimpleSerializeFetchGroupTests extends BaseFetchGroupTests {
 
     @Test
     public void simpleSerializeAndMerge() throws Exception {
-        EntityManager em = createEntityManager();
+        EntityManager em = createEntityManager("fieldaccess");
         int id = minEmployeeIdWithAddressAndPhones(em);
         HashMap<String, PhoneNumber> phonesOriginal = new HashMap();
         // save the original Employee for clean up
@@ -702,13 +702,13 @@ public class SimpleSerializeFetchGroupTests extends BaseFetchGroupTests {
             phonesOriginal.put(phone.getType(), phone);
         }
         closeEntityManager(em);
-        clearCache();
+        clearCache("fieldaccess");
         int newSalary = empOriginal.getSalary() * 2;
         if(newSalary == 0) {
             newSalary = 100;
         }
         
-        em = createEntityManager();
+        em = createEntityManager("fieldaccess");
         Query query = em.createQuery("SELECT e FROM Employee e WHERE e.id = "+id);        
         FetchGroup fetchGroup = new FetchGroup("names");
         fetchGroup.addAttribute("firstName");
@@ -784,8 +784,6 @@ public class SimpleSerializeFetchGroupTests extends BaseFetchGroupTests {
                 assertEquals(empOriginal.getPeriod().getEndDate(), empMerged.getPeriod().getEndDate());
             }
             assertEquals(empOriginal.getPayScale(), empMerged.getPayScale());
-            assertEquals(empOriginal.getStartTime(), empMerged.getStartTime());
-            assertEquals(empOriginal.getEndTime(), empMerged.getEndTime());
             commitTransaction(em);                
         } finally {
             if(isTransactionActive(em)) {
@@ -846,7 +844,7 @@ public class SimpleSerializeFetchGroupTests extends BaseFetchGroupTests {
         }
     }
 /*    public void simpleSerializeAndMerge() throws Exception {
-        EntityManager em = createEntityManager();
+        EntityManager em = createEntityManager("fieldaccess");
         int id = minimumEmployeeId(em);
         // save the original Employee for clean up
         Employee empOriginal = em.find(Employee.class, id);
@@ -857,7 +855,7 @@ public class SimpleSerializeFetchGroupTests extends BaseFetchGroupTests {
             newSalary = 100;
         }
         
-        em = createEntityManager();
+        em = createEntityManager("fieldaccess");
         Query query = em.createQuery("SELECT e FROM Employee e WHERE e.id = "+id);        
         FetchGroup fetchGroup = new FetchGroup("names");
         fetchGroup.addAttribute("firstName");
@@ -922,9 +920,9 @@ public class SimpleSerializeFetchGroupTests extends BaseFetchGroupTests {
     }*/
     
     public void partialMerge() throws Exception {
-        EntityManager em = createEntityManager();
+        EntityManager em = createEntityManager("fieldaccess");
         // Search for an Employee with an Address and Phone Numbers 
-        TypedQuery<Employee> query = em.createQuery("SELECT e FROM Employee e WHERE e.address IS NOT NULL AND e.id IN (SELECT MIN(p.id) FROM PhoneNumber p)", Employee.class);
+        TypedQuery<Employee> query = em.createQuery("SELECT e FROM Employee e WHERE e.address IS NOT NULL AND e.id IN (SELECT MIN(p.owner.id) FROM PhoneNumber p)", Employee.class);
         
         // Load only its names and phone Numbers
         FetchGroup fetchGroup = new FetchGroup();
@@ -962,7 +960,7 @@ public class SimpleSerializeFetchGroupTests extends BaseFetchGroupTests {
 
     public void copyGroupMerge() {
         // Search for an Employee with an Address and Phone Numbers
-        EntityManager em = createEntityManager();
+        EntityManager em = createEntityManager("fieldaccess");
         TypedQuery<Employee> query = em.createQuery("SELECT e FROM Employee e WHERE e.id IN (SELECT MIN(ee.id) FROM Employee ee)", Employee.class);
         Employee emp = query.getSingleResult();
         assertEquals(1, getQuerySQLTracker(em).getTotalSQLSELECTCalls());
@@ -999,7 +997,7 @@ public class SimpleSerializeFetchGroupTests extends BaseFetchGroupTests {
     
     public void copyGroupMerge2() {
         // Search for an Employee with an Address and Phone Numbers
-        EntityManager em = createEntityManager();
+        EntityManager em = createEntityManager("fieldaccess");
         TypedQuery<Employee> query = em.createQuery("SELECT e FROM Employee e", Employee.class);
         query.setHint(QueryHints.BATCH, "e.address");
         List<Employee> employees = query.getResultList();

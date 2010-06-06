@@ -32,6 +32,7 @@ import org.eclipse.persistence.queries.AttributeGroup;
  */
 public class CopyGroup extends AttributeGroup {
     protected boolean shouldResetPrimaryKey;
+    protected boolean shouldResetVersion;
     protected org.eclipse.persistence.internal.sessions.AbstractSession session;
     protected Map copies;
 
@@ -162,6 +163,14 @@ public class CopyGroup extends AttributeGroup {
 
     /**
      * PUBLIC:
+     * Set if the version should be reset to null.
+     */
+    public void setShouldResetVersion(boolean newShouldResetVersion) {
+        shouldResetVersion = newShouldResetVersion;
+    }
+
+    /**
+     * PUBLIC:
      * Return true if has been configured to CASCADE_ALL_PARTS or CASCADE_PRIVATE_PARTS.
      */
     public boolean shouldCascade() {
@@ -201,6 +210,14 @@ public class CopyGroup extends AttributeGroup {
     }
 
     /**
+     * PUBLIC:
+     * Return if the version should be reset to null.
+     */
+    public boolean shouldResetVersion() {
+        return shouldResetVersion;
+    }
+
+    /**
      * INTERNAL:
      */
     protected String toStringAdditionalInfo() {
@@ -214,12 +231,13 @@ public class CopyGroup extends AttributeGroup {
         } else {
             depthString = "NO_CASCADE";
         }
-        Object[] args = { depthString, Boolean.valueOf(shouldResetPrimaryKey()) };
+        Object[] args = { depthString, Boolean.valueOf(shouldResetPrimaryKey()), Boolean.valueOf(shouldResetVersion())};
         return ToStringLocalization.buildMessage("depth_reset_key", args);
     }
 
     @Override
     public void addAttribute(String attributeNameOrPath, AttributeGroup group) {
+        cascadeTree();
         super.addAttribute(attributeNameOrPath, (group != null ? group.toCopyGroup() : null));
     }
 

@@ -140,6 +140,21 @@ public class FullRegressionTestSuite extends TestSuite {
         suite.addTestSuite(org.eclipse.persistence.testing.tests.jpa.fieldaccess.relationships.ExpressionJUnitTestSuite.class);
         suite.addTest(org.eclipse.persistence.testing.tests.jpa.fieldaccess.relationships.VirtualAttributeTestSuite.suite());
         suite.addTest(org.eclipse.persistence.testing.tests.jpa.fieldaccess.relationships.JAXBTestSuite.suite());
+        // Fetch Groups tests.
+        TestSuite suiteFg = new TestSuite();
+        suiteFg.setName("fieldaccess.FetchGroups");
+        suiteFg.addTest(org.eclipse.persistence.testing.tests.jpa.fieldaccess.fetchgroups.FetchGroupTrackerWeavingTests.suite());
+        suiteFg.addTest(org.eclipse.persistence.testing.tests.jpa.fieldaccess.fetchgroups.SimpleDefaultFetchGroupTests.suite());
+        suiteFg.addTest(org.eclipse.persistence.testing.tests.jpa.fieldaccess.fetchgroups.SimpleFetchGroupTests.suite());
+        suiteFg.addTest(org.eclipse.persistence.testing.tests.jpa.fieldaccess.fetchgroups.SimpleNamedFetchGroupTests.suite());
+        suiteFg.addTest(org.eclipse.persistence.testing.tests.jpa.fieldaccess.fetchgroups.SimpleSerializeFetchGroupTests.suite());
+        suiteFg.addTest(org.eclipse.persistence.testing.tests.jpa.fieldaccess.fetchgroups.NestedDefaultFetchGroupTests.suite());
+        suiteFg.addTest(org.eclipse.persistence.testing.tests.jpa.fieldaccess.fetchgroups.NestedFetchGroupTests.suite());
+        suiteFg.addTest(org.eclipse.persistence.testing.tests.jpa.fieldaccess.fetchgroups.NestedNamedFetchGroupTests.suite());
+        suiteFg.addTest(org.eclipse.persistence.testing.tests.jpa.fieldaccess.fetchgroups.FetchGroupMergeWithCacheTests.suite());
+        suite.addTest(suiteFg);
+        fullSuite.addTest(suite);
+
         fullSuite.addTest(suite);
 
         // Inheritance model.

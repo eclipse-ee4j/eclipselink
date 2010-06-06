@@ -130,7 +130,8 @@ public class EntityFetchGroup extends FetchGroup {
      * Return true if this EntityFetchGroup is a super-set of the passed in
      * EntityFetchGroup.
      */
-    public boolean isSupersetOf(EntityFetchGroup anotherGroup) {
+    @Override
+    public boolean isSupersetOf(AttributeGroup anotherGroup) {
         if (anotherGroup == null) {
             return false;
         }

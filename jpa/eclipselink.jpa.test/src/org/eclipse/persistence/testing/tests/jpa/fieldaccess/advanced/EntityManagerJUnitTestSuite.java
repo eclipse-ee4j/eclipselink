@@ -4573,7 +4573,7 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
             internalTestWeaving(new Buyer(), false, false);  // field-locking
             internalTestWeaving(new GoldBuyer(), false, false);  // field-locking
             internalTestWeaving(new PlatinumBuyer(), false, false);  // field-locking
-            internalTestWeaving(new Department(), false, false);  // eager 1-m
+            internalTestWeaving(new Department(), true, false);
             internalTestWeaving(new Golfer(), true, false);
             internalTestWeaving(new GolferPK(), true, false);
             internalTestWeaving(new SmallProject(), true, false);
