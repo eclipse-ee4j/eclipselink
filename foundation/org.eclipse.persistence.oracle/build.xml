@@ -33,9 +33,9 @@
 #******************************************************************************/-->
 <!-- This ant project includes the following tasks:
         - build (default) : cleans, compiles, and packages all tests
-        - clean   : cleans up all generated files and dirs
-        - compile : compiles all classes
-        - package : packages the oracle extensions OSGi bundle jar.
+        - clean           : cleans up all generated files and dirs
+        - compile         : compiles all classes
+        - package         : packages the oracle extensions OSGi bundle jar.
 -->
 <project name="org.eclipse.persistence.oracle" default="build" basedir=".">
     <available file="../${ant.project.name}" type="dir" property="oracle.is.local"/>
