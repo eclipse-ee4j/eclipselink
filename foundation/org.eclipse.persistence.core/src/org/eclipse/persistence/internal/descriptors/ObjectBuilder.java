@@ -1753,21 +1753,24 @@ public class ObjectBuilder implements Cloneable, Serializable {
         if(copyGroup.shouldCascadeTree()) {
             FetchGroupManager fetchGroupManager = getDescriptor().getFetchGroupManager();
             if(fetchGroupManager != null) {
-                // by default add primary key attribute(s) if not already in the group
-                if(!copyGroup.shouldResetPrimaryKey()) {
-                    for(DatabaseMapping mapping : getPrimaryKeyMappings()) {
-                        String name = mapping.getAttributeName();
-                        if(!copyGroup.containsAttribute(name)) {
-                           copyGroup.addAttribute(name); 
+                // empty copy group means all the attributes should be copied - don't alter it.
+                if(copyGroup.hasItems()) {
+                    // by default add primary key attribute(s) if not already in the group
+                    if(!copyGroup.shouldResetPrimaryKey()) {
+                        for(DatabaseMapping mapping : getPrimaryKeyMappings()) {
+                            String name = mapping.getAttributeName();
+                            if(!copyGroup.containsAttribute(name)) {
+                               copyGroup.addAttribute(name); 
+                            }
                         }
                     }
-                }
-                
-                // by default version attribute if not already in the group
-                if(!copyGroup.shouldResetVersion()) {
-                    if(this.lockAttribute != null) {
-                        if(!copyGroup.containsAttribute(this.lockAttribute)) {
-                           copyGroup.addAttribute(this.lockAttribute); 
+                    
+                    // by default version attribute if not already in the group
+                    if(!copyGroup.shouldResetVersion()) {
+                        if(this.lockAttribute != null) {
+                            if(!copyGroup.containsAttribute(this.lockAttribute)) {
+                               copyGroup.addAttribute(this.lockAttribute); 
+                            }
                         }
                     }
                 }
@@ -1855,7 +1858,15 @@ public class ObjectBuilder implements Cloneable, Serializable {
                                 if(mappingCopyGroup == null) {
                                     FetchGroupManager referenceFetchGroupManager = referenceDescriptor.getFetchGroupManager();
                                     if(referenceFetchGroupManager != null) {
-                                        mappingCopyGroup = referenceFetchGroupManager.getNonReferenceEntityFetchGroup().toCopyGroup();
+                                        EntityFetchGroup nonReferenceEntityFetchGroup = referenceFetchGroupManager.getNonReferenceEntityFetchGroup();
+                                        if(nonReferenceEntityFetchGroup != null) {
+                                            mappingCopyGroup = nonReferenceEntityFetchGroup.toCopyGroup();
+                                        } else {
+                                            // null nonReferenceEntityFetchGroup is equivalent to containing all attributes:
+                                            // create a new empty CopyGroup.
+                                            mappingCopyGroup = new CopyGroup();
+                                            mappingCopyGroup.shouldCascadeTree();
+                                        }
                                     } else {
                                         // TODO: would that work?
                                         mappingCopyGroup = new CopyGroup();
