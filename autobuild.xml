@@ -63,7 +63,7 @@
             depends="init, publish-build, publish-results"
     />
     <target name="build-oracle"     description="Trigger the automated oracle build"
-            depends="build-oracle-extension, publish-oracle"
+            depends="init, build-oracle-extension, publish-oracle"
     />
 
     <!-- script to "cleanup" the revision information -->
@@ -220,24 +220,24 @@
         <echo message="env.TARGET      = '${env.TARGET}'"/>
         <echo message=" "/>
         <echo message="builddate.buildtime='${build.date}.${build.time}'"/>
-        <echo message="java.version  ='${java.version}'"/>
-        <echo message="os.name       ='${os.name}'"/>
-        <echo message="os.arch       ='${os.arch}'"/>
-        <echo message="os.version    ='${os.version}'"/>
+        <echo message="java.version   ='${java.version}'"/>
+        <echo message="os.name        ='${os.name}'"/>
+        <echo message="os.arch        ='${os.arch}'"/>
+        <echo message="os.version     ='${os.version}'"/>
         <echo message=" "/>
-        <echo message="branch.name   = '${branch.name}'"/>
-        <echo message="basedir       ='${basedir}'"/>
-        <echo message="build.deps.dir='${build.deps.dir}'"/>
-        <echo message="build.root.dir='${build.root.dir}'"/>
-        <echo message="log.dir       ='${log.dir}'"/>
-        <echo message="junit.dir     ='${junit.dir}'"/>
-        <echo message="junit.lib     ='${junit.lib}'"/>
+        <echo message="branch.name    ='${branch.name}'"/>
+        <echo message="basedir        ='${basedir}'"/>
+        <echo message="build.deps.dir ='${build.deps.dir}'"/>
+        <echo message="build.root.dir ='${build.root.dir}'"/>
+        <echo message="log.dir        ='${log.dir}'"/>
+        <echo message="junit.dir      ='${junit.dir}'"/>
+        <echo message="junit.lib      ='${junit.lib}'"/>
         <echo message=" "/>
-        <echo message="EL version    ='${release.version}'"/>
-        <echo message="build.type    ='${build.type}'"/>
-        <echo message="version.string  ='${version.string}'"/>
-        <echo message="build.number  ='${build.date}'"/>
-        <echo message="svn.revision  ='${svn.revision}'"/>
+        <echo message="EL version     ='${release.version}'"/>
+        <echo message="build.type     ='${build.type}'"/>
+        <echo message="version.string ='${version.string}'"/>
+        <echo message="build.number   ='${build.date}'"/>
+        <echo message="svn.revision   ='${svn.revision}'"/>
     </target>
 
     <target name="clean" depends="init">
