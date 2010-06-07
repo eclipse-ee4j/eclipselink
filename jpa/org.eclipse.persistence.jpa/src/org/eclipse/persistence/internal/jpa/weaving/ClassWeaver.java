@@ -504,14 +504,14 @@ public class ClassWeaver extends ClassAdapter implements Constants {
         // Get the opcode for the load instruction.  This may be different depending on the type
         int opcode = attributeDetails.getReferenceClassType().getOpcode(Constants.ILOAD);
         
-        if (classDetails.shouldWeaveChangeTracking()) {
-            if (classDetails.shouldWeaveFetchGroups()) {
-                cv_set.visitVarInsn(ALOAD, 0);
-                cv_set.visitLdcInsn(attribute);
-                // _persistence_checkFetchedForSet("variableName");
-                cv_set.visitMethodInsn(INVOKEVIRTUAL, classDetails.getClassName(), "_persistence_checkFetchedForSet", "(Ljava/lang/String;)V");
-            }
+        if (classDetails.shouldWeaveFetchGroups()) {
+            cv_set.visitVarInsn(ALOAD, 0);
+            cv_set.visitLdcInsn(attribute);
+            // _persistence_checkFetchedForSet("variableName");
+            cv_set.visitMethodInsn(INVOKEVIRTUAL, classDetails.getClassName(), "_persistence_checkFetchedForSet", "(Ljava/lang/String;)V");
+        }
 
+        if (classDetails.shouldWeaveChangeTracking()) {
             if (attributeDetails.weaveValueHolders()) {
                 // _persistence_initialize_variableName_vh();
                 cv_set.visitVarInsn(ALOAD, 0);
