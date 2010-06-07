@@ -1,1 +1,1 @@
-This directory contains the Oracle Extensions projects.  Unlike other directories, the class files have been checked in in addition to the source files.  This will allow people without all the jars that we depend on to use the classes they need.
+ This directory contains the Oracle Extensions projects.  Unlike other directories, the class files have been checked in in addition to the source files.  This will allow people without all the jars that we depend on to use the classes they need.
