@@ -230,6 +230,10 @@ public class WriterRecord extends MarshalRecord {
                     writer.write("&lt;");
                     break;
                 }
+                case '"': {
+                    writer.write("&quot;");
+                    break;
+                }
                 default:
                     writer.write(character);
                 }
