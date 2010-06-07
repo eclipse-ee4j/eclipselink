@@ -932,11 +932,17 @@ public class ObjectChangeSet implements Serializable, Comparable<ObjectChangeSet
             AbstractSession unitOfWork = this.unitOfWorkChangeSet.getSession();
             ClassDescriptor descriptor = getDescriptor();
             if ((unitOfWork != null) && (descriptor != null)) {
+                FetchGroup fetchGroup = null;
+                if(descriptor.hasFetchGroupManager()) {
+                    fetchGroup = descriptor.getFetchGroupManager().getObjectFetchGroup(this.cloneObject);
+                }
                 List mappings = descriptor.getMappings();
                 int mappingsSize = mappings.size();
                 for (int index = 0; index < mappingsSize; index++) {
                     DatabaseMapping mapping = (DatabaseMapping)mappings.get(index);
-                    addChange(mapping.compareForChange(this.cloneObject, this.cloneObject, this, unitOfWork));
+                    if(fetchGroup == null || fetchGroup.containsAttribute(mapping.getAttributeName())) {
+                        addChange(mapping.compareForChange(this.cloneObject, this.cloneObject, this, unitOfWork));
+                    }
                 }
             }
         }

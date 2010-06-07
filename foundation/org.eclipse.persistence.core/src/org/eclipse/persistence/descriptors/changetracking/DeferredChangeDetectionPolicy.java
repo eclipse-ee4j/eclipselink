@@ -154,9 +154,15 @@ public class DeferredChangeDetectionPolicy implements ObjectChangePolicy, java.i
             // PERF: Avoid synchronized enumerator as is concurrency bottleneck.
             List mappings = descriptor.getMappings();
             int mappingsSize = mappings.size();
+            FetchGroup fetchGroup = null;
+            if(descriptor.hasFetchGroupManager()) {
+                fetchGroup = descriptor.getFetchGroupManager().getObjectFetchGroup(clone);
+            }
             for (int index = 0; index < mappingsSize; index++) {
                 DatabaseMapping mapping = (DatabaseMapping)mappings.get(index);
-                changes.addChange(mapping.compareForChange(clone, backUp, changes, session));
+                if(fetchGroup == null || fetchGroup.containsAttribute(mapping.getAttributeName())) {
+                    changes.addChange(mapping.compareForChange(clone, backUp, changes, session));
+                }
             }
         }
 

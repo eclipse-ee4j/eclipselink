@@ -25,6 +25,7 @@ import org.eclipse.persistence.internal.sessions.UnitOfWorkChangeSet;
 import org.eclipse.persistence.internal.sessions.UnitOfWorkImpl;
 import org.eclipse.persistence.internal.descriptors.*;
 import org.eclipse.persistence.mappings.*;
+import org.eclipse.persistence.queries.FetchGroup;
 
 /**
  * PUBLIC:
@@ -81,11 +82,17 @@ public class AttributeChangeTrackingPolicy extends ObjectChangeTrackingPolicy {
             changes = descriptor.getObjectBuilder().createObjectChangeSet(clone, changeSet, isNew, true, session);
             // PERF: Do not create change records for new objects.
             if (descriptor.shouldUseFullChangeSetsForNewObjects() || descriptor.isAggregateDescriptor()) {
+                FetchGroup fetchGroup = null;
+                if(descriptor.hasFetchGroupManager()) {
+                    fetchGroup = descriptor.getFetchGroupManager().getObjectFetchGroup(clone);
+                }
                 List mappings = descriptor.getMappings();
                 int size = mappings.size();
                 for (int index = 0; index < size; index++) {
                     DatabaseMapping mapping = (DatabaseMapping)mappings.get(index);
-                    changes.addChange(mapping.compareForChange(clone, null, changes, session));
+                    if(fetchGroup == null || fetchGroup.containsAttribute(mapping.getAttributeName())) {
+                        changes.addChange(mapping.compareForChange(clone, null, changes, session));
+                    }
                 }
             }
         }
