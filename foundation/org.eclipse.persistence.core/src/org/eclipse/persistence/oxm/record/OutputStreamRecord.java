@@ -72,6 +72,7 @@ public class OutputStreamRecord extends MarshalRecord {
     protected static byte[] CLOSE_EMPTY_ELEMENT;
     protected static byte[] AMP;
     protected static byte[] LT;
+    protected static byte[] QUOT;
     protected static byte[] ENCODING;
     protected static byte[] EQUALS;
     protected static byte[] DOUBLE_QUOTE;
@@ -95,6 +96,7 @@ public class OutputStreamRecord extends MarshalRecord {
             CLOSE_EMPTY_ELEMENT = "/>".getBytes(XMLConstants.DEFAULT_XML_ENCODING);
             AMP = "&amp;".getBytes(XMLConstants.DEFAULT_XML_ENCODING);
             LT = "&lt;".getBytes(XMLConstants.DEFAULT_XML_ENCODING);
+            QUOT = "&quot;".getBytes(XMLConstants.DEFAULT_XML_ENCODING);
             ENCODING = XMLConstants.DEFAULT_XML_ENCODING.getBytes(XMLConstants.DEFAULT_XML_ENCODING);
         } catch (UnsupportedEncodingException e) {        	
         }
@@ -282,6 +284,10 @@ public class OutputStreamRecord extends MarshalRecord {
                     outputStream.write(LT);
                     break;
                 }
+                    case '"': {
+                        outputStream.write(QUOT);
+                        break;
+                    }
                 default:
                     outputStream.write(character);
                 }
