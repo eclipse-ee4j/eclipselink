@@ -1837,6 +1837,7 @@ public class JUnitJPQLComplexTestSuite extends JUnitTestCase
         }
         EntityManager em = createEntityManager();
         beginTransaction(em);
+        try {
 
         BeerConsumer consumer = new BeerConsumer();
         consumer.setName("Marvin Monroe");
@@ -1846,18 +1847,28 @@ public class JUnitJPQLComplexTestSuite extends JUnitTestCase
         blue.setUniqueKey(BigInteger.ONE);
         consumer.addBlueBeerToConsume(blue);
         em.persist(blue);
+        BeerConsumer consumer2 = new BeerConsumer();
+        consumer2.setName("Marvin Monroe2");
+        em.persist(consumer2);
+        Blue blue2 = new Blue();
+        blue2.setAlcoholContent(5.0f);
+        blue2.setUniqueKey(BigInteger.valueOf(2));
+        consumer2.addBlueBeerToConsume(blue2);
+        em.persist(blue2);
         em.flush();
         Vector expectedResult = new Vector();
         expectedResult.add(BigInteger.ONE);
         
         clearCache();
-        String ejbqlString = "SELECT KEY(b) FROM BeerConsumer bc join bc.blueBeersToConsume b";
+        String ejbqlString = "SELECT KEY(b) FROM BeerConsumer bc join bc.blueBeersToConsume b where bc.name = 'Marvin Monroe'";
         
         List result = em.createQuery(ejbqlString).getResultList();
         Assert.assertTrue("mapContainerPolicyMapKeyInSelectTest failed", comparer.compareObjects(result, expectedResult));                 
 
-        rollbackTransaction(em);
-        closeEntityManager(em);
+        } finally {
+            rollbackTransaction(em);
+            closeEntityManager(em);
+        }
     }
     
     public void mapContainerPolicyMapValueInSelectTest(){
@@ -1867,6 +1878,7 @@ public class JUnitJPQLComplexTestSuite extends JUnitTestCase
         }
         EntityManager em = createEntityManager();
         beginTransaction(em);
+        try {
         
         BeerConsumer consumer = new BeerConsumer();
         consumer.setName("Marvin Monroe");
@@ -1876,18 +1888,28 @@ public class JUnitJPQLComplexTestSuite extends JUnitTestCase
         blue.setUniqueKey(BigInteger.ONE);
         consumer.addBlueBeerToConsume(blue);
         em.persist(blue);
+        BeerConsumer consumer2 = new BeerConsumer();
+        consumer2.setName("Marvin Monroe2");
+        em.persist(consumer2);
+        Blue blue2 = new Blue();
+        blue2.setAlcoholContent(5.0f);
+        blue2.setUniqueKey(BigInteger.valueOf(2));
+        consumer2.addBlueBeerToConsume(blue2);
+        em.persist(blue2);
         em.flush();
         Vector expectedResult = new Vector();
         expectedResult.add(blue);
         
         clearCache();
-        String ejbqlString = "SELECT VALUE(b) FROM BeerConsumer bc join bc.blueBeersToConsume b";
+        String ejbqlString = "SELECT VALUE(b) FROM BeerConsumer bc join bc.blueBeersToConsume b where bc.name = 'Marvin Monroe'";
         
         List result = em.createQuery(ejbqlString).getResultList();
         Assert.assertTrue("mapContainerPolicyMapValueInSelectTest failed", comparer.compareObjects(result, expectedResult));                 
 
-        rollbackTransaction(em);
-        closeEntityManager(em);
+        } finally {
+            rollbackTransaction(em);
+            closeEntityManager(em);
+        }
     }
     
     public void mapContainerPolicyMapEntryInSelectTest(){
@@ -1897,6 +1919,7 @@ public class JUnitJPQLComplexTestSuite extends JUnitTestCase
         }
         EntityManager em = createEntityManager();
         beginTransaction(em);
+        try {
 
         BeerConsumer consumer = new BeerConsumer();
         consumer.setName("Marvin Monroe");
@@ -1906,11 +1929,19 @@ public class JUnitJPQLComplexTestSuite extends JUnitTestCase
         blue.setUniqueKey(BigInteger.ONE);
         consumer.addBlueBeerToConsume(blue);
         em.persist(blue);
+        BeerConsumer consumer2 = new BeerConsumer();
+        consumer2.setName("Marvin Monroe2");
+        em.persist(consumer2);
+        Blue blue2 = new Blue();
+        blue2.setAlcoholContent(5.0f);
+        blue2.setUniqueKey(BigInteger.valueOf(2));
+        consumer2.addBlueBeerToConsume(blue2);
+        em.persist(blue2);
         em.flush();
 
         
         clearCache();
-        String ejbqlString = "SELECT ENTRY(b) FROM BeerConsumer bc join bc.blueBeersToConsume b";
+        String ejbqlString = "SELECT ENTRY(b) FROM BeerConsumer bc join bc.blueBeersToConsume b where bc.name = 'Marvin Monroe'";
         
         List result = em.createQuery(ejbqlString).getResultList();
         
@@ -1920,8 +1951,10 @@ public class JUnitJPQLComplexTestSuite extends JUnitTestCase
         Assert.assertTrue("Keys do not match", entry.getKey().equals(BigInteger.ONE));
         Assert.assertTrue("Values do not match", comparer.compareObjects(entry.getValue(), blue));
 
-        rollbackTransaction(em);
-        closeEntityManager(em);
+        } finally {
+            rollbackTransaction(em);
+            closeEntityManager(em);
+        }
     }
     
     public void mapContainerPolicyMapKeyInSelectionCriteriaTest(){
@@ -1931,6 +1964,7 @@ public class JUnitJPQLComplexTestSuite extends JUnitTestCase
         }
         EntityManager em = createEntityManager();
         beginTransaction(em);
+        try {
 
         BeerConsumer consumer = new BeerConsumer();
         consumer.setName("Marvin Monroe");
@@ -1940,6 +1974,14 @@ public class JUnitJPQLComplexTestSuite extends JUnitTestCase
         blue.setUniqueKey(BigInteger.ONE);
         consumer.addBlueBeerToConsume(blue);
         em.persist(blue);
+        BeerConsumer consumer2 = new BeerConsumer();
+        consumer2.setName("Marvin Monroe2");
+        em.persist(consumer2);
+        Blue blue2 = new Blue();
+        blue2.setAlcoholContent(5.0f);
+        blue2.setUniqueKey(BigInteger.valueOf(2));
+        consumer2.addBlueBeerToConsume(blue2);
+        em.persist(blue2);
         em.flush();
         Vector expectedResult = new Vector();
         expectedResult.add(consumer);
@@ -1950,8 +1992,10 @@ public class JUnitJPQLComplexTestSuite extends JUnitTestCase
         List result = em.createQuery(ejbqlString).getResultList();
         Assert.assertTrue("mapContainerPolicyMapKeyInSelectionCriteriaTest failed", comparer.compareObjects(result, expectedResult));                 
 
-        rollbackTransaction(em);
-        closeEntityManager(em);
+        } finally {
+            rollbackTransaction(em);
+            closeEntityManager(em);
+        }
     }
     
     public void mapContainerPolicyMapValueInSelectionCriteriaTest(){
@@ -1961,6 +2005,7 @@ public class JUnitJPQLComplexTestSuite extends JUnitTestCase
         }
         EntityManager em = createEntityManager();
         beginTransaction(em);
+        try {
 
         BeerConsumer consumer = new BeerConsumer();
         consumer.setName("Marvin Monroe");
@@ -1970,6 +2015,14 @@ public class JUnitJPQLComplexTestSuite extends JUnitTestCase
         blue.setUniqueKey(BigInteger.ONE);
         consumer.addBlueBeerToConsume(blue);
         em.persist(blue);
+        BeerConsumer consumer2 = new BeerConsumer();
+        consumer2.setName("Marvin Monroe2");
+        em.persist(consumer2);
+        Blue blue2 = new Blue();
+        blue2.setAlcoholContent(5.0f);
+        blue2.setUniqueKey(BigInteger.valueOf(2));
+        consumer2.addBlueBeerToConsume(blue2);
+        em.persist(blue2);
         em.flush();
         Vector expectedResult = new Vector();
         expectedResult.add(consumer);
@@ -1980,8 +2033,10 @@ public class JUnitJPQLComplexTestSuite extends JUnitTestCase
         List result = em.createQuery(ejbqlString).getResultList();
         Assert.assertTrue("mapContainerPolicyMapValueInSelectionCriteriaTest failed", comparer.compareObjects(result, expectedResult));                 
 
-        rollbackTransaction(em);
-        closeEntityManager(em);
+        } finally {
+            rollbackTransaction(em);
+            closeEntityManager(em);
+        }
     }
     
     public void mappedKeyMapContainerPolicyMapKeyInSelectionCriteriaTest(){
@@ -1991,6 +2046,7 @@ public class JUnitJPQLComplexTestSuite extends JUnitTestCase
         }
         EntityManager em = createEntityManager();
         beginTransaction(em);
+        try {
 
         BeerConsumer consumer = new BeerConsumer();
         consumer.setName("Marvin Monroe");
@@ -2002,6 +2058,16 @@ public class JUnitJPQLComplexTestSuite extends JUnitTestCase
         consumer.addBecksBeerToConsume(becks, tag);
         em.persist(becks);
         em.persist(tag);
+        BeerConsumer consumer2 = new BeerConsumer();
+        consumer.setName("Marvin Monroe2");
+        em.persist(consumer2);
+        Becks becks2 = new Becks();
+        becks2.setAlcoholContent(5.0);
+        BecksTag tag2 = new BecksTag();
+        tag2.setCallNumber("1234");
+        consumer2.addBecksBeerToConsume(becks2, tag2);
+        em.persist(becks2);
+        em.persist(tag2);
         em.flush();
         Vector expectedResult = new Vector();
         expectedResult.add(consumer);
@@ -2013,8 +2079,10 @@ public class JUnitJPQLComplexTestSuite extends JUnitTestCase
 
         Assert.assertTrue("mappedKeyMapContainerPolicyMapKeyInSelectionCriteriaTest failed", comparer.compareObjects(result, expectedResult));                 
 
-        rollbackTransaction(em);
-        closeEntityManager(em);
+        } finally {
+            rollbackTransaction(em);
+            closeEntityManager(em);
+        }
     }
     
     public void mappedKeyMapContainerPolicyMapKeyInSelectTest(){
@@ -2024,6 +2092,7 @@ public class JUnitJPQLComplexTestSuite extends JUnitTestCase
         }
         EntityManager em = createEntityManager();
         beginTransaction(em);
+        try {
 
         BeerConsumer consumer = new BeerConsumer();
         consumer.setName("Marvin Monroe");
@@ -2035,6 +2104,16 @@ public class JUnitJPQLComplexTestSuite extends JUnitTestCase
         consumer.addBecksBeerToConsume(becks, tag);
         em.persist(becks);
         em.persist(tag);
+        BeerConsumer consumer2 = new BeerConsumer();
+        consumer.setName("Marvin Monroe2");
+        em.persist(consumer2);
+        Becks becks2 = new Becks();
+        becks2.setAlcoholContent(5.0);
+        BecksTag tag2 = new BecksTag();
+        tag2.setCallNumber("1234");
+        consumer2.addBecksBeerToConsume(becks2, tag2);
+        em.persist(becks2);
+        em.persist(tag2);
         em.flush();
         Vector expectedResult = new Vector();
         expectedResult.add(tag);
@@ -2046,8 +2125,10 @@ public class JUnitJPQLComplexTestSuite extends JUnitTestCase
 
         Assert.assertTrue("mappedKeyMapContainerPolicyMapKeyInSelectTest failed", comparer.compareObjects(result, expectedResult));                 
 
-        rollbackTransaction(em);
-        closeEntityManager(em);
+        } finally {
+            rollbackTransaction(em);
+            closeEntityManager(em);
+        }
     }
     
     public void mappedKeyMapContainerPolicyMapEntryInSelectTest(){
@@ -2057,6 +2138,7 @@ public class JUnitJPQLComplexTestSuite extends JUnitTestCase
         }
         EntityManager em = createEntityManager();
         beginTransaction(em);
+        try {
 
         BeerConsumer consumer = new BeerConsumer();
         consumer.setName("Marvin Monroe");
@@ -2068,6 +2150,16 @@ public class JUnitJPQLComplexTestSuite extends JUnitTestCase
         consumer.addBecksBeerToConsume(becks, tag);
         em.persist(becks);
         em.persist(tag);
+        BeerConsumer consumer2 = new BeerConsumer();
+        consumer2.setName("Marvin Monroe2");
+        em.persist(consumer2);
+        Becks becks2 = new Becks();
+        becks2.setAlcoholContent(5.0);
+        BecksTag tag2 = new BecksTag();
+        tag2.setCallNumber("1234");
+        consumer2.addBecksBeerToConsume(becks2, tag2);
+        em.persist(becks2);
+        em.persist(tag2);
         em.flush();
         
         clearCache();
@@ -2081,8 +2173,10 @@ public class JUnitJPQLComplexTestSuite extends JUnitTestCase
         Assert.assertTrue("Keys do not match", comparer.compareObjects(entry.getKey(), tag));
         Assert.assertTrue("Values do not match", comparer.compareObjects(entry.getValue(), becks)); 
 
-        rollbackTransaction(em);
-        closeEntityManager(em);
+        } finally {
+            rollbackTransaction(em);
+            closeEntityManager(em);
+        }
     }
     
     public void mappedKeyMapContainerPolicyEmbeddableMapKeyInSelectionCriteriaTest(){
@@ -2092,6 +2186,7 @@ public class JUnitJPQLComplexTestSuite extends JUnitTestCase
         }
         EntityManager em = createEntityManager();
         beginTransaction(em);
+        try {
 
         BeerConsumer consumer = new BeerConsumer();
         consumer.setName("Marvin Monroe");
@@ -2103,6 +2198,16 @@ public class JUnitJPQLComplexTestSuite extends JUnitTestCase
         tag.setNumber(123);
         consumer.addCoronaBeerToConsume(corona, tag);
         em.persist(corona);
+        BeerConsumer consumer2 = new BeerConsumer();
+        consumer2.setName("Marvin Monroe2");
+        em.persist(consumer2);
+        Corona corona2 = new Corona();
+        corona2.setAlcoholContent(5.0);
+        CoronaTag tag2 = new CoronaTag();
+        tag2.setCode("1234");
+        tag2.setNumber(1234);
+        consumer2.addCoronaBeerToConsume(corona2, tag2);
+        em.persist(corona2);
         em.flush();
         Vector expectedResult = new Vector();
         expectedResult.add(consumer);
@@ -2114,8 +2219,10 @@ public class JUnitJPQLComplexTestSuite extends JUnitTestCase
 
         Assert.assertTrue("mappedKeyMapContainerPolicyEmbeddableMapKeyInSelectionCriteriaTest failed", comparer.compareObjects(result, expectedResult));                 
 
-        rollbackTransaction(em);
-        closeEntityManager(em);
+        } finally {
+            rollbackTransaction(em);
+            closeEntityManager(em);
+        }
     }
     
     public void mappedKeyMapContainerPolicyElementCollectionSelectionCriteriaTest(){
@@ -2125,6 +2232,7 @@ public class JUnitJPQLComplexTestSuite extends JUnitTestCase
         }
         EntityManager em = createEntityManager();
         beginTransaction(em);
+        try {
 
         ExpertBeerConsumer consumer = new ExpertBeerConsumer();
         consumer.setAccredidation(new Accredidation());
@@ -2134,6 +2242,14 @@ public class JUnitJPQLComplexTestSuite extends JUnitTestCase
         bday.setMonth(6);
         bday.setYear(2009);
         consumer.addCelebration(bday, "Lots of Cake!");
+        ExpertBeerConsumer consumer2 = new ExpertBeerConsumer();
+        consumer2.setAccredidation(new Accredidation());
+        consumer2.setName("Marvin Monroe2");
+        Birthday bday2 = new Birthday();
+        bday2.setDay(25);
+        bday2.setMonth(6);
+        bday2.setYear(2001);
+        consumer2.addCelebration(bday, "Lots of food!");
 
         em.persist(consumer);
         em.flush();
@@ -2147,8 +2263,10 @@ public class JUnitJPQLComplexTestSuite extends JUnitTestCase
 
         Assert.assertTrue("mappedKeyMapContainerPolicyElementCollctionSelectionCriteriaTest failed", comparer.compareObjects(result, expectedResult));
 
-        rollbackTransaction(em);
-        closeEntityManager(em);
+        } finally {
+            rollbackTransaction(em);
+            closeEntityManager(em);
+        }
     }
     
     public void mappedKeyMapContainerPolicyNavigateMapKeyInEntityTest(){
@@ -2158,6 +2276,7 @@ public class JUnitJPQLComplexTestSuite extends JUnitTestCase
         }
         EntityManager em = createEntityManager();
         beginTransaction(em);
+        try {
 
         BeerConsumer consumer = new BeerConsumer();
         consumer.setName("Marvin Monroe");
@@ -2169,6 +2288,16 @@ public class JUnitJPQLComplexTestSuite extends JUnitTestCase
         consumer.addBecksBeerToConsume(becks, tag);
         em.persist(becks);
         em.persist(tag);
+        BeerConsumer consumer2 = new BeerConsumer();
+        consumer2.setName("Marvin Monroe2");
+        em.persist(consumer2);
+        Becks becks2 = new Becks();
+        becks2.setAlcoholContent(5.0);
+        BecksTag tag2 = new BecksTag();
+        tag2.setCallNumber("1234");
+        consumer2.addBecksBeerToConsume(becks2, tag2);
+        em.persist(becks2);
+        em.persist(tag2);
         em.flush();
         Vector expectedResult = new Vector();
         expectedResult.add("123");
@@ -2180,8 +2309,10 @@ public class JUnitJPQLComplexTestSuite extends JUnitTestCase
 
         Assert.assertTrue("mappedKeyMapContainerPolicyNavigateMapKeyInEntityTest failed", comparer.compareObjects(result, expectedResult));                 
 
-        rollbackTransaction(em);
-        closeEntityManager(em);
+        } finally {
+            rollbackTransaction(em);
+            closeEntityManager(em);
+        }
     }
     
     public void mappedKeyMapContainerPolicyNavigateMapKeyInEmbeddableTest(){
@@ -2191,6 +2322,7 @@ public class JUnitJPQLComplexTestSuite extends JUnitTestCase
         }
         EntityManager em = createEntityManager();
         beginTransaction(em);
+        try {
 
         BeerConsumer consumer = new BeerConsumer();
         consumer.setName("Marvin Monroe");
@@ -2202,6 +2334,16 @@ public class JUnitJPQLComplexTestSuite extends JUnitTestCase
         tag.setNumber(123);
         consumer.addCoronaBeerToConsume(corona, tag);
         em.persist(corona);
+        BeerConsumer consumer2 = new BeerConsumer();
+        consumer2.setName("Marvin Monroe2");
+        em.persist(consumer2);
+        Corona corona2 = new Corona();
+        corona2.setAlcoholContent(5.0);
+        CoronaTag tag2 = new CoronaTag();
+        tag2.setCode("1234");
+        tag2.setNumber(1234);
+        consumer2.addCoronaBeerToConsume(corona2, tag2);
+        em.persist(corona2);
         em.flush();
         Vector expectedResult = new Vector();
         expectedResult.add("123");
@@ -2213,8 +2355,10 @@ public class JUnitJPQLComplexTestSuite extends JUnitTestCase
 
         Assert.assertTrue("mappedKeyMapContainerPolicyNavigateMapKeyInEmbeddableTest failed", comparer.compareObjects(result, expectedResult));                 
 
-        rollbackTransaction(em);
-        closeEntityManager(em);
+        } finally {
+            rollbackTransaction(em);
+            closeEntityManager(em);
+        }
     }
     
     public void complexTypeParameterTest()
@@ -2563,6 +2707,7 @@ public class JUnitJPQLComplexTestSuite extends JUnitTestCase
         }
         EntityManager em = createEntityManager();
         beginTransaction(em);
+        try {
 
         BeerConsumer consumer = new BeerConsumer();
         consumer.setName("Marvin Monroe");
@@ -2573,6 +2718,15 @@ public class JUnitJPQLComplexTestSuite extends JUnitTestCase
         number.setNumber("1234567");
         em.persist(number);
         consumer.addTelephoneNumber(number);
+        BeerConsumer consumer2 = new BeerConsumer();
+        consumer2.setName("Marvin Monroe2");
+        em.persist(consumer2);
+        TelephoneNumber number2 = new TelephoneNumber();
+        number2.setType("Home");
+        number2.setAreaCode("974");
+        number2.setNumber("1234567");
+        em.persist(number2);
+        consumer2.addTelephoneNumber(number2);
         em.flush();
         Vector expectedResult = new Vector();
         expectedResult.add(number);
@@ -2584,8 +2738,10 @@ public class JUnitJPQLComplexTestSuite extends JUnitTestCase
 
         Assert.assertTrue("mappedContainerPolicyCompoundMapKeyTest failed", comparer.compareObjects(result, expectedResult));                 
 
-        rollbackTransaction(em);
-        closeEntityManager(em);
+        } finally {
+            rollbackTransaction(em);
+            closeEntityManager(em);
+        }
     }
     
     public void updateWhereExistsTest() {

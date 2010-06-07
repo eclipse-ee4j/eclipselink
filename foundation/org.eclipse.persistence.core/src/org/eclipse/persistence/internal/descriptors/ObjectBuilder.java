@@ -2793,9 +2793,21 @@ public class ObjectBuilder implements Cloneable, Serializable {
                 if (((ForeignReferenceMapping)mapping).getBatchFetchType() == BatchFetchType.IN) {
                     this.hasInBatchFetchedAttribute = true;
                 }
+            } else if (mapping.isAggregateObjectMapping()) {
+                if (mapping.getReferenceDescriptor().getObjectBuilder().hasInBatchFetchedAttribute()) {
+                    this.hasInBatchFetchedAttribute = true;                    
+                }
             }
         }
         this.batchFetchedAttributes = batchedAttributes;
+        
+        if (this.hasInBatchFetchedAttribute && this.descriptor.hasInheritance()) {
+            ClassDescriptor parent = this.descriptor.getInheritancePolicy().getParentDescriptor();
+            while (parent != null) {
+                parent.getObjectBuilder().setHasInBatchFetchedAttribute(true);
+                parent = parent.getInheritancePolicy().getParentDescriptor();                
+            }
+        }
     }
 
     /**

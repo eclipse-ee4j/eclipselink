@@ -48,6 +48,7 @@ public class MapEntryExpression extends QueryKeyExpression {
      * Find the alias for a given table.  A TableEntry is a place holder and its base expression holds
      * all the relevant information.  Get the alias from the baseExpression
      */
+    @Override
     public DatabaseTable aliasForTable(DatabaseTable table) {
         return ((DataExpression)getBaseExpression()).aliasForTable(table);
     }
@@ -63,8 +64,8 @@ public class MapEntryExpression extends QueryKeyExpression {
      * INTERNAL:
      * This expression is built on a different base than the one we want. Rebuild it and
      * return the root of the new tree
-     * @Override
      */
+    @Override
     public Expression rebuildOn(Expression newBase) {
         Expression newLocalBase = getBaseExpression().rebuildOn(newBase);
         Expression result = null;
@@ -86,8 +87,8 @@ public class MapEntryExpression extends QueryKeyExpression {
      * <p>
      * For nested joined attributes, the joined attribute query must have
      * its joined attributes rebuilt relative to it.
-     *      * @Override
      */
+    @Override
     public Expression rebuildOn(Expression oldBase, Expression newBase) {
         if (this == oldBase) {
             return newBase;
@@ -108,6 +109,7 @@ public class MapEntryExpression extends QueryKeyExpression {
      * INTERNAL:
      * Used for debug printing.
      */
+    @Override
     public String descriptionOfNodeType() {
         if (returnMapEntry){
             return "MapEntry";
@@ -127,6 +129,15 @@ public class MapEntryExpression extends QueryKeyExpression {
         return super.existingDerivedTable(table);
     }
     
+    /**
+     * Exclude any tables defined by base.
+     */
+    @Override
+    public Vector getOwnedTables() {
+        return null;
+    }
+
+    @Override
     public ClassDescriptor getDescriptor() {
         if (isAttribute()) {
             return null;
@@ -155,6 +166,7 @@ public class MapEntryExpression extends QueryKeyExpression {
     /**
      * INTERNAL:
      */
+    @Override
     public DatabaseField getField() {
         if (!isAttribute()) {
             return null;
@@ -167,6 +179,7 @@ public class MapEntryExpression extends QueryKeyExpression {
      * INTERNAL:
      * Return all the fields
      */
+    @Override
     public Vector getFields() {
         Vector result = new Vector();
         InterfaceContainerPolicy icp = getInterfaceContainerPolicy();
@@ -183,11 +196,13 @@ public class MapEntryExpression extends QueryKeyExpression {
         }
         return result;
     }
-    
+
+    @Override
     public CollectionMapping getMapping() {
         return (CollectionMapping)((QueryKeyExpression)getBaseExpression()).getMapping();
     }
-    
+
+    @Override
     public QueryKey getQueryKeyOrNull() {
         if (!hasQueryKey) {
             return null;
@@ -209,6 +224,7 @@ public class MapEntryExpression extends QueryKeyExpression {
      * INTERNAL:
      * Return if the expression is for a direct mapped attribute.
      */
+    @Override
     public boolean isAttribute() {
         if (isAttributeExpression == null) {
             if (returnMapEntry){
@@ -224,10 +240,11 @@ public class MapEntryExpression extends QueryKeyExpression {
     /**
      * INTERNAL:
      */
+    @Override
     public boolean isMapEntryExpression(){
         return true;
     }
-    
+
     private InterfaceContainerPolicy getInterfaceContainerPolicy(){
         DatabaseMapping mapping = getMapping();
         if (mapping == null) {
@@ -250,6 +267,7 @@ public class MapEntryExpression extends QueryKeyExpression {
      * INTERNAL:
      * Mapping criteria will be provided by the base expression
      */
+    @Override
     public Expression mappingCriteria() {
         return null;
     }
@@ -262,6 +280,7 @@ public class MapEntryExpression extends QueryKeyExpression {
     /**
      * Do any required validation for this node. Throw an exception if it's incorrect.
      */
+    @Override
     public void validateNode() {
         if ((getQueryKeyOrNull() == null) && (getMapping() == null)) {
             throw QueryException.invalidQueryKeyInExpression(getName());
@@ -279,6 +298,7 @@ public class MapEntryExpression extends QueryKeyExpression {
      * INTERNAL:
      * Used to print a debug form of the expression tree.
      */
+    @Override
     public void writeDescriptionOn(BufferedWriter writer) throws IOException {
         writer.write(descriptionOfNodeType());
     }
