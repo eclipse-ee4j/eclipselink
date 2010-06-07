@@ -8,8 +8,8 @@ JVM_ARGS="-Xmx256m"
 # JVM_ARGS="${JVM_ARGS} -DproxySet=true -Dhttp.proxyHost= -Dhttp.proxyPort="
 
 # Please do not change any of the following lines:
-CLASSPATH=`dirname $0`/../jlib/moxy/javax.xml.stream_1.0.1.v201001131653.jar:\
-`dirname $0`/../jlib/moxy/javax.xml.bind_2.2.0.v201003241715.jar:\
+CLASSPATH=`dirname $0`/../jlib/moxy/javax.xml.stream_1.0.1.v201004272200.jar:\
+`dirname $0`/../jlib/moxy/javax.xml.bind_2.2.0.v201005080402.jar:\
 `dirname $0`/../jlib/moxy/javax.activation_1.1.0.v201005080500.jar:\
 `dirname $0`/../jlib/moxy/com.sun.xml.bind_2.2.0.v201004141950.jar:\
 `dirname $0`/../jlib/moxy/com.sun.tools.xjc_2.2.0.jar:\

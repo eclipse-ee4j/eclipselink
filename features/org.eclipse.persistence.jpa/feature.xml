@@ -37,7 +37,7 @@
          id="javax.mail"
          download-size="0"
          install-size="0"
-         version="1.4.0.v200804091730"
+         version="1.4.0.v201005080615"
          unpack="false"/>
 
    <plugin
@@ -51,7 +51,7 @@
          id="javax.xml.stream"
          download-size="0"
          install-size="0"
-         version="1.0.1.v201001131653"
+         version="1.0.1.v201004272200"
          unpack="false"/>
 
    <plugin
