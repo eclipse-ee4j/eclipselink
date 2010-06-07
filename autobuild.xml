@@ -63,7 +63,7 @@
             depends="init, publish-build, publish-results"
     />
     <target name="build-oracle"     description="Trigger the automated oracle build"
-            depends="build-oracle-extension, publish-oracle"
+            depends="init, build-oracle-extension, publish-oracle"
     />
 
     <!-- script to "cleanup" the revision information -->
