@@ -301,7 +301,7 @@ public class WriteLockManager {
                                     params[0] = descriptor.getJavaClass();
                                     params[1] = objectChangeSet.getId();
                                     params[2] = Thread.currentThread().getName();
-                                    session.log(SessionLog.FINER, SessionLog.CACHE, "dead_lock_encountered_on_write_no_cachekey", params, null, true);
+                                    session.log(SessionLog.FINER, SessionLog.CACHE, "dead_lock_encountered_on_write_no_cachekey", params, null);
                                 }
                                 if (mergeManager.getWriteLockQueued() == null) {
                                     // thread is entering the wait queue for the

@@ -729,19 +729,6 @@ public class ValidationException extends EclipseLinkException {
 
     /**
     * PUBLIC:
-    * Possible cause:   The toplink_session_name value on the beans environment variable does not match with one in the sessions.xml file.
-    * Action:  Check that the session is in the properties file and check for any possible spelling differences. If necessary, correct the value of toplink_sessoin_name, regenerate thedeployment code, and redeploy.
-    */
-    public static ValidationException ejbNoSuchSessionSpecifiedInProperties(String sessionName, Object beanClass) {
-        Object[] args = { sessionName, beanClass };
-
-        ValidationException validationException = new ValidationException(ExceptionMessageGenerator.buildMessage(ValidationException.class, EJB_NO_SUCH_SESSION_SPECIFIED_IN_PROPERTIES, args));
-        validationException.setErrorCode(EJB_NO_SUCH_SESSION_SPECIFIED_IN_PROPERTIES);
-        return validationException;
-    }
-
-    /**
-    * PUBLIC:
     * Possible cause:  An incorrect primary key object is being used with a bean.
     * Action: Ensure that you are using the correct primary key object for a bean.
     */
@@ -764,20 +751,6 @@ public class ValidationException extends EclipseLinkException {
         ValidationException validationException = new ValidationException(ExceptionMessageGenerator.buildMessage(ValidationException.class, EJB_SESSION_TYPE_CLASS_NOT_FOUND, args));
         validationException.setErrorCode(EJB_SESSION_TYPE_CLASS_NOT_FOUND);
         validationException.setInternalException(exception);
-        return validationException;
-    }
-
-    /**
-    * PUBLIC:
-    * Possible cause: The sessions.xml file can not be found.
-    * Action: Make sure that the location of the sessions.xml file is on the classpath.  If the exception is within VisualAge the sessions.xml file must be in the project resources for the TopLink project.
-    */
-    public static ValidationException ejbPersistenceUnitPropertiesNotFound(Exception exception) {
-        Object[] args = {  };
-
-        ValidationException validationException = new ValidationException(ExceptionMessageGenerator.buildMessage(ValidationException.class, EJB_TOPLINK_PROPERTIES_NOT_FOUND, args));
-        validationException.setInternalException(exception);
-        validationException.setErrorCode(EJB_TOPLINK_PROPERTIES_NOT_FOUND);
         return validationException;
     }
 
@@ -1366,19 +1339,6 @@ public class ValidationException extends EclipseLinkException {
         return validationException;
     }
 
-    /**
-    * PUBLIC:
-    * Possible cause:  The sessions.xml file does not include any reference to a project class, file, or xml project file for the session specified in the deployment descriptor.
-    * Action: Edit the sessions.xml file to include the desired project.
-    */
-    public static ValidationException noProjectSpecifiedInProperties(String bundleName, String serverName) {
-        Object[] args = { bundleName, serverName };
-
-        ValidationException validationException = new ValidationException(ExceptionMessageGenerator.buildMessage(ValidationException.class, NO_PROJECT_SPECIFIED_IN_PROPERTIES, args));
-        validationException.setErrorCode(NO_PROJECT_SPECIFIED_IN_PROPERTIES);
-        return validationException;
-    }
-
     public static ValidationException noSessionFound(String sessionName, String resourceName) {
         Object[] args = { sessionName, resourceName };
 
@@ -1536,20 +1496,6 @@ public class ValidationException extends EclipseLinkException {
         return validationException;
     }
 
-    /**
-    * PUBLIC:
-    * Possible cause:  An amendment method was called but can not be found.
-    * Action:  Check that the required amendment method exists on the class specified.
-    */
-    public static ValidationException projectAmendmentExceptionOccured(Exception exception, String amendmentMethod, String amendmentClass) {
-        Object[] args = { amendmentMethod, amendmentClass };
-
-        ValidationException validationException = new ValidationException(ExceptionMessageGenerator.buildMessage(ValidationException.class, PROJECT_AMENDMENT_EXCEPTION_OCCURED, args));
-        validationException.setInternalException(exception);
-        validationException.setErrorCode(PROJECT_AMENDMENT_EXCEPTION_OCCURED);
-        return validationException;
-    }
-
     public static ValidationException projectXMLNotFound(String projectXMLFile, Exception exception) {
         Object[] args = { projectXMLFile };
         ValidationException validationException = new ValidationException(ExceptionMessageGenerator.buildMessage(ValidationException.class, PROJECT_XML_NOT_FOUND, args));
@@ -1624,19 +1570,6 @@ public class ValidationException extends EclipseLinkException {
 
         ValidationException validationException = new ValidationException(ExceptionMessageGenerator.buildMessage(ValidationException.class, STOP_INDEX_OUT_OF_RANGE, args));
         validationException.setErrorCode(STOP_INDEX_OUT_OF_RANGE);
-        return validationException;
-    }
-
-    /**
-    * PUBLIC:
-    * Possible cause:  The session class specified in the sessions.xml file for the session specified on the toplink_session_name environment variable can not be found.
-    * Action: Check that the session class given in the exception is on the application server dependent classpath.
-    */
-    public static ValidationException subSessionsNotDefinedForBroker(String brokerName) {
-        Object[] args = { brokerName };
-
-        ValidationException validationException = new ValidationException(ExceptionMessageGenerator.buildMessage(ValidationException.class, SUB_SESSION_NOT_DEFINED_FOR_BROKER, args));
-        validationException.setErrorCode(SUB_SESSION_NOT_DEFINED_FOR_BROKER);
         return validationException;
     }
 
@@ -2281,19 +2214,6 @@ public class ValidationException extends EclipseLinkException {
 
         ValidationException validationException = new ValidationException(ExceptionMessageGenerator.buildMessage(ValidationException.class, MULTIPLE_OBJECT_VALUES_FOR_DATA_VALUE, args));
         validationException.setErrorCode(MULTIPLE_OBJECT_VALUES_FOR_DATA_VALUE);
-        return validationException;
-    }
-    
-    /**
-     * PUBLIC:
-     * Possible cause:  More than one of projectClass, projectFile, and xmlProjectFile are specified for the same session in the TopLink.properties file.
-     * Action:  Remove one or more of the entries so that only one of the three is specified in the TopLink.properties file.
-     */
-    public static ValidationException multipleProjectsSpecifiedInProperties(String bundleName, String serverName) {
-        Object[] args = { bundleName, serverName };
-
-        ValidationException validationException = new ValidationException(ExceptionMessageGenerator.buildMessage(ValidationException.class, MULTIPLE_PROJECTS_SPECIFIED_IN_PROPERTIES, args));
-        validationException.setErrorCode(MULTIPLE_PROJECTS_SPECIFIED_IN_PROPERTIES);
         return validationException;
     }
 

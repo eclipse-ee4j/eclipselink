@@ -841,6 +841,11 @@ public class PersistenceUnitProperties {
     /**
      * The <code>"eclipselink.weaving.internal"</code> property indicates
      * whether internal optimizations should be enabled through weaving.
+     * 
+     * Internal optimizations include caching of primary key and session, 
+     * addition of a serialVersionUID if none exists, optimization of EclipseLink's
+     * cloning strategy and optimization of the way EclipseLink gets and sets values from
+     * fields mapped as Basic.
      * <p>
      * This property will only be considered if weaving is enabled.
      * <p>

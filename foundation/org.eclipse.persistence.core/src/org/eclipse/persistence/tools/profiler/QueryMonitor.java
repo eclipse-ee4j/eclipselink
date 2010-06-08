@@ -22,7 +22,8 @@ import org.eclipse.persistence.queries.*;
  * <p><b>Purpose</b>:
  * Provide a very simple low overhead means for measuring query executions, and cache hits.
  * This can be useful for performance analysis in a complex system.
- * This monitor is enabled through the System property "org.eclipse.persistence.querymonitor=true".
+ * This monitor is enabled through the System property "org.eclipse.persistence.querymonitor=true" or
+ * through the persistence.xml property eclipselink.profiler=QueryMonitor.
  * It dumps the number of query cache hits, and executions (misses) once every 100s.
  *
  * @author James Sutherland

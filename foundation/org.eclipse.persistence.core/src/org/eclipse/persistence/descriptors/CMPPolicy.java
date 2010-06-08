@@ -308,7 +308,7 @@ public class CMPPolicy implements java.io.Serializable {
      */
     public Object createPrimaryKeyInstanceFromPrimaryKeyValues(AbstractSession session, int[] elementIndex, Object ... keyElements ) {
         Object keyInstance = null;
-        KeyElementAccessor[] pkElementArray = getKeyClassFields(getPKClass());
+        KeyElementAccessor[] pkElementArray = getKeyClassFields();
         if ((pkElementArray.length == 1) && (pkElementArray[0] instanceof KeyIsElementAccessor)) {
             DatabaseMapping mapping = getDescriptor().getObjectBuilder().getMappingForAttributeName(pkElementArray[0].getAttributeName());
             if (mapping.isDirectToFieldMapping()) {
@@ -352,7 +352,7 @@ public class CMPPolicy implements java.io.Serializable {
      * Create an instance of the Id class or value from the object.
      */
     public Object createPrimaryKeyInstance(Object object, AbstractSession session) {
-        KeyElementAccessor[] pkElementArray = this.getKeyClassFields(getPKClass());
+        KeyElementAccessor[] pkElementArray = this.getKeyClassFields();
         ObjectBuilder builder = getDescriptor().getObjectBuilder();
         if (pkElementArray.length == 1 && pkElementArray[0] instanceof KeyIsElementAccessor){
             DatabaseMapping mapping = builder.getMappingForAttributeName(pkElementArray[0].getAttributeName());
@@ -446,7 +446,7 @@ public class CMPPolicy implements java.io.Serializable {
      * INTERNAL:
      * @return Returns the keyClassFields.
      */
-    protected KeyElementAccessor[] getKeyClassFields(Class clazz) {
+    protected KeyElementAccessor[] getKeyClassFields() {
     	// TODO fix this exception so that it is more descriptive
     	// This method only works in CMP3Policy but was added here for separation
     	// of components

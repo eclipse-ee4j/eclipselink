@@ -151,7 +151,7 @@ public class CMP3Policy extends CMPPolicy {
      */
     public Class getPKClass() {
         if(this.pkClass == null && getPKClassName() == null) {
-            getKeyClassFields(null);
+            getKeyClassFields();
         }
         return this.pkClass;
     }
@@ -194,7 +194,7 @@ public class CMP3Policy extends CMPPolicy {
         // If the descriptor primary key is mapped through direct-to-field mappings,
         // then no elaborate conversion is required.
         // If key is compound, add each value to the vector.
-        KeyElementAccessor[] pkElementArray = this.getKeyClassFields(key.getClass());
+        KeyElementAccessor[] pkElementArray = this.getKeyClassFields();
         Object[] primaryKey = null;
         if (getDescriptor().getCacheKeyType() != CacheKeyType.ID_VALUE) {
             primaryKey = new Object[pkElementArray.length];
@@ -264,7 +264,7 @@ public class CMP3Policy extends CMPPolicy {
     public Object createBeanUsingKey(Object key, AbstractSession session) {
         try {
             Object bean = this.getDescriptor().getInstantiationPolicy().buildNewInstance();
-            KeyElementAccessor[] keyElements = this.getKeyClassFields(key.getClass());
+            KeyElementAccessor[] keyElements = this.getKeyClassFields();
             for (int index = 0; index < keyElements.length; ++index) {
                 Object toWriteInto = bean;
                 Object keyFieldValue = keyElements[index].getValue(key, session);
@@ -464,7 +464,7 @@ public class CMP3Policy extends CMPPolicy {
      * INTERNAL:
      * @return Returns the keyClassFields.
      */
-    protected KeyElementAccessor[] getKeyClassFields(Class clazz) {
+    protected KeyElementAccessor[] getKeyClassFields() {
         return this.keyClassFields;
     }
     
@@ -616,7 +616,7 @@ public class CMP3Policy extends CMPPolicy {
      */
     public Object getPkValueFromKeyForField(Object key, DatabaseField field, AbstractSession session){
         Object fieldValue = null;
-        this.getKeyClassFields(key.getClass());
+        this.getKeyClassFields();
         KeyElementAccessor accessor = this.fieldToAccessorMap.get(field);
         DatabaseMapping mapping = accessor.getMapping();
         if (mapping.isDirectToFieldMapping()) {

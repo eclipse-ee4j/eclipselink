@@ -17,7 +17,9 @@ package org.eclipse.persistence.internal.jpa.modelgen;
 
 import java.io.IOException;
 import java.io.Writer;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
@@ -167,7 +169,9 @@ public class CanonicalModelProcessor extends AbstractProcessor {
             String parent = writeImportStatements(imports, accessor, writer, persistenceUnit, canonicalpackage);
                      
             // Write out the generation annotations.
-            writer.append("@Generated(\"EclipseLink-" + Version.getVersion() + ".v" + Version.getBuildDate() + "-r" + Version.getBuildRevision() + " @ " +  new Date() + "\")\n");
+            Date date = new Date();
+            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
+            writer.append("@Generated(value=\"EclipseLink-" + Version.getVersion() + ".v" + Version.getBuildDate() + "-r" + Version.getBuildRevision() + "\", date=\"" +  sdf.format(date) + "\")\n");
             writer.append("@StaticMetamodel(" + className + ".class)\n");
                 
             int modifier = accessor.getAccessibleObject().getModifiers();

@@ -114,7 +114,7 @@ public class PersistenceUnitReader {
                     processingEnv.getMessager().printMessage(Kind.NOTE, "The persistence xml file ["+filename+"] was not found. NO GENERATION will occur!! Please ensure a persistence xml file is available either from the CLASS_OUTPUT directory [META-INF/persistence.xml] or using the eclipselink.persistencexml property to specify its location. ");
                 } else {
                     // For any other mapping file log a message.
-                    processingEnv.getMessager().printMessage(Kind.NOTE, "File was not found: " + filename); 
+                    processingEnv.getMessager().printMessage(Kind.NOTE, "Optional file was not found: " + filename + " continuing with generation."); 
                 }
             }
         }   

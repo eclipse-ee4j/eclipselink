@@ -17,7 +17,6 @@ import java.io.*;
 import org.eclipse.persistence.exceptions.*;
 import org.eclipse.persistence.queries.*;
 import org.eclipse.persistence.internal.helper.*;
-import org.eclipse.persistence.internal.localization.WarningLocalization;
 import org.eclipse.persistence.internal.queries.*;
 import org.eclipse.persistence.internal.sessions.AbstractRecord;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
@@ -787,7 +786,7 @@ public abstract class DatasourceCall implements Call {
                 if (value == null) {
                     DatabaseField translationField = translationRow.getField(field);
                     if (translationField == null){
-                        session.log(SessionLog.WARNING, SessionLog.SQL, WarningLocalization.buildMessage("named_argument_not_found_in_query_parameters", new Object[]{field}));
+                        session.log(SessionLog.WARNING, SessionLog.SQL, "named_argument_not_found_in_query_parameters", new Object[]{field});
                     }
                     if ((translationField != null) && (translationField.getType() != null)) {
                         value = translationField;
