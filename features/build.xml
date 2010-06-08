@@ -72,7 +72,7 @@
         <property name="feature.common.dir"           value="${feature.build.location}/common"/>
 
         <!-- Defaults of Pre-Set variables -->
-        <property name="release.version"                    value="2.1.0"/>
+        <property name="release.version"                    value="2.2.0"/>
         <property name="version.qualifier"                  value="qualifier"/>
         <property name="version.string"                     value="${release.version}.${version.qualifier}"/>
         <property name="eclipselink.install.prefix"         value="eclipselink"/>
