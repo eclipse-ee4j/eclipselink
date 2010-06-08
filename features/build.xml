@@ -338,7 +338,7 @@
                           *jms*.jar,
                           com.sun*.jar,
                           eclipselink*.jar,
-                          javax.persistence*1.*.jar,
+                          javax.persistence*_1.*.jar,
                           *preview*.jar,
                           *javax.resource*.jar,
                           *javax.transaction*.jar,

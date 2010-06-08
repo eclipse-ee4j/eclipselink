@@ -123,7 +123,7 @@
 
         <!-- These define the dependency block for a given artifact -->
         <!-- * JPA does have a dependency upon javax.persistence, but it is left unstated because while 2.0 functionality -->
-        <!--   depends upon javax.persistence_2.0.0 jpa 1.0 functionality can run with just javax.persistence_1.0         -->
+        <!--   depends upon javax.persistence_2.0.x jpa 1.0 functionality can run with just javax.persistence_1.0         -->
         <!-- * The modelgen processor is a jar containing a single data resource used by the compiler to establish a      -->
         <!--   canonical modelgen processor during compilation. It has no real dependencies, nor is anything really       -->
         <!--   dependant upon it, but it is needed for this compiler functionality to work. (think of it as a compiler    -->
