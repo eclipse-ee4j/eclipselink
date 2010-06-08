@@ -110,7 +110,7 @@
         <property name="coretest.prop.file" value="${log.dir}/mysql.jpa.test.properties"/>
         <property name="test.properties.run" value="${coretest.prop.file}"/>
 
-        <!-- get svn.revision    NOTE: if get fails defaulted to "NA"            -->
+        <!-- get svn.revision    NOTE: if get fails defaulted to "NA"              -->
         <exec outputproperty="svn.revision"
             failonerror="false"
             failifexecutionfails="false"
