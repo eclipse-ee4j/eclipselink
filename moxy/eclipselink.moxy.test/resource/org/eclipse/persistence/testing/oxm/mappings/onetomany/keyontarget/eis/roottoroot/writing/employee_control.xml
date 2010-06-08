@@ -1,0 +1,11 @@
+<root>
+	<ns1:employee xmlns:ns1="myNamespace">
+		<first-name>Jack</first-name>
+	</ns1:employee>
+	<ns1:employee xmlns:ns1="myNamespace">
+		<first-name>Jill</first-name>
+	</ns1:employee>
+	<ns1:employee xmlns:ns1="myNamespace">
+		<first-name>Joe</first-name>
+	</ns1:employee>
+</root>

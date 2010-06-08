@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ns:employee xmlns:ns="http://www.myns.com" employee-number = "1001">
+  <!-- This is a comment -->
+  <first-name>Matt</first-name>
+  <last-name>MacIvor</last-name>
+  <ns:address type="canadian-address">
+    <!-- Need one here -->
+    <street>2001 Odessy Drive</street>
+    <city>Ottawa</city>
+    <province>ON</province>
+    <postal-code>A1A 1A1</postal-code>
+  </ns:address>
+  <!-- Here is a comment for this node -->
+  <responsibility>Write Java Code</responsibility>
+  <responsibility>Write Design Spec</responsibility>
+  <responsibility>New Responsibility</responsibility>
+  <phones>
+    <x:phone xmlns:x="http://www.myns.com">
+      <!-- This is another comment -->
+      <area-code>902</area-code>
+      <exchange>555</exchange>
+      <number>3226</number>
+    </x:phone>
+  </phones>
+</ns:employee>

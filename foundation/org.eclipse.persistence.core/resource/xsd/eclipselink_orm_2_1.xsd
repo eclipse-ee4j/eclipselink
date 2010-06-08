@@ -1,0 +1,4108 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!-- ************************************************************************************************************************** -->
+<!-- Copyright (c) 1998, 2010 Oracle. All rights reserved.                                                                      -->
+<!-- This program and the accompanying materials are made available under the                                                   -->
+<!-- terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0                                           --> 
+<!-- which accompanies this distribution.                                                                                       -->
+<!-- The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html                                       -->
+<!-- and the Eclipse Distribution License is available at                                                                       --> 
+<!-- http://www.eclipse.org/org/documents/edl-v10.php.                                                                          -->
+<!--                                                                                                                            -->
+<!-- Contributors:                                                                                                              -->
+<!--     Oracle - initial API and implementation from Oracle TopLink                                                            -->
+<!--     tware - update version number to 2.0                                                                                   -->
+<!--     12/2/2009-2.1 Guy Pelletier                                                                                            -->
+<!--        - 296289: Add current annotation metadata support on mapped superclasses to EclipseLink-ORM.XML Schema              -->
+<!--        - 296612: Add current annotation only metadata support of return insert/update to the EclipseLink-ORM.XML Schema    -->
+<!--        - formatted to match orm_2_0.xsd so that users can easily compare the two schemas                                   -->
+<!--     5/4/2010-2.1 Guy Pelletier                                                                                             -->
+<!--        - 227219: Expand EclipseLink-ORM.XML schema functionality for 2.1 release  (update version to 2.1)                  -->
+<!-- ************************************************************************************************************************** -->
+
+<!-- Java Persistence API object-relational mapping file schema -->
+<xsd:schema targetNamespace="http://www.eclipse.org/eclipselink/xsds/persistence/orm" 
+  xmlns:orm="http://www.eclipse.org/eclipselink/xsds/persistence/orm" 
+  xmlns:xsd="http://www.w3.org/2001/XMLSchema" 
+  elementFormDefault="qualified" 
+  attributeFormDefault="unqualified" 
+  version="2.1">
+
+  <xsd:annotation>
+    <xsd:documentation>
+      @(#)eclipselink_orm_2_1.xsd 2.1  April 05 2010
+    </xsd:documentation>
+  </xsd:annotation>
+  
+  <xsd:annotation>
+     <xsd:documentation><![CDATA[
+
+       This is the XML Schema for the native Eclipselink XML mapping file
+       The file may be named "META-INF/eclipselink-orm.xml" in the persistence
+       archive or it may be named some other name which would be
+       used to locate the file as resource on the classpath.
+       Object/relational mapping files must indicate the object/relational
+       mapping file schema by using the persistence namespace:
+
+       http://www.eclipse.org/eclipselink/xsds/persistence/orm
+
+       and indicate the version of the schema by using the version element as shown below:
+
+       <entity-mappings xmlns="http://www.eclipse.org/eclipselink/xsds/persistence/orm"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.eclipse.org/eclipselink/xsds/persistence/orm 
+       eclipselink_orm_2_1.xsd
+       version="2.1">
+       ...
+       </entity-mappings>
+
+     ]]></xsd:documentation>
+  </xsd:annotation>
+
+  <!-- **************************************************** -->
+
+  <xsd:complexType name="emptyType"/>
+  <xsd:simpleType name="versionType">
+    <xsd:restriction base="xsd:token">
+      <xsd:pattern value="[0-9]+(\.[0-9]+)*"/>
+    </xsd:restriction>
+  </xsd:simpleType>
+
+  <!-- **************************************************** -->
+
+  <xsd:complexType name="access-methods">
+    <xsd:annotation>
+      <xsd:documentation>
+
+      </xsd:documentation>
+    </xsd:annotation>
+    <xsd:attribute name="get-method" type="xsd:string" use="required"/>
+    <xsd:attribute name="set-method" type="xsd:string" use="required"/>
+  </xsd:complexType>
+  
+  <!-- **************************************************** -->
+  
+  <xsd:complexType name="cache">
+    <xsd:annotation>
+      <xsd:documentation>
+
+        /** 
+         * The Cache annotation is used to set an 
+         * org.eclipse.persistence.descriptors.invalidation.CacheInvalidationPolicy 
+         * which sets objects in EclipseLink's identity maps to be invalid 
+         * following given rules. By default in EclipseLink, objects do not 
+         * expire in the cache. Several different policies are available to 
+         * allow objects to expire.
+         * 
+         * @see org.eclipse.persistence.annotations.CacheType
+         * 
+         * A Cache anotation may be defined on an Entity or MappedSuperclass. 
+         * In the case of inheritance, a Cache annotation should only be defined 
+         * on the root of the inheritance hierarchy.
+         */
+        @Target({TYPE})
+        @Retention(RUNTIME)
+        public @interface Cache {
+          /**
+           * (Optional) The type of cache to use.
+           */ 
+          CacheType type() default SOFT_WEAK;
+
+          /**
+           * (Optional) The size of cache to use.
+           */ 
+          int size() default 100;
+
+          /**
+           * (Optional) Cached instances in the shared cache or a client 
+           * isolated cache.
+           */ 
+          boolean shared() default true;
+
+          /**
+           * (Optional) Expire cached instance after a fix period of time (ms). 
+           * Queries executed against the cache after this will be forced back 
+           * to the database for a refreshed copy
+           */ 
+          int expiry() default -1; // minus one is no expiry.
+
+          /**
+           * (Optional) Expire cached instance a specific time of day. Queries 
+           * executed against the cache after this will be forced back to the 
+           * database for a refreshed copy
+           */ 
+          TimeOfDay expiryTimeOfDay() default @TimeOfDay(specified=false);
+
+          /**
+           * (Optional) Force all queries that go to the database to always 
+           * refresh the cache.
+           */ 
+          boolean alwaysRefresh() default false;
+
+          /**
+           * (Optional) For all queries that go to the database, refresh the
+           * cache only if the data received from the database by a query is 
+           * newer than the data in the cache (as determined by the optimistic 
+           * locking field)
+           */ 
+          boolean refreshOnlyIfNewer() default false;
+
+          /**
+           * (Optional) Setting to true will force all queries to bypass the 
+           * cache for hits but still resolve against the cache for identity. 
+           * This forces all queries to hit the database.
+           */ 
+          boolean disableHits() default false;
+
+          /**
+           * (Optional) The cache coordination mode.
+           */ 
+          CacheCoordinationType coordinationType() default SEND_OBJECT_CHANGES;
+        }
+
+      </xsd:documentation>
+    </xsd:annotation>
+    <xsd:choice>
+      <xsd:element name="expiry" type="xsd:integer" minOccurs="0"/>
+      <xsd:element name="expiry-time-of-day" type="orm:time-of-day" minOccurs="0"/>
+    </xsd:choice>
+    <xsd:attribute name="size" type="xsd:integer"/>
+    <xsd:attribute name="shared" type="xsd:boolean"/>
+    <xsd:attribute name="type" type="orm:cache-type"/>
+    <xsd:attribute name="always-refresh" type="xsd:boolean"/>
+    <xsd:attribute name="refresh-only-if-newer" type="xsd:boolean"/>
+    <xsd:attribute name="disable-hits" type="xsd:boolean"/>
+    <xsd:attribute name="coordination-type" type="orm:cache-coordination-type"/>
+  </xsd:complexType>
+
+  <!-- **************************************************** --> 
+
+  <xsd:complexType name="cache-interceptor">
+    <xsd:annotation>
+      <xsd:documentation>
+
+        @Target({TYPE}) @Retention(RUNTIME)
+        public @interface CacheInterceptor {
+          Class value();
+        }
+
+      </xsd:documentation>
+    </xsd:annotation>
+    <xsd:attribute name="class" type="xsd:string" use="required"/>
+  </xsd:complexType>
+
+  <!-- **************************************************** -->
+
+
+  <xsd:simpleType name="cache-type">
+    <xsd:annotation>
+      <xsd:documentation>
+
+        /** 
+         * The CacheType enum is used with the Cache annotation for a 
+         * persistent class. It defines the type of IdentityMap/Cache used for 
+         * the class. By default the SOFT_WEAK cache type is used.
+         * 
+         * @see org.eclipse.persistence.annotations.Cache 
+         */
+        public enum CacheType {
+          /**
+           * Provides full caching and guaranteed identity. Caches all objects
+           * and does not remove them. 
+           * WARNING: This method may be memory intensive when many objects are 
+           * read.
+           */
+          FULL,
+
+          /**
+           * Similar to the FULL identity map except that the map holds the
+           * objects using weak references. This method allows full garbage
+           * collection and provides full caching and guaranteed identity.
+           */
+          WEAK,
+
+          /**
+           * Similar to the FULL identity map except that the map holds the
+           * objects using soft references. This method allows full garbage
+           * collection when memory is low and provides full caching and
+           * guaranteed identity.
+           */
+          SOFT,
+
+          /**
+           * Similar to the WEAK identity map except that it maintains a
+           * most-frequently-used sub-cache. The size of the sub-cache is
+           * proportional to the size of the identity map as specified by
+           * descriptor's setIdentityMapSize() method. The sub-cache
+           * uses soft references to ensure that these objects are
+           * garbage-collected only if the system is low on memory.
+           */
+          SOFT_WEAK,
+
+          /**
+           * Identical to the soft cache weak (SOFT_WEAK) identity map except 
+           * that it uses hard references in the sub-cache. Use this identity 
+           * map if soft references do not behave properly on your platform.
+           */
+          HARD_WEAK,
+
+          /**
+           * A cache identity map maintains a fixed number of objects
+           * specified by the application. Objects are removed from the cache
+           * on a least-recently-used basis. This method allows object
+           * identity for the most commonly used objects.
+           * WARNING: Furnishes caching and identity, but does not guarantee 
+           * identity.
+           */
+          CACHE,
+
+          /**
+           * WARNING: Does not preserve object identity and does not cache 
+           * objects.
+           */
+          NONE
+        }
+
+      </xsd:documentation>
+    </xsd:annotation>
+    <xsd:restriction base="xsd:token">
+      <xsd:enumeration value="FULL"/>
+      <xsd:enumeration value="WEAK"/>
+      <xsd:enumeration value="SOFT"/>
+      <xsd:enumeration value="SOFT_WEAK"/>
+      <xsd:enumeration value="HARD_WEAK"/>
+      <xsd:enumeration value="CACHE"/>
+      <xsd:enumeration value="NONE"/>
+    </xsd:restriction>
+  </xsd:simpleType>
+
+  <!-- **************************************************** -->  
+
+  <xsd:simpleType name="cache-coordination-type">
+    <xsd:annotation>
+      <xsd:documentation>
+
+        /** 
+         * An enum that is used within the Cache annotation.
+         * 
+         * @see org.eclipse.persistence.annotations.Cache 
+         */ 
+        public enum CacheCoordinationType {
+          /**
+           * Sends a list of changed objects including data about the changes.
+           * This data is merged into the receiving cache.
+           */
+          SEND_OBJECT_CHANGES,
+
+          /**
+           * Sends a list of the identities of the objects that have changed. 
+           * The receiving cache invalidates the objects (rather than changing 
+           * any of the data)
+           */
+          INVALIDATE_CHANGED_OBJECTS,
+
+          /**
+           * Same as SEND_OBJECT_CHANGES except it also includes any newly
+           * created objects from the transaction.
+           */
+          SEND_NEW_OBJECTS_WITH_CHANGES,
+
+          /**
+           * Does no cache coordination.
+           */
+          NONE
+        }
+
+      </xsd:documentation>
+    </xsd:annotation>
+    <xsd:restriction base="xsd:token">
+      <xsd:enumeration value="SEND_OBJECT_CHANGES"/>
+      <xsd:enumeration value="INVALIDATE_CHANGED_OBJECTS"/>
+      <xsd:enumeration value="SEND_NEW_OBJECTS_WITH_CHANGES"/>
+      <xsd:enumeration value="NONE"/>
+    </xsd:restriction>
+  </xsd:simpleType>
+
+  <!-- **************************************************** -->
+
+  <xsd:complexType name="change-tracking">
+    <xsd:annotation>
+      <xsd:documentation>
+
+        /** 
+         * The ChangeTracking annotation is used to specify the 
+         * org.eclipse.persistence.descriptors.changetracking.ObjectChangePolicy 
+         * which computes changes sets for EclipseLink's UnitOfWork commit 
+         * process. An ObjectChangePolicy is stored on an Entity's descriptor.
+         *
+         * A ChangeTracking annotation may be specified on an Entity, 
+         * MappedSuperclass or Embeddable.
+         */ 
+        @Target({TYPE})
+        @Retention(RUNTIME)
+        public @interface ChangeTracking {
+          /**
+           * (Optional) The type of change tracking to use.
+           */ 
+          ChangeTrackingType value() default AUTO;
+        }
+
+      </xsd:documentation>
+    </xsd:annotation>
+    <xsd:attribute name="type" type="orm:change-tracking-type" use="required"/>
+  </xsd:complexType>
+
+  <!-- **************************************************** -->
+
+  <xsd:simpleType name="change-tracking-type">
+    <xsd:annotation>
+      <xsd:documentation>
+
+        /** 
+         * An enum that is used within the ChangeTracking annotation. 
+         */ 
+        public enum ChangeTrackingType {
+          /**
+           * An ATTRIBUTE change tracking type allows change tracking at the
+           * attribute level of an object. Objects with changed attributes will
+           * be processed in the commit process to include any changes in the 
+           * results of the commit. Unchanged objects will be ignored.
+           */
+          ATTRIBUTE,
+
+          /**
+           * An OBJECT change tracking policy allows an object to calculate for 
+           * itself whether it has changed. Changed objects will be processed in 
+           * the commit process to include any changes in the results of the 
+           * commit. Unchanged objects will be ignored.
+           */
+          OBJECT,
+
+          /**
+           * A DEFERRED change tracking policy defers all change detection to
+           * the UnitOfWork's change detection process. Essentially, the 
+           * calculateChanges() method will run for all objects in a UnitOfWork. 
+           * This is the default ObjectChangePolicy
+           */
+          DEFERRED,
+
+          /**
+           * Will not set any change tracking policy.
+           */
+          AUTO
+        }
+
+      </xsd:documentation>
+    </xsd:annotation>
+    <xsd:restriction base="xsd:token">
+      <xsd:enumeration value="ATTRIBUTE"/>
+      <xsd:enumeration value="OBJECT"/>
+      <xsd:enumeration value="DEFERRED"/>
+      <xsd:enumeration value="AUTO"/>
+    </xsd:restriction>
+  </xsd:simpleType>
+
+  <!-- **************************************************** -->
+
+  <xsd:complexType name="customizer">
+    <xsd:annotation>
+      <xsd:documentation>
+
+        /** 
+         * The Customizer annotation is used to specify a class that implements 
+         * the org.eclipse.persistence.config.DescriptorCustomizer 
+         * interface and is to run against an enetity's class descriptor after all 
+         * metadata processing has been completed.
+         *
+         * The Customizer annotation may be defined on an Entity, MappedSuperclass 
+         * or Embeddable class. In the case of inheritance, a Customizer is not 
+         * inherited from its parent classes. 
+         */ 
+        @Target({TYPE})
+        @Retention(RUNTIME)
+        public @interface Customizer {
+          /**
+           * (Required) Defines the name of the descriptor customizer class that 
+           * should be applied for the related entity or embeddable class.
+           */
+          Class value(); 
+        }
+
+      </xsd:documentation>
+    </xsd:annotation>
+    <xsd:attribute name="class" type="xsd:string" use="required"/>
+  </xsd:complexType>
+
+  <!-- **************************************************** -->
+
+  <xsd:simpleType name="direction-type">
+    <xsd:annotation>
+      <xsd:documentation>
+
+        /** 
+         * An enum that is used within the StoredProcedureParameter annotation.
+         * It is used to specify the direction of the stored procedure 
+         * parameters of a named stored procedure query.
+         */
+        public enum Direction {
+          /**
+           * Input parameter
+           */
+          IN,
+
+          /**
+           * Output parameter
+           */
+          OUT,
+
+          /**
+           * Input and output parameter
+           */
+          IN_OUT,
+
+          /**
+           * Output cursor
+           */
+          OUT_CURSOR
+        }
+
+      </xsd:documentation>
+    </xsd:annotation>
+    <xsd:restriction base="xsd:token">
+      <xsd:enumeration value="IN"/>
+      <xsd:enumeration value="OUT"/>
+      <xsd:enumeration value="IN_OUT"/>
+      <xsd:enumeration value="OUT_CURSOR"/>
+    </xsd:restriction>
+  </xsd:simpleType>
+
+  <!-- **************************************************** -->
+
+  <xsd:element name="entity-mappings">
+    <xsd:complexType>
+      <xsd:annotation>
+        <xsd:documentation>
+
+        The entity-mappings element is the root element of a mapping
+        file. It contains the following four types of elements:
+
+        1. The persistence-unit-metadata element contains metadata
+        for the entire persistence unit. It is undefined if this element
+        occurs in multiple mapping files within the same persistence unit.
+        
+        2. The package, schema, catalog and access elements apply to all of
+        the entity, mapped-superclass and embeddable elements defined in
+        the same file in which they occur.
+
+        3. The sequence-generator, table-generator, named-query,
+        named-native-query and sql-result-set-mapping elements are global
+        to the persistence unit. It is undefined to have more than one
+        sequence-generator or table-generator of the same name in the same
+        or different mapping files in a persistence unit. It is also 
+        undefined to have more than one named-query, named-native-query, or
+        result-set-mapping of the same name in the same or different mapping 
+        files in a persistence unit.
+
+        4. The entity, mapped-superclass and embeddable elements each define
+        the mapping information for a managed persistent class. The mapping
+        information contained in these elements may be complete or it may
+        be partial.
+
+        </xsd:documentation>
+      </xsd:annotation>
+      <xsd:sequence>
+        <xsd:element name="description" type="xsd:string"
+                     minOccurs="0"/>
+        <xsd:element name="persistence-unit-metadata" 
+                     type="orm:persistence-unit-metadata"
+                     minOccurs="0"/>
+        <xsd:element name="package" type="xsd:string"
+                     minOccurs="0"/>
+        <xsd:element name="schema" type="xsd:string"
+                     minOccurs="0"/>
+        <xsd:element name="catalog" type="xsd:string"
+                     minOccurs="0"/>
+        <xsd:element name="access" type="orm:access-type"
+                     minOccurs="0"/>
+        <xsd:element name="access-methods" type="orm:access-methods" 
+                     minOccurs="0"/>                     
+        <xsd:element name="converter" type="orm:converter" minOccurs="0" maxOccurs="unbounded"/>
+        <xsd:element name="type-converter" type="orm:type-converter" minOccurs="0" maxOccurs="unbounded"/>
+        <xsd:element name="object-type-converter" type="orm:object-type-converter" minOccurs="0" maxOccurs="unbounded"/>
+        <xsd:element name="struct-converter" type="orm:struct-converter" minOccurs="0" maxOccurs="unbounded"/>
+        <xsd:element name="sequence-generator" type="orm:sequence-generator"
+                     minOccurs="0" maxOccurs="unbounded"/>
+        <xsd:element name="table-generator" type="orm:table-generator" 
+                     minOccurs="0" maxOccurs="unbounded"/>
+        <xsd:element name="named-query" type="orm:named-query" 
+                     minOccurs="0" maxOccurs="unbounded"/>
+        <xsd:element name="named-native-query" type="orm:named-native-query"
+                     minOccurs="0" maxOccurs="unbounded"/>
+        <xsd:element name="named-stored-procedure-query" type="orm:named-stored-procedure-query" minOccurs="0" maxOccurs="unbounded"/>             
+        <xsd:element name="sql-result-set-mapping" 
+                     type="orm:sql-result-set-mapping" 
+                     minOccurs="0" maxOccurs="unbounded"/>
+        <xsd:element name="mapped-superclass" type="orm:mapped-superclass" 
+                     minOccurs="0" maxOccurs="unbounded"/>
+        <xsd:element name="entity" type="orm:entity" 
+                     minOccurs="0" maxOccurs="unbounded"/>
+        <xsd:element name="embeddable" type="orm:embeddable" 
+                     minOccurs="0" maxOccurs="unbounded"/>
+      </xsd:sequence>
+      <xsd:attribute name="version" type="orm:versionType" 
+                     fixed="2.1" use="required"/>
+    </xsd:complexType>
+  </xsd:element>
+
+  <!-- **************************************************** -->
+
+  <xsd:simpleType name="existence-type">
+    <xsd:annotation>
+      <xsd:documentation>
+        /**
+         * The ExistenceChecking annotation is used to specify the type of 
+         * checking EclipseLink should use when updating entities.
+         * 
+         * An existence-checking specification is supported on an Entity or 
+         * MappedSuperclass annotation.
+         */
+        public @interface ExistenceChecking {
+
+          /**
+           * (Optional) Set the existence check for determining
+           * if an insert or update should occur for an object.
+           */
+          ExistenceType value() default CHECK_CACHE;
+        }
+
+        /**
+         * Assume that if the objects primary key does not include null and 
+         * it is in the cache, then it must exist.
+         */
+        CHECK_CACHE,
+
+        /**
+         * Perform does exist check on the database.
+         */
+        CHECK_DATABASE,
+
+        /**
+         * Assume that if the objects primary key does not include null then 
+         * it must exist. This may be used if the application guarantees or 
+         * does not care about the existence check.
+         */
+        ASSUME_EXISTENCE,
+
+        /**
+         * Assume that the object does not exist. This may be used if the 
+         * application guarantees or does not care about the existence check.  
+         * This will always force an insert to be called.
+         */
+        ASSUME_NON_EXISTENCE
+
+      </xsd:documentation>
+    </xsd:annotation>    
+    <xsd:restriction base="xsd:token">
+      <xsd:enumeration value="CHECK_CACHE"/>
+      <xsd:enumeration value="CHECK_DATABASE"/>
+      <xsd:enumeration value="ASSUME_EXISTENCE"/>
+      <xsd:enumeration value="ASSUME_NON_EXISTENCE"/>
+    </xsd:restriction>
+  </xsd:simpleType> 
+
+  <!-- **************************************************** -->
+
+  <xsd:complexType name="persistence-unit-metadata">
+    <xsd:annotation>
+      <xsd:documentation>
+
+        Metadata that applies to the persistence unit and not just to 
+        the mapping file in which it is contained. 
+
+        If the xml-mapping-metadata-complete element is specified,
+        the complete set of mapping metadata for the persistence unit 
+        is contained in the XML mapping files for the persistence unit.
+
+      </xsd:documentation>
+    </xsd:annotation>
+    <xsd:sequence>
+      <xsd:element name="description" type="xsd:string" minOccurs="0"/>
+      <xsd:element name="xml-mapping-metadata-complete" type="orm:emptyType"
+                   minOccurs="0"/>
+      <xsd:element name="exclude-default-mappings" type="orm:emptyType" minOccurs="0"/>             
+      <xsd:element name="persistence-unit-defaults" 
+                   type="orm:persistence-unit-defaults"
+                   minOccurs="0"/>
+    </xsd:sequence>
+  </xsd:complexType>
+
+  <!-- **************************************************** -->
+
+  <xsd:complexType name="persistence-unit-defaults">
+    <xsd:annotation>
+      <xsd:documentation>
+
+        These defaults are applied to the persistence unit as a whole 
+        unless they are overridden by local annotation or XML 
+        element settings. 
+        
+        schema - Used as the schema for all tables, secondary tables, join
+            tables, collection tables, sequence generators, and table 
+            generators that apply to the persistence unit
+        catalog - Used as the catalog for all tables, secondary tables, join
+            tables, collection tables, sequence generators, and table 
+            generators that apply to the persistence unit
+        delimited-identifiers - Used to treat database identifiers as
+            delimited identifiers.
+        access - Used as the access type for all managed classes in
+            the persistence unit
+        cascade-persist - Adds cascade-persist to the set of cascade options
+            in all entity relationships of the persistence unit
+        entity-listeners - List of default entity listeners to be invoked 
+            on each entity in the persistence unit. 
+
+      </xsd:documentation>
+    </xsd:annotation>
+    <xsd:sequence>
+        <xsd:element name="description" type="xsd:string" minOccurs="0"/>
+        <xsd:element name="schema" type="xsd:string"
+                     minOccurs="0"/>
+        <xsd:element name="catalog" type="xsd:string"
+                     minOccurs="0"/>
+        <xsd:element name="delimited-identifiers" type="orm:emptyType" 
+                     minOccurs="0"/>
+        <xsd:element name="access" type="orm:access-type"
+                     minOccurs="0"/>
+        <xsd:element name="access-methods" type="orm:access-methods" 
+                     minOccurs="0"/>
+        <xsd:element name="cascade-persist" type="orm:emptyType" 
+                     minOccurs="0"/>
+        <xsd:element name="entity-listeners" type="orm:entity-listeners"
+                     minOccurs="0"/>
+    </xsd:sequence>
+  </xsd:complexType>
+
+  <!-- **************************************************** -->
+
+  <xsd:complexType name="entity">
+    <xsd:annotation>
+      <xsd:documentation>
+
+        Defines the settings and mappings for an entity. Is allowed to be
+        sparsely populated and used in conjunction with the annotations.
+        Alternatively, the metadata-complete attribute can be used to 
+        indicate that no annotations on the entity class (and its fields
+        or properties) are to be processed. If this is the case then 
+        the defaulting rules for the entity and its subelements will 
+        be recursively applied.
+
+        @Target(TYPE) @Retention(RUNTIME)
+          public @interface Entity {
+          String name() default "";
+        }
+
+      </xsd:documentation>
+    </xsd:annotation>
+    <xsd:sequence>
+      <xsd:element name="description" type="xsd:string" minOccurs="0"/>
+      <xsd:element name="access-methods" type="orm:access-methods" minOccurs="0"/>
+      <xsd:element name="customizer" type="orm:customizer" minOccurs="0"/>
+      <xsd:element name="change-tracking" type="orm:change-tracking" minOccurs="0"/>
+      <xsd:element name="table" type="orm:table" 
+                   minOccurs="0"/>
+      <xsd:element name="secondary-table" type="orm:secondary-table" 
+                   minOccurs="0" maxOccurs="unbounded"/>
+      <xsd:element name="primary-key-join-column" 
+                   type="orm:primary-key-join-column" 
+                   minOccurs="0" maxOccurs="unbounded"/>
+      <xsd:element name="id-class" type="orm:id-class" minOccurs="0"/>
+      <xsd:element name="primary-key" type="orm:primary-key" minOccurs="0"/>
+      <xsd:element name="inheritance" type="orm:inheritance" minOccurs="0"/>
+      <xsd:choice>
+        <xsd:sequence>
+            <xsd:element name="discriminator-value" type="orm:discriminator-value" minOccurs="0"/>
+            <xsd:element name="discriminator-column" type="orm:discriminator-column" minOccurs="0"/>
+        </xsd:sequence>
+        <xsd:element name="class-extractor" type="orm:class-extractor" minOccurs="0"/>
+      </xsd:choice>
+      <xsd:element name="optimistic-locking" type="orm:optimistic-locking" minOccurs="0"/>
+      <xsd:element name="cache" type="orm:cache" minOccurs="0"/>
+      <xsd:element name="cache-interceptor" type="orm:cache-interceptor" minOccurs="0" maxOccurs="1"/>
+      <xsd:element name="fetch-group" type="orm:fetch-group" minOccurs="0" maxOccurs="unbounded"/>
+      <xsd:element name="converter" type="orm:converter" minOccurs="0" maxOccurs="unbounded"/>
+      <xsd:element name="type-converter" type="orm:type-converter" minOccurs="0" maxOccurs="unbounded"/>
+      <xsd:element name="object-type-converter" type="orm:object-type-converter" minOccurs="0" maxOccurs="unbounded"/>
+      <xsd:element name="struct-converter" type="orm:struct-converter" minOccurs="0" maxOccurs="unbounded"/>
+      <xsd:element name="copy-policy" type="orm:copy-policy" minOccurs="0" maxOccurs="1"/>
+      <xsd:element name="instantiation-copy-policy" type="orm:instantiation-copy-policy" minOccurs="0" maxOccurs="1"/>
+      <xsd:element name="clone-copy-policy" type="orm:clone-copy-policy" minOccurs="0" maxOccurs="1"/>
+      <xsd:element name="sequence-generator" type="orm:sequence-generator" 
+                   minOccurs="0"/>
+      <xsd:element name="table-generator" type="orm:table-generator" 
+                   minOccurs="0"/>
+      <xsd:element name="named-query" type="orm:named-query" 
+                   minOccurs="0" maxOccurs="unbounded"/>
+      <xsd:element name="named-native-query" type="orm:named-native-query" 
+                   minOccurs="0" maxOccurs="unbounded"/>
+      <xsd:element name="named-stored-procedure-query" type="orm:named-stored-procedure-query" minOccurs="0" maxOccurs="unbounded"/>             
+      <xsd:element name="sql-result-set-mapping" 
+                   type="orm:sql-result-set-mapping" 
+                   minOccurs="0" maxOccurs="unbounded"/>
+      <xsd:element name="query-redirectors" type="orm:query-redirectors" minOccurs="0" maxOccurs="1"/>
+      <xsd:element name="exclude-default-listeners" type="orm:emptyType" 
+                   minOccurs="0"/>
+      <xsd:element name="exclude-superclass-listeners" type="orm:emptyType" 
+                   minOccurs="0"/>
+      <xsd:element name="entity-listeners" type="orm:entity-listeners" 
+                   minOccurs="0"/>
+      <xsd:element name="pre-persist" type="orm:pre-persist" minOccurs="0"/>
+      <xsd:element name="post-persist" type="orm:post-persist" 
+                   minOccurs="0"/>
+      <xsd:element name="pre-remove" type="orm:pre-remove" minOccurs="0"/>
+      <xsd:element name="post-remove" type="orm:post-remove" minOccurs="0"/>
+      <xsd:element name="pre-update" type="orm:pre-update" minOccurs="0"/>
+      <xsd:element name="post-update" type="orm:post-update" minOccurs="0"/>
+      <xsd:element name="post-load" type="orm:post-load" minOccurs="0"/>
+      <xsd:element name="property" type="orm:property" minOccurs="0" maxOccurs="unbounded"/>
+      <xsd:element name="attribute-override" type="orm:attribute-override" 
+                   minOccurs="0" maxOccurs="unbounded"/>
+      <xsd:element name="association-override" 
+                   type="orm:association-override"
+                   minOccurs="0" maxOccurs="unbounded"/>
+      <xsd:element name="attributes" type="orm:attributes" minOccurs="0"/>
+    </xsd:sequence>
+    <xsd:attribute name="name" type="xsd:string"/>
+    <xsd:attribute name="class" type="xsd:string" use="required"/>
+    <xsd:attribute name="parent-class" type="xsd:string"/>
+    <xsd:attribute name="access" type="orm:access-type"/>
+    <xsd:attribute name="cacheable" type="xsd:boolean"/>
+    <xsd:attribute name="metadata-complete" type="xsd:boolean"/>
+    <xsd:attribute name="read-only" type="xsd:boolean"/>
+    <xsd:attribute name="existence-checking" type="orm:existence-type"/>
+    <xsd:attribute name="exclude-default-mappings" type="xsd:boolean"/>
+  </xsd:complexType>
+
+<!-- **************************************************** -->
+
+  <xsd:simpleType name="access-type">
+    <xsd:annotation>
+      <xsd:documentation>
+
+        This element determines how the persistence provider accesses the
+        state of an entity or embedded object.
+
+      </xsd:documentation>
+    </xsd:annotation>
+    <xsd:restriction base="xsd:token">
+      <xsd:enumeration value="PROPERTY"/>
+      <xsd:enumeration value="FIELD"/>
+      <xsd:enumeration value="VIRTUAL"/>
+    </xsd:restriction>
+  </xsd:simpleType>
+
+<!-- **************************************************** -->
+
+  <xsd:complexType name="association-override">
+    <xsd:annotation>
+      <xsd:documentation>
+
+        @Target({TYPE, METHOD, FIELD}) @Retention(RUNTIME)
+        public @interface AssociationOverride {
+          String name();
+          JoinColumn[] joinColumns() default{};
+          JoinTable joinTable() default @JoinTable;
+        }
+
+      </xsd:documentation>
+    </xsd:annotation>
+    <xsd:sequence>
+      <xsd:element name="description" type="xsd:string" minOccurs="0"/>
+      <xsd:choice>
+        <xsd:element name="join-column" type="orm:join-column"
+                     minOccurs="0" maxOccurs="unbounded"/>
+        <xsd:element name="join-table" type="orm:join-table"
+                     minOccurs="0"/>
+      </xsd:choice>
+    </xsd:sequence>
+    <xsd:attribute name="name" type="xsd:string" use="required"/>
+  </xsd:complexType>
+
+<!-- **************************************************** -->
+
+  <xsd:complexType name="attribute-override">
+    <xsd:annotation>
+      <xsd:documentation>
+
+        @Target({TYPE, METHOD, FIELD}) @Retention(RUNTIME)
+        public @interface AttributeOverride {
+          String name();
+          Column column();
+        }
+
+      </xsd:documentation>
+    </xsd:annotation>
+    <xsd:sequence>
+      <xsd:element name="description" type="xsd:string" minOccurs="0"/>
+      <xsd:element name="column" type="orm:column"/>
+    </xsd:sequence>
+    <xsd:attribute name="name" type="xsd:string" use="required"/>
+  </xsd:complexType>
+
+<!-- **************************************************** -->
+
+  <xsd:complexType name="attributes">
+    <xsd:annotation>
+      <xsd:documentation>
+
+        This element contains the entity field or property mappings.
+        It may be sparsely populated to include only a subset of the
+        fields or properties. If metadata-complete for the entity is true
+        then the remainder of the attributes will be defaulted according
+        to the default rules.
+
+      </xsd:documentation>
+    </xsd:annotation>
+    <xsd:sequence>
+      <xsd:element name="description" type="xsd:string" minOccurs="0"/>
+      <xsd:choice>
+        <xsd:element name="id" type="orm:id" 
+                     minOccurs="0" maxOccurs="unbounded"/>
+        <xsd:element name="embedded-id" type="orm:embedded-id" 
+                     minOccurs="0"/>
+      </xsd:choice>
+      <xsd:element name="basic" type="orm:basic"
+                   minOccurs="0" maxOccurs="unbounded"/>
+      <xsd:element name="basic-collection" type="orm:basic-collection" minOccurs="0" maxOccurs="unbounded"/>
+      <xsd:element name="basic-map" type="orm:basic-map" minOccurs="0" maxOccurs="unbounded"/>
+      <xsd:element name="version" type="orm:version"
+                   minOccurs="0" maxOccurs="unbounded"/>
+      <xsd:element name="many-to-one" type="orm:many-to-one"
+                   minOccurs="0" maxOccurs="unbounded"/>
+      <xsd:element name="one-to-many" type="orm:one-to-many"
+                   minOccurs="0" maxOccurs="unbounded"/>
+      <xsd:element name="one-to-one" type="orm:one-to-one"
+                   minOccurs="0" maxOccurs="unbounded"/>
+      <xsd:element name="variable-one-to-one" type="orm:variable-one-to-one" minOccurs="0" maxOccurs="unbounded"/>
+      <xsd:element name="many-to-many" type="orm:many-to-many" 
+                   minOccurs="0" maxOccurs="unbounded"/>
+      <xsd:element name="element-collection" type="orm:element-collection" 
+                   minOccurs="0" maxOccurs="unbounded"/>
+      <xsd:element name="embedded" type="orm:embedded"
+                   minOccurs="0" maxOccurs="unbounded"/>
+      <xsd:element name="transformation" type="orm:transformation" minOccurs="0" maxOccurs="unbounded"/>
+      <xsd:element name="transient" type="orm:transient"
+                   minOccurs="0" maxOccurs="unbounded"/>
+    </xsd:sequence>
+  </xsd:complexType>
+
+<!-- **************************************************** -->
+
+  <xsd:complexType name="basic">
+    <xsd:annotation>
+      <xsd:documentation>
+
+        @Target({METHOD, FIELD}) @Retention(RUNTIME)
+        public @interface Basic {
+          FetchType fetch() default EAGER;
+          boolean optional() default true;
+        }
+
+      </xsd:documentation>
+    </xsd:annotation>
+    <xsd:sequence>
+      <xsd:element name="column" type="orm:column" minOccurs="0"/>
+      <xsd:element name="generated-value" type="orm:generated-value" minOccurs="0"/>
+      <xsd:choice minOccurs="0">
+        <xsd:element name="lob" type="orm:lob"/>
+        <xsd:element name="temporal" type="orm:temporal"/>
+        <xsd:element name="enumerated" type="orm:enumerated"/>
+        <xsd:element name="convert" type="xsd:string"/>
+      </xsd:choice>
+      <xsd:choice minOccurs="0">
+        <xsd:element name="converter" type="orm:converter"/>
+        <xsd:element name="type-converter" type="orm:type-converter"/>
+        <xsd:element name="object-type-converter" type="orm:object-type-converter"/>
+        <xsd:element name="struct-converter" type="orm:struct-converter"/>
+      </xsd:choice>
+      <xsd:element name="table-generator" type="orm:table-generator" minOccurs="0"/>
+      <xsd:element name="sequence-generator" type="orm:sequence-generator" minOccurs="0"/>
+      <xsd:element name="property" type="orm:property" minOccurs="0" maxOccurs="unbounded"/>
+      <xsd:element name="access-methods" type="orm:access-methods" minOccurs="0"/>
+      <xsd:element name="return-insert" type="orm:return-insert" minOccurs="0"/>
+      <xsd:element name="return-update" type="orm:emptyType" minOccurs="0"/>
+    </xsd:sequence>
+    <xsd:attribute name="name" type="xsd:string" use="required"/>
+    <xsd:attribute name="fetch" type="orm:fetch-type"/>
+    <xsd:attribute name="optional" type="xsd:boolean"/>
+    <xsd:attribute name="access" type="orm:access-type"/>
+    <xsd:attribute name="mutable" type="xsd:boolean"/>
+    <xsd:attribute name="attribute-type" type="xsd:string"/>
+  </xsd:complexType>
+
+<!-- **************************************************** -->
+
+  <xsd:complexType name="basic-collection">
+    <xsd:annotation>
+      <xsd:documentation>
+
+        @Target({METHOD, FIELD})
+        @Retention(RUNTIME)
+        public @interface BasicCollection {
+          /**
+           * (Optional) Defines whether the value of the field or property 
+           * should be lazily loaded or must be eagerly fetched. The EAGER 
+           * strategy is a requirement on the persistence provider runtime that 
+           * the value must be eagerly fetched. The LAZY strategy is a hint to 
+           * the persistence provider runtime. If not specified, defaults to 
+           * LAZY.
+           */
+          FetchType fetch() default LAZY; 
+ 
+          /**
+           * (Optional) The name of the value column that holds the direct 
+           * collection data. Defaults to the property or field name.
+           */
+          Column valueColumn() default @Column;
+        }
+
+      </xsd:documentation>
+    </xsd:annotation>
+    <xsd:sequence>
+      <xsd:element name="value-column" type="orm:column" minOccurs="0"/>
+      <xsd:element name="convert" type="xsd:string" minOccurs="0"/>
+      <xsd:choice minOccurs="0">
+        <xsd:element name="converter" type="orm:converter"/>
+        <xsd:element name="type-converter" type="orm:type-converter"/>
+        <xsd:element name="object-type-converter" type="orm:object-type-converter"/>
+        <xsd:element name="struct-converter" type="orm:struct-converter"/>
+      </xsd:choice>
+      <xsd:element name="collection-table" type="orm:eclipselink-collection-table" minOccurs="0"/>
+      <xsd:element name="join-fetch" type="orm:join-fetch-type" minOccurs="0"/>
+      <xsd:element name="batch-fetch" type="orm:batch-fetch" minOccurs="0"/>
+      <xsd:element name="property" type="orm:property" minOccurs="0" maxOccurs="unbounded"/>
+      <xsd:element name="access-methods" type="orm:access-methods" minOccurs="0"/>
+    </xsd:sequence>
+    <xsd:attribute name="name" type="xsd:string"/>
+    <xsd:attribute name="fetch" type="orm:fetch-type"/>
+    <xsd:attribute name="access" type="orm:access-type"/>
+  </xsd:complexType>
+
+  <!-- **************************************************** -->
+
+  <xsd:complexType name="basic-map">
+    <xsd:annotation>
+      <xsd:documentation>
+
+        @Target({METHOD, FIELD})
+        @Retention(RUNTIME)
+        public @interface BasicMap {
+          /**
+           * (Optional) Defines whether the value of the field or property 
+           * should be lazily loaded or must be eagerly fetched. The EAGER 
+           * strategy is a requirement on the persistence provider runtime that 
+           * the value must be eagerly fetched. The LAZY strategy is a hint to 
+           * the persistence provider runtime. If not specified, defaults to 
+           * LAZY.
+           */
+          FetchType fetch() default LAZY;
+
+          /**
+           * (Optional) The name of the data column that holds the direct map 
+           * key. If the name on te key column is "", the name will default to:
+           * the name of the property or field; "_KEY".
+           */
+          Column keyColumn() default @Column;
+
+          /**
+           * (Optional) Specify the key converter. Default is equivalent to 
+           * specifying @Convert("none"), meaning no converter will be added to 
+           * the direct map key.
+           */
+          Convert keyConverter() default @Convert;
+
+          /**
+           * (Optional) The name of the data column that holds the direct 
+           * collection data. Defaults to the property or field name.
+           */
+          Column valueColumn() default @Column;
+
+          /**
+           * (Optional) Specify the value converter. Default is equivalent to 
+           * specifying @Convert("none"), meaning no converter will be added to 
+           * the value column mapping.
+           */
+          Convert valueConverter() default @Convert;
+        }
+
+      </xsd:documentation>
+    </xsd:annotation>
+    <xsd:sequence>
+      <xsd:element name="key-column" type="orm:column" minOccurs="0"/>
+      <xsd:element name="key-converter" type="xsd:string" minOccurs="0"/>    
+      <xsd:element name="value-column" type="orm:column" minOccurs="0"/>
+      <xsd:element name="value-converter" type="xsd:string" minOccurs="0"/>
+      <xsd:choice minOccurs="0" maxOccurs="2">
+        <xsd:element name="converter" type="orm:converter"/>
+        <xsd:element name="type-converter" type="orm:type-converter"/>
+        <xsd:element name="object-type-converter" type="orm:object-type-converter"/>
+        <xsd:element name="struct-converter" type="orm:struct-converter"/>
+      </xsd:choice>    
+      <xsd:element name="collection-table" type="orm:eclipselink-collection-table" minOccurs="0"/>
+      <xsd:element name="join-fetch" type="orm:join-fetch-type" minOccurs="0"/>
+      <xsd:element name="batch-fetch" type="orm:batch-fetch" minOccurs="0"/>
+      <xsd:element name="property" type="orm:property" minOccurs="0" maxOccurs="unbounded"/>
+      <xsd:element name="access-methods" type="orm:access-methods" minOccurs="0"/>
+    </xsd:sequence>
+    <xsd:attribute name="name" type="xsd:string"/>
+    <xsd:attribute name="fetch" type="orm:fetch-type"/>
+    <xsd:attribute name="access" type="orm:access-type"/>
+  </xsd:complexType>
+
+  <!-- **************************************************** -->
+
+  <xsd:complexType name="cascade-type">
+    <xsd:annotation>
+      <xsd:documentation>
+
+        public enum CascadeType { ALL, PERSIST, MERGE, REMOVE, REFRESH, DETACH};
+
+      </xsd:documentation>
+    </xsd:annotation>
+    <xsd:sequence>
+      <xsd:element name="cascade-all" type="orm:emptyType"
+                   minOccurs="0"/>
+      <xsd:element name="cascade-persist" type="orm:emptyType"
+                   minOccurs="0"/>
+      <xsd:element name="cascade-merge" type="orm:emptyType"
+                   minOccurs="0"/>
+      <xsd:element name="cascade-remove" type="orm:emptyType"
+                   minOccurs="0"/>
+      <xsd:element name="cascade-refresh" type="orm:emptyType"
+                   minOccurs="0"/>
+      <xsd:element name="cascade-detach" type="orm:emptyType"
+                   minOccurs="0"/>
+    </xsd:sequence>
+  </xsd:complexType>
+
+<!-- **************************************************** -->
+
+  <xsd:complexType name="class-extractor">
+    <xsd:annotation>
+      <xsd:documentation>
+
+        /**
+         * A ClassExtractor allows for a user defined class indicator in place of 
+         * providing a discriminator column. The class has the following restrictions:
+
+         *  - It must extend the org.eclipse.persistence.descriptors.ClassExtractor 
+         *    class and implement the extractClassFromRow(Record, Session) method. 
+         *  - That method must take a database row (a Record/Map) as an argument and 
+         *    must return the class to use for that row. 
+         * 
+         * This method will be used to decide which class to instantiate when reading 
+         * from the database. It is the application's responsibility to populate any 
+         * typing information in the database required to determine the class from the 
+         * row.
+         * 
+         * The ClassExtractor must only be set on the root of an entity class or
+         * sub-hierarchy in which a different inheritance strategy is applied. The 
+         * ClassExtractor can only be used with the SINGLE_TABLE and JOINED inheritance 
+         * strategies.
+         * 
+         * If a ClassExtractor is used then a DiscriminatorColumn cannot be used. A 
+         * ClassExtractor also cannot be used on either the root or its subclasses.
+         * 
+         * In addition, for more complex configurations using a ClassExtractor and a 
+         * SINGLE_TABLE strategy, the descriptor's withAllSubclasses and onlyInstances 
+         * expressions should be set through the ClassExtractor's initialize method.
+         *
+         * @see org.eclipse.persistence.descriptors.InheritancePolicy.setWithAllSubclassesExpression(Expression)
+         * @see org.eclipse.persistence.descriptors.InheritancePolicy.setOnlyInstancesExpression(Expression)
+         * 
+         * @author Guy Pelletier
+         * @since EclipseLink 2.1 
+         */ 
+        @Target({TYPE})
+        @Retention(RUNTIME)
+        public @interface ClassExtractor {
+            /**
+             * (Required) Defines the name of the class extractor that should be 
+             * applied to this entity's descriptor.
+             */
+            Class value(); 
+        }
+
+      </xsd:documentation>
+    </xsd:annotation>
+    <xsd:attribute name="class" type="xsd:string" use="required"/>
+  </xsd:complexType>
+  
+<!-- **************************************************** -->
+
+  <xsd:complexType name="clone-copy-policy">
+    <xsd:annotation>
+      <xsd:documentation>
+        /**
+         * A CloneCopyPolicy is used to set an 
+         * org.eclipse.persistence.descriptors.copying.CloneCopyPolicy on an 
+         * Entity. A CloneCopyPolicy must specify at one or both of the "method" 
+         * or "workingCopyMethod". "workingCopyMethod" is used to clone objects 
+         * that will be returned to the user as they are registered in 
+         * EclipseLink's transactional mechanism, the UnitOfWork. "method" will 
+         * be used for the clone that is used for comparison in conjunction with 
+         * EclipseLink's DeferredChangeDetectionPolicy
+         *  
+         * A CloneCopyPolicy should be specified on an Entity, MappedSuperclass
+         * or Embeddable.
+         * 
+         * Example:
+         * @Entity
+         * @CloneCopyPolicy(method="myCloneMethod")
+         * 
+         * or:
+         * 
+         * @Entity
+         * @CloneCopyPolicy(method="myCloneMethod", workingCopyMethod="myWorkingCopyCloneMethod")
+         * 
+         * or:
+         * 
+         * @Entity
+         * @CloneCopyPolicy(workingCopyMethodName="myWorkingCopyClone")
+         */
+        public @interface CloneCopyPolicy {
+
+            /**
+             * (Optional)
+             * Either method or workingCopyMethod must be specified this defines 
+             * a method that will be used to create a clone that will be used 
+             * for comparison by
+             * EclipseLink's DeferredChangeDetectionPolicy
+             */
+            String method();
+
+            /**
+             * (Optional)
+             * Either method or workingCopyMethod must be specified
+             * this defines a method that will be used to create a clone that 
+             * will be used to create the object returned when registering an 
+             * Object in an EclipseLink UnitOfWork
+             */
+            String workingCopyMethod();
+
+        }
+      </xsd:documentation>
+    </xsd:annotation>
+    <xsd:attribute name="method" type="xsd:string"/>
+    <xsd:attribute name="working-copy-method" type="xsd:string"/>
+  </xsd:complexType>
+
+  <!-- **************************************************** -->
+
+  <xsd:complexType name="collection-table">
+    <xsd:annotation>
+      <xsd:documentation>
+
+        @Target({METHOD, FIELD}) @Retention(RUNTIME)
+        public @interface CollectionTable {
+          String name() default "";
+          String catalog() default "";
+          String schema() default "";
+          JoinColumn[] joinColumns() default {};
+          UniqueConstraint[] uniqueConstraints() default {};
+        }
+
+      </xsd:documentation>
+    </xsd:annotation>
+    <xsd:sequence>
+      <xsd:element name="join-column" type="orm:join-column" 
+                   minOccurs="0" maxOccurs="unbounded"/>
+      <xsd:element name="unique-constraint" type="orm:unique-constraint" 
+                   minOccurs="0" maxOccurs="unbounded"/>
+    </xsd:sequence>
+    <xsd:attribute name="name" type="xsd:string"/>
+    <xsd:attribute name="catalog" type="xsd:string"/>
+    <xsd:attribute name="schema" type="xsd:string"/>
+    </xsd:complexType>
+
+  <!-- **************************************************** -->
+
+  <xsd:complexType name="eclipselink-collection-table">
+    <xsd:annotation>
+      <xsd:documentation>
+
+        @Target({METHOD, FIELD})
+        @Retention(RUNTIME)
+        public @interface CollectionTable {
+          /**
+           * (Optional) The name of the collection table. If it is not 
+           * specified, it is defaulted to the concatenation of the following: 
+           * the name of the source entity; "_" ; the name of the relationship 
+           * property or field of the source entity.
+           */
+          String name() default ""; 
+
+          /**
+           * (Optional) The catalog of the table. It defaults to the persistence 
+           * unit default catalog.
+           */
+          String catalog() default ""; 
+
+          /**
+           * (Optional) The schema of the table. It defaults to the persistence 
+           * unit default schema.
+           */
+          String schema() default ""; 
+
+          /**
+           * (Optional) Used to specify a primary key column that is used as a 
+           * foreign key to join to another table. If the source entity uses a 
+           * composite primary key, a primary key join column must be specified 
+           * for each field of the composite primary key. In a single primary 
+           * key case, a primary key join column may optionally be specified. 
+           * Defaulting will apply otherwise as follows:
+           * name, the same name as the primary key column of the primary table 
+           * of the source entity. referencedColumnName, the same name of 
+           * primary key column of the primary table of the source entity.
+           */
+          PrimaryKeyJoinColumn[] primaryKeyJoinColumns() default {}; 
+ 
+          /**
+           * (Optional) Unique constraints that are to be placed on the table. 
+           * These are only used if table generation is in effect.
+           */
+          UniqueConstraint[] uniqueConstraints() default {}; 
+       }
+
+      </xsd:documentation>
+    </xsd:annotation>
+    <xsd:sequence>
+      <xsd:element name="primary-key-join-column" type="orm:primary-key-join-column" minOccurs="0" maxOccurs="unbounded"/>
+      <xsd:element name="unique-constraint" type="orm:unique-constraint" minOccurs="0" maxOccurs="unbounded"/>
+    </xsd:sequence>
+    <xsd:attribute name="name" type="xsd:string"/>
+    <xsd:attribute name="catalog" type="xsd:string"/>
+    <xsd:attribute name="schema" type="xsd:string"/>
+  </xsd:complexType>
+
+
+<!-- **************************************************** -->
+
+  <xsd:complexType name="column">
+    <xsd:annotation>
+      <xsd:documentation>
+
+        @Target({METHOD, FIELD}) @Retention(RUNTIME)
+        public @interface Column {
+          String name() default "";
+          boolean unique() default false;
+          boolean nullable() default true;
+          boolean insertable() default true;
+          boolean updatable() default true;
+          String columnDefinition() default "";
+          String table() default "";
+          int length() default 255;
+          int precision() default 0; // decimal precision
+          int scale() default 0; // decimal scale
+        }
+
+      </xsd:documentation>
+    </xsd:annotation>
+    <xsd:attribute name="name" type="xsd:string"/>
+    <xsd:attribute name="unique" type="xsd:boolean"/>
+    <xsd:attribute name="nullable" type="xsd:boolean"/>
+    <xsd:attribute name="insertable" type="xsd:boolean"/>
+    <xsd:attribute name="updatable" type="xsd:boolean"/>
+    <xsd:attribute name="column-definition" type="xsd:string"/>
+    <xsd:attribute name="table" type="xsd:string"/>
+    <xsd:attribute name="length" type="xsd:int"/>
+    <xsd:attribute name="precision" type="xsd:int"/>
+    <xsd:attribute name="scale" type="xsd:int"/>
+  </xsd:complexType>
+
+<!-- **************************************************** -->
+
+  <xsd:complexType name="conversion-value">
+    <xsd:annotation>
+      <xsd:documentation>
+
+        @Target({})
+        @Retention(RUNTIME)
+        public @interface ConversionValue {
+          /**
+           * (Required) Specify the database value.
+           */
+          String dataValue();
+
+          /**
+           * (Required) Specify the object value.
+           */
+          String objectValue();
+        }
+
+      </xsd:documentation>
+    </xsd:annotation>
+    <xsd:attribute name="data-value" type="xsd:string" use="required"/>
+    <xsd:attribute name="object-value" type="xsd:string" use="required"/>
+  </xsd:complexType>
+
+  <!-- **************************************************** -->
+
+  <xsd:complexType name="converter">
+    <xsd:annotation>
+      <xsd:documentation>
+
+        @Target({TYPE, METHOD, FIELD})
+        @Retention(RUNTIME)
+        public @interface Converter {
+          /**
+           * (Required) Name this converter. The name should be unique across 
+           * the whole persistence unit.
+           */
+          String name();
+
+          /**
+           * (Required) The converter class to be used. This class must implement
+           * the org.eclipse.persistence.mappings.converters.Converter interface.
+           */
+          Class converterClass(); 
+        }
+
+      </xsd:documentation>
+    </xsd:annotation>
+    <xsd:attribute name="name" type="xsd:string" use="required"/>
+    <xsd:attribute name="class" type="xsd:string" use="required"/>
+  </xsd:complexType>
+
+  <!-- **************************************************** -->
+
+  <xsd:complexType name="column-result">
+    <xsd:annotation>
+      <xsd:documentation>
+
+        @Target({}) @Retention(RUNTIME)
+        public @interface ColumnResult {
+          String name();
+        }
+
+      </xsd:documentation>
+    </xsd:annotation>
+    <xsd:attribute name="name" type="xsd:string" use="required"/>
+  </xsd:complexType>
+
+  <!-- **************************************************** -->
+
+  <xsd:complexType name="copy-policy">
+    <xsd:annotation>
+      <xsd:documentation>
+        /**
+         * A CopyPolicy is used to set a 
+         * org.eclipse.persistence.descriptors.copying.CopyPolicy on an Entity.
+         * It is required that a class that implements 
+         * org.eclipse.persistence.descriptors.copying.CopyPolicy be specified 
+         * as the argument.
+         * 
+         * A CopyPolicy should be specified on an Entity, MappedSuperclass or 
+         * Embeddable.
+         * 
+         * For instance:
+         * @Entity
+         * @CopyPolicy("example.MyCopyPolicy")
+         */
+        public @interface CopyPolicy {
+
+        /*
+        * (Required)
+        * This defines the class of the copy policy. It must specify a class 
+        * that implements org.eclipse.persistence.descriptors.copying.CopyPolicy
+        */
+        Class value();
+        }
+
+      </xsd:documentation>
+    </xsd:annotation>
+    <xsd:attribute name="class" type="xsd:string" use="required"/>
+  </xsd:complexType>
+
+  <!-- **************************************************** -->
+
+  <xsd:complexType name="discriminator-column">
+    <xsd:annotation>
+      <xsd:documentation>
+
+        @Target({TYPE}) @Retention(RUNTIME)
+        public @interface DiscriminatorColumn {
+          String name() default "DTYPE";
+          DiscriminatorType discriminatorType() default STRING;
+          String columnDefinition() default "";
+          int length() default 31;
+        }
+
+      </xsd:documentation>
+    </xsd:annotation>
+    <xsd:attribute name="name" type="xsd:string"/>
+    <xsd:attribute name="discriminator-type" type="orm:discriminator-type"/>
+    <xsd:attribute name="column-definition" type="xsd:string"/>
+    <xsd:attribute name="length" type="xsd:int"/>
+  </xsd:complexType>
+
+  <!-- **************************************************** -->
+
+  <xsd:complexType name="discriminator-class">
+    <xsd:annotation>
+      <xsd:documentation>
+
+        /** 
+         * A DiscriminatorClass is used within a VariableOneToOne annotation.
+         */ 
+        @Target({}) 
+        @Retention(RUNTIME)
+        public @interface DiscriminatorClass {
+          /**
+           * (Required) The discriminator to be stored on the database. 
+           */
+          String discriminator();
+
+          /**
+           * (Required) The class to the instantiated with the given 
+           * discriminator.
+           */
+          Class value();
+        }
+
+      </xsd:documentation>
+    </xsd:annotation>
+    <xsd:attribute name="discriminator" type="xsd:string" use="required"/>
+    <xsd:attribute name="value" type="xsd:string" use="required"/>
+  </xsd:complexType>
+
+  <!-- **************************************************** -->
+
+  <xsd:simpleType name="discriminator-type">
+    <xsd:annotation>
+      <xsd:documentation>
+
+        public enum DiscriminatorType { STRING, CHAR, INTEGER };
+
+      </xsd:documentation>
+    </xsd:annotation>
+    <xsd:restriction base="xsd:token">
+      <xsd:enumeration value="STRING"/>
+      <xsd:enumeration value="CHAR"/>
+      <xsd:enumeration value="INTEGER"/>
+    </xsd:restriction>
+  </xsd:simpleType>
+
+<!-- **************************************************** -->
+
+  <xsd:simpleType name="discriminator-value">
+    <xsd:annotation>
+      <xsd:documentation>
+
+        @Target({TYPE}) @Retention(RUNTIME)
+        public @interface DiscriminatorValue {
+          String value();
+        }
+
+      </xsd:documentation>
+    </xsd:annotation>
+    <xsd:restriction base="xsd:string"/>
+  </xsd:simpleType>
+
+<!-- **************************************************** -->
+
+<xsd:complexType name="element-collection">
+    <xsd:annotation>
+      <xsd:documentation>
+
+        @Target({METHOD, FIELD}) @Retention(RUNTIME)
+        public @interface ElementCollection {
+          Class targetClass() default void.class;
+          FetchType fetch() default LAZY;
+        }
+
+      </xsd:documentation>
+    </xsd:annotation>
+    <xsd:sequence>
+      <xsd:choice>
+        <xsd:element name="order-by" type="orm:order-by"
+                     minOccurs="0"/>
+        <xsd:element name="order-column" type="orm:order-column"
+                     minOccurs="0"/>
+      </xsd:choice>
+      <xsd:choice>
+        <xsd:element name="map-key" type="orm:map-key"
+                     minOccurs="0"/>
+        <xsd:sequence>
+          <xsd:element name="map-key-class" type="orm:map-key-class"
+                       minOccurs="0"/>
+          <xsd:choice>
+            <xsd:element name="map-key-temporal"
+                         type="orm:temporal"
+                         minOccurs="0"/>
+            <xsd:element name="map-key-enumerated"
+                         type="orm:enumerated"
+                         minOccurs="0"/>
+            <xsd:element name="map-key-convert" type="xsd:string" minOccurs="0"/>
+            <xsd:sequence>
+            <xsd:element name="map-key-attribute-override"
+                         type="orm:attribute-override"
+                         minOccurs="0" maxOccurs="unbounded"/>
+              <xsd:element name="map-key-association-override" type="orm:association-override" minOccurs="0" maxOccurs="unbounded"/>
+            </xsd:sequence>
+          </xsd:choice>
+          <xsd:choice>
+            <xsd:element name="map-key-column"
+                         type="orm:map-key-column"
+                         minOccurs="0"/>
+            <xsd:element name="map-key-join-column"
+                         type="orm:map-key-join-column"
+                         minOccurs="0" maxOccurs="unbounded"/>
+          </xsd:choice>
+        </xsd:sequence>
+      </xsd:choice>
+      <xsd:choice>
+        <xsd:sequence>
+          <xsd:element name="column" type="orm:column" minOccurs="0"/>
+          <xsd:choice>
+            <xsd:element name="temporal"
+                         type="orm:temporal"
+                         minOccurs="0"/>
+            <xsd:element name="enumerated"
+                         type="orm:enumerated"
+                         minOccurs="0"/>
+            <xsd:element name="lob"
+                         type="orm:lob"
+                         minOccurs="0"/>
+            <xsd:element name="convert" type="xsd:string" minOccurs="0"/>
+          </xsd:choice>
+        </xsd:sequence>
+        <xsd:sequence>
+          <xsd:element name="attribute-override"
+                       type="orm:attribute-override"
+                       minOccurs="0" maxOccurs="unbounded"/>
+          <xsd:element name="association-override"
+                       type="orm:association-override"
+                       minOccurs="0" maxOccurs="unbounded"/>
+        </xsd:sequence>
+      </xsd:choice>
+      <xsd:choice minOccurs="0" maxOccurs="2">
+        <xsd:element name="converter" type="orm:converter"/>
+        <xsd:element name="type-converter" type="orm:type-converter"/>
+        <xsd:element name="object-type-converter" type="orm:object-type-converter"/>
+        <xsd:element name="struct-converter" type="orm:struct-converter"/>
+      </xsd:choice>
+      <xsd:element name="collection-table" type="orm:collection-table"
+                     minOccurs="0"/>
+      <xsd:element name="join-fetch" type="orm:join-fetch-type" minOccurs="0"/>
+      <xsd:element name="batch-fetch" type="orm:batch-fetch" minOccurs="0"/>
+      <xsd:element name="property" type="orm:property" minOccurs="0" maxOccurs="unbounded"/>
+      <xsd:element name="access-methods" type="orm:access-methods" minOccurs="0"/>
+    </xsd:sequence>
+    <xsd:attribute name="name" type="xsd:string" use="required"/>
+    <xsd:attribute name="target-class" type="xsd:string"/>
+    <xsd:attribute name="fetch" type="orm:fetch-type"/>
+    <xsd:attribute name="access" type="orm:access-type"/>
+    <xsd:attribute name="attribute-type" type="xsd:string"/>
+</xsd:complexType>
+
+<!-- **************************************************** -->
+
+  <xsd:complexType name="embeddable">
+    <xsd:annotation>
+      <xsd:documentation>
+
+        Defines the settings and mappings for embeddable objects. Is 
+        allowed to be sparsely populated and used in conjunction with 
+        the annotations. Alternatively, the metadata-complete attribute 
+        can be used to indicate that no annotations are to be processed 
+        in the class. If this is the case then the defaulting rules will 
+        be recursively applied.
+
+        @Target({TYPE}) @Retention(RUNTIME)
+        public @interface Embeddable {}
+
+      </xsd:documentation>
+    </xsd:annotation>
+    <xsd:sequence>
+      <xsd:element name="description" type="xsd:string" minOccurs="0"/>
+      <xsd:element name="access-methods" type="orm:access-methods" minOccurs="0"/>
+      <xsd:element name="customizer" type="orm:customizer" minOccurs="0"/>
+      <xsd:element name="change-tracking" type="orm:change-tracking" minOccurs="0"/>
+      <xsd:element name="converter" type="orm:converter" minOccurs="0" maxOccurs="unbounded"/>
+      <xsd:element name="type-converter" type="orm:type-converter" minOccurs="0" maxOccurs="unbounded"/>
+      <xsd:element name="object-type-converter" type="orm:object-type-converter" minOccurs="0" maxOccurs="unbounded"/>
+      <xsd:element name="struct-converter" type="orm:struct-converter" minOccurs="0" maxOccurs="unbounded"/>
+      <xsd:element name="copy-policy" type="orm:copy-policy" minOccurs="0" maxOccurs="1"/>
+      <xsd:element name="instantiation-copy-policy" type="orm:instantiation-copy-policy" minOccurs="0" maxOccurs="1"/>
+      <xsd:element name="clone-copy-policy" type="orm:clone-copy-policy" minOccurs="0" maxOccurs="1"/>
+      <xsd:element name="property" type="orm:property" minOccurs="0" maxOccurs="unbounded"/>
+      <xsd:element name="attributes" type="orm:attributes" minOccurs="0"/>
+    </xsd:sequence>
+    <xsd:attribute name="class" type="xsd:string" use="required"/>
+    <xsd:attribute name="access" type="orm:access-type"/>
+    <xsd:attribute name="metadata-complete" type="xsd:boolean"/>
+    <xsd:attribute name="exclude-default-mappings" type="xsd:boolean"/>
+  </xsd:complexType>
+
+  <!-- **************************************************** -->
+
+  <xsd:complexType name="embedded">
+    <xsd:annotation>
+      <xsd:documentation>
+
+        @Target({METHOD, FIELD}) @Retention(RUNTIME)
+        public @interface Embedded {}
+
+      </xsd:documentation>
+    </xsd:annotation>
+    <xsd:sequence>
+      <xsd:element name="attribute-override" type="orm:attribute-override" 
+                   minOccurs="0" maxOccurs="unbounded"/>
+      <xsd:element name="association-override" 
+                   type="orm:association-override"
+                   minOccurs="0" maxOccurs="unbounded"/>
+      <xsd:element name="property" type="orm:property" minOccurs="0" maxOccurs="unbounded"/>
+      <xsd:element name="access-methods" type="orm:access-methods" minOccurs="0"/>
+    </xsd:sequence>
+    <xsd:attribute name="name" type="xsd:string" use="required"/>
+    <xsd:attribute name="access" type="orm:access-type"/>
+    <xsd:attribute name="attribute-type" type="xsd:string"/>
+  </xsd:complexType>
+
+<!-- **************************************************** -->
+
+  <xsd:complexType name="embedded-id">
+    <xsd:annotation>
+      <xsd:documentation>
+
+        @Target({METHOD, FIELD}) @Retention(RUNTIME)
+        public @interface EmbeddedId {}
+
+      </xsd:documentation>
+    </xsd:annotation>
+    <xsd:sequence>
+      <xsd:element name="attribute-override" type="orm:attribute-override" 
+                   minOccurs="0" maxOccurs="unbounded"/>
+      <xsd:element name="property" type="orm:property" minOccurs="0" maxOccurs="unbounded"/>
+      <xsd:element name="access-methods" type="orm:access-methods" minOccurs="0"/>
+    </xsd:sequence>
+    <xsd:attribute name="name" type="xsd:string" use="required"/>
+    <xsd:attribute name="access" type="orm:access-type"/>
+    <xsd:attribute name="attribute-type" type="xsd:string"/>
+  </xsd:complexType>
+
+<!-- **************************************************** -->
+
+  <xsd:complexType name="entity-listener">
+    <xsd:annotation>
+      <xsd:documentation>
+
+        Defines an entity listener to be invoked at lifecycle events
+        for the entities that list this listener.
+
+      </xsd:documentation>
+    </xsd:annotation>
+    <xsd:sequence>
+      <xsd:element name="description" type="xsd:string" minOccurs="0"/>
+      <xsd:element name="pre-persist" type="orm:pre-persist" minOccurs="0"/>
+      <xsd:element name="post-persist" type="orm:post-persist" 
+                   minOccurs="0"/>
+      <xsd:element name="pre-remove" type="orm:pre-remove" minOccurs="0"/>
+      <xsd:element name="post-remove" type="orm:post-remove" minOccurs="0"/>
+      <xsd:element name="pre-update" type="orm:pre-update" minOccurs="0"/>
+      <xsd:element name="post-update" type="orm:post-update" minOccurs="0"/>
+      <xsd:element name="post-load" type="orm:post-load" minOccurs="0"/>
+    </xsd:sequence>
+    <xsd:attribute name="class" type="xsd:string" use="required"/>
+  </xsd:complexType>
+
+<!-- **************************************************** -->
+
+  <xsd:complexType name="entity-listeners">
+    <xsd:annotation>
+      <xsd:documentation>
+
+        @Target({TYPE}) @Retention(RUNTIME)
+        public @interface EntityListeners {
+          Class[] value();
+        }
+
+      </xsd:documentation>
+    </xsd:annotation>
+    <xsd:sequence>
+      <xsd:element name="entity-listener" type="orm:entity-listener" 
+                   minOccurs="0" maxOccurs="unbounded"/>
+    </xsd:sequence>
+  </xsd:complexType>
+
+<!-- **************************************************** -->
+
+  <xsd:complexType name="entity-result">
+    <xsd:annotation>
+      <xsd:documentation>
+
+        @Target({}) @Retention(RUNTIME)
+        public @interface EntityResult {
+          Class entityClass();
+          FieldResult[] fields() default {};
+          String discriminatorColumn() default "";
+        }
+
+      </xsd:documentation>
+    </xsd:annotation>
+    <xsd:sequence>
+      <xsd:element name="field-result" type="orm:field-result" 
+                   minOccurs="0" maxOccurs="unbounded"/>
+    </xsd:sequence>
+    <xsd:attribute name="entity-class" type="xsd:string" use="required"/>
+    <xsd:attribute name="discriminator-column" type="xsd:string"/>
+  </xsd:complexType>
+
+<!-- **************************************************** -->
+
+  <xsd:simpleType name="enum-type">
+    <xsd:annotation>
+      <xsd:documentation>
+
+        public enum EnumType {
+          ORDINAL,
+          STRING
+        }
+
+      </xsd:documentation>
+    </xsd:annotation>
+    <xsd:restriction base="xsd:token">
+      <xsd:enumeration value="ORDINAL"/>
+      <xsd:enumeration value="STRING"/>
+    </xsd:restriction>
+  </xsd:simpleType>
+
+<!-- **************************************************** -->
+
+  <xsd:simpleType name="enumerated">
+    <xsd:annotation>
+      <xsd:documentation>
+
+        @Target({METHOD, FIELD}) @Retention(RUNTIME)
+        public @interface Enumerated {
+          EnumType value() default ORDINAL;
+        }
+
+      </xsd:documentation>
+    </xsd:annotation>
+    <xsd:restriction base="orm:enum-type"/>
+  </xsd:simpleType>
+
+<!-- **************************************************** -->
+
+  <xsd:complexType name="fetch-attribute">
+    <xsd:annotation>
+      <xsd:documentation>
+
+        @Target({TYPE})
+        @Retention(RUNTIME)
+        public @interface FetchAttribute {
+          /**
+           * (Required) The fetch attribute name.
+           */
+          String name(); 
+        }
+
+      </xsd:documentation>
+    </xsd:annotation>
+    <xsd:attribute name="name" type="xsd:string" use="required"/>
+  </xsd:complexType>
+  
+<!-- **************************************************** -->
+
+  <xsd:complexType name="fetch-group">
+    <xsd:annotation>
+      <xsd:documentation>
+
+        @Target({TYPE})
+        @Retention(RUNTIME)
+        public @interface FetchGroup {
+          /**
+           * (Required) The fetch group name.
+           */
+          String name(); 
+
+          /**
+           * (Optional) Indicates whether all relationship attributes
+           * specified in the fetch group should be loaded.
+           */
+          boolean load() default true; 
+
+          /**
+           * (Required) The list of attributes to fetch.
+           */
+          FetchAttribute[] attributes();
+        }
+
+      </xsd:documentation>
+    </xsd:annotation>
+    <xsd:sequence>
+      <xsd:element name="attribute" type="orm:fetch-attribute" minOccurs="1" maxOccurs="unbounded"/>
+    </xsd:sequence>
+    <xsd:attribute name="name" type="xsd:string" use="required"/>
+    <xsd:attribute name="load" type="xsd:boolean"/>
+  </xsd:complexType>
+
+<!-- **************************************************** -->
+
+  <xsd:simpleType name="fetch-type">
+    <xsd:annotation>
+      <xsd:documentation>
+
+        public enum FetchType { LAZY, EAGER };
+
+      </xsd:documentation>
+    </xsd:annotation>
+    <xsd:restriction base="xsd:token">
+      <xsd:enumeration value="LAZY"/>
+      <xsd:enumeration value="EAGER"/>
+    </xsd:restriction>
+  </xsd:simpleType>
+
+<!-- **************************************************** -->
+
+  <xsd:complexType name="field-result">
+    <xsd:annotation>
+      <xsd:documentation>
+
+        @Target({}) @Retention(RUNTIME)
+        public @interface FieldResult {
+          String name();
+          String column();
+        }
+
+      </xsd:documentation>
+    </xsd:annotation>
+    <xsd:attribute name="name" type="xsd:string" use="required"/>
+    <xsd:attribute name="column" type="xsd:string" use="required"/>
+  </xsd:complexType>
+
+<!-- **************************************************** -->
+
+  <xsd:complexType name="generated-value">
+    <xsd:annotation>
+      <xsd:documentation>
+
+        @Target({METHOD, FIELD}) @Retention(RUNTIME)
+        public @interface GeneratedValue {
+          GenerationType strategy() default AUTO;
+          String generator() default "";
+        }
+
+      </xsd:documentation>
+    </xsd:annotation>
+    <xsd:attribute name="strategy" type="orm:generation-type"/>
+    <xsd:attribute name="generator" type="xsd:string"/>
+  </xsd:complexType>
+
+<!-- **************************************************** -->
+
+  <xsd:simpleType name="generation-type">
+    <xsd:annotation>
+      <xsd:documentation>
+
+        public enum GenerationType { TABLE, SEQUENCE, IDENTITY, AUTO };
+
+      </xsd:documentation>
+    </xsd:annotation>
+    <xsd:restriction base="xsd:token">
+      <xsd:enumeration value="TABLE"/>
+      <xsd:enumeration value="SEQUENCE"/>
+      <xsd:enumeration value="IDENTITY"/>
+      <xsd:enumeration value="AUTO"/>
+    </xsd:restriction>
+  </xsd:simpleType>
+
+<!-- **************************************************** -->
+
+  <xsd:complexType name="id">
+    <xsd:annotation>
+      <xsd:documentation>
+
+        @Target({METHOD, FIELD}) @Retention(RUNTIME)
+        public @interface Id {}
+
+      </xsd:documentation>
+    </xsd:annotation>
+    <xsd:sequence>
+      <xsd:element name="column" type="orm:column" 
+                   minOccurs="0"/>
+      <xsd:element name="generated-value" type="orm:generated-value"
+                   minOccurs="0"/>
+      <xsd:choice minOccurs="0">
+      <xsd:element name="temporal" type="orm:temporal" 
+                   minOccurs="0"/>
+      <xsd:element name="convert" type="xsd:string"/>
+      </xsd:choice>
+      <xsd:choice minOccurs="0">
+        <xsd:element name="converter" type="orm:converter"/>
+        <xsd:element name="type-converter" type="orm:type-converter"/>
+        <xsd:element name="object-type-converter" type="orm:object-type-converter"/>
+        <xsd:element name="struct-converter" type="orm:struct-converter"/>
+      </xsd:choice>
+      <xsd:element name="table-generator" type="orm:table-generator" 
+                   minOccurs="0"/>
+      <xsd:element name="sequence-generator" type="orm:sequence-generator"
+                   minOccurs="0"/>
+      <xsd:element name="property" type="orm:property" minOccurs="0" maxOccurs="unbounded"/>
+      <xsd:element name="access-methods" type="orm:access-methods" minOccurs="0"/>
+    </xsd:sequence>
+    <xsd:attribute name="name" type="xsd:string" use="required"/>
+    <xsd:attribute name="access" type="orm:access-type"/>
+    <xsd:attribute name="mutable" type="xsd:boolean"/>
+    <xsd:attribute name="attribute-type" type="xsd:string"/>
+  </xsd:complexType>
+
+<!-- **************************************************** -->
+
+  <xsd:complexType name="id-class">
+    <xsd:annotation>
+      <xsd:documentation>
+
+        @Target({TYPE}) @Retention(RUNTIME)
+        public @interface IdClass {
+          Class value();
+        }
+
+      </xsd:documentation>
+    </xsd:annotation>
+    <xsd:attribute name="class" type="xsd:string" use="required"/>
+  </xsd:complexType>
+
+<!-- **************************************************** -->
+
+  <xsd:simpleType name="id-validation">
+    <xsd:annotation>
+      <xsd:documentation>
+
+        /** 
+         * The IdValidation enum determines the type value that are valid for an Id.
+         * By default null is not allowed, and 0 is not allow for singleton ids of long or int type.
+         * The default value is ZERO for singleton ids, and NULL for composite ids.
+         * This can be set using the @PrimaryKey annotation, or ClassDescriptor API.
+         * 
+         * @see PrimaryKey
+         * @see org.eclipse.persistence.descriptors.ClassDescriptor#setIdValidation(IdValidation)
+         * @author James Sutherland
+         * @since EclipseLink 1.0 
+         */ 
+        public enum IdValidation {
+            /**
+             * Only null is not allowed as an id value, 0 is allowed.
+             */
+            NULL,
+
+            /**
+             * null and 0 are not allowed, (only int and long).
+             */
+            ZERO,
+
+            /**
+             * No id validation is done.
+             */
+            NONE
+        }
+
+      </xsd:documentation>
+    </xsd:annotation>
+
+    <xsd:restriction base="xsd:token">
+      <xsd:enumeration value="NULL"/>
+      <xsd:enumeration value="ZERO"/>
+      <xsd:enumeration value="NONE"/>
+    </xsd:restriction>
+  </xsd:simpleType>
+
+  <xsd:simpleType name="cache-key-type">
+    <xsd:annotation>
+      <xsd:documentation>
+            
+            /**
+             * Configures what type of Id value is used to store the object in the cache.
+             * This can either be the basic Id value for simple singleton Ids,
+             * or an optimized CacheKey type.
+             * 
+             * @see PrimaryKey#cacheKeyType()
+             * @see ClassDescriptor#setCacheKeyType(CacheKeyType)
+             * @author James Sutherland
+             * @since EclipseLink 2.1
+             */
+            public enum CacheKeyType {
+                /**
+                 * This can only be used for simple singleton Ids, such as long/int/String.
+                 * This is the default for simple singleton Ids.
+                 */
+                ID_VALUE,
+            
+                /**
+                 * Optimized cache key type that allows composite and complex values.
+                 * This is the default for composite or complex Ids.
+                 */
+                CACHE_KEY,
+            
+                /**
+                 * The cache key type is automatically configured depending on what is optimal for the class.
+                 */
+                AUTO
+            }
+
+      </xsd:documentation>
+    </xsd:annotation>
+
+    <xsd:restriction base="xsd:token">
+      <xsd:enumeration value="ID_VALUE"/>
+      <xsd:enumeration value="CACHE_KEY"/>
+      <xsd:enumeration value="AUTO"/>
+    </xsd:restriction>
+  </xsd:simpleType>
+  
+  <!-- **************************************************** -->
+
+  <xsd:complexType name="inheritance">
+    <xsd:annotation>
+      <xsd:documentation>
+
+        @Target({TYPE}) @Retention(RUNTIME)
+        public @interface Inheritance {
+          InheritanceType strategy() default SINGLE_TABLE;
+        }
+
+      </xsd:documentation>
+    </xsd:annotation>
+    <xsd:attribute name="strategy" type="orm:inheritance-type"/>
+  </xsd:complexType>
+
+  <!-- **************************************************** -->
+
+  <xsd:simpleType name="inheritance-type">
+    <xsd:annotation>
+      <xsd:documentation>
+
+        public enum InheritanceType
+          { SINGLE_TABLE, JOINED, TABLE_PER_CLASS};
+
+      </xsd:documentation>
+    </xsd:annotation>
+    <xsd:restriction base="xsd:token">
+      <xsd:enumeration value="SINGLE_TABLE"/>
+      <xsd:enumeration value="JOINED"/>
+      <xsd:enumeration value="TABLE_PER_CLASS"/>
+    </xsd:restriction>
+  </xsd:simpleType>
+
+<!-- **************************************************** -->
+
+  <xsd:complexType name="instantiation-copy-policy">
+    <xsd:annotation>
+      <xsd:documentation>
+        /**
+         * An InstantiationCopyPolicy is used to set an 
+         * org.eclipse.persistence.descriptors.copying.InstantiationCopyPolicy 
+         * on an Entity. InstantiationCopyPolicy is the default CopyPolicy in 
+         * EclipseLink and therefore this configuration option is only used to 
+         * override other types of copy policies
+         * 
+         * An InstantiationCopyPolicy should be specified on an Entity, 
+         * MappedSuperclass or Embeddable.
+         * 
+         * Example:
+         * @Entity
+         * @InstantiationCopyPolicy 
+         */
+        public @interface InstantiationCopyPolicy {
+        }
+      </xsd:documentation>
+    </xsd:annotation>
+  </xsd:complexType>
+
+  <!-- **************************************************** -->
+
+  <xsd:complexType name="join-column">
+    <xsd:annotation>
+      <xsd:documentation>
+
+        @Target({METHOD, FIELD}) @Retention(RUNTIME)
+        public @interface JoinColumn {
+          String name() default "";
+          String referencedColumnName() default "";
+          boolean unique() default false;
+          boolean nullable() default true;
+          boolean insertable() default true;
+          boolean updatable() default true;
+          String columnDefinition() default "";
+          String table() default "";
+        }
+
+      </xsd:documentation>
+    </xsd:annotation>
+    <xsd:attribute name="name" type="xsd:string"/>
+    <xsd:attribute name="referenced-column-name" type="xsd:string"/>
+    <xsd:attribute name="unique" type="xsd:boolean"/>
+    <xsd:attribute name="nullable" type="xsd:boolean"/>
+    <xsd:attribute name="insertable" type="xsd:boolean"/>
+    <xsd:attribute name="updatable" type="xsd:boolean"/>
+    <xsd:attribute name="column-definition" type="xsd:string"/>
+    <xsd:attribute name="table" type="xsd:string"/>
+  </xsd:complexType>
+
+<!-- **************************************************** -->
+
+  <xsd:simpleType name="join-fetch-type">
+    <xsd:annotation>
+      <xsd:documentation>
+
+        public enum JoinFetchType {
+        /**
+         * An inner join is used to fetch the related object.
+         * This does not allow for null/empty values.
+         */
+        INNER,
+
+        /**
+         * An inner join is used to fetch the related object.
+         * This allows for null/empty values.
+         */
+        OUTER,
+      }
+
+      </xsd:documentation>
+    </xsd:annotation>
+    <xsd:restriction base="xsd:token">
+      <xsd:enumeration value="INNER"/>
+      <xsd:enumeration value="OUTER"/>
+    </xsd:restriction>
+  </xsd:simpleType>
+
+<!-- **************************************************** -->
+
+  <xsd:simpleType name="batch-fetch-type">
+    <xsd:annotation>
+      <xsd:documentation>
+            public enum BatchFetchType {
+                /**
+                 * This is the default form of batch reading.
+                 * The original query's selection criteria is joined with the batch query.
+                 */
+                JOIN,
+            
+                /**
+                 * This uses an SQL EXISTS and a sub-select in the batch query instead of a join.
+                 * This has the advantage of not requiring an SQL DISTINCT which can have issues
+                 * with LOBs, or may be more efficient for some types of queries or on some databases.
+                 */
+                EXISTS,
+            
+                /**
+                 * This uses an SQL IN clause in the batch query passing in the source object Ids.
+                 * This has the advantage of only selecting the objects not already contained in the cache,
+                 * and can work better with cursors, or if joins cannot be used.
+                 * This may only work for singleton Ids on some databases.
+                 */
+                IN    
+            }
+
+      </xsd:documentation>
+    </xsd:annotation>
+    <xsd:restriction base="xsd:token">
+      <xsd:enumeration value="JOIN"/>
+      <xsd:enumeration value="EXISTS"/>
+      <xsd:enumeration value="IN"/>
+    </xsd:restriction>
+  </xsd:simpleType>
+  
+  <!-- **************************************************** -->
+
+  <xsd:complexType name="join-table">
+    <xsd:annotation>
+      <xsd:documentation>
+
+        @Target({METHOD, FIELD}) @Retention(RUNTIME)
+        public @interface JoinTable {
+          String name() default "";
+          String catalog() default "";
+          String schema() default "";
+          JoinColumn[] joinColumns() default {};
+          JoinColumn[] inverseJoinColumns() default {};
+          UniqueConstraint[] uniqueConstraints() default {};
+        }
+
+      </xsd:documentation>
+    </xsd:annotation>
+    <xsd:sequence>
+      <xsd:element name="join-column" type="orm:join-column" 
+                   minOccurs="0" maxOccurs="unbounded"/>
+      <xsd:element name="inverse-join-column" type="orm:join-column" 
+                   minOccurs="0" maxOccurs="unbounded"/>
+      <xsd:element name="unique-constraint" type="orm:unique-constraint" 
+                   minOccurs="0" maxOccurs="unbounded"/>
+    </xsd:sequence>
+    <xsd:attribute name="name" type="xsd:string"/>
+    <xsd:attribute name="catalog" type="xsd:string"/>
+    <xsd:attribute name="schema" type="xsd:string"/>
+  </xsd:complexType>
+
+<!-- **************************************************** -->
+
+  <xsd:complexType name="lob">
+    <xsd:annotation>
+      <xsd:documentation>
+
+        @Target({METHOD, FIELD}) @Retention(RUNTIME)
+        public @interface Lob {}
+
+      </xsd:documentation>
+    </xsd:annotation>
+  </xsd:complexType>
+
+<!-- **************************************************** -->
+
+  <xsd:simpleType name="lock-mode-type">
+    <xsd:annotation>
+      <xsd:documentation>
+
+        public enum LockModeType { READ, WRITE, OPTIMISTIC, OPTIMISTIC_FORCE_INCREMENT, PESSIMISTIC_READ, PESSIMISTIC_WRITE, PESSIMISTIC_FORCE_INCREMENT, NONE};
+
+      </xsd:documentation>
+    </xsd:annotation>
+    <xsd:restriction base="xsd:token">
+      <xsd:enumeration value="READ"/>
+      <xsd:enumeration value="WRITE"/>
+      <xsd:enumeration value="OPTIMISTIC"/>
+      <xsd:enumeration value="OPTIMISTIC_FORCE_INCREMENT"/>
+      <xsd:enumeration value="PESSIMISTIC_READ"/>
+      <xsd:enumeration value="PESSIMISTIC_WRITE"/>
+      <xsd:enumeration value="PESSIMISTIC_FORCE_INCREMENT"/>
+      <xsd:enumeration value="NONE"/>
+
+    </xsd:restriction>
+  </xsd:simpleType>
+
+<!-- **************************************************** -->
+
+<xsd:complexType name="many-to-many">
+    <xsd:annotation>
+      <xsd:documentation>
+
+        @Target({METHOD, FIELD}) @Retention(RUNTIME)
+        public @interface ManyToMany {
+          Class targetEntity() default void.class;
+          CascadeType[] cascade() default {};
+          FetchType fetch() default LAZY;
+          String mappedBy() default "";
+        }
+
+      </xsd:documentation>
+    </xsd:annotation>
+    <xsd:sequence>
+      <xsd:choice>
+        <xsd:element name="order-by" type="orm:order-by"
+                   minOccurs="0"/>
+        <xsd:element name="order-column" type="orm:order-column"
+                   minOccurs="0"/>
+      </xsd:choice>
+      <xsd:choice>
+        <xsd:element name="map-key" type="orm:map-key"
+                   minOccurs="0"/>
+        <xsd:sequence>
+          <xsd:element name="map-key-class" type="orm:map-key-class"
+                   minOccurs="0"/>
+          <xsd:choice>
+            <xsd:element name="map-key-temporal"
+                         type="orm:temporal"
+                         minOccurs="0"/>
+            <xsd:element name="map-key-enumerated"
+                         type="orm:enumerated"
+                         minOccurs="0"/>
+            <xsd:element name="map-key-convert" type="xsd:string" minOccurs="0"/>
+            <xsd:choice>
+            <xsd:element name="map-key-attribute-override"
+                         type="orm:attribute-override"
+                         minOccurs="0" maxOccurs="unbounded"/>
+            <xsd:element name="map-key-association-override" type="orm:association-override" minOccurs="0" maxOccurs="unbounded"/>
+            </xsd:choice>
+          </xsd:choice>
+          <xsd:choice>
+            <xsd:element name="map-key-column" type="orm:map-key-column"
+                   minOccurs="0"/>
+            <xsd:element name="map-key-join-column"
+                   type="orm:map-key-join-column"
+                   minOccurs="0" maxOccurs="unbounded"/>
+          </xsd:choice>
+        </xsd:sequence>
+      </xsd:choice>
+      <xsd:choice minOccurs="0" maxOccurs="1">
+        <xsd:element name="converter" type="orm:converter"/>
+        <xsd:element name="type-converter" type="orm:type-converter"/>
+        <xsd:element name="object-type-converter" type="orm:object-type-converter"/>
+        <xsd:element name="struct-converter" type="orm:struct-converter"/>
+      </xsd:choice>
+      <xsd:element name="join-table" type="orm:join-table"
+                   minOccurs="0"/>
+      <xsd:element name="cascade" type="orm:cascade-type"
+                   minOccurs="0"/>
+      <xsd:element name="join-fetch" type="orm:join-fetch-type" minOccurs="0"/>
+      <xsd:element name="batch-fetch" type="orm:batch-fetch" minOccurs="0"/>
+      <xsd:element name="property" type="orm:property" minOccurs="0" maxOccurs="unbounded"/>
+      <xsd:element name="access-methods" type="orm:access-methods" minOccurs="0"/>
+    </xsd:sequence>
+    <xsd:attribute name="name" type="xsd:string" use="required"/>
+    <xsd:attribute name="target-entity" type="xsd:string"/>
+    <xsd:attribute name="fetch" type="orm:fetch-type"/>
+    <xsd:attribute name="access" type="orm:access-type"/>
+    <xsd:attribute name="mapped-by" type="xsd:string"/>
+    <xsd:attribute name="attribute-type" type="xsd:string"/>
+  </xsd:complexType>
+
+<!-- **************************************************** -->
+
+  <xsd:complexType name="many-to-one">
+    <xsd:annotation>
+      <xsd:documentation>
+
+        @Target({METHOD, FIELD}) @Retention(RUNTIME)
+        public @interface ManyToOne {
+          Class targetEntity() default void.class;
+          CascadeType[] cascade() default {};
+          FetchType fetch() default EAGER;
+          boolean optional() default true;
+        }
+
+      </xsd:documentation>
+    </xsd:annotation>
+    <xsd:sequence>
+      <xsd:choice>       
+        <xsd:element name="join-column" type="orm:join-column" 
+                     minOccurs="0" maxOccurs="unbounded"/>
+        <xsd:element name="join-table" type="orm:join-table" 
+                     minOccurs="0"/>
+      </xsd:choice>
+      <xsd:element name="cascade" type="orm:cascade-type" 
+                   minOccurs="0"/>
+      <xsd:element name="join-fetch" type="orm:join-fetch-type" minOccurs="0"/>
+      <xsd:element name="batch-fetch" type="orm:batch-fetch" minOccurs="0"/>
+      <xsd:element name="property" type="orm:property" minOccurs="0" maxOccurs="unbounded"/>
+      <xsd:element name="access-methods" type="orm:access-methods" minOccurs="0"/>
+    </xsd:sequence>
+    <xsd:attribute name="name" type="xsd:string" use="required"/>
+    <xsd:attribute name="target-entity" type="xsd:string"/>
+    <xsd:attribute name="fetch" type="orm:fetch-type"/>
+    <xsd:attribute name="optional" type="xsd:boolean"/>
+    <xsd:attribute name="access" type="orm:access-type"/>
+    <xsd:attribute name="maps-id" type="xsd:string"/>
+    <xsd:attribute name="id" type="xsd:boolean"/>
+  </xsd:complexType>
+
+<!-- **************************************************** -->
+
+  <xsd:complexType name="map-key">
+    <xsd:annotation>
+      <xsd:documentation>
+
+        @Target({METHOD, FIELD}) @Retention(RUNTIME)
+        public @interface MapKey {
+          String name() default "";
+        }
+
+      </xsd:documentation>
+    </xsd:annotation>
+    <xsd:attribute name="name" type="xsd:string"/>
+  </xsd:complexType>
+
+<!-- **************************************************** -->
+
+  <xsd:complexType name="map-key-class">
+    <xsd:annotation>
+      <xsd:documentation>
+
+        @Target({METHOD, FIELD}) @Retention(RUNTIME)
+        public @interface MapKeyClass {
+          Class value();
+        }
+
+      </xsd:documentation>
+    </xsd:annotation>
+    <xsd:attribute name="class" type="xsd:string" use="required"/>
+  </xsd:complexType>
+
+<!-- **************************************************** -->
+
+  <xsd:complexType name="map-key-column">
+    <xsd:annotation>
+      <xsd:documentation>
+
+        @Target({METHOD, FIELD}) @Retention(RUNTIME)
+        public @interface MapKeyColumn {
+          String name() default "";
+          boolean unique() default false;
+          boolean nullable() default false;
+          boolean insertable() default true;
+          boolean updatable() default true;
+          String columnDefinition() default "";
+          String table() default "";
+          int length() default 255;
+          int precision() default 0; // decimal precision
+          int scale() default 0; // decimal scale
+        }
+
+      </xsd:documentation>
+    </xsd:annotation>
+    <xsd:attribute name="name" type="xsd:string"/>
+    <xsd:attribute name="unique" type="xsd:boolean"/>
+    <xsd:attribute name="nullable" type="xsd:boolean"/>
+    <xsd:attribute name="insertable" type="xsd:boolean"/>
+    <xsd:attribute name="updatable" type="xsd:boolean"/>
+    <xsd:attribute name="column-definition" type="xsd:string"/>
+    <xsd:attribute name="table" type="xsd:string"/>
+    <xsd:attribute name="length" type="xsd:int"/>
+    <xsd:attribute name="precision" type="xsd:int"/>
+    <xsd:attribute name="scale" type="xsd:int"/>
+  </xsd:complexType>
+
+<!-- **************************************************** -->
+
+  <xsd:complexType name="map-key-join-column">
+    <xsd:annotation>
+      <xsd:documentation>
+
+        @Target({METHOD, FIELD}) @Retention(RUNTIME)
+        public @interface MapKeyJoinColumn {
+          String name() default "";
+          String referencedColumnName() default "";
+          boolean unique() default false;
+          boolean nullable() default false;
+          boolean insertable() default true;
+          boolean updatable() default true;
+          String columnDefinition() default "";
+          String table() default "";
+        }
+
+      </xsd:documentation>
+    </xsd:annotation>
+    <xsd:attribute name="name" type="xsd:string"/>
+    <xsd:attribute name="referenced-column-name" type="xsd:string"/>
+    <xsd:attribute name="unique" type="xsd:boolean"/>
+    <xsd:attribute name="nullable" type="xsd:boolean"/>
+    <xsd:attribute name="insertable" type="xsd:boolean"/>
+    <xsd:attribute name="updatable" type="xsd:boolean"/>
+    <xsd:attribute name="column-definition" type="xsd:string"/>
+    <xsd:attribute name="table" type="xsd:string"/>
+  </xsd:complexType>
+
+
+<!-- **************************************************** -->
+
+  <xsd:complexType name="mapped-superclass">
+    <xsd:annotation>
+      <xsd:documentation>
+
+        Defines the settings and mappings for a mapped superclass. Is 
+        allowed to be sparsely populated and used in conjunction with 
+        the annotations. Alternatively, the metadata-complete attribute 
+        can be used to indicate that no annotations are to be processed 
+        If this is the case then the defaulting rules will be recursively 
+        applied.
+
+        @Target(TYPE) @Retention(RUNTIME)
+        public @interface MappedSuperclass{}
+
+      </xsd:documentation>
+    </xsd:annotation>
+    <xsd:sequence>
+      <xsd:element name="description" type="xsd:string" minOccurs="0"/>
+      <xsd:element name="access-methods" type="orm:access-methods" minOccurs="0"/>
+      <xsd:element name="customizer" type="orm:customizer" minOccurs="0"/>
+      <xsd:element name="change-tracking" type="orm:change-tracking" minOccurs="0"/>
+      <xsd:element name="id-class" type="orm:id-class" minOccurs="0"/>
+      <xsd:element name="primary-key" type="orm:primary-key" minOccurs="0"/>
+      <xsd:element name="optimistic-locking" type="orm:optimistic-locking" minOccurs="0"/>
+      <xsd:element name="cache" type="orm:cache" minOccurs="0"/>
+      <xsd:element name="cache-interceptor" type="orm:cache-interceptor" minOccurs="0"/>
+      <xsd:element name="fetch-group" type="orm:fetch-group" minOccurs="0" maxOccurs="unbounded"/>
+      <xsd:element name="converter" type="orm:converter" minOccurs="0" maxOccurs="unbounded"/>
+      <xsd:element name="type-converter" type="orm:type-converter" minOccurs="0" maxOccurs="unbounded"/>
+      <xsd:element name="object-type-converter" type="orm:object-type-converter" minOccurs="0" maxOccurs="unbounded"/>
+      <xsd:element name="struct-converter" type="orm:struct-converter" minOccurs="0" maxOccurs="unbounded"/>
+      <xsd:element name="copy-policy" type="orm:copy-policy" minOccurs="0" maxOccurs="1"/>
+      <xsd:element name="instantiation-copy-policy" type="orm:instantiation-copy-policy" minOccurs="0" maxOccurs="1"/>
+      <xsd:element name="clone-copy-policy" type="orm:clone-copy-policy" minOccurs="0" maxOccurs="1"/>
+      <xsd:element name="sequence-generator" type="orm:sequence-generator" 
+                   minOccurs="0"/>
+      <xsd:element name="table-generator" type="orm:table-generator" 
+                   minOccurs="0"/>
+      <xsd:element name="named-query" type="orm:named-query" 
+                   minOccurs="0" maxOccurs="unbounded"/>
+      <xsd:element name="named-native-query" type="orm:named-native-query" 
+                   minOccurs="0" maxOccurs="unbounded"/>
+      <xsd:element name="named-stored-procedure-query" type="orm:named-stored-procedure-query" minOccurs="0" maxOccurs="unbounded"/>             
+      <xsd:element name="sql-result-set-mapping" 
+                   type="orm:sql-result-set-mapping" 
+                   minOccurs="0" maxOccurs="unbounded"/>
+      <xsd:element name="query-redirectors" type="orm:query-redirectors" minOccurs="0" maxOccurs="1"/>
+      <xsd:element name="exclude-default-listeners" type="orm:emptyType" 
+                   minOccurs="0"/>
+      <xsd:element name="exclude-superclass-listeners" type="orm:emptyType" 
+                   minOccurs="0"/>
+      <xsd:element name="entity-listeners" type="orm:entity-listeners" 
+                   minOccurs="0"/>
+      <xsd:element name="pre-persist" type="orm:pre-persist" minOccurs="0"/>
+      <xsd:element name="post-persist" type="orm:post-persist" 
+                   minOccurs="0"/>
+      <xsd:element name="pre-remove" type="orm:pre-remove" minOccurs="0"/>
+      <xsd:element name="post-remove" type="orm:post-remove" minOccurs="0"/>
+      <xsd:element name="pre-update" type="orm:pre-update" minOccurs="0"/>
+      <xsd:element name="post-update" type="orm:post-update" minOccurs="0"/>
+      <xsd:element name="post-load" type="orm:post-load" minOccurs="0"/>
+      <xsd:element name="property" type="orm:property" minOccurs="0" maxOccurs="unbounded"/>
+      <xsd:element name="attribute-override" type="orm:attribute-override" 
+                   minOccurs="0" maxOccurs="unbounded"/>
+      <xsd:element name="association-override" 
+                   type="orm:association-override"
+                   minOccurs="0" maxOccurs="unbounded"/>
+      <xsd:element name="attributes" type="orm:attributes" minOccurs="0"/>
+    </xsd:sequence>
+    <xsd:attribute name="class" type="xsd:string" use="required"/>
+    <xsd:attribute name="parent-class" type="xsd:string"/>
+    <xsd:attribute name="access" type="orm:access-type"/>
+    <xsd:attribute name="cacheable" type="xsd:boolean"/>
+    <xsd:attribute name="metadata-complete" type="xsd:boolean"/>
+    <xsd:attribute name="read-only" type="xsd:boolean"/>
+    <xsd:attribute name="existence-checking" type="orm:existence-type"/>
+    <xsd:attribute name="exclude-default-mappings" type="xsd:boolean"/>
+  </xsd:complexType>
+
+<!-- **************************************************** -->
+
+  <xsd:complexType name="named-native-query">
+    <xsd:annotation>
+      <xsd:documentation>
+
+        @Target({TYPE}) @Retention(RUNTIME)
+        public @interface NamedNativeQuery {
+          String name();
+          String query();
+          QueryHint[] hints() default {};
+          Class resultClass() default void.class;
+          String resultSetMapping() default ""; //named SqlResultSetMapping
+        }
+
+      </xsd:documentation>
+    </xsd:annotation>
+    <xsd:sequence>
+      <xsd:element name="description" type="xsd:string" minOccurs="0"/>
+      <xsd:element name="query" type="xsd:string"/>
+      <xsd:element name="hint" type="orm:query-hint" 
+                   minOccurs="0" maxOccurs="unbounded"/>
+    </xsd:sequence>
+    <xsd:attribute name="name" type="xsd:string" use="required"/>
+    <xsd:attribute name="result-class" type="xsd:string"/>
+    <xsd:attribute name="result-set-mapping" type="xsd:string"/>
+  </xsd:complexType>
+
+<!-- **************************************************** -->
+
+  <xsd:complexType name="named-query">
+    <xsd:annotation>
+      <xsd:documentation>
+
+        @Target({TYPE}) @Retention(RUNTIME)
+        public @interface NamedQuery {
+          String name();
+          String query();
+          LockModeType lockMode() default NONE;
+          QueryHint[] hints() default {};
+        }
+
+      </xsd:documentation>
+    </xsd:annotation>
+    <xsd:sequence>
+      <xsd:element name="description" type="xsd:string" minOccurs="0"/>
+      <xsd:element name="query" type="xsd:string"/>
+      <xsd:element name="lock-mode" type="orm:lock-mode-type" minOccurs="0"/>
+      <xsd:element name="hint" type="orm:query-hint" 
+                   minOccurs="0" maxOccurs="unbounded"/>
+    </xsd:sequence>
+    <xsd:attribute name="name" type="xsd:string" use="required"/>
+</xsd:complexType>
+
+<!-- **************************************************** -->
+
+  <xsd:complexType name="named-stored-procedure-query">
+    <xsd:annotation>
+      <xsd:documentation>
+
+        /** 
+         * A NamedStoredProcedureQuery annotation allows the definition of 
+         * queries that call stored procedures as named queries.
+         * A NamedStoredProcedureQuery annotation may be defined on an Entity or
+         * MappedSuperclass. 
+         */ 
+        @Target({TYPE})
+        @Retention(RUNTIME)
+        public @interface NamedStoredProcedureQuery {
+          /**
+           * (Required) Unique name that references this stored procedure query.
+           */
+          String name();
+
+          /**
+           * (Optional) Query hints.
+           */
+          QueryHint[] hints() default {};
+
+          /**
+           * (Optional) Refers to the class of the result.
+           */
+          Class resultClass() default void.class;
+
+          /**
+           * (Optional) The name of the SQLResultMapping.
+           */
+          String resultSetMapping() default "";
+
+          /**
+           * (Required) The name of the stored procedure.
+           */
+          String procedureName();
+
+          /**
+           * (Optional) Whether the query should return a result set.
+           */
+          boolean returnsResultSet() default true; 
+
+          /**
+           * (Optional) Defines arguments to the stored procedure.
+           */
+          StoredProcedureParameter[] parameters() default {};
+        }
+
+      </xsd:documentation>
+    </xsd:annotation>
+    <xsd:sequence>
+      <xsd:element name="hint" type="orm:query-hint" minOccurs="0" maxOccurs="unbounded"/>
+      <xsd:element name="parameter" type="orm:stored-procedure-parameter" minOccurs="0" maxOccurs="unbounded"/>
+    </xsd:sequence>
+    <xsd:attribute name="name" type="xsd:string" use="required"/>
+    <xsd:attribute name="result-class" type="xsd:string"/>
+    <xsd:attribute name="result-set-mapping" type="xsd:string"/>
+    <xsd:attribute name="procedure-name" type="xsd:string" use="required"/>
+    <xsd:attribute name="returns-result-set" type="xsd:boolean"/>
+  </xsd:complexType>
+
+  <!-- **************************************************** -->
+
+  <xsd:complexType name="object-type-converter">
+    <xsd:annotation>
+      <xsd:documentation>
+
+        @Target({TYPE, METHOD, FIELD})
+        @Retention(RUNTIME)
+        public @interface ObjectTypeConverter {
+          /**
+           * (Required) Name this converter. The name should be unique
+           * across the whole persistence unit.
+           */
+          String name();
+
+          /**
+           * (Optional) Specify the type stored on the database. The
+           * default is inferred from the type of the persistence
+           * field or property.
+           */
+          Class dataType() default void.class;
+
+          /**
+           * (Optional) Specify the type stored on the entity. The
+           * default is inferred from the type of the persistent 
+           * field or property.
+           */
+          Class objectType() default void.class;
+
+          /**
+           * (Required) Specify the conversion values to be used 
+           * with the object converter.
+           */
+          ConversionValue[] conversionValues();
+
+           /**
+            * (Optional) Specify a default object value. Used for 
+            * legacy data if the data value is missing.
+            */
+           String defaultObjectValue() default "";
+         }
+
+      </xsd:documentation>
+    </xsd:annotation>
+    <xsd:sequence>
+      <xsd:element name="conversion-value" type="orm:conversion-value" minOccurs="1" maxOccurs="unbounded"/>
+      <xsd:element name="default-object-value" type="xsd:string" minOccurs="0"/>
+    </xsd:sequence>
+    <xsd:attribute name="name" type="xsd:string" use="required"/>
+    <xsd:attribute name="data-type" type="xsd:string"/>
+    <xsd:attribute name="object-type" type="xsd:string"/>
+  </xsd:complexType>
+
+  <!-- **************************************************** -->
+
+<xsd:complexType name="one-to-many">
+    <xsd:annotation>
+      <xsd:documentation>
+
+        @Target({METHOD, FIELD}) @Retention(RUNTIME)
+        public @interface OneToMany {
+          Class targetEntity() default void.class;
+          CascadeType[] cascade() default {};
+          FetchType fetch() default LAZY;
+          String mappedBy() default "";
+        }
+
+      </xsd:documentation>
+    </xsd:annotation>
+    <xsd:sequence>
+      <xsd:choice>
+        <xsd:element name="order-by" type="orm:order-by"
+                   minOccurs="0"/>
+        <xsd:element name="order-column" type="orm:order-column"
+                   minOccurs="0"/>
+      </xsd:choice>
+      <xsd:choice>
+        <xsd:element name="map-key" type="orm:map-key"
+                   minOccurs="0"/>
+        <xsd:sequence>
+          <xsd:element name="map-key-class" type="orm:map-key-class"
+                   minOccurs="0"/>
+          <xsd:choice>
+            <xsd:element name="map-key-temporal"
+                         type="orm:temporal"
+                         minOccurs="0"/>
+            <xsd:element name="map-key-enumerated"
+                         type="orm:enumerated"
+                         minOccurs="0"/>
+            <xsd:element name="map-key-convert" type="xsd:string" minOccurs="0"/>
+            <xsd:choice>
+            <xsd:element name="map-key-attribute-override"
+                         type="orm:attribute-override"
+                         minOccurs="0" maxOccurs="unbounded"/>
+              <xsd:element name="map-key-association-override" type="orm:association-override" minOccurs="0" maxOccurs="unbounded"/>
+            </xsd:choice>
+          </xsd:choice>
+          <xsd:choice>
+            <xsd:element name="map-key-column" type="orm:map-key-column"
+                   minOccurs="0"/>
+            <xsd:element name="map-key-join-column"
+                   type="orm:map-key-join-column"
+                   minOccurs="0" maxOccurs="unbounded"/>
+          </xsd:choice>
+       </xsd:sequence>
+     </xsd:choice>
+     <xsd:choice minOccurs="0" maxOccurs="1">
+        <xsd:element name="converter" type="orm:converter"/>
+        <xsd:element name="type-converter" type="orm:type-converter"/>
+        <xsd:element name="object-type-converter" type="orm:object-type-converter"/>
+        <xsd:element name="struct-converter" type="orm:struct-converter"/>
+      </xsd:choice>
+      <xsd:choice>
+        <xsd:element name="join-table" type="orm:join-table"
+                     minOccurs="0"/>
+        <xsd:element name="join-column" type="orm:join-column"
+                     minOccurs="0" maxOccurs="unbounded"/>
+      </xsd:choice>
+      <xsd:element name="cascade" type="orm:cascade-type"
+                   minOccurs="0"/>
+     <xsd:element name="private-owned" type="orm:emptyType" minOccurs="0"/>
+     <xsd:element name="join-fetch" type="orm:join-fetch-type" minOccurs="0"/>
+     <xsd:element name="batch-fetch" type="orm:batch-fetch" minOccurs="0"/>
+     <xsd:element name="property" type="orm:property" minOccurs="0" maxOccurs="unbounded"/>
+     <xsd:element name="access-methods" type="orm:access-methods" minOccurs="0"/>
+    </xsd:sequence>
+    <xsd:attribute name="name" type="xsd:string" use="required"/>
+    <xsd:attribute name="target-entity" type="xsd:string"/>
+    <xsd:attribute name="fetch" type="orm:fetch-type"/>
+    <xsd:attribute name="access" type="orm:access-type"/>
+    <xsd:attribute name="mapped-by" type="xsd:string"/>
+    <xsd:attribute name="orphan-removal" type="xsd:boolean"/>
+    <xsd:attribute name="attribute-type" type="xsd:string"/>
+  </xsd:complexType>
+
+<!-- **************************************************** -->
+
+  <xsd:complexType name="one-to-one">
+    <xsd:annotation>
+      <xsd:documentation>
+
+        @Target({METHOD, FIELD}) @Retention(RUNTIME)
+        public @interface OneToOne {
+          Class targetEntity() default void.class;
+          CascadeType[] cascade() default {};
+          FetchType fetch() default EAGER;
+          boolean optional() default true;
+          String mappedBy() default "";
+          boolean orphanRemoval() default false;
+        }
+
+      </xsd:documentation>
+    </xsd:annotation>
+    <xsd:sequence>
+      <xsd:choice>
+        <xsd:element name="primary-key-join-column" 
+                     type="orm:primary-key-join-column" 
+                     minOccurs="0" maxOccurs="unbounded"/>
+        <xsd:element name="join-column" type="orm:join-column" 
+                     minOccurs="0" maxOccurs="unbounded"/>
+        <xsd:element name="join-table" type="orm:join-table" 
+                     minOccurs="0"/>
+      </xsd:choice>
+      <xsd:element name="cascade" type="orm:cascade-type" 
+                   minOccurs="0"/>
+      <xsd:element name="private-owned" type="orm:emptyType" minOccurs="0"/>
+      <xsd:element name="join-fetch" type="orm:join-fetch-type" minOccurs="0"/>
+      <xsd:element name="batch-fetch" type="orm:batch-fetch" minOccurs="0"/>
+      <xsd:element name="property" type="orm:property" minOccurs="0" maxOccurs="unbounded"/>
+      <xsd:element name="access-methods" type="orm:access-methods" minOccurs="0"/>
+    </xsd:sequence>
+    <xsd:attribute name="name" type="xsd:string" use="required"/>
+    <xsd:attribute name="target-entity" type="xsd:string"/>
+    <xsd:attribute name="fetch" type="orm:fetch-type"/>
+    <xsd:attribute name="optional" type="xsd:boolean"/>
+    <xsd:attribute name="access" type="orm:access-type"/>
+    <xsd:attribute name="mapped-by" type="xsd:string"/>
+    <xsd:attribute name="orphan-removal" type="xsd:boolean"/>
+    <xsd:attribute name="maps-id" type="xsd:string"/>
+    <xsd:attribute name="id" type="xsd:boolean"/>
+</xsd:complexType>
+
+<!-- **************************************************** -->
+
+  <xsd:complexType name="optimistic-locking">
+    <xsd:annotation>
+      <xsd:documentation>
+
+        /** 
+         * An optimistic-locking element is used to specify the type of 
+         * optimistic locking EclipseLink should use when updating or deleting 
+         * entities. An optimistic-locking specification is supported on
+         * an entity or mapped-superclass.
+         * 
+         * It is used in conjunction with the optimistic-locking-type.
+         */ 
+        @Target({TYPE})
+        @Retention(RUNTIME)
+        public @interface OptimisticLocking {
+          /**
+           * (Optional) The type of optimistic locking policy to use.
+           */
+          OptimisticLockingType type() default VERSION_COLUMN;
+
+          /**
+           * (Optional) For an optimistic locking policy of type 
+           * SELECTED_COLUMNS, this annotation member becomes a (Required) 
+           * field.
+           */
+          Column[] selectedColumns() default {};
+
+          /**
+           * (Optional) Specify where the optimistic locking policy should 
+           * cascade lock. Currently only supported with VERSION_COLUMN locking.
+           */
+          boolean cascade() default false;
+        }
+
+      </xsd:documentation>
+    </xsd:annotation>
+    <xsd:sequence>
+      <xsd:element name="selected-column" type="orm:column" minOccurs="0" maxOccurs="unbounded"/>    
+    </xsd:sequence>
+    <xsd:attribute name="type" type="orm:optimistic-locking-type"/>
+    <xsd:attribute name="cascade" type="xsd:boolean"/>
+  </xsd:complexType>
+
+  <!-- **************************************************** -->
+
+  <xsd:simpleType name="optimistic-locking-type">
+    <xsd:annotation>
+      <xsd:documentation>
+
+        /** 
+         * A simple type that is used within an optimistic-locking 
+         * specification to specify the type of optimistic-locking that
+         * EclipseLink should use when updating or deleting entities.
+         */
+        public enum OptimisticLockingType {
+          /**
+           * Using this type of locking policy compares every field in the table
+           * in the WHERE clause when doing an update or a delete. If any field
+           * has been changed, an optimistic locking exception will be thrown.
+           */
+          ALL_COLUMNS,
+
+          /**
+           * Using this type of locking policy compares only the changed fields
+           * in the WHERE clause when doing an update. If any field has been
+           * changed, an optimistic locking exception will be thrown. A delete
+           * will only compare the primary key.
+           */
+          CHANGED_COLUMNS,
+
+          /**
+           * Using this type of locking compares selected fields in the WHERE
+           * clause when doing an update or a delete. If any field has been
+           * changed, an optimistic locking exception will be thrown. Note that
+           * the fields specified must be mapped and not be primary keys.
+           */
+          SELECTED_COLUMNS,
+
+          /**
+           * Using this type of locking policy compares a single version number
+           * in the where clause when doing an update. The version field must be
+           * mapped and not be the primary key.
+           */
+          VERSION_COLUMN
+        }
+
+      </xsd:documentation>
+    </xsd:annotation>
+
+    <xsd:restriction base="xsd:token">
+      <xsd:enumeration value="ALL_COLUMNS"/>
+      <xsd:enumeration value="CHANGED_COLUMNS"/>
+      <xsd:enumeration value="SELECTED_COLUMNS"/>
+      <xsd:enumeration value="VERSION_COLUMN"/>
+    </xsd:restriction>
+  </xsd:simpleType>  
+
+  <!-- **************************************************** -->
+
+  <xsd:simpleType name="order-by">
+    <xsd:annotation>
+      <xsd:documentation>
+
+        @Target({METHOD, FIELD}) @Retention(RUNTIME)
+        public @interface OrderBy {
+          String value() default "";
+        }
+
+      </xsd:documentation>
+    </xsd:annotation>
+    <xsd:restriction base="xsd:string"/>
+  </xsd:simpleType>
+
+<!-- **************************************************** -->
+
+  <xsd:complexType name="order-column">
+    <xsd:annotation>
+      <xsd:documentation>
+
+        @Target({METHOD, FIELD}) @Retention(RUNTIME)
+        public @interface OrderColumn {
+          String name() default "";
+          boolean nullable() default true;
+          boolean insertable() default true;
+          boolean updatable() default true;
+          String columnDefinition() default "";
+         }
+
+      </xsd:documentation>
+    </xsd:annotation>
+    <xsd:attribute name="name" type="xsd:string"/>
+    <xsd:attribute name="nullable" type="xsd:boolean"/>
+    <xsd:attribute name="insertable" type="xsd:boolean"/>
+    <xsd:attribute name="updatable" type="xsd:boolean"/>
+    <xsd:attribute name="column-definition" type="xsd:string"/>
+    <xsd:attribute name="correction-type" type="orm:order-column-correction-type"/>
+  </xsd:complexType>
+
+  <!-- **************************************************** -->
+
+  <xsd:simpleType name="order-column-correction-type">
+    <xsd:annotation>
+      <xsd:documentation>
+
+        public enum OrderCorrectionType {
+          READ,
+          READ_WRITE,
+          EXCEPTION
+        }
+
+      </xsd:documentation>
+    </xsd:annotation>
+    <xsd:restriction base="xsd:token">
+      <xsd:enumeration value="READ"/>
+      <xsd:enumeration value="READ_WRITE"/>
+      <xsd:enumeration value="EXCEPTION"/>
+    </xsd:restriction>
+  </xsd:simpleType>
+
+<!-- **************************************************** -->
+
+  <xsd:complexType name="post-load">
+    <xsd:annotation>
+      <xsd:documentation>
+
+        @Target({METHOD}) @Retention(RUNTIME)
+        public @interface PostLoad {}
+
+      </xsd:documentation>
+    </xsd:annotation>
+    <xsd:sequence>
+      <xsd:element name="description" type="xsd:string" minOccurs="0"/>
+    </xsd:sequence>
+    <xsd:attribute name="method-name" type="xsd:string" use="required"/>
+  </xsd:complexType>
+
+<!-- **************************************************** -->
+
+  <xsd:complexType name="post-persist">
+    <xsd:annotation>
+      <xsd:documentation>
+
+        @Target({METHOD}) @Retention(RUNTIME)
+        public @interface PostPersist {}
+
+      </xsd:documentation>
+    </xsd:annotation>
+    <xsd:sequence>
+      <xsd:element name="description" type="xsd:string" minOccurs="0"/>
+    </xsd:sequence>
+    <xsd:attribute name="method-name" type="xsd:string" use="required"/>
+  </xsd:complexType>
+
+<!-- **************************************************** -->
+
+  <xsd:complexType name="post-remove">
+    <xsd:annotation>
+      <xsd:documentation>
+
+        @Target({METHOD}) @Retention(RUNTIME)
+        public @interface PostRemove {}
+
+      </xsd:documentation>
+    </xsd:annotation>
+    <xsd:sequence>
+      <xsd:element name="description" type="xsd:string" minOccurs="0"/>
+    </xsd:sequence>
+    <xsd:attribute name="method-name" type="xsd:string" use="required"/>
+  </xsd:complexType>
+
+<!-- **************************************************** -->
+
+  <xsd:complexType name="post-update">
+    <xsd:annotation>
+      <xsd:documentation>
+
+        @Target({METHOD}) @Retention(RUNTIME)
+        public @interface PostUpdate {}
+
+      </xsd:documentation>
+    </xsd:annotation>
+    <xsd:sequence>
+      <xsd:element name="description" type="xsd:string" minOccurs="0"/>
+    </xsd:sequence>
+    <xsd:attribute name="method-name" type="xsd:string" use="required"/>
+  </xsd:complexType>
+
+<!-- **************************************************** -->
+
+  <xsd:complexType name="pre-persist">
+    <xsd:annotation>
+      <xsd:documentation>
+
+        @Target({METHOD}) @Retention(RUNTIME)
+        public @interface PrePersist {}
+
+      </xsd:documentation>
+    </xsd:annotation>
+    <xsd:sequence>
+      <xsd:element name="description" type="xsd:string" minOccurs="0"/>
+    </xsd:sequence>
+    <xsd:attribute name="method-name" type="xsd:string" use="required"/>
+  </xsd:complexType>
+
+<!-- **************************************************** -->
+
+  <xsd:complexType name="pre-remove">
+    <xsd:annotation>
+      <xsd:documentation>
+
+        @Target({METHOD}) @Retention(RUNTIME)
+        public @interface PreRemove {}
+
+      </xsd:documentation>
+    </xsd:annotation>
+    <xsd:sequence>
+      <xsd:element name="description" type="xsd:string" minOccurs="0"/>
+    </xsd:sequence>
+    <xsd:attribute name="method-name" type="xsd:string" use="required"/>
+  </xsd:complexType>
+
+<!-- **************************************************** -->
+
+  <xsd:complexType name="pre-update">
+    <xsd:annotation>
+      <xsd:documentation>
+
+        @Target({METHOD}) @Retention(RUNTIME)
+        public @interface PreUpdate {}
+
+      </xsd:documentation>
+    </xsd:annotation>
+    <xsd:sequence>
+      <xsd:element name="description" type="xsd:string" minOccurs="0"/>
+    </xsd:sequence>
+    <xsd:attribute name="method-name" type="xsd:string" use="required"/>
+  </xsd:complexType>
+
+<!-- **************************************************** -->
+
+  <xsd:complexType name="primary-key">
+    <xsd:annotation>
+      <xsd:documentation>
+
+        /**
+         *  The PrimaryKey annotation allows advanced configuration of the Id.
+         *  A validation policy can be given that allows specifying if zero is a valid id value.
+         *  The set of primary key columns can also be specified precisely.
+         * 
+         * @author James Sutherland
+         * @since EclipseLink 1.1
+         */
+        @Target({TYPE})
+        @Retention(RUNTIME)
+        public @interface PrimaryKey {
+          /**
+           * (Optional) Configures what id validation is done.
+           * By default 0 is not a valid id value, this can be used to allow 0 id values.
+           */
+          IdValidation validation() default IdValidation.ZERO; 
+
+          /**
+           * (Optional) Configures what cache key type is used to store the object in the cache.
+           * By default the type is determined by what type is optimal for the class.
+           */
+          CacheKeyType cacheKeyType() default CacheKeyType.AUTO;
+    
+          /**
+           * (Optional) Used to specify the primary key columns directly.
+           * This can be used instead of @Id if the primary key includes a non basic field,
+           * such as a foreign key, or a inheritance discriminator, embedded, or transformation mapped field.
+           */
+          Column[] columns() default {};
+        }
+
+      </xsd:documentation>
+    </xsd:annotation>
+    <xsd:sequence>
+      <xsd:element name="column" type="orm:column" minOccurs="0" maxOccurs="unbounded"/>
+    </xsd:sequence>
+    <xsd:attribute name="validation" type="orm:id-validation"/>
+    <xsd:attribute name="cache-key-type" type="orm:cache-key-type"/>
+  </xsd:complexType>
+
+  <!-- **************************************************** -->
+
+  <xsd:complexType name="primary-key-join-column">
+    <xsd:annotation>
+      <xsd:documentation>
+
+        @Target({TYPE, METHOD, FIELD}) @Retention(RUNTIME)
+        public @interface PrimaryKeyJoinColumn {
+          String name() default "";
+          String referencedColumnName() default "";
+          String columnDefinition() default "";
+        }
+
+      </xsd:documentation>
+    </xsd:annotation>
+    <xsd:attribute name="name" type="xsd:string"/>
+    <xsd:attribute name="referenced-column-name" type="xsd:string"/>
+    <xsd:attribute name="column-definition" type="xsd:string"/>
+  </xsd:complexType>
+
+<!-- **************************************************** -->
+
+  <xsd:complexType name="property">
+    <xsd:annotation>
+      <xsd:documentation>
+
+        A user defined mapping's property.
+        @Target({METHOD, FIELD, TYPE})
+        @Retention(RUNTIME)
+        public @interface Property {
+          /**
+           * Property name.
+           */ 
+          String name();
+
+          /**
+           * String representation of Property value,
+           * converted to an instance of valueType.
+           */ 
+          String value();
+
+          /**
+           * Property value type.
+           * The value converted to valueType by ConversionManager.
+           * If specified must be a simple type that could be handled by 
+           * ConversionManager: 
+           * numerical, boolean, temporal.  
+           */ 
+          Class valueType() default String.class;
+        }
+
+      </xsd:documentation>
+    </xsd:annotation>
+    <xsd:attribute name="name" type="xsd:string" use="required"/>
+    <xsd:attribute name="value" type="xsd:string" use="required"/>
+    <xsd:attribute name="value-type" type="xsd:string"/>
+  </xsd:complexType>
+
+  <!-- **************************************************** -->
+
+  <xsd:complexType name="query-hint">
+    <xsd:annotation>
+      <xsd:documentation>
+
+        @Target({}) @Retention(RUNTIME) 
+        public @interface QueryHint {
+          String name();
+          String value();
+        }
+
+      </xsd:documentation>
+    </xsd:annotation>
+    <xsd:sequence>
+      <xsd:element name="description" type="xsd:string" minOccurs="0"/>
+    </xsd:sequence>
+    <xsd:attribute name="name" type="xsd:string" use="required"/>
+    <xsd:attribute name="value" type="xsd:string" use="required"/>
+  </xsd:complexType>
+
+<!-- **************************************************** -->
+
+  <xsd:complexType name="query-redirectors">
+    <xsd:annotation>
+      <xsd:documentation>
+
+@Target({TYPE}) @Retention(RUNTIME)
+public @interface QueryRedirectors {
+    
+    /**
+     * This AllQueries Query Redirector will be applied to any executing object query
+     * that does not have a more precise redirector (like the 
+     * ReadObjectQuery Redirector) or a redirector set directly on the query.
+     * Query redirectors allow the user to intercept query execution preventing
+     * it or alternately performing some side effect like auditing.
+     * 
+     */
+    Class allQueries() default void.class;
+    
+    /**
+     * A Default ReadAll Query Redirector will be applied to any executing
+     * ReadAllQuery that does not have a redirector set directly on the query.
+     * Query redirectors allow the user to intercept query execution preventing
+     * it or alternately performing some side effect like auditing.
+     * For users executing a JPA Query through the getResultList() API this is the redirector that will be invoked
+     */
+    Class readAll() default void.class;
+    
+    /**
+     * A Default ReadObject Query Redirector will be applied to any executing
+     * ReadObjectQuery that does not have a redirector set directly on the query.
+     * Query redirectors allow the user to intercept query execution preventing
+     * it or alternately performing some side effect like auditing.
+     * For users executing a JPA Query through the getSingleResult() API or EntityManager.find() this is the redirector that will be invoked
+     */
+    Class readObject() default void.class;
+    
+    /**
+     * A Default ReportQuery Redirector will be applied to any executing
+     * ReportQuery that does not have a redirector set directly on the query.
+     * Query redirectors allow the user to intercept query execution preventing
+     * it or alternately performing some side effect like auditing.
+     * For users executing a JPA Query that contains agregate functions or selects multiple entities this is the redirector that will be invoked
+     */
+    Class report() default void.class;
+    
+    /**
+     * A Default Update Query Redirector will be applied to any executing
+     * UpdateObjectQuery or UpdateAllQuery that does not have a redirector set directly on the query.
+     * In EclipseLink an UpdateObjectQuery is executed whenever flushing changes to the datasource.
+     * Query redirectors allow the user to intercept query execution preventing
+     * it or alternately performing some side effect like auditing.
+     */ 
+    Class update() default void.class;
+    
+    /**
+     * A Default Insert Query Redirector will be applied to any executing
+     * InsertObjectQuery that does not have a redirector set directly on the query.
+     * In EclipseLink an InsertObjectQuery is executed when persisting an object to the datasource.
+     * Query redirectors allow the user to intercept query execution preventing
+     * it or alternately performing some side effect like auditing.
+     */
+    Class insert() default void.class;
+    
+    /**
+     * A Default Delete Object Query Redirector will be applied to any executing
+     * DeleteObjectQuery or DeleteAllQuery that does not have a redirector set directly on the query.
+     * Query redirectors allow the user to intercept query execution preventing
+     * it or alternately performing some side effect like auditing.
+     */
+    Class delete() default void.class;
+
+}
+      </xsd:documentation>
+    </xsd:annotation>
+    <xsd:attribute name="all-queries" type="xsd:string"/>
+    <xsd:attribute name="read-all" type="xsd:string"/>
+    <xsd:attribute name="read-object" type="xsd:string"/>
+    <xsd:attribute name="report" type="xsd:string"/>
+    <xsd:attribute name="update" type="xsd:string"/>
+    <xsd:attribute name="insert" type="xsd:string"/>
+    <xsd:attribute name="delete" type="xsd:string"/>
+  </xsd:complexType>
+
+  <!-- **************************************************** -->
+
+  <xsd:complexType name="read-transformer">
+    <xsd:annotation>
+      <xsd:documentation>
+
+        /**
+         * Annotation for org.eclipse.persistence.mappings.TransformationMapping.
+         * Unless the TransformationMapping is write-only, it should have a 
+         * ReadTransformer, it defines transformation of database column(s) 
+         * value(s)into attribute value.
+         *
+         * Also unless it's a read-only mapping, either WriteTransformer 
+         * annotation or WriteTransformers annotation should be specified. Each 
+         * WriteTransformer defines transformation of the attribute value to a 
+         * single database column value (column is specified in the 
+         * WriteTransformer).
+         */
+        @Target({METHOD, FIELD})
+        @Retention(RUNTIME)
+        public @interface ReadTransformer {
+            /**
+             * User-defined class that must implement the 
+             * org.eclipse.persistence.mappings.transformers.AttributeTransformer 
+             * interface. The class will be instantiated, its 
+             * buildAttributeValue will be used to create the value to be 
+             * assigned to the attribute.
+             * Either transformerClass or method must be specified, but not both.
+             */ 
+            Class transformerClass() default void.class;
+
+            /**
+             * The mapped class must have a method with this name which returns 
+             * a value to be assigned to the attribute (not assigns the value to 
+             * the attribute). Either transformerClass or method must be 
+             * specified, but not both.
+             */ 
+            String method() default "";
+        }
+
+      </xsd:documentation>
+    </xsd:annotation>
+    <xsd:attribute name="transformer-class" type="xsd:string"/>
+    <xsd:attribute name="method" type="xsd:string"/>
+  </xsd:complexType>
+
+  <!-- **************************************************** -->
+
+  <xsd:complexType name="return-insert">
+    <xsd:annotation>
+      <xsd:documentation>
+      
+        @Target({METHOD, FIELD})
+        @Retention(RUNTIME)
+        public @interface ReturnInsert {
+            /**
+             * A ReturnInsert annotation allows for INSERT operations to return 
+             * values back into the object being written. This allows for table 
+             * default values, trigger or stored procedures computed values to 
+             * be set back into the object.
+             */
+            boolean returnOnly() default false;
+        }
+
+      </xsd:documentation>
+    </xsd:annotation>
+    <xsd:attribute name="return-only" type="xsd:boolean"/>
+  </xsd:complexType>
+  
+  <!-- **************************************************** -->
+
+  <xsd:complexType name="secondary-table">
+    <xsd:annotation>
+      <xsd:documentation>
+
+        @Target({TYPE}) @Retention(RUNTIME)
+        public @interface SecondaryTable {
+          String name();
+          String catalog() default "";
+          String schema() default "";
+          PrimaryKeyJoinColumn[] pkJoinColumns() default {};
+          UniqueConstraint[] uniqueConstraints() default {};
+         }
+
+      </xsd:documentation>
+    </xsd:annotation>
+    <xsd:sequence>
+       <xsd:element name="primary-key-join-column" 
+                    type="orm:primary-key-join-column" 
+                    minOccurs="0" maxOccurs="unbounded"/>
+       <xsd:element name="unique-constraint" type="orm:unique-constraint" 
+                    minOccurs="0" maxOccurs="unbounded"/>
+    </xsd:sequence>
+    <xsd:attribute name="name" type="xsd:string" use="required"/>
+    <xsd:attribute name="catalog" type="xsd:string"/>
+    <xsd:attribute name="schema" type="xsd:string"/>
+  </xsd:complexType>
+
+<!-- **************************************************** -->
+
+  <xsd:complexType name="sequence-generator">
+    <xsd:annotation>
+      <xsd:documentation>
+
+        @Target({TYPE, METHOD, FIELD}) @Retention(RUNTIME)
+        public @interface SequenceGenerator {
+          String name();
+          String sequenceName() default "";
+          String catalog() default "";
+          String schema() default "";
+          int initialValue() default 1;
+          int allocationSize() default 50;
+        }
+
+      </xsd:documentation>
+    </xsd:annotation>
+    <xsd:sequence>
+      <xsd:element name="description" type="xsd:string" minOccurs="0"/>
+    </xsd:sequence>
+    <xsd:attribute name="name" type="xsd:string" use="required"/>
+    <xsd:attribute name="sequence-name" type="xsd:string"/>
+    <xsd:attribute name="catalog" type="xsd:string"/>
+    <xsd:attribute name="schema" type="xsd:string"/>
+    <xsd:attribute name="initial-value" type="xsd:int"/>
+    <xsd:attribute name="allocation-size" type="xsd:int"/>
+  </xsd:complexType>
+
+<!-- **************************************************** -->
+
+  <xsd:complexType name="sql-result-set-mapping">
+    <xsd:annotation>
+      <xsd:documentation>
+
+        @Target({TYPE}) @Retention(RUNTIME)
+        public @interface SqlResultSetMapping {
+          String name();
+          EntityResult[] entities() default {};
+          ColumnResult[] columns() default {};
+        }
+
+      </xsd:documentation>
+    </xsd:annotation>
+    <xsd:sequence>
+      <xsd:element name="description" type="xsd:string" minOccurs="0"/>
+      <xsd:element name="entity-result" type="orm:entity-result" 
+                   minOccurs="0" maxOccurs="unbounded"/>
+      <xsd:element name="column-result" type="orm:column-result" 
+                   minOccurs="0" maxOccurs="unbounded"/>
+    </xsd:sequence>
+    <xsd:attribute name="name" type="xsd:string" use="required"/>
+  </xsd:complexType>
+
+<!-- **************************************************** -->
+
+  <xsd:complexType name="stored-procedure-parameter">
+    <xsd:annotation>
+      <xsd:documentation>
+
+        /** 
+         * A StoredProcedureParameter annotation is used within a 
+         * NamedStoredProcedureQuery annotation. 
+         */ 
+        @Target({})
+        @Retention(RUNTIME)
+        public @interface StoredProcedureParameter {
+          /**
+           * (Optional) The direction of the stored procedure parameter.
+           */
+          Direction direction() default IN;
+
+          /**
+           * (Optional) Stored procedure parameter name.
+           */
+          String name() default "";
+
+          /**
+           * (Required) The query parameter name.
+           */
+          String queryParameter();
+
+          /**
+           * (Optional) The type of Java class desired back from the procedure, 
+           * this is dependent on the type returned from the procedure.
+           */
+          Class type() default void.class;
+
+          /**
+           * (Optional) The JDBC type code, this dependent on the type returned 
+           * from the procedure.
+           */
+          int jdbcType() default -1;
+
+          /**
+           * (Optional) The JDBC type name, this may be required for ARRAY or 
+           * STRUCT types.
+           */
+          String jdbcTypeName() default "";
+        }
+
+      </xsd:documentation>
+    </xsd:annotation>
+    <xsd:attribute name="direction" type="orm:direction-type"/>
+    <xsd:attribute name="name" type="xsd:string"/>
+    <xsd:attribute name="query-parameter" type="xsd:string" use="required"/>
+    <xsd:attribute name="type" type="xsd:string"/>
+    <xsd:attribute name="jdbc-type" type="xsd:integer"/>
+    <xsd:attribute name="jdbc-type-name" type="xsd:string"/>
+  </xsd:complexType>
+
+  <!-- **************************************************** -->
+
+  <xsd:complexType name="struct-converter">
+    <xsd:annotation>
+      <xsd:documentation>
+
+        @Target({TYPE, METHOD, FIELD})
+        @Retention(RUNTIME)
+        public @interface StructConverter {
+          /**
+           * (Required) Name this converter. The name should be unique across 
+           * the whole persistence unit.
+           */
+          String name();
+
+          /**
+           * (Required) The converter class to be used. This class must 
+           * implement the EclipseLink interface 
+           * org.eclipse.persistence.mappings.converters.Converter
+           */
+          String converter(); 
+        }
+
+      </xsd:documentation>
+    </xsd:annotation>
+    <xsd:attribute name="name" type="xsd:string" use="required"/>
+    <xsd:attribute name="converter" type="xsd:string" use="required"/>
+  </xsd:complexType>
+
+  <!-- **************************************************** -->
+
+  <xsd:complexType name="table">
+    <xsd:annotation>
+      <xsd:documentation>
+
+        @Target({TYPE}) @Retention(RUNTIME)
+        public @interface Table {
+          String name() default "";
+          String catalog() default "";
+          String schema() default "";
+          UniqueConstraint[] uniqueConstraints() default {};
+        }
+
+      </xsd:documentation>
+    </xsd:annotation>
+    <xsd:sequence>
+      <xsd:element name="unique-constraint" type="orm:unique-constraint" 
+                   minOccurs="0" maxOccurs="unbounded"/>
+    </xsd:sequence>
+    <xsd:attribute name="name" type="xsd:string"/>
+    <xsd:attribute name="catalog" type="xsd:string"/>
+    <xsd:attribute name="schema" type="xsd:string"/>
+  </xsd:complexType>
+
+<!-- **************************************************** -->
+
+  <xsd:complexType name="table-generator">
+    <xsd:annotation>
+      <xsd:documentation>
+
+        @Target({TYPE, METHOD, FIELD}) @Retention(RUNTIME)
+        public @interface TableGenerator {
+          String name();
+          String table() default "";
+          String catalog() default "";
+          String schema() default "";
+          String pkColumnName() default "";
+          String valueColumnName() default "";
+          String pkColumnValue() default "";
+          int initialValue() default 0;
+          int allocationSize() default 50;
+          UniqueConstraint[] uniqueConstraints() default {};
+        }
+
+      </xsd:documentation>
+    </xsd:annotation>
+    <xsd:sequence>
+      <xsd:element name="description" type="xsd:string" minOccurs="0"/>
+      <xsd:element name="unique-constraint" type="orm:unique-constraint" 
+                   minOccurs="0" maxOccurs="unbounded"/>
+    </xsd:sequence>
+    <xsd:attribute name="name" type="xsd:string" use="required"/>
+    <xsd:attribute name="table" type="xsd:string"/>
+    <xsd:attribute name="catalog" type="xsd:string"/>
+    <xsd:attribute name="schema" type="xsd:string"/>
+    <xsd:attribute name="pk-column-name" type="xsd:string"/>
+    <xsd:attribute name="value-column-name" type="xsd:string"/>
+    <xsd:attribute name="pk-column-value" type="xsd:string"/>
+    <xsd:attribute name="initial-value" type="xsd:int"/>
+    <xsd:attribute name="allocation-size" type="xsd:int"/>
+  </xsd:complexType>
+
+<!-- **************************************************** -->
+
+  <xsd:simpleType name="temporal">
+    <xsd:annotation>
+      <xsd:documentation>
+
+        @Target({METHOD, FIELD}) @Retention(RUNTIME)
+        public @interface Temporal {
+          TemporalType value();
+        }
+
+      </xsd:documentation>
+    </xsd:annotation>
+    <xsd:restriction base="orm:temporal-type"/>
+  </xsd:simpleType>
+
+  <!-- **************************************************** -->
+
+  <xsd:simpleType name="temporal-type">
+    <xsd:annotation>
+      <xsd:documentation>
+
+        public enum TemporalType {
+          DATE, // java.sql.Date
+          TIME, // java.sql.Time
+          TIMESTAMP // java.sql.Timestamp
+        }
+
+      </xsd:documentation>
+    </xsd:annotation>
+      <xsd:restriction base="xsd:token">
+        <xsd:enumeration value="DATE"/>
+        <xsd:enumeration value="TIME"/>
+        <xsd:enumeration value="TIMESTAMP"/>
+     </xsd:restriction>
+  </xsd:simpleType>
+
+  <!-- **************************************************** -->  
+
+  <xsd:complexType name="time-of-day">
+    <xsd:annotation>
+      <xsd:documentation>
+
+        @Target({})
+        @Retention(RUNTIME)
+        public @interface TimeOfDay {
+          /**
+           * (Optional) Hour of the day.
+           */ 
+          int hour() default 0;
+
+          /**
+           * (Optional) Minute of the day.
+           */ 
+          int minute() default 0;
+
+          /**
+           * (Optional) Second of the day.
+           */ 
+          int second() default 0;
+
+          /**
+           * (Optional) Millisecond of the day.
+           */ 
+          int millisecond() default 0;
+
+          /**
+           * Internal use. Do not modify.
+           */ 
+          boolean specified() default true;
+        }
+
+      </xsd:documentation>
+    </xsd:annotation>
+    <xsd:attribute name="hour" type="xsd:integer"/>
+    <xsd:attribute name="minute" type="xsd:integer"/>
+    <xsd:attribute name="second" type="xsd:integer"/>
+    <xsd:attribute name="millisecond" type="xsd:integer"/>
+  </xsd:complexType>
+
+<!-- **************************************************** -->
+
+  <xsd:complexType name="transformation">
+    <xsd:annotation>
+      <xsd:documentation>
+
+        /**
+         * Transformation is an optional annotation for 
+         * org.eclipse.persistence.mappings.TransformationMapping.
+         * TransformationMapping allows to map an attribute to one or more 
+         * database columns.
+         * 
+         * Transformation annotation is an optional part of 
+         * TransformationMapping definition. Unless the TransformationMapping is 
+         * write-only, it should have a ReadTransformer, it defines 
+         * transformation of database column(s) value(s)into attribute value.
+         * Also unless it's a read-only mapping, either WriteTransformer 
+         * annotation or WriteTransformers annotation should be specified. Each 
+         * WriteTransformer defines transformation of the attribute value to a 
+         * single database column value (column is specified in the 
+         * WriteTransformer). 
+         */ 
+        @Target({METHOD, FIELD})
+        @Retention(RUNTIME)
+        public @interface Transformation {
+            /**
+             * (Optional) Defines whether the value of the field or property 
+             * should be lazily loaded or must be eagerly fetched. The EAGER 
+             * strategy is a requirement on the persistence provider runtime 
+             * that the value must be eagerly fetched. The LAZY strategy is a 
+             * hint to the persistence provider runtime. If not specified, 
+             * defaults to EAGER.
+             */
+            FetchType fetch() default EAGER;
+
+            /**
+             * (Optional) The optional element is a hint as to whether the value
+             *  of the field or property may be null. It is disregarded
+             *  for primitive types, which are considered non-optional.
+             */
+            boolean optional() default true;
+        }
+
+      </xsd:documentation>
+    </xsd:annotation>
+    <xsd:sequence>
+      <xsd:element name="read-transformer" type="orm:read-transformer"/>
+      <xsd:element name="write-transformer" type="orm:write-transformer" minOccurs="0" maxOccurs="unbounded"/>
+      <xsd:element name="access" type="orm:access-type" minOccurs="0"/>
+      <xsd:element name="property" type="orm:property" minOccurs="0" maxOccurs="unbounded"/>
+      <xsd:element name="access-methods" type="orm:access-methods" minOccurs="0"/>
+    </xsd:sequence>
+    <xsd:attribute name="name" type="xsd:string" use="required"/>
+    <xsd:attribute name="fetch" type="orm:fetch-type"/>
+    <xsd:attribute name="optional" type="xsd:boolean"/>
+    <xsd:attribute name="access" type="orm:access-type"/>
+    <xsd:attribute name="mutable" type="xsd:boolean"/>
+    <xsd:attribute name="attribute-type" type="xsd:string"/>
+  </xsd:complexType>
+
+  <!-- **************************************************** -->
+
+  <xsd:complexType name="transient">
+    <xsd:annotation>
+      <xsd:documentation>
+
+        @Target({METHOD, FIELD}) @Retention(RUNTIME)
+        public @interface Transient {}
+
+      </xsd:documentation>
+    </xsd:annotation>
+    <xsd:attribute name="name" type="xsd:string" use="required"/>
+  </xsd:complexType>
+
+<!-- **************************************************** -->
+
+  <xsd:complexType name="type-converter">
+    <xsd:annotation>
+      <xsd:documentation>
+
+        @Target({TYPE, METHOD, FIELD})
+        @Retention(RUNTIME)
+        public @interface TypeConverter {
+          /**
+           * (Required) Name this converter. The name should be unique
+           * across the whole persistence unit.
+           */
+           String name();
+
+          /**
+           * (Optional) Specify the type stored on the database. The
+           * default is inferred from the type of the persistence field 
+           * or property.
+           */
+          Class dataType() default void.class;
+
+          /**
+           * (Optional) Specify the type stored on the entity. The
+           * default is inferred from the type of the persistent field 
+           * or property.
+           */
+          Class objectType() default void.class;
+        }
+
+      </xsd:documentation>
+    </xsd:annotation>
+    <xsd:attribute name="name" type="xsd:string" use="required"/>
+    <xsd:attribute name="data-type" type="xsd:string"/>
+    <xsd:attribute name="object-type" type="xsd:string"/>
+  </xsd:complexType>
+
+  <!-- **************************************************** -->
+
+  <xsd:complexType name="unique-constraint">
+    <xsd:annotation>
+      <xsd:documentation>
+
+        @Target({}) @Retention(RUNTIME)
+        public @interface UniqueConstraint {
+          String name() default "";
+          String[] columnNames();
+        }
+
+      </xsd:documentation>
+    </xsd:annotation>
+    <xsd:sequence>
+      <xsd:element name="column-name" type="xsd:string" 
+                   maxOccurs="unbounded"/>
+    </xsd:sequence>
+    <xsd:attribute name="name" type="xsd:string"/>
+  </xsd:complexType>
+
+<!-- **************************************************** -->
+
+  <xsd:complexType name="variable-one-to-one">
+    <xsd:annotation>
+      <xsd:documentation>
+        /** 
+         * Variable one to one mappings are used to represent a pointer 
+         * references between a java object and an implementer of an interface. 
+         * This mapping is usually represented by a single pointer (stored in an 
+         * instance variable) between the source and target objects. In the 
+         * relational database tables, these mappings are normally implemented 
+         * using a foreign key and a type code.
+         * 
+         * A VariableOneToOne can be specified within an Entity, 
+         * MappedSuperclass and Embeddable class. 
+         */ 
+        @Target({METHOD, FIELD}) 
+        @Retention(RUNTIME)
+        public @interface VariableOneToOne {
+          /**
+           * (Optional) The interface class that is the target of the 
+           * association. If not specified it will be inferred from the type 
+           * of the object being referenced.
+           */
+          Class targetInterface() default void.class;
+
+          /**
+           * (Optional) The operations that must be cascaded to the target of 
+           * the association.
+           */
+          CascadeType[] cascade() default {};
+
+          /**
+           * (Optional) Defines whether the value of the field or property 
+           * should be lazily loaded or must be eagerly fetched. The EAGER 
+           * strategy is a requirement on the persistence provider runtime 
+           * that the value must be eagerly fetched. The LAZY strategy is a 
+           * hint to the persistence provider runtime. If not specified, 
+           * defaults to EAGER.
+           */
+          FetchType fetch() default EAGER;
+
+          /**
+           * (Optional) Whether the association is optional. If set to false 
+           * then a non-null relationship must always exist.
+           */
+          boolean optional() default true;
+
+          /**
+           * (Optional) The discriminator column will hold the type 
+           * indicators. If the DiscriminatorColumn is not specified, the name 
+           * of the discriminator column defaults to "DTYPE" and the 
+           * discriminator type to STRING.
+           */
+          DiscriminatorColumn discriminatorColumn() default @DiscriminatorColumn;
+
+          /**
+           * (Optional) The list of discriminator types that can be used with 
+           * this VariableOneToOne. If none are specified then those entities 
+           * within the persistence unit that implement the target interface 
+           * will be added to the list of types. The discriminator type will 
+           * default as follows:
+           *  - If DiscriminatorColumn type is STRING: Entity.name()
+           *  - If DiscriminatorColumn type is CHAR: First letter of the 
+           *    Entity class
+           *  - If DiscriminatorColumn type is INTEGER: The next integer after 
+           *    the highest integer explicitly added.
+           */
+          DiscriminatorClass[] discriminatorClasses() default {};
+        }
+
+      </xsd:documentation>
+    </xsd:annotation>
+    <xsd:sequence>
+      <xsd:element name="cascade" type="orm:cascade-type" minOccurs="0"/>
+      <xsd:element name="discriminator-column" type="orm:discriminator-column" minOccurs="0"/>
+      <xsd:element name="discriminator-class" type="orm:discriminator-class" minOccurs="0" maxOccurs="unbounded"/>
+      <xsd:element name="join-column" type="orm:join-column" minOccurs="0" maxOccurs="unbounded"/>
+      <xsd:element name="private-owned" type="orm:emptyType" minOccurs="0"/>
+      <xsd:element name="property" type="orm:property" minOccurs="0" maxOccurs="unbounded"/>
+      <xsd:element name="access-methods" type="orm:access-methods" minOccurs="0"/>
+    </xsd:sequence>
+    <xsd:attribute name="name" type="xsd:string" use="required"/>
+    <xsd:attribute name="target-interface" type="xsd:string"/>
+    <xsd:attribute name="fetch" type="orm:fetch-type"/>
+    <xsd:attribute name="optional" type="xsd:boolean"/>
+    <xsd:attribute name="access" type="orm:access-type"/>
+    <xsd:attribute name="orphan-removal" type="xsd:boolean"/>
+  </xsd:complexType>
+
+  <!-- **************************************************** -->
+
+  <xsd:complexType name="version">
+    <xsd:annotation>
+      <xsd:documentation>
+
+        @Target({METHOD, FIELD}) @Retention(RUNTIME)
+        public @interface Version {}
+
+      </xsd:documentation>
+    </xsd:annotation>
+    <xsd:sequence>
+      <xsd:element name="column" type="orm:column" minOccurs="0"/>
+      <xsd:choice minOccurs="0">
+        <xsd:element name="temporal" type="orm:temporal"/>
+        <xsd:element name="convert" type="xsd:string"/>
+      </xsd:choice>
+      <xsd:choice minOccurs="0">
+        <xsd:element name="converter" type="orm:converter"/>
+        <xsd:element name="type-converter" type="orm:type-converter"/>
+        <xsd:element name="object-type-converter" type="orm:object-type-converter"/>
+        <xsd:element name="struct-converter" type="orm:struct-converter"/>
+      </xsd:choice>
+      <xsd:element name="property" type="orm:property" minOccurs="0" maxOccurs="unbounded"/>
+      <xsd:element name="access-methods" type="orm:access-methods" minOccurs="0"/>
+    </xsd:sequence>
+    <xsd:attribute name="name" type="xsd:string" use="required"/>
+    <xsd:attribute name="access" type="orm:access-type"/>
+    <xsd:attribute name="mutable" type="xsd:boolean"/>
+    <xsd:attribute name="attribute-type" type="xsd:string"/>
+  </xsd:complexType>
+
+  <!-- **************************************************** -->
+
+  <xsd:complexType name="write-transformer">
+    <xsd:annotation>
+      <xsd:documentation>
+
+        /**
+         * Annotation for org.eclipse.persistence.mappings.TransformationMapping.
+         * WriteTransformer defines transformation of the attribute value to a 
+         * single database column value (column is specified in the 
+         * WriteTransformer).
+         *  
+         * A single WriteTransformer may be specified directly on the method or 
+         * attribute. Multiple WriteTransformers should be wrapped into 
+         * WriteTransformers annotation. No WriteTransformers specified for 
+         * read-only mapping. Unless the TransformationMapping is write-only, it 
+         * should have a ReadTransformer, it defines transformation of database 
+         * column(s) value(s)into attribute value.
+         */ 
+        @Target({METHOD, FIELD})
+        @Retention(RUNTIME)
+        public @interface WriteTransformer {
+            /**
+             * User-defined class that must implement the 
+             * org.eclipse.persistence.mappings.transformers.FieldTransformer 
+             * interface. The class will be instantiated, its buildFieldValue 
+             * will be used to create the value to be written into the database 
+             * column. Note that for ddl generation and returning to be 
+             * supported the method buildFieldValue in the class should be 
+             * defined to return the relevant Java type, not just Object as 
+             * defined in the interface, for instance:
+             * public Time buildFieldValue(Object instance, String fieldName, Session session).
+             * Either transformerClass or method must be specified, but not both.
+             */ 
+            Class transformerClass() default void.class;
+
+            /**
+             * The mapped class must have a method with this name which returns 
+             * a value to be written into the database column.
+             * Note that for ddl generation and returning to be supported the 
+             * method should be defined to return a particular type, not just 
+             * Object, for instance:
+             * public Time getStartTime().
+             * The method may require a Transient annotation to avoid being 
+             * mapped as Basic by default.
+             * Either transformerClass or method must be specified, but not both.
+             */ 
+            String method() default "";
+
+            /**
+             * Specify here the column into which the value should be written.
+             * The only case when this could be skipped is if a single 
+             * WriteTransformer annotates an attribute - the attribute's name 
+             * will be used as a column name.
+             */ 
+            Column column() default @Column;
+        }
+
+      </xsd:documentation>
+    </xsd:annotation>
+    <xsd:sequence>
+      <xsd:element name="column" type="orm:column"/>
+    </xsd:sequence>
+    <xsd:attribute name="transformer-class" type="xsd:string"/>
+    <xsd:attribute name="method" type="xsd:string"/>
+  </xsd:complexType>
+  
+  <xsd:complexType name="batch-fetch">
+    <xsd:annotation>
+      <xsd:documentation>
+        /**
+         * A BatchFetch annotation can be used on any relationship mapping,
+         * (OneToOne, ManyToOne, OneToMany, ManyToMany, ElementCollection, BasicCollection, BasicMap).
+         * It allows the related objects to be batch read in a single query.
+         * Batch fetching can also be set at the query level, and it is 
+         * normally recommended to do so as all queries may not require batching.
+         * 
+         * @author James Sutherland
+         * @since EclipseLink 2.1
+         */
+        @Target({METHOD, FIELD})
+        @Retention(RUNTIME)
+        public @interface BatchFetch {
+            /**
+             * (Optional) The type of batch-fetch to use.
+             * Either JOIN, EXISTS or IN.
+             * JOIN is the default.
+             */ 
+            BatchFetchType value() default BatchFetchType.JOIN;
+            
+            /**
+             * Define the default batch fetch size.
+             * This is only used for IN type batch reading and defines
+             * the number of keys used in each IN clause.
+             * The default size is 256, or the query's pageSize for cursor queries.
+             */
+            int size() default -1;
+        }
+      </xsd:documentation>
+    </xsd:annotation>
+    <xsd:attribute name="type" type="orm:batch-fetch-type"/>
+    <xsd:attribute name="size" type="xsd:integer"/>
+  </xsd:complexType>
+  
+</xsd:schema>
+
+

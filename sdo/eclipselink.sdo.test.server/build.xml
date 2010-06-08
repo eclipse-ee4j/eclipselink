@@ -1,0 +1,211 @@
+<?xml version="1.0"?>
+<!--/*******************************************************************************
+* This program and the accompanying materials are made available under the
+* terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+* which accompanies this distribution.
+* The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
+* and the Eclipse Distribution License is available at
+* http://www.eclipse.org/org/documents/edl-v10.php.
+*
+*   Ant naming conventions:
+*   - regardless of the actual OS platform,'/' is the directory separator
+*     (Ant will convert as appropriate).
+*   - multi-word properties use periods '.'
+*     - properties ending in .jar define jarfile names only (no path)
+*     - properties ending in .lib are fully qualified jars (path and filename)
+*     - properties ending in .dir are directory paths
+*     - properties ending in .path are path refid names (classpath fragments)
+*   - multi-word targets use hyphens '-'
+*     - targets beginning with test- are reserved for high level test targets,
+*       and are used in test results parsing
+*     - targets typically use the form <action>-<object>-<type> (ie. package-bundle-zip)
+*   - multi-word macros use underscores '_'
+*   - multi-word macro attributes are concatinated
+*     e.g. 'runpathref'
+*   - multi-word tasks (taskdef) names are concatinated
+*     e.g. 'validateconnection'
+*   - OS environment variables are in ALLCAPS and have 'env' as a prefix
+*     e.g. ${env.XXX}.
+*   - Ant properties are lower case.
+*
+* Contributors:
+*     etang - initial API and implementation on May 10, 2010
+#******************************************************************************/-->
+<project name="eclipselink.sdo.test.server" default="test" basedir=".">
+    <property name="env" environment="env" value="env"/>
+
+    <available file="../${ant.project.name}" type="dir" property="sdotest.is.local"/>
+    <fail message="Not running from '${ant.project.name}' directory" unless="sdotest.is.local"/>
+
+    <dirname  property="sdotest.build.location" file="${ant.file.org.eclipse.persistence.core}"/>
+    <echo message="sdotest.build.location = '${sdotest.build.location}'"/>
+
+    <condition property="sdotest.2.base.dir" value="../.." else="..">
+        <contains string="${sdotest.build.location}" substring="sdo"/>
+    </condition>
+    <property name="sdotest.2.common.plugins.dir" value="${sdotest.2.base.dir}/plugins"/>
+    <property name="sdotest.plugins.dir" value="../plugins"/>
+
+    <property file="${user.home}/build.properties"/>
+    <property file="./build.properties"/>
+    <property file="./test.properties"/>
+    <property file="${user.home}/${server.name}.properties"/>
+    <property file="${sdotest.2.base.dir}/jpa/eclipselink.jpa.test/${server.name}.properties"/>
+
+    <!-- compile path without product components -->
+    <path id="sdotest.thirdparty.compile.path">
+        <fileset
+            dir="${sdotest.2.common.plugins.dir}"
+            includes="
+               ${eclipselink.core.depend},
+            "/>
+        <pathelement path="${junit.lib}"/>
+        <pathelement path="${sdotest.plugins.dir}/${commonj.sdo.jar}"/>
+    </path>
+    <!-- Run path without product components -->
+    <path id="sdotest.thirdparty.run.path">
+        <fileset dir="${server.lib}" includes="${server.depend}"/>
+    </path>
+    <path id="sdotest.compile.against.jar.path">
+        <pathelement path="${sdotest.2.base.dir}/${eclipselink.jar}"/>
+        <path refid="sdotest.thirdparty.compile.path"/>
+    </path>
+    <path id="sdotest.run.against.jar.path">
+        <pathelement path="${tmp.dir}/deptApp.jar"/>
+        <path refid="sdotest.compile.against.jar.path"/>
+        <path refid="sdotest.thirdparty.run.path"/>
+    </path>
+
+    <target name="clean" description="clean the build">
+        <delete includeEmptyDirs="true" failonerror="false">
+            <fileset dir="${classes.dir}"/>
+        </delete>
+        <mkdir dir="${classes.dir}"/>
+        <mkdir dir="${tmp.dir}"/>
+        <mkdir dir="${report.dir}"/>
+    </target>
+
+    <target name="compile" depends="clean">
+        <javac
+            srcdir="${src.dir}"
+            destdir="${classes.dir}"
+            debug="${javac.debug}"
+            debuglevel="${javac.debuglevel}"
+            optimize="${javac.optimize}"
+            source="${javac.version}"
+            target="${javac.version}"
+            deprecation="${javac.deprecation}"
+            failonerror="true"
+            includes="org/eclipse/persistence/testing/sdo/**/*.java">
+            <classpath>
+                <path refid="sdotest.compile.against.jar.path"/>
+            </classpath>
+        </javac>
+    </target>
+
+    <target name="build-ejb-jar" depends="compile">
+      <copy todir="${classes.dir}">
+        <fileset dir="${resource.dir}"/>
+      </copy>
+      <zip 
+        destfile="${tmp.dir}/deptApp.jar"
+        basedir="${classes.dir}"
+        excludes="org/eclipse/persistence/testing/sdo/server/server/DeptServiceClient*.class" />
+    </target>
+
+    <target name="build-app-ear" depends="build-ejb-jar">
+      <zip 
+        destfile="./deptApp.ear"
+        basedir="${tmp.dir}" />
+    </target>
+
+    <target name="detect-server">
+        <condition property="session.bean" value="DeptServiceBean#org.eclipse.persistence.testing.sdo.server.DeptService">
+            <contains string="${server.name}" substring="weblogic"/>
+        </condition>
+        <condition property="session.bean" value="ejb/deptApp/deptApp.jar/org.eclipse.persistence.testing.sdo.server.DeptServiceBean#org.eclipse.persistence.testing.sdo.server.DeptService">
+            <contains string="${server.name}" substring="websphere"/>
+        </condition>
+        <condition property="is.websphere" value="true">
+            <contains string="${server.name}" substring="websphere"/>
+        </condition>
+        <condition property="session.bean" value="deptApp/org.eclipse.persistence.testing.sdo.server.DeptServiceBean/remote-org.eclipse.persistence.testing.sdo.server.DeptService">
+            <contains string="${server.name}" substring="jboss"/>
+        </condition>
+    </target>
+
+    <target name="create-ejb-stubs" depends="detect-server" if="is.websphere">
+        <condition property="suffix" value="sh">
+            <os family="unix"/>
+        </condition>
+        <condition property="suffix" value="bat">
+            <os family="windows"/>
+        </condition>
+        <exec executable="${was.home}/bin/createEJBStubs.${suffix}">
+            <arg line="${tmp.dir}/deptApp.jar"/>
+        </exec>
+    </target>
+
+    <target name="server-deploy">
+        <ant antfile="${sdotest.2.base.dir}/jpa/eclipselink.jpa.test/${server.name}.xml" target="${server.name}-deploy" inheritRefs="true">
+            <property name="ear.name" value="${ear.name}"/>
+            <property name="application.name" value="${application.name}"/>
+        </ant>
+    </target>
+
+    <target name="server-undeploy">
+        <ant antfile="${sdotest.2.base.dir}/jpa/eclipselink.jpa.test/${server.name}.xml" target="${server.name}-undeploy" inheritRefs="true">
+            <property name="application.name" value="${application.name}"/>
+        </ant>
+    </target>
+
+    <target name="generate-report">
+        <junitreport todir="${report.dir}">
+            <fileset dir="${report.dir}">
+                <include name="**/*.xml"/>
+            </fileset>
+            <report format="noframes" todir="${report.dir}"/>
+        </junitreport>
+    </target>
+
+    <!-- Tests redeploy scenario -->
+    <target name="test" depends="build-app-ear,create-ejb-stubs">
+        <antcall target="server-deploy" inheritRefs="true">
+            <param name="ear.name" value="deptApp.ear"/>
+            <param name="application.name" value="deptApp"/>
+        </antcall>
+        <junit printsummary="yes" haltonfailure="no" failureproperty="junit.failed" fork="yes" showoutput="true" maxmemory="256m" tempdir="${tmp.dir}" dir="${classes.dir}">
+            <sysproperty key="initialCtxFactory" value="${server.factory}"/>
+            <sysproperty key="securityPrincipal" value="${server.user}"/>
+            <sysproperty key="securityCredentials" value="${server.pwd}"/>
+            <sysproperty key="providerUrl" value="${server.url}"/>
+            <sysproperty key="sessionBean" value="${session.bean}"/>
+            <classpath refid="sdotest.run.against.jar.path"/>
+            <formatter type="xml"/>
+            <test name="org.eclipse.persistence.testing.sdo.server.DeptServiceClientTestSuite" haltonfailure="no" todir="${report.dir}"/>
+        </junit>
+        <antcall target="server-undeploy" inheritRefs="true">
+            <param name="application.name" value="deptApp"/>
+        </antcall>
+        <!-- Sleep to ensure undeploy is completed before redeploy-->
+        <sleep seconds="120"/>
+        <antcall target="server-deploy" inheritRefs="true">
+            <param name="ear.name" value="deptApp.ear"/>
+            <param name="application.name" value="deptApp"/>
+        </antcall>
+        <junit printsummary="yes" haltonfailure="no" failureproperty="junit.failed" fork="yes" showoutput="true" maxmemory="256m" tempdir="${tmp.dir}" dir="${classes.dir}">
+            <sysproperty key="initialCtxFactory" value="${server.factory}"/>
+            <sysproperty key="securityPrincipal" value="${server.user}"/>
+            <sysproperty key="securityCredentials" value="${server.pwd}"/>
+            <sysproperty key="providerUrl" value="${server.url}"/>
+            <sysproperty key="sessionBean" value="${session.bean}"/>
+            <classpath refid="sdotest.run.against.jar.path"/>
+            <formatter type="xml"/>
+            <test name="org.eclipse.persistence.testing.sdo.server.DeptServiceClientTestSuite" haltonfailure="no" todir="${report.dir}"/>
+        </junit>
+        <antcall target="server-undeploy" inheritRefs="true">
+            <param name="application.name" value="deptApp"/>
+        </antcall>
+        <antcall target="generate-report" inheritRefs="true"/>
+    </target>
+</project>

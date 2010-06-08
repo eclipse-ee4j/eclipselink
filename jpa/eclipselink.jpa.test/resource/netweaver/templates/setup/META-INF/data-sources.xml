@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE data-sources SYSTEM "data-sources.dtd" >
+<data-sources>
+  <data-source>
+    <data-source-name>%%data-source-name%%</data-source-name>
+    <driver-name>%%driver-name%%</driver-name>
+    <isolation-level>TRANSACTION_READ_COMMITTED</isolation-level>
+    <sql-engine>native_sql</sql-engine>
+    <jdbc-1.x>
+      <driver-class-name>%%driver-class-name%%</driver-class-name>
+      <url>%%url%%</url>
+      <user-name>%%user-name%%</user-name>
+      <password>%%password%%</password>
+    </jdbc-1.x>
+  </data-source>
+</data-sources>

@@ -1,0 +1,212 @@
+<?xml version="1.0"?>
+<!--/*******************************************************************************
+* This program and the accompanying materials are made available under the
+* terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+* which accompanies this distribution.
+* The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
+* and the Eclipse Distribution License is available at
+* http://www.eclipse.org/org/documents/edl-v10.php.
+*
+*   Ant naming conventions:
+*   - regardless of the actual OS platform,'/' is the directory separator
+*     (Ant will convert as appropriate).
+*   - multi-word properties use periods '.'
+*     - properties ending in .jar define jarfile names only (no path)
+*     - properties ending in .lib are fully qualified jars (path and filename)
+*     - properties ending in .dir are directory paths
+*     - properties ending in .path are path refid names (classpath fragments)
+*   - multi-word targets use hyphens '-'
+*     - targets beginning with test- are reserved for high level test targets,
+*       and are used in test results parsing
+*     - targets typically use the form <action>-<object>-<type> (ie. package-bundle-zip)
+*   - multi-word macros use underscores '_'
+*   - multi-word macro attributes are concatinated
+*     e.g. 'runpathref'
+*   - multi-word tasks (taskdef) names are concatinated
+*     e.g. 'validateconnection'
+*   - OS environment variables are in ALLCAPS and have 'env' as a prefix
+*     e.g. ${env.XXX}.
+*   - Ant properties are lower case.
+*
+* Contributors:
+*     egwin - initial API and implementation
+#******************************************************************************/-->
+<project name="org.eclipse.persistence.antlr" default="build">
+    <available file="../${ant.project.name}" type="dir" property="antlr.is.local"/>
+    <!-- Test to make sure that the calling script doesn't inherit the variable -->
+    <!-- (should be set locally, and be destroyed upon return) -->
+    <fail message="Not running from '${ant.project.name}' directory" unless="antlr.is.local"/>
+
+    <dirname  property="antlr.build.location_temp" file="${ant.file.org.eclipse.persistence.antlr}"/>
+    <pathconvert targetos="unix" property="antlr.build.location">
+        <path>
+            <pathelement location="${antlr.build.location_temp}"/>
+        </path>
+    </pathconvert>
+    <property name="antlr.2.base.dir" value="../.."/>
+    <property name="antlr.2.common.plugins.dir" value=".."/>
+    <property name="antlr.2.buildsys.dir" value="${antlr.2.base.dir}/buildsystem"/>
+
+    <!-- Properties usually defined in build.properties, set here to avoid easy redefinition. -->
+    <!-- Version properties -->
+    <property name="release.version"               value="2.1.0"/>
+    <!-- Project infrastructure properties -->
+    <property name="src.dir"                       value="src"/>
+    <property name="antlr.classes.dir"             value="."/>
+
+    <!-- local property overrides -->
+    <condition property="custom.properties.message" value="Loading ${user.home}/build.properties..."
+                                                     else="Custom properties file '${user.home}/build.properties' not found to load.">
+        <available file="${user.home}/build.properties"/>
+    </condition>
+    <echo message="${custom.properties.message}"/>
+    <property file="${user.home}/build.properties"/>
+
+    <!-- Defaults, set var in ${user.home}/build.properties if different version required -->
+    <property name="bndtool.jar" value="bnd-0.0.366.jar"/>
+
+    <!-- Primary Targets -->
+    <target name="build" depends="clean, bnd-package, package" description="package ${ant.project.name}"/>
+
+    <!-- clean -->
+    <target name="clean" description="Clean the build">
+        <delete includeEmptyDirs="true" failonerror="false">
+            <fileset dir="${antlr.2.common.plugins.dir}" includes="${ant.project.name}_*.jar, ${ant.project.name}.source_*.jar"/>
+        </delete>
+    </target>
+
+    <!-- initialize varables and paths needed for compile -->
+    <!-- the number of properties needed now is too great for lazy loading without a target -->
+    <target name="init">
+        <!-- This HAS to be defined after allowing user redefinitions (which will cause the condition not to set anything) -->
+        <!-- This tests to make sure the extensions dir exists, if not sets to a existant dummy location -->
+        <condition property="extensions.depend.dir" value="${antlr.2.base.dir}/../extension.lib.external"
+                                                    else="${antlr.build.location}">
+            <available file="${antlr.2.base.dir}/../extension.lib.external" type="dir"/>
+        </condition>
+        <echo message="extensions.depend.dir        = '${extensions.depend.dir}'"/>
+
+        <!-- versioning -->
+        <!-- These variables  are set in autobuild.xml. A manual build gets defaults -->
+        <tstamp>
+           <format property="build.date" pattern="yyyyMMdd"/>
+           <format property="build.time" pattern="HHmm"/>
+        </tstamp>
+        <property name="build.type"            value="SNAPSHOT"/>
+        <property name="svn.revision"          value="NA"/>
+        <property name="version.qualifier"     value="qualifier"/>
+        <property name="version.string"        value="${release.version}.${version.qualifier}"/>
+        <property name="release.designation"   value="EclipseLink ${release.version} Build"/>
+        <property name="specification.vendor"  value="Eclipse.org - EclipseLink Project"/>
+        <property name="implementation.vendor" value="${specification.vendor}"/>
+
+        <!-- Check for BND library -->
+        <property name="alt.manifest.dir"      value="${antlr.build.location}/META-INF"/>
+        <condition property="bnd.lib" value="${extensions.depend.dir}/${bndtool.jar}">
+            <available file="${extensions.depend.dir}/${bndtool.jar}"/>
+        </condition>
+        <condition property="bnd.lib" value="${antlr.2.buildsys.dir}/${bndtool.jar}">
+            <available file="${antlr.2.buildsys.dir}/${bndtool.jar}"/>
+        </condition>
+        <echo message="bnd.lib                     = '${bnd.lib}'"/>
+        <condition property="bld">
+            <or>
+                <isset property="bnd.lib"/>
+                <isset property="nobnd"/>
+            </or>
+        </condition>
+        <condition property="bnd.bld">
+            <and>
+                <isset property="bnd.lib"/>
+                <not>  <isset property="nobnd"/> </not>
+            </and>
+        </condition>
+    </target>
+
+    <target name="fail-on-no-bnd" unless="bld">
+        <echo message="BND tool (${bndtool.jar}) not found in either:"/>
+        <echo message="    the extensions.depend.dir: '${extensions.depend.dir}'"/>
+        <echo message="    or the buildsystem dir:    '${antlr.2.buildsys.dir}'"/>
+        <echo message=""/>
+        <echo message="if you have a different version, you can define a different"/>
+        <echo message="jarname by adding 'bndtool.jar=bnd-{version}.jar to your'"/>
+        <echo message="${user.home}/build.properties file."/>
+        <echo message=""/>
+        <echo message="You can download BND from http://www.aqute.biz/Code/Download"/>
+        <echo message=""/>
+        <echo message="or if you really need to build NOW, you can use '-Dnobnd=true'"/>
+        <echo message="on the ant command-line. However, the manifests used will be those"/>
+        <echo message="checked-in for development, and will likely have errors."/>
+        <fail message="Missing BND library!"/>
+    </target>
+
+    <!-- package -->
+    <target name="package" if="nobnd" depends="init" description="jar OSGI bundle">
+        <jar jarfile="${antlr.2.common.plugins.dir}/${ant.project.name}_${version.string}.jar" manifest="${alt.manifest.dir}/MANIFEST.MF">
+            <fileset dir="${antlr.2.base.dir}">
+                <include name="about.html"/>
+                <include name="readme.html"/>
+                <include name="license.*"/>
+            </fileset>
+            <fileset dir="${antlr.classes.dir}">
+                <include name="org/eclipse/persistence/**/*.class"/>
+            </fileset>
+        </jar>
+        <jar jarfile="${antlr.2.common.plugins.dir}/${ant.project.name}.source_${version.string}.jar">
+             <manifest>
+                <attribute name="Specification-Vendor"   value="${specification.vendor}"/>
+                <attribute name="Specification-Version"  value="${release.version}"/>
+                <attribute name="Implementation-Vendor"  value="${implementation.vendor}"/>
+                <attribute name="Implementation-Version" value="${version.string}"/>
+                <attribute name="Bundle-ManifestVersion" value="2"/>
+                <attribute name="Bundle-Name"            value="EclipseLink ANTLR Source"/>
+                <attribute name="Bundle-SymbolicName"    value="${ant.project.name}.source"/>
+                <attribute name="Bundle-Vendor"          value="${implementation.vendor}"/>
+                <attribute name="Bundle-Version"         value="${version.string}"/>
+                <attribute name="Eclipse-SourceBundle"   value="${ant.project.name};version=&quot;${version.string}&quot;"/>
+            </manifest>
+            <fileset dir="${antlr.2.base.dir}">
+                <include name="about.html"/>
+                <include name="readme.html"/>
+                <include name="license.*"/>
+            </fileset>
+            <fileset dir="${src.dir}">
+                <include name="org/eclipse/persistence/**/*.java"/>
+            </fileset>
+        </jar>
+    </target>
+
+    <target name="bnd-package" if="bnd.bld" depends="init, fail-on-no-bnd">
+        <taskdef resource="aQute/bnd/ant/taskdef.properties" classpath="${bnd.lib}"/>
+        <bnd
+            classpath="${antlr.classes.dir}"
+            eclipse="false"
+            sourcepath="${src.dir}"
+            failok="false"
+            exceptions="true"
+            files="./org.eclipse.persistence.antlr.bnd"
+            output="${antlr.2.common.plugins.dir}/${ant.project.name}_${version.string}.jar"/>
+        <jar jarfile="${antlr.2.common.plugins.dir}/${ant.project.name}.source_${version.string}.jar">
+             <manifest>
+                <attribute name="Specification-Vendor"   value="${specification.vendor}"/>
+                <attribute name="Specification-Version"  value="${release.version}"/>
+                <attribute name="Implementation-Vendor"  value="${implementation.vendor}"/>
+                <attribute name="Implementation-Version" value="${version.string}"/>
+                <attribute name="Bundle-ManifestVersion" value="2"/>
+                <attribute name="Bundle-Name"            value="EclipseLink ANTLR Source"/>
+                <attribute name="Bundle-SymbolicName"    value="${ant.project.name}.source"/>
+                <attribute name="Bundle-Vendor"          value="${implementation.vendor}"/>
+                <attribute name="Bundle-Version"         value="${version.string}"/>
+                <attribute name="Eclipse-SourceBundle"   value="${ant.project.name};version=&quot;${version.string}&quot;"/>
+            </manifest>
+            <fileset dir="${antlr.2.base.dir}">
+                <include name="about.html"/>
+                <include name="readme.html"/>
+                <include name="license.*"/>
+            </fileset>
+            <fileset dir="${src.dir}">
+                <include name="org/eclipse/persistence/**/*.java"/>
+            </fileset>
+        </jar>
+    </target>
+</project>

@@ -1,0 +1,1585 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+*******************************************************************************
+ Copyright (c) 1998, 2007 Oracle. All rights reserved.
+ This program and the accompanying materials are made available under the
+ terms of the Eclipse Public License v1.0, which accompanies this distribution
+ and is available at http://www.eclipse.org/legal/epl-v10.html.
+
+ Contributors:
+     Oracle - initial API and implementation from Oracle TopLink
+*****************************************************************************/  
+-->
+<!-- 
+
+XML Schema definition for the Eclipse Persistence Services Project Session Configuration file. Instances
+of this file are typically located as: 'META-INF/sessions.xml'
+
+ -->
+
+<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+    elementFormDefault="qualified" version="1.1">
+    <xsd:element name="sessions">
+        <xsd:annotation>
+            <xsd:documentation>
+                This is the root element and exists only for XML
+                structure
+            </xsd:documentation>
+        </xsd:annotation>
+        <xsd:complexType>
+            <xsd:sequence>
+                <xsd:element name="session" type="session" minOccurs="0"
+                    maxOccurs="unbounded" />
+            </xsd:sequence>
+            <xsd:attribute name="version" type="xsd:string"
+                use="required" />
+        </xsd:complexType>
+    </xsd:element>
+    <xsd:complexType name="session">
+        <xsd:annotation>
+            <xsd:documentation>
+                This is the node element that describes a particular session
+            </xsd:documentation>
+        </xsd:annotation>
+        <xsd:sequence>
+            <xsd:element name="name" type="xsd:string">
+                <xsd:annotation>
+                    <xsd:documentation>
+                        Generic element used to describe a string that
+                        represents the name of an item
+                    </xsd:documentation>
+                </xsd:annotation>
+            </xsd:element>
+            <xsd:element name="server-platform" type="server-platform"
+                minOccurs="0" />
+            <xsd:choice minOccurs="0">
+                <xsd:element name="remote-command">
+                    <xsd:annotation>
+                        <xsd:documentation>
+                            This element is an optional element of
+                            session element that define the Remote
+                            Command Module that can also be used for
+                            cache synchronization
+                        </xsd:documentation>
+                    </xsd:annotation>
+                    <xsd:complexType>
+                        <xsd:sequence>
+                            <xsd:element name="channel"
+                                type="xsd:string" default="EclipseLinkCommandChannel"
+                                minOccurs="0">
+                                <xsd:annotation>
+                                    <xsd:documentation>
+                                        This element is an optional
+                                        element of remote-command
+                                        element."
+                                    </xsd:documentation>
+                                </xsd:annotation>
+                            </xsd:element>
+                            <xsd:element name="commands"
+                                minOccurs="0">
+                                <xsd:annotation>
+                                    <xsd:documentation>
+                                        This element is an optional
+                                        element of remote-command
+                                        element. It determine what
+                                        command features, the RCM
+                                        supports
+                                    </xsd:documentation>
+                                </xsd:annotation>
+                                <xsd:complexType>
+                                    <xsd:sequence>
+                                        <xsd:element name="cache-sync"
+                                            type="xsd:boolean" default="false" minOccurs="0">
+                                            <xsd:annotation>
+                                                <xsd:documentation>
+                                                    This element is an
+                                                    optional element of
+                                                    command element. It
+                                                    turns on cache
+                                                    synchronization to
+                                                    allow sending and
+                                                    receiving cache sync
+                                                    commands
+                                                </xsd:documentation>
+                                            </xsd:annotation>
+                                        </xsd:element>
+                                    </xsd:sequence>
+                                </xsd:complexType>
+                            </xsd:element>
+                            <xsd:element name="transport"
+                                type="transport-manager" minOccurs="0">
+                                <xsd:annotation>
+                                    <xsd:documentation>
+                                        This element is an optional
+                                        element of remote-command
+                                        element. It defines the
+                                        transport mechanism of the RCM.
+                                        The default transport mechanism
+                                        is RMI
+                                    </xsd:documentation>
+                                </xsd:annotation>
+                            </xsd:element>
+                        </xsd:sequence>
+                    </xsd:complexType>
+                </xsd:element>
+            </xsd:choice>
+            <xsd:element name="event-listener-classes" minOccurs="0">
+                <xsd:complexType>
+                    <xsd:group ref="event-listener-classes" />
+                </xsd:complexType>
+            </xsd:element>
+            <xsd:element name="profiler" minOccurs="0">
+                <xsd:annotation>
+                    <xsd:documentation>
+                        This element represents if the profiler will be
+                        used by the session
+                    </xsd:documentation>
+                </xsd:annotation>
+                <xsd:simpleType>
+                    <xsd:restriction base="xsd:string">
+                        <xsd:enumeration value="dms" />
+                        <xsd:enumeration value="eclipselink" />
+                    </xsd:restriction>
+                </xsd:simpleType>
+            </xsd:element>
+            <xsd:element name="exception-handler-class"
+                type="xsd:string" minOccurs="0">
+                <xsd:annotation>
+                    <xsd:documentation>
+                        This is the class that the session will use to
+                        handle exceptions generated from within the
+                        session
+                    </xsd:documentation>
+                </xsd:annotation>
+            </xsd:element>
+            <xsd:element name="logging" type="log" minOccurs="0">
+                <xsd:annotation>
+                    <xsd:documentation>
+                        This element used to specify the logging options
+                    </xsd:documentation>
+                </xsd:annotation>
+            </xsd:element>
+            <xsd:element name="session-customizer-class"
+                type="xsd:string" minOccurs="0">
+                <xsd:annotation>
+                    <xsd:documentation>
+                        This element specifies the session customizer
+                        class to run on a loaded session.
+                    </xsd:documentation>
+                </xsd:annotation>
+            </xsd:element>
+        </xsd:sequence>
+    </xsd:complexType>
+    <xsd:complexType name="server-platform">
+        <xsd:annotation>
+            <xsd:documentation>
+                This is the node element that describes which server
+                platform to use, JTA settings and runtime services
+                settings
+            </xsd:documentation>
+        </xsd:annotation>
+        <xsd:sequence>
+            <xsd:element name="enable-runtime-services"
+                type="xsd:boolean" default="true" minOccurs="0">
+                <xsd:annotation>
+                    <xsd:documentation>
+                        This element is an optional element. This
+                        specifies whether or not the JMX MBean for
+                        providing runtime services is deployed.
+                    </xsd:documentation>
+                </xsd:annotation>
+            </xsd:element>
+            <xsd:element name="enable-jta" type="xsd:boolean"
+                default="true" minOccurs="0">
+                <xsd:annotation>
+                    <xsd:documentation>
+                        This element is an optional element. This
+                        specifies whether or not this session will
+                        integrate with the JTA (i.e. whether the session
+                        will be populated with a transaction controller
+                        class. The choice of server-class will
+                        automatically be chosen based on the transaction
+                        controller
+                    </xsd:documentation>
+                </xsd:annotation>
+            </xsd:element>
+        </xsd:sequence>
+    </xsd:complexType>
+    <xsd:complexType name="custom-platform">
+        <xsd:complexContent>
+            <xsd:extension base="server-platform">
+                <xsd:sequence>
+                    <xsd:element name="server-class" type="xsd:string"
+                        default="org.eclipse.persistence.platform.server.CustomServerPlatform"
+                        minOccurs="0">
+                        <xsd:annotation>
+                            <xsd:documentation>
+                                This is the subclass of
+                                org.eclipse.persistence.platform.server.PlatformBase
+                                to specify which server platform to use
+                            </xsd:documentation>
+                        </xsd:annotation>
+                    </xsd:element>
+                    <xsd:element
+                        name="external-transaction-controller-class" type="xsd:string"
+                        minOccurs="0" />
+                </xsd:sequence>
+            </xsd:extension>
+        </xsd:complexContent>
+    </xsd:complexType>
+    <xsd:complexType name="oc4j-903-platform">
+        <xsd:complexContent>
+            <xsd:extension base="server-platform" />
+        </xsd:complexContent>
+    </xsd:complexType>
+    <xsd:complexType name="oc4j-904-platform">
+        <xsd:complexContent>
+            <xsd:extension base="server-platform" />
+        </xsd:complexContent>
+    </xsd:complexType>
+    <xsd:complexType name="oc4j-1012-platform">
+        <xsd:complexContent>
+            <xsd:extension base="server-platform" />
+        </xsd:complexContent>
+    </xsd:complexType>
+    <xsd:complexType name="oc4j-1013-platform">
+        <xsd:complexContent>
+            <xsd:extension base="server-platform" />
+        </xsd:complexContent>
+    </xsd:complexType>
+    <xsd:complexType name="oc4j-1111-platform">
+        <xsd:complexContent>
+            <xsd:extension base="server-platform"/>
+        </xsd:complexContent>
+    </xsd:complexType>
+    <xsd:complexType name="weblogic-61-platform">
+        <xsd:complexContent>
+            <xsd:extension base="server-platform" />
+        </xsd:complexContent>
+    </xsd:complexType>
+    <xsd:complexType name="weblogic-70-platform">
+        <xsd:complexContent>
+            <xsd:extension base="server-platform" />
+        </xsd:complexContent>
+    </xsd:complexType>
+    <xsd:complexType name="weblogic-81-platform">
+        <xsd:complexContent>
+            <xsd:extension base="server-platform" />
+        </xsd:complexContent>
+    </xsd:complexType>
+    <xsd:complexType name="weblogic-9-platform">
+        <xsd:complexContent>
+            <xsd:extension base="server-platform" />
+        </xsd:complexContent>
+    </xsd:complexType>
+    <xsd:complexType name="weblogic-10-platform">
+        <xsd:complexContent>
+            <xsd:extension base="server-platform" />
+        </xsd:complexContent>
+    </xsd:complexType>
+    <xsd:complexType name="websphere-40-platform">
+        <xsd:complexContent>
+            <xsd:extension base="server-platform" />
+        </xsd:complexContent>
+    </xsd:complexType>
+    <xsd:complexType name="websphere-50-platform">
+        <xsd:complexContent>
+            <xsd:extension base="server-platform" />
+        </xsd:complexContent>
+    </xsd:complexType>
+    <xsd:complexType name="websphere-51-platform">
+        <xsd:complexContent>
+            <xsd:extension base="server-platform" />
+        </xsd:complexContent>
+    </xsd:complexType>
+    <xsd:complexType name="websphere-60-platform">
+        <xsd:complexContent>
+            <xsd:extension base="server-platform" />
+        </xsd:complexContent>
+    </xsd:complexType>
+    <xsd:complexType name="websphere-61-platform">
+        <xsd:complexContent>
+            <xsd:extension base="server-platform" />
+        </xsd:complexContent>
+    </xsd:complexType>
+    <xsd:complexType name="jboss-platform">
+        <xsd:complexContent>
+            <xsd:extension base="server-platform" />
+        </xsd:complexContent>
+    </xsd:complexType>
+    <xsd:complexType name="session-broker">
+        <xsd:annotation>
+            <xsd:documentation>
+                Provides a single view to a session that
+                transparently accesses multple databases.
+            </xsd:documentation>
+        </xsd:annotation>
+        <xsd:complexContent>
+            <xsd:extension base="session">
+                <xsd:sequence>
+                    <xsd:element name="session-name" type="xsd:string"
+                        maxOccurs="unbounded">
+                        <xsd:annotation>
+                            <xsd:documentation>
+                                This is the element that represents the
+                                session name
+                            </xsd:documentation>
+                        </xsd:annotation>
+                    </xsd:element>
+                </xsd:sequence>
+            </xsd:extension>
+        </xsd:complexContent>
+    </xsd:complexType>
+    <xsd:simpleType name="project">
+        <xsd:restriction base="xsd:string" />
+    </xsd:simpleType>
+    <xsd:simpleType name="xml">
+        <xsd:restriction base="project" />
+    </xsd:simpleType>
+    <xsd:simpleType name="class">
+        <xsd:restriction base="project" />
+    </xsd:simpleType>
+    <xsd:complexType name="database-session">
+        <xsd:annotation>
+            <xsd:documentation>
+                The session is the primary interface into EclipseLink, the
+                application should do all of its reading and writing of
+                objects through the session. The session also manages
+                transactions and units of work. The database session is
+                intended for usage in two-tier client-server
+                applications. Although it could be used in a server
+                situation, it is limitted to only having a single
+                database connection and only allows a single open
+                database transaction.
+            </xsd:documentation>
+        </xsd:annotation>
+        <xsd:complexContent>
+            <xsd:extension base="session">
+                <xsd:sequence>
+                    <xsd:element name="primary-project" type="project"
+                        minOccurs="0">
+                        <xsd:annotation>
+                            <xsd:documentation>
+                                This project (class or xml) will be
+                                loaded as the primary project for the
+                                session.
+                            </xsd:documentation>
+                        </xsd:annotation>
+                    </xsd:element>
+                    <xsd:element name="additional-project"
+                        type="project" minOccurs="0" maxOccurs="unbounded">
+                        <xsd:annotation>
+                            <xsd:documentation>
+                                Additional projects will have their
+                                descriptors appended to the primary
+                                project.
+                            </xsd:documentation>
+                        </xsd:annotation>
+                    </xsd:element>
+                    <xsd:element name="login" type="login"
+                        minOccurs="0" />
+                </xsd:sequence>
+            </xsd:extension>
+        </xsd:complexContent>
+    </xsd:complexType>
+    <xsd:complexType name="server-session">
+        <xsd:annotation>
+            <xsd:documentation>
+                Is an extension of a DatabaseSession
+            </xsd:documentation>
+        </xsd:annotation>
+        <xsd:complexContent>
+            <xsd:extension base="database-session">
+                <xsd:sequence>
+                    <xsd:element name="connection-pools"
+                        minOccurs="0">
+                        <xsd:annotation>
+                            <xsd:documentation>
+                                Connection pools are only for usage with
+                                internal connection pooling and should
+                                not be used if using external connection
+                                pooling
+                            </xsd:documentation>
+                        </xsd:annotation>
+                        <xsd:complexType>
+                            <xsd:sequence>
+                                <xsd:element name="read-connection-pool"
+                                    type="read-connection-pool" minOccurs="0" />
+                                <xsd:element
+                                    name="write-connection-pool" type="connection-pool"
+                                    minOccurs="0" />
+                                <xsd:element
+                                    name="sequence-connection-pool" type="connection-pool"
+                                    minOccurs="0">
+                                    <xsd:annotation>
+                                        <xsd:documentation>
+                                            Set this tag to use the
+                                            sequence connection pool
+                                        </xsd:documentation>
+                                    </xsd:annotation>
+                                </xsd:element>
+                                <xsd:element name="connection-pool"
+                                    type="connection-pool" minOccurs="0" maxOccurs="unbounded" />
+                            </xsd:sequence>
+                        </xsd:complexType>
+                    </xsd:element>
+                    <xsd:element name="connection-policy"
+                        type="connection-policy" minOccurs="0" />
+                </xsd:sequence>
+            </xsd:extension>
+        </xsd:complexContent>
+    </xsd:complexType>
+    <xsd:complexType name="connection-policy">
+        <xsd:annotation>
+            <xsd:documentation>
+                Used to specify how default client sessions are acquired
+            </xsd:documentation>
+        </xsd:annotation>
+        <xsd:sequence>
+            <xsd:element name="exclusive-connection" type="xsd:boolean"
+                default="false" minOccurs="0">
+                <xsd:annotation>
+                    <xsd:documentation>
+                        Specifies if an exclusive connection should be
+                        used for reads, required for VPD, or user based
+                        read security.
+                    </xsd:documentation>
+                </xsd:annotation>
+            </xsd:element>
+            <xsd:element name="lazy" type="xsd:boolean" default="true"
+                minOccurs="0">
+                <xsd:annotation>
+                    <xsd:documentation>
+                        Specifies if a connection should be acquired and
+                        held upfront in the client session, or only
+                        acquired when needed and then released.
+                    </xsd:documentation>
+                </xsd:annotation>
+            </xsd:element>
+        </xsd:sequence>
+    </xsd:complexType>
+    <xsd:complexType name="login">
+        <xsd:annotation>
+            <xsd:documentation>
+                Defines common fields for database-login and eis-login
+            </xsd:documentation>
+        </xsd:annotation>
+        <xsd:sequence>
+            <xsd:element name="platform-class" type="xsd:string"
+                minOccurs="0">
+                <xsd:annotation>
+                    <xsd:documentation>
+                        This is the element that represents the platform
+                        class name
+                    </xsd:documentation>
+                </xsd:annotation>
+            </xsd:element>
+            <xsd:element name="user-name" type="xsd:string"
+                minOccurs="0">
+                <xsd:annotation>
+                    <xsd:documentation>
+                        This element is used in the login as well as the
+                        Cache Synchronization feature
+                    </xsd:documentation>
+                </xsd:annotation>
+            </xsd:element>
+            <xsd:element name="encryption-class" type="xsd:string"
+                default="org.eclipse.persistence.internal.security.JCEEncryptor"
+                minOccurs="0">
+                <xsd:annotation>
+                    <xsd:documentation>
+                        This element is used in the login as well as the
+                        Cache Synchronization feature
+                    </xsd:documentation>
+                </xsd:annotation>
+            </xsd:element>
+            <xsd:element name="password" type="xsd:string"
+                minOccurs="0">
+                <xsd:annotation>
+                    <xsd:documentation>
+                        This element is used in the login as well as the
+                        Cache Synchronization feature
+                    </xsd:documentation>
+                </xsd:annotation>
+            </xsd:element>
+            <xsd:element name="table-qualifier" type="xsd:string"
+                minOccurs="0">
+                <xsd:annotation>
+                    <xsd:documentation>
+                        Set the default qualifier for all tables. This
+                        can be the creator of the table or database name
+                        the table exists on. This is required by some
+                        databases such as Oracle and DB2.
+                    </xsd:documentation>
+                </xsd:annotation>
+            </xsd:element>
+            <xsd:element name="external-connection-pooling"
+                type="xsd:boolean" default="false" minOccurs="0">
+                <xsd:annotation>
+                    <xsd:documentation>
+                        Set to true if the connection should use an
+                        external connection pool
+                    </xsd:documentation>
+                </xsd:annotation>
+            </xsd:element>
+            <xsd:element name="external-transaction-controller"
+                type="xsd:boolean" minOccurs="0">
+                <xsd:annotation>
+                    <xsd:documentation>
+                        Set to true if the session will be using an
+                        external transaction controller
+                    </xsd:documentation>
+                </xsd:annotation>
+            </xsd:element>
+            <xsd:element name="sequencing" minOccurs="0">
+                <xsd:annotation>
+                    <xsd:documentation>
+                        Sequencing information.
+                    </xsd:documentation>
+                </xsd:annotation>
+                <xsd:complexType>
+                    <xsd:sequence>
+                        <xsd:element name="default-sequence"
+                            type="sequence" minOccurs="0">
+                            <xsd:annotation>
+                                <xsd:documentation>
+                                    Default sequence. The name is
+                                    optional. If no name provided an
+                                    empty string will be used as a name.
+                                </xsd:documentation>
+                            </xsd:annotation>
+                        </xsd:element>
+                        <xsd:element name="sequences" minOccurs="0">
+                            <xsd:annotation>
+                                <xsd:documentation>
+                                    Non default sequences. Make sure
+                                    each sequence has unique name.
+                                </xsd:documentation>
+                            </xsd:annotation>
+                            <xsd:complexType>
+                                <xsd:sequence>
+                                    <xsd:element name="sequence"
+                                        type="sequence" minOccurs="0" maxOccurs="unbounded" />
+                                </xsd:sequence>
+                            </xsd:complexType>
+                        </xsd:element>
+                    </xsd:sequence>
+                </xsd:complexType>
+            </xsd:element>
+            <xsd:element name="property" minOccurs="0"
+                maxOccurs="unbounded">
+                <xsd:annotation>
+                    <xsd:documentation>
+                        This element is an optional element of a login.
+                        It is used to define extra properties on the
+                        login
+                    </xsd:documentation>
+                </xsd:annotation>
+                <xsd:complexType>
+                    <xsd:attribute name="name" type="xsd:string"
+                        use="required" />
+                    <xsd:attribute name="value" type="xsd:string"
+                        use="required" />
+                </xsd:complexType>
+            </xsd:element>
+        </xsd:sequence>
+    </xsd:complexType>
+    <xsd:complexType name="database-login">
+        <xsd:annotation>
+            <xsd:documentation>
+                Holds the configuration information necessary to connect
+                to a JDBC driver.
+            </xsd:documentation>
+        </xsd:annotation>
+        <xsd:complexContent>
+            <xsd:extension base="login">
+                <xsd:sequence>
+                    <xsd:choice minOccurs="0">
+                        <xsd:sequence>
+                            <xsd:element name="driver-class"
+                                type="xsd:string">
+                                <xsd:annotation>
+                                    <xsd:documentation>
+                                        The driver class is the Java
+                                        class for the JDBC driver to be
+                                        used (e.g.
+                                        sun.jdbc.odbc.JdbcOdbcDriver.class)
+                                    </xsd:documentation>
+                                </xsd:annotation>
+                            </xsd:element>
+                            <xsd:element name="connection-url"
+                                type="xsd:string">
+                                <xsd:annotation>
+                                    <xsd:documentation>
+                                        This is the URL that will be
+                                        used to connect to the database.
+                                    </xsd:documentation>
+                                </xsd:annotation>
+                            </xsd:element>
+                        </xsd:sequence>
+                        <xsd:element name="datasource">
+                            <xsd:annotation>
+                                <xsd:documentation>
+                                    This is the URL of a datasource that
+                                    may be used by the session to
+                                    connect to the database.
+                                </xsd:documentation>
+                            </xsd:annotation>
+                            <xsd:complexType>
+                                <xsd:simpleContent>
+                                    <xsd:extension base="xsd:string">
+                                        <xsd:attribute name="lookup"
+                                            type="lookup-enum" />
+                                    </xsd:extension>
+                                </xsd:simpleContent>
+                            </xsd:complexType>
+                        </xsd:element>
+                    </xsd:choice>
+                    <xsd:element name="bind-all-parameters"
+                        type="xsd:boolean" default="true" minOccurs="0">
+                        <xsd:annotation>
+                            <xsd:documentation>
+                                Set whether to bind all arguments to any
+                                SQL statement.
+                            </xsd:documentation>
+                        </xsd:annotation>
+                    </xsd:element>
+                    <xsd:element name="cache-all-statements"
+                        type="xsd:boolean" default="false" minOccurs="0">
+                        <xsd:annotation>
+                            <xsd:documentation>
+                                Set whether prepared statements should
+                                be cached.
+                            </xsd:documentation>
+                        </xsd:annotation>
+                    </xsd:element>
+                    <xsd:element name="byte-array-binding"
+                        type="xsd:boolean" default="true" minOccurs="0">
+                        <xsd:annotation>
+                            <xsd:documentation>
+                                EclipseLink can be configured to use
+                                parameter binding for large binary data.
+                                By default EclipseLink will print this data
+                                as hex through the JDBC binary excape
+                                clause. Both binding and printing have
+                                various limits on all databases (e.g. 5k
+                                - 32k).
+                            </xsd:documentation>
+                        </xsd:annotation>
+                    </xsd:element>
+                    <xsd:element name="string-binding"
+                        type="xsd:boolean" default="false" minOccurs="0">
+                        <xsd:annotation>
+                            <xsd:documentation>
+                                Set to true if strings should be bound.
+                                Used to help bean introspection.
+                            </xsd:documentation>
+                        </xsd:annotation>
+                    </xsd:element>
+                    <xsd:element name="streams-for-binding"
+                        type="xsd:boolean" default="false" minOccurs="0">
+                        <xsd:annotation>
+                            <xsd:documentation>
+                                EclipseLink can be configured to use streams
+                                to store large binary data. This can
+                                improve the max size for reading/writing
+                                on some JDBC drivers.
+                            </xsd:documentation>
+                        </xsd:annotation>
+                    </xsd:element>
+                    <xsd:element name="force-field-names-to-upper-case"
+                        type="xsd:boolean" default="false" minOccurs="0">
+                        <xsd:annotation>
+                            <xsd:documentation>
+                                This setting can be used if the
+                                application expects upper case but the
+                                database does not return consistent case
+                                (e.g. different databases).
+                            </xsd:documentation>
+                        </xsd:annotation>
+                    </xsd:element>
+                    <xsd:element name="optimize-data-conversion"
+                        type="xsd:boolean" default="true" minOccurs="0">
+                        <xsd:annotation>
+                            <xsd:documentation>
+                                Set whether driver level data conversion
+                                optimization is enabled. This can be
+                                disabled as some drivers perform data
+                                conversion themselves incorrectly.
+                            </xsd:documentation>
+                        </xsd:annotation>
+                    </xsd:element>
+                    <xsd:element name="trim-strings" type="xsd:boolean"
+                        default="true" minOccurs="0">
+                        <xsd:annotation>
+                            <xsd:documentation>
+                                By default CHAR field values have
+                                trailing blanks trimmed, this can be
+                                configured.
+                            </xsd:documentation>
+                        </xsd:annotation>
+                    </xsd:element>
+                    <xsd:element name="batch-writing" type="xsd:boolean"
+                        default="false" minOccurs="0">
+                        <xsd:annotation>
+                            <xsd:documentation>
+                                EclipseLink can be configured to use batch
+                                writing. This facility allows multiple
+                                write operations to be submitted to a
+                                database for processing at once.
+                                Submitting multiple updates together,
+                                instead of individually, can greatly
+                                improve performance in some situations.
+                            </xsd:documentation>
+                        </xsd:annotation>
+                    </xsd:element>
+                    <xsd:element name="jdbc-batch-writing"
+                        type="xsd:boolean" default="true" minOccurs="0">
+                        <xsd:annotation>
+                            <xsd:documentation>
+                                Setting this tag with true indicates to
+                                EclipseLink that the JDBC driver supports
+                                batch writing. EclipseLink's internal batch
+                                writing is disabled. Setting this tag
+                                with false indicates to EclipseLink that the
+                                JDBC driver does not support batch
+                                writing. This will revert to the default
+                                behaviour which is to delegate to
+                                EclipseLink's internal batch writing.
+                            </xsd:documentation>
+                        </xsd:annotation>
+                    </xsd:element>
+                    <xsd:element name="max-batch-writing-size"
+                        type="xsd:integer" default="32000" minOccurs="0">
+                        <xsd:annotation>
+                            <xsd:documentation>
+                                Allow for the max batch writing size to
+                                be set. This allows for the batch size
+                                to be limited as most database have
+                                strict limits. The size is in
+                                characters, the default is 32000 but the
+                                real value depends on the database
+                                configuration.
+                            </xsd:documentation>
+                        </xsd:annotation>
+                    </xsd:element>
+                    <xsd:element name="native-sql" type="xsd:boolean"
+                        default="false" minOccurs="0">
+                        <xsd:annotation>
+                            <xsd:documentation>
+                                EclipseLink can be configured to use
+                                database specific sql grammar not JDBC
+                                specific. This is because unfortunately
+                                some bridges to not support the full
+                                JDBC standard. By default EclipseLink uses
+                                the JDBC sql grammar.
+                            </xsd:documentation>
+                        </xsd:annotation>
+                    </xsd:element>
+                    <xsd:element name="struct-converters"
+                        minOccurs="0">
+                        <xsd:complexType>
+                            <xsd:group ref="struct-converters" />
+                        </xsd:complexType>
+                    </xsd:element>
+					<xsd:element name="connection-health-validated-on-error" type="xsd:boolean" minOccurs="0">
+						<xsd:annotation>
+							<xsd:documentation>If true will cause EclipseLink to ping database to determine if an SQLException was cause by a communication failure</xsd:documentation>
+						</xsd:annotation>
+					</xsd:element>
+					<xsd:element name="query-retry-attempt-count" type="xsd:integer" minOccurs="0">
+						<xsd:annotation>
+							<xsd:documentation>Configure the number of attempts EclipseLink will make if EclipseLink is attempting to retry a query.</xsd:documentation>
+						</xsd:annotation>
+					</xsd:element>
+					<xsd:element name="delay-between-reconnect-attempts" type="xsd:integer" minOccurs="0">
+						<xsd:annotation>
+							<xsd:documentation>Configure the time in miliseconds that EclipseLink will wait between attempts to reconnect if EclipseLink is attempting to retry a query.</xsd:documentation>
+						</xsd:annotation>
+					</xsd:element>
+					<xsd:element name="ping-sql" type="xsd:string" minOccurs="0">
+						<xsd:annotation>
+							<xsd:documentation>Override the platform specific SQL that EclipseLink will issue to a connection to determine if the connection is still live.</xsd:documentation>
+						</xsd:annotation>
+					</xsd:element>
+                </xsd:sequence>
+            </xsd:extension>
+        </xsd:complexContent>
+    </xsd:complexType>
+    <xsd:simpleType name="lookup-enum">
+        <xsd:restriction base="xsd:string">
+            <xsd:enumeration value="composite-name" />
+            <xsd:enumeration value="compound-name" />
+            <xsd:enumeration value="string" />
+        </xsd:restriction>
+    </xsd:simpleType>
+    <xsd:complexType name="eis-login">
+        <xsd:annotation>
+            <xsd:documentation>
+                Defines connection information and datasource
+                properties. There are three ways to connect through EIS,
+                - Provide a JNDI name to the ConnectionFactory and use
+                the default getConnection - Provide a JNDI name to the
+                ConnectionFactory, and a driver specific ConnectionSpec
+                to pass to the getConnection - Connect in a non-managed
+                way directly to the driver specific ConnectionFactory An
+                EISConnectionSpec must be provided to define how to
+                connect to the EIS adapter. The EIS platform can be used
+                to provide datasource/driver specific behavoir such as
+                InteractionSpec and Record conversion.
+            </xsd:documentation>
+        </xsd:annotation>
+        <xsd:complexContent>
+            <xsd:extension base="login">
+                <xsd:sequence>
+                    <xsd:element name="connection-spec-class"
+                        type="xsd:string" minOccurs="0" />
+                    <xsd:element name="connection-factory-url"
+                        type="xsd:string" minOccurs="0" />
+                </xsd:sequence>
+            </xsd:extension>
+        </xsd:complexContent>
+    </xsd:complexType>
+    <xsd:complexType name="xml-login">
+    	<xsd:annotation>
+    		<xsd:documentation>
+    			Defines login and platform type to be used
+    		</xsd:documentation>
+    	</xsd:annotation>
+    	<xsd:complexContent>
+    		<xsd:extension base="login">
+    			<xsd:sequence>
+    				<xsd:element name="equal-namespace-resolvers"
+    					type="xsd:boolean" maxOccurs="1" minOccurs="0">
+    				</xsd:element>
+    				<xsd:element name="document-preservation-policy"
+    					maxOccurs="1" minOccurs="0"
+    					type="document-preservation-policy">
+
+    				</xsd:element>
+    			</xsd:sequence>
+    		</xsd:extension>
+    	</xsd:complexContent>
+    </xsd:complexType>
+    <xsd:complexType name="connection-pool">
+        <xsd:annotation>
+            <xsd:documentation>
+                Used to specify how connections should be pooled in a
+                server session.
+            </xsd:documentation>
+        </xsd:annotation>
+        <xsd:sequence>
+            <xsd:element name="name" type="xsd:string" />
+            <xsd:element name="max-connections" type="xsd:integer"
+                minOccurs="0">
+                <xsd:annotation>
+                    <xsd:documentation>
+                        The max number of connections that will be
+                        created in the pool
+                    </xsd:documentation>
+                </xsd:annotation>
+            </xsd:element>
+            <xsd:element name="min-connections" type="xsd:integer"
+                minOccurs="0">
+                <xsd:annotation>
+                    <xsd:documentation>
+                        The min number of connections that will aways be
+                        in the pool
+                    </xsd:documentation>
+                </xsd:annotation>
+            </xsd:element>
+            <xsd:element name="login" type="login" minOccurs="0" />
+        </xsd:sequence>
+    </xsd:complexType>
+    <xsd:complexType name="read-connection-pool">
+        <xsd:annotation>
+            <xsd:documentation>
+                The read connection pool is used for read access through
+                the server session. Any of the connection pools can be
+                used for the read pool however this is the default. This
+                pool allows for concurrent reads against the same JDBC
+                connection and requires that the JDBC connection support
+                concurrent read access.
+            </xsd:documentation>
+        </xsd:annotation>
+        <xsd:complexContent>
+            <xsd:extension base="connection-pool">
+                <xsd:sequence>
+                    <xsd:element name="exclusive" type="xsd:boolean"
+                        default="false" minOccurs="0">
+                        <xsd:annotation>
+                            <xsd:documentation>
+                                This tag is used to specify if the
+                                connections from the read connection
+                                pool are exclusive or not
+                            </xsd:documentation>
+                        </xsd:annotation>
+                    </xsd:element>
+                </xsd:sequence>
+            </xsd:extension>
+        </xsd:complexContent>
+    </xsd:complexType>
+    <xsd:complexType name="log">
+        <xsd:annotation>
+            <xsd:documentation>
+                Defines the common logging options
+            </xsd:documentation>
+        </xsd:annotation>
+    </xsd:complexType>
+    <xsd:complexType name="java-log">
+        <xsd:annotation>
+            <xsd:documentation>
+                Defines the options of the Java log
+            </xsd:documentation>
+        </xsd:annotation>
+        <xsd:complexContent>
+            <xsd:extension base="log">
+                <xsd:sequence>
+                    <xsd:element name="logging-options"
+                        type="logging-options" minOccurs="0" />
+                </xsd:sequence>
+            </xsd:extension>
+        </xsd:complexContent>
+    </xsd:complexType>
+    <xsd:complexType name="eclipselink-log">
+        <xsd:annotation>
+            <xsd:documentation>
+                Defines the options of the EclipseLink log
+            </xsd:documentation>
+        </xsd:annotation>
+        <xsd:complexContent>
+            <xsd:extension base="log">
+                <xsd:sequence>
+                    <xsd:element name="log-level" default="info"
+                        minOccurs="0">
+                        <xsd:annotation>
+                            <xsd:documentation>
+                                This element specifies the log level for logging
+                            </xsd:documentation>
+                        </xsd:annotation>
+                        <xsd:simpleType>
+                            <xsd:restriction base="xsd:string">
+                                <xsd:enumeration value="off" />
+                                <xsd:enumeration value="severe" />
+                                <xsd:enumeration value="warning" />
+                                <xsd:enumeration value="info" />
+                                <xsd:enumeration value="config" />
+                                <xsd:enumeration value="fine" />
+                                <xsd:enumeration value="finer" />
+                                <xsd:enumeration value="finest" />
+                                <xsd:enumeration value="all" />
+                            </xsd:restriction>
+                        </xsd:simpleType>
+                    </xsd:element>
+                    <xsd:element name="file-name" type="xsd:string"
+                        minOccurs="0">
+                        <xsd:annotation>
+                            <xsd:documentation>
+                                Name of the file to write the logging to
+                            </xsd:documentation>
+                        </xsd:annotation>
+                    </xsd:element>
+                    <xsd:element name="logging-options"
+                        type="logging-options" minOccurs="0" />
+                </xsd:sequence>
+            </xsd:extension>
+        </xsd:complexContent>
+    </xsd:complexType>
+    <xsd:complexType name="server-log">
+        <xsd:annotation>
+            <xsd:documentation>
+                Defines the options of the Server log
+            </xsd:documentation>
+        </xsd:annotation>
+        <xsd:complexContent>
+            <xsd:extension base="log" />
+        </xsd:complexContent>
+    </xsd:complexType>
+    <xsd:complexType name="logging-options">
+        <xsd:sequence>
+            <xsd:element name="log-exception-stacktrace"
+                type="xsd:boolean" default="false" minOccurs="0">
+                <xsd:annotation>
+                    <xsd:documentation>
+                        Set whether to log exception stacktrace. Without
+                        this element, the stacktrace is logged for FINER
+                        or less (FINEST)
+                    </xsd:documentation>
+                </xsd:annotation>
+            </xsd:element>
+            <xsd:element name="print-thread" type="xsd:boolean"
+                default="false" minOccurs="0">
+                <xsd:annotation>
+                    <xsd:documentation>
+                        Set whether to log thread. Without this element,
+                        the thread is logged for FINE or less (FINER or
+                        FINEST)
+                    </xsd:documentation>
+                </xsd:annotation>
+            </xsd:element>
+            <xsd:element name="print-session" type="xsd:boolean"
+                default="true" minOccurs="0">
+                <xsd:annotation>
+                    <xsd:documentation>
+                        Set whether to log session. Without this
+                        element, the session is always printed
+                    </xsd:documentation>
+                </xsd:annotation>
+            </xsd:element>
+            <xsd:element name="print-connection" type="xsd:boolean"
+                default="true" minOccurs="0">
+                <xsd:annotation>
+                    <xsd:documentation>
+                        Set whether to log connection. Without this
+                        element, the connection is always printed
+                    </xsd:documentation>
+                </xsd:annotation>
+            </xsd:element>
+            <xsd:element name="print-date" type="xsd:boolean"
+                default="true" minOccurs="0">
+                <xsd:annotation>
+                    <xsd:documentation>
+                        Set whether to log date. Without this element,
+                        the date is always printed
+                    </xsd:documentation>
+                </xsd:annotation>
+            </xsd:element>
+        </xsd:sequence>
+    </xsd:complexType>
+    <xsd:complexType name="transport-manager">
+        <xsd:annotation>
+            <xsd:documentation>
+                This element defines the transport mechanism of the RCM.
+                The default transport mechanism is RMI
+            </xsd:documentation>
+        </xsd:annotation>
+        <xsd:sequence>
+            <xsd:element name="on-connection-error"
+                default="DiscardConnection" minOccurs="0">
+                <xsd:annotation>
+                    <xsd:documentation>
+                        This element is an optional element of transport
+                        element and has value of "DiscardConnection" or
+                        "KeepConnection". It determines whether
+                        connection to a RCM service should be dropped if
+                        there is a communication error with that RCM
+                        service. The default value for this element is
+                        "DiscardConnection".
+                    </xsd:documentation>
+                </xsd:annotation>
+                <xsd:simpleType>
+                    <xsd:restriction base="xsd:string">
+                        <xsd:enumeration value="KeepConnection" />
+                        <xsd:enumeration value="DiscardConnection" />
+                    </xsd:restriction>
+                </xsd:simpleType>
+            </xsd:element>
+        </xsd:sequence>
+    </xsd:complexType>
+    <xsd:complexType name="rmi-transport">
+        <xsd:annotation>
+            <xsd:documentation>
+                This element is an optional element of transport
+                element. It defines the RMI transport mechanism. The
+                default naming service is JNDI
+            </xsd:documentation>
+        </xsd:annotation>
+        <xsd:complexContent>
+            <xsd:extension base="transport-manager">
+                <xsd:sequence>
+                    <xsd:element name="send-mode" default="Asynchronous"
+                        minOccurs="0">
+                        <xsd:annotation>
+                            <xsd:documentation>
+                                This element is an optional element of
+                                rmi element and has value of
+                                "Asynchronous" or "Synchronous". It
+                                determines whether the RCM propagates
+                                command and does not wait for command to
+                                finish its execution in asynchronous
+                                mode or wait for command to finish its
+                                execution in synchronous mode. The
+                                default value of this element is
+                                "Asynchronous".
+                            </xsd:documentation>
+                        </xsd:annotation>
+                        <xsd:simpleType>
+                            <xsd:restriction base="xsd:string">
+                                <xsd:enumeration value="Asynchronous" />
+                                <xsd:enumeration value="Synchronous" />
+                            </xsd:restriction>
+                        </xsd:simpleType>
+                    </xsd:element>
+                    <xsd:element name="discovery" minOccurs="0">
+                        <xsd:annotation>
+                            <xsd:documentation>
+                                This element is an optional element of
+                                rmi element. It determines whether the
+                                Discovery settings should be changed.
+                                Note that a default Discovery with its
+                                default settings is created when the rmi
+                                element is specified.
+                            </xsd:documentation>
+                        </xsd:annotation>
+                        <xsd:complexType>
+                            <xsd:sequence>
+                                <xsd:element
+                                    name="multicast-group-address" type="xsd:string"
+                                    default="226.10.12.64" minOccurs="0" />
+                                <xsd:element name="multicast-port"
+                                    type="xsd:integer" default="3121" minOccurs="0" />
+                                <xsd:element name="announcement-delay"
+                                    type="xsd:integer" default="1000" minOccurs="0">
+                                    <xsd:annotation>
+                                        <xsd:documentation>
+                                            This element is an optional
+                                            element of discovery
+                                            elemenent. It determines
+                                            whether the multicast group
+                                            address should be changed.
+                                            The default value of this
+                                            element is "1000"
+                                        </xsd:documentation>
+                                    </xsd:annotation>
+                                </xsd:element>
+                                <xsd:element name="packet-time-to-live"
+                                    type="xsd:integer" default="2" minOccurs="0">
+                                    <xsd:annotation>
+                                        <xsd:documentation>
+                                            This element is an optional
+                                            element of discovery
+                                            elemenent. It determines
+                                            whether the time-to-live of
+                                            the packets that are sent
+                                            from the Discovery's
+                                            mulsticast socket should be
+                                            changed. The default value
+                                            of this element is "2"
+                                        </xsd:documentation>
+                                    </xsd:annotation>
+                                </xsd:element>
+                            </xsd:sequence>
+                        </xsd:complexType>
+                    </xsd:element>
+                    <xsd:choice minOccurs="0">
+                        <xsd:element name="jndi-naming-service"
+                            type="jndi-naming-service" />
+                        <xsd:element
+                            name="rmi-registry-naming-service">
+                            <xsd:annotation>
+                                <xsd:documentation>
+                                    This element is an optional element
+                                    of rmi elemenent. It determines
+                                    whether RMI registry should be used
+                                    for naming service
+                                </xsd:documentation>
+                            </xsd:annotation>
+                            <xsd:complexType>
+                                <xsd:sequence>
+                                    <xsd:element name="url"
+                                        type="xsd:string" minOccurs="0" />
+                                </xsd:sequence>
+                            </xsd:complexType>
+                        </xsd:element>
+                    </xsd:choice>
+                </xsd:sequence>
+            </xsd:extension>
+        </xsd:complexContent>
+    </xsd:complexType>
+    <xsd:complexType name="rmi-iiop-transport">
+        <xsd:annotation>
+            <xsd:documentation>
+                This element defines the RMI-IIOP transport mechanism of
+                the RCM. The default naming service is JNDI
+            </xsd:documentation>
+        </xsd:annotation>
+        <xsd:complexContent>
+            <xsd:extension base="rmi-transport" />
+        </xsd:complexContent>
+    </xsd:complexType>
+    <xsd:complexType name="jms-topic-transport">
+        <xsd:annotation>
+            <xsd:documentation>
+                This element defines the JMS topic transport mechanism
+                of the RCM
+            </xsd:documentation>
+        </xsd:annotation>
+        <xsd:complexContent>
+            <xsd:extension base="transport-manager">
+                <xsd:sequence>
+                    <xsd:element name="topic-host-url" type="xsd:string"
+                        minOccurs="0" />
+                    <xsd:element name="topic-connection-factory-name"
+                        type="xsd:string" default="jms/EclipseLinkTopicConnectionFactory"
+                        minOccurs="0" />
+                    <xsd:element name="topic-name" type="xsd:string"
+                        default="jms/EclipseLinkTopic" minOccurs="0" />
+                    <xsd:element name="jndi-naming-service"
+                        type="jndi-naming-service" />
+                </xsd:sequence>
+            </xsd:extension>
+        </xsd:complexContent>
+    </xsd:complexType>
+    <xsd:complexType name="oc4j-jgroups-transport">
+        <xsd:annotation>
+            <xsd:documentation>
+                This element defines the OC4J JGroups transport
+                mechanism of the RCM
+            </xsd:documentation>
+        </xsd:annotation>
+        <xsd:complexContent>
+            <xsd:extension base="transport-manager">
+                <xsd:sequence>
+                    <xsd:element name="use-single-threaded-notification"
+                        type="xsd:boolean" default="false" minOccurs="0" />
+                    <xsd:element name="topic-name" type="xsd:string"
+                        minOccurs="0" />
+                </xsd:sequence>
+            </xsd:extension>
+        </xsd:complexContent>
+    </xsd:complexType>
+    <xsd:complexType name="sun-corba-transport">
+        <xsd:annotation>
+            <xsd:documentation>
+                This element defines the Sun CORBA transport mechanism
+                of the RCM
+            </xsd:documentation>
+        </xsd:annotation>
+        <xsd:complexContent>
+            <xsd:extension base="transport-manager" />
+        </xsd:complexContent>
+    </xsd:complexType>
+    <xsd:complexType name="user-defined-transport">
+        <xsd:annotation>
+            <xsd:documentation>
+                This element is an optional element of transport
+                element. It determines whether a user implemented
+                transport mechanism that should be used.
+            </xsd:documentation>
+        </xsd:annotation>
+        <xsd:complexContent>
+            <xsd:extension base="transport-manager">
+                <xsd:sequence>
+                    <xsd:element name="transport-class"
+                        type="xsd:string" />
+                </xsd:sequence>
+            </xsd:extension>
+        </xsd:complexContent>
+    </xsd:complexType>
+    <xsd:complexType name="jndi-naming-service">
+        <xsd:sequence>
+            <xsd:element name="url" type="xsd:string" minOccurs="0">
+                <xsd:annotation>
+                    <xsd:documentation>
+                        This element is an optional element of
+                        jndi-naming-service. It determines whether the
+                        URL for naming service should be changed. 
+                    </xsd:documentation>
+                </xsd:annotation>
+            </xsd:element>
+            <xsd:element name="user-name" type="xsd:string"
+                default="admin" minOccurs="0" />
+            <xsd:element name="encryption-class" type="xsd:string"
+                default="org.eclipse.persistence.internal.security.JCEEncryptor"
+                minOccurs="0" />
+            <xsd:element name="password" type="xsd:string"
+                default="password" minOccurs="0" />
+            <!--  TODO: Need to have a non WebLogic (previously OC4J) default or route through server platform by default -->
+            <xsd:element name="initial-context-factory-name"
+                type="xsd:string"
+                default="weblogic.jndi.WLInitialContextFactory"
+                minOccurs="0">
+                <xsd:annotation>
+                    <xsd:documentation>
+                        This element is an optional element of
+                        jndi-naming-service. It determines whether the
+                        initial context factory class for naming service
+                        should be changed. 
+                    </xsd:documentation>
+                </xsd:annotation>
+            </xsd:element>
+            <xsd:element name="property" minOccurs="0"
+                maxOccurs="unbounded">
+                <xsd:annotation>
+                    <xsd:documentation>
+                        This element is an optional element of
+                        jndi-naming-service. It determines whether
+                        naming service requires extra property that is
+                        not defined by EclipseLink but it is required by the
+                        user application
+                    </xsd:documentation>
+                </xsd:annotation>
+                <xsd:complexType>
+                    <xsd:attribute name="name" type="xsd:string"
+                        use="required" />
+                    <xsd:attribute name="value" type="xsd:string"
+                        use="required" />
+                </xsd:complexType>
+            </xsd:element>
+        </xsd:sequence>
+    </xsd:complexType>
+    <xsd:group name="event-listener-classes">
+        <xsd:sequence>
+            <xsd:element name="event-listener-class" type="xsd:string"
+                minOccurs="0" maxOccurs="unbounded" />
+        </xsd:sequence>
+    </xsd:group>
+    <xsd:group name="struct-converters">
+        <xsd:sequence>
+            <xsd:element name="struct-converter" type="xsd:string"
+                minOccurs="0" maxOccurs="unbounded" />
+        </xsd:sequence>
+    </xsd:group>
+    <xsd:complexType name="sequence">
+        <xsd:annotation>
+            <xsd:documentation>Sequence object.</xsd:documentation>
+        </xsd:annotation>
+        <xsd:sequence>
+            <xsd:element name="name" type="xsd:string" minOccurs="0">
+                <xsd:annotation>
+                    <xsd:documentation>
+                        Sequence name.
+                    </xsd:documentation>
+                </xsd:annotation>
+            </xsd:element>
+            <xsd:element name="preallocation-size" type="xsd:integer"
+                default="50" minOccurs="0">
+                <xsd:annotation>
+                    <xsd:documentation>
+                        Sequence preallocation size.
+                    </xsd:documentation>
+                </xsd:annotation>
+            </xsd:element>
+        </xsd:sequence>
+    </xsd:complexType>
+    <xsd:complexType name="default-sequence">
+        <xsd:annotation>
+            <xsd:documentation>
+                References default sequence object, overriding its name
+                and (optionally) preallocation size.
+            </xsd:documentation>
+            <xsd:documentation>
+                To use preallocation size of default sequence object,
+                set preallocation size to 0
+            </xsd:documentation>
+        </xsd:annotation>
+        <xsd:complexContent>
+            <xsd:extension base="sequence" />
+        </xsd:complexContent>
+    </xsd:complexType>
+    <xsd:complexType name="native-sequence">
+        <xsd:annotation>
+            <xsd:documentation>
+                Database sequence mechanism used.
+            </xsd:documentation>
+        </xsd:annotation>
+        <xsd:complexContent>
+            <xsd:extension base="sequence" />
+        </xsd:complexContent>
+    </xsd:complexType>
+    <xsd:complexType name="table-sequence">
+        <xsd:annotation>
+            <xsd:documentation>Table sequence</xsd:documentation>
+        </xsd:annotation>
+        <xsd:complexContent>
+            <xsd:extension base="sequence">
+                <xsd:sequence>
+                    <xsd:element name="table" type="xsd:string"
+                        default="SEQUENCE" minOccurs="0">
+                        <xsd:annotation>
+                            <xsd:documentation>
+                                Define the name of the sequence table.
+                            </xsd:documentation>
+                        </xsd:annotation>
+                    </xsd:element>
+                    <xsd:element name="name-field" type="xsd:string"
+                        default="SEQ_NAME" minOccurs="0">
+                        <xsd:annotation>
+                            <xsd:documentation>
+                                Define the name of the sequence name
+                                field in the sequence table.
+                            </xsd:documentation>
+                        </xsd:annotation>
+                    </xsd:element>
+                    <xsd:element name="counter-field" type="xsd:string"
+                        default="SEQ_COUNT" minOccurs="0">
+                        <xsd:annotation>
+                            <xsd:documentation>
+                                Define the name of the sequence counter
+                                field in the sequence table.
+                            </xsd:documentation>
+                        </xsd:annotation>
+                    </xsd:element>
+                </xsd:sequence>
+            </xsd:extension>
+        </xsd:complexContent>
+    </xsd:complexType>
+    <xsd:complexType name="unary-table-sequence">
+        <xsd:annotation>
+            <xsd:documentation>
+                Unary table sequence - sequence name is a table name,
+                table has a single field and a single row
+            </xsd:documentation>
+        </xsd:annotation>
+        <xsd:complexContent>
+            <xsd:extension base="sequence">
+                <xsd:sequence>
+                    <xsd:element name="counter-field" type="xsd:string"
+                        default="SEQUENCE" minOccurs="0">
+                        <xsd:annotation>
+                            <xsd:documentation>
+                                Define the name of the sequence counter
+                                field in the sequence table.
+                            </xsd:documentation>
+                        </xsd:annotation>
+                    </xsd:element>
+                </xsd:sequence>
+            </xsd:extension>
+        </xsd:complexContent>
+    </xsd:complexType>
+    <xsd:complexType name="xmlfile-sequence">
+        <xsd:annotation>
+            <xsd:documentation>Xmlfile sequence.</xsd:documentation>
+        </xsd:annotation>
+        <xsd:complexContent>
+            <xsd:extension base="sequence" />
+        </xsd:complexContent>
+    </xsd:complexType>
+    <xsd:complexType name="xml-sequence">
+        <xsd:annotation>
+            <xsd:documentation>Xml sequence</xsd:documentation>
+        </xsd:annotation>
+        <xsd:complexContent>
+            <xsd:extension base="sequence">
+                <xsd:sequence>
+                    <xsd:element name="root-element" type="xsd:string"
+                        default="SEQUENCE" minOccurs="0">
+                        <xsd:annotation>
+                            <xsd:documentation>
+                                Define the name of the sequence table.
+                            </xsd:documentation>
+                        </xsd:annotation>
+                    </xsd:element>
+                    <xsd:element name="name-element" type="xsd:string"
+                        default="SEQ_NAME" minOccurs="0">
+                        <xsd:annotation>
+                            <xsd:documentation>
+                                Define the name of the sequence name
+                                field in the sequence table.
+                            </xsd:documentation>
+                        </xsd:annotation>
+                    </xsd:element>
+                    <xsd:element name="counter-element"
+                        type="xsd:string" default="SEQ_COUNT" minOccurs="0">
+                        <xsd:annotation>
+                            <xsd:documentation>
+                                Define the name of the sequence counter
+                                field in the sequence table.
+                            </xsd:documentation>
+                        </xsd:annotation>
+                    </xsd:element>
+                </xsd:sequence>
+            </xsd:extension>
+        </xsd:complexContent>
+    </xsd:complexType>
+
+
+
+    <xsd:complexType name="document-preservation-policy">
+        <xsd:annotation>
+        	<xsd:documentation>
+        		This element specifies which document preservation
+        		strategy will be used.
+        	</xsd:documentation>
+        </xsd:annotation>
+        <xsd:sequence>
+    		<xsd:element name="node-ordering-policy"
+    			type="node-ordering-policy" maxOccurs="1" minOccurs="0">
+    		</xsd:element>
+    	</xsd:sequence>
+    </xsd:complexType>
+
+    <xsd:complexType name="node-ordering-policy">
+    	<xsd:annotation>
+    		<xsd:documentation>
+    			This element specifies which node ordering strategy will
+    			be used.
+    		</xsd:documentation>
+    	</xsd:annotation></xsd:complexType>
+
+    <xsd:complexType
+    	name="descriptor-level-document-preservation-policy">
+        <xsd:annotation>
+        	<xsd:documentation>
+        		An implementation of DocumentPreservation Policy that
+        		accesses the session cache to store Objects and their
+        		associated nodes.
+        	</xsd:documentation>
+        </xsd:annotation>
+        <xsd:complexContent>
+    		<xsd:extension base="document-preservation-policy"></xsd:extension>
+    	</xsd:complexContent>
+    </xsd:complexType>
+
+    <xsd:complexType name="no-document-preservation-policy">
+        <xsd:annotation>
+        	<xsd:documentation>
+        		A DocumentPreservationPolicy to indicate that no
+        		document preservation work should be done.
+        	</xsd:documentation>
+        </xsd:annotation>
+        <xsd:complexContent>
+    		<xsd:extension base="document-preservation-policy"></xsd:extension>
+    	</xsd:complexContent>
+    </xsd:complexType>
+
+    <xsd:complexType name="xml-binder-policy">
+        <xsd:annotation>
+        	<xsd:documentation>
+        		An implementation of DocumentPreservationPolicy that
+        		maintains bidirectional relationships between Java
+        		Objects and the XMLNodes they originated from.
+        	</xsd:documentation>
+        </xsd:annotation>
+        <xsd:complexContent>
+    		<xsd:extension base="document-preservation-policy"></xsd:extension>
+    	</xsd:complexContent>
+    </xsd:complexType>
+
+    <xsd:complexType name="append-new-elements-ordering-policy">
+        <xsd:annotation>
+        	<xsd:documentation>
+        		An implementation of NodeOrderingPolicy that simply
+        		appends the new child element to the parent.
+        	</xsd:documentation>
+        </xsd:annotation>
+        <xsd:complexContent>
+    		<xsd:extension base="node-ordering-policy"></xsd:extension>
+    	</xsd:complexContent>
+    </xsd:complexType>
+
+    <xsd:complexType name="ignore-new-elements-ordering-policy">
+        <xsd:annotation>
+        	<xsd:documentation>
+        		An implementation of NodeOrderingPolicy that ignores any
+        		new elements when updating a cached document.
+        	</xsd:documentation>
+        </xsd:annotation>
+        <xsd:complexContent>
+    		<xsd:extension base="node-ordering-policy"></xsd:extension>
+    	</xsd:complexContent>
+    </xsd:complexType>
+
+    <xsd:complexType name="relative-position-ordering-policy">
+        <xsd:annotation>
+        	<xsd:documentation>
+        		An implementation of NodeOrderingPolicy that adds new
+        		elements to an XML Document based on the last updated
+        		sibling in their context.
+        	</xsd:documentation>
+        </xsd:annotation>
+        <xsd:complexContent>
+    		<xsd:extension base="node-ordering-policy"></xsd:extension>
+    	</xsd:complexContent>
+    </xsd:complexType>
+</xsd:schema>

@@ -1,0 +1,14 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<document-root>
+    <employee>
+        <contact-info>
+            <work-address-id>a100</work-address-id>
+            <work-address-id>a101</work-address-id>
+        </contact-info>
+    </employee>
+    <addresses>
+        <address aid="a100" />
+        <address aid="a101" />
+        <address aid="a102" />
+    </addresses>
+</document-root>

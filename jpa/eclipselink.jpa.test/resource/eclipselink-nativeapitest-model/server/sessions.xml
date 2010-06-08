@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="US-ASCII"?>
+<sessions xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="file://xsd/eclipselink_sessions_1.0.xsd" version="1.0">
+    <session xsi:type="server-session">
+        <name>NativeAPITest</name>
+        <server-platform xsi:type="%%server-platform-class%%"/>
+        <event-listener-classes/>
+        <logging xsi:type="eclipselink-log">
+            <log-level>finest</log-level>
+        </logging>
+        <primary-project xsi:type="xml">META-INF/NativeAPITestProject.xml</primary-project>
+        <login xsi:type="database-login">
+            <platform-class>%%database-platform%%</platform-class>
+            <external-connection-pooling>true</external-connection-pooling>
+            <external-transaction-controller>true</external-transaction-controller>
+            <sequencing>
+                <default-sequence xsi:type="table-sequence">
+                    <name>Default</name>
+                </default-sequence>
+            </sequencing> 
+            <datasource lookup="string">%%session-data-source-name%%</datasource>
+        </login>
+    </session>
+</sessions>

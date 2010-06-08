@@ -1,0 +1,34 @@
+<xsd:schema targetNamespace="http://example.com/address/" xmlns="http://example.com/address/"
+     elementFormDefault="qualified" sdoJava:package="mypackage.address"
+     xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:sdoJava="commonj.sdo/java" xmlns:ns0="http://example.com/process/">
+    <xsd:import schemaLocation="Process.xsd" namespace="http://example.com/process/"/>
+    <xsd:import namespace="commonj.sdo/java"/>
+    <xsd:complexType name="Address">
+        <xsd:sequence>
+            <xsd:element name="AddressId" type="xsd:decimal" minOccurs="0"/>
+            <xsd:element name="AddressName" type="xsd:string" minOccurs="0"/>
+            <xsd:element name="AddressLine1" type="xsd:string" minOccurs="0" nillable="true"/>
+            <xsd:element name="AddressLine2" type="xsd:string" minOccurs="0" nillable="true"/>
+            <xsd:element name="AddressLine3" type="xsd:string" minOccurs="0" nillable="true"/>
+            <xsd:element name="Description" type="xsd:string" minOccurs="0" nillable="true"/>
+            <xsd:element name="EmailAddress" type="xsd:string" minOccurs="0" nillable="true"/>
+            <xsd:element name="Country" type="xsd:string" minOccurs="0" nillable="true"/>
+            <xsd:element name="TownOrCity" type="xsd:string" minOccurs="0" nillable="true"/>
+            <xsd:element name="PostalCode" type="xsd:string" minOccurs="0" nillable="true"/>
+            <xsd:element name="TelephoneNumber1" type="xsd:string" minOccurs="0" nillable="true"/>
+            <xsd:element name="TelephoneNumber2" type="xsd:string" minOccurs="0" nillable="true"/>
+            <xsd:element name="TelephoneNumber3" type="xsd:string" minOccurs="0" nillable="true"/>
+        </xsd:sequence>
+    </xsd:complexType>
+    <xsd:complexType name="AddressResult">
+        <xsd:complexContent>
+            <xsd:extension base="ns0:MethodResult">
+                <xsd:sequence>
+                    <xsd:element name="Value" type="Address" minOccurs="0" maxOccurs="unbounded"/>
+                </xsd:sequence>
+            </xsd:extension>
+        </xsd:complexContent>
+    </xsd:complexType>
+    <xsd:element name="addressResult" type="AddressResult"/>
+    <xsd:element name="address" type="Address"/>
+</xsd:schema>

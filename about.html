@@ -1,0 +1,218 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1"/>
+<title>About EclipseLink 2.0.0</title>
+</head>
+<body lang="EN-US">
+<h1>EclipseLink 2.0.0</h1>
+<p>Dec 10th, 2009</p>
+<h2>About</h2>
+<p>The <a href="http://www.eclipse.org/eclipselink">EclipseLink</a> project's 
+  goal is to provide a complete persistence framework that is both comprehensive 
+  and universal. It will run in any Java environment and read and write objects 
+  to virtually any type of data source, including relational databases, and XML. 
+  EclipseLink will focus on providing leading edge support, including advanced 
+  feature extensions, for the dominant persistence standards for each target data 
+  source; Java Persistence API (JPA) for relational databases, Java API for XML 
+  Binding (JAXB) for XML, Service Data Objects (SDO), and Database Web services 
+  (DBWS). </p>
+
+<p>For tips on getting started with EclipseLink, please see the following resources: 
+</p>
+<ul>
+  <li> <a href="http://wiki.eclipse.org/EclipseLink/Release/2.0.0">EclipseLink 2.0.0 Release Notes</a></li>
+  <li> <a href="http://wiki.eclipse.org/EclipseLink/UserManual">Documentation</a></li>
+  <li> <a href="http://wiki.eclipse.org/EclipseLink/Examples">Examples and How To</a></li>
+</ul>
+<h2>License </h2>
+<p>The Eclipse Foundation makes available all content in this plug-in (&quot;Content&quot;). 
+    Unless otherwise indicated below, the Content is provided to you under the terms 
+	and conditions of the Eclipse Public License Version 1.0 (&quot;EPL&quot;) and 
+	Eclipse Distribution License Version 1.0 (“EDL”). A copy of the EPL is available at 
+	<a href="http://www.eclipse.org/legal/epl-v10.html"> http://www.eclipse.org/legal/epl-v10.html</a> 
+	and a copy of the EDL is available at <a href="http://www.eclipse.org/org/documents/edl-v10.php"> 
+	http://www.eclipse.org/org/documents/edl-v10.php</a>.  For purposes of the EPL, "Program" 
+	will mean the Content.</p>
+<p>If you did not receive this Content directly from the Eclipse Foundation, the 
+  Content is being redistributed by another party (&quot;Redistributor&quot;) 
+  and different terms and conditions may apply to your use of any object code 
+  in the Content. Check the Redistributor&#8217;s license that was provided with 
+  the Content. If no such license exists, contact the Redistributor. Unless otherwise 
+  indicated below, the terms and conditions of the EPL and EDL still apply to any source 
+  code in the Content and such source code may be obtained at <a href="http://www.eclipse.org">http://www.eclipse.org</a>.</p>
+<h2>Third Party Content</h2>
+<p>The Content includes items that have been sourced from third parties as set 
+  out below. If you did not receive this Content directly from the Eclipse Foundation, 
+  the following is provided for informational purposes only, and you should look 
+  to the Redistributor&#8217;s license for terms and conditions of use.</p>
+<ul>
+  <li>Foundation Dependencies 
+    <ul>
+      <li><a href="#ASM">ASM</a></li>
+    </ul>
+  </li>
+  <li>EclipseLink JPA 
+    <ul>
+      <li><a href="#ANTLR">ANTLR</a></li>
+      <li><a href="#JPA1">Java Persistence API (JPA) 1.0 - EJB 3.0</a></li>
+      <li><a href="#JPA2">Java Persistence API (JPA) 2.0 EARLY ACCESS</a></li>
+    </ul>
+  </li>
+  <li>EclipseLink MOXy 
+    <ul>
+      <li><a href="#JAXB">Java Architecture for XML Binding (JAXB)</a></li>
+      <li><a href="#MAIL">Java Mail</a></li>
+      <li><a href="#ACTIVATION">Java Activation Framework</a></li>
+      <li><a href="#StAX">Streaming API for XML (StAX)</a></li>
+    </ul>
+  </li>
+  <li>EclipseLink SDO 
+    <ul>
+      <li><a href="#SDO">Service Data Objects (SDO)</a></li>
+    </ul>
+  </li>
+  <li>Utilities 
+    <ul>
+      <li><a href="#JCA">Java Connector</a></li>
+      <li><a href="#XERCES">Xerces</a></li>
+      <li><a href="#WSDL4J">WSDL4J 1.6.2 </a></li>
+    </ul>
+  </li>
+</ul>
+<hr />
+<h3><a name="ASM" id="ASM"></a>ASM v1.5.3 </h3>
+<blockquote> 
+  <p>The EclipseLink Project includes ASM for the purpose of 
+    byte code weaving. The AMS library is re-packaged within the source of the 
+    project (org.persistence.eclipse.internal.libraries.asm.*) to avoid version 
+    collisions with other usage of ASM. A custom patch has been added to the ASM 
+    1.5.3 source to handle an issue with other usages. This fix has 
+    also been contributed back to the ASM project for inclusion in later projects. 
+  </p>
+  <p>The source code is available within the project's subversion repository. 
+    The binaries are distributed within the eclipselink.jar and in the org.eclipse.persistence.asm_2.0.0.v*.jar 
+    bundle. </p>
+  <p> <a href="http://asm.objectweb.org/license.html">http://asm.objectweb.org/license.html</a></p>
+  <p>Copyright (c) 2000-2005 INRIA, France Telecom, All rights reserved.</p>
+  <p>Redistribution and use in source and binary forms, with or without modification, 
+    are permitted provided that the following conditions are met:</p>
+  <ol>
+    <li> Redistributions of source code must retain the above copyright notice, 
+      this list of conditions and the following disclaimer.</li>
+    <li> Redistributions in binary form must reproduce the above copyright notice, 
+      this list of conditions and the following disclaimer in the documentation 
+      and/or other materials provided with the distribution.</li>
+    <li> Neither the name of the copyright holders nor the names of its contributors 
+      may be used to endorse or promote products derived from this software without 
+      specific prior written permission.</li>
+  </ol>
+  <p>THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS &quot;AS 
+    IS&quot;AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED 
+    TO, THEIMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR 
+    PURPOSEARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS 
+    BELIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, ORCONSEQUENTIAL 
+    DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OFSUBSTITUTE GOODS OR 
+    SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER 
+    CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER INCONTRACT, STRICT LIABILITY, 
+    OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)ARISING IN ANY WAY OUT OF THE USE 
+    OF THIS SOFTWARE, EVEN IF ADVISED OFTHE POSSIBILITY OF SUCH DAMAGE.</p>
+</blockquote>
+<h3><a name="ANTLR" id="ANTLR"></a>ANTLR v3.0</h3>
+<blockquote>
+  <p>The <a href="http://www.antlr.org/">ANTLR library</a> (<a href="http://www.antlr.org/license.html">license</a>) 
+    is included within EclipseLink Project to enable parsing of the Java Persistence 
+    Query language (JP QL). The ANTLR library is re-packaged within the project 
+    in the org.eclipse.persistence.internal.libraries.antlr.* packages. </p>
+  <p>The source is available with the project's subversion repository. The binaries 
+    are distributed within the eclipselink.jar and in the org.eclipse.persistence.antlr_2.0.0.v*.jar 
+    bundle.</p>
+</blockquote>
+<h3><a name="JAXB" id="JAXB"></a>Java Architecture for XML Binding (JAXB) v2.0.5</h3>
+<blockquote> 
+  <p>The <a href="https://jaxb.dev.java.net/2.0.5/">JAXB libraries</a> distributed 
+    under <a href="https://glassfish.dev.java.net/public/CDDLv1.0.html">CDDL v1.0</a> 
+    are included within the EclipseLink Project to enable the MOXY component's 
+    implementation of JAXB.</p>
+  <p>JAXB Libraries: </p>
+  <ul>
+    <li>/jlib/moxy/javax.xml.bind_2.1.12.v20090708-1500.jar</li>
+    <li>/jlib/moxy/jaxb-impl.jar</li>
+    <li>/jlib/moxy/jaxb.xjc.jar </li>
+  </ul>
+</blockquote>
+<h3><a name="JPA1" id="JPA1"></a>Java Persistence (JPA) 1.0 - EJB 3.0</h3>
+<blockquote> 
+  <p>The Java Persistence API, included with EJB 3.0, is available for download 
+    from the <a href="https://glassfish.dev.java.net/source/browse/glassfish/ejb-api">ejb-api 
+    directory</a> in the glassfish CVS repository.It is distributed under <a href="https://glassfish.dev.java.net/public/CDDLv1.0.html"> 
+    CDDLv1.0 </a>. The jar is being shipped as an OSGi bundle and is required 
+    for compilation of some container based fuctionality.</p>
+</blockquote>
+<p></p>
+<h3><a name="JPA2" id="JPA2"></a>Java Persistence (JPA) 2.0.  </h3>
+<blockquote> 
+  <p>EclipseLink is the Java Persistence (JPA) 2.0 Reference Implementation
+    (<a href="http://jcp.org/en/jsr/detail?id=317">JSR 317</a>).  The JPA 2.0 
+	specification API is included in EclipseLink under the <a href="http://www.eclipse.org/legal/epl-v10.html">EPL</a> and <a href="http://www.eclipse.org/org/documents/edl-v10.php">EDL</a> licenses.</p>
+</blockquote>
+<h3><a name="MAIL" id="MAIL"></a>Java Mail v1.4</h3>
+<blockquote>
+  <p>The Java Mail library (mail.jar) is distributed with the <a href="https://jaxb.dev.java.net/2.0.5/">JAXB 
+    v2.0.5</a> under <a href="https://glassfish.dev.java.net/public/CDDLv1.0.html">CDDL 
+    v1.0</a> and is included within the EclipseLink Project distribution 
+    to support Web Services attachment handling in the MOXy component. It is only 
+    required when using Java SE 5 (Java Mail is included in Java SE 6).</p>
+</blockquote>
+<h3><a name="ACTIVATION" id="ACTIVATION"></a>Java Activation Framework v1.1</h3>
+<blockquote>
+  <p>The Java Activation Framework (activation.jar) is distributed with the <a href="https://jaxb.dev.java.net/2.0.5/">JAXB 
+    v2.0.5</a> under <a href="https://glassfish.dev.java.net/public/CDDLv1.0.html">CDDL 
+    v1.0</a> and is included within the EclipseLink Project distribution to support 
+    Web Services attachment handling in the MOXy component. It is only required 
+    when using Java SE 5 (The Java Activation Framework is included in Java SE 
+    6).</p>
+</blockquote>
+<h3><a name="StAX" id="StAX"></a>Streaming API for XML (StAX) v1.0</h3>
+<blockquote>
+  <p>The Streaming API for XML (StAX) library (jsr173_1.0_api.jar) is distributed 
+    with the <a href="https://jaxb.dev.java.net/2.0.5/">JAXB v2.0.5</a> under 
+    <a href="https://glassfish.dev.java.net/public/CDDLv1.0.html">CDDL v1.0</a> 
+    and is included within the EclipseLink Project distribution as an optional 
+    XML processing approach in the MOXy component. </p>
+</blockquote>
+<h3><a name="SDO" id="SDO"></a>Service Data Objects (SDO) v2.1.1</h3>
+<blockquote>
+  <p>The <a href="http://jcp.org/aboutJava/communityprocess/pr/jsr235/index.html">Service 
+    Data Objects (SDO) API</a> is distributed under a <a href="https://glassfish.dev.java.net/public/CDDLv1.0.html"> CDDLv1.0 </a> and  <a href="http://jcp.org/aboutJava/communityprocess/pr/jsr235/index.html">custom 
+    license</a>. It provides the standard API implemented by the EclipseLink Project's SDO component.</p>
+</blockquote>
+<h3><a name="JCA" id="JCA"></a>Java Connector v1.5</h3>
+<blockquote>
+  <p>The JCA 1.5 API is available for download from the <a href="https://glassfish.dev.java.net/source/browse/glassfish/connector-api">connector-api 
+    directory</a> in the glassfish CVS repository. It is distributed under <a href="https://glassfish.dev.java.net/public/CDDLv1.0.html"> 
+    CDDLv1.0 </a>. </p>
+  <p>This jar is being shipped and required by the Workbench only. When using 
+    EclipseLink in a container where JCA integration is required that container 
+    will provide the necessary API libraries.</p>
+</blockquote>
+<h3><a name="XERCES" id="XERCES"></a>Xerces v2.9.0</h3>
+<blockquote>
+  <p>Xerces 2.9.0 is available from <a href="http://xerces.apache.org/xerces-j/"> 
+    the Xerces home page</a>. It is distributed under <a href="http://ant.apache.org/license.html"> 
+    Apache 2.0</a>.</p>
+  <p>This jar is shipped for the Workbench's use only in the reading and writing 
+    of XML configuration files.</p>
+</blockquote>
+<h3><a name="WSDL4J" id="WSDL4J"></a>WSDL4j v1.6.2</h3>
+<blockquote>
+  <p>WSDL4J 1.6.2 is available for download from the <a href="http://sourceforge.net/projects/wsdl4j">wsdl4j 
+    project</a>. It distributed under <a href="http://svn.apache.org/repos/asf/webservices/wss4j/trunk/legal/LICENSE.wsdl4j"> 
+    CPLv1.0 </a>. </p>
+  <p>This jar is being shipped as a OSGi bundle and is only required for the DBWS 
+    Builder utility.</p>
+</blockquote>
+<p></p>
+</body>
+</html>

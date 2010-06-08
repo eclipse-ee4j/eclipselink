@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ns0:blah xsi:type="ns0:PurchaseOrderType" orderDate="1999-10-20" xmlns:ns0="http://www.example.org" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+   <shipTo country="US">
+      <name>Alice Smith</name>
+      <street>123 Maple Street</street>
+      <city>Mill Valley</city>
+      <state>CA</state>
+      <zip>90952</zip>
+   </shipTo>
+   <comment>Hurry, my lawn is going wild!</comment>
+   <item partNum="1234" xsi:type="ns0:LineItemType">
+      <productName>AddressItem</productName>
+      <quantity>1</quantity>
+      <USPrice>10.99</USPrice>
+   </item>
+   <someOtherAddress country="US" xsi:type="ns0:USAddressType">
+      <name>Test Smith</name>
+      <street>Test Avenue</street>
+      <city>Test Valley</city>
+      <state>Test</state>
+      <zip>TestZIP</zip>
+   </someOtherAddress>
+   <someUnknownThing>
+      <someOtherUnknownThing  xmlns:xsd="http://www.w3.org/2001/XMLSchema" xsi:type="xsd:int">10</someOtherUnknownThing>
+   </someUnknownThing>
+</ns0:blah>

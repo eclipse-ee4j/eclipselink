@@ -1,0 +1,10 @@
+<?xml version="1.0"?>
+<schema xmlns="http://www.w3.org/2001/XMLSchema" xmlns:nist="myYearMonth-NS" targetNamespace="myYearMonth-NS">
+
+	<element name="myYearMonth" type="nist:myYearMonth-Type"/>
+
+	<simpleType name="myYearMonth-Type">
+		<restriction base="gYearMonth"/>
+	</simpleType>
+
+</schema>

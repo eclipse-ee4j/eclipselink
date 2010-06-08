@@ -1,0 +1,222 @@
+<!--/*******************************************************************************
+* This program and the accompanying materials are made available under the 
+* terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
+* which accompanies this distribution. 
+* The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
+* and the Eclipse Distribution License is available at 
+* http://www.eclipse.org/org/documents/edl-v10.php.
+*
+*   Ant naming conventions:
+*   - regardless of the actual OS platform,'/' is the directory separator
+*     (Ant will convert as appropriate).
+*   - multi-word properties use periods '.'
+*     - properties ending in .jar define jarfile names only (no path)
+*     - properties ending in .lib are fully qualified jars (path and filename)
+*     - properties ending in .dir are directory paths
+*     - properties ending in .path are path refid names (classpath fragments)
+*   - multi-word targets use hyphens '-'
+*     - targets beginning with test- are reserved for high level test targets,
+*       and are used in test results parsing
+*     - targets typically use the form <action>-<object>-<type> (ie. package-bundle-zip)
+*   - multi-word macros use underscores '_'
+*   - multi-word macro attributes are concatinated
+*     e.g. 'runpathref'  
+*   - multi-word tasks (taskdef) names are concatinated
+*     e.g. 'validateconnection'
+*   - OS environment variables are in ALLCAPS and have 'env' as a prefix
+*     e.g. ${env.XXX}.
+*   - Ant properties are lower case.
+*
+* Contributors:
+*     tware - initial API and implementation
+#******************************************************************************/-->
+
+<!-- This ant project includes the following tasks:
+        - oc4j-install : recreates server installation from download zip
+        - oc4j-setup : creates connection pool
+        - oc4j-reset : removes connection pool
+        - oc4j-start : starts server
+        - oc4j-stop : stops server
+        - oc4j-deploy : deploys ear
+        - oc4j-undeploy : undeploys ear
+
+        It requires some configuration of the oc4j.properties, it should be run through build.xml, not directly.
+    -->
+<project name="Eclipse Persistence Services JPA OC4J Testing" basedir=".">
+
+    <!-- Allows a user to overide certain user specific properties. -->
+    <property file="${user.home}/oc4j.properties"/>
+    <property file="./oc4j.properties"/>
+    <property name="eclipselink.lib" value="../../${eclipselink.jar}"/>
+
+    <!--
+        This target is to install OC4J server at ${oc4j.home}. 
+        Before calling this target, you need to obtain Oracle OC4J standalone zip - oc4j.extended.zip and put it at ${extension.oracle.lib.external}
+    -->
+    <target name="oc4j-install">
+        <delete dir="${oc4j.home}"/>
+        <mkdir dir="${oc4j.home}"/>
+        <unzip src="${oc4j.extended.zip}" dest="${oc4j.home}"/>
+        <!--Change password for admin-->
+        <java classname="oracle.security.jazn.util.JAZNInstallHelper" fork="true" dir="${oc4j.home}/j2ee/home">
+            <classpath>
+                <pathelement location="${oc4j.home}/j2ee/home/jazncore.jar" />
+                <pathelement location="${oc4j.home}/j2ee/home/jazn.jar" />
+            </classpath>
+            <arg line="-oh ${oc4j.home} -realm jazn.com -user ${server.user} -oldpwd welcome -newpwd ${server.pwd} -clearpwd true"/>
+        </java>
+
+        <copy file="${eclipselink.lib}" todir="${oc4j.home}/j2ee/home/applib"/>
+        <copy file="${junit.lib}" todir="${oc4j.home}/j2ee/home/applib"/>
+        <copy file="${jdbc.driver.jar}" todir="${oc4j.home}/j2ee/home/applib"/>
+        <copy file="${oracle.extensions.depend.dir}/${oracle.spatial.lib}" todir="${oc4j.home}/j2ee/home/applib"/>
+    </target>
+
+    <!-- Start the server. -->
+    <target name="oc4j-start">
+        <property file="${user.home}/oc4j.properties"/>
+        <property file="./oc4j.properties"/>
+        <java jar="${oc4j.home}/j2ee/home/oc4j.jar"
+            fork="true"
+            failonerror="false">
+            <jvmarg value="-Xms512m"/>
+            <jvmarg value="-Xmx960m"/>
+            <jvmarg value="-XX:PermSize=128m"/>
+            <jvmarg value="-XX:MaxPermSize=256m"/>
+            <arg value="-config"/>
+            <arg value="${oc4j.home}/j2ee/home/config/server.xml"/>
+            <arg value="-userThreads"/>
+            <!--jvmarg value="-Xdebug"/-->
+            <!--jvmarg value="-Xnoagent"/-->
+            <!--jvmarg value="-Xrunjdwp:transport=dt_socket,server=y,suspend=n,address=4000"/-->
+            <!--sysproperty key="http.proxyHost" value="www-proxy.us.oracle.com"/-->
+            <!--sysproperty key="http.proxyPort" value="80"/-->
+            <sysproperty key="eclipselink.logging.level" value="${logging.level}"/>
+        </java>
+    </target>
+
+    <!--
+        This target is to create connection pool and managed datasource required for running JPA tests on the OC4J server
+        Note: OC4J server must be up while calling this target
+    -->
+    <target name="oc4j-setup">
+        <antcall target="create-connection-pool" inheritRefs="true"/>
+        <antcall target="create-managed-datasource" inheritRefs="true"/>
+    </target>
+
+    <!--
+        This target is to remove the connection pool and managed datasource created by target <oc4j.setup>
+        Note: OC4J server must be up while calling this target
+    -->
+    <target name="oc4j-reset">
+        <antcall target="remove-datasource" inheritRefs="true"/>
+        <antcall target="remove-connection-pool" inheritRefs="true"/>
+    </target>
+
+    <target name="create-connection-pool">
+        <java jar="${oc4j.home}/j2ee/home/admin_client.jar" fork="true">
+            <arg value="deployer:oc4j:${oc4j.httphost}:${oc4j.rmiport}"/>
+            <arg value="${server.user}"/>
+            <arg value="${server.pwd}"/>
+            <arg value="-addDataSourceConnectionPool"/>
+            <arg value="-name"/>
+            <arg value="ejbPool"/>
+            <arg value="-factoryClass"/>
+            <arg value="oracle.jdbc.pool.OracleDataSource"/>
+            <arg value="-dbUser"/>
+            <arg value="${db.user}"/>
+            <arg value="-dbPassword"/>
+            <arg value="${db.pwd}"/>
+            <arg value="-url"/>
+            <arg value="${db.url}"/>
+        </java>
+    </target>
+
+    <target name="create-managed-datasource">
+        <java jar="${oc4j.home}/j2ee/home/admin_client.jar" fork="true">
+            <arg value="deployer:oc4j:${oc4j.httphost}:${oc4j.rmiport}"/>
+            <arg value="${server.user}"/>
+            <arg value="${server.pwd}"/>
+            <arg value="-addManagedDataSource"/>
+            <arg value="-name"/>
+            <arg value="EclipseLinkDS"/>
+            <arg value="-jndiLocation"/>
+            <arg value="jdbc/EclipseLinkDS"/>
+            <arg value="-connectionPoolName"/>
+            <arg value="ejbPool"/>
+        </java>
+    </target>
+
+    <target name="remove-datasource">
+        <java jar="${oc4j.home}/j2ee/home/admin_client.jar" fork="true">
+            <arg value="deployer:oc4j:${oc4j.httphost}:${oc4j.rmiport}"/>
+            <arg value="${server.user}"/>
+            <arg value="${server.pwd}"/>
+            <arg value="-removeManagedDatasource"/>
+            <arg value="-name"/>
+            <arg value="EclipseLinkDS"/>
+        </java>
+    </target>
+
+    <target name="remove-connection-pool">
+        <java jar="${oc4j.home}/j2ee/home/admin_client.jar" fork="true">
+            <arg value="deployer:oc4j:${oc4j.httphost}:${oc4j.rmiport}"/>
+            <arg value="${server.user}"/>
+            <arg value="${server.pwd}"/>
+            <arg value="-removeDataSourceConnectionPool"/>
+            <arg value="-name"/>
+            <arg value="ejbPool"/>
+        </java>
+    </target>
+
+    <!-- Stop the server. -->
+    <target name="oc4j-stop">
+        <property file="${user.home}/oc4j.properties"/>
+        <property file="./oc4j.properties"/>
+        <java jar="${oc4j.home}/j2ee/home/admin_client.jar"
+            fork="true"
+            failonerror="false">
+            <arg value="deployer:oc4j:${oc4j.httphost}:${oc4j.rmiport}"/>
+            <arg value="${server.user}"/>
+            <arg value="${server.pwd}"/>
+            <arg value="-shutdown"/>
+            <arg value="force"/>
+        </java>
+    </target>
+
+    <!--
+        Deploy the application ear to the server.
+        Note: OC4J server must be running.
+    -->
+    <target name="oc4j-deploy">
+        <java jar="${oc4j.home}/j2ee/home/admin_client.jar"
+            fork="true"
+            failonerror="false">
+            <arg value="deployer:oc4j:${oc4j.httphost}:${oc4j.rmiport}"/>
+            <arg value="${server.user}"/>
+            <arg value="${server.pwd}"/>
+            <arg value="-deploy"/>
+            <arg value="-file"/>
+            <arg value="${ear.name}"/>
+            <arg value="-deploymentName"/>
+            <arg value="${application.name}"/>
+        </java>
+    </target>
+
+    <!--
+        Undeploy the application ear to the server.
+        Note: OC4J server must be running.
+    -->
+    <target name="oc4j-undeploy">
+        <java jar="${oc4j.home}/j2ee/home/admin_client.jar"
+            fork="true"
+            failonerror="false">
+            <arg value="deployer:oc4j:${oc4j.httphost}:${oc4j.rmiport}"/>
+            <arg value="${server.user}"/>
+            <arg value="${server.pwd}"/>
+            <arg value="-undeploy"/>
+            <arg value="${application.name}"/>
+        </java>
+    </target>
+
+</project>

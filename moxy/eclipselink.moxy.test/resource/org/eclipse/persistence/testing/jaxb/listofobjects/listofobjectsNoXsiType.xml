@@ -1,0 +1,105 @@
+<?xml version = '1.0' encoding = 'UTF-8'?>
+<x:root xmlns:x="listOfObjectsNamespace">
+   <empList id="10">	  
+		  <firstName>Bob</firstName>
+		  <lastName>Smith</lastName>
+		  <responsibilities>
+			 <responsibility xmlns:xsi='http://www.w3.org/2001/XMLSchema-instance' xmlns:xsd='http://www.w3.org/2001/XMLSchema' xsi:type="xsd:string">Fix Bugs</responsibility>
+			 <responsibility xmlns:xsi='http://www.w3.org/2001/XMLSchema-instance' xmlns:xsd='http://www.w3.org/2001/XMLSchema' xsi:type="xsd:string">Write JAXB2.0 Prototype</responsibility>
+			 <responsibility xmlns:xsi='http://www.w3.org/2001/XMLSchema-instance' xmlns:xsd='http://www.w3.org/2001/XMLSchema' xsi:type="xsd:string">Write Design Spec</responsibility>
+		 </responsibilities>
+   </empList>
+   <empList id="100">
+		  <firstName>Bob2</firstName>
+		  <lastName>Smith2</lastName>
+		  <responsibilities>
+			 <responsibility xmlns:xsi='http://www.w3.org/2001/XMLSchema-instance' xmlns:xsd='http://www.w3.org/2001/XMLSchema' xsi:type="xsd:string">Fix Bugs</responsibility>
+		 </responsibilities>
+   </empList>
+   <integerList>10</integerList>
+   <integerList>20</integerList>
+   <integerList>30</integerList>
+   <integerList>40</integerList>
+   <empArray id="10">
+		  <firstName>Bob</firstName>
+		  <lastName>Smith</lastName>
+		  <responsibilities>
+			 <responsibility xmlns:xsi='http://www.w3.org/2001/XMLSchema-instance' xmlns:xsd='http://www.w3.org/2001/XMLSchema' xsi:type="xsd:string">Fix Bugs</responsibility>
+			 <responsibility xmlns:xsi='http://www.w3.org/2001/XMLSchema-instance' xmlns:xsd='http://www.w3.org/2001/XMLSchema' xsi:type="xsd:string">Write JAXB2.0 Prototype</responsibility>
+			 <responsibility xmlns:xsi='http://www.w3.org/2001/XMLSchema-instance' xmlns:xsd='http://www.w3.org/2001/XMLSchema' xsi:type="xsd:string">Write Design Spec</responsibility>
+		 </responsibilities>
+   </empArray>
+   <empArray id="100">
+		  <firstName>Bob2</firstName>
+		  <lastName>Smith2</lastName>
+		  <responsibilities>
+			 <responsibility xmlns:xsi='http://www.w3.org/2001/XMLSchema-instance' xmlns:xsd='http://www.w3.org/2001/XMLSchema' xsi:type="xsd:string">Fix Bugs</responsibility>
+		 </responsibilities>
+   </empArray>
+   <integerArray>10</integerArray>
+   <integerArray>20</integerArray>
+   <integerArray>30</integerArray>
+   <integerArray>40</integerArray>
+   <intArray>1</intArray>
+   <intArray>2</intArray>
+   <booleanArray>true</booleanArray>
+   <booleanArray>true</booleanArray>
+   <booleanArray>false</booleanArray>
+   <booleanArray>false</booleanArray>
+   <stringIntegerHashMap>
+   <entry>
+      <key>string1</key>
+      <value>10</value>
+   </entry>
+   <entry>
+      <key>string2</key>
+      <value>20</value>
+   </entry>
+   <entry>
+      <key>string3</key>
+      <value>30</value>
+   </entry>
+   </stringIntegerHashMap>
+   <integerLinkedList>5</integerLinkedList>
+   <integerLinkedList>15</integerLinkedList>
+   <integerLinkedList>25</integerLinkedList>
+   <stringEmployeeHashtable>
+      <entry>
+         <key>string1</key>
+         <value id="10">
+            <firstName>Bob</firstName>
+            <lastName>Smith</lastName>
+            <responsibilities>
+               <responsibility xmlns:xsi='http://www.w3.org/2001/XMLSchema-instance' xmlns:xsd='http://www.w3.org/2001/XMLSchema' xsi:type="xsd:string">Fix Bugs</responsibility>
+               <responsibility xmlns:xsi='http://www.w3.org/2001/XMLSchema-instance' xmlns:xsd='http://www.w3.org/2001/XMLSchema' xsi:type="xsd:string">Write JAXB2.0 Prototype</responsibility>
+               <responsibility xmlns:xsi='http://www.w3.org/2001/XMLSchema-instance' xmlns:xsd='http://www.w3.org/2001/XMLSchema' xsi:type="xsd:string">Write Design Spec</responsibility>
+            </responsibilities>
+         </value>        
+      </entry>
+   </stringEmployeeHashtable>
+   <bigDecimalStack>1</bigDecimalStack>
+   <bigDecimalStack>5</bigDecimalStack>
+   <bigDecimalStack>10</bigDecimalStack>
+   <stringMyList>aaa</stringMyList>
+   <stringMyList>bbb</stringMyList>
+   <stringMyList>ccc</stringMyList>
+   <stringIntegerConcurrentMap>
+      <entry>
+         <key>string1</key>
+         <value>10</value>
+      </entry>
+      <entry>
+         <key>string2</key>
+         <value>20</value>
+      </entry>
+      <entry>
+         <key>string3</key>
+        <value>30</value>
+      </entry>
+   </stringIntegerConcurrentMap>
+   <integerSet>20</integerSet>
+   <integerSet>40</integerSet>
+   <integerSet>60</integerSet>
+   <stringQueue>ddd</stringQueue>
+   <stringQueue>eee</stringQueue>
+</x:root>

@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ns0:customer testAttr="theValue" xmlns:ns0="http://www.example.org" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+   <ns0:firstName>Jane</ns0:firstName>
+   <ns0:lastName>Smith</ns0:lastName>
+   <ns0:extraName>Jones</ns0:extraName>
+   <ns0:age>10</ns0:age>
+   <ns0:price>15</ns0:price>
+   <ns0:birthDate>1999-05-21</ns0:birthDate>
+   <ns0:phone>
+      <ns0:areaCode>613</ns0:areaCode>
+      <ns0:number>123-4567</ns0:number>
+   </ns0:phone>
+   <ns0:blahphone>
+      <ns0:areaCode>902</ns0:areaCode>
+      <ns0:number>234-5678</ns0:number>
+   </ns0:blahphone>
+   <ns0:blahphone>
+      <ns0:areaCode>506</ns0:areaCode>
+      <ns0:number>345-6789</ns0:number>
+   </ns0:blahphone>
+   <ns0:order>
+      <ns0:orderName>theOrder</ns0:orderName>
+      <ns0:orderQuantity>15</ns0:orderQuantity>
+   </ns0:order>
+</ns0:customer>

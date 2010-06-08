@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" elementFormDefault="qualified">
+	<xs:element name="project" type="project-type"/>
+	<xs:complexType name="project-type">
+		<xs:sequence>
+			<xs:element name="id" type="xs:int"/>
+			<xs:element name="name" type="xs:string"/>
+			<xs:element name="description" type="xs:string"/>
+			<xs:element name="version" type="xs:string"/>
+			<xs:element name="end-date" type="xs:date"/>
+			<xs:element name="team-leader">
+				<xs:complexType>
+					<xs:attribute name="employee-id" type="xs:int"/>
+				</xs:complexType>
+			</xs:element>
+			<xs:element name="team-members">
+				<xs:complexType>
+					<xs:sequence>
+						<xs:element name="employee-id" type="xs:int" maxOccurs="unbounded"/>
+					</xs:sequence>
+				</xs:complexType>
+			</xs:element>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="large-project-type">
+		<xs:complexContent>
+			<xs:extension base="project-type">
+				<xs:sequence>
+					<xs:element name="budget">
+						<xs:simpleType>
+							<xs:union memberTypes="xs:float xs:nonNegativeInteger"/>
+						</xs:simpleType>
+					</xs:element>
+					<xs:element name="milestone" type="xs:date"/>
+				</xs:sequence>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+</xs:schema>

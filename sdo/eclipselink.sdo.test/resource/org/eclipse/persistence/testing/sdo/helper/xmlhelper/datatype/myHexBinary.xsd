@@ -1,0 +1,10 @@
+<?xml version="1.0"?>
+<schema xmlns="http://www.w3.org/2001/XMLSchema" xmlns:nist="myHexBinary-NS" targetNamespace="myHexBinary-NS">
+
+	<element name="myHexBinary" type="nist:myHexBinary-Type"/>
+
+	<simpleType name="myHexBinary-Type">
+		<restriction base="hexBinary"/>
+	</simpleType>
+
+</schema>

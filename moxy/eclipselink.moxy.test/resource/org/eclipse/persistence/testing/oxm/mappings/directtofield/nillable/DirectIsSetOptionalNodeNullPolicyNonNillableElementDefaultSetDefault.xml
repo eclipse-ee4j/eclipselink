@@ -1,0 +1,6 @@
+<?xml version="1.0"?>
+<employee>
+	<id>123</id>
+	<first-name>John</first-name>
+	<last-name>Doe</last-name>
+</employee>

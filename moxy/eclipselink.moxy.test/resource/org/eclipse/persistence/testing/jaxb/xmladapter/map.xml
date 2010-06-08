@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<theRoot>
+   <name>thePerson</name>
+   <mapTest>
+      <keys>1 2 3</keys>
+      <values>first second third</values>
+   </mapTest>
+</theRoot>

@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="US-ASCII"?>
+<!-- This sessions xml can be used with SimpleJGeometryTestSuite and WrapppedJGeometryTestSuite when running them in JUnit. It is also used by the sessions.xml test model -->
+<sessions xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="file://xsd/eclipselink_sessions_1.0.xsd" version="1.0">
+   <session xsi:type="database-session">
+      <name>spatial-session</name>
+          <logging xsi:type="eclipselink-log">
+            <log-level>fine</log-level>
+            <logging-options>
+            <log-exception-stacktrace/>
+            <print-thread/>
+            <print-session/>
+            <print-connection/>
+            <print-date/>
+          </logging-options>
+      </logging>
+      <primary-project xsi:type="class">org.eclipse.persistence.testing.models.spatial.jgeometry.JGeometryProject</primary-project>
+      <login xsi:type="database-login">
+             <platform-class>@dbPlatform@</platform-class>
+             <user-name>@dbUser@</user-name>
+            <password>@dbPassword@</password>
+            <driver-class>@driverClass@</driver-class>
+            <connection-url>@dbURL@</connection-url>
+          <struct-converters>
+            <struct-converter>org.eclipse.persistence.platform.database.oracle.converters.JGeometryConverter</struct-converter>
+            <struct-converter>org.eclipse.persistence.testing.models.spatial.jgeometry.wrapped.MyGeometryConverter</struct-converter>
+          </struct-converters>
+      </login>
+   </session>
+</sessions>

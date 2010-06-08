@@ -1,0 +1,7 @@
+<emp userID="empUserID">
+  <name>empName</name>
+  <emailAddress userID="emailUserID2">
+      <test userID="testID"/>
+      <domain>emailDomain2</domain>
+  </emailAddress>
+</emp>

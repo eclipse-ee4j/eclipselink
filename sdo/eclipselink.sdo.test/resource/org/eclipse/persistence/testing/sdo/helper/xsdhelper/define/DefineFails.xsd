@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xsd:schema targetNamespace="http://www.example.org" xmlns="http://www.example.org" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+
+<xsd:element name="customer" type="customer-type"/>
+	<xsd:complexType name="address-type">
+		<xsd:attribute name="street" type="xsd:string"/>
+		<xsd:attribute name="city" type="xsd:string"/>
+	</xsd:complexType>
+	
+	<xsd:complexType name="customer-type">
+	 	<xsd:sequence>
+      			<xsd:element name="firstName" type="xsd:string"/>			
+			<xsd:element name="lastName" type="xsd:string"/>			
+			<xsd:element name="address" type="address-type"/>			
+			<xsd:element name="testBadType" type="bad-type"/>			
+		</xsd:sequence>
+		<xsd:attribute name="customerID" type="xsd:int"/>
+		<xsd:attribute name="sin" type="xsd:string"/>	
+	</xsd:complexType>
+</xsd:schema>

@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<feature
+      id="org.eclipse.persistence.jpa.source"
+      label="%featureName"
+      version="@VERSION@.@QUALIFIER@"
+      provider-name="%providerName">
+
+   <description>
+      %description
+   </description>
+
+   <copyright>
+      %copyright
+   </copyright>
+
+   <license url="%licenseURL">
+      %license
+   </license>
+
+   <url>
+      <update label="%updateSiteName" url="%primaryUpdateURL"/>
+      <discovery label="%secondaryUpdateSiteName" url="%secondaryUpdateURL"/>
+   </url>
+
+   <plugin
+         id="org.eclipse.persistence.antlr.source"
+         download-size="0"
+         install-size="0"
+         version="@VERSION@.@QUALIFIER@"
+         unpack="false"/>
+
+   <plugin
+         id="org.eclipse.persistence.asm.source"
+         download-size="0"
+         install-size="0"
+         version="@VERSION@.@QUALIFIER@"
+         unpack="false"/>
+
+   <plugin
+         id="org.eclipse.persistence.core.source"
+         download-size="0"
+         install-size="0"
+         version="@VERSION@.@QUALIFIER@"
+         unpack="false"/>
+
+   <plugin
+         id="org.eclipse.persistence.jpa.source"
+         download-size="0"
+         install-size="0"
+         version="@VERSION@.@QUALIFIER@"
+         unpack="false"/>
+
+   <plugin
+         id="org.eclipse.persistence.jpa.equinox.source"
+         download-size="0"
+         install-size="0"
+         version="@VERSION@.@QUALIFIER@"
+         unpack="false"/>
+
+   <plugin
+         id="org.eclipse.persistence.jpa.equinox.weaving.source"
+         download-size="0"
+         install-size="0"
+         version="@VERSION@.@QUALIFIER@"
+         unpack="false"/>
+
+   <plugin
+         id="org.eclipse.persistence.jpa.osgi.source"
+         download-size="0"
+         install-size="0"
+         version="@VERSION@.@QUALIFIER@"
+         unpack="false"/>
+
+   <plugin
+         id="org.eclipse.persistence.oracle.source"
+         download-size="0"
+         install-size="0"
+         version="@VERSION@.@QUALIFIER@"
+         unpack="false"/>
+
+</feature>

@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xsd:schema targetNamespace="http://www.example.org" xmlns="http://www.example.org" elementFormDefault="qualified" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:sdoXML="commonj.sdo/xml">  <xsd:complexType name="Company">	
+      <xsd:attribute name="name" type="xsd:string"/>
+      <xsd:sequence>
+         <xsd:element name="cust" type="Customer" minOccurs="0" maxOccurs="unbounded"/>
+         <xsd:element name="porder" type="PurchaseOrder" minOccurs="0" maxOccurs="unbounded"/>
+         <xsd:element name="item" type="Item" minOccurs="0" maxOccurs="unbounded"/>
+      </xsd:sequence>
+   </xsd:complexType>
+   <xsd:complexType name="USAddress">
+      <xsd:attribute name="name" type="xsd:string"/>
+      <xsd:attribute name="street" type="xsd:string"/>
+      <xsd:attribute name="city" type="xsd:string"/>
+      <xsd:attribute name="state" type="xsd:string"/>
+      <xsd:attribute name="zip" type="xsd:decimal"/>
+      <xsd:attribute name="country" type="xsd:string" default="US"/>
+   </xsd:complexType>
+   <xsd:complexType name="Customer">
+      <xsd:sequence>
+         <xsd:element name="custName" type="xsd:string" minOccurs="0"/>
+         <xsd:element name="purchaseOrder" type="xsd:IDREF" minOccurs="0" sdoXML:propertyType="PurchaseOrder" sdoXML:oppositeProperty="customer"/>
+      </xsd:sequence>
+      <xsd:attribute name="custID" type="xsd:string"/>
+   </xsd:complexType>
+   <xsd:complexType name="PurchaseOrder">
+      <xsd:sequence>
+         <xsd:element name="poID" type="xsd:ID" minOccurs="0"/>
+         <xsd:element name="shipTo" type="USAddress" minOccurs="0"/>
+         <xsd:element name="billTo" type="USAddress" minOccurs="0"/>
+         <xsd:element name="item" type="xsd:IDREFS" minOccurs="0" maxOccurs="unbounded" sdoXML:propertyType="Item"/>
+      </xsd:sequence>
+      <xsd:attribute name="customer" type="xsd:IDREF" minOccurs="0" sdoXML:propertyType="Customer" sdoXML:oppositeProperty="purchaseOrder"/>
+      <xsd:attribute name="comment" type="xsd:string"/>
+      <xsd:attribute name="orderDate" type="xsd:date"/>
+   </xsd:complexType>
+   <xsd:complexType name="Item">
+         <xsd:attribute name="itemID" type="xsd:ID"/>
+         <xsd:attribute name="name" type="xsd:string"/>
+   </xsd:complexType>
+   <xsd:element name="uSAddress" type="USAddress"/>
+   <xsd:element name="purchaseOrder" type="PurchaseOrder"/>
+   <xsd:element name="customer" type="Customer"/>
+   <xsd:element name="item" type="Item"/>
+   <xsd:element name="company" type="Company"/>
+</xsd:schema>

@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ns0:company xsi:type="ns0:CompanyType" xmlns:ns0="http://theUri" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+   <ns0:companyName>theCompany</ns0:companyName>
+   <ns0:employee>
+      <ns0:name>Jane</ns0:name>
+      <ns0:jobTitle>theJob</ns0:jobTitle>
+      <ns0:manager>
+         <ns0:name>John</ns0:name>
+         <ns0:jobTitle>theJob2</ns0:jobTitle>
+         <ns0:manager>
+            <ns0:name>Jill</ns0:name>
+            <ns0:jobTitle>theJob3</ns0:jobTitle>
+         </ns0:manager>
+      </ns0:manager>
+   </ns0:employee>
+</ns0:company>

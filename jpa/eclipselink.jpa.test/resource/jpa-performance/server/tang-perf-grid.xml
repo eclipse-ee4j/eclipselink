@@ -1,0 +1,75 @@
+<?xml version="1.0"?>
+<!DOCTYPE cache-config SYSTEM "cache-config.dtd">
+
+<cache-config>
+  <caching-scheme-mapping>
+    <cache-mapping>
+      <cache-name>Employee</cache-name>
+      <scheme-name>perf-local</scheme-name>
+    </cache-mapping>
+    <cache-mapping>
+      <cache-name>Address</cache-name>
+      <scheme-name>perf-local</scheme-name>
+    </cache-mapping>
+    <cache-mapping>
+      <cache-name>Project</cache-name>
+      <scheme-name>perf-local</scheme-name>
+    </cache-mapping>
+    <cache-mapping>
+      <cache-name>PhoneNumber</cache-name>
+      <scheme-name>perf-local</scheme-name>
+    </cache-mapping>
+  </caching-scheme-mapping>
+  <caching-schemes>
+
+    <local-scheme>
+      <scheme-name>perf-local</scheme-name>
+    </local-scheme>
+
+    <near-scheme>
+      <scheme-name>perf-near</scheme-name>
+      <front-scheme>
+        <local-scheme>
+          <scheme-ref>perf-local</scheme-ref>
+        </local-scheme>
+      </front-scheme>
+      <back-scheme>
+        <distributed-cache-scheme>
+          <scheme-ref>perf</scheme-ref>
+        </distributed-cache-scheme>
+      </back-scheme>
+    </near-scheme>
+
+    <distributed-scheme>
+      <scheme-name>perf</scheme-name>
+      <service-name>EclipseLinkJPA</service-name>
+        <serializer>
+          <class-name>oracle.eclipselink.coherence.integrated.cache.WrapperSerializer</class-name>
+        </serializer>
+      <backing-map-scheme>
+        <read-write-backing-map-scheme>
+          <internal-cache-scheme>
+            <local-scheme/>
+          </internal-cache-scheme>
+          <!-- Define the cache scheme -->
+          <!--cachestore-scheme>
+            <class-scheme>
+              <class-name>oracle.eclipselink.coherence.integrated.EclipseLinkJPACacheStore</class-name>
+              <init-params>
+                <init-param>
+                  <param-type>java.lang.String</param-type>
+                  <param-value>{cache-name}</param-value>
+                </init-param>
+                <init-param>
+                  <param-type>java.lang.String</param-type>
+                  <param-value>jpa-performance</param-value>
+                </init-param>
+              </init-params>
+            </class-scheme>
+          </cachestore-scheme-->
+        </read-write-backing-map-scheme>
+      </backing-map-scheme>
+      <autostart>true</autostart>
+    </distributed-scheme>
+  </caching-schemes>
+</cache-config>

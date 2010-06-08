@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ns5:company xsi:type="ns0:CompanyType" xmlns:ns5="http://testUri" xmlns:ns0="http://someOtherUri" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+   <ns0:companyName>theCompany</ns0:companyName>
+   <ns0:ceo>
+      <ns5:name>Jane</ns5:name>
+      <ns0:jobTitle>theJob</ns0:jobTitle>
+   </ns0:ceo>
+</ns5:company>

@@ -1,0 +1,276 @@
+<!--/*******************************************************************************
+* This program and the accompanying materials are made available under the 
+* terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
+* which accompanies this distribution. 
+* The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
+* and the Eclipse Distribution License is available at 
+* http://www.eclipse.org/org/documents/edl-v10.php.
+*
+*   Ant naming conventions:
+*   - regardless of the actual OS platform,'/' is the directory separator
+*     (Ant will convert as appropriate).
+*   - multi-word properties use periods '.'
+*     - properties ending in .jar define jarfile names only (no path)
+*     - properties ending in .lib are fully qualified jars (path and filename)
+*     - properties ending in .dir are directory paths
+*     - properties ending in .path are path refid names (classpath fragments)
+*   - multi-word targets use hyphens '-'
+*     - targets beginning with test- are reserved for high level test targets,
+*       and are used in test results parsing
+*     - targets typically use the form <action>-<object>-<type> (ie. package-bundle-zip)
+*   - multi-word macros use underscores '_'
+*   - multi-word macro attributes are concatinated
+*     e.g. 'runpathref'  
+*   - multi-word tasks (taskdef) names are concatinated
+*     e.g. 'validateconnection'
+*   - OS environment variables are in ALLCAPS and have 'env' as a prefix
+*     e.g. ${env.XXX}.
+*   - Ant properties are lower case.
+*
+* Contributors:
+*     edtang - initial API and implementation
+#******************************************************************************/-->
+
+<!-- This ant project includes the following tasks:
+        - glassfish-install : recreates server and adds jars
+        - glassfish-setup : creates connection pool
+        - glassfish-reset : removes connection pool
+        - glassfish-start : starts server
+        - glassfish-stop : stops server
+        - glassfish-deploy : deploys ear
+        - glassfish-undeploy : undeploys ear
+
+        It requires some configuration of the glassfish.properties, it should be run through build.xml, not directly.
+        To connect to the admin console use http://localhost:4848/console, this may be useful for debugging deployment failures.
+
+-->
+
+<project name="Eclipse Persistence Services JPA SunAS9 Testing" basedir=".">
+    
+    <property name="env" environment="env" value="env"/>
+    <!-- Allows a user to overide certain user specific properties. -->
+    <property file="${user.home}/glassfish.properties"/>
+    <property file="./test.properties"/>
+    <property file="./glassfish.properties"/>
+    <property name="eclipselink.lib" value="../../${eclipselink.jar}"/>
+
+    <!-- Check the os -->
+    <condition property="extension" value=".bat" else="">
+        <os family="Windows"/>
+    </condition>
+
+    <condition property="is.v3">
+        <contains string="${server.version}" substring="3"/>
+    </condition>
+
+    <!-- Install the latest glassfish nightly build -->
+    <target name="install-latest-glassfish" if="install.latest.glassfish">
+        <echo message="set the proxy to ${proxy.host}:${proxy.port}"/>
+        <setproxy proxyhost="${proxy.host}" proxyport="${proxy.port}"/>
+        <echo message="getting the latest glassfish nightly build from ${nightly-build-url}..."/>
+        <get src="${nightly-build-url}/${latest-glassfish-file-name}" 
+             dest="${installer.dir}/${latest-glassfish-file-name}" 
+             ignoreerrors="true"
+             verbose="true"
+             usetimestamp="true"/>
+        <echo message="Unzip the latest glassfish nightly build from ${latest-glassfish-file-name}"/>
+        <delete dir="${install.dir}"/>
+        <unzip src="${installer.dir}/${latest-glassfish-file-name}" dest="${install.dir}/.."/>
+        <chmod dir="${glassfish.home}/bin" perm="ugo+rx"  includes="**/*"/>
+    </target>
+
+    <!-- Copies libraries to domain1 -->
+    <target name="glassfish-install" depends="install-latest-glassfish">
+        <copy file="${junit.lib}" todir="${glassfish.home}/domains/domain1/lib"/>
+        <copy file="${jdbc.driver.jar}" todir="${glassfish.home}/domains/domain1/lib/ext"/>
+        <copy file="${oracle.extensions.depend.dir}/${oracle.spatial.lib}" todir="${glassfish.home}/domains/domain1/lib"/>
+        <copy file="${oracle.extensions.depend.dir}/${oracle.xdb.lib}" todir="${glassfish.home}/domains/domain1/lib"/>
+        <antcall target="copy-eclipselink-to-glassfish2" inheritRefs="true"/>
+        <antcall target="copy-eclipselink-and-persistence-latest-jars-to-glassfish3" inheritRefs="true"/>
+    </target>
+
+    <target name="copy-eclipselink-to-glassfish2" unless="is.v3">
+        <copy file="${eclipselink.lib}" todir="${glassfish.home}/domains/domain1/lib"/>
+    </target>
+
+    <target name="copy-eclipselink-and-persistence-latest-jars-to-glassfish3" if="is.v3">
+        <delete>
+            <fileset dir="${glassfish.home}/modules">
+                <include name="javax.persistence_*.jar"/>
+                <include name="org.eclipse.persistence.*.jar"/>
+            </fileset>
+        </delete>
+        <copy todir="${glassfish.home}/modules" overwrite="true" failonerror="false">
+            <fileset dir="${eclipselink.jpa.test}/../plugins/">
+                <include name="javax.persistence_2*.jar"/>
+            </fileset>
+            <fileset dir="${eclipselink.jpa.test}/../../plugins/"
+                includes="org.eclipse.persistence.a*.jar
+                          org.eclipse.persistence.c*.jar
+                          org.eclipse.persistence.o*.jar
+                          org.eclipse.persistence.j*.jar"
+                excludes="org.eclipse.persistence.*.source*.jar"/>
+        </copy>
+    </target>
+    
+    <!-- Start the server. -->
+    <target name="glassfish-start">
+        <exec executable="${glassfish.home}/bin/asadmin${extension}" spawn="true">
+            <arg value="start-domain"/>
+            <arg value="domain1"/>
+        </exec>
+        <echo message="I'm going to sleep 2 minutes waiting for glassfish domain1 to be started up ..."/>
+        <sleep minutes="2"/>
+        <!--pass is.JTA and ejb.lookup properties to server-->
+        <exec executable="${glassfish.home}/bin/asadmin${extension}" spawn="true">
+            <arg value="create-jvm-options"/>
+            <arg value="-Dis.JTA=${is.JTA}"/>
+        </exec>
+        <exec executable="${glassfish.home}/bin/asadmin${extension}" spawn="true">
+            <arg value="create-jvm-options"/>
+            <arg value="-Dejb.lookup=${ejb.lookup}"/>
+        </exec>
+    </target>
+    
+    <!--
+        This target is to create connection pool and managed datasource required for running JPA tests on the SunAS9 server, and start Derby database
+        Note: SunAS9 server must be running.
+    -->
+    <target name="glassfish-setup">
+        <echo message="Removing the ${user.home}/.asadminpass"/>
+        <delete file="${user.home}/.asadminpass" verbose="true" failonerror="false"/>        
+        <echo message="Writing out the glassfish admin password to ${adminpassfile}"/>
+        <echo file="${adminpassfile}" append="false">AS_ADMIN_PASSWORD=${server.pwd}</echo>
+        <echo message="glassfish.db.url == ${glassfish.db.url}"/>
+        <exec executable="${glassfish.home}/bin/asadmin${extension}">
+            <arg value="create-jdbc-connection-pool"/>
+            <arg value="--user"/>
+            <arg value="${server.user}"/>
+            <arg value="--passwordfile"/>
+            <arg value="${adminpassfile}"/>
+            <arg value="--restype"/>
+            <arg value="javax.sql.XADataSource"/>
+            <arg value="--datasourceclassname"/>
+            <arg value="oracle.jdbc.xa.client.OracleXADataSource"/>
+            <arg value="--property"/>
+            <arg value="URL=${glassfish.db.url}:User=${db.user}:Password=${db.pwd}"/>
+            <arg value="jdbc-oracle-jta-pool"/>
+        </exec> 
+        <exec executable="${glassfish.home}/bin/asadmin${extension}">
+            <arg value="create-jdbc-resource"/>
+            <arg value="--user"/>
+            <arg value="${server.user}"/>
+            <arg value="--passwordfile"/>
+            <arg value="${adminpassfile}"/>
+            <arg value="--connectionpoolid"/>
+            <arg value="jdbc-oracle-jta-pool"/>
+            <arg value="jdbc/EclipseLinkDS"/>
+        </exec>
+        <exec executable="${glassfish.home}/bin/asadmin${extension}">
+            <arg value="create-jdbc-connection-pool"/>
+            <arg value="--user"/>
+            <arg value="${server.user}"/>
+            <arg value="--passwordfile"/>
+            <arg value="${adminpassfile}"/>
+            <arg value="--restype"/>
+            <arg value="javax.sql.XADataSource"/>
+            <arg value="--datasourceclassname"/>
+            <arg value="oracle.jdbc.xa.client.OracleXADataSource"/>
+            <arg value="--nontransactionalconnections"/>
+            <arg value="true"/>
+            <arg value="--property"/>
+            <arg value="URL=${glassfish.db.url}:User=${db.user}:Password=${db.pwd}"/>
+            <arg value="jdbc-oracle-nonjta-pool"/>
+        </exec> 
+        <exec executable="${glassfish.home}/bin/asadmin${extension}">
+            <arg value="create-jdbc-resource"/>
+            <arg value="--user"/>
+            <arg value="${server.user}"/>
+            <arg value="--passwordfile"/>
+            <arg value="${adminpassfile}"/>
+            <arg value="--connectionpoolid"/>
+            <arg value="jdbc-oracle-nonjta-pool"/>
+            <arg value="jdbc/ELNonJTADS"/>
+        </exec>
+    </target>
+    
+    <!--
+        This target is to remove the connection pool and managed datasource created by target <glassfish-setup>, and stop Derby database
+        Note: SunAS9 server must be running.
+    -->
+    
+    <target name="glassfish-reset">
+        <exec executable="${glassfish.home}/bin/asadmin${extension}">
+            <arg value="delete-jdbc-resource"/>
+            <arg value="--user"/>
+            <arg value="${server.user}"/>
+            <arg value="--passwordfile"/>
+            <arg value="${adminpassfile}"/>
+            <arg value="jdbc/EclipseLinkDS"/>
+        </exec> 
+        <exec executable="${glassfish.home}/bin/asadmin${extension}">
+            <arg value="delete-jdbc-connection-pool"/>
+            <arg value="--user"/>
+            <arg value="${server.user}"/>
+            <arg value="--passwordfile"/>
+            <arg value="${adminpassfile}"/>
+            <arg value="jdbc-oracle-jta-pool"/>
+        </exec>
+        <exec executable="${glassfish.home}/bin/asadmin${extension}">
+            <arg value="delete-jdbc-resource"/>
+            <arg value="--user"/>
+            <arg value="${server.user}"/>
+            <arg value="--passwordfile"/>
+            <arg value="${adminpassfile}"/>
+            <arg value="jdbc/ELNonJTADS"/>
+        </exec> 
+        <exec executable="${glassfish.home}/bin/asadmin${extension}">
+            <arg value="delete-jdbc-connection-pool"/>
+            <arg value="--user"/>
+            <arg value="${server.user}"/>
+            <arg value="--passwordfile"/>
+            <arg value="${adminpassfile}"/>
+            <arg value="jdbc-oracle-nonjta-pool"/>
+        </exec>
+    </target>
+             
+    <!-- Stop the server. -->
+    <target name="glassfish-stop">
+        <exec executable="${glassfish.home}/bin/asadmin${extension}">
+            <arg value="stop-domain"/>
+            <arg value="domain1"/>
+        </exec>
+    </target>
+    
+    <!--
+        Deploy the application ear to the server.
+        Note: SunAS9 server must be running.
+    -->
+    <target name="glassfish-deploy">
+        <exec executable="${glassfish.home}/bin/asadmin${extension}">
+            <arg value="deploy"/>
+            <arg value="--user"/>
+            <arg value="${server.user}"/>
+            <arg value="--passwordfile"/>
+            <arg value="${adminpassfile}"/>
+            <arg value="--name"/>
+            <arg value="${application.name}"/>
+            <arg value="${ear.name}"/>
+        </exec>
+    </target>
+    
+    <!--
+        Undeploy the application ear to the server.
+        Note: SunAS9 server must be running.
+    -->
+    <target name="glassfish-undeploy">
+        <exec executable="${glassfish.home}/bin/asadmin${extension}">
+            <arg value="undeploy"/>
+            <arg value="--user"/>
+            <arg value="${server.user}"/>
+            <arg value="--passwordfile"/>
+            <arg value="${adminpassfile}"/>
+            <arg value="${application.name}"/> 
+        </exec>
+    </target>
+</project>

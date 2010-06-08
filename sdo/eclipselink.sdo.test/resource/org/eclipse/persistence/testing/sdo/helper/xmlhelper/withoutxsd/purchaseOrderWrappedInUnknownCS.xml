@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ns0:someUnknownRoot xmlns:ns0="testUri">
+   <ns0:purchaseOrder orderDate="1999-10-20" xmlns:ns0="http://www.example.org" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+      <shipTo country="US">
+         <name>Alice Smith</name>
+         <street>123 Maple Street</street>
+         <city>Mill Valley</city>
+         <state>CA</state>
+      </shipTo>
+      <billTo country="US">
+         <name>Robert Smith</name>
+         <street>8 Oak Avenue</street>
+         <city>Mill Valley</city>
+         <state>PA</state>
+      </billTo>
+      <comment>Hurry, my lawn is going wild!</comment>
+      <items>
+         <item partNum="872-AA">
+            <productName>Lawnmower</productName>
+            <quantity>1</quantity>
+            <USPrice>148.95</USPrice>
+            <comment>Confirm this is electric</comment>
+         </item>
+         <item partNum="926-AA">
+            <productName>Baby Monitor</productName>
+            <quantity>1</quantity>
+            <USPrice>39.98</USPrice>
+            <shipDate>1999-05-21</shipDate>
+         </item>
+      </items>
+      <theCS delete="#/someUnknownRoot/ns0:purchaseOrder[1]/theCS/ns0:purchaseOrder/foo[1]" xmlns:sdo="commonj.sdo">
+         <ns0:purchaseOrder sdo:ref="#/someUnknownRoot/ns0:purchaseOrder[1]">
+            <comment>oldComment</comment>
+            <blah>123</blah>
+            <foo>
+               <name>someName</name>
+            </foo>
+         </ns0:purchaseOrder>
+         <phone sdo:ref="#/someUnknownRoot/ns0:purchaseOrder[1]/phone[1]">
+            <number>33333333</number>
+            <ext>444</ext>
+         </phone>
+      </theCS>
+      <phone>
+         <addr country="US" xsi:type="ns0:AddressType">
+            <name>Test Smith</name>
+            <street>Test Avenue</street>
+            <city>Test Valley</city>
+            <state>Test</state>
+            <item partNum="1234" xsi:type="ns0:LineItemType">
+               <productName>AddressItem</productName>
+               <quantity>1</quantity>
+               <USPrice>10.99</USPrice>
+            </item>
+            <dwelling>
+               <dwellingType>duplex</dwellingType>
+               <sqFootage>1500</sqFootage>
+            </dwelling>
+         </addr>
+         <number>12345678</number>
+         <ext>123</ext>
+      </phone>
+   </ns0:purchaseOrder>
+</ns0:someUnknownRoot>

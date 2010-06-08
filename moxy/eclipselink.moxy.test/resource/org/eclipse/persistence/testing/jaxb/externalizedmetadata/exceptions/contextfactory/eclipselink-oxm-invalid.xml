@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="US-ASCII"?>
+<xml-bindingd xmlns="http://www.eclipse.org/eclipselink/xsds/persistence/oxm">
+	<java-types>
+		<invalid-tag name="foo.MyNonExistentClass"/>
+	</java-types>
+</xml-bindingd>

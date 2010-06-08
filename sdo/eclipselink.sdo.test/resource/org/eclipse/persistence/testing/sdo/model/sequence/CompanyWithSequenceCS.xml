@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ns0:company name="myCompany" xmlns:sdo="commonj.sdo" xmlns:ns0="http://www.example.org" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+   <ns0:cust custID="5">
+      <ns0:email>email1@myCompany.com</ns0:email>
+      <ns0:email>email2@myCompany.com</ns0:email>
+      <ns0:phone>6135550001</ns0:phone>
+   </ns0:cust>
+   <ns0:porder comment="Hurry, my lawn is going wild!" orderDate="1999-10-20">
+      <ns0:poID>20</ns0:poID>
+      <ns0:shipTo name="Alice Smith" street="123 Maple Street" city="Mill Valley" state="CA" zip="90952" country="US"/>
+      <ns0:billTo name="Robert Smith" street="8 Oak Avenue" city="Mill Valley" state="PA" zip="95819" country="US"/>
+      <ns0:comment>comment 1</ns0:comment>
+      <ns0:item>3</ns0:item>
+      <ns0:item>7</ns0:item>
+   </ns0:porder>
+   <ns0:item itemID="3" name="crayons"/>
+   <ns0:item itemID="6" name="pencils"/>
+   <ns0:item itemID="7" name="pens"/>
+</ns0:company>

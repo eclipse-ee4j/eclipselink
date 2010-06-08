@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema targetNamespace="myNamespace" xmlns:myns="myNamespace" xmlns:xs="http://www.w3.org/2001/XMLSchema"
+    xmlns:jxb="http://java.sun.com/xml/ns/jaxb" jxb:version="1.0">
+
+    <xs:annotation>
+        <xs:appinfo>
+            <jxb:schemaBindings>
+                <jxb:package name="foo.bar"/>
+            </jxb:schemaBindings>
+        </xs:appinfo>
+    </xs:annotation>
+
+    <xs:element name="person" type="myns:person"/>
+
+    <xs:complexType name="person">
+        <xs:annotation>
+            <xs:appinfo>
+                <jxb:class name="MyPersonType"/>
+            </xs:appinfo>
+        </xs:annotation>
+
+        <xs:sequence>
+            <xs:element name="name" type="xs:string"/>
+        </xs:sequence>
+    </xs:complexType>
+
+</xs:schema>

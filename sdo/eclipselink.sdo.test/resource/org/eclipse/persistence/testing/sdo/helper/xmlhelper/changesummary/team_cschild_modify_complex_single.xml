@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ns0:team xmlns:ns0="http://www.example.org" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+   <ns0:manager>
+      <ns0:name>New Name</ns0:name>
+      <ns0:address>
+         <ns0:street>first street</ns0:street>
+         <ns0:city>first city</ns0:city>
+         <ns0:province>new province</ns0:province>
+      </ns0:address>
+      <ns0:phone>
+         <ns0:number>1234567</ns0:number>
+      </ns0:phone>
+      <ns0:phone>
+         <ns0:number>2345678</ns0:number>
+      </ns0:phone>
+      <ns0:phone>
+         <ns0:number>3456789</ns0:number>
+      </ns0:phone>
+      <ns0:phone>
+         <ns0:number>4567890</ns0:number>
+      </ns0:phone>
+      <ns0:myChangeSummary xmlns:sdo="commonj.sdo">
+         <ns0:manager sdo:ref="#/ns0:team/ns0:manager">
+            <ns0:name>Old Name</ns0:name>
+         </ns0:manager>
+         <ns0:address sdo:ref="#/ns0:team/ns0:manager/ns0:address" sdo:unset="street city">
+            <ns0:province>old province</ns0:province>
+         </ns0:address>
+         <ns0:phone sdo:ref="#/ns0:team/ns0:manager/ns0:phone[3]">
+            <ns0:number>1111111</ns0:number>
+         </ns0:phone>
+      </ns0:myChangeSummary>
+   </ns0:manager>
+</ns0:team>

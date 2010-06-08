@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<class>
+   <name>test.oracle.models.complexinheritance.SoftwareEngineer</name>
+   <modifier>1</modifier>
+   <superclass-handle>
+      <type-name>test.oracle.models.complexinheritance.Engineer</type-name>
+   </superclass-handle>
+   <attributes>
+      <class-attribute>
+         <name>boss</name>
+         <modifier>1</modifier>
+         <type-declaration>
+            <type-handle>
+               <type-name>test.oracle.models.complexinheritance.Engineer</type-name>
+            </type-handle>
+         </type-declaration>
+      </class-attribute>
+      <class-attribute>
+         <name>isExperiencedInJava</name>
+         <modifier>1</modifier>
+         <type-declaration>
+            <type-handle>
+               <type-name>boolean</type-name>
+            </type-handle>
+         </type-declaration>
+      </class-attribute>
+   </attributes>
+   <methods>
+      <method>
+         <name>SoftwareEngineer</name>
+         <constructor>true</constructor>
+         <modifier>1</modifier>
+      </method>
+   </methods>
+</class>

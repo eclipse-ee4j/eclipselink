@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ns0:purchaseOrder orderDate="1999-10-20" xmlns:ns0="http://www.example.org" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+   <shipTo zip="90952" xsi:type="ns0:usAddressType">
+      <name xsi:nil="true"/>
+      <state>CA</state>
+   </shipTo>
+   <billTo xsi:type="ns0:cdnAddressMailingType">
+      <name>Robert Smith</name>
+      <street>8 Oak Avenue</street>
+      <city>Mill Valley</city>
+      <country>Canada</country>
+      <province>Ontario</province>
+      <postalcode>B3L 4J3</postalcode>
+      <deliveryInfo>usual</deliveryInfo>
+   </billTo>
+   <comment>Hurry, my lawn is going wild!</comment>
+   <items>
+      <item partNum="872-AA" quantity="1">
+         <productName>Lawnmower</productName>
+         <comment>Confirm this is electric</comment>
+      </item>
+      <item partNum="926-AA" quantity="1">
+         <productName>Baby Monitor</productName>
+         <exchangeRate>1.3</exchangeRate>
+         <shipDate>1999-05-21</shipDate>
+      </item>
+   </items>
+   <customer namePrefix="Dr.">
+      <name>Sally</name>
+      <gender>female</gender>
+      <phoneNumber>6131231234</phoneNumber>
+   </customer>
+</ns0:purchaseOrder>

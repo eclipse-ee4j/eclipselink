@@ -1,0 +1,25 @@
+<xsd:schema targetNamespace="theURI" xmlns:tns="theURI" xmlns:xsd="http://www.w3.org/2001/XMLSchema" elementFormDefault="qualified">
+  <xsd:element name="AAA">
+    <xsd:complexType>
+        <xsd:sequence>
+          <xsd:group ref="myFirstSequence" minOccurs="1" maxOccurs="1"/>
+	  <xsd:element name="testElement" type="xsd:string"/>
+          <xsd:group ref="mySecondSequence" minOccurs="1" maxOccurs="unbounded"/>
+        </xsd:sequence>      
+    </xsd:complexType>
+  </xsd:element>
+
+  <xsd:group name="myFirstSequence">
+    <xsd:sequence>
+      <xsd:element name="BBB" type="xsd:string" minOccurs="1"/>
+      <xsd:element name="CCC" type="xsd:string" minOccurs="1"/>
+    </xsd:sequence>
+  </xsd:group>
+
+  <xsd:group name="mySecondSequence">
+    <xsd:choice>
+      <xsd:element name="XXX" type="xsd:string" minOccurs="1"/>
+      <xsd:element name="YYY" type="xsd:string" minOccurs="1"/>
+    </xsd:choice>
+  </xsd:group>
+</xsd:schema>

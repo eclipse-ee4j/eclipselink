@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+   <xsd:complexType name="collectionOfObject">
+      <xsd:sequence>
+         <xsd:element maxOccurs="unbounded" minOccurs="0" name="item" type="xsd:anyType"/>
+      </xsd:sequence>
+   </xsd:complexType>
+   <xsd:element name="collectionTag6" type="collectionOfObject"/>
+   <xsd:element name="collectionTag5" type="collectionOfObject"/>
+   <xsd:element name="collectionTag4" type="collectionOfObject"/>
+   <xsd:element name="collectionTag3" type="collectionOfObject"/>
+   <xsd:element name="collectionTag2" type="collectionOfObject"/>
+   <xsd:element name="collectionTag1" type="collectionOfObject"/>
+</xsd:schema>

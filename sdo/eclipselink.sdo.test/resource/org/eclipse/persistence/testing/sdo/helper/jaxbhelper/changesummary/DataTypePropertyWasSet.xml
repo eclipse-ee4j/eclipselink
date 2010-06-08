@@ -1,0 +1,8 @@
+<tns:root  xmlns:tns="urn:changesummary" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+   <tns:name>NewValue</tns:name>
+   <tns:sdo-change-summary xmlns:sdo="commonj.sdo">
+      <tns:root sdo:ref="#/ns0:bar">
+         <tns:name>OldValue</tns:name>
+      </tns:root>
+   </tns:sdo-change-summary>
+</tns:root>

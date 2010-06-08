@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<person xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+<item>10</item>
+<item>2001-01-01</item>
+<first-name>Jane</first-name>
+<last-name>Doe</last-name>
+</person>

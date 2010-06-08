@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<sections title="Eclipse Persistence Services Project (EclipseLink) : Nightly Tests">
+        <description>
+        </description> 
+	<section class="main" name="1.0 Nightly Tests - Core SRG">
+	<description>

@@ -1,0 +1,40 @@
+Manifest-Version: 1.0
+Ant-Version: Apache Ant 1.7.1
+Created-By: 14.2-b01 (Sun Microsystems Inc.)
+Specification-Vendor: Eclipse.org - EclipseLink Project
+Specification-Version: 2.0.0
+Implementation-Vendor: Eclipse.org - EclipseLink Project
+Implementation-Version: 2.1.0.qualifier
+Bundle-ManifestVersion: 2
+Bundle-Name: EclipseLink Oracle Extensions
+Bundle-SymbolicName: org.eclipse.persistence.oracle
+Bundle-Vendor: Eclipse.org - EclipseLink Project
+Bundle-Version: 2.1.0.qualifier
+Bundle-RequiredExecutionEnvironment: J2SE-1.5
+Fragment-Host: org.eclipse.persistence.core;bundle-version="2.1.0.qualifier"
+Export-Package: org.eclipse.persistence.eis.adapters.aq;version="2.1.0
+ .qualifier",org.eclipse.persistence.internal.eis.adapters.aq;ve
+ rsion="2.1.0.qualifier",org.eclipse.persistence.internal.platfo
+ rm.database.oracle;version="2.1.0.qualifier",org.eclipse.persis
+ tence.internal.platform.database.oracle.xdb;version="2.1.0.qualifier",org.eclipse.persistence.platform.database.oracle;version="2.0.
+ 0.qualifier",org.eclipse.persistence.platform.database.oracle.c
+ onverters;version="2.1.0.qualifier",org.eclipse.persistence.pla
+ tform.xml.xdk;version="2.1.0.qualifier"
+Bundle-ClassPath: .
+Import-Package: javax.resource;version="1.5.0";resolution:=optional,ja
+ vax.naming;resolution:=optional,javax.resource.cci;version="1.5.0";re
+ solution:=optional,javax.sql;resolution:=optional,javax.xml.parsers;r
+ esolution:=optional,javax.xml.transform;resolution:=optional,javax.xm
+ l.transform.dom;resolution:=optional,javax.xml.transform.sax;resoluti
+ on:=optional,javax.xml.transform.stream;resolution:=optional,javax.xm
+ l.validation;resolution:=optional,oracle.AQ;resolution:=optional,orac
+ le.jdbc;resolution:=optional,oracle.jdbc.internal;resolution:=optiona
+ l,oracle.jdbc.pool;resolution:=optional,oracle.spatial.geometry;resol
+ ution:=optional,oracle.sql;resolution:=optional,oracle.xdb;resolution
+ :=optional,oracle.xdb.dom;resolution:=optional,oracle.xml.jaxp;resolu
+ tion:=optional,oracle.xml.parser.schema;resolution:=optional,oracle.x
+ ml.parser.v2;resolution:=optional,oracle.xml.util;resolution:=optiona
+ l,org.w3c.dom;resolution:=optional,org.xml.sax;resolution:=optional
+HK2-Bundle-Name: org.eclipse.persistence:org.eclipse.persistence.oracl
+ e
+

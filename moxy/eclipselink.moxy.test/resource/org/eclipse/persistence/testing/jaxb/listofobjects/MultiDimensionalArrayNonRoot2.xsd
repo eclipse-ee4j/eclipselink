@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xsd:schema xmlns:ns0="urn:example" xmlns:ns1="listOfObjectsNamespace" xmlns:xsd="http://www.w3.org/2001/XMLSchema" targetNamespace="urn:example">
+   <xsd:import schemaLocation="schema0.xsd" namespace="listOfObjectsNamespace"/>
+   <xsd:element name="root" type="ns1:multiDimensionalArrayRoot"/>
+</xsd:schema>

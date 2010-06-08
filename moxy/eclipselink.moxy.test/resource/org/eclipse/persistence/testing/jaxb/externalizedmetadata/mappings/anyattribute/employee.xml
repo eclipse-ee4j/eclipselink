@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<employee xmlns:s="http://www.example.com/stuff">
+  <things>
+    <junk>
+      <s:stuff xmlns:ns0="http://www.example.com/other" ns0:first-name="Joe" ns0:last-name="Oracle" />
+    </junk>
+  </things> 
+</employee>

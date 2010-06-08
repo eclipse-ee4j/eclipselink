@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ns0:quoteType xsi:type="ns0:quoteType" xmlns:ns0="www.example.com" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+   <ns0:lineItem>
+      <ns0:id>42-9626LI</ns0:id>
+      <ns0:cost>100</ns0:cost>
+      <ns0:quantity>1</ns0:quantity>
+   </ns0:lineItem>
+   <ns0:lineItem>
+      <ns0:id>22-9223LI</ns0:id>
+      <ns0:cost>199</ns0:cost>
+      <ns0:quantity>2</ns0:quantity>
+   </ns0:lineItem>
+   <ns0:relatedQuoteItem>
+      <ns0:id>23-4635RQI</ns0:id>
+      <ns0:cost>20</ns0:cost>
+      <ns0:quantity>4</ns0:quantity>
+   </ns0:relatedQuoteItem>
+   <ns0:relatedQuoteItem>
+      <ns0:id>98-8786RQI</ns0:id>
+      <ns0:cost>21</ns0:cost>
+      <ns0:quantity>1</ns0:quantity>
+   </ns0:relatedQuoteItem>
+   <ns0:changeSummary xmlns:sdo="commonj.sdo">
+      <ns0:relatedQuoteItem sdo:ref="#/ns0:quoteType/ns0:relatedQuoteItem[1]">
+         <ns0:cost>379</ns0:cost>
+      </ns0:relatedQuoteItem>
+      <ns0:relatedQuoteItem sdo:ref="#/ns0:quoteType/ns0:relatedQuoteItem[2]">
+         <ns0:cost>345</ns0:cost>
+      </ns0:relatedQuoteItem>
+   </ns0:changeSummary>
+</ns0:quoteType>

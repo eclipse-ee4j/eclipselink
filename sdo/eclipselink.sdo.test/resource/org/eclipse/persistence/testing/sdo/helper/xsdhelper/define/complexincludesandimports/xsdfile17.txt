@@ -1,0 +1,16 @@
+<xsd:schema targetNamespace="commonj.sdo/xml" xmlns:sdo="commonj.sdo" xmlns:sdoXML="commonj.sdo/xml" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+   <xsd:import namespace="commonj.sdo" schemaLocation="includeSdoModel.xsd"/>
+   <xsd:attribute name="name" type="xsd:string"/>
+   <xsd:attribute name="propertyType" type="xsd:QName"/>
+   <xsd:attribute name="oppositeProperty" type="xsd:string"/>
+   <xsd:attribute name="sequence" type="xsd:boolean"/>
+   <xsd:attribute name="string" type="xsd:boolean"/>
+   <xsd:attribute name="dataType" type="xsd:QName"/>
+   <xsd:attribute name="aliasName" type="xsd:string"/>
+   <xsd:attribute name="readOnly" type="xsd:boolean"/>
+   <xsd:attribute name="many" type="xsd:boolean"/>
+   <xsd:attribute name="xmlElement" type="sdo:Boolean"/>
+   <xsd:complexType name="XMLInfo">
+      <xsd:attribute name="xmlElement" type="sdo:Boolean"/>
+   </xsd:complexType>
+</xsd:schema>

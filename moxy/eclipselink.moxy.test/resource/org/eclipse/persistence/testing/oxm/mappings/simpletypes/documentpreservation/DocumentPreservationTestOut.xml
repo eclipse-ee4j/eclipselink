@@ -1,0 +1,6 @@
+<?xml version = '1.0' encoding = 'UTF-8'?>
+<employee>
+	<!-- This is a comment -->
+	<name>Jane Doe</name>
+	<phone-no>(613)444-1234</phone-no>
+</employee>

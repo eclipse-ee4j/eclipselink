@@ -1,0 +1,6 @@
+<?xml version="1.0"?>
+<schema xmlns="http://www.w3.org/2001/XMLSchema" xmlns:nist="myDateTime-NS" targetNamespace="myDateTime-NS">
+
+	<element name="myDateTime" type="dateTime"/>
+
+</schema>

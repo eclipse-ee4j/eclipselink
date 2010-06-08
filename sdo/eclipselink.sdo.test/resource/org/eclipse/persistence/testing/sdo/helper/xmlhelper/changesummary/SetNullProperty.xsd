@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xsd:schema elementFormDefault="qualified"
+            targetNamespace="http://www.example.org"
+            xmlns="http://www.example.org"
+            xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+            xmlns:sdo="commonj.sdo">
+	<xsd:element name="theRoot" type="RootType"/>
+	<xsd:complexType name="RootType">
+		<xsd:sequence>
+			<xsd:element name="Value" type="xsd:anyType" minOccurs="0" maxOccurs="unbounded"/>
+			<xsd:element name="ChangeSummary" type="sdo:ChangeSummaryType" minOccurs="0"/>
+		</xsd:sequence>
+	</xsd:complexType>
+	<xsd:complexType name="Emp">
+		<xsd:sequence>
+			<xsd:element name="Empno" type="xsd:string" minOccurs="0"/>
+			<xsd:element name="Ename" type="xsd:string" minOccurs="0"/>
+			<xsd:element name="SimpleNonNillable" type="xsd:string" minOccurs="0"/>
+			<xsd:element name="SimpleNillable" type="xsd:string" nillable="true" minOccurs="0"/>
+			<xsd:element name="ComplexNonNillable" type="Address" minOccurs="0"/>
+			<xsd:element name="ComplexNillable" type="Address" nillable="true" minOccurs="0"/>
+		</xsd:sequence>
+	</xsd:complexType>
+	<xsd:complexType name="Address">
+		<xsd:sequence>
+			<xsd:element name="street" type="xsd:string" minOccurs="0"/>
+		</xsd:sequence>
+	</xsd:complexType>
+</xsd:schema>

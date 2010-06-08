@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="US-ASCII"?>
+<xml-bindings xmlns="http://www.eclipse.org/eclipselink/xsds/persistence/oxm">
+    <java-types>
+        <java-type name="org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmlelements.Bar">
+            <xml-root-element name="bar"/>
+            <java-attributes>
+                <xml-elements java-attribute="items" xml-idref="true">
+                    <xml-element java-attribute="address" type="org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmlelements.Address"/>
+                    <xml-element java-attribute="phone" type="org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmlelements.Phone" />
+                    <xml-element-wrapper name="contact" />
+                </xml-elements>
+            </java-attributes>
+        </java-type>
+        <java-type name="org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmlelements.Address">
+            <java-attributes>
+                <xml-element java-attribute="id" xml-id="true" />
+            </java-attributes>
+        </java-type>
+        <java-type name="org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmlelements.Phone">
+            <java-attributes>
+                <xml-element java-attribute="id" xml-id="true" />
+            </java-attributes>
+        </java-type>
+    </java-types>
+</xml-bindings>

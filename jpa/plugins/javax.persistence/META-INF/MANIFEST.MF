@@ -1,0 +1,34 @@
+Manifest-Version: 1.0
+Export-Package: javax.persistence;version="2.0.1";jpa="2.0";uses:="javax.persistence.criteria,javax.persistence.metamodel,javax.persistence.spi",
+ javax.persistence.criteria;version="2.0.1";jpa="2.0";uses:="javax.persistence.metamodel,javax.persistence",
+ javax.persistence.metamodel;version="2.0.1";jpa="2.0",
+ javax.persistence.spi;version="2.0.1";jpa="2.0";uses:="javax.persistence,javax.sql"
+Private-Package: .,org.eclipse.persistence.javax.persistence.osgi
+Implementation-Version: 2.0.0
+Bundle-ClassPath: .
+Specification-Vendor: Sun Microsystems Inc.
+Tool: Bnd-0.0.366
+DSTAMP: 20091104
+Bundle-Name: Java Persistence API 2.0
+TODAY: November 4 2009
+Created-By: 1.6.0_04 (Sun Microsystems Inc.)
+TSTAMP: 1116
+Bundle-RequiredExecutionEnvironment: J2SE-1.5
+Implementation-Vendor: Eclipse.org - EclipseLink Project
+Bundle-Vendor: Eclipse.org - EclipseLink Project
+Bundle-Version: 2.0.1.v201005141605
+Bnd-LastModified: 1257351401813
+Bundle-ManifestVersion: 2
+Bundle-Activator: org.eclipse.persistence.javax.persistence.osgi.Activ
+ ator
+Include-Resource: ../../../about.html,../../../readme.html,../../../li
+ cense.html,./readme.txt,javax/persistence/orm_1_0.xsd=./src/javax/per
+ sistence/orm_1_0.xsd,javax/persistence/orm_2_0.xsd=./src/javax/persis
+ tence/orm_2_0.xsd,javax/persistence/persistence_1_0.xsd=./src/javax/p
+ ersistence/persistence_1_0.xsd,javax/persistence/persistence_2_0.xsd=
+ ./src/javax/persistence/persistence_2_0.xsd
+Import-Package: javax.sql;resolution:=optional,org.osgi.framework;reso
+ lution:=optional,org.osgi.util.tracker;resolution:=optional
+Specification-Version: 2.0
+Bundle-SymbolicName: javax.persistence
+

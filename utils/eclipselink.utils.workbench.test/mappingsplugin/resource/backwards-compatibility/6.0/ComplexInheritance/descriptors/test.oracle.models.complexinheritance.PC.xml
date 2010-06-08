@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<descriptor type="relational">
+   <name>test.oracle.models.complexinheritance.PC</name>
+   <class-handle>
+      <type-name>test.oracle.models.complexinheritance.PC</type-name>
+   </class-handle>
+   <transactional-policy type="relational">
+      <descriptor-alias>PC</descriptor-alias>
+      <refresh-cache-policy/>
+      <caching-policy/>
+      <query-manager type="relational"/>
+      <locking-policy type="relational"/>
+      <primary-key-policy>
+         <primary-key-handles>
+            <column-handle>
+               <column-table-name>INH_COMP</column-table-name>
+               <column-name>ID</column-name>
+            </column-handle>
+         </primary-key-handles>
+      </primary-key-policy>
+   </transactional-policy>
+   <inheritance-policy type="relational">
+      <is-root>false</is-root>
+      <parent-descriptor-handle>
+         <descriptor-name>test.oracle.models.complexinheritance.Computer</descriptor-name>
+      </parent-descriptor-handle>
+   </inheritance-policy>
+   <after-loading-policy>
+      <post-load-class-handle>
+         <type-name>test.oracle.models.complexinheritance.PC</type-name>
+      </post-load-class-handle>
+      <post-load-method-handle>
+         <method-declaring-type-name>test.oracle.models.complexinheritance.PC</method-declaring-type-name>
+         <method-signature>addToDescriptor(org.eclipse.persistence.publicinterface.Descriptor)</method-signature>
+      </post-load-method-handle>
+   </after-loading-policy>
+   <primary-table-handle>
+      <table-name>INH_COMP</table-name>
+   </primary-table-handle>
+</descriptor>

@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<descriptor type="relational">
+   <name>test.oracle.models.complexaggregate.EvaluationClient</name>
+   <class-handle>
+      <type-name>test.oracle.models.complexaggregate.EvaluationClient</type-name>
+   </class-handle>
+   <transactional-policy type="relational">
+      <descriptor-alias>EvaluationClient</descriptor-alias>
+      <refresh-cache-policy/>
+      <caching-policy>
+         <existence-checking>Assume non-existence</existence-checking>
+      </caching-policy>
+      <query-manager type="relational"/>
+      <locking-policy type="relational"/>
+      <primary-key-policy>
+         <primary-key-handles>
+            <column-handle>
+               <column-table-name>AGG_ECNT</column-table-name>
+               <column-name>CL_ID</column-name>
+            </column-handle>
+         </primary-key-handles>
+      </primary-key-policy>
+   </transactional-policy>
+   <mappings>
+      <mapping type="aggregate">
+         <name>evaluationPeriod</name>
+         <attribute-handle>
+            <attribute-declaring-type-name>test.oracle.models.complexaggregate.EvaluationClient</attribute-declaring-type-name>
+            <attribute-name>evaluationPeriod</attribute-name>
+         </attribute-handle>
+         <reference-descriptor-handle>
+            <descriptor-name>test.oracle.models.complexaggregate.Period</descriptor-name>
+         </reference-descriptor-handle>
+         <paths-to-fields>
+            <aggregate-path-to-field>
+               <field-description>DIRECT</field-description>
+               <column-handle>
+                  <column-table-name>AGG_ECNT</column-table-name>
+                  <column-name>EV_EDATE</column-name>
+               </column-handle>
+               <mapping-handles>
+                  <mapping-handle>
+                     <mapping-descriptor-name>test.oracle.models.complexaggregate.Period</mapping-descriptor-name>
+                     <mapping-name>endDate</mapping-name>
+                  </mapping-handle>
+               </mapping-handles>
+            </aggregate-path-to-field>
+            <aggregate-path-to-field>
+               <field-description>DIRECT</field-description>
+               <column-handle>
+                  <column-table-name>AGG_ECNT</column-table-name>
+                  <column-name>EV_SDATE</column-name>
+               </column-handle>
+               <mapping-handles>
+                  <mapping-handle>
+                     <mapping-descriptor-name>test.oracle.models.complexaggregate.Period</mapping-descriptor-name>
+                     <mapping-name>startDate</mapping-name>
+                  </mapping-handle>
+               </mapping-handles>
+            </aggregate-path-to-field>
+         </paths-to-fields>
+      </mapping>
+   </mappings>
+   <inheritance-policy type="relational">
+      <is-root>false</is-root>
+      <parent-descriptor-handle>
+         <descriptor-name>test.oracle.models.complexaggregate.Client</descriptor-name>
+      </parent-descriptor-handle>
+   </inheritance-policy>
+   <primary-table-handle>
+      <table-name>AGG_ECNT</table-name>
+   </primary-table-handle>
+</descriptor>

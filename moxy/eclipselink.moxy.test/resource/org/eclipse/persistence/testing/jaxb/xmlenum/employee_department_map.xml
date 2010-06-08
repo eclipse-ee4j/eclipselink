@@ -1,0 +1,13 @@
+<employee>
+  <name>John Doe</name>
+  <deps>
+    <entry>
+      <key>1</key>
+      <value>value1</value>
+    </entry>
+    <entry>
+      <key>4</key>
+      <value>value2</value>
+    </entry>
+  </deps>
+</employee>

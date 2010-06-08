@@ -1,0 +1,10 @@
+<?xml version="1.0"?>
+<schema xmlns="http://www.w3.org/2001/XMLSchema" xmlns:nist="myCharacter-NS" targetNamespace="myCharacter-NS">
+
+	<element name="myCharacter" type="nist:myCharacter-Type"/>
+
+	<simpleType name="myCharacter-Type">
+		<restriction base="string"/>
+	</simpleType>
+
+</schema>

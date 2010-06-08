@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?><xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:ns0="myuri" targetNamespace="myuri">
+   <xsd:complexType name="address">
+      <xsd:sequence>
+         <xsd:element minOccurs="0" name="state" type="xsd:string"/>
+         <xsd:element minOccurs="0" name="street" type="xsd:string"/>
+         <xsd:element minOccurs="0" name="city" type="xsd:string"/>
+         <xsd:element minOccurs="0" name="zip" type="xsd:string"/>
+      </xsd:sequence>
+   </xsd:complexType>
+   <xsd:element name="address" type="ns0:address"/>
+</xsd:schema>

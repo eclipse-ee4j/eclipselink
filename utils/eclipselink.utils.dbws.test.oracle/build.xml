@@ -1,0 +1,385 @@
+<?xml version="1.0"?>
+<!--/*******************************************************************************
+* This program and the accompanying materials are made available under the
+* terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+* which accompanies this distribution.
+* The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
+* and the Eclipse Distribution License is available at
+* http://www.eclipse.org/org/documents/edl-v10.php.
+*
+*   Ant naming conventions:
+*   - regardless of the actual OS platform,'/' is the directory separator
+*     (Ant will convert as appropriate).
+*   - multi-word properties use periods '.'
+*     - properties ending in .jar define jarfile names only (no path)
+*     - properties ending in .lib are fully qualified jars (path and filename)
+*     - properties ending in .dir are directory paths
+*     - properties ending in .path are path refid names (classpath fragments)
+*   - multi-word targets use hyphens '-'
+*     - targets beginning with test- are reserved for high level test targets,
+*       and are used in test results parsing
+*     - targets typically use the form <action>-<object>-<type> (ie. package-bundle-zip)
+*   - multi-word macros use underscores '_'
+*   - multi-word macro attributes are concatinated
+*     e.g. 'runpathref'
+*   - multi-word tasks (taskdef) names are concatinated
+*     e.g. 'validateconnection'
+*   - OS environment variables are in ALLCAPS and have 'env' as a prefix
+*     e.g. ${env.XXX}.
+*   - Ant properties are lower case.
+*
+* Contributors:
+*     egwin - initial API and implementation
+*     minorman - dbws utils oracle-specific test target
+#******************************************************************************/-->
+<!-- This ant project includes the following tasks:
+        - build (default) : cleans, compiles, and packages all tests
+        - clean   : cleans up all generated files and dirs
+        - compile : compiles all test classes
+        - package : packages tests into eclipselink-dbws-oracle-depend-test.jar
+        - test: Runs DBWS utils Oracle-specific tests
+-->
+<project
+  name="eclipselink.utils.dbws.test.oracle"
+  default="build"
+  basedir="."
+  >
+  <!-- OS environment variables have 'env' as a prefix -->
+  <property environment="env"/>
+  <presetdef
+    name="DeleteDirQuietly"
+    >
+    <delete
+      dir="_tmp_"
+      quiet="true"
+      failonerror="false"
+    />
+  </presetdef>
+  <presetdef
+    name="DeleteFileQuietly"
+    >
+    <delete
+      file="_tmp_"
+      quiet="true"
+      failonerror="false"
+    />
+  </presetdef>
+  <scriptdef
+    name="toLower"
+    language="javascript"
+    manager="javax"
+    >
+    <attribute name="input"/>
+    <attribute name="property"/>
+    <![CDATA[
+      // getting the value
+      input = attributes.get("input");
+      property = attributes.get("property");
+      if (input == null || property == null) {
+         self.fail("both 'input' and 'property' attributes must be set.");
+      }
+      lowercaseInput = input.toLowerCase();
+      // put result into property - NB overwrites previous value! Not safe for <parallel> tasks
+      project.setProperty(attributes.get("property"), lowercaseInput);
+    ]]>
+  </scriptdef>
+  <macrodef
+    name="verify_build_dir"
+    >
+    <attribute name="name"/>
+    <attribute name="message"/>
+    <sequential>
+      <dirname
+        property="@{name}.actual.dir"
+        file="${ant.file}"
+      />
+      <pathconvert
+        targetos="unix"
+        property="@{name}.actual.dir.unix"
+        >
+        <path>
+          <pathelement
+            location="${@{name}.actual.dir}"
+          />
+        </path>
+      </pathconvert>
+      <dirname
+        property="@{name}.actual.dir.parent"
+        file="."
+      />
+      <pathconvert
+        targetos="unix"
+        property="@{name}.actual.dir.parent.unix"
+        >
+        <path>
+          <pathelement
+            location="${@{name}.actual.dir.parent}"
+          />
+        </path>
+      </pathconvert>
+      <property
+        name="@{name}.dir"
+        value="${@{name}.actual.dir.parent.unix}/@{name}"
+      />
+      <fail
+        message="@{message}"
+        >
+        <condition>
+          <not>
+            <equals arg1="${@{name}.actual.dir.unix}" arg2="${@{name}.dir}"/>
+          </not>
+        </condition>
+      </fail>
+    </sequential>
+  </macrodef>
+  <!-- Test to make certain that build is run from component dir -->
+  <verify_build_dir
+    name="${ant.project.name}"
+    message="Not running from '${ant.project.name}' directory"
+  />
+  <property
+    name="version.qualifier"
+    value="qualifier"
+  />
+  <!-- user property overrides -->
+  <property file="${user.home}/build.properties"/>
+  <!-- properties checked into SVN -->
+  <property file="./build.properties"/>
+  <!-- user testing properties overrides -->
+  <property file="${user.home}/test.properties"/>
+  <!-- testing properties checked into SVN -->
+  <property file="./test.properties"/>
+  <!-- Test dependencies -->
+  <available file="${junit.lib}" property="junit.jar.exist"/>
+  <available file="${jdbc.driver.jar}" property="jdbc.jar.exist"/>
+  <condition property="support.test">
+    <and>
+      <isset property="junit.jar.exist"/>
+      <isset property="jdbc.jar.exist"/>
+      <isset property="db.platform"/>
+        <!-- bit too lenient, but means we don't have to change for Oracle12, Oracle13 .. -->
+        <matches
+          pattern="org.eclipse.persistence.platform.database.oracle.Oracle[0-9]{1,2}Platform"
+          string="${db.platform}"
+        />
+    </and>
+  </condition>
+
+  <!--
+    compile path is complex, not just eclipselink.jar
+    Put core (plugin) modules first on path so that any 
+    in-progress work that has just be re-compiled will be
+    picked up ahead of eclipselink.jar
+  -->
+  <!-- Set Compile Path-->
+  <path id="utils.dbws.test.oracle.compile.path">
+    <pathelement path="${junit.lib}"/>
+    <fileset
+      dir="${core.plugins.dir}"
+      includes="${core.plugins}"
+    />
+    <fileset
+      dir="${dbws.plugins.dir}"
+      includes="${dbws.plugins}"
+    />
+    <fileset
+      dir="${dbws.utils.dir}"
+      includes="${eclipselink.dbws.utils.jar}"
+    /> 
+    <pathelement path="../../eclipselink.jar"/>
+  </path>
+  <!-- Test Path-->
+  <path id="utils.dbws.test.oracle.test.path">
+    <pathelement path="${jdbc.driver.jar}"/>
+    <path refid="utils.dbws.test.oracle.compile.path"/>
+    <pathelement location="${eclipselink.dbws.oracle.test.jar}"/>
+  </path>
+
+  <!-- these presets and macros must be defined AFTER .properties read -->
+  <presetdef name="javac">
+    <javac
+      fork="true"
+      debug="${javac.debug}"
+      debuglevel="${javac.debuglevel}"
+      source="1.6"
+      target="1.6"
+      failonerror="true"
+      memoryMaximumSize="512m"
+    />
+  </presetdef>
+  <macrodef
+    name="SetupDatabase"
+    >
+    <attribute name="filename"/>
+    <sequential>
+      <sql
+        onerror="continue"
+        keepformat="true"
+        driver="${db.driver}"
+        url="${db.url}"
+        userid="${db.user}"
+        password="${db.pwd}"
+        delimiter="|"
+        >
+        <classpath>
+          <pathelement location="${jdbc.driver.jar}"/>
+        </classpath>
+        <fileset
+          dir="${resource.dir}"
+          >
+         <include name="dbsetup_@{filename}.sql"/>
+        </fileset>
+      </sql>
+    </sequential>
+  </macrodef>
+  <macrodef
+    name="RunTestsuite"
+    >
+    <attribute name="testsuite-name"/>
+    <sequential>
+      <junit
+        printsummary="withOutAndErr"
+        fork="yes"
+        forkmode="once"
+        maxmemory="512m"
+        >
+        <classpath refid="utils.dbws.test.oracle.test.path"/>
+        <formatter
+          type="xml"
+        />
+        <sysproperty
+          key="eclipselink.logging.level"
+          value="${logging.level}"
+        />
+        <sysproperty
+          key="db.driver"
+          value="${db.driver}"
+        />
+        <sysproperty
+          key="db.url"
+          value="${db.url}"
+        />
+        <sysproperty
+          key="db.user"
+          value="${db.user}"
+        />
+        <sysproperty
+          key="db.pwd"
+          value="${db.pwd}"
+        />
+        <sysproperty
+          key="db.platform"
+          value="${db.platform}"
+        />
+        <test
+          name="dbws.testing.visit.@{testsuite-name}Suite"
+        />
+      </junit>
+    </sequential>
+  </macrodef>
+  <macrodef
+    name="TeardownDatabase"
+    >
+    <attribute name="filename"/>
+    <sequential>
+      <sql
+        onerror="continue"
+        keepformat="true"
+        driver="${db.driver}"
+        url="${db.url}"
+        userid="${db.user}"
+        password="${db.pwd}"
+        delimiter="|"
+        >
+        <classpath>
+          <pathelement location="${jdbc.driver.jar}"/>
+        </classpath>
+        <fileset
+          dir="${resource.dir}"
+          >
+         <include name="dbteardown_@{filename}.sql"/>
+        </fileset>
+      </sql>
+    </sequential>
+  </macrodef>
+
+  <target name="build" depends="clean, compile, package" if="support.test"/>
+  
+  <target
+    name="clean" 
+    if="support.test"
+    >
+    <DeleteDirQuietly dir="${classes.dir}"/>
+    <mkdir dir="${classes.dir}"/>
+    <DeleteDirQuietly dir="${run.dir}"/>
+    <mkdir dir="${run.dir}"/>
+    <DeleteFileQuietly file="${eclipselink.dbws.oracle.test.jar}"/>
+  </target>
+
+  <target
+    name="compile"
+    if="support.test"
+    >
+    <javac
+      srcdir="${src.dir}"
+      destdir="${classes.dir}"
+      classpathref="utils.dbws.test.oracle.compile.path"
+    />
+  </target>
+
+  <target
+    name="package"
+    if="support.test"
+    >
+    <jar
+      jarfile="${eclipselink.dbws.oracle.test.jar}">
+      <fileset dir="${classes.dir}">
+        <include name="dbws/testing/**/*.class"/>
+      </fileset>
+    </jar>
+  </target>
+
+  <target
+    name="run-tests"
+    if="support.test"
+    depends="build"
+    >
+    <SetupDatabase filename="alltests"/>
+    <RunTestsuite testsuite-name="AdvancedJDBCTest"/>
+    <RunTestsuite testsuite-name="BuildARecordTestWebService"/>
+    <RunTestsuite testsuite-name="BuildCRecordTestWebService"/>
+    <RunTestsuite testsuite-name="BuildEmpArrayTestWebService"/>
+    <RunTestsuite testsuite-name="BuildTbl1TestWebService"/>
+    <RunTestsuite testsuite-name="BuildTbl2TestWebService"/>
+    <RunTestsuite testsuite-name="EchoEmpObjectTestWebService"/>
+    <RunTestsuite testsuite-name="ORDescriptorBuilderTest"/>
+    <RunTestsuite testsuite-name="OXDescriptorBuilderTest"/>
+    <RunTestsuite testsuite-name="P1testWebService"/>
+    <RunTestsuite testsuite-name="P2testWebService"/>
+    <RunTestsuite testsuite-name="P3testWebService"/>
+    <RunTestsuite testsuite-name="P4testWebService"/>
+    <RunTestsuite testsuite-name="P5testWebService"/>
+    <RunTestsuite testsuite-name="P6testWebService"/>
+    <RunTestsuite testsuite-name="PLSQLHelperObjectsBuilderTest"/>
+    <RunTestsuite testsuite-name="TopLevelPLSQLStoredProcedureTest"/>
+    <RunTestsuite testsuite-name="TopLevelStoredProcedureTest"/>
+    <RunTestsuite testsuite-name="TypesTest"/>
+    <RunTestsuite testsuite-name="LocalTableTypeTest"/>
+    <TeardownDatabase filename="alltests"/>
+    <junitreport
+      todir="${run.dir}"
+      >
+      <fileset
+        dir="."
+        >
+        <include
+          name="TEST-*Suite.xml"
+        />
+      </fileset>
+      <report
+        format="noframes"
+        todir="${run.dir}"
+      />
+    </junitreport>
+  </target>
+</project>

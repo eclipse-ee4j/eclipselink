@@ -1,0 +1,7 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: EclipseLink OSGi Deployment Fragment (non-specification)
+Bundle-SymbolicName: org.eclipse.persistence.jpa.osgi
+Bundle-Version: 2.1.0.qualifier
+Fragment-Host: org.eclipse.persistence.jpa;bundle-version="2.1.0.qualifier"
+Bundle-RequiredExecutionEnvironment: J2SE-1.5

@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- edited with XMLSPY v5 rel. 3 U (http://www.xmlspy.com) by Les Davis (Oracle Corporation) -->
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" elementFormDefault="qualified">
+	<xs:element name="address">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element name="street" type="xs:string" minOccurs="2" maxOccurs="2"/>
+				<xs:element name="city" type="xs:string"/>
+				<xs:element name="province" type="xs:string"/>
+				<xs:element name="postal-code" type="xs:string"/>
+				<xs:element name="employee-id" type="xs:integer"/>
+			</xs:sequence>
+			<xs:attribute name="employee-number" type="xs:int" use="required"/>
+		</xs:complexType>
+		<xs:keyref name="employee-id" refer="id">
+			<xs:selector xpath="xs:employee"/>
+			<xs:field xpath="id"/>
+		</xs:keyref>
+	</xs:element>
+	<xs:attributeGroup name="name-group">
+		<xs:attribute name="first-name" type="xs:string"/>
+		<xs:attribute name="last-name" type="xs:string"/>
+		<xs:anyAttribute namespace="initial"/>
+	</xs:attributeGroup>
+	<xs:element name="employee">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element name="personal-information">
+					<xs:complexType>
+						<xs:attributeGroup ref="name-group"/>
+					</xs:complexType>
+				</xs:element>
+				<xs:element name="job-information">
+					<xs:complexType>
+						<xs:sequence>
+							<xs:element name="task" type="xs:string" maxOccurs="3"/>
+						</xs:sequence>
+					</xs:complexType>
+				</xs:element>
+				<xs:element name="contact-information">
+					<xs:complexType>
+						<xs:sequence>
+							<xs:element ref="address"/>
+							<xs:element name="phone" type="phone-type" maxOccurs="unbounded"/>
+						</xs:sequence>
+					</xs:complexType>
+				</xs:element>
+				<xs:element name="dependent-information">
+					<xs:complexType>
+						<xs:sequence>
+							<xs:element name="dependent" maxOccurs="unbounded">
+								<xs:complexType>
+									<xs:sequence>
+										<xs:element ref="address"/>
+										<xs:element name="phone-no" type="phone-type" maxOccurs="unbounded"/>
+									</xs:sequence>
+									<xs:attributeGroup ref="name-group"/>
+								</xs:complexType>
+							</xs:element>
+						</xs:sequence>
+					</xs:complexType>
+				</xs:element>
+				<xs:element name="id" type="xs:integer"/>
+			</xs:sequence>
+		</xs:complexType>
+		<xs:unique name="id">
+			<xs:selector xpath="xs:employee"/>
+			<xs:field xpath="id"/>
+		</xs:unique>
+	</xs:element>
+	<xs:complexType name="phone-type">
+		<xs:sequence>
+			<xs:element name="area-code" type="xs:short"/>
+			<xs:element name="exchange" type="xs:short"/>
+			<xs:element name="number" type="xs:short"/>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:simpleType name="gender-type" final="#all">
+		<xs:restriction base="xs:string">
+			<xs:length value="1"/>
+			<xs:minLength value="1"/>
+			<xs:maxLength value="1"/>
+			<xs:pattern value="((Letter |'_'|':')(Name-Character)*)"/>
+			<xs:enumeration value=""/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:group name="emp-group">
+		<xs:sequence>
+			<xs:element ref="address"/>
+			<xs:element ref="employee"/>
+		</xs:sequence>
+	</xs:group>
+</xs:schema>

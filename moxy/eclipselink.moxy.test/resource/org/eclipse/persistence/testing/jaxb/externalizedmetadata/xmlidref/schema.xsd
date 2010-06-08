@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+   <xsd:complexType name="address">
+      <xsd:sequence>
+         <xsd:element name="city" type="xsd:string" minOccurs="0"/>
+      </xsd:sequence>
+      <xsd:attribute name="aid" type="xsd:ID" use="required"/>
+   </xsd:complexType>
+   <xsd:complexType name="employee">
+      <xsd:sequence>
+         <xsd:element name="name" type="xsd:string" minOccurs="0"/>
+         <xsd:element name="homeAddress" type="address" minOccurs="0"/>
+      </xsd:sequence>
+      <xsd:attribute name="work-address-id" type="xsd:IDREF"/>
+   </xsd:complexType>
+   <xsd:element name="address" type="address"/>
+   <xsd:element name="employee" type="employee"/>
+</xsd:schema>

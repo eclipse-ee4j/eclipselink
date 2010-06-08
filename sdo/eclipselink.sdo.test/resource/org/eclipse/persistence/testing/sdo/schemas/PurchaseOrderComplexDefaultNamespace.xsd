@@ -1,0 +1,117 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<schema targetNamespace="http://www.example.org" xmlns="http://www.w3.org/2001/XMLSchema" xmlns:ns0="http://www.example.org" elementFormDefault="unqualified" attributeFormDefault="unqualified"> 
+   <complexType name="Items">
+        <sequence>
+		<sequence>
+	  		<sequence>
+			            <element name="item" type="ns0:LineItemType" minOccurs="0" maxOccurs="unbounded"/>
+ 		     	</sequence>
+		</sequence>
+        </sequence>
+    </complexType>
+   <complexType name="usAddressType">
+      <complexContent>
+         <extension base="AddressType">
+            <sequence>
+               <element name="state" type="string" minOccurs="0"/>
+            </sequence>
+            <attribute name="zip" type="int"/>
+         </extension>
+      </complexContent>
+   </complexType>
+   <complexType name="AddressType">
+      <sequence>
+         <element name="name" type="string" minOccurs="0"/>
+         <element name="street" type="string" minOccurs="0"/>
+         <element name="city" type="string" minOccurs="0"/>
+         <element name="base64Test" type="base64Binary" minOccurs="0"/>
+      </sequence>
+      <attribute name="country" type="string" default="US"/>
+   </complexType>
+   <complexType name="LineItemType">
+      <sequence>
+         <element name="productName" type="string" minOccurs="0"/>
+	 <choice>
+  	    <element name="USPrice" type="float" minOccurs="0"/>
+	       <sequence>
+		   <element name="CDNPrice" type="float" minOccurs="0"/>
+	     	   <element name="exchangeRate" type="float" minOccurs="0"/>
+                </sequence>
+	    </choice>
+	 <element name="shipDate" type="date" minOccurs="0"/>
+         <element name="comment" type="string" minOccurs="0"/>
+      </sequence>
+      <attribute name="partNum" type="ns0:SKU"/>
+      <attribute name="quantity" type="ns0:quantityType"/>
+   </complexType>  
+   <complexType name="PurchaseOrderType">
+      <sequence>
+         <element name="shipTo" type="ns0:AddressType" minOccurs="0"/>
+         <element name="billTo" type="ns0:AddressType" minOccurs="0"/>
+         <element name="comment" type="string" minOccurs="0"/>
+         <element name="items" type="ns0:Items" minOccurs="0"/>
+         <element name="customer" type="ns0:CustomerType" minOccurs="0"/>
+      </sequence>
+      <attribute name="poId" type="string"/>
+      <attribute name="orderDate" type="date"/>
+   </complexType>
+   <complexType name="CustomerType">
+      <sequence>
+         <element name="name" type="string" minOccurs="0"/>
+         <element name="gender" type="ns0:gender" minOccurs="0"/>
+         <element name="phoneNumber" minOccurs="0">
+            <simpleType>
+	       <restriction base="string">
+                  <length value="10"/>
+               </restriction>
+            </simpleType>
+	    </element>
+         </sequence>
+         <attribute name="namePrefix">
+	    <simpleType>
+	       <restriction base="string">
+	          <enumeration value="Dr."/>
+		     <enumeration value="Mrs."/>
+		     <enumeration value="Mr."/>
+	          </restriction>
+	       </simpleType>
+        </attribute>
+   </complexType>
+   <complexType name="cdnAddressType">
+      <complexContent>
+         <extension base="AddressType">
+            <sequence>
+	       <choice>	       
+	          <sequence>
+		     <element name="province" type="string" minOccurs="0"/>
+		  </sequence>
+	          <element name="territory" type="string" minOccurs="0"/>
+	       </choice>
+  	       <element name="postalcode" type="string" minOccurs="0"/>
+            </sequence>
+         </extension>
+      </complexContent>
+   </complexType>
+   <complexType name="cdnAddressMailingType">
+      <complexContent>
+         <extension base="cdnAddressType">
+            <sequence>
+  	       <element name="deliveryInfo" type="string" minOccurs="0"/>
+            </sequence>
+         </extension>
+      </complexContent>
+   </complexType>
+    <element name="purchaseOrder" type="ns0:PurchaseOrderType"/>
+   <simpleType name="gender">
+      <restriction base="string">
+         <enumeration value="male"/>
+	 <enumeration value="female"/>
+      </restriction>
+   </simpleType>
+   <simpleType name="quantityType">
+      <restriction base="int"/>
+   </simpleType>
+   <simpleType name="SKU">
+      <restriction base="string"/>
+   </simpleType>
+</schema>

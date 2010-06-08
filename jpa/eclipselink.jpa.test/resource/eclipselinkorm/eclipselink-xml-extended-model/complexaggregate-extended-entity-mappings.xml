@@ -1,0 +1,193 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<entity-mappings version="2.1" xmlns="http://www.eclipse.org/eclipselink/xsds/persistence/orm" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+	<description>
+		Complex Aggregate Test Model Instance Document
+	</description>
+	<persistence-unit-metadata>
+		<persistence-unit-defaults>
+			<access>FIELD</access>
+		</persistence-unit-defaults>
+	</persistence-unit-metadata>
+	<package>org.eclipse.persistence.testing.models.jpa.xml.complexaggregate</package>
+	<entity name="XMLExtendedHockeyPlayer" class="HockeyPlayer">
+		<table name="XML_HOCKEY_PLAYER" />
+		<table-generator name="XML_HOCKEY_PLAYER_TABLE_GENERATOR"
+			table="XML_HOCKEY_SEQ" pk-column-name="SEQ_NAME"
+			value-column-name="SEQ_COUNT" pk-column-value="HOCKEY_PLAYER_SEQ" />
+		<attributes>
+			<id name="playerId">
+				<column name="PLAYERID" />
+				<generated-value strategy="TABLE" generator="XML_HOCKEY_PLAYER_TABLE_GENERATOR" />
+			</id>
+			<basic name="firstName">
+				<column name="FNAME" />
+			</basic>
+			<basic name="lastName">
+				<column name="LNAME" />
+			</basic>
+			<embedded name="vitals" />
+		</attributes>
+	</entity>
+	<entity name="XMLExtendedHockeyTeam" class="HockeyTeam">
+		<table name="XML_HOCKEY_TEAM" />
+		<table-generator name="XML_HOCKEY_TEAM_TABLE_GENERATOR"
+			table="XML_HOCKEY_SEQ" pk-column-name="SEQ_NAME"
+			value-column-name="SEQ_COUNT" pk-column-value="HOCKEY_TEAM_SEQ" />
+		<attributes>
+			<embedded-id name="id" />
+			<basic name="name">
+				<column name="NAME" />
+			</basic>
+			<one-to-many name="players" mapped-by="hockeyTeam" />
+			<one-to-one name="ownershipGroup">
+				<join-column name="OWNER_ID" referenced-column-name="ID"/>
+			</one-to-one>
+			<embedded name="teamDetails" />
+		</attributes>
+	</entity>
+	<entity name="XMLExtendedRole" class="Role">
+        <table name="XML_ROLE"/>
+        <attributes>
+            <id name="id">
+                <generated-value strategy="TABLE" generator="ROLE_TABLE_GENERATOR"/>
+                <table-generator name="ROLE_TABLE_GENERATOR" table="XML_HOCKEY_SEQ" pk-column-name="SEQ_NAME" value-column-name="SEQ_COUNT" pk-column-value="ROLE_SEQ"/>
+            </id>
+            <basic name="description">
+                <column name="DESCRIP"/>
+            </basic>
+        </attributes>
+    </entity>
+	<entity name="XMLExtendedOwnershipGroup" class="OwnershipGroup">
+		<table name="XML_OWNERSHIP_GROUP" />
+		<attributes>
+			<basic name="name" />
+			<embedded name="ownershipDetails" />
+		</attributes>
+	</entity>
+	<entity name="XMLCitySlicker" class="CitySlicker">
+	   <table name="XML_CITYSLICKER"/>
+	   <attributes>
+            <embedded-id name="name"/>
+            <basic name="age"/>
+            <basic name="gender"/>
+            <many-to-one name="world"/>
+       </attributes>
+	</entity>
+	<entity name="XMLCountryDweller" class="CountryDweller">
+	   <table name="XML_COUNTRY_DWELLER"/>
+	   <attributes>
+            <embedded-id name="name"/>
+            <basic name="age"/>
+            <basic name="gender"/>
+            <many-to-one name="world"/>
+       </attributes>
+	</entity>
+	<entity name="XMLWorld" class="World">
+	   <table name="XML_WORLD"/>
+	   <attributes>
+            <id name="id">
+                <generated-value strategy="TABLE" generator="WORLD_TABLE_GENERATOR"/>
+                <table-generator name="WORLD_TABLE_GENERATOR" table="XML_WORLD_SEQ" pk-column-name="SEQ_NAME" value-column-name="SEQ_COUNT" pk-column-value="WORLD_SEQ"/>
+            </id>
+             <one-to-many name="citySlickers" fetch="EAGER" mapped-by="world">
+                <order-by/> <!-- will default to the embedded id fields -->
+             </one-to-many>
+             <one-to-many name="countryDwellers" fetch="EAGER" mapped-by="world">
+                <order-by>age, getGender DESC</order-by>
+             </one-to-many>
+       </attributes>
+	</entity>
+	<embeddable class="Name">
+        <attributes>
+            <basic name="firstName">
+                <column name="FNAME" />
+            </basic>
+            <basic name="lastName">
+                <column name="LNAME" />
+            </basic>
+            <basic name="id">
+                <generated-value strategy="IDENTITY"/>
+            </basic>
+        </attributes>
+    </embeddable>
+	<embeddable class="PersonalVitals">
+		<attributes>
+			<basic name="age" />
+			<basic name="weight" />
+			<basic name="height" />
+		</attributes>
+	</embeddable>
+	<embeddable class="TeamVitals">
+		<attributes>
+			<basic name="position">
+				<column name="POS" />
+			</basic>
+			<basic name="jerseyNumber">
+				<column name="JERSEY_NUMBER" />
+			</basic>
+			<one-to-many name="roles">
+                <join-table name="XML_PLAYER_ROLES">
+                    <join-column name="PLAYER_ID"/>
+                    <inverse-join-column name="ROLE_ID"/>
+                </join-table>
+                <cascade>
+                    <cascade-persist/>
+                </cascade>   
+            </one-to-many>
+			<one-to-one name="hockeyTeam" target-entity="HockeyTeam" fetch="EAGER">
+				<join-column name="TEAM_ID" referenced-column-name="ID" />
+				<join-column name="TEAM_ID_DESC" referenced-column-name="ID_DESC" />
+			</one-to-one>
+		</attributes>
+	</embeddable>
+	<embeddable class="Vitals">
+		<attributes>
+			<embedded name="personalVitals" />
+			<embedded name="teamVitals" />
+		</attributes>
+	</embeddable>
+	<embeddable class="OwnershipDetails">
+		<attributes>
+			<id name="id">
+				<generated-value strategy="TABLE"
+					generator="OWNERSHIP_GROUP_TABLE_GENERATOR" />
+				<table-generator name="OWNERSHIP_GROUP_TABLE_GENERATOR"
+					table="XML_HOCKEY_SEQ" pk-column-name="SEQ_NAME"
+					value-column-name="SEQ_COUNT"
+					pk-column-value="OWNERSHIP_GROUP_SEQ" />
+			</id>
+			<basic-collection name="privileges">
+				<value-column name="PRIVILEGE" />
+				<collection-table name="XML_OWNER_PRIVILEGES">
+					<primary-key-join-column name="OWNER_ID"
+						referenced-column-name="ID" />
+				</collection-table>
+			</basic-collection>
+			<version name="version" />
+			<transient name="transientValue" />
+		</attributes>
+	</embeddable>
+	<embeddable class="HockeyTeamDetails">
+		<attributes>
+			<basic name="awayColor">
+				<column name="AWAY_COLOR" />
+			</basic>
+			<basic name="homeColor">
+				<column name="HOME_COLOR" />
+			</basic>
+			<basic name="level">
+				<column name="TEAM_LEVEL" />
+			</basic>
+		</attributes>
+	</embeddable>
+	<embeddable class="HockeyTeamId">
+		<attributes>
+			<basic name="id">
+				<column name="ID" />
+			</basic>
+			<basic name="description">
+				<column name="ID_DESC" />
+			</basic>
+		</attributes>
+	</embeddable>
+</entity-mappings>

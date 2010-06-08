@@ -1,0 +1,46 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  <groupId>@groupId@</groupId>
+  <artifactId>@artifactId@</artifactId>
+  <packaging>jar</packaging>
+  <name>@artifactName@</name>
+  <description>EclipseLink subversion revision @svn.revision@</description>
+  <version>@version@</version>
+  <url>http://www.eclipse.org/eclipselink</url>
+  <issueManagement>
+    <system>bugzilla</system>
+    <url>https://bugs.eclipse.org/bugs</url>
+  </issueManagement>
+  <inceptionYear>2007</inceptionYear>
+  <mailingLists>
+    <mailingList>
+      <name>EclipseLink Developer List</name>
+      <post>eclipselink-dev@eclipse.org</post>
+      <archive>http://dev.eclipse.org/mhonarc/lists/eclipselink-dev</archive>
+    </mailingList>
+    <mailingList>
+      <name>EclipseLink User List</name>
+      <post>eclipselink-users@eclipse.org</post>
+      <archive>http://dev.eclipse.org/mhonarc/lists/eclipselink-users</archive>
+    </mailingList>
+  </mailingLists>
+  <licenses>
+    <license>
+      <name>Eclipse Public License v1.0</name>
+      <url>http://www.eclipse.org/legal/epl-v10.html</url>
+      <distribution>repo</distribution>
+      <comments>Standard Eclipse Licence</comments>
+    </license>
+    <license>
+      <name>Eclipse Distribution License v. 1.0</name>
+      <url>http://www.eclipse.org/org/documents/edl-v10.php</url>
+      <distribution>repo</distribution>
+      <comments>Standard Eclipse Distribution License</comments>
+    </license>
+  </licenses>
+  @dependencies@
+</project>
+
+
+

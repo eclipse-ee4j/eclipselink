@@ -1,0 +1,4 @@
+<schema targetNamespace="http://example.com/serviceTypes" xmlns="http://www.w3.org/2001/XMLSchema">
+   <include schemaLocation="Service.xsd"/>
+   <include schemaLocation="ServiceCS.xsd"/>
+</schema>

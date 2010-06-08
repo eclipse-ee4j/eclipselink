@@ -1,0 +1,41 @@
+Manifest-Version: 1.0
+Export-Package: org.eclipse.persistence.internal.libraries.asm.attrs;u
+ ses:="org.eclipse.persistence.internal.libraries.asm";version="2.1.0.
+ qualifier",org.eclipse.persistence.internal.libraries.asm.commons;use
+ s:="org.eclipse.persistence.internal.libraries.asm";version="2.1.0.qu
+ alifier",org.eclipse.persistence.internal.libraries.asm.tree;uses:="o
+ rg.eclipse.persistence.internal.libraries.asm";version="2.1.0.qualifi
+ er",org.eclipse.persistence.internal.libraries.asm.tree.analysis;uses
+ :="org.eclipse.persistence.internal.libraries.asm.tree,org.eclipse.pe
+ rsistence.internal.libraries.asm";version="2.1.0.qualifier",org.eclip
+ se.persistence.internal.libraries.asm.xml;uses:="org.eclipse.persiste
+ nce.internal.libraries.asm,org.xml.sax,org.xml.sax.helpers,org.xml.sa
+ x.ext,javax.xml.transform,javax.xml.transform.sax,javax.xml.transform
+ .stream,org.eclipse.persistence.internal.libraries.asm.util";version=
+ "2.1.0.qualifier",org.eclipse.persistence.internal.libraries.asm;vers
+ ion="2.1.0.qualifier",org.eclipse.persistence.internal.libraries.asm.
+ util;uses:="org.eclipse.persistence.internal.libraries.asm,org.eclips
+ e.persistence.internal.libraries.asm.util.attrs,org.eclipse.persisten
+ ce.internal.libraries.asm.tree.analysis,org.eclipse.persistence.inter
+ nal.libraries.asm.tree";version="2.1.0.qualifier",org.eclipse.persist
+ ence.internal.libraries.asm.util.attrs;uses:="org.eclipse.persistence
+ .internal.libraries.asm.attrs,org.eclipse.persistence.internal.librar
+ ies.asm";version="2.1.0.qualifier"
+Implementation-Version: 2.1.0.qualifier
+Tool: Bnd-0.0.366
+DSTAMP: 20091021
+Bundle-Name: EclipseLink ASM
+TODAY: October 21 2009
+Created-By: 1.6.0_06 (Sun Microsystems Inc.)
+TSTAMP: 1028
+Bundle-RequiredExecutionEnvironment: J2SE-1.5
+HK2-Bundle-Name: org.eclipse.persistence:org.eclipse.persistence.asm
+Bundle-Vendor: Eclipse.org - EclipseLink Project
+Implementation-Vendor: Eclipse.org - EclipseLink Project
+Bundle-Version: 2.1.0.qualifier
+Bnd-LastModified: 1256135308856
+Bundle-ManifestVersion: 2
+Import-Package: javax.xml.transform,javax.xml.transform.sax,javax.xml.
+ transform.stream,org.xml.sax,org.xml.sax.ext,org.xml.sax.helpers
+Bundle-SymbolicName: org.eclipse.persistence.asm
+

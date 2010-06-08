@@ -1,0 +1,37 @@
+<xsd:schema targetNamespace="http://www.example.com" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns="http://www.example.com" xmlns:sdox="commonj.sdo/xml" xmlns:sdoj="commonj.sdo/java" sdoj:package="org.eclipse.persistence.testing.sdo.helper.classgen.dynamicimpl">
+
+        <xsd:import namespace="commonj.sdo/java" schemaLocation="sdoJava.xsd"/>
+
+        <xsd:complexType name="InheritanceD">
+                <xsd:complexContent>
+                        <xsd:extension base="InheritanceC">
+                                <xsd:sequence>
+                                        <xsd:element name="propertyD" type="xsd:string"/>
+                                </xsd:sequence>
+                        </xsd:extension>
+                </xsd:complexContent>
+        </xsd:complexType>
+
+        <xsd:complexType name="InheritanceA">
+                <xsd:sequence>
+                        <xsd:element name="propertyA" type="xsd:string"/>
+                </xsd:sequence>
+        </xsd:complexType>
+
+        <xsd:complexType name="InheritanceB">
+                <xsd:complexContent>
+                        <xsd:extension base="InheritanceA">
+                                <xsd:sequence>
+                                        <xsd:element name="propertyB" type="xsd:string"/>
+                                </xsd:sequence>
+                        </xsd:extension>
+                </xsd:complexContent>
+        </xsd:complexType>
+
+        <xsd:complexType name="InheritanceC">
+                <xsd:complexContent>
+                        <xsd:extension base="InheritanceB"/>
+                </xsd:complexContent>
+        </xsd:complexType>
+
+</xsd:schema>

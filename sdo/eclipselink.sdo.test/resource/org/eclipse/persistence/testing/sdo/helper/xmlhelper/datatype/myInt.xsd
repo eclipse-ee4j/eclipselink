@@ -1,0 +1,10 @@
+<?xml version="1.0"?>
+<schema xmlns="http://www.w3.org/2001/XMLSchema" xmlns:nist="myInt-NS" targetNamespace="myInt-NS">
+
+	<element name="myInt" type="nist:myInt-Type"/>
+
+	<simpleType name="myInt-Type">
+		<restriction base="int"/>
+	</simpleType>
+
+</schema>

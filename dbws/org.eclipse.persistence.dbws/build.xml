@@ -1,0 +1,260 @@
+<?xml version="1.0"?>
+<!--/*******************************************************************************
+* This program and the accompanying materials are made available under the
+* terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+* which accompanies this distribution.
+* The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
+* and the Eclipse Distribution License is available at
+* http://www.eclipse.org/org/documents/edl-v10.php.
+*
+*   Ant naming conventions:
+*   - regardless of the actual OS platform,'/' is the directory separator
+*     (Ant will convert as appropriate).
+*   - multi-word properties use periods '.'
+*     - properties ending in .jar define jarfile names only (no path)
+*     - properties ending in .lib are fully qualified jars (path and filename)
+*     - properties ending in .dir are directory paths
+*     - properties ending in .path are path refid names (classpath fragments)
+*   - multi-word targets use hyphens '-'
+*     - targets beginning with test- are reserved for high level test targets,
+*       and are used in test results parsing
+*     - targets typically use the form <action>-<object>-<type> (ie. package-bundle-zip)
+*   - multi-word macros use underscores '_'
+*   - multi-word macro attributes are concatinated
+*     e.g. 'runpathref'
+*   - multi-word tasks (taskdef) names are concatinated
+*     e.g. 'validateconnection'
+*   - OS environment variables are in ALLCAPS and have 'env' as a prefix
+*     e.g. ${env.XXX}.
+*   - Ant properties are lower case.
+*
+* Contributors:
+*     egwin - initial API and implementation
+*     mnorman - fix to deal with basedir/path problems
+*     egwin - update to adopt calling standards
+#******************************************************************************/-->
+<project name="org.eclipse.persistence.dbws" default="build" basedir=".">
+    <available file="../${ant.project.name}" type="dir" property="dbws.is.local"/>
+    <!-- Test to make sure that the calling script doesn't inherit the variable -->
+    <!-- (should be set locally, and be destroyed upon return) -->
+    <fail message="Not running from '${ant.project.name}' directory" unless="dbws.is.local"/>
+
+    <dirname  property="dbws.build.location_temp" file="${ant.file.org.eclipse.persistence.dbws}"/>
+    <pathconvert targetos="unix" property="dbws.build.location">
+        <path>
+            <pathelement location="${dbws.build.location_temp}"/>
+        </path>
+    </pathconvert>
+    <condition property="dbws.2.base.dir" value="../.." else="..">
+        <contains string="${dbws.build.location}" substring="dbws"/>
+    </condition>
+    <property name="dbws.2.common.plugins.dir" value="${dbws.2.base.dir}/plugins"/>
+    <property name="dbws.2.buildsys.dir" value="${dbws.2.base.dir}/buildsystem"/>
+
+    <!-- OS environment variables have 'env' as a prefix -->
+    <property environment="env"/>
+    <!-- local property overrides -->
+    <condition property="custom.properties.message" value="Loading ${user.home}/build.properties..."
+                                                     else="Custom properties file '${user.home}/build.properties' not found to load.">
+        <available file="${user.home}/build.properties"/>
+    </condition>
+    <echo message="${custom.properties.message}"/>
+    <property file="${user.home}/build.properties"/>
+    <property file="${dbws.build.location}/build.properties"/>
+
+    <!-- Defaults, set var in ${user.home}/build.properties if different version required -->
+    <property name="bndtool.jar" value="bnd-0.0.366.jar"/>
+
+    <!-- Primary Targets -->
+    <target name="build" depends="clean, compile, jar" description="build ${ant.project.name} component"/>
+    <target name="jar"   depends="bnd-package, package" description="package ${ant.project.name} component"/>
+
+    <!-- clean -->
+    <target name="clean" description="Clean all generated content">
+        <delete includeEmptyDirs="true" failonerror="false">
+            <fileset dir="${classes.dir}"/>
+            <fileset dir="${dbws.2.common.plugins.dir}" includes="${ant.project.name}_*.jar, ${ant.project.name}.source_*.jar"/>
+        </delete>
+    </target>
+
+    <!-- initialize varables and paths needed for compile -->
+    <!-- the number of properties needed now is too great for lazy loading without a target -->
+    <target name="init">
+        <!-- This HAS to be defined after allowing user redefinitions (which will cause the condition not to set anything) -->
+        <!-- This tests to make sure the extensions dir exists, if not sets to a existant dummy location -->
+        <condition property="extensions.depend.dir" value="${dbws.2.base.dir}/../extension.lib.external"
+                                                    else="${dbws.build.location}">
+            <available file="${dbws.2.base.dir}/../extension.lib.external" type="dir"/>
+        </condition>
+        <echo message="extensions.depend.dir        = '${extensions.depend.dir}'"/>
+
+        <!-- versioning -->
+        <!-- These variables  are set in autobuild.xml. A manual build gets defaults -->
+        <tstamp>
+           <format property="build.date" pattern="yyyyMMdd"/>
+           <format property="build.time" pattern="HHmm"/>
+        </tstamp>
+        <property name="build.type"            value="SNAPSHOT"/>
+        <property name="svn.revision"          value="NA"/>
+        <property name="version.qualifier"     value="qualifier"/>
+        <property name="version.string"        value="${release.version}.${version.qualifier}"/>
+        <property name="release.designation"   value="EclipseLink ${release.version} Build"/>
+        <property name="specification.vendor"  value="Eclipse.org - EclipseLink Project"/>
+        <property name="implementation.vendor" value="${specification.vendor}"/>
+
+        <!-- dependency properties -->
+        <property name="core.lib"           value="${dbws.2.common.plugins.dir}/org.eclipse.persistence.core_${version.string}.jar"/>
+
+        <!-- dependency tests -->
+        <available file="${core.lib}"               property="core.bundle.exist"/>
+        <fail message="Cannot find: '${core.lib}'"  unless="core.bundle.exist"/>
+
+        <!-- Set Compile Path-->
+        <path id="dbws.compile.path">
+            <pathelement path="${dbws.2.common.plugins.dir}/${asm}"/>
+            <pathelement path="${core.lib}"/>
+            <fileset
+                dir="${dbws.2.common.plugins.dir}"
+                includes="${dbws.common.dependencies}"/>
+        </path>
+
+        <!-- Check for BND library -->
+        <property name="alt.manifest.dir"      value="${dbws.build.location}/META-INF"/>
+        <condition property="bnd.lib" value="${extensions.depend.dir}/${bndtool.jar}">
+            <available file="${extensions.depend.dir}/${bndtool.jar}"/>
+        </condition>
+        <condition property="bnd.lib" value="${dbws.2.buildsys.dir}/${bndtool.jar}">
+            <available file="${dbws.2.buildsys.dir}/${bndtool.jar}"/>
+        </condition>
+        <echo message="bnd.lib                     = '${bnd.lib}'"/>
+        <condition property="bld">
+            <or>
+                <isset property="bnd.lib"/>
+                <isset property="nobnd"/>
+            </or>
+        </condition>
+        <condition property="bnd.bld">
+            <and>
+                <isset property="bnd.lib"/>
+                <not>  <isset property="nobnd"/> </not>
+            </and>
+        </condition>
+    </target>
+
+    <target name="fail-on-no-bnd" unless="bld">
+        <echo message="BND tool (${bndtool.jar}) not found in either:"/>
+        <echo message="    the extensions.depend.dir: '${extensions.depend.dir}'"/>
+        <echo message="    or the buildsystem dir:    '${dbws.2.buildsys.dir}'"/>
+        <echo message=""/>
+        <echo message="if you have a different version, you can define a different"/>
+        <echo message="jarname by adding 'bndtool.jar=bnd-{version}.jar to your'"/>
+        <echo message="${user.home}/build.properties file."/>
+        <echo message=""/>
+        <echo message="You can download BND from http://www.aqute.biz/Code/Download"/>
+        <echo message=""/>
+        <echo message="or if you really need to build NOW, you can use '-Dnobnd=true'"/>
+        <echo message="on the ant command-line. However, the manifests used will be those"/>
+        <echo message="checked-in for development, and will likely have errors."/>
+        <fail message="Missing BND library!"/>
+    </target>
+
+    <!-- compile -->
+    <target name="compile" depends="init, fail-on-no-bnd" description="Compile bundle code">
+        <mkdir dir="${classes.dir}"/>
+        <javac srcdir="${src.dir}"
+               destdir="${classes.dir}"
+               includes="**/*.java"
+               debug="${javac.debug}"
+               debuglevel="${javac.debuglevel}"
+               optimize="${javac.optimize}"
+               source="${javac.version}"
+               target="${javac.version}"
+               deprecation="${javac.deprecation}"
+               failonerror="true"
+               memoryMaximumSize="512m"
+               fork="true"
+               classpathref="dbws.compile.path"
+        />
+    </target>
+
+    <!-- package -->
+    <target name="package" if="nobnd" depends="init" description="jar OSGI bundle">
+        <jar jarfile="${dbws.2.common.plugins.dir}/${ant.project.name}_${version.string}.jar" manifest="${alt.manifest.dir}/MANIFEST.MF">
+            <fileset dir="${dbws.2.base.dir}">
+                <include name="about.html"/>
+                <include name="readme.html"/>
+                <include name="license.*"/>
+            </fileset>
+            <fileset dir="${classes.dir}">
+                <include name="org/eclipse/persistence/**/*.class"/>
+            </fileset>
+            <fileset dir="${resource.dir}">
+                <include name="xsd/*.xsd"/>
+            </fileset>
+        </jar>
+        <jar jarfile="${dbws.2.common.plugins.dir}/${ant.project.name}.source_${version.string}.jar">
+             <manifest>
+                <attribute name="Specification-Vendor"   value="${specification.vendor}"/>
+                <attribute name="Specification-Version"  value="${release.version}"/>
+                <attribute name="Implementation-Vendor"  value="${implementation.vendor}"/>
+                <attribute name="Implementation-Version" value="${version.string}"/>
+                <attribute name="Bundle-ManifestVersion" value="2"/>
+                <attribute name="Bundle-Name"            value="EclipseLink DBWS Source"/>
+                <attribute name="Bundle-SymbolicName"    value="${ant.project.name}.source"/>
+                <attribute name="Bundle-Vendor"          value="${implementation.vendor}"/>
+                <attribute name="Bundle-Version"         value="${version.string}"/>
+                <attribute name="Eclipse-SourceBundle"   value="${ant.project.name};version=&quot;${version.string}&quot;"/>
+            </manifest>
+            <fileset dir="${dbws.2.base.dir}">
+                <include name="about.html"/>
+                <include name="readme.html"/>
+                <include name="license.*"/>
+            </fileset>
+            <fileset dir="${src.dir}">
+                <include name="org/eclipse/persistence/**/*.java"/>
+            </fileset>
+            <fileset dir="${resource.dir}">
+                <include name="org/eclipse/persistence/dbws/*.xsd"/>
+                <include name="META-INF/services/javax.persistence.spi.PersistenceProvider"/>
+            </fileset>
+        </jar>
+    </target>
+
+    <target name="bnd-package" if="bnd.bld" depends="init">
+        <taskdef resource="aQute/bnd/ant/taskdef.properties" classpath="${bnd.lib}"/>
+        <bnd
+            classpath="${classes.dir}"
+            eclipse="false"
+            sourcepath="${src.dir}"
+            failok="false"
+            exceptions="true"
+            files="./org.eclipse.persistence.dbws.bnd"
+            output="${dbws.2.common.plugins.dir}/${ant.project.name}_${version.string}.jar"/>
+        <jar jarfile="${dbws.2.common.plugins.dir}/${ant.project.name}.source_${version.string}.jar">
+             <manifest>
+                <attribute name="Specification-Vendor"   value="${specification.vendor}"/>
+                <attribute name="Specification-Version"  value="${release.version}"/>
+                <attribute name="Implementation-Vendor"  value="${implementation.vendor}"/>
+                <attribute name="Implementation-Version" value="${version.string}"/>
+                <attribute name="Bundle-ManifestVersion" value="2"/>
+                <attribute name="Bundle-Name"            value="EclipseLink DBWS Source"/>
+                <attribute name="Bundle-SymbolicName"    value="${ant.project.name}.source"/>
+                <attribute name="Bundle-Vendor"          value="${implementation.vendor}"/>
+                <attribute name="Bundle-Version"         value="${version.string}"/>
+                <attribute name="Eclipse-SourceBundle"   value="${ant.project.name};version=&quot;${version.string}&quot;"/>
+            </manifest>
+            <fileset dir="${dbws.2.base.dir}">
+                <include name="about.html"/>
+                <include name="readme.html"/>
+                <include name="license.*"/>
+            </fileset>
+            <fileset dir="${src.dir}">
+                <include name="org/eclipse/persistence/**/*.java"/>
+            </fileset>
+            <fileset dir="${resource.dir}">
+                <include name="org/eclipse/persistence/dbws/*.xsd"/>
+                <include name="META-INF/services/javax.persistence.spi.PersistenceProvider"/>
+            </fileset>
+        </jar>
+    </target>
+</project>

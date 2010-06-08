@@ -1,0 +1,20 @@
+<?xml version = '1.0' encoding = 'UTF-8'?>
+<sessions version="10g (10.1.3 )" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+   <session xsi:type="database-session">
+      <name>Session</name>
+      <event-listener-classes/>
+      <primary-project xsi:type="xml">C:/default_default_sequencing.xml</primary-project>
+      <login xsi:type="database-login">
+         <platform-class>org.eclipse.persistence.oraclespecific.Oracle9Platform</platform-class>
+         <user-name>tl</user-name>
+         <password>tl</password>
+         <sequencing>
+            <default-sequence xsi:type="table-sequence">
+               <preallocation-size>20</preallocation-size>
+            </default-sequence>
+         </sequencing>
+         <driver-class>oracle.jdbc.driver.OracleDriver</driver-class>
+         <connection-url>jdbc:oracle:thin:@default:default</connection-url>
+      </login>
+   </session>
+</sessions>

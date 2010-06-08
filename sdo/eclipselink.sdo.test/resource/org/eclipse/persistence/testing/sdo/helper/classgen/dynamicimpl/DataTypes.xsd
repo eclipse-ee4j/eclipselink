@@ -1,0 +1,61 @@
+<xsd:schema targetNamespace="http://www.example.com"
+    xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+    xmlns="http://www.example.com"
+    xmlns:sdox="commonj.sdo/xml"
+    xmlns:sdoj="commonj.sdo/java"
+    sdoj:package="org.eclipse.persistence.testing.sdo.helper.classgen.dynamicimpl">
+
+    <xsd:import namespace="commonj.sdo/java"
+        schemaLocation="sdoJava.xsd" />
+
+    <xsd:complexType name="DataTypes">
+        <xsd:sequence>
+            <xsd:element name="anySimpleType-property" type="xsd:anySimpleType"/>
+            <xsd:element name="anyType-property" type="xsd:anyType"/>
+            <xsd:element name="anyURI-property" type="xsd:anyURI"/>
+            <xsd:element name="base64Binary-property" type="xsd:base64Binary"/>
+            <xsd:element name="boolean-property" type="xsd:boolean"/>
+            <xsd:element name="byte-property" type="xsd:byte"/>
+            <xsd:element name="date-property" type="xsd:date"/>
+            <xsd:element name="dateTime-property" type="xsd:dateTime"/>
+            <xsd:element name="decimal-property" type="xsd:decimal"/>
+            <xsd:element name="double-property" type="xsd:double"/>
+            <xsd:element name="duration-property" type="xsd:duration"/>
+            <xsd:element name="ENTITIES-property" type="xsd:ENTITIES"/>
+            <xsd:element name="ENTITY-property" type="xsd:ENTITY"/>
+            <xsd:element name="float-property" type="xsd:float"/>
+            <xsd:element name="gDay-property" type="xsd:gDay"/>
+            <xsd:element name="gMonth-property" type="xsd:gMonth"/>
+            <xsd:element name="gMonthDay-property" type="xsd:gMonthDay"/>
+            <xsd:element name="gYear-property" type="xsd:gYear"/>
+            <xsd:element name="gYearMonth-property" type="xsd:gYearMonth"/>
+            <xsd:element name="hexBinary-property" type="xsd:hexBinary"/>
+            <xsd:element name="ID-property" type="xsd:ID"/>
+            <xsd:element name="IDREF-property" type="xsd:IDREF"/>
+            <xsd:element name="int-property" type="xsd:int"/>
+            <xsd:element name="integer-property" type="xsd:integer"/>
+            <xsd:element name="language-property" type="xsd:language"/>
+            <xsd:element name="long-property" type="xsd:long"/>
+            <xsd:element name="Name-property" type="xsd:Name"/>
+            <xsd:element name="NCName-property" type="xsd:NCName"/>
+            <xsd:element name="negativeInteger-property" type="xsd:negativeInteger"/>
+            <xsd:element name="NMTOKEN-property" type="xsd:NMTOKEN"/>
+            <xsd:element name="NMTOKENS-property" type="xsd:NMTOKENS"/>
+            <xsd:element name="nonNegativeInteger-property" type="xsd:nonNegativeInteger"/>
+            <xsd:element name="nonPositiveInteger-property" type="xsd:nonPositiveInteger"/>
+            <xsd:element name="normalizedString-property" type="xsd:normalizedString"/>
+            <xsd:element name="NOTATION" type="xsd:NOTATION"/>
+            <xsd:element name="positiveInteger-property" type="xsd:positiveInteger"/>
+            <xsd:element name="QName" type="xsd:QName"/>
+            <xsd:element name="short" type="xsd:short"/>
+            <xsd:element name="string" type="xsd:string"/>
+            <xsd:element name="time" type="xsd:time"/>
+            <xsd:element name="token" type="xsd:token"/>
+            <xsd:element name="unsignedByte" type="xsd:unsignedByte"/>
+            <xsd:element name="unsignedInt" type="xsd:unsignedInt"/>
+            <xsd:element name="unsignedLong" type="xsd:unsignedLong"/>
+            <xsd:element name="unsignedShort" type="xsd:unsignedShort"/>
+        </xsd:sequence>
+    </xsd:complexType>
+
+</xsd:schema>

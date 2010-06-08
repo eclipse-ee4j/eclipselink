@@ -1,0 +1,30 @@
+Manifest-Version: 1.0
+Export-Package: org.eclipse.persistence.jpa.equinox.weaving;x-internal
+ :=true;version="2.1.0.qualifier"
+Private-Package: .
+Ignore-Package: org.eclipse.osgi.framework.debug,org.eclipse.osgi.fram
+ ework.log,java.util,org.eclipse.osgi.baseadaptor.hooks,java.net,java.
+ security,org.eclipse.osgi.baseadaptor.loader,java.io,org.eclipse.osgi
+ .baseadaptor.bundlefile,org.osgi.util.tracker,org.osgi.framework,java
+ .lang,org.eclipse.osgi.baseadaptor,org.eclipse.osgi.framework.adaptor
+Implementation-Version: 2.1.0.qualifier
+Specification-Vendor: Eclipse.org - EclipseLink Project
+Tool: Bnd-0.0.366
+DSTAMP: 20091021
+Bundle-Name: Dynamic Weaving Fragment for Equinox
+TODAY: October 21 2009
+Created-By: 1.6.0_06 (Sun Microsystems Inc.)
+TSTAMP: 1019
+Bundle-RequiredExecutionEnvironment: J2SE-1.5
+Implementation-Vendor: Eclipse.org - EclipseLink Project
+Bundle-Vendor: Eclipse.org - EclipseLink Project
+Fragment-Host: org.eclipse.osgi;extension:=framework;bundle-version="3
+ .4.0"
+Bundle-Version: 2.1.0.qualifier
+Bnd-LastModified: 1256134790372
+Bundle-ManifestVersion: 2
+Include-Resource: ../../about.html,../../readme.html,../../license.htm
+ l,./hookconfigurators.properties
+Specification-Version: 2.0.0
+Bundle-SymbolicName: org.eclipse.persistence.jpa.equinox.weaving
+

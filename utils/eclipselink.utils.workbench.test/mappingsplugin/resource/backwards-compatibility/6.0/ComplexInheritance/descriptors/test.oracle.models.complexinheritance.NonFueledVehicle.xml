@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<descriptor type="relational">
+   <name>test.oracle.models.complexinheritance.NonFueledVehicle</name>
+   <class-handle>
+      <type-name>test.oracle.models.complexinheritance.NonFueledVehicle</type-name>
+   </class-handle>
+   <transactional-policy type="relational">
+      <descriptor-alias>NonFueledVehicle</descriptor-alias>
+      <refresh-cache-policy/>
+      <caching-policy/>
+      <query-manager type="relational"/>
+      <locking-policy type="relational"/>
+      <primary-key-policy>
+         <primary-key-handles>
+            <column-handle>
+               <column-table-name>VEHICLE</column-table-name>
+               <column-name>ID</column-name>
+            </column-handle>
+         </primary-key-handles>
+      </primary-key-policy>
+   </transactional-policy>
+   <inheritance-policy type="relational">
+      <is-root>false</is-root>
+      <parent-descriptor-handle>
+         <descriptor-name>test.oracle.models.complexinheritance.Vehicle</descriptor-name>
+      </parent-descriptor-handle>
+   </inheritance-policy>
+   <primary-table-handle>
+      <table-name>VEHICLE</table-name>
+   </primary-table-handle>
+</descriptor>

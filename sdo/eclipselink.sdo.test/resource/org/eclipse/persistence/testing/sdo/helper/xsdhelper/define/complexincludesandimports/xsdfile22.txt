@@ -1,0 +1,4 @@
+<xsd:schema targetNamespace="http://example.com/hr/" xmlns="http://example.com/hr/" elementFormDefault="qualified" sdoJava:package="hr" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:sdoJava="commonj.sdo/java" xmlns:ns0="http://example.com/serviceTypes">
+   <xsd:import schemaLocation="includeServiceAndServiceCS.xsd" namespace="http://example.com/serviceTypes"/>
+   <xsd:import schemaLocation="includeSdoJava.xsd" namespace="commonj.sdo/java"/>
+</xsd:schema>

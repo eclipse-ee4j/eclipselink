@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<table>
+   <short-name>EMAILADDRESS</short-name>
+   <columns>
+      <column>
+         <name>ADDRESS</name>
+         <type>VARCHAR2</type>
+         <size>20</size>
+      </column>
+      <column>
+         <name>ID</name>
+         <type>NUMBER</type>
+         <unique>true</unique>
+         <primary-key>true</primary-key>
+      </column>
+   </columns>
+</table>

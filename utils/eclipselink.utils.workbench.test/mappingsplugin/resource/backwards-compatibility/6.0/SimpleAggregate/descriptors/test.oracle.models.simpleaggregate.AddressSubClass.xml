@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<descriptor type="aggregate">
+   <name>test.oracle.models.simpleaggregate.AddressSubClass</name>
+   <class-handle>
+      <type-name>test.oracle.models.simpleaggregate.AddressSubClass</type-name>
+   </class-handle>
+   <mappings>
+      <mapping type="direct-to-field">
+         <name>country</name>
+         <attribute-handle>
+            <attribute-declaring-type-name>test.oracle.models.simpleaggregate.AddressSubClass</attribute-declaring-type-name>
+            <attribute-name>country</attribute-name>
+         </attribute-handle>
+         <uses-method-accessing>true</uses-method-accessing>
+         <get-method-handle>
+            <method-declaring-type-name>test.oracle.models.simpleaggregate.AddressSubClass</method-declaring-type-name>
+            <method-signature>getCountry()</method-signature>
+         </get-method-handle>
+         <set-method-handle>
+            <method-declaring-type-name>test.oracle.models.simpleaggregate.AddressSubClass</method-declaring-type-name>
+            <method-signature>setCountry(java.lang.String)</method-signature>
+         </set-method-handle>
+      </mapping>
+   </mappings>
+   <inheritance-policy type="relational">
+      <is-root>false</is-root>
+      <parent-descriptor-handle>
+         <descriptor-name>test.oracle.models.simpleaggregate.Address</descriptor-name>
+      </parent-descriptor-handle>
+      <read-subclasses-on-query>false</read-subclasses-on-query>
+   </inheritance-policy>
+</descriptor>

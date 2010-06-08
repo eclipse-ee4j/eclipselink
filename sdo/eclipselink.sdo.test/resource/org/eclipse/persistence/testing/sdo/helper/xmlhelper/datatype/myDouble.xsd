@@ -1,0 +1,10 @@
+<?xml version="1.0"?>
+<schema xmlns="http://www.w3.org/2001/XMLSchema" xmlns:nist="myDouble-NS" targetNamespace="myDouble-NS">
+
+	<element name="myDouble" type="nist:myDouble-Type"/>
+
+	<simpleType name="myDouble-Type">
+		<restriction base="double"/>
+	</simpleType>
+
+</schema>

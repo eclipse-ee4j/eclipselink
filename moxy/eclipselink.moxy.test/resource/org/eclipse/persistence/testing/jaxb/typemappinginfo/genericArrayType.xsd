@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+   <xsd:complexType name="listOfbyteArray">
+      <xsd:sequence>
+         <xsd:element name="item" type="xsd:base64Binary" maxOccurs="unbounded" minOccurs="0"/>
+      </xsd:sequence>
+   </xsd:complexType>
+   <xsd:complexType name="listOfString">
+      <xsd:sequence>
+         <xsd:element name="item" type="xsd:string" maxOccurs="unbounded" minOccurs="0"/>
+      </xsd:sequence>
+   </xsd:complexType>
+   <xsd:element name="testTagname" type="listOfbyteArray"/>
+   <xsd:element name="testTagname2" type="listOfbyteArray"/>
+   <xsd:element name="testTagname3" type="listOfString"/>
+</xsd:schema>

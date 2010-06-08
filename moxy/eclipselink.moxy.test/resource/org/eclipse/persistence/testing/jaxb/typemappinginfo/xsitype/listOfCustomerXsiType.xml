@@ -1,0 +1,13 @@
+<?xml version = '1.0' encoding = 'UTF-8'?>
+<ns0:testListOfCustomer xmlns:ns0="someUri" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+   <item>
+      <id>2</id>
+      <name>aaa</name>
+      <customerId>1</customerId>
+   </item>
+   <item>
+      <id>4</id>
+      <name>bbb</name>
+      <customerId>3</customerId>
+   </item>
+</ns0:testListOfCustomer>

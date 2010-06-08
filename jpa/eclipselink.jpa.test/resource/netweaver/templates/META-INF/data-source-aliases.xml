@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<data-source-aliases xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="data-source-aliases.xsd">
+  <aliases>
+    <data-source-name>%%datasourcename%%</data-source-name>
+    <alias>jdbc/EclipseLinkDS</alias>
+  </aliases>
+</data-source-aliases>

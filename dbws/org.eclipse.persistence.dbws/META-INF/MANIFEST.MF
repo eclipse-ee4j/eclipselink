@@ -1,0 +1,105 @@
+Manifest-Version: 1.0
+Export-Package: org.eclipse.persistence.internal.dbws;uses:="org.eclip
+ se.persistence.internal.oxm.schema.model,org.eclipse.persistence.inte
+ rnal.xr,org.eclipse.persistence.mappings,org.eclipse.persistence.oxm,
+ org.eclipse.persistence.descriptors,org.eclipse.persistence.sessions,
+ org.eclipse.persistence.oxm.schema,org.w3c.dom,javax.xml.namespace,or
+ g.eclipse.persistence.exceptions,javax.servlet,javax.xml.ws,org.eclip
+ se.persistence.internal.sessions,org.eclipse.persistence.internal.dat
+ abaseaccess,org.eclipse.persistence.internal.helper,javax.xml.ws.soap
+ ,org.eclipse.persistence.dbws,org.eclipse.persistence.internal.oxm,or
+ g.eclipse.persistence.oxm.mappings,org.eclipse.persistence.internal.o
+ xm.schema,javax.xml.transform,javax.xml.transform.stream,javax.xml.so
+ ap,org.eclipse.persistence.oxm.attachment,javax.activation,org.eclips
+ e.persistence.internal.libraries.asm";version="2.1.0.qualifier",org.e
+ clipse.persistence.internal.xr.sxf;uses:="org.w3c.dom,org.eclipse.per
+ sistence.mappings,org.eclipse.persistence.oxm.mappings,org.eclipse.pe
+ rsistence.internal.databaseaccess,org.eclipse.persistence.oxm,org.ecl
+ ipse.persistence.descriptors,org.eclipse.persistence.oxm.platform,org
+ .eclipse.persistence.sessions,org.eclipse.persistence.oxm.schema";ver
+ sion="2.1.0.qualifier",org.eclipse.persistence.dbws;uses:="org.eclips
+ e.persistence.internal.xr,org.eclipse.persistence.mappings,org.eclips
+ e.persistence.oxm,org.eclipse.persistence.exceptions,org.eclipse.pers
+ istence.sessions,org.eclipse.persistence.descriptors,org.eclipse.pers
+ istence.oxm.record,org.xml.sax,org.eclipse.persistence.internal.xr.sx
+ f,javax.xml.namespace,org.eclipse.persistence.oxm.mappings,org.eclips
+ e.persistence.mappings.transformers,org.eclipse.persistence.internal.
+ helper";version="2.1.0.qualifier",org.eclipse.persistence.internal.xr
+ ;uses:="javax.activation,org.eclipse.persistence.internal.oxm,org.ecl
+ ipse.persistence.exceptions,org.eclipse.persistence.descriptors,org.e
+ clipse.persistence.sessions,org.eclipse.persistence.queries,org.eclip
+ se.persistence.internal.helper,javax.xml.namespace,org.eclipse.persis
+ tence.mappings,org.eclipse.persistence.oxm,org.eclipse.persistence.in
+ ternal.indirection,org.eclipse.persistence.internal.dynamicpersist,or
+ g.eclipse.persistence.oxm.mappings,org.eclipse.persistence.mappings.f
+ oundation,org.eclipse.persistence.internal.databaseaccess,org.eclipse
+ .persistence.mappings.transformers,org.eclipse.persistence.oxm.record
+ ,org.eclipse.persistence.internal.descriptors,org.eclipse.persistence
+ .internal.xr.sxf,org.eclipse.persistence.internal.sessions,org.eclips
+ e.persistence.oxm.schema,org.w3c.dom,org.eclipse.persistence.platform
+ .database,org.eclipse.persistence.platform.xml,org.eclipse.persistenc
+ e.internal.oxm.schema.model,javax.xml.parsers,org.eclipse.persistence
+ .internal.oxm.schema,javax.xml.transform,org.eclipse.persistence.sess
+ ions.factories,org.eclipse.persistence.internal.sessions.factories,or
+ g.eclipse.persistence.internal.sessions.factories.model,org.eclipse.p
+ ersistence.internal.sessions.factories.model.project,org.eclipse.pers
+ istence.internal.security,org.eclipse.persistence.oxm.platform";versi
+ on="2.1.0.qualifier"
+Private-Package: .
+Implementation-Version: 2.1.0.qualifier
+Specification-Vendor: Eclipse.org - EclipseLink Project
+Tool: Bnd-0.0.366
+DSTAMP: 20091021
+Bundle-Name: EclipseLink DBWS
+TODAY: October 21 2009
+Created-By: 1.6.0_06 (Sun Microsystems Inc.)
+TSTAMP: 1022
+Bundle-RequiredExecutionEnvironment: J2SE-1.5
+HK2-Bundle-Name: org.eclipse.persistence:org.eclipse.persistence.dbws
+Require-Bundle: org.eclipse.persistence.core;bundle-version="2.1.0.qua
+ lifier";visibility:=reexport, org.eclipse.persistence.asm;bundle-vers
+ ion="2.1.0.qualifier"
+Implementation-Vendor: Eclipse.org - EclipseLink Project
+Bundle-Vendor: Eclipse.org - EclipseLink Project
+Bundle-Version: 2.1.0.qualifier
+Bnd-LastModified: 1256134997794
+Bundle-ManifestVersion: 2
+Include-Resource: ../../about.html,  ../../readme.html, ../../license.
+ html
+Import-Package: javax.activation;vendor=sun,javax.servlet;version="2.4
+ .0",javax.xml.namespace;resolution:=optional,javax.xml.parsers;resolu
+ tion:=optional,javax.xml.soap;version="1.3.0",javax.xml.transform;res
+ olution:=optional,javax.xml.transform.stream;resolution:=optional,jav
+ ax.xml.ws,javax.xml.ws.soap,org.eclipse.persistence.descriptors;versi
+ on="2.1.0.qualifier",org.eclipse.persistence.exceptions;version="2.0.
+ 0.qualifier",org.eclipse.persistence.internal.databaseaccess;version=
+ "2.1.0.qualifier",org.eclipse.persistence.internal.descriptors;versio
+ n="2.1.0.qualifier",org.eclipse.persistence.internal.helper;version="
+ 2.1.0.qualifier",org.eclipse.persistence.internal.indirection;version
+ ="2.1.0.qualifier",org.eclipse.persistence.internal.libraries.asm;res
+ olution:=optional,org.eclipse.persistence.internal.oxm;version="2.1.0
+ .qualifier",org.eclipse.persistence.internal.oxm.schema;version="2.1.
+ 0.qualifier",org.eclipse.persistence.internal.oxm.schema.model;versio
+ n="2.1.0.qualifier",org.eclipse.persistence.internal.security;version
+ ="2.1.0.qualifier",org.eclipse.persistence.internal.sessions;version=
+ "2.1.0.qualifier",org.eclipse.persistence.internal.sessions.factories
+ ;version="2.1.0.qualifier",org.eclipse.persistence.internal.sessions.
+ factories.model;version="2.1.0.qualifier",org.eclipse.persistence.int
+ ernal.sessions.factories.model.project;version="2.1.0.qualifier",org.
+ eclipse.persistence.mappings;version="2.1.0.qualifier",org.eclipse.pe
+ rsistence.mappings.foundation;version="2.1.0.qualifier",org.eclipse.p
+ ersistence.mappings.transformers;version="2.1.0.qualifier",org.eclips
+ e.persistence.oxm;version="2.1.0.qualifier",org.eclipse.persistence.o
+ xm.attachment;version="2.1.0.qualifier",org.eclipse.persistence.oxm.m
+ appings;version="2.1.0.qualifier",org.eclipse.persistence.oxm.platfor
+ m;version="2.1.0.qualifier",org.eclipse.persistence.oxm.record;versio
+ n="2.1.0.qualifier",org.eclipse.persistence.oxm.schema;version="2.1.0
+ .qualifier",org.eclipse.persistence.platform.database;version="2.1.0.
+ qualifier",org.eclipse.persistence.platform.xml;version="2.1.0.qualif
+ ier",org.eclipse.persistence.queries;version="2.1.0.qualifier",org.ec
+ lipse.persistence.sessions;version="2.1.0.qualifier",org.eclipse.pers
+ istence.sessions.factories;version="2.1.0.qualifier",org.w3c.dom;reso
+ lution:=optional,org.xml.sax;resolution:=optional
+Specification-Version: 2.0.0
+Bundle-SymbolicName: org.eclipse.persistence.dbws
+

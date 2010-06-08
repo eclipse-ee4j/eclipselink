@@ -1,0 +1,13 @@
+<xsd:schema elementFormDefault="qualified" targetNamespace="SchemaCNamespace"
+     xmlns:ns0="SchemaBNamespace" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+    
+    <xsd:complexType name="ChildType">
+         <xsd:complexContent>
+            <xsd:extension base="ns0:MiddleType">
+                <xsd:sequence>                    
+                    <xsd:element name="someChildElement" type="xsd:string" minOccurs="0" maxOccurs="unbounded"/>
+                </xsd:sequence>
+            </xsd:extension>
+        </xsd:complexContent>        
+    </xsd:complexType>
+</xsd:schema>

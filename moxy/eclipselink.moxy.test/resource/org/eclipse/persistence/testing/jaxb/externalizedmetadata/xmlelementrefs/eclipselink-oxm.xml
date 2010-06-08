@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="US-ASCII"?>
+<xml-bindings xmlns="http://www.eclipse.org/eclipselink/xsds/persistence/oxm">
+	<java-types>
+		<java-type name="org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmlelementrefs.Foos">
+            <xml-root-element name="my-foos" />
+            <java-attributes>
+                <xml-element-refs java-attribute="items" >
+                    <xml-element-ref name="integer-root" namespace="myns" />
+                    <xml-element-ref name="root" />
+                    <xml-element-wrapper name="items" />
+                </xml-element-refs>
+            </java-attributes>
+		</java-type>
+	</java-types>
+</xml-bindings>

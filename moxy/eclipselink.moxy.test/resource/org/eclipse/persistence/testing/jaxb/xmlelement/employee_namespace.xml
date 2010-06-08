@@ -1,0 +1,4 @@
+<?xml version = '1.0' encoding = 'UTF-8'?>
+<employee-data  xmlns:ns0="my.cool/namespace">
+  <ns0:id>10</ns0:id>
+</employee-data>
