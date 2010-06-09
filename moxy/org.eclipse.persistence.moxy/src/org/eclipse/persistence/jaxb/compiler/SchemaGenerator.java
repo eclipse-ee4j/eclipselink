@@ -131,10 +131,8 @@ public class SchemaGenerator {
                 // the following satisfies a TCK requirement
                 if (elementName.length() >= 3) {
                     int idx = elementName.length() - 1;
-                    char ch = elementName.charAt(idx - 1);
-                    if (Character.isDigit(ch)) {
-                        char lastCh = Character.toUpperCase(elementName.charAt(idx));
-                        elementName = elementName.substring(0, idx) + lastCh;
+                    if (Character.isDigit(elementName.charAt(idx - 1))) {
+                        elementName = elementName.substring(0, idx) + Character.toUpperCase(elementName.charAt(idx));
                     }
                 }
             }
@@ -563,22 +561,19 @@ public class SchemaGenerator {
                             ElementDeclaration decl = referencedElements.get(0);
                             String localName = decl.getElementName().getLocalPart();
                             Schema referencedSchema = this.getSchemaForNamespace(decl.getElementName().getNamespaceURI());
-    
                             addImportIfRequired(currentSchema, referencedSchema, decl.getElementName().getNamespaceURI());
-    
+
                             String prefix = this.getPrefixForNamespace(decl.getElementName().getNamespaceURI(), currentSchema.getNamespaceResolver());
-                            
-                            if(decl.getScopeClass() == GLOBAL.class){
+                            if (decl.getScopeClass() == GLOBAL.class){
                                 if (prefix == null || prefix.equals("")) {
                                     element.setRef(localName);      
-                                }else{
+                                } else {
                                     element.setRef(prefix + ":" + localName);
                                 }
-                            }else{
+                            } else {
                                 element.setType(getTypeName(next, decl.getJavaType(), currentSchema));
                                 element.setName(localName);
                             }
-                            
                             if (next.getGenericType() != null) {
                                 element.setMinOccurs(Occurs.ZERO);
                                 element.setMaxOccurs(Occurs.UNBOUNDED);
@@ -594,17 +589,16 @@ public class SchemaGenerator {
                                 Element element = new Element();
                                 String localName = elementDecl.getElementName().getLocalPart();
                                 Schema referencedSchema = this.getSchemaForNamespace(elementDecl.getElementName().getNamespaceURI());
-    
                                 addImportIfRequired(currentSchema, referencedSchema, elementDecl.getElementName().getNamespaceURI());
     
                                 String prefix = this.getPrefixForNamespace(elementDecl.getElementName().getNamespaceURI(), currentSchema.getNamespaceResolver());
-                                if(elementDecl.getScopeClass() == GLOBAL.class){
+                                if (elementDecl.getScopeClass() == GLOBAL.class){
                                     if (prefix == null || prefix.equals("")) {
                                         element.setRef(localName);
                                     } else {
                                         element.setRef(prefix + ":" + localName);
                                     }
-                                }else{
+                                } else {
                                     element.setType(getTypeName(next, elementDecl.getJavaType(), referencedSchema));
                                     element.setName(localName);
                                 }
@@ -637,8 +631,6 @@ public class SchemaGenerator {
     
                         QName elementName = next.getSchemaName();
                         JavaClass javaType = next.getActualType();                    
-                        boolean isComplexType = false;
-    
                         element.setName(elementName.getLocalPart());
     
                         String typeName = null;
@@ -649,15 +641,13 @@ public class SchemaGenerator {
                         } else {
                             TypeInfo info = (TypeInfo) typeInfo.get(javaType.getQualifiedName());
                             if (info != null) {
-                                isComplexType = info.isComplexType();
-                                if (isComplexType) {
+                                if (info.isComplexType()) {
                                     typeName = info.getComplexType().getName();
                                 } else if (info.getSimpleType() != null) {
                                     typeName = info.getSimpleType().getName();
                                 } else {
                                     typeName = info.getSchemaTypeName();
                                 }
-    
                                 if (typeName == null) {
                                     //need to add complex-type locally, or reference global element
                                     if (!info.hasRootElement()) {
@@ -668,7 +658,6 @@ public class SchemaGenerator {
                                         }
                                     }
                                 }
-    
                                 // check to see if we need to add an import
                                 if (addImportIfRequired(currentSchema, info.getSchema(), info.getClassNamespace())) {
                                     String prefix = currentSchema.getNamespaceResolver().resolveNamespaceURI(info.getClassNamespace());
@@ -679,7 +668,6 @@ public class SchemaGenerator {
                             } else if (!next.isMap()) {
                                 typeName = getTypeName(next, javaType, currentSchema);                         
                             }
-    
                             // may need to qualify the type
                             if (typeName != null && !typeName.contains(":")) {
                                 String prefix = getPrefixForNamespace(info.getSchema().getTargetNamespace(), currentSchema.getNamespaceResolver());
@@ -688,7 +676,6 @@ public class SchemaGenerator {
                                 }
                             }
                         }
-    
                         if (next.getGenericType() != null) {
                             if (next.isXmlList()) {
                                 SimpleType localSimpleType = new SimpleType();
@@ -701,7 +688,6 @@ public class SchemaGenerator {
                                 element.setType(typeName);
                             }
                         } else if (next.isMap()) {
-                                                    
                             ComplexType entryComplexType = new ComplexType();
                             Sequence entrySequence = new Sequence();
     
@@ -712,11 +698,11 @@ public class SchemaGenerator {
                             JavaClass keyType = next.getKeyType();
                             JavaClass valueType = next.getValueType();
                                               
-                            if(keyType == null){
+                            if (keyType == null) {
                                 keyType = helper.getJavaClass(Object.class);
                             }
                             
-                            if(valueType == null){
+                            if (valueType == null) {
                                 valueType = helper.getJavaClass(Object.class);
                             }
                             
@@ -789,7 +775,6 @@ public class SchemaGenerator {
                                 entryElement.setMaxOccurs(Occurs.UNBOUNDED);
                                 sequence.addElement(entryElement);
                                 entryElement.setComplexType(entryComplexType);
-    
                                 element.setComplexType(complexType);
                             }
                         } else {
@@ -818,8 +803,7 @@ public class SchemaGenerator {
                                 //don't overwrite global elements. May have been defined by a type.
                                 attributeSchema.getTopLevelElements().put(element.getName(), element);
                             }
-    
-                            //add an import here
+                            // may need to add an import here
                             addImportIfRequired(currentSchema, attributeSchema, elementName.getNamespaceURI());
     
                             String prefix = getPrefixForNamespace(elementName.getNamespaceURI(), currentSchema.getNamespaceResolver());
@@ -847,11 +831,17 @@ public class SchemaGenerator {
         }
     }
 
+    /**
+     * Return the schema type (as QName) based on a given JavaClass.
+     *  
+     * @param javaClass
+     * @return
+     */
     public QName getSchemaTypeFor(JavaClass javaClass) {
         String className;
-        if(javaClass.isArray()) {
+        if (javaClass.isArray()) {
             Class wrapperClass = arrayClassesToGeneratedClasses.get(javaClass.getName());
-            if(null == wrapperClass) {
+            if (null == wrapperClass) {
                 className = javaClass.getQualifiedName();
             } else {
                 className = wrapperClass.getName();
@@ -922,6 +912,12 @@ public class SchemaGenerator {
         return null;
     }
 
+    /**
+     * Indicates if a given Property is a collection type.
+     * 
+     * @param field
+     * @return
+     */
     public boolean isCollectionType(Property field) {
         JavaClass type = field.getType();
         return (helper.getJavaClass(java.util.Collection.class).isAssignableFrom(type) 
@@ -929,6 +925,13 @@ public class SchemaGenerator {
                 || helper.getJavaClass(java.util.Set.class).isAssignableFrom(type));
     }
 
+    /**
+     * Return the Schema for a given namespace.  If no schema exists for the 
+     * given namespace, one will be created.
+     * 
+     * @param namespace
+     * @return
+     */
     private Schema getSchemaForNamespace(String namespace) {
         if (schemaForNamespace == null) {
             schemaForNamespace = new HashMap<String, Schema>();
@@ -936,7 +939,6 @@ public class SchemaGenerator {
         }
         Schema schema = schemaForNamespace.get(namespace);
         if (schema == null) {
-
             NamespaceInfo namespaceInfo = getNamespaceInfoForNamespace(namespace);
 
             schema = new Schema();
@@ -1125,6 +1127,12 @@ public class SchemaGenerator {
         }
     }
 
+    /**
+     * Return the Map of SchemaTypeInfo instances.  The Map is keyed on JavaClass 
+     * qualified name. 
+     *  
+     * @return
+     */
     public HashMap<String, SchemaTypeInfo> getSchemaTypeInfo() {
         return this.schemaTypeInfo;
     }
@@ -1202,6 +1210,14 @@ public class SchemaGenerator {
         return src.getRawName().equals(tgt.getCanonicalName());
     }    
     
+    /**
+     * Return the type name for a given Property.
+     * 
+     * @param next
+     * @param javaType
+     * @param theSchema
+     * @return
+     */
     private String getTypeName(Property next, JavaClass javaType, Schema theSchema){ 
         QName schemaType = next.getSchemaType();
         if (schemaType == null) {
@@ -1210,13 +1226,30 @@ public class SchemaGenerator {
         if (schemaType != null) {
             if (schemaType.getNamespaceURI() == null) {
                 return schemaType.getLocalPart();
-            } else {
-                String prefix = getOrGeneratePrefixForNamespace(schemaType.getNamespaceURI(), theSchema);
-                return prefix + ":" + schemaType.getLocalPart();
             }
-        } else {
-            return XMLConstants.SCHEMA_PREFIX + ":anySimpleType";
+            return getOrGeneratePrefixForNamespace(schemaType.getNamespaceURI(), theSchema) + ":" + schemaType.getLocalPart();
         }
+        return XMLConstants.SCHEMA_PREFIX + ":anySimpleType";
+    }
+    
+    /**
+     * Return the qualified (if necessary) type name for a given Property.
+     *  
+     * @param prop
+     * @param schema
+     * @return
+     */
+    private String getQualifiedTypeName(Property prop, Schema schema) {
+        JavaClass javaType = prop.getActualType();
+        String typeName = getTypeName(prop, javaType, schema);
+        // may need to qualify the type
+        if (typeName != null && !typeName.contains(":")) {
+            String prefix = getPrefixForNamespace(schema.getTargetNamespace(), schema.getNamespaceResolver());
+            if (prefix != null) {
+                typeName = prefix + ":" + typeName;
+            }
+        }
+        return typeName;
     }
 
     /**
@@ -1300,11 +1333,9 @@ public class SchemaGenerator {
                     } else {
                         attributeRefName = frag.getShortName();
                     }
-                    // 
                     if (currentParticle.getOwner() instanceof ComplexType) {
                         createRefAttribute(attributeRefName, (ComplexType)currentParticle.getOwner());
                     }
-
                     // set the frag's schema as it may be different than the current schema
                     xpr.schema = fragSchema;
                     // ref case - indicate to the calling method that there's nothing to do
@@ -1320,11 +1351,17 @@ public class SchemaGenerator {
                 // if the global element exists, use it; otherwise create a new one
                 globalElement = (Element) fragSchema.getTopLevelElements().get(frag.getLocalName());
                 if (globalElement == null) {
-                    globalElement = createGlobalElement(frag, workingSchema, fragSchema, isChoice, isUnbounded); 
+                    globalElement = createGlobalElement(frag, workingSchema, fragSchema, isChoice, isUnbounded, next, (lastFrag && !isAny)); 
                 }
                 // if the current element doesn't exist set a ref and add it to the sequence
                 if (!currentElementExists) {
-                    currentElement = createRefElement(frag.getShortName(), currentParticle);
+                    // use prefix from the working schema's resolver - add prefix/uri pair if necessary
+                    String fragPrefix = workingSchema.getNamespaceResolver().resolveNamespaceURI(fragUri);
+                    if (fragPrefix == null) {
+                        fragPrefix = workingSchema.getNamespaceResolver().generatePrefix(frag.getPrefix());
+                        workingSchema.getNamespaceResolver().put(fragPrefix, fragUri);
+                    }
+                    currentElement = createRefElement(fragPrefix + ":" + frag.getLocalName(), currentParticle);
                     currentElementExists = true;
                 }
                 // set the frag's schema as it may be different than the current schema
@@ -1346,7 +1383,6 @@ public class SchemaGenerator {
                 currentElement = globalElement;
             }
         }
-        
         if (!lastFrag || (lastFrag && isAny)) {
             // if we didn't process a global element, and the current element isn't already in the sequence, add it 
             if (!currentElementExists && globalElement == null) {
@@ -1357,12 +1393,10 @@ public class SchemaGenerator {
             // set the correct particle to use/return
             xpr.particle = currentElement.getComplexType().getTypeDefParticle();
         }
-        
         // if we're on the last fragment, we're done
         if (lastFrag) {
             return xpr;
         }
-
         // call back into this method to process the next path element
         return buildSchemaComponentsForXPath(frag.getNextFragment(), xpr, isAny, isChoice, next);
     }
@@ -1411,21 +1445,10 @@ public class SchemaGenerator {
      * @param next
      * @return
      */
-    public Attribute createGlobalAttribute(XPathFragment frag, Schema workingSchema, Schema fragSchema, Property next) {
+    public Attribute createGlobalAttribute(XPathFragment frag, Schema workingSchema, Schema fragSchema, Property prop) {
         Attribute gAttribute = new Attribute();
         gAttribute.setName(frag.getLocalName());
-        
-        JavaClass javaType = next.getActualType();
-        String typeName = getTypeName(next, javaType, fragSchema);
-        // may need to qualify the type
-        if (typeName != null && !typeName.contains(":")) {
-            String prefix = getPrefixForNamespace(fragSchema.getTargetNamespace(), fragSchema.getNamespaceResolver());
-            if (prefix != null) {
-                typeName = prefix + ":" + typeName;
-            }
-        }
-        gAttribute.setType(typeName);
-        
+        gAttribute.setType(getQualifiedTypeName(prop, fragSchema));
         fragSchema.getTopLevelAttributes().put(gAttribute.getName(), gAttribute);
         addImportIfRequired(workingSchema, fragSchema, frag.getNamespaceURI());
         return gAttribute;
@@ -1436,28 +1459,34 @@ public class SchemaGenerator {
      * will typically be called when processing an XPath and a prefixed path
      * element is encountered the requires an element ref.
      * 
-     * @param frag
-     * @param workingSchema
-     * @param fragSchema
-     * @param isChoice
-     * @param isUnbounded
+     * @param frag XPathFragment which wil lbe used to create the global element
+     * @param workingSchema current schema
+     * @param fragSchema frag's schema
+     * @param isChoice indicates if we need to construct a choice
+     * @param isUnbounded maxOccurs setting for choice
+     * @param next property which owns the xml-path
+     * @param shouldSetType if this is the last fragment in the xml-path and not an 'any', we should set the type
      * @return
      */
-    public Element createGlobalElement(XPathFragment frag, Schema workingSchema, Schema fragSchema, boolean isChoice, boolean isUnbounded) {
+    public Element createGlobalElement(XPathFragment frag, Schema workingSchema, Schema fragSchema, boolean isChoice, boolean isUnbounded, Property prop, boolean shouldSetType) {
         Element gElement = new Element();
         gElement.setName(frag.getLocalName());
-        ComplexType gCType = new ComplexType();
-        TypeDefParticle particle;
-        if (isChoice) {
-            particle = new Choice();
-            if (isUnbounded) {
-                particle.setMaxOccurs(Occurs.UNBOUNDED);
-            }
+        if (shouldSetType) {
+            gElement.setType(getQualifiedTypeName(prop, fragSchema));
         } else {
-            particle = new Sequence();
+            ComplexType gCType = new ComplexType();
+            TypeDefParticle particle;
+            if (isChoice) {
+                particle = new Choice();
+                if (isUnbounded) {
+                    particle.setMaxOccurs(Occurs.UNBOUNDED);
+                }
+            } else {
+                particle = new Sequence();
+            }
+            gCType.setTypeDefParticle(particle);
+            gElement.setComplexType(gCType);
         }
-        gCType.setTypeDefParticle(particle);
-        gElement.setComplexType(gCType);
         fragSchema.addTopLevelElement(gElement);
         addImportIfRequired(workingSchema, fragSchema, frag.getNamespaceURI());
         return gElement;

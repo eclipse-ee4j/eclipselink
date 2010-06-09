@@ -38,6 +38,13 @@ import org.w3c.dom.Document;
 public class CompositeMappingTestCases extends ExternalizedMetadataTestCases {
     private static final String CONTEXT_PATH = "org.eclipse.persistence.testing.jaxb.externalizedmetadata.mappings.composite";
     private static final String PATH = "org/eclipse/persistence/testing/jaxb/externalizedmetadata/mappings/composite/";
+    private static final String CYCLIC_CONTEXT_PATH = CONTEXT_PATH + ".cyclic";
+    private static final String CYCLIC_PATH = PATH + "cyclic/";
+    private static final String MULTI_NS_CONTEXT_PATH = CONTEXT_PATH + ".multiplenamespaces";
+    private static final String MULTI_NS_PATH = PATH + "multiplenamespaces/";
+    private static final String MULTI_NS_CYCLIC_CONTEXT_PATH = CYCLIC_CONTEXT_PATH + ".multiplenamespaces";
+    private static final String MULTI_NS_CYCLIC_PATH = CYCLIC_PATH + "multiplenamespaces/";
+    
     private static final String HOME_CITY = "Kanata";
     private static final String HOME_STREET = "66 Lakview Drive";
     private static final String HOME_PROVINCE = "ON";
@@ -59,6 +66,7 @@ public class CompositeMappingTestCases extends ExternalizedMetadataTestCases {
     private static final String DEPT_NAME = "Sanitation";
     private static final String EMPLOYEES_NS = "http://www.example.com/employees"; 
     private static final String CONTACTS_NS = "http://www.example.com/contacts"; 
+    private static final String ADDRESS_NS = "http://www.example.com/address"; 
     
     private MySchemaOutputResolver employeeResolver;
 
@@ -138,6 +146,10 @@ public class CompositeMappingTestCases extends ExternalizedMetadataTestCases {
         return emp;
     }
     
+    /**
+     * Tests schema generation and instance document validation.
+     * 
+     */
     public void testSchemaGenAndValidation() {
         // validate employee schema
         compareSchemas(employeeResolver.schemaFiles.get(EMPLOYEES_NS), new File(PATH + "employee.xsd"));
@@ -153,6 +165,40 @@ public class CompositeMappingTestCases extends ExternalizedMetadataTestCases {
         src = PATH + "write-employee.xml";
         result = validateAgainstSchema(src, EMPLOYEES_NS, employeeResolver);
         assertTrue("Instance doc validation (write-employee.xml) failed unxepectedly: " + result, result == null);
+        
+        // validate schema generation with three namespaces (no cyclic imports)
+        MySchemaOutputResolver resolver = generateSchemaWithFileName(new Class[] { 
+                  org.eclipse.persistence.testing.jaxb.externalizedmetadata.mappings.composite.multiplenamespaces.Employee.class 
+                }, MULTI_NS_CONTEXT_PATH, MULTI_NS_PATH + "employee-oxm.xml", 3);
+        
+        // validate three namespace employee schema
+        compareSchemas(resolver.schemaFiles.get(EMPTY_NAMESPACE), new File(MULTI_NS_PATH + "employee.xsd"));
+        // validate three namespace contacts schema
+        compareSchemas(resolver.schemaFiles.get(CONTACTS_NS), new File(MULTI_NS_PATH + "contacts.xsd"));
+        // validate three namespace address schema
+        compareSchemas(resolver.schemaFiles.get(ADDRESS_NS), new File(MULTI_NS_PATH + "address.xsd"));
+
+        // validate schema generation with cyclic imports (due to xml-path w/multiple namespaces)
+        resolver = generateSchemaWithFileName(new Class[] { 
+                  org.eclipse.persistence.testing.jaxb.externalizedmetadata.mappings.composite.cyclic.Employee.class 
+                }, CYCLIC_CONTEXT_PATH, CYCLIC_PATH + "cyclic-oxm.xml", 2);
+        
+        // validate cyclic employee schema
+        compareSchemas(resolver.schemaFiles.get(EMPLOYEES_NS), new File(CYCLIC_PATH + "employee.xsd"));
+        // validate cyclic contacts schema
+        compareSchemas(resolver.schemaFiles.get(CONTACTS_NS), new File(CYCLIC_PATH + "contacts.xsd"));
+
+        // validate schema generation with three namespaces (cyclic imports)
+        resolver = generateSchemaWithFileName(new Class[] { 
+                  org.eclipse.persistence.testing.jaxb.externalizedmetadata.mappings.composite.cyclic.multiplenamespaces.Employee.class 
+                }, MULTI_NS_CYCLIC_CONTEXT_PATH, MULTI_NS_CYCLIC_PATH + "employee-oxm.xml", 3);
+        
+        // validate three namespace cyclic employee schema
+        compareSchemas(resolver.schemaFiles.get(EMPLOYEES_NS), new File(MULTI_NS_CYCLIC_PATH + "employee.xsd"));
+        // validate three namespace cyclic contacts schema
+        compareSchemas(resolver.schemaFiles.get(CONTACTS_NS), new File(MULTI_NS_CYCLIC_PATH + "contacts.xsd"));
+        // validate three namespace cyclic address schema
+        compareSchemas(resolver.schemaFiles.get(ADDRESS_NS), new File(MULTI_NS_CYCLIC_PATH + "/address.xsd"));
     }
     
     /**
