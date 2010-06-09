@@ -67,6 +67,8 @@ public class SimpleFetchGroupTests extends BaseFetchGroupTests {
         suite.addTest(new SimpleFetchGroupTests("joinFetchEmployeeAddressPhoneWithDynamicFetchGroup"));
         suite.addTest(new SimpleFetchGroupTests("verifyUnfetchedAttributes"));
         suite.addTest(new SimpleFetchGroupTests("verifyFetchedRelationshipAttributes"));
+        suite.addTest(new SimpleFetchGroupTests("detachedByClosingEntityManagerObjectWithFetchGroup"));
+        suite.addTest(new SimpleFetchGroupTests("explicitlyDetachedObjectWithFetchGroup"));
         
         return suite;
     }
@@ -698,5 +700,45 @@ public class SimpleFetchGroupTests extends BaseFetchGroupTests {
 
         assertNotNull(emp);
 
+    }
+
+    @Test
+    public void detachedByClosingEntityManagerObjectWithFetchGroup() {
+        EntityManager em = createEntityManager("fieldaccess");
+
+        FetchGroup fg = new FetchGroup();
+        fg.addAttribute("firstName");
+        fg.addAttribute("lastName");
+
+        Map<String, Object> hints = new HashMap<String, Object>();
+        hints.put(QueryHints.FETCH_GROUP, fg);
+
+        Employee emp = minimumEmployee(em, hints);
+        assertFetched(emp, fg);
+        closeEntityManager(em);
+        
+        // trigger the fetch group
+        emp.getSalary();
+        assertNoFetchGroup(emp);
+    }
+
+    @Test
+    public void explicitlyDetachedObjectWithFetchGroup() {
+        EntityManager em = createEntityManager("fieldaccess");
+
+        FetchGroup fg = new FetchGroup();
+        fg.addAttribute("firstName");
+        fg.addAttribute("lastName");
+
+        Map<String, Object> hints = new HashMap<String, Object>();
+        hints.put(QueryHints.FETCH_GROUP, fg);
+
+        Employee emp = minimumEmployee(em, hints);
+        em.detach(emp);
+        assertFetched(emp, fg);
+        
+        // trigger the fetch group
+        emp.getSalary();
+        assertNoFetchGroup(emp);
     }
 }

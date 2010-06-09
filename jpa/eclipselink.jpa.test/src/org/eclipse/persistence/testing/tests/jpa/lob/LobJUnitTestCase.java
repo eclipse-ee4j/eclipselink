@@ -119,15 +119,16 @@ public class LobJUnitTestCase extends JUnitTestCase {
             if (isTransactionActive(em)) {
                 rollbackTransaction(em);
             }
-            closeEntityManager(em);
             throw e;
+        } finally {
+            closeEntityManager(em);
         }
 
+        // entity manager has been closed - image is detached object.
         assertTrue("byte-arrays do not match", Helper.compareByteArrays(image.getAudio(), originalImage.getAudio()));
         assertTrue("char-arrays do not match", Helper.compareCharArrays(image.getCommentary(), originalImage.getCommentary()));
         assertTrue("Byte-arrays do not match", Helper.compareArrays(image.getPicture(), originalImage.getPicture()));
         assertTrue(image.getScript().equals(originalImage.getScript()));
-        closeEntityManager(em);
     }
 
     public void testUpdate() {

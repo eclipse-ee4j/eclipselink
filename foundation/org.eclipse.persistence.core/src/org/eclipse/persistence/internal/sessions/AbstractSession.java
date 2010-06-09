@@ -4064,6 +4064,15 @@ public abstract class AbstractSession implements org.eclipse.persistence.session
        DescriptorIterator iterator = new DescriptorIterator() {
            public void iterate(Object object) {
                if(this.getCurrentGroup() != null) {
+                   if(getCurrentDescriptor().hasFetchGroupManager()) {
+                       FetchGroup fetchGroup = getCurrentDescriptor().getFetchGroupManager().getObjectFetchGroup(object);
+                       if(fetchGroup != null) {
+                           if(!fetchGroup.getAttributeNames().containsAll(getCurrentGroup().getAttributeNames())) {
+                               // trigger fetch group if it does not contain all attributes of the current group.
+                               fetchGroup.onUnfetchedAttribute((FetchGroupTracker)object, null);
+                           }
+                       }
+                   }
                    ObjectBuilder builder = getCurrentDescriptor().getObjectBuilder();
                    Iterator<String> it = getCurrentGroup().getAttributeNames().iterator();
                    while(it.hasNext()) {

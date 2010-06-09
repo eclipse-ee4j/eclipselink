@@ -1763,6 +1763,15 @@ public class ObjectBuilder implements Cloneable, Serializable {
                                copyGroup.addAttribute(name); 
                             }
                         }
+                    } else {
+                        for(DatabaseMapping mapping : getPrimaryKeyMappings()) {
+                            if(mapping.isForeignReferenceMapping()) {
+                                String name = mapping.getAttributeName();
+                                if(!copyGroup.containsAttribute(name)) {
+                                   copyGroup.addAttribute(name); 
+                                }
+                            }
+                        }
                     }
                     
                     // by default version attribute if not already in the group
@@ -1771,6 +1780,14 @@ public class ObjectBuilder implements Cloneable, Serializable {
                             if(!copyGroup.containsAttribute(this.lockAttribute)) {
                                copyGroup.addAttribute(this.lockAttribute); 
                             }
+                        }
+                    }
+                    
+                    FetchGroup fetchGroup = fetchGroupManager.getObjectFetchGroup(original);
+                    if(fetchGroup != null) {
+                        if(!fetchGroup.getAttributeNames().containsAll(copyGroup.getAttributeNames())) {
+                            // trigger fetch group if it does not contain all attributes of the copy group.
+                            fetchGroup.onUnfetchedAttribute((FetchGroupTracker)original, null);
                         }
                     }
                 }
@@ -1819,10 +1836,12 @@ public class ObjectBuilder implements Cloneable, Serializable {
 
                     if(copy != null) {
                         if(copyGroupEntityFetchGroup != null) {
-                            if(!existingEntityFetchGroup.getAttributeNames().containsAll(attributesToCopy)) {
-                                // Entity fetch group that will be assigned to copy object
-                                newEntityFetchGroup = fetchGroupManager.flatUnionFetchGroups(existingEntityFetchGroup, copyGroupEntityFetchGroup);
-                                shouldAssignNewEntityFetchGroup = true;
+                            if(!copyGroup.shouldResetPrimaryKey()) {
+                                if(!existingEntityFetchGroup.getAttributeNames().containsAll(attributesToCopy)) {
+                                    // Entity fetch group that will be assigned to copy object
+                                    newEntityFetchGroup = fetchGroupManager.flatUnionFetchGroups(existingEntityFetchGroup, copyGroupEntityFetchGroup);
+                                    shouldAssignNewEntityFetchGroup = true;
+                                }
                             }
                             attributesToCopy = new HashSet(attributesToCopy);
                             attributesToCopy.removeAll(existingEntityFetchGroup.getAttributeNames());
@@ -1833,8 +1852,10 @@ public class ObjectBuilder implements Cloneable, Serializable {
                         Set<CopyGroup> visitedCopyGroups = new HashSet();
                         visitedCopyGroups.add(copyGroup);
                         copyGroup.getCopies().put(original, new Object[]{copy, visitedCopyGroups});
-                        newEntityFetchGroup = copyGroupEntityFetchGroup;
-                        shouldAssignNewEntityFetchGroup = true;
+                        if(!copyGroup.shouldResetPrimaryKey()) {
+                            newEntityFetchGroup = copyGroupEntityFetchGroup;
+                            shouldAssignNewEntityFetchGroup = true;
+                        }
                     }
                 }
                 if(shouldAssignNewEntityFetchGroup) {
@@ -1858,7 +1879,7 @@ public class ObjectBuilder implements Cloneable, Serializable {
                                 if(mappingCopyGroup == null) {
                                     FetchGroupManager referenceFetchGroupManager = referenceDescriptor.getFetchGroupManager();
                                     if(referenceFetchGroupManager != null) {
-                                        EntityFetchGroup nonReferenceEntityFetchGroup = referenceFetchGroupManager.getNonReferenceEntityFetchGroup();
+                                        EntityFetchGroup nonReferenceEntityFetchGroup = referenceFetchGroupManager.getNonReferenceEntityFetchGroup(copyGroup.shouldResetPrimaryKey(), copyGroup.shouldResetVersion());
                                         if(nonReferenceEntityFetchGroup != null) {
                                             mappingCopyGroup = nonReferenceEntityFetchGroup.toCopyGroup();
                                         } else {
@@ -1866,6 +1887,8 @@ public class ObjectBuilder implements Cloneable, Serializable {
                                             // create a new empty CopyGroup.
                                             mappingCopyGroup = new CopyGroup();
                                             mappingCopyGroup.shouldCascadeTree();
+                                            mappingCopyGroup.setShouldResetPrimaryKey(copyGroup.shouldResetPrimaryKey());
+                                            mappingCopyGroup.setShouldResetVersion(copyGroup.shouldResetVersion());
                                         }
                                     } else {
                                         // TODO: would that work?
