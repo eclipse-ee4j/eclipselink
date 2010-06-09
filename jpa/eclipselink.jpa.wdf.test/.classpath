@@ -8,7 +8,7 @@
 	<classpathentry combineaccessrules="false" kind="src" path="/org.eclipse.persistence.antlr"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/org.eclipse.persistence.jpa"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.junit.JUNIT_CONTAINER/4"/>
-	<classpathentry kind="var" path="ECLIPSE_HOME/plugins/javax.ejb_3.0.0.jar"/>
-	<classpathentry kind="var" path="ECLIPSE_HOME/plugins/javax.transaction_1.1.0.jar"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/javax.ejb 3.0.0"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/javax.transaction 1.1.0"/>
 	<classpathentry kind="output" path="classes"/>
 </classpath>
