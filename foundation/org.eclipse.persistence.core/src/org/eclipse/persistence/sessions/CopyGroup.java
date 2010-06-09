@@ -275,6 +275,8 @@ public class CopyGroup extends AttributeGroup {
         CopyGroup copyGroup = new CopyGroup(name);
         copyGroup.cascadeTree();
         if(parent != null) {
+            copyGroup.setShouldResetPrimaryKey(((CopyGroup)parent).shouldResetPrimaryKey());
+            copyGroup.setShouldResetVersion(((CopyGroup)parent).shouldResetVersion());
             copyGroup.setCopies(((CopyGroup)parent).getCopies());
         }
         return copyGroup;

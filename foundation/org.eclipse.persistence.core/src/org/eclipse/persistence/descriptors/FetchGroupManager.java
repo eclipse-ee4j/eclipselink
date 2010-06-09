@@ -171,6 +171,53 @@ public class FetchGroupManager implements Cloneable {
     
     /**
      * INTERNAL:
+     * Returns EntityFetchGroup corresponding to non relational attributes
+     * intersected with defaultFetchGroup.
+     */
+    public EntityFetchGroup getNonReferenceEntityFetchGroup(boolean addPk, boolean addVersion) {
+        if(addPk && addVersion) {
+            return getNonReferenceEntityFetchGroup();
+        }
+        FetchGroup nonReferenceFetchGroup = new FetchGroup();
+        for (DatabaseMapping mapping : getDescriptor().getMappings()) {
+            if(!mapping.isForeignReferenceMapping()) {
+                String name = mapping.getAttributeName();
+                if(this.defaultEntityFetchGroup == null || this.defaultEntityFetchGroup.containsAttribute(name)) {
+                    nonReferenceFetchGroup.addAttribute(name);
+                }
+            }
+        }
+        if(addPk) {
+            for(DatabaseMapping mapping : descriptor.getObjectBuilder().getPrimaryKeyMappings()) {
+                String name = mapping.getAttributeName();
+                if(!nonReferenceFetchGroup.containsAttribute(name)) {
+                    nonReferenceFetchGroup.addAttribute(name); 
+                }
+            }
+        } else {
+            for(DatabaseMapping mapping : descriptor.getObjectBuilder().getPrimaryKeyMappings()) {
+                if(mapping.isForeignReferenceMapping()) {
+                    String name = mapping.getAttributeName();
+                    if(!nonReferenceFetchGroup.containsAttribute(name)) {
+                        // always add foreign reference pk
+                        nonReferenceFetchGroup.addAttribute(name); 
+                    }
+                }
+            }
+        }
+        if(addVersion) {
+            String lockAttribute = descriptor.getObjectBuilder().getLockAttribute();
+            if(lockAttribute != null) {
+                if(!nonReferenceFetchGroup.containsAttribute(lockAttribute)) {
+                    nonReferenceFetchGroup.addAttribute(lockAttribute); 
+                }
+            }
+        }
+        return getEntityFetchGroup(nonReferenceFetchGroup);
+    }
+    
+    /**
+     * INTERNAL:
      * Add primary key and version attributes to the passed fetch group.
      */
     public void addMinimalFetchGroup(FetchGroup fetchGroup) {

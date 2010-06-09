@@ -5351,6 +5351,7 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
             iterator.setCascadeCondition(detached);
             iterator.setShouldIterateOverUninstantiatedIndirectionObjects(false);
         }
+        iterator.setShouldIterateOnFetchGroupAttributesOnly(true);
         iterator.startIterationOn(implementation);
     }
 

@@ -19,6 +19,8 @@ import java.util.Set;
 
 import org.eclipse.persistence.internal.localization.ExceptionLocalization;
 import org.eclipse.persistence.internal.queries.AttributeItem;
+import org.eclipse.persistence.sessions.Session;
+import org.eclipse.persistence.sessions.UnitOfWork;
 
 /**
  * A FetchGroup is a performance enhancement that allows a group of attributes
@@ -129,9 +131,32 @@ public class FetchGroup extends AttributeGroup {
     public String onUnfetchedAttribute(FetchGroupTracker entity, String attributeName) {
         ReadObjectQuery query = new ReadObjectQuery(entity);
         query.setShouldUseDefaultFetchGroup(false);
-        Object result = entity._persistence_getSession().executeQuery(query);
+        Session session = entity._persistence_getSession();
+        boolean shouldLoadResultIntoSelectionObject = false;
+        if(session.isUnitOfWork()) {
+            shouldLoadResultIntoSelectionObject = !((UnitOfWork)session).isObjectRegistered(entity);
+        } else {
+            shouldLoadResultIntoSelectionObject = !session.getIdentityMapAccessor().containsObjectInIdentityMap(entity);
+        }
+        if(shouldLoadResultIntoSelectionObject) {
+            // entity is not in the cache.
+            // instead of updating object in the cache update entity directly.
+            query.setShouldLoadResultIntoSelectionObject(true);
+            // and ignore cache
+            query.dontCheckCache();
+            query.setShouldMaintainCache(false);
+            // To avoid infinite loop clear the fetch group right away.
+            entity._persistence_setFetchGroup(null);
+            entity._persistence_setSession(null);
+        }
+        Object result = session.executeQuery(query);
         if (result == null) {
             Object[] args = { query.getSelectionId() };
+            // the object was not found in the db end exception will be thrown - restore the fetch group back.
+            if(shouldLoadResultIntoSelectionObject) {
+                entity._persistence_setFetchGroup(this);
+                entity._persistence_setSession(session);
+            }
             return ExceptionLocalization.buildMessage("no_entities_retrieved_for_get_reference", args);
         }
         return null;

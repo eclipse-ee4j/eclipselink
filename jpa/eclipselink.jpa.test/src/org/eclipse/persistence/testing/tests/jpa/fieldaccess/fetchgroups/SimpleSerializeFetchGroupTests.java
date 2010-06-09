@@ -79,6 +79,7 @@ public class SimpleSerializeFetchGroupTests extends BaseFetchGroupTests {
         suite.addTest(new SimpleSerializeFetchGroupTests("partialMerge"));
         suite.addTest(new SimpleSerializeFetchGroupTests("copyGroupMerge"));
         suite.addTest(new SimpleSerializeFetchGroupTests("copyGroupMerge2"));
+        suite.addTest(new SimpleSerializeFetchGroupTests("copyNoPk"));
         
         return suite;
     }
@@ -1036,6 +1037,51 @@ public class SimpleSerializeFetchGroupTests extends BaseFetchGroupTests {
         
         rollbackTransaction(em);
     }
+    
+    public void copyNoPk() {        
+        CopyGroup group = new CopyGroup();
+        group.setShouldResetPrimaryKey(true);
+        group.setShouldResetVersion(true);
+        group.cascadeTree(); // Copy only the attributes specified
+        group.addAttribute("firstName");
+        group.addAttribute("lastName");
+        group.addAttribute("gender");
+        group.addAttribute("period");
+        group.addAttribute("salary");
+        group.addAttribute("address.country");
+        group.addAttribute("address.street");
+        group.addAttribute("phoneNumbers.areaCode");
+        group.addAttribute("phoneNumbers.number");
+        
+        ((CopyGroup)group.getGroup("phoneNumbers")).setShouldResetPrimaryKey(false);
+
+        EntityManager em = createEntityManager("fieldaccess");
+/*        FetchGroup fg = new FetchGroup();
+        fg.addAttribute("firstName");
+        fg.addAttribute("lastName");
+        Map<String, Object> hints = new HashMap<String, Object>();
+        hints.put(QueryHints.FETCH_GROUP, fg);
+        Employee emp = minimumEmployee(em, hints);*/        
+        Employee emp = minimumEmployee(em);        
+        em.unwrap(JpaEntityManager.class).load(emp, group);
+        Employee empCopy = (Employee) em.unwrap(JpaEntityManager.class).copy(emp, group);
+        System.out.println(">>> Employee copied");
+        
+        beginTransaction(em);
+        try {
+            // Persist the employee copy
+            em.persist(empCopy);
+            System.out.println(">>> Persist new entity complete");
+    
+            // Flush the changes to the database
+            em.flush();
+        } finally {
+            if(isTransactionActive(em)) {
+                rollbackTransaction(em);
+            }
+        }
+    }
+
     
     private <T> T serialize(Serializable entity) throws IOException, ClassNotFoundException {
         byte[] bytes = SerializationHelper.serialize(entity);

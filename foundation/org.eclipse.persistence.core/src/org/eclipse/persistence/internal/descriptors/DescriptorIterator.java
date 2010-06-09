@@ -21,6 +21,7 @@ import org.eclipse.persistence.internal.queries.AttributeItem;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.mappings.*;
 import org.eclipse.persistence.queries.AttributeGroup;
+import org.eclipse.persistence.queries.FetchGroup;
 
 /**
  * This class provides a generic way of using the descriptor information
@@ -59,6 +60,8 @@ public abstract class DescriptorIterator {
     protected boolean shouldIterateOnIndirectionObjects;
     protected boolean shouldIterateOnAggregates;
     protected boolean shouldIterateOnPrimitives;
+    // false by default; true means if object has FetchGroup then don't iterate outside it.
+    protected boolean shouldIterateOnFetchGroupAttributesOnly;
     protected boolean shouldBreak;
     protected int cascadeDepth;// see static constants below
     protected CascadeCondition cascadeCondition;
@@ -84,6 +87,7 @@ public abstract class DescriptorIterator {
         this.shouldIterateOverWrappedObjects = true;// process "wrapped" objects
         this.shouldIterateOnAggregates = false;
         this.shouldIterateOnPrimitives = false;
+        this.shouldIterateOnFetchGroupAttributesOnly = false;
         this.shouldBreak = false;
         this.cascadeCondition = new CascadeCondition();
     }
@@ -395,6 +399,21 @@ public abstract class DescriptorIterator {
             mappings = builder.getRelationshipMappings();
         }
         
+        if(shouldIterateOnFetchGroupAttributesOnly()) {
+            if(getCurrentDescriptor().hasFetchGroupManager()) {
+                FetchGroup fetchGroup = getCurrentDescriptor().getFetchGroupManager().getObjectFetchGroup(sourceObject);
+                if(fetchGroup != null) {
+                    List<DatabaseMapping> fetchGroupMappings = new ArrayList();
+                    for(DatabaseMapping mapping : mappings) {
+                        if(fetchGroup.containsAttribute(mapping.getAttributeName())) {
+                            fetchGroupMappings.add(mapping);
+                        }
+                    }
+                    mappings = fetchGroupMappings;
+                }
+            }
+        }
+        
         if(this.usesGroup) {
             AttributeGroup currentGroupOriginal = this.currentGroup;
             AttributeItem currentItemOriginal = this.currentItem;
@@ -477,6 +496,13 @@ public abstract class DescriptorIterator {
     }
 
     /**
+     * Set whether the attributes outside fetch group should be processed. 
+     */
+    public void setShouldIterateOnFetchGroupAttributesOnly(boolean shouldIterateOnFetchGroupAttributesOnly) {
+        this.shouldIterateOnFetchGroupAttributesOnly = shouldIterateOnFetchGroupAttributesOnly;
+    }
+    
+    /**
      * Set whether the indirection objects themselves (e.g. the ValueHolders)
      * should be processed.
      */
@@ -550,6 +576,14 @@ public abstract class DescriptorIterator {
         return shouldIterateOnAggregates;
     }
 
+    /**
+     * If true then if object has a FetchGroup then iterations
+     * not performed on mappings that are outside of the FetchGroup.
+     */
+    public boolean shouldIterateOnFetchGroupAttributesOnly() {
+        return this.shouldIterateOnFetchGroupAttributesOnly;
+    }
+    
     /**
      * Return whether the indirection objects themselves (e.g. the ValueHolders)
      * should be processed.
