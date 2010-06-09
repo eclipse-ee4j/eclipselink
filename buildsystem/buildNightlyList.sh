@@ -92,9 +92,6 @@ for version in `ls -dr [0-9]*` ; do
         file=`ls | sort -r | grep -m1 eclipselink-jpa-wdf-[l,s]rg-[0-9]`
         if [ "${file}" != "" ] ; then
             echo "            <td align=\"center\"> <a href=\"${BaseDisplayURL}/${version}/${contentdir}/${file}\"> JPA (WDF) </a> </td>" >> $tmp/index.xml
-            #else
-                #echo "            <td align=\"center\"> JPA (WDF) </td>" >> $tmp/index.xml
-        fi
         fi
         file=`ls | sort -r | grep -m1 eclipselink-jaxb-[l,s]rg-[0-9]`
         if [ "${file}" != "" ] ; then
