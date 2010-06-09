@@ -47,6 +47,8 @@
  *       - 282553: JPA 2.0 JoinTable support for OneToOne and ManyToOne
  *     10/21/2009-2.0 Guy Pelletier 
  *       - 290567: mappedbyid support incomplete
+ *     06/09/2010-2.0.3 Guy Pelletier 
+ *       - 313401: shared-cache-mode defaults to NONE when the element value is unrecognized
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata.accessors.classes;
 
@@ -752,7 +754,7 @@ public class EntityAccessor extends MappedSuperclassAccessor {
      */
     @Override
     protected void processCaching() {
-        if (getProject().isCacheAll()) {
+        if (getProject().isSharedCacheModeAll()) {
            if (getDescriptor().isCacheableFalse()) {
                // The persistence unit has an ALL caching type and the user 
                // specified Cacheable(false). Log a warning message that it is 
@@ -763,7 +765,7 @@ public class EntityAccessor extends MappedSuperclassAccessor {
                 
            // Process the cache metadata.
            processCachingMetadata();
-        } else if (getProject().isCacheNone()) {
+        } else if (getProject().isSharedCacheModeNone()) {
             if (getDescriptor().isCacheableTrue()) {
                 // The persistence unit has a NONE caching type and the the user
                 // specified Cacheable(true). Log a warning message that it is being 
@@ -774,7 +776,7 @@ public class EntityAccessor extends MappedSuperclassAccessor {
                 
             // Turn off the cache.
             getDescriptor().useNoCache();
-        } else if (getProject().isCacheEnableSelective()) {
+        } else if (getProject().isSharedCacheModeEnableSelective()) {
             if (getDescriptor().isCacheableTrue()) {
                 // ENABLE_SELECTIVE and Cacheable(true), process the cache metadata.
                 processCachingMetadata();
@@ -782,7 +784,7 @@ public class EntityAccessor extends MappedSuperclassAccessor {
                 // ENABLE_SELECTIVE and Cacheable(false) or no setting, turn off the cache.
                 getDescriptor().useNoCache();
             }
-        } else if (getProject().isCacheDisableSelective()) {
+        } else if (getProject().isSharedCacheModeDisableSelective() || getProject().isSharedCacheModeUnspecified()) {
             if (getDescriptor().isCacheableFalse()) {
                 // DISABLE_SELECTIVE and Cacheable(false), turn off cache.
                 getDescriptor().useNoCache();

@@ -41,6 +41,8 @@
  *       - 290567: mappedbyid support incomplete
  *     11/13/2009-2.0 Guy Pelletier 
  *       - 293629: An attribute referenced from orm.xml is not recognized correctly
+ *     06/09/2010-2.0.3 Guy Pelletier 
+ *       - 313401: shared-cache-mode defaults to NONE when the element value is unrecognized
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata;
 
@@ -204,10 +206,11 @@ public class MetadataProject {
     // the correct owning descriptor.
     private HashSet<EmbeddableAccessor> m_rootEmbeddableAccessors;
     
-    /**
-     * All mappedSuperclass accessors, identity is handled by keying on className.
-     * @since EclipseLink 1.2 for the JPA 2.0 Reference Implementation
-     */
+    // Cache the shared cache mode
+    private SharedCacheMode m_sharedCacheMode;
+    private boolean m_isSharedCacheModeInitialized;
+    
+    // All mappedSuperclass accessors, identity is handled by keying on className.
     private HashMap<String, MappedSuperclassAccessor> m_metamodelMappedSuperclasses;
     
     /**
@@ -219,6 +222,8 @@ public class MetadataProject {
      * @param weavingEnabled - flag for global dynamic weaving state
      */
     public MetadataProject(PersistenceUnitInfo puInfo, AbstractSession session, boolean weavingEnabled, boolean weaveEager) {
+        m_isSharedCacheModeInitialized = false;
+        
         m_persistenceUnitInfo = puInfo;
         m_session = session;
         m_logger = new MetadataLogger(session);
@@ -631,36 +636,6 @@ public class MetadataProject {
     
     /**
      * INTERNAL:
-     * This method will return the name of the SharedCacheMode if specified in the 
-     * persistence.xml file. Note, this is a JPA 2.0 feature, therefore, this 
-     * method needs to catch any exception as a result of trying to access this 
-     * information from a JPA 1.0 container.   
-     */
-    protected String getCaching() {
-        try {
-            Method method = null;
-            Object SharedCacheMode = null;
-            
-            if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()) {
-                method = (Method) AccessController.doPrivileged(new PrivilegedGetDeclaredMethod(PersistenceUnitInfo.class, "getSharedCacheMode", null));
-                SharedCacheMode = AccessController.doPrivileged(new PrivilegedMethodInvoker(method, m_persistenceUnitInfo));
-            } else {
-                method = PrivilegedAccessHelper.getDeclaredMethod(PersistenceUnitInfo.class, "getSharedCacheMode", null);
-                SharedCacheMode = PrivilegedAccessHelper.invokeMethod(method, m_persistenceUnitInfo, null);
-            }
-         
-            if (SharedCacheMode != null) {
-                return ((SharedCacheMode) SharedCacheMode).name();
-            }
-        } catch (Throwable exception) {
-            // Catch and swallow any exceptions and return null.
-        }
-        
-        return null;
-    }
-    
-    /**
-     * INTERNAL:
      */
     public AbstractConverterMetadata getConverter(String name) {
         return m_converters.get(name);
@@ -849,6 +824,37 @@ public class MetadataProject {
     
     /**
      * INTERNAL:
+     * This method will return the name of the SharedCacheMode if specified in 
+     * the persistence.xml file. Note, this is a JPA 2.0 feature, therefore, 
+     * this method needs to catch any exception as a result of trying to access 
+     * this information from a JPA 1.0 container.   
+     */
+    protected String getSharedCacheModeName() {
+        if (! m_isSharedCacheModeInitialized) {
+            try {
+                Method method = null;
+            
+                if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()) {
+                    method = (Method) AccessController.doPrivileged(new PrivilegedGetDeclaredMethod(PersistenceUnitInfo.class, "getSharedCacheMode", null));
+                    m_sharedCacheMode = (SharedCacheMode) AccessController.doPrivileged(new PrivilegedMethodInvoker(method, m_persistenceUnitInfo));
+                } else {
+                    method = PrivilegedAccessHelper.getDeclaredMethod(PersistenceUnitInfo.class, "getSharedCacheMode", null);
+                    m_sharedCacheMode = (SharedCacheMode) PrivilegedAccessHelper.invokeMethod(method, m_persistenceUnitInfo, null);
+                }
+            } catch (Throwable exception) {
+                // Swallow any exceptions, shared cache mode will be null.
+            }
+            
+            // Set the shared cache mode as initialized to avoid the reflective
+            // calls over and over again.
+            m_isSharedCacheModeInitialized = true;
+        }
+        
+        return (m_sharedCacheMode == null) ? null : m_sharedCacheMode.name();
+    }
+    
+    /**
+     * INTERNAL:
      */
     public List<StructConverterMetadata> getStructConverters(){
         List<StructConverterMetadata> structConverters = new ArrayList<StructConverterMetadata>();
@@ -930,8 +936,61 @@ public class MetadataProject {
     /**
      * INTERNAL:
      */
+    public boolean hasSharedCacheMode() {
+        return getSharedCacheModeName() != null;
+    }
+    
+    /**
+     * INTERNAL:
+     */
     public boolean isIdClass(MetadataClass idClass) {
         return m_idClasses.contains(idClass.getName());
+    }
+    
+    /**
+     * INTERNAL:
+     * Return true if the caching has been specified as ALL in the
+     * persistence.xml.
+     */
+    public boolean isSharedCacheModeAll() {
+        return hasSharedCacheMode() && getSharedCacheModeName().equals(SharedCacheMode.ALL.name());
+    }
+    
+    /**
+     * INTERNAL:
+     * Return true if the caching has been specified as DISABLE_SELECTIVE in the
+     * persistence.xml. DISABLE_SELECTIVE is the default therefore this will 
+     * also return true if no caching setting was set.
+     */
+    public boolean isSharedCacheModeDisableSelective() {
+        return ! hasSharedCacheMode() || getSharedCacheModeName().equals(SharedCacheMode.DISABLE_SELECTIVE.name());
+    }
+    
+    /**
+     * INTERNAL:
+     * Return true if the caching has been specified as ENABLE_SELECTIVE in the
+     * persistence.xml. 
+     */
+    public boolean isSharedCacheModeEnableSelective() {
+        return hasSharedCacheMode() && getSharedCacheModeName().equals(SharedCacheMode.ENABLE_SELECTIVE.name());
+    }
+    
+    /**
+     * INTERNAL:
+     * Return true if the caching has been specified as NONE in the 
+     * persistence.xml.  
+     */
+    public boolean isSharedCacheModeNone() {
+        return hasSharedCacheMode() && getSharedCacheModeName().equals(SharedCacheMode.NONE.name());
+    }
+    
+    /**
+     * INTERNAL:
+     * Return true if the caching has been specified as UNSPECIFIED in the 
+     * persistence.xml.  
+     */
+    public boolean isSharedCacheModeUnspecified() {
+        return hasSharedCacheMode() && getSharedCacheModeName().equals(SharedCacheMode.UNSPECIFIED.name());
     }
     
     /**
@@ -942,43 +1001,6 @@ public class MetadataProject {
     public boolean isWeavingEnabled() {
         return m_weavingEnabled;
     }  
-    
-    /**
-     * INTERNAL:
-     * Return true if the caching has been specified as ALL in the
-     * persistence.xml.
-     */
-    public boolean isCacheAll() {
-        return getCaching() != null && getCaching().equals("ALL");
-    }
-    
-    /**
-     * INTERNAL:
-     * Return true if the caching has been specified as DISABLE_SELECTIVE in the
-     * persistence.xml. DISABLE_SELECTIVE is the default therefore this will 
-     * also return true if no caching setting was set.
-     */
-    public boolean isCacheDisableSelective() {
-        return getCaching() == null || getCaching().equals("DISABLE_SELECTIVE");
-    }
-    
-    /**
-     * INTERNAL:
-     * Return true if the caching has been specified as ENABLE_SELECTIVE in the
-     * persistence.xml. 
-     */
-    public boolean isCacheEnableSelective() {
-        return getCaching() != null && getCaching().equals("ENABLE_SELECTIVE");
-    }
-    
-    /**
-     * INTERNAL:
-     * Return true if the caching has been specified as NONE in the 
-     * persistence.xml.  
-     */
-    public boolean isCacheNone() {
-        return getCaching() != null && getCaching().equals("NONE");
-    }
     
     /**
      * INTERNAL:

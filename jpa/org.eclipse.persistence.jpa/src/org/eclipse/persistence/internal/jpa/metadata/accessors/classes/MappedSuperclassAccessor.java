@@ -34,6 +34,8 @@
  *       - 266912: In initIdClass() store IdClass names for use by the Metamodel API  
  *     10/21/2009-2.0 Guy Pelletier 
  *       - 290567: mappedbyid support incomplete
+ *     06/09/2010-2.0.3 Guy Pelletier 
+ *       - 313401: shared-cache-mode defaults to NONE when the element value is unrecognized
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata.accessors.classes;
 
@@ -663,9 +665,9 @@ public class MappedSuperclassAccessor extends ClassAccessor {
         // ALL or no setting
         // ENABLE_SELECTIVE and Cacheable(true)
         // DISABLE_SELECTIVE and Cacheable(true) 
-        if (getProject().isCacheAll() || 
-           (getProject().isCacheEnableSelective() && getDescriptor().isCacheableTrue()) ||
-           (getProject().isCacheDisableSelective() && ! getDescriptor().isCacheableFalse())) {
+        if (getProject().isSharedCacheModeAll() || 
+           (getProject().isSharedCacheModeEnableSelective() && getDescriptor().isCacheableTrue()) ||
+           (getProject().isSharedCacheModeDisableSelective() && ! getDescriptor().isCacheableFalse())) {
             
             processCachingMetadata();
         } 
