@@ -2437,15 +2437,7 @@ public class AnnotationsProcessor {
                         declaration.setJavaTypeAdapterClass(typeAdapterClass);
 
                         Method[] tacMethods = typeAdapterClass.getMethods();
-                        Class declJavaType = null;
-
-                        for (int i = 0; i < tacMethods.length; i++) {
-                            Method method = tacMethods[i];
-                            if (method.getName().equals("marshal")) {
-                                declJavaType = method.getReturnType();
-                                break;
-                            }
-                        }
+                        Class declJavaType = CompilerHelper.getTypeFromAdapterClass(typeAdapterClass);
 
                         declaration.setJavaType(helper.getJavaClass(declJavaType));
                         declaration.setAdaptedJavaType(type);
