@@ -12,6 +12,8 @@
  *       - 277039: JPA 2.0 Cache Usage Settings
  *     07/16/2009-2.0 Guy Pelletier 
  *       - 277039: JPA 2.0 Cache Usage Settings
+ *     06/09/2010-2.0.3 Guy Pelletier 
+ *       - 313401: shared-cache-mode defaults to NONE when the element value is unrecognized
  ******************************************************************************/  
 package org.eclipse.persistence.testing.tests.jpa.cacheable;
 
@@ -44,6 +46,7 @@ import org.eclipse.persistence.testing.models.jpa.cacheable.ChildCacheableFalseE
  * "ALL"
  * "ENABLE_SELECTIVE"
  * "DISABLE_SELECTIVE"
+ * "UNSPECIFIED"
  */
 public class CacheableModelJunitTest extends JUnitTestCase {
     private static int m_cacheableTrueEntity1Id;
@@ -180,6 +183,7 @@ public class CacheableModelJunitTest extends JUnitTestCase {
             suite.addTest(new CacheableModelJunitTest("testCachingOnNONE"));
             suite.addTest(new CacheableModelJunitTest("testCachingOnENABLE_SELECTIVE"));
             suite.addTest(new CacheableModelJunitTest("testCachingOnDISABLE_SELECTIVE"));
+			suite.addTest(new CacheableModelJunitTest("testCachingOnUNSPECIFIED"));
             
             // Test cache retrieve mode of BYPASS and USE through the EM.
             suite.addTest(new CacheableModelJunitTest("testCreateEntities"));
@@ -809,6 +813,41 @@ public class CacheableModelJunitTest extends JUnitTestCase {
         // Should pick up true from the mapped superclass.
         ClassDescriptor xmlNoneSubEntityDescriptor = session.getDescriptorForAlias("XML_SUB_CACHEABLE_NONE");
         assertFalse("SubCacheableNoneEntity (DISABLE_SELECTIVE) from XML has caching turned off", usesNoCache(xmlNoneSubEntityDescriptor));
+    }
+    
+    /**
+     * Verifies the cacheable settings when caching (from persistence.xml) is set to UNSPECIFIED.
+     */
+    public void testCachingOnUNSPECIFIED() {
+        ServerSession session = getPUServerSession("UNSPECIFIED");
+        ClassDescriptor falseEntityDescriptor = session.getDescriptorForAlias("JPA_CACHEABLE_FALSE");
+        assertTrue("CacheableFalseEntity (UNSPECIFIED) from annotations has caching turned on", usesNoCache(falseEntityDescriptor));
+        
+        ClassDescriptor trueEntityDescriptor = session.getDescriptorForAlias("JPA_CACHEABLE_TRUE");
+        assertFalse("CacheableTrueEntity (UNSPECIFIED) from annotations has caching turned off", usesNoCache(trueEntityDescriptor));
+ 
+        ClassDescriptor childFalseEntityDescriptor = session.getDescriptorForAlias("JPA_CHILD_CACHEABLE_FALSE");
+        assertTrue("ChildCacheableFalseEntity (UNSPECIFIED) from annotations has caching turned on", usesNoCache(childFalseEntityDescriptor));
+        
+        ClassDescriptor falseSubEntityDescriptor = session.getDescriptorForAlias("JPA_SUB_CACHEABLE_FALSE");
+        assertTrue("SubCacheableFalseEntity (UNSPECIFIED) from annotations has caching turned on", usesNoCache(falseSubEntityDescriptor));
+    
+        // Should pick up true from the mapped superclass.
+        ClassDescriptor noneSubEntityDescriptor = session.getDescriptorForAlias("JPA_SUB_CACHEABLE_NONE");
+        assertFalse("SubCacheableNoneEntity (UNSPECIFIED) from annotations has caching turned off", usesNoCache(noneSubEntityDescriptor));
+
+        ClassDescriptor xmlFalseEntityDescriptor = session.getDescriptorForAlias("XML_CACHEABLE_FALSE");
+        assertTrue("CacheableFalseEntity (UNSPECIFIED) from XML has caching turned on", usesNoCache(xmlFalseEntityDescriptor));
+        
+        ClassDescriptor xmlTrueEntityDescriptor = session.getDescriptorForAlias("XML_CACHEABLE_TRUE");
+        assertFalse("CacheableTrueEntity (UNSPECIFIED) from XML has caching turned off", usesNoCache(xmlTrueEntityDescriptor));
+        
+        ClassDescriptor xmlFalseSubEntityDescriptor = session.getDescriptorForAlias("XML_SUB_CACHEABLE_FALSE");
+        assertTrue("SubCacheableFalseEntity (UNSPECIFIED) from XML has caching turned on", usesNoCache(xmlFalseSubEntityDescriptor));
+    
+        // Should pick up true from the mapped superclass.
+        ClassDescriptor xmlNoneSubEntityDescriptor = session.getDescriptorForAlias("XML_SUB_CACHEABLE_NONE");
+        assertFalse("SubCacheableNoneEntity (UNSPECIFIED) from XML has caching turned off", usesNoCache(xmlNoneSubEntityDescriptor));
     }
     
     public void testCreateEntities() {
