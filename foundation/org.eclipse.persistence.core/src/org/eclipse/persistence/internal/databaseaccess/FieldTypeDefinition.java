@@ -35,6 +35,7 @@ public class FieldTypeDefinition implements Serializable {
     protected int minScale;
     protected int maxScale;
     protected boolean shouldAllowNull; //allow for specific types/platforms to not allow null
+    protected String typesuffix;
 
     public FieldTypeDefinition() {
         defaultSize = 10;
@@ -44,6 +45,7 @@ public class FieldTypeDefinition implements Serializable {
         minScale = 0;
         maxScale = 0;
         shouldAllowNull = true;
+        typesuffix = null;
     }
 
     /**
@@ -79,6 +81,12 @@ public class FieldTypeDefinition implements Serializable {
         setMaxScale(defaultSubSize);
     }
 
+    public FieldTypeDefinition(String databaseTypeName, int defaultSize, String aTypesuffix) {
+        this(databaseTypeName, defaultSize);
+        this.typesuffix = aTypesuffix;
+        this.isSizeAllowed = true;
+    }
+    
     /**
      * Return a new field type with a required size defaulting to the defaultSize.
      */
@@ -153,6 +161,13 @@ public class FieldTypeDefinition implements Serializable {
     */
     public String getName() {
         return name;
+    }
+    
+    /**
+     * Returns a type suffix (like unicode, byte or ascii) for maxdb create table stmts
+     */
+    public String getTypesuffix() {
+        return typesuffix;
     }
 
     /**
