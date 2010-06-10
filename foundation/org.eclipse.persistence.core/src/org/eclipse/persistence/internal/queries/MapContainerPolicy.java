@@ -231,7 +231,17 @@ public class MapContainerPolicy extends InterfaceContainerPolicy {
             return true;
         }
         Object backUpVersion = ((UnitOfWorkImpl)session).getBackupClone(sourceValue, getElementDescriptor());
-        return (keyFrom(backUpVersion, session).equals(keyFrom(sourceValue, session)));
+        Object backUpVersionKey = keyFrom(backUpVersion, session);
+        Object sourceValueKey = keyFrom(sourceValue, session);
+        if (backUpVersionKey == sourceValueKey) {
+            // this conditional captures the same instances, as well as both being nulls
+            // not sure if this semantics is correct
+            return true;
+        }
+        if (backUpVersionKey == null && sourceValueKey != null) {
+            return false;
+        }
+        return backUpVersionKey.equals(sourceValueKey);
     }
 
     /**

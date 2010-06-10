@@ -136,6 +136,7 @@ public class InheritedModelJunitTest extends JUnitTestCase {
         suite.addTest(new InheritedModelJunitTest("testAddToHeinekenBeerConsumerMap"));
         suite.addTest(new InheritedModelJunitTest("testColumnUpdatableAndInsertable"));
         suite.addTest(new InheritedModelJunitTest("testColumnUpdatableAndInsertableThroughQuery"));
+        suite.addTest(new InheritedModelJunitTest("testElementCollectionMapEmbeddable"));
         
         return suite;
     }
@@ -1596,6 +1597,31 @@ public class InheritedModelJunitTest extends JUnitTestCase {
             fail("Update query failed: " + e.getMessage());
         } finally {
             closeEntityManager(em);
+        }
+    }
+    
+    public void testElementCollectionMapEmbeddable(){
+        EntityManager em = createEntityManager();
+        
+        try {
+            // Create an official
+            beginTransaction(em);
+            BeerConsumer consumer = new BeerConsumer();
+            consumer.setName("Lionel");
+            RedStripe rs = new RedStripe();
+            rs.setAlcoholContent(4.5);
+            consumer.addRedStripeByAlcoholContent(rs);
+            em.persist(consumer);
+            em.flush();
+            
+            rs = new RedStripe();
+            rs.setAlcoholContent(3.5);
+            consumer.addRedStripeByAlcoholContent(rs);
+            em.flush();
+        } catch (Exception e){
+            e.printStackTrace();
+        } finally {
+            rollbackTransaction(em);
         }
     }
 }
