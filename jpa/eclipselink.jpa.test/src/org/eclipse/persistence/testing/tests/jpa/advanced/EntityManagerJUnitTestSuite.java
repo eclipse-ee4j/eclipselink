@@ -346,6 +346,7 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
         suite.addTest(new EntityManagerJUnitTestSuite("testPreupdateEmbeddable"));
         suite.addTest(new EntityManagerJUnitTestSuite("testFindReadOnlyIsolated"));
         suite.addTest(new EntityManagerJUnitTestSuite("testInheritanceQuery"));
+        suite.addTest(new EntityManagerJUnitTestSuite("testNullBasicMap"));
         
         return suite;
     }
@@ -9479,6 +9480,27 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
         params.add(id);
         List res = (List) getServerSession().executeQuery(query, params);
         assertTrue(res.size() == 1);
+    }
+    
+    public void testNullBasicMap(){
+        EntityManager em = createEntityManager();
+        beginTransaction(em);
+        try{
+            Buyer buyer = new Buyer();
+            buyer.setName("Joe");
+            buyer.setDescription("Test Buyer");
+            buyer.setCreditCards(null);
+            em.persist(buyer);
+            em.flush();
+            clearCache();
+            buyer = em.find(Buyer.class, buyer.getId());
+            assertTrue("Buyer was not properly persisted", buyer != null);
+        } catch (NullPointerException ex){
+            fail("NPE caught when persisting a null Map.");
+        } finally {
+            rollbackTransaction(em);
+        }
+        
     }
 }
 
