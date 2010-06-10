@@ -146,13 +146,6 @@ public class AccessPlatform extends org.eclipse.persistence.platform.database.Da
     }
 
     /**
-     *    Append the receiver's field 'NOT NULL' constraint clause to a writer.
-     */
-    public void printFieldNotNullClause(Writer writer) {
-        // Do nothing
-    }
-
-    /**
      * This is used as some databases create the primary key constraint differently, i.e. Access.
      */
     public boolean requiresNamedPrimaryKeyConstraints() {
