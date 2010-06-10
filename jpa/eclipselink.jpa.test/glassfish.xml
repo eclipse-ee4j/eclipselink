@@ -96,19 +96,22 @@
     <target name="copy-eclipselink-and-persistence-latest-jars-to-glassfish3" if="is.v3">
         <delete>
             <fileset dir="${glassfish.home}/modules">
-                <include name="javax.persistence_*.jar"/>
+                <include name="javax.persistence*.jar"/>
                 <include name="org.eclipse.persistence.*.jar"/>
             </fileset>
         </delete>
         <copy todir="${glassfish.home}/modules" overwrite="true" failonerror="false">
             <fileset dir="${eclipselink.jpa.test}/../plugins/">
                 <include name="javax.persistence_2*.jar"/>
+                <exclude name="javax.persistence_2*_preview.jar"/>
             </fileset>
             <fileset dir="${eclipselink.jpa.test}/../../plugins/"
-                includes="org.eclipse.persistence.a*.jar
-                          org.eclipse.persistence.c*.jar
-                          org.eclipse.persistence.o*.jar
-                          org.eclipse.persistence.j*.jar"
+                includes="org.eclipse.persistence.antlr_*.jar
+                          org.eclipse.persistence.asm_*.jar
+                          org.eclipse.persistence.core_*.jar
+                          org.eclipse.persistence.jpa_*.jar
+                          org.eclipse.persistence.jpa.modelgen_*.jar
+                          org.eclipse.persistence.oracle_*.jar"
                 excludes="org.eclipse.persistence.*.source*.jar"/>
         </copy>
     </target>
