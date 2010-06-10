@@ -18,7 +18,7 @@
              <property name="eclipselink.logging.file" value="JPAAdvancedProperties.log"/>
              <property name="eclipselink.session.include.descriptor.queries" value="true"/>
              <property name="eclipselink.profiler" value="NoProfiler"/>
-
+             <!--property name="eclipselink.logging.level" value="FINEST"/-->
         </properties>
     </persistence-unit>
 </persistence>
