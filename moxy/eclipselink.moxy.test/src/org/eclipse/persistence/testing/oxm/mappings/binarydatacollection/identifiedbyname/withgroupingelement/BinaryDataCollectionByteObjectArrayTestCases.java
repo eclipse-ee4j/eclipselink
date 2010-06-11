@@ -65,8 +65,8 @@ public class BinaryDataCollectionByteObjectArrayTestCases extends XMLMappingTest
 	        xmlUnmarshaller.setAttachmentUnmarshaller(new MyAttachmentUnmarshaller());
 	    }
 
-    @Override
-    public void testUnmarshallerHandler() throws Exception {
-    }
+    //@Override
+    //public void testUnmarshallerHandler() throws Exception {
+    //}
 
 }

@@ -244,11 +244,17 @@ public class XMLCompositeDirectCollectionMapping extends AbstractCompositeDirect
      */
     public void initialize(AbstractSession session) throws DescriptorException {
         super.initialize(session);
-        if (this.getField() instanceof XMLField && getValueConverter() instanceof TypeConversionConverter) {
-            TypeConversionConverter converter = (TypeConversionConverter) getValueConverter();
-            this.getField().setType(converter.getObjectClass());
+        if (this.getField() instanceof XMLField) {
+            if(getValueConverter() instanceof TypeConversionConverter) {
+                TypeConversionConverter converter = (TypeConversionConverter) getValueConverter();
+                this.getField().setType(converter.getObjectClass());
+            }
+            String xpathString = ((XMLField)getField()).getXPath();
+            if (this.isAbstractCompositeDirectCollectionMapping() && (xpathString.indexOf(XMLConstants.ATTRIBUTE) == -1) && (!xpathString.endsWith(XMLConstants.TEXT))) {            
+                throw DescriptorException.invalidXpathForXMLDirectMapping(this);
+            }            
         }
-
+        
         ContainerPolicy cp = getContainerPolicy();
         if (cp != null) {
             if (cp.getContainerClass() == null) {
