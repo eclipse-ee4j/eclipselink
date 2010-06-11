@@ -1130,6 +1130,12 @@ public class ClassDescriptor implements Cloneable, Serializable {
         }
         clonedDescriptor.setMappings(mappingsVector);
 
+        for (DatabaseMapping origMapping : this.getPreDeleteMappings()) {
+            DatabaseMapping mapping = (DatabaseMapping)origMapping.clone();
+            mapping.setDescriptor(clonedDescriptor);
+            clonedDescriptor.getPreDeleteMappings().add(mapping);
+        }
+        
         Map queryKeyVector = new HashMap(getQueryKeys().size() + 2);
 
         // All the query keys

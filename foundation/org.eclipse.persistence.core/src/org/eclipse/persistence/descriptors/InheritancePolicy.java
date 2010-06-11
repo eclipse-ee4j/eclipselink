@@ -936,6 +936,7 @@ public class InheritancePolicy implements Serializable, Cloneable {
 
         if (isChildDescriptor()) {
             getDescriptor().setMappings(Helper.concatenateVectors(getParentDescriptor().getMappings(), getDescriptor().getMappings()));
+            getDescriptor().getPreDeleteMappings().addAll(getParentDescriptor().getPreDeleteMappings());
             getDescriptor().setQueryKeys(Helper.concatenateMaps(getParentDescriptor().getQueryKeys(), getDescriptor().getQueryKeys()));
             addFieldsToParent(getDescriptor().getFields());
             // Parents fields must be first for indexing to work.
