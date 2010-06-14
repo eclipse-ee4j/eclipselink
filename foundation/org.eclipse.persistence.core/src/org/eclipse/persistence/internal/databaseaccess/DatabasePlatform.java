@@ -68,6 +68,7 @@ import org.eclipse.persistence.platform.database.OraclePlatform;
 import org.eclipse.persistence.platform.database.SybasePlatform;
 import org.eclipse.persistence.platform.database.converters.StructConverter;
 import org.eclipse.persistence.queries.Call;
+import org.eclipse.persistence.queries.ReportQuery;
 import org.eclipse.persistence.queries.SQLCall;
 import org.eclipse.persistence.queries.StoredProcedureCall;
 import org.eclipse.persistence.queries.ValueReadQuery;
@@ -1522,6 +1523,21 @@ public class DatabasePlatform extends DatasourcePlatform {
      */
     public boolean requiresUniqueConstraintCreationOnTableCreate() {
         return false;
+    }
+    
+    /**
+     * INTERNAL:
+     * Used by Exists queries because they just need to select a single row.
+     * In most databases, we will select one of the primary key fields.
+     * 
+     * On databases where, for some reason we cannot select one of the key fields
+     * this method can be overridden
+     * @param subselect
+     * 
+     * @see SymfowarePlatform
+     */
+    public void retrieveFirstPrimaryKeyOrOne(ReportQuery subselect){
+        subselect.setShouldRetrieveFirstPrimaryKey(true);
     }
     /**
      *  Used for jdbc drivers which do not support autocommit to explicitly rollback a transaction

@@ -33,6 +33,7 @@ import org.eclipse.persistence.internal.helper.ClassConstants;
 import org.eclipse.persistence.internal.helper.Helper;
 import org.eclipse.persistence.internal.helper.NonSynchronizedVector;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
+import org.eclipse.persistence.queries.ReportQuery;
 import org.eclipse.persistence.queries.ValueReadQuery;
 
 /**
@@ -1085,6 +1086,23 @@ public class SymfowarePlatform extends DatabasePlatform {
         return true;
     }
 
+    
+    /**
+     * INTERNAL:
+     * Used by Exists queries because they just need to select a single row.
+     * In most databases, we will select one of the primary key fields.
+     * 
+     * On Syfoware, there are situations where the key cannot be used.
+     * 
+     * See: https://bugs.eclipse.org/bugs/show_bug.cgi?id=303396
+     * @param subselect
+     * 
+     * @see SymfowarePlatform
+     */
+    public void retrieveFirstPrimaryKeyOrOne(ReportQuery subselect){
+        subselect.selectValue1();
+    }
+    
     /**
      * Symfoware does not support the default syntax generated for update-all
      * and delete-all queries as they can include the same table in the FROM
