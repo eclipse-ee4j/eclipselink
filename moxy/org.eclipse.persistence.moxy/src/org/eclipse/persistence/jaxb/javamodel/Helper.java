@@ -265,20 +265,6 @@ public class Helper {
     	return loader;
     }
     
-    public JavaClass getNextMappedSuperClass(JavaClass jClass){ 
-        JavaClass superClass = jClass.getSuperclass();
-        
-        if(superClass == null || isBuiltInJavaType(jClass) || superClass.getRawName().equals("java.lang.Object")){
-            return null;
-        }
-        
-        if(isAnnotationPresent(superClass, XmlTransient.class)){
-        	return getNextMappedSuperClass(superClass);
-        }
-        
-        return superClass; 
-    }
-    
     public Class getClassForJavaClass(JavaClass javaClass){
     	
     	String javaClassName = javaClass.getRawName();

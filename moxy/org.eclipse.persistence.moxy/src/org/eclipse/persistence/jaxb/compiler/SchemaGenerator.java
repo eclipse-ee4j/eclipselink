@@ -260,8 +260,8 @@ public class SchemaGenerator {
             info.setComplexType(type);
         } else {
             ComplexType type = new ComplexType();
-            JavaClass superClass = helper.getNextMappedSuperClass(myClass);
-
+            JavaClass superClass = CompilerHelper.getNextMappedSuperClass(myClass, this.typeInfo, this.helper);
+            //JavaClass superClass = this.helper.getNextMappedSuperClass(myClass);
             // Handle abstract class
             if (myClass.isAbstract()) {
                 type.setAbstractValue(true);

@@ -18,6 +18,7 @@ import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.lang.reflect.WildcardType;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -28,12 +29,15 @@ import javax.xml.bind.JAXBException;
 import javax.xml.bind.Unmarshaller;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlList;
+import javax.xml.bind.annotation.XmlTransient;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
 import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
 import org.eclipse.persistence.jaxb.JAXBContextFactory;
 import org.eclipse.persistence.jaxb.JAXBContext;
 import org.eclipse.persistence.jaxb.TypeMappingInfo;
+import org.eclipse.persistence.jaxb.javamodel.Helper;
+import org.eclipse.persistence.jaxb.javamodel.JavaClass;
 
 /**
  * Helper class for code that needs to be shared between AnnotationsProcessor,
@@ -387,5 +391,19 @@ public class CompilerHelper {
             }
         }
         return xmlBindingsModelContext;
+    }
+    
+    public static JavaClass getNextMappedSuperClass(JavaClass cls, HashMap<String, TypeInfo> typeInfo, Helper helper) {
+        JavaClass superClass = cls.getSuperclass();
+        
+        if(superClass == null || helper.isBuiltInJavaType(cls) || superClass.getRawName().equals("java.lang.Object")){
+            return null;
+        }
+        TypeInfo parentTypeInfo = typeInfo.get(superClass.getQualifiedName());
+        if(parentTypeInfo == null || parentTypeInfo.isTransient()) {
+            return getNextMappedSuperClass(superClass, typeInfo, helper);
+        }
+        
+        return superClass;
     }
 }

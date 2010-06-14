@@ -1736,7 +1736,7 @@ public class MappingsGenerator {
             return;
         }
 
-        JavaClass superClass = helper.getNextMappedSuperClass(jClass);
+        JavaClass superClass = CompilerHelper.getNextMappedSuperClass(jClass, typeInfo, helper);
         if(superClass == null){
             return;
         }
@@ -1794,7 +1794,7 @@ public class MappingsGenerator {
 
         JavaClass nextMappedSuperClass = rootMappedSuperClass;
         while(nextMappedSuperClass != null){
-            nextMappedSuperClass = helper.getNextMappedSuperClass(nextMappedSuperClass);
+            nextMappedSuperClass = CompilerHelper.getNextMappedSuperClass(nextMappedSuperClass, this.typeInfo, helper);
             if(nextMappedSuperClass == null){
                 return rootMappedSuperClass;
             }

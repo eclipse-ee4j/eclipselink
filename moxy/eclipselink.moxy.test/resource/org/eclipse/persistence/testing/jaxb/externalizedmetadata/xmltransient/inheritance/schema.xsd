@@ -7,8 +7,12 @@
       </xsd:sequence>
    </xsd:complexType>
    <xsd:complexType name="employee">
-      <xsd:sequence>
-         <xsd:element name="employeeId" type="xsd:int"/>
-      </xsd:sequence>
+      <xsd:complexContent>
+         <xsd:extension base="person">
+            <xsd:sequence>
+               <xsd:element name="employeeId" type="xsd:int"/>
+            </xsd:sequence>
+         </xsd:extension>
+      </xsd:complexContent>
    </xsd:complexType>
 </xsd:schema>
