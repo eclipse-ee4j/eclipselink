@@ -7,6 +7,10 @@ HK2-Bundle-Name: org.eclipse.persistence:org.eclipse.persistence.asm
 Implementation-Vendor: ${implementation.vendor}
 Bundle-Vendor: ${implementation.vendor}
 Bundle-Version: ${version.string}
+Include-Resource:\
+ ${asm.2.base.dir}/about.html,\
+ ${asm.2.base.dir}/readme.html,\
+ ${asm.2.base.dir}/license.html
 Import-Package: *
 Specification-Version: 
 
