@@ -54,7 +54,9 @@
  *     04/27/2010-2.1 Guy Pelletier 
  *       - 309856: MappedSuperclasses from XML are not being initialized properly
  *     05/19/2010-2.1 Guy Pelletier 
- *       - 313574: Lower case primary key column association does not work when upper casing flag is set to true       
+ *       - 313574: Lower case primary key column association does not work when upper casing flag is set to true
+ *     06/14/2010-2.2 Guy Pelletier 
+ *       - 264417: Table generation is incorrect for JoinTables in AssociationOverrides
  ******************************************************************************/
 package org.eclipse.persistence.internal.jpa.metadata.accessors.mappings;
 
@@ -143,6 +145,7 @@ public abstract class MappingAccessor extends MetadataAccessor {
 
     private ClassAccessor m_classAccessor;
     private DatabaseMapping m_mapping;
+    private DatabaseMapping m_overrideMapping;
     private Map<String, PropertyMetadata> m_properties = new HashMap<String, PropertyMetadata>();
     private String m_attributeType;
     
@@ -559,7 +562,7 @@ public abstract class MappingAccessor extends MetadataAccessor {
      * Return the mapping that this accessor is associated to.
      */
     public DatabaseMapping getMapping(){
-        return m_mapping;
+        return (m_overrideMapping == null) ? m_mapping : m_overrideMapping;
     }
     
     /**
@@ -681,7 +684,7 @@ public abstract class MappingAccessor extends MetadataAccessor {
      * Return the mapping accessors associated with the reference descriptor.
      */
     public Collection<MappingAccessor> getReferenceAccessors() {
-        return getReferenceDescriptor().getAccessors();
+        return getReferenceDescriptor().getMappingAccessors();
     }
     
     /**
@@ -1185,7 +1188,7 @@ public abstract class MappingAccessor extends MetadataAccessor {
             // The getAccessorFor call will take care of any sub dot notation 
             // attribute names when looking for the mapping. It will traverse 
             // the embeddable chain. 
-            MappingAccessor mappingAccessor = embeddableDescriptor.getAccessorFor(attributeName);
+            MappingAccessor mappingAccessor = embeddableDescriptor.getMappingAccessor(attributeName);
             
             if (mappingAccessor == null) {
                 throw ValidationException.embeddableAssociationOverrideNotFound(embeddableDescriptor.getJavaClass(), attributeName, getJavaClass(), getAttributeName());
@@ -1217,7 +1220,7 @@ public abstract class MappingAccessor extends MetadataAccessor {
             // The getMappingForAttributeName call will take care of any sub dot 
             // notation attribute names when looking for the mapping. It will
             // traverse the embeddable chain. 
-            MappingAccessor mappingAccessor = embeddableDescriptor.getAccessorFor(attributeName);
+            MappingAccessor mappingAccessor = embeddableDescriptor.getMappingAccessor(attributeName);
                 
             if (mappingAccessor == null) {
                 throw ValidationException.embeddableAttributeOverrideNotFound(embeddableDescriptor.getJavaClass(), attributeName, getJavaClass(), getAttributeName());
@@ -1770,6 +1773,18 @@ public abstract class MappingAccessor extends MetadataAccessor {
         
         // Keep a reference back to this mapping for quick look up.
         m_mapping = mapping;  
+    }
+    
+    /**
+     * INTERNAL:
+     * An override mapping is created when an association override is specified
+     * to a relationship accessor on an embeddable class. For any non-owning 
+     * relationship accessor referring to this accessor will need its override
+     * mapping and not the original mapping from the embeddable so that it can
+     * populate the right metadata.
+     */
+    protected void setOverrideMapping(DatabaseMapping mapping) {
+        m_overrideMapping = mapping;
     }
     
     /**

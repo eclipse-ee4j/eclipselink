@@ -44,6 +44,8 @@
  *       - 315195: Add new property to avoid reading XML during the canonical model generation
  *     06/09/2010-2.0.3 Guy Pelletier 
  *       - 313401: shared-cache-mode defaults to NONE when the element value is unrecognized
+ *     06/14/2010-2.2 Guy Pelletier 
+ *       - 264417: Table generation is incorrect for JoinTables in AssociationOverrides
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata.accessors.classes;
 
@@ -610,7 +612,7 @@ public class MappedSuperclassAccessor extends ClassAccessor {
         // Before gathering our accessors, clear any accessors previously 
         // gathered. When generating the canonical model the accessors need 
         // to be re-gathered in each compile round.
-        getDescriptor().clearAccessors();
+        getDescriptor().clearMappingAccessors();
         
         // Add the accessors from this mapped superclass.
         addAccessors();
@@ -1130,7 +1132,7 @@ public class MappedSuperclassAccessor extends ClassAccessor {
      */
     public void processMetamodelDescriptor() {        
         for (MappedSuperclassAccessor mappedSuperclass : getProject().getMetamodelMappedSuperclasses()) {
-            mappedSuperclass.processAccessors();
+            mappedSuperclass.processMappingAccessors();
         }
     }
     

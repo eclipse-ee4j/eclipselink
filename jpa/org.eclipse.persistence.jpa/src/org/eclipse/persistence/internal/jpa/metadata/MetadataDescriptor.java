@@ -64,6 +64,8 @@
  *       - 307547:  Exception in order by clause after migrating to eclipselink 1.2 release
  *     06/01/2010-2.1 Guy Pelletier 
  *       - 315195: Add new property to avoid reading XML during the canonical model generation
+ *     06/14/2010-2.2 Guy Pelletier 
+ *       - 264417: Table generation is incorrect for JoinTables in AssociationOverrides
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata;
 
@@ -88,14 +90,11 @@ import org.eclipse.persistence.internal.jpa.CMP3Policy;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.classes.ClassAccessor;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.classes.EmbeddableAccessor;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.classes.EntityAccessor;
-import org.eclipse.persistence.internal.jpa.metadata.accessors.mappings.CollectionAccessor;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.mappings.EmbeddedIdAccessor;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.mappings.IdAccessor;
-import org.eclipse.persistence.internal.jpa.metadata.accessors.mappings.ManyToManyAccessor;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.mappings.MappedKeyMapAccessor;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.mappings.MappingAccessor;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.mappings.ObjectAccessor;
-import org.eclipse.persistence.internal.jpa.metadata.accessors.mappings.OneToOneAccessor;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.mappings.RelationshipAccessor;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataClass;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.MetadataAccessor;
@@ -156,8 +155,8 @@ public class MetadataDescriptor {
     
     private Map<String, String> m_pkClassIDs;
     private Map<String, String> m_genericTypes;
-    private Map<String, MappingAccessor> m_accessors;
     private Map<String, IdAccessor> m_idAccessors;
+    private Map<String, MappingAccessor> m_mappingAccessors;
     private Map<String, MappingAccessor> m_primaryKeyAccessors;
     private Map<String, PropertyMetadata> m_properties;
     private Map<String, String> m_pkJoinColumnAssociations;
@@ -214,7 +213,7 @@ public class MetadataDescriptor {
         
         m_pkClassIDs = new HashMap<String, String>();
         m_genericTypes = new HashMap<String, String>();
-        m_accessors = new HashMap<String, MappingAccessor>();
+        m_mappingAccessors = new HashMap<String, MappingAccessor>();
         m_idAccessors = new HashMap<String, IdAccessor>();
         m_primaryKeyAccessors = new HashMap<String, MappingAccessor>();
         m_properties = new HashMap<String, PropertyMetadata>();
@@ -238,42 +237,6 @@ public class MetadataDescriptor {
     public MetadataDescriptor(MetadataClass javaClass, ClassAccessor classAccessor) {
         this(javaClass);
         m_classAccessor = classAccessor;
-    }
-    
-    /**
-     * INTERNAL:
-     * We must check for null since buildAccessor from ClassAccessor may return
-     * a null if ignore default mappings is set to true.</p>
-     * If the accessor is an IdAccessor we store it in a separate map for use
-     * during MappedSuperclass processing.
-     */
-    public void addAccessor(MappingAccessor accessor) {
-        // Don't bother adding a relationship accessor with a type of
-        // ValueHolderInterface. This may be very legacy and no longer needed
-        // but for the canonical model processing it's much cleaner if this
-        // accessor does not show up in the accessors list. NOTE: processing
-        // avoidance of this accessor was previously in
-        // RelationshipAccessor.processRelationship().
-        if (accessor.isRelationship() && ((RelationshipAccessor) accessor).isValueHolderInterface()) {
-            return;
-        }
-        
-        m_accessors.put(accessor.getAttributeName(), accessor);
-        
-        // Store IdAccessors in a separate map for use by hasIdAccessor()
-        if (accessor.isId()) {
-            m_idAccessors.put(accessor.getAttributeName(), (IdAccessor) accessor);
-        }
-        
-        // Check if we already processed an EmbeddedId for this Entity or MappedSuperclass.
-        if (accessor.isEmbeddedId() && hasEmbeddedId()) {
-            throw ValidationException.multipleEmbeddedIdAnnotationsFound(getJavaClass(), accessor.getAttributeName(), this.getEmbeddedIdAttributeName());
-        } 
-        
-        // 300051: store the single EmbeddedIdAccessor for use by hasEmbeddedId in MetadataProject.addMetamodelMappedSuperclass()
-        if (accessor.isEmbeddedId()) {
-            setEmbeddedIdAccessor((EmbeddedIdAccessor)accessor); 
-        }
     }
     
     /**
@@ -318,6 +281,38 @@ public class MetadataDescriptor {
         m_descriptor.getEventManager().addinternalListener(validationListener);
     }
 
+    /**
+     * INTERNAL:
+     * If the accessor is an IdAccessor we store it in a separate map for use
+     * during MappedSuperclass processing.
+     */
+    public void addMappingAccessor(MappingAccessor accessor) {
+        // Don't bother adding a relationship accessor with a type of
+        // ValueHolderInterface. This may be very legacy and no longer needed
+        // but for the canonical model processing it's much cleaner if this
+        // accessor does not show up in the mapping accessors list.
+        if (accessor.isRelationship() && ((RelationshipAccessor) accessor).isValueHolderInterface()) {
+            return;
+        }
+        
+        m_mappingAccessors.put(accessor.getAttributeName(), accessor);
+        
+        // Store IdAccessors in a separate map for use by hasIdAccessor()
+        if (accessor.isId()) {
+            m_idAccessors.put(accessor.getAttributeName(), (IdAccessor) accessor);
+        }
+        
+        // Check if we already processed an EmbeddedId for this Entity or MappedSuperclass.
+        if (accessor.isEmbeddedId() && hasEmbeddedId()) {
+            throw ValidationException.multipleEmbeddedIdAnnotationsFound(getJavaClass(), accessor.getAttributeName(), this.getEmbeddedIdAttributeName());
+        } 
+        
+        // 300051: store the single EmbeddedIdAccessor for use by hasEmbeddedId in MetadataProject.addMetamodelMappedSuperclass()
+        if (accessor.isEmbeddedId()) {
+            setEmbeddedIdAccessor((EmbeddedIdAccessor)accessor); 
+        }
+    }
+    
     /**
      * INTERNAL:
      */
@@ -399,23 +394,21 @@ public class MetadataDescriptor {
       * INTERNAL:
       * Store relationship accessors for later processing and quick look up.
       */
-    public void addRelationshipAccessor(MappingAccessor accessor) {
+    public void addRelationshipAccessor(RelationshipAccessor accessor) {
         getProject().addRelationshipAccessor(accessor);
         
         // Store bidirectional ManyToMany relationships so that we may look at 
         // attribute names when defaulting join columns.
         if (accessor.isManyToMany()) {
-            String mappedBy = ((ManyToManyAccessor) accessor).getMappedBy();
-            
-            if (mappedBy != null && ! mappedBy.equals("")) {
-                String referenceClassName = ((ManyToManyAccessor) accessor).getReferenceClassName();
+            if (accessor.hasMappedBy()) {
+                String referenceClassName = accessor.getReferenceClassName();
                 
                 // Initialize the map of bi-directional mappings for this class.
                 if (! m_biDirectionalManyToManyAccessors.containsKey(referenceClassName)) {
                     m_biDirectionalManyToManyAccessors.put(referenceClassName, new HashMap<String, MetadataAccessor>());
                 }
             
-                m_biDirectionalManyToManyAccessors.get(referenceClassName).put(mappedBy, accessor);
+                m_biDirectionalManyToManyAccessors.get(referenceClassName).put(accessor.getMappedBy(), accessor);
             }
         }
     }
@@ -437,8 +430,8 @@ public class MetadataDescriptor {
      * Anything that is set in the addAccessor(MappingAccessor) method should 
      * be cleared here.
      */
-    public void clearAccessors() {
-        m_accessors.clear();
+    public void clearMappingAccessors() {
+        m_mappingAccessors.clear();
         m_embeddedIdAccessor = null;
     }
     
@@ -447,82 +440,6 @@ public class MetadataDescriptor {
      */
     public boolean excludeSuperclassListeners() {
         return m_descriptor.getEventManager().excludeSuperclassListeners();
-    }
-    
-    /**
-     * INTERNAL:
-     * This method will first check for an accessor with name equal to field or 
-     * property name. If no accessor is found than it assumes the field or 
-     * property name passed in may be a method name and converts it to its 
-     * corresponding property name and looks for the accessor again. If still no 
-     * accessor is found and this descriptor represents an inheritance subclass, 
-     * then traverse up the chain to look for that accessor. Null is returned 
-     * otherwise.
-     */
-    public MappingAccessor getAccessorFor(String fieldOrPropertyName) {
-        return getAccessorFor(fieldOrPropertyName, true);
-    }
-    
-    /**
-     * INTERNAL:
-     * This method will first check for an accessor with name equal to field or 
-     * property name. If no accessor is found and the checkForMethodName flag is
-     * set to true then we'll attempt to convert a potential method name to its 
-     * corresponding property name and looks for the accessor again. If still no 
-     * accessor is found and this descriptor represents an inheritance subclass, 
-     * then traverse up the chain to look for that accessor. Null is returned 
-     * otherwise.
-     */
-    protected MappingAccessor getAccessorFor(String fieldOrPropertyName, boolean checkForMethodName) {
-        MappingAccessor accessor = m_accessors.get(fieldOrPropertyName);
-        
-        if (accessor == null) {
-            // Perhaps we have a method name. This is value add, and maybe we
-            // really shouldn't do this but it covers the following case:
-            // <order-by>age, getGender DESC</order-by>, where the user
-            // specifies a method name.
-            if (checkForMethodName) {
-                accessor = m_accessors.get(Helper.getAttributeNameFromMethodName(fieldOrPropertyName));
-            }
-           
-            // If still no accessor and we are an inheritance subclass, check 
-            // our parent descriptor. Unless we are within a table per class 
-            // strategy in which case, if the mapping doesn't exist within our
-            // accessor list, we don't want to deal with it.
-            if (accessor == null && isInheritanceSubclass() && ! usesTablePerClassInheritanceStrategy()) {
-                accessor = getInheritanceParentDescriptor().getAccessorFor(fieldOrPropertyName, checkForMethodName);
-            }
-        }
-        
-        if (accessor == null) {
-            // We didn't find an accessor on our descriptor (or a parent descriptor), 
-            // check our aggregate descriptors now.
-            for (MetadataDescriptor embeddableDescriptor : m_embeddableDescriptors) {
-                // If the attribute name employs the dot notation, rip off the first 
-                // bit (up to the first dot and keep burying down the embeddables)
-                String subAttributeName = new String(fieldOrPropertyName);
-                if (subAttributeName.contains(".")) {
-                    subAttributeName = subAttributeName.substring(fieldOrPropertyName.indexOf(".") + 1);
-                }
-            
-                accessor = embeddableDescriptor.getAccessorFor(subAttributeName, checkForMethodName);
-            
-                if (accessor != null) {
-                    // Found one, stop looking ...
-                    return accessor;
-                }
-            }
-        }
-        
-        return accessor;
-    }
-    
-    /**
-     * INTERNAL:
-     * Return the collection of mapping accessors for this descriptor.
-     */
-    public Collection<MappingAccessor> getAccessors() {
-        return m_accessors.values();
     }
     
     /**
@@ -730,7 +647,7 @@ public class MetadataDescriptor {
                     m_idOrderByAttributeNames = getInheritanceRootDescriptor().getIdAttributeNames();
                 } else {
                     // We must have a composite primary key as a result of an embedded id.
-                    m_idOrderByAttributeNames = getAccessorFor(getEmbeddedIdAttributeName()).getReferenceDescriptor().getOrderByAttributeNames();
+                    m_idOrderByAttributeNames = getMappingAccessor(getEmbeddedIdAttributeName()).getReferenceDescriptor().getOrderByAttributeNames();
                 } 
             } else {
                 m_idOrderByAttributeNames = m_idAttributeNames;
@@ -809,56 +726,86 @@ public class MetadataDescriptor {
     
     /**
      * INTERNAL:
+     * This method will first check for an accessor with name equal to field or 
+     * property name. If no accessor is found than it assumes the field or 
+     * property name passed in may be a method name and converts it to its 
+     * corresponding property name and looks for the accessor again. If still no 
+     * accessor is found and this descriptor represents an inheritance subclass, 
+     * then traverse up the chain to look for that accessor. Null is returned 
+     * otherwise.
      */
-    public DatabaseMapping getMappingForAttributeName(String attributeName) {
-        return getMappingForAttributeName(attributeName, null);
-    } 
+    public MappingAccessor getMappingAccessor(String fieldOrPropertyName) {
+        return getMappingAccessor(fieldOrPropertyName, true);
+    }
     
     /**
-     * INTERNAL: 
-     * Non-owning mappings that need to look up the owning mapping, should call 
-     * this method with their respective accessor to check for circular mappedBy 
-     * references. If the referencingAccessor is null, no check will be made.
+     * INTERNAL:
+     * This method will first check for an accessor with name equal to field or 
+     * property name. If no accessor is found and the checkForMethodName flag is
+     * set to true then we'll attempt to convert a potential method name to its 
+     * corresponding property name and looks for the accessor again. If still no 
+     * accessor is found and this descriptor represents an inheritance subclass, 
+     * then traverse up the chain to look for that accessor. Null is returned 
+     * otherwise.
      */
-    public DatabaseMapping getMappingForAttributeName(String attributeName, MetadataAccessor referencingAccessor) {
-        // Get accessor will traverse the parent descriptors of an inheritance
-        // hierarchy.
-        MappingAccessor accessor = getAccessorFor(attributeName);
+    protected MappingAccessor getMappingAccessor(String fieldOrPropertyName, boolean checkForMethodName) {
+        MappingAccessor accessor = m_mappingAccessors.get(fieldOrPropertyName);
         
-        if (accessor != null) {
-            // If the accessor is a relationship accessor than it may or may
-            // not have been processed yet. Fast track its processing if it
-            // needs to be. The process call will do nothing if it has already
-            // been processed.
-            if (accessor.isRelationship()) {
-                RelationshipAccessor relationshipAccessor = (RelationshipAccessor) accessor;
-                
-                // Check that we don't have circular mappedBy values which 
-                // will cause an infinite loop.
-                if (referencingAccessor != null && (relationshipAccessor.isOneToOne() || relationshipAccessor.isCollectionAccessor())) {
-                    String mappedBy = null;
-                    
-                    if (relationshipAccessor.isOneToOne()) {
-                        mappedBy = ((OneToOneAccessor) relationshipAccessor).getMappedBy();
-                    } else {
-                        mappedBy = ((CollectionAccessor) relationshipAccessor).getMappedBy();
-                    }
-                    
-                    if (mappedBy != null && mappedBy.equals(referencingAccessor.getAttributeName())) {
-                        throw ValidationException.circularMappedByReferences(referencingAccessor.getJavaClass(), referencingAccessor.getAttributeName(), getJavaClass(), attributeName);
-                    }
-                }
-                
-                relationshipAccessor.processRelationship();
+        if (accessor == null) {
+            // Perhaps we have a method name. This is value add, and maybe we
+            // really shouldn't do this but it covers the following case:
+            // <order-by>age, getGender DESC</order-by>, where the user
+            // specifies a method name.
+            if (checkForMethodName) {
+                accessor = m_mappingAccessors.get(Helper.getAttributeNameFromMethodName(fieldOrPropertyName));
             }
-            
-            // Return the mapping stored on the accessor.
-            return accessor.getMapping();
+           
+            // If still no accessor and we are an inheritance subclass, check 
+            // our parent descriptor. Unless we are within a table per class 
+            // strategy in which case, if the mapping doesn't exist within our
+            // accessor list, we don't want to deal with it.
+            if (accessor == null && isInheritanceSubclass() && ! usesTablePerClassInheritanceStrategy()) {
+                accessor = getInheritanceParentDescriptor().getMappingAccessor(fieldOrPropertyName, checkForMethodName);
+            }
         }
         
-        // Found nothing ... return null.
-        return null;
-    } 
+        if (accessor == null) {
+            // We didn't find an accessor on our descriptor (or a parent descriptor), 
+            // check our aggregate descriptors now.
+            for (MetadataDescriptor embeddableDescriptor : m_embeddableDescriptors) {
+                // If the attribute name employs the dot notation, rip off the first 
+                // bit (up to the first dot and keep burying down the embeddables)
+                String subAttributeName = new String(fieldOrPropertyName);
+                if (subAttributeName.contains(".")) {
+                    subAttributeName = subAttributeName.substring(fieldOrPropertyName.indexOf(".") + 1);
+                }
+            
+                accessor = embeddableDescriptor.getMappingAccessor(subAttributeName, checkForMethodName);
+            
+                if (accessor != null) {
+                    // Found one, stop looking ...
+                    return accessor;
+                }
+            }
+        }
+        
+        return accessor;
+    }
+    
+    /**
+     * INTERNAL:
+     * Return the collection of mapping accessors for this descriptor.
+     */
+    public Collection<MappingAccessor> getMappingAccessors() {
+        return m_mappingAccessors.values();
+    }
+    
+    /**
+     * INTERNAL:
+     */
+    public DatabaseMapping getMappingForAttributeName(String attributeName) {
+        return getMappingAccessor(attributeName).getMapping();
+    }  
     
     /**
      * INTERNAL:
@@ -1035,15 +982,6 @@ public class MetadataDescriptor {
     
     /**
      * INTERNAL:
-     * Returns true if we already have (processed) an accessor for the given
-     * attribute name.
-     */
-    public boolean hasAccessorFor(String attributeName) {
-    	return getAccessorFor(attributeName, false) != null;
-    }
-    
-    /**
-     * INTERNAL:
      */
     public boolean hasAssociationOverrideFor(String attributeName) {
         return m_associationOverrides.containsKey(attributeName);
@@ -1171,6 +1109,15 @@ public class MetadataDescriptor {
     
     /**
      * INTERNAL:
+     * Returns true if we already have (processed) an accessor for the given
+     * attribute name.
+     */
+    public boolean hasMappingAccessor(String attributeName) {
+        return getMappingAccessor(attributeName, false) != null;
+    }
+    
+    /**
+     * INTERNAL:
      */
     public boolean hasMappingForAttributeName(String attributeName) {
         return m_descriptor.getMappingForAttributeName(attributeName) != null;
@@ -1288,13 +1235,13 @@ public class MetadataDescriptor {
     
     /**
      * INTERNAL:
-     * Process this descriptors accessors. Some accessors will not be processed
-     * right away, instead stored on the project for processing in a later 
-     * stage. This method can not and must not be called beyond MetadataProject 
-     * stage 2 processing.
+     * Process this descriptors mapping accessors. Some accessors will not be 
+     * processed right away, instead stored on the project for processing in a 
+     * later  stage. This method can not and must not be called beyond 
+     * MetadataProject stage 2 processing.
      */
-    public void processAccessors() {
-        for (MappingAccessor accessor : m_accessors.values()) {
+    public void processMappingAccessors() {
+        for (MappingAccessor accessor : m_mappingAccessors.values()) {
             if (! accessor.isProcessed()) {
                 // If we a mapped key map accessor with an embeddable as the 
                 // key, process that embeddable accessor now.
@@ -1352,7 +1299,7 @@ public class MetadataDescriptor {
                         m_derivedIdAccessors.add((ObjectAccessor) accessor);
                         getProject().addAccessorWithDerivedId(m_classAccessor);
                     } else {
-                        addRelationshipAccessor(accessor);
+                        addRelationshipAccessor((RelationshipAccessor) accessor);
                     }
                 } else {
                     accessor.process();

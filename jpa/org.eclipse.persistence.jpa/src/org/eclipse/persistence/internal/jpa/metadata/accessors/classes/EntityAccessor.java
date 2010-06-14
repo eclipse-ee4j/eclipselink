@@ -61,6 +61,8 @@
  *       - 315195: Add new property to avoid reading XML during the canonical model generation
  *     06/09/2010-2.0.3 Guy Pelletier 
  *       - 313401: shared-cache-mode defaults to NONE when the element value is unrecognized
+ *     06/14/2010-2.2 Guy Pelletier 
+ *       - 264417: Table generation is incorrect for JoinTables in AssociationOverrides
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata.accessors.classes;
 
@@ -649,7 +651,7 @@ public class EntityAccessor extends MappedSuperclassAccessor {
         // Before gathering our accessors, clear any accessors previously 
         // gathered. When generating the canonical model the accessors need 
         // to be re-gathered in each compile round.
-        getDescriptor().clearAccessors();
+        getDescriptor().clearMappingAccessors();
         
         // Finally, add our immediate accessors and converters.
         addAccessors();
@@ -692,9 +694,9 @@ public class EntityAccessor extends MappedSuperclassAccessor {
             mappedSuperclass.process();
         }
         
-        // Finally, process the accessors on this entity (and all those from
-        // super classes that apply to us).
-        processAccessors();
+        // Finally, process the mapping accessors on this entity (and all those 
+        // from super classes that apply to us).
+        processMappingAccessors();
     }
     
     /**
@@ -876,10 +878,10 @@ public class EntityAccessor extends MappedSuperclassAccessor {
      * @see InheritanceMetadata process()
      */
     @Override
-    public void processAccessors() {
-        // Process our accessors, and then perform the necessary validation
-        // checks for this entity.
-        super.processAccessors();
+    public void processMappingAccessors() {
+        // Process our mapping accessors, and then perform the necessary 
+        // validation checks for this entity.
+        super.processMappingAccessors();
 
         // Validate the optimistic locking setting.
         validateOptimisticLocking();

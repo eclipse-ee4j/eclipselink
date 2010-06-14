@@ -28,6 +28,9 @@
         <class>org.eclipse.persistence.testing.models.jpa.ddlgeneration.PropertyInfo</class>
         <class>org.eclipse.persistence.testing.models.jpa.ddlgeneration.Address</class>
         <class>org.eclipse.persistence.testing.models.jpa.ddlgeneration.Zipcode</class>
+        <class>org.eclipse.persistence.testing.models.jpa.ddlgeneration.Employee</class>
+        <class>org.eclipse.persistence.testing.models.jpa.ddlgeneration.ContactInfo</class>
+        <class>org.eclipse.persistence.testing.models.jpa.ddlgeneration.PhoneNumber</class>
         <properties>
             <property name="eclipselink.session=name" value="mergeinherited-session"/>
             <property name="eclipselink.jdbc.read-connections.shared" value="true"/>

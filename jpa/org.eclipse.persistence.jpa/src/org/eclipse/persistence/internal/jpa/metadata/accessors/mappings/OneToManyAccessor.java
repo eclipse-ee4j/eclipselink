@@ -27,6 +27,8 @@
  *       - 266912: JPA 2.0 Metamodel support for 1:m as 1:1 in DI 96
  *     04/27/2010-2.1 Guy Pelletier 
  *       - 309856: MappedSuperclasses from XML are not being initialized properly
+ *     06/14/2010-2.2 Guy Pelletier 
+ *       - 264417: Table generation is incorrect for JoinTables in AssociationOverrides
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata.accessors.mappings;
 
@@ -148,6 +150,11 @@ public class OneToManyAccessor extends CollectionAccessor {
             // The override mapping will have the correct source, sourceRelation, 
             // target and targetRelation keys. Along with the correct relation table.
             embeddableMapping.addOverrideUnidirectionalOneToManyMapping(overrideMapping);
+            
+            // Set the override mapping which will have the correct metadata
+            // set. This is the metadata any non-owning relationship accessor
+            // referring to this accessor will need.
+            setOverrideMapping(overrideMapping);
         } else {
             super.processAssociationOverride(associationOverride, embeddableMapping, owningDescriptor);
         }
@@ -177,7 +184,7 @@ public class OneToManyAccessor extends CollectionAccessor {
      */
     protected void processOneToManyMapping() {
        // Non-owning side, process the foreign keys from the owner.
-       DatabaseMapping owningMapping = getOwningMapping(getMappedBy());
+       DatabaseMapping owningMapping = getOwningMappingAccessor();
        if (owningMapping.isOneToOneMapping()){ 
            OneToOneMapping ownerMapping = (OneToOneMapping) owningMapping;
            

@@ -41,6 +41,8 @@
  *       - 267217: Add Named Access Type to EclipseLink-ORM
  *     04/27/2010-2.1 Guy Pelletier 
  *       - 309856: MappedSuperclasses from XML are not being initialized properly
+ *     06/14/2010-2.2 Guy Pelletier 
+ *       - 264417: Table generation is incorrect for JoinTables in AssociationOverrides
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata.accessors.mappings;
 
@@ -118,7 +120,6 @@ public abstract class CollectionAccessor extends RelationshipAccessor implements
     
     private String m_mapKeyConvert;
     private String m_mapKeyClassName;
-    private String m_mappedBy;
     private String m_orderBy;
     
     private TemporalMetadata m_mapKeyTemporal;
@@ -137,7 +138,7 @@ public abstract class CollectionAccessor extends RelationshipAccessor implements
     protected CollectionAccessor(MetadataAnnotation annotation, MetadataAccessibleObject accessibleObject, ClassAccessor classAccessor) {
         super(annotation, accessibleObject, classAccessor);
         
-        m_mappedBy = (annotation == null) ? "" : (String) annotation.getAttribute("mappedBy");
+        setMappedBy((annotation == null) ? "" : (String) annotation.getAttribute("mappedBy"));
         
         // Set the order if one is present.
         if (isAnnotationPresent(OrderBy.class)) {
@@ -297,10 +298,6 @@ public abstract class CollectionAccessor extends RelationshipAccessor implements
                 return false;
             }
             
-            if (! valuesMatch(m_mappedBy, collectionAccessor.getMappedBy())) {
-                return false;
-            }
-            
             if (! valuesMatch(m_orderBy, collectionAccessor.getOrderBy())) {
                 return false;
             }
@@ -431,14 +428,6 @@ public abstract class CollectionAccessor extends RelationshipAccessor implements
      * INTERNAL:
      * Used for OX mapping.
      */
-    public String getMappedBy() {
-        return m_mappedBy;
-    }
-    
-    /**
-     * INTERNAL:
-     * Used for OX mapping.
-     */
     public String getOrderBy() {
         return m_orderBy; 
     }
@@ -532,14 +521,6 @@ public abstract class CollectionAccessor extends RelationshipAccessor implements
     
     /**
      * INTERNAL:
-     * Return true if the mapped by has been specified.
-     */
-    protected boolean hasMappedBy() {
-        return m_mappedBy != null && ! m_mappedBy.equals("");
-    }
-    
-    /**
-     * INTERNAL:
      * Return true if this accessor has temporal metadata.
      */
     @Override
@@ -584,6 +565,8 @@ public abstract class CollectionAccessor extends RelationshipAccessor implements
      */
     @Override
     public void process() {
+        super.process();
+        
         if (! getAccessibleObject().isSupportedToManyCollectionClass(getRawClass())) {
             throw ValidationException.invalidCollectionTypeForRelationship(getJavaClass(), getRawClass(), getAttributeName());
         }
@@ -657,6 +640,11 @@ public abstract class CollectionAccessor extends RelationshipAccessor implements
             // The override mapping will have the correct source, sourceRelation, 
             // target and targetRelation keys. Along with the correct relation table.
             embeddableMapping.addOverrideManyToManyMapping(overrideMapping);
+            
+            // Set the override mapping which will have the correct metadata
+            // set. This is the metadata any non-owning relationship accessor
+            // referring to this accessor will need.
+            setOverrideMapping(overrideMapping);
         } else {
             super.processAssociationOverride(associationOverride, embeddableMapping, owningDescriptor);
         }
@@ -708,7 +696,7 @@ public abstract class CollectionAccessor extends RelationshipAccessor implements
                 while (commaTokenizer.hasMoreTokens()) {
                     StringTokenizer spaceTokenizer = new StringTokenizer(commaTokenizer.nextToken());
                     String propertyOrFieldName = spaceTokenizer.nextToken();
-                    MappingAccessor referenceAccessor = referenceDescriptor.getAccessorFor(propertyOrFieldName);
+                    MappingAccessor referenceAccessor = referenceDescriptor.getMappingAccessor(propertyOrFieldName);
                 
                     if (referenceAccessor == null) {
                         throw ValidationException.invalidOrderByValue(propertyOrFieldName, referenceDescriptor.getJavaClass(), getAccessibleObjectName(), getJavaClass());
@@ -816,14 +804,6 @@ public abstract class CollectionAccessor extends RelationshipAccessor implements
      */
     public void setMapKeyTemporal(TemporalMetadata mapKeyTemporal) {
         m_mapKeyTemporal = mapKeyTemporal;
-    }
-    
-    /**
-     * INTERNAL:
-     * Used for OX mapping.
-     */
-    public void setMappedBy(String mappedBy) {
-        m_mappedBy = mappedBy;
     }
     
     /**

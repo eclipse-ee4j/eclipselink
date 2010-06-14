@@ -17,6 +17,8 @@
  *     07/17/2009 - tware -  added tests for DDL generation of maps
  *     01/22/2010-2.0.1 Guy Pelletier 
  *       - 294361: incorrect generated table for element collection attribute overrides
+ *     06/14/2010-2.2 Guy Pelletier 
+ *       - 264417: Table generation is incorrect for JoinTables in AssociationOverrides
  ******************************************************************************/   
 package org.eclipse.persistence.testing.tests.jpa.ddlgeneration;
 
@@ -945,6 +947,39 @@ public class DDLGenerationJUnitTestSuite extends JUnitTestCase {
             assertFalse("Collection is empty", inventor.getPatentCollection().getPatents().isEmpty());
             assertTrue("Target is incorrect", inventor.getPatentCollection().getPatents().get(0).getId() == 1);
             rollbackTransaction(em);
+        } finally {
+            closeEntityManager(em);
+        }
+    }
+    
+    /**
+     * Fix for bug 264417: Table generation is incorrect for JoinTables in 
+     * AssociationOverrides. Problem is that non-owning mappings were processed 
+     * before the association overrides in turn causing the multiple table
+     * generation (owning side - correct, non-owning side - incorrect)
+     * This test was added as well to test the fix, also manual inspection of 
+     * the DDL was done.
+     */
+    public void testAssociationOverrideToEmbeddedManyToMany(){
+        EntityManager em = createEntityManager(DDL_PU);
+        
+        try {
+            beginTransaction(em);
+            
+            Employee employee = new Employee();
+            PhoneNumber phoneNumber = new PhoneNumber();
+            employee.addPhoneNumber(phoneNumber);
+            em.persist(employee);
+            
+            getServerSession(DDL_PU).setLogLevel(0);
+            commitTransaction(em);
+            
+            // Force the read to hit the database and make sure the phone number is read back.
+            clearCache(DDL_PU);
+            em.clear();
+            assertNotNull("Unable to read back the phone number", em.find(PhoneNumber.class, phoneNumber.getNumber()));
+        } catch (Exception e) {
+            fail("An error occurred: " + e.getMessage());
         } finally {
             closeEntityManager(em);
         }

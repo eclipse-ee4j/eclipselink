@@ -23,6 +23,8 @@
  *       - 282553: JPA 2.0 JoinTable support for OneToOne and ManyToOne
  *     04/27/2010-2.1 Guy Pelletier 
  *       - 309856: MappedSuperclasses from XML are not being initialized properly
+ *     06/14/2010-2.2 Guy Pelletier 
+ *       - 264417: Table generation is incorrect for JoinTables in AssociationOverrides
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata.accessors.mappings;
 
@@ -50,8 +52,6 @@ import org.eclipse.persistence.mappings.RelationTableMechanism;
  */
 public class OneToOneAccessor extends ObjectAccessor {
     // Note: Any metadata mapped from XML to this class must be compared in the equals method.
-
-    private String m_mappedBy;
     
     /**
      * INTERNAL:
@@ -69,22 +69,9 @@ public class OneToOneAccessor extends ObjectAccessor {
         
         // A one to one mapping can default.
         if (oneToOne != null) {
-            m_mappedBy = (String) oneToOne.getAttribute("mappedBy");
+            setMappedBy((String) oneToOne.getAttribute("mappedBy"));
             setOrphanRemoval((Boolean) oneToOne.getAttribute("orphanRemoval"));
         }
-    }
-    
-    /**
-     * INTERNAL:
-     */
-    @Override
-    public boolean equals(Object objectToCompare) {
-        if (super.equals(objectToCompare) && objectToCompare instanceof OneToOneAccessor) {
-            OneToOneAccessor oneToOneAccessor = (OneToOneAccessor) objectToCompare;
-            return valuesMatch(m_mappedBy, oneToOneAccessor.getMappedBy());
-        }
-        
-        return false;
     }
     
     /**
@@ -93,22 +80,6 @@ public class OneToOneAccessor extends ObjectAccessor {
      */
     protected String getLoggingContext() {
         return MetadataLogger.ONE_TO_ONE_MAPPING_REFERENCE_CLASS;
-    }
-    
-    /**
-     * INTERNAL:
-     * Used for OX mapping.
-     */
-    public String getMappedBy() {
-        return m_mappedBy;
-    }
-    
-    /**
-     * INTERNAL:
-     * Return true is the mapped by has been specified.
-     */
-    protected boolean hasMappedBy() {
-        return m_mappedBy != null && ! m_mappedBy.equals("");
     }
     
     /**
@@ -125,13 +96,15 @@ public class OneToOneAccessor extends ObjectAccessor {
      */
     @Override
     public void process() {
+        super.process();
+        
         // Initialize our mapping now with what we found.
         OneToOneMapping mapping = initOneToOneMapping();
         setMapping(mapping);
         
         if (hasMappedBy()) {
             // Non-owning side, process the foreign keys from the owner.
-            DatabaseMapping owningMapping = getOwningMapping(getMappedBy());
+            DatabaseMapping owningMapping = getOwningMappingAccessor();
             if (owningMapping.isOneToOneMapping()){
                 OneToOneMapping ownerMapping = (OneToOneMapping) owningMapping;
                 
@@ -174,13 +147,5 @@ public class OneToOneAccessor extends ObjectAccessor {
             // Owning side, look for JoinColumns or PrimaryKeyJoinColumns.
             processOwningMappingKeys(mapping);
         }
-    }
-    
-    /**
-     * INTERNAL:
-     * Used for OX mapping.
-     */
-    public void setMappedBy(String mappedBy) {
-        m_mappedBy = mappedBy;
     }
 }

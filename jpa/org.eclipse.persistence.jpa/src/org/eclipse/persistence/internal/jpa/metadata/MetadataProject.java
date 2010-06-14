@@ -55,6 +55,8 @@
  *       - 253083: Add support for dynamic persistence using ORM.xml/eclipselink-orm.xml
  *     06/09/2010-2.0.3 Guy Pelletier 
  *       - 313401: shared-cache-mode defaults to NONE when the element value is unrecognized
+ *     06/14/2010-2.2 Guy Pelletier 
+ *       - 264417: Table generation is incorrect for JoinTables in AssociationOverrides
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata;
 
@@ -214,8 +216,10 @@ public class MetadataProject {
     // Accessors that map to an Embeddable class
     private HashSet<MappingAccessor> m_embeddableMappingAccessors;
     
-    // All relationship accessors.
-    private HashSet<RelationshipAccessor> m_relationshipAccessors;
+    // All owning relationship accessors.
+    private HashSet<RelationshipAccessor> m_owningRelationshipAccessors;
+    // All non-owning (mappedBy) relationship accessors.
+    private HashSet<RelationshipAccessor> m_nonOwningRelationshipAccessors;
     
     // Root level embeddable accessors. When we pre-process embeddable
     // accessors we need to process them from the root down so as to set
@@ -269,7 +273,8 @@ public class MetadataProject {
         m_idClasses = new HashSet<String>();
         m_virtualClasses = new HashSet<ClassAccessor>();
         m_accessorsWithCustomizer = new HashSet<ClassAccessor>();
-        m_relationshipAccessors = new HashSet<RelationshipAccessor>();
+        m_owningRelationshipAccessors = new HashSet<RelationshipAccessor>();
+        m_nonOwningRelationshipAccessors = new HashSet<RelationshipAccessor>();
         m_rootEmbeddableAccessors = new HashSet<EmbeddableAccessor>();
         m_embeddableMappingAccessors = new HashSet<MappingAccessor>();
         m_directCollectionAccessors = new HashSet<DirectCollectionAccessor>();
@@ -534,8 +539,12 @@ public class MetadataProject {
     /**
      * INTERNAL:
      */
-    public void addRelationshipAccessor(MappingAccessor accessor) {
-        m_relationshipAccessors.add((RelationshipAccessor) accessor);
+    public void addRelationshipAccessor(RelationshipAccessor accessor) {
+        if (accessor.hasMappedBy()) {
+            m_nonOwningRelationshipAccessors.add(accessor);
+        } else {
+            m_owningRelationshipAccessors.add(accessor);
+        }
     }
     
     /**
@@ -1212,6 +1221,35 @@ public class MetadataProject {
     
     /**
      * INTERNAL:
+     * Process the non-owning relationship accessors. All owning relationshuip
+     * accessors should be processed. Some non-owning relationships may have
+     * already been fast tracked to from an element collection containing
+     * an embeddable (with a non-owning relationship).
+     */
+    protected void processNonOwningRelationshipAccessors() {
+        for (RelationshipAccessor accessor : m_nonOwningRelationshipAccessors) {
+            if (! accessor.isProcessed()) {
+                accessor.process();
+            }
+        }
+    }
+    
+    /**
+     * INTERNAL:
+     * Process the owning relationship accessors. Some may have already been
+     * processed through the processing of derived id's therefore don't process
+     * them again.
+     */
+    protected void processOwningRelationshipAccessors() {
+        for (RelationshipAccessor accessor : m_owningRelationshipAccessors) {
+            if (! accessor.isProcessed()) {
+                accessor.process();
+            }
+        }
+    }
+    
+    /**
+     * INTERNAL:
      * Process any and all persistence unit metadata and defaults to the given 
      * descriptor.
      */
@@ -1253,16 +1291,6 @@ public class MetadataProject {
         // a sql result set mapping specification.
         for (NamedQueryMetadata query : m_queries.values()) {
             query.process(m_session, loader, this);
-        }
-    }
-    
-    /**
-     * INTERNAL:
-     * Process the related descriptors.
-     */
-    protected void processRelationshipAccessors() {
-        for (RelationshipAccessor accessor : m_relationshipAccessors) {
-            accessor.processRelationship();
         }
     }
     
@@ -1536,7 +1564,7 @@ public class MetadataProject {
     public void processStage3() {
         // 1 - Process accessors with IDs derived from relationships. This will 
         // finish up any stage2 processing that relied on the PK processing 
-        // being complete as well. Note some relationships mappings may be 
+        // being complete as well. Note: some relationships mappings may be 
         // processed in this stage. This is ok since it is to determine and
         // validate the primary key.
         processAccessorsWithDerivedIDs();
@@ -1549,22 +1577,26 @@ public class MetadataProject {
         // validated primary key.
         processSequencingAccessors();
         
-        // 4 - Process the relationship accessors now that every entity has a 
-        // validated primary key and we can process join columns.
-        processRelationshipAccessors();
+        // 4 - Process the owning relationship accessors now that every entity 
+        // has a validated primary key and we can process join columns.
+        processOwningRelationshipAccessors();
         
-        // 5 - Process the interface accessors which will iterate through all 
+        // 5 - Process the embeddable mapping accessors. These are the
+        // embedded, embedded id and element collection accessors that map
+        // to an embeddable class. We must hold off on their processing till
+        // now to ensure their owning relationship accessors have been processed 
+        // and we can therefore process any association overrides correctly.
+        processEmbeddableMappingAccessors();
+        
+        // 6 - Process the non owning relationship accessors now that every 
+        // owning relationship should be fully processed.
+        processNonOwningRelationshipAccessors(); 
+        
+        // 7 - Process the interface accessors which will iterate through all 
         // the entities in the PU and check if we should add them to a variable 
         // one to one mapping that was either defined (incompletely) or 
         // defaulted.
         processInterfaceAccessors();
-        
-        // 6 - Process the embeddable mapping accessors. These are the
-        // embedded, embedded id and element collection accessors that map
-        // to an embeddable class. We must hold off on their processing till
-        // now to ensure their relationship accessors have been processed and
-        // we can therefore process any association overrides correctly.
-        processEmbeddableMappingAccessors();
     }
     
     /**

@@ -53,6 +53,8 @@
  *       - 309373: Add parent class attribute to EclipseLink-ORM
  *     05/14/2010-2.1 Guy Pelletier 
  *       - 253083: Add support for dynamic persistence using ORM.xml/eclipselink-orm.xml
+ *     06/14/2010-2.2 Guy Pelletier 
+ *       - 264417: Table generation is incorrect for JoinTables in AssociationOverrides
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata.accessors.classes;
 
@@ -242,7 +244,7 @@ public abstract class ClassAccessor extends MetadataAccessor {
             }
          
             // Add the accessor to the descriptor.
-            getDescriptor().addAccessor(accessor);
+            getDescriptor().addMappingAccessor(accessor);
         }
     }
     
@@ -346,7 +348,7 @@ public abstract class ClassAccessor extends MetadataAccessor {
                     // methods for this field, however the field has been tagged 
                     // as access field. We must therefore overwrite the previous 
                     // accessor with this explicit one.
-                    if (! getDescriptor().hasAccessorFor(metadataField.getAttributeName()) || (getDescriptor().hasAccessorFor(metadataField.getAttributeName()) && processingInverse)) {
+                    if (! getDescriptor().hasMappingAccessor(metadataField.getAttributeName()) || (getDescriptor().hasMappingAccessor(metadataField.getAttributeName()) && processingInverse)) {
                         addAccessor(buildAccessor(metadataField));
                     }
                 }
@@ -381,7 +383,7 @@ public abstract class ClassAccessor extends MetadataAccessor {
                     // Access type is field however the user indicated the we 
                     // should use its access methods. We must therefore 
                     // overwrite the previous accessor with this explicit one.
-                    if (! getDescriptor().hasAccessorFor(metadataMethod.getAttributeName()) || (getDescriptor().hasAccessorFor(metadataMethod.getAttributeName()) && processingInverse)) {
+                    if (! getDescriptor().hasMappingAccessor(metadataMethod.getAttributeName()) || (getDescriptor().hasMappingAccessor(metadataMethod.getAttributeName()) && processingInverse)) {
                         addAccessor(buildAccessor(metadataMethod));
                     }
                 }
@@ -953,15 +955,6 @@ public abstract class ClassAccessor extends MetadataAccessor {
     
     /**
      * INTERNAL:
-     * Process the accessors for the given class.
-     */
-    public void processAccessors() {
-        // Now tell the descriptor to process its accessors.
-        getDescriptor().processAccessors();
-    }
-    
-    /**
-     * INTERNAL:
      */
     protected abstract void processAccessType();
     
@@ -1106,7 +1099,9 @@ public abstract class ClassAccessor extends MetadataAccessor {
                 }
                 
                 // Now process the relationship, and the derived id.
-                accessor.processRelationship();
+                if (! accessor.isProcessed()) {
+                    accessor.process();
+                }
             }
             
             // Once we're done, we'll move ourselves from the processing to 
@@ -1116,6 +1111,15 @@ public abstract class ClassAccessor extends MetadataAccessor {
         }
     }
 
+    /**
+     * INTERNAL:
+     * Process the accessors for the given class.
+     */
+    public void processMappingAccessors() {
+        // Now tell the descriptor to process its accessors.
+        getDescriptor().processMappingAccessors();
+    }
+    
     /**
      * INTERNAL:
      * If the user specified a parent class set it on the metadata class

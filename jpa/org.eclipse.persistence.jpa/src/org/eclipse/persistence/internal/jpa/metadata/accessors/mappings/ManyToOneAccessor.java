@@ -21,6 +21,8 @@
  *       - 266912: JPA 2.0 Metamodel support for m:1 as m:m in DI 96
  *     04/27/2010-2.1 Guy Pelletier 
  *       - 309856: MappedSuperclasses from XML are not being initialized properly
+ *     06/14/2010-2.2 Guy Pelletier 
+ *       - 264417: Table generation is incorrect for JoinTables in AssociationOverrides
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata.accessors.mappings;
 
@@ -99,6 +101,8 @@ public class ManyToOneAccessor extends ObjectAccessor {
      * Process a many to one setting into an EclipseLink OneToOneMapping.
      */
     public void process() {
+        super.process();
+        
         // Initialize our mapping now with what we found.
         ManyToOneMapping mapping = initManyToOneMapping();
         setMapping(mapping);

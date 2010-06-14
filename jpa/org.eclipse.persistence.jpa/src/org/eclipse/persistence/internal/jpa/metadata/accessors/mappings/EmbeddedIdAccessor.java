@@ -33,6 +33,8 @@
  *                      during MetadataProject.addMetamodelMappedSuperclass()
  *     04/27/2010-2.1 Guy Pelletier 
  *       - 309856: MappedSuperclasses from XML are not being initialized properly
+ *     06/14/2010-2.2 Guy Pelletier 
+ *       - 264417: Table generation is incorrect for JoinTables in AssociationOverrides
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata.accessors.mappings;
 
@@ -140,7 +142,7 @@ public class EmbeddedIdAccessor extends EmbeddedAccessor {
         // After processing the embeddable class, we need to gather our 
         // primary keys fields that we will eventually set on the owning 
         // descriptor metadata.
-        if (getReferenceDescriptor().getAccessors().isEmpty()) {
+        if (getReferenceDescriptor().getMappingAccessors().isEmpty()) {
             throw ValidationException.embeddedIdHasNoAttributes(getDescriptor().getJavaClass(), getReferenceDescriptor().getJavaClass(), getReferenceDescriptor().getClassAccessor().getAccessType());
         } else {
             // Go through all our mappings, the fields from those mappings will

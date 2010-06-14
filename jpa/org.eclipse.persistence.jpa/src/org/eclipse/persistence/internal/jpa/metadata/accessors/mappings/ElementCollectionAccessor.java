@@ -35,6 +35,8 @@
  *       - 309856: MappedSuperclasses from XML are not being initialized properly
  *     05/31/2010-2.1 Guy Pelletier 
  *       - 314941: multiple joinColumns without referenced column names defined, no error
+ *     06/14/2010-2.2 Guy Pelletier 
+ *       - 264417: Table generation is incorrect for JoinTables in AssociationOverrides
  ******************************************************************************/ 
 package org.eclipse.persistence.internal.jpa.metadata.accessors.mappings;
 
@@ -785,7 +787,7 @@ public class ElementCollectionAccessor extends DirectCollectionAccessor implemen
      * INTERNAL:
      */
     protected void processMappingsFromEmbeddable(MetadataDescriptor embeddableDescriptor, AggregateObjectMapping nestedAggregateObjectMapping, EmbeddableMapping embeddableMapping, Map<String, AttributeOverrideMetadata> attributeOverrides, Map<String, AssociationOverrideMetadata> associationOverrides, String dotNotationName) {        
-        for (MappingAccessor mappingAccessor : embeddableDescriptor.getAccessors()) {
+        for (MappingAccessor mappingAccessor : embeddableDescriptor.getMappingAccessors()) {
             // Fast track any mapping accessor that hasn't been processed at
             // this point. The only accessors that can't be processed here are
             // nested embedded or element collection accessors.
@@ -854,7 +856,7 @@ public class ElementCollectionAccessor extends DirectCollectionAccessor implemen
                     throw ValidationException.invalidEmbeddableClassForElementCollection(embeddableDescriptor.getJavaClass(), getAttributeName(), getJavaClass(), mapping.getAttributeName());
                 }
             } else if (mapping.isAggregateObjectMapping()) {
-                MappingAccessor accessor = embeddableDescriptor.getAccessorFor(mapping.getAttributeName());
+                MappingAccessor accessor = embeddableDescriptor.getMappingAccessor(mapping.getAttributeName());
                 processMappingsFromEmbeddable(accessor.getReferenceDescriptor(), (AggregateObjectMapping) mapping, embeddableMapping, attributeOverrides, associationOverrides, overrideName);
             } else {
                 // TODO: mapping.isAggregateCollectionMapping. We could handle 

@@ -12,6 +12,8 @@
  *       - 286317: UniqueConstraint xml element is changing (plus couple other fixes, see bug)
  *     04/27/2010-2.1 Guy Pelletier 
  *       - 309856: MappedSuperclasses from XML are not being initialized properly
+ *     06/14/2010-2.2 Guy Pelletier 
+ *       - 264417: Table generation is incorrect for JoinTables in AssociationOverrides
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata.mappings;
 
@@ -103,7 +105,7 @@ public class MapKeyMetadata extends ORMetadata {
             String fieldOrPropertyName = MetadataHelper.getName(m_name, referenceDescriptor.getIdAttributeName(), logger.MAP_KEY_ATTRIBUTE_NAME, logger, mappingAccessor.getAnnotatedElementName());
     
             // Look up the referenceAccessor
-            MetadataAccessor referenceAccessor = referenceDescriptor.getAccessorFor(fieldOrPropertyName);
+            MetadataAccessor referenceAccessor = referenceDescriptor.getMappingAccessor(fieldOrPropertyName);
             if (referenceAccessor == null) {
                 // 266912: relax validation for MappedSuperclass descriptors when the map key is an unresolved generic type
                 if (referenceDescriptor.isMappedSuperclass()) {

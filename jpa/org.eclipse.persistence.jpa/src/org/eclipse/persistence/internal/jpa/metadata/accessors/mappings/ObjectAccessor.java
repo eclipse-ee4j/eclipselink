@@ -37,6 +37,8 @@
  *       - 267217: Add Named Access Type to EclipseLink-ORM
  *     04/27/2010-2.1 Guy Pelletier 
  *       - 309856: MappedSuperclasses from XML are not being initialized properly
+ *     06/14/2010-2.2 Guy Pelletier 
+ *       - 264417: Table generation is incorrect for JoinTables in AssociationOverrides
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata.accessors.mappings;
 
@@ -243,10 +245,10 @@ public abstract class ObjectAccessor extends RelationshipAccessor {
         if (referenceAccessor.hasDerivedId()) {
             // Referenced object has a derived ID and must be a simple pk type.  
             // Recurse through to get the simple type.
-            return ((ObjectAccessor) referenceDescriptor.getAccessorFor(referenceDescriptor.getIdAttributeName())).getSimplePKType();
+            return ((ObjectAccessor) referenceDescriptor.getMappingAccessor(referenceDescriptor.getIdAttributeName())).getSimplePKType();
         } else {
             // Validate on their basic mapping.
-            return referenceDescriptor.getAccessorFor(referenceDescriptor.getIdAttributeName()).getRawClass();
+            return referenceDescriptor.getMappingAccessor(referenceDescriptor.getIdAttributeName()).getRawClass();
         }
     }
     
@@ -407,7 +409,7 @@ public abstract class ObjectAccessor extends RelationshipAccessor {
                     translationFKField.setTable(defaultTable);
                 }
                     
-                embeddableMapping.addFieldNameTranslation(translationFKField.getQualifiedName(),fkField.getName());
+                embeddableMapping.addFieldNameTranslation(translationFKField.getQualifiedName(), fkField.getName());
             }
         }
     }
@@ -441,10 +443,10 @@ public abstract class ObjectAccessor extends RelationshipAccessor {
                 // Referenced object has a derived ID but no PK class defined,
                 // so it must be a simple pk type. Recurse through to get the 
                 // simple type
-                type = ((ObjectAccessor) referenceDescriptor.getAccessorFor(referenceDescriptor.getIdAttributeName())).getSimplePKType();
+                type = ((ObjectAccessor) referenceDescriptor.getMappingAccessor(referenceDescriptor.getIdAttributeName())).getSimplePKType();
             } else {
                 // Validate on their basic mapping.
-                type = referenceDescriptor.getAccessorFor(referenceDescriptor.getIdAttributeName()).getRawClass();
+                type = referenceDescriptor.getMappingAccessor(referenceDescriptor.getIdAttributeName()).getRawClass();
             }
             
             getOwningDescriptor().validatePKClassId(getAttributeName(), type);
@@ -491,7 +493,7 @@ public abstract class ObjectAccessor extends RelationshipAccessor {
         
         if (embeddedIdAccessor == null) {
             // Case #4: a simple id association
-            MappingAccessor idAccessor = getDescriptor().getAccessorFor(getDescriptor().getIdAttributeName());
+            MappingAccessor idAccessor = getDescriptor().getMappingAccessor(getDescriptor().getIdAttributeName());
             DatabaseMapping idMapping = idAccessor.getMapping();
                         
             // Grab the foreign key field and set it as the descriptor's id field.
@@ -519,7 +521,7 @@ public abstract class ObjectAccessor extends RelationshipAccessor {
                 
                 // Set the maps id value on the mapping.
                 oneToOneMapping.setMapsIdValue(m_mapsId);
-                MappingAccessor mappingAccessor = embeddedIdAccessor.getReferenceDescriptor().getAccessorFor(m_mapsId);
+                MappingAccessor mappingAccessor = embeddedIdAccessor.getReferenceDescriptor().getMappingAccessor(m_mapsId);
         
                 if (mappingAccessor == null) {
                     throw ValidationException.invalidMappedByIdValue(m_mapsId, getAnnotatedElementName(), embeddedIdAccessor.getReferenceClass());
@@ -586,7 +588,7 @@ public abstract class ObjectAccessor extends RelationshipAccessor {
                 } else {
                     // The reference primary key accessor will tell us which attribute 
                     // accessor we need to map a field name translation for.
-                    MappingAccessor idAccessor = mapsIdAccessor.getReferenceDescriptor().getAccessorFor(referencePKAccessor.getAttributeName());
+                    MappingAccessor idAccessor = mapsIdAccessor.getReferenceDescriptor().getMappingAccessor(referencePKAccessor.getAttributeName());
                 
                     // Add a field name translation to the mapping.
                     ((EmbeddedAccessor) mapsIdAccessor).updateDerivedIdField((EmbeddableMapping) mapsIdAccessor.getMapping(), idAccessor.getAttributeName(), fkField, idAccessor);

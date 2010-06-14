@@ -42,6 +42,8 @@
  *       - 253083: Add support for dynamic persistence using ORM.xml/eclipselink-orm.xml
  *     06/01/2010-2.1 Guy Pelletier 
  *       - 315195: Add new property to avoid reading XML during the canonical model generation
+ *     06/14/2010-2.2 Guy Pelletier 
+ *       - 264417: Table generation is incorrect for JoinTables in AssociationOverrides
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata.accessors.classes;
 
@@ -270,7 +272,7 @@ public class EmbeddableAccessor extends ClassAccessor {
         // Before gathering our accessors, clear any accessors previously 
         // gathered. When generating the canonical model the accessors need 
         // to be re-gathered in each compile round.
-        getDescriptor().clearAccessors();
+        getDescriptor().clearMappingAccessors();
         
         // Add the accessors and converters on this embeddable.
         addAccessors();
@@ -299,8 +301,8 @@ public class EmbeddableAccessor extends ClassAccessor {
         // Process the properties metadata.
         processProperties();
 
-        // Process the accessors on this embeddable.
-        processAccessors();
+        // Process the mapping accessors on this embeddable.
+        processMappingAccessors();
         
         // Set the processed flag.
         setIsProcessed();

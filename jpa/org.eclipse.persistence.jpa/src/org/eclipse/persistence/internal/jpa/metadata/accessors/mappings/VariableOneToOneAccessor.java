@@ -22,6 +22,8 @@
  *       - 282553: JPA 2.0 JoinTable support for OneToOne and ManyToOne
  *     04/27/2010-2.1 Guy Pelletier 
  *       - 309856: MappedSuperclasses from XML are not being initialized properly
+ *     06/14/2010-2.2 Guy Pelletier 
+ *       - 264417: Table generation is incorrect for JoinTables in AssociationOverrides
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata.accessors.mappings;
 
@@ -83,7 +85,7 @@ public class VariableOneToOneAccessor extends ObjectAccessor {
         if (variableOneToOne != null) {
             // Parent class looks for 'targetEntity' and not 'targetInterface'
             // Need to set it correctly.
-            setTargetEntity(getMetadataClass((String)variableOneToOne.getAttribute("targetInterface")));
+            setTargetEntity(getMetadataClass((String) variableOneToOne.getAttribute("targetInterface")));
             setOrphanRemoval((Boolean) variableOneToOne.getAttribute("orphanRemoval"));
             
             m_discriminatorColumn = new DiscriminatorColumnMetadata((MetadataAnnotation) variableOneToOne.getAttribute("discriminatorColumn"), accessibleObject);
@@ -220,6 +222,8 @@ public class VariableOneToOneAccessor extends ObjectAccessor {
      * VariableOneToOneMapping.
      */
     public void process() {
+        super.process();
+        
         // Add ourselves to the list of variable one to one accessors to this
         // interface. If an InterfaceAccessor doesn't exist, create one. It
         // will be re-used for each variable one to one accessor that uses

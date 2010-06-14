@@ -35,6 +35,8 @@
  *       - 267217: Add Named Access Type to EclipseLink-ORM
  *     04/27/2010-2.1 Guy Pelletier 
  *       - 309856: MappedSuperclasses from XML are not being initialized properly
+ *     06/14/2010-2.2 Guy Pelletier 
+ *       - 264417: Table generation is incorrect for JoinTables in AssociationOverrides
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata.accessors.mappings;
 
@@ -90,6 +92,7 @@ public abstract class RelationshipAccessor extends MappingAccessor {
     private MetadataClass m_targetEntity;
     
     private String m_fetch;
+    private String m_mappedBy;
     private String m_joinFetch;
     private String m_batchFetch;
     private Integer m_batchFetchSize;
@@ -223,6 +226,10 @@ public abstract class RelationshipAccessor extends MappingAccessor {
             }
 
             if (! valuesMatch(m_cascade, relationshipAccessor.getCascade())) {
+                return false;
+            }
+            
+            if (! valuesMatch(m_mappedBy, relationshipAccessor.getMappedBy())) {
                 return false;
             }
             
@@ -364,6 +371,14 @@ public abstract class RelationshipAccessor extends MappingAccessor {
      * INTERNAL:
      * Used for OX mapping.
      */
+    public String getMappedBy() {
+        return m_mappedBy;
+    }
+    
+    /**
+     * INTERNAL:
+     * Used for OX mapping.
+     */
     public Boolean getOrphanRemoval() {
         return m_orphanRemoval;
     }
@@ -372,20 +387,30 @@ public abstract class RelationshipAccessor extends MappingAccessor {
      * INTERNAL:
      * Method to return an owner mapping. It will tell the owner class to
      * process itself if it hasn't already done so. Assumes that a mapped by
-     * value has been specified and that a check against mappedByValue has been
+     * value has been specified and that a check against mappedBy has been
      * done.
      */
-    protected DatabaseMapping getOwningMapping(String mappedBy) {
+    protected DatabaseMapping getOwningMappingAccessor() {
         MetadataDescriptor ownerDescriptor = getReferenceDescriptor();
-        DatabaseMapping mapping = ownerDescriptor.getMappingForAttributeName(mappedBy, this);
+        MappingAccessor mappingAccessor = ownerDescriptor.getMappingAccessor(getMappedBy());
         
         // If no mapping was found, there is an error in the mappedBy field, 
         // therefore, throw an exception.
-        if (mapping == null) {
-            throw ValidationException.noMappedByAttributeFound(ownerDescriptor.getJavaClass(), mappedBy, getJavaClass(), getAttributeName());
+        if (mappingAccessor == null) {
+            throw ValidationException.noMappedByAttributeFound(ownerDescriptor.getJavaClass(), getMappedBy(), getJavaClass(), getAttributeName());
+        } else if (mappingAccessor.isRelationship()) {
+            RelationshipAccessor relationshipAccessor = (RelationshipAccessor) mappingAccessor;
+            
+            // Check that we don't have circular mappedBy values which will 
+            // cause an infinite loop.
+            String mappedBy = relationshipAccessor.getMappedBy();
+                
+            if (mappedBy != null && mappedBy.equals(getAttributeName())) {
+                throw ValidationException.circularMappedByReferences(getJavaClass(), getAttributeName(), getJavaClass(), getMappedBy());
+            }
         }
         
-        return mapping;
+        return mappingAccessor.getMapping();
     }
     
     /**
@@ -441,6 +466,15 @@ public abstract class RelationshipAccessor extends MappingAccessor {
      */
     protected boolean hasJoinTable() {
         return m_joinTable != null;
+    }
+    
+    /**
+     * INTERNAL:
+     * Return true if this accessor is the non owning side of the relationship,
+     * that is, has a mapped by value. 
+     */
+    public boolean hasMappedBy() {
+        return getMappedBy() != null && ! getMappedBy().equals("");
     }
     
     /**
@@ -605,10 +639,9 @@ public abstract class RelationshipAccessor extends MappingAccessor {
     
     /**
      * INTERNAL:
-     * Front end validation before actually processing the relationship 
-     * accessor. The process() method should not be called directly.
+     * Common validation done by all relationship accessors.
      */
-    public void processRelationship() {
+    public void process() {
         // The processing of this accessor may have been fast tracked through a 
         // non-owning relationship. If so, no processing is required.
         if (! isProcessed()) {
@@ -621,8 +654,6 @@ public abstract class RelationshipAccessor extends MappingAccessor {
             if (hasConvert(false)) {
                 throw ValidationException.invalidMappingForConverter(getJavaClass(), getAttributeName());
             }
-                        
-            process();
         }
     }
     
@@ -635,12 +666,11 @@ public abstract class RelationshipAccessor extends MappingAccessor {
         super.setAccessorMethods(mapping);
         
         // If we have property access and the owning class has field access, 
-        // mark the mapping to weave transient field value holders (if it 
-        // so applies at weaving time). Setting the accessor methods 
-        // previously told us the type of access in turn indicating if we 
-        // needed to weave  transient value holder fields on the class. 
-        // With JPA 2.0 and the possibility of mixed access types this 
-        // assumption no longer applies.
+        // mark the mapping to weave transient field value holders (if it so 
+        // applies at weaving time). Setting the accessor methods previously 
+        // told us the type of access in turn indicating if we needed to weave
+        // transient value holder fields on the class. With JPA 2.0 and the 
+        // possibility of mixed access types this assumption no longer applies.
         ((ForeignReferenceMapping) mapping).setRequiresTransientWeavedFields(usesPropertyAccess() && ! getClassAccessor().usesPropertyAccess());
     }
     
@@ -718,6 +748,14 @@ public abstract class RelationshipAccessor extends MappingAccessor {
      */
     public void setJoinTable(JoinTableMetadata joinTable) {
         m_joinTable = joinTable;
+    }
+    
+    /**
+     * INTERNAL:
+     * Used for OX mapping.
+     */
+    public void setMappedBy(String mappedBy) {
+        m_mappedBy = mappedBy;
     }
     
     /**
