@@ -228,7 +228,7 @@ public class MergeManager {
             return object;
         }
 
-        // Do not merged read-only objects in a unit of work.
+        // Do not merge read-only objects in a unit of work.
         if (this.session.isClassReadOnly(object.getClass())) {
             return object;
         }

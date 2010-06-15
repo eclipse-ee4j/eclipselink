@@ -113,7 +113,9 @@ public class MetamodelMetamodelTest extends MetamodelTest {
 
     public static final int METAMODEL_ALL_ATTRIBUTES_SIZE = 130;
     public static final int METAMODEL_ALL_TYPES = 47;
-    public static final int METAMODEL_MANUFACTURER_DECLARED_TYPES = 28;    
+    public static final int METAMODEL_MANUFACTURER_DECLARED_TYPES = 28;
+    // Get # of processor cores (hard cores + hyperthreaded cores)
+    public static final int numberProcessingUnits = Runtime.getRuntime().availableProcessors();
     
     public MetamodelMetamodelTest() {
         super();
@@ -161,6 +163,7 @@ public class MetamodelMetamodelTest extends MetamodelTest {
             suite.addTest(new MetamodelMetamodelTest("testBindable_getBindableJavaType_Method"));
             suite.addTest(new MetamodelMetamodelTest("testEmbeddableType"));
             suite.addTest(new MetamodelMetamodelTest("testEntityType"));
+            suite.addTest(new MetamodelMetamodelTest("testEntityAttribute_getBindableJavaType_Method"));          
             suite.addTest(new MetamodelMetamodelTest("testIdentifiableType_getIdType_Method"));
             suite.addTest(new MetamodelMetamodelTest("testIdentifiableType_getIdClassAttributes_Method"));
             suite.addTest(new MetamodelMetamodelTest("testIdentifiableType_getIdClassAttributesAcrossMappedSuperclassChain_Method")); // 288792        
@@ -180,7 +183,6 @@ public class MetamodelMetamodelTest extends MetamodelTest {
             suite.addTest(new MetamodelMetamodelTest("testIdentifiableType_getIdType_handles_possible_null_cmppolicy"));
             
             suite.addTest(new MetamodelMetamodelTest("testListAttribute"));
-            
             suite.addTest(new MetamodelMetamodelTest("testManagedType_getAttributes_Method"));
             suite.addTest(new MetamodelMetamodelTest("testManagedType_getDeclaredAttributes_Method"));
             suite.addTest(new MetamodelMetamodelTest("testManagedType_getSingularAttribute_Type_param_Method"));
@@ -206,6 +208,7 @@ public class MetamodelMetamodelTest extends MetamodelTest {
             suite.addTest(new MetamodelMetamodelTest("testManagedType_getAttribute_doesNotExist_on_Entity_Method"));
             suite.addTest(new MetamodelMetamodelTest("testManagedType_getAttribute_doesNotExist_on_MappedSuperclass_Method"));
             suite.addTest(new MetamodelMetamodelTest("testManagedType_getDeclaredAttribute_Method"));
+            suite.addTest(new MetamodelMetamodelTest("testManagedType_getDeclaredListAttribute_Method"));            
             suite.addTest(new MetamodelMetamodelTest("testManagedType_getDeclaredAttribute_above_throws_iae_Method"));
             suite.addTest(new MetamodelMetamodelTest("testManagedType_getDeclaredAttribute_doesNotExist_Method"));
             suite.addTest(new MetamodelMetamodelTest("testManagedType_getSingularAttribute_BASIC_Method"));
@@ -255,7 +258,8 @@ public class MetamodelMetamodelTest extends MetamodelTest {
             suite.addTest(new MetamodelMetamodelTest("testMetamodel_getEmbeddables_Method"));
             suite.addTest(new MetamodelMetamodelTest("testPluralAttribute_CollectionType_enum"));
             suite.addTest(new MetamodelMetamodelTest("testPluralAttribute_getCollectionType_Method"));
-            suite.addTest(new MetamodelMetamodelTest("testPluralAttribute_getElementType_Method"));        
+            suite.addTest(new MetamodelMetamodelTest("testPluralAttribute_getElementType_Method"));
+            suite.addTest(new MetamodelMetamodelTest("testPluralAttribute_getBindableJavaType_Method"));
             suite.addTest(new MetamodelMetamodelTest("testSetAttribute"));
             suite.addTest(new MetamodelMetamodelTest("testSingularAttribute_isOptional_Method"));
             suite.addTest(new MetamodelMetamodelTest("testSingularAttribute_isId_Method"));
@@ -290,6 +294,7 @@ public class MetamodelMetamodelTest extends MetamodelTest {
         EntityManager em = null;
         boolean exceptionThrown = false;
         Metamodel metamodel = null;
+        
         try {
             emf = initialize(overrideEMFCachingForTesting);
             em = emf.createEntityManager();
@@ -598,7 +603,11 @@ public class MetamodelMetamodelTest extends MetamodelTest {
             
             Attribute anAttribute = entityManufacturer_.getAttribute("computers");            
             assertNotNull(anAttribute);
-            assertEquals(Computer.class, anAttribute.getJavaType());            
+            assertTrue(((AttributeImpl)anAttribute).isPlural());
+            assertTrue(anAttribute instanceof PluralAttribute);
+            Bindable aPluralAttribute = entityManufacturer_.getSet("computers");
+            assertEquals(Computer.class, aPluralAttribute.getBindableJavaType());
+            assertEquals(Set.class, anAttribute.getJavaType());
             assertEquals(PersistentAttributeType.ONE_TO_MANY, anAttribute.getPersistentAttributeType());
         } catch (IllegalArgumentException iae) {
             iae.printStackTrace();
@@ -867,7 +876,12 @@ public class MetamodelMetamodelTest extends MetamodelTest {
             assertEquals(Type.PersistenceType.ENTITY, entityManufacturer_.getPersistenceType());
             Attribute anAttribute = entityManufacturer_.getAttribute("computers");            
             assertNotNull(anAttribute);
-            assertEquals(Computer.class, anAttribute.getJavaType());
+            assertTrue(((AttributeImpl)anAttribute).isPlural());
+            assertTrue(anAttribute instanceof PluralAttribute);
+            Bindable aPluralAttribute = entityManufacturer_.getSet("computers");
+            assertEquals(Computer.class, aPluralAttribute.getBindableJavaType());
+            assertEquals(Set.class, anAttribute.getJavaType());
+            assertEquals(PersistentAttributeType.ONE_TO_MANY, anAttribute.getPersistentAttributeType());
         } catch (IllegalArgumentException iae) {
             iae.printStackTrace();
             exceptionThrown = true;
@@ -973,7 +987,13 @@ public class MetamodelMetamodelTest extends MetamodelTest {
             //java.lang.reflect.Member getJavaMember();
             Attribute anAttribute = entityManufacturer_.getAttribute("computers");            
             assertNotNull(anAttribute);
-            assertEquals(Computer.class, anAttribute.getJavaType());
+            assertTrue(((AttributeImpl)anAttribute).isPlural());
+            assertTrue(anAttribute instanceof PluralAttribute);
+            Bindable aPluralAttribute = entityManufacturer_.getSet("computers");
+            assertEquals(Computer.class, aPluralAttribute.getBindableJavaType());
+            assertEquals(Set.class, anAttribute.getJavaType());
+            assertEquals(PersistentAttributeType.ONE_TO_MANY, anAttribute.getPersistentAttributeType());
+            
             Member aMember = anAttribute.getJavaMember();
             assertNotNull(aMember);
             assertTrue(aMember instanceof Field);
@@ -1009,7 +1029,14 @@ public class MetamodelMetamodelTest extends MetamodelTest {
             //boolean isAssociation();
             Attribute anAttribute = entityManufacturer_.getAttribute("computers");            
             assertNotNull(anAttribute);
-            assertEquals(Computer.class, anAttribute.getJavaType());
+            assertTrue(((AttributeImpl)anAttribute).isPlural());
+            assertTrue(anAttribute instanceof PluralAttribute);
+            Bindable aBindable = entityManufacturer_.getSet("computers");
+            PluralAttribute aPluralAttribute = entityManufacturer_.getSet("computers");
+            assertEquals(Computer.class, aPluralAttribute.getBindableJavaType());
+            assertEquals(Set.class, anAttribute.getJavaType());
+            assertEquals(PersistentAttributeType.ONE_TO_MANY, anAttribute.getPersistentAttributeType());
+            
             boolean isAssociation = anAttribute.isAssociation();
             assertFalse(isAssociation);
         } catch (IllegalArgumentException iae) {
@@ -1112,7 +1139,14 @@ public class MetamodelMetamodelTest extends MetamodelTest {
             assertEquals(Type.PersistenceType.ENTITY, entityManufacturer_.getPersistenceType());
             Attribute anAttribute = entityManufacturer_.getAttribute("computers");            
             assertNotNull(anAttribute);
-            assertEquals(Computer.class, anAttribute.getJavaType());
+            assertEquals(PersistentAttributeType.ONE_TO_MANY, anAttribute.getPersistentAttributeType());
+            assertNotNull(anAttribute);
+            assertTrue(((AttributeImpl)anAttribute).isPlural());
+            assertTrue(anAttribute instanceof PluralAttribute);
+            PluralAttribute aPluralAttribute = entityManufacturer_.getSet("computers");
+            assertEquals(Computer.class, aPluralAttribute.getBindableJavaType());
+            // 314906: javaType for collections is the collection type not the element type
+//            assertEquals(Set.class, aPluralAttribute.getJavaType());
 
             /**
              *  Is the attribute collection-valued.
@@ -3458,7 +3492,14 @@ public class MetamodelMetamodelTest extends MetamodelTest {
             assertEquals(entityHardwareDesigner_, ((MapAttribute)anAttribute).getElementType());
             assertEquals(CollectionType.MAP, ((MapAttribute)anAttribute).getCollectionType());            
             assertEquals(String.class, ((MapAttribute)anAttribute).getKeyJavaType());
-            assertEquals(HardwareDesigner.class, anAttribute.getJavaType());
+            
+            assertTrue(((AttributeImpl)anAttribute).isPlural());
+            assertTrue(anAttribute instanceof PluralAttribute);
+            Bindable aPluralAttribute = entityManufacturer_.getMap("hardwareDesignersMapUC4");
+            assertEquals(HardwareDesigner.class, aPluralAttribute.getBindableJavaType());
+            assertEquals(Map.class, anAttribute.getJavaType());
+            assertEquals(PersistentAttributeType.ONE_TO_MANY, anAttribute.getPersistentAttributeType());
+            
         } catch (IllegalArgumentException iae) {
             iae.printStackTrace();
             expectedIAExceptionThrown = true;
@@ -3491,7 +3532,15 @@ public class MetamodelMetamodelTest extends MetamodelTest {
             assertTrue(anAttribute instanceof CollectionAttribute);
             assertEquals(entityComputer_, ((CollectionAttribute)anAttribute).getElementType());
             assertEquals(CollectionType.COLLECTION, ((CollectionAttribute)anAttribute).getCollectionType());            
-            assertEquals(Computer.class, anAttribute.getJavaType());
+            
+            assertTrue(((AttributeImpl)anAttribute).isPlural());
+            assertTrue(anAttribute instanceof PluralAttribute);
+            Bindable aPluralAttribute = msCorporation_.getCollection("corporateComputers");
+            assertEquals(Computer.class, aPluralAttribute.getBindableJavaType());
+            assertEquals(Collection.class, anAttribute.getJavaType());
+            assertEquals(PersistentAttributeType.ONE_TO_MANY, anAttribute.getPersistentAttributeType());
+            
+            
         } catch (IllegalArgumentException iae) {
             iae.printStackTrace();
             expectedIAExceptionThrown = true;
@@ -3573,7 +3622,13 @@ public class MetamodelMetamodelTest extends MetamodelTest {
             assertEquals(entityHardwareDesigner_, ((MapAttribute)anAttribute).getElementType());
             assertEquals(CollectionType.MAP, ((MapAttribute)anAttribute).getCollectionType());            
             assertEquals(String.class, ((MapAttribute)anAttribute).getKeyJavaType());
-            assertEquals(HardwareDesigner.class, anAttribute.getJavaType());
+            
+            assertTrue(((AttributeImpl)anAttribute).isPlural());
+            assertTrue(anAttribute instanceof PluralAttribute);
+            Bindable aPluralAttribute = entityManufacturer_.getMap("hardwareDesignersMapUC4");
+            assertEquals(HardwareDesigner.class, aPluralAttribute.getBindableJavaType());
+            assertEquals(Map.class, anAttribute.getJavaType());
+            assertEquals(PersistentAttributeType.ONE_TO_MANY, anAttribute.getPersistentAttributeType());
         } catch (IllegalArgumentException iae) {
             iae.printStackTrace();
             expectedIAExceptionThrown = true;
@@ -3583,6 +3638,43 @@ public class MetamodelMetamodelTest extends MetamodelTest {
         }
     }
 
+    public void testManagedType_getDeclaredListAttribute_Method() {
+        EntityManager em = null;
+        boolean expectedIAExceptionThrown = false;
+        try {
+            em = privateTestSetup();
+            assertNotNull(em);
+            Metamodel metamodel = em.getMetamodel();
+            assertNotNull("The metamodel should never be null after an em.getMetamodel() call here.", metamodel);
+            EntityTypeImpl<Manufacturer> entityManufacturer_ = (EntityTypeImpl)metamodel.entity(Manufacturer.class);
+            assertNotNull(entityManufacturer_);
+            EntityTypeImpl<HardwareDesigner> entityHardwareDesigner_ = (EntityTypeImpl)metamodel.entity(HardwareDesigner.class);
+            assertNotNull(entityHardwareDesigner_);
+            
+            // Test case
+            Attribute anAttribute = entityManufacturer_.getDeclaredAttribute("hardwareDesigners");
+            assertNotNull(anAttribute);
+            assertEquals(PersistentAttributeType.ONE_TO_MANY, anAttribute.getPersistentAttributeType());
+            assertTrue(((AttributeImpl)anAttribute).isPlural());
+            assertTrue(anAttribute instanceof ListAttribute);
+            assertEquals(entityHardwareDesigner_, ((ListAttribute)anAttribute).getElementType());
+            assertEquals(CollectionType.LIST, ((ListAttribute)anAttribute).getCollectionType());            
+            
+            assertTrue(((AttributeImpl)anAttribute).isPlural());
+            assertTrue(anAttribute instanceof PluralAttribute);
+            Bindable aPluralAttribute = entityManufacturer_.getDeclaredList("hardwareDesigners");
+            assertEquals(HardwareDesigner.class, aPluralAttribute.getBindableJavaType());
+            assertEquals(List.class, anAttribute.getJavaType());
+            assertEquals(PersistentAttributeType.ONE_TO_MANY, anAttribute.getPersistentAttributeType());
+        } catch (IllegalArgumentException iae) {
+            iae.printStackTrace();
+            expectedIAExceptionThrown = true;
+        } finally {
+            cleanup(em);
+            assertFalse("An IAE exception should not occur here.", expectedIAExceptionThrown);
+        }
+    }
+    
     public void testManagedType_getDeclaredAttribute_above_throws_iae_Method() {
         EntityManager em = null;
         boolean expectedIAExceptionThrown = false;
@@ -5440,7 +5532,89 @@ public class MetamodelMetamodelTest extends MetamodelTest {
         }
     }
     
+    // Same as Entity unless used on Basic
     public void testSingularAttribute_getBindableJavaType_Method() {
+        EntityManager em = null;
+        boolean expectedIAExceptionThrown = false;
+        try {
+            em = privateTestSetup();
+            assertNotNull(em);
+            Metamodel metamodel = em.getMetamodel();
+            assertNotNull("The metamodel should never be null after an em.getMetamodel() call here.", metamodel);
+            EntityTypeImpl<GalacticPosition> entityLocation_ = (EntityTypeImpl) metamodel.entity(GalacticPosition.class);
+            assertNotNull(entityLocation_);
+            EntityTypeImpl<Computer> entityComputer_ = (EntityTypeImpl)metamodel.entity(Computer.class);
+            assertNotNull(entityComputer_);
+            
+            /**
+             * Return the Java type of the represented object.
+             * If the bindable type of the object is <code>PLURAL_ATTRIBUTE</code>,
+             * the Java element type is returned. If the bindable type is
+             * <code>SINGULAR_ATTRIBUTE</code> or <code>ENTITY_TYPE</code>, 
+             * the Java type of the
+             * represented entity or attribute is returned.
+             * @return Java type
+             */
+            //Class<T> getBindableJavaType();
+            Attribute anAttribute = entityComputer_.getSingularAttribute("location");
+            assertNotNull(anAttribute);
+            assertEquals(PersistentAttributeType.ONE_TO_ONE, anAttribute.getPersistentAttributeType());
+            assertFalse(((AttributeImpl)anAttribute).isPlural());
+            assertTrue(anAttribute instanceof SingularAttribute);
+            assertEquals(Type.PersistenceType.ENTITY, entityComputer_.getPersistenceType());
+            Bindable aSingularAttribute = entityComputer_.getSingularAttribute("location");
+            assertEquals(GalacticPosition.class, aSingularAttribute.getBindableJavaType());
+        } catch (IllegalArgumentException iae) {
+            iae.printStackTrace();
+            expectedIAExceptionThrown = true;
+        } finally {
+            cleanup(em);
+            assertFalse("An IAE exception should not occur here.", expectedIAExceptionThrown);
+        }
+    }
+
+    // same as Singular unless used on Basic
+    public void testEntityAttribute_getBindableJavaType_Method() {
+        EntityManager em = null;
+        boolean expectedIAExceptionThrown = false;
+        try {
+            em = privateTestSetup();
+            assertNotNull(em);
+            Metamodel metamodel = em.getMetamodel();
+            assertNotNull("The metamodel should never be null after an em.getMetamodel() call here.", metamodel);
+            EntityTypeImpl<GalacticPosition> entityLocation_ = (EntityTypeImpl) metamodel.entity(GalacticPosition.class);
+            assertNotNull(entityLocation_);
+            EntityTypeImpl<Computer> entityComputer_ = (EntityTypeImpl)metamodel.entity(Computer.class);
+            assertNotNull(entityComputer_);
+            
+            /**
+             * Return the Java type of the represented object.
+             * If the bindable type of the object is <code>PLURAL_ATTRIBUTE</code>,
+             * the Java element type is returned. If the bindable type is
+             * <code>SINGULAR_ATTRIBUTE</code> or <code>ENTITY_TYPE</code>, 
+             * the Java type of the
+             * represented entity or attribute is returned.
+             * @return Java type
+             */
+            //Class<T> getBindableJavaType();
+            Attribute anAttribute = entityComputer_.getSingularAttribute("location");
+            assertNotNull(anAttribute);
+            assertEquals(PersistentAttributeType.ONE_TO_ONE, anAttribute.getPersistentAttributeType());
+            assertFalse(((AttributeImpl)anAttribute).isPlural());
+            assertTrue(anAttribute instanceof SingularAttribute);
+            assertEquals(Type.PersistenceType.ENTITY, entityComputer_.getPersistenceType());
+            Bindable aSingularAttribute = entityComputer_.getSingularAttribute("location");
+            assertEquals(GalacticPosition.class, aSingularAttribute.getBindableJavaType());
+        } catch (IllegalArgumentException iae) {
+            iae.printStackTrace();
+            expectedIAExceptionThrown = true;
+        } finally {
+            cleanup(em);
+            assertFalse("An IAE exception should not occur here.", expectedIAExceptionThrown);
+        }
+    }
+    
+    public void testPluralAttribute_getBindableJavaType_Method() {
         EntityManager em = null;
         boolean expectedIAExceptionThrown = false;
         try {
@@ -5458,7 +5632,16 @@ public class MetamodelMetamodelTest extends MetamodelTest {
              * @return Java type
              */
             //Class<T> getBindableJavaType();
-            
+            EntityTypeImpl<Manufacturer> entityManufacturer_ = (EntityTypeImpl)metamodel.entity(Manufacturer.class);
+            assertNotNull(entityManufacturer_);
+            assertEquals(Type.PersistenceType.ENTITY, entityManufacturer_.getPersistenceType());
+            Attribute anAttribute = entityManufacturer_.getAttribute("computers");
+            assertEquals(PersistentAttributeType.ONE_TO_MANY, anAttribute.getPersistentAttributeType());
+            assertNotNull(anAttribute);
+            assertTrue(((AttributeImpl)anAttribute).isPlural());
+            assertTrue(anAttribute instanceof PluralAttribute);
+            Bindable aPluralAttribute = entityManufacturer_.getSet("computers");
+            assertEquals(Computer.class, aPluralAttribute.getBindableJavaType());
         } catch (IllegalArgumentException iae) {
             iae.printStackTrace();
             expectedIAExceptionThrown = true;
@@ -5467,7 +5650,7 @@ public class MetamodelMetamodelTest extends MetamodelTest {
             assertFalse("An IAE exception should not occur here.", expectedIAExceptionThrown);
         }
     }
-
+    
     public void testSingularAttribute_getJavaType_Method() {
         EntityManager em = null;
         boolean expectedIAExceptionThrown = false;

@@ -17,6 +17,9 @@
  *       http://wiki.eclipse.org/EclipseLink/Development/JPA_2.0/metamodel_api#DI_74:_20090909:_Implement_IdentifiableType.hasSingleIdAttribute.28.29 
  *     10/21/2009-2.0 Guy Pelletier 
  *       - 290567: mappedbyid support incomplete
+ *     06/14/2010-2.1  mobrien - 314906: getJavaType should return the 
+ *       collection javaType C in <X,C,V) of <X, List<V>, V> instead off the elementType V.
+ *       Because of this we switch to using getBindableJavaType() in getIdType()   
  ******************************************************************************/
 package org.eclipse.persistence.internal.jpa.metamodel;
 
@@ -25,6 +28,7 @@ import java.util.List;
 import java.util.Set;
 
 import javax.persistence.metamodel.Attribute;
+import javax.persistence.metamodel.Bindable;
 import javax.persistence.metamodel.IdentifiableType;
 import javax.persistence.metamodel.SingularAttribute;
 import javax.persistence.metamodel.Type;
@@ -219,7 +223,7 @@ public abstract class IdentifiableTypeImpl<X> extends ManagedTypeImpl<X> impleme
                         // get the attribute Id (declared or not)
                         Attribute anAttribute = this.getAttribute(aMapping.getAttributeName());
                         if(anAttribute != null) {
-                            return this.getMetamodel().getType(anAttribute.getJavaType());
+                            return this.getMetamodel().getType(((Bindable)anAttribute).getBindableJavaType()); // all Attributes are Bindable
                         }                        
                     }
                 }

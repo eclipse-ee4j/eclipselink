@@ -15,6 +15,8 @@
  *       - 266912: JPA 2.0 Metamodel API (part of the JSR-317 EJB 3.1 Criteria API)  
  *    08/19/2009-2.0  mobrien - Extend Collection support
  *       http://wiki.eclipse.org/EclipseLink/Development/JPA_2.0/metamodel_api#DI_59:_20090818:_PluralAttribute.elementType_not_set_for_non-lazy_instantiated_Collection_Attribute
+ *     06/14/2010-2.1  mobrien - 314906: getJavaType should return the 
+ *       collection javaType C in <X,C,V) of <X, List<V>, V> instead off the elementType V  
  ******************************************************************************/
 package org.eclipse.persistence.internal.jpa.metamodel;
 
@@ -171,18 +173,19 @@ public abstract class PluralAttributeImpl<X, C, V> extends AttributeImpl<X, C> i
         return this.elementType;
     }
     
-    /**
-     *  Return the Java type of the represented attribute.
-     *  @return Java type
-     */
-    @Override
-    public Class<C> getJavaType() {
-        return (Class<C>)elementType.getJavaType();
-    }
-    
     @Override
     public boolean isPlural() {
         return true;
     }
 
+    @Override
+    public String toString() {
+        StringBuffer aBuffer = new StringBuffer(getJavaType().getSimpleName());
+        aBuffer.append("AttributeImpl[");
+        //aBuffer.append(getElementType());
+        //aBuffer.append(",");
+        aBuffer.append(getMapping());
+        aBuffer.append("]");
+        return aBuffer.toString();
+    }
 }

@@ -21,7 +21,9 @@
  *           when MapKey name attribute not specified (MapContainerPolicy) 
  *         add BasicMap support via DirectMapContainerPolicy
  *     13/10/2009-2.0  mobrien - 294765 - fix allows removal of workaround for
- *        when MapKey annotation not specified          
+ *        when MapKey annotation not specified
+ *     06/14/2010-2.1  mobrien - 314906: getJavaType should return the 
+ *       collection javaType C in <X,C,V) of <X, Map<K,V>, V> instead off the elementType V  
  ******************************************************************************/
 package org.eclipse.persistence.internal.jpa.metamodel;
 
@@ -234,6 +236,15 @@ public class MapAttributeImpl<X, K, V> extends PluralAttributeImpl<X, Map<K, V>,
     }
     
     /**
+     *  Return the Java type of the represented attribute.
+     *  @return Java type
+     */
+    @Override
+    public Class getJavaType() {
+        return Map.class;
+    }
+    
+    /**
      * Return the Java type of the map key.
      * @return Java key type
      * @see MapAttribute
@@ -249,10 +260,5 @@ public class MapAttributeImpl<X, K, V> extends PluralAttributeImpl<X, Map<K, V>,
      */
     public Type<K> getKeyType() {
         return this.keyType;
-    }
-
-    @Override
-    public String toString() {
-        return "MapAttributeImpl[" + getMapping() + "]";
     }
 }
