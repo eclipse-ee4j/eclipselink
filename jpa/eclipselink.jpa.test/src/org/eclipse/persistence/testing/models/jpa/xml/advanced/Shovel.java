@@ -17,6 +17,10 @@ package org.eclipse.persistence.testing.models.jpa.xml.advanced;
 
 import java.util.List;
 
+import org.eclipse.persistence.annotations.ChangeTracking;
+
+import static org.eclipse.persistence.annotations.ChangeTrackingType.DEFERRED;
+
 /**
  * This class is used to test the extended orm named-access setting.
  * 
@@ -26,6 +30,7 @@ import java.util.List;
  *  
  * @author gpelleti
  */
+@ChangeTracking(DEFERRED)
 public class Shovel {
     // id
     private Integer id;
