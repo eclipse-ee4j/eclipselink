@@ -1344,10 +1344,6 @@ public class AnnotationsProcessor {
         property.setPropertyName(propertyName);
         property.setElement(javaHasAnnotations);
         
-        if(helper.isAnnotationPresent(javaHasAnnotations, XmlPath.class)) {
-            XmlPath xmlPath = (XmlPath)helper.getAnnotation(javaHasAnnotations, XmlPath.class);
-            property.setXmlPath(xmlPath.value());
-        }
         // if there is a TypeInfo for ptype check it for transient, otherwise check the class
         TypeInfo pTypeInfo = typeInfo.get(ptype.getQualifiedName());
         if ((pTypeInfo != null && !pTypeInfo.isTransient()) || !helper.isAnnotationPresent(ptype, XmlTransient.class)) {
@@ -1369,10 +1365,26 @@ public class AnnotationsProcessor {
             }
         }
 
-        property.setSchemaName(getQNameForProperty(propertyName, javaHasAnnotations, getNamespaceInfoForPackage(cls), info.getClassNamespace()));
-
         processPropertyAnnotations(info, cls, javaHasAnnotations, property);
 
+        if (helper.isAnnotationPresent(javaHasAnnotations, XmlPath.class)) {
+            XmlPath xmlPath = (XmlPath)helper.getAnnotation(javaHasAnnotations, XmlPath.class);
+            property.setXmlPath(xmlPath.value());
+            
+            // set schema name
+            String schemaName = XMLProcessor.getNameFromXPath(xmlPath.value(), property.getPropertyName(), property.isAttribute());
+            QName qName;
+            NamespaceInfo nsInfo = getNamespaceInfoForPackage(cls);
+            if (nsInfo.isElementFormQualified()) {
+                qName = new QName(nsInfo.getNamespace(), schemaName);
+            } else {
+                qName = new QName(schemaName);
+            }
+            property.setSchemaName(qName);
+        } else {
+            property.setSchemaName(getQNameForProperty(propertyName, javaHasAnnotations, getNamespaceInfoForPackage(cls), info.getClassNamespace()));
+        }
+        
         ptype = property.getActualType();
         if (ptype.isPrimitive()) {
             property.setIsRequired(true);
@@ -1825,7 +1837,7 @@ public class AnnotationsProcessor {
                 // use the JavaBean API to correctly decapitalize the first character, if necessary
                 propertyName = Introspector.decapitalize(propertyName);
             }
-
+            
             JavaClass ptype = null;
             if (getMethod != null) {
                 ptype = (JavaClass) getMethod.getReturnType();

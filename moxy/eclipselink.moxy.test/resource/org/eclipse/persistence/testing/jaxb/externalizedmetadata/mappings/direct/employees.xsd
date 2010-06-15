@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<xsd:schema targetNamespace="http://www.example.com/employees" xmlns:ns0="http://www.example.com/employees" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:prj="http://www.example.com/projects">
+<xsd:schema xmlns:ns0="http://www.example.com/employees" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:prj="http://www.example.com/projects" targetNamespace="http://www.example.com/employees">
    <xsd:import schemaLocation="schema1.xsd" namespace="http://www.example.com/projects"/>
    <xsd:complexType name="employee">
       <xsd:sequence>
@@ -37,7 +37,7 @@
          <xsd:element name="some-string" type="xsd:string" minOccurs="0" nillable="true"/>
          <xsd:element name="a-string" type="xsd:string" minOccurs="0"/>
       </xsd:sequence>
-      <xsd:attribute name="id" type="xsd:int"/>
+      <xsd:attribute name="id" type="xsd:int" use="required"/>
       <xsd:attribute name="salary" type="xsd:double"/>
    </xsd:complexType>
    <xsd:element name="employee" type="ns0:employee"/>
