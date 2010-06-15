@@ -1589,7 +1589,7 @@ public class AnnotationsProcessor {
                 if (!Modifier.isStatic(modifiers) && !Modifier.isTransient(modifiers) && ((onlyPublic && Modifier.isPublic(next.getModifiers())) || !onlyPublic)) {
                     propertyMethods.add(next);
                 }
-            } else if ((next.getName().startsWith("set") && next.getName().length() > 3)) {
+            } else if (next.getName().startsWith("set") && next.getName().length() > 3 && next.getParameterTypes().length == 1) {
                 int modifiers = next.getModifiers();
                 if (!Modifier.isStatic(modifiers) && !Modifier.isTransient(modifiers) && ((onlyPublic && Modifier.isPublic(next.getModifiers())) || !onlyPublic)) {
                     propertyMethods.add(next);

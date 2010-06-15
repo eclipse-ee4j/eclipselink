@@ -20,6 +20,8 @@ public class EmployeeNamespace
 	@XmlElement(name="id", namespace="my.cool/namespace")
 	public int id;
 
+	
+	public void setSomething() {}
 
 	public String toString()
 	{
