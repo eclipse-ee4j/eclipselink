@@ -30,7 +30,6 @@ import javax.naming.InitialContext;
 import javax.naming.NamingException;
 
 import org.eclipse.persistence.exceptions.SDOException;
-import org.eclipse.persistence.internal.helper.ClassConstants;
 import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
 import org.eclipse.persistence.sdo.SDOConstants;
 import org.eclipse.persistence.sdo.SDOResolvable;
@@ -435,15 +434,13 @@ public class SDOHelperContext implements HelperContext {
             contextMap = new ConcurrentHashMap<String, HelperContext>();
             // use putIfAbsent to avoid concurrent entries in the map
             ConcurrentHashMap existingMap = helperContexts.putIfAbsent(key, contextMap);
-            if (existingMap != null) {
+            if (null == existingMap) {
+                addNotificationListener(key);
+            } else {
                 // if a new entry was just added, use it instead of the one we just created
                 contextMap = existingMap;
             }
-            if (key.getClass() == ClassConstants.STRING) {
-                helperContexts.put(new HelperContextMapKey(contextClassLoader), contextMap);
-            }
         }
-        addNotificationListener(key);
         return contextMap;
     }
 
