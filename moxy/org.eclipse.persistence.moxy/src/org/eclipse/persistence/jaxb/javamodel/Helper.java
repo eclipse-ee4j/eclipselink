@@ -16,8 +16,6 @@ import java.lang.annotation.Annotation;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-import javax.xml.bind.annotation.XmlTransient;
-
 import org.eclipse.persistence.oxm.XMLConstants;
 import org.eclipse.persistence.internal.helper.ClassConstants;
 import org.eclipse.persistence.jaxb.javamodel.JavaAnnotation;
