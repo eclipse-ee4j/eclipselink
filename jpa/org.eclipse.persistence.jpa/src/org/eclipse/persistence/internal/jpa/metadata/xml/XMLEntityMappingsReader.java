@@ -52,7 +52,7 @@ public class XMLEntityMappingsReader {
     public static final String ORM_1_0_NAMESPACE = "http://java.sun.com/xml/ns/persistence/orm";
     public static final String ORM_2_0_XSD = "org/eclipse/persistence/jpa/orm_2_0.xsd";
     public static final String ORM_2_0_NAMESPACE = "http://java.sun.com/xml/ns/persistence/orm";
-    public static final String ECLIPSELINK_ORM_XSD = "xsd/eclipselink_orm_2_1.xsd";
+    public static final String ECLIPSELINK_ORM_XSD = "xsd/eclipselink_orm_2_2.xsd";
     public static final String ECLIPSELINK_ORM_NAMESPACE = "http://www.eclipse.org/eclipselink/xsds/persistence/orm";
     
     private static XMLContext m_orm1_0Project;
