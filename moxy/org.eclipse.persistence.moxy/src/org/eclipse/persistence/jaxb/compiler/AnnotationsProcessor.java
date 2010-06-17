@@ -559,7 +559,7 @@ public class AnnotationsProcessor {
                     if (property.isXmlValue() && !(tInfo.getXmlValueProperty().getPropertyName().equals(property.getPropertyName()))) {
                         throw JAXBException.xmlValueAlreadySet(property.getPropertyName(), tInfo.getXmlValueProperty().getPropertyName(), jClass.getName());
                     }
-                    if (!property.isXmlValue() && !property.isAttribute() && !property.isInverseReference()) {
+                    if (!property.isXmlValue() && !property.isAttribute() && !property.isInverseReference() && !property.isTransient()) {
                         throw JAXBException.propertyOrFieldShouldBeAnAttribute(property.getPropertyName());
                     }
                 }
@@ -1288,26 +1288,25 @@ public class AnnotationsProcessor {
 
         for (Iterator<JavaField> fieldIt = cls.getDeclaredFields().iterator(); fieldIt.hasNext();) {
             JavaField nextField = fieldIt.next();
+            int modifiers = nextField.getModifiers();
             if (!helper.isAnnotationPresent(nextField, XmlTransient.class)) {
-                int modifiers = nextField.getModifiers();
                 if (!Modifier.isTransient(modifiers) && ((Modifier.isPublic(nextField.getModifiers()) && onlyPublic) || !onlyPublic)) {
-                	if(!Modifier.isStatic(modifiers)){
+                    if(!Modifier.isStatic(modifiers)){
                             Property property = buildNewProperty(info, cls, nextField, nextField.getName(), nextField.getResolvedType());
                             properties.add(property);	
-                	}else if(Modifier.isFinal(modifiers) && helper.isAnnotationPresent(nextField, XmlAttribute.class)){
-                           try{
-                               Property property = buildNewProperty(info, cls, nextField, nextField.getName(), nextField.getResolvedType());                            	  
-                               Object value =  ((JavaFieldImpl)nextField).get(null);
-                               String stringValue = (String)XMLConversionManager.getDefaultXMLManager().convertObject(value, String.class, property.getSchemaType());
-                               property.setFixedValue(stringValue);
-                               properties.add(property);
-                           }catch(ClassCastException e){
-                               //do Nothing
-                           }catch(IllegalAccessException e){
-                               //do Nothing
-                           }
-                	}
-                    
+                    }else if(Modifier.isFinal(modifiers) && helper.isAnnotationPresent(nextField, XmlAttribute.class)){
+                        try{
+                            Property property = buildNewProperty(info, cls, nextField, nextField.getName(), nextField.getResolvedType());                            	  
+                            Object value =  ((JavaFieldImpl)nextField).get(null);
+                            String stringValue = (String)XMLConversionManager.getDefaultXMLManager().convertObject(value, String.class, property.getSchemaType());
+                            property.setFixedValue(stringValue);
+                            properties.add(property);
+                        }catch(ClassCastException e){
+                           //do Nothing
+                        }catch(IllegalAccessException e){
+                            //do Nothing
+                        }
+                    }
                 }
             } else {
                 // If a property is marked transient ensure it doesn't exist in the propOrder
@@ -1953,16 +1952,18 @@ public class AnnotationsProcessor {
         for (int i = 0; i < fieldProperties.size(); i++) {
             Property next = (Property) fieldProperties.get(i);
             JavaHasAnnotations elem = next.getElement();
-            if (hasJAXBAnnotations(elem)) {
-                list.add(next);
+            if (!hasJAXBAnnotations(elem)) {
+                next.setTransient(true);
             }
+            list.add(next);
         }
         for (int i = 0; i < methodProperties.size(); i++) {
             Property next = (Property) methodProperties.get(i);
             JavaHasAnnotations elem = next.getElement();
-            if (hasJAXBAnnotations(elem)) {
-                list.add(next);
+            if (!hasJAXBAnnotations(elem)) {
+                next.setTransient(true);
             }
+            list.add(next);
         }
         return list;
     }
@@ -2448,7 +2449,6 @@ public class AnnotationsProcessor {
                         Class typeAdapterClass = typeAdapter.value();
                         declaration.setJavaTypeAdapterClass(typeAdapterClass);
 
-                        Method[] tacMethods = typeAdapterClass.getMethods();
                         Class declJavaType = CompilerHelper.getTypeFromAdapterClass(typeAdapterClass);
 
                         declaration.setJavaType(helper.getJavaClass(declJavaType));
@@ -2581,8 +2581,11 @@ public class AnnotationsProcessor {
                 || helper.isAnnotationPresent(elem, XmlElementWrapper.class)
                 || helper.isAnnotationPresent(elem, XmlList.class)
                 || helper.isAnnotationPresent(elem, XmlMimeType.class)
-                || helper.isAnnotationPresent(elem, XmlIDREF.class)) {
+                || helper.isAnnotationPresent(elem, XmlIDREF.class)
+                || helper.isAnnotationPresent(elem, XmlPath.class)
+                || helper.isAnnotationPresent(elem, XmlInverseReference.class)) {
             return true;
+        
         }
         return false;
     }
