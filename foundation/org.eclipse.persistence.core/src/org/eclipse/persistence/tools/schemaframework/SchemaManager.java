@@ -192,8 +192,8 @@ public class SchemaManager {
                     this.appendToDDLWriter(createSchemaWriter, getSession().getPlatform().getStoredProcedureTerminationToken());
                 }
                 this.appendToDDLWriter(createSchemaWriter, "\n");
-                databaseObjectDefinition.postCreateObject(getSession(), createSchemaWriter, createSQLFiles);
             }
+            databaseObjectDefinition.postCreateObject(getSession(), createSchemaWriter, createSQLFiles);
         } finally {
             if (usesBatchWriting) {
                 getSession().getPlatform().setUsesBatchWriting(true);
@@ -444,6 +444,7 @@ public class SchemaManager {
         }
 
         try {
+            databaseObjectDefinition.preDropObject(getSession(), getDropSchemaWriter(), createSQLFiles);
             if (shouldWriteToDatabase()) {
                 // drop actual object
                 databaseObjectDefinition.dropFromDatabase(getSession());

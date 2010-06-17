@@ -831,7 +831,7 @@ public class TableDefinition extends DatabaseObjectDefinition {
                     List<String> columnAsList = new ArrayList<String>();
                     columnAsList.add(field.getName());
                     buildIndexCreationWriter(session, field.getName(),
-                            columnAsList, new StringWriter());
+                            columnAsList, schemaWriter);
                     if (createSQLFiles) {
                         schemaWriter.write(session.getPlatform()
                                 .getStoredProcedureTerminationToken());
@@ -896,16 +896,6 @@ public class TableDefinition extends DatabaseObjectDefinition {
         }
     }
 
-    /**
-     * INTERNAL:
-     * Execute the DDL to create this table.
-     */
-    public void createOnDatabase(AbstractSession session) throws EclipseLinkException {
-        super.createOnDatabase(session);
-        createIndexOnPrimaryKeyOnDatabase(session);
-        createIndicesOnUniqueKeysOnDatabase(session);
-    }
-    
     /**
      * INTERNAL:
      * Return the delete SQL string.
@@ -994,17 +984,6 @@ public class TableDefinition extends DatabaseObjectDefinition {
         }
     }
 
-    /**
-     * INTERNAL:
-     * Execute the DDL to drop the table.
-     */
-    public void dropFromDatabase(AbstractSession session) throws EclipseLinkException {
-        // first drop indices on table's primary and unique keys (if required)
-        dropIndicesOnUniqueKeysOnDatabase(session);
-        dropIndexOnPrimaryKeyOnDatabase(session);
-        super.dropFromDatabase(session);
-    }
-    
     /**
      * INTERNAL:<br/>
      * Write the SQL drop index string to drop index on PK if passed a writer,
@@ -1146,19 +1125,6 @@ public class TableDefinition extends DatabaseObjectDefinition {
 
     /**
      * INTERNAL:
-     * Execute the DDL to drop the table.  Either directly from the database
-     * of write out the statement to a file.
-     */
-    public void dropObject(AbstractSession session, Writer schemaWriter, boolean createSQLFiles) throws EclipseLinkException {
-        // first drop indices on table's primary and unique keys (if required)
-        setCreateSQLFiles(createSQLFiles);
-        dropIndicesOnUniqueKeys(session, schemaWriter);
-        dropIndexOnPrimaryKey(session, schemaWriter);
-        super.dropObject(session, schemaWriter, createSQLFiles);
-    }
-    
-    /**
-     * INTERNAL:
      */
     HashMap<String, ForeignKeyConstraint> getForeignKeyMap() {
         return foreignKeyMap;
@@ -1219,6 +1185,18 @@ public class TableDefinition extends DatabaseObjectDefinition {
         setCreateSQLFiles(createSQLFiles);
         createIndexOnPrimaryKey(session, createSchemaWriter);
         createIndicesOnUniqueKeys(session, createSchemaWriter);
+    }
+    
+    /**
+     * Execute any statements required before the deletion of the object
+     * @param session
+     * @param dropSchemaWriter
+     */
+    public void preDropObject(AbstractSession session, Writer dropSchemaWriter, boolean createSQLFiles){
+        // drop indices on table's primary and unique keys (if required)
+        setCreateSQLFiles(createSQLFiles);
+        dropIndicesOnUniqueKeys(session, dropSchemaWriter);
+        dropIndexOnPrimaryKey(session, dropSchemaWriter);
     }
     
     /**

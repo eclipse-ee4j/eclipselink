@@ -143,6 +143,14 @@ public abstract class DatabaseObjectDefinition implements Cloneable, Serializabl
     }
     
     /**
+     * Execute any statements required before the deletion of the object
+     * @param session
+     * @param dropSchemaWriter
+     */
+    public void preDropObject(AbstractSession session, Writer dropSchemaWriter, boolean createSQLFiles){
+    }
+    
+    /**
      * PUBLIC:
      * Set the name of the object.
      * i.e. the table name or the sequence name.
