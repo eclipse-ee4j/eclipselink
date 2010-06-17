@@ -11,6 +11,8 @@
  *     Oracle - initial API and implementation from Oracle TopLink
  *     02/25/2009-2.0 Guy Pelletier 
  *       - 265359: JPA 2.0 Element Collections - Metadata processing portions
+ *     06/16/2010-2.2 Guy Pelletier 
+ *       - 247078: eclipselink-orm.xml schema should allow lob and enumerated on version and id mappings
  ******************************************************************************/  
 package org.eclipse.persistence.testing.models.jpa.advanced;
 
@@ -60,6 +62,9 @@ public class AdvancedTableCreator extends TogglingFastTableCreator {
         addTableDefinition(buildADVENTITYAENTITYDTable());
         addTableDefinition(buildENTITYETable());
         addTableDefinition(buildADVENTITYAENTITYETable());
+        addTableDefinition(buildVIOLATIONTable());
+        addTableDefinition(buildVIOLATIONCODETable());
+        addTableDefinition(buildVIOLATIONCODESTable());
     }
     
     public static TableDefinition buildADDRESSTable() {
@@ -1438,6 +1443,83 @@ public class AdvancedTableCreator extends TogglingFastTableCreator {
         return table;
     }
 
+	public static TableDefinition buildVIOLATIONTable() {
+	    TableDefinition table = new TableDefinition();
+	    table.setName("VIOLATION");
+	    
+        FieldDefinition fieldID = new FieldDefinition();
+        fieldID.setName("ID");
+        fieldID.setTypeName("VARCHAR");
+        fieldID.setSize(2);
+        fieldID.setSubSize(0);
+        fieldID.setIsPrimaryKey(true);
+        fieldID.setIsIdentity(true);
+        fieldID.setUnique(false);
+        fieldID.setShouldAllowNull(false);
+        table.addField(fieldID);
+        
+	    return table;
+	}
+	
+	public static TableDefinition buildVIOLATIONCODETable() {
+	    TableDefinition table = new TableDefinition();
+	    table.setName("VIOLATION_CODE");
+	    
+        FieldDefinition fieldID = new FieldDefinition();
+        fieldID.setName("ID");
+        fieldID.setTypeName("NUMERIC");
+        fieldID.setSize(15);
+        fieldID.setSubSize(0);
+        fieldID.setIsPrimaryKey(true);
+        fieldID.setIsIdentity(true);
+        fieldID.setUnique(false);
+        fieldID.setShouldAllowNull(false);
+        table.addField(fieldID);
+        
+        FieldDefinition fieldDESCRIP = new FieldDefinition();
+        fieldDESCRIP.setName("DESCRIP");
+        fieldDESCRIP.setTypeName("VARCHAR");
+        fieldDESCRIP.setSize(100);
+        fieldDESCRIP.setShouldAllowNull(true);
+        fieldDESCRIP.setIsPrimaryKey(false);
+        fieldDESCRIP.setUnique(false);
+        fieldDESCRIP.setIsIdentity(false);
+        table.addField(fieldDESCRIP);
+	    
+	    return table;
+    }
+	
+	public static TableDefinition buildVIOLATIONCODESTable() {
+        TableDefinition table = new TableDefinition();
+        table.setName("VIOLATION_CODES");
+        
+        FieldDefinition fieldVIOLATIONID = new FieldDefinition();
+        fieldVIOLATIONID.setName("VIOLATION_ID");
+        fieldVIOLATIONID.setTypeName("VARCHAR");
+        fieldVIOLATIONID.setSize(2);
+        fieldVIOLATIONID.setSubSize(0);
+        fieldVIOLATIONID.setIsPrimaryKey(false);
+        fieldVIOLATIONID.setIsIdentity(false);
+        fieldVIOLATIONID.setUnique(false);
+        fieldVIOLATIONID.setShouldAllowNull(false);
+        fieldVIOLATIONID.setForeignKeyFieldName("VIOLATION.ID");
+        table.addField(fieldVIOLATIONID);
+        
+        FieldDefinition fieldVIOLATIONCODEID = new FieldDefinition();
+        fieldVIOLATIONCODEID.setName("VIOLATION_CODE_ID");
+        fieldVIOLATIONCODEID.setTypeName("NUMERIC");
+        fieldVIOLATIONCODEID.setSize(15);
+        fieldVIOLATIONCODEID.setSubSize(0);
+        fieldVIOLATIONCODEID.setIsPrimaryKey(false);
+        fieldVIOLATIONCODEID.setIsIdentity(false);
+        fieldVIOLATIONCODEID.setUnique(false);
+        fieldVIOLATIONCODEID.setShouldAllowNull(false);
+        fieldVIOLATIONCODEID.setForeignKeyFieldName("VIOLATION_CODE.ID");
+        table.addField(fieldVIOLATIONCODEID);
+        
+        return table;
+    }
+	
     public static TableDefinition buildWOMANTable() {
         TableDefinition table = new TableDefinition();
         table.setName("WOMAN");

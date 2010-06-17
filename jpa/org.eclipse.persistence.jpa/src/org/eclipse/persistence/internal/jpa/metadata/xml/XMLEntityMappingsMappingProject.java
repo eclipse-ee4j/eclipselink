@@ -1418,6 +1418,7 @@ public class XMLEntityMappingsMappingProject extends org.eclipse.persistence.ses
         descriptor.addMapping(getColumnMapping());
         descriptor.addMapping(getGeneratedValueMapping());
         descriptor.addMapping(getTemporalMapping());
+        descriptor.addMapping(getEnumeratedMapping());
         descriptor.addMapping(getConvertMapping());
         descriptor.addMapping(getConverterMapping());
         descriptor.addMapping(getTypeConverterMapping());

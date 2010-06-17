@@ -1937,9 +1937,9 @@
       <xsd:element name="generated-value" type="orm:generated-value"
                    minOccurs="0"/>
       <xsd:choice minOccurs="0">
-      <xsd:element name="temporal" type="orm:temporal" 
-                   minOccurs="0"/>
-      <xsd:element name="convert" type="xsd:string"/>
+        <xsd:element name="temporal" type="orm:temporal"/>
+        <xsd:element name="enumerated" type="orm:enumerated"/>
+        <xsd:element name="convert" type="xsd:string"/>
       </xsd:choice>
       <xsd:choice minOccurs="0">
         <xsd:element name="converter" type="orm:converter"/>

@@ -19,6 +19,8 @@
  *       - 303632: Add attribute-type for mapping attributes to EclipseLink-ORM
  *     03/29/2010-2.1 Guy Pelletier 
  *       - 267217: Add Named Access Type to EclipseLink-ORM
+ *     06/16/2010-2.2 Guy Pelletier 
+ *       - 247078: eclipselink-orm.xml schema should allow lob and enumerated on version and id mappings
  ******************************************************************************/  
 package org.eclipse.persistence.testing.models.jpa.xml.advanced;
 
@@ -57,6 +59,10 @@ public class AdvancedTableCreator extends TogglingFastTableCreator {
         addTableDefinition(buildSHOVELOWNERTable());
         addTableDefinition(buildSHOVELPROJECTTable());
         addTableDefinition(buildSHOVELPROJECTSTable());
+
+        addTableDefinition(buildVIOLATIONTable());
+        addTableDefinition(buildVIOLATIONCODETable());
+        addTableDefinition(buildVIOLATIONCODESTable());
     }
     
     public static TableDefinition buildREADONLYCLASSTable() {
@@ -1192,6 +1198,83 @@ public class AdvancedTableCreator extends TogglingFastTableCreator {
         fieldSCOOP.setUnique(false);
         fieldSCOOP.setIsIdentity(false);
         table.addField(fieldSCOOP);
+        
+        return table;
+    }
+
+public static TableDefinition buildVIOLATIONTable() {
+	    TableDefinition table = new TableDefinition();
+	    table.setName("XML_VIOLATION");
+	    
+        FieldDefinition fieldID = new FieldDefinition();
+        fieldID.setName("ID");
+        fieldID.setTypeName("VARCHAR");
+        fieldID.setSize(2);
+        fieldID.setSubSize(0);
+        fieldID.setIsPrimaryKey(true);
+        fieldID.setIsIdentity(true);
+        fieldID.setUnique(false);
+        fieldID.setShouldAllowNull(false);
+        table.addField(fieldID);
+        
+	    return table;
+	}
+	
+	public static TableDefinition buildVIOLATIONCODETable() {
+	    TableDefinition table = new TableDefinition();
+	    table.setName("XML_VIOLATION_CODE");
+	    
+        FieldDefinition fieldID = new FieldDefinition();
+        fieldID.setName("ID");
+        fieldID.setTypeName("NUMERIC");
+        fieldID.setSize(15);
+        fieldID.setSubSize(0);
+        fieldID.setIsPrimaryKey(true);
+        fieldID.setIsIdentity(true);
+        fieldID.setUnique(false);
+        fieldID.setShouldAllowNull(false);
+        table.addField(fieldID);
+        
+        FieldDefinition fieldDESCRIP = new FieldDefinition();
+        fieldDESCRIP.setName("DESCRIP");
+        fieldDESCRIP.setTypeName("VARCHAR");
+        fieldDESCRIP.setSize(100);
+        fieldDESCRIP.setShouldAllowNull(true);
+        fieldDESCRIP.setIsPrimaryKey(false);
+        fieldDESCRIP.setUnique(false);
+        fieldDESCRIP.setIsIdentity(false);
+        table.addField(fieldDESCRIP);
+	    
+	    return table;
+    }
+	
+	public static TableDefinition buildVIOLATIONCODESTable() {
+        TableDefinition table = new TableDefinition();
+        table.setName("XML_VIOLATION_CODES");
+        
+        FieldDefinition fieldVIOLATIONID = new FieldDefinition();
+        fieldVIOLATIONID.setName("VIOLATION_ID");
+        fieldVIOLATIONID.setTypeName("VARCHAR");
+        fieldVIOLATIONID.setSize(2);
+        fieldVIOLATIONID.setSubSize(0);
+        fieldVIOLATIONID.setIsPrimaryKey(false);
+        fieldVIOLATIONID.setIsIdentity(false);
+        fieldVIOLATIONID.setUnique(false);
+        fieldVIOLATIONID.setShouldAllowNull(false);
+        fieldVIOLATIONID.setForeignKeyFieldName("XML_VIOLATION.ID");
+        table.addField(fieldVIOLATIONID);
+        
+        FieldDefinition fieldVIOLATIONCODEID = new FieldDefinition();
+        fieldVIOLATIONCODEID.setName("VIOLATION_CODE_ID");
+        fieldVIOLATIONCODEID.setTypeName("NUMERIC");
+        fieldVIOLATIONCODEID.setSize(15);
+        fieldVIOLATIONCODEID.setSubSize(0);
+        fieldVIOLATIONCODEID.setIsPrimaryKey(false);
+        fieldVIOLATIONCODEID.setIsIdentity(false);
+        fieldVIOLATIONCODEID.setUnique(false);
+        fieldVIOLATIONCODEID.setShouldAllowNull(false);
+        fieldVIOLATIONCODEID.setForeignKeyFieldName("XML_VIOLATION_CODE.ID");
+        table.addField(fieldVIOLATIONCODEID);
         
         return table;
     }

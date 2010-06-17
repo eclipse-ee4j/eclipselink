@@ -17,6 +17,8 @@
  *       - 267217: Add Named Access Type to EclipseLink-ORM
  *     04/09/2010-2.1 Guy Pelletier 
  *       - 307050: Add defaults for access methods of a VIRTUAL access type
+ *     06/16/2010-2.2 Guy Pelletier 
+ *       - 247078: eclipselink-orm.xml schema should allow lob and enumerated on version and id mappings
  ******************************************************************************/  
 package org.eclipse.persistence.testing.tests.jpa.xml.advanced;
 
@@ -71,6 +73,10 @@ import org.eclipse.persistence.testing.models.jpa.xml.advanced.ShovelProject;
 import org.eclipse.persistence.testing.models.jpa.xml.advanced.ShovelSections;
 import org.eclipse.persistence.testing.models.jpa.xml.advanced.SmallProject;
 import org.eclipse.persistence.testing.models.jpa.xml.advanced.ShovelSections.MaterialType;
+import org.eclipse.persistence.testing.models.jpa.xml.advanced.Violation;
+import org.eclipse.persistence.testing.models.jpa.xml.advanced.ViolationCode;
+import org.eclipse.persistence.testing.models.jpa.xml.advanced.Violation.ViolationID;
+import org.eclipse.persistence.testing.models.jpa.xml.advanced.ViolationCode.ViolationCodeId;
 import org.eclipse.persistence.testing.framework.JoinedAttributeTestHelper;
 import org.eclipse.persistence.testing.framework.junit.JUnitTestCase;
 import org.eclipse.persistence.testing.tests.jpa.TestingProperties;
@@ -149,6 +155,8 @@ public class EntityMappingsAdvancedJUnitTestCase extends JUnitTestCase {
             // These are dynamic persistence tests.
             suite.addTest(new EntityMappingsAdvancedJUnitTestCase("testAttributeTypeSpecifications", persistenceUnit));
             suite.addTest(new EntityMappingsAdvancedJUnitTestCase("testMockDynamicClassCRUD", persistenceUnit));
+            
+            suite.addTest(new EntityMappingsAdvancedJUnitTestCase("testEnumeratedPrimaryKeys", persistenceUnit));
         }
         
         return suite;
@@ -1633,5 +1641,57 @@ public class EntityMappingsAdvancedJUnitTestCase extends JUnitTestCase {
         } finally {
             closeEntityManager(em);
         }
-    }    
+    }   
+    
+    /**
+     * Fix for bug 247078: eclipselink-orm.xml schema should allow lob and 
+     * enumerated on version and id mappings 
+     */
+    public void testEnumeratedPrimaryKeys(){
+        EntityManager em = createEntityManager(m_persistenceUnit);
+        
+        try {
+            beginTransaction(em);
+            
+            ViolationCode codeA = new ViolationCode();
+            codeA.setId(ViolationCodeId.A);
+            codeA.setDescription("Violation A");
+            em.persist(codeA);
+            
+            ViolationCode codeB = new ViolationCode();
+            codeB.setId(ViolationCodeId.B);
+            codeB.setDescription("Violation B");
+            em.persist(codeB);
+            
+            ViolationCode codeC = new ViolationCode();
+            codeC.setId(ViolationCodeId.C);
+            codeC.setDescription("Violation C");
+            em.persist(codeC);
+            
+            ViolationCode codeD = new ViolationCode();
+            codeD.setId(ViolationCodeId.D);
+            codeD.setDescription("Violation D");
+            em.persist(codeD);
+            
+            Violation violation = new Violation();
+            violation.setId(ViolationID.V1);
+            violation.getViolationCodes().add(codeA);
+            violation.getViolationCodes().add(codeC);
+            violation.getViolationCodes().add(codeD);
+            em.persist(violation);
+            
+            commitTransaction(em);
+            
+            // Force the read to hit the database and make sure the violation is read back.
+            clearCache(m_persistenceUnit);
+            em.clear();
+            Violation refreshedViolation = em.find(Violation.class, violation.getId());
+            assertNotNull("Unable to read back the violation", refreshedViolation);
+            assertTrue("Violation object did not match after refresh", getServerSession(m_persistenceUnit).compareObjects(violation, refreshedViolation));
+        } catch (Exception e) {
+            fail("An error occurred: " + e.getMessage());
+        } finally {
+            closeEntityManager(em);
+        }
+    }
 }

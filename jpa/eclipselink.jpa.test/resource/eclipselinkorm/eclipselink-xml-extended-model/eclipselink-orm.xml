@@ -450,6 +450,31 @@
             <many-to-many name="shovels" target-entity="Shovel" mapped-by="projects" attribute-type="java.util.List"/>
         </attributes>
     </entity>
+    <entity name="XMLViolation" class="Violation" access="FIELD">
+        <table name="XML_VIOLATION"/>
+        <attributes>
+            <id name="id">
+                <enumerated>STRING</enumerated>
+            </id>
+            <many-to-many name="violationCodes">
+                <join-table name="XML_VIOLATION_CODES">
+                    <join-column name="VIOLATION_ID"/>
+                    <inverse-join-column name="VIOLATION_CODE_ID"/>
+                </join-table>
+            </many-to-many>
+        </attributes>
+    </entity>
+    <entity name="XMLViolationCode" class="ViolationCode" access="FIELD">
+        <table name="XML_VIOLATION_CODE"/>
+        <attributes>
+            <id name="id">
+                <enumerated>ORDINAL</enumerated>
+            </id>
+            <basic name="description">
+                <column name="DESCRIP"/>
+            </basic>
+        </attributes>
+    </entity>
     <embeddable class="ShovelSections" access="VIRTUAL">
         <access-methods get-method="getMaterial" set-method="setMaterial"/>
         <attributes>

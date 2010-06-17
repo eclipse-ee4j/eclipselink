@@ -13,6 +13,8 @@
  *       - 302316: clear the object cache when testing stored procedure returns on SQLServer 
  *         to avoid false positives visible only when debugging in DatabaseCall.buildOutputRow()
  *       - 260263: SQLServer 2005/2008 requires stored procedure creation select clause variable and column name matching
+ *     06/16/2010-2.2 Guy Pelletier 
+ *       - 247078: eclipselink-orm.xml schema should allow lob and enumerated on version and id mappings
  ******************************************************************************/  
 package org.eclipse.persistence.testing.tests.jpa.advanced;
 
@@ -75,6 +77,10 @@ import org.eclipse.persistence.testing.models.jpa.advanced.LargeProject;
 import org.eclipse.persistence.testing.models.jpa.advanced.PhoneNumber;
 import org.eclipse.persistence.testing.models.jpa.advanced.Project;
 import org.eclipse.persistence.testing.models.jpa.advanced.SmallProject;
+import org.eclipse.persistence.testing.models.jpa.advanced.Violation;
+import org.eclipse.persistence.testing.models.jpa.advanced.ViolationCode;
+import org.eclipse.persistence.testing.models.jpa.advanced.Violation.ViolationID;
+import org.eclipse.persistence.testing.models.jpa.advanced.ViolationCode.ViolationCodeId;
 
 /**
  * This test suite tests EclipseLink JPA annotations extensions.
@@ -160,6 +166,8 @@ public class AdvancedJPAJunitTest extends JUnitTestCase {
         suite.addTest(new AdvancedJPAJunitTest("testUnidirectionalTargetLocking_AddRemoveTarget"));
         suite.addTest(new AdvancedJPAJunitTest("testUnidirectionalTargetLocking_DeleteSource"));
         
+        suite.addTest(new AdvancedJPAJunitTest("testEnumeratedPrimaryKeys"));
+        
         return suite;
     }
     
@@ -171,7 +179,7 @@ public class AdvancedJPAJunitTest extends JUnitTestCase {
         new AdvancedTableCreator().replaceTables(session);
         // The EquipmentCode class 'should' be set to read only. We want 
         // to be able to create a couple in the Employee populator, so 
-         // force the read only to false. If EquipmentCode is not 
+        // force the read only to false. If EquipmentCode is not 
         // actually read only, don't worry, we set the original read
         // only value back on the descriptor and the error will be 
         // caught in a later test in this suite.
@@ -1786,6 +1794,58 @@ public class AdvancedJPAJunitTest extends JUnitTestCase {
         // non-empty error message means the test has failed
         if(errorMsg.length() > 0) {
             fail(errorMsg);
+        }
+    }
+    
+    /**
+     * Fix for bug 247078: eclipselink-orm.xml schema should allow lob and 
+     * enumerated on version and id mappings 
+     */
+    public void testEnumeratedPrimaryKeys(){
+        EntityManager em = createEntityManager();
+        
+        try {
+            beginTransaction(em);
+            
+            ViolationCode codeA = new ViolationCode();
+            codeA.setId(ViolationCodeId.A);
+            codeA.setDescription("Violation A");
+            em.persist(codeA);
+            
+            ViolationCode codeB = new ViolationCode();
+            codeB.setId(ViolationCodeId.B);
+            codeB.setDescription("Violation B");
+            em.persist(codeB);
+            
+            ViolationCode codeC = new ViolationCode();
+            codeC.setId(ViolationCodeId.C);
+            codeC.setDescription("Violation C");
+            em.persist(codeC);
+            
+            ViolationCode codeD = new ViolationCode();
+            codeD.setId(ViolationCodeId.D);
+            codeD.setDescription("Violation D");
+            em.persist(codeD);
+            
+            Violation violation = new Violation();
+            violation.setId(ViolationID.V1);
+            violation.getViolationCodes().add(codeA);
+            violation.getViolationCodes().add(codeC);
+            violation.getViolationCodes().add(codeD);
+            em.persist(violation);
+            
+            commitTransaction(em);
+            
+            // Force the read to hit the database and make sure the violation is read back.
+            clearCache();
+            em.clear();
+            Violation refreshedViolation = em.find(Violation.class, violation.getId());
+            assertNotNull("Unable to read back the violation", refreshedViolation);
+            assertTrue("Violation object did not match after refresh", getServerSession().compareObjects(violation, refreshedViolation));
+        } catch (Exception e) {
+            fail("An error occurred: " + e.getMessage());
+        } finally {
+            closeEntityManager(em);
         }
     }
     
