@@ -31,6 +31,8 @@
  *       - 299893: @MapKeyClass does not work with ElementCollection
  *     02/18/2010-2.0.2 Guy Pelletier 
  *       - 294803: @Column(updatable=false) has no effect on @Basic mappings
+ *     06/18/2010-2.2 Guy Pelletier 
+ *       - 300458: EclispeLink should throw a more specific exception than NPE
  ******************************************************************************/  
 package org.eclipse.persistence.testing.models.jpa.inherited;
 
@@ -88,10 +90,10 @@ public class InheritedTableManager extends TogglingFastTableCreator {
         addTableDefinition(build_COMMITTEE_Table());
         addTableDefinition(build_SERIALNUMBER_Table());
         addTableDefinition(build_TELEPHONE_NUMBER_Table());
-        
         addTableDefinition(build_LOCATION_Table());
         
         addTableDefinition(build_BC_LOOKUP_Table());
+        addTableDefinition(build_NOISE_BYLAW_Table());
     }
     
     public static TableDefinition build_ALPINE_Table() {
@@ -833,6 +835,43 @@ public class InheritedTableManager extends TogglingFastTableCreator {
         COUNTRY_field.setUnique(false);
         COUNTRY_field.setIsIdentity(false);
         table.addField(COUNTRY_field);
+        
+        return table;
+    }
+    
+    public static TableDefinition build_NOISE_BYLAW_Table() {
+        TableDefinition table = new TableDefinition();
+        table.setName("JPA_NOISY");
+        
+        FieldDefinition CITY_field = new FieldDefinition();
+        CITY_field.setName("CITY");
+        CITY_field.setTypeName("VARCHAR");
+        CITY_field.setSize(25);
+        CITY_field.setIsPrimaryKey(true);
+        CITY_field.setUnique(false);
+        CITY_field.setIsIdentity(false);
+        CITY_field.setShouldAllowNull(false);
+        table.addField(CITY_field);
+        
+        FieldDefinition NUMB_field = new FieldDefinition();
+        NUMB_field.setName("NUMB");
+        NUMB_field.setTypeName("NUMERIC");
+        NUMB_field.setSize(15);
+        NUMB_field.setIsPrimaryKey(true);
+        NUMB_field.setUnique(false);
+        NUMB_field.setIsIdentity(false);
+        NUMB_field.setShouldAllowNull(false);
+        table.addField(NUMB_field);
+        
+        FieldDefinition DESCRIP_field = new FieldDefinition();
+        DESCRIP_field.setName("DESCRIP");
+        DESCRIP_field.setTypeName("VARCHAR");
+        DESCRIP_field.setSize(100);
+        DESCRIP_field.setIsPrimaryKey(false);
+        DESCRIP_field.setUnique(false);
+        DESCRIP_field.setIsIdentity(false);
+        DESCRIP_field.setShouldAllowNull(true);
+        table.addField(DESCRIP_field);
         
         return table;
     }

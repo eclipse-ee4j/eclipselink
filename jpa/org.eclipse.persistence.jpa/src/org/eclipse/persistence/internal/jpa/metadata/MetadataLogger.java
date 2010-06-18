@@ -27,6 +27,8 @@
  *       - 277039: JPA 2.0 Cache Usage Settings
  *     01/19/2010-2.1 Guy Pelletier 
  *       - 211322: Add fetch-group(s) support to the EclipseLink-ORM.XML Schema
+ *     06/18/2010-2.2 Guy Pelletier 
+ *       - 300458: EclispeLink should throw a more specific exception than NPE
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata;
 
@@ -104,6 +106,8 @@ public class MetadataLogger {
     
     public static final String IGNORE_FETCH_GROUP = "metadata_warning_ignore_fetch_group";
     public static final String IGNORE_MAPPING_METADATA = "metadata_warning_ignore_mapping_metadata";
+    
+    public static final String MULTIPLE_ID_FIELDS_WITHOUT_ID_CLASS = "metadata_warning_multiple_id_fields_without_id_class";
     
     
     /*************************************************************************/
@@ -238,6 +242,8 @@ public class MetadataLogger {
         
         addContextString(IGNORE_FETCH_GROUP);
         addContextString(IGNORE_MAPPING_METADATA);
+        
+        addContextString(MULTIPLE_ID_FIELDS_WITHOUT_ID_CLASS);
         
         // Generic default messages that could apply to XML and annotation
         // configurations.

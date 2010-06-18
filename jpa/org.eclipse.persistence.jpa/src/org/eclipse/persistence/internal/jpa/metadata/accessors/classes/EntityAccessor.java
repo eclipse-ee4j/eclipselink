@@ -63,6 +63,8 @@
  *       - 313401: shared-cache-mode defaults to NONE when the element value is unrecognized
  *     06/14/2010-2.2 Guy Pelletier 
  *       - 264417: Table generation is incorrect for JoinTables in AssociationOverrides
+ *     06/18/2010-2.2 Guy Pelletier 
+ *       - 300458: EclispeLink should throw a more specific exception than NPE
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata.accessors.classes;
 
@@ -1365,6 +1367,13 @@ public class EntityAccessor extends MappedSuperclassAccessor {
         if (getDescriptor().hasCompositePrimaryKey()) {
             if (getDescriptor().pkClassWasNotValidated()) {
                 throw ValidationException.invalidCompositePKSpecification(getJavaClass(), getDescriptor().getPKClassName());
+            }
+
+            // Log a warning to the user that they have specified multiple id 
+            // fields without an id class specification. If they are using a
+            // @PrimaryKey specification don't issue the warning.
+            if (! getDescriptor().hasPKClass() && ! getDescriptor().hasPrimaryKey()) {
+                getLogger().logWarningMessage(MetadataLogger.MULTIPLE_ID_FIELDS_WITHOUT_ID_CLASS, getJavaClassName());
             }
         } else {
             // Descriptor has a single primary key. Validate an id 

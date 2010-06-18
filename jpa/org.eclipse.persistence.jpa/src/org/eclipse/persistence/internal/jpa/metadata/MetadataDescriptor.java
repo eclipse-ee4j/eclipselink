@@ -66,6 +66,8 @@
  *       - 315195: Add new property to avoid reading XML during the canonical model generation
  *     06/14/2010-2.2 Guy Pelletier 
  *       - 264417: Table generation is incorrect for JoinTables in AssociationOverrides
+ *     06/18/2010-2.2 Guy Pelletier 
+ *       - 300458: EclispeLink should throw a more specific exception than NPE
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata;
 
@@ -131,6 +133,7 @@ public class MetadataDescriptor {
     private boolean m_hasCustomizer;
     private boolean m_hasReadOnly;
     private boolean m_hasCopyPolicy;
+    private boolean m_hasPrimaryKey;
     
     // Default access methods are used for VIRTUAL mapping attributes when
     // the attributes do not specify their own access methods.
@@ -199,6 +202,7 @@ public class MetadataDescriptor {
         m_hasCustomizer = false;
         m_hasReadOnly = false;
         m_hasCopyPolicy = false;
+        m_hasPrimaryKey = false;
         m_isCascadePersist = false;
         m_ignoreAnnotations = false;
         m_ignoreDefaultMappings = false;
@@ -1079,6 +1083,15 @@ public class MetadataDescriptor {
     public boolean hasCopyPolicy() {
         return m_hasCopyPolicy;
     }
+    
+    /**
+     * INTERNAL:
+     * Indicates that a PrimaryKey annotation or primary-key element has been 
+     * processed for this descriptor.
+     */
+    public boolean hasPrimaryKey() {
+        return m_hasPrimaryKey;
+    }
 
     /**
      * INTERNAL:
@@ -1467,6 +1480,15 @@ public class MetadataDescriptor {
      */
     public void setHasDefaultRedirectors() {
         m_hasDefaultRedirectors = true;
+    }
+    
+    /**
+     * INTERNAL:
+     * Indicates that we have processed a PrimaryKey annotation or primary-key
+     * xml element.
+     */
+    public void setHasPrimaryKey() {
+       m_hasPrimaryKey = true; 
     }
     
     /**

@@ -27,6 +27,8 @@
  *       - 249037: JPA 2.0 persisting list item index
  *     02/18/2010-2.0.2 Guy Pelletier 
  *       - 294803: @Column(updatable=false) has no effect on @Basic mappings
+ *     06/18/2010-2.2 Guy Pelletier 
+ *       - 300458: EclispeLink should throw a more specific exception than NPE
  ******************************************************************************/  
 package org.eclipse.persistence.testing.tests.jpa.inherited;
 
@@ -62,6 +64,7 @@ import org.eclipse.persistence.testing.models.jpa.inherited.ExpertBeerConsumer;
 import org.eclipse.persistence.testing.models.jpa.inherited.Heineken;
 import org.eclipse.persistence.testing.models.jpa.inherited.InheritedTableManager;
 import org.eclipse.persistence.testing.models.jpa.inherited.Location;
+import org.eclipse.persistence.testing.models.jpa.inherited.NoiseBylaw;
 import org.eclipse.persistence.testing.models.jpa.inherited.NoviceBeerConsumer;
 import org.eclipse.persistence.testing.models.jpa.inherited.Official;
 import org.eclipse.persistence.testing.models.jpa.inherited.OfficialEntry;
@@ -137,6 +140,7 @@ public class InheritedModelJunitTest extends JUnitTestCase {
         suite.addTest(new InheritedModelJunitTest("testColumnUpdatableAndInsertable"));
         suite.addTest(new InheritedModelJunitTest("testColumnUpdatableAndInsertableThroughQuery"));
         suite.addTest(new InheritedModelJunitTest("testElementCollectionMapEmbeddable"));
+        suite.addTest(new InheritedModelJunitTest("testMultipleIdButNonIdClassEntity"));
         
         return suite;
     }
@@ -147,6 +151,44 @@ public class InheritedModelJunitTest extends JUnitTestCase {
     public void testSetup() {
         new InheritedTableManager().replaceTables(JUnitTestCase.getServerSession());
         clearCache();
+    }
+    
+    public void  testMultipleIdButNonIdClassEntity() {
+        EntityManager em = createEntityManager();
+        beginTransaction(em);
+        
+        NoiseBylaw noiseBylaw = new NoiseBylaw();
+        int noiseBylawId = 0;
+        
+        try {
+            getServerSession().setLogLevel(0);
+            
+            noiseBylaw.setCity("Ottawa");
+            noiseBylaw.setDescription("Can't mow your grass after 9PM!");
+            em.persist(noiseBylaw);
+            noiseBylawId = noiseBylaw.getNumber();
+            commitTransaction(em);
+        } catch (RuntimeException e) {
+            if (isTransactionActive(em)){
+                rollbackTransaction(em);
+            }
+            
+            closeEntityManager(em);
+            fail("An exception was caught during create operation: [" + e.getMessage() + "]");
+        }
+        
+        closeEntityManager(em);
+        
+        clearCache();
+        em = createEntityManager();
+        
+        // find by object entity will not work since there is no IdClass in 
+        // this case so we will look it up through jpql
+        String jpqlString = "SELECT n FROM NoiseBylaw n WHERE n.number =" + noiseBylawId;
+        NoiseBylaw refreshedNoiseBylaw = (NoiseBylaw) em.createQuery(jpqlString).getSingleResult();
+        assertTrue("The noise bylaw read back did not match the original", getServerSession().compareObjects(noiseBylaw, refreshedNoiseBylaw));
+        
+        closeEntityManager(em);
     }
     
     public void testBecksBeerConsumer() {

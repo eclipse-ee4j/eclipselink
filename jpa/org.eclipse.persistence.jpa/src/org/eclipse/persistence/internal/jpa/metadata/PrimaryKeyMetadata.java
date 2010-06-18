@@ -11,6 +11,8 @@
  *     James Sutherland - initial impl
  *     04/27/2010-2.1 Guy Pelletier 
  *       - 309856: MappedSuperclasses from XML are not being initialized properly
+ *     06/18/2010-2.2 Guy Pelletier 
+ *       - 300458: EclispeLink should throw a more specific exception than NPE
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata;
 
@@ -118,6 +120,8 @@ public class PrimaryKeyMetadata extends ORMetadata {
      * Process the meta-data, configure primary key and idValidation in descriptor.
      */
     public void process(MetadataDescriptor descriptor) {
+        descriptor.setHasPrimaryKey();
+        
         if (m_validation != null) {
             descriptor.getClassDescriptor().setIdValidation(IdValidation.valueOf(m_validation));
         }
