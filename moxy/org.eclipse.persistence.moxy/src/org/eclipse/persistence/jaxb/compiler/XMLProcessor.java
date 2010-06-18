@@ -511,8 +511,18 @@ public class XMLProcessor {
         // set isAttribute
         oldProperty.setIsAttribute(true);
 
-        // set required
-        oldProperty.setIsRequired(xmlAttribute.isRequired());
+        // handle XmlJavaTypeAdapter
+        if (xmlAttribute.getXmlJavaTypeAdapter() != null) {
+            oldProperty.setXmlJavaTypeAdapter(xmlAttribute.getXmlJavaTypeAdapter());
+        }
+
+        // handle required - for required, if set by user than true/false;  
+        // if not set by user, true if property type == primitive
+        if (xmlAttribute.isSetRequired()) {
+            oldProperty.setIsRequired(xmlAttribute.isRequired());
+        } else if (oldProperty.getActualType().isPrimitive()) {
+            oldProperty.setIsRequired(true);
+        }
 
         // set xml-inline-binary-data
         oldProperty.setisInlineBinaryData(xmlAttribute.isXmlInlineBinaryData());
@@ -548,10 +558,6 @@ public class XMLProcessor {
         }
         oldProperty.setSchemaName(qName);
 
-        // handle XmlJavaTypeAdapter
-        if (xmlAttribute.getXmlJavaTypeAdapter() != null) {
-            oldProperty.setXmlJavaTypeAdapter(xmlAttribute.getXmlJavaTypeAdapter());
-        }
         // handle xml-mime-type
         if (xmlAttribute.getXmlMimeType() != null) {
             oldProperty.setMimeType(xmlAttribute.getXmlMimeType());
