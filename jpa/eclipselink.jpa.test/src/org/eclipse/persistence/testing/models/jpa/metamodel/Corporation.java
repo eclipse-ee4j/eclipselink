@@ -20,10 +20,14 @@ import static javax.persistence.CascadeType.ALL;
 import java.util.Collection;
 import java.util.HashSet;
 
+import javax.persistence.Access;
+import javax.persistence.AccessType;
 import javax.persistence.MappedSuperclass;
 import javax.persistence.OneToMany;
+import javax.persistence.OneToOne;
 
 @MappedSuperclass
+@Access(AccessType.FIELD) // for 316991
 public abstract class Corporation extends Person {
 
     // If a JoinTable with a JoinColumn is used - then we need a mappedBy on the inverse side here
@@ -31,5 +35,25 @@ public abstract class Corporation extends Person {
     @OneToMany(cascade=ALL)//, mappedBy="corporation")
     //@JoinColumn(name="CORP_COMPUTERS")
     private Collection<Computer> corporateComputers = new HashSet<Computer>();
+    
+    @OneToOne // unidirectional
+    private ArrayProcessor primarySuperComputer;
+
+    public Collection<Computer> getCorporateComputers() {
+        return corporateComputers;
+    }
+
+    public void setCorporateComputers(Collection<Computer> corporateComputers) {
+        this.corporateComputers = corporateComputers;
+    }
+
+    public ArrayProcessor getPrimarySuperComputer() {
+        return primarySuperComputer;
+    }
+
+    public void setPrimarySuperComputer(ArrayProcessor primarySuperComputer) {
+        this.primarySuperComputer = primarySuperComputer;
+    }
+    
     
 }

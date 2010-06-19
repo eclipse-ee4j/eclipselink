@@ -14,12 +14,17 @@
  *       - 266912: JPA 2.0 Metamodel API (part of the JSR-317 EJB 3.1 Criteria API)
  *     10/15/2009-2.0  mobrien - 266912 
  *          http://wiki.eclipse.org/EclipseLink/Development/JPA_2.0/metamodel_api#DI_94:_20091015:_Split_and_Granularize_Test_Suite
+ *     16/06/2010-2.2  mobrien - 316991: Attribute.getJavaMember() requires reflective getMethod call
+ *       when only getMethodName is available on accessor for attributes of Embeddable types.
+ *       see testAttribute_getJavaMember_BasicType_on_Embeddable_Method()
+ *       http://wiki.eclipse.org/EclipseLink/Development/JPA_2.0/metamodel_api#DI_95:_20091017:_Attribute.getJavaMember.28.29_returns_null_for_a_BasicType_on_a_MappedSuperclass_because_of_an_uninitialized_accessor
  ******************************************************************************/
 package org.eclipse.persistence.testing.tests.jpa.metamodel;
 
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Member;
+import java.lang.reflect.Method;
 import java.math.BigInteger;
 import java.util.Collection;
 import java.util.List;
@@ -67,14 +72,17 @@ import org.eclipse.persistence.testing.models.jpa.metamodel.ArrayProcessor;
 import org.eclipse.persistence.testing.models.jpa.metamodel.Board;
 import org.eclipse.persistence.testing.models.jpa.metamodel.CPU;
 import org.eclipse.persistence.testing.models.jpa.metamodel.CPUEmbeddedId;
+import org.eclipse.persistence.testing.models.jpa.metamodel.CompositePK;
 import org.eclipse.persistence.testing.models.jpa.metamodel.Computer;
 import org.eclipse.persistence.testing.models.jpa.metamodel.Core;
 import org.eclipse.persistence.testing.models.jpa.metamodel.Corporation;
+import org.eclipse.persistence.testing.models.jpa.metamodel.Designer;
 import org.eclipse.persistence.testing.models.jpa.metamodel.EmbeddedPK;
 import org.eclipse.persistence.testing.models.jpa.metamodel.Enclosure;
 import org.eclipse.persistence.testing.models.jpa.metamodel.EnclosureIdClassPK;
 import org.eclipse.persistence.testing.models.jpa.metamodel.GalacticPosition;
 import org.eclipse.persistence.testing.models.jpa.metamodel.HardwareDesigner;
+import org.eclipse.persistence.testing.models.jpa.metamodel.MSRootPropertyAccess;
 import org.eclipse.persistence.testing.models.jpa.metamodel.MS_MS_Entity_Center;
 import org.eclipse.persistence.testing.models.jpa.metamodel.MS_MS_Entity_Leaf;
 import org.eclipse.persistence.testing.models.jpa.metamodel.MS_MS_Entity_Root;
@@ -83,6 +91,7 @@ import org.eclipse.persistence.testing.models.jpa.metamodel.Memory;
 import org.eclipse.persistence.testing.models.jpa.metamodel.MultiCoreCPU;
 import org.eclipse.persistence.testing.models.jpa.metamodel.Person;
 import org.eclipse.persistence.testing.models.jpa.metamodel.Processor;
+import org.eclipse.persistence.testing.models.jpa.metamodel.VectorProcessor;
 
 import org.eclipse.persistence.testing.framework.junit.JUnitTestCase;
 
@@ -111,8 +120,8 @@ import org.eclipse.persistence.testing.framework.junit.JUnitTestCase;
  */
 public class MetamodelMetamodelTest extends MetamodelTest {
 
-    public static final int METAMODEL_ALL_ATTRIBUTES_SIZE = 130;
-    public static final int METAMODEL_ALL_TYPES = 47;
+    public static final int METAMODEL_ALL_ATTRIBUTES_SIZE = 136;
+    public static final int METAMODEL_ALL_TYPES = 49;
     public static final int METAMODEL_MANUFACTURER_DECLARED_TYPES = 28;
     // Get # of processor cores (hard cores + hyperthreaded cores)
     public static final int numberProcessingUnits = Runtime.getRuntime().availableProcessors();
@@ -151,7 +160,13 @@ public class MetamodelMetamodelTest extends MetamodelTest {
             suite.addTest(new MetamodelMetamodelTest("testAttribute_getJavaType_BasicType_Method"));
             suite.addTest(new MetamodelMetamodelTest("testAttribute_getJavaType_ManagedType_Method"));
             suite.addTest(new MetamodelMetamodelTest("testAttribute_getJavaMember_BasicType_on_MappedSuperclass_Method"));
+            suite.addTest(new MetamodelMetamodelTest("testAttribute_getJavaMember_BasicType_FieldAccess_on_Embeddable_Method")); // 316991
+            suite.addTest(new MetamodelMetamodelTest("testAttribute_getJavaMember_BasicType_PropertyAccess_on_Embeddable_Method")); // 316991            
             suite.addTest(new MetamodelMetamodelTest("testAttribute_getJavaMember_BasicType_on_Entity_Method"));
+            suite.addTest(new MetamodelMetamodelTest("testAttribute_getJavaMember_EntityType_FieldLevel_on_Entity_Method")); // 316991            
+            suite.addTest(new MetamodelMetamodelTest("testAttribute_getJavaMember_EntityType_FieldLevel_on_MappedSuperclass_Method")); // 316991
+            suite.addTest(new MetamodelMetamodelTest("testAttribute_getJavaMember_EntityType_PropertyMethodLevel_on_Entity_Method")); // 316991
+            suite.addTest(new MetamodelMetamodelTest("testAttribute_getJavaMember_EntityType_PropertyMethodLevel_on_MappedSuperclass_Method")); // 316991            
             suite.addTest(new MetamodelMetamodelTest("testAttribute_getJavaMember_ManagedType_Method"));        
             suite.addTest(new MetamodelMetamodelTest("testAttribute_isAssociation_on_Plural_Method"));
             suite.addTest(new MetamodelMetamodelTest("testAttribute_isAssociation_on_Singular_Method"));
@@ -340,6 +355,15 @@ public class MetamodelMetamodelTest extends MetamodelTest {
             ManagedType<CPUEmbeddedId> embedCPUEmbeddedId = metamodel.managedType(CPUEmbeddedId.class);            
             assertNotNull(embedCPUEmbeddedId);
             assertEquals(Type.PersistenceType.EMBEDDABLE, embedCPUEmbeddedId.getPersistenceType());
+            // 316991: DI 95: Handle case where getMethod is not set - but getMethodName is
+            // http://wiki.eclipse.org/EclipseLink/Development/JPA_2.0/metamodel_api#DI_95:_20091017:_Attribute.getJavaMember.28.29_returns_null_for_a_BasicType_on_a_MappedSuperclass_because_of_an_uninitialized_accessor
+            Attribute embeddedAttribute = embedCPUEmbeddedId.getAttribute("pk_part1");
+            assertNotNull(embeddedAttribute);
+            Member aMember = embeddedAttribute.getJavaMember();
+            assertNotNull(aMember);
+            assertNotNull("id java member is null", aMember);
+            assertTrue("id attribute java member is not an instance of Method", aMember instanceof Method);
+            assertEquals("getPk_part1", aMember.getName());
         } catch (IllegalArgumentException iae) {
             iae.printStackTrace();
             exceptionThrown = true;
@@ -929,6 +953,82 @@ public class MetamodelMetamodelTest extends MetamodelTest {
         }
     }
 
+    // 316991: handle missing getMethod on embeddables by using the getMethodName
+    public void testAttribute_getJavaMember_BasicType_FieldAccess_on_Embeddable_Method() {
+        EntityManager em = null;
+        boolean exceptionThrown = false;
+        try {
+            em = privateTestSetup();
+            assertNotNull(em);
+            Metamodel metamodel = em.getMetamodel();
+            assertNotNull("The metamodel should never be null after an em.getMetamodel() call here.", metamodel);
+
+            /**
+             *  Return the java.lang.reflect.Member for the represented attribute.
+             *  @return corresponding java.lang.reflect.Member
+             */
+            //java.lang.reflect.Member getJavaMember();
+            ManagedType<EmbeddedPK> embedableAttribute = metamodel.managedType(EmbeddedPK.class);            
+            assertNotNull(embedableAttribute);
+            assertEquals(Type.PersistenceType.EMBEDDABLE, embedableAttribute.getPersistenceType());
+            // 316991: DI 95: Handle case where getMethod is not set - but getMethodName is
+            // http://wiki.eclipse.org/EclipseLink/Development/JPA_2.0/metamodel_api#DI_95:_20091017:_Attribute.getJavaMember.28.29_returns_null_for_a_BasicType_on_a_MappedSuperclass_because_of_an_uninitialized_accessor
+            Attribute embeddedAttribute = embedableAttribute.getAttribute("pk_part1");
+            assertNotNull(embeddedAttribute);
+            // The following line exercises the 2nd field part for non-MappedSuperclasses in getJavaMember()
+            Member aMember = embeddedAttribute.getJavaMember();
+            assertNotNull(aMember); // Fix for missing getMethod in 316991
+            assertNotNull("pk_part1 java member is null", aMember);
+            assertTrue("pk_part1 attribute java member is not an instance of Method", aMember instanceof Field);
+            assertEquals("pk_part1", aMember.getName());
+            assertNotNull(((Field)aMember).getType());
+            assertEquals(int.class.getName(), ((Field)aMember).getType().getName());
+        } catch (IllegalArgumentException iae) {
+            iae.printStackTrace();
+            exceptionThrown = true;
+        } finally {
+            cleanup(em);
+            assertFalse("An IAE exception should not occur here.", exceptionThrown);
+        }
+    }
+    
+    // 316991: handle missing getMethod on embeddables by using the getMethodName
+    public void testAttribute_getJavaMember_BasicType_PropertyAccess_on_Embeddable_Method() {
+        EntityManager em = null;
+        boolean exceptionThrown = false;
+        try {
+            em = privateTestSetup();
+            assertNotNull(em);
+            Metamodel metamodel = em.getMetamodel();
+            assertNotNull("The metamodel should never be null after an em.getMetamodel() call here.", metamodel);
+
+            /**
+             *  Return the java.lang.reflect.Member for the represented attribute.
+             *  @return corresponding java.lang.reflect.Member
+             */
+            //java.lang.reflect.Member getJavaMember();
+            ManagedType<CPUEmbeddedId> embedCPUEmbeddedId = metamodel.managedType(CPUEmbeddedId.class);            
+            assertNotNull(embedCPUEmbeddedId);
+            assertEquals(Type.PersistenceType.EMBEDDABLE, embedCPUEmbeddedId.getPersistenceType());
+            // 316991: DI 95: Handle case where getMethod is not set - but getMethodName is
+            // http://wiki.eclipse.org/EclipseLink/Development/JPA_2.0/metamodel_api#DI_95:_20091017:_Attribute.getJavaMember.28.29_returns_null_for_a_BasicType_on_a_MappedSuperclass_because_of_an_uninitialized_accessor
+            Attribute embeddedAttribute = embedCPUEmbeddedId.getAttribute("pk_part1");
+            assertNotNull(embeddedAttribute);
+            Member aMember = embeddedAttribute.getJavaMember();
+            assertNotNull(aMember); // Fix for missing getMethod in 316991
+            assertNotNull("id java member is null", aMember);
+            assertTrue("id attribute java member is not an instance of Method", aMember instanceof Method);
+            assertEquals("getPk_part1", aMember.getName());
+            assertEquals(int.class, ((Method)aMember).getReturnType());            
+        } catch (IllegalArgumentException iae) {
+            iae.printStackTrace();
+            exceptionThrown = true;
+        } finally {
+            cleanup(em);
+            assertFalse("An IAE exception should not occur here.", exceptionThrown);
+        }
+    }
+    
     public void testAttribute_getJavaMember_BasicType_on_Entity_Method() {
         EntityManager em = null;
         boolean exceptionThrown = false;
@@ -958,6 +1058,154 @@ public class MetamodelMetamodelTest extends MetamodelTest {
             assertEquals("anInt", aMember.getName());
             assertNotNull(((Field)aMember).getType());
             assertEquals(int.class.getName(), ((Field)aMember).getType().getName());
+        } catch (IllegalArgumentException iae) {
+            iae.printStackTrace();
+            exceptionThrown = true;
+        } finally {
+            cleanup(em);
+            assertFalse("An IAE exception should not occur here.", exceptionThrown);
+        }
+    }
+
+    // 316991: regression test getJavaMember() on field level access Entity attribute @OneToOne on an Entity
+    public void testAttribute_getJavaMember_EntityType_FieldLevel_on_Entity_Method() {
+        EntityManager em = null;
+        boolean exceptionThrown = false;
+        try {
+            em = privateTestSetup();
+            assertNotNull(em);
+            Metamodel metamodel = em.getMetamodel();
+            assertNotNull("The metamodel should never be null after an em.getMetamodel() call here.", metamodel);
+            EntityTypeImpl<Computer> entityComputer_ = (EntityTypeImpl)metamodel.entity(Computer.class);
+            assertNotNull(entityComputer_);
+            assertEquals(Type.PersistenceType.ENTITY, entityComputer_.getPersistenceType());
+
+            /**
+             *  Return the java.lang.reflect.Member for the represented 
+             *  attribute.
+             *  @return corresponding java.lang.reflect.Member
+             */
+            //java.lang.reflect.Member getJavaMember();
+            Attribute anAttribute = entityComputer_.getAttribute("location");            
+            assertNotNull(anAttribute);
+            assertEquals(GalacticPosition.class, anAttribute.getJavaType());
+            Member aMember = anAttribute.getJavaMember();
+            assertNotNull("location java member is null", aMember);
+            assertTrue("location attribute java member is not an instance of Field", aMember instanceof Field);
+            assertEquals("location", aMember.getName());
+            assertNotNull(((Field)aMember).getType());
+            assertEquals(GalacticPosition.class.getName(), ((Field)aMember).getType().getName());
+        } catch (IllegalArgumentException iae) {
+            iae.printStackTrace();
+            exceptionThrown = true;
+        } finally {
+            cleanup(em);
+            assertFalse("An IAE exception should not occur here.", exceptionThrown);
+        }
+    }
+
+    // 316991: regression test getJavaMember() on field level access Entity attribute unidirectional @OneToOne on a MappedSuperclass
+    // This test exercises special handling code late in getJavaMember() for MappedSuperclasses 
+    public void testAttribute_getJavaMember_EntityType_FieldLevel_on_MappedSuperclass_Method() {
+        EntityManager em = null;
+        boolean exceptionThrown = false;
+        try {
+            em = privateTestSetup();
+            assertNotNull(em);
+            Metamodel metamodel = em.getMetamodel();
+            assertNotNull("The metamodel should never be null after an em.getMetamodel() call here.", metamodel);
+            MappedSuperclassTypeImpl<Designer> msDesigner_ = (MappedSuperclassTypeImpl)metamodel.managedType(Designer.class);
+            assertNotNull(msDesigner_);
+            assertEquals(Type.PersistenceType.MAPPED_SUPERCLASS, msDesigner_.getPersistenceType());
+
+            /**
+             *  Return the java.lang.reflect.Member for the represented 
+             *  attribute.
+             *  @return corresponding java.lang.reflect.Member
+             */
+            //java.lang.reflect.Member getJavaMember();
+            Attribute anAttribute = msDesigner_.getAttribute("primaryEmployer");            
+            assertNotNull(anAttribute);
+            assertEquals(Manufacturer.class, anAttribute.getJavaType());
+            Member aMember = anAttribute.getJavaMember();
+            assertNotNull("primaryEmployer java member is null", aMember);
+            assertTrue("primaryEmployer attribute java member is not an instance of Field", aMember instanceof Field);
+            assertEquals("primaryEmployer", aMember.getName());
+            assertNotNull(((Field)aMember).getType());
+            assertEquals(Manufacturer.class.getName(), ((Field)aMember).getType().getName());
+        } catch (IllegalArgumentException iae) {
+            iae.printStackTrace();
+            exceptionThrown = true;
+        } finally {
+            cleanup(em);
+            assertFalse("An IAE exception should not occur here.", exceptionThrown);
+        }
+    }
+
+    // 316991: regression test getJavaMember() on method level access Entity attribute unidirectional @OneToOne on an Entity
+    public void testAttribute_getJavaMember_EntityType_PropertyMethodLevel_on_Entity_Method() {
+        EntityManager em = null;
+        boolean exceptionThrown = false;
+        try {
+            em = privateTestSetup();
+            assertNotNull(em);
+            Metamodel metamodel = em.getMetamodel();
+            assertNotNull("The metamodel should never be null after an em.getMetamodel() call here.", metamodel);
+            EntityType<VectorProcessor> anEntity_ = metamodel.entity(VectorProcessor.class);
+            assertNotNull(anEntity_);
+            assertEquals(Type.PersistenceType.ENTITY, anEntity_.getPersistenceType());
+
+            /**
+             *  Return the java.lang.reflect.Member for the represented 
+             *  attribute.
+             *  @return corresponding java.lang.reflect.Member
+             */
+            //java.lang.reflect.Member getJavaMember();
+            Attribute anAttribute = anEntity_.getAttribute("host");            
+            assertNotNull(anAttribute);
+            assertEquals(Computer.class, anAttribute.getJavaType());
+            Member aMember = anAttribute.getJavaMember();
+            assertNotNull("host java member is null", aMember);
+            assertTrue("host attribute java member is not an instance of Method", aMember instanceof Method);
+            assertEquals("getHost", aMember.getName());
+            assertEquals(Computer.class, ((Method)aMember).getReturnType());
+        } catch (IllegalArgumentException iae) {
+            iae.printStackTrace();
+            exceptionThrown = true;
+        } finally {
+            cleanup(em);
+            assertFalse("An IAE exception should not occur here.", exceptionThrown);
+        }
+    }
+
+    // 316991: regression test getJavaMember() on method level access Entity attribute unidirectional @OneToOne on a MappedSuperclass
+    // This test exercises special handling code early in getJavaMember() for MappedSuperclasses 
+    public void testAttribute_getJavaMember_EntityType_PropertyMethodLevel_on_MappedSuperclass_Method() {
+        EntityManager em = null;
+        boolean exceptionThrown = false;
+        try {
+            em = privateTestSetup();
+            assertNotNull(em);
+            Metamodel metamodel = em.getMetamodel();
+            assertNotNull("The metamodel should never be null after an em.getMetamodel() call here.", metamodel);
+            MappedSuperclassTypeImpl<MSRootPropertyAccess> aMappedSuperclass_ = (MappedSuperclassTypeImpl)metamodel.managedType(MSRootPropertyAccess.class);
+            assertNotNull(aMappedSuperclass_);
+            assertEquals(Type.PersistenceType.MAPPED_SUPERCLASS, aMappedSuperclass_.getPersistenceType());
+
+            /**
+             *  Return the java.lang.reflect.Member for the represented 
+             *  attribute.
+             *  @return corresponding java.lang.reflect.Member
+             */
+            //java.lang.reflect.Member getJavaMember();
+            Attribute anAttribute = aMappedSuperclass_.getAttribute("primarySuperComputer"); // if attribute is missing from model we throw an IAE            
+            assertNotNull(anAttribute);
+            assertEquals(ArrayProcessor.class, anAttribute.getJavaType());
+            Member aMember = anAttribute.getJavaMember();
+            assertNotNull("primarySuperComputer java member is null", aMember);
+            assertTrue("primarySuperComputer attribute java member is not an instance of Method", aMember instanceof Method);
+            assertEquals("getPrimarySuperComputer", aMember.getName());
+            assertEquals(ArrayProcessor.class, ((Method)aMember).getReturnType());
         } catch (IllegalArgumentException iae) {
             iae.printStackTrace();
             exceptionThrown = true;
@@ -1146,7 +1394,7 @@ public class MetamodelMetamodelTest extends MetamodelTest {
             PluralAttribute aPluralAttribute = entityManufacturer_.getSet("computers");
             assertEquals(Computer.class, aPluralAttribute.getBindableJavaType());
             // 314906: javaType for collections is the collection type not the element type
-//            assertEquals(Set.class, aPluralAttribute.getJavaType());
+            assertEquals(Set.class, aPluralAttribute.getJavaType());
 
             /**
              *  Is the attribute collection-valued.
@@ -2032,7 +2280,7 @@ public class MetamodelMetamodelTest extends MetamodelTest {
             assertNotNull(attributeSet);
             // We should see 30 attributes (3 List, 3 Singular, 17 basic (java.lang, java.math) for Manufacturer (computers, hardwareDesigners, id(from the mappedSuperclass), 
             // version, name(from the mappedSuperclass) and corporateComputers from the Corporation mappedSuperclass)
-            assertEquals(METAMODEL_MANUFACTURER_DECLARED_TYPES + 4, attributeSet.size());
+            assertEquals(METAMODEL_MANUFACTURER_DECLARED_TYPES + 5, attributeSet.size());
             // for each managed entity we will see 2 entries (one for the Id, one for the Version)
             assertTrue(attributeSet.contains(entityManufacturer_.getAttribute("id"))); // 
             assertTrue(attributeSet.contains(entityManufacturer_.getAttribute("version"))); //
@@ -2202,8 +2450,8 @@ public class MetamodelMetamodelTest extends MetamodelTest {
             
             Set<Attribute<Corporation, ?>> declaredAttributesSetForCorporation = msCorporation_.getDeclaredAttributes();
             assertNotNull(declaredAttributesSetForCorporation);
-            // We should see 1 declared out of 4 attributes for Computer 
-            assertEquals(1, declaredAttributesSetForCorporation.size());
+            // We should see 2 declared out of 5 attributes for Computer 
+            assertEquals(2, declaredAttributesSetForCorporation.size());
             // Id is declared 1 level above
             //assertFalse(declaredAttributesSetForCorporation.contains(msCorporation.getAttribute("id"))); //
             // name is declared 1 level above but is not visible in a ms-->ms hierarchy
@@ -2366,7 +2614,7 @@ public class MetamodelMetamodelTest extends MetamodelTest {
             Set<SingularAttribute<? super Manufacturer, ?>> singularAttributeSet = entityManufacturer_.getSingularAttributes();
             assertNotNull(singularAttributeSet);
             // We should see 3+18 singular attributes for Manufacturer (id(from the mappedSuperclass), version, name(from the mappedSuperclass))
-            assertEquals(METAMODEL_MANUFACTURER_DECLARED_TYPES - 7, singularAttributeSet.size());
+            assertEquals(METAMODEL_MANUFACTURER_DECLARED_TYPES - 6, singularAttributeSet.size());
             // for each managed entity we will see 2 entries (one for the Id, one for the Version)
             assertTrue(singularAttributeSet.contains(entityManufacturer_.getAttribute("id"))); // 
             assertTrue(singularAttributeSet.contains(entityManufacturer_.getAttribute("version"))); //

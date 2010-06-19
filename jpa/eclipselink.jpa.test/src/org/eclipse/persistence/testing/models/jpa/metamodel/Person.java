@@ -30,6 +30,7 @@ import javax.persistence.MappedSuperclass;
 import javax.persistence.OneToMany;
 import javax.persistence.TableGenerator;
 
+//This class uses IntanceVariableAttributeAccessors during reflective calls
 @MappedSuperclass
 public class Person implements Serializable { //  changed from abstract to concrete for 248780   
     @Id
@@ -64,7 +65,7 @@ public class Person implements Serializable { //  changed from abstract to concr
         return name;
     }
 
-    @Column(name="PERSON_NAME")
+    //@Column(name="PERSON_NAME") // avoid Exception Description: Mapping metadata cannot be applied to properties/methods that take arguments. The attribute [method setName] from class [class org.eclipse.persistence.testing.models.jpa.metamodel.Manufacturer] is in violation of this restriction. Ensure the method has no arguments if it is mapped with annotations or in an XML mapping file.
     public void setName(String name) {
         this.name = name;
     }

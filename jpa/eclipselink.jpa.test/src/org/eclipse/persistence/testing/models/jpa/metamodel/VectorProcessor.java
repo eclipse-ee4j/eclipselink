@@ -15,14 +15,32 @@
  ******************************************************************************/  
 package org.eclipse.persistence.testing.models.jpa.metamodel;
 
+import javax.persistence.Access;
+import javax.persistence.AccessType;
 import javax.persistence.Entity;
+import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
 @Entity(name="VectorProcessorMetamodel")
 @Table(name="CMP3_MM_PROC")
+@Access(AccessType.PROPERTY) // for 316991
 public class VectorProcessor extends Processor {
 
     private static final long serialVersionUID = -8152429622530834747L;
+    
+    private Computer host;
 
     public VectorProcessor() {}
+
+    @OneToOne
+    public Computer getHost() {
+        return host;
+    }
+
+    public void setHost(Computer host) {
+        this.host = host;
+    }
+    
+    
+    
 }

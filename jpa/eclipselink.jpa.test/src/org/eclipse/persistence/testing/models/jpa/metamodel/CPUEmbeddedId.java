@@ -14,6 +14,10 @@
  *                      can better determine when to add the MAPPED_SUPERCLASS_RESERVED_PK_NAME
  *                      temporary PK field used to process MappedSuperclasses for the Metamodel API
  *                      during MetadataProject.addMetamodelMappedSuperclass()
+ *     16/06/2010-2.2  mobrien - 316991: Attribute.getJavaMember() requires reflective getMethod call
+ *       when only getMethodName is available on accessor for attributes of Embeddable types.
+ *       http://wiki.eclipse.org/EclipseLink/Development/JPA_2.0/metamodel_api#DI_95:_20091017:_Attribute.getJavaMember.28.29_returns_null_for_a_BasicType_on_a_MappedSuperclass_because_of_an_uninitialized_accessor
+ *                      
  ******************************************************************************/  
 package org.eclipse.persistence.testing.models.jpa.metamodel;
 
@@ -26,6 +30,7 @@ import javax.persistence.Embeddable;
 import javax.persistence.GeneratedValue;
 import javax.persistence.TableGenerator;
 
+// This class uses MethodAttributeAccessors during reflective calls
 @Embeddable
 public class CPUEmbeddedId implements Serializable {
     private static final long serialVersionUID = 2162087921393149126L;

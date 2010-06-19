@@ -17,12 +17,15 @@ import static javax.persistence.GenerationType.TABLE;
 
 import java.io.Serializable;
 
+import javax.persistence.Access;
+import javax.persistence.AccessType;
 import javax.persistence.Column;
 import javax.persistence.Embeddable;
 import javax.persistence.GeneratedValue;
 import javax.persistence.TableGenerator;
 
 @Embeddable
+@Access(AccessType.FIELD) // for 316991
 public class EmbeddedPK implements Serializable {
     // This class is embedded inside a Location Entity
     @GeneratedValue(strategy=TABLE, generator="EMBEDDEDPK_MM_TABLE_GENERATOR")

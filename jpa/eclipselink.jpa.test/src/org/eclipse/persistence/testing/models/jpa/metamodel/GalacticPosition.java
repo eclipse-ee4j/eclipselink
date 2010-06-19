@@ -18,6 +18,8 @@ package org.eclipse.persistence.testing.models.jpa.metamodel;
 import static javax.persistence.FetchType.EAGER;
 import static javax.persistence.InheritanceType.JOINED;
 
+import javax.persistence.Access;
+import javax.persistence.AccessType;
 import javax.persistence.Column;
 import javax.persistence.EmbeddedId;
 import javax.persistence.Entity;
@@ -32,19 +34,10 @@ import javax.persistence.Version;
 @Inheritance(strategy=JOINED)
 @Entity(name="GalacticMetamodel")
 @Table(name="CMP3_MM_GALACTIC")
+@Access(AccessType.FIELD) // for 316991
 public class GalacticPosition extends Position implements java.io.Serializable {
-/*    @Id
-    @GeneratedValue(strategy=TABLE, generator="GALACTIC_MM_TABLE_GENERATOR")
-    @TableGenerator(
-        name="GALACTIC_MM_TABLE_GENERATOR", 
-        table="CMP3_MM_GALACTIC_SEQ", 
-        pkColumnName="SEQ_MM_NAME", 
-        valueColumnName="SEQ_MM_COUNT",
-        pkColumnValue="CUST_MM_SEQ"
-    )
-    @Column(name="GALACTIC_ID")    
-    private Integer primaryKey;
-*/    
+    private static final long serialVersionUID = 1395818966377137158L;
+
     // Any reference to this embedded key requires a bidirectional relationship (not unidirectional)
     @EmbeddedId
     @Column(name="GALACTIC_ID")    
@@ -93,7 +86,23 @@ public class GalacticPosition extends Position implements java.io.Serializable {
     public void setPrimaryKey(EmbeddedPK primaryKey) {
         this.primaryKey = primaryKey;
     }
-    
+
+    public Computer getComputerUC12() {
+        return computerUC12;
+    }
+
+    public void setComputerUC12(Computer computerUC12) {
+        this.computerUC12 = computerUC12;
+    }
+
+    public Computer getComputerUniUC13() {
+        return computerUniUC13;
+    }
+
+    public void setComputerUniUC13(Computer computerUniUC13) {
+        this.computerUniUC13 = computerUniUC13;
+    }
+        
     public int getVersion() { 
         return version; 
     }
@@ -101,13 +110,4 @@ public class GalacticPosition extends Position implements java.io.Serializable {
     protected void setVersion(int version) {
         this.version = version;
     }
-
-/*    public Integer getId() {
-        return primaryKey;
-    }
-
-    public void setId(Integer id) {
-        this.primaryKey = id;
-    }*/
-    
 }

@@ -15,12 +15,20 @@
  *       - 266912: JPA 2.0 Metamodel API (part of the JSR-317 EJB 3.1 Criteria API)
  *     29/10/2009-2.0  mobrien - m:1 and 1:m relationships require special handling
  *       in their internal m:m and 1:1 database mapping representations.
- *       http://wiki.eclipse.org/EclipseLink/Development/JPA_2.0/metamodel_api#DI_96:_20091019:_Attribute.getPersistentAttributeType.28.29_treats_ManyToOne_the_same_as_OneToOne   
+ *       http://wiki.eclipse.org/EclipseLink/Development/JPA_2.0/metamodel_api#DI_96:_20091019:_Attribute.getPersistentAttributeType.28.29_treats_ManyToOne_the_same_as_OneToOne
+ *     16/06/2010-2.2  mobrien - 316991: Attribute.getJavaMember() requires reflective getMethod call
+ *       when only getMethodName is available on accessor for attributes of Embeddable types.
+ *       http://wiki.eclipse.org/EclipseLink/Development/JPA_2.0/metamodel_api#DI_95:_20091017:_Attribute.getJavaMember.28.29_returns_null_for_a_BasicType_on_a_MappedSuperclass_because_of_an_uninitialized_accessor
+ *          
  ******************************************************************************/
 package org.eclipse.persistence.internal.jpa.metamodel;
 
 import java.io.Serializable;
+import java.lang.reflect.Field;
 import java.lang.reflect.Member;
+import java.lang.reflect.Method;
+import java.security.AccessController;
+import java.security.PrivilegedActionException;
 
 import javax.persistence.metamodel.Attribute;
 import javax.persistence.metamodel.ManagedType;
@@ -28,6 +36,9 @@ import javax.persistence.metamodel.ManagedType;
 import org.eclipse.persistence.descriptors.RelationalDescriptor;
 import org.eclipse.persistence.internal.descriptors.InstanceVariableAttributeAccessor;
 import org.eclipse.persistence.internal.descriptors.MethodAttributeAccessor;
+import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
+import org.eclipse.persistence.internal.security.PrivilegedGetDeclaredField;
+import org.eclipse.persistence.internal.security.PrivilegedGetDeclaredMethod;
 import org.eclipse.persistence.logging.AbstractSessionLog;
 import org.eclipse.persistence.logging.SessionLog;
 import org.eclipse.persistence.mappings.AttributeAccessor;
@@ -96,11 +107,32 @@ public abstract class AttributeImpl<X, T> implements Attribute<X, T>, Serializab
      */
     public Member getJavaMember() {
         AttributeAccessor accessor = getMapping().getAttributeAccessor();
-
         if (accessor.isMethodAttributeAccessor()) {
-            return ((MethodAttributeAccessor) accessor).getGetMethod();
+            // Method level access here
+            Method aMethod = ((MethodAttributeAccessor) accessor).getGetMethod();
+            if(null == aMethod) {
+                // 316991: If the getMethod is not set - use a reflective call via the getMethodName
+                String getMethodName = null;
+                try {
+                    getMethodName = ((MethodAttributeAccessor)mapping.getAttributeAccessor()).getGetMethodName();   
+                    if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()) {
+                        aMethod = (Method) AccessController.doPrivileged(new PrivilegedGetDeclaredMethod(
+                                this.getManagedTypeImpl().getJavaType(), getMethodName, null));
+                    } else {
+                        aMethod = PrivilegedAccessHelper.getDeclaredMethod(
+                                this.getManagedTypeImpl().getJavaType(),getMethodName, null);
+                    } 
+                    // Exceptions are to be ignored for reflective calls - if the methodName is also null - it will catch here
+                } catch (PrivilegedActionException pae) {
+                    //pae.printStackTrace();
+                } catch (NoSuchMethodException nsfe) {
+                    //nsfe.printStackTrace();
+                }                
+            }
+            return aMethod;            
         }
 
+        // Field level access here
         Member aMember = ((InstanceVariableAttributeAccessor) accessor).getAttributeField();
         // For primitive and basic types - we should not return null - the attributeAccessor on the MappedSuperclass is not initialized - see
         // http://wiki.eclipse.org/EclipseLink/Development/JPA_2.0/metamodel_api#DI_95:_20091017:_Attribute.getJavaMember.28.29_returns_null_for_a_BasicType_on_a_MappedSuperclass_because_of_an_uninitialized_accessor
@@ -115,7 +147,31 @@ public abstract class AttributeImpl<X, T> implements Attribute<X, T>, Serializab
                 aMember = ((InstanceVariableAttributeAccessor)inheritingTypeMember.getMapping()
                         .getAttributeAccessor()).getAttributeField();
             }
+            
+            if(null == aMember) {
+                // 316991: Handle Embeddable types
+                // If field level access - perform a getDeclaredField call
+                if(null == aMember) {
+                    // Field level access
+                    // Check declaredFields in the case where we have no getMethod or getMethodName
+                    try {
+                        if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()){
+                            aMember = (Field)AccessController.doPrivileged(new PrivilegedGetDeclaredField(
+                                this.getManagedTypeImpl().getJavaType(), mapping.getAttributeName(), false));
+                        } else {
+                            aMember = PrivilegedAccessHelper.getDeclaredField(
+                                this.getManagedTypeImpl().getJavaType(), mapping.getAttributeName(), false);
+                        }                                        
+                        // Exceptions are to be ignored for reflective calls - if the methodName is also null - it will catch here
+                    } catch (PrivilegedActionException pae) {
+                        //pae.printStackTrace();
+                    } catch (NoSuchFieldException nsfe) {
+                        //nsfe.printStackTrace();
+                    }                
+                }
+            }
         }
+        
         // 303063: secondary check for attribute override case - this will show on code coverage
         if(null == aMember) {
             AbstractSessionLog.getLog().log(SessionLog.FINEST, "metamodel_attribute_getmember_is_null", this, this.getManagedTypeImpl(), this.getDescriptor());
