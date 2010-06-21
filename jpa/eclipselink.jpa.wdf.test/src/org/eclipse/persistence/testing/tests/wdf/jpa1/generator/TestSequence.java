@@ -75,7 +75,7 @@ public class TestSequence extends JPA1Base {
 
     @Test
     @Skip(databases = MySQLPlatform.class)
-    @ToBeInvestigated(databases = OraclePlatform.class)
+    @ToBeInvestigated(databases = OraclePlatform.class, databaseNames = "org.eclipse.persistence.platform.database.MaxDBPlatform")
     // adjust test
     public void testAllocSize() {
         JPAEnvironment env = getEnvironment();

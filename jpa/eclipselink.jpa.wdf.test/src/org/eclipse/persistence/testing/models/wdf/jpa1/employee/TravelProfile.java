@@ -34,6 +34,7 @@ public class TravelProfile {
         this.guid = guid;
     }
 
+    
     private byte[] guid = new byte[16];
     private boolean smoker;
     private String preferredAirline;
@@ -85,6 +86,7 @@ public class TravelProfile {
      * @return Returns the guid.
      */
     @Id
+    @Column(length = 16)
     public byte[] getGuid() {
         return guid;
     }

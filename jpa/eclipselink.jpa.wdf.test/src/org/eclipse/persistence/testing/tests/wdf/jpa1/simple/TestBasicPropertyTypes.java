@@ -28,6 +28,7 @@ import javax.persistence.PersistenceException;
 
 import org.eclipse.persistence.testing.framework.wdf.Bugzilla;
 import org.eclipse.persistence.testing.framework.wdf.JPAEnvironment;
+import org.eclipse.persistence.testing.framework.wdf.Skip;
 import org.eclipse.persistence.testing.framework.wdf.ToBeInvestigated;
 import org.eclipse.persistence.testing.models.wdf.jpa1.types.BasicTypesPropertyAccess;
 import org.eclipse.persistence.testing.models.wdf.jpa1.types.UserDefinedEnum;
@@ -856,6 +857,7 @@ public class TestBasicPropertyTypes extends JPA1Base {
     }
 
     @Test
+    @Skip(databaseNames = "org.eclipse.persistence.platform.database.MaxDBPlatform")
     public void testPrimitiveByteArray2Longvarbinary() {
         final byte[] UNCHANGED = new byte[] { 0, 1, 2, 3, 4, 5, 6, 7 };
         MutableValidator validator = new MutableValidator() {
