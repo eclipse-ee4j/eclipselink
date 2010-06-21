@@ -823,7 +823,9 @@ public class EntityAccessor extends MappedSuperclassAccessor {
                 MetadataAnnotation discriminatorValue = getAnnotation(DiscriminatorValue.class);
                 
                 if (discriminatorValue == null) {
-                    return Helper.getShortClassName(getJavaClassName());
+                    // By default return the alias (i.e. entity name if provided
+                    // otherwise the short java class name)
+                    return getDescriptor().getAlias();
                 } else {
                     return (String) discriminatorValue.getAttribute("value"); 
                 }

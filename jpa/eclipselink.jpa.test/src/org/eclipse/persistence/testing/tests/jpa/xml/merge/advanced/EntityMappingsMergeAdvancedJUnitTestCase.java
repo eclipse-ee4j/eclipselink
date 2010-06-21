@@ -78,11 +78,11 @@ public class EntityMappingsMergeAdvancedJUnitTestCase extends JUnitTestCase {
         }
         // defaulted in annotations
         String smallProjectIndicator = (String)classNameIndicators.get(packageName + "SmallProject");
-        if(!smallProjectIndicator.equals("SmallProject")) {
+        if(!smallProjectIndicator.equals("XMLMergeSmallProject")) {
             fail("Wrong classIndicatorField value for SmallProject '"+smallProjectIndicator+"'");
         }
         String largeProjectIndicator = (String)classNameIndicators.get(packageName + "LargeProject");
-        if(!largeProjectIndicator.equals("LargeProject")) {
+        if(!largeProjectIndicator.equals("XMLMergeLargeProject")) {
             fail("Wrong classIndicatorField value for LargeProject '"+largeProjectIndicator+"'");
         }
     }

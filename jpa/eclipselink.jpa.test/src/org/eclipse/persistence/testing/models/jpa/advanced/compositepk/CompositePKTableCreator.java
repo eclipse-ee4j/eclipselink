@@ -857,7 +857,7 @@ public class CompositePKTableCreator extends TogglingFastTableCreator {
         FieldDefinition fieldDTYPE = new FieldDefinition();
         fieldDTYPE.setName("DTYPE");
         fieldDTYPE.setTypeName("VARCHAR2");
-        fieldDTYPE.setSize(15);
+        fieldDTYPE.setSize(20);
         fieldDTYPE.setSubSize(0);
         fieldDTYPE.setIsPrimaryKey(false);
         fieldDTYPE.setIsIdentity(false);
