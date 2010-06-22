@@ -46,10 +46,13 @@
  *       - 313401: shared-cache-mode defaults to NONE when the element value is unrecognized
  *     06/14/2010-2.2 Guy Pelletier 
  *       - 264417: Table generation is incorrect for JoinTables in AssociationOverrides
+ *     06/22/2010-2.2 Guy Pelletier 
+ *       - 308729: Persistent Unit deployment exception when mappedsuperclass has no annotations but has lifecycle callbacks
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata.accessors.classes;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -445,6 +448,49 @@ public class MappedSuperclassAccessor extends ClassAccessor {
     
     /**
      * INTERNAL:
+     * Return true if any given field defines object relational persistence
+     * mapping annotations. This method is used when determining the access type 
+     * of this accessor. Note: Through the annotation target, it is invalid to 
+     * specify a lifecycle annotation on a field so we don't need to check as we 
+     * do when checking the methods.
+     * 
+     * @see processAccessType()
+     */
+    protected boolean hasObjectRelationalFieldMappingAnnotationsDefined() {
+        Collection<MetadataField> fields = getJavaClass().getFields().values();
+        
+        for (MetadataField field : fields) {
+            if (field.hasDeclaredAnnotations(getDescriptor())) {
+                return true;
+            }
+        }
+        
+        return false;
+    }
+    
+    /**
+     * INTERNAL:
+     * Return true if any given method defines object relational persistence
+     * mapping annotations. This method is used when determining the access type 
+     * of this accessor. Note: life cycle annotations are NOT object relational 
+     * mappings therefore should not influence the decision.
+     * 
+     * @see processAccessType()
+     */
+    protected boolean hasObjectRelationalMethodMappingAnnotationsDefined() {
+        Collection<MetadataMethod> methods = getJavaClass().getMethods().values();
+        
+        for (MetadataMethod method : methods) {
+            if (method.hasDeclaredAnnotations(getDescriptor()) && ! method.isALifeCycleCallbackMethod()) {
+                return true;
+            }
+        }
+        
+        return false;
+    }
+    
+    /**
+     * INTERNAL:
      * This method is called in the pre-processing stage since we want to
      * gather a list of id classes used throughout the persistence unit. This
      * will help us build accessors, namely, mappedById accessors that can
@@ -646,9 +692,9 @@ public class MappedSuperclassAccessor extends ClassAccessor {
         // 3 - If there are no mapped superclasses or no mapped superclasses
         // without an explicit access type. Check where the annotations are
         // defined on this entity class.
-        if (havePersistenceFieldAnnotationsDefined(getJavaClass().getFields().values())) {
+        if (hasObjectRelationalFieldMappingAnnotationsDefined()) {
             defaultAccessType = MetadataConstants.FIELD;
-        } else if (havePersistenceMethodAnnotationsDefined(getJavaClass().getMethods().values())) {
+        } else if (hasObjectRelationalMethodMappingAnnotationsDefined()) {
             defaultAccessType = MetadataConstants.PROPERTY;
         } else {
             // 4 - If there are no annotations defined on either the

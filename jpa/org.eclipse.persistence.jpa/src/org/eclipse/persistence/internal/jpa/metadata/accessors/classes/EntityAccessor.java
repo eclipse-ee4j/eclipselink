@@ -65,6 +65,8 @@
  *       - 264417: Table generation is incorrect for JoinTables in AssociationOverrides
  *     06/18/2010-2.2 Guy Pelletier 
  *       - 300458: EclispeLink should throw a more specific exception than NPE
+ *     06/22/2010-2.2 Guy Pelletier 
+ *       - 308729: Persistent Unit deployment exception when mappedsuperclass has no annotations but has lifecycle callbacks
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata.accessors.classes;
 
@@ -952,9 +954,9 @@ public class EntityAccessor extends MappedSuperclassAccessor {
         if (defaultAccessType == null) {
             for (MappedSuperclassAccessor mappedSuperclass : m_mappedSuperclasses) {
                 if (! mappedSuperclass.hasAccess()) {
-                    if (havePersistenceFieldAnnotationsDefined(mappedSuperclass.getJavaClass().getFields().values())) {
+                    if (mappedSuperclass.hasObjectRelationalFieldMappingAnnotationsDefined()) {
                         defaultAccessType = MetadataConstants.FIELD;
-                    } else if (havePersistenceMethodAnnotationsDefined(mappedSuperclass.getJavaClass().getMethods().values())) {
+                    } else if (mappedSuperclass.hasObjectRelationalMethodMappingAnnotationsDefined()) {
                         defaultAccessType = MetadataConstants.PROPERTY;
                     }
                         
@@ -966,9 +968,9 @@ public class EntityAccessor extends MappedSuperclassAccessor {
             // without an explicit access type. Check where the annotations are 
             // defined on this entity class. 
             if (defaultAccessType == null) {    
-                if (havePersistenceFieldAnnotationsDefined(getJavaClass().getFields().values())) {
+                if (hasObjectRelationalFieldMappingAnnotationsDefined()) {
                     defaultAccessType = MetadataConstants.FIELD;
-                } else if (havePersistenceMethodAnnotationsDefined(getJavaClass().getMethods().values())) {
+                } else if (hasObjectRelationalMethodMappingAnnotationsDefined()) {
                     defaultAccessType = MetadataConstants.PROPERTY;
                 } else {
                     // 4 - If there are no annotations defined on either the

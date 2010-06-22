@@ -19,6 +19,8 @@
  *       - 267217: Add Named Access Type to EclipseLink-ORM
  *     04/09/2010-2.1 Guy Pelletier 
  *       - 307050: Add defaults for access methods of a VIRTUAL access type
+ *     06/22/2010-2.2 Guy Pelletier 
+ *       - 308729: Persistent Unit deployment exception when mappedsuperclass has no annotations but has lifecycle callbacks
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata.accessors.objects;
 
@@ -189,7 +191,7 @@ public class MetadataMethod extends MetadataAnnotatedElement {
      * property name (getXyz or isXyz) and does not have parameters and has
      * an associated set method.
      */
-    protected boolean isALifeCycleCallbackMethod() {
+    public boolean isALifeCycleCallbackMethod() {
         return isAnnotationPresent(PostLoad.class) ||
                isAnnotationPresent(PostPersist.class) ||
                isAnnotationPresent(PostRemove.class) ||

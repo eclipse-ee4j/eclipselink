@@ -55,12 +55,13 @@
  *       - 253083: Add support for dynamic persistence using ORM.xml/eclipselink-orm.xml
  *     06/14/2010-2.2 Guy Pelletier 
  *       - 264417: Table generation is incorrect for JoinTables in AssociationOverrides
+ *     06/22/2010-2.2 Guy Pelletier 
+ *       - 308729: Persistent Unit deployment exception when mappedsuperclass has no annotations but has lifecycle callbacks
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata.accessors.classes;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
 
@@ -777,32 +778,6 @@ public abstract class ClassAccessor extends MetadataAccessor {
      */
     protected boolean hasParentClass() {
         return m_parentClass != null && ! m_parentClass.equals(void.class);
-    }
-    
-    /**
-     * INTERNAL:
-     */
-    protected boolean havePersistenceFieldAnnotationsDefined(Collection<MetadataField> fields) {
-        for (MetadataField field : fields) {            
-            if (field.hasDeclaredAnnotations(getDescriptor())) {
-                return true;
-            }
-        }
-        
-        return false;
-    }
-    
-    /**
-     * INTERNAL:
-     */
-    protected boolean havePersistenceMethodAnnotationsDefined(Collection<MetadataMethod> methods) {
-        for (MetadataMethod method : methods) {            
-            if (method.hasDeclaredAnnotations(getDescriptor())) {
-                return true;
-            }
-        }
-        
-        return false;
     }
     
     /**
