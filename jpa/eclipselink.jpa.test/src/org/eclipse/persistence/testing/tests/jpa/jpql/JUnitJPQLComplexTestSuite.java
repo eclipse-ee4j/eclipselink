@@ -267,8 +267,12 @@ public class JUnitJPQLComplexTestSuite extends JUnitTestCase
         new InheritedTableManager().replaceTables(session);
         
         new DataTypesTableCreator().replaceTables(session);
-        SchemaManager schema = new SchemaManager((session));
-        schema.replaceObject(buildStoredFunction());
+
+        //create stored function when database supports it
+        if (supportsStoredProcedures())
+            SchemaManager schema = new SchemaManager((session));
+            schema.replaceObject(buildStoredFunction());
+        }
     }
     public StoredFunctionDefinition buildStoredFunction() {
         StoredFunctionDefinition func = new StoredFunctionDefinition();
