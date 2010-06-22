@@ -15,14 +15,10 @@ import java.awt.Component;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
-import java.beans.PropertyChangeEvent;
-import java.util.Collections;
 import java.util.Iterator;
 
 import javax.swing.BorderFactory;
-import javax.swing.ButtonModel;
 import javax.swing.ComboBoxModel;
-import javax.swing.JCheckBox;
 import javax.swing.JComponent;
 import javax.swing.JPanel;
 
@@ -30,24 +26,19 @@ import org.eclipse.persistence.tools.workbench.framework.context.WorkbenchContex
 import org.eclipse.persistence.tools.workbench.framework.resources.ResourceRepository;
 import org.eclipse.persistence.tools.workbench.framework.ui.view.ScrollablePropertiesPage;
 import org.eclipse.persistence.tools.workbench.framework.uitools.SwingTools;
-import org.eclipse.persistence.tools.workbench.framework.uitools.TriStateBooleanCellRendererAdapter;
 import org.eclipse.persistence.tools.workbench.scplugin.model.adapter.RemoteCommandManagerAdapter;
 import org.eclipse.persistence.tools.workbench.scplugin.model.adapter.SessionAdapter;
 import org.eclipse.persistence.tools.workbench.scplugin.ui.session.SessionNode;
 import org.eclipse.persistence.tools.workbench.scplugin.ui.tools.BooleanCellRendererAdapter;
-import org.eclipse.persistence.tools.workbench.uitools.ComponentVisibilityEnabler;
 import org.eclipse.persistence.tools.workbench.uitools.SwitcherPanel;
 import org.eclipse.persistence.tools.workbench.uitools.app.CollectionAspectAdapter;
 import org.eclipse.persistence.tools.workbench.uitools.app.CollectionValueModel;
 import org.eclipse.persistence.tools.workbench.uitools.app.PropertyAspectAdapter;
 import org.eclipse.persistence.tools.workbench.uitools.app.PropertyValueModel;
-import org.eclipse.persistence.tools.workbench.uitools.app.TransformationPropertyValueModel;
-import org.eclipse.persistence.tools.workbench.uitools.app.swing.CheckBoxModelAdapter;
 import org.eclipse.persistence.tools.workbench.uitools.app.swing.ComboBoxModelAdapter;
 import org.eclipse.persistence.tools.workbench.uitools.cell.AdaptableListCellRenderer;
 import org.eclipse.persistence.tools.workbench.uitools.cell.CellRendererAdapter;
 import org.eclipse.persistence.tools.workbench.utility.Transformer;
-import org.eclipse.persistence.tools.workbench.utility.TriStateBoolean;
 import org.eclipse.persistence.tools.workbench.utility.iterators.ArrayIterator;
 
 /**
@@ -105,7 +96,7 @@ public final class SessionClusteringPropertiesPage extends ScrollablePropertiesP
 		{
 			protected Iterator getValueFromSubject()
 			{
-				return new ArrayIterator(new Object[] { TriStateBoolean.UNDEFINED, TriStateBoolean.TRUE, TriStateBoolean.FALSE});
+				return new ArrayIterator(new Object[] {Boolean.TRUE, Boolean.FALSE});
 			}
 		};
 	}
@@ -132,21 +123,8 @@ public final class SessionClusteringPropertiesPage extends ScrollablePropertiesP
 	private CellRendererAdapter buildClusteringLabelDecorator()
 	{
 		ResourceRepository resourceRepository = resourceRepository();
-
-		return new TriStateBooleanCellRendererAdapter(resourceRepository){
-			@Override
-			protected String trueResourceKey() {
-				return "REMOTE_COMMAND";
-			}
-			@Override
-			protected String falseResourceKey() {
-				return "CACHE_SYNCHRONIZATION";
-			}
-			@Override
-			protected String undefinedResourceKey() {			
-				return "DEFAULT_CLUSTERING_TYPE";
-			}
-		};
+		
+		return new BooleanCellRendererAdapter(resourceRepository.getString("REMOTE_COMMAND"), resourceRepository.getString("DEFAULT_CLUSTERING_TYPE"));
 	}
 
 	/**
@@ -206,23 +184,21 @@ public final class SessionClusteringPropertiesPage extends ScrollablePropertiesP
 			protected Object getValueFromSubject()
 			{
 				SessionAdapter adapter = (SessionAdapter) subject;
-
-				if (adapter.hasNoClusteringService())
-					return TriStateBoolean.UNDEFINED;
-
-				return TriStateBoolean.valueOf(adapter.hasRemoteCommandManager());
+				
+				if (adapter.hasNoClusteringService()) {
+					return Boolean.FALSE;
+				}
+				
+				return Boolean.valueOf(adapter.hasRemoteCommandManager());
 			}
 
 			protected void setValueOnSubject(Object value)
 			{
 				SessionAdapter adapter = (SessionAdapter) subject;
-
-				if (TriStateBoolean.TRUE.equals(value))
-				{
+				
+				if (Boolean.TRUE.equals(value)) {
 					adapter.setClusteringToRemoteCommandManager();
-				}
-				else if (TriStateBoolean.FALSE.equals(value) || TriStateBoolean.UNDEFINED.equals(value))
-				{
+				} else {
 					adapter.setClusteringToNothing();
 				}
 			}
