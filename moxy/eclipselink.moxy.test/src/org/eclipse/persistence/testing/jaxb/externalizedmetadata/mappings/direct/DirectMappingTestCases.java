@@ -46,7 +46,7 @@ public class DirectMappingTestCases extends ExternalizedMetadataTestCases {
     private static final int EMPID = 66;
     private static final int MGRID = 99;
     private static final int PROJECT_ID = 999;
-    private static final double SALARY = 123456.78;
+    private static final Double SALARY = 123456.78;
     private static final String CHARACTER_DATA = "<characters>a b c d e f g</characters>";
     private static final String PRIVATE_DATA = "This is some private data";
     private static final String EMPLOYEES_NS = "http://www.example.com/employees";

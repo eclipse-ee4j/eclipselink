@@ -9,14 +9,12 @@
                     <province>ON</province>
                     <postalCode>K2M2K7</postalCode>
                 </address>
-                <address/>
                 <address id="76">
                     <city>Ottawa</city>
                     <street>45 O'Connor St.</street>
                     <province>ON</province>
                     <postalCode>K1P1A4</postalCode>
                 </address>
-                <address/>
             </addresses>
         </c:contact-info>
         <write-only>

@@ -9,7 +9,7 @@
             <java-attributes>
                 <xml-attribute java-attribute="id" xml-path="@empId" />
                 <xml-element java-attribute="addresses" xml-path="info/c:contact-info/addresses/address">
-                    <xml-null-policy null-representation-for-xml="EMPTY_NODE" />
+                    <xml-null-policy null-representation-for-xml="ABSENT_NODE" />
                     <xml-access-methods get-method="getAddresses" set-method="setAddresses" />
                 </xml-element>
                 <xml-element java-attribute="readOnlyAddressList" xml-path="info/read-only/address" read-only="true" />

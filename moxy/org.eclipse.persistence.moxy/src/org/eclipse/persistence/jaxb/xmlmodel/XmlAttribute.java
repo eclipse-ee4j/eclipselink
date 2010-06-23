@@ -253,7 +253,16 @@ public class XmlAttribute
     public void setNamespace(String value) {
         this.namespace = value;
     }
-
+    
+    /**
+     * Indicates if the required flag was set via external metadata.
+     * 
+     * @return
+     */
+    public boolean isSetRequired() {
+        return required != null;
+    }
+    
     /**
      * Gets the value of the required property.
      * 

@@ -77,10 +77,10 @@ public class CompositeCollecitonMappingTestCases extends ExternalizedMetadataTes
     }
 
     /**
-     * Create the control Employee object.
+     * Create the control Employee object for reading.
      * 
      */
-    public Employee getControlObject() {
+    public Employee getReadControlObject() {
         // setup Addresses
         Address hAddress = new Address();
         hAddress.id = HOME_ID;
@@ -98,9 +98,7 @@ public class CompositeCollecitonMappingTestCases extends ExternalizedMetadataTes
 
         List<Address> adds = new ArrayList<Address>();
         adds.add(hAddress);
-        adds.add(null);
         adds.add(wAddress);
-        adds.add(null);
 
         // setup read-only Address list
         Address roAddress = new Address();
@@ -129,6 +127,19 @@ public class CompositeCollecitonMappingTestCases extends ExternalizedMetadataTes
         emp.addresses = adds;
         emp.readOnlyAddressList = roAdds;
         emp.writeOnlyAddressList = woAdds;
+        return emp;
+    }
+    
+    /**
+     * Create the control Employee object for writing.
+     * 
+     * For null policy test of ABSENT_NODE we will add some null addresses.
+     * 
+     */
+    public Employee getControlObject() {
+        Employee emp = getReadControlObject();
+        emp.addresses.add(null);
+        emp.addresses.add(null);
         return emp;
     }
     
@@ -163,13 +174,8 @@ public class CompositeCollecitonMappingTestCases extends ExternalizedMetadataTes
             fail("Couldn't load instance doc [" + PATH + "employee.xml" + "]");
         }
         // tweak control object
-        Employee ctrlEmp = getControlObject();
-        //unmarshal null will result in new Address instances being set in the object
-        ctrlEmp.addresses.remove(1);
-        ctrlEmp.addresses.add(1, new Address());
-        ctrlEmp.addresses.remove(3);
-        ctrlEmp.addresses.add(3, new Address());
-        // write-only address list will no be read in
+        Employee ctrlEmp = getReadControlObject();
+        // write-only address list will not be read in
         ctrlEmp.writeOnlyAddressList = null;
         try {
             Employee empObj = (Employee) jaxbContext.createUnmarshaller().unmarshal(iDocStream);

@@ -8,7 +8,7 @@
          <xsd:element name="province" type="xsd:string" minOccurs="0"/>
          <xsd:element name="postalCode" type="xsd:string" minOccurs="0"/>
       </xsd:sequence>
-      <xsd:attribute name="id" type="xsd:int"/>
+      <xsd:attribute name="id" type="xsd:int" use="required"/>
    </xsd:complexType>
    <xsd:complexType name="employee">
       <xsd:sequence>
@@ -34,7 +34,7 @@
             </xsd:complexType>
          </xsd:element>
       </xsd:sequence>
-      <xsd:attribute name="empId" type="xsd:int"/>
+      <xsd:attribute name="empId" type="xsd:int" use="required"/>
    </xsd:complexType>
    <xsd:element name="employee" type="ns0:employee"/>
 </xsd:schema>

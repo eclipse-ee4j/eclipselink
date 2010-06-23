@@ -37,7 +37,7 @@
          <xsd:element name="some-string" type="xsd:string" minOccurs="0" nillable="true"/>
          <xsd:element name="a-string" type="xsd:string" minOccurs="0"/>
       </xsd:sequence>
-      <xsd:attribute name="id" type="xsd:int"/>
+      <xsd:attribute name="id" type="xsd:int" use="required"/>
       <xsd:attribute name="salary" type="xsd:double"/>
    </xsd:complexType>
    <xsd:element name="employee" type="ns0:employee"/>

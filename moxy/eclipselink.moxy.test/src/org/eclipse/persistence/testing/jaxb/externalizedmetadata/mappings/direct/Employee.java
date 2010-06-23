@@ -23,7 +23,7 @@ public class Employee {
     public String projectName;
     public String data1;
     public String data2;
-    public double salary;
+    public Double salary;
     public String privateData;
     public String characterData; 
     public String someString;
@@ -91,7 +91,7 @@ public class Employee {
                 lastName.equals(empObj.lastName) && 
                 data1.equals(empObj.data1) &&
                 data2.equals(empObj.data2) &&
-                salary == empObj.salary &&
+                salary.equals(empObj.salary) &&
                 mgrId == empObj.mgrId &&
                 characterData.equals(empObj.characterData) &&
                 projectId == empObj.projectId &&
