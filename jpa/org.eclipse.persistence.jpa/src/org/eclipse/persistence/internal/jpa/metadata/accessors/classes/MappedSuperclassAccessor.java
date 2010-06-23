@@ -42,6 +42,8 @@
  *       - 309373: Add parent class attribute to EclipseLink-ORM
  *     06/01/2010-2.1 Guy Pelletier 
  *       - 315195: Add new property to avoid reading XML during the canonical model generation
+ *     06/09/2010-2.0.3 Guy Pelletier 
+ *       - 313401: shared-cache-mode defaults to NONE when the element value is unrecognized
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata.accessors.classes;
 
@@ -837,9 +839,9 @@ public class MappedSuperclassAccessor extends ClassAccessor {
         // ALL or no setting
         // ENABLE_SELECTIVE and Cacheable(true)
         // DISABLE_SELECTIVE and Cacheable(true) 
-        if (getProject().isCacheAll() || 
-           (getProject().isCacheEnableSelective() && getDescriptor().isCacheableTrue()) ||
-           (getProject().isCacheDisableSelective() && ! getDescriptor().isCacheableFalse())) {
+        if (getProject().isSharedCacheModeAll() || 
+           (getProject().isSharedCacheModeEnableSelective() && getDescriptor().isCacheableTrue()) ||
+           (getProject().isSharedCacheModeDisableSelective() && ! getDescriptor().isCacheableFalse())) {
             
             processCachingMetadata();
         } 
