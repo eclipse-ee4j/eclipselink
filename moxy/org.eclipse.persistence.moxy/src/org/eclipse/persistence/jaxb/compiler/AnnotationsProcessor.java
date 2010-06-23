@@ -2436,16 +2436,7 @@ public class AnnotationsProcessor {
                         Class typeAdapterClass = typeAdapter.value();
                         declaration.setJavaTypeAdapterClass(typeAdapterClass);
 
-                        Method[] tacMethods = typeAdapterClass.getMethods();
-                        Class declJavaType = null;
-
-                        for (int i = 0; i < tacMethods.length; i++) {
-                            Method method = tacMethods[i];
-                            if (method.getName().equals("marshal")) {
-                                declJavaType = method.getReturnType();
-                                break;
-                            }
-                        }
+                        Class declJavaType = CompilerHelper.getTypeFromAdapterClass(typeAdapterClass);
 
                         declaration.setJavaType(helper.getJavaClass(declJavaType));
                         declaration.setAdaptedJavaType(type);
@@ -2577,8 +2568,11 @@ public class AnnotationsProcessor {
                 || helper.isAnnotationPresent(elem, XmlElementWrapper.class)
                 || helper.isAnnotationPresent(elem, XmlList.class)
                 || helper.isAnnotationPresent(elem, XmlMimeType.class)
-                || helper.isAnnotationPresent(elem, XmlIDREF.class)) {
+                || helper.isAnnotationPresent(elem, XmlIDREF.class)
+                || helper.isAnnotationPresent(elem, XmlPath.class)
+                || helper.isAnnotationPresent(elem, XmlInverseReference.class)) {
             return true;
+        
         }
         return false;
     }
