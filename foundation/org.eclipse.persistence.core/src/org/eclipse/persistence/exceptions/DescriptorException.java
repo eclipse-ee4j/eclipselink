@@ -231,6 +231,7 @@ public class DescriptorException extends ValidationException {
     public final static int ONE_TO_ONE_MAPPING_CONFLICT = 214;
     public final static int NO_RELATION_TABLE_MECHANISM = 215;
     public final static int CANNOT_USE_ID_VALUE_FOR_COMPOSITE_ID = 216;
+    public final static int INVALID_XPATH_FOR_DIRECT_MAPPING = 217;
 
     /**
      * INTERNAL:
@@ -2008,6 +2009,14 @@ public class DescriptorException extends ValidationException {
         DescriptorException descriptorException = new DescriptorException(ExceptionMessageGenerator.buildMessage(DescriptorException.class, CANNOT_USE_ID_VALUE_FOR_COMPOSITE_ID, args), descriptor);
         descriptorException.setErrorCode(CANNOT_USE_ID_VALUE_FOR_COMPOSITE_ID);
         return descriptorException;
-    }    
+    }
+    
+    public static DescriptorException invalidXpathForXMLDirectMapping(DatabaseMapping mapping) {
+        Object[] args = {};
+
+        DescriptorException descriptorException = new DescriptorException(ExceptionMessageGenerator.buildMessage(DescriptorException.class, INVALID_XPATH_FOR_DIRECT_MAPPING, args), mapping);
+        descriptorException.setErrorCode(INVALID_XPATH_FOR_DIRECT_MAPPING);
+        return descriptorException;
+    }
 
 }

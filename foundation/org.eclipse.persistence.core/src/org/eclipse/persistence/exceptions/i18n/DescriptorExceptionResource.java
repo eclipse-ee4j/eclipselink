@@ -225,6 +225,7 @@ public class DescriptorExceptionResource extends ListResourceBundle {
                                            { "214", "{0} specifies relation table, that is not compatible with addForeignKey(Name) method, or use addSourceRelationKeyField(Name) and addTargetRelationKeyFieldName methods instead."},
                                            { "215", "{0} must have non-null RelationTableMechanism."},
                                            { "216", "CacheKeyType cannot be ID_VALUE for a composite primary key.."},
+                                           { "217", "Invalid XPath for XMLDirectMapping/XMLCompositeDirectCollectionMapping. XPath must either contain an @ symbol for attributes or end in /text() for text nodes. For example: \"@name\" or \"name/text()\""}, 
 
     };
 

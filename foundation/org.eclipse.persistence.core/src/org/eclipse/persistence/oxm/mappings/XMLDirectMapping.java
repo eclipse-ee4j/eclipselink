@@ -236,6 +236,10 @@ public class XMLDirectMapping extends AbstractDirectMapping implements XMLMappin
     public void initialize(AbstractSession session) throws DescriptorException {
         super.initialize(session);
         ((XMLField)getField()).setIsCDATA(this.isCDATA());
+        String xpathString = ((XMLField)getField()).getXPath();
+        if (this.isAbstractDirectMapping() && (xpathString.indexOf(XMLConstants.ATTRIBUTE) == -1) && (!xpathString.endsWith(XMLConstants.TEXT))) {            
+            throw DescriptorException.invalidXpathForXMLDirectMapping(this);
+        }
     }
 
     /**
