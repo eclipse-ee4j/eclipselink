@@ -87,9 +87,9 @@ public class SAXUnmarshaller implements PlatformUnmarshaller {
         try {
             saxParserFactory = SAXParserFactory.newInstance();
             saxParserFactory.setNamespaceAware(true);
-            saxParserFactory.setFeature("http://xml.org/sax/features/namespace-prefixes", true);
+            saxParserFactory.setFeature(XMLReader.NAMESPACE_PREFIXES_FEATURE, true);
             try {
-                saxParserFactory.setFeature("http://java.sun.com/xml/schema/features/report-ignored-element-content-whitespace", true);
+                saxParserFactory.setFeature(XMLReader.REPORT_IGNORED_ELEMENT_CONTENT_WHITESPACE_FEATURE, true);
             } catch(org.xml.sax.SAXNotRecognizedException ex) {
                 //ignore if the parser doesn't recognize or support this feature
             } catch(org.xml.sax.SAXNotSupportedException ex) {

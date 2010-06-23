@@ -44,6 +44,8 @@ import org.eclipse.persistence.oxm.mappings.XMLMapping;
 public class XMLReader implements org.xml.sax.XMLReader {
 
     protected static final String LEXICAL_HANDLER_PROPERTY = "http://xml.org/sax/properties/lexical-handler";
+    public static final String NAMESPACE_PREFIXES_FEATURE = "http://xml.org/sax/features/namespace-prefixes";
+    public static final String REPORT_IGNORED_ELEMENT_CONTENT_WHITESPACE_FEATURE = "http://java.sun.com/xml/schema/features/report-ignored-element-content-whitespace";
 
     private org.xml.sax.XMLReader reader;
     private boolean supportsLexicalHandler;
@@ -141,11 +143,31 @@ public class XMLReader implements org.xml.sax.XMLReader {
     }
 
     public void parse(InputSource input) throws IOException, SAXException {
-        reader.parse(input);
+        try {
+            reader.parse(input);
+        } catch(SAXNotSupportedException e) {
+            String message = e.getMessage();
+            if(message != null && message.contains("namespace-prefix")) {
+                reader.setFeature(NAMESPACE_PREFIXES_FEATURE, false);
+                reader.parse(input);
+            } else {
+                throw e;
+            }
+        }
     }
 
     public void parse (String systemId) throws IOException, SAXException {
-        reader.parse(systemId);
+        try {
+            reader.parse(systemId);
+        } catch(SAXNotSupportedException e) {
+            String message = e.getMessage();
+            if(message != null && message.contains("namespace-prefix")) {
+                reader.setFeature(NAMESPACE_PREFIXES_FEATURE, false);
+                reader.parse(systemId);
+            } else {
+                throw e;
+            }
+        }
     }
 
     public void newObjectEvent(Object object, Object parent, XMLMapping selfRecordMapping) {
