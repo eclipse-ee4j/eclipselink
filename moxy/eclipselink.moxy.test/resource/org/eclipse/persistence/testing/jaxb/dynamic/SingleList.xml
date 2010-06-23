@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ns0:customer xmlns:ns0="www.example.org/customer">
+   <ns0:phone-numbers type="work">555-1111</ns0:phone-numbers>
+   <ns0:phone-numbers type="cell">555-2222</ns0:phone-numbers>
+   <ns0:phone-numbers type="home">555-3333</ns0:phone-numbers>
+</ns0:customer>

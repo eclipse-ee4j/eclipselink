@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ns0:customer xmlns:ns0="www.example.org/customer">
+   <ns0:name>Jane Doe</ns0:name>
+   <ns0:addresses>
+      <ns0:city>Any Town</ns0:city>
+      <ns0:street>1 Any Street</ns0:street>
+   </ns0:addresses>
+   <ns0:addresses>
+      <ns0:city>Another City</ns0:city>
+      <ns0:street>2 Any Street</ns0:street>
+   </ns0:addresses>
+   <ns0:phone-numbers type="work">555-1111</ns0:phone-numbers>
+   <ns0:phone-numbers type="cell">555-2222</ns0:phone-numbers>
+   <ns0:phone-numbers type="home">555-3333</ns0:phone-numbers>
+   <ns0:addresses2>
+      <ns0:city>Big City</ns0:city>
+      <ns0:street>3 Any Street</ns0:street>
+   </ns0:addresses2>
+</ns0:customer>
