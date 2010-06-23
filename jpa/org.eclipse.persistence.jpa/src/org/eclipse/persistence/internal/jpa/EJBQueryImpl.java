@@ -705,7 +705,7 @@ public class EJBQueryImpl<X> implements JpaQuery<X> {
                 List resultList = new ArrayList();
                 Object result = executeReadQuery();
                 if (result != null) {
-                    resultList.add(executeReadQuery());
+                    resultList.add(result);
                 }
                 return resultList;
             } else if (!query.isReadQuery()) {
