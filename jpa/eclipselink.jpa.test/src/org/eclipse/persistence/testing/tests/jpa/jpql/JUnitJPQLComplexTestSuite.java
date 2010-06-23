@@ -40,12 +40,10 @@ import org.eclipse.persistence.expressions.ExpressionBuilder;
 import org.eclipse.persistence.sessions.Session;
 
 import org.eclipse.persistence.platform.server.oc4j.Oc4jPlatform;
-import org.eclipse.persistence.queries.DataReadQuery;
 import org.eclipse.persistence.queries.ReadAllQuery;
 import org.eclipse.persistence.queries.ReadObjectQuery;
 
 import org.eclipse.persistence.queries.ReportQuery;
-import org.eclipse.persistence.queries.StoredProcedureCall;
 import org.eclipse.persistence.tools.schemaframework.*;
 
 import org.eclipse.persistence.testing.models.jpa.advanced.Buyer;

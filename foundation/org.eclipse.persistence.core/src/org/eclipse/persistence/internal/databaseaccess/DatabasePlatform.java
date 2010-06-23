@@ -2832,6 +2832,19 @@ public class DatabasePlatform extends DatasourcePlatform {
     
     /**
      * INTERNAL:
+     * Prints return keyword for StoredFunctionDefinition:
+     *    CREATE FUNCTION StoredFunction_In (P_IN BIGINT) 
+     *      RETURN  BIGINT
+     * The method was introduced because MySQL requires "RETURNS" instead:  
+     *    CREATE FUNCTION StoredFunction_In (P_IN BIGINT) 
+     *      RETURNS  BIGINT
+     */
+    public void printStoredFunctionReturnKeyWord(Writer writer) throws IOException {
+        writer.write("\n\t RETURN ");
+    }
+    
+    /**
+     * INTERNAL:
      * Print the SQL representation of the statement on a stream, storing the fields
      * in the DatabaseCall.
      */

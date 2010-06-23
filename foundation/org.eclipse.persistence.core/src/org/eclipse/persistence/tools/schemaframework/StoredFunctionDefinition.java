@@ -89,7 +89,7 @@ public class StoredFunctionDefinition extends StoredProcedureDefinition {
      */
     protected void printReturn(Writer writer, AbstractSession session) throws ValidationException {
         try {
-            writer.write("\n\t RETURN ");
+            session.getPlatform().printStoredFunctionReturnKeyWord(writer);
             FieldDefinition argument = (FieldDefinition)getArguments().firstElement();
 
             // argumentType should be OUT: getArgumentTypes().firstElement() == OUT;
