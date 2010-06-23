@@ -1257,12 +1257,14 @@ public class AnnotationsProcessor {
 
         if (!info.isTransient()) {
             JavaClass superClass = cls.getSuperclass();
-            TypeInfo superClassInfo = typeInfo.get(superClass.getQualifiedName());
-            while (superClassInfo != null && superClassInfo.isTransient()) {
-                List<Property> superProps = getPublicMemberPropertiesForClass(superClass, superClassInfo);
-                returnList.addAll(0, superProps);
-                superClass = superClass.getSuperclass();
-                superClassInfo = typeInfo.get(superClass.getQualifiedName());
+            if(null != superClass) {
+                TypeInfo superClassInfo = typeInfo.get(superClass.getQualifiedName());
+                while (superClassInfo != null && superClassInfo.isTransient()) {
+                    List<Property> superProps = getPublicMemberPropertiesForClass(superClass, superClassInfo);
+                    returnList.addAll(0, superProps);
+                    superClass = superClass.getSuperclass();
+                    superClassInfo = typeInfo.get(superClass.getQualifiedName());
+                }
             }
         }
 

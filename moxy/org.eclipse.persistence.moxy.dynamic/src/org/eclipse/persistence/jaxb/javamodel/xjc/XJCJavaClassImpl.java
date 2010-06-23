@@ -102,23 +102,20 @@ public class XJCJavaClassImpl implements JavaClass {
             typeParams = xjcClass.typeParams();
         }
 
-        ArrayList<JavaClass> typeArguments = new ArrayList<JavaClass>(typeParams.length);
+        if(null == typeParams || 0 == typeParams.length) {
+            return null;
+        }
 
-        for (int i = 0; i < typeParams.length; i++) {
-            JTypeVar var = typeParams[i];
-
-            JClass xjcBoundClass = null;
-
-            try {
-                xjcBoundClass = (JClass) PrivilegedAccessHelper.getValueFromField(JTYPEVAR_BOUND, var);
-            } catch (Exception e) {
-                return null;
-            }
-
+        try {
+            ArrayList<JavaClass> typeArguments = new ArrayList<JavaClass>(1);
+            JTypeVar var = typeParams[typeParams.length - 1];
+            JClass xjcBoundClass = (JClass) PrivilegedAccessHelper.getValueFromField(JTYPEVAR_BOUND, var);
             XJCJavaClassImpl boundClass = new XJCJavaClassImpl(xjcBoundClass, jCodeModel, dynamicClassLoader);
             typeArguments.add(boundClass);
+            return typeArguments;
+        } catch (Exception e) {
+            return null;
         }
-        return typeArguments;
     }
 
     public JavaClass getComponentType() {
@@ -191,7 +188,12 @@ public class XJCJavaClassImpl implements JavaClass {
     }
 
     public Collection<JavaField> getDeclaredFields() {
-        Collection<JFieldVar> xjcFields = xjcClass.fields().values();
+        Collection<JFieldVar> xjcFields;
+        if(null == xjcClass && xjcRefClass instanceof JDefinedClass) {
+            xjcFields = ((JDefinedClass)xjcRefClass).fields().values();
+        } else {
+            xjcFields = xjcClass.fields().values();
+        }
         ArrayList<JavaField> fields = new ArrayList<JavaField>(xjcFields.size());
 
         for (JFieldVar jField : xjcFields) {
