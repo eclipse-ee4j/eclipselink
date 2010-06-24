@@ -39,6 +39,13 @@
     <property file="${user.home}/websphere.properties"/>
     <property file="./websphere.properties"/>
 
+    <condition property="is.as">
+        <contains string="${server.version}" substring="as"/>
+    </condition>
+
+    <condition property="is.nd">
+        <contains string="${server.version}" substring="nd"/>
+    </condition>
     <!-- This copy eclipselink.jar, junit.jar to WebSphere server lib/ext. -->
     <target name="websphere-install">
         <copy file="${junit.lib}" todir="${was.home}/lib/ext"/>
@@ -50,12 +57,32 @@
     <!-- Start the server. -->
     <target name="websphere-start">
         <echo message="WebSphere Server is Starting......"/>
+        <antcall target="websphere-start-as" inheritRefs="true"/>
+        <antcall target="websphere-start-nd" inheritRefs="true"/>
+        <echo message="Finish Starting WebSphere Server."/>
+    </target>
+
+    <!-- Start the AS edition server. -->
+    <target name="websphere-start-as" if="is.as">
         <exec executable="${was.home}/bin/startServer.${suffix}">
             <arg value="server1"/>
             <arg value="-Dis.JTA=${is.JTA}"/>
             <arg value="-Dejb.lookup=${ejb.lookup}"/>
         </exec> 
-        <echo message="Finish Starting WebSphere Server."/>
+    </target>
+
+    <!-- Start the ND edition server. -->
+    <target name="websphere-start-nd" if="is.nd">
+        <echo message="Starting Deployment Manager......"/>
+        <exec executable="${was.home}/profiles/Dmgr01/bin/startManager.${suffix}"/>
+        <echo message="Starting Node......"/>
+        <exec executable="${was.home}/profiles/AppSrv01/bin/startNode.${suffix}"/>
+        <echo message="Starting Server......"/>
+        <exec executable="${was.home}/profiles/AppSrv01/bin/startServer.${suffix}">
+            <arg value="server1"/>
+            <arg value="-Dis.JTA=${is.JTA}"/>
+            <arg value="-Dejb.lookup=${ejb.lookup}"/>
+        </exec> 
     </target>
 
     <!--
@@ -90,11 +117,29 @@
     <!-- Stop the server. -->
     <target name="websphere-stop">
         <echo message="WebSphere Server is Stopping......"/>
+        <antcall target="websphere-stop-as" inheritRefs="true"/>
+        <antcall target="websphere-stop-nd" inheritRefs="true"/>
+        <delete file="${was.home}/lib/ext/eclipselink.jar" failonerror="false"/>
+        <echo message="Finish Stopping WebSphere Server."/>
+    </target>
+
+    <!-- Stop the AS edition server. -->
+    <target name="websphere-stop-as" if="is.as">
         <exec executable="${was.home}/bin/stopServer.${suffix}">
             <arg value="server1"/>
         </exec> 
-        <delete file="${was.home}/lib/ext/eclipselink.jar" failonerror="false"/>
-        <echo message="Finish Stopping WebSphere Server."/>
+    </target>
+
+    <!-- Stop the ND edition server. -->
+    <target name="websphere-stop-nd" if="is.nd">
+        <echo message="Stoping Server......"/>
+        <exec executable="${was.home}/profiles/AppSrv01/bin/stopServer.${suffix}">
+            <arg value="server1"/>
+        </exec>
+        <echo message="Stoping Node......"/>
+        <exec executable="${was.home}/profiles/AppSrv01/bin/stopNode.${suffix}"/>
+        <echo message="Stoping Deployment Manager......"/>
+        <exec executable="${was.home}/profiles/Dmgr01/bin/stopManager.${suffix}"/>
     </target>
 
     <!--
@@ -104,6 +149,7 @@
     <target name="websphere-deploy">
         <echo message="*****Deploy ${application.name} on WebSphere Server*****"/>
         <copy overwrite="true" file="${was.jython.scripts.dir}/installApps.py" tofile="${was.home}/bin/installApps.py"/>
+        <replace file="${was.home}/bin/installApps.py" token="%%hostName%%" value="${instance.host}"/>
         <replace file="${was.home}/bin/installApps.py" token="%%appName%%" value="${application.name}"/>
         <replace file="${was.home}/bin/installApps.py" token="%%ear%%" value="${application.name}.ear"/>
         <sleep seconds="20"/>
