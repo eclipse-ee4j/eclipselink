@@ -2860,7 +2860,7 @@ public class ObjectBuilder implements Cloneable, Serializable {
      */
     public void initializePrimaryKey(AbstractSession session) throws DescriptorException {
         List primaryKeyFields = this.descriptor.getPrimaryKeyFields();
-        if(primaryKeyFields.isEmpty() && getDescriptor().isAggregateCollectionDescriptor()) {
+        if (primaryKeyFields.isEmpty() && getDescriptor().isAggregateCollectionDescriptor()) {
             // populate primaryKeys with all mapped fields found in the main table.
             DatabaseTable defaultTable = getDescriptor().getDefaultTable();
             Iterator<DatabaseField> it = getDescriptor().getFields().iterator();
@@ -2880,8 +2880,8 @@ public class ObjectBuilder implements Cloneable, Serializable {
         }
         createPrimaryKeyExpression(session);
 
-        this.getPrimaryKeyMappings().clear();
-        this.getNonPrimaryKeyMappings().clear();
+        getPrimaryKeyMappings().clear();
+        getNonPrimaryKeyMappings().clear();
 
         // This must be before because the secondary table primary key fields are registered after
         for (Iterator fields = getMappingsByField().keySet().iterator(); fields.hasNext();) {
@@ -2946,6 +2946,29 @@ public class ObjectBuilder implements Cloneable, Serializable {
             }
         }
         this.descriptor.setHasSimplePrimaryKey(hasSimplePrimaryKey);
+
+        // Set id validation, zero is allowed for composite primary keys.
+        boolean wasIdValidationSet = true;
+        if (this.descriptor.getIdValidation() == null) {
+            wasIdValidationSet = false;
+            if (this.descriptor.getPrimaryKeyFields().size() > 1) {
+                this.descriptor.setIdValidation(IdValidation.NULL);
+            } else {
+                this.descriptor.setIdValidation(IdValidation.ZERO);
+            }
+        }
+        // Initialize id validation per field, default sequence to allowing zero.
+        // This defaults to allowing zero for the other fields.
+        if (this.descriptor.getPrimaryKeyIdValidations() == null) {
+            this.descriptor.setPrimaryKeyIdValidations(new ArrayList(this.descriptor.getPrimaryKeyFields().size()));
+            for (DatabaseField field : this.descriptor.getPrimaryKeyFields()) {
+                if (!wasIdValidationSet && this.descriptor.usesSequenceNumbers() && field.equals(this.descriptor.getSequenceNumberField())) {
+                    this.descriptor.getPrimaryKeyIdValidations().add(IdValidation.ZERO);
+                } else {
+                    this.descriptor.getPrimaryKeyIdValidations().add(this.descriptor.getIdValidation());
+                }
+            }
+        }
     }
 
     /**

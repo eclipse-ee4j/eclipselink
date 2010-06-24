@@ -2805,29 +2805,6 @@ public class ClassDescriptor implements Cloneable, Serializable {
                 setUnitOfWorkCacheIsolationLevel(ISOLATE_NEW_DATA_AFTER_TRANSACTION);
             }
         }
-        
-        // Set id validation, zero is allowed for composite primary keys.
-        boolean wasIdValidationSet = true;
-        if (getIdValidation() == null) {
-            wasIdValidationSet = false;
-            if (getPrimaryKeyFields().size() > 1) {
-                setIdValidation(IdValidation.NULL);
-            } else {
-                setIdValidation(IdValidation.ZERO);
-            }
-        }
-        // Initialize id validation per field, default sequence to allowing zero.
-        // This defaults to allowing zero for the other fields.
-        if (getPrimaryKeyIdValidations() == null) {
-            setPrimaryKeyIdValidations(new ArrayList(getPrimaryKeyFields().size()));
-            for (DatabaseField field : getPrimaryKeyFields()) {
-                if (!wasIdValidationSet && usesSequenceNumbers() && field.equals(getSequenceNumberField())) {
-                    getPrimaryKeyIdValidations().add(IdValidation.ZERO);
-                } else {
-                    getPrimaryKeyIdValidations().add(getIdValidation());
-                }
-            }
-        }
         // Setup default redirectors.  Any redirector that is not set will get assigned the
         // default redirector.
         if (this.defaultReadAllQueryRedirector == null){
