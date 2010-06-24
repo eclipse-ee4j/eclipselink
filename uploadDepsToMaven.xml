@@ -67,7 +67,7 @@
         <antcall target="upload-artifact"> 
             <param name="groupId" value="commonj.sdo"/>
             <param name="artifactId" value="commonj.sdo"/>
-            <param name="artifactVersion" value="2.1.0"/>
+            <param name="artifactVersion" value="2.1.1"/>
             <param name="artifact" value="${eclipselink.sdo.base}/${plugins.dir}/commonj.sdo_2.1.0.jar"/>
             <param name="artifactName" value="SDO API"/>
         </antcall>
