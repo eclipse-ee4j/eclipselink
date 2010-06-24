@@ -26,12 +26,13 @@ import org.apache.tools.ant.BuildException;
 import org.eclipse.persistence.buildtools.helper.Version;
 
 public class SelectBundle extends Task {
-    private String criterion = "";      // the OSGi-like criteria used to 'select' the most appropriate jar. for example:(1.0,2.0]
-    private String basename  = "";      // basename of jar (org.eclipse.persistence.jpa, javax.xml.bind, javax.persistence)
-    private String directory  = "";     // directory to search for the jar
-    private String property  = "";      // property to set with filename of 'selected' jar
-    private String separator = "_";     // the separator used to differentiate basename and jarversion
-    private String suffix    = "jar";   // suffix of file to find (default: jar)
+    private boolean includepath = false; // whether to include the path (directory property) in the value of property if selection is successful (default: no)
+    private String criterion = "";       // the OSGi-like criteria used to 'select' the most appropriate jar. for example:(1.0,2.0]
+    private String basename  = "";       // basename of jar (org.eclipse.persistence.jpa, javax.xml.bind, javax.persistence)
+    private String directory  = "";      // directory to search for the jar
+    private String property  = "";       // property to set with filename of 'selected' jar
+    private String separator = "_";      // the separator used to differentiate basename and jarversion
+    private String suffix    = "jar";    // suffix of file to find (default: jar)
 
     //private boolean debug = true;           // local: whether to print debugging messages
     private boolean minInclusive = false;   // local: whether the 'floor' version is inclusive or not "("=true "["=false
@@ -177,12 +178,19 @@ public class SelectBundle extends Task {
         String file = matchCriteria();
 
         if( !(file == null)){
-            getProject().setProperty(property, file);
+            if (includepath)
+                getProject().setProperty(property, directory+"/"+file);
+            else   
+                getProject().setProperty(property, file);
         }
         //if(debug) log("execute: Search Finished.");
     }
 
     // Setters
+    public void setIncludepath(boolean includepath) {
+        this.includepath = includepath;
+    }
+
     public void setCriterion(String criterion) {
         this.criterion = criterion;
     }

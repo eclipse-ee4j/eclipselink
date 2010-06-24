@@ -41,6 +41,17 @@
         <say message="Ant (${bnd.prefix}) bundle found in '${bnd.search.dir}'" unless="${bnd.property}"/>
         
         <selectbundle
+            includepath="true"
+            criterion="${bnd.criteria}"
+            basename="${bnd.prefix}"
+            directory="${bnd.search.dir}"
+            property="selected.bnd.lib"
+            separator="${bnd.separator}"
+        />
+        <say message="selected file: '${selected.bnd.lib}'" if="selected.bnd.lib"/>
+        <say message="Ant (${bnd.prefix}) bundle found in '${bnd.search.dir}'" unless="selected.bnd.lib"/>
+        
+        <selectbundle
             criterion="${bind.criteria}"
             basename="${bind.prefix}"
             directory="${plugin.dir}"
