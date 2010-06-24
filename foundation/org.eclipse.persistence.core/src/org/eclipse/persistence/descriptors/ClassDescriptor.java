@@ -187,6 +187,9 @@ public class ClassDescriptor implements Cloneable, Serializable {
     /** Allow zero primary key validation to be configured. */
     protected IdValidation idValidation;
     
+    /** Allow zero primary key validation to be configured per field. */
+    protected List<IdValidation> primaryKeyIdValidations;
+
     /** Allow cache key type to be configured. */
     protected CacheKeyType cacheKeyType;
     
@@ -2804,11 +2807,25 @@ public class ClassDescriptor implements Cloneable, Serializable {
         }
         
         // Set id validation, zero is allowed for composite primary keys.
+        boolean wasIdValidationSet = true;
         if (getIdValidation() == null) {
-            if (getPrimaryKeyFields().size() > 1 && !usesSequenceNumbers()) {
+            wasIdValidationSet = false;
+            if (getPrimaryKeyFields().size() > 1) {
                 setIdValidation(IdValidation.NULL);
             } else {
                 setIdValidation(IdValidation.ZERO);
+            }
+        }
+        // Initialize id validation per field, default sequence to allowing zero.
+        // This defaults to allowing zero for the other fields.
+        if (getPrimaryKeyIdValidations() == null) {
+            setPrimaryKeyIdValidations(new ArrayList(getPrimaryKeyFields().size()));
+            for (DatabaseField field : getPrimaryKeyFields()) {
+                if (!wasIdValidationSet && usesSequenceNumbers() && field.equals(getSequenceNumberField())) {
+                    getPrimaryKeyIdValidations().add(IdValidation.ZERO);
+                } else {
+                    getPrimaryKeyIdValidations().add(getIdValidation());
+                }
             }
         }
         // Setup default redirectors.  Any redirector that is not set will get assigned the
@@ -5441,6 +5458,11 @@ public class ClassDescriptor implements Cloneable, Serializable {
      */
     public void setIdValidation(IdValidation idValidation) {
         this.idValidation = idValidation;
+        if (getPrimaryKeyIdValidations() != null) {
+            for (int index = 0; index < getPrimaryKeyIdValidations().size(); index++) {
+                getPrimaryKeyIdValidations().set(index, idValidation);
+            }
+        }
     }
 
     /**
@@ -5449,6 +5471,22 @@ public class ClassDescriptor implements Cloneable, Serializable {
      */
     public IdValidation getIdValidation() {
         return idValidation;
+    }
+
+    /**
+     * ADVANCED:
+     * Return what types are allowed in each primary key field (id).
+     */    
+    public List<IdValidation> getPrimaryKeyIdValidations() {
+        return primaryKeyIdValidations;
+    }
+
+    /**
+     * ADVANCED:
+     * Return what types are allowed in each primary key field (id).
+     */
+    public void setPrimaryKeyIdValidations(List<IdValidation> primaryKeyIdValidations) {
+        this.primaryKeyIdValidations = primaryKeyIdValidations;
     }
 
     /**

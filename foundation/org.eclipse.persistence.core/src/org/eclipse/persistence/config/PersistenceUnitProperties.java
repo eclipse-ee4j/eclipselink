@@ -1137,7 +1137,7 @@ public class PersistenceUnitProperties {
 
     /**
      * The <code>"eclipselink.id-validation"</code> property defines
-     * which primary key componets values are considered invalid.
+     * which primary key components values are considered invalid.
      * These values will be also overridden by sequencing.
      * Note that Identity always overrides any existing id value
      * and so does any sequence with shouldAlwaysOverrideExistingValue flag set to true.

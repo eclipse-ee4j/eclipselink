@@ -13,6 +13,10 @@
 package org.eclipse.persistence.testing.framework;
 
 import java.io.*;
+import java.lang.ref.WeakReference;
+import java.util.ArrayList;
+import java.util.List;
+
 import javax.persistence.*;
 import org.eclipse.persistence.exceptions.*;
 import org.eclipse.persistence.internal.databaseaccess.DatabasePlatform;
@@ -688,5 +692,26 @@ public abstract class TestCase extends junit.framework.TestCase implements TestE
     public static boolean supportsStoredProcedures(Session session) {
         DatabasePlatform platform = session.getPlatform();
         return platform.isOracle() || platform.isSybase() || platform.isMySQL() || platform.isSQLServer() || platform.isSymfoware();
+    }
+    
+    /**
+     * Force a garbage collection.
+     */
+    public void forceGC() {
+        WeakReference ref = new WeakReference(new Object());
+        for (int loops = 0; loops < 10; loops++) {
+            //List junk = new ArrayList (10);
+            for (int i = 0; i < 10; i++) {
+                //junk.add(new java.math.BigDecimal(i));
+            }
+
+            // Force garbage collection.
+            System.gc();
+            System.runFinalization();
+        }
+        // Check if a garbage collect really occurred.
+        if (ref.get() != null) {
+            System.out.println("WARNING: gc did not occur");
+        }
     }
 }

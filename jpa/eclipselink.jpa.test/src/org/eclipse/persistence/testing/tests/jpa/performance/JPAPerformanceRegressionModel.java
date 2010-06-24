@@ -21,6 +21,7 @@ import javax.persistence.EntityManager;
 import javax.persistence.spi.PersistenceProvider;
 
 import org.eclipse.persistence.testing.models.jpa.performance.*;
+import org.eclipse.persistence.testing.tests.jpa.performance.misc.JPABootstrapPerformanceTest;
 import org.eclipse.persistence.testing.tests.jpa.performance.reading.JPAReadAllAddressNamedQueryPerformanceComparisonTest;
 import org.eclipse.persistence.testing.tests.jpa.performance.reading.JPAReadAllAddressPerformanceComparisonTest;
 import org.eclipse.persistence.testing.tests.jpa.performance.reading.JPAReadAllAddressSimpleExpressionPerformanceComparisonTest;
@@ -65,12 +66,15 @@ public class JPAPerformanceRegressionModel extends TestModel {
     public void addTests() {
         addTest(getReadingTestSuite());
         addTest(getWritingTestSuite());
+        addTest(getMiscTestSuite());
+        
         TestSuite suite = new TestSuite();
         suite.setName("ChangeTrackingSuite");
         suite.addTest(buildChangeTrackingTest());
         suite.addTest(buildFieldAccessChangeTrackingTest());
         suite.addTest(buildEmployeeChangeTrackingTest());
         suite.addTest(buildDateChangeTrackingTest());
+        
         addTest(suite);
     }
 
@@ -138,6 +142,16 @@ public class JPAPerformanceRegressionModel extends TestModel {
         // false == merge; true == use sequencing.
         suite.addTest(new JPAMassInsertOrMergeEmployeeWithManagementLevelsPerformanceComparisonTest(false, true, nLevels, nDirects));
 
+        return suite;        
+    }
+
+    public TestSuite getMiscTestSuite() {
+        TestSuite suite = new TestSuite();
+        suite.setName("JPAMiscTestSuite");
+        suite.setDescription("This suite tests miscellaneous performance.");
+
+        suite.addTest(new JPABootstrapPerformanceTest());
+        
         return suite;        
     }
 

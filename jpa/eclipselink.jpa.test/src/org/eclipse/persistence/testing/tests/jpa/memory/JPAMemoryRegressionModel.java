@@ -14,12 +14,20 @@
 
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
+import javax.persistence.EntityManager;
+import javax.persistence.Query;
 import javax.persistence.spi.PersistenceProvider;
 
-import org.eclipse.persistence.testing.models.performance.*;
+import org.eclipse.persistence.testing.models.jpa.performance.Address;
+import org.eclipse.persistence.testing.models.jpa.performance.Employee;
+import org.eclipse.persistence.testing.models.jpa.performance.EmployeeTableCreator;
+import org.eclipse.persistence.testing.models.jpa.performance.EmploymentPeriod;
+import org.eclipse.persistence.testing.models.jpa.performance.PhoneNumber;
 import org.eclipse.persistence.internal.helper.Helper;
+import org.eclipse.persistence.jpa.JpaEntityManager;
 import org.eclipse.persistence.testing.framework.*;
 
 /**
@@ -31,22 +39,35 @@ public class JPAMemoryRegressionModel extends TestModel {
         setDescription("Memory tests that compare JPA memory usage.");
     }
 
-    public void addRequiredSystems() {
-        addRequiredSystem(new EmployeeSystem());
-    }
-
     public void addTests() {
-        //addTest(new ServerSessionMemoryRegressionTest());
-        //addTest(new ReadMemoryRegressionTest());
-        //addTest(new WriteMemoryRegressionTest());
+        addTest(buildReadTest());
+        addTest(buildInsertTest());
+        addTest(buildUpdateTest());
+        addTest(buildBootstrapTest());
     }
 
     /**
      * Create/populate database.
      */
     public void setup() {
-        // Populate database (through EclipseLink).
-        for (int j = 0; j < 100; j++) {
+        setupProvider();
+        getSession().logMessage(getExecutor().getEntityManagerFactory().getClass().toString());
+        System.out.println(getExecutor().getEntityManagerFactory().getClass().toString());
+        // Populate database.
+        EntityManager manager = getExecutor().createEntityManager();
+        // Create schema using session from entity manager to create sequences correctly.
+        try {
+            // Create schema.
+            new EmployeeTableCreator().replaceTables(((JpaEntityManager)manager).getServerSession());
+        } catch (ClassCastException cast) {
+            // Create using DatabaseSession if not EclipseLink JPA.
+            new EmployeeTableCreator().replaceTables(getDatabaseSession());
+        }
+        
+        manager.getTransaction().begin();
+
+        // Populate database
+        for (int j = 0; j < 1000; j++) {
             Employee empInsert = new Employee();
             empInsert.setFirstName("Brendan");
             empInsert.setMale();
@@ -66,18 +87,19 @@ public class JPAMemoryRegressionModel extends TestModel {
             empInsert.getAddress().setCountry("Canada");
             empInsert.addPhoneNumber(new PhoneNumber("Work Fax", "613", "2255943"));
             empInsert.addPhoneNumber(new PhoneNumber("Home", "613", "2224599"));
-            getDatabaseSession().insertObject(empInsert);
+            manager.persist(empInsert);
         }
-        setupProvider();
-        getSession().logMessage(getExecutor().getEntityManagerFactory().getClass().toString());
-        System.out.println(getExecutor().getEntityManagerFactory().getClass().toString());
+
+        manager.getTransaction().commit();
+        ((JpaEntityManager)manager).getServerSession().getIdentityMapAccessor().initializeAllIdentityMaps();
+        manager.close();
     }
     
     /**
      * Setup the JPA provider.
      */
     public void setupProvider() {
-        // Configure provider to be EclipseLink.
+        // Configure provider to be TopLink.
         String providerClass = "org.eclipse.persistence.jpa.PersistenceProvider";
         PersistenceProvider provider = null;
         try {
@@ -101,5 +123,135 @@ public class JPAMemoryRegressionModel extends TestModel {
         properties.put("eclipselink.logging.level", getSession().getSessionLog().getLevelString());
         properties.put("eclipselink.jdbc.cache-statements", "true");
         return properties;
-    }    
+    }
+    
+    /**
+     * Measure the amount of memory used by inserts.
+     */
+    public TestCase buildBootstrapTest() {
+        MemoryRegressionTestCase test = new MemoryRegressionTestCase() {
+            @Override
+            public void startTest() {
+                getExecutor().getEntityManagerFactory().close();
+                getExecutor().setEntityManagerFactory(null);
+            }
+            
+            public void test() {
+                EntityManager manager = createEntityManager();
+                Query query = manager.createQuery("Select e from Employee e");
+                query.getResultList();
+                manager.close();
+            }
+        };
+        test.setName("BootstrapMemoryTest");
+        return test;
+    }
+    
+    /**
+     * Measure the amount of memory used by inserts.
+     */
+    public TestCase buildInsertTest() {
+        MemoryRegressionTestCase test = new MemoryRegressionTestCase() {
+            @Override
+            public void startTest() {
+                EntityManager manager = createEntityManager();
+                ((JpaEntityManager)manager).getServerSession().getIdentityMapAccessor().initializeAllIdentityMaps();
+                manager.close();
+            }
+            
+            public void test() {
+                for (int count = 0; count < 500; count++) {
+                    EntityManager manager = createEntityManager();
+                    manager.getTransaction().begin();
+                    Employee employee = new Employee();
+                    employee.setFirstName("NewGuy");
+                    employee.setLastName("Smith");
+                    manager.persist(employee);
+                    manager.getTransaction().commit();
+                    manager.close();
+                }
+            }
+            
+            @Override
+            public void endTest() {
+                EntityManager manager = createEntityManager();
+                manager.getTransaction().begin();
+                manager.createNativeQuery("Delete from P_EMPLOYEE where F_NAME = 'NewGuy'").executeUpdate();
+                manager.getTransaction().commit();
+                ((JpaEntityManager)manager).getServerSession().getIdentityMapAccessor().initializeAllIdentityMaps();
+                manager.close();
+            }
+        };
+        test.setName("InsertMemoryTest");
+        return test;
+    }
+
+    /**
+     * Measure the amount of memory used by updates.
+     */
+    public TestCase buildUpdateTest() {
+        MemoryRegressionTestCase test = new MemoryRegressionTestCase() {
+            @Override
+            public void startTest() {
+                EntityManager manager = createEntityManager();
+                ((JpaEntityManager)manager).getServerSession().getIdentityMapAccessor().initializeAllIdentityMaps();
+                manager.close();
+            }
+            
+            public void test() {
+                EntityManager manager = createEntityManager();
+                Query query = manager.createQuery("Select e from Employee e");
+                List<Employee> employees = query.getResultList();
+                for (Employee employee : employees) {
+                    manager.getTransaction().begin();
+                    employee.setFirstName("UpdatedGuy");
+                    manager.getTransaction().commit();
+                }
+                manager.close();
+            }
+            
+            @Override
+            public void endTest() {
+                EntityManager manager = createEntityManager();
+                ((JpaEntityManager)manager).getServerSession().getIdentityMapAccessor().initializeAllIdentityMaps();
+                manager.close();
+            }
+        };
+        test.setName("UpdateMemoryTest");
+        return test;
+    }
+
+    /**
+     * Measure the amount of memory used by reads.
+     */
+    public TestCase buildReadTest() {
+        MemoryRegressionTestCase test = new MemoryRegressionTestCase() {
+            @SuppressWarnings("unused")
+            List results;
+            
+            @Override
+            public void startTest() {
+                EntityManager manager = createEntityManager();
+                ((JpaEntityManager)manager).getServerSession().getIdentityMapAccessor().initializeAllIdentityMaps();
+                manager.close();
+            }
+            public void test() {
+                EntityManager manager = createEntityManager();
+                Query query = manager.createQuery("Select e from Employee e");
+                results = query.getResultList();
+                manager.close();
+            }
+            
+            @Override
+            public void endTest() {
+                results = null;
+                EntityManager manager = createEntityManager();
+                ((JpaEntityManager)manager).getServerSession().getIdentityMapAccessor().initializeAllIdentityMaps();
+                manager.close();
+            }
+        };
+        test.setName("ReadMemoryTest");
+        return test;
+    }
+    
 }

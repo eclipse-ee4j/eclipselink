@@ -67,25 +67,4 @@ public abstract class MemoryLeakTestCase extends TestCase {
             throwError("Objects did not garbage collect: " + count);
         }
     }
-    
-    /**
-     * Force a garbage collection.
-     */
-    public void forceGC() {
-        WeakReference ref = new WeakReference(new Object());
-        for (int loops = 0; loops < 10; loops++) {
-            List junk = new ArrayList (50000);
-            for (int i = 0; i < 50000; i++) {
-                junk.add(new java.math.BigDecimal(i));
-            }
-
-            // Force garbage collection.
-            System.gc();
-            System.runFinalization();
-        }
-        // Check if a garbage collect really occurred.
-        if (ref.get() != null) {
-            System.out.println("WARNING: gc did not occur");
-        }
-    }    
 }

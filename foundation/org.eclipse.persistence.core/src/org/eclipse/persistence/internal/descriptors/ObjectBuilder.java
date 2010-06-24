@@ -286,7 +286,8 @@ public class ObjectBuilder implements Cloneable, Serializable {
         // PERF: The (internal) support for letting the sequence decide this was removed,
         // as anything other than primitive should allow null and default as such.
         Object sequenceValue;
-        if(isPrimaryKeyComponentInvalid(existingValue) || getDescriptor().getSequence().shouldAlwaysOverrideExistingValue()) {
+        int index = this.descriptor.getPrimaryKeyFields().indexOf(sequenceNumberField);
+        if (isPrimaryKeyComponentInvalid(existingValue, index) || this.descriptor.getSequence().shouldAlwaysOverrideExistingValue()) {
             sequenceValue = writeSession.getSequencing().getNextValue(this.descriptor.getJavaClass());
         } else {
             return null;
@@ -2130,8 +2131,7 @@ public class ObjectBuilder implements Cloneable, Serializable {
             for (int index = 0; index < size; index++) {
                 AbstractDirectMapping mapping = (AbstractDirectMapping)mappings.get(index);
                 Object keyValue = mapping.valueFromObject(domainObject, primaryKeyFields.get(index), session);
-                // Only check for 0 for singleton primary keys.
-                if (isPrimaryKeyComponentInvalid(keyValue)) {
+                if (isPrimaryKeyComponentInvalid(keyValue, index)) {
                     if (shouldReturnNullIfNull) {
                         return null;
                     }
@@ -2164,8 +2164,7 @@ public class ObjectBuilder implements Cloneable, Serializable {
                 // the main reason for this is that 1-1 can optimize on vh by getting from the row as the row-type.
                 Class classification = primaryKeyClassifications.get(index);
                 Object value = databaseRow.get(primaryKeyFields.get(index));
-                // Only check for 0 for singleton primary keys.
-                if (isPrimaryKeyComponentInvalid(value)) {
+                if (isPrimaryKeyComponentInvalid(value, index)) {
                     if (shouldReturnNullIfNull) {
                         return null;
                     }
@@ -2737,13 +2736,18 @@ public class ObjectBuilder implements Cloneable, Serializable {
 
     }
     
-    public boolean isPrimaryKeyComponentInvalid(Object keyValue) {
-        IdValidation idValidation = descriptor.getIdValidation();
-        if(idValidation == IdValidation.ZERO) {
+    public boolean isPrimaryKeyComponentInvalid(Object keyValue, int index) {
+        IdValidation idValidation;
+        if (index < 0) {
+            idValidation = this.descriptor.getIdValidation();
+        } else {        
+            idValidation = this.descriptor.getPrimaryKeyIdValidations().get(index);
+        }
+        if (idValidation == IdValidation.ZERO) {
             return keyValue == null || Helper.isEquivalentToNull(keyValue); 
-        } else if(idValidation == IdValidation.NULL) {
+        } else if (idValidation == IdValidation.NULL) {
             return keyValue == null;
-        } else if(idValidation == IdValidation.NEGATIVE) {
+        } else if (idValidation == IdValidation.NEGATIVE) {
             return keyValue == null || Helper.isNumberNegativeOrZero(keyValue);
         } else {
             // idValidation == IdValidation.NONE

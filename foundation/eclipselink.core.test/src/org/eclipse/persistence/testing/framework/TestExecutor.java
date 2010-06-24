@@ -330,7 +330,7 @@ public class TestExecutor {
      * This entity manager is initialized from META-INF/persistence.xml.
      */
     public EntityManager createEntityManager() {
-        return entityManagerFactory.createEntityManager();
+        return getEntityManagerFactory().createEntityManager();
     }
     
     /**

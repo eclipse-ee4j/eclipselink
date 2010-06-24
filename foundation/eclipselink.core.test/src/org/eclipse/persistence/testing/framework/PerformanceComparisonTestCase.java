@@ -168,13 +168,14 @@ public abstract class PerformanceComparisonTestCase extends TestCase implements 
         try {
             // Repeat the test and baseline for the number of repeats.
             for (int index = 0; index < REPEATS; index++) {
-                long startTime = System.currentTimeMillis();
-                long endTime = startTime;
-                performanceTest.resetIterations();
-                System.gc();
-                Thread.sleep(1000);
+                long startTime, endTime;
                 try {
                     performanceTest.startTest();
+                    System.gc();
+                    Thread.sleep(1000);
+                    performanceTest.resetIterations();
+                    startTime = System.currentTimeMillis();
+                    endTime = startTime;
                     // Count how many times the test can be invoked in the run time.
                     // This allows for the test run time to be easily changed.
                     while ((startTime + performanceTest.getTestRunTime()) >= endTime) {
@@ -190,13 +191,13 @@ public abstract class PerformanceComparisonTestCase extends TestCase implements 
                 for (int testIndex = 0; testIndex < performanceTest.getTests().size(); testIndex++) {
                     PerformanceComparisonTest test = (PerformanceComparisonTest)performanceTest.getTests().get(testIndex);
                     ((TestCase)test).setExecutor(((TestCase)performanceTest).getExecutor());
-                    startTime = System.currentTimeMillis();
-                    endTime = startTime;
-                    performanceTest.resetIterations();
-                    System.gc();
-                    Thread.sleep(1000);
                     try {
                         test.startTest();
+                        performanceTest.resetIterations();
+                        System.gc();
+                        Thread.sleep(1000);
+                        startTime = System.currentTimeMillis();
+                        endTime = startTime;
                         // Count how many times the test can be invoked in the run time.
                         // This allows for the test run time to be easily changed.
                         while ((startTime + performanceTest.getTestRunTime()) >= endTime) {
