@@ -181,4 +181,15 @@ public class XmlAccessorTypeTestCases extends ExternalizedMetadataTestCases {
         String result = validateAgainstSchema(src, null, outputResolver);
         assertTrue("Schema validation passed unxepectedly", result != null);
     }
+    
+    public void testNoAccessTypePropertiesAdded() {
+        String contextPath = CONTEXT_PATH + ".none";
+        String path = PATH + "none/";
+
+        outputResolver = generateSchema(new Class[] { org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmlaccessortype.none.Employee.class }, contextPath, path,  1);
+
+        String src = PATH + "employee-no-access.xml";
+        String result = validateAgainstSchema(src, EMPTY_NAMESPACE, outputResolver);
+        assertTrue("Schema validation passed unxepectedly " + result, result == null);
+    }
 }
