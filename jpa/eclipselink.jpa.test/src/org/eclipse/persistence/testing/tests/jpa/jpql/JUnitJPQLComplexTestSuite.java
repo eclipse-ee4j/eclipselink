@@ -40,10 +40,13 @@ import org.eclipse.persistence.expressions.ExpressionBuilder;
 import org.eclipse.persistence.sessions.Session;
 
 import org.eclipse.persistence.platform.server.oc4j.Oc4jPlatform;
+import org.eclipse.persistence.queries.DataReadQuery;
 import org.eclipse.persistence.queries.ReadAllQuery;
 import org.eclipse.persistence.queries.ReadObjectQuery;
 
 import org.eclipse.persistence.queries.ReportQuery;
+import org.eclipse.persistence.queries.StoredProcedureCall;
+import org.eclipse.persistence.tools.schemaframework.*;
 
 import org.eclipse.persistence.testing.models.jpa.advanced.Buyer;
 import org.eclipse.persistence.testing.models.jpa.advanced.Employee;
@@ -212,6 +215,9 @@ public class JUnitJPQLComplexTestSuite extends JUnitTestCase
         suite.addTest(new JUnitJPQLComplexTestSuite("variableReferencedOnlyInParameterTest"));
         suite.addTest(new JUnitJPQLComplexTestSuite("standardFunctionCreateQueryTest"));
         suite.addTest(new JUnitJPQLComplexTestSuite("customFunctionNVLTest"));
+        suite.addTest(new JUnitJPQLComplexTestSuite("testFuncWithStoredFunc"));
+        suite.addTest(new JUnitJPQLComplexTestSuite("testFuncWithMySQLFuncs"));
+        suite.addTest(new JUnitJPQLComplexTestSuite("testNestedFUNCs"));
         
         suite.addTest(new JUnitJPQLComplexTestSuite("testFunctionInSelect"));
         suite.addTest(new JUnitJPQLComplexTestSuite("testFunctionInOrderBy"));
@@ -261,6 +267,21 @@ public class JUnitJPQLComplexTestSuite extends JUnitTestCase
         new InheritedTableManager().replaceTables(session);
         
         new DataTypesTableCreator().replaceTables(session);
+
+        //create stored function when database supports it
+        if (supportsStoredProcedures()){
+            SchemaManager schema = new SchemaManager(session);
+            schema.replaceObject(buildStoredFunction());
+        }
+    }
+
+    public StoredFunctionDefinition buildStoredFunction() {
+        StoredFunctionDefinition func = new StoredFunctionDefinition();
+        func.setName("StoredFunction_In");
+        func.addArgument("P_IN", Long.class);
+        func.setReturnType(Long.class);
+        func.addStatement("RETURN P_IN * 1000");
+        return func;
     }
     
     public void complexABSTest()
@@ -2984,6 +3005,82 @@ public class JUnitJPQLComplexTestSuite extends JUnitTestCase
         }
     }
 
+    /* Test FUNC with stored function 'StoredFunction_In'*/
+    public void testFuncWithStoredFunc(){
+        if (!supportsStoredProcedures())
+        {
+            warning("this test is not suitable for running on dbs that don't support stored function");
+            return;
+        }else{
+            String sqlString = "SELECT e.id FROM Employee e WHERE e.salary = FUNC('StoredFunction_In', 75)";
+            EntityManager em = createEntityManager();
+            Query query;
+            try{
+            query = em.createQuery(sqlString);
+            List result = query.getResultList();
+            Employee emp = em.find(Employee.class, result.get(0));
+            assertTrue("Func is not working properly with stored function.", emp.getSalary()==75000);
+            }catch(Exception e){
+                e.printStackTrace();
+            }finally{
+                closeEntityManager(em);
+            }
+        }
+    }
+
+    /* Test FUNC with specific MySQL functions*/
+    public void testFuncWithMySQLFuncs(){
+        if(!getServerSession().getPlatform().isMySQL()) {
+            warning("The test testFuncWithMySQLFuncs is supported on MySQL only");
+            return;
+        }else{
+            String[] jpqlStrings = {"Select e.id from Employee e Order By FUNC('UNHEX', e.firstName)",
+                                    "Select FUNC('CRC32', e.lastName) from Employee e",
+                                    "Select FUNC('BINARY', e.firstName) from Employee e",
+                                    "Select FUNC('ENCRYPT', e.firstName), FUNC('ENCRYPT', e.lastName) from Employee e",
+                                    "SELECT FUNC('UTC_DATE'), e.id FROM Employee e",
+                                    "SELECT FUNC('CONCAT','GroupA', FUNC('SUBSTRING',e.firstName, 1, 2)) FROM Employee e WHERE TRIM(' ' FROM e.firstName) = e.firstName"
+                                   };
+            EntityManager em = createEntityManager();
+            String errorMsg = "";
+            Query query;
+            for(int i=0; i < jpqlStrings.length; i++) {
+                try{
+                query = em.createQuery(jpqlStrings[i]);
+                List result = query.getResultList();
+                }catch(Exception ex){
+                    ex.printStackTrace();
+                    errorMsg += '\t' + jpqlStrings[i] + " - "+ex+'\n';
+                }
+            }
+            closeEntityManager(em);
+            if(errorMsg.length() > 0) {
+                errorMsg = "Failed:\n" + errorMsg;
+                fail(errorMsg);
+            }
+        }
+    }
+    
+    /* Test nested functions with FUNC*/
+    public void testNestedFUNCs() {
+        if(!getServerSession().getPlatform().isOracle()) {
+            warning("The test testNestedFUNCs is supported on Oracle only");
+            return;
+        }else{
+            String jpqlString = "select FUNC('NVL',FUNC('TO_NUMBER', FUNC('DECODE', FUNC('SUBSTRB', e.firstName,1,1),' ', NULL,FUNC('SUBSTRB',e.lastName,1,10)), null), -99) from Employee e";
+            EntityManager em = createEntityManager();
+            Query query;
+            try{
+            query = em.createQuery(jpqlString);
+            List result = query.getResultList();
+            }catch(Exception ex){
+                ex.printStackTrace();
+                fail("nested fucntions don't work, the error is" + ex.getMessage());
+            }finally{
+                closeEntityManager(em);
+            }
+        }
+    }
     public void testFunctionInSelect() {
         EntityManager em = createEntityManager();
         Query query = em.createQuery("Select UPPER(e.firstName) from Employee e");
