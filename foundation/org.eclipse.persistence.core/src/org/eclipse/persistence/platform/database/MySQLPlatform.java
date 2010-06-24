@@ -628,4 +628,17 @@ public class MySQLPlatform extends DatabasePlatform {
         call.setIgnoreMaxResultsSetting(true);
     }
     
+    /**
+     * INTERNAL:
+     * Prints return keyword for StoredFunctionDefinition:
+     *    CREATE FUNCTION StoredFunction_In (P_IN BIGINT) 
+     *      RETURN  BIGINT
+     * The method was introduced because MySQL requires "RETURNS" instead:  
+     *    CREATE FUNCTION StoredFunction_In (P_IN BIGINT) 
+     *      RETURNS  BIGINT
+     */
+    @Override
+    public void printStoredFunctionReturnKeyWord(Writer writer) throws IOException {
+        writer.write("\n\t RETURNS ");
+    }    
 }
