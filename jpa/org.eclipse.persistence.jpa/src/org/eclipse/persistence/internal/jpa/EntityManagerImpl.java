@@ -341,8 +341,27 @@ public class EntityManagerImpl implements org.eclipse.persistence.jpa.JpaEntityM
             verifyOpen();
             if (this.extendedPersistenceContext != null) {
                 if (checkForTransaction(false) == null) {
-                    // clear all change sets and cache
-                    this.extendedPersistenceContext.clearForClose(true);
+                    //     259993: WebSphere 7.0 during a JPAEMPool.putEntityManager() afterCompletion callback
+                    // may attempt to clear an entityManager in lifecyle/state 4 with a transaction commit active  
+                    // that is in the middle of a commit for an insert or update by calling em.clear(true).  
+                    //     We only clear the entityManager if we are in the states 
+                    // (Birth == 0, WriteChangesFailed==3, Death==5 or AfterExternalTransactionRolledBack==6).
+                    // If we are in one of the following *Pending states (1,2 and 4) we defer the clear() to the release() call later.
+                    // Note: the single state CommitTransactionPending==2 may never happen as a result of an em.clear
+                    if(this.extendedPersistenceContext.isSynchronized() && 
+                            ( this.extendedPersistenceContext.isCommitPending() 
+                            || this.extendedPersistenceContext.isAfterWriteChangesButBeforeCommit() 
+                            || this.extendedPersistenceContext.isMergePending())) {
+                        // when jta transaction afterCompleteion callback will have completed merge,
+                        // the uow will be released.
+                        // Change sets will be cleared, but the cache will be kept.
+                        // uow still could be used for instantiating of ValueHolders
+                        // after it's released.
+                        extendedPersistenceContext.setResumeUnitOfWorkOnTransactionCompletion(false);
+                    } else {                    
+                        // clear all change sets and cache
+                        this.extendedPersistenceContext.clearForClose(true);
+                    }
                     this.extendedPersistenceContext = null;
                 } else {
                     // clear all change sets created after the last flush and

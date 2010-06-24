@@ -5701,28 +5701,6 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
      * We defer a clear() call to release() if the uow lifecycle is 1,2 or 4 (*Pending).
      */
     public void clearForClose(boolean shouldClearCache) {
-        //     259993: WebSphere 7.0 during a JPAEMPool.putEntityManager() afterCompletion callback
-        // may attempt to clear an entityManager in lifecyle/state 4 with a transaction commit active  
-        // that is in the middle of a commit for an insert or update by calling em.clear(true).  
-        //     We only clear the entityManager if we are in the states 
-        // (Birth == 0, WriteChangesFailed==3, Death==5 or AfterExternalTransactionRolledBack==6).
-        // If we are in one of the following *Pending states (1,2 and 4) we defer the clear() to the release() call later.
-        // Note: the single state CommitTransactionPending==2 may never happen as a result of an em.cler
-        if(this.lifecycle == CommitPending 
-                || this.lifecycle == CommitTransactionPending 
-                || this.lifecycle == MergePending) {
-            // Perform a partial clear() by clearing the identityMaps but leaving all other fields and lifecycle set.
-            // Later in release a clear(false) will clear everything else except the identityMaps.
-            // Certain application servers like WebSphere 7 will call em.clear() during commit()
-            // in order that the entityManager is cleared before returning the em to their server pool.
-            // Any entities that were managed will still be in the shared cache and database.            
-            if (shouldClearCache) {
-                clearIdentityMapCache();
-            }
-            // We must exit before we perform a full clear
-            return;
-        }
-        
         clear(shouldClearCache);
         if (isActive()) {
             //Reset lifecycle
