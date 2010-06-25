@@ -16,6 +16,8 @@ import junit.framework.Assert;
 import junit.framework.Test;
 import junit.framework.TestSuite;
 
+import java.util.List;
+
 import javax.persistence.EntityManager;
 
 import org.eclipse.persistence.internal.sessions.AbstractSession;
@@ -76,6 +78,7 @@ public class JUnitJPQLInheritanceTestSuite extends JUnitTestCase {
         suite.addTest(new JUnitJPQLInheritanceTestSuite("testJoinedInheritanceWithLeftOuterJoin1"));
         suite.addTest(new JUnitJPQLInheritanceTestSuite("testJoinedInheritanceWithLeftOuterJoin2"));
         suite.addTest(new JUnitJPQLInheritanceTestSuite("testJoinedInheritanceWithLeftOuterJoin3"));
+        suite.addTest(new JUnitJPQLInheritanceTestSuite("testAllPeople"));
         
         return suite;
     }
@@ -231,6 +234,15 @@ public class JUnitJPQLInheritanceTestSuite extends JUnitTestCase {
             em.createQuery(ejbqlString).getResultList();
         } catch (Exception e) {
             fail("Error occurred on a left outer join sql expression on a joined inheritance test: " + e.getCause());
+        }
+    }
+    
+    public void testAllPeople() {
+        EntityManager em = createEntityManager();
+        String ejbqlString = "SELECT p FROM Person p";
+        List result = em.createQuery(ejbqlString).setMaxResults(100).getResultList();
+        if (result.size() != 8) {
+            fail("Expected 8 people got: " + result);
         }
     }
 

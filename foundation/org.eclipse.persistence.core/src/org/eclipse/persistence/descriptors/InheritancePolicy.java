@@ -132,8 +132,13 @@ public class InheritancePolicy implements Serializable, Cloneable {
            // allTables should've been null, too
            allTables = new Vector(getDescriptor().getTables());
         }
-        childrenTables.add(table);
-        allTables.add(table);
+        // Avoid duplicates as two independent subclasses may have the same table.
+        if (!this.childrenTables.contains(table)) {
+            this.childrenTables.add(table);
+        }
+        if (!this.allTables.contains(table)) {
+            this.allTables.add(table);
+        }
         childrenTablesJoinExpressions.put(table, expression);
         childrenJoinExpression = expression.and(childrenJoinExpression);
     }
