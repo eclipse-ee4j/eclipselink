@@ -604,6 +604,9 @@ public class SDODataObject implements DataObject, SequencedObject {
      * @throws IllegalArgumentException
      */
     public Property defineOpenContentProperty(String name, Object value) throws UnsupportedOperationException, IllegalArgumentException {
+        if (value == null) {
+            return null;
+        }
         DataObject propertyDO = aHelperContext.getDataFactory().create(SDOConstants.SDO_URL, SDOConstants.PROPERTY);
 
         propertyDO.set("name", name);
@@ -612,9 +615,6 @@ public class SDODataObject implements DataObject, SequencedObject {
         boolean isContainment = false;
         Class valueClass = value.getClass();
 
-        if (value == null) {
-            return null;
-        }
         if (value instanceof Collection) {
             if (((Collection)value).size() > 0) {
                 Object firstObject = ((Collection)value).iterator().next();
@@ -654,6 +654,9 @@ public class SDODataObject implements DataObject, SequencedObject {
     }
 
     public Property defineOpenContentProperty(String name, Object value, Type sdotype) throws UnsupportedOperationException, IllegalArgumentException {
+        if (value == null) {
+            return null;
+        }
         if(sdotype == null){
           return defineOpenContentProperty(name, value);
         }
@@ -664,9 +667,6 @@ public class SDODataObject implements DataObject, SequencedObject {
         boolean isContainment = false;
         Class valueClass = value.getClass();
 
-        if (value == null) {
-            return null;
-        }
         if (value instanceof Collection) {
             if (((Collection)value).size() > 0) {
                 Object firstObject = ((Collection)value).iterator().next();
