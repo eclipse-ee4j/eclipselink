@@ -379,6 +379,12 @@ public class LoggingLocalizationResource extends ListResourceBundle {
         { "jmx_mbean_runtime_services_get_executethreadruntime_object_failed", "Version of WebLogic does not support executeThreadRuntime - using ClassLoader: {0}" },
         { "nested_entity_manager_flush_not_executed_pre_query_changes_may_be_pending", "The class {0} is already flushing. The query will be executed without further changes being written to the database.  If the query is conditional upon changed data the changes may not be reflected in the results.  Users should issue a flush() call upon completion of the dependent changes and prior to this flush() to ensure correct results." },
         { "query_has_joined_attribute_outside_fetch_group", "{0}: joined attribute [{1}] is not included into the fetch group. The joined attribute data (though read from the database) will be ignored. A new sql will be executed to read again the object referenced by the joined attribute; and yet another sql to read the whole main object (because of setting the value to the attribute outside the fetch group). Either include the fetched attribute into the fetch group or remove it."},
+        // JAXB Metadata Logging Messages
+        { "jaxb_metadata_warning_ignoring_java_attribute", "Ignoring attribute [{0}] on class [{1}] as no Property was generated for it."},
+        { "jaxb_metadata_warning_invalid_bound_type", "The bound type [{0}] for adapter class [{1}] is invalid, and will be ignored."},
+        { "jaxb_metadata_warning_no_classes_to_process", "There are no classes to process for package [{0}]."},
+        { "jaxb_metadata_warning_ignoring_type_on_map", "Ignoring the type attribute set on xml-element since xml-map is specified on property [{0}]."},
+        { "jaxb_metadata_warning_invalid_java_attribute", "An unsupported JavaAttribute [{0}] was encountered and will be ignored."},
         // MESSAGES end        
         
         
@@ -641,11 +647,11 @@ public class LoggingLocalizationResource extends ListResourceBundle {
         { "nested_entity_manager_flush_not_executed_pre_query_changes_may_be_pending.MSGID", "TOP-50233"},
         { "query_has_joined_attribute_outside_fetch_group.MSGID", "TOP-50234"},
         // JAXB Metadata Logging Messages
-        { "jaxb_metadata_warning_ignoring_java_attribute", "Ignoring attribute [{0}] on class [{1}] as no Property was generated for it."},
-        { "jaxb_metadata_warning_invalid_bound_type", "The bound type [{0}] for adapter class [{1}] is invalid, and will be ignored."},
-        { "jaxb_metadata_warning_no_classes_to_process", "There are no classes to process for package [{0}]."},
-        { "jaxb_metadata_warning_ignoring_type_on_map", "Ignoring the type attribute set on xml-element since xml-map is specified on property [{0}]."},
-        { "jaxb_metadata_warning_invalid_java_attribute", "An unsupported JavaAttribute [{0}] was encountered an will be ignored."}
+        { "jaxb_metadata_warning_ignoring_java_attribute.MSGID", "TOP-50235"},
+        { "jaxb_metadata_warning_invalid_bound_type.MSGID", "TOP-50236"},
+        { "jaxb_metadata_warning_no_classes_to_process.MSGID", "TOP-50237"},
+        { "jaxb_metadata_warning_ignoring_type_on_map.MSGID", "TOP-50238"},
+        { "jaxb_metadata_warning_invalid_java_attribute.MSGID", "TOP-50239"}
     }; 
      
     /**
