@@ -191,7 +191,7 @@ public class ValidationExceptionResource extends ListResourceBundle {
                                            { "7194", "Could not bind: [{0}] to: [{1}]." },
                                            { "7195", "Exception configuring EntityManagerFactory." },
                                            { "7196", "[{0}] of type [{1}] cannot be casted to [{2}]."},
-                                           { "7197", "Null primary key encountered in unit of work clone [{0}]."},
+                                           { "7197", "Null or zero primary key encountered in unit of work clone [{0}], primary key [{1}]. Set descriptor's IdValidation or the \"eclipselink.id-validation\" property."},
                                            { "7198", "Class: [{0}] was not found while converting from class names to classes."},
                                            { "7199", "A primary table was not defined for entity {0} in the entity-mappings file: {1}.  A primary table is required to process an entity relationship."},
                                            { "7200", "The attribute [{1}] was not found on the embeddable class [{0}]. It is referenced in an attribute override for the embedded attribute [{3}] on class [{2}]."},

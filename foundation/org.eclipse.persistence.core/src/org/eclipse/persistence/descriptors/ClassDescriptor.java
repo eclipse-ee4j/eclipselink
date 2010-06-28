@@ -187,6 +187,9 @@ public class ClassDescriptor implements Cloneable, Serializable {
     /** Allow zero primary key validation to be configured. */
     protected IdValidation idValidation;
     
+    /** Allow zero primary key validation to be configured per field. */
+    protected List<IdValidation> primaryKeyIdValidations;
+
     /** Allow cache key type to be configured. */
     protected CacheKeyType cacheKeyType;
     
@@ -2794,15 +2797,6 @@ public class ClassDescriptor implements Cloneable, Serializable {
                 setUnitOfWorkCacheIsolationLevel(ISOLATE_CACHE_ALWAYS);
             } else {
                 setUnitOfWorkCacheIsolationLevel(ISOLATE_NEW_DATA_AFTER_TRANSACTION);
-            }
-        }
-        
-        // Set id validation, zero is allowed for composite primary keys.
-        if (getIdValidation() == null) {
-            if (getPrimaryKeyFields().size() > 1 && !usesSequenceNumbers()) {
-                setIdValidation(IdValidation.NULL);
-            } else {
-                setIdValidation(IdValidation.ZERO);
             }
         }
         // Setup default redirectors.  Any redirector that is not set will get assigned the
@@ -5435,6 +5429,11 @@ public class ClassDescriptor implements Cloneable, Serializable {
      */
     public void setIdValidation(IdValidation idValidation) {
         this.idValidation = idValidation;
+        if (getPrimaryKeyIdValidations() != null) {
+            for (int index = 0; index < getPrimaryKeyIdValidations().size(); index++) {
+                getPrimaryKeyIdValidations().set(index, idValidation);
+            }
+        }
     }
 
     /**
@@ -5443,6 +5442,22 @@ public class ClassDescriptor implements Cloneable, Serializable {
      */
     public IdValidation getIdValidation() {
         return idValidation;
+    }
+
+    /**
+     * ADVANCED:
+     * Return what types are allowed in each primary key field (id).
+     */    
+    public List<IdValidation> getPrimaryKeyIdValidations() {
+        return primaryKeyIdValidations;
+    }
+
+    /**
+     * ADVANCED:
+     * Return what types are allowed in each primary key field (id).
+     */
+    public void setPrimaryKeyIdValidations(List<IdValidation> primaryKeyIdValidations) {
+        this.primaryKeyIdValidations = primaryKeyIdValidations;
     }
 
     /**
