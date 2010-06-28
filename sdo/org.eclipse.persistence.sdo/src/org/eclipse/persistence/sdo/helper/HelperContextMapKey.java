@@ -82,23 +82,11 @@ public class HelperContextMapKey {
     }
 
     /**
-     * Return a unique hashCode (as an int) for this instance.  The code will
-     * be based on the application name if set, otherwise it will be based
-     * on the loader.
-     *   
-     * Assumes that this instance's loader is non-null.
+     * Return a hashCode (as an int) for this instance.
      * 
      */
     public int hashCode() {
-        int hash;
-        // if the application name is set, base the hash code on it
-        if (getApplicationName() != null) {
-            hash = getApplicationName().hashCode();
-        } else {
-            // we don't have an application name, so use the loader for the hash code
-            hash = getLoader().hashCode();
-        }
-        return hash;
+        return 7;
     }
     
     /**
@@ -116,9 +104,10 @@ public class HelperContextMapKey {
         } catch (ClassCastException cce) {
             return false;
         }
+        
         // if the applicationName is non-null we will base equality on it
         if (applicationName != null) {
-            return this.applicationName.equals(ckey.getApplicationName());
+            return this.applicationName.equals(ckey.getApplicationName()) || areLoadersEqual(ckey.getLoader());
         }
         // at this point we have to assume that the class loader is the map key, so base equality on it
         return areLoadersEqual(ckey.getLoader());
