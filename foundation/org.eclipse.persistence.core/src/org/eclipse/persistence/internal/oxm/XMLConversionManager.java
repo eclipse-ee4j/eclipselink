@@ -864,7 +864,11 @@ public class XMLConversionManager extends ConversionManager implements TimeZoneH
             XMLGregorianCalendar xgc = getDatatypeFactory().newXMLGregorianCalendar();
             // use the timezone info on source calendar, if any
             if (sourceCalendar.isSet(Calendar.ZONE_OFFSET)) {
-                xgc.setTimezone(cal.get(Calendar.ZONE_OFFSET) / 60000);
+                if(sourceCalendar.isSet(Calendar.DST_OFFSET)) {
+                    xgc.setTimezone((cal.get(Calendar.ZONE_OFFSET) + cal.get(Calendar.DST_OFFSET)) / 60000);
+                } else {
+                    xgc.setTimezone((cal.get(Calendar.ZONE_OFFSET)) / 60000);
+                }
             }
             // gDay
             if (XMLConstants.G_DAY_QNAME.equals(schemaTypeQName)) {
