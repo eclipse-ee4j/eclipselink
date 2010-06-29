@@ -385,6 +385,9 @@ public class LoggingLocalizationResource extends ListResourceBundle {
         { "jaxb_metadata_warning_no_classes_to_process", "There are no classes to process for package [{0}]."},
         { "jaxb_metadata_warning_ignoring_type_on_map", "Ignoring the type attribute set on xml-element since xml-map is specified on property [{0}]."},
         { "jaxb_metadata_warning_invalid_java_attribute", "An unsupported JavaAttribute [{0}] was encountered and will be ignored."},
+        { "jaxb_metadata_warning_invalid_package_level_xml_java_type_adapter", "An invalid XmlJavaTypeAdapter [{0}] was specified for package [{1}], and will be ignored."},
+        { "jaxb_metadata_warning_invalid_type_level_xml_java_type_adapter", "An invalid XmlJavaTypeAdapter [{0}] was specified for class [{1}], and will be ignored."},
+        { "jaxb_metadata_warning_invalid_property_level_xml_java_type_adapter", "An invalid XmlJavaTypeAdapter [{0}] was specified for field/property [{1}] on class [{2}], and will be ignored."},
         // MESSAGES end        
         
         
@@ -651,7 +654,10 @@ public class LoggingLocalizationResource extends ListResourceBundle {
         { "jaxb_metadata_warning_invalid_bound_type.MSGID", "TOP-50236"},
         { "jaxb_metadata_warning_no_classes_to_process.MSGID", "TOP-50237"},
         { "jaxb_metadata_warning_ignoring_type_on_map.MSGID", "TOP-50238"},
-        { "jaxb_metadata_warning_invalid_java_attribute.MSGID", "TOP-50239"}
+        { "jaxb_metadata_warning_invalid_java_attribute.MSGID", "TOP-50239"},
+        { "jaxb_metadata_warning_invalid_package_level_xml_java_type_adapter.MSGID", "TOP-50240"},
+        { "jaxb_metadata_warning_invalid_type_level_xml_java_type_adapter.MSGID", "TOP-50241"},
+        { "jaxb_metadata_warning_invalid_property_level_xml_java_type_adapter.MSGID", "TOP-50242"}
     }; 
      
     /**

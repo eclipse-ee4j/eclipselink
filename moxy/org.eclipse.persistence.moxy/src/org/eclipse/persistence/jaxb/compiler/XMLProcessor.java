@@ -232,10 +232,17 @@ public class XMLProcessor {
                 for (TypeInfo tInfo : typeInfos.values()) {
                     List<XmlJavaTypeAdapter> adapters = xmlBindings.getXmlJavaTypeAdapters().getXmlJavaTypeAdapter();
                     for (XmlJavaTypeAdapter xja : adapters) {
-                        JavaClass adapterClass = jModelInput.getJavaModel().getClass(xja.getValue());
-                        JavaClass boundType = jModelInput.getJavaModel().getClass(xja.getType());
-                        if (boundType != null) {
-                            tInfo.addPackageLevelAdapterClass(adapterClass, boundType);
+                        try {
+                            JavaClass adapterClass = jModelInput.getJavaModel().getClass(xja.getValue());
+                            JavaClass boundType = jModelInput.getJavaModel().getClass(xja.getType());
+                            if (boundType != null) {
+                                tInfo.addPackageLevelAdapterClass(adapterClass, boundType);
+                            }
+                        } catch(JAXBException e) {
+                            String[] messageParams = new String[2];
+                            messageParams[0] = xja.getValue();
+                            messageParams[1] = packageName;
+                            this.getLogger().logWarning(JAXBMetadataLogger.INVALID_PACKAGE_LEVEL_XML_JAVA_TYPE_ADAPTER, messageParams);
                         }
                     }
                 }
@@ -347,7 +354,7 @@ public class XMLProcessor {
         } else if (javaAttribute instanceof XmlAttribute) {
             return processXmlAttribute((XmlAttribute) javaAttribute, oldProperty, typeInfo, nsInfo);
         } else if (javaAttribute instanceof XmlElement) {
-            return processXmlElement((XmlElement) javaAttribute, oldProperty, typeInfo, nsInfo);
+            return processXmlElement((XmlElement) javaAttribute, oldProperty, typeInfo, nsInfo, javaType);
         } else if (javaAttribute instanceof XmlElements) {
             return processXmlElements((XmlElements) javaAttribute, oldProperty, typeInfo);
         } else if (javaAttribute instanceof XmlElementRef) {
@@ -604,7 +611,7 @@ public class XMLProcessor {
      * @param nsInfo
      * @return
      */
-    private Property processXmlElement(XmlElement xmlElement, Property oldProperty, TypeInfo typeInfo, NamespaceInfo nsInfo) {
+    private Property processXmlElement(XmlElement xmlElement, Property oldProperty, TypeInfo typeInfo, NamespaceInfo nsInfo, JavaType javaType) {
         // reset any existing values
         resetProperty(oldProperty, typeInfo);
 
@@ -696,7 +703,16 @@ public class XMLProcessor {
 
         // handle XmlJavaTypeAdapter
         if (xmlElement.getXmlJavaTypeAdapter() != null) {
-            oldProperty.setXmlJavaTypeAdapter(xmlElement.getXmlJavaTypeAdapter());
+            try {
+                oldProperty.setXmlJavaTypeAdapter(xmlElement.getXmlJavaTypeAdapter());
+            } catch(JAXBException e) {
+                String[] messageParams = new String[3];
+                messageParams[0] = xmlElement.getXmlJavaTypeAdapter().getValue();
+                messageParams[1] = xmlElement.getJavaAttribute();
+                messageParams[2] = javaType.getName();
+                getLogger().logWarning(JAXBMetadataLogger.INVALID_PROPERTY_LEVEL_XML_JAVA_TYPE_ADAPTER, messageParams);
+                oldProperty.setXmlJavaTypeAdapter(null);
+            }
         }
 
         // for primitives we always set required, a.k.a. minOccurs="1"

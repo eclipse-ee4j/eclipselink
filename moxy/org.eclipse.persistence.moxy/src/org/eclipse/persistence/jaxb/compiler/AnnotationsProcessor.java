@@ -1180,7 +1180,7 @@ public class AnnotationsProcessor {
      * @param propertyType
      * @return if @XmlJavaTypeAdapter exists return property's value type; otherwise propertyType
      */
-    private void processXmlJavaTypeAdapter(Property property, TypeInfo info) {
+    private void processXmlJavaTypeAdapter(Property property, TypeInfo info, JavaClass javaClass) {
         JavaClass adapterClass = null;
         JavaClass ptype = property.getActualType();
         if (helper.isAnnotationPresent(property.getElement(), XmlJavaTypeAdapter.class)) {
@@ -1195,8 +1195,17 @@ public class AnnotationsProcessor {
                 JavaClass[] jClassArray = new JavaClass[] { ptype };
                 buildNewTypeInfo(jClassArray);
             }
-            if (ptypeInfo != null && ptypeInfo.getXmlJavaTypeAdapter() != null) {
-                property.setXmlJavaTypeAdapter(ptypeInfo.getXmlJavaTypeAdapter());
+            org.eclipse.persistence.jaxb.xmlmodel.XmlJavaTypeAdapter xmlJavaTypeAdapter;
+            if (ptypeInfo != null && null != (xmlJavaTypeAdapter = ptypeInfo.getXmlJavaTypeAdapter())) {
+                try {
+                     property.setXmlJavaTypeAdapter(xmlJavaTypeAdapter);
+                } catch(JAXBException e) {
+                    String[] messageParams = new String[2];
+                    messageParams[0] = xmlJavaTypeAdapter.getValue();
+                    messageParams[1] = javaClass.getName();
+                    ptypeInfo.setXmlJavaTypeAdapter(null);
+                    this.getLogger().logWarning(JAXBMetadataLogger.INVALID_TYPE_LEVEL_XML_JAVA_TYPE_ADAPTER, messageParams);
+                }
 
             } else if (info.getPackageLevelAdaptersByClass().get(ptype.getQualifiedName()) != null) {
                 adapterClass = info.getPackageLevelAdapterClass(ptype);
@@ -1395,7 +1404,17 @@ public class AnnotationsProcessor {
         if (!property.isSetXmlJavaTypeAdapter()) {
             TypeInfo refClassInfo = getTypeInfo().get(ptype.getQualifiedName());
             if (refClassInfo != null && refClassInfo.isSetXmlJavaTypeAdapter()) {
-                property.setXmlJavaTypeAdapter(refClassInfo.getXmlJavaTypeAdapter());
+                org.eclipse.persistence.jaxb.xmlmodel.XmlJavaTypeAdapter xmlJavaTypeAdapter = null;
+                try {
+                    xmlJavaTypeAdapter = refClassInfo.getXmlJavaTypeAdapter();
+                    property.setXmlJavaTypeAdapter(refClassInfo.getXmlJavaTypeAdapter());
+                } catch(JAXBException e) {
+                    String[] messageParams = new String[2];
+                    messageParams[0] = xmlJavaTypeAdapter.getValue();
+                    messageParams[1] = cls.getName();
+                    property.setXmlJavaTypeAdapter(null);
+                    this.getLogger().logWarning(JAXBMetadataLogger.INVALID_TYPE_LEVEL_XML_JAVA_TYPE_ADAPTER, messageParams);
+                }
             }
         }
 
@@ -1643,7 +1662,7 @@ public class AnnotationsProcessor {
 
             property.setInverseReference(true);
         }
-        processXmlJavaTypeAdapter(property, info);
+        processXmlJavaTypeAdapter(property, info, cls);
 
         processXmlElement(property, info);
 

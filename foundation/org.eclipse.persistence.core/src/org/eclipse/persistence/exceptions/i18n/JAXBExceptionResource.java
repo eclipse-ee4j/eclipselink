@@ -65,7 +65,8 @@ public class JAXBExceptionResource extends ListResourceBundle {
         {"50043", "Error creating DynamicJAXBContext: Source was null."},
         {"50044", "Error creating DynamicJAXBContext: InputStream was null."},
         {"50045", "Error creating DynamicJAXBContext: Node was null."},
-        {"50046", "Error creating DynamicJAXBContext: XJC was unable to generate a CodeModel."}
+        {"50046", "Error creating DynamicJAXBContext: XJC was unable to generate a CodeModel."},
+        {"50047", "Class [{0}] not found."}
     };
 
     /**
