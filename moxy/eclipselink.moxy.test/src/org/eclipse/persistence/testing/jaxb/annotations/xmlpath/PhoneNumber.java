@@ -18,4 +18,12 @@ public class PhoneNumber {
 
     @XmlValue
     public String number;
+    
+    public boolean equals(Object obj) {
+        if(!(obj instanceof PhoneNumber)) {
+            return false;
+        } else {
+            return this.number.equals(((PhoneNumber)obj).number);
+        }
+    }
 }

@@ -19,13 +19,16 @@ import javax.xml.namespace.QName;
 
 import org.eclipse.persistence.testing.jaxb.JAXBTestCases;
 
-public class XmlPathTestCases extends JAXBTestCases {
+public class XmlPathUnmappedTestCases extends JAXBTestCases {
 
     private static final String XML_RESOURCE = "org/eclipse/persistence/testing/jaxb/annotations/xmlpath/xmlpathannotation.xml";
-    public XmlPathTestCases(String name) throws Exception {
+    private static final String XML_RESOURCE_UNMAPPED = "org/eclipse/persistence/testing/jaxb/annotations/xmlpath/xmlpathannotation_unmapped.xml";
+    
+    public XmlPathUnmappedTestCases(String name) throws Exception {
         super(name);
         setClasses(new Class[] {Root.class, Employee.class, Address.class, PhoneNumber.class});
-        setControlDocument(XML_RESOURCE);
+        setControlDocument(XML_RESOURCE_UNMAPPED);
+        setWriteControlDocument(XML_RESOURCE);
     }
     
     public Object getControlObject() {
