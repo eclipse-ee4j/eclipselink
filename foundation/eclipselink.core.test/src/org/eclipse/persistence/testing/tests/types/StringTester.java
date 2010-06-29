@@ -49,7 +49,7 @@ public class StringTester extends TypeTester {
         /* Next define the attribute mappings. */
         descriptor.addDirectMapping("testName", "getTestName", "setTestName", "NAME");
         descriptor.addDirectMapping("varString", "VAR");
-        descriptor.addDirectMapping("fixedString", "FIXED");
+        descriptor.addDirectMapping("fixedString", "FIXED_STRING");
         return descriptor;
     }
 
@@ -64,7 +64,7 @@ public class StringTester extends TypeTester {
         /* Next define the attribute mappings. */
         descriptor.addDirectMapping("testName", "getTestName", "setTestName", "NAME");
         descriptor.addDirectMapping("varString", "getVarString", "setVarString", "VAR");
-        descriptor.addDirectMapping("fixedString", "getFixedString", "setFixedString", "FIXED");
+        descriptor.addDirectMapping("fixedString", "getFixedString", "setFixedString", "FIXED_STRING");
         return descriptor;
     }
 
@@ -127,7 +127,7 @@ public class StringTester extends TypeTester {
         definition.setName("STRINGS");
 
         definition.addField("VAR", String.class, StringTester.stringLength());
-        definition.addField("FIXED", Character.class, StringTester.stringLength());
+        definition.addField("FIXED_STRING", Character.class, StringTester.stringLength());
         return definition;
     }
 
