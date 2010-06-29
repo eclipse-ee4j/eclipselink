@@ -321,13 +321,19 @@ public class CMPPolicy implements java.io.Serializable {
                 //get reference descriptor and extract pk from target cmp policy
                 keyInstance = mapping.getReferenceDescriptor().getCMPPolicy().createPrimaryKeyInstanceFromPrimaryKeyValues(session, elementIndex, keyElements);
             }
-            elementIndex[0] = elementIndex[0]+ 1; // remove processed key incase keys are complex and derrived
+            ++elementIndex[0]; // remove processed key incase keys are complex and derrived
         } else {
             keyInstance = getPKClassInstance();
             //get clone of Key so we can remove values.
             for (int index = 0; index < pkElementArray.length; index++) {
                 KeyElementAccessor accessor = pkElementArray[index];
                 DatabaseMapping mapping = getDescriptor().getObjectBuilder().getMappingForAttributeName(accessor.getAttributeName());
+                if (mapping == null){
+                    mapping = getDescriptor().getObjectBuilder().getMappingForField(accessor.getDatabaseField());
+                }
+                while (mapping.isAggregateMapping()){
+                    mapping = mapping.getReferenceDescriptor().getObjectBuilder().getMappingForField(accessor.getDatabaseField());
+                }
                 Object fieldValue = null;
                 if (mapping.isDirectToFieldMapping()) {
                     fieldValue = keyElements[elementIndex[0]];
@@ -335,7 +341,7 @@ public class CMPPolicy implements java.io.Serializable {
                     if (converter != null){
                         fieldValue = converter.convertDataValueToObjectValue(fieldValue, session);
                     }
-                    elementIndex[0] = elementIndex[0]++;
+                    ++elementIndex[0];
                 } else if (mapping.isObjectReferenceMapping()) { // what if mapping comes from derived ID.  need to get the derived mapping.
                     //get reference descriptor and extract pk from target cmp policy
                     fieldValue = mapping.getReferenceDescriptor().getCMPPolicy().createPrimaryKeyInstanceFromPrimaryKeyValues(session, elementIndex, keyElements);
