@@ -91,31 +91,6 @@ public class ProjectHelper {
                     }
                     else {
                         xdm.setAttributeAccessor(new XRDynamicEntityAccessor(attributeName, idx));
-                        /*
-                        if (xdm.isDirectToFieldMapping()) {
-                            XMLDirectMapping xmlDM = (XMLDirectMapping)xdm;
-                            XMLField xmlField = (XMLField)xmlDM.getField();
-                            Class schemaClass = SCHEMA_2_CLASS.get(xmlField.getSchemaType());
-                            if (schemaClass != null) {
-                                xmlField.setType(schemaClass);
-                            }
-                            else {
-                                xmlField.setType(OBJECT);
-                            }
-                        }
-                        else if (xdm.isAbstractCompositeDirectCollectionMapping()) {
-                            AbstractCompositeDirectCollectionMapping acdcm =
-                                (AbstractCompositeDirectCollectionMapping)xdm;
-                            XMLField xmlField = (XMLField)acdcm.getField();
-                            Class schemaClass = SCHEMA_2_CLASS.get(xmlField.getSchemaType());
-                            if (clz != null) {
-                                xmlField.setType(schemaClass);
-                            }
-                            else {
-                                xmlField.setType(OBJECT);
-                            }
-                        }
-                        */
                     }
                 }
                 if (xrfi != null) {
