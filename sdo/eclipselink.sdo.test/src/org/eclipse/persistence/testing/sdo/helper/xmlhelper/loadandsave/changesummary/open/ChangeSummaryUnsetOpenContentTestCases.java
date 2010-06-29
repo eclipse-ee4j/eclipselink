@@ -37,6 +37,5 @@ public class ChangeSummaryUnsetOpenContentTestCases extends ChangeSummaryRootLoa
 
     protected void verifyAfterLoad(XMLDocument document) {
         super.verifyAfterLoad(document);
-
     }
 }

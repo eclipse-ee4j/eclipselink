@@ -1,0 +1,26 @@
+<root>
+   <employees>
+      <employee>
+	     <employee-info id="101"/>
+		 <personal-info>
+			<extra-element>Some Text</extra-element>
+		    <first-name>Jane</first-name>
+			<last-name>Doe</last-name>
+		 </personal-info>
+		 <contact-info>
+		    <address-id>102</address-id>
+			<phones>
+			   <phone-number>123-4567</phone-number>
+			   <phone-number>234-5678</phone-number>
+			</phones>
+		 </contact-info>
+		 <extra-attributes xmlns:ns0="http://myns.com/myns" ns0:attr2="value2" attr1="value1"/>
+      </employee>
+   </employees>
+   <addresses>
+      <address id="102">
+	    <street>123 Fake Street</street>
+		<city>Ottawa</city>
+	  </address>
+   </addresses>
+</root>

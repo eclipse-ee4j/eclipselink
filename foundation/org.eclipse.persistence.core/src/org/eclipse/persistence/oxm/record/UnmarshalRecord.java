@@ -834,6 +834,23 @@ public class UnmarshalRecord extends XMLRecord implements ContentHandler, Lexica
             }
         }
     }
+    
+    public void endUnmappedElement(String namespaceURI, String localName, String qName) throws SAXException {
+        typeQName = null;
+        levelIndex--;
+        if ((0 == levelIndex) && (null != getParentRecord()) && !isSelfRecord()) {
+            endDocument();
+            // don't endElement on, or pass control to, a 'self' parent
+            UnmarshalRecord pRec = getParentRecord();
+            while (pRec.isSelfRecord()) {
+                pRec = pRec.getParentRecord();
+            }
+            pRec.endElement(namespaceURI, localName, qName);
+            xmlReader.setContentHandler(pRec);
+            xmlReader.setLexicalHandler(pRec);
+        }
+       
+    }
 
     public void characters(char[] ch, int start, int length) throws SAXException {
         try {
@@ -1079,6 +1096,9 @@ public class UnmarshalRecord extends XMLRecord implements ContentHandler, Lexica
     }
 
     public void unmappedContent() {
+        if(this.xPathNode.getParent() != null) {
+            xPathNode = xPathNode.getParent();
+        }
         this.unmarshalContext.unmappedContent(this);
     }
 

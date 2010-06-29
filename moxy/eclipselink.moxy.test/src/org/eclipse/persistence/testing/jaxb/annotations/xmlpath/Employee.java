@@ -77,6 +77,6 @@ public class Employee {
             String value2 = emp.attributes.get(nextKey);
             equal = equal && value1.equals(value2);
         }
-        return true;
+        return equal;
     }
 }
