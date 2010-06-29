@@ -16,11 +16,15 @@ import org.eclipse.persistence.logging.AbstractSessionLog;
 import org.eclipse.persistence.logging.SessionLog;
 
 public class JAXBMetadataLogger {
-    public static String NO_PROPERTY_FOR_JAVA_ATTRIBUTE = "jaxb_metadata_warning_ignoring_java_attribute";
-    public static String INVALID_BOUND_TYPE = "jaxb_metadata_warning_invalid_bound_type";
-    public static String NO_CLASSES_TO_PROCESS = "jaxb_metadata_warning_no_classes_to_process";
-    public static String INVALID_JAVA_ATTRIBUTE = "jaxb_metadata_warning_invalid_java_attribute";
-    public static String INVALID_TYPE_ON_MAP = "jaxb_metadata_warning_ignoring_type_on_map";
+
+    public final static String NO_PROPERTY_FOR_JAVA_ATTRIBUTE = "jaxb_metadata_warning_ignoring_java_attribute";
+    public final static String INVALID_BOUND_TYPE = "jaxb_metadata_warning_invalid_bound_type";
+    public final static String NO_CLASSES_TO_PROCESS = "jaxb_metadata_warning_no_classes_to_process";
+    public final static String INVALID_JAVA_ATTRIBUTE = "jaxb_metadata_warning_invalid_java_attribute";
+    public final static String INVALID_TYPE_ON_MAP = "jaxb_metadata_warning_ignoring_type_on_map";
+    public final static String INVALID_PACKAGE_LEVEL_XML_JAVA_TYPE_ADAPTER = "jaxb_metadata_warning_invalid_package_level_xml_java_type_adapter";
+    public final static String INVALID_TYPE_LEVEL_XML_JAVA_TYPE_ADAPTER = "jaxb_metadata_warning_invalid_type_level_xml_java_type_adapter";
+    public final static String INVALID_PROPERTY_LEVEL_XML_JAVA_TYPE_ADAPTER = "jaxb_metadata_warning_invalid_property_level_xml_java_type_adapter";
 
     /**
      * This is the default constructor.

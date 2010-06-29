@@ -76,6 +76,7 @@ public class JAXBException extends EclipseLinkException {
     public static final int NULL_INPUT_STREAM = 50044;
     public static final int NULL_NODE = 50045;
     public static final int XJC_BINDING_ERROR = 50046;
+    public static final int CLASS_NOT_FOUND_EXCEPTION = 50047;
 
     protected JAXBException(String message) {
         super(message);
@@ -586,6 +587,13 @@ public class JAXBException extends EclipseLinkException {
         Object[] args = { };
         JAXBException exception = new JAXBException(ExceptionMessageGenerator.buildMessage(JAXBException.class, XJC_BINDING_ERROR, args));
         exception.setErrorCode(XJC_BINDING_ERROR);
+        return exception;
+    }
+
+    public static JAXBException classNotFoundException(String className) {
+        Object[] args = { className };
+        JAXBException exception = new JAXBException(ExceptionMessageGenerator.buildMessage(JAXBException.class, CLASS_NOT_FOUND_EXCEPTION, args));
+        exception.setErrorCode(CLASS_NOT_FOUND_EXCEPTION);
         return exception;
     }
 

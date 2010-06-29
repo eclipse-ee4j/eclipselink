@@ -14,6 +14,7 @@ package org.eclipse.persistence.jaxb.javamodel.reflection;
 
 import java.lang.annotation.Annotation;
 
+import org.eclipse.persistence.exceptions.JAXBException;
 import org.eclipse.persistence.internal.jaxb.JaxbClassLoader;
 import org.eclipse.persistence.jaxb.javamodel.JavaAnnotation;
 import org.eclipse.persistence.jaxb.javamodel.JavaClass;
@@ -66,7 +67,7 @@ public class JavaModelImpl implements JavaModel {
             Class clazz = classLoader.loadClass(className);
             return getClass(clazz);
         } catch(ClassNotFoundException e) {
-            return null;
+            throw JAXBException.classNotFoundException(className);
         }
     }
 
