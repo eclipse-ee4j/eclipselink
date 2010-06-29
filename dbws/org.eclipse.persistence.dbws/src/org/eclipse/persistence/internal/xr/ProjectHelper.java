@@ -27,13 +27,8 @@ import org.eclipse.persistence.internal.indirection.BasicIndirectionPolicy;
 import org.eclipse.persistence.internal.xr.XRDynamicEntity;
 import org.eclipse.persistence.mappings.DatabaseMapping;
 import org.eclipse.persistence.mappings.ForeignReferenceMapping;
-import org.eclipse.persistence.mappings.foundation.AbstractCompositeDirectCollectionMapping;
-import org.eclipse.persistence.oxm.XMLField;
-import org.eclipse.persistence.oxm.mappings.XMLDirectMapping;
 import org.eclipse.persistence.sessions.Login;
 import org.eclipse.persistence.sessions.Project;
-import static org.eclipse.persistence.internal.helper.ClassConstants.OBJECT;
-import static org.eclipse.persistence.internal.xr.Util.SCHEMA_2_CLASS;
 import static org.eclipse.persistence.internal.xr.XRDynamicClassLoader.COLLECTION_WRAPPER_SUFFIX;
 import static org.eclipse.persistence.internal.xr.XRDynamicEntity.XR_FIELD_INFO_STATIC;
 
@@ -45,7 +40,7 @@ import static org.eclipse.persistence.internal.xr.XRDynamicEntity.XR_FIELD_INFO_
  * This API only supports EclipseLink 1.x format deployment XML
  */
 
-@SuppressWarnings({"unchecked", "rawtypes"})
+@SuppressWarnings({"unchecked"/*, "rawtypes"*/})
 public class ProjectHelper {
     /**
      * INTERNAL: Fix the given EclipseLink OR and OX projects so that the
@@ -96,6 +91,7 @@ public class ProjectHelper {
                     }
                     else {
                         xdm.setAttributeAccessor(new XRDynamicEntityAccessor(attributeName, idx));
+                        /*
                         if (xdm.isDirectToFieldMapping()) {
                             XMLDirectMapping xmlDM = (XMLDirectMapping)xdm;
                             XMLField xmlField = (XMLField)xmlDM.getField();
@@ -119,6 +115,7 @@ public class ProjectHelper {
                                 xmlField.setType(OBJECT);
                             }
                         }
+                        */
                     }
                 }
                 if (xrfi != null) {
