@@ -37,19 +37,26 @@
             property="${bnd.property}"
             separator="${bnd.separator}"
         />
+        <selectbundle
+            criterion="${bnd.criteria}"
+            basename="${bnd.prefix}"
+            directory=".."
+            property="${bnd.property}"
+            separator="${bnd.separator}"
+        />
         <say message="selected file: '${selected.bnd.jar}'" if="${bnd.property}"/>
-        <say message="Ant (${bnd.prefix}) bundle found in '${bnd.search.dir}'" unless="${bnd.property}"/>
+        <say message="Bnd (${bnd.prefix}) bundle not found in '${bnd.search.dir}'!" unless="${bnd.property}"/>
         
         <selectbundle
             includepath="true"
             criterion="${bnd.criteria}"
             basename="${bnd.prefix}"
             directory="${bnd.search.dir}"
-            property="selected.bnd.lib"
+            property="selected.bndtool.lib"
             separator="${bnd.separator}"
         />
-        <say message="selected file: '${selected.bnd.lib}'" if="selected.bnd.lib"/>
-        <say message="Ant (${bnd.prefix}) bundle found in '${bnd.search.dir}'" unless="selected.bnd.lib"/>
+        <say message="selected file: '${selected.bndtool.lib}'" if="selected.bndtool.lib"/>
+        <say message="Bnd (${bnd.prefix}) bundle not found in '${bnd.search.dir}'!" unless="selected.bndtool.lib"/>
         
         <selectbundle
             criterion="${bind.criteria}"
@@ -58,7 +65,7 @@
             property="${bind.property}"
         />
         <say message="selected file: '${selected.bind.jar}'" if="selected.bind.jar"/>
-        <say message="Ant (${bind.prefix}) bundle found in '${plugin.dir}'" unless="selected.bind.jar"/>
+        <say message="Javax.xml.bind (${bind.prefix}) bundle not found in '${plugin.dir}'!" unless="selected.bind.jar"/>
 
         <selectbundle
             criterion="${ant.criteria}"
@@ -68,7 +75,7 @@
             suffix="zip"
         />
         <say message="selected file: '${selected.ant.jar}'" if="selected.ant.jar"/>
-        <say message="Ant (${ant.prefix}) bundle found in '${plugin.dir}'!" unless="selected.ant.jar"/>
+        <say message="Ant (${ant.prefix}) bundle not found in '${plugin.dir}'!" unless="selected.ant.jar"/>
     </target>
 
 </project>

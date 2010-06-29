@@ -163,6 +163,9 @@ public class SelectBundle extends Task {
 
     // The "meat"
     public void execute() throws BuildException {
+        if (getProject() == null) {
+            throw new IllegalStateException("Project not set!");
+        }
         if (basename == null || basename.length() == 0) {
             throw new BuildException("The basename attribute must be present.", getLocation());
         }
@@ -177,11 +180,11 @@ public class SelectBundle extends Task {
         //if(debug) log("execute: ** Match **");
         String file = matchCriteria();
 
-        if( !(file == null)){
+        if( !(file == null) ){
             if (includepath)
-                getProject().setProperty(property, directory+"/"+file);
+                getProject().setNewProperty(property, directory+"/"+file);
             else   
-                getProject().setProperty(property, file);
+                getProject().setNewProperty(property, file);
         }
         //if(debug) log("execute: Search Finished.");
     }
