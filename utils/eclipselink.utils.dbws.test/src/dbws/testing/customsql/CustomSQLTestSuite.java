@@ -149,13 +149,13 @@ public class CustomSQLTestSuite extends DBWSTestSuite {
           "<ename>SCOTT</ename>" +
           "<job>ANALYST</job>" +
           "<mgr>7566</mgr>" +
-          "<hiredate>1981-06-09-05:00</hiredate>" +
+          "<hiredate>1981-06-09</hiredate>" +
           "<sal>3000.00</sal>" +
           "<comm xsi:nil=\"true\"/>" +
           "<deptno>20</deptno>" +
         "</customType>";
 
-    @SuppressWarnings({"unchecked", "rawtypes"})
+    @SuppressWarnings({"unchecked"/*, "rawtypes"*/})
     @Test
     public void findAll() {
         Invocation invocation = new Invocation("findAll_customType");
@@ -182,7 +182,7 @@ public class CustomSQLTestSuite extends DBWSTestSuite {
           "<ename>SMITH</ename>" +
           "<job>CLERK</job>" +
           "<mgr>7902</mgr>" +
-          "<hiredate>1980-12-17-05:00</hiredate>" +
+          "<hiredate>1980-12-17</hiredate>" +
           "<sal>800.00</sal>" +
           "<comm xsi:nil=\"true\"/>" +
           "<deptno>20</deptno>" +
@@ -192,7 +192,7 @@ public class CustomSQLTestSuite extends DBWSTestSuite {
           "<ename>ALLEN</ename>" +
           "<job>SALESMAN</job>" +
           "<mgr>7698</mgr>" +
-          "<hiredate>1981-02-20-05:00</hiredate>" +
+          "<hiredate>1981-02-20</hiredate>" +
           "<sal>1600.00</sal>" +
           "<comm>300.00</comm>" +
           "<deptno>30</deptno>" +
@@ -202,7 +202,7 @@ public class CustomSQLTestSuite extends DBWSTestSuite {
           "<ename>WARD</ename>" +
           "<job>SALESMAN</job>" +
           "<mgr>7698</mgr>" +
-          "<hiredate>1981-02-22-05:00</hiredate>" +
+          "<hiredate>1981-02-22</hiredate>" +
           "<sal>1250.00</sal>" +
           "<comm>500.00</comm>" +
           "<deptno>30</deptno>" +
@@ -212,7 +212,7 @@ public class CustomSQLTestSuite extends DBWSTestSuite {
           "<ename>JONES</ename>" +
           "<job>MANAGER</job>" +
           "<mgr>7839</mgr>" +
-          "<hiredate>1981-04-02-05:00</hiredate>" +
+          "<hiredate>1981-04-02</hiredate>" +
           "<sal>2975.00</sal>" +
           "<comm xsi:nil=\"true\"/>" +
           "<deptno>20</deptno>" +
@@ -222,7 +222,7 @@ public class CustomSQLTestSuite extends DBWSTestSuite {
           "<ename>MARTIN</ename>" +
           "<job>SALESMAN</job>" +
           "<mgr>7698</mgr>" +
-          "<hiredate>1981-09-28-05:00</hiredate>" +
+          "<hiredate>1981-09-28</hiredate>" +
           "<sal>1250.00</sal>" +
           "<comm>1400.00</comm>" +
           "<deptno>30</deptno>" +
@@ -232,7 +232,7 @@ public class CustomSQLTestSuite extends DBWSTestSuite {
           "<ename>BLAKE</ename>" +
           "<job>MANAGER</job>" +
           "<mgr>7839</mgr>" +
-          "<hiredate>1981-05-01-05:00</hiredate>" +
+          "<hiredate>1981-05-01</hiredate>" +
           "<sal>2850.00</sal>" +
           "<comm xsi:nil=\"true\"/>" +
           "<deptno>30</deptno>" +
@@ -242,7 +242,7 @@ public class CustomSQLTestSuite extends DBWSTestSuite {
           "<ename>CLARK</ename>" +
           "<job>MANAGER</job>" +
           "<mgr>7839</mgr>" +
-          "<hiredate>1981-06-09-05:00</hiredate>" +
+          "<hiredate>1981-06-09</hiredate>" +
           "<sal>2450.00</sal>" +
           "<comm xsi:nil=\"true\"/>" +
           "<deptno>10</deptno>" +
@@ -252,7 +252,7 @@ public class CustomSQLTestSuite extends DBWSTestSuite {
           "<ename>SCOTT</ename>" +
           "<job>ANALYST</job>" +
           "<mgr>7566</mgr>" +
-          "<hiredate>1981-06-09-05:00</hiredate>" +
+          "<hiredate>1981-06-09</hiredate>" +
           "<sal>3000.00</sal>" +
           "<comm xsi:nil=\"true\"/>" +
           "<deptno>20</deptno>" +
@@ -262,7 +262,7 @@ public class CustomSQLTestSuite extends DBWSTestSuite {
           "<ename>KING</ename>" +
           "<job>PRESIDENT</job>" +
           "<mgr xsi:nil=\"true\"/>" +
-          "<hiredate>1981-11-17-05:00</hiredate>" +
+          "<hiredate>1981-11-17</hiredate>" +
           "<sal>5000.00</sal>" +
           "<comm xsi:nil=\"true\"/>" +
           "<deptno>10</deptno>" +
@@ -272,7 +272,7 @@ public class CustomSQLTestSuite extends DBWSTestSuite {
           "<ename>TURNER</ename>" +
           "<job>SALESMAN</job>" +
           "<mgr>7698</mgr>" +
-          "<hiredate>1981-09-08-05:00</hiredate>" +
+          "<hiredate>1981-09-08</hiredate>" +
           "<sal>1500.00</sal>" +
           "<comm>0.00</comm>" +
           "<deptno>30</deptno>" +
@@ -282,7 +282,7 @@ public class CustomSQLTestSuite extends DBWSTestSuite {
           "<ename>ADAMS</ename>" +
           "<job>CLERK</job>" +
           "<mgr>7788</mgr>" +
-          "<hiredate>1987-05-23-05:00</hiredate>" +
+          "<hiredate>1987-05-23</hiredate>" +
           "<sal>1100.00</sal>" +
           "<comm xsi:nil=\"true\"/>" +
           "<deptno>20</deptno>" +
@@ -292,7 +292,7 @@ public class CustomSQLTestSuite extends DBWSTestSuite {
           "<ename>JAMES</ename>" +
           "<job>CLERK</job>" +
           "<mgr>7698</mgr>" +
-          "<hiredate>1981-12-03-05:00</hiredate>" +
+          "<hiredate>1981-12-03</hiredate>" +
           "<sal>950.00</sal>" +
           "<comm xsi:nil=\"true\"/>" +
           "<deptno>30</deptno>" +
@@ -302,7 +302,7 @@ public class CustomSQLTestSuite extends DBWSTestSuite {
           "<ename>FORD</ename>" +
           "<job>ANALYST</job>" +
           "<mgr>7566</mgr>" +
-          "<hiredate>1981-12-03-05:00</hiredate>" +
+          "<hiredate>1981-12-03</hiredate>" +
           "<sal>3000.00</sal>" +
           "<comm xsi:nil=\"true\"/>" +
           "<deptno>20</deptno>" +
@@ -312,7 +312,7 @@ public class CustomSQLTestSuite extends DBWSTestSuite {
           "<ename>MILLER</ename>" +
           "<job>CLERK</job>" +
           "<mgr>7782</mgr>" +
-          "<hiredate>1982-01-23-05:00</hiredate>" +
+          "<hiredate>1982-01-23</hiredate>" +
           "<sal>1300.00</sal>" +
           "<comm xsi:nil=\"true\"/>" +
           "<deptno>10</deptno>" +

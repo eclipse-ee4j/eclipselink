@@ -155,7 +155,7 @@ public class EchoEmpObjectTestWebServiceSuite extends WebServiceTestSuite implem
                             "<postcode>12</postcode>" +
                          "</address>" +
                          "<employee_name>Mike Norman</employee_name>" +
-                         "<date_of_hire>2009-05-01-05:00</date_of_hire>" +
+                         "<date_of_hire>2009-05-01</date_of_hire>" +
                      "</emp_objectType>" +
                  "</srvc:result>" +
              "</srvc:" + ADVJDBC_ECHO_EMPOBJECT_TEST + "Response>" +

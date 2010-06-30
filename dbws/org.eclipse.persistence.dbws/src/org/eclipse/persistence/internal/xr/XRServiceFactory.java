@@ -129,7 +129,7 @@ import static org.eclipse.persistence.oxm.XMLConstants.ANY_QNAME;
  *   &lt;/query&gt;
  * &lt;/dbws&gt;
  */
-@SuppressWarnings({"unchecked", "rawtypes"})
+@SuppressWarnings({"unchecked"/*, "rawtypes"*/})
 public class XRServiceFactory  {
 
     public XRServiceAdapter xrService;

@@ -63,7 +63,7 @@ import static org.eclipse.persistence.internal.xr.sxf.SimpleXMLFormat.DEFAULT_SI
 import static org.eclipse.persistence.internal.xr.sxf.SimpleXMLFormat.DEFAULT_SIMPLE_XML_TAG;
 import static org.eclipse.persistence.oxm.XMLConstants.BOOLEAN_QNAME;
 
-@SuppressWarnings({"serial", "unchecked", "rawtypes"})
+@SuppressWarnings({"serial", "unchecked"/*, "rawtypes"*/})
 public class DBWSModelProject extends Project {
 
     public NamespaceResolver ns;

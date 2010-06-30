@@ -127,7 +127,7 @@ public class PLSQLORDescriptorBuilder extends PublisherDefaultListener {
             descriptorMap.put(recordAlias, ordt);
         }
     }
-    @SuppressWarnings({"unchecked", "rawtypes"})
+    @SuppressWarnings({"unchecked"/*, "rawtypes"*/})
     @Override
     public void beginPlsqlRecordField(String fieldName, int idx) {
         RecordHelper recordHelper = (RecordHelper)stac.peek();

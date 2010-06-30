@@ -82,6 +82,6 @@ public class SimpleTableTestSuite extends DBWSTestSuite {
         "<simpletableType xmlns=\"urn:simpletable\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">" +
           "<id>1</id>" +
           "<name>mike</name>" +
-          "<since>2001-12-25-05:00</since>" +
+          "<since>2001-12-25</since>" +
         "</simpletableType>";
 }
