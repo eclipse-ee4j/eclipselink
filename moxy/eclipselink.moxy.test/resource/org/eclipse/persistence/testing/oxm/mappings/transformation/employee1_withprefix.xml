@@ -1,0 +1,9 @@
+<?xml version = '1.0' encoding = 'UTF-8'?>
+<employee>
+   <unmapped xmlns:x="someuri">text</unmapped>
+   <name>John Smith</name>
+   <normal-hours>
+      <start-time>9:00AM</start-time>
+      <end-time>5:00PM</end-time>
+   </normal-hours>
+</employee>

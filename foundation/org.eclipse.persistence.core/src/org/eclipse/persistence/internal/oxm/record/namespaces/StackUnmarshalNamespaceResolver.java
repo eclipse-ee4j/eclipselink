@@ -66,12 +66,20 @@ public class StackUnmarshalNamespaceResolver implements UnmarshalNamespaceResolv
             int size = uris.size();
             if(size > 0) {
                 String uri = uris.remove(size - 1);
+                if(size == 1) {
+                    //if there was only 1 uri, when it's removed, remove this prefix
+                    //from the map
+                    namespaceMap.remove(prefix);
+                }
                 if(uri != null) {
                     List<String> prefixes = uriToPrefixMap.get(uri);
                     if(prefixes != null){
                         int prefixesSize = prefixes.size();
-                        if(prefixesSize > 0) {
-                	       prefixes.remove(prefixesSize - 1);
+                        if(prefixesSize == 1) {
+                            uriToPrefixMap.remove(uri);
+                        }
+                        else {
+                            prefixes.remove(prefixesSize - 1);
                         }
                     }
                 }
