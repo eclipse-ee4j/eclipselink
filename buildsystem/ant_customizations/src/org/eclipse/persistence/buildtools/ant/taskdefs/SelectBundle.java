@@ -21,6 +21,7 @@ package org.eclipse.persistence.buildtools.ant.taskdefs;
 
 import java.io.File;
 import java.io.FilenameFilter;
+import org.apache.tools.ant.Project;
 import org.apache.tools.ant.Task;
 import org.apache.tools.ant.BuildException;
 import org.eclipse.persistence.buildtools.helper.Version;
@@ -34,7 +35,6 @@ public class SelectBundle extends Task {
     private String separator = "_";      // the separator used to differentiate basename and jarversion
     private String suffix    = "jar";    // suffix of file to find (default: jar)
 
-    //private boolean debug = true;           // local: whether to print debugging messages
     private boolean minInclusive = false;   // local: whether the 'floor' version is inclusive or not "("=true "["=false
     private boolean maxInclusive = false;   // local: whether the 'ceiling' version is inclusive or not "("=true "["=false
     private Version minVersion   = null;    // local: the value of the "floor" version
@@ -68,18 +68,18 @@ public class SelectBundle extends Task {
             maxInclusive = (maxSquareBracket || endInt);
             //singleton version
             if(initInt) {
-                //if(debug) log("evaluateCriteria: Singleton detected");
+                log("evaluateCriteria: Singleton detected", Project.MSG_VERBOSE);
                 minVersion = new Version(criterion);
                 // an approximation of infinity (high value for major.monor.micro and qualifier)
                 maxVersion = new Version("99999.99999.99999.ÿÿÿÿÿÿ");
             }
             // version range
             if(!initInt) {
-                //if(debug) log("evaluateCriteria: Range(min:" + criterion.substring(1,criterion.indexOf(',')) + ")");
+                log("evaluateCriteria: Range(min:" + criterion.substring(1,criterion.indexOf(',')) + ")", Project.MSG_VERBOSE);
                 minVersion = new Version( criterion.substring(1,criterion.indexOf(',')) );
             }
             if(!endInt) {
-                //if(debug) log("evaluateCriteria: Range(max:" + criterion.substring(criterion.indexOf(',')+1,endIndex) + ")");
+                log("evaluateCriteria: Range(max:" + criterion.substring(criterion.indexOf(',')+1,endIndex) + ")", Project.MSG_VERBOSE);
                 maxVersion = new Version( criterion.substring(criterion.indexOf(',')+1,endIndex) );
             }
         }
@@ -92,60 +92,65 @@ public class SelectBundle extends Task {
         }
         
         // Debug Logging
-        //if(debug) {
-        //    if(minInclusive)
-        //        log("evaluateCriteria: minInclusive(true)");
-        //    else
-        //        log("evaluateCriteria: minInclusive(false)");
-        //    if(maxInclusive)
-        //        log("evaluateCriteria: maxInclusive(true)");
-        //    else
-        //        log("evaluateCriteria: maxInclusive(false)");
-        //    if(debug) log("evaluateCriteria: minVersion(" + minVersion.getIdentifier() + ")");
-        //    if(debug) log("evaluateCriteria: maxVersion(" + maxVersion.getIdentifier() + ")");
-        //}
+        if(minInclusive)
+            log("evaluateCriteria: minInclusive(true)", Project.MSG_VERBOSE);
+        else
+            log("evaluateCriteria: minInclusive(false)", Project.MSG_VERBOSE);
+        if(maxInclusive)
+            log("evaluateCriteria: maxInclusive(true)", Project.MSG_VERBOSE);
+        else
+            log("evaluateCriteria: maxInclusive(false)", Project.MSG_VERBOSE);
+        log("evaluateCriteria: minVersion(" + minVersion.getIdentifier() + ")", Project.MSG_VERBOSE);
+        log("evaluateCriteria: maxVersion(" + maxVersion.getIdentifier() + ")", Project.MSG_VERBOSE);
 
     }
 
     private String matchCriteria() {
         String bestMatch = null;       //filename of file selected
         String[] filelist = getListOfFiles(directory);
-        int relativeVersionIndex = basename.length() + separator.length();
-        //if(debug) log("matchCriteria: relativeVersionIndex(" + Integer.toString(relativeVersionIndex) + ")");
-        for ( int i=0; i<filelist.length; i++ )
-        {
-            int versionEndIndex = filelist[i].indexOf("."+suffix);
-            //if(debug) log("matchCriteria: versionEndIndex(" + Integer.toString(versionEndIndex)+")");
-            //if(debug) log("matchCriteria: filelist["+ Integer.toString(i) + "](" + filelist[i] + ")");
-            // Should add try block to test for version exception
-            String version = filelist[i].substring(relativeVersionIndex,versionEndIndex);
 
-            //if(debug) log("matchCriteria: version string of found file(" + version + ")");
-            if(version.length()>0){
-                if(minInclusive && maxInclusive) {
-                    if(minVersion.le(version) && maxVersion.ge(version) ){
-                        bestMatch = filelist[i];
+        log("matchCriteria: basename.length='" + Integer.toString(basename.length()) + "'", Project.MSG_VERBOSE);
+        log("matchCriteria: separator.length='" + Integer.toString(separator.length()) + "'", Project.MSG_VERBOSE);
+        int relativeVersionIndex = basename.length() + separator.length();
+        log("matchCriteria: relativeVersionIndex(" + Integer.toString(relativeVersionIndex) + ")", Project.MSG_VERBOSE);
+        if( filelist != null ) {
+            log("matchCriteria: filelist.length='" + Integer.toString(filelist.length) + "'", Project.MSG_VERBOSE);
+            for ( int i=0; i<filelist.length; i++ )
+            {
+                int versionEndIndex = filelist[i].indexOf("."+suffix);
+                log("matchCriteria: versionEndIndex(" + Integer.toString(versionEndIndex)+")", Project.MSG_VERBOSE);
+                log("matchCriteria: filelist["+ Integer.toString(i) + "](" + filelist[i] + ")", Project.MSG_VERBOSE);
+                // Should add try block to test for version exception
+                String version = filelist[i].substring(relativeVersionIndex,versionEndIndex);
+
+                log("matchCriteria: version string of found file(" + version + ")", Project.MSG_VERBOSE);
+                if(version.length()>0){
+                    if(minInclusive && maxInclusive) {
+                        if(minVersion.le(version) && maxVersion.ge(version) ){
+                            bestMatch = filelist[i];
+                        }
                     }
-                }
-                else if (minInclusive && !maxInclusive){
-                    if(minVersion.le(version) && maxVersion.gt(version) ){
-                        bestMatch = filelist[i];
+                    else if (minInclusive && !maxInclusive){
+                        if(minVersion.le(version) && maxVersion.gt(version) ){
+                            bestMatch = filelist[i];
+                        }
                     }
-                }
-                else if (!minInclusive && maxInclusive){
-                    if(minVersion.lt(version) && maxVersion.ge(version) ){
-                        bestMatch = filelist[i];
+                    else if (!minInclusive && maxInclusive){
+                        if(minVersion.lt(version) && maxVersion.ge(version) ){
+                            bestMatch = filelist[i];
+                        }
                     }
-                }
-                else if (!minInclusive && !maxInclusive ){
-                    if(minVersion.lt(version) && maxVersion.gt(version) ){
-                        bestMatch = filelist[i];
+                    else if (!minInclusive && !maxInclusive ){
+                        if(minVersion.lt(version) && maxVersion.gt(version) ){
+                            bestMatch = filelist[i];
+                        }
                     }
+                    log("matchCriteria: Best Match so far(" + bestMatch + ")", Project.MSG_VERBOSE);
                 }
-                //if(debug) log("matchCriteria: Best Match so far(" + bestMatch + ")");
             }
+            log("matchCriteria: BestMatch(" + bestMatch + ")", Project.MSG_VERBOSE);
         }
-        //if(debug) log("matchCriteria: BestMatch(" + bestMatch + ")");
+        else log("matchCriteria: filelist is null!", Project.MSG_VERBOSE);
         return bestMatch;
     }
 
@@ -175,18 +180,18 @@ public class SelectBundle extends Task {
         if (property == null || property.length() == 0) {
             throw new BuildException("The property attribute must be present.", getLocation());
         }
-        //if(debug) log("execute: ** Evaluate **");
+        log("execute: ** Evaluate **", Project.MSG_VERBOSE);
         evaluateCriteria();
-        //if(debug) log("execute: ** Match **");
+        log("execute: ** Match **", Project.MSG_VERBOSE);
         String file = matchCriteria();
 
-        if( !(file == null) ){
+        if( file != null ){
             if (includepath)
                 getProject().setNewProperty(property, directory+"/"+file);
             else   
                 getProject().setNewProperty(property, file);
         }
-        //if(debug) log("execute: Search Finished.");
+        log("execute: Search Finished.", Project.MSG_VERBOSE);
     }
 
     // Setters
@@ -204,6 +209,7 @@ public class SelectBundle extends Task {
 
     public void setDirectory(String directory) {
         this.directory = directory;
+        log("setDirectory: directory='" + directory + "'", Project.MSG_VERBOSE);
     }
 
     public void setProperty(String property) {
