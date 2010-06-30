@@ -28,6 +28,7 @@ public class TransformationMappingTestSuite extends TestCase {
     public static Test suite() {
         TestSuite suite = new TestSuite("Transformation Mapping Suite");
         suite.addTestSuite(TransformationMappingTestCases.class);
+        suite.addTestSuite(TransformationMappingPrefixTestCases.class);
         suite.addTestSuite(TransformationMappingErrorTestCases.class);
         suite.addTestSuite(TransformationMappingAnyCollectionTestCases.class);
         suite.addTestSuite(TransformationMappingAnyObjectTestCases.class);
