@@ -44,8 +44,20 @@
 *        build or package EclipseLink. It is designed to be run on the Eclipse
 *        Build Server (an IBM PowerPC running Linux)
 *================================================================================= -->
-<project name="EclipseLink Automated Build" basedir="." default="build-nightly">
+<project name="AutoBuild" basedir="." default="build-nightly">
 <echo message="---- AutoBuild.xml ----"/>
+    <dirname  property="build.location_temp" file="${ant.file.AutoBuild}"/>
+    <pathconvert targetos="unix" property="build.location">
+        <path>
+            <pathelement location="${build.location_temp}"/>
+        </path>
+    </pathconvert>
+    <echo message="build.location = '${build.location}'"/>
+
+    <!-- Define custom task to "cleanup" the revision information -->
+    <property name="custom.tasks.lib" value="${build.location}/buildsystem/ant_customizations.jar"/>
+    <property name="custom.cleanrev.task.class" value="org.eclipse.persistence.buildtools.ant.taskdefs.CleanRevision"/>
+    <taskdef  name="cleanrevision" classname="${custom.cleanrev.task.class}" classpath="${custom.tasks.lib}"/>
 
     <target name="build-no-publish" description="Trigger an automated build without testing or publish"
             depends="clean, build"
@@ -65,35 +77,6 @@
     <target name="build-oracle"     description="Trigger the automated oracle build"
             depends="init, build-oracle-extension, publish-oracle"
     />
-
-    <!-- script to "cleanup" the revision information -->
-    <scriptdef name="cleanRevision" language="javascript" manager="javax">
-        <attribute name="input"/>
-        <attribute name="property"/>
-        <![CDATA[
-            // getting the value
-            input = attributes.get("input");
-            property = attributes.get("property");
-            if (input == null || property == null) {
-               self.fail("both 'input' and 'property' attributes must be set.");
-            }
-            if (input.startsWith("${") || input == "" ) {
-                // Set the result of an undefined (unexpanded) or "empty string" variable to 'NA'
-                project.setProperty(attributes.get("property"), "NA");
-            }
-            else {
-                // Last changed revision (branch specific) is stored 2nd to last line of
-                //    "svn info --revision HEAD <url>" output
-                // Get "endString" Index based on search for last instance of "Last Changed"
-                endLastRev = input.lastIndexOf("Last Changed");
-                // Get "beginString" index based upon the last space in the line above the endString index
-                beginLastRev = input.lastIndexOf(" ", endLastRev);
-                // Trim the string to not include the leading space, or the end-of-line
-                trimmedInput = input.substring(beginLastRev+1, endLastRev-1);
-                project.setProperty(attributes.get("property"), trimmedInput);
-            }
-        ]]>
-    </scriptdef>
 
     <target name="init" depends="pre-init, common-init"/>
     <target name="pre-init">
