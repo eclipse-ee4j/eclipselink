@@ -31,18 +31,20 @@ public class IsolatedCacheTestSuite extends JUnitTestCase {
         super(name);
     }
     
-    public void setUp () {
-        super.setUp();
+    public void testSetup () {
         new RelationshipsTableManager().replaceTables(JUnitTestCase.getServerSession());
     }
     
     public static Test suite() {
-        return new TestSuite(IsolatedCacheTestSuite.class) {
-            protected void setUp(){}
-            protected void tearDown(){}
-        };
+        TestSuite suite = new TestSuite();
+        suite.setName("IsolatedCacheTestSuite (field access)");
+        
+        suite.addTest(new IsolatedCacheTestSuite("testSetup")); 
+        suite.addTest(new IsolatedCacheTestSuite("testCacheIsolationDBQueryHit"));
+        
+        return suite;
     }
-     
+         
     public void testCacheIsolationDBQueryHit() throws Exception {
         EntityManager em = createEntityManager();
         

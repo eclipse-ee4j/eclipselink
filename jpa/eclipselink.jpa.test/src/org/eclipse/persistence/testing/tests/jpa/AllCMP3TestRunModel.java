@@ -31,8 +31,6 @@ public class AllCMP3TestRunModel extends TestModel {
     
         public AllCMP3TestRunModel() {
             addTest(new org.eclipse.persistence.testing.tests.jpa.advanced.JPAAdvancedTestModel());
-            addTest(new org.eclipse.persistence.testing.tests.jpa.relationships.CMP3RelationshipsTestModel());
-            addTest(new org.eclipse.persistence.testing.tests.jpa.fieldaccess.CMP3FieldAccessTestModel());
             addTest(new org.eclipse.persistence.testing.tests.jpa.inheritance.CMP3InheritanceTestModel());
             addTest(new org.eclipse.persistence.testing.tests.jpa.complexaggregate.CMP3ComplexAggregateTestModel());
             addTest(FullRegressionTestSuite.suite());

@@ -11,7 +11,7 @@
  *     03/26/2008-1.0M6 Guy Pelletier 
  *       - 211302: Add variable 1-1 mapping support to the EclipseLink-ORM.XML Schema 
  ******************************************************************************/
-package org.eclipse.persistence.testing.tests.jpa.relationships;
+package org.eclipse.persistence.testing.tests.jpa.fieldaccess.relationships;
 
 import java.util.Collection;
 import java.util.HashMap;
@@ -27,9 +27,6 @@ import javax.persistence.Query;
 import junit.framework.Test;
 import junit.framework.TestSuite;
 
-import org.eclipse.persistence.descriptors.copying.CloneCopyPolicy;
-import org.eclipse.persistence.descriptors.copying.CopyPolicy;
-import org.eclipse.persistence.descriptors.copying.InstantiationCopyPolicy;
 import org.eclipse.persistence.exceptions.QueryException;
 import org.eclipse.persistence.internal.jpa.EJBQueryImpl;
 import org.eclipse.persistence.internal.jpa.EntityManagerImpl;
@@ -38,26 +35,9 @@ import org.eclipse.persistence.queries.ReadAllQuery;
 import org.eclipse.persistence.queries.ReadObjectQuery;
 import org.eclipse.persistence.sessions.server.ServerSession;
 import org.eclipse.persistence.testing.framework.junit.JUnitTestCase;
-import org.eclipse.persistence.testing.models.jpa.relationships.Auditor;
-import org.eclipse.persistence.testing.models.jpa.relationships.CustomerCollection;
-import org.eclipse.persistence.testing.models.jpa.relationships.CustomerServiceRepresentative;
-import org.eclipse.persistence.testing.models.jpa.relationships.Lego;
-import org.eclipse.persistence.testing.models.jpa.relationships.Item;
-import org.eclipse.persistence.testing.models.jpa.relationships.Mattel;
-import org.eclipse.persistence.testing.models.jpa.relationships.MegaBrands;
-import org.eclipse.persistence.testing.models.jpa.relationships.Namco;
-import org.eclipse.persistence.testing.models.jpa.relationships.OrderCard;
-import org.eclipse.persistence.testing.models.jpa.relationships.OrderLabel;
-import org.eclipse.persistence.testing.models.jpa.relationships.RelationshipsExamples;
-import org.eclipse.persistence.testing.models.jpa.relationships.RelationshipsTableManager;
-import org.eclipse.persistence.testing.models.jpa.relationships.Order;
-import org.eclipse.persistence.testing.models.jpa.relationships.ServiceCall;
-import org.eclipse.persistence.testing.models.jpa.relationships.TestInstantiationCopyPolicy;
-
-import org.eclipse.persistence.testing.models.jpa.relationships.Customer;
+import org.eclipse.persistence.testing.models.jpa.fieldaccess.relationships.*;
 
 public class RelationshipModelJUnitTestSuite extends JUnitTestCase {
-    private static Integer itemId;
     
     public RelationshipModelJUnitTestSuite() {
         super();
@@ -69,18 +49,9 @@ public class RelationshipModelJUnitTestSuite extends JUnitTestCase {
     
     public static Test suite() {
         TestSuite suite = new TestSuite();
-        suite.setName("RelationshipModelJUnitTestSuite");
+        suite.setName("RelationshipModelJUnitTestSuite (field access)");
         
         suite.addTest(new RelationshipModelJUnitTestSuite("testSetup")); 
-        suite.addTest(new RelationshipModelJUnitTestSuite("testCreateItem")); 
-        suite.addTest(new RelationshipModelJUnitTestSuite("testModifyItem"));
-        suite.addTest(new RelationshipModelJUnitTestSuite("testVerifyItem"));
-        suite.addTest(new RelationshipModelJUnitTestSuite("testInstantiationCopyPolicy"));
-        suite.addTest(new RelationshipModelJUnitTestSuite("testCopyPolicy"));
-        suite.addTest(new RelationshipModelJUnitTestSuite("testCloneCopyPolicy"));
-        suite.addTest(new RelationshipModelJUnitTestSuite("testCollectionImplementation"));
-        suite.addTest(new RelationshipModelJUnitTestSuite("testCustomerServiceRepMap"));
-        suite.addTest(new RelationshipModelJUnitTestSuite("testOne2OneRelationTables"));
         suite.addTest(new RelationshipModelJUnitTestSuite("testExecuteUpdateTest"));
         suite.addTest(new RelationshipModelJUnitTestSuite("testGetResultCollectionTest"));
         suite.addTest(new RelationshipModelJUnitTestSuite("testGetResultListTest"));
@@ -97,227 +68,6 @@ public class RelationshipModelJUnitTestSuite extends JUnitTestCase {
     public void testSetup() {
         new RelationshipsTableManager().replaceTables(JUnitTestCase.getServerSession());
         clearCache();
-    }
-    
-    /**
-     * Create a new item that has a variable one to one to a manufacturer.
-     */
-    public void testCreateItem() {
-        EntityManager em = createEntityManager();
-        beginTransaction(em);
-        
-        try {
-            Item item = new Item();
-            item.setName("Synergizer2000");
-            item.setDescription("Every kid must have one ... ");
-            
-            // Manufacturer does not cascade persist
-            Mattel mattel = new Mattel();
-            mattel.setName("Mattel Inc.");
-            em.persist(mattel);
-            item.setManufacturer(mattel);
-            
-            // Distributor will cascade persist
-            Namco namco = new Namco();
-            namco.setName("Namco Games");
-            item.setDistributor(namco);
-            
-            em.persist(item);
-            itemId = item.getItemId();
-            commitTransaction(em);
-        } catch (RuntimeException e) {
-            if (isTransactionActive(em)) {
-                rollbackTransaction(em);
-            }
-            
-            closeEntityManager(em);
-            throw e;
-        }
-        
-        closeEntityManager(em);
-    }
-    
-    /**
-     * Read an item, verify it contents, modify it and commit.
-     */
-    public void testModifyItem() {
-        EntityManager em = createEntityManager();
-        beginTransaction(em);
-        
-        try {
-            Item item = em.find(Item.class, itemId);
-            item.setName("Willy Waller");
-            item.setDescription("For adults only!");
-            
-            assertTrue("The manufacturer was not persisted", item.getManufacturer() != null);
-            assertTrue("The manufacturer of the item was incorrect", item.getManufacturer().getName().equals("Mattel Inc."));
-            
-            Lego lego = new Lego();
-            lego.setName("The LEGO Group");
-            item.setManufacturer(lego);
-
-            assertTrue("The distributor was not persisted", item.getDistributor() != null);
-            assertTrue("The distributor of the item was incorrect", item.getDistributor().getName().equals("Namco Games"));
-                    
-            MegaBrands megaBrands = new MegaBrands();
-            megaBrands.setName("MegaBrands Inc.");
-            item.setDistributor(megaBrands);
-            
-            em.merge(item);
-            em.persist(lego);
-            em.persist(megaBrands);
-            commitTransaction(em);    
-        } catch (RuntimeException e) {
-            if (isTransactionActive(em)) {
-                rollbackTransaction(em);
-            }
-            
-            closeEntityManager(em);
-            throw e;
-        }
-        
-        closeEntityManager(em);
-    }
-    
-    /**
-     * Verify the final contents of item.
-     */
-    public void testVerifyItem() {
-        EntityManager em = createEntityManager();
-        Item item = em.find(Item.class, itemId);
-        
-        assertTrue("The manufacturer was not persisted", item.getManufacturer() != null);
-        assertTrue("The manufacturer of the item was incorrect", item.getManufacturer().getName().equals("The LEGO Group"));
-
-        assertTrue("The distributor was not persisted", item.getDistributor() != null);
-        assertTrue("The distributor of the item was incorrect", item.getDistributor().getName().equals("MegaBrands Inc."));
-        
-        closeEntityManager(em);
-    }
-    
-    public void testInstantiationCopyPolicy(){
-        assertTrue("The InstantiationCopyPolicy was not properly set.", getServerSession().getDescriptor(Item.class).getCopyPolicy() instanceof InstantiationCopyPolicy);
-    }
-    
-    public void testCopyPolicy(){
-        assertTrue("The CopyPolicy was not properly set.", getServerSession().getDescriptor(Order.class).getCopyPolicy() instanceof TestInstantiationCopyPolicy);
-    }
-    
-    public void testCloneCopyPolicy(){
-        CopyPolicy copyPolicy = getServerSession().getDescriptor(Namco.class).getCopyPolicy();
-        assertTrue("The CloneCopyPolicy was not properly set.", copyPolicy  instanceof CloneCopyPolicy);
-        assertTrue("The method on CloneCopyPolicy was not properly set.", ((CloneCopyPolicy)copyPolicy).getMethodName().equals("cloneNamco"));
-        assertTrue("The workingCopyMethod on CloneCopyPolicy was not properly set.", ((CloneCopyPolicy)copyPolicy).getWorkingCopyMethodName().equals("cloneWorkingCopyNamco"));
-    }
-    
-    /**
-     * bug 236275: Use a Collection implementation type that does not implement List in an eager relationship
-     * This test uses a HashSet 
-     */
-    public void testCollectionImplementation(){
-        EntityManager em = createEntityManager();
-        beginTransaction(em);
-        try {
-            Customer c = new Customer();
-            //Customer uses HashSet by default, but set it anyway to ensure the model doesn't change. 
-            CustomerCollection collection = new CustomerCollection();
-            c.setCCustomers(collection);
-            em.persist(c);
-            commitTransaction(em);
-        } catch (RuntimeException e) {
-            if (isTransactionActive(em)) {
-                rollbackTransaction(em);
-            }
-            
-            closeEntityManager(em);
-            throw e;
-        }
-        closeEntityManager(em);
-    }
-    
-    // Bug 282571 - Map and ManyToMany
-    public void testCustomerServiceRepMap(){
-        EntityManager em = createEntityManager();
-        beginTransaction(em);
-        
-        Customer cust = new Customer();
-        cust.setName("Kovie");
-        cust.setCity("Ottawa");
-        
-        CustomerServiceRepresentative rep = new CustomerServiceRepresentative();
-        rep.setName("Brian");
-        
-        ServiceCall call = new ServiceCall();
-        call.setDescription("Trade from Habs.");
-        
-        cust.addCSInteraction(call, rep);
-        
-        em.persist(call);
-        em.persist(cust);
-        em.flush();
-        
-        rollbackTransaction(em);
-    }
-    
-    /**
-     * This tests a couple scenarios:
-     * - 1-M mapped by a M-1 using a JoinTable
-     * - 1-1 mapped using a JoinTable (uni-directional)
-     * - 1-1 mapped using a JoinTable (bi-directional)
-     */
-    public void testOne2OneRelationTables() {
-        EntityManager em = createEntityManager();
-        beginTransaction(em);
-        
-        Order order1 = new Order();
-        Order order2 = new Order();
-        Auditor auditor = new Auditor();
-                
-        try {
-            OrderCard order1Card = new OrderCard();
-            OrderLabel order1Label = new OrderLabel();
-            order1Label.setDescription("I describe order 1");
-            order1.setOrderLabel(order1Label);
-            order1.setOrderCard(order1Card);
-            em.persist(order1);
-            
-            OrderCard order2Card = new OrderCard();
-            OrderLabel order2Label = new OrderLabel();
-            order2Label.setDescription("I describe order 2");
-            order2.setOrderLabel(order2Label);
-            order2.setOrderCard(order2Card);
-            em.persist(order2);
-                
-            auditor.setName("Guillaume");
-            auditor.addOrder(order1);
-            auditor.addOrder(order2);
-            em.persist(auditor);
-
-            commitTransaction(em);
-        } catch (RuntimeException e) {
-            if (isTransactionActive(em)) {
-                rollbackTransaction(em);
-            }
-            
-            closeEntityManager(em);
-            throw e;
-        }
-        
-        closeEntityManager(em);
-
-        
-        clearCache();
-        em = createEntityManager();
-        
-        Auditor refreshedAuditor = em.find(Auditor.class, auditor.getId());
-        Order refreshedOrder1 = em.find(Order.class, order1.getOrderId());
-        Order refreshedOrder2 = em.find(Order.class, order2.getOrderId());
-        
-        assertTrue("Auditor read back did not match the original", getServerSession().compareObjects(auditor, refreshedAuditor));
-        assertTrue("Order1 read back did not match the original", getServerSession().compareObjects(order1, refreshedOrder1));
-        assertTrue("Order2 read back did not match the original", getServerSession().compareObjects(order2, refreshedOrder2));
-        
-        closeEntityManager(em);
     }
     
     /*
@@ -344,7 +94,7 @@ public class RelationshipModelJUnitTestSuite extends JUnitTestCase {
 
             beginTransaction(em);
             Customer cus = em.find(Customer.class, cusIDs[0]);
-            Query query = em.createQuery("UPDATE Customer customer SET customer.name = '" + nameChange1 + "' WHERE customer.customerId = " + cusIDs[0]);
+            Query query = em.createQuery("UPDATE FieldAccessCustomer customer SET customer.name = '" + nameChange1 + "' WHERE customer.customerId = " + cusIDs[0]);
             query.executeUpdate();
             em.clear();
             clearCache();
@@ -353,7 +103,7 @@ public class RelationshipModelJUnitTestSuite extends JUnitTestCase {
             returnedName1 = cus.getName();
 
             // tests bug 4288845
-            Query query2 = em.createQuery("UPDATE Customer customer SET customer.name = :name WHERE customer.customerId = " + cusIDs[0]);
+            Query query2 = em.createQuery("UPDATE FieldAccessCustomer customer SET customer.name = :name WHERE customer.customerId = " + cusIDs[0]);
             query2.setParameter("name", nameChange2);
             query2.executeUpdate();
             em.clear();
@@ -363,7 +113,7 @@ public class RelationshipModelJUnitTestSuite extends JUnitTestCase {
             returnedName2 = cus.getName();
 
             // tests bug 4293920
-            Query query3 = em.createQuery("UPDATE Customer customer SET customer.name = :name WHERE customer.customerId = :id");
+            Query query3 = em.createQuery("UPDATE FieldAccessCustomer customer SET customer.name = :name WHERE customer.customerId = :id");
             query3.setParameter("name", nameChange3);
             query3.setParameter("id", cusIDs[0]);
             query3.executeUpdate();
@@ -375,7 +125,7 @@ public class RelationshipModelJUnitTestSuite extends JUnitTestCase {
 
             // tests bug 4294241
             try {
-                Query query4 = em.createNamedQuery("findAllCustomers");
+                Query query4 = em.createNamedQuery("findAllCustomersFieldAccess");
                 query4.executeUpdate();
             } catch (IllegalStateException expected) {
                 expectedException = expected;
@@ -399,7 +149,7 @@ public class RelationshipModelJUnitTestSuite extends JUnitTestCase {
                 fail("Customer name did not get updated correctly should be:" + nameChange3 + " is :" + returnedName3);
             }
             if (expectedException == null) {
-                fail("excuteUpdate did not result in an exception on findAllCustomers named ReadAllQuery");
+                fail("excuteUpdate did not result in an exception on findAllCustomersFieldAccess named ReadAllQuery");
             }
             if (expectedException2 == null) {
                 fail("commit did not throw expected RollbackException");
@@ -424,7 +174,7 @@ public class RelationshipModelJUnitTestSuite extends JUnitTestCase {
     public void testGetResultCollectionTest() {
         Collection returnedCustomers1, returnedCustomers2;
         QueryException expectedException1 = null;
-        String ejbql1 = "SELECT OBJECT(thecust) FROM Customer thecust WHERE thecust.customerId = :id";
+        String ejbql1 = "SELECT OBJECT(thecust) FROM FieldAccessCustomer thecust WHERE thecust.customerId = :id";
         Integer[] cusIDs = new Integer[3];
 
         Customer cusClone1 = RelationshipsExamples.customerExample1();
@@ -443,7 +193,7 @@ public class RelationshipModelJUnitTestSuite extends JUnitTestCase {
             beginTransaction(em);
             EntityManagerImpl entityManagerImpl = (EntityManagerImpl) em.getDelegate();
 
-            EJBQueryImpl query1 = (EJBQueryImpl) entityManagerImpl.createNamedQuery("findAllCustomers");
+            EJBQueryImpl query1 = (EJBQueryImpl) entityManagerImpl.createNamedQuery("findAllCustomersFieldAccess");
             returnedCustomers1 = query1.getResultCollection();
 
             EJBQueryImpl query2 = (EJBQueryImpl) entityManagerImpl.createQuery(ejbql1);
@@ -505,7 +255,7 @@ public class RelationshipModelJUnitTestSuite extends JUnitTestCase {
     public void testGetResultListTest() {
         Collection returnedCustomers1, returnedCustomers2;
         QueryException expectedException1 = null;
-        String ejbql1 = "SELECT OBJECT(thecust) FROM Customer thecust WHERE thecust.customerId = :id";
+        String ejbql1 = "SELECT OBJECT(thecust) FROM FieldAccessCustomer thecust WHERE thecust.customerId = :id";
         Integer[] cusIDs = new Integer[3];
 
         Customer cusClone1 = RelationshipsExamples.customerExample1();
@@ -524,7 +274,7 @@ public class RelationshipModelJUnitTestSuite extends JUnitTestCase {
             beginTransaction(em);
             EntityManagerImpl entityManagerImpl = (EntityManagerImpl) em.getDelegate();
 
-            Query query1 = em.createNamedQuery("findAllCustomers");
+            Query query1 = em.createNamedQuery("findAllCustomersFieldAccess");
             returnedCustomers1 = query1.getResultList();
 
             Query query2 = em.createQuery(ejbql1);
@@ -607,7 +357,7 @@ public class RelationshipModelJUnitTestSuite extends JUnitTestCase {
             cusIDs[1] = cusClone2.getCustomerId();
             beginTransaction(em);
             try {
-                returnedCustomer1 = (Customer) em.createNamedQuery("findAllCustomers").getSingleResult();
+                returnedCustomer1 = (Customer) em.createNamedQuery("findAllCustomersFieldAccess").getSingleResult();
             } catch (NonUniqueResultException exceptionExpected1) {
                 expectedException1 = exceptionExpected1;
             }
@@ -621,7 +371,7 @@ public class RelationshipModelJUnitTestSuite extends JUnitTestCase {
                 expectedException2 = exceptionExpected2;
             }
             // bug 4301674 test
-            EJBQueryImpl query2 = (EJBQueryImpl) em.createNamedQuery("findAllCustomers");
+            EJBQueryImpl query2 = (EJBQueryImpl) em.createNamedQuery("findAllCustomersFieldAccess");
             ReadAllQuery readAllQuery = new ReadAllQuery(Customer.class);
             MapContainerPolicy mapContainerPolicy = new MapContainerPolicy();
             mapContainerPolicy.setContainerClass(HashMap.class);
@@ -632,15 +382,15 @@ public class RelationshipModelJUnitTestSuite extends JUnitTestCase {
             result.toString();
     
             // check for single result found.
-            Query query3 = em.createQuery("SELECT OBJECT(thecust) FROM Customer thecust WHERE thecust.customerId = :id");
+            Query query3 = em.createQuery("SELECT OBJECT(thecust) FROM FieldAccessCustomer thecust WHERE thecust.customerId = :id");
             returnedCustomer1 = (Customer) query3.setParameter("id", cusIDs[0]).getSingleResult();
     
             // check for single result using a ReadObjectQuery (tests previous
             // fix for 4202835)
-            EJBQueryImpl query4 = (EJBQueryImpl) em.createQuery("SELECT OBJECT(thecust) FROM Customer thecust WHERE thecust.customerId = :id");
+            EJBQueryImpl query4 = (EJBQueryImpl) em.createQuery("SELECT OBJECT(thecust) FROM FieldAccessCustomer thecust WHERE thecust.customerId = :id");
             query4.setParameter("id", cusIDs[0]);
             ReadObjectQuery readObjectQuery = new ReadObjectQuery(Customer.class);
-            readObjectQuery.setEJBQLString("SELECT OBJECT(thecust) FROM Customer thecust WHERE thecust.customerId = :id");
+            readObjectQuery.setEJBQLString("SELECT OBJECT(thecust) FROM FieldAccessCustomer thecust WHERE thecust.customerId = :id");
             query4.setDatabaseQuery(readObjectQuery);
             returnedCustomer2 = (Customer) query4.getSingleResult();
             commitTransaction(em);
@@ -734,7 +484,7 @@ public class RelationshipModelJUnitTestSuite extends JUnitTestCase {
                 ServerSession ss = getServerSession();
                 Vector vec = new Vector();
                 vec.add(itemIDs[0]);
-                list = (List) ss.executeQuery("findAllOrdersByItem", vec);
+                list = (List) ss.executeQuery("findAllFieldAccessOrdersByItem", vec);
             } catch (Exception ex) {
                 exception = ex;
             }

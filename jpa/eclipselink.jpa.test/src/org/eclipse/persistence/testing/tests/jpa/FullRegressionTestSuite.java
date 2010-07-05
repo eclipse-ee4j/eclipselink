@@ -54,6 +54,7 @@ import org.eclipse.persistence.testing.tests.jpa.inherited.EmbeddableSuperclassJ
 
 import org.eclipse.persistence.testing.tests.jpa.relationships.EMQueryJUnitTestSuite;
 import org.eclipse.persistence.testing.tests.jpa.relationships.ExpressionJUnitTestSuite;
+import org.eclipse.persistence.testing.tests.jpa.relationships.IsolatedCacheTestSuite;
 import org.eclipse.persistence.testing.tests.jpa.relationships.RelationshipModelJUnitTestSuite;
 import org.eclipse.persistence.testing.tests.jpa.relationships.UniAndBiDirectionalMappingTestSuite;
 import org.eclipse.persistence.testing.tests.jpa.relationships.VirtualAttributeTestSuite;
@@ -138,6 +139,8 @@ public class FullRegressionTestSuite extends TestSuite {
         suite.addTest(org.eclipse.persistence.testing.tests.jpa.fieldaccess.advanced.UpdateAllQueryAdvancedJunitTest.suite());
         suite.addTest(org.eclipse.persistence.testing.tests.jpa.fieldaccess.relationships.UniAndBiDirectionalMappingTestSuite.suite());
         suite.addTestSuite(org.eclipse.persistence.testing.tests.jpa.fieldaccess.relationships.ExpressionJUnitTestSuite.class);
+        suite.addTest(org.eclipse.persistence.testing.tests.jpa.fieldaccess.relationships.RelationshipModelJUnitTestSuite.suite());
+        suite.addTest(org.eclipse.persistence.testing.tests.jpa.fieldaccess.relationships.IsolatedCacheTestSuite.suite());
         suite.addTest(org.eclipse.persistence.testing.tests.jpa.fieldaccess.relationships.VirtualAttributeTestSuite.suite());
         suite.addTest(org.eclipse.persistence.testing.tests.jpa.fieldaccess.relationships.JAXBTestSuite.suite());
         // Fetch Groups tests.
@@ -153,7 +156,6 @@ public class FullRegressionTestSuite extends TestSuite {
         suiteFg.addTest(org.eclipse.persistence.testing.tests.jpa.fieldaccess.fetchgroups.NestedNamedFetchGroupTests.suite());
         suiteFg.addTest(org.eclipse.persistence.testing.tests.jpa.fieldaccess.fetchgroups.FetchGroupMergeWithCacheTests.suite());
         suite.addTest(suiteFg);
-        fullSuite.addTest(suite);
 
         fullSuite.addTest(suite);
 
@@ -181,8 +183,9 @@ public class FullRegressionTestSuite extends TestSuite {
         // Relationship model.
         suite = new TestSuite();
         suite.setName("relationships");
-        suite.addTestSuite(EMQueryJUnitTestSuite.class);
-        suite.addTestSuite(ExpressionJUnitTestSuite.class);
+        suite.addTest(EMQueryJUnitTestSuite.suite());
+        suite.addTest(ExpressionJUnitTestSuite.suite());
+        suite.addTest(IsolatedCacheTestSuite.suite());
         suite.addTest(VirtualAttributeTestSuite.suite());
         suite.addTest(ValidationTestSuite.suite());
         suite.addTest(QueryParameterValidationTestSuite.suite());

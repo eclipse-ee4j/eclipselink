@@ -27,6 +27,9 @@ import org.eclipse.persistence.exceptions.DatabaseException;
 
 import javax.persistence.Query;
 
+import junit.framework.Test;
+import junit.framework.TestSuite;
+
 public class EMQueryJUnitTestSuite extends JUnitTestCase {
     protected Integer nonExistingCustomerId = new Integer(999999);
         
@@ -37,8 +40,23 @@ public class EMQueryJUnitTestSuite extends JUnitTestCase {
         super(name);
     }
     
-    public void setUp () {
-        super.setUp();
+    public static Test suite() {
+        TestSuite suite = new TestSuite();
+        suite.setName("EMQueryJUnitTestSuite");
+        
+        suite.addTest(new EMQueryJUnitTestSuite("testSetup"));
+        suite.addTest(new EMQueryJUnitTestSuite("testgetReference"));
+        suite.addTest(new EMQueryJUnitTestSuite("testcreateNativeQuery"));
+        suite.addTest(new EMQueryJUnitTestSuite("testcreateNativeQueryWithSelectSQL"));
+        suite.addTest(new EMQueryJUnitTestSuite("testNativeNamedQuery"));
+        suite.addTest(new EMQueryJUnitTestSuite("testSetParameterUsingNull"));
+        suite.addTest(new EMQueryJUnitTestSuite("testExcludingUnneccesaryJoin"));
+        suite.addTest(new EMQueryJUnitTestSuite("testRemoveUnneccesaryDistinctFromJoin"));
+        
+        return suite;
+    }
+    
+    public void testSetup() {
         clearCache();
         new RelationshipsTableManager().replaceTables(JUnitTestCase.getServerSession());        
     }
@@ -177,16 +195,15 @@ public class EMQueryJUnitTestSuite extends JUnitTestCase {
      */
     public void testSetParameterUsingNull() throws Exception {
         try {
-            java.util.List l = createEntityManager().createQuery(
+            createEntityManager().createQuery(
                 "Select Distinct Object(c) from Customer c where c.name = :cName")
                 .setParameter("cName", null)
                 .getResultList();
-        } catch (DatabaseException e ) {
+        } catch (DatabaseException e) {
             // Above query generates following sql
             // SELECT DISTINCT CUST_ID, CITY, NAME, CUST_VERSION FROM CMP3_CUSTOMER WHERE (NAME = NULL)
             // which will not work on most of the dbs
             // Ignore any resulting DatabaseException
-
         }
     }
     

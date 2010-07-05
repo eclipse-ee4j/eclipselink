@@ -25,9 +25,9 @@ public class RelationshipsServerTestSuite extends TestSuite{
         TestSuite suite = new TestSuite();
         suite.setName("ServerTestSuite");
 
-        suite.addTestSuite(EMQueryJUnitTestSuite.class);
-        suite.addTestSuite(ExpressionJUnitTestSuite.class);
-
+        suite.addTest(EMQueryJUnitTestSuite.suite());
+        suite.addTest(ExpressionJUnitTestSuite.suite());
+        suite.addTest(IsolatedCacheTestSuite.suite());
         suite.addTest(VirtualAttributeTestSuite.suite());
         //suite.addTest(ValidationTestSuite.suite()); in validation test model
         //suite.addTest(QueryParameterValidationTestSuite.suite()); in validation test model

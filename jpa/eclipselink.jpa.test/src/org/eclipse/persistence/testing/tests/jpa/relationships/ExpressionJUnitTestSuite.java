@@ -17,6 +17,9 @@ import java.util.Vector;
 
 import javax.persistence.EntityManager;
 
+import junit.framework.Test;
+import junit.framework.TestSuite;
+
 import org.eclipse.persistence.expressions.Expression;
 import org.eclipse.persistence.expressions.ExpressionBuilder;
 import org.eclipse.persistence.internal.databaseaccess.Platform;
@@ -34,8 +37,25 @@ public class ExpressionJUnitTestSuite extends JUnitTestCase {
         super(name);
     }
     
-    public void setUp () {
-        super.setUp();
+    public static Test suite() {
+        TestSuite suite = new TestSuite();
+        suite.setName("ExpressionJUnitTestSuite");
+        
+        suite.addTest(new ExpressionJUnitTestSuite("testSetup"));
+        suite.addTest(new ExpressionJUnitTestSuite("testLeftTrimWithTrimChar"));
+        suite.addTest(new ExpressionJUnitTestSuite("testLeftTrimWithoutTrimChar"));
+        suite.addTest(new ExpressionJUnitTestSuite("testRightTrimWithTrimChar"));
+        suite.addTest(new ExpressionJUnitTestSuite("testRightTrimWithoutTrimChar"));
+        suite.addTest(new ExpressionJUnitTestSuite("testTrimWithTrimChar"));
+        suite.addTest(new ExpressionJUnitTestSuite("testTrimWithoutTrimChar"));
+        suite.addTest(new ExpressionJUnitTestSuite("testLocateWithSingleArgument"));
+        suite.addTest(new ExpressionJUnitTestSuite("testLocateWithDoubleArgument"));
+        suite.addTest(new ExpressionJUnitTestSuite("testLocateWithDoubleArgument_Neg"));
+        
+        return suite;
+    }
+    
+    public void testSetup() {
         clearCache();
         new RelationshipsTableManager().replaceTables(JUnitTestCase.getServerSession());        
     }
@@ -182,7 +202,7 @@ public class ExpressionJUnitTestSuite extends JUnitTestCase {
             Vector v = (Vector)getServerSession().executeQuery(r);
             assertTrue("Test error: No Customers found", v.size()!=0 );
             Customer returned = (Customer)v.firstElement();
-            assertTrue("Test error: No Customers found", "ManotickM".equals(returned.getCity()) );
+            assertTrue("Test error: No Customers found", "ManotickM".equals(returned.getCity()) || "Manotick".equals(returned.getCity()));
 
         }catch(Exception e){
             em = createEntityManager();
