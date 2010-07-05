@@ -53,6 +53,8 @@
  *       - 309373: Add parent class attribute to EclipseLink-ORM
  *     05/14/2010-2.1 Guy Pelletier 
  *       - 253083: Add support for dynamic persistence using ORM.xml/eclipselink-orm.xml
+ *     07/05/2010-2.1.1 Guy Pelletier 
+ *       - 317708: Exception thrown when using LAZY fetch on VIRTUAL mapping
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata.accessors.classes;
 
@@ -306,6 +308,13 @@ public abstract class ClassAccessor extends MetadataAccessor {
                     // access type.
                     accessor.initAccess();
                     
+                    // After the accessor has been fully initialized we can ask 
+                    // the accessor to validate an attribute type specification 
+					// for a virtual class.
+                    if (accessor.usesVirtualAccess() && ! accessor.hasAttributeType()) {
+                        throw ValidationException.noAttributeTypeSpecification(accessor.getAttributeName(), getJavaClassName(), getLocation());
+                    }
+                    
                     // Add the accessor to the descriptor's list
                     addAccessor(accessor);
                 }
@@ -541,10 +550,10 @@ public abstract class ClassAccessor extends MetadataAccessor {
     
     /**
      * INTERNAL:
-     * This method should only be called when using name access and presumably
-     * for dynamic persistence. No method validation is done and either the
-     * access methods specified or the default get and set methods for name
-     * access will be used.
+     * This method should only be called when using virtual access and 
+     * presumably for dynamic persistence. No method validation is done and 
+     * either the access methods specified or the default get and set methods 
+     * for name access will be used.
      */
     protected MetadataMethod getAccessibleVirtualMethod(MappingAccessor accessor) {
         // If the mapping accessor does not have access methods specified,
@@ -565,12 +574,6 @@ public abstract class ClassAccessor extends MetadataAccessor {
         // Set the get and set method names.
         getMethod.setName(accessor.getGetMethodName());
         setMethod.setName(accessor.getSetMethodName());
-        
-        // Validate that the mapping accessor has an attribute-type 
-        // specification or specifies a target entity or class.
-        if (accessor.getRawClass() == null) {
-            throw ValidationException.noAttributeTypeSpecification(accessor.getAttributeName(), getJavaClassName(), getLocation());
-        }
 
         return getMethod;
     }
@@ -1123,7 +1126,7 @@ public abstract class ClassAccessor extends MetadataAccessor {
      * case when no java class file is available (otherwise we look at the
      * class for the parent). 
      */
-    protected void processParentClass() {
+    public void processParentClass() {
         if (hasParentClass()) {
             // Set the class the user specified.
             getJavaClass().setSuperclass(getParentClass());

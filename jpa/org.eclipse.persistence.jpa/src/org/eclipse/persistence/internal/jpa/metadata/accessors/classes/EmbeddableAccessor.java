@@ -42,6 +42,8 @@
  *       - 253083: Add support for dynamic persistence using ORM.xml/eclipselink-orm.xml
  *     06/01/2010-2.1 Guy Pelletier 
  *       - 315195: Add new property to avoid reading XML during the canonical model generation
+ *     07/05/2010-2.1.1 Guy Pelletier 
+ *       - 317708: Exception thrown when using LAZY fetch on VIRTUAL mapping
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata.accessors.classes;
 
@@ -213,9 +215,6 @@ public class EmbeddableAccessor extends ClassAccessor {
     public void preProcess() {
         setIsPreProcessed();
         
-        // Process the parent class if specified.
-        processParentClass();
-        
         // Process the correct access type before any other processing.
         processAccessType();
         
@@ -250,9 +249,6 @@ public class EmbeddableAccessor extends ClassAccessor {
     @Override
     public void preProcessForCanonicalModel() {        
         setIsPreProcessed();
-        
-        // Process the parent class if specified.
-        processParentClass();
         
         // Process the correct access type before any other processing.
         processAccessType();

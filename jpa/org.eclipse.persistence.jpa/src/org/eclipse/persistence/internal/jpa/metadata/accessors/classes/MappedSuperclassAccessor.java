@@ -44,6 +44,8 @@
  *       - 315195: Add new property to avoid reading XML during the canonical model generation
  *     06/09/2010-2.0.3 Guy Pelletier 
  *       - 313401: shared-cache-mode defaults to NONE when the element value is unrecognized
+ *     07/05/2010-2.1.1 Guy Pelletier 
+ *       - 317708: Exception thrown when using LAZY fetch on VIRTUAL mapping
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata.accessors.classes;
 
@@ -576,9 +578,6 @@ public class MappedSuperclassAccessor extends ClassAccessor {
     public void preProcess() {
         setIsPreProcessed();
         
-        // Process the parent class if specified.
-        processParentClass();
-        
         // Add any id class definition to the project.
         initIdClass();
         
@@ -600,9 +599,6 @@ public class MappedSuperclassAccessor extends ClassAccessor {
     @Override
     public void preProcessForCanonicalModel() {
         setIsPreProcessed();
-        
-        // Process the parent class if specified.
-        processParentClass();
         
         // Process the correct access type before any other processing.
         processAccessType();

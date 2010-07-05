@@ -20,6 +20,7 @@
             <property name="eclipselink.orm.validate.schema" value="true"/>
         </properties>
     </persistence-unit> 
+    
     <persistence-unit name="extended-relationships" transaction-type="RESOURCE_LOCAL">
         <provider>org.eclipse.persistence.jpa.PersistenceProvider</provider>
         <mapping-file>META-INF/relationships-extended-entity-mappings.xml</mapping-file>
@@ -43,6 +44,7 @@
             <property name="eclipselink.orm.validate.schema" value="true"/>
         </properties>
     </persistence-unit>
+    
     <persistence-unit name="extended-inheritance" transaction-type="RESOURCE_LOCAL">
         <provider>org.eclipse.persistence.jpa.PersistenceProvider</provider>
         <mapping-file>META-INF/inheritance-extended-entity-mappings.xml</mapping-file>
@@ -66,6 +68,7 @@
             <property name="eclipselink.orm.validate.schema" value="true"/>
         </properties>
     </persistence-unit>
+    
     <persistence-unit name="extended-complex-aggregate" transaction-type="RESOURCE_LOCAL">
         <provider>org.eclipse.persistence.jpa.PersistenceProvider</provider>
         <mapping-file>META-INF/complexaggregate-extended-entity-mappings.xml</mapping-file>
@@ -85,6 +88,25 @@
             <property name="eclipselink.ddl-generation" value="drop-and-create-tables"/>
             <property name="eclipselink.create-ddl-jdbc-file-name" value="extended-xml-complexaggregate-model-create.jdbc"/>
             <property name="eclipselink.drop-ddl-jdbc-file-name" value="extended-xml-complexaggregate-model-drop.jdbc"/>
+            <property name="eclipselink.ddl-generation.output-mode" value="sql-script"/>
+            <property name="eclipselink.orm.validate.schema" value="true"/>
+        </properties>
+    </persistence-unit>
+    
+    <persistence-unit name="extended-dynamic-advanced" transaction-type="RESOURCE_LOCAL">
+        <provider>org.eclipse.persistence.jpa.PersistenceProvider</provider>
+        <mapping-file>META-INF/advanced-dynamic-entity-mappings.xml</mapping-file>
+        <exclude-unlisted-classes>true</exclude-unlisted-classes>
+
+        <properties>
+            <property name="eclipselink.exclude-eclipselink-orm" value="true"/>
+            <property name="eclipselink.session-name" value="extended-dynamic-session"/>
+            <property name="eclipselink.weaving" value="static"/>
+            <property name="eclipselink.orm.throw.exceptions" value="true"/>
+            <property name="eclipselink.logging.level" value="FINEST"/>
+            <property name="eclipselink.ddl-generation" value="drop-and-create-tables"/>
+            <property name="eclipselink.create-ddl-jdbc-file-name" value="extended-xml-dynamic-model-create.jdbc"/>
+            <property name="eclipselink.drop-ddl-jdbc-file-name" value="extended-xml-dynamic-model-drop.jdbc"/>
             <property name="eclipselink.ddl-generation.output-mode" value="sql-script"/>
             <property name="eclipselink.orm.validate.schema" value="true"/>
         </properties>

@@ -54,7 +54,9 @@
  *     04/27/2010-2.1 Guy Pelletier 
  *       - 309856: MappedSuperclasses from XML are not being initialized properly
  *     05/19/2010-2.1 Guy Pelletier 
- *       - 313574: Lower case primary key column association does not work when upper casing flag is set to true       
+ *       - 313574: Lower case primary key column association does not work when upper casing flag is set to true
+ *     07/05/2010-2.1.1 Guy Pelletier 
+ *       - 317708: Exception thrown when using LAZY fetch on VIRTUAL mapping
  ******************************************************************************/
 package org.eclipse.persistence.internal.jpa.metadata.accessors.mappings;
 
@@ -662,13 +664,7 @@ public abstract class MappingAccessor extends MetadataAccessor {
      */
     public MetadataClass getRawClass() {
         if (m_attributeType == null) {
-            MetadataClass rawClass = getAccessibleObject().getRawClass(getDescriptor());
-
-            // Raw class == null and no attribute-type is specified, try the
-            // reference class since some mappings (1-1, M-1 or V1-1) don't 
-            // require an attribute-type specification since it can be specified
-            // through the target entity/interface specification.
-            return (rawClass == null) ? getReferenceClass() : rawClass;         
+            return getAccessibleObject().getRawClass(getDescriptor());
         } else {
             // If the class doesn't exist the factory we'll just return a
             // generic MetadataClass
@@ -775,6 +771,10 @@ public abstract class MappingAccessor extends MetadataAccessor {
     
     /**
      * INTERNAL:
+     * Those accessors that do not require a separate attribute-type 
+     * specification for VIRTUAL accessors should override this method. For
+     * example, one-to-one and many-to-one will its target-entity. 
+     * variable-one-to-one will use its target-interface. 
      */
     public boolean hasAttributeType() {
         return m_attributeType != null;
@@ -1809,7 +1809,7 @@ public abstract class MappingAccessor extends MetadataAccessor {
         if (hasAccess()) {
             return getAccess().equals(MetadataConstants.PROPERTY);
         } else {
-            return hasAccessMethods() ? true : m_classAccessor.usesPropertyAccess();
+            return hasAccessMethods() ? !usesVirtualAccess() : m_classAccessor.usesPropertyAccess();
         }
     }
     
