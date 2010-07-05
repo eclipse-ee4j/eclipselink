@@ -67,6 +67,8 @@
  *       - 300458: EclispeLink should throw a more specific exception than NPE
  *     06/22/2010-2.2 Guy Pelletier 
  *       - 308729: Persistent Unit deployment exception when mappedsuperclass has no annotations but has lifecycle callbacks
+ *     07/05/2010-2.1.1 Guy Pelletier 
+ *       - 317708: Exception thrown when using LAZY fetch on VIRTUAL mapping
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata.accessors.classes;
 
@@ -540,10 +542,6 @@ public class EntityAccessor extends MappedSuperclassAccessor {
     public void preProcess() {
         setIsPreProcessed();
         
-        // We must process any parent class specification before discovering
-        // any mapped superclasses or inheritance parents.
-        processParentClass();
-        
         // If we are not already an inheritance subclass (meaning we were not
         // discovered through a subclass entity discovery) then perform
         // the discovery process before processing any further. We traverse
@@ -612,10 +610,6 @@ public class EntityAccessor extends MappedSuperclassAccessor {
     @Override
     public void preProcessForCanonicalModel() {
         setIsPreProcessed();
-        
-        // We must process any parent class specification before discovering
-        // any mapped superclasses or inheritance parents.
-        processParentClass();
         
         // If we are not already an inheritance subclass (meaning we were not
         // discovered through a subclass entity discovery) then perform

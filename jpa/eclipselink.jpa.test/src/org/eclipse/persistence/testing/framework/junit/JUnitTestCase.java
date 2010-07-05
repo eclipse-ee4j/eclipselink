@@ -369,6 +369,10 @@ public abstract class JUnitTestCase extends TestCase {
         return ((org.eclipse.persistence.jpa.JpaEntityManager)getEntityManagerFactory(persistenceUnitName).createEntityManager()).getServerSession();        
     }
     
+    public static ServerSession getServerSession(String persistenceUnitName, Map properties) {
+        return ((org.eclipse.persistence.jpa.JpaEntityManager)getEntityManagerFactory(persistenceUnitName, properties).createEntityManager()).getServerSession();        
+    }
+    
     public static EntityManagerFactory getEntityManagerFactory(String persistenceUnitName) {
         return getEntityManagerFactory(persistenceUnitName,  JUnitTestCaseHelper.getDatabaseProperties());
     }

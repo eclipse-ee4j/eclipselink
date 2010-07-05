@@ -57,6 +57,8 @@
  *       - 313401: shared-cache-mode defaults to NONE when the element value is unrecognized
  *     06/14/2010-2.2 Guy Pelletier 
  *       - 264417: Table generation is incorrect for JoinTables in AssociationOverrides
+ *     07/05/2010-2.1.1 Guy Pelletier 
+ *       - 317708: Exception thrown when using LAZY fetch on VIRTUAL mapping
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata;
 
@@ -301,6 +303,9 @@ public class MetadataProject {
         // Process the persistence unit meta data (if there is any).
         processPersistenceUnitMetadata(descriptor);
 
+        // Process and set the parent class (if one is available).
+        accessor.processParentClass();
+        
         // Add the descriptor to the actual EclipseLink Project.
         m_session.getProject().addDescriptor(descriptor.getClassDescriptor());
 
@@ -441,6 +446,9 @@ public class MetadataProject {
      * model processor will populate all mapped superclasses in this map.
      */
     public void addMappedSuperclass(MappedSuperclassAccessor mappedSuperclass) {
+        // Process and set the parent class (if one is available).
+        mappedSuperclass.processParentClass();
+        
         m_mappedSuperclasseAccessors.put(mappedSuperclass.getJavaClassName(), mappedSuperclass);
     }
 

@@ -39,6 +39,8 @@
  *       - 309856: MappedSuperclasses from XML are not being initialized properly
  *     06/14/2010-2.2 Guy Pelletier 
  *       - 264417: Table generation is incorrect for JoinTables in AssociationOverrides
+ *     07/05/2010-2.1.1 Guy Pelletier 
+ *       - 317708: Exception thrown when using LAZY fetch on VIRTUAL mapping
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata.accessors.mappings;
 
@@ -250,6 +252,17 @@ public abstract class ObjectAccessor extends RelationshipAccessor {
             // Validate on their basic mapping.
             return referenceDescriptor.getMappingAccessor(referenceDescriptor.getIdAttributeName()).getRawClass();
         }
+    }
+    
+    /**
+     * INTERNAL:
+     * Object accessors don't require a separate attribute-type specification
+     * in XML, instead they can use the reference class to determine the
+     * attribute-type.
+     */
+    @Override
+    public boolean hasAttributeType() {
+        return getReferenceClass() != null;
     }
     
     /**

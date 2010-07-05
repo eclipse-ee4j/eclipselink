@@ -9,6 +9,8 @@
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
+ *     07/05/2010-2.1.1 Guy Pelletier 
+ *       - 317708: Exception thrown when using LAZY fetch on VIRTUAL mapping
  ******************************************************************************/
 package org.eclipse.persistence.internal.jpa;
 
@@ -154,6 +156,11 @@ public class EntityManagerFactoryImpl implements EntityManagerFactory, Persisten
                     Map serverSessionProperties = splitProperties[1];
                     // the call top setupImpl.deploy() finishes the session
                     // creation
+                    // If the user has provided a loader (e.g. DynamicClassLoader), use it!
+                    ClassLoader providedLoader = (ClassLoader) serverSessionProperties.get(PersistenceUnitProperties.CLASSLOADER);
+                    if (providedLoader != null) {
+                        realLoader = providedLoader;
+                    }
                     ServerSession tempServerSession = setupImpl.deploy(realLoader, serverSessionProperties);
                     // discard all but non server session properties from server
                     // session properties.

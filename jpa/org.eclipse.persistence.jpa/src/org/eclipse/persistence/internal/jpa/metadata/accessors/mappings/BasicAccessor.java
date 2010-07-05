@@ -33,6 +33,8 @@
  *       - 303632: Add attribute-type for mapping attributes to EclipseLink-ORM
  *     04/27/2010-2.1 Guy Pelletier 
  *       - 309856: MappedSuperclasses from XML are not being initialized properly
+ *     07/05/2010-2.1.1 Guy Pelletier 
+ *       - 317708: Exception thrown when using LAZY fetch on VIRTUAL mapping
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata.accessors.mappings;
 
@@ -346,7 +348,7 @@ public class BasicAccessor extends DirectAccessor {
         // specification) we need to set the attribute classification on the 
         // mapping to ensure we do the right conversions.
         if (hasAttributeType() || getAccessibleObject().isGenericType()) {
-            mapping.setAttributeClassification(getJavaClass(getReferenceClass()));
+            mapping.setAttributeClassificationName(getReferenceClassName());
         }
         
         mapping.setField(m_field);
