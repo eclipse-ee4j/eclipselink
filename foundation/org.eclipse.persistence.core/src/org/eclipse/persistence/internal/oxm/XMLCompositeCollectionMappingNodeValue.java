@@ -28,9 +28,11 @@ import org.eclipse.persistence.oxm.XMLConstants;
 import org.eclipse.persistence.oxm.XMLContext;
 import org.eclipse.persistence.oxm.XMLDescriptor;
 import org.eclipse.persistence.oxm.XMLField;
+import org.eclipse.persistence.oxm.XMLMarshalListener;
 import org.eclipse.persistence.oxm.XMLMarshaller;
 import org.eclipse.persistence.oxm.mappings.UnmarshalKeepAsElementPolicy;
 import org.eclipse.persistence.oxm.mappings.XMLCompositeCollectionMapping;
+import org.eclipse.persistence.oxm.mappings.XMLInverseReferenceMapping;
 import org.eclipse.persistence.oxm.mappings.XMLMapping;
 import org.eclipse.persistence.oxm.mappings.converters.XMLConverter;
 import org.eclipse.persistence.oxm.record.MarshalRecord;
@@ -182,17 +184,18 @@ public class XMLCompositeCollectionMappingNodeValue extends XMLRelationshipMappi
             }
         }
         unmarshalRecord.addAttributeValue(this, objectValue, collection);
-        
-        if(xmlCompositeCollectionMapping.getInverseReferenceMapping() != null) {
-            if(xmlCompositeCollectionMapping.getInverseReferenceMapping().getContainerPolicy() == null) {
-                xmlCompositeCollectionMapping.getInverseReferenceMapping().getAttributeAccessor().setAttributeValueInObject(objectValue, unmarshalRecord.getCurrentObject());
+
+        XMLInverseReferenceMapping inverseReferenceMapping = xmlCompositeCollectionMapping.getInverseReferenceMapping();
+        if(null != inverseReferenceMapping) {
+            if(inverseReferenceMapping.getContainerPolicy() == null) {
+                inverseReferenceMapping.getAttributeAccessor().setAttributeValueInObject(objectValue, unmarshalRecord.getCurrentObject());
             } else {
-                Object backpointerContainer = xmlCompositeCollectionMapping.getInverseReferenceMapping().getAttributeAccessor().getAttributeValueFromObject(objectValue);
+                Object backpointerContainer = inverseReferenceMapping.getAttributeAccessor().getAttributeValueFromObject(objectValue);
                 if(backpointerContainer == null) {
-                    backpointerContainer = xmlCompositeCollectionMapping.getInverseReferenceMapping().getContainerPolicy().containerInstance();
-                    xmlCompositeCollectionMapping.getInverseReferenceMapping().getAttributeAccessor().setAttributeValueInObject(objectValue, backpointerContainer);
+                    backpointerContainer = inverseReferenceMapping.getContainerPolicy().containerInstance();
+                    inverseReferenceMapping.getAttributeAccessor().setAttributeValueInObject(objectValue, backpointerContainer);
                 }
-                xmlCompositeCollectionMapping.getInverseReferenceMapping().getContainerPolicy().addInto(unmarshalRecord.getCurrentObject(), backpointerContainer, unmarshalRecord.getSession());
+                inverseReferenceMapping.getContainerPolicy().addInto(unmarshalRecord.getCurrentObject(), backpointerContainer, unmarshalRecord.getSession());
             }
         }
         unmarshalRecord.setChildRecord(null);
@@ -232,11 +235,12 @@ public class XMLCompositeCollectionMappingNodeValue extends XMLRelationshipMappi
         if (null == value) {
             return xmlCompositeCollectionMapping.getNullPolicy().compositeObjectMarshal(xPathFragment, marshalRecord, object, session, namespaceResolver);
         }
-        
-        if ((marshaller != null) && (marshaller.getMarshalListener() != null)) {
-            marshaller.getMarshalListener().beforeMarshal(value);
+
+        XMLMarshalListener marshalListener = null;
+        if (null != marshaller && null != (marshalListener = marshaller.getMarshalListener())) {
+            marshalListener.beforeMarshal(value);
         }
-             
+
         XMLDescriptor descriptor = (XMLDescriptor)xmlCompositeCollectionMapping.getReferenceDescriptor();
         if(descriptor == null || descriptor.hasInheritance()){
         	descriptor = (XMLDescriptor)session.getDescriptor(value.getClass());
@@ -272,8 +276,8 @@ public class XMLCompositeCollectionMappingNodeValue extends XMLRelationshipMappi
             marshalRecord.characters(stringValue);
             marshalRecord.endElement(xPathFragment, namespaceResolver);
         }
-        if ((marshaller != null) && (marshaller.getMarshalListener() != null)) {
-            marshaller.getMarshalListener().afterMarshal(value);
+        if (null != marshalListener) {
+            marshalListener.afterMarshal(value);
         }
         return true;
     }

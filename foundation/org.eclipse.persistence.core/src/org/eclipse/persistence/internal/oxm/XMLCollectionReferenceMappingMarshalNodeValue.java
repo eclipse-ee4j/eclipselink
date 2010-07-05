@@ -107,7 +107,7 @@ public class XMLCollectionReferenceMappingMarshalNodeValue extends MappingNodeVa
         } else {
             for (int x = 0, size = marshalContext.getNonAttributeChildrenSize(branchNode); x < size; x++) {
                 XPathNode xPathNode = (XPathNode)marshalContext.getNonAttributeChild(x, branchNode);
-                xPathNode.marshal(marshalRecord, value, session, namespaceResolver, marshalRecord.getMarshaller(), marshalContext.getMarshalContext(x));
+                xPathNode.marshal(marshalRecord, value, session, namespaceResolver, marshalRecord.getMarshaller(), marshalContext.getMarshalContext(x), null);
             }
             
         }

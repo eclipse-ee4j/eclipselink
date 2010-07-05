@@ -35,7 +35,7 @@ import org.xml.sax.Attributes;
  */
 
 public abstract class NodeValue {
-    private XPathNode xPathNode;
+    protected XPathNode xPathNode;
 
     public XPathNode getXPathNode() {
         return xPathNode;

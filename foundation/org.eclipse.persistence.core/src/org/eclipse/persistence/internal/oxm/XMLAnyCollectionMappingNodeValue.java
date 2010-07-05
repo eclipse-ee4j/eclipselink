@@ -311,7 +311,7 @@ public class XMLAnyCollectionMappingNodeValue extends XMLRelationshipMappingNode
                 writeExtraNamespaces(extraNamespaces, marshalRecord, session);
 
                 objectBuilder.addXsiTypeAndClassIndicatorIfRequired(marshalRecord, descriptor, descriptor, (XMLField)xmlAnyCollectionMapping.getField(), originalValue, value, wasXMLRoot, false);               
-                objectBuilder.buildRow(marshalRecord, value, session, marshaller, WriteType.UNDEFINED);                
+                objectBuilder.buildRow(marshalRecord, value, session, marshaller, null, WriteType.UNDEFINED);
                 objectBuilder.removeExtraNamespacesFromNamespaceResolver(marshalRecord, extraNamespaces, session);
 
                 marshalRecord.endElement(rootFragment, namespaceResolver);

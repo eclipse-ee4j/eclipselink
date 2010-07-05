@@ -51,7 +51,7 @@ public class XPathNode {
     private XPathNode parent;
     private List<XPathNode> attributeChildren;
     private List<XPathNode> nonAttributeChildren;
-    private List selfChildren;
+    private List<XPathNode> selfChildren;
     private Map<XPathFragment, XPathNode> attributeChildrenMap;
     private Map<XPathFragment, XPathNode> nonAttributeChildrenMap;
     private XMLAnyAttributeMappingNodeValue anyAttributeNodeValue;
@@ -159,18 +159,15 @@ public class XPathNode {
 
     public boolean equals(Object object) {
         try {
-            XPathNode perfNode = (XPathNode)object;
-
-            if ((getXPathFragment() == null) && (perfNode.getXPathFragment() != null)) {
-                return false;
-            }
-            if ((getXPathFragment() != null) && (perfNode.getXPathFragment() == null)) {
-                return false;
-            }
-            if (getXPathFragment() == perfNode.getXPathFragment()) {
+            XPathFragment perfNodeXPathFragment = ((XPathNode)object).getXPathFragment();
+            if(xPathFragment == perfNodeXPathFragment) {
                 return true;
+            } else if(null == xPathFragment) {
+                return false;
+            } else if(null == perfNodeXPathFragment) {
+                return false;
             }
-            return this.getXPathFragment().equals(perfNode.getXPathFragment());
+            return xPathFragment.equals(perfNodeXPathFragment);
 
             // turn fix off for now until we re-enable XMLAnyObjectAndAnyCollectionTestCases
             //          } catch (NullPointerException npe) {
@@ -262,7 +259,7 @@ public class XPathNode {
         if(isSelfFragment){
             children.add(xPathNode);
             if (null == selfChildren) {
-                selfChildren = new ArrayList();
+                selfChildren = new ArrayList<XPathNode>();
             }
             selfChildren.add(xPathNode);
         }else{
@@ -291,9 +288,6 @@ public class XPathNode {
         }
         return xPathNode;
     }
-    public boolean marshal(MarshalRecord marshalRecord, Object object, AbstractSession session, NamespaceResolver namespaceResolver, XMLMarshaller marshaller, MarshalContext marshalContext) {
-        return marshal(marshalRecord, object, session, namespaceResolver, marshaller, marshalContext, null);
-    }
 
     public boolean marshal(MarshalRecord marshalRecord, Object object, AbstractSession session, NamespaceResolver namespaceResolver, XMLMarshaller marshaller, MarshalContext marshalContext, XPathFragment rootFragment) {
         if ((null == marshalNodeValue) || marshalNodeValue.isMarshalOnlyNodeValue()) {
@@ -307,7 +301,7 @@ public class XPathNode {
                 }
             }
             if (anyAttributeNode != null) {
-                hasValue = anyAttributeNode.marshal(marshalRecord, object, session, namespaceResolver, marshaller, ObjectMarshalContext.getInstance()) || hasValue;
+                hasValue = anyAttributeNode.marshal(marshalRecord, object, session, namespaceResolver, marshaller, ObjectMarshalContext.getInstance(), null) || hasValue;
             }
             if (null != nonAttributeChildren) {
                 for (int x = 0, size = marshalContext.getNonAttributeChildrenSize(this); x < size; x++) {
@@ -338,12 +332,12 @@ public class XPathNode {
         if (null != attributeChildren) {
             for (int x = 0, size = attributeChildren.size(); x < size; x++) {
                 XPathNode attributeNode = attributeChildren.get(x);
-                hasValue = attributeNode.marshal(marshalRecord, object, session, namespaceResolver, null, ObjectMarshalContext.getInstance()) || hasValue;
+                hasValue = attributeNode.marshal(marshalRecord, object, session, namespaceResolver, null, ObjectMarshalContext.getInstance(), null) || hasValue;
             }
         }
         if (anyAttributeNode != null) {
             //marshal the anyAttribute node here before closeStartElement()
-            hasValue = anyAttributeNode.marshal(marshalRecord, object, session, namespaceResolver, null, ObjectMarshalContext.getInstance()) || hasValue;
+            hasValue = anyAttributeNode.marshal(marshalRecord, object, session, namespaceResolver, null, ObjectMarshalContext.getInstance(), null) || hasValue;
         }
 
         if (null != compositeObjectBuilder) {
@@ -371,7 +365,7 @@ public class XPathNode {
     }
 
     public boolean isWhitespaceAware() {
-        return this.getNodeValue().isWhitespaceAware();
+        return unmarshalNodeValue.isWhitespaceAware();
     }
 
 }

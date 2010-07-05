@@ -31,9 +31,11 @@ import org.eclipse.persistence.oxm.XMLConstants;
 import org.eclipse.persistence.oxm.XMLContext;
 import org.eclipse.persistence.oxm.XMLDescriptor;
 import org.eclipse.persistence.oxm.XMLField;
+import org.eclipse.persistence.oxm.XMLMarshalListener;
 import org.eclipse.persistence.oxm.XMLMarshaller;
 import org.eclipse.persistence.oxm.mappings.UnmarshalKeepAsElementPolicy;
 import org.eclipse.persistence.oxm.mappings.XMLCompositeObjectMapping;
+import org.eclipse.persistence.oxm.mappings.XMLInverseReferenceMapping;
 import org.eclipse.persistence.oxm.mappings.XMLMapping;
 import org.eclipse.persistence.oxm.mappings.converters.XMLConverter;
 import org.eclipse.persistence.oxm.record.MarshalRecord;
@@ -106,8 +108,8 @@ public class XMLCompositeObjectMappingNodeValue extends XMLRelationshipMappingNo
         }
 
         XMLMarshaller marshaller = marshalRecord.getMarshaller();
-        if (xmlCompositeObjectMapping.getConverter() != null) {
-            Converter converter = xmlCompositeObjectMapping.getConverter();
+        Converter converter = xmlCompositeObjectMapping.getConverter();
+        if (null != converter) {
             if (converter instanceof XMLConverter) {
                 objectValue = ((XMLConverter)converter).convertObjectValueToDataValue(objectValue, session, marshaller);
             } else {
@@ -118,18 +120,20 @@ public class XMLCompositeObjectMappingNodeValue extends XMLRelationshipMappingNo
             return xmlCompositeObjectMapping.getNullPolicy().compositeObjectMarshal(xPathFragment, marshalRecord, object, session, namespaceResolver);
         }
 
-        if ((marshaller != null) && (marshaller.getMarshalListener() != null)) {
-            marshaller.getMarshalListener().beforeMarshal(objectValue);
+        XMLMarshalListener marshalListener = null;
+        if (null != marshaller && null != (marshalListener = marshaller.getMarshalListener())) {
+            marshalListener.beforeMarshal(objectValue);
         }
 
         XPathFragment groupingFragment = marshalRecord.openStartGroupingElements(namespaceResolver);
+        boolean isSelfFragment = xPathFragment.isSelfFragment;
         marshalRecord.closeStartGroupingElements(groupingFragment);
 
         UnmarshalKeepAsElementPolicy keepAsElementPolicy = xmlCompositeObjectMapping.getKeepAsElementPolicy();
         if (((keepAsElementPolicy == UnmarshalKeepAsElementPolicy.KEEP_UNKNOWN_AS_ELEMENT) || (keepAsElementPolicy == UnmarshalKeepAsElementPolicy.KEEP_ALL_AS_ELEMENT)) && objectValue instanceof Node) {
-            if(xPathFragment.isSelfFragment){
+            if(isSelfFragment){
                 NodeList children = ((org.w3c.dom.Element) objectValue).getChildNodes();
-                for(int i =0; i< children.getLength(); i++){
+                for(int i =0, size=children.getLength(); i<size ; i++){
                     Node next = children.item(i);
                     if(next.getNodeType() == Node.ELEMENT_NODE){
                         marshalRecord.node(next, marshalRecord.getNamespaceResolver());
@@ -143,44 +147,44 @@ public class XMLCompositeObjectMappingNodeValue extends XMLRelationshipMappingNo
         }
         XMLDescriptor descriptor = (XMLDescriptor)xmlCompositeObjectMapping.getReferenceDescriptor();
         if(descriptor == null || descriptor.hasInheritance()){
-        	descriptor = (XMLDescriptor)session.getDescriptor(objectValue.getClass());
+            descriptor = (XMLDescriptor)session.getDescriptor(objectValue.getClass());
         }
-                
+
         if(descriptor != null){
             TreeObjectBuilder objectBuilder = (TreeObjectBuilder)descriptor.getObjectBuilder();
 
-            if (!xPathFragment.isSelfFragment()) {
-                getXPathNode().startElement(marshalRecord, xPathFragment, object, session, namespaceResolver, objectBuilder, objectValue);
+            if (!isSelfFragment) {
+                xPathNode.startElement(marshalRecord, xPathFragment, object, session, namespaceResolver, objectBuilder, objectValue);
             }
 
             List extraNamespaces = objectBuilder.addExtraNamespacesToNamespaceResolver(descriptor, marshalRecord, session);
             writeExtraNamespaces(extraNamespaces, marshalRecord, session);
-            if(!".".equals(this.xmlCompositeObjectMapping.getXPath())) {
+            if(!isSelfFragment) {
                 objectBuilder.addXsiTypeAndClassIndicatorIfRequired(marshalRecord, descriptor, (XMLDescriptor) xmlCompositeObjectMapping.getReferenceDescriptor(), (XMLField)xmlCompositeObjectMapping.getField(), false);
             }
 
             objectBuilder.buildRow(marshalRecord, objectValue, session, marshaller, xPathFragment, WriteType.UNDEFINED);
 
-            if (!xPathFragment.isSelfFragment()) {
+            if (!isSelfFragment) {
                 marshalRecord.endElement(xPathFragment, namespaceResolver);
             }
             objectBuilder.removeExtraNamespacesFromNamespaceResolver(marshalRecord, extraNamespaces, session);
         } else {
-            if (!xPathFragment.isSelfFragment()) {
-                getXPathNode().startElement(marshalRecord, xPathFragment, object, session, namespaceResolver, null, objectValue);
-             }
+            if (!isSelfFragment) {
+                xPathNode.startElement(marshalRecord, xPathFragment, object, session, namespaceResolver, null, objectValue);
+            }
 
-             QName schemaType = getSchemaType((XMLField) xmlCompositeObjectMapping.getField(), objectValue, session);
-             String stringValue = getValueToWrite(schemaType, objectValue, (XMLConversionManager) session.getDatasourcePlatform().getConversionManager(), namespaceResolver);
-             updateNamespaces(schemaType, marshalRecord,((XMLField)xmlCompositeObjectMapping.getField()));
+            QName schemaType = getSchemaType((XMLField) xmlCompositeObjectMapping.getField(), objectValue, session);
+            String stringValue = getValueToWrite(schemaType, objectValue, (XMLConversionManager) session.getDatasourcePlatform().getConversionManager(), namespaceResolver);
+            updateNamespaces(schemaType, marshalRecord,((XMLField)xmlCompositeObjectMapping.getField()));
             marshalRecord.characters(stringValue);
 
-            if (!xPathFragment.isSelfFragment()) {
+            if (!isSelfFragment) {
                 marshalRecord.endElement(xPathFragment, namespaceResolver);
             }
         }
-        if ((marshaller != null) && (marshaller.getMarshalListener() != null)) {
-            marshaller.getMarshalListener().afterMarshal(objectValue);
+        if (null != marshalListener) {
+            marshalListener.afterMarshal(objectValue);
         }
         return true;
     }
@@ -284,14 +288,14 @@ public class XMLCompositeObjectMappingNodeValue extends XMLRelationshipMappingNo
 
             if ((((keepAsElementPolicy == UnmarshalKeepAsElementPolicy.KEEP_UNKNOWN_AS_ELEMENT) || (keepAsElementPolicy == UnmarshalKeepAsElementPolicy.KEEP_ALL_AS_ELEMENT))) && (builder.getNodes().size() != 0)) {
 
-            	if(unmarshalRecord.getTypeQName() != null){
+                if(unmarshalRecord.getTypeQName() != null){
                     Class theClass = (Class)((XMLConversionManager) unmarshalRecord.getSession().getDatasourcePlatform().getConversionManager()).getDefaultXMLTypes().get(unmarshalRecord.getTypeQName());
                     if(theClass != null){
                         //handle simple text
-                    	endElementProcessText(unmarshalRecord, xmlCompositeObjectMapping.getConverter(), xPathFragment, null);
+                        endElementProcessText(unmarshalRecord, xmlCompositeObjectMapping.getConverter(), xPathFragment, null);
                         return;
                     }
-         	   }
+                }
 
                 if (builder.getDocument() != null) {
                     setOrAddAttributeValueForKeepAsElement(builder, (XMLMapping) xmlCompositeObjectMapping, (XMLConverter) xmlCompositeObjectMapping.getConverter(), unmarshalRecord, false, null);
@@ -315,16 +319,17 @@ public class XMLCompositeObjectMappingNodeValue extends XMLRelationshipMappingNo
             }
             // Set the child object on the parent
             unmarshalRecord.setAttributeValue(object, xmlCompositeObjectMapping);
-            if(xmlCompositeObjectMapping.getInverseReferenceMapping() != null) {
-                if(xmlCompositeObjectMapping.getInverseReferenceMapping().getContainerPolicy() == null) {
-                    xmlCompositeObjectMapping.getInverseReferenceMapping().getAttributeAccessor().setAttributeValueInObject(object, unmarshalRecord.getCurrentObject());
+            XMLInverseReferenceMapping inverseReferenceMapping = xmlCompositeObjectMapping.getInverseReferenceMapping();
+            if(null != inverseReferenceMapping) {
+                if(inverseReferenceMapping.getContainerPolicy() == null) {
+                    inverseReferenceMapping.getAttributeAccessor().setAttributeValueInObject(object, unmarshalRecord.getCurrentObject());
                 } else {
-                    Object backpointerContainer = xmlCompositeObjectMapping.getInverseReferenceMapping().getAttributeAccessor().getAttributeValueFromObject(object);
+                    Object backpointerContainer = inverseReferenceMapping.getAttributeAccessor().getAttributeValueFromObject(object);
                     if(backpointerContainer == null) {
-                        backpointerContainer = xmlCompositeObjectMapping.getInverseReferenceMapping().getContainerPolicy().containerInstance();
-                        xmlCompositeObjectMapping.getInverseReferenceMapping().getAttributeAccessor().setAttributeValueInObject(object, backpointerContainer);
+                        backpointerContainer = inverseReferenceMapping.getContainerPolicy().containerInstance();
+                        inverseReferenceMapping.getAttributeAccessor().setAttributeValueInObject(object, backpointerContainer);
                     }
-                    xmlCompositeObjectMapping.getInverseReferenceMapping().getContainerPolicy().addInto(unmarshalRecord.getCurrentObject(), backpointerContainer, unmarshalRecord.getSession());
+                    inverseReferenceMapping.getContainerPolicy().addInto(unmarshalRecord.getCurrentObject(), backpointerContainer, unmarshalRecord.getSession());
                 }
             }
             unmarshalRecord.setChildRecord(null);
@@ -333,9 +338,9 @@ public class XMLCompositeObjectMappingNodeValue extends XMLRelationshipMappingNo
 
     public void endSelfNodeValue(UnmarshalRecord unmarshalRecord, UnmarshalRecord selfRecord, Attributes attributes) {
         if(xmlCompositeObjectMapping.getNullPolicy().valueIsNull(attributes)){
-    		xmlCompositeObjectMapping.setAttributeValueInObject(unmarshalRecord.getCurrentObject(), null);
-    		return;
-    	}
+            xmlCompositeObjectMapping.setAttributeValueInObject(unmarshalRecord.getCurrentObject(), null);
+            return;
+        }
 
         if (unmarshalRecord.getFragmentBuilder().getDocument() != null) {
             UnmarshalKeepAsElementPolicy keepAsElementPolicy = xmlCompositeObjectMapping.getKeepAsElementPolicy();
@@ -381,8 +386,8 @@ public class XMLCompositeObjectMappingNodeValue extends XMLRelationshipMappingNo
             }
         } else {
             Object valueToSet = selfRecord.getCurrentObject();
-            if (xmlCompositeObjectMapping.getConverter() != null) {
-                Converter converter = xmlCompositeObjectMapping.getConverter();
+            Converter converter = xmlCompositeObjectMapping.getConverter();
+            if (null != converter) {
                 if (converter instanceof XMLConverter) {
                     valueToSet = ((XMLConverter)converter).convertDataValueToObjectValue(valueToSet, unmarshalRecord.getSession(), unmarshalRecord.getUnmarshaller());
                 } else {
@@ -391,8 +396,9 @@ public class XMLCompositeObjectMappingNodeValue extends XMLRelationshipMappingNo
             }
 
             xmlCompositeObjectMapping.setAttributeValueInObject(unmarshalRecord.getCurrentObject(), valueToSet);
-            if (xmlCompositeObjectMapping.getInverseReferenceMapping() != null) {
-                xmlCompositeObjectMapping.getInverseReferenceMapping().getAttributeAccessor().setAttributeValueInObject(unmarshalRecord.getCurrentObject(), valueToSet);
+            XMLInverseReferenceMapping inverseReferenceMapping = xmlCompositeObjectMapping.getInverseReferenceMapping();
+            if (null != inverseReferenceMapping) {
+                inverseReferenceMapping.getAttributeAccessor().setAttributeValueInObject(unmarshalRecord.getCurrentObject(), valueToSet);
             }
         }
     }

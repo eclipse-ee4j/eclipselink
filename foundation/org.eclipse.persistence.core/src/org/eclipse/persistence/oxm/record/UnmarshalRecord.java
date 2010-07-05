@@ -606,8 +606,9 @@ public class UnmarshalRecord extends XMLRecord implements ContentHandler, Lexica
     	
         if((null != xPathNode.getXPathFragment() && xPathNode.getXPathFragment().nameIsText()) || xpathNodeIsMixedContent) {
             xpathNodeIsMixedContent = false;
-            if (null != xPathNode.getUnmarshalNodeValue()) {
-                xPathNode.getUnmarshalNodeValue().endElement(xPathFragment, this);
+            NodeValue xPathNodeUnmarshalNodeValue = xPathNode.getUnmarshalNodeValue();
+            if (null != xPathNodeUnmarshalNodeValue) {
+                xPathNodeUnmarshalNodeValue.endElement(xPathFragment, this);
                 if (xPathNode.getParent() != null) {
                     xPathNode = xPathNode.getParent();
                 }
@@ -782,18 +783,19 @@ public class UnmarshalRecord extends XMLRecord implements ContentHandler, Lexica
                 XPathNode textNode = xPathNode.getTextNode();
 
                 if (null != textNode && textNode.isWhitespaceAware() && getStringBuffer().length() == 0) {
+                    NodeValue textNodeUnmarshalNodeValue = textNode.getUnmarshalNodeValue();
                     if (!isXsiNil) {
-                        if (textNode.getUnmarshalNodeValue().isMappingNodeValue()) {
-                            textNode.getUnmarshalNodeValue().endElement(xPathFragment, this);
+                        if (textNodeUnmarshalNodeValue.isMappingNodeValue()) {
+                            textNodeUnmarshalNodeValue.endElement(xPathFragment, this);
                         }
                     } else {
-                        if(textNode.getUnmarshalNodeValue().isMappingNodeValue()) {
-                            DatabaseMapping mapping = ((MappingNodeValue)textNode.getUnmarshalNodeValue()).getMapping();
+                        if(textNodeUnmarshalNodeValue.isMappingNodeValue()) {
+                            DatabaseMapping mapping = ((MappingNodeValue)textNodeUnmarshalNodeValue).getMapping();
                             if(mapping.isAbstractDirectMapping()) {
                                 Object nullValue = ((AbstractDirectMapping)mapping).getNullValue();
-                                if(!("".equals(nullValue))) {
+                                if(!(XMLConstants.EMPTY_STRING.equals(nullValue))) {
                                     setAttributeValue(null, mapping);
-                                    this.removeNullCapableValue((NullCapableValue)textNode.getUnmarshalNodeValue());
+                                    this.removeNullCapableValue((NullCapableValue)textNodeUnmarshalNodeValue);
                                 }
                             }
                             isXsiNil = false;
@@ -838,12 +840,12 @@ public class UnmarshalRecord extends XMLRecord implements ContentHandler, Lexica
     public void endUnmappedElement(String namespaceURI, String localName, String qName) throws SAXException {
         typeQName = null;
         levelIndex--;
-        if ((0 == levelIndex) && (null != getParentRecord()) && !isSelfRecord()) {
+        if ((0 == levelIndex) && (null != parentRecord) && !isSelfRecord()) {
             endDocument();
             // don't endElement on, or pass control to, a 'self' parent
-            UnmarshalRecord pRec = getParentRecord();
+            UnmarshalRecord pRec = parentRecord;
             while (pRec.isSelfRecord()) {
-                pRec = pRec.getParentRecord();
+                pRec = pRec.parentRecord;
             }
             pRec.endElement(namespaceURI, localName, qName);
             xmlReader.setContentHandler(pRec);

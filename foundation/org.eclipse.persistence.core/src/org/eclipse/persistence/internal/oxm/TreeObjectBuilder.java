@@ -298,22 +298,19 @@ public class TreeObjectBuilder extends XMLObjectBuilder {
     }
 
     public XPathNode addChild(XPathFragment xPathFragment, NodeValue nodeValue, NamespaceResolver namespaceResolver) {
-        return getRootXPathNode().addChild(xPathFragment, nodeValue, namespaceResolver);
+        return rootXPathNode.addChild(xPathFragment, nodeValue, namespaceResolver);
     }
 
     @Override
     public AbstractRecord buildRow(AbstractRecord record, Object object, org.eclipse.persistence.internal.sessions.AbstractSession session, WriteType writeType) {
-        return buildRow(record, object, session, null, writeType);
-    }
-    public AbstractRecord buildRow(AbstractRecord record, Object object, org.eclipse.persistence.internal.sessions.AbstractSession session, XMLMarshaller marshaller, WriteType writeType) {
-        return buildRow(record, object, session, marshaller, null, writeType);
+        return buildRow(record, object, session, null, null, writeType);
     }
 
     public AbstractRecord buildRow(AbstractRecord record, Object object, org.eclipse.persistence.internal.sessions.AbstractSession session, XMLMarshaller marshaller, XPathFragment rootFragment, WriteType writeType) {
-        if (null == getRootXPathNode().getNonAttributeChildren()) {
+        if (null == rootXPathNode.getNonAttributeChildren()) {
             return record;
         }
-        XMLDescriptor xmlDescriptor = (XMLDescriptor) this.descriptor;
+        XMLDescriptor xmlDescriptor = (XMLDescriptor) descriptor;
         NamespaceResolver namespaceResolver = xmlDescriptor.getNamespaceResolver();
         MarshalContext marshalContext = null;
         if(xmlDescriptor.isSequencedObject()) {
@@ -322,8 +319,8 @@ public class TreeObjectBuilder extends XMLObjectBuilder {
         } else {
             marshalContext = ObjectMarshalContext.getInstance();
         }
-        for (int x = 0, size = marshalContext.getNonAttributeChildrenSize(getRootXPathNode()); x < size; x++) {
-            XPathNode xPathNode = (XPathNode)marshalContext.getNonAttributeChild(x, getRootXPathNode());
+        for (int x = 0, size = marshalContext.getNonAttributeChildrenSize(rootXPathNode); x < size; x++) {
+            XPathNode xPathNode = (XPathNode)marshalContext.getNonAttributeChild(x, rootXPathNode);
             xPathNode.marshal((MarshalRecord)record, object, session, namespaceResolver, marshaller, marshalContext.getMarshalContext(x), rootFragment);
         }
         return record;
@@ -331,17 +328,18 @@ public class TreeObjectBuilder extends XMLObjectBuilder {
 
     public boolean marshalAttributes(MarshalRecord marshalRecord, Object object, AbstractSession session) {
         boolean hasValue = false;
-        NamespaceResolver namespaceResolver = ((XMLDescriptor)this.getDescriptor()).getNamespaceResolver();
+        NamespaceResolver namespaceResolver = ((XMLDescriptor)descriptor).getNamespaceResolver();
 
         List<XPathNode> attributeChildren = rootXPathNode.getAttributeChildren();
         if (null != attributeChildren) {
+            ObjectMarshalContext objectMarshalContext = ObjectMarshalContext.getInstance();
             for (int x = 0, attributeChildrenSize=attributeChildren.size(); x < attributeChildrenSize; x++) {
-                hasValue = attributeChildren.get(x).marshal(marshalRecord, object, session, namespaceResolver, null, ObjectMarshalContext.getInstance()) || hasValue;
+                hasValue = attributeChildren.get(x).marshal(marshalRecord, object, session, namespaceResolver, null, objectMarshalContext, null) || hasValue;
             }
         }
 
         if (rootXPathNode.getAnyAttributeNode() != null) {
-            hasValue = rootXPathNode.getAnyAttributeNode().marshal(marshalRecord, object, session, namespaceResolver, null, ObjectMarshalContext.getInstance()) || hasValue;
+            hasValue = rootXPathNode.getAnyAttributeNode().marshal(marshalRecord, object, session, namespaceResolver, null, ObjectMarshalContext.getInstance(), null) || hasValue;
         }
 
         List<XPathNode> selfChildren = rootXPathNode.getSelfChildren();
@@ -349,7 +347,7 @@ public class TreeObjectBuilder extends XMLObjectBuilder {
             for (XPathNode selfXPathNode : selfChildren) {
                 NodeValue marshalNodeValue = selfXPathNode.getMarshalNodeValue();
                 if(marshalNodeValue instanceof MappingNodeValue) {
-                    DatabaseMapping selfMapping = ((MappingNodeValue) selfXPathNode.getMarshalNodeValue()).getMapping();
+                    DatabaseMapping selfMapping = ((MappingNodeValue) marshalNodeValue).getMapping();
                     Object value = selfMapping.getAttributeValueFromObject(object);
                     XMLDescriptor referenceDescriptor = (XMLDescriptor)selfMapping.getReferenceDescriptor();
                     XMLDescriptor valueDescriptor;
@@ -374,8 +372,8 @@ public class TreeObjectBuilder extends XMLObjectBuilder {
      * This allows subclasses to define different record types.
      */
     public AbstractRecord createRecord(AbstractSession session) {
-    	UnmarshalRecord uRec = new UnmarshalRecord(this);
-    	uRec.setSession(session);
+        UnmarshalRecord uRec = new UnmarshalRecord(this);
+        uRec.setSession(session);
         return uRec;
     }
 
@@ -386,7 +384,7 @@ public class TreeObjectBuilder extends XMLObjectBuilder {
     public AbstractRecord createRecord(String rootName, AbstractSession session) {
         NodeRecord nRec = new NodeRecord(rootName, getNamespaceResolver());
         nRec.setSession(session);
-    	return nRec;
+        return nRec;
     }
 
     /**
@@ -396,7 +394,7 @@ public class TreeObjectBuilder extends XMLObjectBuilder {
     public AbstractRecord createRecord(String rootName, Node parent, AbstractSession session) {
         NodeRecord nRec = new NodeRecord(rootName, getNamespaceResolver(), parent);
         nRec.setSession(session);
-    	return nRec;
+        return nRec;
     }
 
     /**
