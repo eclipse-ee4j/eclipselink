@@ -60,8 +60,11 @@
     <property file="${equinox.build.location}/build.properties"/>
 
     <!-- Defaults, set var in ${user.home}/build.properties if different version required -->
-    <property name="bndtool.jar" value="bnd-0.0.366.jar"/>
-    <property name="equinox.jar" value="org.eclipse.osgi_3.5.0.v20090520.jar"/>
+    <property name="bndtool.prefix" value="bnd"/>
+    <property name="bndtool.separator" value="-"/>
+    <property name="bndtool.criteria" value="[0.0.350,0.1.0)"/>
+    <property name="equinox.prefix" value="org.eclipse.osgi"/>
+    <property name="equinox.criteria" value="[3.5.0,4.0.0)"/>
 
     <!-- Primary Targets -->
     <target name="build" depends="clean, compile, jar" description="build ${ant.project.name} component"/>
@@ -79,6 +82,12 @@
     <!-- the number of properties needed now is too great for lazy loading without a target -->
     <!-- Tests for dependency jars (equinox), etc. Will bypass build if not found -->
     <target name="pre-init">
+        <property name="custom.tasks.lib" value="${dbws.2.buildsys.dir}/ant_customizations.jar"/>
+        <property name="custom.echo.task.class" value="org.eclipse.persistence.buildtools.ant.taskdefs.Say"/>
+        <property name="custom.selectbundle.task.class" value="org.eclipse.persistence.buildtools.ant.taskdefs.SelectBundle"/>
+        <taskdef name="say"          classname="${custom.echo.task.class}"         classpath="${custom.tasks.lib}"/>
+        <taskdef name="selectbundle" classname="${custom.selectbundle.task.class}" classpath="${custom.tasks.lib}"/>
+
         <!-- This HAS to be defined after allowing user redefinitions (which will cause the condition not to set anything) -->
         <!-- This tests to make sure the extensions dir exists, if not sets to a existant dummy location -->
         <condition property="extensions.depend.dir" value="${equinox.2.base.dir}/../extension.lib.external"
@@ -88,16 +97,18 @@
         <echo message="extensions.depend.dir        = '${extensions.depend.dir}'"/>
 
         <!-- Check for Equinox library -->
-        <condition property="equinox.lib" value="${extensions.depend.dir}/${equinox.jar}">
-            <available file="${extensions.depend.dir}/${equinox.jar}"/>
-        </condition>
-        <condition property="equinox.lib" value="${equinox.2.jpa.plugins.dir}/${equinox.jar}">
-            <available file="${equinox.2.jpa.plugins.dir}/${equinox.jar}"/>
-        </condition>
-        <condition property="equinox.lib" value="${equinox.2.common.plugins.dir}/${equinox.jar}">
-            <available file="${equinox.2.common.plugins.dir}/${equinox.jar}"/>
-        </condition>
-        <echo message="equinox.lib                 = '${equinox.lib}'"/>
+        <selectbundle basename="${equinox.prefix}" directory="${extensions.depend.dir}" criterion="${equinox.criteria}"
+                      property="equinox.lib" includepath="true"
+        />
+        <selectbundle basename="${equinox.prefix}" directory="${equinox.2.jpa.plugins.dir}" criterion="${equinox.criteria}"
+                      property="equinox.lib" includepath="true"
+        />
+        <selectbundle basename="${equinox.prefix}" directory="${equinox.2.common.plugins.dir}" criterion="${equinox.criteria}"
+                      property="equinox.lib" includepath="true"
+        />
+        <say message="equinox.lib                  = '${equinox.lib}'" if="equinox.lib"/>
+        <say message="Equinox bundle matching '${equinox.prefix}_${equinox.criteria}.jar' not found in " unless="equinox.lib"/>
+        <say message="   '${extensions.depend.dir}','${equinox.2.jpa.plugins.dir}' or '${equinox.2.common.plugins.dir}'!" unless="equinox.lib"/>
 
         <!-- versioning -->
         <!-- These variables  are set in autobuild.xml. A manual build gets defaults -->
@@ -126,17 +137,21 @@
         <available file="${weaving.lib}"       property="weaving.bundle.exist"/>
 
         <!-- Check for BND library -->
-        <property name="alt.manifest.dir"      value="${equinox.build.location}/META-INF"/>
-        <condition property="bnd.lib" value="${extensions.depend.dir}/${bndtool.jar}">
-            <available file="${extensions.depend.dir}/${bndtool.jar}"/>
-        </condition>
-        <condition property="bnd.lib" value="${equinox.2.buildsys.dir}/${bndtool.jar}">
-            <available file="${equinox.2.buildsys.dir}/${bndtool.jar}"/>
-        </condition>
-        <echo message="bnd.lib                     = '${bnd.lib}'"/>
+        <property name="nobndtool.manifest.dir"      value="${equinox.build.location}/META-INF"/>
+        <!-- extensions.depend.dir must be tested first to allow user overrides to work properly,  **
+         **  once bnd is added to the buildsystem directory.                                       -->
+        <selectbundle basename="${bndtool.prefix}" directory="${extensions.depend.dir}" separator="${bndtool.separator}"
+                     criterion="${bndtool.criteria}" property="bndtool.lib" includepath="true"
+        />
+        <selectbundle basename="${bndtool.prefix}" directory="${equinox.2.buildsys.dir}" separator="${bndtool.separator}"
+                     criterion="${bndtool.criteria}" property="bndtool.lib" includepath="true"
+        />
+        <say message="bndtool.lib                     = '${bndtool.lib}'" if="bndtool.lib"/>
+        <say message="Bnd bundle not found in '${extensions.depend.dir}' or '${equinox.2.buildsys.dir}'!" unless="bndtool.lib"/>
+
         <condition property="bld">
             <or>
-                <isset property="bnd.lib"/>
+                <isset property="bndtool.lib"/>
                 <isset property="nobnd"/>
             </or>
         </condition>
@@ -187,19 +202,19 @@
         <condition property="bnd.bld">
             <and>
                 <isset property="build.ok"/>
-                <isset property="bnd.lib"/>
+                <isset property="bndtool.lib"/>
                 <not>  <isset property="nobnd"/> </not>
             </and>
         </condition>
     </target>
 
     <target name="fail-on-no-bnd" unless="bld">
-        <echo message="BND tool (${bndtool.jar}) not found in either:"/>
+        <echo message="BND tool (${bndtool.prefix}${bndtool.separator}[version].jar) not found in either:"/>
         <echo message="    the extensions.depend.dir: '${extensions.depend.dir}'"/>
         <echo message="    or the buildsystem dir:    '${equinox.2.buildsys.dir}'"/>
         <echo message=""/>
-        <echo message="if you have a different version, you can define a different"/>
-        <echo message="jarname by adding 'bndtool.jar=bnd-{version}.jar to your'"/>
+        <echo message="if you have renamed it, you can define a different"/>
+        <echo message="jarname by adding 'bndtool.lib=[path]/[jarname] to your'"/>
         <echo message="${user.home}/build.properties file."/>
         <echo message=""/>
         <echo message="You can download BND from http://www.aqute.biz/Code/Download"/>
@@ -231,7 +246,7 @@
 
     <!-- package -->
     <target name="package" if="package.ok" depends="init" description="jar OSGI bundle">
-        <jar jarfile="${equinox.2.common.plugins.dir}/${ant.project.name}_${version.string}.jar" manifest="${alt.manifest.dir}/MANIFEST.MF">
+        <jar jarfile="${equinox.2.common.plugins.dir}/${ant.project.name}_${version.string}.jar" manifest="${nobndtool.manifest.dir}/MANIFEST.MF">
             <fileset dir="${equinox.2.base.dir}">
                 <include name="about.html"/>
                 <include name="readme.html"/>
@@ -266,7 +281,7 @@
     </target>
 
     <target name="bnd-package" if="bnd.bld" depends="init">
-        <taskdef resource="aQute/bnd/ant/taskdef.properties" classpath="${bnd.lib}"/>
+        <taskdef resource="aQute/bnd/ant/taskdef.properties" classpath="${bndtool.lib}"/>
         <bnd
             classpath="${classes.dir}"
             eclipse="false"

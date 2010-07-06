@@ -125,17 +125,17 @@
         <available file="${jpa.lib}"           property="jpa.bundle.exist"/>
 
         <!-- Check for BND library -->
-        <property name="alt.manifest.dir"      value="${osgi.build.location}/META-INF"/>
-        <condition property="bnd.lib" value="${extensions.depend.dir}/${bndtool.jar}">
+        <property name="nobndtool.manifest.dir"      value="${osgi.build.location}/META-INF"/>
+        <condition property="bndtool.lib" value="${extensions.depend.dir}/${bndtool.jar}">
             <available file="${extensions.depend.dir}/${bndtool.jar}"/>
         </condition>
-        <condition property="bnd.lib" value="${osgi.2.buildsys.dir}/${bndtool.jar}">
+        <condition property="bndtool.lib" value="${osgi.2.buildsys.dir}/${bndtool.jar}">
             <available file="${osgi.2.buildsys.dir}/${bndtool.jar}"/>
         </condition>
-        <echo message="bnd.lib                     = '${bnd.lib}'"/>
+        <echo message="bndtool.lib                     = '${bndtool.lib}'"/>
         <condition property="bld">
             <or>
-                <isset property="bnd.lib"/>
+                <isset property="bndtool.lib"/>
                 <isset property="nobnd"/>
             </or>
         </condition>
@@ -181,7 +181,7 @@
         <condition property="bnd.bld">
             <and>
                 <isset property="build.ok"/>
-                <isset property="bnd.lib"/>
+                <isset property="bndtool.lib"/>
                 <not>  <isset property="nobnd"/> </not>
             </and>
         </condition>
@@ -225,7 +225,7 @@
 
     <!-- package -->
     <target name="package" if="package.ok" depends="init" description="jar OSGI bundle">
-        <jar jarfile="${osgi.2.common.plugins.dir}/${ant.project.name}_${version.string}.jar" manifest="${alt.manifest.dir}/MANIFEST.MF">
+        <jar jarfile="${osgi.2.common.plugins.dir}/${ant.project.name}_${version.string}.jar" manifest="${nobndtool.manifest.dir}/MANIFEST.MF">
             <fileset dir="${osgi.2.base.dir}">
                 <include name="about.html"/>
                 <include name="readme.html"/>
@@ -260,7 +260,7 @@
     </target>
 
     <target name="bnd-package" if="bnd.bld" depends="init">
-        <taskdef resource="aQute/bnd/ant/taskdef.properties" classpath="${bnd.lib}"/>
+        <taskdef resource="aQute/bnd/ant/taskdef.properties" classpath="${bndtool.lib}"/>
         <bnd
             classpath="${classes.dir}"
             eclipse="false"
