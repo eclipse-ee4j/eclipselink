@@ -114,7 +114,7 @@ public class EnumeratedMetadata extends MetadataConverter {
         if (m_enumeratedType != null) {
             isOrdinal = m_enumeratedType.equals(EnumType.ORDINAL.name());
         }
-        setConverter(mapping, new EnumTypeConverter(mapping, getJavaClass(referenceClass), isOrdinal), isForMapKey);
+        setConverter(mapping, new EnumTypeConverter(mapping, referenceClass.getName()), isForMapKey);
     }
     
     /**

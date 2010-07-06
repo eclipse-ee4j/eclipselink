@@ -35,6 +35,7 @@ import org.eclipse.persistence.internal.security.PrivilegedClassForName;
 public class EnumTypeConverter extends ObjectTypeConverter {
     private Class m_enumClass;
     private String m_enumClassName;
+    private boolean m_useOrdinalValues;
     
     /**
      * PUBLIC:
@@ -43,22 +44,27 @@ public class EnumTypeConverter extends ObjectTypeConverter {
      */
     public EnumTypeConverter(DatabaseMapping mapping, Class enumClass, boolean useOrdinalValues) {
         super(mapping);
-        m_enumClassName = enumClass.getName();
         m_enumClass = enumClass;
-        EnumSet theEnums = EnumSet.allOf(enumClass);
-        Iterator<Enum> i = theEnums.iterator();
-        
-        while (i.hasNext()) {
-            Enum theEnum = i.next();
-            
-            if (useOrdinalValues) {
-                addConversionValue(theEnum.ordinal(), theEnum.name());
-            } else {
-                addConversionValue(theEnum.name(), theEnum.name());
-            }
-        }
+        m_enumClassName = enumClass.getName();
+        m_useOrdinalValues = useOrdinalValues;
+        initializeConversions(m_enumClass);
     }
-    
+
+    protected void initializeConversions(Class enumClass) {
+	    EnumSet theEnums = EnumSet.allOf(enumClass);
+	    Iterator<Enum> i = theEnums.iterator();
+	    
+	    while (i.hasNext()) {
+	        Enum theEnum = i.next();
+	        
+	        if (m_useOrdinalValues) {
+	            addConversionValue(theEnum.ordinal(), theEnum.name());
+	        } else {
+	            addConversionValue(theEnum.name(), theEnum.name());
+	        }
+	    }
+    }
+
     /**
      * PUBLIC:
      * Creating an enum converter this way expects that you will provide
@@ -107,6 +113,7 @@ public class EnumTypeConverter extends ObjectTypeConverter {
                     exception);
             }
         }
+        initializeConversions(m_enumClass);
     }
     
     /**
