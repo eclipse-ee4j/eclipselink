@@ -141,7 +141,7 @@
         <selectbundle basename="${bndtool.prefix}" directory="${extensions.depend.dir}" separator="${bndtool.separator}"
                      criterion="${bndtool.criteria}" property="bndtool.lib" includepath="true"
         />
-        <selectbundle basename="${bndtool.prefix}" directory="${dbws.2.buildsys.dir}" separator="${bndtool.separator}"
+        <selectbundle basename="${bndtool.prefix}" directory="${jpa.2.buildsys.dir}" separator="${bndtool.separator}"
                      criterion="${bndtool.criteria}" property="bndtool.lib" includepath="true"
         />
 
