@@ -498,6 +498,10 @@ public class DatasourcePlatform implements Platform {
     public boolean isTimesTen7() {
         return false;
     }
+    
+    public boolean isMaxDB() {
+        return false;
+    }
 
     /**
      * Allow the platform to initialize itself after login/init.

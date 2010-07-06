@@ -36,7 +36,7 @@ public class Scenario2_2c extends ReportQueryTestCase {
             Object[] result = new Object[2];
             result[0] = emp.getId();
             // Oracle returns a BigDecimal for count
-            if (getSession().getPlatform().isOracle() || getSession().getPlatform().isTimesTen7()) {
+            if (getSession().getPlatform().isOracle() || getSession().getPlatform().isTimesTen7() || getSession().getPlatform().isMaxDB()) {
                 result[1] = new java.math.BigDecimal(3);
             } else if (getSession().getPlatform().isMySQL()) {
                 result[1] = new java.lang.Long(3);
