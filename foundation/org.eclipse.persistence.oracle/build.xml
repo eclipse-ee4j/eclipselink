@@ -74,7 +74,9 @@
     <property file="${oracle.build.location}/build.properties"/>
 
     <!-- Defaults, set var in ${user.home}/build.properties if different version required -->
-    <property name="bndtool.jar" value="bnd-0.0.366.jar"/>
+    <property name="bndtool.prefix" value="bnd"/>
+    <property name="bndtool.separator" value="-"/>
+    <property name="bndtool.criteria" value="[0.0.350,0.1.0)"/>
 
     <!-- Primary Targets -->
     <target name="build" depends="clean, compile, jar" description="build ${ant.project.name} component"/>
@@ -92,6 +94,11 @@
     <!-- initialize varables and paths needed for compile -->
     <!-- the number of properties needed now is too great for lazy loading without a target -->
     <target name="init">
+        <property name="custom.tasks.lib" value="${oracle.2.buildsys.dir}/ant_customizations.jar"/>
+        <property name="custom.echo.task.class" value="org.eclipse.persistence.buildtools.ant.taskdefs.Say"/>
+        <property name="custom.selectbundle.task.class" value="org.eclipse.persistence.buildtools.ant.taskdefs.SelectBundle"/>
+        <taskdef name="say"          classname="${custom.echo.task.class}"         classpath="${custom.tasks.lib}"/>
+        <taskdef name="selectbundle" classname="${custom.selectbundle.task.class}" classpath="${custom.tasks.lib}"/>
         <!-- versioning -->
         <!-- These variables  are set in autobuild.xml. A manual build gets defaults -->
         <tstamp>
@@ -107,17 +114,20 @@
         <property name="implementation.vendor" value="${specification.vendor}"/>
 
         <!-- Check for BND library -->
-        <property name="alt.manifest.dir"      value="${oracle.build.location}/META-INF"/>
-        <condition property="bnd.lib" value="${extensions.depend.dir}/${bndtool.jar}">
-            <available file="${extensions.depend.dir}/${bndtool.jar}"/>
-        </condition>
-        <condition property="bnd.lib" value="${oracle.2.buildsys.dir}/${bndtool.jar}">
-            <available file="${oracle.2.buildsys.dir}/${bndtool.jar}"/>
-        </condition>
-        <echo message="bnd.lib                     = '${bnd.lib}'"/>
+        <property name="nobndtool.manifest.dir"      value="${oracle.build.location}/META-INF"/>
+        <!-- extensions.depend.dir must be tested first to allow user overrides to work properly,  **
+         **  once bnd is added to the buildsystem directory.                                       -->
+        <selectbundle basename="${bndtool.prefix}" directory="${extensions.depend.dir}" separator="${bndtool.separator}"
+                     criterion="${bndtool.criteria}" property="bndtool.lib" includepath="true"
+        />
+        <selectbundle basename="${bndtool.prefix}" directory="${oracle.2.buildsys.dir}" separator="${bndtool.separator}"
+                     criterion="${bndtool.criteria}" property="bndtool.lib" includepath="true"
+        />
+
+        <echo message="bndtool.lib                     = '${bndtool.lib}'"/>
         <condition property="bld">
             <or>
-                <isset property="bnd.lib"/>
+                <isset property="bndtool.lib"/>
                 <isset property="nobnd"/>
             </or>
         </condition>
@@ -173,7 +183,7 @@
         <!-- Check bnd settings -->
         <condition property="bnd.bld">
             <and>
-                <isset property="bnd.lib"/>
+                <isset property="bndtool.lib"/>
                 <not>  <isset property="nobnd"/> </not>
             </and>
         </condition>
@@ -196,12 +206,12 @@
     </target>
 
     <target name="fail-on-no-bnd" unless="bld">
-        <echo message="BND tool (${bndtool.jar}) not found in either:"/>
+        <echo message="BND tool (${bndtool.prefix}${bndtool.separator}[version].jar) not found in either:"/>
         <echo message="    the extensions.depend.dir: '${extensions.depend.dir}'"/>
         <echo message="    or the buildsystem dir:    '${oracle.2.buildsys.dir}'"/>
         <echo message=""/>
-        <echo message="if you have a different version, you can define a different"/>
-        <echo message="jarname by adding 'bndtool.jar=bnd-{version}.jar to your'"/>
+        <echo message="if you have renamed it, you can define a different"/>
+        <echo message="jarname by adding 'bndtool.lib=[path]/[jarname] to your'"/>
         <echo message="${user.home}/build.properties file."/>
         <echo message=""/>
         <echo message="You can download BND from http://www.aqute.biz/Code/Download"/>
@@ -235,7 +245,7 @@
     <target name="package" if="package.ok" depends="init-package, bnd-package" description="jar OSGI bundle">
         <delete file="${oracle.2.foundation.plugins.dir}/${ant.project.name}.jar*"        quiet="true" failonerror="false"/>
         <delete file="${oracle.2.foundation.plugins.dir}/${ant.project.name}.source.jar*" quiet="true" failonerror="false"/>
-        <jar jarfile="${oracle.2.foundation.plugins.dir}/${ant.project.name}.jar" manifest="${alt.manifest.dir}/MANIFEST.MF">
+        <jar jarfile="${oracle.2.foundation.plugins.dir}/${ant.project.name}.jar" manifest="${nobndtool.manifest.dir}/MANIFEST.MF">
             <fileset dir="${oracle.2.base.dir}">
                 <include name="about.html"/>
                 <include name="readme.html"/>
@@ -272,7 +282,7 @@
     <target name="repackage" if="nobnd" depends="init-package, bnd-repackage" description="take existing source and classes from checked in bundles, and repackage with new manifest">
         <delete file="${oracle.2.common.plugins.dir}/${ant.project.name}_${version.string}.jar*"        quiet="true" failonerror="false"/>
         <delete file="${oracle.2.common.plugins.dir}/${ant.project.name}.source_${version.string}.jar*" quiet="true" failonerror="false"/>
-        <jar jarfile="${oracle.2.common.plugins.dir}/${ant.project.name}_${version.string}.jar" manifest="${alt.manifest.dir}/MANIFEST.MF" duplicate="preserve">
+        <jar jarfile="${oracle.2.common.plugins.dir}/${ant.project.name}_${version.string}.jar" manifest="${nobndtool.manifest.dir}/MANIFEST.MF" duplicate="preserve">
             <fileset dir="${oracle.2.base.dir}">
                 <include name="about.html"/>
                 <include name="readme.html"/>
@@ -309,7 +319,7 @@
     <target name="bnd-package" if="bnd-package.ok" depends="init-package">
         <delete file="${oracle.2.foundation.plugins.dir}/${ant.project.name}.jar*"        quiet="true" failonerror="false"/>
         <delete file="${oracle.2.foundation.plugins.dir}/${ant.project.name}.source.jar*" quiet="true" failonerror="false"/>
-        <taskdef resource="aQute/bnd/ant/taskdef.properties" classpath="${bnd.lib}"/>
+        <taskdef resource="aQute/bnd/ant/taskdef.properties" classpath="${bndtool.lib}"/>
         <bnd
             classpath="${classes.dir}"
             eclipse="false"
@@ -345,7 +355,7 @@
     <target name="bnd-repackage" if="bnd.bld" depends="init-package" description="take existing source and classes from checked in bundles, and repackage with new manifest">
         <delete file="${oracle.2.common.plugins.dir}/${ant.project.name}_${version.string}.jar*"        quiet="true" failonerror="false"/>
         <delete file="${oracle.2.common.plugins.dir}/${ant.project.name}.source_${version.string}.jar*" quiet="true" failonerror="false"/>
-        <taskdef resource="aQute/bnd/ant/taskdef.properties" classpath="${bnd.lib}"/>
+        <taskdef resource="aQute/bnd/ant/taskdef.properties" classpath="${bndtool.lib}"/>
         <bnd
             classpath="${oracle.2.foundation.plugins.dir}/${ant.project.name}.jar"
             eclipse="false"

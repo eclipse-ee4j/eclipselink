@@ -46,7 +46,7 @@
         </path>
     </pathconvert>
     <condition property="dbws.2.base.dir" value="../.." else="..">
-        <contains string="${dbws.build.location}" substring="dbws"/>
+        <contains string="${dbws.build.location}" substring="dbws/${ant.project.name}"/>
     </condition>
     <property name="dbws.2.common.plugins.dir" value="${dbws.2.base.dir}/plugins"/>
     <property name="dbws.2.buildsys.dir" value="${dbws.2.base.dir}/buildsystem"/>
@@ -63,9 +63,11 @@
     <property file="${dbws.build.location}/build.properties"/>
 
     <!-- Defaults, set var in ${user.home}/build.properties if different version required -->
-    <property name="bndtool.jar" value="bnd-0.0.366.jar"/>
+    <property name="bndtool.prefix" value="bnd"/>
+    <property name="bndtool.separator" value="-"/>
+    <property name="bndtool.criteria" value="[0.0.350,0.1.0)"/>
 
-    <!-- Primary Targets -->
+    <!-- Primary Targets: "jar" separate for dev use -->
     <target name="build" depends="clean, compile, jar" description="build ${ant.project.name} component"/>
     <target name="jar"   depends="bnd-package, package" description="package ${ant.project.name} component"/>
 
@@ -80,6 +82,12 @@
     <!-- initialize varables and paths needed for compile -->
     <!-- the number of properties needed now is too great for lazy loading without a target -->
     <target name="init">
+        <property name="custom.tasks.lib" value="${dbws.2.buildsys.dir}/ant_customizations.jar"/>
+        <property name="custom.echo.task.class" value="org.eclipse.persistence.buildtools.ant.taskdefs.Say"/>
+        <property name="custom.selectbundle.task.class" value="org.eclipse.persistence.buildtools.ant.taskdefs.SelectBundle"/>
+        <taskdef name="say"          classname="${custom.echo.task.class}"         classpath="${custom.tasks.lib}"/>
+        <taskdef name="selectbundle" classname="${custom.selectbundle.task.class}" classpath="${custom.tasks.lib}"/>
+
         <!-- This HAS to be defined after allowing user redefinitions (which will cause the condition not to set anything) -->
         <!-- This tests to make sure the extensions dir exists, if not sets to a existant dummy location -->
         <condition property="extensions.depend.dir" value="${dbws.2.base.dir}/../extension.lib.external"
@@ -119,35 +127,39 @@
         </path>
 
         <!-- Check for BND library -->
-        <property name="alt.manifest.dir"      value="${dbws.build.location}/META-INF"/>
-        <condition property="bnd.lib" value="${extensions.depend.dir}/${bndtool.jar}">
-            <available file="${extensions.depend.dir}/${bndtool.jar}"/>
-        </condition>
-        <condition property="bnd.lib" value="${dbws.2.buildsys.dir}/${bndtool.jar}">
-            <available file="${dbws.2.buildsys.dir}/${bndtool.jar}"/>
-        </condition>
-        <echo message="bnd.lib                     = '${bnd.lib}'"/>
+        <property name="nobndtool.manifest.dir"      value="${dbws.build.location}/META-INF"/>
+        <!-- extensions.depend.dir must be tested first to allow user overrides to work properly,  **
+         **  once bnd is added to the buildsystem directory.                                       -->
+        <selectbundle basename="${bndtool.prefix}" directory="${extensions.depend.dir}" separator="${bndtool.separator}"
+                     criterion="${bndtool.criteria}" property="bndtool.lib" includepath="true"
+        />
+        <selectbundle basename="${bndtool.prefix}" directory="${dbws.2.buildsys.dir}" separator="${bndtool.separator}"
+                     criterion="${bndtool.criteria}" property="bndtool.lib" includepath="true"
+        />
+        <say message="bndtool.lib                     = '${bndtool.lib}'" if="bndtool.lib"/>
+        <say message="Bnd bundle not found in '${extensions.depend.dir}' or '${dbws.2.buildsys.dir}'!" unless="bndtool.lib"/>
+
         <condition property="bld">
             <or>
-                <isset property="bnd.lib"/>
+                <isset property="bndtool.lib"/>
                 <isset property="nobnd"/>
             </or>
         </condition>
         <condition property="bnd.bld">
             <and>
-                <isset property="bnd.lib"/>
+                <isset property="bndtool.lib"/>
                 <not>  <isset property="nobnd"/> </not>
             </and>
         </condition>
     </target>
 
     <target name="fail-on-no-bnd" unless="bld">
-        <echo message="BND tool (${bndtool.jar}) not found in either:"/>
+        <echo message="BND tool (${bndtool.prefix}${bndtool.separator}[version].jar) not found in either:"/>
         <echo message="    the extensions.depend.dir: '${extensions.depend.dir}'"/>
         <echo message="    or the buildsystem dir:    '${dbws.2.buildsys.dir}'"/>
         <echo message=""/>
-        <echo message="if you have a different version, you can define a different"/>
-        <echo message="jarname by adding 'bndtool.jar=bnd-{version}.jar to your'"/>
+        <echo message="if you have renamed it, you can define a different"/>
+        <echo message="jarname by adding 'bndtool.lib=[path]/[jarname] to your'"/>
         <echo message="${user.home}/build.properties file."/>
         <echo message=""/>
         <echo message="You can download BND from http://www.aqute.biz/Code/Download"/>
@@ -179,7 +191,7 @@
 
     <!-- package -->
     <target name="package" if="nobnd" depends="init" description="jar OSGI bundle">
-        <jar jarfile="${dbws.2.common.plugins.dir}/${ant.project.name}_${version.string}.jar" manifest="${alt.manifest.dir}/MANIFEST.MF">
+        <jar jarfile="${dbws.2.common.plugins.dir}/${ant.project.name}_${version.string}.jar" manifest="${nobndtool.manifest.dir}/MANIFEST.MF">
             <fileset dir="${dbws.2.base.dir}">
                 <include name="about.html"/>
                 <include name="readme.html"/>
@@ -221,7 +233,7 @@
     </target>
 
     <target name="bnd-package" if="bnd.bld" depends="init">
-        <taskdef resource="aQute/bnd/ant/taskdef.properties" classpath="${bnd.lib}"/>
+        <taskdef resource="aQute/bnd/ant/taskdef.properties" classpath="${bndtool.lib}"/>
         <bnd
             classpath="${classes.dir}"
             eclipse="false"

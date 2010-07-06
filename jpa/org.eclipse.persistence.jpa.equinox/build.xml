@@ -82,7 +82,7 @@
     <!-- the number of properties needed now is too great for lazy loading without a target -->
     <!-- Tests for dependency jars (equinox), etc. Will bypass build if not found -->
     <target name="pre-init">
-        <property name="custom.tasks.lib" value="${dbws.2.buildsys.dir}/ant_customizations.jar"/>
+        <property name="custom.tasks.lib" value="${equinox.2.buildsys.dir}/ant_customizations.jar"/>
         <property name="custom.echo.task.class" value="org.eclipse.persistence.buildtools.ant.taskdefs.Say"/>
         <property name="custom.selectbundle.task.class" value="org.eclipse.persistence.buildtools.ant.taskdefs.SelectBundle"/>
         <taskdef name="say"          classname="${custom.echo.task.class}"         classpath="${custom.tasks.lib}"/>
