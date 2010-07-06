@@ -466,6 +466,7 @@ public class RelationshipModelJUnitTestSuite extends JUnitTestCase {
                 beginTransaction(em);
             }
 
+            entityManagerImpl = (EntityManagerImpl) em.getDelegate();
             // bug:4300879, check ReadObjectQuery fails
             EJBQueryImpl query4 = (EJBQueryImpl) entityManagerImpl.createQuery(ejbql1);
             query4.setParameter("id", new Integer(-10));
@@ -547,6 +548,7 @@ public class RelationshipModelJUnitTestSuite extends JUnitTestCase {
                 beginTransaction(em);
             }
 
+            entityManagerImpl = (EntityManagerImpl) em.getDelegate();
             // bug:4300879, check ReadObjectQuery fails
             EJBQueryImpl query4 = (EJBQueryImpl) entityManagerImpl.createQuery(ejbql1);
             query4.setParameter("id", new Integer(-10));

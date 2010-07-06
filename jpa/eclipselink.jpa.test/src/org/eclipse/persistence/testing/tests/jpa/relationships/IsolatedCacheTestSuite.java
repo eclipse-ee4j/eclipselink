@@ -50,25 +50,30 @@ public class IsolatedCacheTestSuite extends JUnitTestCase {
         
         // Step 1 - get an isolated item in the cache.
         beginTransaction(em);
+        try {
+            IsolatedItem item = new IsolatedItem();
+            item.setDescription("A phoney item");
+            item.setName("Phoney name");
+            em.persist(item);
         
-        IsolatedItem item = new IsolatedItem();
-        item.setDescription("A phoney item");
-        item.setName("Phoney name");
-        em.persist(item);
-    
-        commitTransaction(em);
-        
-        // Step 2 - clear the entity manager and see if the item still exists
-        // in the uow cache.
-        beginTransaction(em);
-        
-        em.clear();
-        RepeatableWriteUnitOfWork uow = ((EntityManagerImpl) em.getDelegate()).getActivePersistenceContext(em.getTransaction());
-        
-        assertFalse("The isolated item was not cleared from the shared cache", uow.getIdentityMapAccessor().containsObjectInIdentityMap(item));
-        assertFalse("The isolated item was not cleared from the uow cache", uow.getParent().getIdentityMapAccessor().containsObjectInIdentityMap(item));
-        
-        commitTransaction(em);
-        closeEntityManager(em);
+            commitTransaction(em);
+            
+            // Step 2 - clear the entity manager and see if the item still exists
+            // in the uow cache.
+            beginTransaction(em);
+            
+            em.clear();
+            RepeatableWriteUnitOfWork uow = ((EntityManagerImpl) em.getDelegate()).getActivePersistenceContext(em.getTransaction());
+            
+            assertFalse("The isolated item was not cleared from the shared cache", uow.getIdentityMapAccessor().containsObjectInIdentityMap(item));
+            assertFalse("The isolated item was not cleared from the uow cache", uow.getParent().getIdentityMapAccessor().containsObjectInIdentityMap(item));
+            
+            commitTransaction(em);
+        } finally {
+            if (isTransactionActive(em)) {
+                rollbackTransaction(em);
+            }
+            closeEntityManager(em);
+        }
     }
 }

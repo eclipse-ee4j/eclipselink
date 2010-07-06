@@ -216,6 +216,7 @@ public class RelationshipModelJUnitTestSuite extends JUnitTestCase {
                 beginTransaction(em);
             }
 
+            entityManagerImpl = (EntityManagerImpl) em.getDelegate();
             // bug:4300879, check ReadObjectQuery fails
             EJBQueryImpl query4 = (EJBQueryImpl) entityManagerImpl.createQuery(ejbql1);
             query4.setParameter("id", new Integer(-10));
@@ -297,6 +298,7 @@ public class RelationshipModelJUnitTestSuite extends JUnitTestCase {
                 beginTransaction(em);
             }
 
+            entityManagerImpl = (EntityManagerImpl) em.getDelegate();
             // bug:4300879, check ReadObjectQuery fails
             EJBQueryImpl query4 = (EJBQueryImpl) entityManagerImpl.createQuery(ejbql1);
             query4.setParameter("id", new Integer(-10));
@@ -364,7 +366,7 @@ public class RelationshipModelJUnitTestSuite extends JUnitTestCase {
             try {
                 // should be no Items to find, which should cause an
                 // NoResultException
-                Query query1 = em.createNamedQuery("findAllItemsByName");
+                Query query1 = em.createNamedQuery("findAllFieldAccessItemsByName");
                 Item item = (Item) query1.setParameter(1, searchString).getSingleResult();
                 item.toString();
             } catch (NoResultException exceptionExpected2) {
