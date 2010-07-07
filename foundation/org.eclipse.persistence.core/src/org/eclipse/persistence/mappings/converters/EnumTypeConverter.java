@@ -50,19 +50,14 @@ public class EnumTypeConverter extends ObjectTypeConverter {
         initializeConversions(m_enumClass);
     }
 
-    protected void initializeConversions(Class enumClass) {
-	    EnumSet theEnums = EnumSet.allOf(enumClass);
-	    Iterator<Enum> i = theEnums.iterator();
-	    
-	    while (i.hasNext()) {
-	        Enum theEnum = i.next();
-	        
-	        if (m_useOrdinalValues) {
-	            addConversionValue(theEnum.ordinal(), theEnum.name());
-	        } else {
-	            addConversionValue(theEnum.name(), theEnum.name());
-	        }
-	    }
+    /**
+     * PUBLIC:
+     * Creating an enum converter this way will create the conversion values
+     * for you using ordinal or name values.
+     */
+    public EnumTypeConverter(DatabaseMapping mapping, String enumClassName, boolean useOrdinalValues) {
+        this(mapping, enumClassName);
+        m_useOrdinalValues = useOrdinalValues;
     }
 
     /**
@@ -75,6 +70,23 @@ public class EnumTypeConverter extends ObjectTypeConverter {
         m_enumClassName = enumClassName;
     }
 
+    protected void initializeConversions(Class enumClass) {
+        // Initialize conversion if not already set by Converter
+        if (getFieldToAttributeValues().isEmpty()) {
+            EnumSet theEnums = EnumSet.allOf(enumClass);
+            Iterator<Enum> i = theEnums.iterator();
+            
+            while (i.hasNext()) {
+                Enum theEnum = i.next();
+                
+                if (m_useOrdinalValues) {
+                    addConversionValue(theEnum.ordinal(), theEnum.name());
+                } else {
+                    addConversionValue(theEnum.name(), theEnum.name());
+                }
+            }
+        }
+    }
 
     public Class getEnumClass() {
         return m_enumClass;
