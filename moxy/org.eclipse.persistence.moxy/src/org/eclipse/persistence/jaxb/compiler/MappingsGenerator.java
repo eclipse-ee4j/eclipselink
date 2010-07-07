@@ -884,8 +884,6 @@ public class MappingsGenerator {
 
         if (property.getDefaultValue() != null) {
             mapping.setNullValue(property.getDefaultValue());
-        } else if (property.getType().getRawName().equals("java.lang.String")) {
-            mapping.setNullValue("");
         }
 
         // handle null policy set via xml metadata
