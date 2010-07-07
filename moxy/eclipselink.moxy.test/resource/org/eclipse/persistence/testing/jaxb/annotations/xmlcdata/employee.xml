@@ -1,0 +1,4 @@
+<employee>
+  <name>Jane Doe</name>
+  <xmlData><![CDATA[<root><child>A string wrapped in cdata</child></root>]]></xmlData>
+</employee>

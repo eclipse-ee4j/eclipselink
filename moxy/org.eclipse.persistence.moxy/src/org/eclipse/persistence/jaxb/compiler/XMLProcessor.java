@@ -1105,6 +1105,9 @@ public class XMLProcessor {
         oldProperty.setChoice(false);
         oldProperty.setIsReference(false);
         oldProperty.setXmlPath(null);
+        oldProperty.setReadOnly(false);
+        oldProperty.setWriteOnly(false);
+        oldProperty.setCdata(false);
         unsetXmlElementRefs(oldProperty, tInfo);
         unsetXmlElements(oldProperty);
         unsetXmlAnyAttribute(oldProperty, tInfo);

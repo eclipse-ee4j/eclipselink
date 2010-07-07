@@ -78,8 +78,14 @@ public class JAXBTestSuite extends TestCase {
         suite.addTestSuite(XmlIdRefsObjectTestCases.class);
         suite.addTestSuite(XmlInlineBinaryDataTestCases.class);
         suite.addTestSuite(org.eclipse.persistence.testing.jaxb.annotations.xmlpath.XmlPathTestCases.class);
-        //suite.addTestSuite(org.eclipse.persistence.testing.jaxb.annotations.xmlpath.XmlPathOverrideTestCases.class);
+        suite.addTestSuite(org.eclipse.persistence.testing.jaxb.annotations.xmlpath.XmlPathOverrideTestCases.class);
         suite.addTestSuite(org.eclipse.persistence.testing.jaxb.annotations.xmlpath.XmlPathUnmappedTestCases.class);
+        suite.addTestSuite(org.eclipse.persistence.testing.jaxb.annotations.cdata.XmlCDATATestCases.class);
+        suite.addTestSuite(org.eclipse.persistence.testing.jaxb.annotations.cdata.XmlCDATAOverrideTestCases.class);
+        suite.addTestSuite(org.eclipse.persistence.testing.jaxb.annotations.xmlwriteonly.XmlWriteOnlyTestCases.class);
+        suite.addTestSuite(org.eclipse.persistence.testing.jaxb.annotations.xmlwriteonly.XmlWriteOnlyOverrideTestCases.class);
+        suite.addTestSuite(org.eclipse.persistence.testing.jaxb.annotations.xmlreadonly.XmlReadOnlyOverrideTestCases.class);
+        suite.addTestSuite(org.eclipse.persistence.testing.jaxb.annotations.xmlreadonly.XmlReadOnlyOverrideTestCases.class);
         suite.addTestSuite(org.eclipse.persistence.testing.jaxb.xmlenum.XmlEnumElementTestCases.class);
         suite.addTestSuite(org.eclipse.persistence.testing.jaxb.xmlenum.XmlEnumAttributeTestCases.class);
         suite.addTestSuite(org.eclipse.persistence.testing.jaxb.xmlenum.XmlEnumElementCollectionTestCases.class);

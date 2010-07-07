@@ -97,10 +97,13 @@ import org.eclipse.persistence.jaxb.xmlmodel.XmlAccessType;
 
 import org.eclipse.persistence.oxm.NamespaceResolver;
 import org.eclipse.persistence.oxm.XMLConstants;
+import org.eclipse.persistence.oxm.annotations.XmlCDATA;
 import org.eclipse.persistence.oxm.annotations.XmlContainerProperty;
 import org.eclipse.persistence.oxm.annotations.XmlCustomizer;
 import org.eclipse.persistence.oxm.annotations.XmlInverseReference;
 import org.eclipse.persistence.oxm.annotations.XmlPath;
+import org.eclipse.persistence.oxm.annotations.XmlReadOnly;
+import org.eclipse.persistence.oxm.annotations.XmlWriteOnly;
 
 /**
  * INTERNAL:
@@ -1730,6 +1733,16 @@ public class AnnotationsProcessor {
             property.setIsXmlValue(true);
             info.setXmlValueProperty(property);
         }
+        
+        if (helper.isAnnotationPresent(property.getElement(), XmlReadOnly.class)) {
+            property.setReadOnly(true);
+        }
+        if (helper.isAnnotationPresent(property.getElement(), XmlWriteOnly.class)) {
+            property.setWriteOnly(true);
+        }
+        if (helper.isAnnotationPresent(property.getElement(), XmlCDATA.class)) {
+            property.setCdata(true);
+        }
     }
 
     /**
@@ -2604,7 +2617,10 @@ public class AnnotationsProcessor {
                 || helper.isAnnotationPresent(elem, XmlMimeType.class)
                 || helper.isAnnotationPresent(elem, XmlIDREF.class)
                 || helper.isAnnotationPresent(elem, XmlPath.class)
-                || helper.isAnnotationPresent(elem, XmlInverseReference.class)) {
+                || helper.isAnnotationPresent(elem, XmlInverseReference.class)
+                || helper.isAnnotationPresent(elem, XmlReadOnly.class)
+                || helper.isAnnotationPresent(elem, XmlWriteOnly.class)
+                || helper.isAnnotationPresent(elem, XmlCDATA.class)) {
             return true;
         
         }
