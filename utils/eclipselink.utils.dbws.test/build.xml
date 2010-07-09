@@ -50,7 +50,7 @@
         </path>
     </pathconvert>
     <condition property="dbws_util_test.2.common.plugins.dir" value="../../plugins" else="../plugins">
-        <contains string="${dbws_util_test.build.location}" substring="util/${ant.project.name}"/>
+        <contains string="${dbws_util_test.build.location}" substring="utils/${ant.project.name}"/>
     </condition>
     <property name="dbws_util_test.2.dbws_util.dir" value="../eclipselink.utils.dbws"/>
     <property name="custom.tasks.lib" value="${dbws_util_test.build.location}/buildsystem/ant_customizations.jar"/>
