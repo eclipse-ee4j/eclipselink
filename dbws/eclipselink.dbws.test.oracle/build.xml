@@ -39,11 +39,31 @@
         - package: packages tests into eclipselink-dbws-oracle-depend-test.jar
         - test: Runs DBWS Oracle-specific tests
 -->
-<project
-  name="eclipselink.dbws.test.oracle"
-  default="build"
-  basedir="."
-  >
+<project name="eclipselink.dbws.test.oracle" default="build" basedir=".">
+    <!-- Test to make certain that build is run from component dir -->
+    <available file="../${ant.project.name}" type="dir" property="dbws_test_oracle.is.local"/>
+    <fail unless="dbws_test_oracle.is.local" message="Not running from '${ant.project.name}' directory"/>
+
+    <condition property="is.java.version.16">
+        <equals arg1="${ant.java.version}" arg2="1.6"/>
+    </condition>
+    <!-- Sets the warning message appropriately -->
+    <condition property="jdk_message" value="Warning: Minimum of JDK6 is required for this component to build." else="java.version='${java.version}'">
+        <contains string="${java.version}" substring="1.5"/>
+    </condition>
+    <echo message="${jdk_message}"/>
+
+    <!-- Setup relative pathing for build -->
+    <dirname  property="dbws_test_oracle.build.location_temp" file="${ant.file.eclipselink.dbws.test.oracle}"/>
+    <pathconvert targetos="unix" property="dbws_test_oracle.build.location">
+        <path>
+            <pathelement location="${dbws_test_oracle.build.location_temp}"/>
+        </path>
+    </pathconvert>
+    <property name="custom.tasks.lib" value="${dbws_test_oracle.build.location}/buildsystem/ant_customizations.jar"/>
+    <property name="custom.tolower.task.class" value="org.eclipse.persistence.buildtools.ant.taskdefs.ToLower"/>
+    <taskdef  name="toLower" classname="${custom.tolower.task.class}" classpath="${custom.tasks.lib}"/>
+
   <!-- OS environment variables have 'env' as a prefix -->
   <property environment="env"/>
   <presetdef
@@ -64,25 +84,6 @@
       failonerror="false"
     />
   </presetdef>
-  <scriptdef
-    name="toLower"
-    language="javascript"
-    manager="javax"
-    >
-    <attribute name="input"/>
-    <attribute name="property"/>
-    <![CDATA[
-      // getting the value
-      input = attributes.get("input");
-      property = attributes.get("property");
-      if (input == null || property == null) {
-         self.fail("both 'input' and 'property' attributes must be set.");
-      }
-      lowercaseInput = input.toLowerCase();
-      // put result into property - NB overwrites previous value! Not safe for <parallel> tasks
-      project.setProperty(attributes.get("property"), lowercaseInput);
-    ]]>
-  </scriptdef>
   <macrodef
     name="verify_build_dir"
     >

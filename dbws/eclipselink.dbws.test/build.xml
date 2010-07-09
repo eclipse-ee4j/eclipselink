@@ -46,10 +46,18 @@
     <echo message="${jdk_message}"/>
 
     <!-- Setup relative pathing for build -->
-    <dirname  property="dbws_test.build.location" file="${ant.file.org.eclipse.persistence.core}"/>
+    <dirname  property="dbws_test.build.location_temp" file="${ant.file.eclipselink.dbws.test}"/>
+    <pathconvert targetos="unix" property="dbws_test.build.location">
+        <path>
+            <pathelement location="${dbws_test.build.location_temp}"/>
+        </path>
+    </pathconvert>
     <condition property="dbws_test.2.common.plugins.dir" value="../../plugins" else="../plugins">
-        <contains string="${dbws_test.build.location}" substring="dbws"/>
+        <contains string="${dbws_test.build.location}" substring="dbws/${ant.project.name}"/>
     </condition>
+    <property name="custom.tasks.lib" value="${dbws_test.build.location}/buildsystem/ant_customizations.jar"/>
+    <property name="custom.tolower.task.class" value="org.eclipse.persistence.buildtools.ant.taskdefs.ToLower"/>
+    <taskdef  name="toLower" classname="${custom.tolower.task.class}" classpath="${custom.tasks.lib}"/>
 
     <!-- OS environment variables have 'env' as a prefix -->
     <property environment="env"/>
@@ -143,26 +151,6 @@
       failonerror="false"
     />
   </presetdef>
-  <scriptdef
-    name="toLower"
-    language="javascript"
-    manager="javax"
-    >
-    <attribute name="input"/>
-    <attribute name="property"/>
-    <![CDATA[
-      // getting the value
-      input = attributes.get("input");
-      property = attributes.get("property");
-      if (input == null || property == null) {
-         self.fail("both 'input' and 'property' attributes must be set.");
-      }
-      lowercaseInput = input.toLowerCase();
-      // put result into property - NB overwrites previous value! Not safe for <parallel> tasks
-      project.setProperty(attributes.get("property"), lowercaseInput);
-    ]]>
-  </scriptdef>
-
   <macrodef
     name="SetupDatabase"
     >

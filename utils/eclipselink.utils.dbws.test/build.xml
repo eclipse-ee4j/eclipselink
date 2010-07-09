@@ -33,9 +33,8 @@
 *     egwin - update to adopt calling standards
 #******************************************************************************/-->
 <project name="eclipselink.utils.dbws.test" default="build" basedir=".">
+    <!-- Test to make certain that build is run from component dir -->
     <available file="../${ant.project.name}" type="dir" property="dbws_util_test.is.local"/>
-    <!-- Test to make sure that the calling script doesn't inherit the variable -->
-    <!-- (should be set locally, and be destroyed upon return) -->
     <fail unless="dbws_util_test.is.local" message="Not running from '${ant.project.name}' directory"/>
     <condition property="is.java.version.16">
         <equals arg1="${ant.java.version}" arg2="1.6"/>
@@ -44,11 +43,19 @@
         message="eclipselink.utils.dbws requires Java version 1.6 or higher. You are currently using Java version ${ant.java.version}."
     />
 
-    <dirname  property="dbws_util_test.build.location" file="${ant.file.org.eclipse.persistence.core}"/>
+    <dirname  property="dbws_util_test.build.location_temp" file="${ant.file.eclipselink.utils.dbws.test}"/>
+    <pathconvert targetos="unix" property="dbws_util_test.build.location">
+        <path>
+            <pathelement location="${dbws_util_test.build.location_temp}"/>
+        </path>
+    </pathconvert>
     <condition property="dbws_util_test.2.common.plugins.dir" value="../../plugins" else="../plugins">
-        <contains string="${dbws_util_test.build.location}" substring="util"/>
+        <contains string="${dbws_util_test.build.location}" substring="util/${ant.project.name}"/>
     </condition>
     <property name="dbws_util_test.2.dbws_util.dir" value="../eclipselink.utils.dbws"/>
+    <property name="custom.tasks.lib" value="${dbws_util_test.build.location}/buildsystem/ant_customizations.jar"/>
+    <property name="custom.tolower.task.class" value="org.eclipse.persistence.buildtools.ant.taskdefs.ToLower"/>
+    <taskdef  name="toLower" classname="${custom.tolower.task.class}" classpath="${custom.tasks.lib}"/>
 
     <!-- OS environment variables have 'env' as a prefix -->
     <property environment="env"/>
@@ -151,26 +158,6 @@
       failonerror="false"
     />
   </presetdef>
-  <scriptdef
-    name="toLower"
-    language="javascript"
-    manager="javax"
-    >
-    <attribute name="input"/>
-    <attribute name="property"/>
-    <![CDATA[
-      // getting the value
-      input = attributes.get("input");
-      property = attributes.get("property");
-      if (input == null || property == null) {
-         self.fail("both 'input' and 'property' attributes must be set.");
-      }
-      lowercaseInput = input.toLowerCase();
-      // put result into property - NB overwrites previous value! Not safe for <parallel> tasks
-      project.setProperty(attributes.get("property"), lowercaseInput);
-    ]]>
-  </scriptdef>
-
   <macrodef
     name="SetupDatabase"
     >
