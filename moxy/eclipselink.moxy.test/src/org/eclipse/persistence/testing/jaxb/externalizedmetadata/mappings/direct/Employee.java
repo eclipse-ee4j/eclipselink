@@ -14,7 +14,13 @@ package org.eclipse.persistence.testing.jaxb.externalizedmetadata.mappings.direc
 
 import java.util.List;
 
+import javax.xml.bind.annotation.XmlAttribute;
+
+import org.eclipse.persistence.oxm.annotations.XmlPath;
+
 public class Employee {
+    @XmlAttribute
+    @XmlPath("@id")
     public int empId;
     public int mgrId;
     public int projectId;

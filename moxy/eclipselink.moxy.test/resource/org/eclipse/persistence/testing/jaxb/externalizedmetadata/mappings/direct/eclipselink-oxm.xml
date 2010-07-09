@@ -7,7 +7,7 @@
 		<java-type name="org.eclipse.persistence.testing.jaxb.externalizedmetadata.mappings.direct.Employee" xml-accessor-type="FIELD">
             <xml-root-element name="employee" />
             <java-attributes>
-                <xml-attribute java-attribute="empId" xml-path="@id" />
+                <!-- xml-attribute java-attribute="empId" xml-path="@id" /-->
                 <xml-attribute java-attribute="salary" read-only="true" />
                 <xml-attribute java-attribute="mgrId" xml-path="projects/prj:project/@prj:managerId" />
                 <xml-element java-attribute="firstName" xml-path="info/personal-info/first-name/text()" />
