@@ -27,6 +27,8 @@ import org.eclipse.persistence.internal.identitymaps.CacheKey;
 import org.eclipse.persistence.internal.identitymaps.HardCacheWeakIdentityMap;
 import org.eclipse.persistence.internal.identitymaps.IdentityMap;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
+import org.eclipse.persistence.logging.AbstractSessionLog;
+import org.eclipse.persistence.logging.SessionLog;
 import org.eclipse.persistence.sessions.DatabaseLogin;
 import org.eclipse.persistence.sessions.Session;
 import org.eclipse.persistence.sessions.server.ConnectionPool;
@@ -48,6 +50,18 @@ public class RuntimeServices {
     /** stores access to the session object that we are controlling */
     protected Session session;
 
+    /** This is the profile weight at server startup time. This is read-only */
+    private int deployedSessionProfileWeight;
+
+    /** This contains the session log from server startup time. This is read-only. */
+    private SessionLog deployedSessionLog;
+
+    public String objectName;
+    
+    protected static final String EclipseLink_Product_Name = "EclipseLink";
+    /** Short name for the server platform - Must override in subclass */
+    protected static String PLATFORM_NAME = "Server";
+        
     /**
      *  Default Constructor
      */
@@ -406,4 +420,257 @@ public class RuntimeServices {
             getSession().getProfiler().setProfileWeight(weight);
         }
     }
+    
+    /**
+     *    This method is used to initialize the identity maps specified by className.
+     * @param className the fully qualified classnames identifying the identity map to initialize
+     */
+     public synchronized void initializeIdentityMap(String className) throws ClassNotFoundException {
+         Class registeredClass;
+
+         //get identity map, and initialize
+         registeredClass = (Class)getSession().getDatasourcePlatform().getConversionManager()
+             .convertObject(className, ClassConstants.CLASS);
+         getSession().getIdentityMapAccessor().initializeIdentityMap(registeredClass);
+         ((AbstractSession)session).log(SessionLog.INFO, SessionLog.SERVER, "jmx_mbean_runtime_services_identity_map_initialized", className);
+     }
+
+     /**
+      *        This method will log the instance level locks in all Identity Maps in the session.
+      */
+      public void printIdentityMapLocks() {
+          getSession().getIdentityMapAccessorInstance().getIdentityMapManager().printLocks();
+      }
+
+      /**
+      *        This method will log the instance level locks in the Identity Map for the given class in the session.
+      */
+      public void printIdentityMapLocks(String registeredClassName) {
+          Class registeredClass = (Class)getSession().getDatasourcePlatform().getConversionManager()
+              .convertObject(registeredClassName, ClassConstants.CLASS);
+          getSession().getIdentityMapAccessorInstance().getIdentityMapManager().printLocks(registeredClass);
+      }
+
+      /**
+       *        This method assumes EclipseLink Profiling (as opposed to Java profiling).
+       *        This will log at the INFO level a summary of all elements in the profile.
+       */
+       public void printProfileSummary() {
+           if (!this.getUsesEclipseLinkProfiling().booleanValue()) {
+               return;
+           }
+           PerformanceProfiler performanceProfiler = (PerformanceProfiler)getSession().getProfiler();
+           getSession().getSessionLog().info(performanceProfiler.buildProfileSummary().toString());
+       }
+
+       /**
+        * INTERNAL:
+        * utility method to get rid of leading and trailing {}'s
+        */
+       private String trimProfileString(String originalProfileString) {
+           String trimmedString;
+
+           if (originalProfileString.length() > 1) {
+               trimmedString = originalProfileString.substring(0, originalProfileString.length());
+               if ((trimmedString.charAt(0) == '{') && (trimmedString.charAt(trimmedString.length() - 1) == '}')) {
+                   trimmedString = trimmedString.substring(1, trimmedString.length() - 1);
+               }
+               return trimmedString;
+           } else {
+               return originalProfileString;
+           }
+       }
+
+       /**
+       *        This method assumes EclipseLink Profiling (as opposed to Java profiling).
+       *        This will log at the INFO level a summary of all elements in the profile, categorized
+       *        by Class.
+       */
+       public void printProfileSummaryByClass() {
+           if (!this.getUsesEclipseLinkProfiling().booleanValue()) {
+               return;
+           }
+           PerformanceProfiler performanceProfiler = (PerformanceProfiler)getSession().getProfiler();
+           //trim the { and } from the beginning at end, because they cause problems for the logger
+           getSession().getSessionLog().info(trimProfileString(performanceProfiler.buildProfileSummaryByClass().toString()));
+       }
+
+       /**
+       *        This method assumes EclipseLink Profiling (as opposed to Java profiling).
+       *        This will log at the INFO level a summary of all elements in the profile, categorized
+       *        by Query.
+       */
+       public void printProfileSummaryByQuery() {
+           if (!this.getUsesEclipseLinkProfiling().booleanValue()) {
+               return;
+           }
+           PerformanceProfiler performanceProfiler = (PerformanceProfiler)getSession().getProfiler();
+           getSession().getSessionLog().info(trimProfileString(performanceProfiler.buildProfileSummaryByQuery().toString()));
+       }
+
+       /**
+        *        This method is used to get the type of profiling.
+        *   Possible values are: "EclipseLink" or "None".
+        */
+        public synchronized String getProfilingType() {
+            if (getUsesEclipseLinkProfiling().booleanValue()) {
+                return EclipseLink_Product_Name;
+            } else {
+                return "None";
+            }
+        }
+
+        /**
+        *        This method is used to select the type of profiling.
+        *   Valid values are: "EclipseLink" or "None". These values are not case sensitive.
+        *   null is considered  to be "None".
+        */
+        public synchronized void setProfilingType(String profileType) {
+            if ((profileType == null) || (profileType.compareToIgnoreCase("None") == 0)) {
+                this.setUseNoProfiling();
+            } else if (profileType.compareToIgnoreCase(EclipseLink_Product_Name) == 0) {
+                this.setUseEclipseLinkProfiling();
+            }
+        }
+
+        /**
+        *        This method is used to turn on EclipseLink Performance Profiling
+        */
+        public void setUseEclipseLinkProfiling() {
+            if (getUsesEclipseLinkProfiling().booleanValue()) {
+                return;
+            }
+            getSession().setProfiler(new PerformanceProfiler());
+        }
+
+
+        /**
+        *        This method is used to turn off all Performance Profiling, DMS or EclipseLink.
+        */
+        public void setUseNoProfiling() {
+            getSession().setProfiler(null);
+        }
+       
+       /**
+        *        This method answers true if EclipseLink Performance Profiling is on.
+        */
+        public Boolean getUsesEclipseLinkProfiling() {
+            return Boolean.valueOf(getSession().getProfiler() instanceof PerformanceProfiler);
+        }
+
+        /**
+         * PUBLIC: Answer the EclipseLink log level at deployment time. This is read-only.
+         */
+        public String getDeployedEclipseLinkLogLevel() {
+            return getNameForLogLevel(getDeployedSessionLog().getLevel());
+        }
+
+        /**
+         * PUBLIC: Answer the EclipseLink log level that is changeable.
+         * This does not affect the log level in the project (i.e. The next
+         * time the application is deployed, changes are forgotten)
+         */
+        public String getCurrentEclipseLinkLogLevel() {
+            return getNameForLogLevel(this.getSession().getSessionLog().getLevel());
+        }
+
+        /**
+         * PUBLIC: Set the EclipseLink log level to be used at runtime.
+         *
+         * This does not affect the log level in the project (i.e. The next
+         * time the application is deployed, changes are forgotten)
+         *
+         * @param String newLevel: new log level
+         */
+        public synchronized void setCurrentEclipseLinkLogLevel(String newLevel) {
+            this.getSession().setLogLevel(this.getLogLevelForName(newLevel));
+        }
+
+        /**
+         * INTERNAL: Answer the name for the log level given.
+         *
+         * @return String (one of OFF, SEVERE, WARNING, INFO, CONFIG, FINE, FINER, FINEST, ALL)
+         */
+        private String getNameForLogLevel(int logLevel) {
+            switch (logLevel) {
+            case SessionLog.ALL:
+                return SessionLog.ALL_LABEL;
+            case SessionLog.SEVERE:
+                return SessionLog.SEVERE_LABEL;
+            case SessionLog.WARNING:
+                return SessionLog.WARNING_LABEL;
+            case SessionLog.INFO:
+                return SessionLog.INFO_LABEL;
+            case SessionLog.CONFIG:
+                return SessionLog.CONFIG_LABEL;
+            case SessionLog.FINE:
+                return SessionLog.FINE_LABEL;
+            case SessionLog.FINER:
+                return SessionLog.FINER_LABEL;
+            case SessionLog.FINEST:
+                return SessionLog.FINEST_LABEL;
+            case SessionLog.OFF:
+                return SessionLog.OFF_LABEL;
+            }
+            return "N/A";
+        }
+
+        /**
+         * INTERNAL: Answer the log level for the given name.
+         *
+         * @return int for OFF, SEVERE, WARNING, INFO, CONFIG, FINE, FINER, FINEST, ALL
+         */
+        private int getLogLevelForName(String levelName) {
+            if (levelName.equals(SessionLog.ALL_LABEL)) {
+                return SessionLog.ALL;
+            }
+            if (levelName.equals(SessionLog.SEVERE_LABEL)) {
+                return SessionLog.SEVERE;
+            }
+            if (levelName.equals(SessionLog.WARNING_LABEL)) {
+                return SessionLog.WARNING;
+            }
+            if (levelName.equals(SessionLog.INFO_LABEL)) {
+                return SessionLog.INFO;
+            }
+            if (levelName.equals(SessionLog.CONFIG_LABEL)) {
+                return SessionLog.CONFIG;
+            }
+            if (levelName.equals(SessionLog.FINE_LABEL)) {
+                return SessionLog.FINE;
+            }
+            if (levelName.equals(SessionLog.FINER_LABEL)) {
+                return SessionLog.FINER;
+            }
+            if (levelName.equals(SessionLog.FINEST_LABEL)) {
+                return SessionLog.FINEST;
+            }
+            return SessionLog.OFF;
+        }        
+     /**
+      *  INTERNAL:
+      *  Define the deployment time data associated with logging and profiling
+      *
+      */
+     protected void updateDeploymentTimeData() {
+         this.deployedSessionLog = (SessionLog)((AbstractSessionLog)session.getSessionLog()).clone();
+         if (session.getProfiler() == null) {
+             this.deployedSessionProfileWeight = -1;//there is no profiler
+         } else {
+             this.deployedSessionProfileWeight = session.getProfiler().getProfileWeight();
+         }
+     }
+     
+     public int getDeployedSessionProfileWeight() {
+         return deployedSessionProfileWeight;
+     }
+
+     public SessionLog getDeployedSessionLog() {
+         return deployedSessionLog;
+     }
+
+     public String getObjectName() {
+         return objectName;
+     }
+     
 }

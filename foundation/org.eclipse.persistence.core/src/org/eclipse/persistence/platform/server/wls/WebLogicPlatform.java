@@ -9,6 +9,10 @@
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
+ *     06/30/2010-2.1.1 Michael O'Brien 
+ *       - 316513: Enable JMX MBean functionality for JBoss, Glassfish and WebSphere in addition to WebLogic
+ *       Move JMX MBean generic registration code up from specific platforms
+ *       see <link>http://wiki.eclipse.org/EclipseLink/DesignDocs/316513</link>        
  ******************************************************************************/
 package org.eclipse.persistence.platform.server.wls;
 
@@ -18,7 +22,7 @@ import java.sql.Connection;
 
 import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
 import org.eclipse.persistence.logging.SessionLog;
-import org.eclipse.persistence.platform.server.ServerPlatformBase;
+import org.eclipse.persistence.platform.server.JMXServerPlatformBase;
 import org.eclipse.persistence.sessions.DatabaseSession;
 import org.eclipse.persistence.transaction.wls.WebLogicTransactionController;
 
@@ -36,7 +40,7 @@ import org.eclipse.persistence.transaction.wls.WebLogicTransactionController;
  * information
  * </ul>
  */
-public class WebLogicPlatform extends ServerPlatformBase {
+public class WebLogicPlatform extends JMXServerPlatformBase {
 
     /**
      * Cached WLS connection class used to reflectively check connections and
@@ -62,6 +66,7 @@ public class WebLogicPlatform extends ServerPlatformBase {
      */
     public WebLogicPlatform(DatabaseSession newDatabaseSession) {
         super(newDatabaseSession);
+        this.disableRuntimeServices();
     }
 
     /**
@@ -77,24 +82,6 @@ public class WebLogicPlatform extends ServerPlatformBase {
         }
     }
 
-    /**
-     * INTERNAL: 
-     * getApplicationName(): Answer the name of the module (EAR name) that this session is associated with.
-     * Answer "unknown" if there is no application name available.
-     * Default behavior is to return "unknown" - we override this behavior here for WebLogic.
-     * 
-     * There are 4 levels of implementation.
-     * 1) use the property override weblogic.applicationName, or
-     * 2) perform a reflective weblogic.work.executeThreadRuntime.getApplicationName() call (build 10.3+), or
-     * 3) extract the moduleName:persistence_unit from the weblogic classloader string representation (build 10.3), or
-     * 3) defer to superclass - usually return "unknown"
-     *
-     * @return String applicationName
-     */
-    public String getApplicationName() {
-        return DEFAULT_SERVER_NAME_AND_VERSION;
-    }
-    
     /**
      * INTERNAL: getExternalTransactionControllerClass(): Answer the class of
      * external transaction controller to use for WebLogic. This is read-only.

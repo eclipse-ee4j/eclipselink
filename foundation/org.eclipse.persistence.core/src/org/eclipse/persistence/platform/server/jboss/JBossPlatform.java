@@ -9,16 +9,22 @@
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
+ *     06/30/2010-2.1.1 Michael O'Brien 
+ *       - 316513: Enable JMX MBean functionality for JBoss, Glassfish and WebSphere in addition to WebLogic
+ *       Move JMX MBean generic registration code up from specific platforms
+ *       see <link>http://wiki.eclipse.org/EclipseLink/DesignDocs/316513</link>        
  ******************************************************************************/  
 package org.eclipse.persistence.platform.server.jboss;
 
 import javax.persistence.spi.PersistenceUnitInfo;
 
-import org.eclipse.persistence.sessions.DatabaseSession;
-import org.eclipse.persistence.transaction.jboss.JBossTransactionController;
 import org.eclipse.persistence.internal.helper.JPAClassLoaderHolder;
 import org.eclipse.persistence.logging.AbstractSessionLog;
-import org.eclipse.persistence.platform.server.ServerPlatformBase;
+import org.eclipse.persistence.platform.server.JMXEnabledPlatform;
+import org.eclipse.persistence.platform.server.JMXServerPlatformBase;
+import org.eclipse.persistence.services.jboss.MBeanJBossRuntimeServices;
+import org.eclipse.persistence.sessions.DatabaseSession;
+import org.eclipse.persistence.transaction.jboss.JBossTransactionController;
 
 /**
  * PUBLIC:
@@ -30,7 +36,7 @@ import org.eclipse.persistence.platform.server.ServerPlatformBase;
  * getExternalTransactionControllerClass(): to use an JBoss-specific controller class
  *
  */
-public class JBossPlatform extends ServerPlatformBase {
+public class JBossPlatform extends JMXServerPlatformBase implements JMXEnabledPlatform {
 
     /**
      * INTERNAL:
@@ -38,8 +44,16 @@ public class JBossPlatform extends ServerPlatformBase {
      */
     public JBossPlatform(DatabaseSession newDatabaseSession) {
         super(newDatabaseSession);
+        this.enableRuntimeServices();
+        // Create the JMX MBean specific to this platform for later registration
+        this.prepareServerSpecificServicesMBean();
     }
 
+    @Override
+    public boolean isRuntimeServicesEnabledDefault() {
+        return true;
+    }
+    
     /**
      * INTERNAL: getExternalTransactionControllerClass(): Answer the class of external transaction controller to use
      * for JBoss. This is read-only.
@@ -75,5 +89,28 @@ public class JBossPlatform extends ServerPlatformBase {
         AbstractSessionLog.getLog().log(AbstractSessionLog.WARNING, "persistence_unit_processor_jboss_temp_classloader_bypassed",//
                 puInfo.getPersistenceUnitName(), realClassLoader);
         return new JPAClassLoaderHolder(realClassLoader, false);
-    }    
+    }
+    
+    /**
+     * INTERNAL: 
+     * prepareServerSpecificServicesMBean(): Server specific implementation of the
+     * creation and deployment of the JMX MBean to provide runtime services for the
+     * databaseSession.
+     *
+     * Default is to do nothing.
+     * Implementing platform classes must override this function and supply
+     * the server specific MBean instance for later registration by calling it in the constructor.  
+     *
+     * @return void
+     * @see #isRuntimeServicesEnabled()
+     * @see #disableRuntimeServices()
+     * @see #registerMBean()
+     */
+    @Override
+    public void prepareServerSpecificServicesMBean() {
+        // No check for an existing cached MBean - we will replace it if it exists
+        if(shouldRegisterRuntimeBean) {
+            this.setRuntimeServicesMBean(new MBeanJBossRuntimeServices(getDatabaseSession()));
+        }
+    }
 }

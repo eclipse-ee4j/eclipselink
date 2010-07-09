@@ -9,6 +9,11 @@
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
+ *     06/30/2010-2.1.1 Michael O'Brien 
+ *       - 316513: Enable JMX MBean functionality for JBoss, Glassfish and WebSphere in addition to WebLogic
+ *       Move JMX MBean generic registration code up from specific platforms
+ *       add new isRuntimeServicesEnabledDefault()
+ *       see <link>http://wiki.eclipse.org/EclipseLink/DesignDocs/316513</link>        
  ******************************************************************************/  
 package org.eclipse.persistence.platform.server;
 
@@ -123,6 +128,16 @@ public interface ServerPlatform {
     public abstract boolean isJTAEnabled();
 
     /**
+     * INTERNAL: 
+     * isRuntimeServicesEnabledDefault(): Answer true if the JMX/MBean providing runtime services for
+     * the receiver's DatabaseSession will be deployed at runtime.
+     * Provide the default value for {@link #isRuntimeServicesEnabled()} for a
+     * ServerPlatform. By default this is <code>false</code> but some platforms
+     * can choose to have MBeans deployed by default.
+     */
+    public abstract boolean isRuntimeServicesEnabledDefault();
+
+    /**
      * INTERNAL: disableJTA(): Configure the receiver such that my external transaction controller class will
      * be ignored, and will NOT be used to populate DatabaseSession's external transaction controller class
      * at runtime.
@@ -172,7 +187,7 @@ public interface ServerPlatform {
      * @see #registerMBean()
      */
     public abstract void unregisterMBean();
-
+    
     /**
      * INTERNAL:  This method is used to unwrap the oracle connection wrapped by
      * the application server.  TopLink needs this unwrapped connection for certain

@@ -49,7 +49,7 @@ public class ExceptionLocalizationResource extends ListResourceBundle {
                                            { "error_marshalling_arguments", "Error marshalling arguments" },
                                            { "error_unmarshalling_return", "error unmarshalling return" },
                                            { "null_jar_file_names", "Null jar file names" },
-                                           { "weblogic_mbean_runtime_exception", "An exception occurred while creating a WebLogic runtime service for exposing EclipseLink session information, exception is: {0}" },                                           
+                                           { "jmx_enabled_platform_mbean_runtime_exception", "An exception occurred while calling a JMX MBean runtime service function on {0} that exposes EclipseLink session information, exception is: {1}" },                                           
                                            { "error_loading_resources", "Error loading resources {0} from the classpath" },
                                            { "error_parsing_resources", "Error parsing resources {0}" },
                                            { "unexpect_argument", "Unexpected input argument {0}" },                                           

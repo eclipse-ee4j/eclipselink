@@ -9,12 +9,16 @@
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
+ *     06/30/2010-2.1.1 Michael O'Brien 
+ *       - 316513: Enable JMX MBean functionality for JBoss, Glassfish and WebSphere in addition to WebLogic
+ *       Move JMX MBean generic registration code up from specific platforms
+ *       see <link>http://wiki.eclipse.org/EclipseLink/DesignDocs/316513</link>        
  ******************************************************************************/  
 package org.eclipse.persistence.platform.server.was;
 
 import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
 import org.eclipse.persistence.logging.SessionLog;
-import org.eclipse.persistence.platform.server.ServerPlatformBase;
+import org.eclipse.persistence.platform.server.JMXServerPlatformBase;
 import org.eclipse.persistence.sessions.DatabaseSession;
 
 import java.lang.reflect.InvocationTargetException;
@@ -33,7 +37,7 @@ import org.eclipse.persistence.transaction.was.WebSphereTransactionController;
  * <li> DataSource connection unwrapping (Oracle JDBC API support)
  * </ul>
  */
-public class WebSpherePlatform extends ServerPlatformBase {
+public class WebSpherePlatform extends JMXServerPlatformBase {
 
     /**
      * Cached WAS connection class used to reflectively check connections and unwrap them.
