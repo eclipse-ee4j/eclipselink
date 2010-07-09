@@ -109,8 +109,10 @@ if [ ! "${BRANCH}" = "" ]
 then
     BRANCH_NM=${BRANCH}
     BRANCH=branches/${BRANCH}/
+    JAVA_HOME=/shared/common/ibm-java-ppc64-60-SR7
 else
     BRANCH_NM="trunk"
+    JAVA_HOME=/shared/rt/eclipselink/sapjvm_6
 fi
 
 echo "Target     ='${TARGET}'"
@@ -143,8 +145,7 @@ echo "results stored in: '${tmp}'"
 HOME_DIR=/shared/rt/eclipselink
 BOOTSTRAP_BLDFILE=bootstrap.xml
 UD2M_BLDFILE=uploadDepsToMaven.xml
-#JAVA_HOME=/shared/rt/eclipselink/sapjvm_6
-JAVA_HOME=/shared/common/ibm-java-ppc64-60-SR7
+#JAVA_HOME=/shared/common/ibm-java-ppc64-60-SR7
 ANT_HOME=/shared/common/apache-ant-1.7.0
 LOG_DIR=${HOME_DIR}/logs
 BRANCH_PATH=${HOME_DIR}/${BRANCH}trunk
