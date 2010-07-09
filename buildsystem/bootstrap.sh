@@ -456,7 +456,7 @@ then
     ##
     VERSION=`cat ${DATED_LOG} | grep -m1 "EL version" | cut -d= -f2 | tr -d '\047'`
     BUILD_STR=`cat ${DATED_LOG} | grep -m1 version.string | cut -d= -f2 | tr -d '\047'`
-    echo "Generating summary email for ${VERSION} build (${BUILD_STR})."
+    echo "Generating summary email for ${VERSION} build '${BUILD_STR}'."
 
     ## find the current revision
     ##
@@ -492,7 +492,7 @@ then
         ## Capture any 'allowed' compiler errors
         ##
         cat ${DATED_LOG} | grep -n '[javac]*errors' > ${COMPILE_RESULT_FILE}
-        
+
         ## make sure TESTDATA_FILE is empty
         ##
         if [ -f ${TESTDATA_FILE} ]
@@ -506,7 +506,7 @@ then
         then
             CAVEAT_TXT=" Signing failed. P2 not generated!"
         fi
-    
+
         ## run routine to generate test results file and generate MAIL_SUBJECT based upon exit status
         ##
         genTestSummary ${SORTED_RESULT_FILE} ${TESTDATA_FILE}
@@ -542,7 +542,7 @@ then
         LOGPREFIX=BuildFail
         echo "Build had issues to be resolved."
     fi
-    
+
     if [ \( "${BUILD_FAILED}" = "true" \) -o \( "${TESTS_FAILED}" = "true" \) ]
     then
         cp ${DATED_LOG} ${FailedNFSDir}/${LOGPREFIX}${LOGFILE_NAME}
