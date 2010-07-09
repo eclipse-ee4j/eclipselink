@@ -57,7 +57,7 @@
     <!-- Define custom task to "cleanup" the revision information -->
     <property name="custom.tasks.lib" value="${build.location}/buildsystem/ant_customizations.jar"/>
     <property name="custom.cleanrev.task.class" value="org.eclipse.persistence.buildtools.ant.taskdefs.CleanRevision"/>
-    <!-- taskdef  name="cleanRevision" classname="${custom.cleanrev.task.class}" classpath="${custom.tasks.lib}"/ -->
+    <taskdef  name="cleanRevision" classname="${custom.cleanrev.task.class}" classpath="${custom.tasks.lib}"/>
 
     <target name="build-no-publish" description="Trigger an automated build without testing or publish"
             depends="clean, build"
@@ -79,7 +79,7 @@
     />
 
     <!-- script to "cleanup" the revision information -->
-    <scriptdef name="cleanRevision" language="javascript" manager="javax">
+    <!-- scriptdef name="cleanRevision" language="javascript" manager="javax">
         <attribute name="input"/>
         <attribute name="property"/>
         <![CDATA[
@@ -105,7 +105,7 @@
                 project.setProperty(attributes.get("property"), trimmedInput);
             }
         ]]>
-    </scriptdef>
+    </scriptdef -->
 
     <target name="init" depends="pre-init, common-init"/>
     <target name="pre-init">

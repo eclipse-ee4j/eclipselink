@@ -143,7 +143,7 @@ echo "results stored in: '${tmp}'"
 HOME_DIR=/shared/rt/eclipselink
 BOOTSTRAP_BLDFILE=bootstrap.xml
 UD2M_BLDFILE=uploadDepsToMaven.xml
-#JAVA_HOME=/shared/common/ibm-java-jdk-ppc-60
+#JAVA_HOME=/shared/rt/eclipselink/sapjvm_6
 JAVA_HOME=/shared/common/ibm-java-ppc64-60-SR7
 ANT_HOME=/shared/common/apache-ant-1.7.0
 LOG_DIR=${HOME_DIR}/logs
