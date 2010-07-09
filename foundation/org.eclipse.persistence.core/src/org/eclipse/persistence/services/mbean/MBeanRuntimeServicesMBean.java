@@ -158,4 +158,26 @@ public interface MBeanRuntimeServicesMBean {
      */
     public void setProfileWeight(int size);
 
+    /**
+     *  Answer the EclipseLink log level at deployment time. This is read-only.
+     */
+    public String getDeployedEclipseLinkLogLevel();
+
+    /**
+     *  Answer the EclipseLink log level that is changeable.
+     * This does not affect the log level in the project (i.e. The next
+     * time the application is deployed, changes are forgotten)
+     */
+    public String getCurrentEclipseLinkLogLevel();
+
+    /**
+     *  Set the EclipseLink log level to be used at runtime.
+     *
+     * This does not affect the log level in the project (i.e. The next
+     * time the application is deployed, changes are forgotten)
+     *
+     * @param String newLevel: new log level
+     */
+    public  void setCurrentEclipseLinkLogLevel(String newLevel);
+    
 }

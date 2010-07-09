@@ -8,24 +8,14 @@
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
- *     Oracle - initial API and implementation from Oracle TopLink
  *     @author  mobrien
- *     @since   EclipseLink 1.1 enh# 248748
- *     10/20/2008-1.1M4 Michael O'Brien 
- *       - 248748: Add WebLogic 10.3 specific JMX MBean attributes and functions
- *       see <link>http://wiki.eclipse.org/EclipseLink/DesignDocs/248748</link>
- *     06/11/2008-1.1M5 Michael O'Brien 
- *       - 248746: Add getModuleName() implementation and new getApplicationName()
- *     01/27/2009-1.1.1 Michael O'Brien 
- *       - 262583: removal of category arg get*EclipseLinkLogLevel functions - rev 3308
- *     03/31/2009-1.1.1 Michael O'Brien 
- *       - 270533: CCE on DefaultSessionLog cast narrowed for getLogFilename()
+ *     @since   EclipseLink 2.1.1 enh# 316511
  *     06/30/2010-2.1.1 Michael O'Brien 
  *       - 316513: Enable JMX MBean functionality for JBoss, Glassfish and WebSphere in addition to WebLogic
  *       Move JMX MBean generic registration code up from specific platforms
  *       see <link>http://wiki.eclipse.org/EclipseLink/DesignDocs/316513</link>        
  ******************************************************************************/  
-package org.eclipse.persistence.services.weblogic;
+package org.eclipse.persistence.services.jboss;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -70,7 +60,7 @@ import org.eclipse.persistence.logging.AbstractSessionLog;
 import org.eclipse.persistence.logging.DefaultSessionLog;
 import org.eclipse.persistence.logging.JavaLog;
 import org.eclipse.persistence.logging.SessionLog;
-import org.eclipse.persistence.platform.server.wls.WebLogicPlatform;
+import org.eclipse.persistence.platform.server.jboss.JBossPlatform;
 import org.eclipse.persistence.services.RuntimeServices;
 import org.eclipse.persistence.sessions.DatabaseLogin;
 import org.eclipse.persistence.sessions.DefaultConnector;
@@ -83,39 +73,41 @@ import org.eclipse.persistence.sessions.server.ServerSession;
  * <p>
  * <b>Description</b>: This class is meant to provide facilities for managing an EclipseLink session external
  * to EclipseLink over JMX.
+ * 
+ * @since EclipseLink 2.1.1
  */
-public class WebLogicRuntimeServices extends RuntimeServices {
+public class JBossRuntimeServices extends RuntimeServices {
 
     static {
-        PLATFORM_NAME = "WebLogic";
+        PLATFORM_NAME = "JBoss";
     }
     
     /**
      * PUBLIC:
      *  Default Constructor
      */
-    public WebLogicRuntimeServices() {
+    public JBossRuntimeServices() {
         super();
     }
 
     /**
      *  PUBLIC:
-     *  Create an instance of WebLogicRuntimeServices to be associated with the provided session
+     *  Create an instance of JBossRuntimeServices to be associated with the provided session
      *
      *  @param session The session to be used with these RuntimeServices
      */
-    public WebLogicRuntimeServices(AbstractSession session) {
+    public JBossRuntimeServices(AbstractSession session) {
         super();
         this.session = session;
         this.updateDeploymentTimeData();
     }
 
     /**
-     *  Create an instance of WebLogicRuntimeServices to be associated with the provided locale
+     *  Create an instance of JBossRuntimeServices to be associated with the provided locale
      *
      *  The user must call setSession(Session) afterwards to define the session.
      */
-    public WebLogicRuntimeServices(Locale locale) {
+    public JBossRuntimeServices(Locale locale) {
     }
 
     /**
@@ -128,7 +120,6 @@ public class WebLogicRuntimeServices extends RuntimeServices {
         this.session = newSession;
         this.updateDeploymentTimeData();
     }
-
 
     /**
      * Answer the name of the EclipseLink session this MBean represents.
@@ -574,7 +565,7 @@ public class WebLogicRuntimeServices extends RuntimeServices {
     /**
      * getModuleName(): Answer the name of the context-root of the application that this session is associated with.
      * Answer "unknown" if there is no module name available.
-     * Default behavior is to return "unknown" - we override this behavior here for WebLogic.
+     * Default behavior is to return "unknown"
      */
     public String getModuleName() {
         return ((DatabaseSessionImpl)getSession())
@@ -585,102 +576,14 @@ public class WebLogicRuntimeServices extends RuntimeServices {
     /**
      * getApplicationName(): Answer the name of the module (EAR name) that this session is associated with.
      * Answer "unknown" if there is no application name available.
-     * Default behavior is to return "unknown" - we override this behavior here for WebLogic.
+     * Default behavior is to return "unknown"
      */
     public String getApplicationName() {
-        return ((WebLogicPlatform)((DatabaseSessionImpl)getSession())
+        return ((JBossPlatform)((DatabaseSessionImpl)getSession())
                 .getServerPlatform()).getApplicationName();
     }
     
-    /**
-     * PUBLIC: Answer the EclipseLink log level at deployment time. This is read-only.
-     */
-    public String getDeployedEclipseLinkLogLevel() {
-        return getNameForLogLevel(getDeployedSessionLog().getLevel());
-    }
 
-    /**
-     * PUBLIC: Answer the EclipseLink log level that is changeable.
-     * This does not affect the log level in the project (i.e. The next
-     * time the application is deployed, changes are forgotten)
-     */
-    public String getCurrentEclipseLinkLogLevel() {
-        return getNameForLogLevel(this.getSession().getSessionLog().getLevel());
-    }
-
-    /**
-     * PUBLIC: Set the EclipseLink log level to be used at runtime.
-     *
-     * This does not affect the log level in the project (i.e. The next
-     * time the application is deployed, changes are forgotten)
-     *
-     * @param String newLevel: new log level
-     */
-    public synchronized void setCurrentEclipseLinkLogLevel(String newLevel) {
-        this.getSession().setLogLevel(this.getLogLevelForName(newLevel));
-    }
-
-    /**
-     * INTERNAL: Answer the name for the log level given.
-     *
-     * @return String (one of OFF, SEVERE, WARNING, INFO, CONFIG, FINE, FINER, FINEST, ALL)
-     */
-    private String getNameForLogLevel(int logLevel) {
-        switch (logLevel) {
-        case SessionLog.ALL:
-            return SessionLog.ALL_LABEL;
-        case SessionLog.SEVERE:
-            return SessionLog.SEVERE_LABEL;
-        case SessionLog.WARNING:
-            return SessionLog.WARNING_LABEL;
-        case SessionLog.INFO:
-            return SessionLog.INFO_LABEL;
-        case SessionLog.CONFIG:
-            return SessionLog.CONFIG_LABEL;
-        case SessionLog.FINE:
-            return SessionLog.FINE_LABEL;
-        case SessionLog.FINER:
-            return SessionLog.FINER_LABEL;
-        case SessionLog.FINEST:
-            return SessionLog.FINEST_LABEL;
-        case SessionLog.OFF:
-            return SessionLog.OFF_LABEL;
-        }
-        return "N/A";
-    }
-
-    /**
-     * INTERNAL: Answer the log level for the given name.
-     *
-     * @return int for OFF, SEVERE, WARNING, INFO, CONFIG, FINE, FINER, FINEST, ALL
-     */
-    private int getLogLevelForName(String levelName) {
-        if (levelName.equals(SessionLog.ALL_LABEL)) {
-            return SessionLog.ALL;
-        }
-        if (levelName.equals(SessionLog.SEVERE_LABEL)) {
-            return SessionLog.SEVERE;
-        }
-        if (levelName.equals(SessionLog.WARNING_LABEL)) {
-            return SessionLog.WARNING;
-        }
-        if (levelName.equals(SessionLog.INFO_LABEL)) {
-            return SessionLog.INFO;
-        }
-        if (levelName.equals(SessionLog.CONFIG_LABEL)) {
-            return SessionLog.CONFIG;
-        }
-        if (levelName.equals(SessionLog.FINE_LABEL)) {
-            return SessionLog.FINE;
-        }
-        if (levelName.equals(SessionLog.FINER_LABEL)) {
-            return SessionLog.FINER;
-        }
-        if (levelName.equals(SessionLog.FINEST_LABEL)) {
-            return SessionLog.FINEST;
-        }
-        return SessionLog.OFF;
-    }
 
     /**
      *     Method returns if all Parameters should be bound or not
@@ -1045,6 +948,7 @@ public class WebLogicRuntimeServices extends RuntimeServices {
 
         return Integer.valueOf(classesTable.size());
     }
+
 
     /**
     * Return the log type, either "EclipseLink",  "Java" or the simple name of the logging class used.  

@@ -8,20 +8,14 @@
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
- *     Oracle - initial API and implementation from Oracle TopLink
  *     @author  mobrien
- *     @since   EclipseLink 1.1 enh# 248748
- *     10/20/2008-1.1M4 Michael O'Brien 
- *       - 248748: Add WebLogic 10.3 specific JMX MBean attributes and functions
- *       see <link>http://wiki.eclipse.org/EclipseLink/DesignDocs/248748</link>
- *     27/01/2009-1.1.1 Michael O'Brien 
- *       - 262583: removal of category arg get*EclipseLinkLogLevel functions - rev 3308
+ *     @since   EclipseLink 2.1.1 enh# 316511
  *     06/30/2010-2.1.1 Michael O'Brien 
  *       - 316513: Enable JMX MBean functionality for JBoss, Glassfish and WebSphere in addition to WebLogic
  *       Move JMX MBean generic registration code up from specific platforms
  *       see <link>http://wiki.eclipse.org/EclipseLink/DesignDocs/316513</link>        
  ******************************************************************************/  
-package org.eclipse.persistence.services.weblogic;
+package org.eclipse.persistence.services.jboss;
 
 import java.util.ArrayList;
 import java.util.Vector;
@@ -34,8 +28,10 @@ import org.eclipse.persistence.services.mbean.MBeanRuntimeServicesMBean;
  * <p>
  * <b>Description</b>: This class is meant to provide facilities for managing an EclipseLink session external
  * to EclipseLink over JMX.
+ * 
+ * @since EclipseLink 2.1.1
  */
-public interface MBeanWebLogicRuntimeServicesMBean extends MBeanRuntimeServicesMBean {
+public interface MBeanJBossRuntimeServicesMBean extends MBeanRuntimeServicesMBean {
     /**
      *  Answer the name of the EclipseLink session this MBean represents.
      */
@@ -110,14 +106,14 @@ public interface MBeanWebLogicRuntimeServicesMBean extends MBeanRuntimeServicesM
     /**
      * getModuleName(): Answer the name of the context-root of the application that this session is associated with.
      * Answer "unknown" if there is no module name available.
-     * Default behavior is to return "unknown" - we override this behavior here for WebLogic.
+     * Default behavior is to return "unknown" 
      */
     public String getModuleName();
     
     /**
      * getApplicationName(): Answer the name of the module (EAR name) that this session is associated with.
      * Answer "unknown" if there is no application name available.
-     * Default behavior is to return "unknown" - we override this behavior here for WebLogic.
+     * Default behavior is to return "unknown"
      */
     public String getApplicationName();
 

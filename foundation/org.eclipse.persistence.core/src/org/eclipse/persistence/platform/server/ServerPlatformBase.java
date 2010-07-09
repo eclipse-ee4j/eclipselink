@@ -9,6 +9,11 @@
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
+ *     06/30/2010-2.1.1 Michael O'Brien 
+ *       - 316513: Enable JMX MBean functionality for JBoss, Glassfish and WebSphere in addition to WebLogic
+ *       Move JMX MBean generic registration code up from specific platforms
+ *       add new isRuntimeServicesEnabledDefault()
+ *       see <link>http://wiki.eclipse.org/EclipseLink/DesignDocs/316513</link>        
  ******************************************************************************/  
 package org.eclipse.persistence.platform.server;
 
@@ -44,7 +49,7 @@ import org.eclipse.persistence.internal.databaseaccess.Accessor;
  * <li> Whether or not to enable runtime services
  * <li> How to launch container Threads
  * </ul><p>
- * Subclasses already exist to provide configurations for Oc4J, WebLogic, JBoss, and WebSphere.
+ * Subclasses already exist to provide configurations for Oc4J, WebLogic, JBoss, NetWeaver, GlassFish and WebSphere.
  * <p>
  * If the user wants a different external transaction controller class or
  * to provide some different behavior than the provided ServerPlatform(s), we recommend
@@ -61,17 +66,34 @@ import org.eclipse.persistence.internal.databaseaccess.Accessor;
  */
 public abstract class ServerPlatformBase implements ServerPlatform {
 
+    // Secondary override properties can be set to disable MBean registration
+    /** This System property "eclipselink.register.dev.mbean" when set to true will enable registration/unregistration of the DevelopmentServices MBean */
+    public static final String JMX_REGISTER_DEV_MBEAN_PROPERTY = "eclipselink.register.dev.mbean";
+    /** This System property "eclipselink.register.run.mbean" when set to true will enable registration/unregistration of the RuntimeServices MBean */    
+    public static final String JMX_REGISTER_RUN_MBEAN_PROPERTY = "eclipselink.register.run.mbean";
+    /**
+     * INTERNAL:
+     * Answer "unknown" as a default for platforms that do not implement getModuleName()
+     */
+    public static final String DEFAULT_SERVER_NAME_AND_VERSION = ToStringLocalization.buildMessage("unknown");
+        
+    /**
+     * INTERNAL:
+     * isRuntimeServicesEnabled: Determines if the JMX Runtime Services will be deployed at runtime
+     */
+    private boolean isRuntimeServicesEnabled;
+
+    // Only a "false" value will disable MBean registration for both beans
+    protected boolean shouldRegisterDevelopmentBean = true;
+    protected boolean shouldRegisterRuntimeBean = true;
+    
+    
     /**
      * externalTransactionControllerClass: This is a user-specifiable class defining the class
      * of external transaction controller to be set into the DatabaseSession
      */
     protected Class externalTransactionControllerClass;
 	
-    /**
-     * INTERNAL:
-     * isRuntimeServicesEnabled: Determines if the JMX Runtime Services will be deployed at runtime
-     */
-    private boolean isRuntimeServicesEnabled;
 
     /**
      * INTERNAL:
@@ -80,6 +102,7 @@ public abstract class ServerPlatformBase implements ServerPlatform {
      */
     private boolean isJTAEnabled;
 
+    
     /**
      * INTERNAL:
      * isCMP: true if the container created the server platform, because we're configured
@@ -101,20 +124,24 @@ public abstract class ServerPlatformBase implements ServerPlatform {
     
     /**
      * INTERNAL:
-     * Answer "unknown" as a default for platforms that do not implement getModuleName()
-     */
-    public static final String DEFAULT_SERVER_NAME_AND_VERSION = ToStringLocalization.buildMessage("unknown");
-
-    /**
-     * INTERNAL:
      * Default Constructor: Initialize so that runtime services and JTA are enabled. Set the DatabaseSession that I
      * will be helping.
      */
     public ServerPlatformBase(DatabaseSession newDatabaseSession) {
-        this.isRuntimeServicesEnabled = true;
         this.isJTAEnabled = true;
+        // Default JMX support to false for all sub-platforms except those that override this flag
+        this.isRuntimeServicesEnabled = isRuntimeServicesEnabledDefault();
         this.databaseSession = newDatabaseSession;
         this.setIsCMP(false);
+        //
+        String shouldRegisterRuntimeBeanProperty = System.getProperty(JMX_REGISTER_RUN_MBEAN_PROPERTY);
+        if(null != shouldRegisterRuntimeBeanProperty && shouldRegisterRuntimeBeanProperty.toLowerCase().indexOf("false") > -1) {
+            shouldRegisterRuntimeBean = false;
+        }
+        String shouldRegisterDevelopmentBeanProperty = System.getProperty(JMX_REGISTER_DEV_MBEAN_PROPERTY);
+        if(null != shouldRegisterDevelopmentBeanProperty && shouldRegisterDevelopmentBeanProperty.toLowerCase().indexOf("false") > -1) {
+            shouldRegisterDevelopmentBean = false;
+        }        
     }
     
     /**
@@ -281,6 +308,58 @@ public abstract class ServerPlatformBase implements ServerPlatform {
         return this.isJTAEnabled;
     }
 
+    
+    /**
+     * INTERNAL: 
+     * isRuntimeServicesEnabledDefault(): Answer true if the JMX/MBean providing runtime services for
+     * the receiver's DatabaseSession will be deployed at runtime.
+     * Provide the default value for {@link #isRuntimeServicesEnabled()} for a
+     * ServerPlatform. By default this is <code>false</code> but some platforms
+     * can choose to have MBeans deployed by default.
+     */
+    public boolean isRuntimeServicesEnabledDefault() {
+        return false;
+    }
+    
+    /**
+     * INTERNAL: 
+     * isRuntimeServicesEnabled(): Answer true if the JMX/MBean providing runtime services for
+     * the receiver's DatabaseSession will be deployed at runtime.
+     *
+     * @return boolean isRuntimeServicesEnabled
+     * @see #disableRuntimeServices()
+     */
+    public boolean isRuntimeServicesEnabled() {
+        return this.isRuntimeServicesEnabled;
+    }
+    
+    /**
+     * INTERNAL: disableRuntimeServices(): Configure the receiver such that no JMX/MBean will be registered
+     * to provide runtime services for my DatabaseSession at runtime.
+     *
+     * @return void
+     * @see #isRuntimeServicesEnabled()
+     */
+    public void disableRuntimeServices() {
+        this.ensureNotLoggedIn();
+        this.isRuntimeServicesEnabled = false;
+    }
+
+    /**
+     * INTERNAL: 
+     * enableRuntimeServices(): Configure the receiver such that JMX/MBeans will be registered
+     * to provide runtime services for my DatabaseSession at runtime.
+     *
+     * @return void
+     * @see #isRuntimeServicesEnabled()
+     * @since EclipseLink 2.2.0
+     */
+    public void enableRuntimeServices() {
+        this.ensureNotLoggedIn();
+        this.isRuntimeServicesEnabled = true;
+    }
+    
+    
     /**
      * INTERNAL: disableJTA(): Configure the receiver such that my external transaction controller class will
      * be ignored, and will NOT be used to populate DatabaseSession's external transaction controller class
@@ -298,78 +377,6 @@ public abstract class ServerPlatformBase implements ServerPlatform {
     }
 
     /**
-     * INTERNAL: isRuntimeServicesEnabled(): Answer true if the JMX/MBean providing runtime services for
-     * the receiver's DatabaseSession will be deployed at runtime.
-     *
-     * @return boolean isRuntimeServicesEnabled
-     * @see #disableRuntimeServices()
-     */
-    public boolean isRuntimeServicesEnabled() {
-        return this.isRuntimeServicesEnabled;
-    }
-
-    /**
-     * INTERNAL: disableRuntimeServices(): Configure the receiver such that no JMX/MBean will be registered
-     * to provide runtime services for my DatabaseSession at runtime.
-     *
-     * @return void
-     * @see #isRuntimeServicesEnabled()
-     */
-    public void disableRuntimeServices() {
-        this.ensureNotLoggedIn();
-        this.isRuntimeServicesEnabled = false;
-    }
-
-    /**
-     * INTERNAL: registerMBean(): Create and deploy the JMX MBean to provide runtime services for my
-     * databaseSession.
-     *
-     * Default is to do nothing.
-     *
-     * @return void
-     * @see #isRuntimeServicesEnabled()
-     * @see #disableRuntimeServices()
-     * @see #unregisterMBean()
-     */
-    public void registerMBean() {
-        if (!this.isRuntimeServicesEnabled()) {
-            return;
-        }
-        this.serverSpecificRegisterMBean();
-    }
-
-    /**
-     * INTERNAL: serverSpecificRegisterMBean(): Server specific implementation of the
-     * creation and deployment of the JMX MBean to provide runtime services for my
-     * databaseSession.
-     *
-     * Default is to do nothing. This should be subclassed if required.
-     *
-     * @return void
-     * @see #isRuntimeServicesEnabled()
-     * @see #disableRuntimeServices()
-     * @see #registerMBean()
-     */
-    public void serverSpecificRegisterMBean() {
-    }
-
-    /**
-     * INTERNAL: unregisterMBean(): Unregister the JMX MBean that was providing runtime services for my
-     * databaseSession.
-     *
-     * @return void
-     * @see #isRuntimeServicesEnabled()
-     * @see #disableRuntimeServices()
-     * @see #registerMBean()
-     */
-    public void unregisterMBean() {
-        if (!this.isRuntimeServicesEnabled()) {
-            return;
-        }
-        this.serverSpecificUnregisterMBean();
-    }
-
-    /**
      * INTERNAL:  This method is used to unwrap the connection wrapped by
      * the application server.  TopLink needs this unwrapped connection for certain
      * database vendor specific support. (i.e. TIMESTAMPTZ,NCHAR,XMLTYPE)
@@ -384,19 +391,6 @@ public abstract class ServerPlatformBase implements ServerPlatform {
             return connection;            
         }
     }  
-
-    /**
-     * INTERNAL: serverSpecificUnregisterMBean(): Server specific implementation of the
-     * unregistration of the JMX MBean from its server.
-     *
-     * Default is to do nothing. This should be subclassed if required.
-     *
-     * @return void
-     * @see #isRuntimeServicesEnabled()
-     * @see #disableRuntimeServices()
-     */
-    public void serverSpecificUnregisterMBean() {
-    }
 
     /**
      * INTERNAL: launchContainerRunnable(Runnable runnable): Use the container library to
@@ -487,4 +481,65 @@ public abstract class ServerPlatformBase implements ServerPlatform {
      */
     public void clearStatementCache(java.sql.Connection connection) {   
     }
+    
+    /**
+     * INTERNAL: registerMBean(): Create and deploy the JMX MBean to provide runtime services for my
+     * databaseSession.
+     *
+     * Default is to do nothing.
+     *
+     * @return void
+     * @see #isRuntimeServicesEnabled()
+     * @see #disableRuntimeServices()
+     * @see #unregisterMBean()
+     */
+    public void registerMBean() {
+        if (!this.isRuntimeServicesEnabled()) {
+            return;
+        }
+        this.serverSpecificRegisterMBean();
+    }
+
+    /**
+     * INTERNAL: unregisterMBean(): Unregister the JMX MBean that was providing runtime services for my
+     * databaseSession.
+     *
+     * @return void
+     * @see #isRuntimeServicesEnabled()
+     * @see #disableRuntimeServices()
+     * @see #registerMBean()
+     */
+    public void unregisterMBean() {
+        if (!this.isRuntimeServicesEnabled()) {
+            return;
+        }
+        this.serverSpecificUnregisterMBean();
+    }
+
+    
+    /**
+     * INTERNAL: serverSpecificUnregisterMBean(): Server specific implementation of the
+     * unregistration of the JMX MBean from its server.
+     *
+     * Default is to do nothing. This should be subclassed if required.
+     *
+     * @return void
+     * @see #isRuntimeServicesEnabled()
+     * @see #disableRuntimeServices()
+     */
+    public void serverSpecificUnregisterMBean() { }
+
+    /**
+     * INTERNAL: serverSpecificRegisterMBean(): Server specific implementation of the
+     * creation and deployment of the JMX MBean to provide runtime services for my
+     * databaseSession.
+     *
+     * Default is to do nothing. This should be subclassed if required.
+     *
+     * @return void
+     * @see #isRuntimeServicesEnabled()
+     * @see #disableRuntimeServices()
+     * @see #registerMBean()
+     */
+    public void serverSpecificRegisterMBean() { }       
 }

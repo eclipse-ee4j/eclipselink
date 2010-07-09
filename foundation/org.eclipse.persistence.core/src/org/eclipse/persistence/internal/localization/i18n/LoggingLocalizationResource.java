@@ -11,6 +11,10 @@
  *     Oracle - initial API and implementation from Oracle TopLink
  *     07/16/2009-2.0 Guy Pelletier 
  *       - 277039: JPA 2.0 Cache Usage Settings
+ *     06/30/2010-2.1.1 Michael O'Brien 
+ *       - 316513: Enable JMX MBean functionality for JBoss, Glassfish and WebSphere in addition to WebLogic
+ *       Move JMX MBean generic registration code up from specific platforms
+ *       see <link>http://wiki.eclipse.org/EclipseLink/DesignDocs/316513</link>        
  ******************************************************************************/  
 package org.eclipse.persistence.internal.localization.i18n;
 
@@ -31,6 +35,12 @@ import java.util.ListResourceBundle;
  * 
  */
 public class LoggingLocalizationResource extends ListResourceBundle {
+    
+    /**
+     * Note: Each entry has 2 parts, a MSGID and TOP-NNNNN key at the 
+     * bottom of the file must match the id and string message entry in the 
+     * 1st section at the top of this file for enumeration integrity.
+     */
     static final Object[][] contents = {
         { "topLink_version", "EclipseLink, version: {0}" },
         { "application_server_name_and_version", "Server: {0}" },
@@ -361,7 +371,7 @@ public class LoggingLocalizationResource extends ListResourceBundle {
         { "problem_registering_mbean", "Problem while registering MBean: {0}" },
         { "problem_unregistering_mbean", "Problem while unregistering MBean: {0}" },
         { "session_key_for_mbean_name_is_null", "Session name used for the MBean registration cannot be null." },
-        // Implemented by WebLogicRuntimeServices
+        // Implemented by RuntimeServices implementing subclasses
         { "jmx_mbean_runtime_services_pool_name", "Pool Name = {0}" },
         { "jmx_mbean_runtime_services_identity_map_non_existent", "Identity Map [{0}] does not exist." },
         { "jmx_mbean_runtime_services_identity_map_empty", "Identity Map [{0}] is empty." },
@@ -388,7 +398,15 @@ public class LoggingLocalizationResource extends ListResourceBundle {
         { "jaxb_metadata_warning_invalid_package_level_xml_java_type_adapter", "An invalid XmlJavaTypeAdapter [{0}] was specified for package [{1}], and will be ignored."},
         { "jaxb_metadata_warning_invalid_type_level_xml_java_type_adapter", "An invalid XmlJavaTypeAdapter [{0}] was specified for class [{1}], and will be ignored."},
         { "jaxb_metadata_warning_invalid_property_level_xml_java_type_adapter", "An invalid XmlJavaTypeAdapter [{0}] was specified for field/property [{1}] on class [{2}], and will be ignored."},
-        // MESSAGES end        
+        // 316513: JMX implementation for JBoss, WebSphere and Glassfish as well as WebLogic
+        { "jmx_mbean_runtime_services_registration_encountered_multiple_mbeanserver_instances", "Multiple [{0}] JMX MBeanServer instances exist, we are registering the MBean on the first indexed one [{1}]." },
+        { "jmx_mbean_runtime_services_registration_mbeanserver_print", "JMX MBeanServer instance found: [{0}]." },        
+        // MESSAGES end
+        
+        
+        /**
+         * Note: Each key above must have a corresponding .MSGID and TOP-NNNNN key below for enumeration integrity
+         */
         
         
         
@@ -657,7 +675,15 @@ public class LoggingLocalizationResource extends ListResourceBundle {
         { "jaxb_metadata_warning_invalid_java_attribute.MSGID", "TOP-50239"},
         { "jaxb_metadata_warning_invalid_package_level_xml_java_type_adapter.MSGID", "TOP-50240"},
         { "jaxb_metadata_warning_invalid_type_level_xml_java_type_adapter.MSGID", "TOP-50241"},
-        { "jaxb_metadata_warning_invalid_property_level_xml_java_type_adapter.MSGID", "TOP-50242"}
+        { "jaxb_metadata_warning_invalid_property_level_xml_java_type_adapter.MSGID", "TOP-50242"},
+        { "jmx_mbean_runtime_services_registration_encountered_multiple_mbeanserver_instances.MSGID", "TOP-50242" },
+        { "jmx_mbean_runtime_services_registration_mbeanserver_print.MSGID", "TOP-50243" }        
+
+        /**
+         * Note: Each MSGID and TOP-NNNNN key above must have a corresponding 
+         * id and string message entry in the 1st section at the top of this file.
+         */
+        
     }; 
      
     /**
