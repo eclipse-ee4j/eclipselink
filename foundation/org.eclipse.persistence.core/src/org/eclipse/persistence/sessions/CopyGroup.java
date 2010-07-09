@@ -54,7 +54,7 @@ public class CopyGroup extends AttributeGroup {
     public static final int CASCADE_ALL_PARTS = 3;
 
     /** Depth level indicating that only the attributes found in the attribute group should be copied */
-    public static final int CASCADE_TREE = 3;
+    public static final int CASCADE_TREE = 4;
     
     /**
      * PUBLIC:

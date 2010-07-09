@@ -14,6 +14,7 @@ package org.eclipse.persistence.testing.tests.jpa.fieldaccess.fetchgroups;
 
 import java.io.IOException;
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -27,6 +28,7 @@ import junit.framework.TestSuite;
 import org.eclipse.persistence.config.CacheUsage;
 import org.eclipse.persistence.config.QueryHints;
 import org.eclipse.persistence.indirection.IndirectList;
+import org.eclipse.persistence.internal.helper.IdentityHashSet;
 import org.eclipse.persistence.internal.helper.SerializationHelper;
 import org.eclipse.persistence.internal.queries.AttributeItem;
 import org.eclipse.persistence.internal.queries.EntityFetchGroup;
@@ -84,6 +86,12 @@ public class SimpleSerializeFetchGroupTests extends BaseFetchGroupTests {
         suite.addTest(new SimpleSerializeFetchGroupTests("copyWithPkUseFullGroup"));
         suite.addTest(new SimpleSerializeFetchGroupTests("copyWithoutPk"));
         suite.addTest(new SimpleSerializeFetchGroupTests("copyWithoutPkUseFullGroup"));
+        suite.addTest(new SimpleSerializeFetchGroupTests("copyNoCascade"));
+        suite.addTest(new SimpleSerializeFetchGroupTests("copyCascadePrivateParts"));
+        // The following test commented out due to: 
+        // Bug 319426 - Original and copy share ValueHolder. 
+        // Please uncomment when the bug is fixed.
+        //suite.addTest(new SimpleSerializeFetchGroupTests("copyCascadeAllParts"));
         
         return suite;
     }
@@ -1207,70 +1215,166 @@ public class SimpleSerializeFetchGroupTests extends BaseFetchGroupTests {
     }
 
     @Test
+    public void copyNoCascade() {
+        copyCascade(CopyGroup.NO_CASCADE);
+    }
+    
+    @Test
     public void copyCascadePrivateParts() {
+        copyCascade(CopyGroup.CASCADE_PRIVATE_PARTS);
+    }
+
+    @Test
+    public void copyCascadeAllParts() {
+        copyCascade(CopyGroup.CASCADE_ALL_PARTS);
+    }
+    
+    void copyCascade(int cascadeDepth) {
         EntityManager em = createEntityManager("fieldaccess");
         Query query = em.createQuery("SELECT e FROM Employee e");
         List<Employee> employees = query.getResultList();
 
-        // unless attributes are added by default only private part cascaded
-        // all other attributes are the same (or collections containing the same elements) as in original. 
         CopyGroup group = new CopyGroup();
+        if(cascadeDepth == CopyGroup.NO_CASCADE) {
+            group.dontCascade();
+        } else if(cascadeDepth == CopyGroup.CASCADE_PRIVATE_PARTS) {
+            // default cascade depth setting
+            group.cascadePrivateParts();
+        } else if(cascadeDepth == CopyGroup.CASCADE_ALL_PARTS) {
+            group.cascadeAllParts();
+        } else {
+            fail("Invalid cascadeDepth = " + cascadeDepth);
+        }
         group.setShouldResetPrimaryKey(true);
         
-        List<Employee> employeesCopy = (List)em.unwrap(JpaEntityManager.class).copy(employees, group);
+        List<Employee> employeesCopy;
+        if(cascadeDepth == CopyGroup.NO_CASCADE || cascadeDepth == CopyGroup.CASCADE_PRIVATE_PARTS) {
+            // In this case the objects should be copied one by one - each one using a new CopyGroup.
+            // That ensures most referenced object are original ones (not copies) -
+            // the only exception is privately owned objects in CASCADE_PRIVATE_PARTS case.
+            employeesCopy = new ArrayList(employees.size());
+            for(Employee emp : employees) {
+                CopyGroup groupClone = group.clone();
+                employeesCopy.add((Employee)em.unwrap(JpaEntityManager.class).copy(emp, groupClone));
+            }
+        } else {
+            // cascadeDepth == CopyGroup.CASCADE_ALL_PARTS
+            // In this case all objects should be copied using a single CopyGroup.
+            // That ensures identities of the copies:
+            // for instance if several employees referenced the same project,
+            // then all copies of these employees will reference the single copy of the project. 
+            employeesCopy = (List)em.unwrap(JpaEntityManager.class).copy(employees, group);
+        }
+        
+        // IdentityHashSets will be used to verify copy identities
+        IdentityHashSet originalEmployees = new IdentityHashSet();
+        IdentityHashSet copyEmployees = new IdentityHashSet();
+        IdentityHashSet originalAddresses = new IdentityHashSet();
+        IdentityHashSet copyAddresses = new IdentityHashSet();
+        IdentityHashSet originalProjects = new IdentityHashSet();
+        IdentityHashSet copyProjects = new IdentityHashSet();
+        IdentityHashSet originalPhones = new IdentityHashSet();
+        IdentityHashSet copyPhones = new IdentityHashSet();
         
         int size = employees.size();
         for(int i=0; i < size; i++) {
             Employee emp = employees.get(i);
             Employee empCopy = employeesCopy.get(i);
+            if(cascadeDepth == CopyGroup.CASCADE_ALL_PARTS) {
+                originalEmployees.add(emp);
+                copyEmployees.add(empCopy);
+            } else {
+                // cascadeDepth == CopyGroup.NO_CASCADE || cascadeDepth == CopyGroup.CASCADE_PRIVATE_PARTS
+                // In this case all Employees referenced by empCopyes are originals (manager and managed employees).
+                // Therefore if we add here each emp and empCopy to originalEmployees and copyEmployees respectively
+                // then copyEmployees will always contain all original managers and managed + plus all copies.
+                // Therefore in this case originalEmployees and copyEmployees will contain only references (managers and managed employees).
+            }
 
-            // address, projects, managedEmployees are not privately owned therefore
-            // copyEmp has the same address, projects, managedEmployees as original.
-            assertTrue(emp.getAddress() == empCopy.getAddress());
+            if(emp.getAddress() == null) {
+                assertTrue("emp.getAddress() == null, but empCopy.getAddress() != null", empCopy.getAddress() == null);
+            } else {
+                originalAddresses.add(emp.getAddress());
+                copyAddresses.add(empCopy.getAddress());
+                if(cascadeDepth == CopyGroup.NO_CASCADE || cascadeDepth == CopyGroup.CASCADE_PRIVATE_PARTS) {
+                    assertTrue("address has been copied", emp.getAddress() == empCopy.getAddress());
+                } else {
+                    // cascadeDepth == CopyGroup.CASCADE_ALL_PARTS
+                    assertFalse("address has not been copied", emp.getAddress() == empCopy.getAddress());
+                }
+            }
+
             boolean same;
             for(Project project : emp.getProjects()) {
+                originalProjects.add(project);
                 same = false;
                 for(Project projectCopy : empCopy.getProjects()) {
-                    if(project == projectCopy) {
+                    copyProjects.add(projectCopy);
+                    if(!same && project == projectCopy) {
                         same = true;
-                        break;
                     }
                 }
-                assertTrue(same);
-            }
-            for(Employee managedEmp : emp.getManagedEmployees()) {
-                same = false;
-                for(Employee managedEmpCopy : empCopy.getManagedEmployees()) {
-                    if(managedEmp == managedEmpCopy) {
-                        same = true;
-                        break;
-                    }
+                if(cascadeDepth == CopyGroup.NO_CASCADE || cascadeDepth == CopyGroup.CASCADE_PRIVATE_PARTS) {
+                    assertTrue("project has been copied", same);
+                } else {
+                    // cascadeDepth == CopyGroup.CASCADE_ALL_PARTS
+                    assertFalse("project has not been copied", same);
                 }
-                assertTrue(same);
             }
             
-
-            // manager is not privately owned, however target of OneToOneMapping is copied 
-            // if it has been copied elsewhere (as original Employee).
-            if(emp.getManager() == null) {
-                assertTrue(empCopy.getManager() == null);
-            } else {
-                assertFalse(emp.getManager() == empCopy.getManager());
-            }
-
-            // phoneNumbers privately owned therefore
-            // copyEmp has copies of original's phone numbers
-            for(PhoneNumber phone : emp.getPhoneNumbers()) {
+            for(Employee managedEmp : emp.getManagedEmployees()) {
+                originalEmployees.add(managedEmp);
                 same = false;
-                for(PhoneNumber phoneCopy : empCopy.getPhoneNumbers()) {
-                    if(phone == phoneCopy) {
+                for(Employee managedEmpCopy : empCopy.getManagedEmployees()) {
+                    copyEmployees.add(managedEmpCopy);
+                    if(!same && managedEmp == managedEmpCopy) {
                         same = true;
-                        break;
                     }
                 }
-                assertFalse(same);
+                if(cascadeDepth == CopyGroup.NO_CASCADE || cascadeDepth == CopyGroup.CASCADE_PRIVATE_PARTS) {
+                    assertTrue("managedEmployee has been copied", same);
+                } else {
+                    // cascadeDepth == CopyGroup.CASCADE_ALL_PARTS
+                    assertFalse("managedEmployee has not been copied", same);
+                }
+            }
+            
+            if(emp.getManager() == null) {
+                assertTrue("emp.getManager() == null, but empCopy.getManager() != null", empCopy.getManager() == null);
+            } else {
+                originalEmployees.add(emp.getManager());
+                copyEmployees.add(empCopy.getManager());
+                if(cascadeDepth == CopyGroup.NO_CASCADE || cascadeDepth == CopyGroup.CASCADE_PRIVATE_PARTS) {
+                    assertTrue("manager has been copied", emp.getManager() == empCopy.getManager());
+                } else {
+                    // cascadeDepth == CopyGroup.CASCADE_ALL_PARTS
+                    assertFalse("manager has not been copied", emp.getManager() == empCopy.getManager());
+                }
+            }
+
+            // phoneNumbers is privately owned
+            for(PhoneNumber phone : emp.getPhoneNumbers()) {
+                originalPhones.add(phone);
+                same = false;
+                for(PhoneNumber phoneCopy : empCopy.getPhoneNumbers()) {
+                    copyPhones.add(phoneCopy);
+                    if(!same && phone == phoneCopy) {
+                        same = true;
+                    }
+                }
+                if(cascadeDepth == CopyGroup.NO_CASCADE) {
+                    assertTrue("phone has been copied", same);
+                } else {
+                    // cascadeDepth == CopyGroup.CASCADE_ALL_PARTS || cascadeDepth == CopyGroup.CASCADE_PRIVATE_PARTS
+                    assertFalse("phone has not been copied", same);
+                }
             }
         }
+        
+        assertTrue("copyEmployees.size() == " + copyEmployees.size() + "; was expected " + originalEmployees.size(), originalEmployees.size() == copyEmployees.size());
+        assertTrue("copyAddresses.size() == " + copyAddresses.size() + "; was expected " + originalAddresses.size(), originalAddresses.size() == copyAddresses.size());
+        assertTrue("copyProjects.size() == " + copyProjects.size() + "; was expected " + originalProjects.size(), originalProjects.size() == copyProjects.size());
+        assertTrue("copyPhones.size() == " + copyPhones.size() + "; was expected " + originalPhones.size(), originalPhones.size() == copyPhones.size());
     }
     
     private <T> T serialize(Serializable entity) throws IOException, ClassNotFoundException {
