@@ -52,6 +52,7 @@ public abstract class NamespaceResolvableProject extends Project {
     }
     public NamespaceResolvableProject(NamespaceResolverWithPrefixes ns) {
         super();
+        fieldQname = new QName(getSecondaryNamespace(), "field");
         this.ns = ns;
         buildDescriptors();
         setNamespaceResolverOnDescriptors();
