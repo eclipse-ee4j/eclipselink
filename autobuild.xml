@@ -95,7 +95,7 @@
             }
             else {
                 // Last changed revision (branch specific) is stored 2nd to last line of
-                //    "svn info --revision HEAD <url>" output
+                //    "svn info /-/-revision HEAD <url>" output
                 // Get "endString" Index based on search for last instance of "Last Changed"
                 endLastRev = input.lastIndexOf("Last Changed");
                 // Get "beginString" index based upon the last space in the line above the endString index
