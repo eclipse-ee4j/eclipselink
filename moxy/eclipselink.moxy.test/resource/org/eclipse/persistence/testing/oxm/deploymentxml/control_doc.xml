@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<object-persistence xmlns="http://www.eclipse.org/eclipselink/xsds/persistence" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:eclipselink="http://www.eclipse.org/eclipselink/xsds/persistence" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" version="Eclipse Persistence Services - 2.2.0.qualifier">
+   <name>db-adapter-outbound-request-response</name>
+   <class-mapping-descriptors>
+      <class-mapping-descriptor xsi:type="relational-class-mapping-descriptor">
+         <class>org.eclipse.persistence.testing.oxm.deploymentxml.RequestResponse</class>
+         <alias>RequestResponse</alias>
+         <primary-key>
+            <field table="REQUEST_RESPONSE" name="F1" xsi:type="column"/>
+         </primary-key>
+         <events/>
+         <querying>
+            <queries>
+               <query name="findAllRequestResponse" xsi:type="read-all-query">
+                  <timeout>0</timeout>
+                  <reference-class>org.eclipse.persistence.testing.oxm.deploymentxml.RequestResponse</reference-class>
+                  <cache-usage>primary-key</cache-usage>
+                  <lock-mode>none</lock-mode>
+                  <container xsi:type="list-container-policy">
+                     <collection-type>java.util.Vector</collection-type>
+                  </container>
+               </query>
+               <query name="db-adapter-outbound-request-responseSelect" xsi:type="read-all-query">
+                  <criteria operator="greaterThan" xsi:type="relation-expression">
+                     <left name="f1" xsi:type="query-key-expression">
+                        <base xsi:type="base-expression"/>
+                     </left>
+                     <right xsi:type="parameter-expression">
+                        <parameter name="f1-value" xsi:type="column"/>
+                     </right>
+                  </criteria>
+                  <arguments>
+                     <argument name="f1-value">
+                        <type>java.math.BigDecimal</type>
+                     </argument>
+                  </arguments>
+                  <timeout>0</timeout>
+                  <reference-class>org.eclipse.persistence.testing.oxm.deploymentxml.RequestResponse</reference-class>
+                  <cache-usage>primary-key</cache-usage>
+                  <lock-mode>none</lock-mode>
+                  <container xsi:type="list-container-policy">
+                     <collection-type>java.util.Vector</collection-type>
+                  </container>
+               </query>
+            </queries>
+            <does-exist-query>
+               <existence-check>check-database</existence-check>
+            </does-exist-query>
+         </querying>
+         <attribute-mappings>
+            <attribute-mapping xsi:type="direct-mapping">
+               <attribute-name>f1</attribute-name>
+               <field table="REQUEST_RESPONSE" name="F1" xsi:type="column"/>
+               <attribute-classification>java.math.BigDecimal</attribute-classification>
+            </attribute-mapping>
+            <attribute-mapping xsi:type="direct-mapping">
+               <attribute-name>f2</attribute-name>
+               <field table="REQUEST_RESPONSE" name="F2" xsi:type="column"/>
+               <attribute-classification>java.lang.String</attribute-classification>
+            </attribute-mapping>
+            <attribute-mapping xsi:type="direct-mapping">
+               <attribute-name>f3</attribute-name>
+               <field table="REQUEST_RESPONSE" name="F3" xsi:type="column"/>
+               <attribute-classification>java.lang.String</attribute-classification>
+            </attribute-mapping>
+         </attribute-mappings>
+         <descriptor-type>independent</descriptor-type>
+         <caching>
+            <cache-type>weak-reference</cache-type>
+            <always-refresh>true</always-refresh>
+            <unitofwork-isolation-level>isolate-new-data-after-transaction</unitofwork-isolation-level>
+         </caching>
+         <remote-caching>
+            <cache-type>weak-reference</cache-type>
+         </remote-caching>
+         <instantiation/>
+         <copying xsi:type="instantiation-copy-policy"/>
+         <change-policy xsi:type="deferred-detection-change-policy"/>
+         <tables>
+            <table name="REQUEST_RESPONSE"/>
+         </tables>
+      </class-mapping-descriptor>
+   </class-mapping-descriptors>
+</object-persistence>
