@@ -23,6 +23,7 @@ import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.StringTokenizer;
 import java.util.TimeZone;
 
@@ -35,7 +36,10 @@ import javax.xml.namespace.QName;
 
 import org.eclipse.persistence.exceptions.ConversionException;
 import org.eclipse.persistence.exceptions.XMLConversionException;
-import org.eclipse.persistence.internal.helper.*;
+import org.eclipse.persistence.internal.helper.ClassConstants;
+import org.eclipse.persistence.internal.helper.ConversionManager;
+import org.eclipse.persistence.internal.helper.Helper;
+import org.eclipse.persistence.internal.helper.TimeZoneHolder;
 import org.eclipse.persistence.internal.oxm.conversion.Base64;
 import org.eclipse.persistence.internal.queries.ContainerPolicy;
 import org.eclipse.persistence.oxm.XMLConstants;
@@ -49,7 +53,7 @@ import org.eclipse.persistence.oxm.XMLConstants;
 
 public class XMLConversionManager extends ConversionManager implements TimeZoneHolder {
     protected static final String GMT_ID = "GMT";
-    protected static final String GMT_SUFFIX = "Z";    
+    protected static final String GMT_SUFFIX = "Z";
 
     protected static XMLConversionManager defaultXMLManager;
 
@@ -65,7 +69,7 @@ public class XMLConversionManager extends ConversionManager implements TimeZoneH
     protected static long YEAR_ONE_AD_TIME = -62135769600000L; // time of 1 AD
 
     private static final char PLUS = '+';
-    
+
     protected DatatypeFactory datatypeFactory;
 
     public XMLConversionManager() {
@@ -266,13 +270,13 @@ public class XMLConversionManager extends ConversionManager implements TimeZoneH
         if (sourceObject instanceof XMLGregorianCalendar) {
             return (XMLGregorianCalendar) sourceObject;
         }
-        
+
         if (sourceObject instanceof String) {
             return convertStringToXMLGregorianCalendar((String) sourceObject, schemaTypeQName);
         }
         throw ConversionException.couldNotBeConverted(sourceObject, ClassConstants.XML_GREGORIAN_CALENDAR);
     }
-    
+
     /**
      * Build a valid instance of XMLGregorianCalendar from the provided sourceObject.
      *
@@ -282,7 +286,7 @@ public class XMLConversionManager extends ConversionManager implements TimeZoneH
         if (sourceObject instanceof XMLGregorianCalendar) {
             return (XMLGregorianCalendar) sourceObject;
         }
-        
+
         if (sourceObject instanceof String) {
             return convertStringToXMLGregorianCalendar((String) sourceObject);
         }
@@ -303,7 +307,7 @@ public class XMLConversionManager extends ConversionManager implements TimeZoneH
         }
         throw ConversionException.couldNotBeConverted(sourceObject, ClassConstants.DURATION);
     }
-    
+
     /**
      * Build a valid instance of Character from the provided sourceObject.
      *
@@ -404,24 +408,24 @@ public class XMLConversionManager extends ConversionManager implements TimeZoneH
             return stringFromDuration((Duration) sourceObject);
         }
         if(sourceObject instanceof Double){
-        	if(Double.POSITIVE_INFINITY == ((Double)sourceObject)){
-        		return XMLConstants.POSITIVE_INFINITY;
-        	}
-        	if(Double.NEGATIVE_INFINITY == ((Double)sourceObject)){
-        		return XMLConstants.NEGATIVE_INFINITY;
-        	}
-        	return ((Double)sourceObject).toString();
+            if(Double.POSITIVE_INFINITY == ((Double)sourceObject)){
+                return XMLConstants.POSITIVE_INFINITY;
+            }
+            if(Double.NEGATIVE_INFINITY == ((Double)sourceObject)){
+                return XMLConstants.NEGATIVE_INFINITY;
+            }
+            return ((Double)sourceObject).toString();
         }
         if(sourceObject instanceof Float){
-        	if(Float.POSITIVE_INFINITY == ((Float)sourceObject)){
-        		return XMLConstants.POSITIVE_INFINITY;
-        	}
-        	if(Float.NEGATIVE_INFINITY == ((Float)sourceObject)){
-        		return XMLConstants.NEGATIVE_INFINITY;
-        	}
-        	return ((Float)sourceObject).toString();
+            if(Float.POSITIVE_INFINITY == ((Float)sourceObject)){
+                return XMLConstants.POSITIVE_INFINITY;
+            }
+            if(Float.NEGATIVE_INFINITY == ((Float)sourceObject)){
+                return XMLConstants.NEGATIVE_INFINITY;
+            }
+            return ((Float)sourceObject).toString();
         }
-        
+
         return super.convertObjectToString(sourceObject);
     }
 
@@ -454,22 +458,22 @@ public class XMLConversionManager extends ConversionManager implements TimeZoneH
             return stringFromDuration((Duration) sourceObject);
         }
         if(sourceObject instanceof Double){
-        	if(Double.POSITIVE_INFINITY == ((Double)sourceObject)){
-        		return XMLConstants.POSITIVE_INFINITY;
-        	}
-        	if(Double.NEGATIVE_INFINITY == ((Double)sourceObject)){
-        		return XMLConstants.NEGATIVE_INFINITY;
-        	}
-        	return ((Double)sourceObject).toString();
+            if(Double.POSITIVE_INFINITY == ((Double)sourceObject)){
+                return XMLConstants.POSITIVE_INFINITY;
+            }
+            if(Double.NEGATIVE_INFINITY == ((Double)sourceObject)){
+                return XMLConstants.NEGATIVE_INFINITY;
+            }
+            return ((Double)sourceObject).toString();
         }
         if(sourceObject instanceof Float){
-        	if(Float.POSITIVE_INFINITY == ((Float)sourceObject)){
-        		return XMLConstants.POSITIVE_INFINITY;
-        	}
-        	if(Float.NEGATIVE_INFINITY == ((Float)sourceObject)){
-        		return XMLConstants.NEGATIVE_INFINITY;
-        	}
-        	return ((Float)sourceObject).toString();
+            if(Float.POSITIVE_INFINITY == ((Float)sourceObject)){
+                return XMLConstants.POSITIVE_INFINITY;
+            }
+            if(Float.NEGATIVE_INFINITY == ((Float)sourceObject)){
+                return XMLConstants.NEGATIVE_INFINITY;
+            }
+            return ((Float)sourceObject).toString();
         }
 
         return super.convertObjectToString(sourceObject);
@@ -483,7 +487,7 @@ public class XMLConversionManager extends ConversionManager implements TimeZoneH
         return super.convertObjectToCalendar(sourceObject);
     }
 
-    
+
     /**
      * Convert the object to an instance of Double.
      * @param                    sourceObject Object of type String or Number.
@@ -491,52 +495,52 @@ public class XMLConversionManager extends ConversionManager implements TimeZoneH
      *         NumberFormatException if the String does not contain a
      *        parsable double.
      */
-   protected Double convertObjectToDouble(Object sourceObject) throws ConversionException {       
+   protected Double convertObjectToDouble(Object sourceObject) throws ConversionException {
        if (sourceObject instanceof String) {
            if(XMLConstants.POSITIVE_INFINITY.equals(sourceObject)){
-        	   return Double.valueOf(Double.POSITIVE_INFINITY);
+               return Double.valueOf(Double.POSITIVE_INFINITY);
            }else if(XMLConstants.NEGATIVE_INFINITY.equals(sourceObject)){
-        	   return Double.valueOf(Double.NEGATIVE_INFINITY);
+               return Double.valueOf(Double.NEGATIVE_INFINITY);
            }else{
                return super.convertObjectToDouble(sourceObject);
-       	   }
+           }
        }else{
            return super.convertObjectToDouble(sourceObject);
-       }                  
+       }
    }
-    
+
    /**
     * Build a valid Float instance from a String or another Number instance.
     * @caught exception    The Float(String) constructor throws a
     *         NumberFormatException if the String does not contain a
     *        parsable Float.
     */
-   protected Float convertObjectToFloat(Object sourceObject) throws ConversionException {       
+   protected Float convertObjectToFloat(Object sourceObject) throws ConversionException {
        if (sourceObject instanceof String) {
            if(XMLConstants.POSITIVE_INFINITY.equals(sourceObject)){
                return new Float(Float.POSITIVE_INFINITY);
            }else if(XMLConstants.NEGATIVE_INFINITY.equals(sourceObject)){
                return new Float(Float.NEGATIVE_INFINITY);
-           }               
+           }
            return super.convertObjectToFloat(sourceObject);
        }else{
-       	   return super.convertObjectToFloat(sourceObject);
+           return super.convertObjectToFloat(sourceObject);
        }
    }
-   
+
    /**
     * Build a valid Integer instance from a String or another Number instance.
     * @caught exception    The Integer(String) constructor throws a
     *         NumberFormatException if the String does not contain a
     *        parsable integer.
     */
-   protected Integer convertObjectToInteger(Object sourceObject) throws ConversionException {   
+   protected Integer convertObjectToInteger(Object sourceObject) throws ConversionException {
        if(sourceObject instanceof String && ((String) sourceObject).length()>0  && ((String) sourceObject).charAt(0) == PLUS){
            return super.convertObjectToInteger(((String)sourceObject).substring(1));
        }
        return super.convertObjectToInteger(sourceObject);
    }
-   
+
    /**
     * Build a valid Long instance from a String or another Number instance.
     * @caught exception    The Long(String) constructor throws a
@@ -544,14 +548,14 @@ public class XMLConversionManager extends ConversionManager implements TimeZoneH
     *        parsable long.
     *
     */
-  protected Long convertObjectToLong(Object sourceObject) throws ConversionException {	  
-      if(sourceObject instanceof String && ((String) sourceObject).length()>0  && ((String) sourceObject).charAt(0) == PLUS){		  
+  protected Long convertObjectToLong(Object sourceObject) throws ConversionException {
+      if(sourceObject instanceof String && ((String) sourceObject).length()>0  && ((String) sourceObject).charAt(0) == PLUS){
           return super.convertObjectToLong(((String)sourceObject).substring(1));
       }
       return super.convertObjectToLong(sourceObject);
-  }	  
-  
-  
+  }
+
+
   /**
    * INTERNAL:
    * Build a valid Short instance from a String or another Number instance.
@@ -560,13 +564,13 @@ public class XMLConversionManager extends ConversionManager implements TimeZoneH
    *    parsable short.
    */
   protected Short convertObjectToShort(Object sourceObject) throws ConversionException {
-	  if(sourceObject instanceof String && ((String) sourceObject).length()>0  && ((String) sourceObject).charAt(0) == PLUS){
+      if(sourceObject instanceof String && ((String) sourceObject).length()>0  && ((String) sourceObject).charAt(0) == PLUS){
           return super.convertObjectToShort(((String)sourceObject).substring(1));
       }
       return super.convertObjectToShort(sourceObject);
-  }	  
-  
-  
+  }
+
+
   /**
    * INTERNAL:
    * Build a valid BigDecimal instance from a String or another
@@ -576,35 +580,35 @@ public class XMLConversionManager extends ConversionManager implements TimeZoneH
    *     NumberFormatException if the String does not contain a
    *    parsable BigDecimal.
    */
-  protected BigDecimal convertObjectToNumber(Object sourceObject) throws ConversionException {	  
-	  if(sourceObject instanceof String && ((String) sourceObject).length()>0  && ((String) sourceObject).charAt(0) == PLUS){
+  protected BigDecimal convertObjectToNumber(Object sourceObject) throws ConversionException {
+      if(sourceObject instanceof String && ((String) sourceObject).length()>0  && ((String) sourceObject).charAt(0) == PLUS){
           return super.convertObjectToNumber(((String)sourceObject).substring(1));
       }
-      return super.convertObjectToNumber(sourceObject);	  	  
+      return super.convertObjectToNumber(sourceObject);
   }
-   
+
    /**
     * Build a valid instance of BigInteger from the provided sourceObject.
     *    @param sourceObject    Valid instance of String, BigDecimal, or any Number
     */
-   protected BigInteger convertObjectToBigInteger(Object sourceObject) throws ConversionException {	  
-	   if(sourceObject instanceof String && ((String) sourceObject).length()>0  && ((String) sourceObject).charAt(0) == PLUS){
+   protected BigInteger convertObjectToBigInteger(Object sourceObject) throws ConversionException {
+       if(sourceObject instanceof String && ((String) sourceObject).length()>0  && ((String) sourceObject).charAt(0) == PLUS){
            return super.convertObjectToBigInteger(((String)sourceObject).substring(1));
        }
-       return super.convertObjectToBigInteger(sourceObject);	  
+       return super.convertObjectToBigInteger(sourceObject);
    }
-   
+
    /**
     * Build a valid instance of BigDecimal from the given sourceObject
     *    @param sourceObject    Valid instance of String, BigInteger, any Number
     */
-   protected BigDecimal convertObjectToBigDecimal(Object sourceObject) throws ConversionException {        
-	   if(sourceObject instanceof String && ((String) sourceObject).length()>0  && ((String) sourceObject).charAt(0) == PLUS){
+   protected BigDecimal convertObjectToBigDecimal(Object sourceObject) throws ConversionException {
+       if(sourceObject instanceof String && ((String) sourceObject).length()>0  && ((String) sourceObject).charAt(0) == PLUS){
            return super.convertObjectToBigDecimal(((String)sourceObject).substring(1));
-       }       
-       return super.convertObjectToBigDecimal(sourceObject);	    
+       }
+       return super.convertObjectToBigDecimal(sourceObject);
     }
-   
+
    /**
     * Build a valid instance of Byte from the provided sourceObject
     * @param sourceObject    Valid instance of String or any Number
@@ -614,14 +618,14 @@ public class XMLConversionManager extends ConversionManager implements TimeZoneH
     *
     */
     protected Byte convertObjectToByte(Object sourceObject) throws ConversionException {
-    	if(sourceObject instanceof String && ((String) sourceObject).length()>0  && ((String) sourceObject).charAt(0) == PLUS){
+        if(sourceObject instanceof String && ((String) sourceObject).length()>0  && ((String) sourceObject).charAt(0) == PLUS){
             return super.convertObjectToByte(((String)sourceObject).substring(1));
-        }       
-        return super.convertObjectToByte(sourceObject);	
+        }
+        return super.convertObjectToByte(sourceObject);
     }
-   
+
     public XMLGregorianCalendar convertStringToXMLGregorianCalendar(String sourceString, QName schemaTypeQName) {
-        XMLGregorianCalendar xmlGregorianCalender = null; 
+        XMLGregorianCalendar xmlGregorianCalender = null;
         try {
             xmlGregorianCalender = convertStringToXMLGregorianCalendar(sourceString);
         } catch (Exception ex) {
@@ -679,7 +683,7 @@ public class XMLConversionManager extends ConversionManager implements TimeZoneH
         }
         return xmlGregorianCalender;
     }
-    
+
     /**
      * Return an XMLGregorianCalander created with a given date string
      *
@@ -701,7 +705,7 @@ public class XMLConversionManager extends ConversionManager implements TimeZoneH
                 throw e1;
             }
         }
-                
+
         return calToReturn;
     }
 
@@ -884,7 +888,7 @@ public class XMLConversionManager extends ConversionManager implements TimeZoneH
                 String xmlFormat = xgc.toXMLFormat();
                 String pre  = xmlFormat.substring(0, 4); // will always be --MM
                 String post = XMLConstants.EMPTY_STRING;
-                
+
                 // --MM or --MM--
                 if (xmlFormat.length() == 4 && xmlFormat.length() == 6) {
                     post = XMLConstants.EMPTY_STRING;
@@ -999,7 +1003,6 @@ public class XMLConversionManager extends ConversionManager implements TimeZoneH
         return result;
     }
 
-
     private String stringFromCalendar(Calendar sourceCalendar) {
         if (!(sourceCalendar.isSet(Calendar.HOUR) || sourceCalendar.isSet(Calendar.MINUTE) || sourceCalendar.isSet(Calendar.SECOND) || sourceCalendar.isSet(Calendar.MILLISECOND))) {
             return stringFromCalendar(sourceCalendar, XMLConstants.DATE_QNAME);
@@ -1017,22 +1020,54 @@ public class XMLConversionManager extends ConversionManager implements TimeZoneH
             schemaType = xmlGregorianCalender.getXMLSchemaType();
         }
 
-        XMLGregorianCalendar defaults = getDatatypeFactory().newXMLGregorianCalendar();
-        defaults.setTimezone(getTimeZone().getRawOffset()/60000);
-
-        GregorianCalendar cal;
-        if(xmlGregorianCalender.getTimezone() == DatatypeConstants.FIELD_UNDEFINED){
-            cal = xmlGregorianCalender.toGregorianCalendar(getTimeZone(), null, null);
-        }else{
-            cal = xmlGregorianCalender.toGregorianCalendar();
-        }
-
-        cal.setGregorianChange(new Date(Long.MAX_VALUE));
-        Date returnDate= cal.getTime();
+        GregorianCalendar cal = toGregorianCalendar(xmlGregorianCalender);
+        Date returnDate = cal.getTime();
 
         return returnDate;
     }
 
+    private GregorianCalendar toGregorianCalendar(XMLGregorianCalendar xgc) {
+        TimeZone tz = null;
+        if (xgc.getTimezone() == DatatypeConstants.FIELD_UNDEFINED) {
+            tz = getTimeZone();
+        } else {
+            tz = xgc.getTimeZone(xgc.getTimezone());
+        }
+
+        GregorianCalendar gc = new GregorianCalendar(tz, Locale.getDefault());
+        gc.clear();
+
+        if (xgc.getEonAndYear() != null) {
+            if (xgc.getEonAndYear().signum() < 0) {
+                gc.set(Calendar.ERA, GregorianCalendar.BC);
+            } else {
+                gc.set(Calendar.ERA, GregorianCalendar.AD);
+            }
+        }
+
+        if (xgc.getYear() != DatatypeConstants.FIELD_UNDEFINED)
+            gc.set(Calendar.YEAR, xgc.getYear());
+
+        if (xgc.getMonth() != DatatypeConstants.FIELD_UNDEFINED)
+            gc.set(Calendar.MONTH, xgc.getMonth() - 1);
+
+        if (xgc.getDay() != DatatypeConstants.FIELD_UNDEFINED)
+            gc.set(Calendar.DAY_OF_MONTH, xgc.getDay());
+
+        if (xgc.getHour() != DatatypeConstants.FIELD_UNDEFINED)
+            gc.set(Calendar.HOUR_OF_DAY, xgc.getHour());
+
+        if (xgc.getMinute() != DatatypeConstants.FIELD_UNDEFINED)
+            gc.set(Calendar.MINUTE, xgc.getMinute());
+
+        if (xgc.getSecond() != DatatypeConstants.FIELD_UNDEFINED)
+            gc.set(Calendar.SECOND, xgc.getSecond());
+
+        if (xgc.getMillisecond() != DatatypeConstants.FIELD_UNDEFINED)
+            gc.set(Calendar.MILLISECOND, xgc.getMillisecond());
+
+        return gc;
+    }
 
     /**
      * This method returns a dateTime string representing a given
@@ -1610,7 +1645,7 @@ public class XMLConversionManager extends ConversionManager implements TimeZoneH
         return appendTimeZone(string, sourceDate);
     }
 
-private String stringFromXMLGregorianCalendar(XMLGregorianCalendar 
+private String stringFromXMLGregorianCalendar(XMLGregorianCalendar
 cal, QName schemaTypeQName) {
         GregorianCalendar gCal = cal.toGregorianCalendar();
         if(cal.getTimezone() == DatatypeConstants.FIELD_UNDEFINED) {
@@ -1618,7 +1653,7 @@ cal, QName schemaTypeQName) {
         }
         return stringFromCalendar(gCal, schemaTypeQName);
     }
-    
+
     private String stringFromXMLGregorianCalendar(XMLGregorianCalendar cal) {
         return cal.toXMLFormat();
     }
@@ -1707,9 +1742,9 @@ cal, QName schemaTypeQName) {
         }
         return list;
     }
-    
+
     /**
-     * Convert the given sourceObject (String) to the appropriate collection type specified by the 
+     * Convert the given sourceObject (String) to the appropriate collection type specified by the
      * containerPolicy, using the elementType to properly convert each element of the list.
      *
      * @param sourceObject - will always be a string if read from XML
@@ -1718,7 +1753,7 @@ cal, QName schemaTypeQName) {
      */
     public Object convertStringToList(Object sourceObject, Class elementType, ContainerPolicy containerPolicy) throws ConversionException {
         Collection collection = (Collection) containerPolicy.containerInstance();
-        
+
         if (sourceObject instanceof String) {
             StringTokenizer tokenizer = new StringTokenizer((String) sourceObject, " ");
             while (tokenizer.hasMoreElements()) {
@@ -1726,7 +1761,7 @@ cal, QName schemaTypeQName) {
                 collection.add(convertObject(token, elementType));
             }
         }
-        
+
         return collection;
     }
 
@@ -1804,7 +1839,7 @@ cal, QName schemaTypeQName) {
         javaTypes.put(ClassConstants.BIGINTEGER, XMLConstants.INTEGER_QNAME);
         javaTypes.put(ClassConstants.PBOOLEAN, XMLConstants.BOOLEAN_QNAME);
         javaTypes.put(ClassConstants.PBYTE, XMLConstants.BYTE_QNAME);
-        javaTypes.put(ClassConstants.CALENDAR, XMLConstants.DATE_TIME_QNAME);        
+        javaTypes.put(ClassConstants.CALENDAR, XMLConstants.DATE_TIME_QNAME);
         javaTypes.put(ClassConstants.PDOUBLE, XMLConstants.DOUBLE_QNAME);
         javaTypes.put(ClassConstants.PFLOAT, XMLConstants.FLOAT_QNAME);
         javaTypes.put(ClassConstants.PINT, XMLConstants.INT_QNAME);
