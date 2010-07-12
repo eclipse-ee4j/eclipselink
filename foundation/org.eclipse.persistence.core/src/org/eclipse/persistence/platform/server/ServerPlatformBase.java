@@ -133,14 +133,24 @@ public abstract class ServerPlatformBase implements ServerPlatform {
         this.isRuntimeServicesEnabled = isRuntimeServicesEnabledDefault();
         this.databaseSession = newDatabaseSession;
         this.setIsCMP(false);
-        //
+        // Enable users to disable or enable (default) MBean registration
         String shouldRegisterRuntimeBeanProperty = System.getProperty(JMX_REGISTER_RUN_MBEAN_PROPERTY);
-        if(null != shouldRegisterRuntimeBeanProperty && shouldRegisterRuntimeBeanProperty.toLowerCase().indexOf("false") > -1) {
-            shouldRegisterRuntimeBean = false;
+        if(null != shouldRegisterRuntimeBeanProperty) {
+            if(shouldRegisterRuntimeBeanProperty.toLowerCase().indexOf("false") > -1) {
+                shouldRegisterRuntimeBean = false;
+            }
+            if(shouldRegisterRuntimeBeanProperty.toLowerCase().indexOf("true") > -1) {
+                shouldRegisterRuntimeBean = true;
+            }
         }
         String shouldRegisterDevelopmentBeanProperty = System.getProperty(JMX_REGISTER_DEV_MBEAN_PROPERTY);
-        if(null != shouldRegisterDevelopmentBeanProperty && shouldRegisterDevelopmentBeanProperty.toLowerCase().indexOf("false") > -1) {
-            shouldRegisterDevelopmentBean = false;
+        if(null != shouldRegisterDevelopmentBeanProperty) {
+            if(shouldRegisterDevelopmentBeanProperty.toLowerCase().indexOf("false") > -1) {
+                shouldRegisterDevelopmentBean = false;
+            }
+            if(shouldRegisterDevelopmentBeanProperty.toLowerCase().indexOf("true") > -1) {
+                shouldRegisterDevelopmentBean = true;
+            }
         }        
     }
     
