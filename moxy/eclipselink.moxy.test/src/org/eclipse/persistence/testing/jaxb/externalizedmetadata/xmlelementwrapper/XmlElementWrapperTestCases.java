@@ -82,7 +82,7 @@ public class XmlElementWrapperTestCases extends ExternalizedMetadataTestCases {
      * Tests @XmlElementWrapper via eclipselink-oxm.xml.  Here, a number of
      * overrides are performed.
      * 
-     * Here, @XmlElementWrapper.namespace() is not “##default” and different 
+     * Here, @XmlElementWrapper.namespace() is not "##default" and different 
      * from the target namespace of the enclosing class.  An element declaration 
      * whose name is @XmlElementWrapper.name() and target namespace is
      * @XmlElementWrapper.namespace() should be generated.  Note: The element 

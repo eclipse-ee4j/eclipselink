@@ -504,8 +504,8 @@ public class PersistenceUnitProperties {
      * <p>
      * Valid values:
      * <ul>
-     * <li>true – enable internal statement caching.
-     * <li>false – disable internal statement caching. (DEFAULT)
+     * <li>true - enable internal statement caching.
+     * <li>false - disable internal statement caching. (DEFAULT)
      * </ul>
      * <p>
      * Example: persistence.xml file <code>
@@ -1242,7 +1242,7 @@ public class PersistenceUnitProperties {
      * <li>"NoProfiler" (DEFAULT)
      * <li>"PerformanceProfiler": Use {@link PerformanceProfiler}
      * <li>"QueryMonitor": Use {@link QueryMonitor}
-     * <li>Custom profiler – Specify a custom profiler class name which
+     * <li>Custom profiler - Specify a custom profiler class name which
      * implements {@link SessionProfiler}
      * </ul>
      * 

@@ -49,7 +49,7 @@ public class TestMultipleRelationships extends JPA1Base {
             .valueOf("1877-01-13"));
     private static final Patent ALTERNATING_CURRENT = new Patent("alternating current", 1888, "alternating current", Date
             .valueOf("1888-03-17"));
-    private static final Patent HELICOPTER = new Patent("helicopter", 1922, "flying machine", Date.valueOf("1922-11-11")); // Étienne
+    private static final Patent HELICOPTER = new Patent("helicopter", 1922, "flying machine", Date.valueOf("1922-11-11")); // Etienne
 
     // Oehmichen
 
