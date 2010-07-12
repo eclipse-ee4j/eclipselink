@@ -88,6 +88,8 @@ public class SDOConstants {
 
     public static final String XMLHELPER_LOAD_OPTIONS ="LoadOptions";
     public static final String TYPE_LOAD_OPTION = "type";
+    public static final String ATTACHMENT_MARSHALLER_OPTION = "attachmentMarshaller";
+    public static final String ATTACHMENT_UNMARSHALLER_OPTION = "attachmentUnmarshaller";
 
     public static HelperContext globalHelperContext;
     private static SDOTypeHelper sdoTypeHelper;

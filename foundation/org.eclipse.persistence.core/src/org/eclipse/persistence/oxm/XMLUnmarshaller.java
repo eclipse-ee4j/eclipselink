@@ -22,6 +22,7 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Properties;
+import java.util.Map.Entry;
 import javax.xml.transform.Source;
 import javax.xml.validation.Schema;
 
@@ -68,7 +69,7 @@ import org.eclipse.persistence.oxm.attachment.*;
  *
  * @see org.eclipse.persistence.oxm.XMLContext
  */
-public class XMLUnmarshaller {
+public class XMLUnmarshaller implements Cloneable {
     public static final int NONVALIDATING = XMLParser.NONVALIDATING;
     public static final int SCHEMA_VALIDATION = XMLParser.SCHEMA_VALIDATION;
     public static final int DTD_VALIDATION = XMLParser.DTD_VALIDATION;
@@ -625,6 +626,28 @@ public class XMLUnmarshaller {
     
     public Schema getSchema() {
         return this.platformUnmarshaller.getSchema();
+    }
+
+    @Override
+    public XMLUnmarshaller clone() {
+        XMLUnmarshaller clone = new XMLUnmarshaller(xmlContext);
+        clone.setAttachmentUnmarshaller(attachmentUnmarshaller);
+        clone.setEntityResolver(getEntityResolver());
+        clone.setErrorHandler(getErrorHandler());
+        for(Entry entry : unmarshalProperties.entrySet()) {
+            clone.getProperties().put(entry.getKey(), entry.getValue());
+        }
+        clone.setResultAlwaysXMLRoot(platformUnmarshaller.isResultAlwaysXMLRoot());
+        try {
+            Schema schema = getSchema();
+            if(null != schema) {
+                clone.setSchema(schema);
+            }
+        } catch(UnsupportedOperationException e) {}
+        clone.setUnmappedContentHandlerClass(unmappedContentHandlerClass);
+        clone.setUnmarshalListener(unmarshalListener);
+        clone.setValidationMode(getValidationMode());
+        return clone;
     }
 
 }

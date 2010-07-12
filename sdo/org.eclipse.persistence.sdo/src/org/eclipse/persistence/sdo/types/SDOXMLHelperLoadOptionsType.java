@@ -32,6 +32,18 @@ public class SDOXMLHelperLoadOptionsType extends SDOType implements Type {
         typeOptionProperty.setMany(false);
         typeOptionProperty.setType(typeType);
         addDeclaredProperty(typeOptionProperty);
+
+        SDOProperty attachmentMarshallerProperty = new SDOProperty(aHelperContext);
+        attachmentMarshallerProperty.setName(SDOConstants.ATTACHMENT_MARSHALLER_OPTION);
+        attachmentMarshallerProperty.setMany(false);
+        attachmentMarshallerProperty.setType(SDOConstants.SDO_OBJECT);
+        addDeclaredProperty(attachmentMarshallerProperty);
+
+        SDOProperty attachmentUnmarshallerProperty = new SDOProperty(aHelperContext);
+        attachmentUnmarshallerProperty.setName(SDOConstants.ATTACHMENT_UNMARSHALLER_OPTION);
+        attachmentUnmarshallerProperty.setMany(false);
+        attachmentUnmarshallerProperty.setType(SDOConstants.SDO_OBJECT);
+        addDeclaredProperty(attachmentUnmarshallerProperty);
     }
 
     public List getAliasNames() {

@@ -20,9 +20,16 @@ import org.eclipse.persistence.oxm.attachment.XMLAttachmentUnmarshaller;
  * Provide a testing implementation of AttachmentMarshaller that normally would be provided by the application server
  */
 public class AttachmentMarshallerImpl implements XMLAttachmentMarshaller {
+
+    private String id;
+
+    public AttachmentMarshallerImpl(String id) {
+        this.id = id;
+    }
+
     // maintain a global counter
     public String addMtomAttachment(byte[] bytes, int start, int offset, String namespaceURI, String elemtnName, String mimeType) {
-        return "c_id0";
+        return id;
     }
 
     public String addSwaRefAttachment(byte[] bytes, int start, int offset) {
@@ -41,6 +48,5 @@ public class AttachmentMarshallerImpl implements XMLAttachmentMarshaller {
         // force attachment usage
         return true;
     }
-    
-    
+
 }
