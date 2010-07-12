@@ -43,18 +43,18 @@
         message="eclipselink.utils.dbws requires Java version 1.6 or higher. You are currently using Java version ${ant.java.version}."
     />
 
-    <dirname  property="dbwsutil.build.location_temp" file="${ant.file.eclipselink.utils.dbws.test}"/>
+    <dirname  property="dbwsutil.build.location_temp" file="${ant.file.eclipselink.utils.dbws}"/>
     <pathconvert targetos="unix" property="dbwsutil.build.location">
         <path>
             <pathelement location="${dbwsutil.build.location_temp}"/>
         </path>
     </pathconvert>
-    <condition property="dbwsutil.2.common.plugins.dir" value="../../plugins" else="../plugins">
-        <contains string="${dbwsutil.build.location}" substring="utils/${ant.project.name}"/>
+    <echo message="dbwsutil.build.location = '${dbwsutil.build.location}'"/>
+    <condition property="dbwsutil.2.base.dir" value="../.." else="..">
+        <contains string="${dbwsutil.build.location}" substring="dbws/${ant.project.name}"/>
     </condition>
-    <property name="dbws_util_test.2.dbws_util.dir" value="../eclipselink.utils.dbws"/>
-    <property name="custom.tasks.lib" value="${dbwsutil.build.location}/buildsystem/ant_customizations.jar"/>
-
+    <property name="dbwsutil.2.common.plugins.dir" value="${dbwsutil.2.base.dir}/plugins"/>
+    
     <!-- OS environment variables have 'env' as a prefix -->
     <property environment="env"/>
     <!-- local property overrides -->

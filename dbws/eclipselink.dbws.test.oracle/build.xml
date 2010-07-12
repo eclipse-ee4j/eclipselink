@@ -60,8 +60,16 @@
             <pathelement location="${dbws_test_oracle.build.location_temp}"/>
         </path>
     </pathconvert>
-    <property name="custom.tasks.lib" value="${dbws_test_oracle.build.location}/buildsystem/ant_customizations.jar"/>
+    <echo message="dbws_test_oracle.build.location = '${dbws_test_oracle.build.location}'"/>
+    <condition property="dbws_test_oracle.2.base.dir" value="../.." else="..">
+        <contains string="${dbws_test_oracle.build.location}" substring="dbws/${ant.project.name}"/>
+    </condition>
+    <property name="dbws_test_oracle.2.common.plugins.dir" value="${dbws_test_oracle.2.base.dir}/plugins"/>
+
+    <property name="custom.tasks.lib" value="${dbws_test_oracle.build.location}/${dbws_test_oracle.2.base.dir}/buildsystem/ant_customizations.jar"/>
     <property name="custom.tolower.task.class" value="org.eclipse.persistence.buildtools.ant.taskdefs.ToLower"/>
+    <available file="${custom.tasks.lib}" property="ant_customizations.exist"/>
+    <fail unless="ant_customizations.exist" message="Cannot find custom tasks library: '${custom.tasks.lib}' directory"/>
     <taskdef  name="toLower" classname="${custom.tolower.task.class}" classpath="${custom.tasks.lib}"/>
 
   <!-- OS environment variables have 'env' as a prefix -->

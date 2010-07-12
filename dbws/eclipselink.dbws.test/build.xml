@@ -52,11 +52,17 @@
             <pathelement location="${dbws_test.build.location_temp}"/>
         </path>
     </pathconvert>
-    <condition property="dbws_test.2.common.plugins.dir" value="../../plugins" else="../plugins">
+    <echo message="dbws_test.build.location = '${dbws_test.build.location}'"/>
+    <condition property="dbws_test.2.base.dir" value="../.." else="..">
         <contains string="${dbws_test.build.location}" substring="dbws/${ant.project.name}"/>
     </condition>
-    <property name="custom.tasks.lib" value="${dbws_test.build.location}/buildsystem/ant_customizations.jar"/>
+    <echo message="dbws_test.2.base.dir = '${dbws_test.2.base.dir}'"/>
+    <property name="dbws_test.2.common.plugins.dir" value="${dbws_test.2.base.dir}/plugins"/>
+
+    <property name="custom.tasks.lib" value="${dbws_test.build.location}/${dbws_test.2.base.dir}/buildsystem/ant_customizations.jar"/>
     <property name="custom.tolower.task.class" value="org.eclipse.persistence.buildtools.ant.taskdefs.ToLower"/>
+    <available file="${custom.tasks.lib}" property="ant_customizations.exist"/>
+    <fail unless="ant_customizations.exist" message="Cannot find custom tasks library: '${custom.tasks.lib}' directory"/>
     <taskdef  name="toLower" classname="${custom.tolower.task.class}" classpath="${custom.tasks.lib}"/>
 
     <!-- OS environment variables have 'env' as a prefix -->
@@ -115,7 +121,7 @@
     </condition>
 
     <!-- all -->
-    <target name="build" depends="clean, compile, package" description="build dbwsutils jar"/>
+    <target name="build" depends="clean, compile, package" description="build dbws test jar"/>
 
     <!-- test -->
     <target name="test" depends="compile-common, run-tests" description="run tests after building"/>
