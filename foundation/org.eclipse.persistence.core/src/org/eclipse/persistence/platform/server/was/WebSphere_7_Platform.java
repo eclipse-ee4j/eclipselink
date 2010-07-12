@@ -61,7 +61,6 @@ public class WebSphere_7_Platform extends WebSphere_6_1_Platform implements JMXE
      * @see #disableRuntimeServices()
      * @see #registerMBean()
      */
-    @Override
     public void prepareServerSpecificServicesMBean() {
         // No check for an existing cached MBean - we will replace it if it exists
         if(shouldRegisterRuntimeBean) {
