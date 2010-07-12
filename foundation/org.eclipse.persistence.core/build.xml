@@ -44,9 +44,11 @@
             <pathelement location="${core.build.location_temp}"/>
         </path>
     </pathconvert>
+    <echo message="core.build.location = '${core.build.location}'"/>
     <condition property="core.2.base.dir" value="../.." else="..">
         <contains string="${core.build.location}" substring="foundation/${ant.project.name}"/>
     </condition>
+    <echo message="core.2.base.dir = '${core.2.base.dir}'"/>
     <property name="core.2.common.plugins.dir" value="${core.2.base.dir}/plugins"/>
     <condition property="core.2.jpa.plugins.dir" value="${core.2.base.dir}/jpa/plugins" else="../plugins">
         <available file="${core.2.base.dir}/jpa/plugins" type="dir"/>
@@ -128,7 +130,7 @@
         </path>
 
         <!-- Check for BND library -->
-        <property name="nobndtool.manifest.dir"      value="${dbws.build.location}/META-INF"/>
+        <property name="nobndtool.manifest.dir"      value="${core.build.location}/META-INF"/>
         <!-- extensions.depend.dir must be tested first to allow user overrides to work properly,  **
          **  once bnd is added to the buildsystem directory.                                       -->
         <echo message="bndtool.prefix        = '${bndtool.prefix}'"/>

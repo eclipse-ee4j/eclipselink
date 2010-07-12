@@ -47,6 +47,7 @@
     <condition property="osgi.2.base.dir" value="../.." else="..">
         <contains string="${osgi.build.location}" substring="jpa/${ant.project.name}"/>
     </condition>
+    <echo message="osgi.2.base.dir = '${osgi.2.base.dir}'"/>
     <property name="osgi.2.common.plugins.dir" value="${osgi.2.base.dir}/plugins"/>
     <property name="osgi.2.buildsys.dir" value="${osgi.2.base.dir}/buildsystem"/>
     <property name="osgi.2.jpa.plugins.dir" value="../plugins"/>

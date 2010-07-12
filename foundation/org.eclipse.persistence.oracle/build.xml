@@ -49,9 +49,11 @@
             <pathelement location="${oracle.build.location_temp}"/>
         </path>
     </pathconvert>
+    <echo message="oracle.build.location = '${oracle.build.location}'"/>
     <condition property="oracle.2.base.dir" value="../.." else="..">
         <contains string="${oracle.build.location}" substring="foundation"/>
     </condition>
+    <echo message="oracle.2.base.dir = '${oracle.2.base.dir}'"/>
     <property name="oracle.2.common.plugins.dir"     value="${oracle.2.base.dir}/plugins"/>
     <property name="oracle.2.foundation.plugins.dir" value="../plugins"/>
     <condition property="oracle.2.jpa.plugins.dir"     value="${oracle.2.base.dir}/jpa/plugins" else="../plugins">

@@ -51,7 +51,7 @@
     </pathconvert>
     <echo message="dbwsutiltest.build.location = '${dbwsutiltest.build.location}'"/>
     <condition property="dbwsutiltest.2.base.dir" value="../.." else="..">
-        <contains string="${dbwsutiltest.build.location}" substring="dbws/${ant.project.name}"/>
+        <contains string="${dbwsutiltest.build.location}" substring="utils/${ant.project.name}"/>
     </condition>
     <echo message="dbwsutiltest.2.base.dir = '${dbwsutiltest.2.base.dir}'"/>
     <property name="dbwsutiltest.2.common.plugins.dir" value="${dbwsutiltest.2.base.dir}/plugins"/>
@@ -88,9 +88,9 @@
     <!-- Set Compile Path-->
     <path id="dbwsutiltest.compile.path">
         <pathelement path="${junit.lib}"/>
-        <pathelement path="../../${eclipselink.jar}"/>
+        <pathelement path="${dbwsutiltest.2.base.dir}/${eclipselink.jar}"/>
         <pathelement path="${dbwsutiltest.2.common.plugins.dir}/${asm}"/>
-        <pathelement path="${dbwsutiltest.2.dbwsutil.dir}/${eclipselink.utils.dbws.jar}"/>
+        <pathelement path="${dbwsutiltest.2.dbwsutil.dir}/${dbwsutils.jar}"/>
         <fileset
             dir="../plugins"
             includes="${eclipselink.utils.dbws.depend}"
@@ -108,8 +108,8 @@
         <pathelement path="./${dbwsutil.test.jar}"/>
     </path>
     <!-- Test dependencies -->
-    <available file="../../${eclipselink.jar}" property="eclipselink.jar.exist"/>
-    <available file="${dbwsutiltest.2.dbwsutil.dir}/${eclipselink.utils.dbws.jar}" property="dbwsutil.jar.exist"/>
+    <available file="${dbwsutiltest.2.base.dir}/${eclipselink.jar}" property="eclipselink.jar.exist"/>
+    <available file="${dbwsutiltest.2.dbwsutil.dir}/${dbwsutils.jar}" property="dbwsutil.jar.exist"/>
     <available file="${dbwsutiltest.2.common.plugins.dir}/${asm}"  type="dir" property="asm.exist"/>
     <available file="../plugins/${wsdl.jar}" property="wsdl.exist"/>
     <available file="${jdbc.driver.jar}"  property="jdbc.jar.exist"/>

@@ -68,7 +68,7 @@
     <property name="jaxb-xjc.lib"    value="${moxytest.2.common.plugins.dir}/${jaxb-xjc.jar}"/>
     <property name="jaxb-api.lib"    value="${moxytest.2.common.plugins.dir}/${jaxb-api.jar}"/>
     <property name="jaxb-impl.lib"    value="${moxytest.2.common.plugins.dir}/${jaxb-impl.jar}"/>
-    
+
     <!-- Compile/run paths -->
     <path id="jaxb.compile.path">
         <pathelement path="${jaxb-api.lib}"/>

@@ -59,6 +59,7 @@
     <condition property="core_test.2.base.dir" value="../.." else="..">
         <contains string="${core_test.build.location}" substring="foundation"/>
     </condition>
+    <echo message="core_test.2.base.dir = '${core_test.2.base.dir}'"/>
     <property name="core_test.2.common.plugins.dir" value="${core_test.2.base.dir}/plugins"/>
     <property name="core_test.2.core.dir" value="../org.eclipse.persistence.core"/>
     <property name="core_test.plugins.dir" value="../plugins"/>

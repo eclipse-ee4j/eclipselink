@@ -47,6 +47,7 @@
     <condition property="sdo.2.base.dir" value="../.." else="..">
         <contains string="${sdo.build.location}" substring="sdo/${ant.project.name}"/>
     </condition>
+    <echo message="sdo.2.base.dir = '${sdo.2.base.dir}'"/>
     <property name="sdo.2.common.plugins.dir" value="${sdo.2.base.dir}/plugins"/>
     <property name="sdo.2.buildsys.dir" value="${sdo.2.base.dir}/buildsystem"/>
 

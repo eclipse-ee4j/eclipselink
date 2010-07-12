@@ -45,6 +45,7 @@
     <condition property="sdotest.2.base.dir" value="../.." else="..">
         <contains string="${sdotest.build.location}" substring="sdo"/>
     </condition>
+    <echo message="sdotest.2.base.dir = '${sdotest.2.base.dir}'"/>
     <property name="sdotest.2.common.plugins.dir" value="${sdotest.2.base.dir}/plugins"/>
     <property name="sdotest.plugins.dir" value="../plugins"/>
 

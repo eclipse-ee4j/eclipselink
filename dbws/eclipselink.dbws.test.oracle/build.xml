@@ -64,6 +64,7 @@
     <condition property="dbws_test_oracle.2.base.dir" value="../.." else="..">
         <contains string="${dbws_test_oracle.build.location}" substring="dbws/${ant.project.name}"/>
     </condition>
+    <echo message="dbws_test_oracle.2.base.dir = '${dbws_test_oracle.2.base.dir}'"/>
     <property name="dbws_test_oracle.2.common.plugins.dir" value="${dbws_test_oracle.2.base.dir}/plugins"/>
 
     <property name="custom.tasks.lib" value="${dbws_test_oracle.build.location}/${dbws_test_oracle.2.base.dir}/buildsystem/ant_customizations.jar"/>
@@ -176,7 +177,7 @@
 
   <!--
     compile path is complex, not just eclipselink.jar
-    Put core (plugin) modules first on path so that any 
+    Put core (plugin) modules first on path so that any
     in-progress work that has just be re-compiled will be
     picked up ahead of eclipselink.jar
   -->
@@ -347,9 +348,9 @@
   </macrodef>
 
   <target name="build" depends="clean, compile, package" if="support.test"/>
-  
+
   <target
-    name="clean" 
+    name="clean"
     if="support.test"
     >
     <DeleteDirQuietly dir="${classes.dir}"/>

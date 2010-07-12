@@ -45,9 +45,11 @@
             <pathelement location="${dbws.build.location_temp}"/>
         </path>
     </pathconvert>
+    <echo message="dbws.build.location = '${dbws.build.location}'"/>
     <condition property="dbws.2.base.dir" value="../.." else="..">
         <contains string="${dbws.build.location}" substring="dbws/${ant.project.name}"/>
     </condition>
+    <echo message="dbws.2.base.dir = '${dbws.2.base.dir}'"/>
     <property name="dbws.2.common.plugins.dir" value="${dbws.2.base.dir}/plugins"/>
     <property name="dbws.2.buildsys.dir" value="${dbws.2.base.dir}/buildsystem"/>
 

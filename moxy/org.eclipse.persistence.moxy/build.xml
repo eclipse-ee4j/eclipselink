@@ -47,6 +47,7 @@
     <condition property="moxy.2.base.dir" value="../.." else="..">
         <contains string="${moxy.build.location}" substring="moxy/${ant.project.name}"/>
     </condition>
+    <echo message="moxy.2.base.dir = '${moxy.2.base.dir}'"/>
     <property name="moxy.2.common.plugins.dir" value="${moxy.2.base.dir}/plugins"/>
     <property name="moxy.2.buildsys.dir" value="${moxy.2.base.dir}/buildsystem"/>
 

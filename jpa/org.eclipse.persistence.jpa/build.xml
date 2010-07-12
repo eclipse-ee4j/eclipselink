@@ -47,6 +47,7 @@
     <condition property="jpa.2.base.dir" value="../.." else="..">
         <contains string="${jpa.build.location}" substring="jpa/${ant.project.name}"/>
     </condition>
+    <echo message="jpa.2.base.dir = '${jpa.2.base.dir}'"/>
     <property name="jpa.2.common.plugins.dir" value="${jpa.2.base.dir}/plugins"/>
     <property name="jpa.2.buildsys.dir" value="${jpa.2.base.dir}/buildsystem"/>
     <property name="jpa.2.jpa.plugins.dir" value="../plugins"/>

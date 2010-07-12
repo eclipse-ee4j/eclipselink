@@ -46,6 +46,7 @@
     <condition property="equinox.2.base.dir" value="../.." else="..">
         <contains string="${equinox.build.location}" substring="jpa/${ant.project.name}"/>
     </condition>
+    <echo message="equinox.2.base.dir = '${equinox.2.base.dir}'"/>
     <property name="equinox.2.common.plugins.dir" value="${equinox.2.base.dir}/plugins"/>
     <property name="equinox.2.buildsys.dir" value="${equinox.2.base.dir}/buildsystem"/>
     <property name="equinox.2.jpa.plugins.dir" value="../plugins"/>

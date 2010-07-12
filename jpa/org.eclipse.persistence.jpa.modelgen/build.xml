@@ -47,6 +47,7 @@
     <condition property="modelgen.2.base.dir" value="../.." else="..">
         <contains string="${modelgen.build.location}" substring="jpa/${ant.project.name}"/>
     </condition>
+    <echo message="modelgen.2.base.dir = '${modelgen.2.base.dir}'"/>
     <property name="modelgen.2.common.plugins.dir" value="${modelgen.2.base.dir}/plugins"/>
     <property name="modelgen.2.jpa.plugins.dir" value="../plugins"/>
 

@@ -51,10 +51,11 @@
     </pathconvert>
     <echo message="dbwsutil.build.location = '${dbwsutil.build.location}'"/>
     <condition property="dbwsutil.2.base.dir" value="../.." else="..">
-        <contains string="${dbwsutil.build.location}" substring="dbws/${ant.project.name}"/>
+        <contains string="${dbwsutil.build.location}" substring="utils/${ant.project.name}"/>
     </condition>
+    <echo message="dbwsutil.2.base.dir = '${dbwsutil.2.base.dir}'"/>
     <property name="dbwsutil.2.common.plugins.dir" value="${dbwsutil.2.base.dir}/plugins"/>
-    
+
     <!-- OS environment variables have 'env' as a prefix -->
     <property environment="env"/>
     <!-- local property overrides -->

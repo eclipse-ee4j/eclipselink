@@ -84,7 +84,7 @@
     <!-- convienience targets -->
     <target name="build"     depends="build-against-jar"/>
     <target name="test"      depends="test-against-jar"/>
-    
+
     <target name="clean" description="Clean the build">
         <delete includeEmptyDirs="true" failonerror="false">
             <fileset dir="${wdf_test.build.location}/${classes.dir}"/>
@@ -149,7 +149,7 @@
             <path refid="base.compile.path"/>
         </path>
     </target>
-   
+
     <target name="init_against_classes" depends="init">
         <path id="compile.path">
             <path refid="product.classes.path"/>
@@ -215,7 +215,7 @@
             <classpath refid="compile.path"/>
         </javac>
     </target>
-    
+
     <target name="get-server-properties">
         <property file="${user.home}/${server.name}.properties"/>
         <property file="${wdf_test.build.location}/../eclipselink.jpa.test/${server.name}.properties"/>
@@ -227,15 +227,15 @@
 
     <!-- Packages JPA persistent unit test jars. -->
     <target name="package" depends="package-tests, package-wdf-jpa2-model, package-wdf-jpa1-model" description="build EclipseLink jar"/>
-    
+
 
     <target name="package-tests" depends="get-server-properties">
         <mkdir dir="${wdf_test.build.location}/stage"/>
         <filter token="server.user" value="${server.user}"/>
         <filter token="server.pwd" value="${server.pwd}"/>
         <filter token="server.factory" value="${server.factory}"/>
-        
-        <copy file="${wdf_test.build.location}/../eclipselink.jpa.test/resource/server/jndi.properties" todir="stage" filtering="true"/> 
+
+        <copy file="${wdf_test.build.location}/../eclipselink.jpa.test/resource/server/jndi.properties" todir="stage" filtering="true"/>
 
         <jar jarfile="${wdf_test.build.location}/${eclipselink.tests.jar}">
            <zipfileset dir="${wdf_test.build.location}/resource/ejb" includes="*.xml" prefix="META-INF"/>
@@ -245,7 +245,7 @@
            <fileset dir="${wdf_test.build.location}/stage"
                     includes="jndi.properties"/>
         </jar>
-        <delete dir="stage"/> 
+        <delete dir="stage"/>
     </target>
 
     <target name="package-model" depends="get-server-properties,set-app-name">
@@ -256,7 +256,7 @@
         <replace dir="${build.dir}/META-INF" token='%%data-source-name%%' value="${DS_NAME}">
             <include name="persistence.xml"/>
         </replace>
-        
+
         <condition property="SERVER-PLATFORM-PROPERTY" value="&lt;property name=&quot;eclipselink.target-server&quot; value=&quot;${server.platform}&quot;/&gt;"
                                                        else="">
             <isset property="server.name"/>
@@ -269,7 +269,7 @@
             <fileset dir="${wdf_test.build.location}/${classes.dir}"
                      includes="${PACKAGE}"/>
         </jar>
-        <delete dir="${build.dir}/META-INF"/> 
+        <delete dir="${build.dir}/META-INF"/>
     </target>
 
     <target name="package-wdf-jpa1-model">
@@ -311,8 +311,8 @@
     <target name="test-lrg">
         <antcall target="run-test" inheritRefs="true">
             <param name="TEST_CLASS" value="${test.class}"/>
-            <param name="TEST_AGENT" value="${test.agent}"/> 
-            <param name="TEST_WEAVING" value="${test.weaving}"/> 
+            <param name="TEST_AGENT" value="${test.agent}"/>
+            <param name="TEST_WEAVING" value="${test.weaving}"/>
             <param name="ORM_TESTING" value="-Dorm.testing=jpa"/>
             <param name="RUN_PATH" value="run.path"/>
             <param name="DB_URL" value="${db.url}"/>
@@ -373,18 +373,18 @@
         <copy overwrite="true" file="./resource/ear/application.xml" todir="${build.dir}/META-INF"/>
         <ear destfile="${wdf_test.build.location}/${build.dir}/servertest.ear" appxml="${build.dir}/META-INF/application.xml">
             <fileset file="${wdf_test.build.location}/${eclipselink.tests.jar}"/>
-            <zipfileset dir="${wdf_test.build.location}" includes="${eclipselink.wdf.jpa1.model}.jar" prefix="${LIB_PREFIX}"/> 
+            <zipfileset dir="${wdf_test.build.location}" includes="${eclipselink.wdf.jpa1.model}.jar" prefix="${LIB_PREFIX}"/>
         </ear>
-        <copy file="${wdf_test.build.location}/${build.dir}/servertest.ear" todir="${basedir}"/>  
+        <copy file="${wdf_test.build.location}/${build.dir}/servertest.ear" todir="${basedir}"/>
     </target>
-    
+
     <target name="server-deploy">
         <ant antfile="${wdf_test.build.location}/../eclipselink.jpa.test/${server.name}.xml" target="${server.name}-deploy" inheritRefs="true">
             <property name="ear.name" value="${ear.name}"/>
             <property name="application.name" value="${application.name}"/>
         </ant>
     </target>
-    
+
     <target name="server-undeploy">
         <ant antfile="${wdf_test.build.location}/../eclipselink.jpa.test/${server.name}.xml" target="${server.name}-undeploy" inheritRefs="true">
             <property name="application.name" value="${application.name}"/>
@@ -460,8 +460,8 @@
         </path>
         <antcall target="run-test" inheritRefs="true">
             <param name="TEST_CLASS" value="${test.class}"/>
-            <param name="TEST_AGENT" value="${test.agent}"/> 
-            <param name="TEST_WEAVING" value="${test.weaving}"/> 
+            <param name="TEST_AGENT" value="${test.agent}"/>
+            <param name="TEST_WEAVING" value="${test.weaving}"/>
             <param name="ORM_TESTING" value="-Dorm.testing=jpa"/>
             <param name="RUN_PATH" value="run.path.server"/>
             <param name="DB_URL" value="${db.url}"/>
