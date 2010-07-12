@@ -138,7 +138,6 @@ public class SunAS9ServerPlatform extends JMXServerPlatformBase implements JMXEn
      * @see #disableRuntimeServices()
      * @see #registerMBean()
      */
-    @Override
     public void prepareServerSpecificServicesMBean() {
         // No check for an existing cached MBean - we will replace it if it exists
         if(shouldRegisterRuntimeBean) {
