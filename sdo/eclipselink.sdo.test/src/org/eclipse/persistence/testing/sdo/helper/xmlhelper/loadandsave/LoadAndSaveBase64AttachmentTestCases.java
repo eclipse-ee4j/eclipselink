@@ -1,5 +1,13 @@
 package org.eclipse.persistence.testing.sdo.helper.xmlhelper.loadandsave;
 
+import java.io.ByteArrayOutputStream;
+import java.io.FileInputStream;
+import java.io.InputStreamReader;
+import java.io.OutputStreamWriter;
+
+import javax.xml.transform.stream.StreamResult;
+import javax.xml.transform.stream.StreamSource;
+
 import junit.textui.TestRunner;
 
 import org.eclipse.persistence.oxm.XMLMarshaller;
@@ -12,8 +20,13 @@ import org.eclipse.persistence.sdo.helper.SDOXMLHelper;
 
 import commonj.sdo.DataObject;
 import commonj.sdo.Type;
+import commonj.sdo.helper.XMLDocument;
 
 public class LoadAndSaveBase64AttachmentTestCases extends LoadAndSaveTestCases {
+    private static String OPTIONS_CONTROL_FILE_NAME = "./org/eclipse/persistence/testing/sdo/helper/xmlhelper/EmployeeWithBase64AttachmentOptions.xml";
+    private static String OPTIONS_CONTROL_ID = "OPTIONS";
+    private static byte[] OPTIONS_CONTROL_BYTES = "OPTIONS".getBytes();
+
     public LoadAndSaveBase64AttachmentTestCases(String name) {
         super(name);
     }
@@ -23,8 +36,8 @@ public class LoadAndSaveBase64AttachmentTestCases extends LoadAndSaveTestCases {
 
         XMLMarshaller aMarshaller = ((SDOXMLHelper)xmlHelper).getXmlMarshaller();
         XMLUnmarshaller anUnmarshaller = ((SDOXMLHelper)xmlHelper).getXmlUnmarshaller();
-        XMLAttachmentMarshaller anAttachmentMarshaller = new AttachmentMarshallerImpl();
-        XMLAttachmentUnmarshaller anAttachmentUnmarshaller = new AttachmentUnmarshallerImpl();
+        XMLAttachmentMarshaller anAttachmentMarshaller = new AttachmentMarshallerImpl("c_id0");
+        XMLAttachmentUnmarshaller anAttachmentUnmarshaller = new AttachmentUnmarshallerImpl("Testing".getBytes());
         aMarshaller.setAttachmentMarshaller(anAttachmentMarshaller);
         anUnmarshaller.setAttachmentUnmarshaller(anAttachmentUnmarshaller);
     }
@@ -81,8 +94,62 @@ public class LoadAndSaveBase64AttachmentTestCases extends LoadAndSaveTestCases {
         typeHelper.defineOpenContentProperty(getControlRootURI(), propDO);
     }
 
-    public static void main(String[] args) {
-        String[] arguments = { "-c", "org.eclipse.persistence.testing.sdo.helper.xmlhelper.loadandsave.LoadAndSaveMimeTypeOnPropertyManyTestCases" };
-        TestRunner.main(arguments);
+    public void testLoadFromInputStreamSaveToOutputStreamWithOptions() throws Exception {
+        defineTypes();
+
+        DataObject loadOptions = dataFactory.create(SDOConstants.ORACLE_SDO_URL, SDOConstants.XMLHELPER_LOAD_OPTIONS);
+        loadOptions.set(SDOConstants.ATTACHMENT_UNMARSHALLER_OPTION, new AttachmentUnmarshallerImpl(OPTIONS_CONTROL_BYTES));
+        FileInputStream inputStream = new FileInputStream(OPTIONS_CONTROL_FILE_NAME);
+        XMLDocument document = xmlHelper.load(inputStream, null, loadOptions);
+
+        assertEquals(OPTIONS_CONTROL_BYTES, document.getRootObject().get("photo"));
+
+        DataObject saveOptions = dataFactory.create(SDOConstants.ORACLE_SDO_URL, SDOConstants.XMLHELPER_LOAD_OPTIONS);
+        saveOptions.set(SDOConstants.ATTACHMENT_MARSHALLER_OPTION, new AttachmentMarshallerImpl(OPTIONS_CONTROL_ID));
+        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+        xmlHelper.save(document, outputStream, saveOptions);
+    
+        compareXML(OPTIONS_CONTROL_FILE_NAME, outputStream.toString());
     }
+
+    public void testLoadFromReaderSaveToWriterWithOptions() throws Exception {
+        defineTypes();
+
+        DataObject options = dataFactory.create(SDOConstants.ORACLE_SDO_URL, SDOConstants.XMLHELPER_LOAD_OPTIONS);
+        options.set(SDOConstants.ATTACHMENT_UNMARSHALLER_OPTION, new AttachmentUnmarshallerImpl(OPTIONS_CONTROL_BYTES));
+        FileInputStream inputStream = new FileInputStream(OPTIONS_CONTROL_FILE_NAME);
+        InputStreamReader reader = new InputStreamReader(inputStream);
+        XMLDocument document = xmlHelper.load(reader, null, options);
+
+        assertEquals(OPTIONS_CONTROL_BYTES, document.getRootObject().get("photo"));
+
+        DataObject saveOptions = dataFactory.create(SDOConstants.ORACLE_SDO_URL, SDOConstants.XMLHELPER_LOAD_OPTIONS);
+        saveOptions.set(SDOConstants.ATTACHMENT_MARSHALLER_OPTION, new AttachmentMarshallerImpl(OPTIONS_CONTROL_ID));
+        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+        OutputStreamWriter writer = new OutputStreamWriter(outputStream);
+        xmlHelper.save(document, writer, saveOptions);
+
+        compareXML(OPTIONS_CONTROL_FILE_NAME, outputStream.toString());
+    }
+
+    public void testLoadFromSourceSaveToResultWithOptions() throws Exception {
+        defineTypes();
+
+        DataObject options = dataFactory.create(SDOConstants.ORACLE_SDO_URL, SDOConstants.XMLHELPER_LOAD_OPTIONS);
+        options.set(SDOConstants.ATTACHMENT_UNMARSHALLER_OPTION, new AttachmentUnmarshallerImpl(OPTIONS_CONTROL_BYTES));
+        FileInputStream inputStream = new FileInputStream(OPTIONS_CONTROL_FILE_NAME);
+        StreamSource source = new StreamSource(inputStream);
+        XMLDocument document = xmlHelper.load(source, null, options);
+
+        assertEquals(OPTIONS_CONTROL_BYTES, document.getRootObject().get("photo"));
+
+        DataObject saveOptions = dataFactory.create(SDOConstants.ORACLE_SDO_URL, SDOConstants.XMLHELPER_LOAD_OPTIONS);
+        saveOptions.set(SDOConstants.ATTACHMENT_MARSHALLER_OPTION, new AttachmentMarshallerImpl(OPTIONS_CONTROL_ID));
+        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+        StreamResult result = new StreamResult(outputStream);
+        xmlHelper.save(document, result, saveOptions);
+
+        compareXML(OPTIONS_CONTROL_FILE_NAME, outputStream.toString());
+    }
+
 }

@@ -36,8 +36,8 @@ public class LoadAndSaveMimeTypeOnXSDManyTestCases extends LoadAndSaveTestCases 
 
         XMLMarshaller aMarshaller = ((SDOXMLHelper)xmlHelper).getXmlMarshaller();
         XMLUnmarshaller anUnmarshaller = ((SDOXMLHelper)xmlHelper).getXmlUnmarshaller();
-        XMLAttachmentMarshaller anAttachmentMarshaller = new AttachmentMarshallerImpl();
-        XMLAttachmentUnmarshaller anAttachmentUnmarshaller = new AttachmentUnmarshallerImpl();
+        XMLAttachmentMarshaller anAttachmentMarshaller = new AttachmentMarshallerImpl("c_id0");
+        XMLAttachmentUnmarshaller anAttachmentUnmarshaller = new AttachmentUnmarshallerImpl("Testing".getBytes());
         aMarshaller.setAttachmentMarshaller(anAttachmentMarshaller);
         anUnmarshaller.setAttachmentUnmarshaller(anAttachmentUnmarshaller);
     }
