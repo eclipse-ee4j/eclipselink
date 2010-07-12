@@ -19,8 +19,15 @@ import org.eclipse.persistence.oxm.attachment.XMLAttachmentUnmarshaller;
  * Provide a testing implementation of AttachmentMarshaller that normally would be provided by the application server
  */
 public class AttachmentUnmarshallerImpl implements XMLAttachmentUnmarshaller {
+
+    private byte[] bytes;
+
+    public AttachmentUnmarshallerImpl(byte[] bytes) {
+        this.bytes = bytes;
+    }
+
     public byte[] getAttachmentAsByteArray(String cid) {
-        return "Testing".getBytes();
+        return bytes;
     }
 
     public DataHandler getAttachmentAsDataHandler(String id) {

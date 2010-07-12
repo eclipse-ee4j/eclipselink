@@ -16,6 +16,7 @@ import java.io.*;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
 import java.net.URL;
+import java.util.Map.Entry;
 import java.util.Properties;
 
 import javax.xml.namespace.QName;
@@ -87,7 +88,7 @@ import org.xml.sax.ext.LexicalHandler;
  *
  * @see org.eclipse.persistence.oxm.XMLContext
  */
-public class XMLMarshaller {    
+public class XMLMarshaller implements Cloneable {
     private final static String DEFAULT_XML_VERSION = "1.0";
     private String schemaLocation;
     private String noNamespaceSchemaLocation;
@@ -1395,4 +1396,24 @@ public class XMLMarshaller {
     public void setSchema(Schema schema) {
         this.schema = schema;
     }
+
+    @Override
+    public XMLMarshaller clone() {
+        XMLMarshaller clone = new XMLMarshaller(xmlContext);
+        clone.setAttachmentMarshaller(attachmentMarshaller);
+        clone.setEncoding(getEncoding());
+        clone.setFormattedOutput(isFormattedOutput());
+        clone.setFragment(isFragment());
+        clone.setMarshalListener(marshalListener);
+        clone.setNoNamespaceSchemaLocation(noNamespaceSchemaLocation);
+        for(Entry entry : marshalProperties.entrySet()) {
+            clone.getProperties().put(entry.getKey(), entry.getValue());
+        }
+        if(null != schema) {
+            clone.setSchema(schema);
+        }
+        clone.setSchemaLocation(schemaLocation);
+        return clone;
+    }
+
 }
