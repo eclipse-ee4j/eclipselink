@@ -63,7 +63,7 @@ public class IsolatedCacheTestSuite extends JUnitTestCase {
             beginTransaction(em);
             
             em.clear();
-            RepeatableWriteUnitOfWork uow = ((EntityManagerImpl) em.getDelegate()).getActivePersistenceContext(em.getTransaction());
+            RepeatableWriteUnitOfWork uow = (RepeatableWriteUnitOfWork)((EntityManagerImpl) em.getDelegate()).getUnitOfWork();
             
             assertFalse("The isolated item was not cleared from the shared cache", uow.getIdentityMapAccessor().containsObjectInIdentityMap(item));
             assertFalse("The isolated item was not cleared from the uow cache", uow.getParent().getIdentityMapAccessor().containsObjectInIdentityMap(item));
