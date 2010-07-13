@@ -77,7 +77,6 @@
         <antcall target="weblogic-start-nosleep" inheritRefs="true"/>
         <copy file="${junit.lib}" todir="${weblogic.domain}/lib"/>
         <antcall target="copy-eclipselink-jar-to-domain-lib" inheritRefs="true"/>
-        <copy file="${jdbc.driver.jar}" todir="${weblogic.domain}/lib"/>
         <copy file="${oracle.extensions.depend.dir}/${oracle.xdb.lib}" todir="${weblogic.domain}/lib"/>
         <copy file="${oracle.extensions.depend.dir}/${oracle.spatial.lib}" todir="${weblogic.domain}/lib"/>
         <copy file="${oracle.extensions.depend.dir}/${oracle.xmlparserv2.lib}" todir="${weblogic.domain}/lib"/>
