@@ -44,6 +44,7 @@ public class XMLMarshalException extends ValidationException {
     public static final int UNMAPPED_CONTENTHANDLER_DOESNT_IMPLEMENT = 25025;
     public static final int OBJ_NOT_FOUND_IN_CACHE = 25026; 
     public static final int NO_ATTACHMENT_UNMARSHALLER_SET = 25027;
+    public static final int UNKNOWN_XSI_TYPE = 25028;
 
     // ==========================================================================================
     protected XMLMarshalException(String message) {
@@ -279,6 +280,14 @@ public class XMLMarshalException extends ValidationException {
         
         XMLMarshalException exception = new XMLMarshalException(ExceptionMessageGenerator.buildMessage(XMLMarshalException.class, NO_ATTACHMENT_UNMARSHALLER_SET, args));
         exception.setErrorCode(NO_ATTACHMENT_UNMARSHALLER_SET);
+        return exception;
+    }
+    
+    public static XMLMarshalException unknownXsiTypeValue(String xsiType, DatabaseMapping mapping) {
+        Object[] args = {xsiType, mapping};
+        
+        XMLMarshalException exception = new XMLMarshalException(ExceptionMessageGenerator.buildMessage(XMLMarshalException.class, UNKNOWN_XSI_TYPE, args));
+        exception.setErrorCode(UNKNOWN_XSI_TYPE);
         return exception;
     }
     

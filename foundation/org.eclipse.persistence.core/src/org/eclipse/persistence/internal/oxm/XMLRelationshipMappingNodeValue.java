@@ -103,31 +103,31 @@ public abstract class XMLRelationshipMappingNodeValue extends MappingNodeValue {
                 schemaType = schemaType.trim();
                 if(schemaType.length() > 0) {
                     XPathFragment frag = new XPathFragment();
-                frag.setXPath(schemaType);
+                    frag.setXPath(schemaType);
 
-                QName qname = null;
-                if (frag.hasNamespace()) {
-                    String prefix = frag.getPrefix();
-                    String url = unmarshalRecord.resolveNamespacePrefix(prefix);
-                    frag.setNamespaceURI(url);
-
-                    qname = new QName(url, frag.getLocalName());
-                    unmarshalRecord.setTypeQName(qname);
-                } else {
-                    String url = unmarshalRecord.resolveNamespacePrefix(XMLConstants.EMPTY_STRING);
-                    if(null != url) {
+                    QName qname = null;
+                    if (frag.hasNamespace()) {
+                        String prefix = frag.getPrefix();
+                        String url = unmarshalRecord.resolveNamespacePrefix(prefix);
                         frag.setNamespaceURI(url);
 
                         qname = new QName(url, frag.getLocalName());
                         unmarshalRecord.setTypeQName(qname);
+                    } else {
+                        String url = unmarshalRecord.resolveNamespacePrefix(XMLConstants.EMPTY_STRING);
+                        if(null != url) {
+                            frag.setNamespaceURI(url);
+
+                            qname = new QName(url, frag.getLocalName());
+                            unmarshalRecord.setTypeQName(qname);
+                        }
                     }
-                }
-                returnDescriptor = xmlContext.getDescriptorByGlobalType(frag);
-                if(returnDescriptor == null){
-                    if(policy ==null || (policy != null && policy != UnmarshalKeepAsElementPolicy.KEEP_UNKNOWN_AS_ELEMENT && policy != UnmarshalKeepAsElementPolicy.KEEP_ALL_AS_ELEMENT)){
-                        Class theClass = (Class)((XMLConversionManager) unmarshalRecord.getSession().getDatasourcePlatform().getConversionManager()).getDefaultXMLTypes().get(qname);
-                        if(theClass == null){
-                            throw XMLMarshalException.noDescriptorFound(mapping);
+                    returnDescriptor = xmlContext.getDescriptorByGlobalType(frag);
+                    if(returnDescriptor == null){
+                        if(policy ==null || (policy != null && policy != UnmarshalKeepAsElementPolicy.KEEP_UNKNOWN_AS_ELEMENT && policy != UnmarshalKeepAsElementPolicy.KEEP_ALL_AS_ELEMENT)){
+                            Class theClass = (Class)((XMLConversionManager) unmarshalRecord.getSession().getDatasourcePlatform().getConversionManager()).getDefaultXMLTypes().get(qname);
+                            if(theClass == null){
+                                throw XMLMarshalException.unknownXsiTypeValue(schemaType, mapping);
                             }
                         }
                     }
