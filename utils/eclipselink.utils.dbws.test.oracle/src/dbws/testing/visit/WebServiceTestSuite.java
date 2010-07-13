@@ -80,7 +80,7 @@ import org.eclipse.persistence.sessions.DatasourceLogin;
 import org.eclipse.persistence.sessions.Project;
 import org.eclipse.persistence.sessions.factories.XMLProjectReader;
 import org.eclipse.persistence.tools.dbws.DBWSBuilder;
-import org.eclipse.persistence.tools.dbws.WebServicePackager;
+import org.eclipse.persistence.tools.dbws.JSR109WebServicePackager;
 import static org.eclipse.persistence.internal.xr.Util.SERVICE_NAMESPACE_PREFIX;
 import static org.eclipse.persistence.oxm.mappings.UnmarshalKeepAsElementPolicy.KEEP_UNKNOWN_AS_ELEMENT;
 import static org.eclipse.persistence.tools.dbws.DBWSBuilder.NO_SESSIONS_FILENAME;
@@ -137,13 +137,14 @@ public class WebServiceTestSuite extends ProviderHelper {
             fail("error retrieving database url");
         }
         builder.setUrl(url);
-        builder.setPackager(new WebServicePackager(null, "WebServiceTestPackager", noArchive) {
+        builder.setPackager(new JSR109WebServicePackager(null, "WebServiceTestPackager", noArchive) {
             @Override
             public void start() {
             }
         });
-        builder.build(DBWS_SCHEMA_STREAM, __nullStream, DBWS_SERVICE_STREAM, DBWS_OR_STREAM, DBWS_OX_STREAM,
-            __nullStream, __nullStream, DBWS_WSDL_STREAM, __nullStream, __nullStream, null);
+        builder.build(DBWS_SCHEMA_STREAM, __nullStream, DBWS_SERVICE_STREAM, DBWS_OR_STREAM,
+            DBWS_OX_STREAM, __nullStream, __nullStream, DBWS_WSDL_STREAM, __nullStream, __nullStream,
+            __nullStream, __nullStream, null);
         endpoint = Endpoint.create(endPoint);
         endpoint.publish(endPointAddress);
         WebServiceProvider testProvider = endPoint.getClass().getAnnotation(WebServiceProvider.class);

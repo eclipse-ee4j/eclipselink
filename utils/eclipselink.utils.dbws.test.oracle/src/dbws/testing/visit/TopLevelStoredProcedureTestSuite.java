@@ -116,7 +116,7 @@ public class TopLevelStoredProcedureTestSuite extends BuilderTestSuite {
         builder.setPackager(xrPackager);
         builder.build(DBWS_SCHEMA_STREAM, __nullStream, DBWS_SERVICE_STREAM, DBWS_OR_STREAM,
             DBWS_OX_STREAM, __nullStream, __nullStream, __nullStream, __nullStream, __nullStream,
-            null);
+            __nullStream, __nullStream, null);
         XRServiceFactory factory = new XRServiceFactory() {
             @Override
             public XRServiceAdapter buildService(XRServiceModel xrServiceModel) {

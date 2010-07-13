@@ -39,31 +39,36 @@ import static org.eclipse.persistence.tools.dbws.Util.WEB_XML_FILENAME;
  * @author Mike Norman - michael.norman@oracle.com
  * @since EclipseLink 1.x
  */
-public class WebServicePackager extends ProviderPackager {
+public class JSR109WebServicePackager extends ProviderPackager {
 
     public static final String WEB_XML_PREAMBLE =
-        "<?xml version='1.0' encoding='UTF-8'?>\n" +
-        "<web-app xmlns=\"http://java.sun.com/xml/ns/javaee\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" version=\"2.5\">\n" +
-        "  <display-name>";
-    public static final String WEB_XML_SERVICE_NAME =
-                                          "</display-name>\n" +
+        "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" +
+        "<web-app\n" +
+        "  xmlns=\"http://java.sun.com/xml/ns/javaee\"\n" +
+        "  xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"\n" +
+        "  xsi:schemaLocation=\"http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd\"\n" +
+        "  version=\"2.5\"\n" +
+        "  >\n" +
+        "  <listener>\n" +
+        "    <listener-class>_dbws.ProviderListener</listener-class>\n" +
+        "  </listener>\n" +
         "  <servlet>\n" +
-        "    <servlet-name>DBWSProvider</servlet-name>\n" +
+        "    <servlet-name>_dbws.DBWSProvider</servlet-name>\n" +
         "    <servlet-class>_dbws.DBWSProvider</servlet-class>\n" +
         "    <load-on-startup>0</load-on-startup>\n" +
         "  </servlet>\n" +
         "  <servlet-mapping>\n" +
-        "    <servlet-name>DBWSProvider</servlet-name>\n" +
+        "    <servlet-name>_dbws.DBWSProvider</servlet-name>\n" +
         "    <url-pattern>";
     public static final String WEB_XML_URL_PATTERN =
                                "</url-pattern>\n" +
         "  </servlet-mapping>\n" +
         "</web-app>";
 
-    public WebServicePackager() {
+    public JSR109WebServicePackager() {
         this(new WarArchiver(), "wse", noArchive);
     }
-	protected WebServicePackager(Archiver archiver, String packagerLabel, ArchiveUse useJavaArchive) {
+	protected JSR109WebServicePackager(Archiver archiver, String packagerLabel, ArchiveUse useJavaArchive) {
         super(archiver, packagerLabel, useJavaArchive);
     }
 
@@ -79,9 +84,6 @@ public class WebServicePackager extends ProviderPackager {
     @Override
     public void writeWebXml(OutputStream webXmlStream, DBWSBuilder dbwsBuilder) {
         StringBuilder sb = new StringBuilder(WEB_XML_PREAMBLE);
-        String serviceName = dbwsBuilder.getWSDLGenerator().getServiceName();
-        sb.append(serviceName);
-        sb.append(WEB_XML_SERVICE_NAME);
         sb.append(dbwsBuilder.getContextRoot());
         sb.append(WEB_XML_URL_PATTERN);
         OutputStreamWriter osw = new OutputStreamWriter(new BufferedOutputStream(webXmlStream));

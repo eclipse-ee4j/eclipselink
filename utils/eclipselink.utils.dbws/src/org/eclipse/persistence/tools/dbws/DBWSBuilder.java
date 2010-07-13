@@ -176,6 +176,8 @@ import static org.eclipse.persistence.tools.dbws.Util.DBWS_PROVIDER_SOURCE_FILE;
 import static org.eclipse.persistence.tools.dbws.Util.DEFAULT_PLATFORM_CLASSNAME;
 import static org.eclipse.persistence.tools.dbws.Util.DEFAULT_WSDL_LOCATION_URI;
 import static org.eclipse.persistence.tools.dbws.Util.FINDALL_QUERYNAME;
+import static org.eclipse.persistence.tools.dbws.Util.PROVIDER_LISTENER_CLASS_FILE;
+import static org.eclipse.persistence.tools.dbws.Util.PROVIDER_LISTENER_SOURCE_FILE;
 import static org.eclipse.persistence.tools.dbws.Util.REMOVE_OPERATION_NAME;
 import static org.eclipse.persistence.tools.dbws.Util.SWAREF_FILENAME;
 import static org.eclipse.persistence.tools.dbws.Util.THE_INSTANCE_NAME;
@@ -414,9 +416,9 @@ prompt> java -cp eclipselink.jar:eclipselink-dbwsutils.jar:your_favourite_jdbc_d
             logMessage(SEVERE, "DBWSBuilder unable to create " + WEB_XML_FILENAME, fnfe);
             return;
         };
-        OutputStream codeGenProviderStream = null;
+        OutputStream classProviderStream = null;
         try {
-            codeGenProviderStream = packager.getProviderClassStream();
+            classProviderStream = packager.getProviderClassStream();
         }
         catch (FileNotFoundException fnfe) {
             logMessage(SEVERE,
@@ -432,15 +434,36 @@ prompt> java -cp eclipselink.jar:eclipselink-dbwsutils.jar:your_favourite_jdbc_d
                 "DBWSBuilder unable to create " + DBWS_PROVIDER_SOURCE_FILE, fnfe);
             return;
         };
+        OutputStream classProviderListenerStream = null;
+        try {
+            classProviderListenerStream = packager.getProviderListenerClassStream();
+        }
+        catch (FileNotFoundException fnfe) {
+            logMessage(SEVERE,
+                "DBWSBuilder unable to create " + PROVIDER_LISTENER_CLASS_FILE, fnfe);
+            return;
+        };
+        OutputStream sourceProviderListenerStream = null;
+        try {
+            sourceProviderListenerStream = packager.getProviderListenerSourceStream();
+        }
+        catch (FileNotFoundException fnfe) {
+            logMessage(SEVERE,
+                "DBWSBuilder unable to create " + PROVIDER_LISTENER_SOURCE_FILE, fnfe);
+            return;
+        };
         build(dbwsSchemaStream, dbwsSessionsStream, dbwsServiceStream, dbwsOrStream,
-            dbwsOxStream, swarefStream, webXmlStream, wsdlStream, codeGenProviderStream,
-            sourceProviderStream, logger);
+            dbwsOxStream, swarefStream, webXmlStream, wsdlStream, classProviderStream,
+            sourceProviderStream, classProviderListenerStream, sourceProviderListenerStream,
+            logger);
     }
 
     public void build(OutputStream dbwsSchemaStream, OutputStream dbwsSessionsStream,
         OutputStream dbwsServiceStream, OutputStream dbwsOrStream, OutputStream dbwsOxStream,
         OutputStream swarefStream, OutputStream webXmlStream, OutputStream wsdlStream,
-        OutputStream codeGenProviderStream, OutputStream sourceProviderStream, Logger logger)
+        OutputStream classProviderStream, OutputStream sourceProviderStream, 
+        OutputStream classProviderListenerStream, OutputStream sourceProviderListenerStream, 
+        Logger logger)
         throws WSDLException {
 
         this.logger = logger; // in case some other tool wishes to use a java.util.logger
@@ -496,7 +519,8 @@ prompt> java -cp eclipselink.jar:eclipselink-dbwsutils.jar:your_favourite_jdbc_d
         writeAttachmentSchema(swarefStream);
         buildWSDL(wsdlStream, topTransformer);
         writeWebXML(webXmlStream);
-        generateDBWSProvider(sourceProviderStream, codeGenProviderStream);
+        generateDBWSProvider(sourceProviderStream, classProviderStream, sourceProviderListenerStream,
+            classProviderListenerStream);
         writeSchema(dbwsSchemaStream); // now write out schema
         writeOROXProjects(dbwsOrStream, dbwsOxStream);
         packager.end();
@@ -1126,16 +1150,18 @@ prompt> java -cp eclipselink.jar:eclipselink-dbwsutils.jar:your_favourite_jdbc_d
     }
 
     protected void generateDBWSProvider(OutputStream sourceProviderStream,
-        OutputStream codeGenProviderStream) {
+        OutputStream classProviderStream, OutputStream sourceProviderListenerStream,
+        OutputStream classProviderListenerStream) {
         if (!isNullStream(sourceProviderStream)) {
             logMessage(FINEST, "generating " + DBWS_PROVIDER_SOURCE_FILE);
         }
-        if (!isNullStream(codeGenProviderStream)) {
+        if (!isNullStream(classProviderStream)) {
             logMessage(FINEST, "generating " + DBWS_PROVIDER_CLASS_FILE);
         }
-        packager.writeProvider(sourceProviderStream, codeGenProviderStream, this);
+        packager.writeProvider(sourceProviderStream, classProviderStream,
+            sourceProviderListenerStream, classProviderListenerStream, this);
         packager.closeProviderSourceStream(sourceProviderStream);
-        packager.closeProviderClassStream(codeGenProviderStream);
+        packager.closeProviderClassStream(classProviderStream);
     }
 
     @SuppressWarnings("unchecked")

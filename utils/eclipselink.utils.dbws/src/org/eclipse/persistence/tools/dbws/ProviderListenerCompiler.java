@@ -8,17 +8,17 @@
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
- *     Mike Norman - May 05 2010
- *       fix for https://bugs.eclipse.org/bugs/show_bug.cgi?id=307897
+ *     Mike Norman - July 13 2010
+ *       fix for https://bugs.eclipse.org/bugs/show_bug.cgi?id=318207
  ******************************************************************************/
 package org.eclipse.persistence.tools.dbws;
 
-public class DBWSProviderCompiler extends InMemoryCompiler {
+public class ProviderListenerCompiler extends InMemoryCompiler {
 
-    static final String PROVIDER_NAME = "_dbws.DBWSProvider";
+    static final String PROVIDER_LISTENER_NAME = "_dbws.ProviderListener";
     
-    public DBWSProviderCompiler() {
-        super(PROVIDER_NAME);
+    public ProviderListenerCompiler() {
+        super(PROVIDER_LISTENER_NAME);
     }
 
 }

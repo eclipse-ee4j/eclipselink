@@ -28,32 +28,50 @@ import javax.tools.JavaFileObject;
 
 //EclipseLink imports
 import org.eclipse.persistence.internal.dbws.ProviderHelper;
-import org.eclipse.persistence.tools.dbws.DBWSBuilder;
-import org.eclipse.persistence.tools.dbws.XRPackager;
 import static org.eclipse.persistence.internal.xr.Util.DBWS_WSDL;
 import static org.eclipse.persistence.tools.dbws.DBWSPackager.ArchiveUse.noArchive;
 import static org.eclipse.persistence.tools.dbws.Util.DBWS_PROVIDER_CLASS_FILE;
 import static org.eclipse.persistence.tools.dbws.Util.DBWS_PROVIDER_SOURCE_FILE;
+import static org.eclipse.persistence.tools.dbws.Util.PROVIDER_LISTENER_CLASS_FILE;
+import static org.eclipse.persistence.tools.dbws.Util.PROVIDER_LISTENER_SOURCE_FILE;
 
 /**
  * <p>
  * <b>INTERNAL:</b> ProviderPackager extends {@link XRPackager}. It is responsible for generating<br>
- * the JAX-WS {@link Provider} and saves the generated WSDL to ${stageDir}
+ * the {@link ServletContextListener} and the JAX-WS {@link Provider} and saves the generated WSDL
+ * to ${stageDir}
  * <pre>
  * ${PACKAGER_ROOT}
  *   | DBWSProvider.class     -- code-generated javax.xml.ws.Provider
+ *   | ProviderListener.class -- code-generated javax.servlet.ServletContextListener
  * </pre>
  * 
  * @author Mike Norman - michael.norman@oracle.com
  * @since EclipseLink 1.x
  */
 public class ProviderPackager extends XRPackager {
+    
+    public static final String PROVIDER_LISTENER_SOURCE =
+        "package _dbws;\n\n" +
+        "import javax.servlet.ServletContext;\n" +
+        "import javax.servlet.ServletContextEvent;\n" +
+        "import javax.servlet.ServletContextListener;\n\n" +
+        "public class ProviderListener implements ServletContextListener {\n\n" +
+        "    public static ServletContext SC = null;\n\n" +
+        "    public  ProviderListener() {\n" +
+        "        super();\n" +
+        "    }\n\n" +
+        "    public void contextInitialized(ServletContextEvent sce) {\n" +
+        "        SC = sce.getServletContext();\n" +
+        "    }\n\n" +
+        "    public void contextDestroyed(ServletContextEvent sce) {\n" +
+        "        // no-op\n" +
+        "    }\n" +
+        "}\n";
 
     public static final String DBWS_PROVIDER_SOURCE_PREAMBLE =
-        "package _dbws;\n" +
-        "\n//javase imports\n" +
-        "import java.lang.reflect.Method;\n" +
-        "\n//Java extension libraries\n" +
+        "package _dbws;\n\n" +
+        "//Java extension libraries\n" +
         "import javax.annotation.PostConstruct;\n" +
         "import javax.annotation.PreDestroy;\n" +
         "import javax.annotation.Resource;\n" +
@@ -64,15 +82,9 @@ public class ProviderPackager extends XRPackager {
         "import javax.xml.ws.ServiceMode;\n" +
         "import javax.xml.ws.WebServiceContext;\n" +
         "import javax.xml.ws.WebServiceProvider;\n" +
-        "import javax.xml.ws.handler.MessageContext;\n" +
-        "import javax.xml.ws.soap.SOAPBinding;\n" +
-        "import static javax.xml.ws.Service.Mode.MESSAGE;\n" +
-        "import static javax.xml.ws.soap.SOAPBinding.SOAP12HTTP_BINDING;\n" +
-        "import static javax.xml.ws.soap.SOAPBinding.SOAP11HTTP_MTOM_BINDING;\n" +
-        "import static javax.xml.ws.soap.SOAPBinding.SOAP12HTTP_MTOM_BINDING;\n" +        
-        "\n//EclipseLink imports\n" +
-        "import " + ProviderHelper.class.getName() + ";\n" +
-        "\n" +
+        "import static javax.xml.ws.Service.Mode.MESSAGE;\n\n" +
+        "//EclipseLink imports\n" +
+        "import " + ProviderHelper.class.getName() + ";\n\n" +
         "@WebServiceProvider(\n";
     public static final String DBWS_PROVIDER_SOURCE_WSDL_LOCATION =
         "    wsdlLocation = \"WEB-INF/wsdl/eclipselink-dbws.wsdl\",\n";
@@ -93,38 +105,17 @@ public class ProviderPackager extends XRPackager {
         "@BindingType(value=SOAP12HTTP_MTOM_BINDING)\n";
 
     public static final String DBWS_PROVIDER_SOURCE_CLASSDEF =
-        "public class DBWSProvider extends ProviderHelper implements Provider<SOAPMessage> {\n" +
-        "\n" +
+        "public class DBWSProvider extends ProviderHelper implements Provider<SOAPMessage> {\n\n" +
         "    // Container injects wsContext here\n" +
         "    @Resource\n" +
-        "    protected WebServiceContext wsContext;\n" +
+        "    protected WebServiceContext wsContext;\n\n" +
         "    public  DBWSProvider() {\n" +
         "        super();\n" +
-        "    }\n" +
-        "    private static final String CONTAINER_RESOLVER_CLASSNAME =\n" +
-        "        \"com.sun.xml.ws.api.server.ContainerResolver\";\n" +
+        "    }\n\n" +
         "    @PostConstruct\n" +
         "    public void init() {\n" +
         "        ClassLoader parentClassLoader = Thread.currentThread().getContextClassLoader();\n" +
-        "        ServletContext sc = null;\n" +
-        "        //ServletContext sc = \n" +
-        "        //    ContainerResolver.getInstance().getContainer().getSPI(ServletContext.class);\n" +
-        "        try {\n" +
-        "            Class<?> containerResolverClass = parentClassLoader.loadClass(\n" +
-        "                CONTAINER_RESOLVER_CLASSNAME);\n" +
-        "            Method getInstanceMethod = containerResolverClass.getMethod(\"getInstance\");\n" +
-        "            Object containerResolver = getInstanceMethod.invoke(null);\n" +
-        "            Method getContainerMethod = containerResolver.getClass().getMethod(\"getContainer\");\n" +
-        "            getContainerMethod.setAccessible(true);\n" +
-        "            Object container = getContainerMethod.invoke(containerResolver);\n" +
-        "            Method getSPIMethod = container.getClass().getMethod(\"getSPI\", Class.class);\n" +
-        "            getSPIMethod.setAccessible(true);\n" +
-        "            sc = (ServletContext)getSPIMethod.invoke(container, ServletContext.class);\n" +
-        "        }\n" +
-        "        catch (Exception e) {\n" +
-        "            // if the above doesn't work, then maybe we are running in JavaSE 6 'containerless' mode\n" +
-        "            // we can live with a null ServletContext (just use the parentClassLoader to load resources \n" +
-        "        }\n" +
+        "        ServletContext sc = ProviderListener.SC;\n" +
         "        boolean mtomEnabled = false;\n" +
         "        BindingType thisBindingType = this.getClass().getAnnotation(BindingType.class);\n" +
         "        if (thisBindingType != null) {\n" +
@@ -133,14 +124,14 @@ public class ProviderPackager extends XRPackager {
         "            }\n" +
         "        }\n" +
         "        super.init(parentClassLoader, sc, mtomEnabled);\n" +
-        "    }\n" +
+        "    }\n\n" +
         "    @Override\n" +
         "    public SOAPMessage invoke(SOAPMessage request) {\n" +
         "        if (wsContext != null) {\n" +
         "            setMessageContext(wsContext.getMessageContext());\n" +
         "        }\n" +
         "        return super.invoke(request);\n" +
-        "    }\n" +
+        "    }\n\n" +
         "    @Override\n" +
         "    @PreDestroy\n" +
         "    public void destroy() {\n" +
@@ -174,9 +165,22 @@ public class ProviderPackager extends XRPackager {
     public OutputStream getProviderSourceStream() throws FileNotFoundException {
         return new FileOutputStream(new File(stageDir, DBWS_PROVIDER_SOURCE_FILE));
     }
+    
     @Override
-    public void writeProvider(OutputStream sourceProviderStream,
-        OutputStream codeGenProviderStream, DBWSBuilder builder) {
+    public OutputStream getProviderListenerSourceStream() throws FileNotFoundException {
+        return new FileOutputStream(new File(stageDir, PROVIDER_LISTENER_SOURCE_FILE));
+    }
+    
+    @Override
+    public OutputStream getProviderListenerClassStream() throws FileNotFoundException {
+        return new FileOutputStream(new File(stageDir, PROVIDER_LISTENER_CLASS_FILE));
+        
+    }
+    
+    @Override
+    public void writeProvider(OutputStream sourceProviderStream, OutputStream classProviderStream,
+        OutputStream sourceProviderListenerStream, OutputStream classProviderListenerStream,
+        DBWSBuilder builder) {
         
         StringBuilder source = new StringBuilder(DBWS_PROVIDER_SOURCE_PREAMBLE);
         String wsdlPathPrevix = getWSDLPathPrefix();
@@ -213,36 +217,60 @@ public class ProviderPackager extends XRPackager {
                 osw.write(source.toString());
                 osw.flush();
             }
-            catch (IOException e) {/* ignore */}
+            catch (IOException e) {}
         }
         
-        if (codeGenProviderStream != __nullStream) {
-            DBWSProviderCompiler providerCompiler = new DBWSProviderCompiler();
+        if (classProviderStream != __nullStream) {
+            InMemoryCompiler providerCompiler = new DBWSProviderCompiler();
             if (providerCompiler.getCompiler() == null) {
                 throw new IllegalStateException("DBWSBuilder cannot compile DBWSProvider code\n" +
                     "Please ensure that tools.jar is on your classpath");
             }
-            byte[] bytes = providerCompiler.compile(source.toString());
-            if (bytes.length == 0) {
-                DiagnosticCollector<JavaFileObject> collector = 
-                    providerCompiler.getDiagnosticsCollector();
-                StringBuilder diagBuf = 
-                    new StringBuilder("DBWSBuilder cannot generate DBWSProvider code " +
-                    	"(likely servlet jar missing from classpath)\n");
-                for (Diagnostic<? extends JavaFileObject> d : collector.getDiagnostics()) {
-                    if (d.getKind() == Diagnostic.Kind.ERROR) {
-                        diagBuf.append(d.getMessage(null));
-                        diagBuf.append("\n");
-                    }
-                }
-                throw new IllegalStateException(diagBuf.toString());
+            runInMemoryCompiler(providerCompiler,source.toString(), classProviderStream);
+        }
+
+        if (sourceProviderListenerStream != __nullStream) {
+            OutputStreamWriter osw =
+                new OutputStreamWriter(new BufferedOutputStream(sourceProviderListenerStream));
+            try {
+                osw.write(PROVIDER_LISTENER_SOURCE);
+                osw.flush();
             }
-            else {
-                try {
-                    codeGenProviderStream.write(bytes, 0, bytes.length);
-                }
-                catch (IOException e) {/* ignore */}
+            catch (IOException e) {}
+        }
+
+        if (classProviderListenerStream != __nullStream) {
+            InMemoryCompiler providerListenerCompiler = new ProviderListenerCompiler();
+            if (providerListenerCompiler.getCompiler() == null) {
+                throw new IllegalStateException("DBWSBuilder cannot compile ProviderListener code\n" +
+                    "Please ensure that tools.jar is on your classpath");
             }
+            runInMemoryCompiler(providerListenerCompiler, PROVIDER_LISTENER_SOURCE,
+                classProviderListenerStream);
+        }
+    }
+
+    protected void runInMemoryCompiler(InMemoryCompiler compiler, String source,
+        OutputStream classStream) {
+        byte[] bytes = compiler.compile(source);
+        if (bytes.length == 0) {
+            DiagnosticCollector<JavaFileObject> collector = compiler.getDiagnosticsCollector();
+            StringBuilder diagBuf = 
+                new StringBuilder("DBWSBuilder cannot generate ProviderListener code " +
+                    "(likely servlet jar missing from classpath)\n");
+            for (Diagnostic<? extends JavaFileObject> d : collector.getDiagnostics()) {
+                if (d.getKind() == Diagnostic.Kind.ERROR) {
+                    diagBuf.append(d.getMessage(null));
+                    diagBuf.append("\n");
+                }
+            }
+            throw new IllegalStateException(diagBuf.toString());
+        }
+        else {
+            try {
+                classStream.write(bytes, 0, bytes.length);
+            }
+            catch (IOException e) {} //ignore
         }
     }
 }

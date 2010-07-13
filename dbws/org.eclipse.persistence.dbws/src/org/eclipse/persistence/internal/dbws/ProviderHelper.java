@@ -191,7 +191,7 @@ public class ProviderHelper extends XRServiceFactory {
 
         String path = WSDL_DIR + DBWS_SCHEMA_XML;
         if (sc != null) {
-            path = "WEB-INF/" + path; 
+            path = "/" + WEB_INF_DIR + path; 
             xrSchemaStream = sc.getResourceAsStream(path);
         }
         else {
@@ -218,7 +218,7 @@ public class ProviderHelper extends XRServiceFactory {
         InputStream wsdlInputStream = null;
         path = WSDL_DIR + DBWS_WSDL;
         if (sc != null) {
-            path = WEB_INF_DIR + path;
+            path = "/" + WEB_INF_DIR + path;
             wsdlInputStream = sc.getResourceAsStream(path);
         }
         else {
@@ -263,7 +263,6 @@ public class ProviderHelper extends XRServiceFactory {
             public Object getAttributeValueFromObject(Object object) {
               return ((Invocation)object).getParameters();
             }
-            @SuppressWarnings({"rawtypes"})
             @Override
             public void setAttributeValueInObject(Object object, Object value) {
                 Invocation invocation = (Invocation)object;
@@ -352,8 +351,16 @@ public class ProviderHelper extends XRServiceFactory {
                                 invocation.setParameter(key, theObject);
                             }
                             else {
-                                String val = e.getTextContent();
-                                invocation.setParameter(key, val);
+                                // cant use e.getTextContent() - some DOM impls dont support it :-(
+                                //String val = e.getTextContent();
+                                StringBuffer sb = new StringBuffer();
+                                NodeList childNodes = e.getChildNodes();
+                                for(int idx=0; idx < childNodes.getLength(); idx++ ) {
+                                    if (childNodes.item(idx).getNodeType() == Node.TEXT_NODE ) {
+                                        sb.append(childNodes.item(idx).getNodeValue());
+                                    }
+                                }
+                                invocation.setParameter(key, sb.toString());
                             }
                         }
                     }
@@ -386,7 +393,7 @@ public class ProviderHelper extends XRServiceFactory {
         responseWriter.initialize();
     }
 
-    @SuppressWarnings({"unchecked", "rawtypes"})
+    @SuppressWarnings({"unchecked"/*, "rawtypes"*/})
     public SOAPMessage invoke(SOAPMessage request) {
         Map<String,DataHandler> attachments = null;
         if (mtomEnabled) {

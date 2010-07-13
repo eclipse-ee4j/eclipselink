@@ -74,7 +74,7 @@ import static org.eclipse.persistence.oxm.XMLConstants.TIME_QNAME;
  * @author Mike Norman - michael.norman@oracle.com
  * @since EclipseLink 1.x
  */
-@SuppressWarnings({"serial", "unchecked", "rawtypes"})
+@SuppressWarnings({"serial", "unchecked"/*, "rawtypes"*/})
 public class QueryOperation extends Operation {
 
     protected Result result;
