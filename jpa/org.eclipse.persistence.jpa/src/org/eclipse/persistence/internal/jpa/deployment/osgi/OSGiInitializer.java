@@ -66,7 +66,7 @@ public class OSGiInitializer extends JPAInitializer {
      * @param transformer
      * @param persistenceUnitInfo
      */
-    public void registerTransformer(final ClassTransformer transformer, PersistenceUnitInfo persistenceUnitInfo){
+    public void registerTransformer(final ClassTransformer transformer, PersistenceUnitInfo persistenceUnitInfo, Map properties){
     }
 
 }
