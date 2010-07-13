@@ -1858,6 +1858,8 @@
         <path id="run.path">
             <pathelement path="${eclipselink.jpa.test}/${build.dir}/${TEST_NAME}_client.jar"/>
             <pathelement path="${eclipselink.jpa.test}/${build.dir}/${MODEL_NAME}_ejb.jar"/>
+            <!--this path is used for WebSphere only for now-->
+            <pathelement path="${server.persistence20.lib}/${server.persistence20.jar}"/>
             <fileset dir="${server.lib}" includes="${server.depend}"/>
             <path refid="compile.server.path"/>
         </path>
