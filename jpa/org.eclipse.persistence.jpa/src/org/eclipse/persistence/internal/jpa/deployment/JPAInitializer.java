@@ -91,7 +91,7 @@ public abstract class JPAInitializer {
         // The temporary classloader could be garbage collected even if the puInfo is cached for the future use by other emSetupImpls.
         persistenceUnitInfo.setNewTempClassLoader(persistenceUnitInfo.getClassLoader());
         
-        registerTransformer(transformer, persistenceUnitInfo);
+        registerTransformer(transformer, persistenceUnitInfo, m);
         return emSetupImpl;
     }
     
@@ -198,7 +198,7 @@ public abstract class JPAInitializer {
      * @param transformer
      * @param persistenceUnitInfo
      */
-    public abstract void registerTransformer(final ClassTransformer transformer, PersistenceUnitInfo persistenceUnitInfo);
+    public abstract void registerTransformer(final ClassTransformer transformer, PersistenceUnitInfo persistenceUnitInfo, Map properties);
 
     /**
      * Indicates whether puName uniquely defines the persistence unit.

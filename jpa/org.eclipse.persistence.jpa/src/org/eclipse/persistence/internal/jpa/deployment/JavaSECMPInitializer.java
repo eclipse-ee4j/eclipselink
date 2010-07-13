@@ -267,7 +267,7 @@ public class JavaSECMPInitializer extends JPAInitializer {
      * @param transformer
      * @param persistenceUnitInfo
      */
-    public void registerTransformer(final ClassTransformer transformer, PersistenceUnitInfo persistenceUnitInfo){
+    public void registerTransformer(final ClassTransformer transformer, PersistenceUnitInfo persistenceUnitInfo, Map properties){
         if ((transformer != null) && (globalInstrumentation != null)) {
             AbstractSessionLog.getLog().log(SessionLog.FINER, "cmp_init_register_transformer", persistenceUnitInfo.getPersistenceUnitName());
             globalInstrumentation.addTransformer(new ClassFileTransformer() {
