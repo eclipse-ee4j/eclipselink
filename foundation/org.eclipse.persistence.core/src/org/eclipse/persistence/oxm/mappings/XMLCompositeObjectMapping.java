@@ -520,11 +520,9 @@ public class XMLCompositeObjectMapping extends AbstractCompositeObjectMapping im
                     QName leafElementType = ((XMLField) getField()).getLeafElementType();
                     if (leafElementType != null) {
                         Object indicator = aDescriptor.getInheritancePolicy().getClassIndicatorMapping().get(leafElementType);
-                        // if the inheritance policy does not contain the user-set type, throw an exception
-                        if (indicator == null) {
-                            throw DescriptorException.missingClassForIndicatorFieldValue(leafElementType, aDescriptor.getInheritancePolicy().getDescriptor());
+                        if(indicator != null) {
+                            classValue = (Class) indicator;
                         }
-                        classValue = (Class) indicator;
                     }
                 }
                 if (classValue != null) {

@@ -254,12 +254,9 @@ public class XMLObjectBuilder extends ObjectBuilder {
                 // inheritance policy
                 if (leafElementType != null) {
                     Object indicator = concreteDescriptor.getInheritancePolicy().getClassIndicatorMapping().get(leafElementType);
-                    // if the inheritance policy does not contain the user-set
-                    // type, throw an exception
-                    if (indicator == null) {
-                        throw DescriptorException.missingClassForIndicatorFieldValue(leafElementType, concreteDescriptor.getInheritancePolicy().getDescriptor());
+                    if(indicator != null) {
+                        classValue = (Class)indicator;
                     }
-                    classValue = (Class)indicator;
                 }
             }
 

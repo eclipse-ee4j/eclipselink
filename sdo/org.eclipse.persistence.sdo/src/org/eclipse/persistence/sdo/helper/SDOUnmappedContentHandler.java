@@ -421,12 +421,9 @@ public class SDOUnmappedContentHandler implements UnmappedContentHandler {
                 // if we have a user-set type, try to get the class from the inheritance policy
                 if (leafElementType != null) {
                     Object indicator = xmlDescriptor.getInheritancePolicy().getClassIndicatorMapping().get(leafElementType);
-
-                    // if the inheritance policy does not contain the user-set type, throw an exception
-                    if (indicator == null) {
-                        throw DescriptorException.missingClassForIndicatorFieldValue(leafElementType, xmlDescriptor.getInheritancePolicy().getDescriptor());
+                    if(indicator != null) {
+                        classValue = (Class)indicator;
                     }
-                    classValue = (Class)indicator;
                 }
             }
             if (classValue != null) {
