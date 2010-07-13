@@ -13,7 +13,12 @@
 
 package org.eclipse.persistence.tools.dbws;
 
+//javase imports
+import java.io.OutputStream;
+
 //EclipseLink imports
+import org.eclipse.persistence.internal.sessions.factories.model.SessionConfigs;
+import org.eclipse.persistence.internal.sessions.factories.model.session.DatabaseSessionConfig;
 import static org.eclipse.persistence.tools.dbws.DBWSPackager.ArchiveUse.noArchive;
 
 /**
@@ -58,6 +63,18 @@ public class JDevPackager extends IDEPackager {
     }
     protected JDevPackager(Archiver archiver, String packagerLabel, ArchiveUse useJavaArchive) {
         super(archiver, packagerLabel, useJavaArchive);
+    }
+
+    @Override
+    public SessionConfigs buildSessionsXML(OutputStream dbwsSessionsStream, DBWSBuilder builder) {
+        SessionConfigs ts = super.buildSessionsXML(dbwsSessionsStream, builder);
+        String dataSource = builder.getDataSource();
+        if (dataSource != null) {
+            DatabaseSessionConfig tmpConfig =
+                (DatabaseSessionConfig)ts.getSessionConfigs().firstElement();
+            WeblogicPackager.buildDatabaseSessionConfig(ts, tmpConfig, builder);
+        }
+        return ts;
     }
 
 }

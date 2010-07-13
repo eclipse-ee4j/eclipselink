@@ -20,7 +20,7 @@ import static org.eclipse.persistence.tools.dbws.DBWSPackager.ArchiveUse.archive
 public class WarPackager extends JSR109WebServicePackager {
 
     public WarPackager() {
-        this(new WarArchiver(),"war", archive);
+        this(new WarArchiver(), "war", archive);
     }
     protected WarPackager(Archiver archiver, String packagerLabel, ArchiveUse useJavaArchive) {
         super(archiver, packagerLabel, useJavaArchive);

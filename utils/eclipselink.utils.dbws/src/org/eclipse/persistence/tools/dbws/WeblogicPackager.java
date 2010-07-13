@@ -38,14 +38,12 @@ import static org.eclipse.persistence.tools.dbws.DBWSPackager.ArchiveUse.archive
 public class WeblogicPackager extends WarPackager {
 
     public WeblogicPackager() {
-        this(new WarArchiver(),"wls", archive);
+        this(new WarArchiver(), "wls", archive);
     }
     protected WeblogicPackager(Archiver archiver, String packagerLabel, ArchiveUse useJavaArchive) {
         super(archiver, packagerLabel, useJavaArchive);
     }
 
-    // WebLogic_10_Platform
-    @SuppressWarnings("unchecked")
     @Override
     public SessionConfigs buildSessionsXML(OutputStream dbwsSessionsStream, DBWSBuilder builder) {
         SessionConfigs ts = super.buildSessionsXML(dbwsSessionsStream, builder);
@@ -53,31 +51,38 @@ public class WeblogicPackager extends WarPackager {
         if (dataSource != null) {
             DatabaseSessionConfig tmpConfig =
                 (DatabaseSessionConfig)ts.getSessionConfigs().firstElement();
-            ProjectConfig orProject = tmpConfig.getPrimaryProject();
-            LogConfig logConfig = tmpConfig.getLogConfig();
-            String sessionName = tmpConfig.getName();
-            DatabaseSessionConfig orSessionConfig = new ServerSessionConfig();
-            orSessionConfig.setPrimaryProject(orProject);
-            orSessionConfig.setName(sessionName);
-            orSessionConfig.setLogConfig(logConfig);
-            CustomServerPlatformConfig customServerPlatformConfig = new CustomServerPlatformConfig();
-            customServerPlatformConfig.setEnableJTA(true);
-            customServerPlatformConfig.setEnableRuntimeServices(true);
-            customServerPlatformConfig.setServerClassName(
-                "org.eclipse.persistence.platform.server.wls.WebLogic_10_Platform");
-            customServerPlatformConfig.setExternalTransactionControllerClass(
-                "org.eclipse.persistence.transaction.wls.WebLogicTransactionController");
-            orSessionConfig.setServerPlatformConfig(customServerPlatformConfig);
-            DatabaseLoginConfig dlc = new DatabaseLoginConfig();
-            dlc.setPlatformClass(builder.getPlatformClassname());
-            dlc.setExternalConnectionPooling(true);
-            dlc.setExternalTransactionController(true);
-            dlc.setDatasource(dataSource);
-            dlc.setBindAllParameters(true);
-            dlc.setStreamsForBinding(true);
-            orSessionConfig.setLoginConfig(dlc);
-            ts.getSessionConfigs().set(0, orSessionConfig);
+            buildDatabaseSessionConfig(ts, tmpConfig, builder);
         }
         return ts;
+    }
+
+    // WebLogic_10_Platform
+    @SuppressWarnings("unchecked")
+    public static void buildDatabaseSessionConfig(SessionConfigs ts, DatabaseSessionConfig tmpConfig,
+        DBWSBuilder builder) {
+        ProjectConfig orProject = tmpConfig.getPrimaryProject();
+        LogConfig logConfig = tmpConfig.getLogConfig();
+        String sessionName = tmpConfig.getName();
+        DatabaseSessionConfig orSessionConfig = new ServerSessionConfig();
+        orSessionConfig.setPrimaryProject(orProject);
+        orSessionConfig.setName(sessionName);
+        orSessionConfig.setLogConfig(logConfig);
+        CustomServerPlatformConfig customServerPlatformConfig = new CustomServerPlatformConfig();
+        customServerPlatformConfig.setEnableJTA(true);
+        customServerPlatformConfig.setEnableRuntimeServices(true);
+        customServerPlatformConfig.setServerClassName(
+            "org.eclipse.persistence.platform.server.wls.WebLogic_10_Platform");
+        customServerPlatformConfig.setExternalTransactionControllerClass(
+            "org.eclipse.persistence.transaction.wls.WebLogicTransactionController");
+        orSessionConfig.setServerPlatformConfig(customServerPlatformConfig);
+        DatabaseLoginConfig dlc = new DatabaseLoginConfig();
+        dlc.setPlatformClass(builder.getPlatformClassname());
+        dlc.setExternalConnectionPooling(true);
+        dlc.setExternalTransactionController(true);
+        dlc.setDatasource(builder.getDataSource());
+        dlc.setBindAllParameters(true);
+        dlc.setStreamsForBinding(true);
+        orSessionConfig.setLoginConfig(dlc);
+        ts.getSessionConfigs().set(0, orSessionConfig);
     }
 }
