@@ -57,22 +57,24 @@
     <!-- Define custom task to "cleanup" the revision information -->
     <property name="custom.tasks.lib" value="${build.location}/buildsystem/ant_customizations.jar"/>
     <property name="custom.cleanrev.task.class" value="org.eclipse.persistence.buildtools.ant.taskdefs.CleanRevision"/>
+    <available file="${custom.tasks.lib}" property="ant_customizations.exist"/>
+    <fail unless="ant_customizations.exist" message="Cannot find custom tasks library: '${custom.tasks.lib}' directory"/>
     <taskdef  name="cleanRevision" classname="${custom.cleanrev.task.class}" classpath="${custom.tasks.lib}"/>
 
     <target name="build-no-publish" description="Trigger an automated build without testing or publish"
             depends="clean, build"
     />
     <target name="build-nightly"    description="Trigger the nightly automated build and lrg tests"
-            depends="clean, build, test-lrg, publish-build, publish-results, report-test-result"
+            depends="clean, build, test-lrg, publish-build, report-test-result"
     />
     <target name="build-milestone"  description="Trigger build, testing, and publishing of a milestone release ('release' is a milestone in this case)"
-            depends="promote-init, extract-signed-artifacts, regen-archives, gen-build-for-maven, publish-milestone, populate-p2-update-site, create-tag"
+            depends="promote-init, regen-archives, publish-milestone, create-tag"
     />
     <target name="build-continuous" description="Trigger an automated build and run the tests if source changes exist"
             depends="clean, build-no-javadoc, build-utils, test-srg"
     />
     <target name="publish-all"      description="Trigger just the publish targets"
-            depends="init, publish-build, publish-results"
+            depends="init, publish-build"
     />
     <target name="build-oracle"     description="Trigger the automated oracle build"
             depends="init, build-oracle-extension, publish-oracle"
@@ -392,7 +394,7 @@
         <copy file="${build.root.dir}/features/${p2.archive.presigned.zip}"                    tofile="${download.dir}/${p2.archive.presigned.zip}" failonerror="false"/>
     </target>
 
-    <target name="publish-build" depends="wait-for-sign-jar, wait-report-timeout, publish-artifacts, populate-p2-update-site"/>
+    <target name="publish-build" depends="wait-for-sign-jar, wait-report-timeout, publish-artifacts, publish-maven, populate-p2-update-site, publish-results, commit-artifacts"/>
     <target name="publish-artifacts">
         <!-- New Publish Architecture -->
         <mkdir dir="${download.dir}"/>
@@ -410,30 +412,9 @@
         <copy file="${build.root.dir}/${eclipselink.sdo.test}/${report.dir}/true/junit-noframes.html"  tofile="${download.dir}/eclipselink-sdo-lrg-${version.string}.html" failonerror="false"/>
         <copy file="${build.root.dir}/${eclipselink.dbws.test}/${report.dir}/junit-noframes.html"      tofile="${download.dir}/eclipselink-dbws-lrg-${version.string}.html" failonerror="false"/>
         <copy file="${build.root.dir}/${eclipselink.util.dbws.test}/${report.dir}/junit-noframes.html" tofile="${download.dir}/eclipselink-dbws-util-lrg-${version.string}.html" failonerror="false"/>
-        <exec executable="${svn.exec}" failonerror="false" logError="true">
-            <arg value="commit"/>
-            <arg value="-m ${version.string}"/>
-            <arg value="${build.root.dir}/${eclipselink.jar}"/>
-            <arg value="${build.root.dir}/${eclipselink.src.install.prefix}${eclipselink.zip.suffix}"/>
-        </exec>
-        <ant antfile="uploadToMaven.xml" dir="${build.root.dir}" target="upload-maven-all"/>
         <delete failonerror="false">
             <fileset dir="${signing.dir}" includes="**/*.zip"/>
         </delete>
-        <!-- Since we've checked in some files, the svn revision has incremented. To create a valid "latest.svnrev" file -->
-        <!-- it needs to be recreated now that the build has completed.      -->
-        <ant antfile="${build.root.dir}/buildsystem/bootstrap.xml" target="get-svn-headrev"/>
-        <move file="${current.svnrev.file}" tofile="${latest.svnrev.file}"/>
-    </target>
-
-    <target name="publish-oracle">
-        <echo message="oracle commit in progress..."/>
-        <exec executable="${svn.exec}" failonerror="false" logError="true">
-            <arg value="commit"/>
-            <arg value="-m ${version.string}"/>
-            <arg value="${build.root.dir}/foundation/plugins/org.eclipse.persistence.oracle.jar"/>
-            <arg value="${build.root.dir}/foundation/plugins/org.eclipse.persistence.oracle.source.jar"/>
-        </exec>
     </target>
 
     <target name="publish-maven" depends="init">
@@ -457,6 +438,58 @@
     <target name="publish-results" depends="clean-results">
         <exec executable="/bin/sh" failonerror="true" logError="true" >
             <arg value="${build.root.dir}/buildsystem/buildNightlyList.sh"/>
+        </exec>
+    </target>
+
+    <target name="populate-p2-update-site" depends="fix-permission">
+        <!-- has to be run after publish, so it can be generic for nightly, or milestone builds -->
+        <condition property="p2.archive.to.use" value="${build.root.dir}/features/${p2.archive.presigned.zip}"
+                                                 else="${download.dir}/${p2.archive.signed.zip}">
+            <equals arg1="${build.type}" arg2="SNAPSHOT"/>
+        </condition>
+        <!-- Clean existing repos if it exists (should only be true of a release redo, or the latest milestone or nightly) -->
+        <delete dir="${p2.repos.dir}" failonerror="false"/>
+        <mkdir dir="${p2.repos.dir}"/>
+        <!-- populate update site with feature and bundle jars, then publish repository -->
+        <ant antfile="build.xml" dir="${build.root.dir}/features" target="assemble-repos">
+            <property name="do.composite"        value="true"/>
+            <property name="ready-to-go"         value="true"/>
+            <property name="bundle.install.file" value="${download.dir}/${eclipselink.plugins.install.prefix}-${version.string}${eclipselink.zip.suffix}"/>
+            <property name="p2.archive.zip"      value="${p2.archive.to.use}"/>
+        </ant>
+        <!-- Regenerate Composite Repos metadata -->
+        <echo message="p2.composite.root.dir = '${p2.composite.root.dir}'"/>
+        <echo message="metadata.repos.name   = '${metadata.repos.name}'"/>
+        <exec executable="/bin/sh" failonerror="false" logError="true" >
+            <arg value="${build.root.dir}/buildsystem/buildCompositeP2.sh"/>
+            <arg value="${p2.composite.root.dir}"/>
+            <arg value="${metadata.repos.name}"/>
+        </exec>
+        <!-- Can clean-up temp dir now -->  
+        <delete dir="${temp.rebuild.dir}" failonerror="false"/>
+    </target>
+
+    <target name="commit-artifacts">
+        <!-- Commit eclipselink and source jar for testing availability -->
+        <exec executable="${svn.exec}" failonerror="false" logError="true">
+            <arg value="commit"/>
+            <arg value="-m ${version.string}"/>
+            <arg value="${build.root.dir}/${eclipselink.jar}"/>
+            <arg value="${build.root.dir}/${eclipselink.src.install.prefix}${eclipselink.zip.suffix}"/>
+        </exec>
+        <!-- Since we've checked in some files, the svn revision has incremented. To create a valid "latest.svnrev" file -->
+        <!-- it needs to be recreated now that the build has completed.      -->
+        <ant antfile="${build.root.dir}/buildsystem/bootstrap.xml" target="get-svn-headrev"/>
+        <move file="${current.svnrev.file}" tofile="${latest.svnrev.file}"/>
+    </target>
+
+    <target name="publish-oracle">
+        <echo message="oracle commit in progress..."/>
+        <exec executable="${svn.exec}" failonerror="false" logError="true">
+            <arg value="commit"/>
+            <arg value="-m ${version.string}"/>
+            <arg value="${build.root.dir}/foundation/plugins/org.eclipse.persistence.oracle.jar"/>
+            <arg value="${build.root.dir}/foundation/plugins/org.eclipse.persistence.oracle.source.jar"/>
         </exec>
     </target>
 
@@ -515,13 +548,13 @@
         <mkdir dir="${temp.rebuild.dir}"/>
     </target>
 
+    <target name="regen-archives" depends="extract-signed-artifacts, regen-installer-archive, regen-plugin-archive, gen-build-for-maven"/>
     <target name="extract-signed-artifacts">
         <echo message="Extracting signed jars from archive..."/>
         <property name="signed.jar.path" value="${temp.rebuild.dir}/signed"/>
         <unzip dest="${signed.jar.path}" src="${promote.source.dir}/${p2.archive.signed.zip}"/>
     </target>
 
-    <target name="regen-archives" depends="regen-installer-archive, regen-plugin-archive"/>
     <target name="regen-installer-archive">
         <!--     THIS IS NOT DONE. Unless we start signing eclipselink.jar or DBWS Utils again. -->
         <echo message="     THIS IS NOT DONE. Unless we start signing eclipselink.jar or DBWS Utils again."/>
@@ -590,7 +623,8 @@
         </copy>
     </target>
 
-    <target name="publish-milestone">
+    <target name="publish-milestone" depends="publish-milestone-artifacts, publish-milestone-maven, populate-p2-update-site"/>
+    <target name="publish-milestone-artifacts">
         <!-- Publish from nightly published location to Milestone dir -->
         <mkdir dir="${download.dir}"/>
         <!-- From temp rebuild location -->
@@ -614,35 +648,10 @@
         <!-- Copy for maven to run -->
         <copy todir="${tmp.maven.dir}" file="${basedir}/pom.xml.template"  failonerror="false"/>
         <copy todir="${tmp.maven.dir}" file="${basedir}/uploadToMaven.xml" failonerror="false"/>
-        <ant antfile="uploadToMaven.xml" dir="${tmp.maven.dir}" target="upload-maven-all"/>
     </target>
 
-    <target name="populate-p2-update-site" depends="fix-permission">
-        <!-- has to be run last, so it can be generic for nightly, or milestone builds -->
-        <condition property="p2.archive.to.use" value="${build.root.dir}/features/${p2.archive.presigned.zip}"
-                                                 else="${download.dir}/${p2.archive.signed.zip}">
-            <equals arg1="${build.type}" arg2="SNAPSHOT"/>
-        </condition>
-        <!-- Clean existing repos if it exists (should only be true of a release redo, or the latest milestone or nightly) -->
-        <delete dir="${p2.repos.dir}" failonerror="false"/>
-        <mkdir dir="${p2.repos.dir}"/>
-        <!-- populate update site with feature and bundle jars, then publish repository -->
-        <ant antfile="build.xml" dir="${build.root.dir}/features" target="assemble-repos">
-            <property name="do.composite"        value="true"/>
-            <property name="ready-to-go"         value="true"/>
-            <property name="bundle.install.file" value="${download.dir}/${eclipselink.plugins.install.prefix}-${version.string}${eclipselink.zip.suffix}"/>
-            <property name="p2.archive.zip"      value="${p2.archive.to.use}"/>
-        </ant>
-        <!-- Regenerate Composite Repos metadata -->
-        <echo message="p2.composite.root.dir = '${p2.composite.root.dir}'"/>
-        <echo message="metadata.repos.name   = '${metadata.repos.name}'"/>
-        <exec executable="/bin/sh" failonerror="false" logError="true" >
-            <arg value="${build.root.dir}/buildsystem/buildCompositeP2.sh"/>
-            <arg value="${p2.composite.root.dir}"/>
-            <arg value="${metadata.repos.name}"/>
-        </exec>
-        <!-- Can clean-up temp dir now -->  
-        <delete dir="${temp.rebuild.dir}" failonerror="false"/>
+    <target name="publish-milestone-maven" depends="init">
+        <ant antfile="uploadToMaven.xml" dir="${tmp.maven.dir}" target="upload-maven-all"/>
     </target>
 
     <!-- Helper target for cb processing -->

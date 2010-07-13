@@ -4,6 +4,7 @@
 export JAVA_HOME=/shared/common/ibm-java-jdk-ppc-60
 export PATH=${JAVA_HOME}/bin:/usr/bin:/usr/local/bin:${PATH}
 
+GeneratedDownloadPage=downloads.xml
 BaseDownloadURL="http://www.eclipse.org/downloads/download.php?file=/rt/eclipselink/nightly"
 BaseDisplayURL="http://download.eclipse.org/rt/eclipselink/nightly"
 BaseDownloadNFSDir="/home/data/httpd/download.eclipse.org/rt/eclipselink"
@@ -142,5 +143,5 @@ echo "  </section>                                                              
 echo "</sections>                                                                               " >> $tmp/index.xml
 
 # Copy the completed file to the server, and cleanup
-mv -f $tmp/index.xml  ${BaseDownloadNFSDir}/downloads.xml
+mv -f $tmp/index.xml  ${BaseDownloadNFSDir}/${GeneratedDownloadPage}
 rm -rf $tmp
