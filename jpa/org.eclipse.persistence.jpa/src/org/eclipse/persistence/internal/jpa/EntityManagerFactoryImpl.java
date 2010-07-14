@@ -154,11 +154,6 @@ public class EntityManagerFactoryImpl implements EntityManagerFactory, Persisten
                     Map serverSessionProperties = splitProperties[1];
                     // the call top setupImpl.deploy() finishes the session
                     // creation
-                    // If the user has provided a loader (e.g. DynamicClassLoader), use it!
-                    ClassLoader providedLoader = (ClassLoader) serverSessionProperties.get(PersistenceUnitProperties.CLASSLOADER);
-                    if (providedLoader != null) {
-                        realLoader = providedLoader;
-                    }
                     ServerSession tempServerSession = setupImpl.deploy(realLoader, serverSessionProperties);
                     // discard all but non server session properties from server
                     // session properties.
