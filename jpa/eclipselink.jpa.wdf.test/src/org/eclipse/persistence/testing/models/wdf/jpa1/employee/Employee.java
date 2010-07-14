@@ -152,7 +152,7 @@ public class Employee implements Serializable {
     // <join-column name="PROFILE_GUID"/>
     // </attribute>
     @OneToOne
-    @JoinColumn(name = "PROFILE_GUID")
+    @JoinColumn(name = "PROFILE_GUID", columnDefinition="binary(16) DEFAULT NULL")
     protected TravelProfile travelProfile;
 
     // <attribute name="hobbies">
@@ -186,8 +186,9 @@ public class Employee implements Serializable {
     @JoinTable(name = "TMP_EMP_CREDIT", joinColumns = { @JoinColumn(name = "CLIENT_ID") }, inverseJoinColumns = { @JoinColumn(name = "CREDIT_ID") })
     protected Set<CreditCardAccount> creditCardAccounts;
 
-    @OneToOne
-    @JoinColumn(name = "AUTOMOBILE")
+//    @OneToOne
+//    @JoinColumn(name = "AUTOMOBILE")
+    @Transient // EclipseLink has issue with cyclic FKs FIXME: file bug and add id here
     protected MotorVehicle automobile;
 
     @ManyToOne

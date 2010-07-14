@@ -86,7 +86,7 @@ public class TravelProfile {
      * @return Returns the guid.
      */
     @Id
-    @Column(length = 16)
+    @Column(length = 16, columnDefinition="binary(16) DEFAULT NULL")
     public byte[] getGuid() {
         return guid;
     }

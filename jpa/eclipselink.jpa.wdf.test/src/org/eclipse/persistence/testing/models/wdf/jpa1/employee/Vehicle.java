@@ -59,8 +59,9 @@ public class Vehicle implements Serializable {
     int version;
 
     @ManyToMany
-    @JoinTable(name = "TMP_VEHICLE_PROFILE", joinColumns = { @JoinColumn(name = "VEHICLE_ID") }, inverseJoinColumns = { @JoinColumn(name = "PROFILE_ID") })
+    @JoinTable(name = "TMP_VEHICLE_PROFILE", joinColumns = { @JoinColumn(name = "VEHICLE_ID") }, inverseJoinColumns = { @JoinColumn(name = "PROFILE_ID", columnDefinition="binary(16) DEFAULT NULL") })
     private Set<TravelProfile> profiles;
+    
 
     public void setId(Short id) {
         this.id = id;
