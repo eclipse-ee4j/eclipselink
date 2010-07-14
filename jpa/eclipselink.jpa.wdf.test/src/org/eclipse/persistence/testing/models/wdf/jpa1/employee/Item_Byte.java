@@ -30,7 +30,7 @@ import javax.persistence.Table;
 @Table(name = "BYTE_ITEM")
 public class Item_Byte implements Serializable {
     @Id
-    @Column(name = "ITEM_ID")
+    @Column(name = "ITEM_ID", columnDefinition="binary(16)")
     private byte[] itemId;
     private String namespace;
     private String text;

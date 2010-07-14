@@ -166,7 +166,6 @@ public class CallbackTest extends JPA1Base {
     }
 
     @Test
-    @Issue(issueid = 10)
     public void testPreRemove() throws SQLException {
         clearAllTables();
         final JPAEnvironment environment = getEnvironment();

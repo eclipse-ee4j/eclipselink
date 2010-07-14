@@ -484,7 +484,6 @@ public class TestBidirectionalManyToMany extends JPA1Base {
     }
 
     @Test
-    @Issue(issueid = 10)
     public void testByteItem() {
         JPAEnvironment env = getEnvironment();
         EntityManager em = env.getEntityManager();
