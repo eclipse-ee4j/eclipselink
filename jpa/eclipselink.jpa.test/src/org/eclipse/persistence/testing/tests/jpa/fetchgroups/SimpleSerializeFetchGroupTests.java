@@ -1178,14 +1178,18 @@ public class SimpleSerializeFetchGroupTests extends BaseFetchGroupTests {
 
                 // to cause updates let's change something:
                 //   in Employee table
-                empCopy.setFirstName(empCopy.getFirstName() + "_NEW");
+                empCopy.setFirstName((empCopy.getFirstName() != null ? empCopy.getFirstName() : "") + "_NEW");
                 //   in Salary table
                 empCopy.setSalary(empCopy.getSalary() * 2 + 1);
                 //   in Address
-                empCopy.getAddress().setCountry("NEW");
+                empCopy.getAddress().setCountry((empCopy.getAddress().getCountry() != null ? empCopy.getAddress().getCountry() : "") + "_NEW");
                 //   in each Phone
                 for(PhoneNumber phoneCopy : empCopy.getPhoneNumbers()) {
-                    phoneCopy.setAreaCode("000");
+                    if(phoneCopy.getAreaCode() != null && phoneCopy.getAreaCode().equals("000")) {
+                        phoneCopy.setAreaCode("111");
+                    } else {
+                        phoneCopy.setAreaCode("000");
+                    }
                 }
                 em.merge(empCopy);
             }
