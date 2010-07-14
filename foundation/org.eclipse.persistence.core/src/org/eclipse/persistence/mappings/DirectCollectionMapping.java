@@ -389,6 +389,8 @@ public class DirectCollectionMapping extends CollectionMapping implements Relati
     public void buildCopy(Object copy, Object original, CopyGroup group) {
         Object attributeValue = getRealCollectionAttributeValueFromObject(original, group.getSession());
         attributeValue = getContainerPolicy().cloneFor(attributeValue);
+        // if value holder is used, then the value holder shared with original substituted for a new ValueHolder.
+        getIndirectionPolicy().reset(copy);
         setRealAttributeValueInObject(copy, attributeValue);
     }
 

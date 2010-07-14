@@ -2982,6 +2982,11 @@ public class ObjectBuilder implements Cloneable, Serializable {
         if (clone instanceof ChangeTracker) {
             ((ChangeTracker)clone)._persistence_setPropertyChangeListener(null);
         }
+        if(clone instanceof FetchGroupTracker) {
+            ((FetchGroupTracker)clone)._persistence_setFetchGroup(null);
+            ((FetchGroupTracker)clone)._persistence_setSession(null);
+        }
+        clearPrimaryKey(clone);
         return clone;
     }
 

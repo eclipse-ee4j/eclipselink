@@ -88,10 +88,7 @@ public class SimpleSerializeFetchGroupTests extends BaseFetchGroupTests {
         suite.addTest(new SimpleSerializeFetchGroupTests("copyWithoutPkUseFullGroup"));
         suite.addTest(new SimpleSerializeFetchGroupTests("copyNoCascade"));
         suite.addTest(new SimpleSerializeFetchGroupTests("copyCascadePrivateParts"));
-        // The following test commented out due to: 
-        // Bug 319426 - Original and copy share ValueHolder. 
-        // Please uncomment when the bug is fixed.
-        //suite.addTest(new SimpleSerializeFetchGroupTests("copyCascadeAllParts"));
+        suite.addTest(new SimpleSerializeFetchGroupTests("copyCascadeAllParts"));
         
         return suite;
     }
