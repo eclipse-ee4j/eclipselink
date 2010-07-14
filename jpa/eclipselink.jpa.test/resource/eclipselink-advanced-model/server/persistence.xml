@@ -10,6 +10,8 @@
             <property name="eclipselink.descriptor.customizer.Employee" value="org.eclipse.persistence.testing.models.jpa.advanced.Customizer"/>
             <property name="eclipselink.descriptor.customizer.org.eclipse.persistence.testing.models.jpa.advanced.Address" value="org.eclipse.persistence.testing.models.jpa.advanced.Customizer"/>
             <property name="eclipselink.descriptor.customizer.Project" value="org.eclipse.persistence.testing.models.jpa.advanced.Customizer"/>
+            <property name="eclipselink.cache.shared.org.eclipse.persistence.testing.models.jpa.relationships.IsolatedItem" value="false"/>
+            <property name="eclipselink.cache.shared.org.eclipse.persistence.testing.models.jpa.fieldaccess.relationships.IsolatedItem" value="false"/>
             <property name="eclipselink.weaving" value="%%server-weaving%%"/>
             <!--property name="eclipselink.logging.level" value="FINEST"/-->
         </properties>
