@@ -1031,7 +1031,7 @@ public abstract class ForeignReferenceMapping extends DatabaseMapping {
         if (isPrivateOwned){
             getDescriptor().addMappingsPostCalculateChanges(this);
             if (getDescriptor().hasInheritance()){
-                for (ClassDescriptor descriptor: getDescriptor().getInheritancePolicy().getAllChildDescriptors()) {
+                for (ClassDescriptor descriptor: (List<ClassDescriptor>)getDescriptor().getInheritancePolicy().getAllChildDescriptors()){
                     descriptor.addMappingsPostCalculateChanges(this);
                 }
             }
@@ -1313,14 +1313,14 @@ public abstract class ForeignReferenceMapping extends DatabaseMapping {
             if (isPrivateOwned && !this.isPrivateOwned){
                 this.descriptor.addMappingsPostCalculateChanges(this);
                 if (getDescriptor().hasInheritance()){
-                    for (ClassDescriptor descriptor: getDescriptor().getInheritancePolicy().getAllChildDescriptors()) {
+                    for (ClassDescriptor descriptor: (List<ClassDescriptor>)getDescriptor().getInheritancePolicy().getAllChildDescriptors()){
                         descriptor.addMappingsPostCalculateChanges(this);
                     }
                 }
             }else if (!isPrivateOwned && this.isPrivateOwned){
                 this.descriptor.getMappingsPostCalculateChanges().remove(this);
                 if (getDescriptor().hasInheritance()){
-                    for (ClassDescriptor descriptor: getDescriptor().getInheritancePolicy().getAllChildDescriptors()) {
+                    for (ClassDescriptor descriptor: (List<ClassDescriptor>)getDescriptor().getInheritancePolicy().getAllChildDescriptors()){
                         descriptor.getMappingsPostCalculateChanges().remove(this);
                     }
                 }

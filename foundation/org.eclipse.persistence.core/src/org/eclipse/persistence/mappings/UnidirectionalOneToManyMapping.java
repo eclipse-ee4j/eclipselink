@@ -13,6 +13,7 @@
 package org.eclipse.persistence.mappings;
 
 import java.util.Iterator;
+import java.util.List;
 import java.util.Vector;
 
 import org.eclipse.persistence.descriptors.ClassDescriptor;
@@ -153,7 +154,7 @@ public class UnidirectionalOneToManyMapping extends OneToManyMapping {
             if(shouldIncrementTargetLockValueOnAddOrRemoveTarget) {
                 descriptor.addMappingsPostCalculateChanges(this);
                 if (getDescriptor().hasInheritance()){
-                    for (ClassDescriptor descriptor: getDescriptor().getInheritancePolicy().getAllChildDescriptors()) {
+                    for (ClassDescriptor descriptor: (List<ClassDescriptor>)getDescriptor().getInheritancePolicy().getAllChildDescriptors()){
                         descriptor.addMappingsPostCalculateChanges(this);
                     }
                 }
@@ -161,7 +162,7 @@ public class UnidirectionalOneToManyMapping extends OneToManyMapping {
             if(shouldIncrementTargetLockValueOnDeleteSource && !isPrivateOwned) {
                 descriptor.addMappingsPostCalculateChangesOnDeleted(this);
                 if (getDescriptor().hasInheritance()){
-                    for (ClassDescriptor descriptor: getDescriptor().getInheritancePolicy().getAllChildDescriptors()) {
+                    for (ClassDescriptor descriptor: (List<ClassDescriptor>)getDescriptor().getInheritancePolicy().getAllChildDescriptors()){
                         descriptor.addMappingsPostCalculateChangesOnDeleted(this);
                     }
                 }

@@ -205,11 +205,11 @@ public class CommitOrderDependencyNode {
         results.addElement(node);
 
         if (node.getDescriptor().hasInheritance()) {
-            InheritancePolicy policy = node.getDescriptor().getInheritancePolicy();
+            InheritancePolicy p = node.getDescriptor().getInheritancePolicy();
 
             // For bug 3019934 replace getChildDescriptors with getAllChildDescriptors.
-            for (ClassDescriptor child : policy.getAllChildDescriptors()) {
-                results.add(getOwner().nodeFor(child));
+            for (Enumeration e = p.getAllChildDescriptors().elements(); e.hasMoreElements();) {
+                results.addElement(getOwner().nodeFor((ClassDescriptor)e.nextElement()));
             }
         }
         return results;
