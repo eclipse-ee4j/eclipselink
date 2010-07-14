@@ -105,7 +105,7 @@ public class CompositeCollectionWithGroupingByNamespaceNoRefClassTestCases exten
             instream.close();
             xmlToObjectTest(testObject);
         } catch (XMLMarshalException e) {
-            if (e.getMessage().contains("No descriptor found while unmarshalling element mapped to attribute")) {
+            if (e.getErrorCode() == XMLMarshalException.UNKNOWN_XSI_TYPE) {
                 return;
             } else {
                 fail("an error should have occurred");

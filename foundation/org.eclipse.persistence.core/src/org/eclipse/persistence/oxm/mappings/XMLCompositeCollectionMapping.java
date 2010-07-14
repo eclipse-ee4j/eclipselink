@@ -498,7 +498,12 @@ public class XMLCompositeCollectionMapping extends AbstractCompositeCollectionMa
                     Node nextNode = children.item(i);
                     if(nextNode.getNodeType() == nextNode.ELEMENT_NODE){
                         //complex child
-                        throw XMLMarshalException.noDescriptorFound(this);                              
+                        String type = ((Element) ((DOMRecord)nestedRow).getDOM()).getAttributeNS(XMLConstants.SCHEMA_INSTANCE_URL, XMLConstants.SCHEMA_TYPE_ATTRIBUTE);
+                        if(type != null && type.length() > 0) {
+                            throw XMLMarshalException.unknownXsiTypeValue(type, this);
+                        } else {
+                            throw XMLMarshalException.noDescriptorFound(this);
+                        }
                     }
                 }
                  //simple case
