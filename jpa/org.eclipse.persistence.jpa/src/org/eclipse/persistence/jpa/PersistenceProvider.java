@@ -117,6 +117,9 @@ public class PersistenceProvider implements javax.persistence.spi.PersistencePro
                         if(emSetupImpl != null) {
                             // change the name
                             emSetupImpl.changeSessionName(sessionName);
+                            //  make sure we grab the classloader that may have 
+                            // been provided by the user. I.E. a DynamicClassLoader
+                            puInfo.setClassLoader(classLoader);
                         }
                     }
                     if(emSetupImpl == null) {
