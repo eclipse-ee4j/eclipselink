@@ -67,7 +67,6 @@ public class TestUnidirectionalOneToOne extends JPA1Base {
     }
 
     @Test
-    @Issue(issueid = 10)
     public void testUnchanged() {
         JPAEnvironment env = getEnvironment();
         EntityManager em = env.getEntityManager();
@@ -100,7 +99,6 @@ public class TestUnidirectionalOneToOne extends JPA1Base {
     }
 
     @Test
-    @Issue(issueid = 10)
     public void testMoveTravelProfile() {
         JPAEnvironment env = getEnvironment();
         EntityManager em = env.getEntityManager();

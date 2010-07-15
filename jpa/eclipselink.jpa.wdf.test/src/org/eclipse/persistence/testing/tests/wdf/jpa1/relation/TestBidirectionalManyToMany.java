@@ -452,7 +452,6 @@ public class TestBidirectionalManyToMany extends JPA1Base {
     }
 
     @Test
-    @Issue(issueid = 10)
     public void testGuidCollection() throws SQLException {
         JPAEnvironment env = getEnvironment();
         EntityManager em = env.getEntityManager();
@@ -502,7 +501,6 @@ public class TestBidirectionalManyToMany extends JPA1Base {
     }
 
     @Test
-    @Issue(issueid = 10)
     public void testCascadeMerge() throws IOException, ClassNotFoundException {
         JPAEnvironment env = getEnvironment();
         EntityManager em = env.getEntityManager();
