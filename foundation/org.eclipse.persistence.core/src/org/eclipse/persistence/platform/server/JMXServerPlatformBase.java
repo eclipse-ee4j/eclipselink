@@ -155,7 +155,6 @@ public abstract class JMXServerPlatformBase extends ServerPlatformBase {
         ObjectName name = null;      
         String sessionName = getMBeanSessionName();
         if (null != sessionName && (shouldRegisterDevelopmentBean || shouldRegisterRuntimeBean)) {
-            try {                    
                 // Attempt to register new mBean with the server
                 if (null != mBeanServerRuntime && shouldRegisterDevelopmentBean) {
                     try {
@@ -204,9 +203,6 @@ public abstract class JMXServerPlatformBase extends ServerPlatformBase {
                     }
                     AbstractSessionLog.getLog().log(SessionLog.FINEST, "registered_mbean", runtimeInstance);          
                 }
-            } catch (Exception exception) {
-                AbstractSessionLog.getLog().log(SessionLog.WARNING, "problem_registering_mbean", exception);
-            }
         }
     }
     
@@ -342,6 +338,7 @@ public abstract class JMXServerPlatformBase extends ServerPlatformBase {
      * 3) defer to superclass - usually return "unknown"
      *
      * @return String applicationName
+     * @see JMXEnabledPlatform 
      */
     public String getApplicationName() {
         return this.applicationName;
