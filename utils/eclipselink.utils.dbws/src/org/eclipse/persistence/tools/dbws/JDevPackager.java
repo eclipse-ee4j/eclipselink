@@ -14,38 +14,21 @@
 package org.eclipse.persistence.tools.dbws;
 
 //javase imports
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
 import java.io.OutputStream;
 
 //EclipseLink imports
-import static org.eclipse.persistence.internal.xr.Util.DBWS_OR_XML;
-import static org.eclipse.persistence.internal.xr.Util.DBWS_OX_XML;
-import static org.eclipse.persistence.internal.xr.Util.DBWS_SCHEMA_XML;
-import static org.eclipse.persistence.internal.xr.Util.DBWS_SERVICE_XML;
-import static org.eclipse.persistence.internal.xr.Util.DBWS_WSDL;
-import static org.eclipse.persistence.internal.xr.Util.WEB_INF_DIR;
-import static org.eclipse.persistence.internal.xr.Util.WSDL_DIR;
+import org.eclipse.persistence.internal.sessions.factories.model.SessionConfigs;
+import org.eclipse.persistence.internal.sessions.factories.model.session.DatabaseSessionConfig;
 import static org.eclipse.persistence.tools.dbws.DBWSPackager.ArchiveUse.noArchive;
-import static org.eclipse.persistence.tools.dbws.Util.DBWS_PROVIDER_SOURCE_FILE;
-import static org.eclipse.persistence.tools.dbws.Util.SWAREF_FILENAME;
-import static org.eclipse.persistence.tools.dbws.Util.UNDER_DBWS;
-import static org.eclipse.persistence.tools.dbws.Util.WEB_XML_FILENAME;
 
 /**
  * <p>
- * <b>PUBLIC:</b> JDevPackager extends {@link WeblogicPackager}. It is responsible for generating<br>
+ * <b>PUBLIC:</b> JDevPackager extends {@link IDEPackager}. It is responsible for generating<br>
  * the source code of the DBWS Provider (instead of a <tt>.class</tt> file) and packaging in a<br>
  * JDev-friendly directory structure all the other DBWS files produced by its parent:
  * <pre>
  * \--- JDev <b>Projectnnn</b> root directory
- *    |   application.xml
- *    |   build.properties
- *    |   build.xml
- *    |   data-sources.xml
  *    |   dbws-builder.xml
- *    |   Projectnnn.jpr
  *    |
  *    +---<b>public_html</b>
  *    |   \---WEB-INF
@@ -69,159 +52,29 @@ import static org.eclipse.persistence.tools.dbws.Util.WEB_XML_FILENAME;
  * @author Mike Norman - michael.norman@oracle.com
  * @since EclipseLink 1.x
  */
-public class JDevPackager extends WeblogicPackager {
+public class JDevPackager extends IDEPackager {
 
     public static final String SRC_DIR = "src";
     public static final String PUBLIC_HTML_DIR = "public_html";
 
-    protected File srcDir;
-    protected File publicHTMLDir;
-    protected File webInfDir;
-    protected File wsdlDir;
-    protected File underDBWSDir;
-
     public JDevPackager() {
         this(null, "jdev", noArchive);
+        publicHTMLDirname = PUBLIC_HTML_DIR;
     }
     protected JDevPackager(Archiver archiver, String packagerLabel, ArchiveUse useJavaArchive) {
         super(archiver, packagerLabel, useJavaArchive);
     }
 
     @Override
-    public String getArchiverLabel() {
-        return "not supported";
-    }
-    @Override
-    public String getAdditionalUsage() {
-        return null;
-    }
-
-    @Override
-    public Archiver buildDefaultArchiver() {
-        return null;
-    }
-    
-    // create streams according to JDev project layout (see above)
-
-    @Override
-    public OutputStream getSchemaStream() throws FileNotFoundException {
-        buildWSDLDir();
-        return new FileOutputStream(new File(wsdlDir, DBWS_SCHEMA_XML));
-    }
-
-    @Override
-    public OutputStream getSessionsStream(String sessionsFileName) throws FileNotFoundException {
-        buildSrcDir();
-        return new FileOutputStream(new File(srcDir, sessionsFileName));
-    }
-
-    @Override
-    public OutputStream getServiceStream() throws FileNotFoundException {
-        buildSrcDir();
-        return new FileOutputStream(new File(srcDir, DBWS_SERVICE_XML));
-    }
-
-    @Override
-    public OutputStream getOrStream() throws FileNotFoundException {
-        buildSrcDir();
-        return new FileOutputStream(new File(srcDir, DBWS_OR_XML));
-    }
-
-    @Override
-    public OutputStream getOxStream() throws FileNotFoundException {
-        buildSrcDir();
-        return new FileOutputStream(new File(srcDir, DBWS_OX_XML));
-    }
-
-    @Override
-    public OutputStream getWSDLStream() throws FileNotFoundException {
-        buildWSDLDir();
-        return new FileOutputStream(new File(wsdlDir, DBWS_WSDL));
-    }
-
-    @Override
-    public OutputStream getSWARefStream() throws FileNotFoundException {
-        if (hasAttachments) {
-            buildWSDLDir();
-            return new FileOutputStream(new File(wsdlDir, SWAREF_FILENAME));
+    public SessionConfigs buildSessionsXML(OutputStream dbwsSessionsStream, DBWSBuilder builder) {
+        SessionConfigs ts = super.buildSessionsXML(dbwsSessionsStream, builder);
+        String dataSource = builder.getDataSource();
+        if (dataSource != null) {
+            DatabaseSessionConfig tmpConfig =
+                (DatabaseSessionConfig)ts.getSessionConfigs().firstElement();
+            WeblogicPackager.buildDatabaseSessionConfig(ts, tmpConfig, builder);
         }
-        else {
-            return XRPackager.__nullStream;
-        }
+        return ts;
     }
 
-    @Override
-    public OutputStream getWebXmlStream() throws FileNotFoundException {
-        buildWebInfDir();
-        return new FileOutputStream(new File(webInfDir, WEB_XML_FILENAME));
-    }
-
-    // we doesn't need the .class file: JDev is an IDE, just compile the source!
-    @Override
-    public OutputStream getProviderClassStream() throws FileNotFoundException {
-        return XRPackager.__nullStream;
-    }
-    @Override
-    public OutputStream getProviderSourceStream() throws FileNotFoundException {
-        buildUnderDBWS();
-        return new FileOutputStream(new File(underDBWSDir, DBWS_PROVIDER_SOURCE_FILE));
-    }
-
-    protected void buildSrcDir() throws FileNotFoundException {
-        srcDir = new File(stageDir, SRC_DIR);
-        if (!srcDir.exists()) {
-            boolean worked = srcDir.mkdir();
-            if (!worked) {
-                throw new FileNotFoundException("cannot create " +
-                    SRC_DIR + " under " + stageDir);
-            }
-        }
-    }
-
-    protected void buildUnderDBWS() throws FileNotFoundException {
-        buildSrcDir();
-        underDBWSDir = new File(srcDir, UNDER_DBWS);
-        if (!underDBWSDir.exists()) {
-            boolean worked = underDBWSDir.mkdir();
-            if (!worked) {
-                throw new FileNotFoundException("cannot create " + SRC_DIR + "/" + UNDER_DBWS +
-                    " dir under " + stageDir);
-            }
-        }
-    }
-
-    protected void buildPublicHTMLDir() throws FileNotFoundException {
-        publicHTMLDir = new File(stageDir, PUBLIC_HTML_DIR);
-        if (!publicHTMLDir.exists()) {
-            boolean worked = publicHTMLDir.mkdir();
-            if (!worked) {
-                throw new FileNotFoundException("cannot create " +
-                    PUBLIC_HTML_DIR + " under " + stageDir);
-            }
-        }
-    }
-
-    protected void buildWebInfDir() throws FileNotFoundException {
-        buildPublicHTMLDir();
-        webInfDir = new File(publicHTMLDir, WEB_INF_DIR);
-        if (!webInfDir.exists()) {
-            boolean worked = webInfDir.mkdir();
-            if (!worked) {
-                throw new FileNotFoundException("cannot create " +
-                    WEB_INF_DIR + " under " + PUBLIC_HTML_DIR);
-            }
-        }
-    }
-
-    protected void buildWSDLDir() throws FileNotFoundException {
-        buildWebInfDir();
-        wsdlDir = new File(webInfDir, WSDL_DIR);
-        if (!wsdlDir.exists()) {
-            boolean worked = wsdlDir.mkdir();
-            if (!worked) {
-                throw new FileNotFoundException("cannot create " +
-                    WSDL_DIR + " under " + WEB_INF_DIR);
-            }
-        }
-    }
 }

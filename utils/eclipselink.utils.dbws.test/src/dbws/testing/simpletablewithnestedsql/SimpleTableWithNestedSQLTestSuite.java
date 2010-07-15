@@ -39,7 +39,7 @@ import org.eclipse.persistence.oxm.XMLUnmarshaller;
 import org.eclipse.persistence.tools.dbws.DBWSBuilder;
 import org.eclipse.persistence.tools.dbws.DBWSBuilderModel;
 import org.eclipse.persistence.tools.dbws.DBWSBuilderModelProject;
-import org.eclipse.persistence.tools.dbws.WebServicePackager;
+import org.eclipse.persistence.tools.dbws.JSR109WebServicePackager;
 import static org.eclipse.persistence.internal.dbws.ProviderHelper.MATCH_SCHEMA;
 import static org.eclipse.persistence.tools.dbws.DBWSPackager.ArchiveUse.noArchive;
 import static org.eclipse.persistence.tools.dbws.DBWSBuilder.NO_SESSIONS_FILENAME;
@@ -106,7 +106,7 @@ public class SimpleTableWithNestedSQLTestSuite extends DBWSTestSuite  {
         builder.properties = builderModel.properties;
         builder.getProperties().put(SESSIONS_FILENAME_KEY, NO_SESSIONS_FILENAME);
         builder.operations = builderModel.operations;
-        builder.setPackager(new WebServicePackager(null, "WebServiceTestPackager", noArchive) {
+        builder.setPackager(new JSR109WebServicePackager(null, "WebServiceTestPackager", noArchive) {
             @Override
             public void start() {
             	// do nothing - don't have to verify existence of 'stageDir' when
@@ -116,7 +116,8 @@ public class SimpleTableWithNestedSQLTestSuite extends DBWSTestSuite  {
         ByteArrayOutputStream dbwsServiceStream = new ByteArrayOutputStream();
         ByteArrayOutputStream wsdlStream = new ByteArrayOutputStream();
         builder.build(__nullStream, __nullStream, dbwsServiceStream, __nullStream, __nullStream,
-        	__nullStream, __nullStream, wsdlStream, __nullStream, __nullStream, null);
+        	__nullStream, __nullStream, wsdlStream, __nullStream, __nullStream, __nullStream,
+        	__nullStream, null);
         // verify that the generated WSDL has the correct response type
         // for the nested sql operation 'findByName'
         try {

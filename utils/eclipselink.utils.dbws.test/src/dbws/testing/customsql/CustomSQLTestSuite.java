@@ -155,7 +155,7 @@ public class CustomSQLTestSuite extends DBWSTestSuite {
           "<deptno>20</deptno>" +
         "</customType>";
 
-    @SuppressWarnings({"unchecked"/*, "rawtypes"*/})
+    @SuppressWarnings({"unchecked", "rawtypes"})
     @Test
     public void findAll() {
         Invocation invocation = new Invocation("findAll_customType");

@@ -98,8 +98,13 @@ public class Util {
         "delete";
     public static final String DBWS_PROVIDER_PACKAGE = "_dbws";
     public static final String DBWS_PROVIDER_NAME = "DBWSProvider";
-    public static final String DBWS_PROVIDER_CLASS_FILE = DBWS_PROVIDER_NAME + ".class";
-    public static final String DBWS_PROVIDER_SOURCE_FILE = DBWS_PROVIDER_NAME + ".java";
+    public static final String DOT_CLASS = ".class";
+    static final String DOT_JAVA = ".java";
+    public static final String DBWS_PROVIDER_CLASS_FILE = DBWS_PROVIDER_NAME + DOT_CLASS;
+    public static final String DBWS_PROVIDER_SOURCE_FILE = DBWS_PROVIDER_NAME + DOT_JAVA;
+    static final String PROVIDER_LISTENER = "ProviderListener";
+    public static final String PROVIDER_LISTENER_CLASS_FILE = PROVIDER_LISTENER + DOT_CLASS;
+    public static final String PROVIDER_LISTENER_SOURCE_FILE = PROVIDER_LISTENER + DOT_JAVA;
 
     public static final QName SXF_QNAME_CURSOR = new QName("", "cursor of " + DEFAULT_SIMPLE_XML_FORMAT_TAG);
     // TODO - expand to cover more cases

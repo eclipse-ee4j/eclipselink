@@ -34,7 +34,7 @@ import org.eclipse.persistence.platform.database.oracle.publisher.sqlrefl.Oracle
 import org.eclipse.persistence.platform.database.oracle.publisher.sqlrefl.SqlName;
 import static org.eclipse.persistence.platform.database.oracle.publisher.Util.ALL_ARGUMENTS;
 
-@SuppressWarnings({"unchecked","rawtypes"})
+@SuppressWarnings({"unchecked"/*,"rawtypes"*/})
 public class ViewCache implements Externalizable {
 
     static final String VIEW_CACHE_PREFIX = "viewcachefor";

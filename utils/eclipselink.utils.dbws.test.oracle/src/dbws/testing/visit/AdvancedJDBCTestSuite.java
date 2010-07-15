@@ -80,11 +80,11 @@ public class AdvancedJDBCTestSuite extends BuilderTestSuite {
              "<attribute-mappings>" +
                 "<attribute-mapping xsi:type=\"direct-mapping\">" +
                    "<attribute-name>reg_id</attribute-name>" +
-                   "<field name=\"REG_ID\"/>" +
+                   "<field name=\"REG_ID\" xsi:type=\"column\"/>" +
                 "</attribute-mapping>" +
                 "<attribute-mapping xsi:type=\"direct-mapping\">" +
                    "<attribute-name>reg_name</attribute-name>" +
-                   "<field name=\"REG_NAME\"/>" +
+                   "<field name=\"REG_NAME\" xsi:type=\"column\"/>" +
                 "</attribute-mapping>" +
              "</attribute-mappings>" +
              "<descriptor-type>aggregate</descriptor-type>" +
@@ -98,8 +98,8 @@ public class AdvancedJDBCTestSuite extends BuilderTestSuite {
              "<copying xsi:type=\"instantiation-copy-policy\"/>" +
              "<structure>REGION</structure>" +
              "<field-order>" +
-                "<field name=\"REG_ID\"/>" +
-                "<field name=\"REG_NAME\"/>" +
+                "<field name=\"REG_ID\" xsi:type=\"column\"/>" +
+                "<field name=\"REG_NAME\" xsi:type=\"column\"/>" +
              "</field-order>" +
           "</class-mapping-descriptor>" +
        "</class-mapping-descriptors>" +
@@ -251,11 +251,11 @@ public class AdvancedJDBCTestSuite extends BuilderTestSuite {
              "<attribute-mappings>" +
                 "<attribute-mapping xsi:type=\"direct-mapping\">" +
                    "<attribute-name>reg_id</attribute-name>" +
-                   "<field name=\"REG_ID\"/>" +
+                   "<field name=\"REG_ID\" xsi:type=\"column\"/>" +
                 "</attribute-mapping>" +
                 "<attribute-mapping xsi:type=\"direct-mapping\">" +
                    "<attribute-name>reg_name</attribute-name>" +
-                   "<field name=\"REG_NAME\"/>" +
+                   "<field name=\"REG_NAME\" xsi:type=\"column\"/>" +
                 "</attribute-mapping>" +
              "</attribute-mappings>" +
              "<descriptor-type>aggregate</descriptor-type>" +
@@ -269,8 +269,8 @@ public class AdvancedJDBCTestSuite extends BuilderTestSuite {
              "<copying xsi:type=\"instantiation-copy-policy\"/>" +
              "<structure>REGION</structure>" +
              "<field-order>" +
-                "<field name=\"REG_ID\"/>" +
-                "<field name=\"REG_NAME\"/>" +
+                "<field name=\"REG_ID\" xsi:type=\"column\"/>" +
+                "<field name=\"REG_NAME\" xsi:type=\"column\"/>" +
              "</field-order>" +
           "</class-mapping-descriptor>" +
           "<class-mapping-descriptor xsi:type=\"object-relational-class-mapping-descriptor\">" +
@@ -281,11 +281,11 @@ public class AdvancedJDBCTestSuite extends BuilderTestSuite {
              "<attribute-mappings>" +
                 "<attribute-mapping xsi:type=\"direct-mapping\">" +
                    "<attribute-name>street</attribute-name>" +
-                   "<field name=\"STREET\"/>" +
+                   "<field name=\"STREET\" xsi:type=\"column\"/>" +
                 "</attribute-mapping>" +
                 "<attribute-mapping xsi:type=\"direct-mapping\">" +
                    "<attribute-name>suburb</attribute-name>" +
-                   "<field name=\"SUBURB\"/>" +
+                   "<field name=\"SUBURB\" xsi:type=\"column\"/>" +
                 "</attribute-mapping>" +
                 "<attribute-mapping xsi:type=\"structure-mapping\">" +
                    "<attribute-name>addr_region</attribute-name>" +
@@ -294,7 +294,7 @@ public class AdvancedJDBCTestSuite extends BuilderTestSuite {
                 "</attribute-mapping>" +
                 "<attribute-mapping xsi:type=\"direct-mapping\">" +
                    "<attribute-name>postcode</attribute-name>" +
-                   "<field name=\"POSTCODE\"/>" +
+                   "<field name=\"POSTCODE\" xsi:type=\"column\"/>" +
                 "</attribute-mapping>" +
              "</attribute-mappings>" +
              "<descriptor-type>aggregate</descriptor-type>" +
@@ -308,10 +308,10 @@ public class AdvancedJDBCTestSuite extends BuilderTestSuite {
              "<copying xsi:type=\"instantiation-copy-policy\"/>" +
              "<structure>EMP_ADDRESS</structure>" +
              "<field-order>" +
-                "<field name=\"STREET\"/>" +
-                "<field name=\"SUBURB\"/>" +
-                "<field name=\"ADDR_REGION\"/>" +
-                "<field name=\"POSTCODE\"/>" +
+                "<field name=\"STREET\" xsi:type=\"column\"/>" +
+                "<field name=\"SUBURB\" xsi:type=\"column\"/>" +
+                "<field name=\"ADDR_REGION\" xsi:type=\"column\"/>" +
+                "<field name=\"POSTCODE\" xsi:type=\"column\"/>" +
              "</field-order>" +
           "</class-mapping-descriptor>" +
        "</class-mapping-descriptors>" +
@@ -546,11 +546,11 @@ public class AdvancedJDBCTestSuite extends BuilderTestSuite {
              "<attribute-mappings>" +
                 "<attribute-mapping xsi:type=\"direct-mapping\">" +
                    "<attribute-name>reg_id</attribute-name>" +
-                   "<field name=\"REG_ID\"/>" +
+                   "<field name=\"REG_ID\" xsi:type=\"column\"/>" +
                 "</attribute-mapping>" +
                 "<attribute-mapping xsi:type=\"direct-mapping\">" +
                    "<attribute-name>reg_name</attribute-name>" +
-                   "<field name=\"REG_NAME\"/>" +
+                   "<field name=\"REG_NAME\" xsi:type=\"column\"/>" +
                 "</attribute-mapping>" +
              "</attribute-mappings>" +
              "<descriptor-type>aggregate</descriptor-type>" +
@@ -564,8 +564,8 @@ public class AdvancedJDBCTestSuite extends BuilderTestSuite {
              "<copying xsi:type=\"instantiation-copy-policy\"/>" +
              "<structure>REGION</structure>" +
              "<field-order>" +
-                "<field name=\"REG_ID\"/>" +
-                "<field name=\"REG_NAME\"/>" +
+                "<field name=\"REG_ID\" xsi:type=\"column\"/>" +
+                "<field name=\"REG_NAME\" xsi:type=\"column\"/>" +
              "</field-order>" +
           "</class-mapping-descriptor>" +
           "<class-mapping-descriptor xsi:type=\"object-relational-class-mapping-descriptor\">" +
@@ -576,7 +576,7 @@ public class AdvancedJDBCTestSuite extends BuilderTestSuite {
              "<attribute-mappings>" +
                 "<attribute-mapping xsi:type=\"direct-mapping\">" +
                    "<attribute-name>employee_id</attribute-name>" +
-                   "<field name=\"EMPLOYEE_ID\"/>" +
+                   "<field name=\"EMPLOYEE_ID\" xsi:type=\"column\"/>" +
                 "</attribute-mapping>" +
                 "<attribute-mapping xsi:type=\"structure-mapping\">" +
                    "<attribute-name>address</attribute-name>" +
@@ -585,11 +585,11 @@ public class AdvancedJDBCTestSuite extends BuilderTestSuite {
                 "</attribute-mapping>" +
                 "<attribute-mapping xsi:type=\"direct-mapping\">" +
                    "<attribute-name>employee_name</attribute-name>" +
-                   "<field name=\"EMPLOYEE_NAME\"/>" +
+                   "<field name=\"EMPLOYEE_NAME\" xsi:type=\"column\"/>" +
                 "</attribute-mapping>" +
                 "<attribute-mapping xsi:type=\"direct-mapping\">" +
                    "<attribute-name>date_of_hire</attribute-name>" +
-                   "<field name=\"DATE_OF_HIRE\"/>" +
+                   "<field name=\"DATE_OF_HIRE\" xsi:type=\"column\"/>" +
                 "</attribute-mapping>" +
              "</attribute-mappings>" +
              "<descriptor-type>aggregate</descriptor-type>" +
@@ -603,10 +603,10 @@ public class AdvancedJDBCTestSuite extends BuilderTestSuite {
              "<copying xsi:type=\"instantiation-copy-policy\"/>" +
              "<structure>EMP_OBJECT</structure>" +
              "<field-order>" +
-                "<field name=\"EMPLOYEE_ID\"/>" +
-                "<field name=\"ADDRESS\"/>" +
-                "<field name=\"EMPLOYEE_NAME\"/>" +
-                "<field name=\"DATE_OF_HIRE\"/>" +
+                "<field name=\"EMPLOYEE_ID\" xsi:type=\"column\"/>" +
+                "<field name=\"ADDRESS\" xsi:type=\"column\"/>" +
+                "<field name=\"EMPLOYEE_NAME\" xsi:type=\"column\"/>" +
+                "<field name=\"DATE_OF_HIRE\" xsi:type=\"column\"/>" +
              "</field-order>" +
           "</class-mapping-descriptor>" +
           "<class-mapping-descriptor xsi:type=\"object-relational-class-mapping-descriptor\">" +
@@ -617,11 +617,11 @@ public class AdvancedJDBCTestSuite extends BuilderTestSuite {
              "<attribute-mappings>" +
                 "<attribute-mapping xsi:type=\"direct-mapping\">" +
                    "<attribute-name>street</attribute-name>" +
-                   "<field name=\"STREET\"/>" +
+                   "<field name=\"STREET\" xsi:type=\"column\"/>" +
                 "</attribute-mapping>" +
                 "<attribute-mapping xsi:type=\"direct-mapping\">" +
                    "<attribute-name>suburb</attribute-name>" +
-                   "<field name=\"SUBURB\"/>" +
+                   "<field name=\"SUBURB\" xsi:type=\"column\"/>" +
                 "</attribute-mapping>" +
                 "<attribute-mapping xsi:type=\"structure-mapping\">" +
                    "<attribute-name>addr_region</attribute-name>" +
@@ -630,7 +630,7 @@ public class AdvancedJDBCTestSuite extends BuilderTestSuite {
                 "</attribute-mapping>" +
                 "<attribute-mapping xsi:type=\"direct-mapping\">" +
                    "<attribute-name>postcode</attribute-name>" +
-                   "<field name=\"POSTCODE\"/>" +
+                   "<field name=\"POSTCODE\" xsi:type=\"column\"/>" +
                 "</attribute-mapping>" +
              "</attribute-mappings>" +
              "<descriptor-type>aggregate</descriptor-type>" +
@@ -644,10 +644,10 @@ public class AdvancedJDBCTestSuite extends BuilderTestSuite {
              "<copying xsi:type=\"instantiation-copy-policy\"/>" +
              "<structure>EMP_ADDRESS</structure>" +
              "<field-order>" +
-                "<field name=\"STREET\"/>" +
-                "<field name=\"SUBURB\"/>" +
-                "<field name=\"ADDR_REGION\"/>" +
-                "<field name=\"POSTCODE\"/>" +
+                "<field name=\"STREET\" xsi:type=\"column\"/>" +
+                "<field name=\"SUBURB\" xsi:type=\"column\"/>" +
+                "<field name=\"ADDR_REGION\" xsi:type=\"column\"/>" +
+                "<field name=\"POSTCODE\" xsi:type=\"column\"/>" +
              "</field-order>" +
           "</class-mapping-descriptor>" +
        "</class-mapping-descriptors>" +
@@ -1032,11 +1032,11 @@ public class AdvancedJDBCTestSuite extends BuilderTestSuite {
              "<attribute-mappings>" +
                 "<attribute-mapping xsi:type=\"direct-mapping\">" +
                    "<attribute-name>id</attribute-name>" +
-                   "<field name=\"ID\"/>" +
+                   "<field name=\"ID\" xsi:type=\"column\"/>" +
                 "</attribute-mapping>" +
                 "<attribute-mapping xsi:type=\"direct-mapping\">" +
                    "<attribute-name>name</attribute-name>" +
-                   "<field name=\"NAME\"/>" +
+                   "<field name=\"NAME\" xsi:type=\"column\"/>" +
                 "</attribute-mapping>" +
              "</attribute-mappings>" +
              "<descriptor-type>aggregate</descriptor-type>" +
@@ -1050,8 +1050,8 @@ public class AdvancedJDBCTestSuite extends BuilderTestSuite {
              "<copying xsi:type=\"instantiation-copy-policy\"/>" +
              "<structure>EMP_INFO</structure>" +
              "<field-order>" +
-                "<field name=\"ID\"/>" +
-                "<field name=\"NAME\"/>" +
+                "<field name=\"ID\" xsi:type=\"column\"/>" +
+                "<field name=\"NAME\" xsi:type=\"column\"/>" +
              "</field-order>" +
           "</class-mapping-descriptor>" +
           "<class-mapping-descriptor xsi:type=\"object-relational-class-mapping-descriptor\">" +
@@ -1621,7 +1621,7 @@ public class AdvancedJDBCTestSuite extends BuilderTestSuite {
                 "</attribute-mapping>" +
                 "<attribute-mapping xsi:type=\"direct-mapping\">" +
                    "<attribute-name>t3</attribute-name>" +
-                   "<field name=\"T3\"/>" +
+                   "<field name=\"T3\" xsi:type=\"column\"/>" +
                 "</attribute-mapping>" +
              "</attribute-mappings>" +
              "<descriptor-type>aggregate</descriptor-type>" +
@@ -1635,9 +1635,9 @@ public class AdvancedJDBCTestSuite extends BuilderTestSuite {
              "<copying xsi:type=\"instantiation-copy-policy\"/>" +
              "<structure>SOMEPACKAGE_ARECORD</structure>" +
              "<field-order>" +
-                "<field name=\"T1\"/>" +
-                "<field name=\"T2\"/>" +
-                "<field name=\"T3\"/>" +
+                "<field name=\"T1\" xsi:type=\"column\"/>" +
+                "<field name=\"T2\" xsi:type=\"column\"/>" +
+                "<field name=\"T3\" xsi:type=\"column\"/>" +
              "</field-order>" +
           "</class-mapping-descriptor>" +
           "<class-mapping-descriptor xsi:type=\"object-relational-class-mapping-descriptor\">" +
@@ -1994,8 +1994,8 @@ public class AdvancedJDBCTestSuite extends BuilderTestSuite {
                  "<copying xsi:type=\"instantiation-copy-policy\"/>" +
                  "<structure>SOMEPACKAGE_CRECORD</structure>" +
                  "<field-order>" +
-                    "<field name=\"C1\"/>" +
-                    "<field name=\"C2\"/>" +
+                    "<field name=\"C1\" xsi:type=\"column\"/>" +
+                    "<field name=\"C2\" xsi:type=\"column\"/>" +
                  "</field-order>" +
               "</class-mapping-descriptor>" +
               "<class-mapping-descriptor xsi:type=\"object-relational-class-mapping-descriptor\">" +
@@ -2026,7 +2026,7 @@ public class AdvancedJDBCTestSuite extends BuilderTestSuite {
                     "</attribute-mapping>" +
                     "<attribute-mapping xsi:type=\"direct-mapping\">" +
                        "<attribute-name>t3</attribute-name>" +
-                       "<field name=\"T3\"/>" +
+                       "<field name=\"T3\" xsi:type=\"column\"/>" +
                     "</attribute-mapping>" +
                  "</attribute-mappings>" +
                  "<descriptor-type>aggregate</descriptor-type>" +
@@ -2040,9 +2040,9 @@ public class AdvancedJDBCTestSuite extends BuilderTestSuite {
                  "<copying xsi:type=\"instantiation-copy-policy\"/>" +
                  "<structure>SOMEPACKAGE_ARECORD</structure>" +
                  "<field-order>" +
-                    "<field name=\"T1\"/>" +
-                    "<field name=\"T2\"/>" +
-                    "<field name=\"T3\"/>" +
+                    "<field name=\"T1\" xsi:type=\"column\"/>" +
+                    "<field name=\"T2\" xsi:type=\"column\"/>" +
+                    "<field name=\"T3\" xsi:type=\"column\"/>" +
                  "</field-order>" +
               "</class-mapping-descriptor>" +
               "<class-mapping-descriptor xsi:type=\"object-relational-class-mapping-descriptor\">" +

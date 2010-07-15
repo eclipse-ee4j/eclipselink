@@ -70,6 +70,7 @@
     <!-- Set Compile Path-->
     <path id="dbwsutil.compile.path">
         <pathelement path="${dbwsutil.2.common.plugins.dir}/${asm}"/>
+        <pathelement path="${dbwsutil.2.common.plugins.dir}/${servlet.jar}"/>
         <pathelement path="${dbwsutil.2.common.plugins.dir}/org.eclipse.persistence.core_${version.string}.jar"/>
         <pathelement path="${dbwsutil.2.common.plugins.dir}/org.eclipse.persistence.dbws_${version.string}.jar"/>
         <pathelement path="../plugins/${wsdl.jar}"/>

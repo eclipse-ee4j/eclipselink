@@ -8,10 +8,9 @@
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
- *     Mike Norman - May 05 2010
- *       fix for https://bugs.eclipse.org/bugs/show_bug.cgi?id=307897
+ *     Mike Norman - July 13 2010
+ *       fix for https://bugs.eclipse.org/bugs/show_bug.cgi?id=318207
  ******************************************************************************/
-
 package org.eclipse.persistence.tools.dbws;
 
 //javase imports
@@ -36,23 +35,25 @@ import javax.tools.JavaCompiler.CompilationTask;
 import javax.tools.JavaFileObject.Kind;
 
 /**
- * <p>
- * <b>PRIVATE:</b> DBWSProviderCompiler wraps a {@link javax.tools.JavaCompiler}.
- * Only supports compiling a single file <tt>DBWSProvider.java</tt> in-memory.
- * 
- * @author mnorman
- *
- */
-public class DBWSProviderCompiler {
+* <p>
+* <b>PRIVATE:</b> InMemoryCompiler wraps a {@link javax.tools.JavaCompiler}.
+* Only supports compiling a single file in-memory.
+* 
+* @author mnorman
+*
+*/
+public class InMemoryCompiler {
 
-    static final String PROVIDER_NAME = "_dbws.DBWSProvider";
     static final Iterable<String> OPTIONS = Arrays.asList("-g:source,lines,vars");
-
+    
+    protected String targetFileName;
     protected JavaCompiler compiler;
     protected DiagnosticCollector<JavaFileObject> diagnosticsCollector;
     protected JavaFileManager fileManager;
 
-    public DBWSProviderCompiler() {
+    public InMemoryCompiler(String targetFileName) {
+        super();
+        this.targetFileName = targetFileName;
         compiler = ToolProvider.getSystemJavaCompiler();
         diagnosticsCollector = new DiagnosticCollector<JavaFileObject>();
     }
@@ -64,20 +65,20 @@ public class DBWSProviderCompiler {
     public DiagnosticCollector<JavaFileObject> getDiagnosticsCollector() {
         return diagnosticsCollector;
     }
-    
+
     public byte[] compile(CharSequence source) {
-        JavaFileObject dbwsProviderSource = 
-            new JavaSourceFromString(PROVIDER_NAME, source.toString());
-        ByteArrayJavaFileObject dbwsProviderClass = 
-            new ByteArrayJavaFileObject(PROVIDER_NAME);
-        Iterable<? extends JavaFileObject> compilationUnits = Arrays.asList(dbwsProviderSource);
+        JavaFileObject targetSource = 
+            new JavaSourceFromString(targetFileName, source.toString());
+        ByteArrayJavaFileObject targetClass = 
+            new ByteArrayJavaFileObject(targetFileName);
+        Iterable<? extends JavaFileObject> compilationUnits = Arrays.asList(targetSource);
         ByteArrayFileManager bafm = new ByteArrayFileManager(
-            compiler.getStandardFileManager(null, null, null), dbwsProviderClass);
+            compiler.getStandardFileManager(null, null, null), targetClass);
         StringWriter sw = new StringWriter();
         CompilationTask task = compiler.getTask(sw, bafm, diagnosticsCollector, OPTIONS, null,
             compilationUnits);
         task.call();
-        return dbwsProviderClass.toByteArray();
+        return targetClass.toByteArray();
     }
     
     // wrapper class - not really a 'FileObject', uses in-memory string 'source'

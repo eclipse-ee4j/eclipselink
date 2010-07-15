@@ -34,7 +34,7 @@ import static org.eclipse.persistence.internal.xr.Util.PK_QUERYNAME;
  * @author Mike Norman - michael.norman@oracle.com
  * @since EclipseLink 1.x
  */
-@SuppressWarnings({"unchecked", "rawtypes"})
+@SuppressWarnings({"unchecked"/*, "rawtypes"*/})
 public class DeleteOperation extends Operation {
 
     protected String descriptorName;
