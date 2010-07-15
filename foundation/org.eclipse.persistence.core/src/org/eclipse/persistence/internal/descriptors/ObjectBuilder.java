@@ -1888,8 +1888,6 @@ public class ObjectBuilder implements Cloneable, Serializable {
                                             // create a new empty CopyGroup.
                                             mappingCopyGroup = new CopyGroup();
                                             mappingCopyGroup.shouldCascadeTree();
-                                            mappingCopyGroup.setShouldResetPrimaryKey(copyGroup.shouldResetPrimaryKey());
-                                            mappingCopyGroup.setShouldResetVersion(copyGroup.shouldResetVersion());
                                         }
                                     } else {
                                         // TODO: would that work?
@@ -1898,6 +1896,8 @@ public class ObjectBuilder implements Cloneable, Serializable {
                                         isVisiting = false;
                                     }
                                     mappingCopyGroup.setCopies(copyGroup.getCopies());
+                                    mappingCopyGroup.setShouldResetPrimaryKey(copyGroup.shouldResetPrimaryKey());
+                                    mappingCopyGroup.setShouldResetVersion(copyGroup.shouldResetVersion());
                                 }
                                 mappingCopyGroup.setSession(copyGroup.getSession());
                             }
@@ -2982,6 +2982,11 @@ public class ObjectBuilder implements Cloneable, Serializable {
         if (clone instanceof ChangeTracker) {
             ((ChangeTracker)clone)._persistence_setPropertyChangeListener(null);
         }
+        if(clone instanceof FetchGroupTracker) {
+            ((FetchGroupTracker)clone)._persistence_setFetchGroup(null);
+            ((FetchGroupTracker)clone)._persistence_setSession(null);
+        }
+        clearPrimaryKey(clone);
         return clone;
     }
 

@@ -14,6 +14,7 @@ package org.eclipse.persistence.testing.tests.jpa.fieldaccess.fetchgroups;
 
 import java.io.IOException;
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -27,6 +28,7 @@ import junit.framework.TestSuite;
 import org.eclipse.persistence.config.CacheUsage;
 import org.eclipse.persistence.config.QueryHints;
 import org.eclipse.persistence.indirection.IndirectList;
+import org.eclipse.persistence.internal.helper.IdentityHashSet;
 import org.eclipse.persistence.internal.helper.SerializationHelper;
 import org.eclipse.persistence.internal.queries.AttributeItem;
 import org.eclipse.persistence.internal.queries.EntityFetchGroup;
@@ -36,6 +38,7 @@ import org.eclipse.persistence.queries.FetchGroup;
 import org.eclipse.persistence.sessions.CopyGroup;
 import org.eclipse.persistence.testing.models.jpa.fieldaccess.advanced.Employee;
 import org.eclipse.persistence.testing.models.jpa.fieldaccess.advanced.PhoneNumber;
+import org.eclipse.persistence.testing.models.jpa.fieldaccess.advanced.Project;
 
 import org.junit.Test;
 
@@ -79,7 +82,13 @@ public class SimpleSerializeFetchGroupTests extends BaseFetchGroupTests {
         suite.addTest(new SimpleSerializeFetchGroupTests("partialMerge"));
         suite.addTest(new SimpleSerializeFetchGroupTests("copyGroupMerge"));
         suite.addTest(new SimpleSerializeFetchGroupTests("copyGroupMerge2"));
-        suite.addTest(new SimpleSerializeFetchGroupTests("copyNoPk"));
+        suite.addTest(new SimpleSerializeFetchGroupTests("copyWithPk"));
+        suite.addTest(new SimpleSerializeFetchGroupTests("copyWithPkUseFullGroup"));
+        suite.addTest(new SimpleSerializeFetchGroupTests("copyWithoutPk"));
+        suite.addTest(new SimpleSerializeFetchGroupTests("copyWithoutPkUseFullGroup"));
+        suite.addTest(new SimpleSerializeFetchGroupTests("copyNoCascade"));
+        suite.addTest(new SimpleSerializeFetchGroupTests("copyCascadePrivateParts"));
+        suite.addTest(new SimpleSerializeFetchGroupTests("copyCascadeAllParts"));
         
         return suite;
     }
@@ -1038,43 +1047,167 @@ public class SimpleSerializeFetchGroupTests extends BaseFetchGroupTests {
         rollbackTransaction(em);
     }
     
-    public void copyNoPk() {        
+    @Test
+    public void copyWithPk() {
+        copyWithOrWithoutPk(false, false);
+    }
+
+    @Test
+    public void copyWithPkUseFullGroup() {
+        copyWithOrWithoutPk(false, true);
+    }
+
+    @Test
+    public void copyWithoutPk() {
+        copyWithOrWithoutPk(true, false);
+    }
+
+    @Test
+    public void copyWithoutPkUseFullGroup() {
+        copyWithOrWithoutPk(true, true);
+    }
+
+    void copyWithOrWithoutPk(boolean noPk, boolean useFullGroup) {        
         CopyGroup group = new CopyGroup();
-        group.setShouldResetPrimaryKey(true);
-        group.setShouldResetVersion(true);
+        if(noPk) {
+            // setShouldResetPrimaryKey set to true means that:
+            //  pk would not be copied - unless explicitly specified in the group;
+            //  copy would not have a fetch group
+            group.setShouldResetPrimaryKey(true);
+            // setShouldResetVersion set to true means that
+            // version would not be copied - unless explicitly specified in the group;
+            group.setShouldResetVersion(true);
+        }
         group.cascadeTree(); // Copy only the attributes specified
+        // note that 
+        // default value shouldResetPrimaryKey==false causes pk to copied, too;
+        // default value shouldResetVersion==false causes version to be copied, too.
         group.addAttribute("firstName");
         group.addAttribute("lastName");
         group.addAttribute("gender");
         group.addAttribute("period");
         group.addAttribute("salary");
-        group.addAttribute("address.country");
-        group.addAttribute("address.street");
-        group.addAttribute("phoneNumbers.areaCode");
-        group.addAttribute("phoneNumbers.number");
-        
-        ((CopyGroup)group.getGroup("phoneNumbers")).setShouldResetPrimaryKey(false);
 
+        if(useFullGroup) {
+            // copy group contains all the attributes defined in Address class
+            CopyGroup address = addressDescriptor.getFetchGroupManager().createFullFetchGroup().toCopyGroup();
+            // attribute "employees" removed from the group
+            address.removeAttribute("employees");
+            if(noPk) {
+                // pk attribute "ID" removed from the group - not that it's necessary to explicitly remove it:
+                // setShouldResetPrimaryKey(true) would not remove explicitly specified in the group pk.
+                address.removeAttribute("id");
+                // note that default value shouldResetPrimaryKey==false would have resulted in copying the pk (that would be equivalent of adding the removed "ID" attribute back to the group).
+                address.setShouldResetPrimaryKey(true);
+                address.setShouldResetVersion(true);
+            }
+            group.addAttribute("address", address);
+        
+            // copy group contains all the attributes defined in PhoneNumber class
+            CopyGroup phones = phoneDescriptor.getFetchGroupManager().createFullFetchGroup().toCopyGroup();
+            if(noPk) {
+                // the only goal of setting shouldResetPrimaryKey to true here is to avoid a FetchGroup being assigned to phone's copy.
+                // Note that because both pk components ("owner" and "type") are part of the copy group they  still will be copied:
+                // the phone's copy will have the same type as original and it's owner will be original's owner's copy.
+                phones.setShouldResetPrimaryKey(true);
+            }
+            if(!noPk) {
+                // to avoid instantiating the whole owner
+                phones.addAttribute("owner.id");
+            }
+            group.addAttribute("phoneNumbers", phones);
+        } else {
+            // implicitly created sub CopyGroups address and phoneNumbers will have the same shouldReset flags values as their master CopyGroup.
+            
+            group.addAttribute("address.country");
+            group.addAttribute("address.province");
+            group.addAttribute("address.street");
+            group.addAttribute("address.postalCode");
+            group.addAttribute("address.city");
+
+            if(noPk) {
+                group.addAttribute("phoneNumbers.owner");
+            } else {
+                // to avoid instantiating the whole owner
+                group.addAttribute("phoneNumbers.owner.id");
+            }
+            group.addAttribute("phoneNumbers.type");
+            group.addAttribute("phoneNumbers.areaCode");
+            group.addAttribute("phoneNumbers.number");
+        }
+        
         EntityManager em = createEntityManager("fieldaccess");
-/*        FetchGroup fg = new FetchGroup();
-        fg.addAttribute("firstName");
-        fg.addAttribute("lastName");
-        Map<String, Object> hints = new HashMap<String, Object>();
-        hints.put(QueryHints.FETCH_GROUP, fg);
-        Employee emp = minimumEmployee(em, hints);*/        
         Employee emp = minimumEmployee(em);        
-        em.unwrap(JpaEntityManager.class).load(emp, group);
         Employee empCopy = (Employee) em.unwrap(JpaEntityManager.class).copy(emp, group);
-        System.out.println(">>> Employee copied");
         
         beginTransaction(em);
         try {
-            // Persist the employee copy
-            em.persist(empCopy);
-            System.out.println(">>> Persist new entity complete");
+            if(noPk) {
+                assertNoFetchGroup(empCopy);
+                assertNoFetchGroup(empCopy.getAddress());
+                for(PhoneNumber phoneCopy : empCopy.getPhoneNumbers()) {
+                    assertNoFetchGroup(phoneCopy);
+                }
+                // Persist the employee copy
+                em.persist(empCopy);
+            } else {
+                FetchGroup fetchGroup = group.toFetchGroup();
+                // the following call adds pk and version, verifies that all attribute names correct.
+                employeeDescriptor.getFetchGroupManager().prepareAndVerify(fetchGroup);
+                // copyEmp, its address and phones each should have an EntityFetchGroup corresponding to the respective copyGroup.
+                assertFetched(empCopy, fetchGroup);
+                
+                EntityFetchGroup addressEntityFetchGroup = addressDescriptor.getFetchGroupManager().getEntityFetchGroup(fetchGroup.getGroup("address")); 
+                if(addressEntityFetchGroup == null) { 
+                    assertNoFetchGroup(empCopy.getAddress());
+                } else {
+                    assertFetched(empCopy.getAddress(), addressEntityFetchGroup);
+                }
+
+                EntityFetchGroup phonesEntityFetchGroup = phoneDescriptor.getFetchGroupManager().getEntityFetchGroup(fetchGroup.getGroup("phoneNumbers")); 
+                for(PhoneNumber phoneCopy : empCopy.getPhoneNumbers()) {
+                    if(phonesEntityFetchGroup == null) { 
+                        assertNoFetchGroup(phoneCopy);
+                    } else {
+                        assertFetched(phoneCopy, phonesEntityFetchGroup);
+                    }
+                }
+
+                // to cause updates let's change something:
+                //   in Employee table
+                empCopy.setFirstName((empCopy.getFirstName() != null ? empCopy.getFirstName() : "") + "_NEW");
+                //   in Salary table
+                empCopy.setSalary(empCopy.getSalary() * 2 + 1);
+                //   in Address
+                empCopy.getAddress().setCountry((empCopy.getAddress().getCountry() != null ? empCopy.getAddress().getCountry() : "") + "_NEW");
+                //   in each Phone
+                for(PhoneNumber phoneCopy : empCopy.getPhoneNumbers()) {
+                    if(phoneCopy.getAreaCode() != null && phoneCopy.getAreaCode().equals("000")) {
+                        phoneCopy.setAreaCode("111");
+                    } else {
+                        phoneCopy.setAreaCode("000");
+                    }
+                }
+                em.merge(empCopy);
+            }
     
+            // Insert a new row into Employee, Salary, Address, and a row for each Phone
+            int nExpectedInsertsOrUpdates = 3 + empCopy.getPhoneNumbers().size(); 
+            int nExpectedInserts, nExpectedUpdates;
+            if(noPk) {
+                nExpectedInserts = nExpectedInsertsOrUpdates; 
+                // table sequence might have been updated
+                nExpectedUpdates = getQuerySQLTracker(em).getTotalSQLUPDATECalls();
+            } else {
+                nExpectedInserts = 0; 
+                nExpectedUpdates = nExpectedInsertsOrUpdates;
+            }
+            
             // Flush the changes to the database
             em.flush();
+            
+            assertEquals(nExpectedInserts, getQuerySQLTracker(em).getTotalSQLINSERTCalls());
+            assertEquals(nExpectedUpdates, getQuerySQLTracker(em).getTotalSQLUPDATECalls());
         } finally {
             if(isTransactionActive(em)) {
                 rollbackTransaction(em);
@@ -1082,6 +1215,168 @@ public class SimpleSerializeFetchGroupTests extends BaseFetchGroupTests {
         }
     }
 
+    @Test
+    public void copyNoCascade() {
+        copyCascade(CopyGroup.NO_CASCADE);
+    }
+    
+    @Test
+    public void copyCascadePrivateParts() {
+        copyCascade(CopyGroup.CASCADE_PRIVATE_PARTS);
+    }
+
+    @Test
+    public void copyCascadeAllParts() {
+        copyCascade(CopyGroup.CASCADE_ALL_PARTS);
+    }
+    
+    void copyCascade(int cascadeDepth) {
+        EntityManager em = createEntityManager("fieldaccess");
+        Query query = em.createQuery("SELECT e FROM Employee e");
+        List<Employee> employees = query.getResultList();
+
+        CopyGroup group = new CopyGroup();
+        if(cascadeDepth == CopyGroup.NO_CASCADE) {
+            group.dontCascade();
+        } else if(cascadeDepth == CopyGroup.CASCADE_PRIVATE_PARTS) {
+            // default cascade depth setting
+            group.cascadePrivateParts();
+        } else if(cascadeDepth == CopyGroup.CASCADE_ALL_PARTS) {
+            group.cascadeAllParts();
+        } else {
+            fail("Invalid cascadeDepth = " + cascadeDepth);
+        }
+        group.setShouldResetPrimaryKey(true);
+        
+        List<Employee> employeesCopy;
+        if(cascadeDepth == CopyGroup.NO_CASCADE || cascadeDepth == CopyGroup.CASCADE_PRIVATE_PARTS) {
+            // In this case the objects should be copied one by one - each one using a new CopyGroup.
+            // That ensures most referenced object are original ones (not copies) -
+            // the only exception is privately owned objects in CASCADE_PRIVATE_PARTS case.
+            employeesCopy = new ArrayList(employees.size());
+            for(Employee emp : employees) {
+                CopyGroup groupClone = group.clone();
+                employeesCopy.add((Employee)em.unwrap(JpaEntityManager.class).copy(emp, groupClone));
+            }
+        } else {
+            // cascadeDepth == CopyGroup.CASCADE_ALL_PARTS
+            // In this case all objects should be copied using a single CopyGroup.
+            // That ensures identities of the copies:
+            // for instance if several employees referenced the same project,
+            // then all copies of these employees will reference the single copy of the project. 
+            employeesCopy = (List)em.unwrap(JpaEntityManager.class).copy(employees, group);
+        }
+        
+        // IdentityHashSets will be used to verify copy identities
+        IdentityHashSet originalEmployees = new IdentityHashSet();
+        IdentityHashSet copyEmployees = new IdentityHashSet();
+        IdentityHashSet originalAddresses = new IdentityHashSet();
+        IdentityHashSet copyAddresses = new IdentityHashSet();
+        IdentityHashSet originalProjects = new IdentityHashSet();
+        IdentityHashSet copyProjects = new IdentityHashSet();
+        IdentityHashSet originalPhones = new IdentityHashSet();
+        IdentityHashSet copyPhones = new IdentityHashSet();
+        
+        int size = employees.size();
+        for(int i=0; i < size; i++) {
+            Employee emp = employees.get(i);
+            Employee empCopy = employeesCopy.get(i);
+            if(cascadeDepth == CopyGroup.CASCADE_ALL_PARTS) {
+                originalEmployees.add(emp);
+                copyEmployees.add(empCopy);
+            } else {
+                // cascadeDepth == CopyGroup.NO_CASCADE || cascadeDepth == CopyGroup.CASCADE_PRIVATE_PARTS
+                // In this case all Employees referenced by empCopyes are originals (manager and managed employees).
+                // Therefore if we add here each emp and empCopy to originalEmployees and copyEmployees respectively
+                // then copyEmployees will always contain all original managers and managed + plus all copies.
+                // Therefore in this case originalEmployees and copyEmployees will contain only references (managers and managed employees).
+            }
+
+            if(emp.getAddress() == null) {
+                assertTrue("emp.getAddress() == null, but empCopy.getAddress() != null", empCopy.getAddress() == null);
+            } else {
+                originalAddresses.add(emp.getAddress());
+                copyAddresses.add(empCopy.getAddress());
+                if(cascadeDepth == CopyGroup.NO_CASCADE || cascadeDepth == CopyGroup.CASCADE_PRIVATE_PARTS) {
+                    assertTrue("address has been copied", emp.getAddress() == empCopy.getAddress());
+                } else {
+                    // cascadeDepth == CopyGroup.CASCADE_ALL_PARTS
+                    assertFalse("address has not been copied", emp.getAddress() == empCopy.getAddress());
+                }
+            }
+
+            boolean same;
+            for(Project project : emp.getProjects()) {
+                originalProjects.add(project);
+                same = false;
+                for(Project projectCopy : empCopy.getProjects()) {
+                    copyProjects.add(projectCopy);
+                    if(!same && project == projectCopy) {
+                        same = true;
+                    }
+                }
+                if(cascadeDepth == CopyGroup.NO_CASCADE || cascadeDepth == CopyGroup.CASCADE_PRIVATE_PARTS) {
+                    assertTrue("project has been copied", same);
+                } else {
+                    // cascadeDepth == CopyGroup.CASCADE_ALL_PARTS
+                    assertFalse("project has not been copied", same);
+                }
+            }
+            
+            for(Employee managedEmp : emp.getManagedEmployees()) {
+                originalEmployees.add(managedEmp);
+                same = false;
+                for(Employee managedEmpCopy : empCopy.getManagedEmployees()) {
+                    copyEmployees.add(managedEmpCopy);
+                    if(!same && managedEmp == managedEmpCopy) {
+                        same = true;
+                    }
+                }
+                if(cascadeDepth == CopyGroup.NO_CASCADE || cascadeDepth == CopyGroup.CASCADE_PRIVATE_PARTS) {
+                    assertTrue("managedEmployee has been copied", same);
+                } else {
+                    // cascadeDepth == CopyGroup.CASCADE_ALL_PARTS
+                    assertFalse("managedEmployee has not been copied", same);
+                }
+            }
+            
+            if(emp.getManager() == null) {
+                assertTrue("emp.getManager() == null, but empCopy.getManager() != null", empCopy.getManager() == null);
+            } else {
+                originalEmployees.add(emp.getManager());
+                copyEmployees.add(empCopy.getManager());
+                if(cascadeDepth == CopyGroup.NO_CASCADE || cascadeDepth == CopyGroup.CASCADE_PRIVATE_PARTS) {
+                    assertTrue("manager has been copied", emp.getManager() == empCopy.getManager());
+                } else {
+                    // cascadeDepth == CopyGroup.CASCADE_ALL_PARTS
+                    assertFalse("manager has not been copied", emp.getManager() == empCopy.getManager());
+                }
+            }
+
+            // phoneNumbers is privately owned
+            for(PhoneNumber phone : emp.getPhoneNumbers()) {
+                originalPhones.add(phone);
+                same = false;
+                for(PhoneNumber phoneCopy : empCopy.getPhoneNumbers()) {
+                    copyPhones.add(phoneCopy);
+                    if(!same && phone == phoneCopy) {
+                        same = true;
+                    }
+                }
+                if(cascadeDepth == CopyGroup.NO_CASCADE) {
+                    assertTrue("phone has been copied", same);
+                } else {
+                    // cascadeDepth == CopyGroup.CASCADE_ALL_PARTS || cascadeDepth == CopyGroup.CASCADE_PRIVATE_PARTS
+                    assertFalse("phone has not been copied", same);
+                }
+            }
+        }
+        
+        assertTrue("copyEmployees.size() == " + copyEmployees.size() + "; was expected " + originalEmployees.size(), originalEmployees.size() == copyEmployees.size());
+        assertTrue("copyAddresses.size() == " + copyAddresses.size() + "; was expected " + originalAddresses.size(), originalAddresses.size() == copyAddresses.size());
+        assertTrue("copyProjects.size() == " + copyProjects.size() + "; was expected " + originalProjects.size(), originalProjects.size() == copyProjects.size());
+        assertTrue("copyPhones.size() == " + copyPhones.size() + "; was expected " + originalPhones.size(), originalPhones.size() == copyPhones.size());
+    }
     
     private <T> T serialize(Serializable entity) throws IOException, ClassNotFoundException {
         byte[] bytes = SerializationHelper.serialize(entity);

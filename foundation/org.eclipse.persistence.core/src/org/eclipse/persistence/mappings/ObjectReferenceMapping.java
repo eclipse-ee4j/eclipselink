@@ -93,6 +93,8 @@ public abstract class ObjectReferenceMapping extends ForeignReferenceMapping {
                 attributeValue = copyValue;
             }
         }
+        // if value holder is used, then the value holder shared with original substituted for a new ValueHolder.
+        getIndirectionPolicy().reset(copy);
         setRealAttributeValueInObject(copy, attributeValue);
     }
 

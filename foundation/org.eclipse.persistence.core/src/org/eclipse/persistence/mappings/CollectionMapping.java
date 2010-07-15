@@ -228,6 +228,8 @@ public abstract class CollectionMapping extends ForeignReferenceMapping implemen
             }
             this.containerPolicy.addInto(copyValue, attributeValue, group.getSession());
         }
+        // if value holder is used, then the value holder shared with original substituted for a new ValueHolder.
+        getIndirectionPolicy().reset(copy);
         setRealAttributeValueInObject(copy, attributeValue);
     }
 
