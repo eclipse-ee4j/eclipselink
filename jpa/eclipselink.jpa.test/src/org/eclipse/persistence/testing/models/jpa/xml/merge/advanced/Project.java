@@ -9,20 +9,8 @@
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
-
-
-/*******************************************************************************
- * Copyright (c) 1998, 2010 Oracle. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
- * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
- * http://www.eclipse.org/org/documents/edl-v10.php.
- *
- * Contributors:
- *     Oracle - initial API and implementation from Oracle TopLink
+ *     07/15/2010-2.2 Guy Pelletier 
+ *       -311395 : Multiple lifecycle callback methods for the same lifecycle event
  ******************************************************************************/  
 package org.eclipse.persistence.testing.models.jpa.xml.merge.advanced;
 
@@ -34,14 +22,13 @@ import static javax.persistence.InheritanceType.*;
 import static javax.persistence.DiscriminatorType.*;
 
 /**
- * Bean class: ProjectBean
- * Remote interface: Project
- * Primary key class: ProjectPK
- * Home interface: ProjectHome
- *
- * >Employees have a many-to-many relationship with Projects through the
- *  projects attribute.
- * >Projects refer to Employees through the employees attribute.
+ * This class is used to test XML and annotation merging. This class is mapped
+ * in: eclipselink-xml-merge-model/orm-annotation-merge-advanced-entity-mappings.xml
+ * 
+ * Also there are no automated tests that go along with these models, see the
+ * test suite: EntityMappingsMergeAdvancedJUnitTestCase. It tests through
+ * inspecting descriptor settings only and by no means does extensive
+ * validation of all the metadata and defaults.
  */
 @Entity(name="AnnMergeProject")
 @Table(name="CMP3_ANN_MERGE_PROJECT")
@@ -146,9 +133,15 @@ public class Project implements Serializable {
         return sbuff.toString();
     }
     
-    @PrePersist
-	public void prePersist() {
+    public void prePersist() {
         ++pre_persist_count;
+    }
+    
+    @PrePersist
+	public void ignoredPrePersistMethod() {
+        // This should not throw an exception (multiple pre persist methods)
+        // rather this method should just be ignored since the method above
+        // prePersist is defined as such in XML.
 	}
 
 	@PostPersist

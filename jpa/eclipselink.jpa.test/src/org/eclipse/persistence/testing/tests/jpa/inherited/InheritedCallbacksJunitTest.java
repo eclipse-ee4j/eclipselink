@@ -9,18 +9,23 @@
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
+ *     07/15/2010-2.2 Guy Pelletier 
+ *       -311395 : Multiple lifecycle callback methods for the same lifecycle event
  ******************************************************************************/  
-
-
 package org.eclipse.persistence.testing.tests.jpa.inherited;
 
 import javax.persistence.EntityManager;
 
 import junit.framework.*;
+
+import org.eclipse.persistence.internal.security.SecurableObjectHolder;
 import org.eclipse.persistence.testing.framework.junit.JUnitTestCase;
+import org.eclipse.persistence.testing.models.jpa.inherited.Accredidation;
 import org.eclipse.persistence.testing.models.jpa.inherited.Beer;
 import org.eclipse.persistence.testing.models.jpa.inherited.Alpine;
 import org.eclipse.persistence.testing.models.jpa.inherited.BeerConsumer;
+import org.eclipse.persistence.testing.models.jpa.inherited.Beverage;
+import org.eclipse.persistence.testing.models.jpa.inherited.ExpertBeerConsumer;
 import org.eclipse.persistence.testing.models.jpa.inherited.SerialNumber;
 import org.eclipse.persistence.testing.models.jpa.inherited.InheritedTableManager;
  
@@ -44,6 +49,7 @@ public class InheritedCallbacksJunitTest extends JUnitTestCase {
         suite.addTest(new InheritedCallbacksJunitTest("testPrePersistAlpineOnMerge"));
         suite.addTest(new InheritedCallbacksJunitTest("testPrePersistAlpineAndSerialNumberOnBeerConsumerMerge"));
         suite.addTest(new InheritedCallbacksJunitTest("testPreAndPostPersistBeerConsumer"));
+        suite.addTest(new InheritedCallbacksJunitTest("testPreAndPostPersistExpertBeerConsumer"));
         suite.addTest(new InheritedCallbacksJunitTest("testPostLoadOnFind"));
         suite.addTest(new InheritedCallbacksJunitTest("testPostLoadOnRefresh"));
         suite.addTest(new InheritedCallbacksJunitTest("testPreAndPostUpdate"));
@@ -61,46 +67,54 @@ public class InheritedCallbacksJunitTest extends JUnitTestCase {
     }
     
     public void testPreAndPostPersistAlpine() {
-        int beerPrePersistCount = Beer.BEER_PRE_PERSIST_COUNT;
-        int alpinePrePersistCount = Alpine.ALPINE_PRE_PERSIST_COUNT;
-        
-        Alpine alpine = null;
         EntityManager em = createEntityManager();
         
         try {
+            int beerPrePersistCount = Beer.BEER_PRE_PERSIST_COUNT;
+            int alpinePrePersistCount = Alpine.ALPINE_PRE_PERSIST_COUNT;
+            
+            int beveragePostPersistCount = Beverage.BEVERAGE_POST_PERSIST_COUNT;
+            int beerPostPersistCount = Beer.BEER_POST_PERSIST_COUNT;
+            int alpinePostPersistCount = Alpine.ALPINE_POST_PERSIST_COUNT;
+            
             beginTransaction(em);
             SerialNumber serialNumber = new SerialNumber();
             em.persist(serialNumber);
-            alpine = new Alpine(serialNumber);
+            Alpine alpine = new Alpine(serialNumber);
             alpine.setBestBeforeDate(new java.util.Date(2007, 8, 17));
             alpine.setAlcoholContent(5.0);
             
             em.persist(alpine);
             commitTransaction(em);
+            
+            verifyNotCalled(beerPrePersistCount, Beer.BEER_PRE_PERSIST_COUNT, "celebrate");
+            verifyCalled(alpinePrePersistCount, Alpine.ALPINE_PRE_PERSIST_COUNT, "celebrate");
+            
+            verifyNotCalled(beveragePostPersistCount, Beverage.BEVERAGE_POST_PERSIST_COUNT, "celebrateAgain");
+            verifyCalled(beerPostPersistCount, Beer.BEER_POST_PERSIST_COUNT, "celebrateSomeMore");
+            verifyCalled(alpinePostPersistCount, Alpine.ALPINE_POST_PERSIST_COUNT, "celebrateAgain");
         } catch (RuntimeException ex) {
             if (isTransactionActive(em)){
                 rollbackTransaction(em);
             }
-            closeEntityManager(em);
+            
             throw ex;
+        } finally {
+            closeEntityManager(em);
         }
-        
-        verifyNotCalled(beerPrePersistCount, Beer.BEER_PRE_PERSIST_COUNT, "PrePersist");
-        verifyCalled(alpinePrePersistCount, Alpine.ALPINE_PRE_PERSIST_COUNT, "PrePersist");
     }
     
     public void testPrePersistAlpineOnMerge() {
-        int beerPrePersistCount = Beer.BEER_PRE_PERSIST_COUNT;
-        int alpinePrePersistCount = Alpine.ALPINE_PRE_PERSIST_COUNT;
-        
-        Alpine alpine = null;
         EntityManager em = createEntityManager();
         
         try {
+            int beerPrePersistCount = Beer.BEER_PRE_PERSIST_COUNT;
+            int alpinePrePersistCount = Alpine.ALPINE_PRE_PERSIST_COUNT;
+            
             beginTransaction(em);
             SerialNumber serialNumber = new SerialNumber();
             em.persist(serialNumber);
-            alpine = new Alpine(serialNumber);
+            Alpine alpine = new Alpine(serialNumber);
             alpine.setBestBeforeDate(new java.util.Date(2007, 8, 17));
             alpine.setAlcoholContent(5.0);
             
@@ -117,30 +131,30 @@ public class InheritedCallbacksJunitTest extends JUnitTestCase {
             if (isTransactionActive(em)){
                 rollbackTransaction(em);
             }
-            closeEntityManager(em);
+            
             throw ex;
+        } finally {
+            closeEntityManager(em);
         }
     }
     
     public void testPrePersistAlpineAndSerialNumberOnBeerConsumerMerge() {
-        int beerPrePersistCount = Beer.BEER_PRE_PERSIST_COUNT;
-        int alpinePrePersistCount = Alpine.ALPINE_PRE_PERSIST_COUNT;
-        int serialNumberPrePersistCount = SerialNumber.SERIAL_NUMBER_PRE_PERSIST_COUNT;
-                
-        BeerConsumer beerConsumer = null;
-        Alpine alpine = null;
         EntityManager em = createEntityManager();
                 
         try {
+            int beerPrePersistCount = Beer.BEER_PRE_PERSIST_COUNT;
+            int alpinePrePersistCount = Alpine.ALPINE_PRE_PERSIST_COUNT;
+            int serialNumberPrePersistCount = SerialNumber.SERIAL_NUMBER_PRE_PERSIST_COUNT;
+            
             beginTransaction(em);
-            beerConsumer = new BeerConsumer();
+            BeerConsumer beerConsumer = new BeerConsumer();
             beerConsumer.setName("A consumer to delete eventually");
             em.persist(beerConsumer);
             em.clear();
          
             SerialNumber serialNumber = new SerialNumber();
                     
-            alpine = new Alpine(serialNumber);
+            Alpine alpine = new Alpine(serialNumber);
             alpine.setBestBeforeDate(new java.util.Date(2007, 8, 17));
             alpine.setAlcoholContent(5.0);
                     
@@ -160,106 +174,140 @@ public class InheritedCallbacksJunitTest extends JUnitTestCase {
             if (isTransactionActive(em)){
                 rollbackTransaction(em);
             }
-            closeEntityManager(em);
+            
             throw ex;
-        }  
+        } finally {
+            closeEntityManager(em);
+        }
     }
     
     public void testPreAndPostPersistBeerConsumer() {
-        BeerConsumer beerConsumer = null;
         EntityManager em = createEntityManager();
+        
         try {
             beginTransaction(em);
-            beerConsumer = new BeerConsumer();
+            BeerConsumer beerConsumer = new BeerConsumer();
             beerConsumer.setName("A consumer to delete eventually");
             em.persist(beerConsumer);
             m_Id = beerConsumer.getId();
-        
             commitTransaction(em);
-        }catch (RuntimeException ex){
-            if (isTransactionActive(em)){
+            
+            verifyCalled(0, beerConsumer.pre_persist_count, "PrePersist");
+            verifyCalled(0, beerConsumer.post_persist_count, "PostPersist");
+        } catch (RuntimeException ex) {
+            if (isTransactionActive(em)) {
                 rollbackTransaction(em);
             }
-            closeEntityManager(em);
+            
             throw ex;
+        } finally {
+            closeEntityManager(em);
         }
-        verifyCalled(0, beerConsumer.pre_persist_count, "PrePersist");
-        verifyCalled(0, beerConsumer.post_persist_count, "PostPersist");
     }
     
+    public void testPreAndPostPersistExpertBeerConsumer() {
+        EntityManager em = createEntityManager();
+        
+        try {
+            beginTransaction(em);
+            ExpertBeerConsumer beerConsumer = new ExpertBeerConsumer();
+            beerConsumer.setName("An expert consumer to delete eventually");
+            Accredidation accredidation = new Accredidation();
+            accredidation.setDetails("SuperElite");
+            beerConsumer.setAccredidation(accredidation);
+            em.persist(beerConsumer);
+            commitTransaction(em);
+            
+            verifyNotCalled(0, beerConsumer.pre_persist_count, "PrePersist");
+            verifyCalled(0, beerConsumer.ebc_pre_persist_count, "PrePersist");
+            verifyCalled(0, beerConsumer.post_persist_count, "PostPersist");
+        } catch (RuntimeException ex) {
+            if (isTransactionActive(em)) {
+                rollbackTransaction(em);
+            }
+            
+            throw ex;
+        } finally {
+            closeEntityManager(em);
+        }
+    }
+
     public void testPostLoadOnFind() {
         BeerConsumer beerConsumer = createEntityManager().find(BeerConsumer.class, m_Id);
-        
         verifyCalled(0, beerConsumer.post_load_count, "PostLoad");
     }
     
     public void testPostLoadOnRefresh() {
-        BeerConsumer beerConsumer = null;
         EntityManager em = createEntityManager();
-        beginTransaction(em);
-
+        
         try {
-            beerConsumer = em.find(BeerConsumer.class, m_Id);
+            beginTransaction(em);
+            BeerConsumer beerConsumer = em.find(BeerConsumer.class, m_Id);
             em.refresh(beerConsumer);
-            
             commitTransaction(em);
-        }catch (RuntimeException ex){
-            if (isTransactionActive(em)){
+            
+            verifyCalled(0, beerConsumer.post_load_count, "PostLoad");
+        } catch (RuntimeException ex) {
+            if (isTransactionActive(em)) {
                 rollbackTransaction(em);
             }
-            closeEntityManager(em);
+            
             throw ex;
+        } finally {
+            closeEntityManager(em);
         }
-        
-        verifyCalled(0, beerConsumer.post_load_count, "PostLoad");
     }
     
-    public void testPreAndPostUpdate() {
-        BeerConsumer beerConsumer = null;
-        int count1, count2 = 0;
+    public void testPreAndPostUpdate() {        
         EntityManager em = createEntityManager();
-        beginTransaction(em);
 
         try {
-            beerConsumer = em.find(BeerConsumer.class, m_Id);
+            int count1, count2 = 0;
+        
+            beginTransaction(em);
+            BeerConsumer beerConsumer = em.find(BeerConsumer.class, m_Id);
             count1 = beerConsumer.pre_update_count;
             beerConsumer.setName("An updated name");
             count2 = beerConsumer.post_update_count;
-            commitTransaction(em);    
-        }catch (RuntimeException ex){
-            if (isTransactionActive(em)){
+            commitTransaction(em);
+            
+            verifyCalled(count1, beerConsumer.pre_update_count, "PreUpdate");
+            verifyCalled(count2, beerConsumer.post_update_count, "PostUpdate");
+        } catch (RuntimeException ex) {
+            if (isTransactionActive(em)) {
                 rollbackTransaction(em);
             }
-            closeEntityManager(em);
+            
             throw ex;
+        } finally {
+            closeEntityManager(em);
         }
-        
-        verifyCalled(count1, beerConsumer.pre_update_count, "PreUpdate");
-        verifyCalled(count2, beerConsumer.post_update_count, "PostUpdate");
     }
     
     public void testPreAndPostRemove() {
-        BeerConsumer beerConsumer = null;
-        int count1, count2 = 0;
         EntityManager em = createEntityManager();
-        beginTransaction(em);
-
+        
         try {
-            beerConsumer = em.find(BeerConsumer.class, m_Id);
+            int count1, count2 = 0;
+            
+            beginTransaction(em);
+            BeerConsumer beerConsumer = em.find(BeerConsumer.class, m_Id);
             count1 = beerConsumer.pre_remove_count;
             em.remove(beerConsumer);
             count2 = beerConsumer.post_remove_count;
-            commitTransaction(em);    
-        }catch (RuntimeException ex){
-            if (isTransactionActive(em)){
+            commitTransaction(em);
+            
+            verifyCalled(count1, beerConsumer.pre_remove_count, "PreRemove");
+            verifyCalled(count2, beerConsumer.post_remove_count, "PostRemove");
+        } catch (RuntimeException ex) {
+            if (isTransactionActive(em)) {
                 rollbackTransaction(em);
             }
-            closeEntityManager(em);
+            
             throw ex;
+        } finally {
+            closeEntityManager(em);
         }
-        
-        verifyCalled(count1, beerConsumer.pre_remove_count, "PreRemove");
-        verifyCalled(count2, beerConsumer.post_remove_count, "PostRemove");
     }
     
     public void verifyCalled(int countBefore, int countAfter, String callback) {

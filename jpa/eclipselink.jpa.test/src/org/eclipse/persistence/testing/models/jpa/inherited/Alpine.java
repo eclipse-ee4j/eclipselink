@@ -11,12 +11,16 @@
  *     Oracle - initial API and implementation from Oracle TopLink
  *     06/20/2008-1.0 Guy Pelletier 
  *       - 232975: Failure when attribute type is generic
+ *     07/15/2010-2.2 Guy Pelletier 
+ *       -311395 : Multiple lifecycle callback methods for the same lifecycle event
  ******************************************************************************/  
 package org.eclipse.persistence.testing.models.jpa.inherited;
 
 import java.io.Serializable;
 import java.util.Date;
 import java.util.ArrayList;
+
+import javax.persistence.PostPersist;
 import javax.persistence.Table;
 import javax.persistence.Entity;
 import javax.persistence.Column;
@@ -45,6 +49,7 @@ public class Alpine extends Beer<Integer, Double> implements Cloneable, Serializ
     private ArrayList inspectionDates;
     
     public static int ALPINE_PRE_PERSIST_COUNT = 0;
+    public static int ALPINE_POST_PERSIST_COUNT = 0;
 
     protected Alpine(){};
     
@@ -70,6 +75,11 @@ public class Alpine extends Beer<Integer, Double> implements Cloneable, Serializ
         }
         
         ALPINE_PRE_PERSIST_COUNT++;
+    }
+    
+    @PostPersist
+    public void celebrateAgain() {
+        ALPINE_POST_PERSIST_COUNT++;
     }
     
     @Column(name="BB_DATE")

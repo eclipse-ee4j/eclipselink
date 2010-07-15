@@ -20,27 +20,17 @@ import static javax.persistence.CascadeType.*;
 import static javax.persistence.FetchType.*;
 
 /**
- * Bean class: EmployeeBean
- * Remote interface: Employee
- * Primary key class: EmployeePK
- * Home interface: EmployeeHome
- *
- * Employees have a one-to-many relationship with Employees through the 
- * managedEmployees attribute.
- * Addresses exist in one-to-one relationships with Employees through the
- * address attribute.
- * Employees have a many-to-many relationship with Projects through the
- * projects attribute.
- *  
- * Employee now has invalid annotation fields and data. This is done so that
- * we may test the XML/Annotation merging. Employee has been defined in the
- * XML, therefore, most annotations should not be processed. If they are, then
- * they will force an error, which means something is wrong with our merging.
- *  
- * The invalid annotations that should not be processed have _INVALID
- * appended to some annotation field member. Others will not have this,
- * which means they should be processed (their mappings are not defined in the
- * XML)
+ * This class is used to test XML and annotation merging. This class is mapped
+ * in: eclipselink-xml-merge-model/orm-annotation-merge-advanced-entity-mappings.xml
+ * 
+ * This class is currently marked as metadata-complete=true meaning all the
+ * annotations defined here should be ignored (somewhat defeating the purpose
+ * of XML and Annotation merging testing)
+ * 
+ * Also there are no automated tests that go along with these models, see the
+ * test suite: EntityMappingsMergeAdvancedJUnitTestCase. It tests through
+ * inspecting descriptor settings only and by no means does extensive
+ * validation of all the metadata and defaults.
  */
 @Entity(name="AnnMergeEmplyee")
 @EntityListeners(org.eclipse.persistence.testing.models.jpa.xml.merge.advanced.EmployeeListener.class)

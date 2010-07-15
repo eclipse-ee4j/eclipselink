@@ -10,10 +10,14 @@
  * Contributors:
  *     05/16/2008-1.0M8 Guy Pelletier 
  *       - 218084: Implement metadata merging functionality between mapping files
+ *     07/15/2010-2.2 Guy Pelletier 
+ *       -311395 : Multiple lifecycle callback methods for the same lifecycle event
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata.listeners;
 
 import java.lang.reflect.Method;
+import java.util.List;
+
 import org.eclipse.persistence.descriptors.DescriptorEvent;
 import org.eclipse.persistence.exceptions.ValidationException;
 
@@ -60,8 +64,17 @@ public class EntityClassListener extends EntityListener {
      */
     @Override
     protected void invokeMethod(String event, DescriptorEvent descriptorEvent) {
-        Object[] objectList = {};
-        invokeMethod(getEventMethod(event), descriptorEvent.getObject(), objectList, descriptorEvent);
+        // We must invoke callback methods in reverse order. They are added
+        // from the entity first followed by its mapped superclasses.
+        if (hasEventMethods(event)) {
+            List<Method> eventMethods = getEventMethods(event);
+            
+            for (int i = eventMethods.size() - 1; i >= 0; i--) {
+                Method method = eventMethods.get(i);
+                Object[] objectList = {};
+                invokeMethod(method, descriptorEvent.getObject(), objectList, descriptorEvent);
+            }
+        }
     }
 
     /**

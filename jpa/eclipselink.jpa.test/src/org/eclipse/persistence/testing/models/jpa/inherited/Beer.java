@@ -11,11 +11,14 @@
  *     Oracle - initial API and implementation from Oracle TopLink
  *     06/20/2008-1.0 Guy Pelletier 
  *       - 232975: Failure when attribute type is generic
+ *     07/15/2010-2.2 Guy Pelletier 
+ *       -311395 : Multiple lifecycle callback methods for the same lifecycle event
  ******************************************************************************/  
 package org.eclipse.persistence.testing.models.jpa.inherited;
 
 import javax.persistence.Basic;
 import javax.persistence.Column;
+import javax.persistence.PostPersist;
 import javax.persistence.Version;
 import javax.persistence.ManyToOne;
 import javax.persistence.PrePersist;
@@ -37,12 +40,18 @@ public class Beer<G, H> extends Beverage<G> {
     private BeerConsumer beerConsumer;
     
     public static int BEER_PRE_PERSIST_COUNT = 0;
+    public static int BEER_POST_PERSIST_COUNT = 0;
     
     public Beer() {}
     
     @PrePersist
     public void celebrate() {
         BEER_PRE_PERSIST_COUNT++;
+    }
+    
+    @PostPersist
+    public void celebrateSomeMore() {
+        BEER_POST_PERSIST_COUNT++;
     }
     
     public Object clone() throws CloneNotSupportedException {

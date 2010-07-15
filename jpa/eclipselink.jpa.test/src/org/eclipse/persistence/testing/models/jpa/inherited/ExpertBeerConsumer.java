@@ -22,6 +22,8 @@
  *       - 278768: JPA 2.0 Association Override Join Table
  *     01/26/2010-2.0.1 Guy Pelletier 
  *       - 299893: @MapKeyClass does not work with ElementCollection
+ *     07/15/2010-2.2 Guy Pelletier 
+ *       -311395 : Multiple lifecycle callback methods for the same lifecycle event
  ******************************************************************************/
 package org.eclipse.persistence.testing.models.jpa.inherited;
 
@@ -41,6 +43,7 @@ import javax.persistence.JoinColumn;
 import javax.persistence.MapKeyClass;
 import javax.persistence.MapKeyColumn;
 import javax.persistence.MapKeyTemporal;
+import javax.persistence.PrePersist;
 
 import static javax.persistence.FetchType.EAGER;
 import static javax.persistence.TemporalType.DATE;
@@ -54,6 +57,8 @@ import static javax.persistence.TemporalType.DATE;
 })
 @AssociationOverride(name="records.location", joinColumns=@JoinColumn(name="LOCATION_ID", referencedColumnName="ID"))
 public class ExpertBeerConsumer extends RatedBeerConsumer<String, String, String> {
+    public int ebc_pre_persist_count = 0;
+    
     private Map<Date, String> quotes;
     //private Collection<byte[]> audio;
     private Map<Birthday, String> celebrations;
@@ -122,6 +127,11 @@ public class ExpertBeerConsumer extends RatedBeerConsumer<String, String, String
     //public void setAudio(Collection<byte[]> audio) {
       //  this.audio = audio;
     //}
+    
+    @PrePersist
+    public void prePersist() {
+        ++ebc_pre_persist_count;
+    }
     
     public void setCelebrations(Map<Birthday, String> celebrations) {
         this.celebrations = celebrations;

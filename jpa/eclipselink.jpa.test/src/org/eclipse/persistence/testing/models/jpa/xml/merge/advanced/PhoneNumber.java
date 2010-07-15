@@ -16,8 +16,17 @@ import java.io.*;
 import javax.persistence.*;
 
 /**
- * <p><b>Purpose</b>: Describes an Employee's phone number.
- *    <p><b>Description</b>: Used in a 1:M relationship from an employee.
+ * This class is used to test XML and annotation merging. This class is mapped
+ * in: eclipselink-xml-merge-model/orm-annotation-merge-advanced-entity-mappings.xml
+ * 
+ * This class is currently marked as metadata-complete=true meaning all the
+ * annotations defined here should be ignored (somewhat defeating the purpose
+ * of XML and Annotation merging testing)
+ * 
+ * Also there are no automated tests that go along with these models, see the
+ * test suite: EntityMappingsMergeAdvancedJUnitTestCase. It tests through
+ * inspecting descriptor settings only and by no means does extensive
+ * validation of all the metadata and defaults.
  */
 @IdClass(org.eclipse.persistence.testing.models.jpa.xml.merge.advanced.PhoneNumberPK.class)
 @Entity(name="AnnMergePhoneNumber")

@@ -17,6 +17,8 @@
  *       - 211324: Add additional event(s) support to the EclipseLink-ORM.XML Schema
  *     04/27/2010-2.1 Guy Pelletier 
  *       - 309856: MappedSuperclasses from XML are not being initialized properly
+ *     07/15/2010-2.2 Guy Pelletier 
+ *       -311395 : Multiple lifecycle callback methods for the same lifecycle event
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata.listeners;
 
@@ -406,7 +408,9 @@ public class EntityListenerMetadata extends ORMetadata implements Cloneable {
     
     /**
      * INTERNAL:
-     * Process the XML defined call back methods.
+     * Process the the callback methods. The XML defined callback methods are
+     * always added first, followed by those defined by annotations (only if not
+     * already defined in XML)
      */
     protected void processCallbackMethods(Method[] methods, MetadataDescriptor descriptor) {    
         // 1 - Set the XML specified methods first.
@@ -438,38 +442,39 @@ public class EntityListenerMetadata extends ORMetadata implements Cloneable {
             setPreUpdate(getCallbackMethod(m_preUpdate, methods));
         }
         
-        // 2 - Set any annotation defined methods second.
+        // 2 - Set any annotation defined methods second. We should only add
+        // add them if they were not overridden in XML.
         for (Method method : methods) {
             MetadataMethod metadataMethod = getMetadataClass(method.getDeclaringClass()).getMethod(method.getName(), method.getParameterTypes());
-            if (metadataMethod == null) {
-                continue;
-            }
-            if (metadataMethod.isAnnotationPresent(PostLoad.class, descriptor)) {
-                setPostLoad(method);
-            }
-            
-            if (metadataMethod.isAnnotationPresent(PostPersist.class, descriptor)) {
-                setPostPersist(method);
-            }
-            
-            if (metadataMethod.isAnnotationPresent(PostRemove.class, descriptor)) {
-                setPostRemove(method);
-            }
-            
-            if (metadataMethod.isAnnotationPresent(PostUpdate.class, descriptor)) {
-                setPostUpdate(method);
-            }
-            
-            if (metadataMethod.isAnnotationPresent(PrePersist.class, descriptor)) {
-                setPrePersist(method);
-            }
-            
-            if (metadataMethod.isAnnotationPresent(PreRemove.class, descriptor)) {
-                setPreRemove(method);
-            }
-            
-            if (metadataMethod.isAnnotationPresent(PreUpdate.class, descriptor)) {
-                setPreUpdate(method);
+            // Metadata method can be null when dealing with jdk methods: equals, notify, toString, wait etc.. 
+            if (metadataMethod != null) {
+                if (metadataMethod.isAnnotationPresent(PostLoad.class, descriptor) && m_postLoad == null) {
+                    setPostLoad(method);
+                }
+                
+                if (metadataMethod.isAnnotationPresent(PostPersist.class, descriptor) && m_postPersist == null) {
+                    setPostPersist(method);
+                }
+                
+                if (metadataMethod.isAnnotationPresent(PostRemove.class, descriptor) && m_postRemove == null) {
+                    setPostRemove(method);
+                }
+                
+                if (metadataMethod.isAnnotationPresent(PostUpdate.class, descriptor) && m_postUpdate == null) {
+                    setPostUpdate(method);
+                }
+                
+                if (metadataMethod.isAnnotationPresent(PrePersist.class, descriptor) && m_prePersist == null) {
+                    setPrePersist(method);
+                }
+                
+                if (metadataMethod.isAnnotationPresent(PreRemove.class, descriptor) && m_preRemove == null) {
+                    setPreRemove(method);
+                }
+                
+                if (metadataMethod.isAnnotationPresent(PreUpdate.class, descriptor) && m_preUpdate == null) {
+                    setPreUpdate(method);
+                }
             }
         }
     }

@@ -10,8 +10,6 @@
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
  ******************************************************************************/  
-
-
 package org.eclipse.persistence.testing.models.jpa.xml.merge.advanced;
 
 public class PhoneNumberPK  {

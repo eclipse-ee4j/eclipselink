@@ -12,6 +12,8 @@
  *       - 218084: Implement metadata merging functionality between mapping files
  *     01/05/2010-2.1 Guy Pelletier 
  *       - 211324: Add additional event(s) support to the EclipseLink-ORM.XML Schema
+ *     07/15/2010-2.2 Guy Pelletier 
+ *       -311395 : Multiple lifecycle callback methods for the same lifecycle event
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata.listeners;
 
@@ -22,7 +24,9 @@ import java.lang.reflect.Modifier;
 import java.security.AccessController;
 import java.security.PrivilegedActionException;
 
+import java.util.ArrayList;
 import java.util.Hashtable;
+import java.util.List;
 import java.util.Vector;
 
 import org.eclipse.persistence.descriptors.DescriptorEvent;
@@ -55,8 +59,8 @@ public class EntityListener extends DescriptorEventAdapter {
     
     private Object m_listener;
     private Class m_entityClass;
-    private Hashtable<String, Method> m_methods;
-    private Hashtable<Integer, Boolean> m_overriddenEvents;
+    private Hashtable<String, List<Method>> m_methods;
+    private Hashtable<String, Hashtable<Integer, Boolean>> m_overriddenEvents;
     private static Hashtable<Integer, String> m_eventStrings;
 
     /**
@@ -64,10 +68,11 @@ public class EntityListener extends DescriptorEventAdapter {
      */
     protected EntityListener(Class entityClass) {
         m_entityClass = entityClass;
-        m_methods = new Hashtable<String, Method>();
+        m_methods = new Hashtable<String, List<Method>>();
         
-        // Remember which events are overridden in subclasses.
-        m_overriddenEvents = new Hashtable<Integer, Boolean>();
+        // Remember which events are overridden in subclasses. Overriden events
+        // must be built for each subclass chain.
+        m_overriddenEvents = new Hashtable<String, Hashtable<Integer, Boolean>>();
         
         // For quick look up of equivalent event strings from event codes.
         if (m_eventStrings == null) {
@@ -95,20 +100,29 @@ public class EntityListener extends DescriptorEventAdapter {
     
     /**
      * INTERNAL:
+     * You can have multiple event methods for the same event, however, only
+     * one event method per class is permitted.
      */
     public void addEventMethod(String event, Method method) {
         if (m_methods.containsKey(event)) {
-            Method existingMethod = (Method) getMethods().get(event);
+            Method lastEventMethod = getLastEventMethod(event);
             
-            // We have already set the same callback method name from XML,
-            // so just ignore it if this is the case, otherwise throw an
-            // exception.
-            if (! existingMethod.getName().equals(method.getName())) {
-                throw ValidationException.multipleLifecycleCallbackMethodsForSameLifecycleEvent(getListenerClass(), method, getEventMethod(event));                
+            if (lastEventMethod.getDeclaringClass().equals(method.getDeclaringClass())) {
+                throw ValidationException.multipleLifecycleCallbackMethodsForSameLifecycleEvent(getListenerClass(), method, lastEventMethod);
+            } else {
+                // We must be adding a callback method from a mapped superclass
+                // at this point, so validate the method and add it.
+                validateMethod(method);
+                m_methods.get(event).add(method);
             }
         } else {
+            // Validate the method is valid.
             validateMethod(method);
-            m_methods.put(event, method);
+            
+            // Create the methods list and add this method to it.
+            List methods = new ArrayList<Method>();
+            methods.add(method);
+            m_methods.put(event, methods);
         }
     }
     
@@ -122,11 +136,11 @@ public class EntityListener extends DescriptorEventAdapter {
     /**
      * INTERNAL:
      */
-    protected Method getEventMethod(int eventCode) {
+    protected List<Method> getEventMethods(int eventCode) {
         String eventString = m_eventStrings.get(eventCode);
         
         if (eventString != null) {
-            return getEventMethod(eventString);
+            return getEventMethods(eventString);
         } else {
             return null;
         }
@@ -135,21 +149,18 @@ public class EntityListener extends DescriptorEventAdapter {
     /**
      * INTERNAL:
      */
-    protected Method getEventMethod(String event) {
+    protected List<Method> getEventMethods(String event) {
         return m_methods.get(event);
     }
     
     /**
      * INTERNAL:
+     * Assumes a check for event methods for the given event has been called
+     * beforehand.
      */
-    protected String getEventMethodName(String eventName) {
-        Method method = getEventMethod(eventName);
-        
-        if (method != null) {
-            return method.getName();
-        } else {
-            return null;
-        }
+    protected Method getLastEventMethod(String event) {
+        List<Method> methods = m_methods.get(event);
+        return methods.get(methods.size()-1);
     }
     
     /**
@@ -162,76 +173,6 @@ public class EntityListener extends DescriptorEventAdapter {
     /**
      * INTERNAL:
      */
-    public Hashtable getMethods() {
-        return m_methods;    
-    }
-    
-    /**
-     * INTERNAL:
-     */
-    public String getPostBuildMethodName() {
-        return getEventMethodName(POST_BUILD);
-    }
-    
-    /**
-     * INTERNAL:
-     */
-    public String getPostCloneMethodName() {
-        return getEventMethodName(POST_CLONE);
-    }
-
-    /**
-     * INTERNAL:
-     */
-    public String getPostDeleteMethodName() {
-        return getEventMethodName(POST_DELETE);
-    }
-
-    /**
-     * INTERNAL:
-     */
-    public String getPostInsertMethodName() {
-        return getEventMethodName(POST_INSERT);
-    }
-    
-    /**
-     * INTERNAL:
-     */
-    public String getPostRefreshMethodName() {
-        return getEventMethodName(POST_REFRESH);
-    }
-    
-    /**
-     * INTERNAL:
-     */
-    public String getPostUpdateMethodName() {
-        return getEventMethodName(POST_UPDATE);
-    }
-    
-    /**
-     * INTERNAL:
-     */
-    public String getPrePersistMethodName() {
-        return getEventMethodName(PRE_PERSIST);
-    }
-    
-    /**
-     * INTERNAL:
-     */
-    public String getPreRemoveMethodName() {
-        return getEventMethodName(PRE_REMOVE);
-    }
-    
-    /**
-     * INTERNAL:
-     */
-    public String getPreUpdateWithChangesMethodName() {
-        return getEventMethodName(PRE_UPDATE_WITH_CHANGES);
-    }
-    
-    /**
-     * INTERNAL:
-     */
     public boolean hasCallbackMethods() {
         return m_methods.size() > 0;
     }
@@ -239,28 +180,50 @@ public class EntityListener extends DescriptorEventAdapter {
     /**
      * INTERNAL:
      */
-    public boolean hasOverriddenEventMethod(Method eventMethod, int eventCode) {
-        return hasOverriddenEventMethod(getEventMethod(eventCode), eventMethod);
+    protected boolean hasEventMethods(int eventCode) {
+        return getEventMethods(eventCode) != null;
     }
     
     /**
      * INTERNAL:
      */
-    protected boolean hasOverriddenEventMethod(Method eventMethod1, Method eventMethod2) {
-        return (eventMethod1 != null && eventMethod1.getName().equals(eventMethod2.getName()));
+    protected boolean hasEventMethods(String event) {
+        return getEventMethods(event) != null;
     }
     
     /**
      * INTERNAL:
      */
-    public boolean hasOverriddenEventMethod(Method eventMethod, String eventCode) {
-        return hasOverriddenEventMethod(getEventMethod(eventCode), eventMethod);
+    protected boolean hasOverriddenEventMethod(List<Method> eventMethods, Method eventMethod) {
+        if (eventMethods != null) {
+            for (Method method : eventMethods) {
+                if (method.getName().equals(eventMethod.getName())) {
+                    return true;
+                }
+            }
+        }
+        
+        return false;
     }
     
     /**
      * INTERNAL:
      */
-    protected void invokeMethod(Method method, Object onObject, Object[] objectList, DescriptorEvent event) {
+    protected boolean hasOverriddenEventMethod(Method eventMethod, int eventCode) {
+        return hasOverriddenEventMethod(getEventMethods(eventCode), eventMethod);
+    }
+    
+    /**
+     * INTERNAL:
+     */
+    protected boolean hasOverriddenEventMethod(Method eventMethod, String eventCode) {
+        return hasOverriddenEventMethod(getEventMethods(eventCode), eventMethod);
+    }
+    
+    /**
+     * INTERNAL:
+     */
+    void invokeMethod(Method method, Object onObject, Object[] objectList, DescriptorEvent event) {
         if (method != null) {
             try {
                 if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()){
@@ -300,41 +263,57 @@ public class EntityListener extends DescriptorEventAdapter {
     /**
      * INTERNAL:
      */
-    protected void invokeMethod(String event, DescriptorEvent descriptorEvent) {
-        Object[] objectList = { descriptorEvent.getSource() };
-        invokeMethod(getEventMethod(event), m_listener, objectList, descriptorEvent);
+    void invokeMethod(String event, DescriptorEvent descriptorEvent) {
+        List<Method> eventMethods = getEventMethods(event);
+        
+        if (eventMethods != null) {
+            for (Method method : eventMethods) {
+                Object[] objectList = { descriptorEvent.getSource() };
+                invokeMethod(method, m_listener, objectList, descriptorEvent);
+            }
+        }
     }
 
     /**
      * INTERNAL:
-     * Return true is listener has a lifecycle callback method that is 
+     * Return true if listener has a lifecycle callback method that is 
      * overridden in a subclass.
      */
     public boolean isOverriddenEvent(DescriptorEvent event, Vector eventManagers) {
         int eventCode = event.getEventCode();
-        if (! m_overriddenEvents.containsKey(eventCode)) {
-            m_overriddenEvents.put(eventCode, false); // default
-            
-            Method eventMethod = getEventMethod(eventCode);
+        String forSubclass = event.getDescriptor().getJavaClassName();
         
-            if (eventMethod != null) {
-                for (DescriptorEventManager eventManager : (Vector<DescriptorEventManager>) eventManagers) {
-                    EntityListener childListener = (EntityListener) eventManager.getEntityEventListener();
+        // If we haven't built an overridden events map for this subclass, do so now.
+        if (! m_overriddenEvents.containsKey(forSubclass)) {
+            m_overriddenEvents.put(forSubclass, new Hashtable<Integer, Boolean>());
+        }
+        
+        // Now check the individual events for this subclass.
+        if (! m_overriddenEvents.get(forSubclass).containsKey(eventCode)) {
+            m_overriddenEvents.get(forSubclass).put(eventCode, false); // default
+
+            if (hasEventMethods(eventCode)) {
+                List<Method> eventMethods = getEventMethods(eventCode);
+                
+                for (Method eventMethod : eventMethods) {
+                    for (DescriptorEventManager eventManager : (Vector<DescriptorEventManager>) eventManagers) {
+                        EntityListener childListener = (EntityListener) eventManager.getEntityEventListener();
                     
-                    // We can't override ourself ...
-                    if (childListener == this) {
-                        break;
-                    } else {
-                        if (childListener.hasOverriddenEventMethod(eventMethod, eventCode)) {
-                            m_overriddenEvents.put(eventCode, true);
-                            break; // stop looking
+                        // We can't override ourself ...
+                        if (childListener == this) {
+                            break;
+                        } else {
+                            if (childListener.hasOverriddenEventMethod(eventMethod, eventCode)) {
+                                m_overriddenEvents.get(forSubclass).put(eventCode, true);
+                                break; // stop looking
+                            }
                         }
                     }
                 }
             }
         }
         
-        return m_overriddenEvents.get(eventCode);
+        return m_overriddenEvents.get(forSubclass).get(eventCode);
     }
     
     /**
@@ -461,6 +440,14 @@ public class EntityListener extends DescriptorEventAdapter {
      */
     public void setPreUpdateWithChangesMethod(Method method) { 
         addEventMethod(PRE_UPDATE_WITH_CHANGES, method);
+    }
+ 
+    /**
+     * INTERNAL:
+     * Used in the debugger.
+     */
+    public String toString() {
+        return getEntityClass().getName();
     }
     
     /**

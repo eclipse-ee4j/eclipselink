@@ -11,17 +11,22 @@
  *     Oracle - initial API and implementation from Oracle TopLink
  *     06/20/2008-1.0 Guy Pelletier 
  *       - 232975: Failure when attribute type is generic
+ *     07/15/2010-2.2 Guy Pelletier 
+ *       -311395 : Multiple lifecycle callback methods for the same lifecycle event
  ******************************************************************************/  
 package org.eclipse.persistence.testing.models.jpa.inherited;
 
 import javax.persistence.Id;
 import javax.persistence.GeneratedValue;
+import javax.persistence.PostPersist;
 import javax.persistence.TableGenerator;
 import javax.persistence.MappedSuperclass;
 import static javax.persistence.GenerationType.*;
 
 @MappedSuperclass
 public class Beverage<T> {
+    public static int BEVERAGE_POST_PERSIST_COUNT = 0;
+    
     private T id;
     
     public Beverage() {}
@@ -40,5 +45,10 @@ public class Beverage<T> {
     
     public void setId(T id) {
         this.id = id;
+    }
+    
+    @PostPersist
+    public void celebrateAgain() {
+        BEVERAGE_POST_PERSIST_COUNT++;
     }
 }
