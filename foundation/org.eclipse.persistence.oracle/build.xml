@@ -40,7 +40,7 @@
 <project name="org.eclipse.persistence.oracle" default="build" basedir=".">
     <available file="../${ant.project.name}" type="dir" property="oracle.is.local"/>
     <!-- Test to make sure that the calling script doesn't inherit the variable -->
-    <!-- (should be set locally, and be destroyed upon return) -->
+    <!-- (should be set locally, and be destroyed upon return)                  -->
     <fail message="Not running from '${ant.project.name}' directory" unless="oracle.is.local"/>
 
     <dirname  property="oracle.build.location_temp" file="${ant.file.org.eclipse.persistence.oracle}"/>
