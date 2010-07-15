@@ -29,6 +29,8 @@ import static org.eclipse.persistence.internal.xr.Util.WSDL_DIR;
 import static org.eclipse.persistence.tools.dbws.Util.CLASSES;
 import static org.eclipse.persistence.tools.dbws.Util.DBWS_PROVIDER_CLASS_FILE;
 import static org.eclipse.persistence.tools.dbws.Util.DBWS_PROVIDER_SOURCE_FILE;
+import static org.eclipse.persistence.tools.dbws.Util.PROVIDER_LISTENER_CLASS_FILE;
+import static org.eclipse.persistence.tools.dbws.Util.PROVIDER_LISTENER_SOURCE_FILE;
 import static org.eclipse.persistence.tools.dbws.Util.SWAREF_FILENAME;
 import static org.eclipse.persistence.tools.dbws.Util.UNDER_DBWS;
 import static org.eclipse.persistence.tools.dbws.Util.WEB_XML_FILENAME;
@@ -104,6 +106,14 @@ public class WarArchiver extends JarArchiver {
         return new JarEntry(WEB_INF_DIR + CLASSES + "/" + UNDER_DBWS + "/" + DBWS_PROVIDER_SOURCE_FILE);
     }
 
+    protected ZipEntry getProviderListenerSourceJarEntry() {
+        return new JarEntry(WEB_INF_DIR + CLASSES + "/" + UNDER_DBWS + "/" + PROVIDER_LISTENER_SOURCE_FILE);
+    }
+
+    protected ZipEntry getProviderListenerClassJarEntry() {
+        return new JarEntry(WEB_INF_DIR + CLASSES + "/" + UNDER_DBWS + "/" + PROVIDER_LISTENER_CLASS_FILE);
+    }
+
     protected ZipEntry getWSDLJarEntry() {
         return new JarEntry(WEB_INF_DIR + WSDL_DIR + DBWS_WSDL);
     }
@@ -163,7 +173,28 @@ public class WarArchiver extends JarArchiver {
                 fis.close();
             }
             f.deleteOnExit();
+            
+            // ProviderListener source is optional
+            f = new File(packager.getStageDir(), PROVIDER_LISTENER_SOURCE_FILE);
+            if (f.length() > 0) {
+                jarOutputStream.putNextEntry(getProviderListenerSourceJarEntry());
+                fis = new FileInputStream(f);
+                for (int read = 0; read != -1; read = fis.read(buffer)) {
+                    jarOutputStream.write(buffer, 0, read);
+                }
+                fis.close();
+            }
+            f.deleteOnExit();
 
+            jarOutputStream.putNextEntry(getProviderListenerClassJarEntry());
+            f = new File(packager.getStageDir(), PROVIDER_LISTENER_CLASS_FILE);
+            fis = new FileInputStream(f);
+            for (int read = 0; read != -1; read = fis.read(buffer)) {
+                jarOutputStream.write(buffer, 0, read);
+            }
+            fis.close();
+            f.deleteOnExit();
+            
             jarOutputStream.putNextEntry(getWSDLJarEntry());
             f = new File(packager.getStageDir(), DBWS_WSDL);
             fis = new FileInputStream(f);

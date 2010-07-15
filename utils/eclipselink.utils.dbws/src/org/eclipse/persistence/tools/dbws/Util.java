@@ -98,7 +98,7 @@ public class Util {
         "delete";
     public static final String DBWS_PROVIDER_PACKAGE = "_dbws";
     public static final String DBWS_PROVIDER_NAME = "DBWSProvider";
-    static final String DOT_CLASS = ".class";
+    public static final String DOT_CLASS = ".class";
     static final String DOT_JAVA = ".java";
     public static final String DBWS_PROVIDER_CLASS_FILE = DBWS_PROVIDER_NAME + DOT_CLASS;
     public static final String DBWS_PROVIDER_SOURCE_FILE = DBWS_PROVIDER_NAME + DOT_JAVA;

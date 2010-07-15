@@ -18,6 +18,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 
@@ -27,11 +28,13 @@ import javax.tools.DiagnosticCollector;
 import javax.tools.JavaFileObject;
 
 //EclipseLink imports
+import _dbws.ProviderListener;
 import org.eclipse.persistence.internal.dbws.ProviderHelper;
 import static org.eclipse.persistence.internal.xr.Util.DBWS_WSDL;
 import static org.eclipse.persistence.tools.dbws.DBWSPackager.ArchiveUse.noArchive;
 import static org.eclipse.persistence.tools.dbws.Util.DBWS_PROVIDER_CLASS_FILE;
 import static org.eclipse.persistence.tools.dbws.Util.DBWS_PROVIDER_SOURCE_FILE;
+import static org.eclipse.persistence.tools.dbws.Util.DOT_CLASS;
 import static org.eclipse.persistence.tools.dbws.Util.PROVIDER_LISTENER_CLASS_FILE;
 import static org.eclipse.persistence.tools.dbws.Util.PROVIDER_LISTENER_SOURCE_FILE;
 
@@ -50,6 +53,8 @@ import static org.eclipse.persistence.tools.dbws.Util.PROVIDER_LISTENER_SOURCE_F
  * @since EclipseLink 1.x
  */
 public class ProviderPackager extends XRPackager {
+
+    public static final String PROVIDER_NAME = "_dbws.DBWSProvider";
     
     public static final String PROVIDER_LISTENER_SOURCE =
         "package _dbws;\n\n" +
@@ -177,6 +182,7 @@ public class ProviderPackager extends XRPackager {
         
     }
     
+    static final int DEFAULT_BUFFER_SIZE = 4096;
     @Override
     public void writeProvider(OutputStream sourceProviderStream, OutputStream classProviderStream,
         OutputStream sourceProviderListenerStream, OutputStream classProviderListenerStream,
@@ -221,12 +227,33 @@ public class ProviderPackager extends XRPackager {
         }
         
         if (classProviderStream != __nullStream) {
-            InMemoryCompiler providerCompiler = new DBWSProviderCompiler();
+            InMemoryCompiler providerCompiler = new InMemoryCompiler(PROVIDER_NAME);
             if (providerCompiler.getCompiler() == null) {
                 throw new IllegalStateException("DBWSBuilder cannot compile DBWSProvider code\n" +
                     "Please ensure that tools.jar is on your classpath");
             }
-            runInMemoryCompiler(providerCompiler,source.toString(), classProviderStream);
+            byte[] bytes = providerCompiler.compile(source);
+            if (bytes.length == 0) {
+                DiagnosticCollector<JavaFileObject> collector = providerCompiler.getDiagnosticsCollector();
+                StringBuilder diagBuf = 
+                    new StringBuilder("DBWSBuilder cannot generate ProviderListener code " +
+                        "(likely servlet jar missing from classpath)\n");
+                for (Diagnostic<? extends JavaFileObject> d : collector.getDiagnostics()) {
+                    if (d.getKind() == Diagnostic.Kind.ERROR) {
+                        diagBuf.append(d.getMessage(null));
+                        diagBuf.append("\n");
+                    }
+                }
+                throw new IllegalStateException(diagBuf.toString());
+            }
+            else {
+                try {
+                    classProviderStream.write(bytes, 0, bytes.length);
+                }
+                catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
         }
 
         if (sourceProviderListenerStream != __nullStream) {
@@ -236,41 +263,24 @@ public class ProviderPackager extends XRPackager {
                 osw.write(PROVIDER_LISTENER_SOURCE);
                 osw.flush();
             }
-            catch (IOException e) {}
+            catch (IOException e) {
+                e.printStackTrace();
+            }
         }
 
         if (classProviderListenerStream != __nullStream) {
-            InMemoryCompiler providerListenerCompiler = new ProviderListenerCompiler();
-            if (providerListenerCompiler.getCompiler() == null) {
-                throw new IllegalStateException("DBWSBuilder cannot compile ProviderListener code\n" +
-                    "Please ensure that tools.jar is on your classpath");
-            }
-            runInMemoryCompiler(providerListenerCompiler, PROVIDER_LISTENER_SOURCE,
-                classProviderListenerStream);
-        }
-    }
-
-    protected void runInMemoryCompiler(InMemoryCompiler compiler, String source,
-        OutputStream classStream) {
-        byte[] bytes = compiler.compile(source);
-        if (bytes.length == 0) {
-            DiagnosticCollector<JavaFileObject> collector = compiler.getDiagnosticsCollector();
-            StringBuilder diagBuf = 
-                new StringBuilder("DBWSBuilder cannot generate ProviderListener code " +
-                    "(likely servlet jar missing from classpath)\n");
-            for (Diagnostic<? extends JavaFileObject> d : collector.getDiagnostics()) {
-                if (d.getKind() == Diagnostic.Kind.ERROR) {
-                    diagBuf.append(d.getMessage(null));
-                    diagBuf.append("\n");
+            try {
+                InputStream is = this.getClass().getClassLoader().getResourceAsStream(
+                    ProviderListener.class.getName().replace('.', '/') + DOT_CLASS);
+                byte[] buffer = new byte[DEFAULT_BUFFER_SIZE];
+                int n = 0;
+                while (-1 != (n = is.read(buffer))) {
+                    classProviderListenerStream.write(buffer, 0, n);
                 }
             }
-            throw new IllegalStateException(diagBuf.toString());
-        }
-        else {
-            try {
-                classStream.write(bytes, 0, bytes.length);
+            catch (Exception e) {
+                e.printStackTrace();
             }
-            catch (IOException e) {} //ignore
         }
     }
 }
