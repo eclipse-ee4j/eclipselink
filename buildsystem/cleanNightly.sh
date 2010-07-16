@@ -26,7 +26,7 @@ removed=0
 for contentdir in `ls -dr ${BaseDownloadNFSDir}/nightly/${version}/[0-9]*` ; do
     index=`expr $index + 1`
     if [ $index -gt $num_builds ] ; then
-        echo "Removing $contentdir..."
+        echo "Removing ${contentdir}..."
         rm -r $contentdir
         removed=`expr $removed + 1`
     fi
@@ -40,7 +40,7 @@ removed=0
 for contentdir in `ls -dr ${BaseDownloadNFSDir}/nightly-updates/${version}*` ; do
     index=`expr $index + 1`
     if [ $index -gt $num_p2_builds ] ; then
-        echo "Removing $contentdir..."
+        echo "Removing ${contentdir}..."
         rm -r $contentdir
         removed=`expr $removed + 1`
     fi
@@ -54,7 +54,7 @@ for mvncomp in `ls -d *eclipse*` ; do
     index=0
     removed=0
     for mvnfile in `ls -r ${mvncomp}/${version}-SNAPSHOT/${mvncomp}*.*` ; do
-        echo "Removing $mvnfile..."
+        echo "Removing ${mvnfile}..."
         index=`expr $index + 1`
         if [ $index -gt $num_maven_files ] ; then
            rm $mvnfile
