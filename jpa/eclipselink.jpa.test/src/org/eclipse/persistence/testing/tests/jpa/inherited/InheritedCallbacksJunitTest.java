@@ -18,7 +18,6 @@ import javax.persistence.EntityManager;
 
 import junit.framework.*;
 
-import org.eclipse.persistence.internal.security.SecurableObjectHolder;
 import org.eclipse.persistence.testing.framework.junit.JUnitTestCase;
 import org.eclipse.persistence.testing.models.jpa.inherited.Accredidation;
 import org.eclipse.persistence.testing.models.jpa.inherited.Beer;
