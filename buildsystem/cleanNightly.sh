@@ -23,7 +23,8 @@ fi
 #      leave only the last 10 build dirs for the version on the download server
 index=0
 removed=0
-for contentdir in `ls -dr ${BaseDownloadNFSDir}/nightly/${version}/[0-9]*` ; do
+cd ${BaseDownloadNFSDir}/nightly/${version}
+for contentdir in `ls -dr [0-9]*` ; do
     index=`expr $index + 1`
     if [ $index -gt $num_builds ] ; then
         echo "Removing ${contentdir}..."
@@ -37,7 +38,8 @@ echo "Removed $removed direcories from ${BaseDownloadNFSDir}/nightly/${version}.
 #      leave only the last "num_p2_builds" builds for the version in the nightly P2 repos
 index=0
 removed=0
-for contentdir in `ls -dr ${BaseDownloadNFSDir}/nightly-updates/${version}*` ; do
+cd ${BaseDownloadNFSDir}/nightly-updates
+for contentdir in `ls -dr ${version}*` ; do
     index=`expr $index + 1`
     if [ $index -gt $num_p2_builds ] ; then
         echo "Removing ${contentdir}..."
@@ -53,13 +55,15 @@ cd ${BaseDownloadNFSDir}/maven.repo/org/eclipse/persistence
 for mvncomp in `ls -d *eclipse*` ; do
     index=0
     removed=0
-    for mvnfile in `ls -r ${mvncomp}/${version}-SNAPSHOT/${mvncomp}*.*` ; do
-        echo "Removing ${mvnfile}..."
+    cd ${mvncomp}/${version}-SNAPSHOT
+    for mvnfile in `ls -r ${mvncomp}*.*` ; do
         index=`expr $index + 1`
         if [ $index -gt $num_maven_files ] ; then
+           echo "Removing ${mvnfile}..."
            rm $mvnfile
            removed=`expr $removed + 1`
         fi
     done
     echo "Removed $removed files from ${BaseDownloadNFSDir}/maven.repo/org/eclipse/persistence/${mvncomp}/${version}-SNAPSHOT."
 done
+cd ${buildir}
