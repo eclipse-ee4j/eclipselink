@@ -55,7 +55,7 @@ cd ${BaseDownloadNFSDir}/maven.repo/org/eclipse/persistence
 for mvncomp in `ls -d *eclipse*` ; do
     index=0
     removed=0
-    cd ${mvncomp}/${version}-SNAPSHOT
+    cd ${BaseDownloadNFSDir}/maven.repo/org/eclipse/persistence/${mvncomp}/${version}-SNAPSHOT
     for mvnfile in `ls -r ${mvncomp}*.*` ; do
         index=`expr $index + 1`
         if [ $index -gt $num_maven_files ] ; then
