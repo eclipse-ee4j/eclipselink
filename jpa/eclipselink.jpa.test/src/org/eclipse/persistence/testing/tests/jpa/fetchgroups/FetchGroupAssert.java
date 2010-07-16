@@ -53,7 +53,7 @@ public class FetchGroupAssert {
      */
     public static boolean isValid(FetchGroup fetchGroup, EntityManagerFactory emf, Class<?> entityClass) {
         assertNotNull(fetchGroup);
-        Session session = JpaHelper.getServerSession(emf);
+        Session session = ((org.eclipse.persistence.jpa.JpaEntityManager)emf.createEntityManager()).getServerSession();
         ClassDescriptor descriptor = session.getDescriptor(entityClass);
         try {
             for (Map.Entry<String, AttributeItem> entry : fetchGroup.getItems().entrySet()) {
@@ -82,7 +82,7 @@ public class FetchGroupAssert {
     public static void assertFetchedAttribute(EntityManagerFactory emf, Object entity, String... attribute) {
         assertNotNull("EntityManagerFactory is null", emf);
         assertNotNull("Entity is null", entity);
-        Server session = JpaHelper.getServerSession(emf);
+        Server session = ((org.eclipse.persistence.jpa.JpaEntityManager)emf.createEntityManager()).getServerSession();
         assertNotNull("No Server session found for: " + emf, session);
         ClassDescriptor desc = session.getClassDescriptor(entity);
         assertNotNull("No descriptor found for: " + entity, desc);
@@ -128,7 +128,7 @@ public class FetchGroupAssert {
     public static void assertNotFetchedAttribute(EntityManagerFactory emf, Object entity, String... attribute) {
         assertNotNull("EntityManagerFactory is null", emf);
         assertNotNull("Entity is null", entity);
-        Server session = JpaHelper.getServerSession(emf);
+        Server session = ((org.eclipse.persistence.jpa.JpaEntityManager)emf.createEntityManager()).getServerSession();
         assertNotNull("No Server session found for: " + emf, session);
         ClassDescriptor desc = session.getClassDescriptor(entity);
         assertNotNull("No descriptor found for: " + entity, desc);
@@ -178,7 +178,7 @@ public class FetchGroupAssert {
         }
         assertTrue("FetchGroup on entity does not equal provided", tracker._persistence_getFetchGroup().equals(groupToCompare));
 
-        Server session = JpaHelper.getServerSession(emf);
+        Server session = ((org.eclipse.persistence.jpa.JpaEntityManager)emf.createEntityManager()).getServerSession();
         assertNotNull(session);
         ClassDescriptor descriptor = session.getClassDescriptor(entity);
         assertNotNull(descriptor);
@@ -220,7 +220,7 @@ public class FetchGroupAssert {
     public static void assertDefaultFetched(EntityManagerFactory emf, Object entity) {
         assertNotNull("Null entity", entity);
 
-        ClassDescriptor descriptor = JpaHelper.getServerSession(emf).getClassDescriptor(entity);
+        ClassDescriptor descriptor = ((org.eclipse.persistence.jpa.JpaEntityManager)emf.createEntityManager()).getServerSession().getClassDescriptor(entity);
         assertNotNull("No descriptor found for: " + entity, descriptor);
 
         assertTrue("No FetchGroupManager on: " + descriptor, descriptor.hasFetchGroupManager());
@@ -234,7 +234,7 @@ public class FetchGroupAssert {
     public static void assertFetched(EntityManagerFactory emf, Object entity, String fetchGroupName) {
         assertNotNull("Null entity", entity);
 
-        ClassDescriptor descriptor = JpaHelper.getServerSession(emf).getClassDescriptor(entity);
+        ClassDescriptor descriptor = ((org.eclipse.persistence.jpa.JpaEntityManager)emf.createEntityManager()).getServerSession().getClassDescriptor(entity);
         assertNotNull("No descriptor found for: " + entity, descriptor);
 
         assertTrue("No FetchGroupManager on: " + descriptor, descriptor.hasFetchGroupManager());
@@ -263,7 +263,7 @@ public class FetchGroupAssert {
     }
 
     public static void assertConfig(EntityManagerFactory emf, String entityName, FetchGroup defaultFetchGroup, int numNamedFetchGroups) {
-        ClassDescriptor descriptor = JpaHelper.getServerSession(emf).getClassDescriptorForAlias(entityName);
+        ClassDescriptor descriptor = ((org.eclipse.persistence.jpa.JpaEntityManager)emf.createEntityManager()).getServerSession().getClassDescriptorForAlias(entityName);
         assertNotNull("Not descriptor found for: " + entityName, descriptor);
         assertConfig(descriptor, defaultFetchGroup, numNamedFetchGroups);
     }

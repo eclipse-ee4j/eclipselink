@@ -101,116 +101,136 @@ public class SimpleDefaultFetchGroupTests extends BaseFetchGroupTests {
     @Test
     public void findDefaultFetchGroup() throws Exception {
         EntityManager em = createEntityManager("fieldaccess");
+        try {
+            beginTransaction(em);
 
-        Employee emp = minimumEmployee(em);
+            Employee emp = minimumEmployee(em);
+            assertNotNull(emp);
+            assertEquals(1, getQuerySQLTracker(em).getTotalSQLSELECTCalls());
+            assertDefaultFetched(emp);
 
-        assertNotNull(emp);
-        assertEquals(1, getQuerySQLTracker(em).getTotalSQLSELECTCalls());
-        assertDefaultFetched(emp);
+            assertNotFetchedAttribute(emp, "salary");
+            emp.getSalary();
 
-        assertNotFetchedAttribute(emp, "salary");
-        emp.getSalary();
+            assertEquals(2, getQuerySQLTracker(em).getTotalSQLSELECTCalls());
+            assertFetchedAttribute(emp, "salary");
 
-        assertEquals(2, getQuerySQLTracker(em).getTotalSQLSELECTCalls());
-        assertFetchedAttribute(emp, "salary");
+            assertNoFetchGroup(emp.getAddress());
 
-        assertNoFetchGroup(emp.getAddress());
+            assertEquals(3, getQuerySQLTracker(em).getTotalSQLSELECTCalls());
 
-        assertEquals(3, getQuerySQLTracker(em).getTotalSQLSELECTCalls());
+            for (PhoneNumber phone : emp.getPhoneNumbers()) {
+                assertDefaultFetched(phone);
+            }
 
-        for (PhoneNumber phone : emp.getPhoneNumbers()) {
-            assertDefaultFetched(phone);
-        }
-
-        assertEquals(4, getQuerySQLTracker(em).getTotalSQLSELECTCalls());
-
-        if (emp.getManager() != null) {
-            assertDefaultFetched(emp.getManager());
-            assertEquals(5, getQuerySQLTracker(em).getTotalSQLSELECTCalls());
-        } else {
-            // If manager_id field is null then getManager() does not trigger an sql.
             assertEquals(4, getQuerySQLTracker(em).getTotalSQLSELECTCalls());
+
+            if (emp.getManager() != null) {
+                assertDefaultFetched(emp.getManager());
+                assertEquals(5, getQuerySQLTracker(em).getTotalSQLSELECTCalls());
+            } else {
+                // If manager_id field is null then getManager() does not trigger an sql.
+                assertEquals(4, getQuerySQLTracker(em).getTotalSQLSELECTCalls());
+            }
+        } finally {
+            if (isTransactionActive(em)){
+                rollbackTransaction(em);
+            }
+            closeEntityManager(em);
         }
     }
 
     @Test
     public void singleResultDefaultFetchGroup() throws Exception {
         EntityManager em = createEntityManager("fieldaccess");
+        try {
+            beginTransaction(em);
 
-        Query query = em.createQuery("SELECT e FROM Employee e WHERE e.id = :ID");
-        query.setParameter("ID", minimumEmployeeId(em));
+            Query query = em.createQuery("SELECT e FROM Employee e WHERE e.id = :ID");
+            query.setParameter("ID", minimumEmployeeId(em));
 
-        Employee emp = (Employee) query.getSingleResult();
+            Employee emp = (Employee) query.getSingleResult();
 
-        assertNotNull(emp);
-        assertEquals(2, getQuerySQLTracker(em).getTotalSQLSELECTCalls());
+            assertNotNull(emp);
+            assertEquals(2, getQuerySQLTracker(em).getTotalSQLSELECTCalls());
 
-        assertDefaultFetched(emp);
+            assertDefaultFetched(emp);
 
-        emp.getSalary();
+            emp.getSalary();
 
-        assertFetchedAttribute(emp, "salary");
-        assertEquals(3, getQuerySQLTracker(em).getTotalSQLSELECTCalls());
+            assertFetchedAttribute(emp, "salary");
+            assertEquals(3, getQuerySQLTracker(em).getTotalSQLSELECTCalls());
 
-        assertNoFetchGroup(emp.getAddress());
+            assertNoFetchGroup(emp.getAddress());
 
-        assertEquals(4, getQuerySQLTracker(em).getTotalSQLSELECTCalls());
+            assertEquals(4, getQuerySQLTracker(em).getTotalSQLSELECTCalls());
 
-        for (PhoneNumber phone : emp.getPhoneNumbers()) {
-            assertDefaultFetched(phone);
-        }
+            for (PhoneNumber phone : emp.getPhoneNumbers()) {
+                assertDefaultFetched(phone);
+            }
 
-        assertEquals(5, getQuerySQLTracker(em).getTotalSQLSELECTCalls());
-
-        if (emp.getManager() != null) {
-            assertDefaultFetched(emp.getManager());
-            assertEquals(6, getQuerySQLTracker(em).getTotalSQLSELECTCalls());
-        } else {
-            // If manager_id field is null then getManager() does not trigger an sql.
             assertEquals(5, getQuerySQLTracker(em).getTotalSQLSELECTCalls());
-        }
 
+            if (emp.getManager() != null) {
+                assertDefaultFetched(emp.getManager());
+                assertEquals(6, getQuerySQLTracker(em).getTotalSQLSELECTCalls());
+            } else {
+                // If manager_id field is null then getManager() does not trigger an sql.
+                assertEquals(5, getQuerySQLTracker(em).getTotalSQLSELECTCalls());
+            }
+        } finally {
+            if (isTransactionActive(em)){
+                rollbackTransaction(em);
+            }
+            closeEntityManager(em);
+        }
     }
 
     @Test
     public void resultListDefaultFetchGroup() throws Exception {
         EntityManager em = createEntityManager("fieldaccess");
+        try {
+            beginTransaction(em);
+            Query query = em.createQuery("SELECT e FROM Employee e WHERE e.id = :ID");
+            query.setParameter("ID", minimumEmployeeId(em));
 
-        Query query = em.createQuery("SELECT e FROM Employee e WHERE e.id = :ID");
-        query.setParameter("ID", minimumEmployeeId(em));
+            List<Employee> emps = query.getResultList();
 
-        List<Employee> emps = query.getResultList();
+            assertNotNull(emps);
+            assertEquals(1, emps.size());
 
-        assertNotNull(emps);
-        assertEquals(1, emps.size());
+            Employee emp = emps.get(0);
 
-        Employee emp = emps.get(0);
+            assertEquals(2, getQuerySQLTracker(em).getTotalSQLSELECTCalls());
+            assertDefaultFetched(emp);
 
-        assertEquals(2, getQuerySQLTracker(em).getTotalSQLSELECTCalls());
-        assertDefaultFetched(emp);
+            emp.getSalary();
 
-        emp.getSalary();
+            assertNoFetchGroup(emp);
+            assertEquals(3, getQuerySQLTracker(em).getTotalSQLSELECTCalls());
 
-        assertNoFetchGroup(emp);
-        assertEquals(3, getQuerySQLTracker(em).getTotalSQLSELECTCalls());
+            assertNoFetchGroup(emp.getAddress());
 
-        assertNoFetchGroup(emp.getAddress());
+            assertEquals(4, getQuerySQLTracker(em).getTotalSQLSELECTCalls());
 
-        assertEquals(4, getQuerySQLTracker(em).getTotalSQLSELECTCalls());
-
-        for (PhoneNumber phone : emp.getPhoneNumbers()) {
-            assertDefaultFetched(phone);
-        }
-        assertEquals(5, getQuerySQLTracker(em).getTotalSQLSELECTCalls());
-
-        if (emp.getManager() != null) {
-            assertDefaultFetched(emp.getManager());
-            assertEquals(6, getQuerySQLTracker(em).getTotalSQLSELECTCalls());
-        } else {
-            // If manager_id field is null then getManager() does not trigger an sql.
+            for (PhoneNumber phone : emp.getPhoneNumbers()) {
+                assertDefaultFetched(phone);
+            }
             assertEquals(5, getQuerySQLTracker(em).getTotalSQLSELECTCalls());
-        }
 
+            if (emp.getManager() != null) {
+                assertDefaultFetched(emp.getManager());
+                assertEquals(6, getQuerySQLTracker(em).getTotalSQLSELECTCalls());
+            } else {
+                // If manager_id field is null then getManager() does not trigger an sql.
+                assertEquals(5, getQuerySQLTracker(em).getTotalSQLSELECTCalls());
+            }
+        } finally {
+            if (isTransactionActive(em)){
+                rollbackTransaction(em);
+            }
+            closeEntityManager(em);
+        }
     }
 
     @Test
@@ -224,248 +244,296 @@ public class SimpleDefaultFetchGroupTests extends BaseFetchGroupTests {
     }
     void internalResultListWithJoinFetchAddress(boolean addAddressToFetchGroup) {
         EntityManager em = createEntityManager("fieldaccess");
+        try {
+            beginTransaction(em);
+            Query query = em.createQuery("SELECT e FROM Employee e JOIN FETCH e.address WHERE e.id = :ID");
+            query.setParameter("ID", minimumEmployeeId(em));
+            assertEquals(1, getQuerySQLTracker(em).getTotalSQLSELECTCalls());
 
-        Query query = em.createQuery("SELECT e FROM Employee e JOIN FETCH e.address WHERE e.id = :ID");
-        query.setParameter("ID", minimumEmployeeId(em));
-        assertEquals(1, getQuerySQLTracker(em).getTotalSQLSELECTCalls());
+            FetchGroup fg = null;
+            if(addAddressToFetchGroup) {
+                // that returns clone of the default fetch group
+                fg = employeeDescriptor.getFetchGroupManager().createDefaultFetchGroup();
+                fg.addAttribute("address");
+                query.setHint(QueryHints.FETCH_GROUP, fg);
+            }
+            Employee emp = (Employee)query.getSingleResult();
+            int nSql = 2;
+            if(!addAddressToFetchGroup) {
+                // An extra sql to read employee's Address - 
+                // because address attribute is not in the fetch group the Address object was not built
+                // by join fetch - though the db row for address was read in.
+                //
+                // yet another extra sql generated when the whole employee object is read when address is set. 
+                nSql = nSql + 2;
+            }
 
-        FetchGroup fg = null;
-        if(addAddressToFetchGroup) {
-            // that returns clone of the default fetch group
-            fg = employeeDescriptor.getFetchGroupManager().createDefaultFetchGroup();
-            fg.addAttribute("address");
-            query.setHint(QueryHints.FETCH_GROUP, fg);
-        }
-        Employee emp = (Employee)query.getSingleResult();
-        int nSql = 2;
-        if(!addAddressToFetchGroup) {
-            // An extra sql to read employee's Address - 
-            // because address attribute is not in the fetch group the Address object was not built
-            // by join fetch - though the db row for address was read in.
-            //
-            // yet another extra sql generated when the whole employee object is read when address is set. 
-            nSql = nSql + 2;
-        }
-
-        assertEquals(nSql, getQuerySQLTracker(em).getTotalSQLSELECTCalls());
-        if(addAddressToFetchGroup) {
-            assertFetched(emp, fg);
-        } else {
-            // the whole object has been instantiated when address has been set 
-            assertNoFetchGroup(emp);
-        }
-
-        // instantiates the whole object - unless already instantiated
-        emp.getSalary();
-
-        assertNoFetchGroup(emp);
-        if(addAddressToFetchGroup) {
-            nSql++;
-        }
-        assertEquals(nSql, getQuerySQLTracker(em).getTotalSQLSELECTCalls());
-
-        assertNoFetchGroup(emp.getAddress());
-        assertEquals(nSql, getQuerySQLTracker(em).getTotalSQLSELECTCalls());
-
-        for (PhoneNumber phone : emp.getPhoneNumbers()) {
-            assertDefaultFetched(phone);
-        }
-        assertEquals(++nSql, getQuerySQLTracker(em).getTotalSQLSELECTCalls());
-
-        if (emp.getManager() != null) {
-            assertDefaultFetched(emp.getManager());
-            assertEquals(++nSql, getQuerySQLTracker(em).getTotalSQLSELECTCalls());
-        } else {
-            // If manager_id field is null then getManager() does not trigger an sql.
             assertEquals(nSql, getQuerySQLTracker(em).getTotalSQLSELECTCalls());
+            if(addAddressToFetchGroup) {
+                assertFetched(emp, fg);
+            } else {
+                // the whole object has been instantiated when address has been set 
+                assertNoFetchGroup(emp);
+            }
+
+            // instantiates the whole object - unless already instantiated
+            emp.getSalary();
+
+            assertNoFetchGroup(emp);
+            if(addAddressToFetchGroup) {
+                nSql++;
+            }
+            assertEquals(nSql, getQuerySQLTracker(em).getTotalSQLSELECTCalls());
+
+            assertNoFetchGroup(emp.getAddress());
+            assertEquals(nSql, getQuerySQLTracker(em).getTotalSQLSELECTCalls());
+
+            for (PhoneNumber phone : emp.getPhoneNumbers()) {
+                assertDefaultFetched(phone);
+            }
+            assertEquals(++nSql, getQuerySQLTracker(em).getTotalSQLSELECTCalls());
+
+            if (emp.getManager() != null) {
+                assertDefaultFetched(emp.getManager());
+                assertEquals(++nSql, getQuerySQLTracker(em).getTotalSQLSELECTCalls());
+            } else {
+                // If manager_id field is null then getManager() does not trigger an sql.
+                assertEquals(nSql, getQuerySQLTracker(em).getTotalSQLSELECTCalls());
+            }
+        } finally {
+            if (isTransactionActive(em)){
+                rollbackTransaction(em);
+            }
+            closeEntityManager(em);
         }
     }
 
     @Test
     public void singleResultNoFetchGroup() throws Exception {
         EntityManager em = createEntityManager("fieldaccess");
+        try {
+            beginTransaction(em);
 
-        Query query = em.createQuery("SELECT e FROM Employee e WHERE e.id = :ID");
-        query.setParameter("ID", minimumEmployeeId(em));
+            Query query = em.createQuery("SELECT e FROM Employee e WHERE e.id = :ID");
+            query.setParameter("ID", minimumEmployeeId(em));
 
-        assertNull(getFetchGroup(query));
-        assertNotNull(employeeDescriptor.getFetchGroupManager().getDefaultFetchGroup());
+            assertNull(getFetchGroup(query));
+            assertNotNull(employeeDescriptor.getFetchGroupManager().getDefaultFetchGroup());
 
-        query.setHint(QueryHints.FETCH_GROUP_DEFAULT, "false");
-        assertNull(getFetchGroup(query));
+            query.setHint(QueryHints.FETCH_GROUP_DEFAULT, "false");
+            assertNull(getFetchGroup(query));
 
-        Employee emp = (Employee) query.getSingleResult();
+            Employee emp = (Employee) query.getSingleResult();
 
-        assertNotNull(emp);
-        assertEquals(2, getQuerySQLTracker(em).getTotalSQLSELECTCalls());
-        assertNoFetchGroup(emp);
-        assertNoFetchGroup(emp.getAddress());
+            assertNotNull(emp);
+            assertEquals(2, getQuerySQLTracker(em).getTotalSQLSELECTCalls());
+            assertNoFetchGroup(emp);
+            assertNoFetchGroup(emp.getAddress());
 
-        assertEquals(3, getQuerySQLTracker(em).getTotalSQLSELECTCalls());
+            assertEquals(3, getQuerySQLTracker(em).getTotalSQLSELECTCalls());
 
-        for (PhoneNumber phone : emp.getPhoneNumbers()) {
-            assertDefaultFetched(phone);
+            for (PhoneNumber phone : emp.getPhoneNumbers()) {
+                assertDefaultFetched(phone);
+            }
+
+            assertEquals(4, getQuerySQLTracker(em).getTotalSQLSELECTCalls());
+
+        } finally {
+            if (isTransactionActive(em)){
+                rollbackTransaction(em);
+            }
+            closeEntityManager(em);
         }
-
-        assertEquals(4, getQuerySQLTracker(em).getTotalSQLSELECTCalls());
     }
 
     @Test
     public void resultListNoFetchGroup() throws Exception {
         EntityManager em = createEntityManager("fieldaccess");
+        try {
+            beginTransaction(em);
 
-        Query query = em.createQuery("SELECT e FROM Employee e WHERE e.id = :ID");
-        query.setParameter("ID", minimumEmployeeId(em));
-        query.setHint(QueryHints.FETCH_GROUP_DEFAULT, "false");
+            Query query = em.createQuery("SELECT e FROM Employee e WHERE e.id = :ID");
+            query.setParameter("ID", minimumEmployeeId(em));
+            query.setHint(QueryHints.FETCH_GROUP_DEFAULT, "false");
 
-        List<Employee> emps = query.getResultList();
+            List<Employee> emps = query.getResultList();
 
-        assertNotNull(emps);
-        assertEquals(1, emps.size());
+            assertNotNull(emps);
+            assertEquals(1, emps.size());
 
-        Employee emp = emps.get(0);
+            Employee emp = emps.get(0);
 
-        assertEquals(2, getQuerySQLTracker(em).getTotalSQLSELECTCalls());
+            assertEquals(2, getQuerySQLTracker(em).getTotalSQLSELECTCalls());
 
-        assertNoFetchGroup(emp);
-        assertNoFetchGroup(emp.getAddress());
+            assertNoFetchGroup(emp);
+            assertNoFetchGroup(emp.getAddress());
 
-        assertEquals(3, getQuerySQLTracker(em).getTotalSQLSELECTCalls());
+            assertEquals(3, getQuerySQLTracker(em).getTotalSQLSELECTCalls());
 
-        for (PhoneNumber phone : emp.getPhoneNumbers()) {
-            assertDefaultFetched(phone);
+            for (PhoneNumber phone : emp.getPhoneNumbers()) {
+                assertDefaultFetched(phone);
+            }
+            assertEquals(4, getQuerySQLTracker(em).getTotalSQLSELECTCalls());
+        } finally {
+            if (isTransactionActive(em)){
+                rollbackTransaction(em);
+            }
+            closeEntityManager(em);
         }
-        assertEquals(4, getQuerySQLTracker(em).getTotalSQLSELECTCalls());
     }
 
     @Test
     public void emptyFetchGroup() throws Exception {
         EntityManager em = createEntityManager("fieldaccess");
+        try {
+            beginTransaction(em);
 
-        // Use q query since find will only use default fetch group
-        Query query = em.createQuery("SELECT e FROM Employee e WHERE e.id = :ID");
-        query.setParameter("ID", minimumEmployeeId(em));
-        FetchGroup emptyFG = new FetchGroup("empty@" + System.currentTimeMillis());
-        query.setHint(QueryHints.FETCH_GROUP, emptyFG);
+            // Use q query since find will only use default fetch group
+            Query query = em.createQuery("SELECT e FROM Employee e WHERE e.id = :ID");
+            query.setParameter("ID", minimumEmployeeId(em));
+            FetchGroup emptyFG = new FetchGroup("empty@" + System.currentTimeMillis());
+            query.setHint(QueryHints.FETCH_GROUP, emptyFG);
 
-        assertEquals(emptyFG, getFetchGroup(query));
+            assertEquals(emptyFG, getFetchGroup(query));
 
-        Employee emp = (Employee) query.getSingleResult();
+            Employee emp = (Employee) query.getSingleResult();
 
-        assertFetched(emp, emptyFG);
+            assertFetched(emp, emptyFG);
 
-        for (PhoneNumber phone : emp.getPhoneNumbers()) {
-            assertDefaultFetched(phone);
-            phone.getAreaCode();
-            assertNoFetchGroup(phone);
+            for (PhoneNumber phone : emp.getPhoneNumbers()) {
+                assertDefaultFetched(phone);
+                phone.getAreaCode();
+                assertNoFetchGroup(phone);
+            }
+        } finally {
+            if (isTransactionActive(em)){
+                rollbackTransaction(em);
+            }
+            closeEntityManager(em);
         }
     }
 
     @Test
     public void managerFetchGroup() throws Exception {
         EntityManager em = createEntityManager("fieldaccess");
+        try {
+            beginTransaction(em);
 
-        // Use q query since find will only use default fetch group
-//        Query query = em.createQuery("SELECT e FROM Employee e WHERE e.id = :ID");
-//        query.setParameter("ID", minimumEmployeeId(em));
-        
-        // Complex where clause used to avoid triggering employees and their departments:
-        //   Don't include employees who are managers themselves - otherwise if first selected as employee, then as e.manager the full read will be triggered;
-        //   Don't include managers with departments - because there is no fetch group on e.manager its (non-null) department will trigger an extra sql
-        Query query = em.createQuery("SELECT e FROM Employee e WHERE e.manager IS NOT NULL AND NOT EXISTS(SELECT e2 FROM Employee e2 WHERE e2.manager = e) AND e.manager.department IS NULL");
-        FetchGroup managerFG = new FetchGroup();
-        managerFG.addAttribute("manager");
+            //Use q query since find will only use default fetch group
+            //Query query = em.createQuery("SELECT e FROM Employee e WHERE e.id = :ID");
+            //query.setParameter("ID", minimumEmployeeId(em));
+            
+            //Complex where clause used to avoid triggering employees and their departments:
+            //   Don't include employees who are managers themselves - otherwise if first selected as employee, then as e.manager the full read will be triggered;
+            //   Don't include managers with departments - because there is no fetch group on e.manager its (non-null) department will trigger an extra sql
+            Query query = em.createQuery("SELECT e FROM Employee e WHERE e.manager IS NOT NULL AND NOT EXISTS(SELECT e2 FROM Employee e2 WHERE e2.manager = e) AND e.manager.department IS NULL");
+            FetchGroup managerFG = new FetchGroup();
+            managerFG.addAttribute("manager");
 
-        query.setHint(QueryHints.FETCH_GROUP, managerFG);
-        query.setHint(QueryHints.LEFT_FETCH, "e.manager");
+            query.setHint(QueryHints.FETCH_GROUP, managerFG);
+            query.setHint(QueryHints.LEFT_FETCH, "e.manager");
 
-        assertEquals(managerFG, getFetchGroup(query));
+            assertEquals(managerFG, getFetchGroup(query));
 
-        List employees = query.getResultList();
-        Employee emp = (Employee)employees.get(0);
+            List employees = query.getResultList();
+            Employee emp = (Employee)employees.get(0);
 
-        assertFetched(emp, managerFG);
-        assertEquals(1, getQuerySQLTracker(em).getTotalSQLSELECTCalls());
+            assertFetched(emp, managerFG);
+            assertEquals(1, getQuerySQLTracker(em).getTotalSQLSELECTCalls());
 
-        emp.getManager();
+            emp.getManager();
 
-        assertEquals(1, getQuerySQLTracker(em).getTotalSQLSELECTCalls());
-        assertFetched(emp, managerFG);
+            assertEquals(1, getQuerySQLTracker(em).getTotalSQLSELECTCalls());
+            assertFetched(emp, managerFG);
 
-        emp.getLastName();
+            emp.getLastName();
 
-        assertEquals(2, getQuerySQLTracker(em).getTotalSQLSELECTCalls());
-        assertNoFetchGroup(emp);
+            assertEquals(2, getQuerySQLTracker(em).getTotalSQLSELECTCalls());
+            assertNoFetchGroup(emp);
 
-        int numPhones = 0;
-        for (PhoneNumber phone : emp.getPhoneNumbers()) {
-            assertDefaultFetched(phone);
+            int numPhones = 0;
+            for (PhoneNumber phone : emp.getPhoneNumbers()) {
+                assertDefaultFetched(phone);
 
-            phone.getAreaCode();
+                phone.getAreaCode();
 
-            assertNoFetchGroup(phone);
-            numPhones++;
+                assertNoFetchGroup(phone);
+                numPhones++;
+            }
+            // 1 sql to read all the phones with a fetch group + 1 sql per phone to re-read each phone without fetch group
+            assertEquals(3 + numPhones, getQuerySQLTracker(em).getTotalSQLSELECTCalls());
+        } finally {
+            if (isTransactionActive(em)){
+                rollbackTransaction(em);
+            }
+            closeEntityManager(em);
         }
-        // 1 sql to read all the phones with a fetch group + 1 sql per phone to re-read each phone without fetch group
-        assertEquals(3 + numPhones, getQuerySQLTracker(em).getTotalSQLSELECTCalls());
     }
 
     @Test
     public void employeeNamesFetchGroup() throws Exception {
         EntityManager em = createEntityManager("fieldaccess");
+        try {
+            beginTransaction(em);
 
-        int minId = minimumEmployeeId(em);
-        assertEquals(1, getQuerySQLTracker(em).getTotalSQLSELECTCalls());
+            int minId = minimumEmployeeId(em);
+            assertEquals(1, getQuerySQLTracker(em).getTotalSQLSELECTCalls());
 
-        // Use q query since find will only use default fetch group
-        Query query = em.createQuery("SELECT e FROM Employee e WHERE e.id = :ID");
-        query.setParameter("ID", minId);
+            // Use q query since find will only use default fetch group
+            Query query = em.createQuery("SELECT e FROM Employee e WHERE e.id = :ID");
+            query.setParameter("ID", minId);
 
-        FetchGroup namesFG = new FetchGroup();
-        namesFG.addAttribute("firstName");
-        namesFG.addAttribute("lastName");
-        query.setHint(QueryHints.FETCH_GROUP, namesFG);
+            FetchGroup namesFG = new FetchGroup();
+            namesFG.addAttribute("firstName");
+            namesFG.addAttribute("lastName");
+            query.setHint(QueryHints.FETCH_GROUP, namesFG);
 
-        assertNotNull(getFetchGroup(query));
-        assertSame(namesFG, getFetchGroup(query));
+            assertNotNull(getFetchGroup(query));
+            assertSame(namesFG, getFetchGroup(query));
 
-        Employee emp = (Employee) query.getSingleResult();
+            Employee emp = (Employee) query.getSingleResult();
 
-        assertEquals(2, getQuerySQLTracker(em).getTotalSQLSELECTCalls());
-        assertFetched(emp, namesFG);
+            assertEquals(2, getQuerySQLTracker(em).getTotalSQLSELECTCalls());
+            assertFetched(emp, namesFG);
 
-        emp.getId();
-        emp.getFirstName();
-        emp.getLastName();
-        emp.getVersion();
+            emp.getId();
+            emp.getFirstName();
+            emp.getLastName();
+            emp.getVersion();
 
-        assertEquals(2, getQuerySQLTracker(em).getTotalSQLSELECTCalls());
-        assertFetched(emp, namesFG);
+            assertEquals(2, getQuerySQLTracker(em).getTotalSQLSELECTCalls());
+            assertFetched(emp, namesFG);
 
-        emp.getGender();
-        emp.getSalary();
+            emp.getGender();
+            emp.getSalary();
 
-        assertEquals(3, getQuerySQLTracker(em).getTotalSQLSELECTCalls());
-        assertNoFetchGroup(emp);
+            assertEquals(3, getQuerySQLTracker(em).getTotalSQLSELECTCalls());
+            assertNoFetchGroup(emp);
 
-        int numPhones = 0;
-        for (PhoneNumber phone : emp.getPhoneNumbers()) {
-            assertDefaultFetched(phone);
+            int numPhones = 0;
+            for (PhoneNumber phone : emp.getPhoneNumbers()) {
+                assertDefaultFetched(phone);
 
-            phone.getAreaCode();
+                phone.getAreaCode();
 
-            assertNoFetchGroup(phone);
-            numPhones++;
-        }
-        // 1 sql to read all the phones with a fetch group + 1 sql per phone to re-read each phone without fetch group
-        assertEquals(4 + numPhones, getQuerySQLTracker(em).getTotalSQLSELECTCalls());
-
-        if(emp.getManager() != null) {
-            assertEquals(5 + numPhones, getQuerySQLTracker(em).getTotalSQLSELECTCalls());
-            assertDefaultFetched(emp.getManager());
-        } else {
-            // If manager_id field is null then getManager() does not trigger an sql.
+                assertNoFetchGroup(phone);
+                numPhones++;
+            }
+            // 1 sql to read all the phones with a fetch group + 1 sql per phone to re-read each phone without fetch group
             assertEquals(4 + numPhones, getQuerySQLTracker(em).getTotalSQLSELECTCalls());
+
+            if(emp.getManager() != null) {
+                assertEquals(5 + numPhones, getQuerySQLTracker(em).getTotalSQLSELECTCalls());
+                assertDefaultFetched(emp.getManager());
+            } else {
+                // If manager_id field is null then getManager() does not trigger an sql.
+                assertEquals(4 + numPhones, getQuerySQLTracker(em).getTotalSQLSELECTCalls());
+            }
+        } finally {
+            if (isTransactionActive(em)){
+                rollbackTransaction(em);
+            }
+            closeEntityManager(em);
         }
     }
 
@@ -553,32 +621,40 @@ public class SimpleDefaultFetchGroupTests extends BaseFetchGroupTests {
     }
     void internalJoinFetchEmployeeAddressPhoneWithDynamicFetchGroup(boolean addAddressToFetchGroup) {
         EntityManager em = createEntityManager("fieldaccess");
+        try {
+            beginTransaction(em);
 
-        Query query = em.createQuery("SELECT e FROM Employee e JOIN FETCH e.address WHERE e.id IN (SELECT p.owner.id FROM PhoneNumber p)");
+            Query query = em.createQuery("SELECT e FROM Employee e JOIN FETCH e.address WHERE e.id IN (SELECT p.owner.id FROM PhoneNumber p)");
 
-        FetchGroup fetchGroup = new FetchGroup("names");
-        fetchGroup.addAttribute("firstName");
-        fetchGroup.addAttribute("lastName");
-        if(addAddressToFetchGroup) {
-            fetchGroup.addAttribute("address");
-        }
-        query.setHint(QueryHints.FETCH_GROUP, fetchGroup);
-
-        List<Employee> emps = query.getResultList();
-        assertNotNull(emps);
-
-        if(addAddressToFetchGroup) {
-            assertEquals(1, getQuerySQLTracker(em).getTotalSQLSELECTCalls());
-        } else {
-            assertEquals(1 + 2*emps.size(), getQuerySQLTracker(em).getTotalSQLSELECTCalls());
-        }
-        for (Employee emp : emps) {
+            FetchGroup fetchGroup = new FetchGroup("names");
+            fetchGroup.addAttribute("firstName");
+            fetchGroup.addAttribute("lastName");
             if(addAddressToFetchGroup) {
-                assertFetched(emp, fetchGroup);
-            } else {
-                // the whole object has been instantiated when address has been set 
-                assertNoFetchGroup(emp);
+                fetchGroup.addAttribute("address");
             }
+            query.setHint(QueryHints.FETCH_GROUP, fetchGroup);
+
+            List<Employee> emps = query.getResultList();
+            assertNotNull(emps);
+
+            if(addAddressToFetchGroup) {
+                assertEquals(1, getQuerySQLTracker(em).getTotalSQLSELECTCalls());
+            } else {
+                assertEquals(1 + 2*emps.size(), getQuerySQLTracker(em).getTotalSQLSELECTCalls());
+            }
+            for (Employee emp : emps) {
+                if(addAddressToFetchGroup) {
+                    assertFetched(emp, fetchGroup);
+                } else {
+                    // the whole object has been instantiated when address has been set 
+                    assertNoFetchGroup(emp);
+                }
+        }
+        } finally {
+            if (isTransactionActive(em)){
+                rollbackTransaction(em);
+            }
+            closeEntityManager(em);
         }
     }
 

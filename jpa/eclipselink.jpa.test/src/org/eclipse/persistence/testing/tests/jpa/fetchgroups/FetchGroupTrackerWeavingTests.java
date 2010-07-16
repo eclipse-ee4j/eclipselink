@@ -56,11 +56,15 @@ public class FetchGroupTrackerWeavingTests extends JUnitTestCase {
      * Fetch Group tests require weaving.
      */
     public void runBare() throws Throwable {
-        if (isWeavingEnabled()) {
+        if (this.shouldRunTestOnServer()) {
             super.runBare();
+        } else {
+           if (isWeavingEnabled()) {
+                super.runBare();
+            }
         }
     }
-
+    
     public static junit.framework.Test suite() {
         TestSuite suite = new TestSuite();
         suite.setName("FetchGroupTrackerWeavingTests");

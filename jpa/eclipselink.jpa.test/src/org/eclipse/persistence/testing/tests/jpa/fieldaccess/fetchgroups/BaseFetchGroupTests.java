@@ -74,8 +74,12 @@ public abstract class BaseFetchGroupTests extends JUnitTestCase {
      * Fetch Group tests require weaving.
      */
     public void runBare() throws Throwable {
-        if (isWeavingEnabled("fieldaccess")) {
+        if (this.shouldRunTestOnServer()) {
             super.runBare();
+        } else {
+           if (isWeavingEnabled("fieldaccess")) {
+                super.runBare();
+            }
         }
     }
 
@@ -448,8 +452,7 @@ public abstract class BaseFetchGroupTests extends JUnitTestCase {
     }
     
     protected QuerySQLTracker getQuerySQLTracker(EntityManager em) {
-        return QuerySQLTracker.getTracker(JpaHelper.getEntityManager(em)
-                .getActiveSession());
+        return QuerySQLTracker.getTracker(getServerSession("fieldaccess"));
     }
 
     ClassDescriptor getDescriptor(String entityName) {

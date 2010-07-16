@@ -13,6 +13,7 @@
 package org.eclipse.persistence.testing.tests.jpa.advanced;
 
 import org.eclipse.persistence.testing.tests.jpa.advanced.compositepk.AdvancedCompositePKJunitTest;
+import org.eclipse.persistence.testing.tests.jpa.advanced.fetchgroup.AdvancedFetchGroupJunitTest;
 import org.eclipse.persistence.testing.framework.junit.JUnitTestCase;
 
 import junit.framework.TestSuite;
@@ -40,6 +41,9 @@ public class AdvancedServerTestSuite extends TestSuite {
         suite.addTest(AdvancedJunitTest.suite());
         suite.addTest(AdvancedCompositePKJunitTest.suite());
         suite.addTest(QueryCastTestSuite.suite());
+        if (! JUnitTestCase.isJPA10()) {
+            suite.addTest(AdvancedFetchGroupJunitTest.suite());
+        }
         return suite;
     }
 }

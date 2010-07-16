@@ -501,7 +501,7 @@
             <fileset dir="${eclipselink.jpa.test}/resource/${eclipselink.annotation.model}" includes="*.xml"/>
         </copy>
         <copy todir="${eclipselink.jpa.test}/${build.dir}/${eclipselink.annotation.model}">
-            <!-- 248780: exclude copies of classes from this eclipselink-annotation-model.jar if weaving is disabled in any other jar -->
+            <!-- 248780: exclude copies of classes from this eclipselink-annotation-model.jar if weaving is disabled in any other jar -->        	
             <fileset dir="${eclipselink.jpa.test}/${classes.dir}"
                      includes="org/eclipse/persistence/testing/models/"
                      excludes="org/eclipse/persistence/testing/models/jpa/xml/**
@@ -511,7 +511,7 @@
                                org/eclipse/persistence/testing/models/jpa/fieldaccess/advanced/**
                                org/eclipse/persistence/testing/models/jpa/jpaadvancedproperties/**
                                org/eclipse/persistence/testing/models/jpa/fieldaccess/advanced/**
-                               org/eclipse/persistence/testing/models/jpa/metamodel/**
+                               org/eclipse/persistence/testing/models/jpa/metamodel/**            	
                                org/eclipse/persistence/testing/models/jpa/beanvalidation/**
                                org/eclipse/persistence/testing/models/weaving/**"/>
         </copy>
@@ -757,9 +757,9 @@
             <fileset file="${eclipselink.jpa.test}/${eclipselink.delimited.model}.jar"/>
             <fileset file="${eclipselink.jpa.test}/${eclipselink.beanvalidation.model}.jar"/>
         </delete>
-
+        
     </target>
-
+    
 
     <!-- Testing -->
 
@@ -1498,18 +1498,18 @@
         </replace>
     </target>
 
-    <target name="recover-server-sessionbeans" depends="server-original-sessionbean-existence" if="original.sessionbean.exists">
-        <move file="${eclipselink.jpa.test}/src/org/eclipse/persistence/testing/framework/server/TestRunnerBean.java_original" tofile="${eclipselink.jpa.test}/src/org/eclipse/persistence/testing/framework/server/TestRunnerBean.java" overwrite="true"/>
+    <target name="recover-server-sessionbeans" depends="server-original-sessionbean-existence" if="original.sessionbean.exists"> 
+        <move file="${eclipselink.jpa.test}/src/org/eclipse/persistence/testing/framework/server/TestRunnerBean.java_original" tofile="${eclipselink.jpa.test}/src/org/eclipse/persistence/testing/framework/server/TestRunnerBean.java" overwrite="true"/>     
         <antcall target="remove-multiple-persistence-units-sessionbeans" inheritRefs="true"/>
     </target>
-
+    
     <target name="server-original-sessionbean-existence">
         <available file="${eclipselink.jpa.test}/src/org/eclipse/persistence/testing/framework/server/TestRunnerBean.java_original" property="original.sessionbean.exists" value="true" />
     </target>
 
     <target name="remove-multiple-persistence-units-sessionbeans" if="USE_MULTIPLE_PERSISTENCE_UNITS">
         <delete>
-            <fileset dir="${eclipselink.jpa.test}/${src.dir}/org/eclipse/persistence/testing/framework/server"
+            <fileset dir="${eclipselink.jpa.test}/${src.dir}/org/eclipse/persistence/testing/framework/server" 
             includes="TestRunner1*.java
                       TestRunner2*.java
                       TestRunner3*.java
@@ -1738,23 +1738,23 @@
             </fileset>
         </copy>
     </target>
-
-    <target name="prepare-non-jta-ds-servertest" depends="cleanup-non-jta-ds-servertest" if="is.nonjta.datasource">
-        <move file="${eclipselink.jpa.test}/src/org/eclipse/persistence/testing/framework/server/TestRunnerBean.java" tofile="${eclipselink.jpa.test}/src/org/eclipse/persistence/testing/framework/server/TestRunnerBean.java_jtaDS"/>
+    
+    <target name="prepare-non-jta-ds-servertest" depends="cleanup-non-jta-ds-servertest" if="is.nonjta.datasource"> 
+        <move file="${eclipselink.jpa.test}/src/org/eclipse/persistence/testing/framework/server/TestRunnerBean.java" tofile="${eclipselink.jpa.test}/src/org/eclipse/persistence/testing/framework/server/TestRunnerBean.java_jtaDS"/>        
         <move file="src/org/eclipse/persistence/testing/framework/server/TestRunnerBean.java_nonjtaDS" tofile="src/org/eclipse/persistence/testing/framework/server/TestRunnerBean.java"/>
     </target>
-
+    
     <target name="jta-ds-servertest-existence">
         <available file="${eclipselink.jpa.test}/src/org/eclipse/persistence/testing/framework/server/TestRunnerBean.java_jtaDS" property="jta-ds-servertest.exists" value="true" />
     </target>
-
-    <target name="cleanup-non-jta-ds-servertest" depends="jta-ds-servertest-existence" if="jta-ds-servertest.exists">
-        <move file="${eclipselink.jpa.test}/src/org/eclipse/persistence/testing/framework/server/TestRunnerBean.java" tofile="${eclipselink.jpa.test}/src/org/eclipse/persistence/testing/framework/server/TestRunnerBean.java_nonjtaDS"/>
+    
+    <target name="cleanup-non-jta-ds-servertest" depends="jta-ds-servertest-existence" if="jta-ds-servertest.exists"> 
+        <move file="${eclipselink.jpa.test}/src/org/eclipse/persistence/testing/framework/server/TestRunnerBean.java" tofile="${eclipselink.jpa.test}/src/org/eclipse/persistence/testing/framework/server/TestRunnerBean.java_nonjtaDS"/>        
         <move file="src/org/eclipse/persistence/testing/framework/server/TestRunnerBean.java_jtaDS" tofile="src/org/eclipse/persistence/testing/framework/server/TestRunnerBean.java"/>
     </target>
-
+    
     <target name="replace-datasource-type" depends="replace-jta-datasource,replace-nonjta-datasource"/>
-
+    
     <target name="replace-jta-datasource" unless="is.nonjta.datasource">
         <replace dir="${eclipselink.jpa.test}/stage/META-INF" token='%%data-source-name%%' value="${DS_NAME}">
             <include name="*.xml"/>
@@ -1766,7 +1766,7 @@
             <include name="*.xml"/>
         </replace>
     </target>
-
+    
     <target name="replace-nonjta-datasource" if="is.nonjta.datasource">
         <replace dir="${eclipselink.jpa.test}/stage/META-INF" token='%%data-source-name%%' value="${NONJTA_DS_NAME}">
             <include name="*.xml"/>
@@ -1778,7 +1778,7 @@
             <include name="*.xml"/>
         </replace>
     </target>
-
+    
     <target name="create-ejb-jar" depends="create-ejb-jar-without-static-weaving,create-ejb-jar-with-static-weaving"/>
 
     <target name="create-ejb-jar-without-static-weaving" unless="is.static.server.weaving">
@@ -1951,7 +1951,9 @@
         <antcall target="server-test-ddlgeneration" inheritRefs="true"/>
         <antcall target="server-test-cascadedeletes" inheritRefs="true"/>
         <antcall target="server-test-delimited" inheritRefs="true"/>
+        <antcall target="server-test-fetchgroups" inheritRefs="true"/>
         <antcall target="server-test-fieldaccess-advanced" inheritRefs="true"/>
+        <antcall target="server-test-fieldaccess-fetchgroups" inheritRefs="true"/>
         <antcall target="server-test-fieldaccess-relationships" inheritRefs="true"/>
         <antcall target="server-test-inheritance" inheritRefs="true"/>
         <antcall target="server-test-inherited" inheritRefs="true"/>
@@ -2088,6 +2090,19 @@
         </antcall>
     </target>
 
+    <target name="server-test-fetchgroups">
+        <antcall target="server-run-all" inheritRefs="true">
+            <param name="PERSISTENCE_UNIT_NAME" value="default"/>
+            <param name="MODEL_DIR" value="org/eclipse/persistence/testing/models/jpa/advanced"/>
+            <param name="MODEL_NAME" value="eclipselink-fetchgroups-model"/>
+            <param name="TEST_DIR" value="org/eclipse/persistence/testing/tests/jpa/fetchgroups"/>
+            <param name="TEST_NAME" value="eclipselink-fetchgroups-model"/>
+            <param name="EAR_NAME" value="eclipselink-fetchgroups-model"/>
+            <param name="TEST_SUITE" value="org.eclipse.persistence.testing.tests.jpa.fetchgroups.FetchGroupsServerTestSuite"/>
+            <param name="eclipselink.jpa.test.dir" value="."/>
+        </antcall>
+    </target>
+
     <target name="server-test-fieldaccess-advanced">
         <antcall target="server-run-all" inheritRefs="true">
             <param name="PERSISTENCE_UNIT_NAME" value="fieldaccess"/>
@@ -2097,6 +2112,19 @@
             <param name="TEST_NAME" value="eclipselink-advanced-field-access-model"/>
             <param name="EAR_NAME" value="eclipselink-advanced-field-access-model"/>
             <param name="TEST_SUITE" value="org.eclipse.persistence.testing.tests.jpa.fieldaccess.advanced.FAServerTestSuite"/>
+            <param name="eclipselink.jpa.test.dir" value="."/>
+        </antcall>
+    </target>
+
+    <target name="server-test-fieldaccess-fetchgroups">
+        <antcall target="server-run-all" inheritRefs="true">
+            <param name="PERSISTENCE_UNIT_NAME" value="fieldaccess"/>
+            <param name="MODEL_DIR" value="org/eclipse/persistence/testing/models/jpa/fieldaccess/advanced"/>
+            <param name="MODEL_NAME" value="eclipselink-advanced-field-access-model"/>
+            <param name="TEST_DIR" value="org/eclipse/persistence/testing/tests/jpa/fieldaccess/fetchgroups"/>
+            <param name="TEST_NAME" value="eclipselink-fetchgroups-field-access-model"/>
+            <param name="EAR_NAME" value="eclipselink-fetchgroups-field-access-model"/>
+            <param name="TEST_SUITE" value="org.eclipse.persistence.testing.tests.jpa.fieldaccess.fetchgroups.FAServerTestSuite"/>
             <param name="eclipselink.jpa.test.dir" value="."/>
         </antcall>
     </target>
@@ -2313,9 +2341,9 @@
     <target name="server-test-dll-existence">
         <available file="${eclipselink.jpa.test}/resource/eclipselink-ddl-generation-model/server_ddl" property="server_ddl.exists" value="true" />
     </target>
-
-    <target name="cleanup-merge-inherited-ddl" depends="server-test-dll-existence" if="server_ddl.exists">
-        <move file="${eclipselink.jpa.test}/resource/eclipselink-ddl-generation-model/server" tofile="${eclipselink.jpa.test}/resource/eclipselink-ddl-generation-model/server_merge-inherited"/>
+    
+    <target name="cleanup-merge-inherited-ddl" depends="server-test-dll-existence" if="server_ddl.exists"> 
+        <move file="${eclipselink.jpa.test}/resource/eclipselink-ddl-generation-model/server" tofile="${eclipselink.jpa.test}/resource/eclipselink-ddl-generation-model/server_merge-inherited"/>        
         <move file="${eclipselink.jpa.test}/resource/eclipselink-ddl-generation-model/server_ddl" tofile="${eclipselink.jpa.test}/resource/eclipselink-ddl-generation-model/server"/>
         <delete>
             <fileset dir="${eclipselink.jpa.test}/resource/eclipselink-ddl-generation-model/server_merge-inherited/">
@@ -2323,7 +2351,7 @@
             </fileset>
         </delete>
     </target>
-
+        
     <target name="server-test-xmltest">
         <copy todir="${eclipselink.jpa.test}/resource/eclipselink-xml-servertest-model/server/" overwrite="true" failonerror="false">
             <fileset dir="${eclipselink.jpa.test}/resource/eclipselink-xml-merge-model/">
