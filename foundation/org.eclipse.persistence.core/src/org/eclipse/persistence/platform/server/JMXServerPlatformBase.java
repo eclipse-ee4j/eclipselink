@@ -12,7 +12,9 @@
  *       - 316513: Enable JMX MBean functionality for JBoss, Glassfish and WebSphere in addition to WebLogic
  *       Move JMX MBean generic registration code up from specific platforms
  *       see <link>http://wiki.eclipse.org/EclipseLink/DesignDocs/316513</link>        
- ******************************************************************************/  
+ *     07/15/2010-2.1.1 Michael O'Brien 
+ *       - 316513: registration/deregistration mismatch for MBean Object name reg=- and dereg=_ - no more instance already exists on redeploy
+  ******************************************************************************/  
 package org.eclipse.persistence.platform.server;
 
 import java.util.List;
@@ -225,7 +227,7 @@ public abstract class JMXServerPlatformBase extends ServerPlatformBase {
                 // Attempt to register new mBean with the server
                 if (shouldRegisterDevelopmentBean) {
                     try {
-                        name = new ObjectName(JMX_REGISTRATION_PREFIX + "Development_" + sessionName + ",Type=Configuration");
+                        name = new ObjectName(JMX_REGISTRATION_PREFIX + "Development-" + sessionName + ",Type=Configuration");
                     } catch (MalformedObjectNameException mne) {
                         AbstractSessionLog.getLog().log(SessionLog.WARNING, "problem_unregistering_mbean", mne);
                     } catch (Exception exception) {
