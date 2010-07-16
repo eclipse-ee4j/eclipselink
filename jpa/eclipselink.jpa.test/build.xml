@@ -1951,7 +1951,9 @@
         <antcall target="server-test-ddlgeneration" inheritRefs="true"/>
         <antcall target="server-test-cascadedeletes" inheritRefs="true"/>
         <antcall target="server-test-delimited" inheritRefs="true"/>
+        <antcall target="server-test-fetchgroups" inheritRefs="true"/>
         <antcall target="server-test-fieldaccess-advanced" inheritRefs="true"/>
+        <antcall target="server-test-fieldaccess-fetchgroups" inheritRefs="true"/>
         <antcall target="server-test-fieldaccess-relationships" inheritRefs="true"/>
         <antcall target="server-test-inheritance" inheritRefs="true"/>
         <antcall target="server-test-inherited" inheritRefs="true"/>
@@ -2088,6 +2090,19 @@
         </antcall>
     </target>
 
+    <target name="server-test-fetchgroups">
+        <antcall target="server-run-all" inheritRefs="true">
+            <param name="PERSISTENCE_UNIT_NAME" value="default"/>
+            <param name="MODEL_DIR" value="org/eclipse/persistence/testing/models/jpa/advanced"/>
+            <param name="MODEL_NAME" value="eclipselink-fetchgroups-model"/>
+            <param name="TEST_DIR" value="org/eclipse/persistence/testing/tests/jpa/fetchgroups"/>
+            <param name="TEST_NAME" value="eclipselink-fetchgroups-model"/>
+            <param name="EAR_NAME" value="eclipselink-fetchgroups-model"/>
+            <param name="TEST_SUITE" value="org.eclipse.persistence.testing.tests.jpa.fetchgroups.FetchGroupsServerTestSuite"/>
+            <param name="eclipselink.jpa.test.dir" value="."/>
+        </antcall>
+    </target>
+
     <target name="server-test-fieldaccess-advanced">
         <antcall target="server-run-all" inheritRefs="true">
             <param name="PERSISTENCE_UNIT_NAME" value="fieldaccess"/>
@@ -2097,6 +2112,19 @@
             <param name="TEST_NAME" value="eclipselink-advanced-field-access-model"/>
             <param name="EAR_NAME" value="eclipselink-advanced-field-access-model"/>
             <param name="TEST_SUITE" value="org.eclipse.persistence.testing.tests.jpa.fieldaccess.advanced.FAServerTestSuite"/>
+            <param name="eclipselink.jpa.test.dir" value="."/>
+        </antcall>
+    </target>
+
+    <target name="server-test-fieldaccess-fetchgroups">
+        <antcall target="server-run-all" inheritRefs="true">
+            <param name="PERSISTENCE_UNIT_NAME" value="fieldaccess"/>
+            <param name="MODEL_DIR" value="org/eclipse/persistence/testing/models/jpa/fieldaccess/advanced"/>
+            <param name="MODEL_NAME" value="eclipselink-advanced-field-access-model"/>
+            <param name="TEST_DIR" value="org/eclipse/persistence/testing/tests/jpa/fieldaccess/fetchgroups"/>
+            <param name="TEST_NAME" value="eclipselink-fetchgroups-field-access-model"/>
+            <param name="EAR_NAME" value="eclipselink-fetchgroups-field-access-model"/>
+            <param name="TEST_SUITE" value="org.eclipse.persistence.testing.tests.jpa.fieldaccess.fetchgroups.FAServerTestSuite"/>
             <param name="eclipselink.jpa.test.dir" value="."/>
         </antcall>
     </target>

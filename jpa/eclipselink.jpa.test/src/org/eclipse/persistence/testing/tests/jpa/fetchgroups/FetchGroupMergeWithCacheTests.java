@@ -40,8 +40,9 @@ public class FetchGroupMergeWithCacheTests extends BaseFetchGroupTests {
         
         suite.addTest(new FetchGroupMergeWithCacheTests("testSetup"));
         suite.addTest(new FetchGroupMergeWithCacheTests("cacheFull_QueryWithFetchGroup_Simple"));
-        suite.addTest(new FetchGroupMergeWithCacheTests("cacheFull_FindWithFetchGroup_Simple"));
-        
+        if (!isJPA10()) {
+            suite.addTest(new FetchGroupMergeWithCacheTests("cacheFull_FindWithFetchGroup_Simple"));
+        }
         return suite;
     }
 

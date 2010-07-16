@@ -269,48 +269,55 @@ public class SimpleNamedFetchGroupTests extends BaseFetchGroupTests {
     @Test
     public void managerFetchGroup() throws Exception {
         EntityManager em = createEntityManager();
+        try {
+            beginTransaction(em);
+            // Use q query since find will only use default fetch group
+            // Query query = em.createQuery("SELECT e FROM Employee e WHERE e.id = :ID");
+            // query.setParameter("ID", minimumEmployeeId(em));
 
-        // Use q query since find will only use default fetch group
-//        Query query = em.createQuery("SELECT e FROM Employee e WHERE e.id = :ID");
-//        query.setParameter("ID", minimumEmployeeId(em));
+            // Complex where clause used to avoid triggering employees and their departments:
+            //   Don't include employees who are managers themselves - otherwise if first selected as employee, then as e.manager the full read will be triggered;
+            //   Don't include managers with departments - because there is no fetch group on e.manager its (non-null) department will trigger an extra sql
+            Query query = em.createQuery("SELECT e FROM Employee e WHERE e.manager IS NOT NULL AND NOT EXISTS(SELECT e2 FROM Employee e2 WHERE e2.manager = e) AND e.manager.department IS NULL");
+            FetchGroup managerFG = new FetchGroup();
+            managerFG.addAttribute("manager");
 
-        // Complex where clause used to avoid triggering employees and their departments:
-        //   Don't include employees who are managers themselves - otherwise if first selected as employee, then as e.manager the full read will be triggered;
-        //   Don't include managers with departments - because there is no fetch group on e.manager its (non-null) department will trigger an extra sql
-        Query query = em.createQuery("SELECT e FROM Employee e WHERE e.manager IS NOT NULL AND NOT EXISTS(SELECT e2 FROM Employee e2 WHERE e2.manager = e) AND e.manager.department IS NULL");
-        FetchGroup managerFG = new FetchGroup();
-        managerFG.addAttribute("manager");
+            query.setHint(QueryHints.FETCH_GROUP, managerFG);
 
-        query.setHint(QueryHints.FETCH_GROUP, managerFG);
+            assertNotNull(getFetchGroup(query));
+            assertSame(managerFG, getFetchGroup(query));
 
-        assertNotNull(getFetchGroup(query));
-        assertSame(managerFG, getFetchGroup(query));
+            Employee emp = (Employee) query.getSingleResult();
 
-        Employee emp = (Employee) query.getSingleResult();
+            assertFetched(emp, managerFG);
+            assertEquals(1, getQuerySQLTracker(em).getTotalSQLSELECTCalls());
+            
+            int nSqlToAdd = 0;
+            if (emp.getManager() != null) {
+                assertFetchedAttribute(emp, "manager");
+                // additional sql to select the manager
+                nSqlToAdd++;
+            }
+            
+            assertEquals(1 + nSqlToAdd, getQuerySQLTracker(em).getTotalSQLSELECTCalls());
 
-        assertFetched(emp, managerFG);
-        assertEquals(1, getQuerySQLTracker(em).getTotalSQLSELECTCalls());
-        
-        int nSqlToAdd = 0;
-        if (emp.getManager() != null) {
-            assertFetchedAttribute(emp, "manager");
-            // additional sql to select the manager
-            nSqlToAdd++;
+            // instantiates the whole object
+            emp.getLastName();
+
+            assertEquals(2 + nSqlToAdd, getQuerySQLTracker(em).getTotalSQLSELECTCalls());
+            assertNoFetchGroup(emp);
+
+            for (PhoneNumber phone : emp.getPhoneNumbers()) {
+                assertNoFetchGroup(phone);
+            }
+
+            assertEquals(3 + nSqlToAdd, getQuerySQLTracker(em).getTotalSQLSELECTCalls());
+        } finally {
+            if (isTransactionActive(em)){
+                rollbackTransaction(em);
+            }
+            closeEntityManager(em);
         }
-        
-        assertEquals(1 + nSqlToAdd, getQuerySQLTracker(em).getTotalSQLSELECTCalls());
-
-        // instantiates the whole object
-        emp.getLastName();
-
-        assertEquals(2 + nSqlToAdd, getQuerySQLTracker(em).getTotalSQLSELECTCalls());
-        assertNoFetchGroup(emp);
-
-        for (PhoneNumber phone : emp.getPhoneNumbers()) {
-            assertNoFetchGroup(phone);
-        }
-
-        assertEquals(3 + nSqlToAdd, getQuerySQLTracker(em).getTotalSQLSELECTCalls());
     }
 
     @Test

@@ -83,62 +83,70 @@ public class NestedNamedFetchGroupTests extends BaseFetchGroupTests {
     @Test
     public void dynamicFetchGroup_EmployeeAddress() throws Exception {
         EntityManager em = createEntityManager("fieldaccess");
+        try {
+            beginTransaction(em);
 
-        Query query = em.createQuery("SELECT e FROM Employee e WHERE e.gender = :GENDER");
-        query.setParameter("GENDER", Gender.Male);
+            Query query = em.createQuery("SELECT e FROM Employee e WHERE e.gender = :GENDER");
+            query.setParameter("GENDER", Gender.Male);
 
-        // Define the fields to be fetched on Employee
-        FetchGroup fg = new FetchGroup();
-        fg.addAttribute("firstName");
-        fg.addAttribute("lastName");
-        fg.addAttribute("address");
-        fg.addAttribute("address.city");
-        fg.addAttribute("address.postalCode");
+            // Define the fields to be fetched on Employee
+            FetchGroup fg = new FetchGroup();
+            fg.addAttribute("firstName");
+            fg.addAttribute("lastName");
+            fg.addAttribute("address");
+            fg.addAttribute("address.city");
+            fg.addAttribute("address.postalCode");
 
-        // Configure the dynamic FetchGroup
-        query.setHint(QueryHints.FETCH_GROUP, fg);
+            // Configure the dynamic FetchGroup
+            query.setHint(QueryHints.FETCH_GROUP, fg);
 
-        List<Employee> emps = query.getResultList();
+            List<Employee> emps = query.getResultList();
 
-        assertNotNull(emps);
-        for (Employee emp : emps) {
-            FetchGroupTracker tracker = (FetchGroupTracker) emp;
+            assertNotNull(emps);
+            for (Employee emp : emps) {
+                FetchGroupTracker tracker = (FetchGroupTracker) emp;
 
-            assertNotNull(tracker._persistence_getFetchGroup());
+                assertNotNull(tracker._persistence_getFetchGroup());
 
-            // Verify specified fields plus mandatory ones are loaded
-            assertTrue(tracker._persistence_isAttributeFetched("id"));
-            assertTrue(tracker._persistence_isAttributeFetched("firstName"));
-            assertTrue(tracker._persistence_isAttributeFetched("lastName"));
-            assertTrue(tracker._persistence_isAttributeFetched("version"));
+                // Verify specified fields plus mandatory ones are loaded
+                assertTrue(tracker._persistence_isAttributeFetched("id"));
+                assertTrue(tracker._persistence_isAttributeFetched("firstName"));
+                assertTrue(tracker._persistence_isAttributeFetched("lastName"));
+                assertTrue(tracker._persistence_isAttributeFetched("version"));
 
-            // Verify the other fields are not loaded
-            assertFalse(tracker._persistence_isAttributeFetched("salary"));
-            assertFalse(tracker._persistence_isAttributeFetched("startTime"));
-            assertFalse(tracker._persistence_isAttributeFetched("endTime"));
+                // Verify the other fields are not loaded
+                assertFalse(tracker._persistence_isAttributeFetched("salary"));
+                assertFalse(tracker._persistence_isAttributeFetched("startTime"));
+                assertFalse(tracker._persistence_isAttributeFetched("endTime"));
 
-            // Force the loading of lazy fields and verify
-            emp.getSalary();
+                // Force the loading of lazy fields and verify
+                emp.getSalary();
 
-            assertTrue(tracker._persistence_isAttributeFetched("salary"));
-            assertTrue(tracker._persistence_isAttributeFetched("startTime"));
-            assertTrue(tracker._persistence_isAttributeFetched("endTime"));
+                assertTrue(tracker._persistence_isAttributeFetched("salary"));
+                assertTrue(tracker._persistence_isAttributeFetched("startTime"));
+                assertTrue(tracker._persistence_isAttributeFetched("endTime"));
 
-            // Now we'll check the address uses the provided dynamic fetch-group
-            FetchGroupTracker addrTracker = (FetchGroupTracker) emp.getAddress();
-            assertNotNull("Address does not have a FetchGroup", addrTracker._persistence_getFetchGroup());
-            assertTrue(addrTracker._persistence_isAttributeFetched("city"));
-            assertTrue(addrTracker._persistence_isAttributeFetched("postalCode"));
-            assertFalse(addrTracker._persistence_isAttributeFetched("street"));
-            assertFalse(addrTracker._persistence_isAttributeFetched("country"));
+                // Now we'll check the address uses the provided dynamic fetch-group
+                FetchGroupTracker addrTracker = (FetchGroupTracker) emp.getAddress();
+                assertNotNull("Address does not have a FetchGroup", addrTracker._persistence_getFetchGroup());
+                assertTrue(addrTracker._persistence_isAttributeFetched("city"));
+                assertTrue(addrTracker._persistence_isAttributeFetched("postalCode"));
+                assertFalse(addrTracker._persistence_isAttributeFetched("street"));
+                assertFalse(addrTracker._persistence_isAttributeFetched("country"));
 
-            // Now we'll check the phoneNumbers use of the default fetch group
-            for (PhoneNumber phone : emp.getPhoneNumbers()) {
-                FetchGroupTracker phoneTracker = (FetchGroupTracker) phone;
-                assertNotNull("PhoneNumber does not have a FetchGroup", phoneTracker._persistence_getFetchGroup());
-                assertTrue(phoneTracker._persistence_isAttributeFetched("number"));
-                assertFalse(phoneTracker._persistence_isAttributeFetched("areaCode"));
+                // Now we'll check the phoneNumbers use of the default fetch group
+                for (PhoneNumber phone : emp.getPhoneNumbers()) {
+                    FetchGroupTracker phoneTracker = (FetchGroupTracker) phone;
+                    assertNotNull("PhoneNumber does not have a FetchGroup", phoneTracker._persistence_getFetchGroup());
+                    assertTrue(phoneTracker._persistence_isAttributeFetched("number"));
+                    assertFalse(phoneTracker._persistence_isAttributeFetched("areaCode"));
+                }
             }
+        } finally {
+            if (isTransactionActive(em)){
+                rollbackTransaction(em);
+            }
+            closeEntityManager(em);
         }
     }
 
@@ -208,147 +216,163 @@ public class NestedNamedFetchGroupTests extends BaseFetchGroupTests {
     @Test
     public void dynamicFetchGroup_EmployeeAddressNullPhone() throws Exception {
         EntityManager em = createEntityManager("fieldaccess");
+        try {
+            beginTransaction(em);
 
-        Query query = em.createQuery("SELECT e FROM Employee e WHERE e.gender = :GENDER");
-        query.setParameter("GENDER", Gender.Male);
+            Query query = em.createQuery("SELECT e FROM Employee e WHERE e.gender = :GENDER");
+            query.setParameter("GENDER", Gender.Male);
 
-        // Define the fields to be fetched on Employee
-        FetchGroup empGroup = new FetchGroup();
-        empGroup.addAttribute("firstName");
-        empGroup.addAttribute("lastName");
-        empGroup.addAttribute("address");
+            // Define the fields to be fetched on Employee
+            FetchGroup empGroup = new FetchGroup();
+            empGroup.addAttribute("firstName");
+            empGroup.addAttribute("lastName");
+            empGroup.addAttribute("address");
 
-        // Define the fields to be fetched on Address
-        FetchGroup addressGroup = new FetchGroup();
-        addressGroup.addAttribute("city");
-        addressGroup.addAttribute("postalCode");
+            // Define the fields to be fetched on Address
+            FetchGroup addressGroup = new FetchGroup();
+            addressGroup.addAttribute("city");
+            addressGroup.addAttribute("postalCode");
 
-        empGroup.addAttribute("address", addressGroup);
+            empGroup.addAttribute("address", addressGroup);
 
-//        empGroup.addAttribute("phoneNumbers").setUseDefaultFetchGroup(false);
-        FetchGroup fullPhone = this.phoneDescriptor.getFetchGroupManager().createFullFetchGroup();
-        // to preclude Employee from being loaded by phoneNumber.owner add it to the fetch group
-        fullPhone.addAttribute("owner.id");
-        empGroup.addAttribute("phoneNumbers", fullPhone);
+            //empGroup.addAttribute("phoneNumbers").setUseDefaultFetchGroup(false);
+            FetchGroup fullPhone = this.phoneDescriptor.getFetchGroupManager().createFullFetchGroup();
+            // to preclude Employee from being loaded by phoneNumber.owner add it to the fetch group
+            fullPhone.addAttribute("owner.id");
+            empGroup.addAttribute("phoneNumbers", fullPhone);
 
-        // Configure the dynamic FetchGroup
-        query.setHint(QueryHints.FETCH_GROUP, empGroup);
+            // Configure the dynamic FetchGroup
+            query.setHint(QueryHints.FETCH_GROUP, empGroup);
 
-        List<Employee> emps = query.getResultList();
+            List<Employee> emps = query.getResultList();
 
-        assertNotNull(emps);
-        for (Employee emp : emps) {
-            FetchGroupTracker tracker = (FetchGroupTracker) emp;
+            assertNotNull(emps);
+            for (Employee emp : emps) {
+                FetchGroupTracker tracker = (FetchGroupTracker) emp;
 
-            assertNotNull(tracker._persistence_getFetchGroup());
+                assertNotNull(tracker._persistence_getFetchGroup());
 
-            // Verify specified fields plus mandatory ones are loaded
-            assertTrue(tracker._persistence_isAttributeFetched("id"));
-            assertTrue(tracker._persistence_isAttributeFetched("firstName"));
-            assertTrue(tracker._persistence_isAttributeFetched("lastName"));
-            assertTrue(tracker._persistence_isAttributeFetched("version"));
+                // Verify specified fields plus mandatory ones are loaded
+                assertTrue(tracker._persistence_isAttributeFetched("id"));
+                assertTrue(tracker._persistence_isAttributeFetched("firstName"));
+                assertTrue(tracker._persistence_isAttributeFetched("lastName"));
+                assertTrue(tracker._persistence_isAttributeFetched("version"));
 
-            // Verify the other fields are not loaded
-            assertFalse(tracker._persistence_isAttributeFetched("salary"));
-            assertFalse(tracker._persistence_isAttributeFetched("startTime"));
-            assertFalse(tracker._persistence_isAttributeFetched("endTime"));
+                // Verify the other fields are not loaded
+                assertFalse(tracker._persistence_isAttributeFetched("salary"));
+                assertFalse(tracker._persistence_isAttributeFetched("startTime"));
+                assertFalse(tracker._persistence_isAttributeFetched("endTime"));
 
-            // Force the loading of lazy fields and verify
-            emp.getSalary();
+                // Force the loading of lazy fields and verify
+                emp.getSalary();
 
-            assertTrue(tracker._persistence_isAttributeFetched("salary"));
-            assertTrue(tracker._persistence_isAttributeFetched("startTime"));
-            assertTrue(tracker._persistence_isAttributeFetched("endTime"));
+                assertTrue(tracker._persistence_isAttributeFetched("salary"));
+                assertTrue(tracker._persistence_isAttributeFetched("startTime"));
+                assertTrue(tracker._persistence_isAttributeFetched("endTime"));
 
-            // Now we'll check the address uses the provided dynamic fetch-group
-            FetchGroupTracker addrTracker = (FetchGroupTracker) emp.getAddress();
-            assertNotNull("Address does not have a FetchGroup", addrTracker._persistence_getFetchGroup());
-            assertTrue(addrTracker._persistence_isAttributeFetched("city"));
-            assertTrue(addrTracker._persistence_isAttributeFetched("postalCode"));
-            assertFalse(addrTracker._persistence_isAttributeFetched("street"));
-            assertFalse(addrTracker._persistence_isAttributeFetched("country"));
+                // Now we'll check the address uses the provided dynamic fetch-group
+                FetchGroupTracker addrTracker = (FetchGroupTracker) emp.getAddress();
+                assertNotNull("Address does not have a FetchGroup", addrTracker._persistence_getFetchGroup());
+                assertTrue(addrTracker._persistence_isAttributeFetched("city"));
+                assertTrue(addrTracker._persistence_isAttributeFetched("postalCode"));
+                assertFalse(addrTracker._persistence_isAttributeFetched("street"));
+                assertFalse(addrTracker._persistence_isAttributeFetched("country"));
 
-            // Now we'll check the phoneNumbers use of the default fetch group
-            for (PhoneNumber phone : emp.getPhoneNumbers()) {
-                FetchGroupTracker phoneTracker = (FetchGroupTracker) phone;
-                assertNull("PhoneNumber has a FetchGroup", phoneTracker._persistence_getFetchGroup());
+                // Now we'll check the phoneNumbers use of the default fetch group
+                for (PhoneNumber phone : emp.getPhoneNumbers()) {
+                    FetchGroupTracker phoneTracker = (FetchGroupTracker) phone;
+                    assertNull("PhoneNumber has a FetchGroup", phoneTracker._persistence_getFetchGroup());
+                }
             }
+        } finally {
+            if (isTransactionActive(em)){
+                rollbackTransaction(em);
+            }
+            closeEntityManager(em);
         }
     }
 
     @Test
     public void dynamicFetchGroup_EmployeeAddressEmptyPhone() throws Exception {
         EntityManager em = createEntityManager("fieldaccess");
+        try {
+            beginTransaction(em);
 
-        Query query = em.createQuery("SELECT e FROM Employee e WHERE e.gender = :GENDER");
-        query.setParameter("GENDER", Gender.Male);
+            Query query = em.createQuery("SELECT e FROM Employee e WHERE e.gender = :GENDER");
+            query.setParameter("GENDER", Gender.Male);
 
-        // Define the fields to be fetched on Employee
-        FetchGroup empGroup = new FetchGroup();
-        empGroup.addAttribute("firstName");
-        empGroup.addAttribute("lastName");
-        empGroup.addAttribute("address");
+            // Define the fields to be fetched on Employee
+            FetchGroup empGroup = new FetchGroup();
+            empGroup.addAttribute("firstName");
+            empGroup.addAttribute("lastName");
+            empGroup.addAttribute("address");
 
-        // Define the fields to be fetched on Address
-        FetchGroup addressGroup = new FetchGroup();
-        addressGroup.addAttribute("city");
-        addressGroup.addAttribute("postalCode");
+            // Define the fields to be fetched on Address
+            FetchGroup addressGroup = new FetchGroup();
+            addressGroup.addAttribute("city");
+            addressGroup.addAttribute("postalCode");
 
-        empGroup.addAttribute("address", addressGroup);
-        // to preclude Employee from being loaded by phoneNumber.owner add it to the fetch group
-        FetchGroup ownerId = new FetchGroup();
-        ownerId.addAttribute("owner.id");
-        empGroup.addAttribute("phoneNumbers", ownerId);
+            empGroup.addAttribute("address", addressGroup);
+            // to preclude Employee from being loaded by phoneNumber.owner add it to the fetch group
+            FetchGroup ownerId = new FetchGroup();
+            ownerId.addAttribute("owner.id");
+            empGroup.addAttribute("phoneNumbers", ownerId);
 
-        // Configure the dynamic FetchGroup
-        query.setHint(QueryHints.FETCH_GROUP, empGroup);
+            // Configure the dynamic FetchGroup
+            query.setHint(QueryHints.FETCH_GROUP, empGroup);
 
-        List<Employee> emps = query.getResultList();
+            List<Employee> emps = query.getResultList();
 
-        assertNotNull(emps);
-        for (Employee emp : emps) {
-            FetchGroupTracker tracker = (FetchGroupTracker) emp;
+            assertNotNull(emps);
+            for (Employee emp : emps) {
+                FetchGroupTracker tracker = (FetchGroupTracker) emp;
 
-            assertNotNull(tracker._persistence_getFetchGroup());
+                assertNotNull(tracker._persistence_getFetchGroup());
 
-            // Verify specified fields plus mandatory ones are loaded
-            assertTrue(tracker._persistence_isAttributeFetched("id"));
-            assertTrue(tracker._persistence_isAttributeFetched("firstName"));
-            assertTrue(tracker._persistence_isAttributeFetched("lastName"));
-            assertTrue(tracker._persistence_isAttributeFetched("version"));
+                // Verify specified fields plus mandatory ones are loaded
+                assertTrue(tracker._persistence_isAttributeFetched("id"));
+                assertTrue(tracker._persistence_isAttributeFetched("firstName"));
+                assertTrue(tracker._persistence_isAttributeFetched("lastName"));
+                assertTrue(tracker._persistence_isAttributeFetched("version"));
 
-            // Verify the other fields are not loaded
-            assertFalse(tracker._persistence_isAttributeFetched("salary"));
-            assertFalse(tracker._persistence_isAttributeFetched("startTime"));
-            assertFalse(tracker._persistence_isAttributeFetched("endTime"));
+                // Verify the other fields are not loaded
+                assertFalse(tracker._persistence_isAttributeFetched("salary"));
+                assertFalse(tracker._persistence_isAttributeFetched("startTime"));
+                assertFalse(tracker._persistence_isAttributeFetched("endTime"));
 
-            // Force the loading of lazy fields and verify
-            emp.getSalary();
+                // Force the loading of lazy fields and verify
+                emp.getSalary();
 
-            assertTrue(tracker._persistence_isAttributeFetched("salary"));
-            assertTrue(tracker._persistence_isAttributeFetched("startTime"));
-            assertTrue(tracker._persistence_isAttributeFetched("endTime"));
+                assertTrue(tracker._persistence_isAttributeFetched("salary"));
+                assertTrue(tracker._persistence_isAttributeFetched("startTime"));
+                assertTrue(tracker._persistence_isAttributeFetched("endTime"));
 
-            // Now we'll check the address uses the provided dynamic fetch-group
-            FetchGroupTracker addrTracker = (FetchGroupTracker) emp.getAddress();
-            assertNotNull("Address does not have a FetchGroup", addrTracker._persistence_getFetchGroup());
-            assertTrue(addrTracker._persistence_isAttributeFetched("city"));
-            assertTrue(addrTracker._persistence_isAttributeFetched("postalCode"));
-            assertFalse(addrTracker._persistence_isAttributeFetched("street"));
-            assertFalse(addrTracker._persistence_isAttributeFetched("country"));
+                // Now we'll check the address uses the provided dynamic fetch-group
+                FetchGroupTracker addrTracker = (FetchGroupTracker) emp.getAddress();
+                assertNotNull("Address does not have a FetchGroup", addrTracker._persistence_getFetchGroup());
+                assertTrue(addrTracker._persistence_isAttributeFetched("city"));
+                assertTrue(addrTracker._persistence_isAttributeFetched("postalCode"));
+                assertFalse(addrTracker._persistence_isAttributeFetched("street"));
+                assertFalse(addrTracker._persistence_isAttributeFetched("country"));
 
-            // Now we'll check the phoneNumbers use of the default fetch group
-            for (PhoneNumber phone : emp.getPhoneNumbers()) {
-                FetchGroupTracker phoneTracker = (FetchGroupTracker) phone;
-                assertNotNull("PhoneNumber does not have a FetchGroup", phoneTracker._persistence_getFetchGroup());
-                assertFalse(phoneTracker._persistence_isAttributeFetched("number"));
-                assertFalse(phoneTracker._persistence_isAttributeFetched("areaCode"));
+                // Now we'll check the phoneNumbers use of the default fetch group
+                for (PhoneNumber phone : emp.getPhoneNumbers()) {
+                    FetchGroupTracker phoneTracker = (FetchGroupTracker) phone;
+                    assertNotNull("PhoneNumber does not have a FetchGroup", phoneTracker._persistence_getFetchGroup());
+                    assertFalse(phoneTracker._persistence_isAttributeFetched("number"));
+                    assertFalse(phoneTracker._persistence_isAttributeFetched("areaCode"));
 
-                phone.getNumber();
+                    phone.getNumber();
 
-                assertTrue(phoneTracker._persistence_isAttributeFetched("number"));
-                assertTrue(phoneTracker._persistence_isAttributeFetched("areaCode"));
+                    assertTrue(phoneTracker._persistence_isAttributeFetched("number"));
+                    assertTrue(phoneTracker._persistence_isAttributeFetched("areaCode"));
+                }
             }
+        } finally {
+            if (isTransactionActive(em)){
+                rollbackTransaction(em);
+            }
+            closeEntityManager(em);
         }
     }
 

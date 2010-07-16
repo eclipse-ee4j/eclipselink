@@ -12,6 +12,9 @@
  ******************************************************************************/
 package org.eclipse.persistence.testing.tests.jpa.fieldaccess.fetchgroups;
 
+import java.io.ByteArrayInputStream;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.io.IOException;
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -65,8 +68,6 @@ public class SimpleSerializeFetchGroupTests extends BaseFetchGroupTests {
         
         suite.addTest(new SimpleSerializeFetchGroupTests("testSetup"));
         suite.addTest(new SimpleSerializeFetchGroupTests("verifyWriteReplaceOnFetchGroup"));
-        suite.addTest(new SimpleSerializeFetchGroupTests("findMinimalFetchGroup"));
-        suite.addTest(new SimpleSerializeFetchGroupTests("findEmptyFetchGroup_setUnfetchedSalary"));
         suite.addTest(new SimpleSerializeFetchGroupTests("verifyAddAttributeInDetachedEntityFetchGroup"));
         suite.addTest(new SimpleSerializeFetchGroupTests("singleResultEmptyFetchGroup"));
         suite.addTest(new SimpleSerializeFetchGroupTests("resultListEmptyFetchGroup"));
@@ -76,19 +77,23 @@ public class SimpleSerializeFetchGroupTests extends BaseFetchGroupTests {
         suite.addTest(new SimpleSerializeFetchGroupTests("employeeNamesFetchGroup"));
         suite.addTest(new SimpleSerializeFetchGroupTests("joinFetchEmployeeAddressWithDynamicFetchGroup"));
         suite.addTest(new SimpleSerializeFetchGroupTests("joinFetchEmployeeAddressPhoneWithDynamicFetchGroup"));
-        suite.addTest(new SimpleSerializeFetchGroupTests("verifyUnfetchedAttributes"));
         suite.addTest(new SimpleSerializeFetchGroupTests("verifyFetchedRelationshipAttributes"));
-        suite.addTest(new SimpleSerializeFetchGroupTests("simpleSerializeAndMerge"));
-        suite.addTest(new SimpleSerializeFetchGroupTests("partialMerge"));
-        suite.addTest(new SimpleSerializeFetchGroupTests("copyGroupMerge"));
-        suite.addTest(new SimpleSerializeFetchGroupTests("copyGroupMerge2"));
-        suite.addTest(new SimpleSerializeFetchGroupTests("copyWithPk"));
-        suite.addTest(new SimpleSerializeFetchGroupTests("copyWithPkUseFullGroup"));
-        suite.addTest(new SimpleSerializeFetchGroupTests("copyWithoutPk"));
-        suite.addTest(new SimpleSerializeFetchGroupTests("copyWithoutPkUseFullGroup"));
-        suite.addTest(new SimpleSerializeFetchGroupTests("copyNoCascade"));
-        suite.addTest(new SimpleSerializeFetchGroupTests("copyCascadePrivateParts"));
-        suite.addTest(new SimpleSerializeFetchGroupTests("copyCascadeAllParts"));
+        if (!isJPA10()) {
+            suite.addTest(new SimpleSerializeFetchGroupTests("findMinimalFetchGroup"));
+            suite.addTest(new SimpleSerializeFetchGroupTests("findEmptyFetchGroup_setUnfetchedSalary"));
+            suite.addTest(new SimpleSerializeFetchGroupTests("verifyUnfetchedAttributes"));
+            suite.addTest(new SimpleSerializeFetchGroupTests("simpleSerializeAndMerge"));
+            suite.addTest(new SimpleSerializeFetchGroupTests("partialMerge"));
+            suite.addTest(new SimpleSerializeFetchGroupTests("copyGroupMerge"));
+            suite.addTest(new SimpleSerializeFetchGroupTests("copyGroupMerge2"));
+            suite.addTest(new SimpleSerializeFetchGroupTests("copyWithPk"));
+            suite.addTest(new SimpleSerializeFetchGroupTests("copyWithPkUseFullGroup"));
+            suite.addTest(new SimpleSerializeFetchGroupTests("copyWithoutPk"));
+            suite.addTest(new SimpleSerializeFetchGroupTests("copyWithoutPkUseFullGroup"));
+            suite.addTest(new SimpleSerializeFetchGroupTests("copyNoCascade"));
+            suite.addTest(new SimpleSerializeFetchGroupTests("copyCascadePrivateParts"));
+            suite.addTest(new SimpleSerializeFetchGroupTests("copyCascadeAllParts"));
+        }
         
         return suite;
     }
@@ -96,10 +101,10 @@ public class SimpleSerializeFetchGroupTests extends BaseFetchGroupTests {
     @Test
     public void verifyWriteReplaceOnFetchGroup() throws Exception {
         EntityFetchGroup fg = new EntityFetchGroup(new String[]{"basic", "a"});
-//        fg.addAttribute("basic");
-//        fg.addAttribute("a.b");
+        //fg.addAttribute("basic");
+        //fg.addAttribute("a.b");
 
-//        assertTrue(fg.getClass() == FetchGroup.class);
+        //assertTrue(fg.getClass() == FetchGroup.class);
 
         FetchGroup serFG = serialize(fg);
 
@@ -110,15 +115,15 @@ public class SimpleSerializeFetchGroupTests extends BaseFetchGroupTests {
         AttributeItem basicFI = serFG.getItem("basic");
 
         assertNotNull(basicFI);
-//        assertTrue(basicFI instanceof DetachedFetchItem);
+        //assertTrue(basicFI instanceof DetachedFetchItem);
 
         AttributeItem aFI = serFG.getItem("a");
 
         assertNotNull(aFI);
-//        assertTrue(aFI instanceof DetachedFetchItem);
+        //assertTrue(aFI instanceof DetachedFetchItem);
         // serialized EntityFetchGroup is always flat - doesn't have nested groups.
         assertNull(aFI.getGroup());
-/*        assertNotNull(aFI.getGroup());
+        /*assertNotNull(aFI.getGroup());
         assertTrue(aFI.getGroup() instanceof EntityFetchGroup);
         EntityFetchGroup aEFG = (EntityFetchGroup) aFI.getGroup();
         assertNull(aEFG.getParent());
@@ -127,7 +132,7 @@ public class SimpleSerializeFetchGroupTests extends BaseFetchGroupTests {
         AttributeItem bFI = aEFG.getItem("b");
 
         assertNotNull(bFI);
-//        assertTrue(bFI instanceof DetachedFetchItem);
+        //assertTrue(bFI instanceof DetachedFetchItem);
         assertNull(bFI.getGroup());*/
     }
 
@@ -194,57 +199,65 @@ public class SimpleSerializeFetchGroupTests extends BaseFetchGroupTests {
     public void findEmptyFetchGroup_setUnfetchedSalary() throws Exception {
         EntityManager em = createEntityManager("fieldaccess");
         int minId = minimumEmployeeId(em);
+        try {
+            beginTransaction(em);
 
-        assertEquals(1, getQuerySQLTracker(em).getTotalSQLSELECTCalls());
+            assertEquals(1, getQuerySQLTracker(em).getTotalSQLSELECTCalls());
 
-        Map<String, Object> properties = new HashMap<String, Object>();
-        FetchGroup emptyFG = new FetchGroup();
-        properties.put(QueryHints.FETCH_GROUP, emptyFG);
+            Map<String, Object> properties = new HashMap<String, Object>();
+            FetchGroup emptyFG = new FetchGroup();
+            properties.put(QueryHints.FETCH_GROUP, emptyFG);
 
-        Employee emp = em.find(Employee.class, minId, properties);
+            Employee emp = em.find(Employee.class, minId, properties);
 
-        assertNotNull(emp);
-        assertFetched(emp, emptyFG);
-        assertEquals(2, getQuerySQLTracker(em).getTotalSQLSELECTCalls());
+            assertNotNull(emp);
+            assertFetched(emp, emptyFG);
+            assertEquals(2, getQuerySQLTracker(em).getTotalSQLSELECTCalls());
 
-        // Check Basics
-        assertFetchedAttribute(emp, "id");
-        assertFetchedAttribute(emp, "version");
-        assertNotFetchedAttribute(emp, "firstName");
-        assertNotFetchedAttribute(emp, "lastName");
-        assertNotFetchedAttribute(emp, "gender");
-        assertNotFetchedAttribute(emp, "salary");
-        assertNotFetchedAttribute(emp, "startTime");
-        assertNotFetchedAttribute(emp, "endTime");
-        if (emp.getPeriod() != null) {
-            assertFetchedAttribute(emp.getPeriod(), "startDate");
-            assertFetchedAttribute(emp.getPeriod(), "endDate");
-        }
-        assertEquals(3, getQuerySQLTracker(em).getTotalSQLSELECTCalls());
+            // Check Basics
+            assertFetchedAttribute(emp, "id");
+            assertFetchedAttribute(emp, "version");
+            assertNotFetchedAttribute(emp, "firstName");
+            assertNotFetchedAttribute(emp, "lastName");
+            assertNotFetchedAttribute(emp, "gender");
+            assertNotFetchedAttribute(emp, "salary");
+            assertNotFetchedAttribute(emp, "startTime");
+            assertNotFetchedAttribute(emp, "endTime");
+            if (emp.getPeriod() != null) {
+                assertFetchedAttribute(emp.getPeriod(), "startDate");
+                assertFetchedAttribute(emp.getPeriod(), "endDate");
+            }
+            assertEquals(3, getQuerySQLTracker(em).getTotalSQLSELECTCalls());
 
-        // Check Relationships
-        assertNotFetchedAttribute(emp, "address");
-        assertNotFetchedAttribute(emp, "manager");
-        assertNotFetchedAttribute(emp, "phoneNumbers");
-        assertNotFetchedAttribute(emp, "projects");
+            // Check Relationships
+            assertNotFetchedAttribute(emp, "address");
+            assertNotFetchedAttribute(emp, "manager");
+            assertNotFetchedAttribute(emp, "phoneNumbers");
+            assertNotFetchedAttribute(emp, "projects");
 
-        emp.setSalary(1);
+            emp.setSalary(1);
 
-        assertFetchedAttribute(emp, "salary");
+            assertFetchedAttribute(emp, "salary");
 
-        assertEquals(3, getQuerySQLTracker(em).getTotalSQLSELECTCalls());
-        assertNoFetchGroup(emp);
+            assertEquals(3, getQuerySQLTracker(em).getTotalSQLSELECTCalls());
+            assertNoFetchGroup(emp);
 
-        emp.getAddress();
+            emp.getAddress();
 
-        assertEquals(4, getQuerySQLTracker(em).getTotalSQLSELECTCalls());
-        assertNoFetchGroup(emp.getAddress());
+            assertEquals(4, getQuerySQLTracker(em).getTotalSQLSELECTCalls());
+            assertNoFetchGroup(emp.getAddress());
 
-        emp.getPhoneNumbers().size();
+            emp.getPhoneNumbers().size();
 
-        assertEquals(5, getQuerySQLTracker(em).getTotalSQLSELECTCalls());
-        for (PhoneNumber phone : emp.getPhoneNumbers()) {
-            assertNoFetchGroup(phone);
+            assertEquals(5, getQuerySQLTracker(em).getTotalSQLSELECTCalls());
+            for (PhoneNumber phone : emp.getPhoneNumbers()) {
+                assertNoFetchGroup(phone);
+            }
+        } finally {
+            if (isTransactionActive(em)){
+                rollbackTransaction(em);
+            }
+            closeEntityManager(em);
         }
     }
 
@@ -256,96 +269,104 @@ public class SimpleSerializeFetchGroupTests extends BaseFetchGroupTests {
     public void verifyAddAttributeInDetachedEntityFetchGroup() {
         EntityFetchGroup detFG = new EntityFetchGroup(new String[]{"basic", "a"});
 
-//        detFG.addAttribute("basic");
-//        detFG.addAttribute("a.b");
+        //detFG.addAttribute("basic");
+        //detFG.addAttribute("a.b");
 
-//        assertNull(detFG.getParent());
+        //assertNull(detFG.getParent());
         assertEquals(2, detFG.getItems().size());
 
         AttributeItem basicItem = detFG.getItem("basic");
         assertNotNull(basicItem);
         assertEquals("basic", basicItem.getAttributeName());
-//        assertTrue(basicItem instanceof DetachedFetchItem);
+        //assertTrue(basicItem instanceof DetachedFetchItem);
         assertNull(basicItem.getGroup());
         assertSame(detFG, basicItem.getParent());
-//        assertFalse(basicItem.useDefaultFetchGroup());
+        //assertFalse(basicItem.useDefaultFetchGroup());
 
         AttributeItem aItem = detFG.getItem("a");
         assertNotNull(aItem);
         assertEquals("a", aItem.getAttributeName());
-//        assertTrue(aItem instanceof DetachedFetchItem);
+        //assertTrue(aItem instanceof DetachedFetchItem);
         // serialized EntityFetchGroup is always flat - doesn't have nested groups.
-////        assertNull(aItem.getGroup());
+        //assertNull(aItem.getGroup());
         assertNull(aItem.getGroup());
         assertSame(detFG, aItem.getParent());
-//        assertFalse(aItem.useDefaultFetchGroup());
-//        assertTrue(aItem.getGroup() instanceof EntityFetchGroup);
+        //assertFalse(aItem.useDefaultFetchGroup());
+        //assertTrue(aItem.getGroup() instanceof EntityFetchGroup);
 
-//        EntityFetchGroup aFG = (EntityFetchGroup) aItem.getGroup();
+        //EntityFetchGroup aFG = (EntityFetchGroup) aItem.getGroup();
 
-//        assertEquals(1, aFG.getItems().size());
+        //assertEquals(1, aFG.getItems().size());
 
-//        AttributeItem bItem = aFG.getItem("b");
-//        assertNotNull(bItem);
-//        assertEquals("b", bItem.getAttributeName());
-//        assertTrue(bItem instanceof DetachedFetchItem);
-  //      assertNull(bItem.getGroup());
-//        assertSame(aFG, bItem.getParent());
-//        assertFalse(bItem.useDefaultFetchGroup());
+        //AttributeItem bItem = aFG.getItem("b");
+        //assertNotNull(bItem);
+        //assertEquals("b", bItem.getAttributeName());
+        //assertTrue(bItem instanceof DetachedFetchItem);
+        //assertNull(bItem.getGroup());
+        //assertSame(aFG, bItem.getParent());
+        //assertFalse(bItem.useDefaultFetchGroup());
     }
 
     @Test
     public void singleResultEmptyFetchGroup() throws Exception {
         EntityManager em = createEntityManager("fieldaccess");
+        try {
+            beginTransaction(em);
 
-        Query query = em.createQuery("SELECT e FROM Employee e WHERE e.id = :ID");
-        query.setParameter("ID", minimumEmployeeId(em));
-        FetchGroup emptyFG = new FetchGroup();
-        query.setHint(QueryHints.FETCH_GROUP, emptyFG);
+            Query query = em.createQuery("SELECT e FROM Employee e WHERE e.id = :ID");
+            query.setParameter("ID", minimumEmployeeId(em));
+            FetchGroup emptyFG = new FetchGroup();
+            query.setHint(QueryHints.FETCH_GROUP, emptyFG);
 
-        Employee emp = (Employee) query.getSingleResult();
+            Employee emp = (Employee) query.getSingleResult();
 
-        assertNotNull(emp);
-        assertFetched(emp, emptyFG);
-        assertEquals(2, getQuerySQLTracker(em).getTotalSQLSELECTCalls());
+            assertNotNull(emp);
+            assertFetched(emp, emptyFG);
+            assertEquals(2, getQuerySQLTracker(em).getTotalSQLSELECTCalls());
 
-        // Check Basics
-        assertFetchedAttribute(emp, "id");
-        assertFetchedAttribute(emp, "version");
-        assertNotFetchedAttribute(emp, "firstName");
-        assertNotFetchedAttribute(emp, "lastName");
-        assertNotFetchedAttribute(emp, "gender");
-        assertNotFetchedAttribute(emp, "salary");
-        assertNotFetchedAttribute(emp, "startTime");
-        assertNotFetchedAttribute(emp, "endTime");
-        if (emp.getPeriod() != null) {
-            assertFetchedAttribute(emp.getPeriod(), "startDate");
-            assertFetchedAttribute(emp.getPeriod(), "endDate");
-        }
+            // Check Basics
+            assertFetchedAttribute(emp, "id");
+            assertFetchedAttribute(emp, "version");
+            assertNotFetchedAttribute(emp, "firstName");
+            assertNotFetchedAttribute(emp, "lastName");
+            assertNotFetchedAttribute(emp, "gender");
+            assertNotFetchedAttribute(emp, "salary");
+            assertNotFetchedAttribute(emp, "startTime");
+            assertNotFetchedAttribute(emp, "endTime");
+            if (emp.getPeriod() != null) {
+                assertFetchedAttribute(emp.getPeriod(), "startDate");
+                assertFetchedAttribute(emp.getPeriod(), "endDate");
+            }
 
-        // Check Relationships
-        assertNotFetchedAttribute(emp, "address");
-        assertNotFetchedAttribute(emp, "manager");
-        assertNotFetchedAttribute(emp, "phoneNumbers");
-        assertNotFetchedAttribute(emp, "projects");
+            // Check Relationships
+            assertNotFetchedAttribute(emp, "address");
+            assertNotFetchedAttribute(emp, "manager");
+            assertNotFetchedAttribute(emp, "phoneNumbers");
+            assertNotFetchedAttribute(emp, "projects");
 
-        emp.getSalary();
+            emp.getSalary();
 
-        assertFetchedAttribute(emp, "salary");
+            assertFetchedAttribute(emp, "salary");
 
-        assertEquals(3, getQuerySQLTracker(em).getTotalSQLSELECTCalls());
-        assertNoFetchGroup(emp);
+            assertEquals(3, getQuerySQLTracker(em).getTotalSQLSELECTCalls());
+            assertNoFetchGroup(emp);
 
-        emp.getAddress();
+            emp.getAddress();
 
-        assertEquals(4, getQuerySQLTracker(em).getTotalSQLSELECTCalls());
-        assertNoFetchGroup(emp.getAddress());
+            assertEquals(4, getQuerySQLTracker(em).getTotalSQLSELECTCalls());
+            assertNoFetchGroup(emp.getAddress());
 
-        emp.getPhoneNumbers().size();
+            emp.getPhoneNumbers().size();
 
-        assertEquals(5, getQuerySQLTracker(em).getTotalSQLSELECTCalls());
-        for (PhoneNumber phone : emp.getPhoneNumbers()) {
-            assertNoFetchGroup(phone);
+            assertEquals(5, getQuerySQLTracker(em).getTotalSQLSELECTCalls());
+            for (PhoneNumber phone : emp.getPhoneNumbers()) {
+                assertNoFetchGroup(phone);
+            }
+        } finally {
+            if (isTransactionActive(em)){
+                rollbackTransaction(em);
+            }
+            closeEntityManager(em);
         }
     }
 
@@ -355,59 +376,67 @@ public class SimpleSerializeFetchGroupTests extends BaseFetchGroupTests {
     @Test
     public void resultListEmptyFetchGroup() throws Exception {
         EntityManager em = createEntityManager("fieldaccess");
+        try {
+            beginTransaction(em);
 
-        Query query = em.createQuery("SELECT e FROM Employee e WHERE e.id = :ID");
-        query.setParameter("ID", minimumEmployeeId(em));
-        FetchGroup emptyFG = new FetchGroup();
-        query.setHint(QueryHints.FETCH_GROUP, emptyFG);
+            Query query = em.createQuery("SELECT e FROM Employee e WHERE e.id = :ID");
+            query.setParameter("ID", minimumEmployeeId(em));
+            FetchGroup emptyFG = new FetchGroup();
+            query.setHint(QueryHints.FETCH_GROUP, emptyFG);
 
-        List<Employee> emps = query.getResultList();
+            List<Employee> emps = query.getResultList();
 
-        assertNotNull(emps);
-        assertEquals(1, emps.size());
+            assertNotNull(emps);
+            assertEquals(1, emps.size());
 
-        Employee emp = emps.get(0);
+            Employee emp = emps.get(0);
 
-        assertEquals(2, getQuerySQLTracker(em).getTotalSQLSELECTCalls());
-        assertFetched(emp, emptyFG);
+            assertEquals(2, getQuerySQLTracker(em).getTotalSQLSELECTCalls());
+            assertFetched(emp, emptyFG);
 
-        // Check Basics
-        assertFetchedAttribute(emp, "id");
-        assertFetchedAttribute(emp, "version");
-        assertNotFetchedAttribute(emp, "firstName");
-        assertNotFetchedAttribute(emp, "lastName");
-        assertNotFetchedAttribute(emp, "gender");
-        assertNotFetchedAttribute(emp, "salary");
-        assertNotFetchedAttribute(emp, "startTime");
-        assertNotFetchedAttribute(emp, "endTime");
-        assertEquals(2, getQuerySQLTracker(em).getTotalSQLSELECTCalls());
-        if (emp.getPeriod() != null) {
-            assertFetchedAttribute(emp.getPeriod(), "startDate");
-            assertFetchedAttribute(emp.getPeriod(), "endDate");
+            // Check Basics
+            assertFetchedAttribute(emp, "id");
+            assertFetchedAttribute(emp, "version");
+            assertNotFetchedAttribute(emp, "firstName");
+            assertNotFetchedAttribute(emp, "lastName");
+            assertNotFetchedAttribute(emp, "gender");
+            assertNotFetchedAttribute(emp, "salary");
+            assertNotFetchedAttribute(emp, "startTime");
+            assertNotFetchedAttribute(emp, "endTime");
+            assertEquals(2, getQuerySQLTracker(em).getTotalSQLSELECTCalls());
+            if (emp.getPeriod() != null) {
+                assertFetchedAttribute(emp.getPeriod(), "startDate");
+                assertFetchedAttribute(emp.getPeriod(), "endDate");
+            }
+
+            // Check Relationships
+            assertNotFetchedAttribute(emp, "address");
+            assertNotFetchedAttribute(emp, "manager");
+            assertNotFetchedAttribute(emp, "phoneNumbers");
+            assertNotFetchedAttribute(emp, "projects");
+
+            assertEquals(3, getQuerySQLTracker(em).getTotalSQLSELECTCalls());
+
+            emp.getSalary();
+
+            assertFetchedAttribute(emp, "salary");
+            assertNoFetchGroup(emp);
+            assertEquals(3, getQuerySQLTracker(em).getTotalSQLSELECTCalls());
+
+            assertNoFetchGroup(emp.getAddress());
+
+            assertEquals(4, getQuerySQLTracker(em).getTotalSQLSELECTCalls());
+
+            for (PhoneNumber phone : emp.getPhoneNumbers()) {
+                assertNoFetchGroup(phone);
+            }
+            assertEquals(5, getQuerySQLTracker(em).getTotalSQLSELECTCalls());
+        } finally {
+            if (isTransactionActive(em)){
+                rollbackTransaction(em);
+            }
+            closeEntityManager(em);
         }
-
-        // Check Relationships
-        assertNotFetchedAttribute(emp, "address");
-        assertNotFetchedAttribute(emp, "manager");
-        assertNotFetchedAttribute(emp, "phoneNumbers");
-        assertNotFetchedAttribute(emp, "projects");
-
-        assertEquals(3, getQuerySQLTracker(em).getTotalSQLSELECTCalls());
-
-        emp.getSalary();
-
-        assertFetchedAttribute(emp, "salary");
-        assertNoFetchGroup(emp);
-        assertEquals(3, getQuerySQLTracker(em).getTotalSQLSELECTCalls());
-
-        assertNoFetchGroup(emp.getAddress());
-
-        assertEquals(4, getQuerySQLTracker(em).getTotalSQLSELECTCalls());
-
-        for (PhoneNumber phone : emp.getPhoneNumbers()) {
-            assertNoFetchGroup(phone);
-        }
-        assertEquals(5, getQuerySQLTracker(em).getTotalSQLSELECTCalls());
     }
 
     /**
@@ -416,209 +445,241 @@ public class SimpleSerializeFetchGroupTests extends BaseFetchGroupTests {
     @Test
     public void resultListPeriodFetchGroup() throws Exception {
         EntityManager em = createEntityManager("fieldaccess");
+        try {
+            beginTransaction(em);
 
-        Query query = em.createQuery("SELECT e FROM Employee e WHERE e.id = :ID");
-        query.setParameter("ID", minimumEmployeeId(em));
-        FetchGroup fg = new FetchGroup();
-        fg.addAttribute("period");
-        query.setHint(QueryHints.FETCH_GROUP, fg);
+            Query query = em.createQuery("SELECT e FROM Employee e WHERE e.id = :ID");
+            query.setParameter("ID", minimumEmployeeId(em));
+            FetchGroup fg = new FetchGroup();
+            fg.addAttribute("period");
+            query.setHint(QueryHints.FETCH_GROUP, fg);
 
-        List<Employee> emps = query.getResultList();
+            List<Employee> emps = query.getResultList();
 
-        assertNotNull(emps);
-        assertEquals(1, emps.size());
+            assertNotNull(emps);
+            assertEquals(1, emps.size());
 
-        Employee emp = emps.get(0);
+            Employee emp = emps.get(0);
 
-        assertEquals(2, getQuerySQLTracker(em).getTotalSQLSELECTCalls());
-        assertFetched(emp, fg);
+            assertEquals(2, getQuerySQLTracker(em).getTotalSQLSELECTCalls());
+            assertFetched(emp, fg);
 
-        // Check Basics
-        assertFetchedAttribute(emp, "id");
-        assertFetchedAttribute(emp, "version");
-        assertNotFetchedAttribute(emp, "firstName");
-        assertNotFetchedAttribute(emp, "lastName");
-        assertNotFetchedAttribute(emp, "gender");
-        assertNotFetchedAttribute(emp, "salary");
-        assertNotFetchedAttribute(emp, "startTime");
-        assertNotFetchedAttribute(emp, "endTime");
-        if (emp.getPeriod() != null) {
-            assertFetchedAttribute(emp.getPeriod(), "startDate");
-            assertFetchedAttribute(emp.getPeriod(), "endDate");
+            // Check Basics
+            assertFetchedAttribute(emp, "id");
+            assertFetchedAttribute(emp, "version");
+            assertNotFetchedAttribute(emp, "firstName");
+            assertNotFetchedAttribute(emp, "lastName");
+            assertNotFetchedAttribute(emp, "gender");
+            assertNotFetchedAttribute(emp, "salary");
+            assertNotFetchedAttribute(emp, "startTime");
+            assertNotFetchedAttribute(emp, "endTime");
+            if (emp.getPeriod() != null) {
+                assertFetchedAttribute(emp.getPeriod(), "startDate");
+                assertFetchedAttribute(emp.getPeriod(), "endDate");
+            }
+
+            // Check Relationships
+            assertNotFetchedAttribute(emp, "address");
+            assertNotFetchedAttribute(emp, "manager");
+            assertNotFetchedAttribute(emp, "phoneNumbers");
+            assertNotFetchedAttribute(emp, "projects");
+
+            assertEquals(2, getQuerySQLTracker(em).getTotalSQLSELECTCalls());
+
+            emp.getSalary();
+
+            assertFetchedAttribute(emp, "salary");
+            assertNoFetchGroup(emp);
+
+            assertEquals(3, getQuerySQLTracker(em).getTotalSQLSELECTCalls());
+
+            assertNoFetchGroup(emp.getAddress());
+
+            assertEquals(4, getQuerySQLTracker(em).getTotalSQLSELECTCalls());
+
+            for (PhoneNumber phone : emp.getPhoneNumbers()) {
+                assertNoFetchGroup(phone);
+            }
+            assertEquals(5, getQuerySQLTracker(em).getTotalSQLSELECTCalls());
+        } finally {
+            if (isTransactionActive(em)){
+                rollbackTransaction(em);
+            }
+            closeEntityManager(em);
         }
-
-        // Check Relationships
-        assertNotFetchedAttribute(emp, "address");
-        assertNotFetchedAttribute(emp, "manager");
-        assertNotFetchedAttribute(emp, "phoneNumbers");
-        assertNotFetchedAttribute(emp, "projects");
-
-        assertEquals(2, getQuerySQLTracker(em).getTotalSQLSELECTCalls());
-
-        emp.getSalary();
-
-        assertFetchedAttribute(emp, "salary");
-        assertNoFetchGroup(emp);
-
-        assertEquals(3, getQuerySQLTracker(em).getTotalSQLSELECTCalls());
-
-        assertNoFetchGroup(emp.getAddress());
-
-        assertEquals(4, getQuerySQLTracker(em).getTotalSQLSELECTCalls());
-
-        for (PhoneNumber phone : emp.getPhoneNumbers()) {
-            assertNoFetchGroup(phone);
-        }
-        assertEquals(5, getQuerySQLTracker(em).getTotalSQLSELECTCalls());
     }
 
     @Test
     public void managerFetchGroup() throws Exception {
         EntityManager em = createEntityManager("fieldaccess");
+        try {
+            beginTransaction(em);
 
-        // Use q query since find will only use default fetch group
-//        Query query = em.createQuery("SELECT e FROM Employee e WHERE e.id = :ID");
-//        query.setParameter("ID", minimumEmployeeId(em));
+            // Use q query since find will only use default fetch group
+            //Query query = em.createQuery("SELECT e FROM Employee e WHERE e.id = :ID");
+            //query.setParameter("ID", minimumEmployeeId(em));
 
-        // Complex where clause used to avoid triggering employees and their departments:
-        //   Don't include employees who are managers themselves - otherwise if first selected as employee, then as e.manager the full read will be triggered;
-        //   Don't include managers with departments - because there is no fetch group on e.manager its (non-null) department will trigger an extra sql
-        Query query = em.createQuery("SELECT e FROM Employee e WHERE e.manager IS NOT NULL AND NOT EXISTS(SELECT e2 FROM Employee e2 WHERE e2.manager = e) AND e.manager.department IS NULL");
-        
-        FetchGroup managerFG = new FetchGroup();
-        managerFG.addAttribute("manager");
+            // Complex where clause used to avoid triggering employees and their departments:
+            //   Don't include employees who are managers themselves - otherwise if first selected as employee, then as e.manager the full read will be triggered;
+            //   Don't include managers with departments - because there is no fetch group on e.manager its (non-null) department will trigger an extra sql
+            Query query = em.createQuery("SELECT e FROM Employee e WHERE e.manager IS NOT NULL AND NOT EXISTS(SELECT e2 FROM Employee e2 WHERE e2.manager = e) AND e.manager.department IS NULL");
+            
+            FetchGroup managerFG = new FetchGroup();
+            managerFG.addAttribute("manager");
 
-        query.setHint(QueryHints.FETCH_GROUP, managerFG);
+            query.setHint(QueryHints.FETCH_GROUP, managerFG);
 
-        assertNotNull(getFetchGroup(query));
-        assertSame(managerFG, getFetchGroup(query));
+            assertNotNull(getFetchGroup(query));
+            assertSame(managerFG, getFetchGroup(query));
 
-        Employee emp = (Employee) query.getSingleResult();
+            Employee emp = (Employee) query.getSingleResult();
 
-        assertFetched(emp, managerFG);
-        assertEquals(1, getQuerySQLTracker(em).getTotalSQLSELECTCalls());
-        
-        // manager (if not null) hasn't been instantiated yet.
-        int nSqlToAdd = 0;
-        if (emp.getManager() != null) {
-            assertFetchedAttribute(emp, "manager");
-            // additional sql to select the manager
-            nSqlToAdd++;
+            assertFetched(emp, managerFG);
+            assertEquals(1, getQuerySQLTracker(em).getTotalSQLSELECTCalls());
+            
+            // manager (if not null) hasn't been instantiated yet.
+            int nSqlToAdd = 0;
+            if (emp.getManager() != null) {
+                assertFetchedAttribute(emp, "manager");
+                // additional sql to select the manager
+                nSqlToAdd++;
+            }
+            
+            assertEquals(1 + nSqlToAdd, getQuerySQLTracker(em).getTotalSQLSELECTCalls());
+
+            emp.getLastName();
+
+            assertEquals(2 + nSqlToAdd, getQuerySQLTracker(em).getTotalSQLSELECTCalls());
+            assertNoFetchGroup(emp);
+
+            for (PhoneNumber phone : emp.getPhoneNumbers()) {
+                assertNoFetchGroup(phone);
+                phone.getAreaCode();
+            }
+
+            assertEquals(3 + nSqlToAdd, getQuerySQLTracker(em).getTotalSQLSELECTCalls());
+        } finally {
+            if (isTransactionActive(em)){
+                rollbackTransaction(em);
+            }
+            closeEntityManager(em);
         }
-        
-        assertEquals(1 + nSqlToAdd, getQuerySQLTracker(em).getTotalSQLSELECTCalls());
-
-        emp.getLastName();
-
-        assertEquals(2 + nSqlToAdd, getQuerySQLTracker(em).getTotalSQLSELECTCalls());
-        assertNoFetchGroup(emp);
-
-        for (PhoneNumber phone : emp.getPhoneNumbers()) {
-            assertNoFetchGroup(phone);
-            phone.getAreaCode();
-        }
-
-        assertEquals(3 + nSqlToAdd, getQuerySQLTracker(em).getTotalSQLSELECTCalls());
     }
 
     @Test
     public void managerFetchGroupWithJoinFetch() throws Exception {
         EntityManager em = createEntityManager("fieldaccess");
+        try {
+            beginTransaction(em);
 
-//        int minId = minimumEmployeeId(em);
-//        assertEquals(1, getQuerySQLTracker(em).getTotalSQLSELECTCalls());
+            //int minId = minimumEmployeeId(em);
+            //assertEquals(1, getQuerySQLTracker(em).getTotalSQLSELECTCalls());
 
-        // Use q query since find will only use default fetch group
-//        Query query = em.createQuery("SELECT e FROM Employee e WHERE e.id = :ID");
-//        query.setParameter("ID", minId);
+            // Use q query since find will only use default fetch group
+            //Query query = em.createQuery("SELECT e FROM Employee e WHERE e.id = :ID");
+            //query.setParameter("ID", minId);
 
-        // Complex where clause used to avoid triggering employees and their departments:
-        //   Don't include employees who are managers themselves - otherwise if first selected as employee, then as e.manager the full read will be triggered;
-        //   Don't include managers with departments - because there is no fetch group on e.manager its (non-null) department will trigger an extra sql
-        Query query = em.createQuery("SELECT e FROM Employee e WHERE e.manager IS NOT NULL AND NOT EXISTS(SELECT e2 FROM Employee e2 WHERE e2.manager = e) AND e.manager.department IS NULL");
+            // Complex where clause used to avoid triggering employees and their departments:
+            //   Don't include employees who are managers themselves - otherwise if first selected as employee, then as e.manager the full read will be triggered;
+            //   Don't include managers with departments - because there is no fetch group on e.manager its (non-null) department will trigger an extra sql
+            Query query = em.createQuery("SELECT e FROM Employee e WHERE e.manager IS NOT NULL AND NOT EXISTS(SELECT e2 FROM Employee e2 WHERE e2.manager = e) AND e.manager.department IS NULL");
 
-        FetchGroup managerFG = new FetchGroup();
-        managerFG.addAttribute("manager");
+            FetchGroup managerFG = new FetchGroup();
+            managerFG.addAttribute("manager");
 
-        query.setHint(QueryHints.FETCH_GROUP, managerFG);
-        query.setHint(QueryHints.LEFT_FETCH, "e.manager");
+            query.setHint(QueryHints.FETCH_GROUP, managerFG);
+            query.setHint(QueryHints.LEFT_FETCH, "e.manager");
 
-        assertNotNull(getFetchGroup(query));
-        assertSame(managerFG, getFetchGroup(query));
+            assertNotNull(getFetchGroup(query));
+            assertSame(managerFG, getFetchGroup(query));
 
-        Employee emp = (Employee) query.getSingleResult();
+            Employee emp = (Employee) query.getSingleResult();
 
-        assertFetched(emp, managerFG);
-        assertEquals(1, getQuerySQLTracker(em).getTotalSQLSELECTCalls());
-        
-        // manager has been already instantiated by the query.
-        emp.getManager();
-        assertEquals(1, getQuerySQLTracker(em).getTotalSQLSELECTCalls());
-        
-        // instantiates the whiole object
-        emp.getLastName();
+            assertFetched(emp, managerFG);
+            assertEquals(1, getQuerySQLTracker(em).getTotalSQLSELECTCalls());
+            
+            // manager has been already instantiated by the query.
+            emp.getManager();
+            assertEquals(1, getQuerySQLTracker(em).getTotalSQLSELECTCalls());
+            
+            // instantiates the whiole object
+            emp.getLastName();
 
-        assertEquals(2, getQuerySQLTracker(em).getTotalSQLSELECTCalls());
-        assertNoFetchGroup(emp);
+            assertEquals(2, getQuerySQLTracker(em).getTotalSQLSELECTCalls());
+            assertNoFetchGroup(emp);
 
-        for (PhoneNumber phone : emp.getPhoneNumbers()) {
-            assertNoFetchGroup(phone);
-            phone.getAreaCode();
+            for (PhoneNumber phone : emp.getPhoneNumbers()) {
+                assertNoFetchGroup(phone);
+                phone.getAreaCode();
+            }
+
+            assertEquals(3, getQuerySQLTracker(em).getTotalSQLSELECTCalls());
+        } finally {
+            if (isTransactionActive(em)){
+                rollbackTransaction(em);
+            }
+            closeEntityManager(em);
         }
-
-        assertEquals(3, getQuerySQLTracker(em).getTotalSQLSELECTCalls());
     }
 
     @Test
     public void employeeNamesFetchGroup() throws Exception {
         EntityManager em = createEntityManager("fieldaccess");
+        try {
+            beginTransaction(em);
 
-        int minId = minimumEmployeeId(em);
-        assertEquals(1, getQuerySQLTracker(em).getTotalSQLSELECTCalls());
+            int minId = minimumEmployeeId(em);
+            assertEquals(1, getQuerySQLTracker(em).getTotalSQLSELECTCalls());
 
-        // Use q query since find will only use default fetch group
-        Query query = em.createQuery("SELECT e FROM Employee e WHERE e.id = :ID");
-        query.setParameter("ID", minId);
-        FetchGroup namesFG = new FetchGroup();
-        namesFG.addAttribute("firstName");
-        namesFG.addAttribute("lastName");
+            // Use q query since find will only use default fetch group
+            Query query = em.createQuery("SELECT e FROM Employee e WHERE e.id = :ID");
+            query.setParameter("ID", minId);
+            FetchGroup namesFG = new FetchGroup();
+            namesFG.addAttribute("firstName");
+            namesFG.addAttribute("lastName");
 
-        query.setHint(QueryHints.FETCH_GROUP, namesFG);
+            query.setHint(QueryHints.FETCH_GROUP, namesFG);
 
-        assertNotNull(getFetchGroup(query));
-        assertSame(namesFG, getFetchGroup(query));
+            assertNotNull(getFetchGroup(query));
+            assertSame(namesFG, getFetchGroup(query));
 
-        Employee emp = (Employee) query.getSingleResult();
+            Employee emp = (Employee) query.getSingleResult();
 
-        assertEquals(2, getQuerySQLTracker(em).getTotalSQLSELECTCalls());
-        assertFetched(emp, namesFG);
+            assertEquals(2, getQuerySQLTracker(em).getTotalSQLSELECTCalls());
+            assertFetched(emp, namesFG);
 
-        emp.getId();
-        emp.getFirstName();
-        emp.getLastName();
-        emp.getVersion();
+            emp.getId();
+            emp.getFirstName();
+            emp.getLastName();
+            emp.getVersion();
 
-        assertEquals(2, getQuerySQLTracker(em).getTotalSQLSELECTCalls());
-        assertFetched(emp, namesFG);
+            assertEquals(2, getQuerySQLTracker(em).getTotalSQLSELECTCalls());
+            assertFetched(emp, namesFG);
 
-        emp.getGender();
-        emp.getSalary();
+            emp.getGender();
+            emp.getSalary();
 
-        assertEquals(3, getQuerySQLTracker(em).getTotalSQLSELECTCalls());
-        assertNoFetchGroup(emp);
+            assertEquals(3, getQuerySQLTracker(em).getTotalSQLSELECTCalls());
+            assertNoFetchGroup(emp);
 
-        for (PhoneNumber phone : emp.getPhoneNumbers()) {
-            assertNoFetchGroup(phone);
-            phone.getAreaCode();
-        }
-        assertEquals(4, getQuerySQLTracker(em).getTotalSQLSELECTCalls());
-
-        if (emp.getManager() != null) {
-            assertEquals(5, getQuerySQLTracker(em).getTotalSQLSELECTCalls());
-            assertNoFetchGroup(emp.getManager());
-        } else {
-            // If manager_id field is null then getManager() does not trigger an sql.
+            for (PhoneNumber phone : emp.getPhoneNumbers()) {
+                assertNoFetchGroup(phone);
+                phone.getAreaCode();
+            }
             assertEquals(4, getQuerySQLTracker(em).getTotalSQLSELECTCalls());
+
+            if (emp.getManager() != null) {
+                assertEquals(5, getQuerySQLTracker(em).getTotalSQLSELECTCalls());
+                assertNoFetchGroup(emp.getManager());
+            } else {
+                // If manager_id field is null then getManager() does not trigger an sql.
+                assertEquals(4, getQuerySQLTracker(em).getTotalSQLSELECTCalls());
+            }
+        } finally {
+            if (isTransactionActive(em)){
+                rollbackTransaction(em);
+            }
+            closeEntityManager(em);
         }
     }
 
@@ -657,29 +718,37 @@ public class SimpleSerializeFetchGroupTests extends BaseFetchGroupTests {
     @Test
     public void verifyUnfetchedAttributes() throws Exception {
         EntityManager em = createEntityManager("fieldaccess");
+        try {
+            beginTransaction(em);
 
-        TypedQuery<Employee> q = em.createQuery("SELECT e FROM Employee e WHERE e.id IN (SELECT MIN(p.owner.id) FROM PhoneNumber p)", Employee.class);
-        FetchGroup fg = new FetchGroup("Employee.empty");
-        q.setHint(QueryHints.FETCH_GROUP, fg);
-        Employee emp = q.getSingleResult();
+            TypedQuery<Employee> q = em.createQuery("SELECT e FROM Employee e WHERE e.id IN (SELECT MIN(p.owner.id) FROM PhoneNumber p)", Employee.class);
+            FetchGroup fg = new FetchGroup("Employee.empty");
+            q.setHint(QueryHints.FETCH_GROUP, fg);
+            Employee emp = q.getSingleResult();
 
-        assertNotNull(emp);
-        assertEquals(1, getQuerySQLTracker(em).getTotalSQLSELECTCalls());
+            assertNotNull(emp);
+            assertEquals(1, getQuerySQLTracker(em).getTotalSQLSELECTCalls());
 
-        // This check using the mapping returns a default (empty) IndirectList
-/*        OneToManyMapping phoneMapping = (OneToManyMapping) employeeDescriptor.getMappingForAttributeName("phoneNumbers");
-        IndirectList phones = (IndirectList) phoneMapping.getAttributeValueFromObject(emp);
-        assertNotNull(phones);
-        assertTrue(phones.isInstantiated());
-        assertEquals(0, phones.size());
-        assertEquals(1, getQuerySQLTracker(em).getTotalSQLSELECTCalls());*/
+            // This check using the mapping returns a default (empty) IndirectList
+            /*OneToManyMapping phoneMapping = (OneToManyMapping) employeeDescriptor.getMappingForAttributeName("phoneNumbers");
+            IndirectList phones = (IndirectList) phoneMapping.getAttributeValueFromObject(emp);
+            assertNotNull(phones);
+            assertTrue(phones.isInstantiated());
+            assertEquals(0, phones.size());
+            assertEquals(1, getQuerySQLTracker(em).getTotalSQLSELECTCalls());*/
 
-        IndirectList phonesIL = (IndirectList) emp.getPhoneNumbers();
-        assertFalse(phonesIL.isInstantiated());
-        assertEquals(2, getQuerySQLTracker(em).getTotalSQLSELECTCalls());
+            IndirectList phonesIL = (IndirectList) emp.getPhoneNumbers();
+            assertFalse(phonesIL.isInstantiated());
+            assertEquals(2, getQuerySQLTracker(em).getTotalSQLSELECTCalls());
 
-        assertTrue(emp.getPhoneNumbers().size() > 0);
-        assertEquals(3, getQuerySQLTracker(em).getTotalSQLSELECTCalls());
+            assertTrue(emp.getPhoneNumbers().size() > 0);
+            assertEquals(3, getQuerySQLTracker(em).getTotalSQLSELECTCalls());
+        } finally {
+            if (isTransactionActive(em)){
+                rollbackTransaction(em);
+            }
+            closeEntityManager(em);
+        }
     }
 
     @Test
@@ -805,7 +874,7 @@ public class SimpleSerializeFetchGroupTests extends BaseFetchGroupTests {
         em.clear();
         HashMap hints = new HashMap(2);
         hints.put(QueryHints.CACHE_USAGE, CacheUsage.CheckCacheOnly);
-//        hints.put(QueryHints.FETCH_GROUP, fetchGroup);
+        //hints.put(QueryHints.FETCH_GROUP, fetchGroup);
         Employee empShared = em.find(Employee.class, id, hints);
         assertEquals("newFirstName", empShared.getFirstName());
         assertEquals("newLastName", empShared.getLastName());
@@ -853,7 +922,7 @@ public class SimpleSerializeFetchGroupTests extends BaseFetchGroupTests {
             closeEntityManager(em);
         }
     }
-/*    public void simpleSerializeAndMerge() throws Exception {
+    /*public void simpleSerializeAndMerge() throws Exception {
         EntityManager em = createEntityManager("fieldaccess");
         int id = minimumEmployeeId(em);
         // save the original Employee for clean up
@@ -932,119 +1001,131 @@ public class SimpleSerializeFetchGroupTests extends BaseFetchGroupTests {
     public void partialMerge() throws Exception {
         EntityManager em = createEntityManager("fieldaccess");
         // Search for an Employee with an Address and Phone Numbers 
-        TypedQuery<Employee> query = em.createQuery("SELECT e FROM Employee e WHERE e.address IS NOT NULL AND e.id IN (SELECT MIN(p.owner.id) FROM PhoneNumber p)", Employee.class);
-        
-        // Load only its names and phone Numbers
-        FetchGroup fetchGroup = new FetchGroup();
-        fetchGroup.addAttribute("firstName");
-        fetchGroup.addAttribute("lastName");
-        FetchGroup phonesFG = phoneDescriptor.getFetchGroupManager().createFullFetchGroup();
-        // that ensures the owner is not instantiated
-        phonesFG.addAttribute("owner.id");
-        phonesFG.removeAttribute("status");
-        phonesFG.setShouldLoad(true);
-        fetchGroup.addAttribute("phoneNumbers", phonesFG);
-        
-        // Make sure the FetchGroup also forces the relationships to be loaded
-        fetchGroup.setShouldLoad(true);
-        query.setHint(QueryHints.FETCH_GROUP, fetchGroup);
-        
-        Employee emp = query.getSingleResult();
-        
-        // Detach Employee through Serialization
-        Employee detachedEmp = (Employee) SerializationHelper.clone(emp);
-        // Modify the detached Employee inverting the names, adding a phone number, and setting the salary
-        detachedEmp.setFirstName(emp.getLastName());
-        detachedEmp.setLastName(emp.getFirstName());
-        detachedEmp.addPhoneNumber(new PhoneNumber("TEST", "999", "999999"));
-        // NOte that salary was not part of the original FetchGroupdetachedEmp.setSalary(1);
-        detachedEmp.setSalary(1);
-        
-        beginTransaction(em);
-        // Merge the detached employee
-        em.merge(detachedEmp);
-        // Flush the changes to the database
-        em.flush();
-        rollbackTransaction(em);
+        try {
+            beginTransaction(em);
+            TypedQuery<Employee> query = em.createQuery("SELECT e FROM Employee e WHERE e.address IS NOT NULL AND e.id IN (SELECT MIN(p.owner.id) FROM PhoneNumber p)", Employee.class);
+            
+            // Load only its names and phone Numbers
+            FetchGroup fetchGroup = new FetchGroup();
+            fetchGroup.addAttribute("firstName");
+            fetchGroup.addAttribute("lastName");
+            FetchGroup phonesFG = phoneDescriptor.getFetchGroupManager().createFullFetchGroup();
+            // that ensures the owner is not instantiated
+            phonesFG.addAttribute("owner.id");
+            phonesFG.removeAttribute("status");
+            phonesFG.setShouldLoad(true);
+            fetchGroup.addAttribute("phoneNumbers", phonesFG);
+            
+            // Make sure the FetchGroup also forces the relationships to be loaded
+            fetchGroup.setShouldLoad(true);
+            query.setHint(QueryHints.FETCH_GROUP, fetchGroup);
+            
+            Employee emp = query.getSingleResult();
+
+            // Detach Employee through Serialization 
+            Employee detachedEmp = (Employee)clone(emp);
+
+            // Modify the detached Employee inverting the names, adding a phone number, and setting the salary
+            detachedEmp.setFirstName(emp.getLastName());
+            detachedEmp.setLastName(emp.getFirstName());
+            detachedEmp.addPhoneNumber(new PhoneNumber("TEST", "999", "999999"));
+            // NOte that salary was not part of the original FetchGroupdetachedEmp.setSalary(1);
+            detachedEmp.setSalary(1);
+            
+            // Merge the detached employee
+            em.merge(detachedEmp);
+            // Flush the changes to the database
+            em.flush();
+        } finally {
+            rollbackTransaction(em);
+            closeEntityManager(em);
+        }
     }
 
     public void copyGroupMerge() {
         // Search for an Employee with an Address and Phone Numbers
         EntityManager em = createEntityManager("fieldaccess");
-        TypedQuery<Employee> query = em.createQuery("SELECT e FROM Employee e WHERE e.id IN (SELECT MIN(ee.id) FROM Employee ee)", Employee.class);
-        Employee emp = query.getSingleResult();
-        assertEquals(1, getQuerySQLTracker(em).getTotalSQLSELECTCalls());
-        System.out.println(">>> Employee retrieved");
-        
-        // Copy only its names and phone Numbers
-        AttributeGroup group = new CopyGroup();
-        group.addAttribute("firstName");
-        group.addAttribute("lastName");
-        group.addAttribute("address");
-        
-        Employee empCopy = (Employee) em.unwrap(JpaEntityManager.class).copy(emp, group);
-        assertEquals(2, getQuerySQLTracker(em).getTotalSQLSELECTCalls());
-        System.out.println(">>> Employee copied");
-        
-        // Modify the detached Employee inverting the names, adding a phone number, and setting the salary
-        empCopy.setFirstName(emp.getLastName());
-        empCopy.setLastName(emp.getFirstName());
-        
-        // Note that salary was not part of the original FetchGroup
-        //empCopy.setSalary(1);
-        
-        beginTransaction(em);
-        // Merge the detached employee
-        em.merge(empCopy);
-        System.out.println(">>> Sparse merge complete");
-        
-        // Flush the changes to the database
-        em.flush();
-        System.out.println(">>> Flush complete");
-        
-        rollbackTransaction(em);
+        try {
+            beginTransaction(em);
+            TypedQuery<Employee> query = em.createQuery("SELECT e FROM Employee e WHERE e.id IN (SELECT MIN(ee.id) FROM Employee ee)", Employee.class);
+            Employee emp = query.getSingleResult();
+            assertEquals(1, getQuerySQLTracker(em).getTotalSQLSELECTCalls());
+            System.out.println(">>> Employee retrieved");
+            
+            // Copy only its names and phone Numbers
+            AttributeGroup group = new CopyGroup();
+            group.addAttribute("firstName");
+            group.addAttribute("lastName");
+            group.addAttribute("address");
+            
+            Employee empCopy = (Employee) em.unwrap(JpaEntityManager.class).copy(emp, group);
+            assertEquals(2, getQuerySQLTracker(em).getTotalSQLSELECTCalls());
+            System.out.println(">>> Employee copied");
+            
+            // Modify the detached Employee inverting the names, adding a phone number, and setting the salary
+            empCopy.setFirstName(emp.getLastName());
+            empCopy.setLastName(emp.getFirstName());
+            
+            // Note that salary was not part of the original FetchGroup
+            //empCopy.setSalary(1);
+            
+            // Merge the detached employee
+            em.merge(empCopy);
+            System.out.println(">>> Sparse merge complete");
+            
+            // Flush the changes to the database
+            em.flush();
+            System.out.println(">>> Flush complete");
+        } finally {
+            rollbackTransaction(em);
+            closeEntityManager(em);
+        }
     }
     
     public void copyGroupMerge2() {
         // Search for an Employee with an Address and Phone Numbers
         EntityManager em = createEntityManager("fieldaccess");
-        TypedQuery<Employee> query = em.createQuery("SELECT e FROM Employee e", Employee.class);
-        query.setHint(QueryHints.BATCH, "e.address");
-        List<Employee> employees = query.getResultList();
-        assertEquals(1, getQuerySQLTracker(em).getTotalSQLSELECTCalls());
-        System.out.println(">>> Employees retrieved");
-        
-        // Copy only its names and phone Numbers
-        AttributeGroup group = new CopyGroup();
-        group.addAttribute("firstName");
-        group.addAttribute("lastName");
-        group.addAttribute("address");
-        
-        List<Employee> employeesCopy = (List<Employee>) em.unwrap(JpaEntityManager.class).copy(employees, group);
-        assertEquals(2, getQuerySQLTracker(em).getTotalSQLSELECTCalls());
-        System.out.println(">>> Employees copied");
-        
-        beginTransaction(em);
-        for(Employee empCopy : employeesCopy) {
-            // Modify the detached Employee inverting the names, adding a phone number, and setting the salary
-            String firstName = empCopy.getFirstName();
-            String lastName = empCopy.getLastName();
-            empCopy.setFirstName(lastName);
-            empCopy.setLastName(firstName);
-    
-            // Note that salary was not part of the original FetchGroup
-            //empCopy.setSalary(1);        
+        try {
+            beginTransaction(em);
+            TypedQuery<Employee> query = em.createQuery("SELECT e FROM Employee e", Employee.class);
+            query.setHint(QueryHints.BATCH, "e.address");
+            List<Employee> employees = query.getResultList();
+            assertEquals(1, getQuerySQLTracker(em).getTotalSQLSELECTCalls());
+            System.out.println(">>> Employees retrieved");
             
-            // Merge the detached employee
-            em.merge(empCopy);
+            // Copy only its names and phone Numbers
+            AttributeGroup group = new CopyGroup();
+            group.addAttribute("firstName");
+            group.addAttribute("lastName");
+            group.addAttribute("address");
+            
+            List<Employee> employeesCopy = (List<Employee>) em.unwrap(JpaEntityManager.class).copy(employees, group);
+            assertEquals(2, getQuerySQLTracker(em).getTotalSQLSELECTCalls());
+            System.out.println(">>> Employees copied");
+            
+            for(Employee empCopy : employeesCopy) {
+                // Modify the detached Employee inverting the names, adding a phone number, and setting the salary
+                String firstName = empCopy.getFirstName();
+                String lastName = empCopy.getLastName();
+                empCopy.setFirstName(lastName);
+                empCopy.setLastName(firstName);
+            
+                // Note that salary was not part of the original FetchGroup
+                //empCopy.setSalary(1);        
+                
+                // Merge the detached employee
+                em.merge(empCopy);
+            }
+            System.out.println(">>> Sparse merge complete");
+            
+            // Flush the changes to the database
+            em.flush();
+            System.out.println(">>> Flush complete");
+            
+        } finally {
+            rollbackTransaction(em);
+            closeEntityManager(em);
         }
-        System.out.println(">>> Sparse merge complete");
-        
-        // Flush the changes to the database
-        em.flush();
-        System.out.println(">>> Flush complete");
-        
-        rollbackTransaction(em);
     }
     
     @Test
@@ -1137,11 +1218,11 @@ public class SimpleSerializeFetchGroupTests extends BaseFetchGroupTests {
         }
         
         EntityManager em = createEntityManager("fieldaccess");
-        Employee emp = minimumEmployee(em);        
-        Employee empCopy = (Employee) em.unwrap(JpaEntityManager.class).copy(emp, group);
-        
-        beginTransaction(em);
         try {
+            beginTransaction(em);
+            Employee emp = minimumEmployee(em);
+            Employee empCopy = (Employee) em.unwrap(JpaEntityManager.class).copy(emp, group);
+            
             if(noPk) {
                 assertNoFetchGroup(empCopy);
                 assertNoFetchGroup(empCopy.getAddress());
@@ -1232,154 +1313,168 @@ public class SimpleSerializeFetchGroupTests extends BaseFetchGroupTests {
     
     void copyCascade(int cascadeDepth) {
         EntityManager em = createEntityManager("fieldaccess");
-        Query query = em.createQuery("SELECT e FROM Employee e");
-        List<Employee> employees = query.getResultList();
+        try {
+            beginTransaction(em);
+            Query query = em.createQuery("SELECT e FROM Employee e");
+            List<Employee> employees = query.getResultList();
 
-        CopyGroup group = new CopyGroup();
-        if(cascadeDepth == CopyGroup.NO_CASCADE) {
-            group.dontCascade();
-        } else if(cascadeDepth == CopyGroup.CASCADE_PRIVATE_PARTS) {
-            // default cascade depth setting
-            group.cascadePrivateParts();
-        } else if(cascadeDepth == CopyGroup.CASCADE_ALL_PARTS) {
-            group.cascadeAllParts();
-        } else {
-            fail("Invalid cascadeDepth = " + cascadeDepth);
-        }
-        group.setShouldResetPrimaryKey(true);
-        
-        List<Employee> employeesCopy;
-        if(cascadeDepth == CopyGroup.NO_CASCADE || cascadeDepth == CopyGroup.CASCADE_PRIVATE_PARTS) {
-            // In this case the objects should be copied one by one - each one using a new CopyGroup.
-            // That ensures most referenced object are original ones (not copies) -
-            // the only exception is privately owned objects in CASCADE_PRIVATE_PARTS case.
-            employeesCopy = new ArrayList(employees.size());
-            for(Employee emp : employees) {
-                CopyGroup groupClone = group.clone();
-                employeesCopy.add((Employee)em.unwrap(JpaEntityManager.class).copy(emp, groupClone));
-            }
-        } else {
-            // cascadeDepth == CopyGroup.CASCADE_ALL_PARTS
-            // In this case all objects should be copied using a single CopyGroup.
-            // That ensures identities of the copies:
-            // for instance if several employees referenced the same project,
-            // then all copies of these employees will reference the single copy of the project. 
-            employeesCopy = (List)em.unwrap(JpaEntityManager.class).copy(employees, group);
-        }
-        
-        // IdentityHashSets will be used to verify copy identities
-        IdentityHashSet originalEmployees = new IdentityHashSet();
-        IdentityHashSet copyEmployees = new IdentityHashSet();
-        IdentityHashSet originalAddresses = new IdentityHashSet();
-        IdentityHashSet copyAddresses = new IdentityHashSet();
-        IdentityHashSet originalProjects = new IdentityHashSet();
-        IdentityHashSet copyProjects = new IdentityHashSet();
-        IdentityHashSet originalPhones = new IdentityHashSet();
-        IdentityHashSet copyPhones = new IdentityHashSet();
-        
-        int size = employees.size();
-        for(int i=0; i < size; i++) {
-            Employee emp = employees.get(i);
-            Employee empCopy = employeesCopy.get(i);
-            if(cascadeDepth == CopyGroup.CASCADE_ALL_PARTS) {
-                originalEmployees.add(emp);
-                copyEmployees.add(empCopy);
+            CopyGroup group = new CopyGroup();
+            if(cascadeDepth == CopyGroup.NO_CASCADE) {
+                group.dontCascade();
+            } else if(cascadeDepth == CopyGroup.CASCADE_PRIVATE_PARTS) {
+                // default cascade depth setting
+                group.cascadePrivateParts();
+            } else if(cascadeDepth == CopyGroup.CASCADE_ALL_PARTS) {
+                group.cascadeAllParts();
             } else {
-                // cascadeDepth == CopyGroup.NO_CASCADE || cascadeDepth == CopyGroup.CASCADE_PRIVATE_PARTS
-                // In this case all Employees referenced by empCopyes are originals (manager and managed employees).
-                // Therefore if we add here each emp and empCopy to originalEmployees and copyEmployees respectively
-                // then copyEmployees will always contain all original managers and managed + plus all copies.
-                // Therefore in this case originalEmployees and copyEmployees will contain only references (managers and managed employees).
+                fail("Invalid cascadeDepth = " + cascadeDepth);
             }
-
-            if(emp.getAddress() == null) {
-                assertTrue("emp.getAddress() == null, but empCopy.getAddress() != null", empCopy.getAddress() == null);
-            } else {
-                originalAddresses.add(emp.getAddress());
-                copyAddresses.add(empCopy.getAddress());
-                if(cascadeDepth == CopyGroup.NO_CASCADE || cascadeDepth == CopyGroup.CASCADE_PRIVATE_PARTS) {
-                    assertTrue("address has been copied", emp.getAddress() == empCopy.getAddress());
-                } else {
-                    // cascadeDepth == CopyGroup.CASCADE_ALL_PARTS
-                    assertFalse("address has not been copied", emp.getAddress() == empCopy.getAddress());
+            group.setShouldResetPrimaryKey(true);
+            
+            List<Employee> employeesCopy;
+            if(cascadeDepth == CopyGroup.NO_CASCADE || cascadeDepth == CopyGroup.CASCADE_PRIVATE_PARTS) {
+                // In this case the objects should be copied one by one - each one using a new CopyGroup.
+                // That ensures most referenced object are original ones (not copies) -
+                // the only exception is privately owned objects in CASCADE_PRIVATE_PARTS case.
+                employeesCopy = new ArrayList(employees.size());
+                for(Employee emp : employees) {
+                    CopyGroup groupClone = group.clone();
+                    employeesCopy.add((Employee)em.unwrap(JpaEntityManager.class).copy(emp, groupClone));
                 }
+            } else {
+                // cascadeDepth == CopyGroup.CASCADE_ALL_PARTS
+                // In this case all objects should be copied using a single CopyGroup.
+                // That ensures identities of the copies:
+                // for instance if several employees referenced the same project,
+                // then all copies of these employees will reference the single copy of the project. 
+                employeesCopy = (List)em.unwrap(JpaEntityManager.class).copy(employees, group);
             }
+            
+            // IdentityHashSets will be used to verify copy identities
+            IdentityHashSet originalEmployees = new IdentityHashSet();
+            IdentityHashSet copyEmployees = new IdentityHashSet();
+            IdentityHashSet originalAddresses = new IdentityHashSet();
+            IdentityHashSet copyAddresses = new IdentityHashSet();
+            IdentityHashSet originalProjects = new IdentityHashSet();
+            IdentityHashSet copyProjects = new IdentityHashSet();
+            IdentityHashSet originalPhones = new IdentityHashSet();
+            IdentityHashSet copyPhones = new IdentityHashSet();
+            
+            int size = employees.size();
+            for(int i=0; i < size; i++) {
+                Employee emp = employees.get(i);
+                Employee empCopy = employeesCopy.get(i);
+                if(cascadeDepth == CopyGroup.CASCADE_ALL_PARTS) {
+                    originalEmployees.add(emp);
+                    copyEmployees.add(empCopy);
+                } else {
+                    // cascadeDepth == CopyGroup.NO_CASCADE || cascadeDepth == CopyGroup.CASCADE_PRIVATE_PARTS
+                    // In this case all Employees referenced by empCopyes are originals (manager and managed employees).
+                    // Therefore if we add here each emp and empCopy to originalEmployees and copyEmployees respectively
+                    // then copyEmployees will always contain all original managers and managed + plus all copies.
+                    // Therefore in this case originalEmployees and copyEmployees will contain only references (managers and managed employees).
+                }
 
-            boolean same;
-            for(Project project : emp.getProjects()) {
-                originalProjects.add(project);
-                same = false;
-                for(Project projectCopy : empCopy.getProjects()) {
-                    copyProjects.add(projectCopy);
-                    if(!same && project == projectCopy) {
-                        same = true;
+                if(emp.getAddress() == null) {
+                    assertTrue("emp.getAddress() == null, but empCopy.getAddress() != null", empCopy.getAddress() == null);
+                } else {
+                    originalAddresses.add(emp.getAddress());
+                    copyAddresses.add(empCopy.getAddress());
+                    if(cascadeDepth == CopyGroup.NO_CASCADE || cascadeDepth == CopyGroup.CASCADE_PRIVATE_PARTS) {
+                        assertTrue("address has been copied", emp.getAddress() == empCopy.getAddress());
+                    } else {
+                        // cascadeDepth == CopyGroup.CASCADE_ALL_PARTS
+                        assertFalse("address has not been copied", emp.getAddress() == empCopy.getAddress());
                     }
                 }
-                if(cascadeDepth == CopyGroup.NO_CASCADE || cascadeDepth == CopyGroup.CASCADE_PRIVATE_PARTS) {
-                    assertTrue("project has been copied", same);
+
+                boolean same;
+                for(Project project : emp.getProjects()) {
+                    originalProjects.add(project);
+                    same = false;
+                    for(Project projectCopy : empCopy.getProjects()) {
+                        copyProjects.add(projectCopy);
+                        if(!same && project == projectCopy) {
+                            same = true;
+                        }
+                    }
+                    if(cascadeDepth == CopyGroup.NO_CASCADE || cascadeDepth == CopyGroup.CASCADE_PRIVATE_PARTS) {
+                        assertTrue("project has been copied", same);
+                    } else {
+                        // cascadeDepth == CopyGroup.CASCADE_ALL_PARTS
+                        assertFalse("project has not been copied", same);
+                    }
+                }
+            
+                for(Employee managedEmp : emp.getManagedEmployees()) {
+                    originalEmployees.add(managedEmp);
+                    same = false;
+                    for(Employee managedEmpCopy : empCopy.getManagedEmployees()) {
+                        copyEmployees.add(managedEmpCopy);
+                        if(!same && managedEmp == managedEmpCopy) {
+                            same = true;
+                        }
+                    }
+                    if(cascadeDepth == CopyGroup.NO_CASCADE || cascadeDepth == CopyGroup.CASCADE_PRIVATE_PARTS) {
+                        assertTrue("managedEmployee has been copied", same);
+                    } else {
+                        // cascadeDepth == CopyGroup.CASCADE_ALL_PARTS
+                        assertFalse("managedEmployee has not been copied", same);
+                    }
+                }
+                
+                if(emp.getManager() == null) {
+                    assertTrue("emp.getManager() == null, but empCopy.getManager() != null", empCopy.getManager() == null);
                 } else {
-                    // cascadeDepth == CopyGroup.CASCADE_ALL_PARTS
-                    assertFalse("project has not been copied", same);
+                    originalEmployees.add(emp.getManager());
+                    copyEmployees.add(empCopy.getManager());
+                    if(cascadeDepth == CopyGroup.NO_CASCADE || cascadeDepth == CopyGroup.CASCADE_PRIVATE_PARTS) {
+                        assertTrue("manager has been copied", emp.getManager() == empCopy.getManager());
+                    } else {
+                        // cascadeDepth == CopyGroup.CASCADE_ALL_PARTS
+                        assertFalse("manager has not been copied", emp.getManager() == empCopy.getManager());
+                    }
+                }
+
+                // phoneNumbers is privately owned
+                for(PhoneNumber phone : emp.getPhoneNumbers()) {
+                    originalPhones.add(phone);
+                    same = false;
+                    for(PhoneNumber phoneCopy : empCopy.getPhoneNumbers()) {
+                        copyPhones.add(phoneCopy);
+                        if(!same && phone == phoneCopy) {
+                            same = true;
+                        }
+                    }
+                    if(cascadeDepth == CopyGroup.NO_CASCADE) {
+                        assertTrue("phone has been copied", same);
+                    } else {
+                        // cascadeDepth == CopyGroup.CASCADE_ALL_PARTS || cascadeDepth == CopyGroup.CASCADE_PRIVATE_PARTS
+                        assertFalse("phone has not been copied", same);
+                    }
                 }
             }
             
-            for(Employee managedEmp : emp.getManagedEmployees()) {
-                originalEmployees.add(managedEmp);
-                same = false;
-                for(Employee managedEmpCopy : empCopy.getManagedEmployees()) {
-                    copyEmployees.add(managedEmpCopy);
-                    if(!same && managedEmp == managedEmpCopy) {
-                        same = true;
-                    }
-                }
-                if(cascadeDepth == CopyGroup.NO_CASCADE || cascadeDepth == CopyGroup.CASCADE_PRIVATE_PARTS) {
-                    assertTrue("managedEmployee has been copied", same);
-                } else {
-                    // cascadeDepth == CopyGroup.CASCADE_ALL_PARTS
-                    assertFalse("managedEmployee has not been copied", same);
-                }
-            }
-            
-            if(emp.getManager() == null) {
-                assertTrue("emp.getManager() == null, but empCopy.getManager() != null", empCopy.getManager() == null);
-            } else {
-                originalEmployees.add(emp.getManager());
-                copyEmployees.add(empCopy.getManager());
-                if(cascadeDepth == CopyGroup.NO_CASCADE || cascadeDepth == CopyGroup.CASCADE_PRIVATE_PARTS) {
-                    assertTrue("manager has been copied", emp.getManager() == empCopy.getManager());
-                } else {
-                    // cascadeDepth == CopyGroup.CASCADE_ALL_PARTS
-                    assertFalse("manager has not been copied", emp.getManager() == empCopy.getManager());
-                }
-            }
-
-            // phoneNumbers is privately owned
-            for(PhoneNumber phone : emp.getPhoneNumbers()) {
-                originalPhones.add(phone);
-                same = false;
-                for(PhoneNumber phoneCopy : empCopy.getPhoneNumbers()) {
-                    copyPhones.add(phoneCopy);
-                    if(!same && phone == phoneCopy) {
-                        same = true;
-                    }
-                }
-                if(cascadeDepth == CopyGroup.NO_CASCADE) {
-                    assertTrue("phone has been copied", same);
-                } else {
-                    // cascadeDepth == CopyGroup.CASCADE_ALL_PARTS || cascadeDepth == CopyGroup.CASCADE_PRIVATE_PARTS
-                    assertFalse("phone has not been copied", same);
-                }
+            assertTrue("copyEmployees.size() == " + copyEmployees.size() + "; was expected " + originalEmployees.size(), originalEmployees.size() == copyEmployees.size());
+            assertTrue("copyAddresses.size() == " + copyAddresses.size() + "; was expected " + originalAddresses.size(), originalAddresses.size() == copyAddresses.size());
+            assertTrue("copyProjects.size() == " + copyProjects.size() + "; was expected " + originalProjects.size(), originalProjects.size() == copyProjects.size());
+            assertTrue("copyPhones.size() == " + copyPhones.size() + "; was expected " + originalPhones.size(), originalPhones.size() == copyPhones.size());
+        } finally {
+            if(isTransactionActive(em)) {
+                rollbackTransaction(em);
             }
         }
-        
-        assertTrue("copyEmployees.size() == " + copyEmployees.size() + "; was expected " + originalEmployees.size(), originalEmployees.size() == copyEmployees.size());
-        assertTrue("copyAddresses.size() == " + copyAddresses.size() + "; was expected " + originalAddresses.size(), originalAddresses.size() == copyAddresses.size());
-        assertTrue("copyProjects.size() == " + copyProjects.size() + "; was expected " + originalProjects.size(), originalProjects.size() == copyProjects.size());
-        assertTrue("copyPhones.size() == " + copyPhones.size() + "; was expected " + originalPhones.size(), originalPhones.size() == copyPhones.size());
     }
     
     private <T> T serialize(Serializable entity) throws IOException, ClassNotFoundException {
         byte[] bytes = SerializationHelper.serialize(entity);
-        return (T) SerializationHelper.deserialize(bytes);
+        ObjectInputStream inStream = new ObjectInputStream(new ByteArrayInputStream(bytes));
+        return (T) inStream.readObject();
+    }
+
+    private Object clone(Serializable object) throws IOException, ClassNotFoundException {
+        byte[] bytes = SerializationHelper.serialize(object);
+        ObjectInputStream inStream = new ObjectInputStream(new ByteArrayInputStream(bytes));
+        return inStream.readObject();
     }
 }

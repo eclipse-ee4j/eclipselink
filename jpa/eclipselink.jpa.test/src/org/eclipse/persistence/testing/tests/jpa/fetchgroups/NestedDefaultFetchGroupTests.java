@@ -56,15 +56,16 @@ public class NestedDefaultFetchGroupTests extends BaseFetchGroupTests {
         
         suite.addTest(new NestedDefaultFetchGroupTests("testSetup"));
         suite.addTest(new NestedDefaultFetchGroupTests("findMinEmployee"));
-        suite.addTest(new NestedDefaultFetchGroupTests("findMinEmployeeLoadAddress"));
-        suite.addTest(new NestedDefaultFetchGroupTests("findMinEmployeeLoadPhones"));
-        suite.addTest(new NestedDefaultFetchGroupTests("findMinEmployeeLoadAddressAndPhones"));
         suite.addTest(new NestedDefaultFetchGroupTests("findMinEmployeeLoadAddressAndPhoneUsingFetchGroup"));
-        suite.addTest(new NestedDefaultFetchGroupTests("allAddress"));
-        suite.addTest(new NestedDefaultFetchGroupTests("allPhone"));
-        suite.addTest(new NestedDefaultFetchGroupTests("singleResultMinEmployeeFetchJoinAddress"));
-        suite.addTest(new NestedDefaultFetchGroupTests("singleResultMinEmployeeFetchJoinAddressLoad"));
-        
+        if (!isJPA10()) {
+            suite.addTest(new NestedDefaultFetchGroupTests("findMinEmployeeLoadAddress"));
+            suite.addTest(new NestedDefaultFetchGroupTests("findMinEmployeeLoadPhones"));
+            suite.addTest(new NestedDefaultFetchGroupTests("findMinEmployeeLoadAddressAndPhones"));
+            suite.addTest(new NestedDefaultFetchGroupTests("allAddress"));
+            suite.addTest(new NestedDefaultFetchGroupTests("allPhone"));
+            suite.addTest(new NestedDefaultFetchGroupTests("singleResultMinEmployeeFetchJoinAddress"));
+            suite.addTest(new NestedDefaultFetchGroupTests("singleResultMinEmployeeFetchJoinAddressLoad"));
+        }
         return suite;
     }
     
@@ -117,6 +118,8 @@ public class NestedDefaultFetchGroupTests extends BaseFetchGroupTests {
 
     void internalFindMinEmployee(boolean loadAddress, boolean loadPhones, boolean useLoadGroup) {        
         EntityManager em = createEntityManager();
+        beginTransaction(em);
+
         int minId = minEmployeeIdWithAddressAndPhones(em);
         assertEquals(1, getQuerySQLTracker(em).getTotalSQLSELECTCalls());
 
@@ -188,6 +191,10 @@ public class NestedDefaultFetchGroupTests extends BaseFetchGroupTests {
                     defaultEmployeeFG.setShouldLoad(originalLoad);
                 }
             }
+            if (isTransactionActive(em)){
+                rollbackTransaction(em);
+            }
+            closeEntityManager(em);
         }
     }
 /*    void internalFindMinEmployee(boolean loadAddress, boolean loadPhones) {
