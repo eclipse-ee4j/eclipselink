@@ -1,5 +1,5 @@
 # !/bin/sh
-set -x
+#set -x
 
 version=2.2.0
 BaseDownloadNFSDir="/home/data/httpd/download.eclipse.org/rt/eclipselink"
@@ -26,6 +26,7 @@ for contentdir in `ls -dr ${BaseDownloadNFSDir}/nightly/${version}/[0-9]*` ; do
     index=`expr $index + 1`
     if [ $index -gt $num_builds ] ; then
         rm -r $contentdir
+        echo "Removed $contentdir from ${BaseDownloadNFSDir}/nightly/${version}."
     fi
 done
 
@@ -36,6 +37,7 @@ for contentdir in `ls -dr ${BaseDownloadNFSDir}/nightly-updates/${version}*` ; d
     index=`expr $index + 1`
     if [ $index -gt $num_p2_builds ] ; then
         rm -r $contentdir
+        echo "Removed $contentdir from ${BaseDownloadNFSDir}/nightly-updates."
     fi
 done
 
@@ -44,10 +46,13 @@ done
 cd ${BaseDownloadNFSDir}/maven.repo/org/eclipse/persistence
 for mvncomp in `ls -d *eclipse*` ; do
     index=0
+    removed=0
     for mvnfile in `ls -r ${mvncomp}/${version}-SNAPSHOT/${mvncomp}*.*` ; do
         index=`expr $index + 1`
         if [ $index -gt $num_maven_files ] ; then
            rm $mvnfile
+           removed=`expr $removed + 1`
         fi
     done
+    echo "Removed $removed files from ${BaseDownloadNFSDir}/maven.repo/org/eclipse/persistence/${mvncomp}/${version}-SNAPSHOT."
 done
