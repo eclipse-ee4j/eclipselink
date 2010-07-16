@@ -16,9 +16,9 @@
  *     12/12/2008-1.1 Guy Pelletier 
  *       - 249860: Implement table per class inheritance support.
  *     01/28/2009-2.0 Guy Pelletier 
- *       - 248293: JPA 2.0 Element Collections (part 1)   
+ *       - 248293: JPA 2.0 Element Collections (part 1)
  *     02/06/2009-2.0 Guy Pelletier 
- *       - 248293: JPA 2.0 Element Collections (part 2)    
+ *       - 248293: JPA 2.0 Element Collections (part 2)
  *     04/24/2009-2.0 Guy Pelletier 
  *       - 270011: JPA 2.0 MappedById support
  *     06/09/2009-2.0 Guy Pelletier 
@@ -29,6 +29,8 @@
  *       - 211322: Add fetch-group(s) support to the EclipseLink-ORM.XML Schema
  *     06/18/2010-2.2 Guy Pelletier 
  *       - 300458: EclispeLink should throw a more specific exception than NPE
+ *     07/16/2010-2.2 Guy Pelletier 
+ *       - 260296: mixed access with no Transient annotation does not result in error
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata;
 
@@ -108,7 +110,7 @@ public class MetadataLogger {
     public static final String IGNORE_MAPPING_METADATA = "metadata_warning_ignore_mapping_metadata";
     
     public static final String MULTIPLE_ID_FIELDS_WITHOUT_ID_CLASS = "metadata_warning_multiple_id_fields_without_id_class";
-    
+    public static final String INVERSE_ACCESS_TYPE_MAPPING_OVERRIDE = "metadata_warning_inverse_access_type_mapping_override";
     
     /*************************************************************************/
     /*                       GENERIC DEFAULT MESSSAGES                       */ 
@@ -244,6 +246,7 @@ public class MetadataLogger {
         addContextString(IGNORE_MAPPING_METADATA);
         
         addContextString(MULTIPLE_ID_FIELDS_WITHOUT_ID_CLASS);
+        addContextString(INVERSE_ACCESS_TYPE_MAPPING_OVERRIDE);
         
         // Generic default messages that could apply to XML and annotation
         // configurations.
@@ -454,6 +457,14 @@ public class MetadataLogger {
      */
     public void logWarningMessage(String ctx, Object param1, Object param2, Object param3) {
         log(SessionLog.WARNING, ctx, new Object[] {param1, param2, param3});
+    }
+    
+    /**
+     * INTERNAL:
+     * Logging utility method.
+     */
+    public void logWarningMessage(String ctx, Object param1, Object param2, Object param3, Object param4, Object param5) {
+        log(SessionLog.WARNING, ctx, new Object[] {param1, param2, param3, param4, param5});
     }
     
     /**

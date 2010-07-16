@@ -8,8 +8,6 @@
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
- *     06/18/2010-2.2 Guy Pelletier 
- *       - 300458: EclispeLink should throw a more specific exception than NPE
  *     07/16/2010-2.2 Guy Pelletier 
  *       - 260296: mixed access with no Transient annotation does not result in error
  ******************************************************************************/ 
@@ -22,16 +20,16 @@ import javax.persistence.Entity;
 import javax.persistence.Table;
 
 @Entity
-@Table(name="JPA_NOISY")
-@Access(AccessType.FIELD)
-public class NoiseBylaw extends Bylaw {
+@Table(name="JPA_BUILDING")
+@Access(AccessType.PROPERTY)
+public class BuildingBylaw extends Bylaw {
+    @Access(AccessType.FIELD)
+    @Column(name="DESCRIP")
+    public String description;
+
     // The access type is FIELD. If we map this map instead of its associated
     // methods marked as access PROPERTY, we will map the wrong column name
     // and tests from InheritedModelJunitTest.
-    public String description;
-
-    @Access(AccessType.PROPERTY)
-    @Column(name="DESCRIP")
     public String getDescription() {
         return description;
     }

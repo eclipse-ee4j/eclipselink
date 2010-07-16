@@ -29,6 +29,8 @@
  *       - 294803: @Column(updatable=false) has no effect on @Basic mappings
  *     06/18/2010-2.2 Guy Pelletier 
  *       - 300458: EclispeLink should throw a more specific exception than NPE
+ *     07/16/2010-2.2 Guy Pelletier 
+ *       - 260296: mixed access with no Transient annotation does not result in error
  ******************************************************************************/  
 package org.eclipse.persistence.testing.tests.jpa.inherited;
 
@@ -57,6 +59,7 @@ import org.eclipse.persistence.testing.models.jpa.inherited.Birthday;
 import org.eclipse.persistence.testing.models.jpa.inherited.Blue;
 import org.eclipse.persistence.testing.models.jpa.inherited.Alpine;
 import org.eclipse.persistence.testing.models.jpa.inherited.BlueLight;
+import org.eclipse.persistence.testing.models.jpa.inherited.BuildingBylaw;
 import org.eclipse.persistence.testing.models.jpa.inherited.Committee;
 import org.eclipse.persistence.testing.models.jpa.inherited.Corona;
 import org.eclipse.persistence.testing.models.jpa.inherited.CoronaTag;
@@ -159,14 +162,21 @@ public class InheritedModelJunitTest extends JUnitTestCase {
         
         NoiseBylaw noiseBylaw = new NoiseBylaw();
         int noiseBylawId = 0;
+        BuildingBylaw buildingBylaw = new BuildingBylaw();
+        int buildingBylawId = 0;
         
         try {
-            getServerSession().setLogLevel(0);
-            
             noiseBylaw.setCity("Ottawa");
             noiseBylaw.setDescription("Can't mow your grass after 9PM!");
             em.persist(noiseBylaw);
+            
+            buildingBylaw.setCity("Ottawa");
+            buildingBylaw.setDescription("Can't build without a permit");
+            em.persist(buildingBylaw);
+            
             noiseBylawId = noiseBylaw.getNumber();
+            buildingBylawId = buildingBylaw.getNumber();
+            
             commitTransaction(em);
         } catch (RuntimeException e) {
             if (isTransactionActive(em)){
@@ -187,6 +197,10 @@ public class InheritedModelJunitTest extends JUnitTestCase {
         String jpqlString = "SELECT n FROM NoiseBylaw n WHERE n.number =" + noiseBylawId;
         NoiseBylaw refreshedNoiseBylaw = (NoiseBylaw) em.createQuery(jpqlString).getSingleResult();
         assertTrue("The noise bylaw read back did not match the original", getServerSession().compareObjects(noiseBylaw, refreshedNoiseBylaw));
+        
+        String jpqlString2 = "SELECT n FROM BuildingBylaw n WHERE n.number =" + buildingBylawId;
+        BuildingBylaw refreshedBuildingBylaw = (BuildingBylaw) em.createQuery(jpqlString2).getSingleResult();
+        assertTrue("The building bylaw read back did not match the original", getServerSession().compareObjects(buildingBylaw, refreshedBuildingBylaw));
         
         closeEntityManager(em);
     }

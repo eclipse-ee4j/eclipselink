@@ -68,6 +68,8 @@
  *       - 264417: Table generation is incorrect for JoinTables in AssociationOverrides
  *     06/18/2010-2.2 Guy Pelletier 
  *       - 300458: EclispeLink should throw a more specific exception than NPE
+ *     07/16/2010-2.2 Guy Pelletier 
+ *       - 260296: mixed access with no Transient annotation does not result in error
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata;
 
@@ -76,6 +78,8 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import javax.persistence.AccessType;
 
 import org.eclipse.persistence.annotations.ExistenceType;
 import org.eclipse.persistence.descriptors.CMPPolicy;
@@ -297,6 +301,14 @@ public class MetadataDescriptor {
         // accessor does not show up in the mapping accessors list.
         if (accessor.isRelationship() && ((RelationshipAccessor) accessor).isValueHolderInterface()) {
             return;
+        }
+        
+        // Log a warning message if we are overriding a mapping accessor.
+        if (m_mappingAccessors.containsKey(accessor.getAttributeName())) {
+            MappingAccessor existingAccessor = m_mappingAccessors.get(accessor.getAttributeName());
+            String existingAccessType = existingAccessor.usesPropertyAccess() ? AccessType.PROPERTY.name() : AccessType.FIELD.name();
+            String accessType = accessor.usesPropertyAccess() ? AccessType.PROPERTY.name() : AccessType.FIELD.name();
+            getLogger().logWarningMessage(getLogger().INVERSE_ACCESS_TYPE_MAPPING_OVERRIDE, accessor.getJavaClass().getName(), existingAccessor.getAnnotatedElementName(), existingAccessType, accessor.getAnnotatedElementName(), accessType);
         }
         
         m_mappingAccessors.put(accessor.getAttributeName(), accessor);
