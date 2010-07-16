@@ -14,6 +14,7 @@
 package org.eclipse.persistence.testing.models.wdf.jpa1.jpql;
 
 import java.util.Collection;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;

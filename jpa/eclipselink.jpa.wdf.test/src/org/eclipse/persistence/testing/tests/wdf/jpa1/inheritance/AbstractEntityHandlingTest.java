@@ -18,15 +18,13 @@ import java.util.Date;
 import javax.persistence.EntityManager;
 import javax.persistence.Query;
 
+import org.eclipse.persistence.testing.framework.wdf.JPAEnvironment;
+import org.eclipse.persistence.testing.models.wdf.jpa1.employee.abstr.AbstractEmployee;
+import org.eclipse.persistence.testing.models.wdf.jpa1.employee.abstr.ContractEmployee;
+import org.eclipse.persistence.testing.tests.wdf.jpa1.JPA1Base;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-
-import org.eclipse.persistence.testing.models.wdf.jpa1.employee.abstr.AbstractEmployee;
-import org.eclipse.persistence.testing.models.wdf.jpa1.employee.abstr.ContractEmployee;
-
-import org.eclipse.persistence.testing.framework.wdf.JPAEnvironment;
-import org.eclipse.persistence.testing.tests.wdf.jpa1.JPA1Base;
 
 public class AbstractEntityHandlingTest extends JPA1Base {
 

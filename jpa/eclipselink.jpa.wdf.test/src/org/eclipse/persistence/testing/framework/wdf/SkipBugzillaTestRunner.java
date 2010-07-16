@@ -26,6 +26,7 @@ import javax.rmi.PortableRemoteObject;
 
 import org.eclipse.persistence.config.PersistenceUnitProperties;
 import org.eclipse.persistence.platform.database.DatabasePlatform;
+import org.eclipse.persistence.testing.framework.wdf.customizer.AdjustArrayTypeCustomizer;
 import org.eclipse.persistence.testing.framework.wdf.server.Notification;
 import org.eclipse.persistence.testing.framework.wdf.server.ServerTestRunner;
 import org.junit.Assert;
@@ -112,11 +113,12 @@ public class SkipBugzillaTestRunner extends BlockJUnit4ClassRunner {
         String databasePlatformClassName = testProperties.get(PersistenceUnitProperties.TARGET_DATABASE); 
         
 
-        if (databasePlatformClassName != null) {
-        databasePlatformClass = (Class<? extends DatabasePlatform>) Class.forName(databasePlatformClassName);
-        } else {
-            databasePlatformClass = null; // FIXME
-        }
+		if (databasePlatformClassName != null) {
+			databasePlatformClass = (Class<? extends DatabasePlatform>) Class.forName(databasePlatformClassName);
+			AdjustArrayTypeCustomizer.setDatabasePlatformClass(databasePlatformClass);
+		} else {
+			databasePlatformClass = null; // FIXME
+		}        
 
         String testBugzillaRun = (String) testProperties.get(TEST_BUGZILLA_RUN);
         if ("all".equals(testBugzillaRun)) {

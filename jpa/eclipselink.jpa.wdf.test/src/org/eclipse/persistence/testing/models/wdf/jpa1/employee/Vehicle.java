@@ -34,12 +34,16 @@ import javax.persistence.Table;
 import javax.persistence.TableGenerator;
 import javax.persistence.Version;
 
+import org.eclipse.persistence.annotations.Customizer;
+import org.eclipse.persistence.testing.framework.wdf.customizer.AdjustArrayTypeCustomizer;
+
 @Cacheable(value = true)
 @Entity
 @Table(name = "TMP_VEHICLE")
 @EntityListeners( { VehicleListener.class })
 @DiscriminatorColumn(name = "DTYPE", discriminatorType = DiscriminatorType.INTEGER)
 @DiscriminatorValue("-1")
+@Customizer(AdjustArrayTypeCustomizer.class)
 public class Vehicle implements Serializable {
 
     private static final long serialVersionUID = 1L;
@@ -59,7 +63,7 @@ public class Vehicle implements Serializable {
     int version;
 
     @ManyToMany
-    @JoinTable(name = "TMP_VEHICLE_PROFILE", joinColumns = { @JoinColumn(name = "VEHICLE_ID") }, inverseJoinColumns = { @JoinColumn(name = "PROFILE_ID", columnDefinition="binary(16) DEFAULT NULL") })
+    @JoinTable(name = "TMP_VEHICLE_PROFILE", joinColumns = { @JoinColumn(name = "VEHICLE_ID") }, inverseJoinColumns = { @JoinColumn(name = "PROFILE_ID", columnDefinition=TravelProfile.BINARY_16_COLUMN) })
     private Set<TravelProfile> profiles;
     
 

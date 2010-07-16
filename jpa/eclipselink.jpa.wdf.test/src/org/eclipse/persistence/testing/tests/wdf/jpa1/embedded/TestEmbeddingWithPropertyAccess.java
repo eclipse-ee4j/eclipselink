@@ -16,14 +16,13 @@ package org.eclipse.persistence.testing.tests.wdf.jpa1.embedded;
 import java.util.Date;
 
 import javax.persistence.EntityManager;
-import org.junit.Test;
 
+import org.eclipse.persistence.testing.framework.wdf.JPAEnvironment;
 import org.eclipse.persistence.testing.models.wdf.jpa1.employee.EmbeddedFieldAccess;
 import org.eclipse.persistence.testing.models.wdf.jpa1.employee.EmbeddedPropertyAccess;
 import org.eclipse.persistence.testing.models.wdf.jpa1.employee.EmbeddingPropertyAccess;
-
-import org.eclipse.persistence.testing.framework.wdf.JPAEnvironment;
 import org.eclipse.persistence.testing.tests.wdf.jpa1.JPA1Base;
+import org.junit.Test;
 
 public class TestEmbeddingWithPropertyAccess extends JPA1Base {
 

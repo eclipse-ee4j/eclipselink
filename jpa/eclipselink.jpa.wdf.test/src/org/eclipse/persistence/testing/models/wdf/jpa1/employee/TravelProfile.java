@@ -22,9 +22,15 @@ import javax.persistence.Id;
 import javax.persistence.ManyToMany;
 import javax.persistence.Table;
 
+import org.eclipse.persistence.annotations.Customizer;
+import org.eclipse.persistence.testing.framework.wdf.customizer.AdjustArrayTypeCustomizer;
+
 @Entity
 @Table(name = "TMP_PROFILE")
+@Customizer(AdjustArrayTypeCustomizer.class)
 public class TravelProfile {
+	
+	static final String BINARY_16_COLUMN = "BINARY(16)";
 
     /**
      * @param guid
@@ -86,7 +92,7 @@ public class TravelProfile {
      * @return Returns the guid.
      */
     @Id
-    @Column(length = 16, columnDefinition="binary(16) DEFAULT NULL")
+    @Column(length = 16, columnDefinition=BINARY_16_COLUMN)
     public byte[] getGuid() {
         return guid;
     }

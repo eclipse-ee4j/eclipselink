@@ -13,6 +13,11 @@
 
 package org.eclipse.persistence.testing.models.wdf.jpa1.node;
 
+import static javax.persistence.CascadeType.ALL;
+import static javax.persistence.CascadeType.MERGE;
+import static javax.persistence.CascadeType.PERSIST;
+import static javax.persistence.CascadeType.REFRESH;
+
 import java.util.HashSet;
 import java.util.Set;
 
@@ -24,10 +29,6 @@ import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import javax.persistence.Transient;
-import static javax.persistence.CascadeType.PERSIST;
-import static javax.persistence.CascadeType.MERGE;
-import static javax.persistence.CascadeType.REFRESH;
-import static javax.persistence.CascadeType.ALL;
 
 @Entity
 @Table(name = "TMP_CASC_NODE")

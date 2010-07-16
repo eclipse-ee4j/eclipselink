@@ -20,18 +20,18 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.HashSet;
 import java.util.Set;
+
 import javax.persistence.EntityManager;
 import javax.persistence.OptimisticLockException;
-import org.junit.Test;
 
+import org.eclipse.persistence.testing.framework.wdf.JPAEnvironment;
+import org.eclipse.persistence.testing.framework.wdf.ToBeInvestigated;
 import org.eclipse.persistence.testing.models.wdf.jpa1.employee.Department;
 import org.eclipse.persistence.testing.models.wdf.jpa1.employee.Employee;
 import org.eclipse.persistence.testing.models.wdf.jpa1.employee.Project;
 import org.eclipse.persistence.testing.models.wdf.jpa1.employee.Review;
-
-import org.eclipse.persistence.testing.framework.wdf.JPAEnvironment;
-import org.eclipse.persistence.testing.framework.wdf.ToBeInvestigated;
 import org.eclipse.persistence.testing.tests.wdf.jpa1.JPA1Base;
+import org.junit.Test;
 
 public class TestSecondaryTable extends JPA1Base {
 

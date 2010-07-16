@@ -29,7 +29,6 @@ import javax.persistence.PersistenceException;
 import org.eclipse.persistence.testing.framework.wdf.Bugzilla;
 import org.eclipse.persistence.testing.framework.wdf.JPAEnvironment;
 import org.eclipse.persistence.testing.framework.wdf.Skip;
-import org.eclipse.persistence.testing.framework.wdf.ToBeInvestigated;
 import org.eclipse.persistence.testing.models.wdf.jpa1.types.BasicTypesFieldAccess;
 import org.eclipse.persistence.testing.models.wdf.jpa1.types.UserDefinedEnum;
 import org.eclipse.persistence.testing.models.wdf.jpa1.types.UserDefinedSerializable;

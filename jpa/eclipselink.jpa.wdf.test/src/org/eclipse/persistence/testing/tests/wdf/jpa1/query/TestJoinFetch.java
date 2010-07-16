@@ -26,8 +26,6 @@ import java.util.Set;
 import javax.persistence.EntityManager;
 import javax.persistence.Query;
 
-import org.eclipse.persistence.platform.database.OraclePlatform;
-import org.eclipse.persistence.testing.framework.wdf.Issue;
 import org.eclipse.persistence.testing.framework.wdf.JPAEnvironment;
 import org.eclipse.persistence.testing.framework.wdf.ToBeInvestigated;
 import org.eclipse.persistence.testing.models.wdf.jpa1.employee.Department;
@@ -121,7 +119,6 @@ public class TestJoinFetch extends JPA1Base {
 
     @SuppressWarnings("unchecked")
     @Test
-    @Issue(issueid=13, databases=OraclePlatform.class)
     public void testJoinFetchProjects() throws SQLException {
         init();
         EntityManager em = getEnvironment().getEntityManager();
@@ -246,7 +243,6 @@ public class TestJoinFetch extends JPA1Base {
     }
 
     @Test
-    @Issue(issueid=13, databases=OraclePlatform.class)
     public void testDistinctJoinFetchHobbiesWithMultipleSelectItems() throws SQLException {
         init();
         EntityManager em = getEnvironment().getEntityManager();

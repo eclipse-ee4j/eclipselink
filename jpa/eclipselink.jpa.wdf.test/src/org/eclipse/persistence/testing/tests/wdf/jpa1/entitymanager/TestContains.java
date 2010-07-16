@@ -15,13 +15,12 @@ package org.eclipse.persistence.testing.tests.wdf.jpa1.entitymanager;
 
 import javax.persistence.EntityManager;
 
-import org.junit.Assert;
-import org.junit.Test;
-
+import org.eclipse.persistence.testing.framework.wdf.JPAEnvironment;
 import org.eclipse.persistence.testing.models.wdf.jpa1.employee.Car;
 import org.eclipse.persistence.testing.models.wdf.jpa1.employee.Department;
 import org.eclipse.persistence.testing.tests.wdf.jpa1.JPA1Base;
-import org.eclipse.persistence.testing.framework.wdf.JPAEnvironment;
+import org.junit.Assert;
+import org.junit.Test;
 
 public class TestContains extends JPA1Base {
 

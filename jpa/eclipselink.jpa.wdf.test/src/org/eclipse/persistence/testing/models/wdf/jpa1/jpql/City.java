@@ -13,8 +13,10 @@
 
 package org.eclipse.persistence.testing.models.wdf.jpa1.jpql;
 
-import java.util.*;
 import java.io.Serializable;
+import java.util.Collection;
+import java.util.Set;
+
 import javax.persistence.AttributeOverride;
 import javax.persistence.AttributeOverrides;
 import javax.persistence.Column;

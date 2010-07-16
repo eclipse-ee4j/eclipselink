@@ -14,14 +14,15 @@
 package org.eclipse.persistence.testing.tests.wdf.jpa1.entitymanager;
 
 import java.util.Set;
+
 import javax.persistence.EntityManager;
-import org.junit.Test;
 
 import org.eclipse.persistence.testing.framework.wdf.JPAEnvironment;
 import org.eclipse.persistence.testing.framework.wdf.ToBeInvestigated;
 import org.eclipse.persistence.testing.models.wdf.jpa1.node.CascadingNode;
 import org.eclipse.persistence.testing.models.wdf.jpa1.node.CascadingNodeDescription;
 import org.eclipse.persistence.testing.tests.wdf.jpa1.JPA1Base;
+import org.junit.Test;
 
 public class TestCascadeRefresh extends JPA1Base {
 

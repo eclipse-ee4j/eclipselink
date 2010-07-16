@@ -24,7 +24,6 @@ import javax.persistence.EntityManager;
 import javax.persistence.PrePersist;
 import javax.persistence.PreRemove;
 
-import org.eclipse.persistence.testing.framework.wdf.Issue;
 import org.eclipse.persistence.testing.framework.wdf.JPAEnvironment;
 import org.eclipse.persistence.testing.models.wdf.jpa1.employee.Bicycle;
 import org.eclipse.persistence.testing.models.wdf.jpa1.employee.BikeListener;

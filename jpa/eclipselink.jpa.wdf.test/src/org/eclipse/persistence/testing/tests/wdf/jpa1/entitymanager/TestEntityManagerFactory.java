@@ -19,13 +19,13 @@ import javax.persistence.EntityManagerFactory;
 
 import junit.framework.Assert;
 
-import org.junit.Test;
-import org.eclipse.persistence.testing.tests.wdf.jpa1.JPA1Base;
 import org.eclipse.persistence.testing.framework.wdf.AbstractBaseTest;
 import org.eclipse.persistence.testing.framework.wdf.JPAEnvironment;
 import org.eclipse.persistence.testing.framework.wdf.Skip;
 import org.eclipse.persistence.testing.framework.wdf.ToBeInvestigated;
 import org.eclipse.persistence.testing.models.wdf.jpa1.employee.Department;
+import org.eclipse.persistence.testing.tests.wdf.jpa1.JPA1Base;
+import org.junit.Test;
 
 // we cannot close the JTA EntityManagerFactory -> makes further tests impossible
 public class TestEntityManagerFactory extends JPA1Base {

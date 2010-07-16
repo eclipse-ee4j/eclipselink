@@ -32,17 +32,16 @@ import javax.persistence.Query;
 import javax.persistence.TemporalType;
 
 import org.eclipse.persistence.testing.framework.wdf.JPAEnvironment;
-import org.eclipse.persistence.testing.framework.wdf.ToBeInvestigated;
 import org.eclipse.persistence.testing.models.wdf.jpa1.employee.Car;
 import org.eclipse.persistence.testing.models.wdf.jpa1.employee.Cubicle;
 import org.eclipse.persistence.testing.models.wdf.jpa1.employee.CubiclePrimaryKeyClass;
 import org.eclipse.persistence.testing.models.wdf.jpa1.employee.Department;
+import org.eclipse.persistence.testing.models.wdf.jpa1.employee.Department.KrassDep;
 import org.eclipse.persistence.testing.models.wdf.jpa1.employee.Employee;
+import org.eclipse.persistence.testing.models.wdf.jpa1.employee.Employee.KrassEmp;
 import org.eclipse.persistence.testing.models.wdf.jpa1.employee.MotorVehicle;
 import org.eclipse.persistence.testing.models.wdf.jpa1.employee.TransmissionType;
 import org.eclipse.persistence.testing.models.wdf.jpa1.employee.Truck;
-import org.eclipse.persistence.testing.models.wdf.jpa1.employee.Department.KrassDep;
-import org.eclipse.persistence.testing.models.wdf.jpa1.employee.Employee.KrassEmp;
 import org.eclipse.persistence.testing.models.wdf.jpa1.types.UserDefinedEnum;
 import org.junit.Test;
 

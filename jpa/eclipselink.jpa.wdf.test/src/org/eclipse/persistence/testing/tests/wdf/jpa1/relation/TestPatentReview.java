@@ -18,14 +18,13 @@ import java.sql.SQLException;
 
 import javax.persistence.EntityManager;
 import javax.persistence.Query;
-import org.junit.Test;
 
-import org.eclipse.persistence.testing.models.wdf.jpa1.employee.Patent;
-import org.eclipse.persistence.testing.models.wdf.jpa1.employee.PatentReview;
-import org.eclipse.persistence.testing.models.wdf.jpa1.employee.PatentId;
-
-import org.eclipse.persistence.testing.tests.wdf.jpa1.JPA1Base;
 import org.eclipse.persistence.testing.framework.wdf.JPAEnvironment;
+import org.eclipse.persistence.testing.models.wdf.jpa1.employee.Patent;
+import org.eclipse.persistence.testing.models.wdf.jpa1.employee.PatentId;
+import org.eclipse.persistence.testing.models.wdf.jpa1.employee.PatentReview;
+import org.eclipse.persistence.testing.tests.wdf.jpa1.JPA1Base;
+import org.junit.Test;
 
 public class TestPatentReview extends JPA1Base {
 

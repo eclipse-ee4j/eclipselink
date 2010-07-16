@@ -19,11 +19,11 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 
 import javax.persistence.EntityManager;
-import org.junit.Test;
 
-import org.eclipse.persistence.testing.models.wdf.jpa1.node.CascadingNode;
 import org.eclipse.persistence.testing.framework.wdf.JPAEnvironment;
+import org.eclipse.persistence.testing.models.wdf.jpa1.node.CascadingNode;
 import org.eclipse.persistence.testing.tests.wdf.jpa1.JPA1Base;
+import org.junit.Test;
 
 /**
  * A new entity instance becomes both managed and persistent by invoking the persist method on it or by cascading the persist

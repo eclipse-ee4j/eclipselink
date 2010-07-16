@@ -25,16 +25,14 @@ import java.util.List;
 import javax.persistence.EntityManager;
 import javax.persistence.Query;
 
-import org.junit.Test;
-
+import org.eclipse.persistence.testing.framework.wdf.JPAEnvironment;
 import org.eclipse.persistence.testing.models.wdf.jpa1.employee.BrokerageAccount;
 import org.eclipse.persistence.testing.models.wdf.jpa1.employee.Car;
 import org.eclipse.persistence.testing.models.wdf.jpa1.employee.CostCenter;
 import org.eclipse.persistence.testing.models.wdf.jpa1.employee.Employee;
 import org.eclipse.persistence.testing.models.wdf.jpa1.employee.MotorVehicle;
-
-import org.eclipse.persistence.testing.framework.wdf.JPAEnvironment;
 import org.eclipse.persistence.testing.tests.wdf.jpa1.JPA1Base;
+import org.junit.Test;
 
 public class TestEagerLoading extends JPA1Base {
 

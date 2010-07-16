@@ -20,6 +20,7 @@ import java.util.List;
 import javax.persistence.EntityManager;
 import javax.persistence.Query;
 
+import org.eclipse.persistence.testing.framework.wdf.Bugzilla;
 import org.eclipse.persistence.testing.framework.wdf.JPAEnvironment;
 import org.eclipse.persistence.testing.models.wdf.jpa1.employee.Employee;
 import org.eclipse.persistence.testing.tests.wdf.jpa1.JPA1Base;
@@ -66,6 +67,7 @@ public class TestSetFunctions extends JPA1Base {
     }
 
     @Test
+    @Bugzilla(bugid=320120, databaseNames="org.eclipse.persistence.platform.database.MaxDBPlatform")
     public void testSum() {
         JPAEnvironment env = getEnvironment();
         EntityManager em = env.getEntityManager();

@@ -14,6 +14,7 @@
 package org.eclipse.persistence.testing.models.wdf.jpa1.employee;
 
 import java.io.Serializable;
+
 import javax.persistence.Basic;
 import javax.persistence.Cacheable;
 import javax.persistence.ColumnResult;

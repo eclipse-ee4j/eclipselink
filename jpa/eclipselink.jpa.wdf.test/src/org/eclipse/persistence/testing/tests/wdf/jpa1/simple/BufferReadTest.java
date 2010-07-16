@@ -22,8 +22,9 @@ import javax.persistence.EntityManager;
 import javax.persistence.Query;
 import javax.sql.DataSource;
 
+import org.eclipse.persistence.platform.database.SQLServerPlatform;
 import org.eclipse.persistence.testing.framework.wdf.JPAEnvironment;
-import org.eclipse.persistence.testing.framework.wdf.ToBeInvestigated;
+import org.eclipse.persistence.testing.framework.wdf.Skip;
 import org.eclipse.persistence.testing.models.wdf.jpa1.employee.Department;
 import org.eclipse.persistence.testing.models.wdf.jpa1.types.BasicTypesPropertyAccess;
 import org.eclipse.persistence.testing.tests.wdf.jpa1.JPA1Base;
@@ -268,6 +269,7 @@ public class BufferReadTest extends JPA1Base {
     }
 
     @Test
+    @Skip(databases=SQLServerPlatform.class)
     public void testNativeFieldsExecuteOnlyOutsideTransactionSmall() {
         final JPAEnvironment environment = getEnvironment();
         final EntityManager myEm = environment.getEntityManager();

@@ -13,24 +13,23 @@
 
 package org.eclipse.persistence.testing.tests.wdf.jpa1.relation;
 
+import static org.junit.Assert.assertTrue;
+
 import java.io.IOException;
 import java.sql.Date;
 import java.util.Iterator;
 import java.util.Set;
+
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceException;
-import org.junit.Test;
 
+import org.eclipse.persistence.testing.framework.wdf.AbstractBaseTest;
+import org.eclipse.persistence.testing.framework.wdf.JPAEnvironment;
 import org.eclipse.persistence.testing.models.wdf.jpa1.employee.Department;
 import org.eclipse.persistence.testing.models.wdf.jpa1.employee.Employee;
 import org.eclipse.persistence.testing.models.wdf.jpa1.employee.Review;
-
 import org.eclipse.persistence.testing.tests.wdf.jpa1.JPA1Base;
-import org.eclipse.persistence.testing.framework.wdf.AbstractBaseTest;
-import org.eclipse.persistence.testing.framework.wdf.JPAEnvironment;
-import org.eclipse.persistence.testing.framework.wdf.ToBeInvestigated;
-
-import static org.junit.Assert.assertTrue;
+import org.junit.Test;
 
 @SuppressWarnings("unchecked")
 public class TestEmployee_Review extends JPA1Base {

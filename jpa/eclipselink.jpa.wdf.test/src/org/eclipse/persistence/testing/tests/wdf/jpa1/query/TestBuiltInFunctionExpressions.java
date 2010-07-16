@@ -13,7 +13,6 @@
 
 package org.eclipse.persistence.testing.tests.wdf.jpa1.query;
 
-import org.eclipse.persistence.testing.framework.wdf.Skip;
 import org.eclipse.persistence.testing.framework.wdf.ToBeInvestigated;
 import org.junit.Test;
 

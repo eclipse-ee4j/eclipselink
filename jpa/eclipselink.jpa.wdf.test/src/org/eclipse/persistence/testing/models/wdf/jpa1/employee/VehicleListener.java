@@ -14,6 +14,7 @@
 package org.eclipse.persistence.testing.models.wdf.jpa1.employee;
 
 import java.lang.annotation.Annotation;
+
 import javax.persistence.PostLoad;
 import javax.persistence.PostPersist;
 import javax.persistence.PostRemove;

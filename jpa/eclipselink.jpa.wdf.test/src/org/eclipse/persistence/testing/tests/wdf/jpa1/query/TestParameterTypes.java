@@ -22,8 +22,6 @@ import javax.persistence.EntityManager;
 import javax.persistence.Query;
 import javax.persistence.TemporalType;
 
-import org.eclipse.persistence.platform.database.OraclePlatform;
-import org.eclipse.persistence.testing.framework.wdf.Issue;
 import org.eclipse.persistence.testing.framework.wdf.JPAEnvironment;
 import org.eclipse.persistence.testing.models.wdf.jpa1.types.BasicTypesFieldAccess;
 import org.eclipse.persistence.testing.models.wdf.jpa1.types.UserDefinedEnum;
@@ -598,7 +596,6 @@ public class TestParameterTypes extends JPA1Base {
 
     // arrays
     @Test
-    @Issue(issueid=13, databases=OraclePlatform.class)
     public void testPrimitiveByteArray2Binary() {
         final byte[] UNCHANGED = new byte[] { 0, 1, 2, 3, 4, 5, 6, 7 };
         Validator validator = new Validator() {
@@ -658,7 +655,6 @@ public class TestParameterTypes extends JPA1Base {
     }
 
     @Test
-    @Issue(issueid=13, databases=OraclePlatform.class)
     public void testPrimitiveCharArray2Varchar() {
         final char[] UNCHANGED = new char[] { 'U', 'N', 'C', 'H', 'A', 'N', 'G', 'E', 'D' };
         Validator validator = new Validator() {
@@ -699,7 +695,6 @@ public class TestParameterTypes extends JPA1Base {
     }
 
     @Test
-    @Issue(issueid=13, databases=OraclePlatform.class)
     public void testWrapperByteArray2Binary() {
         final Byte[] UNCHANGED = new Byte[] { Byte.valueOf((byte) 0), Byte.valueOf((byte) 1), Byte.valueOf((byte) 2),
                 Byte.valueOf((byte) 3), Byte.valueOf((byte) 4), Byte.valueOf((byte) 5), Byte.valueOf((byte) 6),
@@ -766,7 +761,6 @@ public class TestParameterTypes extends JPA1Base {
 
     @SuppressWarnings("boxing")
     @Test
-    @Issue(issueid=13, databases=OraclePlatform.class)
     public void testWrapperCharArray2Varchar() {
         final Character[] UNCHANGED = new Character[] { 'U', 'N', 'C', 'H', 'A', 'N', 'G', 'E', 'D' };
         Validator validator = new Validator() {

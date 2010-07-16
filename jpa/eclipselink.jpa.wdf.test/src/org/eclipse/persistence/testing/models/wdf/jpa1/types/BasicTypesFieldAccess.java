@@ -36,7 +36,9 @@ import javax.persistence.TemporalType;
 import javax.persistence.Transient;
 import javax.persistence.Version;
 
+import org.eclipse.persistence.annotations.Customizer;
 import org.eclipse.persistence.annotations.Mutable;
+import org.eclipse.persistence.testing.framework.wdf.customizer.AdjustArrayTypeCustomizer;
 
 /*
  * This entity class contains all supported <i>basic </i> data types.
@@ -49,6 +51,7 @@ import org.eclipse.persistence.annotations.Mutable;
 
 @Entity
 @Table(name = "TMP_BASIC_TYPES_FA")
+@Customizer(AdjustArrayTypeCustomizer.class)
 public class BasicTypesFieldAccess {
 
     @Transient
@@ -175,7 +178,7 @@ public class BasicTypesFieldAccess {
 
     // arrays
     @Basic
-    @Column(name = "PBA_BINARY", length = 8)
+	@Column(name = "PBA_BINARY", length = 8, columnDefinition = "BINARY(8)")
     @Mutable
     protected byte[] primitiveByteArray2Binary; // BINARY
 
@@ -191,7 +194,7 @@ public class BasicTypesFieldAccess {
     protected byte[] primitiveByteArray2Blob; // BLOB
 
     @Basic
-    @Column(name = "WBA_BINARY", length = 8)
+	@Column(name = "WBA_BINARY", length = 8, columnDefinition = "BINARY(8)")
     @Mutable
     protected Byte[] wrapperByteArray2Binary; // BINARY
 
@@ -207,7 +210,7 @@ public class BasicTypesFieldAccess {
     protected Byte[] wrapperByteArray2Blob; // BLOB
 
     @Basic
-    @Column(name = "PCA_VARCHAR")
+	@Column(name = "PCA_VARCHAR", columnDefinition = "VARCHAR(255)")
     @Mutable
     protected char[] primitiveCharArray2Varchar; // VARCHAR
 
@@ -218,7 +221,7 @@ public class BasicTypesFieldAccess {
     protected char[] primitiveCharArray2Clob; // CLOB
 
     @Basic
-    @Column(name = "WCA_VARCHAR")
+	@Column(name = "WCA_VARCHAR", columnDefinition = "VARCHAR(255)")
     @Mutable
     protected Character[] wrapperCharacterArray2Varchar; // VARCHAR
 

@@ -14,6 +14,7 @@
 package org.eclipse.persistence.testing.models.wdf.jpa1.jpql;
 
 import java.util.Set;
+
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.ManyToMany;

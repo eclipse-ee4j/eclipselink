@@ -14,14 +14,14 @@
 package org.eclipse.persistence.testing.tests.wdf.jpa1.entitymanager;
 
 import javax.persistence.EntityManager;
-import org.junit.Test;
 
+import org.eclipse.persistence.testing.framework.wdf.JPAEnvironment;
 import org.eclipse.persistence.testing.models.wdf.jpa1.employee.Cubicle;
 import org.eclipse.persistence.testing.models.wdf.jpa1.employee.CubiclePrimaryKeyClass;
 import org.eclipse.persistence.testing.models.wdf.jpa1.employee.Department;
 import org.eclipse.persistence.testing.models.wdf.jpa1.employee.Employee;
 import org.eclipse.persistence.testing.tests.wdf.jpa1.JPA1Base;
-import org.eclipse.persistence.testing.framework.wdf.JPAEnvironment;
+import org.junit.Test;
 
 public class TestUpdate extends JPA1Base {
 

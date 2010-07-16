@@ -22,11 +22,13 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
+
 import javax.persistence.EntityManager;
 import javax.sql.DataSource;
-import org.junit.Before;
-import org.junit.Test;
 
+import org.eclipse.persistence.testing.framework.wdf.AbstractBaseTest;
+import org.eclipse.persistence.testing.framework.wdf.Bugzilla;
+import org.eclipse.persistence.testing.framework.wdf.JPAEnvironment;
 import org.eclipse.persistence.testing.models.wdf.jpa1.employee.Bicycle;
 import org.eclipse.persistence.testing.models.wdf.jpa1.employee.Department;
 import org.eclipse.persistence.testing.models.wdf.jpa1.employee.Employee;
@@ -34,13 +36,9 @@ import org.eclipse.persistence.testing.models.wdf.jpa1.employee.Item_Byte;
 import org.eclipse.persistence.testing.models.wdf.jpa1.employee.Project;
 import org.eclipse.persistence.testing.models.wdf.jpa1.employee.TravelProfile;
 import org.eclipse.persistence.testing.models.wdf.jpa1.employee.Vehicle;
-
 import org.eclipse.persistence.testing.tests.wdf.jpa1.JPA1Base;
-import org.eclipse.persistence.testing.framework.wdf.AbstractBaseTest;
-import org.eclipse.persistence.testing.framework.wdf.Bugzilla;
-import org.eclipse.persistence.testing.framework.wdf.Issue;
-import org.eclipse.persistence.testing.framework.wdf.JPAEnvironment;
-import org.eclipse.persistence.testing.framework.wdf.ToBeInvestigated;
+import org.junit.Before;
+import org.junit.Test;
 
 @SuppressWarnings("unchecked")
 public class TestBidirectionalManyToMany extends JPA1Base {

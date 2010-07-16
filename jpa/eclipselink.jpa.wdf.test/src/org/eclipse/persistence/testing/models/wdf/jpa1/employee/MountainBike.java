@@ -13,10 +13,10 @@
 
 package org.eclipse.persistence.testing.models.wdf.jpa1.employee;
 
+import javax.persistence.Cacheable;
 import javax.persistence.DiscriminatorValue;
 import javax.persistence.Entity;
 import javax.persistence.EntityListeners;
-import javax.persistence.Cacheable;
 
 @Cacheable(true)
 @Entity

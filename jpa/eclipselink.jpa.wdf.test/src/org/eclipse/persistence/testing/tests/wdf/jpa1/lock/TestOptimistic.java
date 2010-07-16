@@ -25,7 +25,6 @@ import javax.persistence.RollbackException;
 
 import org.eclipse.persistence.testing.framework.wdf.Bugzilla;
 import org.eclipse.persistence.testing.framework.wdf.JPAEnvironment;
-import org.eclipse.persistence.testing.framework.wdf.ToBeInvestigated;
 import org.eclipse.persistence.testing.models.wdf.jpa1.employee.Review;
 import org.eclipse.persistence.testing.models.wdf.jpa1.node.Node;
 import org.eclipse.persistence.testing.tests.wdf.jpa1.JPA1Base;

@@ -23,17 +23,16 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+
 import javax.persistence.EntityManager;
 
-import org.junit.Test;
-
+import org.eclipse.persistence.testing.framework.wdf.JPAEnvironment;
 import org.eclipse.persistence.testing.models.wdf.jpa1.employee.Department;
 import org.eclipse.persistence.testing.models.wdf.jpa1.employee.Employee;
 import org.eclipse.persistence.testing.models.wdf.jpa1.employee.Patent;
 import org.eclipse.persistence.testing.models.wdf.jpa1.employee.PatentId;
-
 import org.eclipse.persistence.testing.tests.wdf.jpa1.JPA1Base;
-import org.eclipse.persistence.testing.framework.wdf.JPAEnvironment;
+import org.junit.Test;
 
 public class TestEmployeePatent extends JPA1Base {
     private static final Integer EDISON = new Integer(26);

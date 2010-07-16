@@ -26,11 +26,15 @@ import javax.persistence.Id;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
+import org.eclipse.persistence.annotations.Customizer;
+import org.eclipse.persistence.testing.framework.wdf.customizer.AdjustArrayTypeCustomizer;
+
 @Entity
 @Table(name = "BYTE_ITEM")
+@Customizer(AdjustArrayTypeCustomizer.class)
 public class Item_Byte implements Serializable {
     @Id
-    @Column(name = "ITEM_ID", columnDefinition="binary(16)")
+    @Column(name = "ITEM_ID", columnDefinition=TravelProfile.BINARY_16_COLUMN)
     private byte[] itemId;
     private String namespace;
     private String text;

@@ -13,6 +13,8 @@
 
 package org.eclipse.persistence.testing.tests.wdf.jpa1.query;
 
+import static org.junit.Assert.assertEquals;
+
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
@@ -30,8 +32,6 @@ import org.eclipse.persistence.testing.models.wdf.jpa1.employee.Department;
 import org.eclipse.persistence.testing.models.wdf.jpa1.employee.Project;
 import org.eclipse.persistence.testing.tests.wdf.jpa1.JPA1Base;
 import org.junit.Test;
-
-import static org.junit.Assert.assertEquals;
 
 public class TestCount extends JPA1Base {
 

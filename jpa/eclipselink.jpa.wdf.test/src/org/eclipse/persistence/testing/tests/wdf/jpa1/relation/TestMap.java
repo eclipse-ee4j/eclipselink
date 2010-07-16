@@ -14,18 +14,16 @@
 package org.eclipse.persistence.testing.tests.wdf.jpa1.relation;
 
 import javax.persistence.EntityManager;
-import org.junit.Test;
 
 import org.eclipse.persistence.testing.framework.wdf.Bugzilla;
-import org.eclipse.persistence.testing.framework.wdf.ToBeInvestigated;
 import org.eclipse.persistence.testing.models.wdf.jpa1.employee.Cubicle;
 import org.eclipse.persistence.testing.models.wdf.jpa1.employee.CubiclePrimaryKeyClass;
 import org.eclipse.persistence.testing.models.wdf.jpa1.employee.Department;
 import org.eclipse.persistence.testing.models.wdf.jpa1.employee.Employee;
 import org.eclipse.persistence.testing.models.wdf.jpa1.employee.Office;
 import org.eclipse.persistence.testing.models.wdf.jpa1.employee.UniqueColorOffice;
-
 import org.eclipse.persistence.testing.tests.wdf.jpa1.JPA1Base;
+import org.junit.Test;
 
 public class TestMap extends JPA1Base {
 

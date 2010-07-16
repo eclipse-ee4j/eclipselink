@@ -26,8 +26,6 @@ import java.util.Set;
 import javax.persistence.EntityManager;
 import javax.persistence.Query;
 
-import org.eclipse.persistence.platform.database.OraclePlatform;
-import org.eclipse.persistence.testing.framework.wdf.Issue;
 import org.eclipse.persistence.testing.framework.wdf.JPAEnvironment;
 import org.eclipse.persistence.testing.framework.wdf.ToBeInvestigated;
 import org.eclipse.persistence.testing.models.wdf.jpa1.employee.Bicycle;
@@ -279,7 +277,6 @@ public class TestExtendedQueries extends JPA1Base {
 
     // @TestProperties(unsupportedDatabaseVendors = { DatabaseVendor.OPEN_SQL })
     @Test
-    @Issue(issueid=13, databases=OraclePlatform.class)
     public void testQueryWithBuiltinAbs() throws Exception {
         EntityManager em = getEnvironment().getEntityManager();
         try {
@@ -294,7 +291,6 @@ public class TestExtendedQueries extends JPA1Base {
 
     // @TestProperties(unsupportedDatabaseVendors = { DatabaseVendor.OPEN_SQL })
     @Test
-    @Issue(issueid=13, databases=OraclePlatform.class)
     public void testQueryWithMemberOf() throws Exception {
         EntityManager em = getEnvironment().getEntityManager();
         try {
