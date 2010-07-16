@@ -435,6 +435,32 @@ public abstract class AbstractSessionLog implements SessionLog, java.lang.Clonea
     /**
      * PUBLIC:
      * <p>
+     * Log a message with four parameters that needs to be translated.
+     * </p><p>
+     *
+     * @param level the log request level value
+     * </p><p>
+     * @param message the string message
+     * </p><p>
+     * @param param1  a parameter of the message
+     * </p><p>
+     * @param param2  second parameter of the message
+     * </p><p>
+     * @param param3  third parameter of the message
+     * </p><p>
+     * @param param4  third parameter of the message
+     * </p>
+     */
+    public void log(int level, String message, Object param1, Object param2, Object param3, Object param4) {
+        if (!shouldLog(level)) {
+            return;
+        }
+        log(level, message, new Object[] { param1, param2, param3, param4 });
+    }
+    
+    /**
+     * PUBLIC:
+     * <p>
      * Log a message with an array of parameters that needs to be translated.
      * </p><p>
      *

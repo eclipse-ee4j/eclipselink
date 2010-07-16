@@ -40,5 +40,21 @@ public interface JMXEnabledPlatform {
      * @see #registerMBean()
      * @since EclipseLink 2.1.1 
      */
-    public abstract void prepareServerSpecificServicesMBean();    
+    public abstract void prepareServerSpecificServicesMBean();
+    
+    /**
+     * INTERNAL: 
+     * getApplicationName(): Answer the name of the module (EAR name) that this session is associated with.
+     * Answer "unknown" if there is no application name available.
+     * Default behavior is to return "unknown"
+     * 
+     * There are 4 levels of implementation.
+     * 1) use the property override weblogic.applicationName, or
+     * 2) perform a reflective weblogic.work.executeThreadRuntime.getApplicationName() call, or
+     * 3) extract the moduleName:persistence_unit from the weblogic classloader string representation, or
+     * 3) defer to superclass - usually return "unknown"
+     *
+     * @return String applicationName
+     */
+    public abstract String getApplicationName();
 }

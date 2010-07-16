@@ -11,10 +11,13 @@
  *     06/30/2010-2.1.1 Michael O'Brien 
  *       - 316513: Enable JMX MBean functionality for JBoss, Glassfish and WebSphere in addition to WebLogic
  *       Move JMX MBean generic registration code up from specific platforms
- *       see <link>http://wiki.eclipse.org/EclipseLink/DesignDocs/316513</link>        
+ *       see <link>http://wiki.eclipse.org/EclipseLink/DesignDocs/316513</link>
+ *     07/15/2010-2.1.1 Michael O'Brien 
+ *       - 316513: registration/deregistration mismatch for MBean Object name reg=- and dereg=_ - no more instance already exists on redeploy
  ******************************************************************************/  
 package org.eclipse.persistence.platform.server;
 
+import java.lang.management.ManagementFactory;
 import java.util.List;
 
 import javax.management.InstanceAlreadyExistsException;
@@ -65,6 +68,8 @@ public abstract class JMXServerPlatformBase extends ServerPlatformBase {
 
     /** This is the prefix for all MBeans that are registered with their specific session name appended */
     public static final String JMX_REGISTRATION_PREFIX = "TopLink:Name=";
+    /** The default indexed MBeanServer instance to use when multiple MBeanServer instances exist on the platform - usually only in JBoss */
+    public static final int JMX_MBEANSERVER_INDEX_DEFAULT_FOR_MULTIPLE_SERVERS = 0;
 
     /** Cache the ServerPlatform MBeanServer for performance */
     private MBeanServer mBeanServer = null;
@@ -91,6 +96,16 @@ public abstract class JMXServerPlatformBase extends ServerPlatformBase {
     
     /** 
      * INTERNAL:
+     * Return the MBeanServer to be used for MBean registration and deregistration.<br>
+     * This MBeanServer reference is lazy loaded and cached on the platform.<br>
+     * There are multiple ways of getting the MBeanServer<br>
+     * <p>
+     * 1) MBeanServerFactory static function - working for all 4 server WebLogic, WebSphere, JBoss and Glassfish in a generic way<br>
+     *   - JBoss is the only server to return 2 MBeanServers in the List<br>
+     * 2) ManagementFactory static function - what is the difference in using this one over the one returning a List of servers<br>
+     * 3) JNDI lookup<br>
+     * 4) Direct server specific native API<br></p>
+     * We are using method (1)<br>
      * 
      * @return the JMX specification MBeanServer
      */
@@ -99,31 +114,46 @@ public abstract class JMXServerPlatformBase extends ServerPlatformBase {
         if(null == mBeanServer) {
             try {
                 // Attempt to get the first MBeanServer we find - usually there is only one - when agentId == null we return a List of them
-                List<MBeanServer> mBeanServerList = MBeanServerFactory.findMBeanServer(null);
+                List<MBeanServer> mBeanServerList = MBeanServerFactory.findMBeanServer(null);                
                 if(null == mBeanServerList || mBeanServerList.isEmpty()) {
                     // Unable to acquire a JMX specification List of MBeanServer instances
-                    //System.out.println("Unable to get an MBeanServer list");
+                    // TODO: Warning required
+                    // Try alternate static method
+                    mBeanServer = ManagementFactory.getPlatformMBeanServer();
+                    if(null == mBeanServer) {
+                        AbstractSessionLog.getLog().log(SessionLog.INFO, 
+                            "jmx_mbean_runtime_services_registration_mbeanserver_print",
+                            mBeanServer, mBeanServer.getMBeanCount(), mBeanServer.getDefaultDomain(), 0);
+                    } else {
+                        // TODO: Warning required
+                    }
                 } else {
                     // Use the first MBeanServer by default - there may be multiple domains each with their own MBeanServer
-                    mBeanServer = mBeanServerList.get(0);
+                    mBeanServer = mBeanServerList.get(JMX_MBEANSERVER_INDEX_DEFAULT_FOR_MULTIPLE_SERVERS);
                     if(mBeanServerList.size() > 1) {
-                        // There are multiple MBeanServerInstances - just warn for now
+                        // There are multiple MBeanServerInstances - ust warn for now
                         AbstractSessionLog.getLog().log(SessionLog.WARNING, 
                                 "jmx_mbean_runtime_services_registration_encountered_multiple_mbeanserver_instances",
-                                mBeanServerList.size(), mBeanServer);
-                        // Check the domain if it exists and use a non-null one
-                        
-                        /*for(MBeanServer anMBeanServer : mBeanServerList) {
+                                mBeanServerList.size(), JMX_MBEANSERVER_INDEX_DEFAULT_FOR_MULTIPLE_SERVERS, mBeanServer);
+                        // IE: for JBoss we need to verify we are using the correct MBean server of the two (default, null)
+                        // Check the domain if it is non-null - avoid using this server
+                        int index = 0;
+                        for(MBeanServer anMBeanServer : mBeanServerList) {
+                            String defaultDomain = anMBeanServer.getDefaultDomain();
+                            AbstractSessionLog.getLog().log(SessionLog.INFO, 
+                                    "jmx_mbean_runtime_services_registration_mbeanserver_print",
+                                    anMBeanServer, anMBeanServer.getMBeanCount(), anMBeanServer.getDefaultDomain(), index);
                             if(null != anMBeanServer.getDefaultDomain()) {
                                 mBeanServer = anMBeanServer;
+                                AbstractSessionLog.getLog().log(SessionLog.WARNING, 
+                                        "jmx_mbean_runtime_services_switching_to_alternate_mbeanserver",
+                                        mBeanServer, index);                                                                
                             }
-                        }*/
+                            index++;
+                        }
                     }
                     // iterate and print the names of the MBeanServer instances
                     for(MBeanServer anMBeanServer : mBeanServerList) {
-                        AbstractSessionLog.getLog().log(SessionLog.INFO, 
-                                "jmx_mbean_runtime_services_registration_mbeanserver_print",
-                                anMBeanServer, anMBeanServer.getMBeanCount());
                     }
                 }                
             } catch (Exception e) {
@@ -148,14 +178,12 @@ public abstract class JMXServerPlatformBase extends ServerPlatformBase {
      * @see #disableRuntimeServices()
      * @see #registerMBean()
      */
-    public void serverSpecificRegisterMBean() {
-        
+    public void serverSpecificRegisterMBean() {        
         // get and cache module and application name during registration
         MBeanServer mBeanServerRuntime = getMBeanServer();      
         ObjectName name = null;      
         String sessionName = getMBeanSessionName();
         if (null != sessionName && (shouldRegisterDevelopmentBean || shouldRegisterRuntimeBean)) {
-            try {                    
                 // Attempt to register new mBean with the server
                 if (null != mBeanServerRuntime && shouldRegisterDevelopmentBean) {
                     try {
@@ -204,9 +232,6 @@ public abstract class JMXServerPlatformBase extends ServerPlatformBase {
                     }
                     AbstractSessionLog.getLog().log(SessionLog.FINEST, "registered_mbean", runtimeInstance);          
                 }
-            } catch (Exception exception) {
-                AbstractSessionLog.getLog().log(SessionLog.WARNING, "problem_registering_mbean", exception);
-            }
         }
     }
     
@@ -229,7 +254,7 @@ public abstract class JMXServerPlatformBase extends ServerPlatformBase {
                 // Attempt to register new mBean with the server
                 if (shouldRegisterDevelopmentBean) {
                     try {
-                        name = new ObjectName(JMX_REGISTRATION_PREFIX + "Development_" + sessionName + ",Type=Configuration");
+                        name = new ObjectName(JMX_REGISTRATION_PREFIX + "Development-" + sessionName + ",Type=Configuration");                        
                     } catch (MalformedObjectNameException mne) {
                         AbstractSessionLog.getLog().log(SessionLog.WARNING, "problem_unregistering_mbean", mne);
                     } catch (Exception exception) {
@@ -342,6 +367,7 @@ public abstract class JMXServerPlatformBase extends ServerPlatformBase {
      * 3) defer to superclass - usually return "unknown"
      *
      * @return String applicationName
+     * @see JMXEnabledPlatform 
      */
     public String getApplicationName() {
         return this.applicationName;

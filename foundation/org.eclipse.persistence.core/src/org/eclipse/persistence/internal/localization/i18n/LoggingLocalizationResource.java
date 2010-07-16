@@ -286,6 +286,8 @@ public class LoggingLocalizationResource extends ListResourceBundle {
         { "metadata_warning_ignore_fetch_group", "Ignoring the fetch groups specified on class [{0}] for the entity [{1}] since weaving is not enabled and the entity class does not implement the FetchGroupTracker interface." },
         { "metadata_warning_ignore_mapping_metadata", "Ignoring the javax.persistence metadata applied to the attribute [{0}] from class [{1}]. javax.persistence metadata is ignored on fields or properties that are transient, static or abstract." },
         
+        { "metadata_warning_multiple_id_fields_without_id_class", "You have specified multiple ids for the entity class [{0}] without specifying an @IdClass. By doing this you may lose the ability to find by identity, distributed cache support etc. Note: You may however use entity manager find operations by passing a list of primary key fields. Else, you will have to use JPQL queries to read your entities. For other id options see @PrimaryKey." },
+        
         { "annotation_warning_ignore_annotation", "Ignoring the annotation [{0}] on the element [{1}] because of an XML metadata-complete setting of true for this class." },        
         { "annotation_warning_ignore_private_owned", "Ignoring @PrivateOwned on element [{1}] within entity class [{0}]. A @PrivateOwned can only be used with a @OneToOne, @OneToMany and @VariableOneToOne. Also note, private ownership is implied with a @BasicCollection and @BasicMap." },
         { "annotation_warning_ignore_return_insert", "Ignoring the @ReturnInsert on the element [{0}]. A @ReturnInsert is only supported with a basic mapping." },
@@ -397,8 +399,9 @@ public class LoggingLocalizationResource extends ListResourceBundle {
         { "jaxb_metadata_warning_invalid_type_level_xml_java_type_adapter", "An invalid XmlJavaTypeAdapter [{0}] was specified for class [{1}], and will be ignored."},
         { "jaxb_metadata_warning_invalid_property_level_xml_java_type_adapter", "An invalid XmlJavaTypeAdapter [{0}] was specified for field/property [{1}] on class [{2}], and will be ignored."},
         // 316513: JMX implementation for JBoss, WebSphere and Glassfish as well as WebLogic
-        { "jmx_mbean_runtime_services_registration_encountered_multiple_mbeanserver_instances", "Multiple [{0}] JMX MBeanServer instances exist, we are registering the MBean on the first indexed one [{1}]." },
-        { "jmx_mbean_runtime_services_registration_mbeanserver_print", "JMX MBeanServer instance found: [{0}]." },        
+        { "jmx_mbean_runtime_services_registration_encountered_multiple_mbeanserver_instances", "Multiple [{0}] JMX MBeanServer instances exist, we will use the server at index [{1}] : [{2}]." },
+        { "jmx_mbean_runtime_services_registration_mbeanserver_print", "JMX MBeanServer instance found: [{0}], # of beans: [{1}], domain: [{2}] at index: [{3}]." },
+        { "jmx_mbean_runtime_services_switching_to_alternate_mbeanserver", "JMX MBeanServer in use: [{0}] from index [{1}] " },        
         // MESSAGES end
         
         
@@ -675,7 +678,8 @@ public class LoggingLocalizationResource extends ListResourceBundle {
         { "jaxb_metadata_warning_invalid_type_level_xml_java_type_adapter.MSGID", "TOP-50241"},
         { "jaxb_metadata_warning_invalid_property_level_xml_java_type_adapter.MSGID", "TOP-50242"},
         { "jmx_mbean_runtime_services_registration_encountered_multiple_mbeanserver_instances.MSGID", "TOP-50242" },
-        { "jmx_mbean_runtime_services_registration_mbeanserver_print.MSGID", "TOP-50243" }        
+        { "jmx_mbean_runtime_services_registration_mbeanserver_print.MSGID", "TOP-50243" },        
+        { "jmx_mbean_runtime_services_switching_to_alternate_mbeanserver.MSGID", "TOP-50245" }        
 
         /**
          * Note: Each MSGID and TOP-NNNNN key above must have a corresponding 
