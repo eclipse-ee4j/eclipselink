@@ -8,13 +8,10 @@
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
- *     dclarke - Dynamic Persistence INCUBATION - Enhancement 200045
- *               http://wiki.eclipse.org/EclipseLink/Development/Dynamic
- *     
- * This code is being developed under INCUBATION and is not currently included 
- * in the automated EclipseLink build. The API in this code may change, or 
- * may never be included in the product. Please provide feedback through mailing 
- * lists or the bug database.
+ *     dclarke, mnorman - Dynamic Persistence
+ *       http://wiki.eclipse.org/EclipseLink/Development/Dynamic 
+ *       (https://bugs.eclipse.org/bugs/show_bug.cgi?id=200045)
+ *
  ******************************************************************************/
 package org.eclipse.persistence.jpa.dynamic;
 

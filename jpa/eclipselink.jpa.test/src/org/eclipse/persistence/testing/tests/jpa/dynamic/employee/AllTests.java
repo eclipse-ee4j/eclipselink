@@ -26,7 +26,8 @@ import org.junit.runners.Suite.SuiteClasses;
 @SuiteClasses({
     org.eclipse.persistence.testing.tests.jpa.dynamic.employee.MappingConfigTestSuite.class,
     org.eclipse.persistence.testing.tests.jpa.dynamic.employee.EmployeeQueriesTestSuite.class,
-    org.eclipse.persistence.testing.tests.jpa.dynamic.employee.EmployeeUpdateTestSuite.class
+    org.eclipse.persistence.testing.tests.jpa.dynamic.employee.EmployeeUpdateTestSuite.class,
+    org.eclipse.persistence.testing.tests.jpa.dynamic.employee.EmployeeSparseMergeTestSuite.class
     }
 )
 public class AllTests {}

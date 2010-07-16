@@ -194,24 +194,17 @@ public class DynamicHelper {
         if (types == null || types.length == 0) {
             throw new IllegalArgumentException("No types provided");
         }
-
         Collection<ClassDescriptor> descriptors = new ArrayList<ClassDescriptor>(types.length);
-
-        for (int index = 0; index < types.length; index++) {
-            descriptors.add(types[index].getDescriptor());
-
-            if (!types[index].getDescriptor().requiresInitialization()) {
-                types[index].getDescriptor().getInstantiationPolicy().initialize((AbstractSession) session);
+        for (DynamicType type : types) {
+            if (!type.getDescriptor().requiresInitialization()) {
+                type.getDescriptor().getInstantiationPolicy().initialize((AbstractSession) session);
             }
+            if (type.getDescriptor().getJavaClassName() != null) {
+                fqClassnameToDescriptor.put(type.getDescriptor().getJavaClassName(), type.getDescriptor());
+            }
+            descriptors.add(type.getDescriptor());
         }
-
         session.addDescriptors(descriptors);
-        for (ClassDescriptor desc : descriptors) {
-            if (desc.getJavaClassName() != null) {
-                fqClassnameToDescriptor.put(desc.getJavaClassName(), desc);
-            }
-        }
-
         if (createMissingTables) {
             if (!getSession().isConnected()) {
                 getSession().login();

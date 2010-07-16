@@ -19,6 +19,7 @@ package org.eclipse.persistence.internal.dynamic;
 import org.eclipse.persistence.dynamic.DynamicEntity;
 import org.eclipse.persistence.dynamic.DynamicType;
 import org.eclipse.persistence.exceptions.DescriptorException;
+import org.eclipse.persistence.indirection.IndirectContainer;
 import org.eclipse.persistence.indirection.ValueHolderInterface;
 import org.eclipse.persistence.internal.helper.ClassConstants;
 import org.eclipse.persistence.mappings.AttributeAccessor;
@@ -127,7 +128,13 @@ public class ValuesAccessor extends AttributeAccessor {
     protected boolean isSet(Object entity) throws DescriptorException {
         Object[] values = getValues(entity);
         Object value = values[getIndex()];
-
+        // check for LAZY - only set if {Indirect}.isInstantiated
+        if (value instanceof IndirectContainer) {
+            return ((IndirectContainer)value).isInstantiated();
+        }
+        if (value instanceof ValueHolderInterface) {
+            return ((ValueHolderInterface)value).isInstantiated();
+        }
         return value != null || value == NULL_VALUE;
     }
 

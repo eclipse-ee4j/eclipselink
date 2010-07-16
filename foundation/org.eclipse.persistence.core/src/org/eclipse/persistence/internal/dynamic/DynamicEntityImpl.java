@@ -97,6 +97,15 @@ public abstract class DynamicEntityImpl implements DynamicEntity, PersistenceEnt
     @SuppressWarnings("unchecked")
     public <T> T get(String propertyName) {
         DatabaseMapping mapping = getType().getMapping(propertyName);
+        // https://bugs.eclipse.org/bugs/show_bug.cgi?id=316996
+        // add support for Sparse-Merge via FetchGroups
+        if (_persistence_getFetchGroup() != null) {
+            String errorMsg = _persistence_getFetchGroup().onUnfetchedAttribute(this,
+                propertyName);
+            if (errorMsg != null) {
+                throw DynamicException.invalidPropertyName(getType(), propertyName);
+            }
+        }
         Object value = mapping.getAttributeValueFromObject(this);
         if (mapping.isForeignReferenceMapping() && mapping.isLazy()) {
             // Force basic indirection to be instantiated
@@ -118,6 +127,15 @@ public abstract class DynamicEntityImpl implements DynamicEntity, PersistenceEnt
 
     public DynamicEntity set(String propertyName, Object value) {
         DatabaseMapping mapping = getType().getMapping(propertyName);
+        // https://bugs.eclipse.org/bugs/show_bug.cgi?id=316996
+        // add support for Sparse-Merge via FetchGroups
+        if (_persistence_getFetchGroup() != null) {
+            String errorMsg = _persistence_getFetchGroup().onUnfetchedAttributeForSet(this,
+                propertyName);
+            if (errorMsg != null) {
+                throw DynamicException.invalidPropertyName(getType(), propertyName);
+            }
+        }
         checkSetType(mapping, value);
         Object oldValue = UNKNOWN_VALUE;
         Object currentValue = mapping.getAttributeValueFromObject(this);
@@ -178,6 +196,12 @@ public abstract class DynamicEntityImpl implements DynamicEntity, PersistenceEnt
         return accessor.isSet(this);
     }
     public boolean isSet(String propertyName) {
+        // https://bugs.eclipse.org/bugs/show_bug.cgi?id=316996
+        // add support for Sparse-Merge via FetchGroups
+        if (_persistence_getFetchGroup() != null && 
+            !_persistence_getFetchGroup().containsAttribute(propertyName)) {
+            return false;
+        }
         return isSet(getType().getMapping(propertyName));
     }
 
