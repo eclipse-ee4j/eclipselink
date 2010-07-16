@@ -441,6 +441,25 @@ public interface SessionLog extends Cloneable {
 
     /**
      * PUBLIC:
+     * Log a message with four parameters that needs to be translated.
+     * <p>
+     * The EclipseLink logging levels available are:
+     * <table>
+     * <tr><td>ALL</td>    <td>&nbsp;</td><td>= 0</td>
+     * <tr><td>FINEST</td> <td>&nbsp;</td><td>= 1</td>
+     * <tr><td>FINER</td>  <td>&nbsp;</td><td>= 2</td>
+     * <tr><td>FINE</td>   <td>&nbsp;</td><td>= 3</td>
+     * <tr><td>CONFIG</td> <td>&nbsp;</td><td>= 4</td>
+     * <tr><td>INFO</td>   <td>&nbsp;</td><td>= 5</td>
+     * <tr><td>WARNING</td><td>&nbsp;</td><td>= 6</td>
+     * <tr><td>SEVERE</td> <td>&nbsp;</td><td>= 7</td>
+     * <tr><td>OFF</td>    <td>&nbsp;</td><td>= 8</td>
+     * </table>
+     */
+    public void log(int level, String message, Object param1, Object param2, Object param3, Object param4);
+    
+    /**
+     * PUBLIC:
      * This method is called when the log request is from somewhere session is not available.
      * The message needs to be translated.
      * <p>
