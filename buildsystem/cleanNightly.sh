@@ -40,12 +40,14 @@ for contentdir in `ls -dr ${BaseDownloadNFSDir}/nightly-updates/${version}*` ; d
 done
 
 ### Maven Site ###
-#      leave only last 5 days worth of files in the maven repository
-index=0
-for mvnfile in `ls -r ${BaseDownloadNFSDir}/maven.repo/org/eclipse/persistence/eclipselink/${version}-SNAPSHOT/eclipse*.* ` ; do
+#      leave only last 5 days worth of $files in the maven repository
+cd ${BaseDownloadNFSDir}/maven.repo/org/eclipse/persistence
+for mvncomp in `ls -d *eclipse*` ; do
+    index=0
+    for mvnfile in `ls -r ${mvncomp}/${version}-SNAPSHOT/${mvncomp}*.*` ; do
         index=`expr $index + 1`
         if [ $index -gt $num_maven_files ] ; then
            rm $mvnfile
         fi
+    done
 done
-
