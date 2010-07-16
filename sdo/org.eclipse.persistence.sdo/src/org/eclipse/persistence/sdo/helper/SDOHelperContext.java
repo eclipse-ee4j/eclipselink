@@ -16,13 +16,16 @@ package org.eclipse.persistence.sdo.helper;
 import java.io.File;
 import java.lang.ref.WeakReference;
 import java.lang.reflect.Method;
+import java.util.List;
 import java.util.WeakHashMap;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
 import javax.management.AttributeChangeNotification;
 import javax.management.MBeanServer;
+import javax.management.MBeanServerFactory;
 import javax.management.Notification;
+import javax.management.NotificationFilterSupport;
 import javax.management.NotificationListener;
 import javax.management.ObjectName;
 import javax.naming.Context;
@@ -37,6 +40,7 @@ import org.eclipse.persistence.sdo.helper.delegates.SDODataFactoryDelegate;
 import org.eclipse.persistence.sdo.helper.delegates.SDOTypeHelperDelegate;
 import org.eclipse.persistence.sdo.helper.delegates.SDOXMLHelperDelegate;
 import org.eclipse.persistence.sdo.helper.delegates.SDOXSDHelperDelegate;
+
 import commonj.sdo.helper.CopyHelper;
 import commonj.sdo.helper.DataFactory;
 import commonj.sdo.helper.DataHelper;
@@ -74,16 +78,21 @@ public class SDOHelperContext implements HelperContext {
 
     // Each application will have its own helper context - it is assumed that application 
     // names/loaders are unique within each active server instance
-    private static ConcurrentHashMap<HelperContextMapKey, ConcurrentHashMap<String, HelperContext>> helperContexts = new ConcurrentHashMap<HelperContextMapKey, ConcurrentHashMap<String, HelperContext>>();
+    private static ConcurrentHashMap<Object, ConcurrentHashMap<String, HelperContext>> helperContexts = new ConcurrentHashMap<Object, ConcurrentHashMap<String, HelperContext>>();
+    // allow users to set their own classloader to context map pairs
     private static WeakHashMap<ClassLoader, WeakHashMap<String, WeakReference<HelperContext>>> userSetHelperContexts = new WeakHashMap<ClassLoader, WeakHashMap<String, WeakReference<HelperContext>>>();
-
+    // keep a map of application names to application class loaders to handle redeploy
+    private static ConcurrentHashMap<String, ClassLoader> appNameToClassLoaderMap = new ConcurrentHashMap<String, ClassLoader>();
+    
     // Application server identifiers
     private static String OC4J_CLASSLOADER_NAME = "oracle";
     private static String WLS_CLASSLOADER_NAME = "weblogic";
     private static String WAS_CLASSLOADER_NAME = "com.ibm.ws";
     private static String JBOSS_CLASSLOADER_NAME = "jboss";
     private static String GLOBAL_HELPER_IDENTIFIER = "";
-
+    private static final int WLS_IDENTIFIER = 0;
+    private static final int JBOSS_IDENTIFIER = 1;
+    
     // Common
     private static final int COUNTER_LIMIT = 20;
 
@@ -111,15 +120,21 @@ public class SDOHelperContext implements HelperContext {
     private static final String WAS_CLOSE_BRACKET = "]";
     
     // For JBoss
+    private static MBeanServer jbossMBeanServer = null;
+    private static String JBOSS_SERVICE_CONTROLLER = "jboss.system:service=ServiceController";
+    private static String JBOSS_TYPE_STOP = "org.jboss.system.ServiceMBean.stop";
+    private static String JBOSS_ID_KEY = "id";
+    private static final String JBOSS_DEFAULT_DOMAIN_NAME = "jboss";
     private static final String JBOSS_VFSZIP = "vfszip:";
     private static final String JBOSS_VFSFILE = "vfsfile:";
     private static final String JBOSS_EAR = ".ear";
+    private static final String JBOSS_JAR = ".jar";
     private static final String JBOSS_WAR = ".war";
     private static final int JBOSS_VFSZIP_OFFSET = JBOSS_VFSZIP.length();
     private static final int JBOSS_VFSFILE_OFFSET = JBOSS_VFSFILE.length();
     private static final int JBOSS_EAR_OFFSET = JBOSS_EAR.length();
     private static final int JBOSS_TRIM_COUNT = 2;  // for stripping off the remaining '/}' chars
-
+    
     /**
      * Create a local HelperContext.  The current thread's context ClassLoader
      * will be used to find static instance classes.  In OSGi environments the 
@@ -347,9 +362,10 @@ public class SDOHelperContext implements HelperContext {
      * for the given key.
      * 
      * The key is assumed to be non-null -  getDelegateKey should always
-     * return either a string representing the application name (for WLS)
-     * or a class loader.  This is relevant since 'putIfAbsent' will 
-     * throw a null pointer exception if the key is null.   
+     * return either a string representing the application name (for WLS, 
+     * WAS and JBoss if available) or a class loader.  This is relevant 
+     * since 'putIfAbsent' will throw a null pointer exception if the 
+     * key is null.   
      */
     public static HelperContext getHelperContext() {
         ClassLoader contextClassLoader = Thread.currentThread().getContextClassLoader();
@@ -408,37 +424,52 @@ public class SDOHelperContext implements HelperContext {
     static ConcurrentMap<String, HelperContext> getContextMap() {
         ClassLoader contextClassLoader = Thread.currentThread().getContextClassLoader();
         String classLoaderName = contextClassLoader.getClass().getName();
-        HelperContextMapKey key = getContextMapKey(contextClassLoader, classLoaderName);
-        ConcurrentHashMap<String, HelperContext> contextMap = helperContexts.get(key);       
-        // the following block only applies to WAS and JBoss - hence the loader name check
-        if (contextMap != null && (classLoaderName.contains(WAS_CLASSLOADER_NAME) || classLoaderName.contains(JBOSS_CLASSLOADER_NAME))) {
+        // get a MapKeyLookupResult instance based on the context loader
+        MapKeyLookupResult hCtxMapKey = getContextMapKey(contextClassLoader, classLoaderName);
+        // at this point we will have a loader and possibly an application name
+        String appName = hCtxMapKey.getApplicationName();
+        ClassLoader appLoader = hCtxMapKey.getLoader();
+        // we will use the application name as the map key if set; otherwise we use the loader
+        Object contextMapKey = appName != null ? appName : appLoader;
+        ConcurrentHashMap<String, HelperContext> contextMap = helperContexts.get(contextMapKey);       
+        
+        // handle possible redeploy
+        // the following block only applies to WAS - hence the loader name check
+        if (contextMap != null && appName != null && classLoaderName.contains(WAS_CLASSLOADER_NAME)) {
             // at this point there is an existing entry in the map - if the context is keyed 
             // on application name we need to check to see if a redeployment occurred; in 
             // that case the app names will match, but the class loaders will not
-            if (key.getApplicationName() != null) {
-                for (HelperContextMapKey existingKey : helperContexts.keySet()) {
-                    // find the existing key
-                    if (key.equals(existingKey)) {
-                        // compare loaders - if the loaders are not equal, we need to remove the old entry
-                        if (!key.areLoadersEqual(existingKey.getLoader())) {
-                            // concurrency - use remove(key, value) to ensure we don't remove a newly added entry
-                            helperContexts.remove(key, contextMap);
-                            contextMap = null;
-                        }
-                    }
-                }
-            }            
+            ClassLoader currentAppLoader = appNameToClassLoaderMap.get(appName); 
+            if (currentAppLoader != null && currentAppLoader != appLoader) {
+                // concurrency - use remove(key, value) to ensure we don't remove a newly added entry
+                appNameToClassLoaderMap.remove(appName, currentAppLoader);
+                helperContexts.remove(appName, contextMap);
+                contextMap = null;
+            }
         }
+        
         // may need to add a new entry
         if (null == contextMap) {
             contextMap = new ConcurrentHashMap<String, HelperContext>();
             // use putIfAbsent to avoid concurrent entries in the map
-            ConcurrentHashMap existingMap = helperContexts.putIfAbsent(key, contextMap);
-            if (null == existingMap) {
-                addNotificationListener(key);
-            } else {
+            ConcurrentHashMap existingMap = helperContexts.putIfAbsent(contextMapKey, contextMap);
+            if (existingMap != null) {
                 // if a new entry was just added, use it instead of the one we just created
                 contextMap = existingMap;
+            } else if (appName != null) {
+                // add an appName/appLoader pair to the appNameToClassLoader map
+                appNameToClassLoaderMap.put(appName, appLoader);
+                
+                if (classLoaderName.contains(WLS_CLASSLOADER_NAME)) {
+                    // add a loader/context pair to the helperContexts map to handle case where appName
+                    // is no longer available, but the loader from a previous lookup is being used 
+                    helperContexts.put(appLoader, contextMap);
+                    // add a notification listener to handle redeploy
+                    addWLSNotificationListener(appName);
+                } else if (classLoaderName.contains(JBOSS_CLASSLOADER_NAME)) {
+                    // add a notification listener to handle redeploy - the listener will only be added once
+                    addJBossNotificationListener();
+                }
             }
         }
         return contextMap;
@@ -462,16 +493,21 @@ public class SDOHelperContext implements HelperContext {
      * Remove the HelperContext for the application associated with a
      * given key, if it exists in the map.
      */
-    private static void resetHelperContext(HelperContextMapKey key) {
-        HelperContext hCtx = helperContexts.get(key).get(GLOBAL_HELPER_IDENTIFIER);
-        if (hCtx != null) {
-            helperContexts.remove(key);
+    private static void resetHelperContext(String key) {
+        // remove entry from helperContext map
+        helperContexts.remove(key);
+        // there may be a loader/context pair to remove
+        ClassLoader appLoader = appNameToClassLoaderMap.get(key);
+        if (appLoader != null) {
+            helperContexts.remove(appLoader);
         }
+        // remove the appName entry in the appNameToClassLoader map
+        appNameToClassLoaderMap.remove(key);
     }
 
     /**
      * INTERNAL:
-     * This method will return the HelperContextMapKey instance to be used to 
+     * This method will return the MapKeyLookupResult instance to be used to 
      * store/retrieve the global helper context for a given application.
      * 
      * OC4J classLoader levels: 
@@ -484,12 +520,12 @@ public class SDOHelperContext implements HelperContext {
      *      6 - jre.extension:0.0.0
      *      7 - jre.bootstrap:1.5.0_07 (with various J2SE versions)
      * 
-     * @return HelperContextMapKey wrapping the application classloader for OC4J,
+     * @return MapKeyLookupResult wrapping the application classloader for OC4J,
      *         the application name for WebLogic and WebSphere, the archive file 
-     *         name for JBoss; otherwise a HelperContextMapKey wrapping 
-     *         Thread.currentThread().getContextClassLoader()
+     *         name for JBoss - if available; otherwise a MapKeyLookupResult 
+     *         wrapping Thread.currentThread().getContextClassLoader()
      */
-    private static HelperContextMapKey getContextMapKey(ClassLoader classLoader, String classLoaderName) {
+    private static MapKeyLookupResult getContextMapKey(ClassLoader classLoader, String classLoaderName) {
         // Helper contexts in OC4J server will be keyed on classloader  
         if (classLoaderName.startsWith(OC4J_CLASSLOADER_NAME)) {
             // Check to see if we are running in a Servlet container or a local EJB container
@@ -498,9 +534,9 @@ public class SDOHelperContext implements HelperContext {
                     ||  (classLoader.toString().indexOf(SDOConstants.CLASSLOADER_EJB_FRAGMENT) != -1))) {
                 classLoader = classLoader.getParent();
             }
-            return new HelperContextMapKey(classLoader);
+            return new MapKeyLookupResult(classLoader);
         }
-        // Helper contexts in WebLogic server will be keyed on application name
+        // Helper contexts in WebLogic server will be keyed on application name if available
         if (classLoaderName.contains(WLS_CLASSLOADER_NAME)) {
             Object executeThread = getExecuteThread();
             if (executeThread != null) {
@@ -510,27 +546,27 @@ public class SDOHelperContext implements HelperContext {
                     // if ExecuteThread returns null, we will key on loader, otherwise use the application name
                     if (appName != null) {
                         // assumes object returned from getApplicationName method call is a String if non-null
-                        return new HelperContextMapKey(appName.toString(), classLoader);
+                        return new MapKeyLookupResult(appName.toString(), classLoader);
                     }
                 } catch (Exception e) {
                     throw SDOException.errorInvokingWLSMethodReflectively(WLS_APPLICATION_NAME_GET_METHOD_NAME, WLS_EXECUTE_THREAD, e);
                 }
             }
             // couldn't get the application name, so default to the context loader
-            return new HelperContextMapKey(classLoader);
+            return new MapKeyLookupResult(classLoader);
         }            
-        // Helper contexts in WebSphere server will be keyed on application name
+        // Helper contexts in WebSphere server will be keyed on application name if available
         if (classLoaderName.contains(WAS_CLASSLOADER_NAME)) {
             return getContextMapKeyForWAS(classLoader);
         }
-        // Helper contexts in JBoss server will be keyed on archive file name
+        // Helper contexts in JBoss server will be keyed on archive file name if available
         if (classLoaderName.contains(JBOSS_CLASSLOADER_NAME)) {
             return getContextMapKeyForJBoss(classLoader);
         }
         // at this point we will default to the context loader
-        return new HelperContextMapKey(classLoader);
+        return new MapKeyLookupResult(classLoader);
     }
-
+    
     /**
      * Lazy load the WebLogic MBeanServer instance.
      * 
@@ -607,11 +643,13 @@ public class SDOHelperContext implements HelperContext {
      * re-deployment.
      * 
      * If any errors occur, we will fail silently, i.e. the listener will not be added.
-     *  
-     * @param mapKey
+     *
+     * This method should only be called when running in an active WLS instance.
+     * 
+     * @param applicationName
      */
-    private static void addNotificationListener(HelperContextMapKey mapKey) {
-        if (Thread.currentThread().getContextClassLoader().getClass().getName().contains(WLS_CLASSLOADER_NAME) && getWLSMBeanServer() != null) {
+    private static void addWLSNotificationListener(String applicationName) {
+        if (getWLSMBeanServer() != null) {
             try {
                 ObjectName service = new ObjectName(WLS_SERVICE_KEY);
                 ObjectName serverRuntime = (ObjectName) wlsMBeanServer.getAttribute(service, WLS_SERVER_RUNTIME);
@@ -620,8 +658,8 @@ public class SDOHelperContext implements HelperContext {
                     try {
                         ObjectName appRuntime = appRuntimes[i];
                         Object appName = wlsMBeanServer.getAttribute(appRuntime, WLS_APPLICATION_NAME);
-                        if (appName != null && appName.toString().equals(mapKey.getApplicationName())) {
-                            wlsMBeanServer.addNotificationListener(appRuntime, new MyNotificationListener(mapKey), null, null);
+                        if (appName != null && appName.toString().equals(applicationName)) {
+                            wlsMBeanServer.addNotificationListener(appRuntime, new MyNotificationListener(applicationName, WLS_IDENTIFIER), null, null);
                             break;
                         }
                     } catch (Exception ex) {}
@@ -629,30 +667,110 @@ public class SDOHelperContext implements HelperContext {
             } catch (Exception x) {}
         }
     }
+    
+    /**
+     * INTERNAL:
+     * The listener will handle application re-deployment.  If any errors occur, we will 
+     * fail silently, i.e. the listener will not be added.  Since we cannot register for
+     * notifications for a particular application, and hence recieve notifications for
+     * all apps that are redeployed, we only add the listener once - each time we receive
+     * notification we will check the map and remove the corresponding entry if it exists.
+     * 
+     * This method should only be called when running in an active JBoss instance.
+     * 
+     */
+    private static void addJBossNotificationListener() {
+        if (jbossMBeanServer == null) {
+            List<MBeanServer> mbeanServers = MBeanServerFactory.findMBeanServer(null);
+            for (MBeanServer server : mbeanServers) {
+                if (server.getDefaultDomain().equals(JBOSS_DEFAULT_DOMAIN_NAME)) {
+                    jbossMBeanServer = server;
+                    try {
+                        jbossMBeanServer.addNotificationListener(new ObjectName(JBOSS_SERVICE_CONTROLLER), new MyNotificationListener(JBOSS_IDENTIFIER), new MyNotificationFilter(), null);
+                    } catch (Exception e) {}
+                    break;
+                }
+            }
+        }
+    }
 
+    /**
+     * INTERNAL:
+     * This class will be handed in as a parameter when adding a JBoss notification listener.
+     * The purpose of this class is to restrict notifications to "stop", i.e. we don't
+     * care about "destroy", "start" etc. 
+     *
+     */
+    public static class MyNotificationFilter extends NotificationFilterSupport {
+        MyNotificationFilter() {
+            super.enableType(JBOSS_TYPE_STOP);
+        }
+    }
+    
     /**
      * INTERNAL:
      * Inner class used to catch application re-deployment.  Upon notification of this event,
      * the helper context for the given application will be removed from the helper context
-     * to application map.
+     * to application map.  This method will also remove the corresponding entry in the
+     * application name to application loader map if necessary.
+     * 
+     * For WebLogic, 'appName' will be set; we will regester a listener for each application
+     * name we key a context on, and will only receive a notification if a particular app
+     * is redeployed.  Upon notification we will remove the context entry for 'appName'.
+     * 
+     * For JBoss, 'appName' will not be set; we will only register the listener once,
+     * and each time we're notified of an application redeployment, we will reset the
+     * associated helper context if one exists.
+     * 
      */
     private static class MyNotificationListener implements NotificationListener {
-        HelperContextMapKey mapKey;
+        int server;
+        String appName;
+
+        /**
+         * This is the default constructor - typically used when running in an
+         * actove JBoss instance.
+         * 
+         * @param server
+         */
+        public MyNotificationListener(int server) {
+            this.server = server;
+        }
         
-        public MyNotificationListener(HelperContextMapKey mapKey) {
-            this.mapKey = mapKey;
+        /**
+         * This constructor will set 'appName' - typically used when running in
+         * an active WebLogic instance. 
+         * 
+         * @param appName
+         * @param server
+         */
+        public MyNotificationListener(String appName, int server) {
+            this.server = server;
+            this.appName = appName;
         }
         
         public void handleNotification(Notification notification, Object handback) {
-            if (notification instanceof AttributeChangeNotification) {
-                try {
+            switch (server) {
+            case 0: {  // handle WebLogic notification
+                if (notification instanceof AttributeChangeNotification) {
                     AttributeChangeNotification acn = (AttributeChangeNotification) notification;
                     if (acn.getAttributeName().equals(WLS_ACTIVE_VERSION_STATE)) {
                         if (acn.getNewValue().equals(0)) {
-                            resetHelperContext(mapKey);
+                            resetHelperContext(appName);
                         }
                     }
-                } catch (Exception x) {}
+                }
+                break;
+            }
+            case 1: {  // handle JBoss notification
+                // assumes 'user data' is an ObjectName containing an 'id' property which indicates the archive file name
+                appName = getApplicationNameFromJBossClassLoader(((ObjectName) notification.getUserData()).getKeyProperty(JBOSS_ID_KEY));
+                // we receive notifications for all service stops in JBoss;  only call reset if necessary
+                if (helperContexts.containsKey(appName)) {
+                    resetHelperContext(appName);
+                }
+                break;
+            }
             }
         }
     }
@@ -665,13 +783,20 @@ public class SDOHelperContext implements HelperContext {
      */
     public void makeDefaultContext() {
         ClassLoader contextClassLoader = Thread.currentThread().getContextClassLoader();
-        HelperContextMapKey key = getContextMapKey(contextClassLoader, contextClassLoader.getClass().getName());
-        ConcurrentHashMap<String, HelperContext> contexts = helperContexts.get(key);
+        MapKeyLookupResult hCtxMapKey = getContextMapKey(contextClassLoader, contextClassLoader.getClass().getName());
+
+        String appName = hCtxMapKey.getApplicationName();
+        ClassLoader appLoader = hCtxMapKey.getLoader();
+        Object contextMapKey = appName != null ? appName : appLoader;
+
+        ConcurrentHashMap<String, HelperContext> contexts = helperContexts.get(contextMapKey);
         if (contexts == null) {
             contexts = new ConcurrentHashMap<String, HelperContext>();
-            ConcurrentHashMap<String, HelperContext> existingContexts = helperContexts.putIfAbsent(key, contexts);
+            ConcurrentHashMap<String, HelperContext> existingContexts = helperContexts.putIfAbsent(contextMapKey, contexts);
             if (existingContexts != null) {
                 contexts = existingContexts;
+            } else if (appName != null) {
+                appNameToClassLoaderMap.put(appName, appLoader);
             }
         }
         this.identifier = GLOBAL_HELPER_IDENTIFIER;
@@ -710,7 +835,7 @@ public class SDOHelperContext implements HelperContext {
     }
 
     /**
-     * Attempt to return a HelperContextMapKey instance wrapping the application name and 
+     * Attempt to return a MapKeyLookupResult instance wrapping the application name and 
      * application loader based on a given WAS classloader.  Here we will traverse up the
      * loader hierarchy looking for the top-most application loader.  
      * 
@@ -718,12 +843,12 @@ public class SDOHelperContext implements HelperContext {
      * contain "[app:".
      * 
      * @param loader
-     * @return a HelperContextMapKey instance wrapping application name/loader if 
+     * @return a MapKeyLookupResult instance wrapping application name/loader if 
      *         successfully retrieved (i.e. at least one loader exists in the 
-     *         hierarchy with toString containing "[app:"), or a HelperContextMapKey 
+     *         hierarchy with toString containing "[app:"), or a MapKeyLookupResult 
      *         instance wrapping the given loader if not found
      */                
-    private static HelperContextMapKey getContextMapKeyForWAS(ClassLoader loader) {
+    private static MapKeyLookupResult getContextMapKeyForWAS(ClassLoader loader) {
         ClassLoader applicationLoader = loader;
         String applicationName = null; 
         // Safety counter to keep from taking too long or looping forever, just in case of some unexpected circumstance.
@@ -747,11 +872,11 @@ public class SDOHelperContext implements HelperContext {
         }
         // if we found the application name, use it as the key
         if (applicationName != null) {
-            return new HelperContextMapKey(applicationName, applicationLoader);
+            return new MapKeyLookupResult(applicationName, applicationLoader);
             
         }
         // at this point we don't know the application name so the loader will be the key
-        return new HelperContextMapKey(applicationLoader);
+        return new MapKeyLookupResult(applicationLoader);
     }
 
     /**
@@ -791,49 +916,51 @@ public class SDOHelperContext implements HelperContext {
      *       jrf/jboss-jrfServer/jrfServer/deploy/jrftestapp.ear/jrftestweb.war/}
      * 
      * Assumptions:
-     * 1 - A given toString will only contain one .ear, .jar, or .war EXCEPT in the servlet case, 
-     * where the string would have "{vfszip:/.../xxx.ear/.../xxx.war/}".  In this case we want to 
-     * return xxx.ear as the application name.
+     * 1 - A given toString may contain both .ear and .jar, or .ear and .war, i.e.
+     *     "{vfszip:/.../xxx.ear/.../xxx.war/}".  In this case we want to return 
+     *     xxx.ear as the application name.
      * 2 - A given toString will end in '/}'.
      * 3 - A toString containing the application name will have one of "vfszip:" or "vfsfile:".
      * 
-     * @param loader
+     * @param loaderToString the toString of the loader being processed
      * @return application name (archive file name) if successfully retrieved (i.e. loader 
      *         exists in the hierarchy with toString containing "vfszip:" or "vfsfile:") 
      *         or null
      */                
-    private static String getApplicationNameFromJBossClassLoader(ClassLoader loader) {
-        String clStr = loader.toString();
+    private static String getApplicationNameFromJBossClassLoader(String loaderToString) {
         String appNameSegment = null;
+        int idx;
         // handle "vfszip:<archive-file-name>"
-        if (clStr.indexOf(JBOSS_VFSZIP) != -1) {            
-            appNameSegment = clStr.substring(clStr.indexOf(JBOSS_VFSZIP) + JBOSS_VFSZIP_OFFSET, clStr.length() - JBOSS_TRIM_COUNT);
+        if ((idx = loaderToString.indexOf(JBOSS_VFSZIP)) != -1) {
+            appNameSegment = loaderToString.substring(idx + JBOSS_VFSZIP_OFFSET, loaderToString.length() - JBOSS_TRIM_COUNT);
             // handle case where the string contains both .ear and .war (remove the .war portion)
             if ((appNameSegment.indexOf(JBOSS_WAR) != -1) && (appNameSegment.indexOf(JBOSS_EAR) != -1)) {
                 appNameSegment = appNameSegment.substring(0, appNameSegment.indexOf(JBOSS_EAR) + JBOSS_EAR_OFFSET);
             }
+            // handle case where the string contains both .ear and .jar (remove the .jar portion)
+            else if ((appNameSegment.indexOf(JBOSS_JAR) != -1) && (appNameSegment.indexOf(JBOSS_EAR) != -1)) {
+                appNameSegment = appNameSegment.substring(0, appNameSegment.indexOf(JBOSS_EAR) + JBOSS_EAR_OFFSET);
+            }
+        }
         // handle "vfsfile:<archive-file-name>"
-        } else if (clStr.indexOf(JBOSS_VFSFILE) != -1) {
-            appNameSegment = clStr.substring(clStr.indexOf(JBOSS_VFSFILE) + JBOSS_VFSFILE_OFFSET, clStr.length() - JBOSS_TRIM_COUNT);
+        else if ((idx = loaderToString.indexOf(JBOSS_VFSFILE)) != -1) {
+            appNameSegment = loaderToString.substring(idx + JBOSS_VFSFILE_OFFSET, loaderToString.length() - JBOSS_TRIM_COUNT);
         }
-        if (appNameSegment != null) {
-            return new File(appNameSegment).getName();
-        }
-        return null;
-    }    
-
+        return appNameSegment != null ? new File(appNameSegment).getName() : null;
+    }
+    
     /**
-     * Attempt to return a HelperContextMapKey instance wrapping the archive file name and 
+     * Attempt to return a MapKeyLookupResult instance wrapping the archive file name and 
      * application loader based on a given JBoss classloader.  Here we will traverse up the
      * loader hierarchy looking for the top-most application loader.  
      * 
      * @param loader
-     * @return a HelperContextMapKey instance wrapping archive file name/loader if 
+     * @return a MapKeyLookupResult instance wrapping archive file name/loader if 
      *         successfully retrieved (i.e. at least one loader exists in the 
      *         hierarchy with toString containing containing "vfszip:" or "vfsfile:"), 
-     *         or a HelperContextMapKey instance wrapping the given loader if not found
+     *         or a MapKeyLookupResult instance wrapping the given loader if not found
      */                
-    private static HelperContextMapKey getContextMapKeyForJBoss(ClassLoader loader) {
+    private static MapKeyLookupResult getContextMapKeyForJBoss(ClassLoader loader) {
         ClassLoader applicationLoader = loader;
         String archiveFileName = null;
         // safety counter to keep from taking too long or looping forever, just in case of some unexpected circumstance
@@ -848,7 +975,7 @@ public class SDOHelperContext implements HelperContext {
             // once we have hit the top we will stop looking
             if (parent == null || parent == loader) {
                 // get the archive file name from the loader we are going to return
-                archiveFileName = getApplicationNameFromJBossClassLoader(applicationLoader);
+                archiveFileName = getApplicationNameFromJBossClassLoader(applicationLoader.toString());
                 break;
             }
             // move up and try again
@@ -857,11 +984,10 @@ public class SDOHelperContext implements HelperContext {
         }
         // if we found the archive file name, use it as the key
         if (archiveFileName != null) {
-            return new HelperContextMapKey(archiveFileName, applicationLoader);
-            
+            return new MapKeyLookupResult(archiveFileName, applicationLoader);
         }
         // at this point we don't know the archive file name so the loader will be the key
-        return new HelperContextMapKey(applicationLoader);
+        return new MapKeyLookupResult(applicationLoader);
     }
 
     /**
