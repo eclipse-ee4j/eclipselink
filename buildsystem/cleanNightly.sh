@@ -22,25 +22,31 @@ fi
 ### Download Site ###
 #      leave only the last 10 build dirs for the version on the download server
 index=0
+removed=0
 for contentdir in `ls -dr ${BaseDownloadNFSDir}/nightly/${version}/[0-9]*` ; do
     index=`expr $index + 1`
     if [ $index -gt $num_builds ] ; then
+        echo "Removing $contentdir..."
         rm -r $contentdir
-        echo "Removed $contentdir from ${BaseDownloadNFSDir}/nightly/${version}."
+        removed=`expr $removed + 1`
     fi
 done
+echo "Removed $removed direcories from ${BaseDownloadNFSDir}/nightly/${version}."
 
 ### P2 Site ###
 #      leave only the last "num_p2_builds" builds for the version in the nightly P2 repos
 index=0
+removed=0
 for contentdir in `ls -dr ${BaseDownloadNFSDir}/nightly-updates/${version}*` ; do
     index=`expr $index + 1`
     if [ $index -gt $num_p2_builds ] ; then
+        echo "Removing $contentdir..."
         rm -r $contentdir
-        echo "Removed $contentdir from ${BaseDownloadNFSDir}/nightly-updates."
+        removed=`expr $removed + 1`
     fi
 done
-
+echo "Removed $removed direcories from ${BaseDownloadNFSDir}/nightly-updates."
+    
 ### Maven Site ###
 #      leave only last 5 days worth of files in the maven repository
 cd ${BaseDownloadNFSDir}/maven.repo/org/eclipse/persistence
@@ -48,6 +54,7 @@ for mvncomp in `ls -d *eclipse*` ; do
     index=0
     removed=0
     for mvnfile in `ls -r ${mvncomp}/${version}-SNAPSHOT/${mvncomp}*.*` ; do
+        echo "Removing $mvnfile..."
         index=`expr $index + 1`
         if [ $index -gt $num_maven_files ] ; then
            rm $mvnfile
