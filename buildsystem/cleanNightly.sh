@@ -40,7 +40,7 @@ for contentdir in `ls -dr ${BaseDownloadNFSDir}/nightly-updates/${version}*` ; d
 done
 
 ### Maven Site ###
-#      leave only last 5 days worth of $files in the maven repository
+#      leave only last 5 days worth of files in the maven repository
 cd ${BaseDownloadNFSDir}/maven.repo/org/eclipse/persistence
 for mvncomp in `ls -d *eclipse*` ; do
     index=0
