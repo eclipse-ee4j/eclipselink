@@ -1,15 +1,29 @@
 # !/bin/sh
 #set -x
 
-UPDATE_DIR=/home/data/httpd/download.eclipse.org/rt/eclipselink/updates
-UPDATE_NAME="EclipseLink Update Site"
+RELEASE_SITE_DIR=/home/data/httpd/download.eclipse.org/rt/eclipselink/updates
+RELEASE_SITE_NAME="EclipseLink Release Repository"
+MILESTONE_SITE_DIR=/home/data/httpd/download.eclipse.org/rt/eclipselink/milestone-updates
+MILESTONE_SITE_NAME="EclipseLink Milestone Repository"
+NIGHTLY_SITE_DIR=/home/data/httpd/download.eclipse.org/rt/eclipselink/nightly-updates
+NIGHTLY_SITE_NAME="EclipseLink Nightly Build Repository"
 CMD_ERROR=false
 SITE_DIR=$1
 SITE_NAME=$2
-if [ "${SITE_DIR}" = "update" ]
+if [ "${SITE_DIR}" = "release" ]
 then
-    SITE_DIR=${UPDATE_DIR}
-    SITE_NAME=${UPDATE_NAME}
+    SITE_DIR=${RELEASE_SITE_DIR}
+    SITE_NAME=${RELEASE_SITE_NAME}
+fi
+if [ "${SITE_DIR}" = "milestone" ]
+then
+    SITE_DIR=${MILESTONE_SITE_DIR}
+    SITE_NAME=${MILESTONE_SITE_NAME}
+fi
+if [ "${SITE_DIR}" = "nightly" ]
+then
+    SITE_DIR=${NIGHTLY_SITE_DIR}
+    SITE_NAME=${NIGHTLY_SITE_NAME}
 fi
 
 if [ "${SITE_DIR}" = "" ]
