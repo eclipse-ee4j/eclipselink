@@ -113,8 +113,7 @@ public class AdvancedJPAJunitTest extends JUnitTestCase {
 
         suite.addTest(new AdvancedJPAJunitTest("testSetup"));
         suite.addTest(new AdvancedJPAJunitTest("testRelationshipReadDuringClone"));
-        // This test runs only on a JEE6 / JPA 2.0 capable server
-        suite.addTest(new AdvancedJPAJunitTest("testMetamodelMinimalSanityTest"));
+
         suite.addTest(new AdvancedJPAJunitTest("testExistenceCheckingSetting"));
         
         suite.addTest(new AdvancedJPAJunitTest("testJoinFetchAnnotation"));
@@ -160,6 +159,11 @@ public class AdvancedJPAJunitTest extends JUnitTestCase {
         suite.addTest(new AdvancedJPAJunitTest("testUnidirectionalTargetLocking_AddRemoveTarget"));
         suite.addTest(new AdvancedJPAJunitTest("testUnidirectionalTargetLocking_DeleteSource"));
         
+        if (!isJPA10()) {
+            // Run this test only when the JPA 2.0 specification is enabled on the server, or we are in SE mode with JPA 2.0 capability
+            suite.addTest(new AdvancedJPAJunitTest("testMetamodelMinimalSanityTest"));
+        }
+        
         return suite;
     }
     
@@ -197,92 +201,88 @@ public class AdvancedJPAJunitTest extends JUnitTestCase {
      * http://fisheye2.atlassian.com/changelog/~author=mobrien/eclipselink/?cs=5124
      */
     public void testMetamodelMinimalSanityTest() {
-        // Run test only when the JPA 2.0 specification is enabled on the server, or we are in SE mode with JPA 2.0 capability
-        if(!this.isJPA10()) {
-            EntityManager em = createEntityManager();
-            // pre-clear metamodel to enable test reentry (SE only - not EE)
-            if(!this.isOnServer()) {
-                ((EntityManagerFactoryImpl)((EntityManagerImpl)em).getEntityManagerFactory()).setMetamodel(null);
-            }
-            Metamodel metamodel = em.getMetamodel();
-            // get declared attributes
-            EntityType<LargeProject> entityLargeProject = metamodel.entity(LargeProject.class);
-            Set<Attribute<LargeProject, ?>> declaredAttributes = entityLargeProject.getDeclaredAttributes();
-            assertTrue(declaredAttributes.size() > 0); // instead of a assertEquals(1, size) for future compatibility with changes to Buyer
-        
-            // check that getDeclaredAttribute and getDeclaredAttributes return the same attribute        
-            Attribute<LargeProject, ?> budgetAttribute = entityLargeProject.getDeclaredAttribute("budget");
-            assertNotNull(budgetAttribute);
-            Attribute<LargeProject, ?> budgetSingularAttribute = entityLargeProject.getDeclaredSingularAttribute("budget");
-            assertNotNull(budgetSingularAttribute);
-            assertEquals(budgetSingularAttribute, budgetAttribute);
-            assertTrue(declaredAttributes.contains(budgetSingularAttribute));        
-            // check the type
-            Class budgetClass = budgetSingularAttribute.getJavaType();
-            // Verify whether we expect a boxed class or not 
-            assertEquals(double.class, budgetClass);
-            //assertEquals(Double.class, budgetClass);
-        
-            // Test LargeProject.budget.buyingDays
-        
-            // Check an EnumSet on an Entity
-            EntityType<Buyer> entityBuyer = metamodel.entity(Buyer.class);
-            // public enum Weekdays { SUNDAY, MONDAY, TUESDAY, WEDNESDAY, THURSDAY, FRIDAY, SATURDAY }
-            // private EnumSet<Weekdays> buyingDays;
-            assertNotNull(entityBuyer);
-            // check persistence type
-            assertEquals(PersistenceType.ENTITY, entityBuyer.getPersistenceType());
-            assertEquals(Buyer.class, entityBuyer.getJavaType());
-            // verify EnumSet is a SingularAttribute
-            Attribute buyingDaysAttribute = entityBuyer.getAttribute("buyingDays");
-            assertNotNull(buyingDaysAttribute);
-            // Check persistent attribute type
-            assertEquals(PersistentAttributeType.BASIC, buyingDaysAttribute.getPersistentAttributeType());
-            // Non-spec check on the attribute impl type
-            // EnumSet is not a Set in the Metamodel - it is a treated as a BasicType single object (SingularAttributeType)
-            // BasicTypeImpl@8980685:EnumSet [ javaType: class java.util.EnumSet]
-            assertFalse(((SingularAttributeImpl)buyingDaysAttribute).isPlural());
-            BindableType buyingDaysElementBindableType = ((SingularAttributeImpl)buyingDaysAttribute).getBindableType();
-            assertEquals(BindableType.SINGULAR_ATTRIBUTE, buyingDaysElementBindableType);
-            SingularAttribute<? super Buyer, EnumSet> buyingDaysSingularAttribute = entityBuyer.getSingularAttribute("buyingDays", EnumSet.class);
-            assertNotNull(buyingDaysSingularAttribute);
-            assertFalse(buyingDaysSingularAttribute.isCollection());
-        
-            // http://wiki.eclipse.org/EclipseLink/Development/JPA_2.0/metamodel_api#DI_74:_20090909:_Implement_IdentifiableType.hasSingleIdAttribute.28.29
-            // Check for Id that exists
-            boolean expectedIAExceptionThrown = false;
-            boolean hasSingleIdAttribute = false;
-            try {
-                hasSingleIdAttribute = entityBuyer.hasSingleIdAttribute();
-            } catch (IllegalArgumentException iae) {
-                //iae.printStackTrace();
-                expectedIAExceptionThrown = true;            
-            }
-            assertFalse(expectedIAExceptionThrown);            
-            assertTrue(hasSingleIdAttribute);
-
-            // Verify that the BasicMap Buyer.creditCards is picked up properly
-            //* @param <X> The type the represented Map belongs to
-            //* @param <K> The type of the key of the represented Map
-            //* @param <V> The type of the value of the represented Map
-            //public class MapAttributeImpl<X, K, V> extends PluralAttributeImpl<X, java.util.Map<K, V>, V>
-            Attribute buyerCreditCards = entityBuyer.getAttribute("creditCards");
-            assertNotNull(buyerCreditCards);
-            assertTrue(buyerCreditCards.isCollection());
-            assertTrue(buyerCreditCards instanceof MapAttributeImpl);
-            MapAttribute<? super Buyer, ?, ?> buyerCreditCardsMap = entityBuyer.getMap("creditCards");
-        
-            // Verify owning type
-            assertNotNull(buyerCreditCardsMap);
-            assertEquals(entityBuyer, buyerCreditCardsMap.getDeclaringType());
-        
-            // Verify Map Key
-            assertEquals(String.class, buyerCreditCardsMap.getKeyJavaType());
-        
-            // Verify Map Value
-            assertEquals(Long.class, buyerCreditCardsMap.getElementType().getJavaType());
-        
+        EntityManager em = createEntityManager();
+        // pre-clear metamodel to enable test reentry (SE only - not EE)
+        if(!this.isOnServer()) {
+            ((EntityManagerFactoryImpl)((EntityManagerImpl)em).getEntityManagerFactory()).setMetamodel(null);
         }
+        Metamodel metamodel = em.getMetamodel();
+        // get declared attributes
+        EntityType<LargeProject> entityLargeProject = metamodel.entity(LargeProject.class);
+        Set<Attribute<LargeProject, ?>> declaredAttributes = entityLargeProject.getDeclaredAttributes();
+        assertTrue(declaredAttributes.size() > 0); // instead of a assertEquals(1, size) for future compatibility with changes to Buyer
+        
+        // check that getDeclaredAttribute and getDeclaredAttributes return the same attribute        
+        Attribute<LargeProject, ?> budgetAttribute = entityLargeProject.getDeclaredAttribute("budget");
+        assertNotNull(budgetAttribute);
+        Attribute<LargeProject, ?> budgetSingularAttribute = entityLargeProject.getDeclaredSingularAttribute("budget");
+        assertNotNull(budgetSingularAttribute);
+        assertEquals(budgetSingularAttribute, budgetAttribute);
+        assertTrue(declaredAttributes.contains(budgetSingularAttribute));        
+        // check the type
+        Class budgetClass = budgetSingularAttribute.getJavaType();
+        // Verify whether we expect a boxed class or not 
+        assertEquals(double.class, budgetClass);
+        //assertEquals(Double.class, budgetClass);
+        
+        // Test LargeProject.budget.buyingDays
+        
+        // Check an EnumSet on an Entity
+        EntityType<Buyer> entityBuyer = metamodel.entity(Buyer.class);
+        // public enum Weekdays { SUNDAY, MONDAY, TUESDAY, WEDNESDAY, THURSDAY, FRIDAY, SATURDAY }
+        // private EnumSet<Weekdays> buyingDays;
+        assertNotNull(entityBuyer);
+        // check persistence type
+        assertEquals(PersistenceType.ENTITY, entityBuyer.getPersistenceType());
+        assertEquals(Buyer.class, entityBuyer.getJavaType());
+        // verify EnumSet is a SingularAttribute
+        Attribute buyingDaysAttribute = entityBuyer.getAttribute("buyingDays");
+        assertNotNull(buyingDaysAttribute);
+        // Check persistent attribute type
+        assertEquals(PersistentAttributeType.BASIC, buyingDaysAttribute.getPersistentAttributeType());
+        // Non-spec check on the attribute impl type
+        // EnumSet is not a Set in the Metamodel - it is a treated as a BasicType single object (SingularAttributeType)
+        // BasicTypeImpl@8980685:EnumSet [ javaType: class java.util.EnumSet]
+        assertFalse(((SingularAttributeImpl)buyingDaysAttribute).isPlural());
+        BindableType buyingDaysElementBindableType = ((SingularAttributeImpl)buyingDaysAttribute).getBindableType();
+        assertEquals(BindableType.SINGULAR_ATTRIBUTE, buyingDaysElementBindableType);
+        SingularAttribute<? super Buyer, EnumSet> buyingDaysSingularAttribute = entityBuyer.getSingularAttribute("buyingDays", EnumSet.class);
+        assertNotNull(buyingDaysSingularAttribute);
+        assertFalse(buyingDaysSingularAttribute.isCollection());
+        
+        // http://wiki.eclipse.org/EclipseLink/Development/JPA_2.0/metamodel_api#DI_74:_20090909:_Implement_IdentifiableType.hasSingleIdAttribute.28.29
+        // Check for Id that exists
+        boolean expectedIAExceptionThrown = false;
+        boolean hasSingleIdAttribute = false;
+        try {
+            hasSingleIdAttribute = entityBuyer.hasSingleIdAttribute();
+        } catch (IllegalArgumentException iae) {
+            //iae.printStackTrace();
+            expectedIAExceptionThrown = true;
+        }
+        assertFalse(expectedIAExceptionThrown);
+        assertTrue(hasSingleIdAttribute);
+
+        // Verify that the BasicMap Buyer.creditCards is picked up properly
+        //* @param <X> The type the represented Map belongs to
+        //* @param <K> The type of the key of the represented Map
+        //* @param <V> The type of the value of the represented Map
+        //public class MapAttributeImpl<X, K, V> extends PluralAttributeImpl<X, java.util.Map<K, V>, V>
+        Attribute buyerCreditCards = entityBuyer.getAttribute("creditCards");
+        assertNotNull(buyerCreditCards);
+        assertTrue(buyerCreditCards.isCollection());
+        assertTrue(buyerCreditCards instanceof MapAttributeImpl);
+        MapAttribute<? super Buyer, ?, ?> buyerCreditCardsMap = entityBuyer.getMap("creditCards");
+        
+        // Verify owning type
+        assertNotNull(buyerCreditCardsMap);
+        assertEquals(entityBuyer, buyerCreditCardsMap.getDeclaringType());
+        
+        // Verify Map Key
+        assertEquals(String.class, buyerCreditCardsMap.getKeyJavaType());
+        
+        // Verify Map Value
+        assertEquals(Long.class, buyerCreditCardsMap.getElementType().getJavaType());
     }
     
     /**
