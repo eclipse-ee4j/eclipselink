@@ -2120,7 +2120,7 @@
         <antcall target="server-run-all" inheritRefs="true">
             <param name="PERSISTENCE_UNIT_NAME" value="fieldaccess"/>
             <param name="MODEL_DIR" value="org/eclipse/persistence/testing/models/jpa/fieldaccess/advanced"/>
-            <param name="MODEL_NAME" value="eclipselink-advanced-field-access-model"/>
+            <param name="MODEL_NAME" value="eclipselink-fetchgroups-field-access-model"/>
             <param name="TEST_DIR" value="org/eclipse/persistence/testing/tests/jpa/fieldaccess/fetchgroups"/>
             <param name="TEST_NAME" value="eclipselink-fetchgroups-field-access-model"/>
             <param name="EAR_NAME" value="eclipselink-fetchgroups-field-access-model"/>
