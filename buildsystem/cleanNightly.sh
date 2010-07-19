@@ -48,7 +48,7 @@ for contentdir in `ls -dr ${version}*` ; do
     fi
 done
 echo "Removed $removed direcories from ${BaseDownloadNFSDir}/nightly-updates."
-    
+
 ### Maven Site ###
 #      leave only last 5 days worth of files in the maven repository
 cd ${BaseDownloadNFSDir}/maven.repo/org/eclipse/persistence

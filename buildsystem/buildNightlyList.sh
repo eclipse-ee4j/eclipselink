@@ -17,7 +17,7 @@ echo "generating webpage..."
 tmp=${TMPDIR-/tmp}
 tmp=$tmp/somedir.$RANDOM.$RANDOM.$RANDOM.$$
 (umask 077 && mkdir $tmp) || {
-  echo "Could not create temporary directory! Exiting." 1>&2 
+  echo "Could not create temporary directory! Exiting." 1>&2
   exit 1
 }
 
@@ -48,7 +48,7 @@ for version in `ls -dr [0-9]*` ; do
     echo "            <th align=\"center\"> </th>                                      " >> $tmp/index.xml
     echo "            <th colspan=\"8\" align=\"center\"> Nightly Testing Results </th>" >> $tmp/index.xml
     echo "          </tr>                                                              " >> $tmp/index.xml
-    
+
     #    Generate each table row depending upon available content
     for contentdir in `ls -dr [0-9]*` ; do
         cd $contentdir
