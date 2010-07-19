@@ -171,8 +171,7 @@ public class DescriptorQueryManager implements Cloneable, Serializable {
                 // The reason we do this is we are replacing a query and we want to make sure we are
                 // replacing the exact same one. - TW
                 if (argumentTypes.equals(currentQuery.getArgumentTypeNames())) {
-                    queriesByName.remove(i);
-                    queriesByName.add(i, query);
+                    queriesByName.set(i, query);
                     return;
                 }
             }
