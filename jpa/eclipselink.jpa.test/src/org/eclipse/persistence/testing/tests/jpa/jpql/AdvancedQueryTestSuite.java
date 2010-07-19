@@ -116,7 +116,6 @@ public class AdvancedQueryTestSuite extends JUnitTestCase {
         suite.addTest(new AdvancedQueryTestSuite("testQueryOPTIMISTIC_FORCE_INCREMENTLock"));
         suite.addTest(new AdvancedQueryTestSuite("testQueryPESSIMISTIC_READLock"));
         suite.addTest(new AdvancedQueryTestSuite("testQueryPESSIMISTIC_WRITELock"));
-        suite.addTest(new AdvancedQueryTestSuite("testQueryPESSIMISTIC_FORCE_INCREMENTLock"));
         suite.addTest(new AdvancedQueryTestSuite("testQueryPESSIMISTIC_READ_TIMEOUTLock"));
         suite.addTest(new AdvancedQueryTestSuite("testQueryPESSIMISTIC_WRITE_TIMEOUTLock"));        
         suite.addTest(new AdvancedQueryTestSuite("testObjectResultType"));
@@ -126,9 +125,6 @@ public class AdvancedQueryTestSuite extends JUnitTestCase {
         suite.addTest(new AdvancedQueryTestSuite("testMultipleNamedJoinFetchs"));
         suite.addTest(new AdvancedQueryTestSuite("testNativeQueryTransactions"));
         suite.addTest(new AdvancedQueryTestSuite("testLockWithSecondaryTable"));
-        suite.addTest(new AdvancedQueryTestSuite("testVersionChangeWithReadLock"));
-        suite.addTest(new AdvancedQueryTestSuite("testVersionChangeWithWriteLock"));
-        suite.addTest(new AdvancedQueryTestSuite("testNamedQueryAnnotationOverwritePersistenceXML"));
         suite.addTest(new AdvancedQueryTestSuite("testBatchFetchingJOIN"));
         suite.addTest(new AdvancedQueryTestSuite("testBatchFetchingEXISTS"));
         suite.addTest(new AdvancedQueryTestSuite("testBatchFetchingIN"));
@@ -154,6 +150,12 @@ public class AdvancedQueryTestSuite extends JUnitTestCase {
         suite.addTest(new AdvancedQueryTestSuite("testMapKeyJoinFetching"));
         suite.addTest(new AdvancedQueryTestSuite("testMapKeyBatchFetching"));
         suite.addTest(new AdvancedQueryTestSuite("testJPQLCacheHits"));
+        if (!isJPA10()) {
+            suite.addTest(new AdvancedQueryTestSuite("testQueryPESSIMISTIC_FORCE_INCREMENTLock"));
+            suite.addTest(new AdvancedQueryTestSuite("testVersionChangeWithReadLock"));
+            suite.addTest(new AdvancedQueryTestSuite("testVersionChangeWithWriteLock"));
+            suite.addTest(new AdvancedQueryTestSuite("testNamedQueryAnnotationOverwritePersistenceXML"));
+        }
         return suite;
     }
     
@@ -1195,8 +1197,7 @@ public class AdvancedQueryTestSuite extends JUnitTestCase {
     }
     
     public void testQueryPESSIMISTIC_FORCE_INCREMENTLock() {
-        // It's a JPA2.0 feature
-        if (! isJPA10() && isSelectForUpateSupported()) {
+        if (isSelectForUpateSupported()) {
             Employee employee = null;
             Integer version1;
             
@@ -1437,8 +1438,7 @@ public class AdvancedQueryTestSuite extends JUnitTestCase {
     }
 
     public void testVersionChangeWithReadLock() {
-        // It's a JPA2.0 feature.
-        if (! isJPA10() && isSelectForUpateNoWaitSupported()){
+        if (isSelectForUpateNoWaitSupported()){
             Employee employee = null;
             Integer version1;
             
@@ -1490,33 +1490,28 @@ public class AdvancedQueryTestSuite extends JUnitTestCase {
     }
 
     public void testNamedQueryAnnotationOverwritePersistenceXML() throws Exception {
-
-        //It's a JPA2.0 feature
-        if (! isJPA10()){
-            EntityManager em = createEntityManager();
-            try {
-                beginTransaction(em);
-                Query query = em.createNamedQuery("findAllEmployeesByIdAndFirstName");
-                Map<String, Object> hints = query.getHints();
-                assertTrue("query hint", hints.get(QueryHints.PESSIMISTIC_LOCK_TIMEOUT).equals("15"));
+        EntityManager em = createEntityManager();
+        try {
+            beginTransaction(em);
+            Query query = em.createNamedQuery("findAllEmployeesByIdAndFirstName");
+            Map<String, Object> hints = query.getHints();
+            assertTrue("query hint", hints.get(QueryHints.PESSIMISTIC_LOCK_TIMEOUT).equals("15"));
+            rollbackTransaction(em);
+        } catch(Exception ex){
+            if (isTransactionActive(em)) {
                 rollbackTransaction(em);
-            } catch(Exception ex){
-                if (isTransactionActive(em)) {
-                    rollbackTransaction(em);
-                }
-                throw ex;
-            } finally{
-                if (isTransactionActive(em)) {
-                    rollbackTransaction(em);
-                }
-                closeEntityManager(em);
             }
+            throw ex;
+        } finally{
+            if (isTransactionActive(em)) {
+                rollbackTransaction(em);
+            }
+            closeEntityManager(em);
         }
     }
 
     public void testVersionChangeWithWriteLock() {
-        // It's a JPA2.0 feature
-        if (! isJPA10() && isSelectForUpateNoWaitSupported()) {
+        if (isSelectForUpateNoWaitSupported()) {
             Employee employee = null;
             Integer version1;
             

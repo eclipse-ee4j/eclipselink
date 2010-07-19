@@ -110,8 +110,6 @@ public class AdvancedCompositePKJunitTest extends JUnitTestCase {
         suite.addTest(new AdvancedCompositePKJunitTest("testMapsIdExample6"));
         suite.addTest(new AdvancedCompositePKJunitTest("testMapsIdExample6MultiLevel"));
         
-        suite.addTest(new AdvancedCompositePKJunitTest("testGetIdentifier"));
-        
         suite.addTest(new AdvancedCompositePKJunitTest("testJoinColumnSharesPK"));
         
         suite.addTest(new AdvancedCompositePKJunitTest("testMapWithDerivedId"));
@@ -119,6 +117,10 @@ public class AdvancedCompositePKJunitTest extends JUnitTestCase {
         
         suite.addTest(new AdvancedCompositePKJunitTest("testSharedDerivedIdEmbeddableClass"));
         
+        if (!isJPA10()) {
+            // This test runs only on a JEE6 / JPA 2.0 capable server
+            suite.addTest(new AdvancedCompositePKJunitTest("testGetIdentifier"));
+        }
         return suite;
     }
     
@@ -713,25 +715,22 @@ public class AdvancedCompositePKJunitTest extends JUnitTestCase {
     }
     
     public void testGetIdentifier(){
-        // Don't run this test in a JPA 1.0 environment.
-        if (! isJPA10()) {
-            EntityManagerFactory emf = getEntityManagerFactory();
-            EntityManager em = createEntityManager();
-            beginTransaction(em);
-            try{
-                DepartmentPK pk = new DepartmentPK("DEPT B", "ROLE B", "LOCATION B");
-                Department department = new Department();
-                department.setName("DEPT B");
-                department.setRole("ROLE B");
-                department.setLocation("LOCATION B");
-                em.persist(department);
-                em.flush();
-                
-                PersistenceUnitUtil util = emf.getPersistenceUnitUtil();
-                assertTrue("Got an incorrect id from persistenceUtil.getIdentifier()", pk.equals(util.getIdentifier(department)));
-            } finally {
-                rollbackTransaction(em);
-            }
+        EntityManagerFactory emf = getEntityManagerFactory();
+        EntityManager em = createEntityManager();
+        beginTransaction(em);
+        try{
+            DepartmentPK pk = new DepartmentPK("DEPT B", "ROLE B", "LOCATION B");
+            Department department = new Department();
+            department.setName("DEPT B");
+            department.setRole("ROLE B");
+            department.setLocation("LOCATION B");
+            em.persist(department);
+            em.flush();
+            
+            PersistenceUnitUtil util = emf.getPersistenceUnitUtil();
+            assertTrue("Got an incorrect id from persistenceUtil.getIdentifier()", pk.equals(util.getIdentifier(department)));
+        } finally {
+            rollbackTransaction(em);
         }
     }
     

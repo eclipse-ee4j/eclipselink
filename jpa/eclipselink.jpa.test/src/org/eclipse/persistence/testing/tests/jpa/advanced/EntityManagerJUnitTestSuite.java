@@ -199,18 +199,14 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
         suite.addTest(new EntityManagerJUnitTestSuite("testPrimaryKeyUpdateSameValue"));
         suite.addTest(new EntityManagerJUnitTestSuite("testPrimaryKeyUpdate"));
         suite.addTest(new EntityManagerJUnitTestSuite("testRemoveNull"));
-        suite.addTest(new EntityManagerJUnitTestSuite("testDetachNull"));
         suite.addTest(new EntityManagerJUnitTestSuite("testContainsNull"));
         suite.addTest(new EntityManagerJUnitTestSuite("testPersistNull"));
         suite.addTest(new EntityManagerJUnitTestSuite("testMergeNull"));
         suite.addTest(new EntityManagerJUnitTestSuite("testMergeRemovedObject"));
-        suite.addTest(new EntityManagerJUnitTestSuite("testDetachRemovedObject"));
         suite.addTest(new EntityManagerJUnitTestSuite("testMergeDetachedObject"));
         suite.addTest(new EntityManagerJUnitTestSuite("testSerializedLazy"));
         suite.addTest(new EntityManagerJUnitTestSuite("testCloneable"));
         suite.addTest(new EntityManagerJUnitTestSuite("testLeftJoinOneToOneQuery"));
-        suite.addTest(new EntityManagerJUnitTestSuite("testLockingLeftJoinOneToOneQuery"));
-        suite.addTest(new EntityManagerJUnitTestSuite("testLockingLeftJoinOneToOneQuery2"));
         suite.addTest(new EntityManagerJUnitTestSuite("testNullifyAddressIn"));
         suite.addTest(new EntityManagerJUnitTestSuite("testQueryOnClosedEM"));
         suite.addTest(new EntityManagerJUnitTestSuite("testIncorrectBatchQueryHint"));
@@ -220,12 +216,10 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
         suite.addTest(new EntityManagerJUnitTestSuite("testParallelMultipleFactories"));
         suite.addTest(new EntityManagerJUnitTestSuite("testMultipleFactories"));
         suite.addTest(new EntityManagerJUnitTestSuite("testPersistenceProperties"));
-        suite.addTest(new EntityManagerJUnitTestSuite("testGetProperties"));
         suite.addTest(new EntityManagerJUnitTestSuite("testBeginTransactionCloseCommitTransaction"));
         suite.addTest(new EntityManagerJUnitTestSuite("testBeginTransactionClose"));
         suite.addTest(new EntityManagerJUnitTestSuite("testClose"));
         suite.addTest(new EntityManagerJUnitTestSuite("testPersistOnNonEntity"));
-        suite.addTest(new EntityManagerJUnitTestSuite("testDetachNonEntity"));
         suite.addTest(new EntityManagerJUnitTestSuite("testWRITELock"));
         suite.addTest(new EntityManagerJUnitTestSuite("testOPTIMISTIC_FORCE_INCREMENTLock"));
         suite.addTest(new EntityManagerJUnitTestSuite("testReadTransactionIsolation_OriginalInCache_UpdateAll_Refresh_Flush"));
@@ -251,18 +245,13 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
         suite.addTest(new EntityManagerJUnitTestSuite("testCheckVersionOnMerge"));
         suite.addTest(new EntityManagerJUnitTestSuite("testFindWithNullPk"));
         suite.addTest(new EntityManagerJUnitTestSuite("testFindWithWrongTypePk"));
-        suite.addTest(new EntityManagerJUnitTestSuite("testFindWithProperties"));
         suite.addTest(new EntityManagerJUnitTestSuite("testPersistManagedNoException"));
         suite.addTest(new EntityManagerJUnitTestSuite("testPersistManagedException"));
-        suite.addTest(new EntityManagerJUnitTestSuite("testDetachManagedObject"));
-        suite.addTest(new EntityManagerJUnitTestSuite("testDetachNonManagedObject"));
-        suite.addTest(new EntityManagerJUnitTestSuite("testCascadeDetach"));
         suite.addTest(new EntityManagerJUnitTestSuite("testPersistRemoved"));
         suite.addTest(new EntityManagerJUnitTestSuite("testREADLock"));
         suite.addTest(new EntityManagerJUnitTestSuite("testOPTIMISTICLock"));
         suite.addTest(new EntityManagerJUnitTestSuite("testPESSIMISTIC_READLock"));
         suite.addTest(new EntityManagerJUnitTestSuite("testPESSIMISTIC_WRITELock"));
-        suite.addTest(new EntityManagerJUnitTestSuite("testPESSIMISTIC_FORCE_INCREMENTLock"));
         suite.addTest(new EntityManagerJUnitTestSuite("testPESSIMISTIC_READLockWithNoChanges"));
         suite.addTest(new EntityManagerJUnitTestSuite("testPESSIMISTIC_WRITELockWithNoChanges"));
         suite.addTest(new EntityManagerJUnitTestSuite("testPESSIMISTIC_READ_TIMEOUTLock"));
@@ -301,8 +290,6 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
         suite.addTest(new EntityManagerJUnitTestSuite("testBulkDeleteThenMerge"));
         suite.addTest(new EntityManagerJUnitTestSuite("testNativeSequences"));
         suite.addTest(new EntityManagerJUnitTestSuite("testGetReference"));
-        suite.addTest(new EntityManagerJUnitTestSuite("testGetLockModeType"));
-        suite.addTest(new EntityManagerJUnitTestSuite("testGetEntityManagerFactory"));
         suite.addTest(new EntityManagerJUnitTestSuite("testGetReferenceUpdate"));
         suite.addTest(new EntityManagerJUnitTestSuite("testGetReferenceUsedInUpdate"));
         suite.addTest(new EntityManagerJUnitTestSuite("testBadGetReference"));
@@ -312,7 +299,6 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
         suite.addTest(new EntityManagerJUnitTestSuite("test210280EntityManagerFromPUwithSpaceInNameAndPath"));
         suite.addTest(new EntityManagerJUnitTestSuite("testNewObjectNotCascadePersist"));
         suite.addTest(new EntityManagerJUnitTestSuite("testConnectionPolicy"));
-        suite.addTest(new EntityManagerJUnitTestSuite("testConnectionPolicySetProperty"));
         suite.addTest(new EntityManagerJUnitTestSuite("testConverterIn"));
         suite.addTest(new EntityManagerJUnitTestSuite("testExceptionForPersistNonEntitySubclass"));
         suite.addTest(new EntityManagerJUnitTestSuite("testEnabledPersistNonEntitySubclass"));
@@ -322,7 +308,6 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
         suite.addTest(new EntityManagerJUnitTestSuite("testFlushMode"));
         suite.addTest(new EntityManagerJUnitTestSuite("testEmbeddedNPE"));
         suite.addTest(new EntityManagerJUnitTestSuite("testCollectionAddNewObjectUpdate"));
-        suite.addTest(new EntityManagerJUnitTestSuite("testUnWrapClass"));
         suite.addTest(new EntityManagerJUnitTestSuite("testEMCloseAndOpen"));
         suite.addTest(new EntityManagerJUnitTestSuite("testEMFactoryCloseAndOpen"));
 
@@ -331,23 +316,40 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
         suite.addTest(new EntityManagerJUnitTestSuite("testForUOWInSharedCacheWithBatchQueryHint"));
         suite.addTest(new EntityManagerJUnitTestSuite("testNoPersistOnFlushProperties"));
         suite.addTest(new EntityManagerJUnitTestSuite("testUOWReferenceInExpressionCache"));
-        suite.addTest(new EntityManagerJUnitTestSuite("testIsLoaded"));
-        suite.addTest(new EntityManagerJUnitTestSuite("testIsLoadedAttribute"));
-        suite.addTest(new EntityManagerJUnitTestSuite("testGetIdentifier"));
         suite.addTest(new EntityManagerJUnitTestSuite("testIsLoadedWithReference"));
         suite.addTest(new EntityManagerJUnitTestSuite("testIsLoadedWithoutReference"));
         suite.addTest(new EntityManagerJUnitTestSuite("testIsLoadedWithoutReferenceAttribute"));
-        suite.addTest(new EntityManagerJUnitTestSuite("testGetHints"));
         suite.addTest(new EntityManagerJUnitTestSuite("testTemporalOnClosedEm"));
         suite.addTest(new EntityManagerJUnitTestSuite("testTransientMapping"));
         suite.addTest(new EntityManagerJUnitTestSuite("testGenerateSessionNameFromConnectionProperties"));
-        suite.addTest(new EntityManagerJUnitTestSuite("testPESSIMISTIC_FORCE_INCREMENTLockOnNonVersionedEntity"));
         suite.addTest(new EntityManagerJUnitTestSuite("testLockWithJoinedInheritanceStrategy"));
         suite.addTest(new EntityManagerJUnitTestSuite("testPreupdateEmbeddable"));
         suite.addTest(new EntityManagerJUnitTestSuite("testFindReadOnlyIsolated"));
         suite.addTest(new EntityManagerJUnitTestSuite("testInheritanceQuery"));
         suite.addTest(new EntityManagerJUnitTestSuite("testNullBasicMap"));
-        
+        if (!isJPA10()) {
+            suite.addTest(new EntityManagerJUnitTestSuite("testDetachNull"));
+            suite.addTest(new EntityManagerJUnitTestSuite("testDetachRemovedObject"));
+            suite.addTest(new EntityManagerJUnitTestSuite("testLockingLeftJoinOneToOneQuery"));
+            suite.addTest(new EntityManagerJUnitTestSuite("testLockingLeftJoinOneToOneQuery2"));
+            suite.addTest(new EntityManagerJUnitTestSuite("testGetProperties"));
+            suite.addTest(new EntityManagerJUnitTestSuite("testDetachNonEntity"));
+            suite.addTest(new EntityManagerJUnitTestSuite("testFindWithProperties"));
+            suite.addTest(new EntityManagerJUnitTestSuite("testDetachManagedObject"));
+            suite.addTest(new EntityManagerJUnitTestSuite("testDetachNonManagedObject"));
+            suite.addTest(new EntityManagerJUnitTestSuite("testCascadeDetach"));
+
+            suite.addTest(new EntityManagerJUnitTestSuite("testPESSIMISTIC_FORCE_INCREMENTLock"));
+            suite.addTest(new EntityManagerJUnitTestSuite("testGetLockModeType"));
+            suite.addTest(new EntityManagerJUnitTestSuite("testGetEntityManagerFactory"));
+            suite.addTest(new EntityManagerJUnitTestSuite("testConnectionPolicySetProperty"));
+            suite.addTest(new EntityManagerJUnitTestSuite("testUnWrapClass"));
+            suite.addTest(new EntityManagerJUnitTestSuite("testIsLoaded"));
+            suite.addTest(new EntityManagerJUnitTestSuite("testIsLoadedAttribute"));
+            suite.addTest(new EntityManagerJUnitTestSuite("testGetIdentifier"));
+            suite.addTest(new EntityManagerJUnitTestSuite("testGetHints"));
+            suite.addTest(new EntityManagerJUnitTestSuite("testPESSIMISTIC_FORCE_INCREMENTLockOnNonVersionedEntity"));
+        }
         return suite;
     }
 
@@ -1647,8 +1649,7 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
     }
     
     public void testPESSIMISTIC_FORCE_INCREMENTLock() {
-        // It's JPA2.0 feature.
-        if (! isJPA10() && isSelectForUpateSupported()) {
+        if (isSelectForUpateSupported()) {
             Employee employee = null;
             Integer version1;
 
@@ -1885,40 +1886,37 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
     }
 
     public void testPESSIMISTIC_FORCE_INCREMENTLockOnNonVersionedEntity() {
-        // It's a JPA2.0 feature
-        if (! isJPA10()) {
-            Department dept = null;
+        Department dept = null;
 
-            EntityManager em = createEntityManager();
-            try {
-                beginTransaction(em);
-                dept = new Department();
-                em.persist(dept);
-                commitTransaction(em);
-            } catch (RuntimeException ex) {
-                if (isTransactionActive(em)) {
-                    rollbackTransaction(em);
-                }
-                closeEntityManager(em);
-                throw ex;
-            } 
-
-            try {
-                beginTransaction(em);
-                dept = em.find(Department.class, dept.getId(), LockModeType.PESSIMISTIC_FORCE_INCREMENT);
+        EntityManager em = createEntityManager();
+        try {
+            beginTransaction(em);
+            dept = new Department();
+            em.persist(dept);
+            commitTransaction(em);
+        } catch (RuntimeException ex) {
+            if (isTransactionActive(em)) {
                 rollbackTransaction(em);
-                fail("An Expected javax.persistence.PersistenceException was not thrown");
-            } catch (PersistenceException ex) {
-                if (isTransactionActive(em)) {
-                    rollbackTransaction(em);
-                }
-            } finally {
-                if (isTransactionActive(em)) {
-                    rollbackTransaction(em);
-                }
-                closeEntityManager(em);
             }
-       }
+            closeEntityManager(em);
+            throw ex;
+        } 
+
+        try {
+            beginTransaction(em);
+            dept = em.find(Department.class, dept.getId(), LockModeType.PESSIMISTIC_FORCE_INCREMENT);
+            rollbackTransaction(em);
+            fail("An Expected javax.persistence.PersistenceException was not thrown");
+        } catch (PersistenceException ex) {
+            if (isTransactionActive(em)) {
+                rollbackTransaction(em);
+            }
+        } finally {
+            if (isTransactionActive(em)) {
+                rollbackTransaction(em);
+            }
+            closeEntityManager(em);
+        }
     }
 
     public void testLockWithJoinedInheritanceStrategy () {
@@ -2479,62 +2477,53 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
     }
 
     public void testDetachManagedObject() {
-        // Don't run this test in a JPA 1.0 environment.
-        if (! isJPA10()) {
-            EntityManager em = createEntityManager();
+        EntityManager em = createEntityManager();
 
-            // create test data
-            beginTransaction(em);
-            Employee emp = new Employee();
-            emp.setFirstName("beforePersist");
-            em.persist(emp);
-            Integer id = emp.getId();
-            commitTransaction(em);
+        // create test data
+        beginTransaction(em);
+        Employee emp = new Employee();
+        emp.setFirstName("beforePersist");
+        em.persist(emp);
+        Integer id = emp.getId();
+        commitTransaction(em);
     
-            // Test that 'detach()' removes 'emp' from the persistence context
-            beginTransaction(em);
-            em.detach(emp);
-            assertFalse("could not detach managed object", em.contains(emp));
+        // Test that 'detach()' removes 'emp' from the persistence context
+        beginTransaction(em);
+        em.detach(emp);
+        assertFalse("could not detach managed object", em.contains(emp));
     
-            // clean up 
-            emp = em.find(Employee.class, id);
-            em.remove(emp);
-            commitTransaction(em);
-        }
+        // clean up 
+        emp = em.find(Employee.class, id);
+        em.remove(emp);
+        commitTransaction(em);
     }
 
     public void testCascadeDetach() {
-        // Don't run this test in a JPA 1.0 environment.
-        if (! isJPA10()) {
-            EntityManager em = createEntityManager();
-            Employee emp = (Employee)em.createQuery("Select e from Employee e where e.managedEmployees is not empty").getResultList().get(0);
-            emp.getManagedEmployees().size();
-            em.detach(emp);
-            assertFalse("Did not cascade detach", em.contains(emp.getManagedEmployees().iterator().next()));
-        }
+        EntityManager em = createEntityManager();
+        Employee emp = (Employee)em.createQuery("Select e from Employee e where e.managedEmployees is not empty").getResultList().get(0);
+        emp.getManagedEmployees().size();
+        em.detach(emp);
+        assertFalse("Did not cascade detach", em.contains(emp.getManagedEmployees().iterator().next()));
     }
 
     //detaching an non-managed object should not throw any exception.
     public void testDetachNonManagedObject() {
-        // Don't run this test in a JPA 1.0 environment.
-        if (! isJPA10()) {
-            EntityManager em = createEntityManager();
+        EntityManager em = createEntityManager();
     
-            // Create test data
-            beginTransaction(em);
-            Employee emp = new Employee();
-            emp.setFirstName("beforePersist");
-            boolean caughtException = false;
+        // Create test data
+        beginTransaction(em);
+        Employee emp = new Employee();
+        emp.setFirstName("beforePersist");
+        boolean caughtException = false;
     
-            // detach the object
-            em.detach(emp);
-            em.persist(emp);
+        // detach the object
+        em.detach(emp);
+        em.persist(emp);
     
-            // Deleting the object
-            em.remove(emp);
-            commitTransaction(em);
-            assertFalse("Cannot_detach_Object Exception was thrown for a non-managed Entity", caughtException);
-        }
+        // Deleting the object
+        em.remove(emp);
+        commitTransaction(em);
+        assertFalse("Cannot_detach_Object Exception was thrown for a non-managed Entity", caughtException);
     }
 
     // test for bug 4676587: 
@@ -2721,31 +2710,28 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
     }
 
     public void testFindWithProperties(){
-        // find with properties not supported on 1.0
-        if (! isJPA10()) {
-            Employee employee = new Employee();
-            employee.setFirstName("Marc");
-            HashMap<String, Object> queryhints=new  HashMap<String, Object>();
-            EntityManager em = createEntityManager();
-            try {
-              beginTransaction(em);
-              em.persist(employee);
-              commitTransaction(em);
-              beginTransaction(em);
-              int empId=employee.getId();
-              Employee e1=em.find(Employee.class,empId);
-              e1.setFirstName("testfind");
-              queryhints.put(QueryHints.REFRESH, "TRUE");
-              Employee e2= (Employee)em.find(Employee.class,empId ,queryhints);
-              assertFalse(e2.getFirstName().equals("testfind"));
-              commitTransaction(em);
-            } catch (IllegalArgumentException iae) {
-                return;
-            } catch (Exception e) {
-                fail("Wrong exception type thrown: " + e.getClass());
-            }finally{
-                closeEntityManager(em);
-            }
+        Employee employee = new Employee();
+        employee.setFirstName("Marc");
+        HashMap<String, Object> queryhints=new  HashMap<String, Object>();
+        EntityManager em = createEntityManager();
+        try {
+          beginTransaction(em);
+          em.persist(employee);
+          commitTransaction(em);
+          beginTransaction(em);
+          int empId=employee.getId();
+          Employee e1=em.find(Employee.class,empId);
+          e1.setFirstName("testfind");
+          queryhints.put(QueryHints.REFRESH, "TRUE");
+          Employee e2= (Employee)em.find(Employee.class,empId ,queryhints);
+          assertFalse(e2.getFirstName().equals("testfind"));
+          commitTransaction(em);
+        } catch (IllegalArgumentException iae) {
+            return;
+        } catch (Exception e) {
+            fail("Wrong exception type thrown: " + e.getClass());
+        }finally{
+            closeEntityManager(em);
         }
       }
 
@@ -4362,21 +4348,18 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
 
     //detach(nonentity) throws illegalArgumentException
     public void testDetachNonEntity() {
-        // Don't run this test in a JPA 1.0 environment.
-        if (! isJPA10()) {
-            boolean testPass = false;
-            Object nonEntity = new Object();
-            EntityManager em = createEntityManager();
-            beginTransaction(em);
-            try {
-                em.detach(nonEntity);
-            } catch (IllegalArgumentException e) {
-                testPass = true;
-            } finally {
-                rollbackTransaction(em);
-            }
-            Assert.assertTrue(testPass);
+        boolean testPass = false;
+        Object nonEntity = new Object();
+        EntityManager em = createEntityManager();
+        beginTransaction(em);
+        try {
+            em.detach(nonEntity);
+        } catch (IllegalArgumentException e) {
+            testPass = true;
+        } finally {
+            rollbackTransaction(em);
         }
+        Assert.assertTrue(testPass);
     }
 
     public void testClose() {
@@ -4660,8 +4643,7 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
                     + "Symfoware doesn't support UpdateAll/DeleteAll on multi-table objects (see rfe 298193).");
             return;
         }
-        // getLockModeType not supported on 1.0
-        if ((! isJPA10()) && isSelectForUpateSupported()) {
+        if (isSelectForUpateSupported()) {
             EntityManager em = createEntityManager();
             try {
                 beginTransaction(em);
@@ -4745,23 +4727,20 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
 
     //'getProperties()' returns map that throws exception when tried to modify.
     public void testGetProperties() {
-        // getProperties not supported on 1.0
-        if (! isJPA10()) {
-            EntityManager em = createEntityManager();
-            beginTransaction(em);
-            try {
-                Map m1 = em.getProperties();
-                m1.remove("eclipselink.weaving");
-            } catch (UnsupportedOperationException use) {
-                return;
-            } catch (Exception e) {
-                fail("Wrong exception type thrown: " + e.getClass());
-            } finally {
-                rollbackTransaction(em);
-                closeEntityManager(em);
-            }
-            fail("No exception thrown when entityManager's properties are attempted to change.");
+        EntityManager em = createEntityManager();
+        beginTransaction(em);
+        try {
+            Map m1 = em.getProperties();
+            m1.remove("eclipselink.weaving");
+        } catch (UnsupportedOperationException use) {
+            return;
+        } catch (Exception e) {
+            fail("Wrong exception type thrown: " + e.getClass());
+        } finally {
+            rollbackTransaction(em);
+            closeEntityManager(em);
         }
+        fail("No exception thrown when entityManager's properties are attempted to change.");
     }
 
     public void testUOWReferenceInExpressionCache() {
@@ -4783,33 +4762,30 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
     }
 
     public void testUnWrapClass() {
-        // unWrap not supported on 1.0
-        if (! isJPA10()) {
-            EntityManager em = createEntityManager();
-            try {
-                beginTransaction(em);
-                EntityManagerImpl emi = (EntityManagerImpl) em.getDelegate();
-                ServerSession session = emi.getServerSession();
-                UnitOfWork uow = emi.getUnitOfWork();
-                JpaEntityManager jem = emi;
-                org.eclipse.persistence.sessions.server.ServerSession session1;
-                session1 = (ServerSession) em.unwrap(org.eclipse.persistence.sessions.Session.class);
-                assertEquals("Does not return server session", session, session1);
-                UnitOfWork uow1;
-                uow1 = em.unwrap(org.eclipse.persistence.sessions.UnitOfWork.class);
-                assertEquals("Does not return unit of work", uow, uow1);
-                JpaEntityManager jem1;
-                jem1 = em.unwrap(org.eclipse.persistence.jpa.JpaEntityManager.class);
-                assertEquals("Does not return underlying entitymanager", jem, jem1);
-                // TODO: This should be supported.
-                /*Connection conn1;
-                conn1 = em.unwrap(java.sql.Connection.class);
-                Connection conn = uowImpl.getAccessor().getConnection();
-                assertEquals("Does not return underlying connection", conn, conn1);*/
-            } finally {
-                rollbackTransaction(em);
-                closeEntityManager(em);
-            }
+        EntityManager em = createEntityManager();
+        try {
+            beginTransaction(em);
+            EntityManagerImpl emi = (EntityManagerImpl) em.getDelegate();
+            ServerSession session = emi.getServerSession();
+            UnitOfWork uow = emi.getUnitOfWork();
+            JpaEntityManager jem = emi;
+            org.eclipse.persistence.sessions.server.ServerSession session1;
+            session1 = (ServerSession) em.unwrap(org.eclipse.persistence.sessions.Session.class);
+            assertEquals("Does not return server session", session, session1);
+            UnitOfWork uow1;
+            uow1 = em.unwrap(org.eclipse.persistence.sessions.UnitOfWork.class);
+            assertEquals("Does not return unit of work", uow, uow1);
+            JpaEntityManager jem1;
+            jem1 = em.unwrap(org.eclipse.persistence.jpa.JpaEntityManager.class);
+            assertEquals("Does not return underlying entitymanager", jem, jem1);
+            // TODO: This should be supported.
+            /*Connection conn1;
+            conn1 = em.unwrap(java.sql.Connection.class);
+            Connection conn = uowImpl.getAccessor().getConnection();
+            assertEquals("Does not return underlying connection", conn, conn1);*/
+        } finally {
+            rollbackTransaction(em);
+            closeEntityManager(em);
         }
     }
 
@@ -5442,79 +5418,73 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
     // Test multiple items from a report query. Will verify the version on
     // only one of the results.
     public void testLockingLeftJoinOneToOneQuery() {        
-        // OPTIMISTIC_FORCE_INCREMENT lock not supported on 1.0
-        if (! isJPA10()) {
-            // Grab a copy of the results that we will lock then verify.
-            List<Object[]> results = createEntityManager().createQuery("SELECT m, e FROM Employee e LEFT JOIN e.manager m").getResultList();
-            
-            if (! results.isEmpty()) {
-                // Issuing the force increment locking query.
-                EntityManager em = createEntityManager();
-                beginTransaction(em);
-                em.createQuery("SELECT m, e FROM Employee e LEFT JOIN e.manager m").setLockMode(LockModeType.OPTIMISTIC_FORCE_INCREMENT).getResultList();
-                commitTransaction(em);
-            
-                // Verify the items of the result list all had a version increment.
-                beginTransaction(em);
-                try{
-                    for (Object[] result : results) {
-                        Employee managerBefore = (Employee) result[0];
-                        if (managerBefore != null) {
-                            int managerVersionBefore = managerBefore.getVersion();
-                            Employee managerAfter = em.find(Employee.class, managerBefore.getId());
-                            int managerVersionAfter = managerAfter.getVersion();
-                            assertTrue("The manager version was not updated on the locking query.", (managerVersionAfter - managerVersionBefore) == 1);
-                        }
-                        
-                        Employee employeeBefore = (Employee) result[1];
-                        if (employeeBefore != null) {
-                            int employeeVersionBefore = employeeBefore.getVersion();
-                            Employee employeeAfter = em.find(Employee.class, employeeBefore.getId());
-                            int employeeVersionAfter = employeeAfter.getVersion();
-                            assertTrue("The manager version was not updated on the locking query.", (employeeVersionAfter - employeeVersionBefore) == 1);
-                        }
+        // Grab a copy of the results that we will lock then verify.
+        List<Object[]> results = createEntityManager().createQuery("SELECT m, e FROM Employee e LEFT JOIN e.manager m").getResultList();
+        
+        if (! results.isEmpty()) {
+            // Issuing the force increment locking query.
+            EntityManager em = createEntityManager();
+            beginTransaction(em);
+            em.createQuery("SELECT m, e FROM Employee e LEFT JOIN e.manager m").setLockMode(LockModeType.OPTIMISTIC_FORCE_INCREMENT).getResultList();
+            commitTransaction(em);
+        
+            // Verify the items of the result list all had a version increment.
+            beginTransaction(em);
+            try{
+                for (Object[] result : results) {
+                    Employee managerBefore = (Employee) result[0];
+                    if (managerBefore != null) {
+                        int managerVersionBefore = managerBefore.getVersion();
+                        Employee managerAfter = em.find(Employee.class, managerBefore.getId());
+                        int managerVersionAfter = managerAfter.getVersion();
+                        assertTrue("The manager version was not updated on the locking query.", (managerVersionAfter - managerVersionBefore) == 1);
                     }
-                } finally {
-                   if(this.isTransactionActive(em)) {
-                       rollbackTransaction(em);
-                      }
-                       closeEntityManager(em);
+                    
+                    Employee employeeBefore = (Employee) result[1];
+                    if (employeeBefore != null) {
+                        int employeeVersionBefore = employeeBefore.getVersion();
+                        Employee employeeAfter = em.find(Employee.class, employeeBefore.getId());
+                        int employeeVersionAfter = employeeAfter.getVersion();
+                        assertTrue("The manager version was not updated on the locking query.", (employeeVersionAfter - employeeVersionBefore) == 1);
+                    }
                 }
+            } finally {
+               if(this.isTransactionActive(em)) {
+                   rollbackTransaction(em);
+                  }
+                   closeEntityManager(em);
             }
-        }   
+        }
     }
     
     // Test single item from a report query.
     public void testLockingLeftJoinOneToOneQuery2() {        
-        // OPTIMISTIC_FORCE_INCREMENT lock not supported on 1.0
-        if (! isJPA10()) {
-            // Grab a copy of the results that we will lock then verify.
-            List<Address> results = createEntityManager().createQuery("SELECT a FROM Employee e LEFT JOIN e.address a").getResultList();
+        // Grab a copy of the results that we will lock then verify.
+        List<Address> results = createEntityManager().createQuery("SELECT a FROM Employee e LEFT JOIN e.address a").getResultList();
+        
+        if (results != null) {
+            // Issuing the force increment locking query.
+            EntityManager em = createEntityManager();
+            beginTransaction(em);
+            em.createQuery("SELECT a FROM Employee e LEFT JOIN e.address a").setLockMode(LockModeType.OPTIMISTIC_FORCE_INCREMENT).getResultList();
+            commitTransaction(em);
             
-            if (results != null) {
-                // Issuing the force increment locking query.
-                EntityManager em = createEntityManager();
-                beginTransaction(em);
-                em.createQuery("SELECT a FROM Employee e LEFT JOIN e.address a").setLockMode(LockModeType.OPTIMISTIC_FORCE_INCREMENT).getResultList();
-                commitTransaction(em);
-                
-                // Verify the items of the result list all had a version increment.
-                beginTransaction(em);
-                try{
-                    for (Address address : results) {
-                        if (address != null) {
-                            int versionBefore = address.getVersion();    
-                            Address addressAfter = em.find(Address.class, address.getID());
-                            int versionAfter = addressAfter.getVersion();
-                            assertTrue("The version on an address was not updated on the locking query.", (versionAfter - versionBefore) == 1);
-                        }
+            // Verify the items of the result list all had a version increment.
+            beginTransaction(em);
+            try{
+                for (Address address : results) {
+                    if (address != null) {
+                        int versionBefore = address.getVersion();    
+                        Address addressAfter = em.find(Address.class, address.getID());
+                        int versionAfter = addressAfter.getVersion();
+                        assertTrue("The version on an address was not updated on the locking query.", (versionAfter - versionBefore) == 1);
                     }
-                } finally {
-                   if(this.isTransactionActive(em)) {
-                       rollbackTransaction(em);
-                      }
-                       closeEntityManager(em);
                 }
+            } finally {
+               if(this.isTransactionActive(em)) {
+                   rollbackTransaction(em);
+                  }
+                   closeEntityManager(em);
             }
         }
     }
@@ -5777,45 +5747,42 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
     //checks whether an removed object is completely deleted from the
     //getDeletedObject()Map after 'detach(removedobject)' is invoked
     public void testDetachRemovedObject() {
-        // Don't run this test in a JPA 1.0 environment.
-        if (! isJPA10()) {
-            //create an Employee
-            Employee emp = new Employee();
-            emp.setFirstName("testDetachRemovedObjectEmployee");
-            emp.setId(71);
+        //create an Employee
+        Employee emp = new Employee();
+        emp.setFirstName("testDetachRemovedObjectEmployee");
+        emp.setId(71);
     
-            //persist the Employee
-            EntityManager em = createEntityManager();
-            try {
-                beginTransaction(em);
-                em.persist(emp);
-                commitTransaction(em);
-            } catch (RuntimeException re){
-                if (isTransactionActive(em)){
-                    rollbackTransaction(em);
-                }
-                throw re;
-            }
-    
+        //persist the Employee
+        EntityManager em = createEntityManager();
+        try {
             beginTransaction(em);
-            em.remove(em.find(Employee.class, emp.getId())); //attempt to remove the Employee
+            em.persist(emp);
             commitTransaction(em);
-            beginTransaction(em);
-            EntityManagerImpl em1 = (EntityManagerImpl)em.getDelegate();
-            try {  
-                em.detach(emp);    //attempt to detach the Employee
-                UnitOfWork uow = em1.getUnitOfWork();
-                UnitOfWorkImpl uowImpl = (UnitOfWorkImpl)uow;
-                boolean afterClear = uowImpl.getDeletedObjects().containsKey(emp);
-                assertFalse("exception thrown when detaching a removed entity is attempted.", afterClear);
-            } catch (IllegalArgumentException iae){
-                return;
-            } finally {
-                if (isTransactionActive(em)){
-                    rollbackTransaction(em);
-                }
-                closeEntityManager(em);
+        } catch (RuntimeException re){
+            if (isTransactionActive(em)){
+                rollbackTransaction(em);
             }
+            throw re;
+        }
+    
+        beginTransaction(em);
+        em.remove(em.find(Employee.class, emp.getId())); //attempt to remove the Employee
+        commitTransaction(em);
+        beginTransaction(em);
+        EntityManagerImpl em1 = (EntityManagerImpl)em.getDelegate();
+        try {  
+            em.detach(emp);    //attempt to detach the Employee
+            UnitOfWork uow = em1.getUnitOfWork();
+            UnitOfWorkImpl uowImpl = (UnitOfWorkImpl)uow;
+            boolean afterClear = uowImpl.getDeletedObjects().containsKey(emp);
+            assertFalse("exception thrown when detaching a removed entity is attempted.", afterClear);
+        } catch (IllegalArgumentException iae){
+            return;
+        } finally {
+            if (isTransactionActive(em)){
+                rollbackTransaction(em);
+            }
+            closeEntityManager(em);
         }
     }
     
@@ -5975,22 +5942,19 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
 
     //detach(null) should throw IllegalArgumentException
     public void testDetachNull() {
-        // Don't run this test in a JPA 1.0 environment.
-        if (! isJPA10()) {
-            EntityManager em = createEntityManager();
-            beginTransaction(em);
-            try {
-                em.detach(null);
-            } catch (IllegalArgumentException iae) {
-                return;
-            } catch (Exception e) {
-                fail("Wrong exception type thrown: " + e.getClass());
-            } finally {
-                rollbackTransaction(em);
-                closeEntityManager(em);
-            }
-            fail("No exception thrown when entityManager.detach(null) attempted.");
+        EntityManager em = createEntityManager();
+        beginTransaction(em);
+        try {
+            em.detach(null);
+        } catch (IllegalArgumentException iae) {
+            return;
+        } catch (Exception e) {
+            fail("Wrong exception type thrown: " + e.getClass());
+        } finally {
+            rollbackTransaction(em);
+            closeEntityManager(em);
         }
+        fail("No exception thrown when entityManager.detach(null) attempted.");
     }
 
     //bug gf732 - removing null entity should throw an IllegalArgumentException
@@ -7968,23 +7932,20 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
      * an entity manager is closed.
      */
     public void testGetEntityManagerFactory() {
-        // getEntityManagerFactory not supported on 1.0
-        if (! isJPA10()) {
-            Employee emp = new Employee();
-            EntityManager em = createEntityManager();
-            try {
-                beginTransaction(em);
-                emp.setFirstName("test");
-                em.persist(emp);
-                commitTransaction(em);
-                EntityManagerFactory emf = em.getEntityManagerFactory();
-                if (emf == null) {
-                    fail("Factory is null.");
-                }
-            } finally {
-                closeEntityManager(em);
+        Employee emp = new Employee();
+        EntityManager em = createEntityManager();
+        try {
+            beginTransaction(em);
+            emp.setFirstName("test");
+            em.persist(emp);
+            commitTransaction(em);
+            EntityManagerFactory emf = em.getEntityManagerFactory();
+            if (emf == null) {
+                fail("Factory is null.");
             }
-        }   
+        } finally {
+            closeEntityManager(em);
+        }
     }
     
     /**
@@ -8251,10 +8212,7 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
     }
     
     public void testConnectionPolicySetProperty() {
-        // Don't run this test in a JPA 1.0 environment.
-        if (! isJPA10()) {
-            internalTestConnectionPolicy(true);
-        }
+        internalTestConnectionPolicy(true);
     }
     
     public void internalTestConnectionPolicy(boolean useSetProperty) {
@@ -8891,119 +8849,110 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
     }
     
     public void testIsLoaded(){
-        // Don't run this test in a JPA 1.0 environment.
-        if (! isJPA10()) {
-            EntityManagerFactory emf = getEntityManagerFactory();
-            EntityManager em = createEntityManager();
-            beginTransaction(em);
-            try{
-                Employee emp = new Employee();
-                emp.setFirstName("Abe");
-                emp.setLastName("Jones");
-                Address addr = new Address();
-                addr.setCity("Palo Alto");
-                emp.setAddress(addr);
-                
-                PhoneNumber pn = new PhoneNumber();
-                pn.setNumber("1234456");
-                pn.setType("Home");
-                emp.addPhoneNumber(pn);
-                pn.setOwner(emp);
-                em.persist(emp);
-                em.flush();
-                
-                em.clear();
-                clearCache();
+        EntityManagerFactory emf = getEntityManagerFactory();
+        EntityManager em = createEntityManager();
+        beginTransaction(em);
+        try{
+            Employee emp = new Employee();
+            emp.setFirstName("Abe");
+            emp.setLastName("Jones");
+            Address addr = new Address();
+            addr.setCity("Palo Alto");
+            emp.setAddress(addr);
             
-                emp = em.find(Employee.class, emp.getId());
-                PersistenceUnitUtil util = emf.getPersistenceUnitUtil();
-                assertTrue("PersistenceUnitUtil says employee is not loaded when it is.", util.isLoaded(emp));
-            } finally {
-                rollbackTransaction(em);
-            }
+            PhoneNumber pn = new PhoneNumber();
+            pn.setNumber("1234456");
+            pn.setType("Home");
+            emp.addPhoneNumber(pn);
+            pn.setOwner(emp);
+            em.persist(emp);
+            em.flush();
+            
+            em.clear();
+            clearCache();
+        
+            emp = em.find(Employee.class, emp.getId());
+            PersistenceUnitUtil util = emf.getPersistenceUnitUtil();
+            assertTrue("PersistenceUnitUtil says employee is not loaded when it is.", util.isLoaded(emp));
+        } finally {
+            rollbackTransaction(em);
         }
     }
     
     public void testIsLoadedAttribute(){
-        // Don't run this test in a JPA 1.0 environment.
-        if (! isJPA10()) {
-            EntityManagerFactory emf = getEntityManagerFactory();
-            EntityManager em = createEntityManager();
-            beginTransaction(em);
-            try{
-                Employee emp = new Employee();
-                emp.setFirstName("Abe");
-                emp.setLastName("Jones");
-                Address addr = new Address();
-                addr.setCity("Palo Alto");
-                emp.setAddress(addr);
-                
-                PhoneNumber pn = new PhoneNumber();
-                pn.setNumber("1234456");
-                pn.setType("Home");
-                emp.addPhoneNumber(pn);
-                pn.setOwner(emp);
-                
-                SmallProject project = new SmallProject();
-                project.setName("Utility Testing");
-                project.addTeamMember(emp);
-                emp.addProject(project);
-                em.persist(emp);
-                em.flush();
-                
-                em.clear();
-                clearCache();
-                
-                emp = em.find(Employee.class, emp.getId());
-                PersistenceUnitUtil util = emf.getPersistenceUnitUtil();
-                if (emp instanceof PersistenceWeaved){
-                    assertFalse("PersistenceUnitUtil says address is loaded when it is not", util.isLoaded(emp, "address"));
-                } else {
-                    assertTrue("Non-weaved PersistenceUnitUtil says address is not loaded", util.isLoaded(emp, "address"));
-                }
-                assertFalse("PersistenceUnitUtil says projects is loaded when it is not", util.isLoaded(emp, "projects"));
-                emp.getPhoneNumbers().size();
-                assertTrue("PersistenceUnitUtil says phoneNumbers is not loaded when it is", util.isLoaded(emp, "phoneNumbers"));
-                assertTrue("PersistenceUnitUtil says firstName is not loaded when it is", util.isLoaded(emp, "firstName"));
-            } finally {
-                rollbackTransaction(em);
+        EntityManagerFactory emf = getEntityManagerFactory();
+        EntityManager em = createEntityManager();
+        beginTransaction(em);
+        try{
+            Employee emp = new Employee();
+            emp.setFirstName("Abe");
+            emp.setLastName("Jones");
+            Address addr = new Address();
+            addr.setCity("Palo Alto");
+            emp.setAddress(addr);
+            
+            PhoneNumber pn = new PhoneNumber();
+            pn.setNumber("1234456");
+            pn.setType("Home");
+            emp.addPhoneNumber(pn);
+            pn.setOwner(emp);
+            
+            SmallProject project = new SmallProject();
+            project.setName("Utility Testing");
+            project.addTeamMember(emp);
+            emp.addProject(project);
+            em.persist(emp);
+            em.flush();
+            
+            em.clear();
+            clearCache();
+            
+            emp = em.find(Employee.class, emp.getId());
+            PersistenceUnitUtil util = emf.getPersistenceUnitUtil();
+            if (emp instanceof PersistenceWeaved){
+                assertFalse("PersistenceUnitUtil says address is loaded when it is not", util.isLoaded(emp, "address"));
+            } else {
+                assertTrue("Non-weaved PersistenceUnitUtil says address is not loaded", util.isLoaded(emp, "address"));
             }
+            assertFalse("PersistenceUnitUtil says projects is loaded when it is not", util.isLoaded(emp, "projects"));
+            emp.getPhoneNumbers().size();
+            assertTrue("PersistenceUnitUtil says phoneNumbers is not loaded when it is", util.isLoaded(emp, "phoneNumbers"));
+            assertTrue("PersistenceUnitUtil says firstName is not loaded when it is", util.isLoaded(emp, "firstName"));
+        } finally {
+            rollbackTransaction(em);
         }
     }
     
     public void testGetIdentifier(){
-        // Don't run this test in a JPA 1.0 environment.
-        if (! isJPA10()) {
-            EntityManagerFactory emf = getEntityManagerFactory();
-            EntityManager em = createEntityManager();
-            beginTransaction(em);
-            try{
-                Employee emp = new Employee();
-                emp.setFirstName("Abe");
-                emp.setLastName("Jones");
-                Address addr = new Address();
-                addr.setCity("Palo Alto");
-                emp.setAddress(addr);
-                
-                PhoneNumber pn = new PhoneNumber();
-                pn.setNumber("1234456");
-                pn.setType("Home");
-                emp.addPhoneNumber(pn);
-                pn.setOwner(emp);
-                em.persist(emp);
-                em.flush();
-                Integer id = emp.getId();
-                
-                em.clear();
-                clearCache();
-                
-                emp = em.find(Employee.class, emp.getId());
-                PersistenceUnitUtil util = emf.getPersistenceUnitUtil();
-                Object retrievedId = util.getIdentifier(emp);
-                assertTrue("Got an incorrect id from persistenceUtil.getIdentifier()", id.equals(retrievedId));
-            } finally {
-                rollbackTransaction(em);
-            }
+        EntityManagerFactory emf = getEntityManagerFactory();
+        EntityManager em = createEntityManager();
+        beginTransaction(em);
+        try{
+            Employee emp = new Employee();
+            emp.setFirstName("Abe");
+            emp.setLastName("Jones");
+            Address addr = new Address();
+            addr.setCity("Palo Alto");
+            emp.setAddress(addr);
+            
+            PhoneNumber pn = new PhoneNumber();
+            pn.setNumber("1234456");
+            pn.setType("Home");
+            emp.addPhoneNumber(pn);
+            pn.setOwner(emp);
+            em.persist(emp);
+            em.flush();
+            Integer id = emp.getId();
+            
+            em.clear();
+            clearCache();
+            
+            emp = em.find(Employee.class, emp.getId());
+            PersistenceUnitUtil util = emf.getPersistenceUnitUtil();
+            Object retrievedId = util.getIdentifier(emp);
+            assertTrue("Got an incorrect id from persistenceUtil.getIdentifier()", id.equals(retrievedId));
+        } finally {
+            rollbackTransaction(em);
         }
     }
     
@@ -9149,22 +9098,19 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
     }
     
     public void testGetHints(){
-        // Don't run this test in a JPA 1.0 environment.
-        if (! isJPA10()) {
-            EntityManagerFactory emf = getEntityManagerFactory();
-            EntityManager em = emf.createEntityManager();
-            Query query = em.createQuery("Select e from Employee e");
-            query.setHint(QueryHints.CACHE_USAGE, CacheUsage.DoNotCheckCache);
-            query.setHint(QueryHints.BIND_PARAMETERS, "");
-            Map<String, Object> hints = query.getHints();
-            assertTrue("Incorrect number of hints.", hints.size() == 2);
-            assertTrue("CacheUsage hint missing.", hints.get(QueryHints.CACHE_USAGE).equals(CacheUsage.DoNotCheckCache));
-            assertTrue("Bind parameters hint missing.", hints.get(QueryHints.BIND_PARAMETERS) != null);
-            
-            query = em.createQuery("Select a from Address a");
-            hints = query.getHints();
-            assertTrue("Hints is not null when it should be.", hints == null);
-        }
+        EntityManagerFactory emf = getEntityManagerFactory();
+        EntityManager em = emf.createEntityManager();
+        Query query = em.createQuery("Select e from Employee e");
+        query.setHint(QueryHints.CACHE_USAGE, CacheUsage.DoNotCheckCache);
+        query.setHint(QueryHints.BIND_PARAMETERS, "");
+        Map<String, Object> hints = query.getHints();
+        assertTrue("Incorrect number of hints.", hints.size() == 2);
+        assertTrue("CacheUsage hint missing.", hints.get(QueryHints.CACHE_USAGE).equals(CacheUsage.DoNotCheckCache));
+        assertTrue("Bind parameters hint missing.", hints.get(QueryHints.BIND_PARAMETERS) != null);
+        
+        query = em.createQuery("Select a from Address a");
+        hints = query.getHints();
+        assertTrue("Hints is not null when it should be.", hints == null);
     }
 
     
