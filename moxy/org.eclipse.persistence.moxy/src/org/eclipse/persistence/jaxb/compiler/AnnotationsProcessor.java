@@ -102,6 +102,7 @@ import org.eclipse.persistence.oxm.annotations.XmlContainerProperty;
 import org.eclipse.persistence.oxm.annotations.XmlCustomizer;
 import org.eclipse.persistence.oxm.annotations.XmlInverseReference;
 import org.eclipse.persistence.oxm.annotations.XmlPath;
+import org.eclipse.persistence.oxm.annotations.XmlPaths;
 import org.eclipse.persistence.oxm.annotations.XmlReadOnly;
 import org.eclipse.persistence.oxm.annotations.XmlWriteOnly;
 
@@ -1471,8 +1472,14 @@ public class AnnotationsProcessor {
         String propertyName = choiceProperty.getPropertyName();
         validateElementIsInPropOrder(info, propertyName);
 
+        XmlPath[] paths = null;
+        if(helper.isAnnotationPresent(choiceProperty.getElement(), XmlPaths.class)) {
+            XmlPaths pathAnnotation = (XmlPaths)helper.getAnnotation(choiceProperty.getElement(), XmlPaths.class);
+            paths = pathAnnotation.value();
+        }
         ArrayList<Property> choiceProperties = new ArrayList<Property>();
-        for (org.eclipse.persistence.jaxb.xmlmodel.XmlElement next : choiceProperty.getXmlElements().getXmlElement()) {
+        for(int i = 0; i < choiceProperty.getXmlElements().getXmlElement().size(); i++) {
+            org.eclipse.persistence.jaxb.xmlmodel.XmlElement next = choiceProperty.getXmlElements().getXmlElement().get(i);
             Property choiceProp = new Property(helper);
             
             String name;
@@ -1480,6 +1487,11 @@ public class AnnotationsProcessor {
             
             // handle XmlPath
             // if xml-path is set, we ignore name/namespace
+            if(paths != null && next.getXmlPath() == null) {
+                //Only set the path, if the path hasn't already been set from xml
+                XmlPath nextPath = paths[i];
+                next.setXmlPath(nextPath.value());
+            }
             if (next.getXmlPath() != null) {
                 choiceProp.setXmlPath(next.getXmlPath());
                 name = XMLProcessor.getNameFromXPath(next.getXmlPath(), propertyName, false);
@@ -2617,6 +2629,7 @@ public class AnnotationsProcessor {
                 || helper.isAnnotationPresent(elem, XmlMimeType.class)
                 || helper.isAnnotationPresent(elem, XmlIDREF.class)
                 || helper.isAnnotationPresent(elem, XmlPath.class)
+                || helper.isAnnotationPresent(elem, XmlPaths.class)
                 || helper.isAnnotationPresent(elem, XmlInverseReference.class)
                 || helper.isAnnotationPresent(elem, XmlReadOnly.class)
                 || helper.isAnnotationPresent(elem, XmlWriteOnly.class)
