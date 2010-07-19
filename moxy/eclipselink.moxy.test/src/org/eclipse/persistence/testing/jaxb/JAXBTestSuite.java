@@ -12,6 +12,8 @@
  ******************************************************************************/
 package org.eclipse.persistence.testing.jaxb;
 
+import org.eclipse.persistence.testing.jaxb.annotations.xmlpaths.XmlPathsTestCases;
+import org.eclipse.persistence.testing.jaxb.annotations.xmlpaths.override.XmlPathsOverrideTestCases;
 import org.eclipse.persistence.testing.jaxb.events.RootWithCompositeObjectTestCases;
 import org.eclipse.persistence.testing.jaxb.xmlvalue.XmlValueListTestCases;
 import org.eclipse.persistence.testing.jaxb.xmlvalue.XmlValueTestCases;
@@ -86,6 +88,8 @@ public class JAXBTestSuite extends TestCase {
         suite.addTestSuite(org.eclipse.persistence.testing.jaxb.annotations.xmlwriteonly.XmlWriteOnlyOverrideTestCases.class);
         suite.addTestSuite(org.eclipse.persistence.testing.jaxb.annotations.xmlreadonly.XmlReadOnlyOverrideTestCases.class);
         suite.addTestSuite(org.eclipse.persistence.testing.jaxb.annotations.xmlreadonly.XmlReadOnlyOverrideTestCases.class);
+        suite.addTestSuite(XmlPathsTestCases.class);
+        suite.addTestSuite(XmlPathsOverrideTestCases.class);
         suite.addTestSuite(org.eclipse.persistence.testing.jaxb.xmlenum.XmlEnumElementTestCases.class);
         suite.addTestSuite(org.eclipse.persistence.testing.jaxb.xmlenum.XmlEnumAttributeTestCases.class);
         suite.addTestSuite(org.eclipse.persistence.testing.jaxb.xmlenum.XmlEnumElementCollectionTestCases.class);
