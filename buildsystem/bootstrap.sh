@@ -109,8 +109,10 @@ if [ ! "${BRANCH}" = "" ]
 then
     BRANCH_NM=${BRANCH}
     BRANCH=branches/${BRANCH}/
+    JAVA_HOME=/shared/common/ibm-java-ppc64-60-SR7
 else
     BRANCH_NM="trunk"
+    JAVA_HOME=/shared/rt/eclipselink/sapjvm_6
 fi
 
 echo "Target     ='${TARGET}'"
@@ -143,7 +145,6 @@ echo "results stored in: '${tmp}'"
 HOME_DIR=/shared/rt/eclipselink
 BOOTSTRAP_BLDFILE=bootstrap.xml
 UD2M_BLDFILE=uploadDepsToMaven.xml
-#JAVA_HOME=/shared/common/ibm-java-jdk-ppc-60
 JAVA_HOME=/shared/common/ibm-java-ppc64-60-SR7
 ANT_HOME=/shared/common/apache-ant-1.7.0
 LOG_DIR=${HOME_DIR}/logs
@@ -455,7 +456,7 @@ then
     ##
     VERSION=`cat ${DATED_LOG} | grep -m1 "EL version" | cut -d= -f2 | tr -d '\047'`
     BUILD_STR=`cat ${DATED_LOG} | grep -m1 version.string | cut -d= -f2 | tr -d '\047'`
-    echo "Generating summary email for ${VERSION} build (${BUILD_STR})."
+    echo "Generating summary email for ${VERSION} build '${BUILD_STR}'."
 
     ## find the current revision
     ##
@@ -491,7 +492,7 @@ then
         ## Capture any 'allowed' compiler errors
         ##
         cat ${DATED_LOG} | grep -n '[javac]*errors' > ${COMPILE_RESULT_FILE}
-        
+
         ## make sure TESTDATA_FILE is empty
         ##
         if [ -f ${TESTDATA_FILE} ]
@@ -505,7 +506,7 @@ then
         then
             CAVEAT_TXT=" Signing failed. P2 not generated!"
         fi
-    
+
         ## run routine to generate test results file and generate MAIL_SUBJECT based upon exit status
         ##
         genTestSummary ${SORTED_RESULT_FILE} ${TESTDATA_FILE}
@@ -541,7 +542,7 @@ then
         LOGPREFIX=BuildFail
         echo "Build had issues to be resolved."
     fi
-    
+
     if [ \( "${BUILD_FAILED}" = "true" \) -o \( "${TESTS_FAILED}" = "true" \) ]
     then
         cp ${DATED_LOG} ${FailedNFSDir}/${LOGPREFIX}${LOGFILE_NAME}

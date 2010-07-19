@@ -4,6 +4,7 @@
 export JAVA_HOME=/shared/common/ibm-java-jdk-ppc-60
 export PATH=${JAVA_HOME}/bin:/usr/bin:/usr/local/bin:${PATH}
 
+GeneratedDownloadPage=downloads.xml
 BaseDownloadURL="http://www.eclipse.org/downloads/download.php?file=/rt/eclipselink/nightly"
 BaseDisplayURL="http://download.eclipse.org/rt/eclipselink/nightly"
 BaseDownloadNFSDir="/home/data/httpd/download.eclipse.org/rt/eclipselink"
@@ -16,7 +17,7 @@ echo "generating webpage..."
 tmp=${TMPDIR-/tmp}
 tmp=$tmp/somedir.$RANDOM.$RANDOM.$RANDOM.$$
 (umask 077 && mkdir $tmp) || {
-  echo "Could not create temporary directory! Exiting." 1>&2 
+  echo "Could not create temporary directory! Exiting." 1>&2
   exit 1
 }
 
@@ -47,7 +48,7 @@ for version in `ls -dr [0-9]*` ; do
     echo "            <th align=\"center\"> </th>                                      " >> $tmp/index.xml
     echo "            <th colspan=\"8\" align=\"center\"> Nightly Testing Results </th>" >> $tmp/index.xml
     echo "          </tr>                                                              " >> $tmp/index.xml
-    
+
     #    Generate each table row depending upon available content
     for contentdir in `ls -dr [0-9]*` ; do
         cd $contentdir
@@ -142,5 +143,5 @@ echo "  </section>                                                              
 echo "</sections>                                                                               " >> $tmp/index.xml
 
 # Copy the completed file to the server, and cleanup
-mv -f $tmp/index.xml  ${BaseDownloadNFSDir}/downloads.xml
+mv -f $tmp/index.xml  ${BaseDownloadNFSDir}/${GeneratedDownloadPage}
 rm -rf $tmp
