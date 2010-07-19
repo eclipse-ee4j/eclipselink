@@ -48,10 +48,7 @@
         - server-test : runs the JPA LRG tests in the server
         - server-test-lrg : runs the JPA LRG tests in the server
         - server-test-oracle-proxy : runs the Oracle Proxy Authentication JPA tests in the server
-        - server-test-sessionbean : runs the SessionBean tests in the server
-        - server-test-fieldaccess-advanced : runs the Fieldaccess tests in the server
-        - server-test-datatypes : runs the Datatypes tests in the server
-        - server-test-datetime : runs the Datetime tests in the server
+        - server-test-<individual_suite> : runs a jpa individual_suite on the server
 
         It requires some configuration of the build.properties and test.properties to run.
     -->
@@ -2120,7 +2117,7 @@
         <antcall target="server-run-all" inheritRefs="true">
             <param name="PERSISTENCE_UNIT_NAME" value="fieldaccess"/>
             <param name="MODEL_DIR" value="org/eclipse/persistence/testing/models/jpa/fieldaccess/advanced"/>
-            <param name="MODEL_NAME" value="eclipselink-advanced-field-access-model"/>
+            <param name="MODEL_NAME" value="eclipselink-fetchgroups-field-access-model"/>
             <param name="TEST_DIR" value="org/eclipse/persistence/testing/tests/jpa/fieldaccess/fetchgroups"/>
             <param name="TEST_NAME" value="eclipselink-fetchgroups-field-access-model"/>
             <param name="EAR_NAME" value="eclipselink-fetchgroups-field-access-model"/>
