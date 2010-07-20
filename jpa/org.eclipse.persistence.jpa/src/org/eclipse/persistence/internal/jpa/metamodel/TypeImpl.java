@@ -12,7 +12,8 @@
  *     06/30/2009-2.0  mobrien - finish JPA Metadata API modifications in support
  *       of the Metamodel implementation for EclipseLink 2.0 release involving
  *       Map, ElementCollection and Embeddable types on MappedSuperclass descriptors
- *       - 266912: JPA 2.0 Metamodel API (part of the JSR-317 EJB 3.1 Criteria API)  
+ *       - 266912: JPA 2.0 Metamodel API (part of the JSR-317 EJB 3.1 Criteria API)
+ *     07/20/2010-2.1  mobrien - 303063: Descriptor.javaClass may not be set according to metadata contract
  ******************************************************************************/
 package org.eclipse.persistence.internal.jpa.metamodel;
 
@@ -46,8 +47,11 @@ public abstract class TypeImpl<X> implements Type<X>, Serializable {
         // 303063: secondary check for case where descriptor has no java class set - should never happen but should be warned about
         if(null == javaClass) { 
             AbstractSessionLog.getLog().log(SessionLog.FINEST, "metamodel_typeImpl_javaClass_should_not_be_null", this); // exporting (this) outside the constructor breaks concurrency
-        }        
-        this.javaClass = javaClass;
+            // Default to Object to avoid a NPE - in the case where javaClass is not set or not set yet via Project.convertClassNamesToClasses() 
+            this.javaClass = MetamodelImpl.DEFAULT_ELEMENT_TYPE_FOR_UNSUPPORTED_MAPPINGS;
+        } else {        
+            this.javaClass = javaClass;
+        }
     }
 
     /**
