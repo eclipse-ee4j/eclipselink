@@ -50,6 +50,7 @@ public class HistoryTestModel extends FlashbackTestModel {
         buildUpdateObjectTestSuite();
         addTest(EmployeeBasicTestModel.getDeleteObjectTestSuite());
         addTest(new IsolatedSessionHistoricalTest(getAsOfClause()));
+        addTest(new InsertWithHistoryPolicyTest()); // Bug 319276
     }
 
     private void configure() throws Exception {

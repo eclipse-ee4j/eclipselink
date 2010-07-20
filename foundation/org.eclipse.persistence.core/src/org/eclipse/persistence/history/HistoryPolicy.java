@@ -696,12 +696,20 @@ public class HistoryPolicy implements Cloneable, Serializable {
     public void postDelete(ModifyQuery deleteQuery) {
         logicalDelete(deleteQuery, false);
     }
+    
+    /**
+     * INTERNAL:
+     */
+    // Bug 319276 - pass whether shallow insert/update
+    public void postUpdate(ObjectLevelModifyQuery writeQuery) {
+        postUpdate(writeQuery, false);
+    }
 
     /**
      * INTERNAL:
      */
-    public void postUpdate(ObjectLevelModifyQuery writeQuery) {
-        logicalDelete(writeQuery, true);
+    public void postUpdate(ObjectLevelModifyQuery writeQuery, boolean isShallow) {
+        logicalDelete(writeQuery, true, isShallow);
         logicalInsert(writeQuery, true);
     }
 
@@ -725,7 +733,7 @@ public class HistoryPolicy implements Cloneable, Serializable {
         AbstractRecord originalModifyRow = writeQuery.getModifyRow();
         Object currentTime = null;
         if (isUpdate) {
-            modifyRow = descriptor.getObjectBuilder().buildRow(writeQuery.getObject(), writeQuery.getSession(), WriteType.INSERT);
+            modifyRow = descriptor.getObjectBuilder().buildRow(writeQuery.getObject(), writeQuery.getSession(), WriteType.UPDATE); // Bug 319276
             // If anyone added items to the modify row, then they should also be added here.
             modifyRow.putAll(originalModifyRow);
         } else {
@@ -780,12 +788,21 @@ public class HistoryPolicy implements Cloneable, Serializable {
         historyStatement.setModifyRow(modifyRow);
         session.executeQuery(historyQuery, translationRow);
     }
+    
+    /**
+     * INTERNAL:
+     * Performs a logical delete (update) on the historical schema.
+     */
+    // Bug 319276 - pass whether shallow insert/update
+    public void logicalDelete(ModifyQuery writeQuery, boolean isUpdate) {
+        logicalDelete(writeQuery, isUpdate, false);
+    }
 
     /**
      * INTERNAL:
      * Performs a logical delete (update) on the historical schema.
      */
-    public void logicalDelete(ModifyQuery writeQuery, boolean isUpdate) {
+    public void logicalDelete(ModifyQuery writeQuery, boolean isUpdate, boolean isShallow) {
         ClassDescriptor descriptor = writeQuery.getDescriptor();
         AbstractRecord originalModifyRow = writeQuery.getModifyRow();
         AbstractRecord modifyRow = new DatabaseRecord();
@@ -812,12 +829,19 @@ public class HistoryPolicy implements Cloneable, Serializable {
             whereClause = builder.getField(getEnd(i)).isNull().and(whereClause);
             updateStatement.setWhereClause(whereClause);
 
-            modifyRow.add(getEnd(i), currentTime);
+            modifyRow.add(getEnd(i), currentTime); 
 
             // save a little time here and add the same timestamp value for
             // the start field in the logicalInsert.
             if (isUpdate) {
-                originalModifyRow.add(getStart(i), currentTime);
+                if (isShallow) {
+                    // Bug 319276 - increment the timestamp by 1 to avoid unique constraint violation potential 
+                    java.sql.Timestamp  incrementedTime = (java.sql.Timestamp) currentTime;
+                    incrementedTime.setTime(incrementedTime.getTime() + 1);
+                    originalModifyRow.add(getStart(i), incrementedTime); 
+                } else {
+                    originalModifyRow.add(getStart(i), currentTime);
+                }
             }
             updateMechanism.getSQLStatements().add(updateStatement);
         }

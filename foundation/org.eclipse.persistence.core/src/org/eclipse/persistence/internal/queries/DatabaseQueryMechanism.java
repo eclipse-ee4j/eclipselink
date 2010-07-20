@@ -389,6 +389,8 @@ public abstract class DatabaseQueryMechanism implements Cloneable, Serializable 
         WriteObjectQuery writeQuery = getWriteObjectQuery();
         ClassDescriptor descriptor = getDescriptor();
         DescriptorQueryManager queryManager = descriptor.getQueryManager();
+        boolean isFKUpdate = false; // Bug 319276
+        
         // check for user-defined query
         if ((!writeQuery.isUserDefined())// this is not a user-defined query
                  && queryManager.hasInsertQuery()// there is a user-defined query
@@ -422,6 +424,7 @@ public abstract class DatabaseQueryMechanism implements Cloneable, Serializable 
         // In a unit of work/writeObjects the preInsert may have caused a shallow insert of this object,
         // in this case this second write must do an update.
         if (commitManager.isShallowCommitted(object)) {
+            isFKUpdate = true; // Bug 319276
             updateForeignKeyFieldAfterInsert();
         } else {
             AbstractRecord modifyRow = writeQuery.getModifyRow();
@@ -473,8 +476,14 @@ public abstract class DatabaseQueryMechanism implements Cloneable, Serializable 
         if (writeQuery.shouldCascadeParts()) {
             queryManager.postInsert(writeQuery);
         }
+        
         if ((descriptor.getHistoryPolicy() != null) && descriptor.getHistoryPolicy().shouldHandleWrites()) {
-            descriptor.getHistoryPolicy().postInsert(writeQuery);
+            if (isFKUpdate) { // Bug 319276
+                descriptor.getHistoryPolicy().postUpdate(writeQuery, true);
+            }
+            else {
+                descriptor.getHistoryPolicy().postInsert(writeQuery);
+            }
         }
 
         // PERF: Avoid events if no listeners.
