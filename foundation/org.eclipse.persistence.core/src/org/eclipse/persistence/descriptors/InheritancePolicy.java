@@ -496,10 +496,10 @@ public class InheritancePolicy implements Serializable, Cloneable {
      * subclasses.
      * Required for bug 3019934.
      */
-    public Vector getAllChildDescriptors() {
+    public List<ClassDescriptor> getAllChildDescriptors() {
         // Guess the number of child descriptors...
-        Vector allChildDescriptors = new Vector(this.getAllChildClassIndicators().size());
-        return (Vector)getAllChildDescriptors(allChildDescriptors);
+        List<ClassDescriptor> allChildDescriptors = new ArrayList(this.getAllChildClassIndicators().size());
+        return getAllChildDescriptors(allChildDescriptors);
     }
 
     /**
