@@ -12,9 +12,13 @@
  ******************************************************************************/
 package org.eclipse.persistence.testing.sdo.helper.datahelper;
 
+import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.TimeZone;
+
+import org.eclipse.persistence.internal.oxm.XMLConversionManager;
+import org.eclipse.persistence.oxm.XMLConstants;
 
 public class DataHelperToDateTest extends DataHelperTestCases {
     public DataHelperToDateTest(String name) {
@@ -132,9 +136,27 @@ public class DataHelperToDateTest extends DataHelperTestCases {
     public void testToDateBeforeGregorianChange() {
         // Ensure that if we are converting to a Date that occurred before the
         // Gregorian switchover (October 15, 1582) we do not shift the date.
-        Date dateObj = dataHelper.toDate("0001-01-01-08:00");
-        assertTrue("Month was " + dateObj.getMonth(), dateObj.getMonth() == 0);
-        assertTrue("Day was " + dateObj.getDate(), dateObj.getDate() == 1);
+        Date dateObj = dataHelper.toDate("0001-01-01-05:00");
+
+        SimpleDateFormat sdf = new SimpleDateFormat();
+        sdf.applyPattern("MM/dd/yyyy G");
+
+        String controlString = "01/01/0001 AD";
+
+        assertEquals(controlString, sdf.format(dateObj));
+    }
+
+    public void testToDateBeforeGregorianChangeBC() {
+        // Ensure that if we are converting to a Date that occurred before the
+        // Gregorian switchover (October 15, 1582) we do not shift the date.
+        Date dateObj = dataHelper.toDate("-2006-03-31T03:30:45.001-05:00");
+
+        SimpleDateFormat sdf = new SimpleDateFormat();
+        sdf.applyPattern("MM/dd/yyyy G");
+
+        String controlString = "03/31/2006 BC";
+
+        assertEquals(controlString, sdf.format(dateObj));
     }
 
     public void testToDateWithNullInput() {
@@ -150,4 +172,5 @@ public class DataHelperToDateTest extends DataHelperTestCases {
         } catch (IllegalArgumentException e) {
         }
     }
+
 }
