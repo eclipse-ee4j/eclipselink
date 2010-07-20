@@ -59,7 +59,7 @@
     </pathconvert>
     <echo message="dbws_util_test_oracle.build.location = '${dbws_util_test_oracle.build.location}'"/>
     <condition property="dbws_util_test_oracle.2.base.dir" value="../.." else="..">
-        <contains string="${dbws_util_test_oracle.build.location}" substring="dbws/${ant.project.name}"/>
+        <contains string="${dbws_util_test_oracle.build.location}" substring="utils/${ant.project.name}"/>
     </condition>
     <echo message="dbws_util_test_oracle.2.base.dir = '${dbws_util_test_oracle.2.base.dir}'"/>
     <property name="dbws_util_test_oracle.2.common.plugins.dir" value="${dbws_util_test_oracle.2.base.dir}/plugins"/>
