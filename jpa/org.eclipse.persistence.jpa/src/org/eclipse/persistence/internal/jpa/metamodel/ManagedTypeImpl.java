@@ -120,7 +120,7 @@ public abstract class ManagedTypeImpl<X> extends TypeImpl<X> implements ManagedT
      * @param descriptor - the RelationalDescriptor that defines this managedType
      */
     protected ManagedTypeImpl(MetamodelImpl metamodel, RelationalDescriptor descriptor) {
-        // A valid descriptor will always have a javaClass set
+        // A valid descriptor will always have a javaClass set except in bug# 303063
         super(descriptor.getJavaClass());
         this.descriptor = descriptor;
         // the metamodel field must be instantiated prior to any *AttributeImpl instantiation which will use the metamodel

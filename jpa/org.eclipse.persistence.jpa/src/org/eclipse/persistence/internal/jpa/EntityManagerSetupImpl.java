@@ -1921,7 +1921,7 @@ public class EntityManagerSetupImpl {
         ValidationMode validationMode = getValidationMode(persistenceUnitInfo, puProperties);
         if (validationMode == ValidationMode.AUTO || validationMode == ValidationMode.CALLBACK) {
             // BeanValidationInitializationHelper contains static reference to javax.validation.* classes. We need to support
-            // environment where these classses are not available.
+            // environment where these classes are not available.
             // To guard against some vms that eagerly resolve, reflectively load class to prevent any static reference to it
             String helperClassName = "org.eclipse.persistence.internal.jpa.deployment.BeanValidationInitializationHelper$BeanValidationInitializationHelperImpl";
             ClassLoader eclipseLinkClassLoader = EntityManagerSetupImpl.class.getClassLoader();
