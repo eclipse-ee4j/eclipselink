@@ -369,7 +369,6 @@ public class SDODataHelper implements DataHelper {
             return null;
         }
         GregorianCalendar dateCalendar = new GregorianCalendar(getXMLConversionManager().getTimeZone());
-        dateCalendar.setGregorianChange(new Date(Long.MIN_VALUE));
 
         dateCalendar.clear();
         dateCalendar.setTime(date);

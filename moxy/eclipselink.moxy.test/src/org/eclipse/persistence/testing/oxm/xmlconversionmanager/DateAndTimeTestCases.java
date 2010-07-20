@@ -200,7 +200,6 @@ public class DateAndTimeTestCases extends OXTestCase {
         String control = "-2006-01-01T00:00:00.001";
 
         GregorianCalendar cal = new GregorianCalendar();
-        cal.setGregorianChange(new java.util.Date(Long.MIN_VALUE));
         cal.clear();
         cal.set(Calendar.ERA, java.util.GregorianCalendar.BC);
 
@@ -3566,12 +3565,19 @@ public class DateAndTimeTestCases extends OXTestCase {
         fail(EXCEPTION_NOT_THROWN);
     }
 
-    public void testXMLGregorianCalendarToStringWithDateSchemaType() throws Exception{
+    public void testXMLGregorianCalendarToStringWithDateSchemaType() throws Exception {
         DatatypeFactory factory = DatatypeFactory.newInstance();
 
         XMLGregorianCalendar xgc = factory.newXMLGregorianCalendar("2005-11-05");
         String result = (String)xcm.convertObject(xgc, String.class, XMLConstants.DATE_QNAME);
         assertEquals("2005-11-05", result);
+    }
+
+    public void testStringToCalendarToStringDateOnly() throws Exception {
+        String controlString = "2010-01-01";
+        Calendar cal = xcm.convertStringToCalendar(controlString, XMLConstants.DATE_QNAME);
+        String s = xcm.convertObject(cal, String.class).toString();
+        assertEquals(controlString, s);
     }
 
 }

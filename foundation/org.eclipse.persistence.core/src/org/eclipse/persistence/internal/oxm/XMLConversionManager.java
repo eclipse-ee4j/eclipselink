@@ -720,10 +720,8 @@ public class XMLConversionManager extends ConversionManager implements TimeZoneH
     }
 
     public Calendar convertStringToCalendar(String sourceString, QName schemaTypeQName) {
-        java.util.Date date = convertStringToDate(sourceString, schemaTypeQName);
-        Calendar cal = Helper.calendarFromUtilDate(date);
-        cal.setTimeZone(getTimeZone());
-        return cal;
+        XMLGregorianCalendar xmlGregorianCalender = convertStringToXMLGregorianCalendar(sourceString, schemaTypeQName);
+        return toCalendar(xmlGregorianCalender);
     }
 
     private Date convertObjectToUtilDate(Object sourceObject, QName schemaTypeQName) {
@@ -1016,57 +1014,49 @@ public class XMLConversionManager extends ConversionManager implements TimeZoneH
     public java.util.Date convertStringToDate(String sourceString, QName schemaType) {
         XMLGregorianCalendar xmlGregorianCalender = convertStringToXMLGregorianCalendar(sourceString, schemaType);
 
-        if (schemaType == null) {
-            schemaType = xmlGregorianCalender.getXMLSchemaType();
-        }
-
-        GregorianCalendar cal = toGregorianCalendar(xmlGregorianCalender);
+        Calendar cal = toCalendar(xmlGregorianCalender);
         Date returnDate = cal.getTime();
 
         return returnDate;
     }
 
-    private GregorianCalendar toGregorianCalendar(XMLGregorianCalendar xgc) {
+    private Calendar toCalendar(XMLGregorianCalendar xgc) {
         TimeZone tz = null;
+
         if (xgc.getTimezone() == DatatypeConstants.FIELD_UNDEFINED) {
             tz = getTimeZone();
         } else {
             tz = xgc.getTimeZone(xgc.getTimezone());
         }
 
-        GregorianCalendar gc = new GregorianCalendar(tz, Locale.getDefault());
-        gc.clear();
+        Calendar cal = Calendar.getInstance(tz, Locale.getDefault());
+        cal.clear();
 
-        if (xgc.getEonAndYear() != null) {
-            if (xgc.getEonAndYear().signum() < 0) {
-                gc.set(Calendar.ERA, GregorianCalendar.BC);
-            } else {
-                gc.set(Calendar.ERA, GregorianCalendar.AD);
-            }
+        BigInteger year = xgc.getEonAndYear();
+        if (year != null) {
+            cal.set(Calendar.ERA, year.signum() < 0 ? GregorianCalendar.BC : GregorianCalendar.AD);
+            cal.set(Calendar.YEAR, year.abs().intValue());
         }
 
-        if (xgc.getYear() != DatatypeConstants.FIELD_UNDEFINED)
-            gc.set(Calendar.YEAR, xgc.getYear());
+        if (xgc.getDay() != DatatypeConstants.FIELD_UNDEFINED)
+            cal.set(Calendar.DAY_OF_MONTH, xgc.getDay());
 
         if (xgc.getMonth() != DatatypeConstants.FIELD_UNDEFINED)
-            gc.set(Calendar.MONTH, xgc.getMonth() - 1);
-
-        if (xgc.getDay() != DatatypeConstants.FIELD_UNDEFINED)
-            gc.set(Calendar.DAY_OF_MONTH, xgc.getDay());
+            cal.set(Calendar.MONTH, xgc.getMonth() - 1);
 
         if (xgc.getHour() != DatatypeConstants.FIELD_UNDEFINED)
-            gc.set(Calendar.HOUR_OF_DAY, xgc.getHour());
+            cal.set(Calendar.HOUR_OF_DAY, xgc.getHour());
 
         if (xgc.getMinute() != DatatypeConstants.FIELD_UNDEFINED)
-            gc.set(Calendar.MINUTE, xgc.getMinute());
+            cal.set(Calendar.MINUTE, xgc.getMinute());
 
         if (xgc.getSecond() != DatatypeConstants.FIELD_UNDEFINED)
-            gc.set(Calendar.SECOND, xgc.getSecond());
+            cal.set(Calendar.SECOND, xgc.getSecond());
 
-        if (xgc.getMillisecond() != DatatypeConstants.FIELD_UNDEFINED)
-            gc.set(Calendar.MILLISECOND, xgc.getMillisecond());
+        if (xgc.getFractionalSecond() != null)
+            cal.set(Calendar.MILLISECOND, xgc.getMillisecond());
 
-        return gc;
+        return cal;
     }
 
     /**
@@ -1124,7 +1114,6 @@ public class XMLConversionManager extends ConversionManager implements TimeZoneH
         if (XMLConstants.DATE_QNAME.equals(schemaType)) {
 
             GregorianCalendar cal = new GregorianCalendar(getTimeZone());
-            cal.setGregorianChange(new Date(Long.MIN_VALUE));
             cal.setTime(sourceDate);
 
             xgc.setDay(cal.get(Calendar.DAY_OF_MONTH));
@@ -1141,7 +1130,6 @@ public class XMLConversionManager extends ConversionManager implements TimeZoneH
         if (XMLConstants.TIME_QNAME.equals(schemaType)) {
 
             GregorianCalendar cal = new GregorianCalendar(getTimeZone());
-            cal.setGregorianChange(new Date(Long.MIN_VALUE));
             cal.setTime(sourceDate);
 
             xgc.setHour(cal.get(Calendar.HOUR_OF_DAY));
@@ -1154,14 +1142,12 @@ public class XMLConversionManager extends ConversionManager implements TimeZoneH
         }
         if (XMLConstants.G_DAY_QNAME.equals(schemaType)) {
             GregorianCalendar cal = new GregorianCalendar(getTimeZone());
-            cal.setGregorianChange(new Date(Long.MIN_VALUE));
             cal.setTime(sourceDate);
             xgc.setDay(cal.get(Calendar.DATE));
             return xgc.toXMLFormat();
         }
         if (XMLConstants.G_MONTH_QNAME.equals(schemaType)) {
             GregorianCalendar cal = new GregorianCalendar(getTimeZone());
-            cal.setGregorianChange(new Date(Long.MIN_VALUE));
             cal.setTime(sourceDate);
 
             xgc.setMonth(cal.get(Calendar.MONTH)+1);
@@ -1178,7 +1164,6 @@ public class XMLConversionManager extends ConversionManager implements TimeZoneH
         }
         if (XMLConstants.G_MONTH_DAY_QNAME.equals(schemaType)) {
             GregorianCalendar cal = new GregorianCalendar(getTimeZone());
-            cal.setGregorianChange(new Date(Long.MIN_VALUE));
             cal.setTime(sourceDate);
             xgc.setMonth(cal.get(Calendar.MONTH)+1);
             xgc.setDay(cal.get(Calendar.DAY_OF_MONTH));
@@ -1186,7 +1171,6 @@ public class XMLConversionManager extends ConversionManager implements TimeZoneH
         }
         if (XMLConstants.G_YEAR_QNAME.equals(schemaType)) {
             GregorianCalendar cal = new GregorianCalendar(getTimeZone());
-            cal.setGregorianChange(new Date(Long.MIN_VALUE));
             cal.setTime(sourceDate);
             if(cal.get(Calendar.ERA) == GregorianCalendar.BC){
                 xgc.setYear(-cal.get(Calendar.YEAR));
@@ -1198,7 +1182,6 @@ public class XMLConversionManager extends ConversionManager implements TimeZoneH
         }
         if (XMLConstants.G_YEAR_MONTH_QNAME.equals(schemaType)) {
             GregorianCalendar cal = new GregorianCalendar(getTimeZone());
-            cal.setGregorianChange(new Date(Long.MIN_VALUE));
             cal.setTime(sourceDate);
             if(cal.get(Calendar.ERA) == GregorianCalendar.BC){
                 xgc.setYear(-cal.get(Calendar.YEAR));
@@ -1214,8 +1197,6 @@ public class XMLConversionManager extends ConversionManager implements TimeZoneH
         }
         // default is dateTime
         GregorianCalendar cal = new GregorianCalendar(getTimeZone());
-
-        cal.setGregorianChange(new Date(Long.MIN_VALUE));
         cal.setTime(sourceDate);
         xgc = getDatatypeFactory().newXMLGregorianCalendar(cal);
 
