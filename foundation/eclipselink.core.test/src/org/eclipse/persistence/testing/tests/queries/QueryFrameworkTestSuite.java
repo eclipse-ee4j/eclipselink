@@ -130,6 +130,8 @@ public class QueryFrameworkTestSuite extends TestSuite {
         addTest(new ScrollableCursorBackwardReadingTest());
         addTest(new ScrollableCursorStatementCachingReadTest());
         addTest(new ScrollableCursorNavigationAPITest());
+        addTest(new ScrollableCursorForwardOnlyResultSetTest()); // Bug 309142
+        
         // Cursor conforming tests...
         addTest(new CursoredStreamConformingTest());
         addTest(new CursoredStreamConformingTest(true));

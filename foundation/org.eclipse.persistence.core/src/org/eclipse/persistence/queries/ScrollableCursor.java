@@ -557,12 +557,13 @@ public class ScrollableCursor extends Cursor implements ListIterator {
                     this.nextRow = joinManager.processDataResults(row, this, true);
                 }
             }
-            if (row == null) {
-                // If already afterLast do not increment position again.
-                this.position = size() + 1;
+            
+            this.position = currentPosition + 1;  // bug 309142
+            
+            if (row == null) { 
                 return null;
             }
-            this.position = currentPosition + 1;
+
             Object object = buildAndRegisterObject(row);
             if (object == InvalidObject.instance) {
                 continue;
