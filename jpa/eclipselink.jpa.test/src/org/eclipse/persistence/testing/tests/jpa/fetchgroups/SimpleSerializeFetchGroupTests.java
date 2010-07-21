@@ -788,6 +788,7 @@ public class SimpleSerializeFetchGroupTests extends BaseFetchGroupTests {
         }
         
         em = createEntityManager();
+        beginTransaction(em);
         Query query = em.createQuery("SELECT e FROM Employee e WHERE e.id = "+id);        
         FetchGroup fetchGroup = new FetchGroup("names");
         fetchGroup.addAttribute("firstName");
@@ -802,7 +803,6 @@ public class SimpleSerializeFetchGroupTests extends BaseFetchGroupTests {
         Employee empSerialized;
         Employee empDeserialized;
         Employee empMerged;
-        beginTransaction(em);
         try {
             empSerialized = serialize(emp);
             
