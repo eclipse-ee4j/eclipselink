@@ -17,7 +17,6 @@ import org.eclipse.persistence.testing.tests.jpa.cacheable.CacheableModelJunitTe
 import org.eclipse.persistence.testing.tests.jpa.cacheable.CacheableModelJunitTestEnableSelective;
 import org.eclipse.persistence.testing.tests.jpa.cacheable.CacheableModelJunitTestDisableSelective;
 import org.eclipse.persistence.testing.tests.jpa.cacheable.CacheableModelJunitTestUnspecified;
-import org.eclipse.persistence.testing.tests.jpa.cacheable.CacheableModelJunitTest1;
 import org.eclipse.persistence.testing.framework.junit.JUnitTestCase;
 
 import junit.framework.TestSuite;
