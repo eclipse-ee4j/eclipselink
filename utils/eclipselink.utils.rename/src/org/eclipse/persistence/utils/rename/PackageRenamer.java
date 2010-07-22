@@ -168,7 +168,8 @@ public class PackageRenamer {
 	 */
 	public boolean isExtensionSupported(String extension) {
 		return extension.equalsIgnoreCase("java")
-				|| extension.equalsIgnoreCase("xml");
+				|| extension.equalsIgnoreCase("xml")
+				|| extension.equalsIgnoreCase("mwp");
 	}
 
 	/**
@@ -307,7 +308,10 @@ public class PackageRenamer {
 		String extension = parseFileExtension(source);
 		String resourceName = source.substring(0, source.length()
 				- (extension.length() + 1));
-		String packageName = resourceName.replace('\\', '.');
+		String packageName = resourceName;
+		if ("java".equals(extension)) {
+			packageName = resourceName.replace('\\', '.');
+		}
 		String targetPackageName = packageName;
 
 		RenameFileData fileData = new RenameFileData(targetPackageName, true);
@@ -315,8 +319,9 @@ public class PackageRenamer {
 			fileData = rv.replace(fileData);
 		}
 
-		fileData.setFileContentsString(fileData.getFileContentsString()
-				.replace('.', '\\'));
+		if ("java".equals(extension)) {
+			fileData.setFileContentsString(fileData.getFileContentsString().replace('.', '\\'));
+		}
 
 		if (extension != null && extension.length() > 0) {
 			fileData.setFileContentsString(fileData.getFileContentsString()
