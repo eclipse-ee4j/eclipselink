@@ -35,17 +35,17 @@ import org.eclipse.persistence.testing.framework.junit.JUnitTestCase;
  * 
  * @author mschinca
  */
-@Stateless(name="TestRunner3", mappedName="TestRunner3")
-@Remote(TestRunner3.class)
+@Stateless(name="TestRunner5", mappedName="TestRunner5")
+@Remote(TestRunner5.class)
 @TransactionManagement(TransactionManagementType.BEAN)
-public class TestRunner3Bean implements TestRunner3 {
+public class TestRunner5Bean implements TestRunner5 {
     
     /** The entity manager for the test is injected and passed to the test server platform. */
-    @PersistenceContext(unitName="MulitPU-3")
+    @PersistenceContext(unitName="MulitPU-5")
     private EntityManager entityManager;
 
     /** The entity manager factory for the test is injected and passed to the test server platform. */
-    @PersistenceUnit(unitName="MulitPU-3")
+    @PersistenceUnit(unitName="MulitPU-5")
     private EntityManagerFactory entityManagerFactory;
     
     /**

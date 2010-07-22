@@ -197,8 +197,38 @@
                 <isset property="is.jboss"/>
             </and>
         </condition>
+        <condition property="SERVER.TESTRUNNER1" value="${MODEL_NAME}/${server.testrunner1}">
+            <and>
+                <isset property="is.jboss"/>
+            </and>
+        </condition>
+        <condition property="SERVER.TESTRUNNER2" value="${MODEL_NAME}/${server.testrunner2}">
+            <and>
+                <isset property="is.jboss"/>
+            </and>
+        </condition>
+        <condition property="SERVER.TESTRUNNER3" value="${MODEL_NAME}/${server.testrunner3}">
+            <and>
+                <isset property="is.jboss"/>
+            </and>
+        </condition>
+        <condition property="SERVER.TESTRUNNER4" value="${MODEL_NAME}/${server.testrunner4}">
+            <and>
+                <isset property="is.jboss"/>
+            </and>
+        </condition>
+        <condition property="SERVER.TESTRUNNER5" value="${MODEL_NAME}/${server.testrunner5}">
+            <and>
+                <isset property="is.jboss"/>
+            </and>
+        </condition>
         <property name="SERVER.URL" value="${server.url}${MODEL_NAME}"/>
         <property name="SERVER.TESTRUNNER" value="${server.testrunner}"/>
+        <property name="SERVER.TESTRUNNER1" value="${server.testrunner1}"/>
+        <property name="SERVER.TESTRUNNER2" value="${server.testrunner2}"/>
+        <property name="SERVER.TESTRUNNER3" value="${server.testrunner3}"/>
+        <property name="SERVER.TESTRUNNER4" value="${server.testrunner4}"/>
+        <property name="SERVER.TESTRUNNER5" value="${server.testrunner5}"/>
 
         <condition property="DS_NAME" value="java:/EclipseLinkDS">
             <contains string="${server.name}" substring="jboss"/>
@@ -1484,18 +1514,6 @@
         <copy todir="${eclipselink.jpa.test}/${src.dir}/org/eclipse/persistence/testing/framework/server" overwrite="true">
             <fileset dir="${eclipselink.jpa.test}/${resource.dir}/server" includes="TestRunner*.java"/>
         </copy>
-        <replace dir="${eclipselink.jpa.test}/${src.dir}/org/eclipse/persistence/testing/framework/server" token='%%puName1%%' value="${PERSISTENCE_UNIT_NAME1}">
-            <include name="*.java"/>
-        </replace>
-        <replace dir="${eclipselink.jpa.test}/${src.dir}/org/eclipse/persistence/testing/framework/server" token='%%puName2%%' value="${PERSISTENCE_UNIT_NAME2}">
-            <include name="*.java"/>
-        </replace>
-        <replace dir="${eclipselink.jpa.test}/${src.dir}/org/eclipse/persistence/testing/framework/server" token='%%puName3%%' value="${PERSISTENCE_UNIT_NAME3}">
-            <include name="*.java"/>
-        </replace>
-        <replace dir="${eclipselink.jpa.test}/${src.dir}/org/eclipse/persistence/testing/framework/server" token='%%puName4%%' value="${PERSISTENCE_UNIT_NAME4}">
-            <include name="*.java"/>
-        </replace>
     </target>
 
     <target name="recover-server-sessionbeans" depends="server-original-sessionbean-existence" if="original.sessionbean.exists"> 
@@ -1510,10 +1528,11 @@
     <target name="remove-multiple-persistence-units-sessionbeans" if="USE_MULTIPLE_PERSISTENCE_UNITS">
         <delete>
             <fileset dir="${eclipselink.jpa.test}/${src.dir}/org/eclipse/persistence/testing/framework/server" 
-            includes="TestRunner1*.java
-                      TestRunner2*.java
-                      TestRunner3*.java
-                      TestRunner4*.java"/>
+            includes="TestRunner1Bean.java
+                      TestRunner2Bean*.java
+                      TestRunner3Bean*.java
+                      TestRunner4Bean*.java
+                      TestRunner5Bean*.java"/>
         </delete>
     </target>
     <!-- Build server test client jar. -->
@@ -1872,6 +1891,11 @@
             <sysproperty key="server.password" value="${server.pwd}"/>
             <sysproperty key="server.url" value="${SERVER.URL}"/>
             <sysproperty key="server.testrunner" value="${SERVER.TESTRUNNER}"/>
+            <sysproperty key="server.testrunner1" value="${SERVER.TESTRUNNER1}"/>
+            <sysproperty key="server.testrunner2" value="${SERVER.TESTRUNNER2}"/>
+            <sysproperty key="server.testrunner3" value="${SERVER.TESTRUNNER3}"/>
+            <sysproperty key="server.testrunner4" value="${SERVER.TESTRUNNER4}"/>
+            <sysproperty key="server.testrunner5" value="${SERVER.TESTRUNNER5}"/>
             <sysproperty key="server.run" value="TRUE"/>
             <classpath refid="run.path"/>
             <formatter type="xml"/>
@@ -1996,16 +2020,12 @@
         <antcall target="server-run-all" inheritRefs="true">
             <param name="PERSISTENCE_UNIT_NAME" value="default"/>
             <param name="USE_MULTIPLE_PERSISTENCE_UNITS" value="true"/>
-            <param name="PERSISTENCE_UNIT_NAME1" value="DISABLE_SELECTIVE"/>
-            <param name="PERSISTENCE_UNIT_NAME2" value="ENABLE_SELECTIVE"/>
-            <param name="PERSISTENCE_UNIT_NAME3" value="ALL"/>
-            <param name="PERSISTENCE_UNIT_NAME4" value="NONE"/>
             <param name="MODEL_DIR" value="org/eclipse/persistence/testing/models/jpa/xml/cacheable"/>
             <param name="MODEL_NAME" value="eclipselink-cacheable-model"/>
             <param name="TEST_DIR" value="org/eclipse/persistence/testing/tests/jpa/cacheable"/>
             <param name="TEST_NAME" value="eclipselink-cacheable-model"/>
             <param name="EAR_NAME" value="eclipselink-cacheable-model"/>
-            <param name="TEST_SUITE" value="org.eclipse.persistence.testing.tests.jpa.cacheable.CacheableModelJunitTest"/>
+            <param name="TEST_SUITE" value="org.eclipse.persistence.testing.tests.jpa.cacheable.CacheableServerTestSuite"/>
             <param name="eclipselink.jpa.test.dir" value="."/>
         </antcall>
     </target>

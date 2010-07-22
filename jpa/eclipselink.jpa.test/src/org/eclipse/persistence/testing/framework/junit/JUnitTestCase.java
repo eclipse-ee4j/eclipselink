@@ -30,6 +30,11 @@ import org.eclipse.persistence.sessions.server.ServerSession;
 import org.eclipse.persistence.testing.framework.server.JEEPlatform;
 import org.eclipse.persistence.testing.framework.server.ServerPlatform;
 import org.eclipse.persistence.testing.framework.server.TestRunner;
+import org.eclipse.persistence.testing.framework.server.TestRunner1;
+import org.eclipse.persistence.testing.framework.server.TestRunner2;
+import org.eclipse.persistence.testing.framework.server.TestRunner3;
+import org.eclipse.persistence.testing.framework.server.TestRunner4;
+import org.eclipse.persistence.testing.framework.server.TestRunner5;
 
 /**
  * This is the superclass for all TopLink JUnit tests
@@ -67,6 +72,9 @@ public abstract class JUnitTestCase extends TestCase {
     
     /** System variable to set the tests to run on the server. */
     public static final String RUN_ON_SERVER = "server.run";
+
+    /** Persistence unit name associated with the test runner, null means single persistence unit */
+    public String puName = null;
     
     static {
         emfNamedPersistenceUnits = new Hashtable();
@@ -470,16 +478,52 @@ public abstract class JUnitTestCase extends TestCase {
         }
         properties.put("java.naming.provider.url", url);
         Context context = new InitialContext(properties);
-        TestRunner runner;
         Throwable exception = null;
-        String testrunner = System.getProperty("server.testrunner");
-        if (testrunner == null) {
-            fail("System property 'server.testrunner' must be set.");
+        if (puName == null)
+        {
+            String testrunner = System.getProperty("server.testrunner");
+            if (testrunner == null) {
+                fail("System property 'server.testrunner' must be set.");
+            }
+            TestRunner runner = (TestRunner) PortableRemoteObject.narrow(context.lookup(testrunner), TestRunner.class);
+            exception = runner.runTest(getClass().getName(), getName(), getServerProperties());
+        }else{
+            int i = puName.charAt(8) - 48;
+            String testRunner[] = new String[6];
+            for (int j=1; j<=5; j++)
+            {
+                String serverRunner = "server.testrunner" + j;
+                testRunner[j] = System.getProperty(serverRunner);
+                if (testRunner[j] == null) {
+                    fail("System property 'server.testrunner'" + j + " must be set.");
+                }
+            }
+            switch (i)
+            {
+            case 1:
+                TestRunner1 runner1 = (TestRunner1) PortableRemoteObject.narrow(context.lookup(testRunner[1]), TestRunner1.class);
+                exception = runner1.runTest(getClass().getName(), getName(), getServerProperties());
+                break;
+            case 2:
+                TestRunner2 runner2 = (TestRunner2) PortableRemoteObject.narrow(context.lookup(testRunner[2]), TestRunner2.class);
+                exception = runner2.runTest(getClass().getName(), getName(), getServerProperties());
+                break;
+            case 3:
+                TestRunner3 runner3 = (TestRunner3) PortableRemoteObject.narrow(context.lookup(testRunner[3]), TestRunner3.class);
+                exception = runner3.runTest(getClass().getName(), getName(), getServerProperties());
+                break;
+            case 4:
+                TestRunner4 runner4 = (TestRunner4) PortableRemoteObject.narrow(context.lookup(testRunner[4]), TestRunner4.class);
+                exception = runner4.runTest(getClass().getName(), getName(), getServerProperties());
+                break;
+            case 5:
+                TestRunner5 runner5 = (TestRunner5) PortableRemoteObject.narrow(context.lookup(testRunner[5]), TestRunner5.class);
+                exception = runner5.runTest(getClass().getName(), getName(), getServerProperties());
+                break;
+            default:
+                break;
+            }
         }
-
-
-        runner = (TestRunner) PortableRemoteObject.narrow(context.lookup(testrunner), TestRunner.class);
-        exception = runner.runTest(getClass().getName(), getName(), getServerProperties());
         if (exception != null) {
             throw exception;
         }
@@ -603,5 +647,9 @@ public abstract class JUnitTestCase extends TestCase {
         }
         warning("This database does not support stored procedure creation.");
         return false;
+    }
+
+    public void setPuName(String name){
+        puName = name;
     }
 }
