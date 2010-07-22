@@ -44,6 +44,25 @@ import java.sql.Connection;
 public class SunAS9ServerPlatform extends JMXServerPlatformBase implements JMXEnabledPlatform {
 
     /**
+     * The following constants and attributes are used to determine the module and application name
+     * to satisfy the requirements for 248746 where we provide an identifier pair for JMX sessions.
+     * Each application can have several modules.
+     * 1) Application name - the persistence unit associated with the session (a 1-1 relationship)
+     * 2) Module name - the ejb or war jar name (there is a 1-many relationship for module:session(s)) 
+     */
+    static {
+        /** Override by subclass: Search String in application server ClassLoader for the application:persistence_unit name */
+        APP_SERVER_CLASSLOADER_APPLICATION_PU_SEARCH_STRING_PREFIX = "URLEntry : file:/";
+        /** Override by subclass: Search String in application server session for ejb modules */
+        APP_SERVER_CLASSLOADER_MODULE_EJB_SEARCH_STRING_PREFIX = "_jar/";
+        /** Override by subclass: Search String in application server session for war modules */
+        APP_SERVER_CLASSLOADER_MODULE_WAR_SEARCH_STRING_PREFIX = "_war/";
+        APP_SERVER_CLASSLOADER_APPLICATION_PU_SEARCH_STRING_POSTFIX = "]";
+        APP_SERVER_CLASSLOADER_MODULE_EJB_WAR_SEARCH_STRING_POSTFIX = "";
+        
+    }
+    
+    /**
      * INTERNAL:
      * Default Constructor: All behavior for the default constructor is inherited
      */
@@ -145,5 +164,23 @@ public class SunAS9ServerPlatform extends JMXServerPlatformBase implements JMXEn
         }
     }
 
+    /**
+     * INTERNAL: 
+     * serverSpecificRegisterMBean(): Server specific implementation of the
+     * creation and deployment of the JMX MBean to provide runtime services for my
+     * databaseSession.
+     *
+     * @return void
+     * @see #isRuntimeServicesEnabled()
+     * @see #disableRuntimeServices()
+     * @see #registerMBean()
+     */
+    @Override
+    public void serverSpecificRegisterMBean() {
+       super.serverSpecificRegisterMBean();
+        // get and cache module and application name during registration
+        initializeApplicationNameAndModuleName();
+    }
+        
 }    
 

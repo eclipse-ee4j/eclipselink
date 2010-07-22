@@ -18,7 +18,8 @@ package org.eclipse.persistence.platform.server;
 /**
  * PUBLIC:
  *     This interface must be implemented by server platform classes that have
- *     JMX/MBean functionality enabled in EclipseLink.
+ *     JMX/MBean functionality enabled in EclipseLink.<br>
+ *     As of EclipseLink 
  * @see org.eclipse.persistence.platform.server.JMXServerPlatformBase
  * @since EclipseLink 2.1.1 
  */
@@ -49,8 +50,8 @@ public interface JMXEnabledPlatform {
      * Default behavior is to return "unknown"
      * 
      * There are 4 levels of implementation.
-     * 1) use the property override weblogic.applicationName, or
-     * 2) perform a reflective weblogic.work.executeThreadRuntime.getApplicationName() call, or
+     * 1) use the property override weblogic|jboss|glassfish|websphere.applicationName, or
+     * 2) perform a reflective weblogic.work.executeThreadRuntime.getApplicationName() call on WebLogic for example
      * 3) extract the moduleName:persistence_unit from the weblogic classloader string representation, or
      * 3) defer to superclass - usually return "unknown"
      *

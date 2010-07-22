@@ -43,9 +43,6 @@ import org.eclipse.persistence.sessions.DatabaseSession;
  * This includes WebLogic 10.3 behavior.
  */
 public class WebLogic_10_Platform extends WebLogic_9_Platform implements JMXEnabledPlatform {
-    // see http://e-docs.bea.com/wls/docs90/jmx/accessWLS.html#1119237
-    /** This JNDI address is for JMX MBean registration */
-    private static final String JMX_JNDI_RUNTIME_REGISTER = "java:comp/env/jmx/runtime";
     /* 
      * If the cached MBeanServer is not used, then the unregister jndi address must be used to create a context
      * Note: the context must be explicitly closed after use or we may cache the user and get a
@@ -63,11 +60,6 @@ public class WebLogic_10_Platform extends WebLogic_9_Platform implements JMXEnab
      */
     /** Cache the WebLogic ThreadPoolRuntime for performance */    
     private ObjectName wlsThreadPoolRuntime = null;
-    /** The JMX context when running as a module */
-    private static final String WLS_MODULE_ENV_CONTEXT_LOOKUP = "java:comp/env/jmx/runtime";
-    /** The JMX context when running as a non-module */
-    private static final String WLS_NON_MODULE_CONTEXT_LOOKUP = "java:comp/jmx/runtime";
-    
     private static final String WLS_SERVICE_KEY = "com.bea:Name=RuntimeService,Type=weblogic.management.mbeanservers.runtime.RuntimeServiceMBean";    
     private static final String WLS_SERVER_RUNTIME = "ServerRuntime";    
     private static final String WLS_THREADPOOL_RUNTIME = "ThreadPoolRuntime";
@@ -77,6 +69,17 @@ public class WebLogic_10_Platform extends WebLogic_9_Platform implements JMXEnab
     private static final String WLS_MODULE_NAME_GET_METHOD_NAME = "getModuleName";    
     /** Search String in WebLogic ClassLoader for the application:persistence_unit name */
     private static final String WLS_CLASSLOADER_APPLICATION_PU_SEARCH_STRING_PREFIX = "annotation: ";
+    
+    static {
+        /** Override by subclass: Search String in application server ClassLoader for the application:persistence_unit name */
+        APP_SERVER_CLASSLOADER_APPLICATION_PU_SEARCH_STRING_PREFIX = "/deploy/";
+        /** Override by subclass: Search String in application server session for ejb modules */
+        APP_SERVER_CLASSLOADER_MODULE_EJB_SEARCH_STRING_PREFIX = ".jar/";
+        /** Override by subclass: Search String in application server session for war modules */
+        APP_SERVER_CLASSLOADER_MODULE_WAR_SEARCH_STRING_PREFIX = ".war/";
+        APP_SERVER_CLASSLOADER_APPLICATION_PU_SEARCH_STRING_POSTFIX = "";
+        APP_SERVER_CLASSLOADER_MODULE_EJB_WAR_SEARCH_STRING_POSTFIX = "";
+    }
     
     /**
      * INTERNAL:
@@ -139,7 +142,7 @@ public class WebLogic_10_Platform extends WebLogic_9_Platform implements JMXEnab
      * Get the applicationName and moduleName from the runtime WebLogic MBean reflectively
      * @return
      */
-    private void initializeApplicationNameAndModuleName() {
+    protected void initializeApplicationNameAndModuleName() {
         // Get property from persistence.xml or sessions.xml
         String jpaModuleName = (String)getDatabaseSession().getProperty(SERVER_SPECIFIC_MODULENAME_PROPERTY);
         String jpaApplicationName = (String)getDatabaseSession().getProperty(SERVER_SPECIFIC_APPLICATIONNAME_PROPERTY);      
