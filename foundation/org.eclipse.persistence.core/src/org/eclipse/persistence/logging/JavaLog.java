@@ -179,7 +179,7 @@ public class JavaLog extends AbstractSessionLog {
     protected Logger getLogger(String category) {
         if (session == null) {
             return (Logger)categoryloggers.get(DEFAULT_TOPLINK_NAMESPACE);
-        } else if ((category == null) || (category.length() == 0)) {
+        } else if ((category == null) || (category.length() == 0) || !this.categoryloggers.containsKey(category)) {
             return (Logger) categoryloggers.get(sessionNameSpace);
         } else {
             Logger logger = (Logger) categoryloggers.get(category);
