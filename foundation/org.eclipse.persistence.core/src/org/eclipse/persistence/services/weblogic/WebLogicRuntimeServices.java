@@ -29,12 +29,7 @@ package org.eclipse.persistence.services.weblogic;
 
 import java.util.Locale;
 
-import org.eclipse.persistence.descriptors.ClassDescriptor;
-import org.eclipse.persistence.internal.helper.ClassConstants;
-import org.eclipse.persistence.internal.identitymaps.IdentityMap;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
-import org.eclipse.persistence.services.weblogic.ClassSummaryDetail;
-import org.eclipse.persistence.services.ClassSummaryDetailBase;
 import org.eclipse.persistence.services.RuntimeServices;
 
 /**
@@ -77,39 +72,4 @@ public class WebLogicRuntimeServices extends RuntimeServices {
      */
     public WebLogicRuntimeServices(Locale locale) {
     }
- 
-    /**
-     * INTERNAL:
-     * Helper to build a HashMap to help in the construction of a CompositeData
-     *
-     * @param String mappedClassName: fullyQualified class name of the class
-
-     * @return HashMap
-     */
-/*    private ClassSummaryDetailBase buildLowlevelDetailsForNew(String mappedClassName) {
-        Class mappedClass = (Class)getSession().getDatasourcePlatform().getConversionManager().convertObject(mappedClassName, ClassConstants.CLASS);
-        IdentityMap identityMap = getSession().getIdentityMapAccessorInstance().getIdentityMap(mappedClass);
-        ClassDescriptor descriptor = getSession().getProject().getDescriptor(mappedClass);
-
-        String cacheType = getCacheTypeFor(identityMap.getClass());
-        String configuredSize = "" + identityMap.getMaxSize();
-        String currentSize = "";
-
-        //show the current size, including subclasses 
-        currentSize = "" + identityMap.getSize(mappedClass, true);
-
-        String parentClassName = "";
-
-        boolean isChildDescriptor = descriptor.isChildDescriptor();
-
-        ClassSummaryDetailBase details = new ClassSummaryDetail(
-                mappedClassName,
-                (isChildDescriptor ? "" : cacheType),
-                (isChildDescriptor ? "" : configuredSize),
-                currentSize,
-                parentClassName);
-
-        return details;
-    }*/    
-    
 }

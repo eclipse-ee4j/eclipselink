@@ -70,7 +70,29 @@ public abstract class JMXServerPlatformBase extends ServerPlatformBase {
     public static final String JMX_REGISTRATION_PREFIX = "TopLink:Name=";
     /** The default indexed MBeanServer instance to use when multiple MBeanServer instances exist on the platform - usually only in JBoss */
     public static final int JMX_MBEANSERVER_INDEX_DEFAULT_FOR_MULTIPLE_SERVERS = 0;
+    /** This persistence.xml or sessions.xml property is used to override the moduleName */
+    protected static final String OVERRIDE_JMX_MODULENAME_PROPERTY = "eclipselink.jmx.moduleName"; 
+    /** This persistence.xml or sessions.xml property is used to override the applicationName */
+    protected static final String OVERRIDE_JMX_APPLICATIONNAME_PROPERTY = "eclipselink.jmx.applicationName"; 
 
+    /**
+     * The following constants and attributes are used to determine the module and application name
+     * to satisfy the requirements for 248746 where we provide an identifier pair for JMX sessions.
+     * Each application can have several modules.
+     * 1) Application name - the persistence unit associated with the session (a 1-1 relationship)
+     * 2) Module name - the ejb or war jar name (there is a 1-many relationship for module:session(s)) 
+     */
+    /** Override by subclass: Search String in application server ClassLoader for the application:persistence_unit name */
+    protected static String APP_SERVER_CLASSLOADER_APPLICATION_PU_SEARCH_STRING_PREFIX = "annotation: ";
+    protected static String APP_SERVER_CLASSLOADER_APPLICATION_PU_SEARCH_STRING_POSTFIX = "";
+
+    /** Override by subclass: Search String in application server session for ejb modules */
+    protected static String APP_SERVER_CLASSLOADER_MODULE_EJB_SEARCH_STRING_PREFIX = ".jar/";
+    /** Override by subclass: Search String in application server session for war modules */
+    protected static String APP_SERVER_CLASSLOADER_MODULE_WAR_SEARCH_STRING_PREFIX = ".war/";
+    protected static String APP_SERVER_CLASSLOADER_MODULE_EJB_WAR_SEARCH_STRING_POSTFIX = "";    
+    
+    
     /** Cache the ServerPlatform MBeanServer for performance */
     private MBeanServer mBeanServer = null;
     
@@ -89,9 +111,6 @@ public abstract class JMXServerPlatformBase extends ServerPlatformBase {
      */
     public JMXServerPlatformBase(DatabaseSession newDatabaseSession) {
         super(newDatabaseSession);
-        // Answer "unknown" as a default for platforms that do not implement getModuleName()
-        applicationName = DEFAULT_SERVER_NAME_AND_VERSION;
-        moduleName = DEFAULT_SERVER_NAME_AND_VERSION;        
     }
     
     /** 
@@ -139,7 +158,6 @@ public abstract class JMXServerPlatformBase extends ServerPlatformBase {
                         // Check the domain if it is non-null - avoid using this server
                         int index = 0;
                         for(MBeanServer anMBeanServer : mBeanServerList) {
-                            String defaultDomain = anMBeanServer.getDefaultDomain();
                             AbstractSessionLog.getLog().log(SessionLog.INFO, 
                                     "jmx_mbean_runtime_services_registration_mbeanserver_print",
                                     anMBeanServer, anMBeanServer.getMBeanCount(), anMBeanServer.getDefaultDomain(), index);
@@ -151,9 +169,10 @@ public abstract class JMXServerPlatformBase extends ServerPlatformBase {
                             }
                             index++;
                         }
-                    }
-                    // iterate and print the names of the MBeanServer instances
-                    for(MBeanServer anMBeanServer : mBeanServerList) {
+                    } else {
+                        AbstractSessionLog.getLog().log(SessionLog.INFO, 
+                                "jmx_mbean_runtime_services_registration_mbeanserver_print",
+                                mBeanServer, mBeanServer.getMBeanCount(), mBeanServer.getDefaultDomain(), 0);
                     }
                 }                
             } catch (Exception e) {
@@ -332,6 +351,24 @@ public abstract class JMXServerPlatformBase extends ServerPlatformBase {
     }
 
     /**
+     * INTERNAL:
+     * @param enableDefault
+     * @return
+     */
+    protected String getModuleName(boolean enableDefault) {
+        //Object substring = getModuleOrApplicationName();
+        if(null == this.moduleName) {
+            // Get property from persistence.xml or sessions.xml
+            this.moduleName = (String)getDatabaseSession().getProperty(OVERRIDE_JMX_MODULENAME_PROPERTY);
+        }        
+        // if there is no function or property override then answer "unknown" as a default for platforms that do not implement getModuleName()
+        if(null == this.moduleName && enableDefault) {
+            this.moduleName = DEFAULT_SERVER_NAME_AND_VERSION;
+        }
+        return this.moduleName;
+    }
+    
+    /**
      * INTERNAL: 
      * getModuleName(): Answer the name of the context-root of the application that this session is associated with.
      * Answer "unknown" if there is no module name available.
@@ -340,42 +377,122 @@ public abstract class JMXServerPlatformBase extends ServerPlatformBase {
      * There are 4 levels of implementation.
      * 1) use the property override jboss.moduleName, or
      * 2) perform a reflective jboss.work.executeThreadRuntime.getModuleName() call, or
-     * 3) extract the moduleName:persistence_unit from the jboss classloader string representation, or
+     * 3) extract the moduleName:persistence_unit from the server specific classloader string representation, or
      * 3) defer to superclass - usually return "unknown"
      *
      * @return String moduleName
      */
     @Override
-    public String getModuleName() {        
-        return this.moduleName;
+    public String getModuleName() {
+        return getModuleName(true);
     }
     
+    /**
+     * INTERNAL;
+     * @param aName
+     */
     protected void setModuleName(String aName) {
-        moduleName = aName;
+        this.moduleName = aName;
+    }
+    
+    /**
+     * INTERNAL:
+     * Lazy initialize the application name by
+     * first checking for a persistence.xml property override and then
+     * deferring to a default name in the absence of a platfrom override of this function
+     * @param enableDefault
+     * @return
+     */
+    protected String getApplicationName(boolean enableDefault) {
+        //Object substring = getModuleOrApplicationName();
+        if(null == this.applicationName) {
+            // Get property from persistence.xml or sessions.xml
+            this.applicationName = (String)getDatabaseSession().getProperty(OVERRIDE_JMX_APPLICATIONNAME_PROPERTY);
+        }
+        // if there is no function or property override then answer "unknown" as a default for platforms that do not implement getApplicationName()
+        if(null == this.applicationName && enableDefault) {
+            this.applicationName = DEFAULT_SERVER_NAME_AND_VERSION;
+        }
+        return this.applicationName;
     }
     
     /**
      * INTERNAL: 
      * getApplicationName(): Answer the name of the module (EAR name) that this session is associated with.
      * Answer "unknown" if there is no application name available.
-     * Default behavior is to return "unknown" - we override this behavior here for JBoss.
+     * Default behavior is to return "unknown" 
      * 
      * There are 4 levels of implementation.
      * 1) use the property override weblogic.applicationName, or
      * 2) perform a reflective weblogic.work.executeThreadRuntime.getApplicationName() call, or
-     * 3) extract the moduleName:persistence_unit from the weblogic classloader string representation, or
-     * 3) defer to superclass - usually return "unknown"
+     * 3) extract the moduleName:persistence_unit from the application classloader string representation, or
+     * 3) defer to this superclass - usually return "unknown"
      *
      * @return String applicationName
      * @see JMXEnabledPlatform 
      */
     public String getApplicationName() {
-        return this.applicationName;
+        return getApplicationName(true);
     }
     
-    
+    /**
+     * INTERNAL:
+     * @param aName
+     */
     public void setApplicationName(String aName) {
-        applicationName = aName;
+        this.applicationName = aName;
     }
 
+    /**
+     * INTERNAL:
+     * Get the applicationName and moduleName from the application server
+     * @return
+     */
+    protected void initializeApplicationNameAndModuleName() {
+        String databaseSessionName = getDatabaseSession().getName();
+        String classLoaderName = getDatabaseSession().getPlatform().getConversionManager().getLoader().toString();
+        // Get property from persistence.xml or sessions.xml
+        String jpaModuleName = getModuleName(false);
+        String jpaApplicationName = getApplicationName(false);     
+        
+        if (jpaModuleName == null) {
+            String subString = databaseSessionName.substring(databaseSessionName.indexOf(
+                    APP_SERVER_CLASSLOADER_MODULE_EJB_SEARCH_STRING_PREFIX) + 
+                    APP_SERVER_CLASSLOADER_MODULE_EJB_SEARCH_STRING_PREFIX.length());
+            if(null != subString) {
+                setModuleName(subString);
+            } else {
+                subString = databaseSessionName.substring(databaseSessionName.indexOf(
+                        APP_SERVER_CLASSLOADER_MODULE_WAR_SEARCH_STRING_PREFIX) + 
+                        APP_SERVER_CLASSLOADER_MODULE_WAR_SEARCH_STRING_PREFIX.length());
+                setModuleName(subString);
+            }
+            
+            if(null != jpaModuleName && jpaModuleName.indexOf(APP_SERVER_CLASSLOADER_MODULE_EJB_WAR_SEARCH_STRING_POSTFIX) > -1) {
+                jpaModuleName = jpaModuleName.substring(0,
+                        jpaModuleName.indexOf(APP_SERVER_CLASSLOADER_MODULE_EJB_WAR_SEARCH_STRING_POSTFIX)); 
+            }
+        }
+
+        // Get the application name from the ClassLoader, it is also present in the session name
+        if (jpaApplicationName == null) {
+            jpaApplicationName = classLoaderName.substring(classLoaderName.indexOf(
+                        APP_SERVER_CLASSLOADER_APPLICATION_PU_SEARCH_STRING_PREFIX) + 
+                        APP_SERVER_CLASSLOADER_APPLICATION_PU_SEARCH_STRING_PREFIX.length());
+            if(null != jpaApplicationName && jpaApplicationName.indexOf(APP_SERVER_CLASSLOADER_APPLICATION_PU_SEARCH_STRING_POSTFIX) > -1) {
+                jpaApplicationName = jpaApplicationName.substring(0,
+                        jpaApplicationName.indexOf(APP_SERVER_CLASSLOADER_APPLICATION_PU_SEARCH_STRING_POSTFIX)); 
+            }
+            if(null != jpaApplicationName) {
+                jpaApplicationName = jpaApplicationName.replaceAll("[=,:] ", "_");
+            }
+            setApplicationName(jpaApplicationName);
+        }
+        // Final check for null values - incorporated into the get functions in these logs
+        AbstractSessionLog.getLog().log(SessionLog.FINEST, "mbean_get_application_name", 
+                getDatabaseSession().getName(), getApplicationName());
+        AbstractSessionLog.getLog().log(SessionLog.FINEST, "mbean_get_module_name", 
+                getDatabaseSession().getName(), getModuleName());
+    }
+    
 }
