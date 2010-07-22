@@ -131,6 +131,7 @@ public class AnnotationsProcessor {
     private static final String ARRAY_PACKAGE_NAME = "jaxb.dev.java.net.array";
     private static final String ARRAY_NAMESPACE = "http://jaxb.dev.java.net/array";
     private static final String ARRAY_CLASS_NAME_SUFFIX = "Array";
+    private static final String ORG_W3C_DOM = "org.w3c.dom";
     
     private ArrayList<JavaClass> typeInfoClasses;
     private HashMap<String, NamespaceInfo> packageToNamespaceMappings;
@@ -1244,7 +1245,7 @@ public class AnnotationsProcessor {
     }
 
     public boolean shouldGenerateTypeInfo(JavaClass javaClass) {
-        if (javaClass == null || javaClass.isPrimitive() || javaClass.isAnnotation() || javaClass.isInterface()) {
+        if (javaClass == null || javaClass.isPrimitive() || javaClass.isAnnotation() || ORG_W3C_DOM.equals(javaClass.getPackageName())) {
             return false;
         }
         if (userDefinedSchemaTypes.get(javaClass.getQualifiedName()) != null) {
