@@ -317,7 +317,7 @@ public class Buyer implements Serializable {
         this.buyingDays = buyingDays;
     }
     
-    protected void setCreditCards(Map<String, Long> creditCards) {
+    public void setCreditCards(Map<String, Long> creditCards) {
         this.creditCards = creditCards;
     }    
     

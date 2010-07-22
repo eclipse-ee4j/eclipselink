@@ -178,10 +178,12 @@ public class DirectMapMapping extends DirectCollectionMapping implements MapComp
     public void cascadeDiscoverAndPersistUnregisteredNewObjects(Object object, Map newObjects, Map unregisteredExistingObjects, Map visitedObjects, UnitOfWorkImpl uow) {
         if (containerPolicy.isMappedKeyMapPolicy()){
             Object values = getAttributeValueFromObject(object);
-            Object iterator = containerPolicy.iteratorFor(values);
-            while (containerPolicy.hasNext(iterator)){
-                Object wrappedObject = containerPolicy.nextEntry(iterator, uow);
-                containerPolicy.cascadeDiscoverAndPersistUnregisteredNewObjects(wrappedObject, newObjects, unregisteredExistingObjects, visitedObjects, uow);
+            if (values != null) {
+                Object iterator = containerPolicy.iteratorFor(values);
+                while (containerPolicy.hasNext(iterator)){
+                    Object wrappedObject = containerPolicy.nextEntry(iterator, uow);
+                    containerPolicy.cascadeDiscoverAndPersistUnregisteredNewObjects(wrappedObject, newObjects, unregisteredExistingObjects, visitedObjects, uow);
+                }
             }
         }
     }
@@ -194,10 +196,12 @@ public class DirectMapMapping extends DirectCollectionMapping implements MapComp
     public void cascadePerformRemoveIfRequired(Object object, UnitOfWorkImpl uow, Map visitedObjects) {
         if (containerPolicy.isMappedKeyMapPolicy()){
             Object values = getAttributeValueFromObject(object);
-            Object iterator = containerPolicy.iteratorFor(values);
-            while (containerPolicy.hasNext(iterator)){
-                Object wrappedObject = containerPolicy.nextEntry(iterator, uow);
-                containerPolicy.cascadePerformRemoveIfRequired(wrappedObject, uow, visitedObjects);
+            if (values != null) {
+                Object iterator = containerPolicy.iteratorFor(values);
+                while (containerPolicy.hasNext(iterator)){
+                   Object wrappedObject = containerPolicy.nextEntry(iterator, uow);
+                   containerPolicy.cascadePerformRemoveIfRequired(wrappedObject, uow, visitedObjects);
+              }
             }
         }
     }
@@ -210,10 +214,12 @@ public class DirectMapMapping extends DirectCollectionMapping implements MapComp
     public void cascadeRegisterNewIfRequired(Object object, UnitOfWorkImpl uow, Map visitedObjects) {
         if (containerPolicy.isMappedKeyMapPolicy()){
             Object values = getAttributeValueFromObject(object);
-            Object iterator = containerPolicy.iteratorFor(values);
-            while (containerPolicy.hasNext(iterator)){
-                Object wrappedObject = containerPolicy.nextEntry(iterator, uow);
-                containerPolicy.cascadeRegisterNewIfRequired(wrappedObject, uow, visitedObjects);
+            if (values != null) {
+                Object iterator = containerPolicy.iteratorFor(values);
+                while (containerPolicy.hasNext(iterator)){
+                    Object wrappedObject = containerPolicy.nextEntry(iterator, uow);
+                    containerPolicy.cascadeRegisterNewIfRequired(wrappedObject, uow, visitedObjects);
+                }
             }
         }
     }
