@@ -69,6 +69,9 @@ public class ReportQuery extends ReadAllQuery {
     /** For EJB 3 support returns results as an Object array. */
     public static final int ShouldReturnArray = 5;
 
+    /** For example, ... EXISTS( SELECT 1 FROM ... */
+    public static final int ShouldSelectValue1 = 6;
+
     /** Specifies whether to retrieve primary keys, first primary key, or no primary key.*/
     public static final int FULL_PRIMARY_KEY = 2;
     public static final int FIRST_PRIMARY_KEY = 1;
@@ -889,6 +892,12 @@ public class ReportQuery extends ReadAllQuery {
     public Vector getQueryExpressions() {
         Vector fieldExpressions = NonSynchronizedVector.newInstance(getItems().size());
 
+        if (shouldSelectValue1()) {
+            Expression one = new ConstantExpression(new Integer(1), new ExpressionBuilder());
+            this.addItem("one", one);
+            this.dontUseDistinct();
+            fieldExpressions.addElement(one);
+        } else
         // For bug 3115576 and an EXISTS subquery only need to return a single field.
         if (shouldRetrieveFirstPrimaryKey()) {
             if (!getDescriptor().getPrimaryKeyFields().isEmpty()) {
@@ -1030,7 +1039,7 @@ public class ReportQuery extends ReadAllQuery {
                 throw exception;
             }
         } else {
-            if ((!shouldRetrievePrimaryKeys()) && (!shouldRetrieveFirstPrimaryKey())) {
+            if ((!shouldRetrievePrimaryKeys()) && (!shouldRetrieveFirstPrimaryKey()) && !(shouldSelectValue1())) {
                 throw QueryException.noAttributesForReportQuery(this);
             }
         }
@@ -1234,7 +1243,7 @@ public class ReportQuery extends ReadAllQuery {
                             ExpressionBuilder outerBuilder ;
                             
                             ReportQuery subSelect = new ReportQuery(getReferenceClass(), countBuilder);
-                            subSelect.setShouldRetrieveFirstPrimaryKey(true);
+                            session.getPlatform().retrieveFirstPrimaryKeyOrOne(subSelect);
                             
                             // Make sure the outerBuilder does not appear on the left of the subselect.
                             // Putting a builder on the left is desirable to trigger an optimization.
@@ -1419,6 +1428,16 @@ public class ReportQuery extends ReadAllQuery {
 
     /**
      * PUBLIC:
+     * Simplifies the result by only returning a single value.
+     * This can be used if it known that only one row is returned by the report query and only a single item is added
+     * to the report.
+     */
+    public void selectValue1() {
+        returnChoice = ShouldSelectValue1;
+    }
+
+    /**
+     * PUBLIC:
      * Set if the query results should contain the primary keys or each associated object.
      * This make retrieving the real object easier.
      * By default they are not retrieved.
@@ -1555,5 +1574,14 @@ public class ReportQuery extends ReadAllQuery {
     public boolean shouldReturnArray() {
         return this.returnChoice == ShouldReturnArray;
     }
+
+    /**
+     * PUBLIC:
+     * Returns true if results should be returned as an Object array.
+     */
+    public boolean shouldSelectValue1() {
+        return this.returnChoice == ShouldSelectValue1;
+    }
+
 
 }
