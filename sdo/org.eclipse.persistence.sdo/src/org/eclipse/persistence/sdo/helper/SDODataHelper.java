@@ -62,8 +62,8 @@ public class SDODataHelper implements DataHelper {
     }
 
     /**
-     * The specified TimeZone will be used for all String to date object
-     * conversions. By default the TimeZone from the JVM is used.
+     * The specified TimeZone will be used for all String to Date object
+     * conversions.  By default the GMT time zone is used.
      */
     public void setTimeZone(TimeZone timeZone) {
         if (null == timeZone) {
