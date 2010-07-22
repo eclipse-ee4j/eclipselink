@@ -15,17 +15,12 @@ package org.eclipse.persistence.testing.tests.jpa.complexaggregate;
 
 import java.util.ArrayList;
 
-import java.util.IdentityHashMap;
 import java.util.List;
-import java.util.Map;
-
 import javax.persistence.Query;
 
 import org.eclipse.persistence.config.QueryHints;
-import org.eclipse.persistence.internal.jpa.EJBQueryImpl;
 import org.eclipse.persistence.internal.jpa.EntityManagerImpl;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
-import org.eclipse.persistence.queries.ReadObjectQuery;
 import org.eclipse.persistence.sessions.Session;
 import org.eclipse.persistence.testing.framework.JoinedAttributeTestHelper;
 import org.eclipse.persistence.testing.framework.TestErrorException;

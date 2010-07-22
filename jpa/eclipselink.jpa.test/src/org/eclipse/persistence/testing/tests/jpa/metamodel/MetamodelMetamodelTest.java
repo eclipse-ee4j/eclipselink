@@ -72,7 +72,6 @@ import org.eclipse.persistence.testing.models.jpa.metamodel.ArrayProcessor;
 import org.eclipse.persistence.testing.models.jpa.metamodel.Board;
 import org.eclipse.persistence.testing.models.jpa.metamodel.CPU;
 import org.eclipse.persistence.testing.models.jpa.metamodel.CPUEmbeddedId;
-import org.eclipse.persistence.testing.models.jpa.metamodel.CompositePK;
 import org.eclipse.persistence.testing.models.jpa.metamodel.Computer;
 import org.eclipse.persistence.testing.models.jpa.metamodel.Core;
 import org.eclipse.persistence.testing.models.jpa.metamodel.Corporation;

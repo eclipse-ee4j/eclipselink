@@ -13,8 +13,6 @@
  ******************************************************************************/  
 package org.eclipse.persistence.testing.models.jpa.complexaggregate;
 
-import static javax.persistence.FetchType.EAGER;
-
 import javax.persistence.*;
 
 import java.io.Serializable;

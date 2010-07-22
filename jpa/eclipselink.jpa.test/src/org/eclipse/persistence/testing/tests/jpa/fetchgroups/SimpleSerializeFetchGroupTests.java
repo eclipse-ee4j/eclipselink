@@ -14,7 +14,6 @@ package org.eclipse.persistence.testing.tests.jpa.fetchgroups;
 
 import java.io.ByteArrayInputStream;
 import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
 import java.io.IOException;
 import java.io.Serializable;
 import java.util.ArrayList;
