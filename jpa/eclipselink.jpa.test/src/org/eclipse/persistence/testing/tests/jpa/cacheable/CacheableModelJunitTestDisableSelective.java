@@ -33,7 +33,10 @@ import org.eclipse.persistence.sessions.server.ServerSession;
 import org.eclipse.persistence.testing.framework.junit.JUnitTestCase;
 import org.eclipse.persistence.testing.models.jpa.cacheable.CacheableTableCreator;
 import org.eclipse.persistence.testing.models.jpa.cacheable.CacheableTrueEntity;
+import org.eclipse.persistence.testing.models.jpa.cacheable.CacheableFalseEntity;
 import org.eclipse.persistence.testing.models.jpa.cacheable.ChildCacheableFalseEntity;
+import org.eclipse.persistence.testing.models.jpa.cacheable.SubCacheableFalseEntity;
+import org.eclipse.persistence.testing.models.jpa.cacheable.SubCacheableNoneEntity;
  
 /*
  * The test is testing against "MulitPU-4" persistence unit which has <shared-cache-mode> to be DISABLE_SELECTIVE
