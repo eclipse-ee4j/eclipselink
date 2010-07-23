@@ -465,7 +465,7 @@
             <arg value="${p2.composite.root.dir}"/>
             <arg value="${metadata.repos.name}"/>
         </exec>
-        <!-- Can clean-up temp dir now -->  
+        <!-- Can clean-up temp dir now -->
         <delete dir="${temp.rebuild.dir}" failonerror="false"/>
     </target>
 

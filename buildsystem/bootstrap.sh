@@ -557,7 +557,7 @@ then
     if [ -f ${MAILBODY} ]; then rm ${MAILBODY}; fi
     echo "Build summary for ${BUILD_STR}" > ${MAILBODY}
     echo "-----------------------------------" >> ${MAILBODY}
-    echo "Non-critical compilation issues (if any) repoted in" >> ${MAILBODY}
+    echo "Non-critical compilation issues (if any) reported in" >> ${MAILBODY}
     echo "the format [BUILDLOG_LINE#: NUMBER_OF_ERRORS]:" >> ${MAILBODY}
     cat ${COMPILE_RESULT_FILE} >> ${MAILBODY}
     echo "-----------------------------------" >> ${MAILBODY}
