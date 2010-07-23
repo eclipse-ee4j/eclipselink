@@ -54,7 +54,10 @@ public class SequenceGeneratorMetadata extends ORMetadata {
      * @see MetadataProject processSequencingAccesssors.
      */
     public SequenceGeneratorMetadata(String sequenceName, String catalog, String schema) {
-        this(sequenceName, 0, catalog, schema, false);
+        m_sequenceName = sequenceName;
+        
+        setSchema(schema);
+        setCatalog(catalog);
     }
     
     /**
