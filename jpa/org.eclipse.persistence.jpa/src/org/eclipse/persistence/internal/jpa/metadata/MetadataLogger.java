@@ -31,6 +31,8 @@
  *       - 300458: EclispeLink should throw a more specific exception than NPE
  *     07/16/2010-2.2 Guy Pelletier 
  *       - 260296: mixed access with no Transient annotation does not result in error
+ *     07/23/2010-2.2 Guy Pelletier 
+ *       - 237902: DDL GEN doesn't qualify SEQUENCE table with persistence unit schema
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata;
 
@@ -127,9 +129,11 @@ public class MetadataLogger {
     public static final String TABLE_GENERATOR_NAME = "metadata_default_table_generator_name"; 
     public static final String TABLE_GENERATOR_SCHEMA = "metadata_default_table_generator_schema";
     public static final String TABLE_GENERATOR_CATALOG = "metadata_default_table_generator_catalog";
+    public static final String TABLE_GENERATOR_PK_COLUMN_VALUE = "metadata_default_table_generator_pk_column_value"; 
     
     public static final String SEQUENCE_GENERATOR_SCHEMA = "metadata_default_sequence_generator_schema";
     public static final String SEQUENCE_GENERATOR_CATALOG = "metadata_default_sequence_generator_catalog";
+    public static final String SEQUENCE_GENERATOR_SEQUENCE_NAME = "metadata_default_sequence_generator_sequence_name";
     
     public static final String JOIN_TABLE_NAME = "metadata_default_join_table_name";
     public static final String JOIN_TABLE_SCHEMA = "metadata_default_join_table_schema";
@@ -262,9 +266,11 @@ public class MetadataLogger {
         addContextString(TABLE_GENERATOR_NAME);
         addContextString(TABLE_GENERATOR_SCHEMA);
         addContextString(TABLE_GENERATOR_CATALOG);
+        addContextString(TABLE_GENERATOR_PK_COLUMN_VALUE);
         
         addContextString(SEQUENCE_GENERATOR_SCHEMA);
         addContextString(SEQUENCE_GENERATOR_CATALOG);
+        addContextString(SEQUENCE_GENERATOR_SEQUENCE_NAME);
 
         addContextString(JOIN_TABLE_NAME);
         addContextString(JOIN_TABLE_SCHEMA);

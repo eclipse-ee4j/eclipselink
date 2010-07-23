@@ -11,6 +11,8 @@
  *     Oracle - initial API and implementation from Oracle TopLink
  *     05/16/2008-1.0M8 Guy Pelletier 
  *       - 218084: Implement metadata merging functionality between mapping file
+ *     07/23/2010-2.2 Guy Pelletier 
+ *       - 237902: DDL GEN doesn't qualify SEQUENCE table with persistence unit schema
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata.sequencing;
 
@@ -19,6 +21,7 @@ import org.eclipse.persistence.internal.jpa.metadata.MetadataLogger;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataAccessibleObject;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataAnnotation;
 import org.eclipse.persistence.internal.jpa.metadata.tables.TableMetadata;
+import org.eclipse.persistence.sequencing.TableSequence;
 
 /**
  * A wrapper class to a table generator metadata.
@@ -40,6 +43,15 @@ public class TableGeneratorMetadata extends TableMetadata {
      */
     protected TableGeneratorMetadata() {
         super("<table-generator>");
+    }
+    
+    /**
+     * INTERNAL
+     * This constructor is used to create a default table generator.
+     * @see MetadataProject processSequencingAccesssors.
+     */
+    public TableGeneratorMetadata(String pkColumnValue) {
+        m_pkColumnValue = pkColumnValue;
     }
     
     /**
@@ -177,6 +189,45 @@ public class TableGeneratorMetadata extends TableMetadata {
     
     /**
      * INTERNAL:
+     */
+    public TableSequence process(MetadataLogger logger) {
+        TableSequence sequence = new TableSequence();
+
+        // Process the sequence name.
+        if (m_pkColumnValue == null || m_pkColumnValue.equals("")) {
+            logger.logConfigMessage(logger.TABLE_GENERATOR_PK_COLUMN_VALUE, m_generatorName, getAccessibleObject(), getLocation());
+            sequence.setName(m_generatorName);
+        } else {
+            sequence.setName(m_pkColumnValue);
+        }
+        
+        // Process the allocation size
+        sequence.setPreallocationSize(m_allocationSize == null ? Integer.valueOf(50) : m_allocationSize);
+        
+        // Process the initial value
+        sequence.setInitialValue(m_initialValue == null ? Integer.valueOf(0) :  m_initialValue);
+        
+        // Get the database table from the table generator.
+        sequence.setTable(getDatabaseTable());
+        
+        // If the table has a qualifer, make sure to set it on the sequence.
+        //sequence.setQualifier(getDatabaseTable().getTableQualifier());
+        
+        // Process the pk column name
+        if (m_pkColumnName != null && ! m_pkColumnName.equals("")) {
+            sequence.setNameFieldName(m_pkColumnName);
+        }
+            
+        // Process the pk volumn column name
+        if (m_valueColumnName != null && ! m_valueColumnName.equals("")) {
+            sequence.setCounterFieldName(m_valueColumnName);
+        }
+        
+        return sequence;
+    }
+    
+    /**
+     * INTERNAL:
      * Used for OX mapping.
      */
     public void setAllocationSize(Integer allocationSize) {
@@ -221,5 +272,13 @@ public class TableGeneratorMetadata extends TableMetadata {
      */
     public void setValueColumnName(String valueColumnName) {
         m_valueColumnName = valueColumnName;
+    }
+    
+    /**
+     * INTERNAL:
+     */
+    @Override
+    public String toString() {
+        return "TableGenerator[" + m_generatorName + "]";
     }
 }

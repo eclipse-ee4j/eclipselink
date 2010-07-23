@@ -13,11 +13,21 @@
  *       - 218084: Implement metadata merging functionality between mapping files
  *     04/27/2010-2.1 Guy Pelletier 
  *       - 309856: MappedSuperclasses from XML are not being initialized properly
+ *     07/23/2010-2.2 Guy Pelletier 
+ *       - 237902: DDL GEN doesn't qualify SEQUENCE table with persistence unit schema
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata.sequencing;
 
+import java.util.Map;
+
+import javax.persistence.GenerationType;
+
+import org.eclipse.persistence.internal.jpa.metadata.MetadataDescriptor;
+import org.eclipse.persistence.internal.jpa.metadata.MetadataProject;
 import org.eclipse.persistence.internal.jpa.metadata.ORMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataAnnotation;
+import org.eclipse.persistence.sequencing.Sequence;
+import org.eclipse.persistence.sessions.DatasourceLogin;
 
 /**
  * Metadata object to hold generated value information.
@@ -76,6 +86,68 @@ public class GeneratedValueMetadata extends ORMetadata {
      */
     public String getStrategy() {
         return m_strategy;
+    }
+    
+    /**
+     * INTERNAL:
+     */
+    public void process(MetadataDescriptor descriptor, Map<String, Sequence> sequences, DatasourceLogin login) {
+        // If the generator value is null then it was loaded from XML (and it 
+        // wasn't specified) so assign it the annotation default of ""
+        if (m_generator == null) {
+            m_generator = "";
+        }
+
+        Sequence sequence = sequences.get(m_generator);
+            
+        if (sequence == null) {
+            // A null strategy will default to AUTO.
+            if (m_strategy == null || m_strategy.equals(GenerationType.AUTO.name())) {
+                if (sequences.containsKey(MetadataProject.DEFAULT_AUTO_GENERATOR)) {
+                    login.setDefaultSequence(sequences.get(MetadataProject.DEFAULT_AUTO_GENERATOR));
+                }
+            } else if (m_strategy.equals(GenerationType.TABLE.name())) {
+                if (m_generator.equals("")) {
+                    sequence = sequences.get(MetadataProject.DEFAULT_TABLE_GENERATOR);
+                } else {
+                    sequence = (Sequence) sequences.get(MetadataProject.DEFAULT_TABLE_GENERATOR).clone();
+                    sequence.setName(m_generator);
+                }
+            } else if (m_strategy.equals(GenerationType.SEQUENCE.name())) {
+                if (m_generator.equals("")) {
+                    sequence = sequences.get(MetadataProject.DEFAULT_SEQUENCE_GENERATOR);
+                } else {
+                    sequence = (Sequence) sequences.get(MetadataProject.DEFAULT_SEQUENCE_GENERATOR).clone();
+                    sequence.setName(m_generator);
+                }
+            } else if (m_strategy.equals(GenerationType.IDENTITY.name())) {
+                if (m_generator.equals("")) {
+                    sequence = sequences.get(MetadataProject.DEFAULT_IDENTITY_GENERATOR);
+                } else {
+                    sequence = (Sequence) sequences.get(MetadataProject.DEFAULT_IDENTITY_GENERATOR).clone();
+                    sequence.setName(m_generator);
+                }
+            }
+       }
+
+       if (sequence != null) {
+           descriptor.setSequenceNumberName(sequence.getName());
+           login.addSequence(sequence);
+       } else {
+           String seqName;
+
+           if (m_generator.equals("")) {
+               if (sequences.containsKey(MetadataProject.DEFAULT_AUTO_GENERATOR)) {
+                   seqName = sequences.get(MetadataProject.DEFAULT_AUTO_GENERATOR).getName();
+               } else {
+                   seqName = MetadataProject.DEFAULT_AUTO_GENERATOR;
+               }
+           } else {
+               seqName = m_generator;
+           }
+
+           descriptor.setSequenceNumberName(seqName);
+       }
     }
     
     /**

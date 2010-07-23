@@ -11,6 +11,8 @@
  *     Oracle - initial API and implementation from Oracle TopLink
  *     05/16/2008-1.0M8 Guy Pelletier 
  *       - 218084: Implement metadata merging functionality between mapping files
+ *     07/23/2010-2.2 Guy Pelletier 
+ *       - 237902: DDL GEN doesn't qualify SEQUENCE table with persistence unit schema
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata.sequencing;
 
@@ -19,6 +21,7 @@ import org.eclipse.persistence.internal.jpa.metadata.ORMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataAccessibleObject;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataAnnotation;
 import org.eclipse.persistence.internal.jpa.metadata.xml.XMLEntityMappings;
+import org.eclipse.persistence.sequencing.NativeSequence;
 
 /**
  * A wrapper class to the MetadataSequenceGenerator that holds onto a 
@@ -28,6 +31,8 @@ import org.eclipse.persistence.internal.jpa.metadata.xml.XMLEntityMappings;
  * @since TopLink EJB 3.0 Reference Implementation
  */
 public class SequenceGeneratorMetadata extends ORMetadata {
+    private boolean m_useIdentityIfPlatformSupports = false;
+    
     private Integer m_allocationSize;
     private Integer m_initialValue;
     
@@ -44,6 +49,29 @@ public class SequenceGeneratorMetadata extends ORMetadata {
     }
     
     /**
+     * INTERNAL
+     * This constructor is used to create a default sequence generator.
+     * @see MetadataProject processSequencingAccesssors.
+     */
+    public SequenceGeneratorMetadata(String sequenceName, String catalog, String schema) {
+        this(sequenceName, 0, catalog, schema, false);
+    }
+    
+    /**
+     * INTERNAL
+     * This constructor is used to create a default sequence generator.
+     * @see MetadataProject processSequencingAccesssors.
+     */
+    public SequenceGeneratorMetadata(String sequenceName, Integer allocationSize, String catalog, String schema, boolean useIdentityIfPlatformSupports) {
+        m_sequenceName = sequenceName;
+        m_allocationSize = allocationSize;
+        m_useIdentityIfPlatformSupports = useIdentityIfPlatformSupports;
+        
+        setSchema(schema);
+        setCatalog(catalog);
+    }
+    
+    /**
      * INTERNAL:
      */
     public SequenceGeneratorMetadata(MetadataAnnotation sequenceGenerator, MetadataAccessibleObject accessibleObject) {
@@ -52,8 +80,8 @@ public class SequenceGeneratorMetadata extends ORMetadata {
         m_allocationSize = (Integer) sequenceGenerator.getAttribute("allocationSize");
         m_initialValue = (Integer) sequenceGenerator.getAttribute("initialValue"); 
         m_name = (String) sequenceGenerator.getAttributeString("name"); 
-        m_schema = (String) sequenceGenerator.getAttribute("schema"); 
-        m_catalog = (String) sequenceGenerator.getAttribute("catalog");
+        m_schema = (String) sequenceGenerator.getAttributeString("schema"); 
+        m_catalog = (String) sequenceGenerator.getAttributeString("catalog");
         m_sequenceName = (String) sequenceGenerator.getAttributeString("sequenceName"); 
     }
     
@@ -77,6 +105,14 @@ public class SequenceGeneratorMetadata extends ORMetadata {
                 return false;
             }
             
+            if (! valuesMatch(m_schema, generator.getSchema())) {
+                return false;
+            }
+            
+            if (! valuesMatch(m_catalog, generator.getCatalog())) {
+                return false;
+            }
+            
             return valuesMatch(m_sequenceName, generator.getSequenceName());
         }
         
@@ -97,22 +133,6 @@ public class SequenceGeneratorMetadata extends ORMetadata {
      */
     public String getCatalog() {
         return m_catalog;
-    }
-    
-    /**
-     * INTERNAL:
-     * Used for processing.
-     */
-    public String getQualifier() {
-        if(m_catalog.length() == 0) {
-            if(m_schema.length() == 0) {
-                return "";
-            } else {
-                return  m_schema;
-            }
-        } else {
-            return m_catalog + '.' + m_schema;
-        }
     }
     
     /**
@@ -177,9 +197,63 @@ public class SequenceGeneratorMetadata extends ORMetadata {
     public void initXMLObject(MetadataAccessibleObject accessibleObject, XMLEntityMappings entityMappings) {
         super.initXMLObject(accessibleObject, entityMappings);
         
+        // We must set our sequence name now since we have dependencies on it
+        // before process.
         if (m_sequenceName == null) {
             m_sequenceName = "";
         }
+    }
+    
+    /**
+     * INTERNAL:
+     */
+    public NativeSequence process(MetadataLogger logger) {
+        NativeSequence sequence = new NativeSequence();
+        
+        // Process the sequence name.
+        if (m_sequenceName.equals("")) {
+            logger.logConfigMessage(logger.SEQUENCE_GENERATOR_SEQUENCE_NAME, m_name, getAccessibleObject(), getLocation());
+            sequence.setName(m_name);
+        } else {
+            sequence.setName(m_sequenceName);
+        }
+        
+        // Set the should use identity flag.
+        sequence.setShouldUseIdentityIfPlatformSupports(m_useIdentityIfPlatformSupports);
+        
+        // Process the allocation size
+        sequence.setPreallocationSize(m_allocationSize == null ? Integer.valueOf(50) : m_allocationSize);
+        
+        // Process the initial value
+        sequence.setInitialValue(m_initialValue == null ? Integer.valueOf(1) :  m_initialValue);
+        
+        // Process the schema and catalog qualifier
+        sequence.setQualifier(processQualifier());
+        
+        return sequence;
+    }
+    
+    /**
+     * INTERNAL:
+     * Used for processing.
+     */
+    public String processQualifier() {
+        String qualifier = "";
+        
+        if (m_schema != null && ! m_schema.equals("")) {
+            qualifier = m_schema;
+        }
+    
+        if (m_catalog != null && ! m_catalog.equals("")) {
+            // We didn't append a schema, so don't add a dot.
+            if (qualifier.equals("")) {
+                qualifier = m_catalog;
+            } else {
+                qualifier = m_catalog + "." + qualifier;
+            }
+        }
+        
+        return qualifier;
     }
     
     /**
@@ -228,5 +302,13 @@ public class SequenceGeneratorMetadata extends ORMetadata {
      */
     public void setSequenceName(String sequenceName) {
         m_sequenceName = sequenceName;
+    }
+    
+    /**
+     * INTERNAL:
+     */
+    @Override
+    public String toString() {
+        return "SequenceGenerator[" + m_name + "]";
     }
 }

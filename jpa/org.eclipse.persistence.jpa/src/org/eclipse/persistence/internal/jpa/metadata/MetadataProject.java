@@ -59,6 +59,8 @@
  *       - 264417: Table generation is incorrect for JoinTables in AssociationOverrides
  *     07/05/2010-2.1.1 Guy Pelletier 
  *       - 317708: Exception thrown when using LAZY fetch on VIRTUAL mapping
+ *     07/23/2010-2.2 Guy Pelletier 
+ *       - 237902: DDL GEN doesn't qualify SEQUENCE table with persistence unit schema
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata;
 
@@ -78,7 +80,6 @@ import java.util.Set;
 
 import javax.persistence.SharedCacheMode;
 import javax.persistence.Embeddable;
-import javax.persistence.GenerationType;
 import javax.persistence.spi.PersistenceUnitInfo;
 
 import org.eclipse.persistence.descriptors.ClassDescriptor;
@@ -128,7 +129,6 @@ import org.eclipse.persistence.jpa.dynamic.JPADynamicTypeBuilder;
 
 import org.eclipse.persistence.sequencing.Sequence;
 import org.eclipse.persistence.sequencing.TableSequence;
-import org.eclipse.persistence.sequencing.NativeSequence;
 
 import org.eclipse.persistence.sessions.DatasourceLogin;
 import org.eclipse.persistence.sessions.Project;
@@ -143,10 +143,10 @@ import org.eclipse.persistence.sessions.Project;
  */
 public class MetadataProject {
     // Sequencing constants.
-    private static final String DEFAULT_AUTO_GENERATOR = "SEQ_GEN";
-    private static final String DEFAULT_TABLE_GENERATOR = "SEQ_GEN_TABLE";
-    private static final String DEFAULT_SEQUENCE_GENERATOR = "SEQ_GEN_SEQUENCE";
-    private static final String DEFAULT_IDENTITY_GENERATOR = "SEQ_GEN_IDENTITY";
+    public static final String DEFAULT_AUTO_GENERATOR = "SEQ_GEN";
+    public static final String DEFAULT_TABLE_GENERATOR = "SEQ_GEN_TABLE";
+    public static final String DEFAULT_SEQUENCE_GENERATOR = "SEQ_GEN_SEQUENCE";
+    public static final String DEFAULT_IDENTITY_GENERATOR = "SEQ_GEN_IDENTITY";
     
     // Boolean to specify if we should weave eager relationships.
     private boolean m_weaveEager;
@@ -583,7 +583,6 @@ public class MetadataProject {
         // Schema could be "" or null, need to check for an XML default.
         sequenceGenerator.setSchema(MetadataHelper.getName(sequenceGenerator.getSchema(), defaultSchema, sequenceGenerator.getSchemaContext(), m_logger, sequenceGenerator.getLocation()));
         
-        
         // Check if the name is used with a table generator.
         TableGeneratorMetadata tableGenerator = m_tableGenerators.get(name);
         if (tableGenerator != null) {
@@ -948,6 +947,30 @@ public class MetadataProject {
     
     /**
      * INTERNAL:
+     * Return the persistence unit default catalog.
+     */
+    protected String getPersistenceUnitDefaultCatalog() {
+        if (m_persistenceUnitMetadata != null) {
+            return m_persistenceUnitMetadata.getCatalog();
+        }
+        
+        return null;
+    }
+    
+    /**
+     * INTERNAL:
+     * Return the persistence unit default schema.
+     */
+    protected String getPersistenceUnitDefaultSchema() {
+        if (m_persistenceUnitMetadata != null) {
+            return m_persistenceUnitMetadata.getSchema();
+        }
+        
+        return null;
+    }
+    
+    /**
+     * INTERNAL:
      */
     public PersistenceUnitInfo getPersistenceUnitInfo() {
         return m_persistenceUnitInfo;
@@ -1304,193 +1327,70 @@ public class MetadataProject {
     
     /**
      * INTERNAL:
-     * Process the sequencing information.
+     * Process the sequencing information. At this point, through validation, it 
+     * is not possible to have:
+     *   1 - a table generator with the generator name equal to 
+     *       DEFAULT_SEQUENCE_GENERATOR or DEFAULT_IDENTITY_GENERATOR
+     *   2 - a sequence generator with the name eqaul to DEFAULT_TABLE_GENERATOR 
+     *       or DEFAULT_IDENTITY_GENERATOR
+     *   3 - you can't have both a sequence generator and a table generator with 
+     *       the same DEFAULT_AUTO_GENERATOR name.
+     *       
+     * @see addTableGenerator and addSequenceGenerator.
      */
     protected void processSequencingAccessors() {
         if (! m_generatedValues.isEmpty()) {
-            DatasourceLogin login = m_session.getProject().getLogin();
-    
-            Sequence defaultAutoSequence = null;
-            TableSequence defaultTableSequence = new TableSequence(DEFAULT_TABLE_GENERATOR);
-            NativeSequence defaultObjectNativeSequence = new NativeSequence(DEFAULT_SEQUENCE_GENERATOR, false);
-            NativeSequence defaultIdentityNativeSequence = new NativeSequence(DEFAULT_IDENTITY_GENERATOR, 1, true);
-
-            // override default table name with platform's, in case current one
-            // is not legal for this platform (e.g. SEQUENCE for Symfoware)
-            Sequence seq = m_session.getDatasourcePlatform().getDefaultSequence();
-            if (seq instanceof TableSequence) {
-                defaultTableSequence.setTableName(((TableSequence)seq).getTableName());
-            }
-
-            // Sequences keyed on generator names.
+            // 1 - Build our map of sequences keyed on generator names.
             Hashtable<String, Sequence> sequences = new Hashtable<String, Sequence>();
             
             for (SequenceGeneratorMetadata sequenceGenerator : m_sequenceGenerators.values()) {
-                String sequenceGeneratorName = sequenceGenerator.getName();
-                
-                String seqName;
-                if (sequenceGenerator.getSequenceName() != null && (! sequenceGenerator.getSequenceName().equals(""))) {
-                    seqName = sequenceGenerator.getSequenceName();
-                } else {
-                    // TODO: Log a message.
-                    seqName = sequenceGeneratorName;
-                }
-                
-                Integer allocationSize = sequenceGenerator.getAllocationSize();
-                if (allocationSize == null) {
-                    // Default value, same as annotation default.
-                    allocationSize = Integer.valueOf(50);
-                }
-                
-                Integer initialValue = sequenceGenerator.getInitialValue();
-                if (initialValue == null) {
-                    // Default value, same as annotation default.
-                    initialValue = Integer.valueOf(1);
-                }
-                
-                NativeSequence sequence = new NativeSequence(seqName, allocationSize, initialValue, false);
-                sequence.setQualifier(sequenceGenerator.getQualifier());
-                sequences.put(sequenceGeneratorName, sequence);
-                
-                if (sequenceGeneratorName.equals(DEFAULT_AUTO_GENERATOR)) {
-                    // SequenceGenerator defined with DEFAULT_AUTO_GENERATOR.
-                    // The sequence it defines will be used as a defaultSequence.
-                    defaultAutoSequence = sequence;
-                } else if (sequenceGeneratorName.equals(DEFAULT_SEQUENCE_GENERATOR)) {
-                    // SequenceGenerator defined with DEFAULT_SEQUENCE_GENERATOR.
-                    // All sequences of GeneratorType SEQUENCE referencing 
-                    // non-defined generators will use a clone of the sequence 
-                    // defined by this generator.
-                    defaultObjectNativeSequence = sequence;
-                }
+                sequences.put(sequenceGenerator.getName(), sequenceGenerator.process(m_logger));
             }
 
             for (TableGeneratorMetadata tableGenerator : m_tableGenerators.values()) {
-                String tableGeneratorName = tableGenerator.getGeneratorName();
-                
-                String seqName;
-                if (tableGenerator.getPkColumnValue() != null && (! tableGenerator.getPkColumnValue().equals(""))) {
-                    seqName = tableGenerator.getPkColumnValue();
-                } else {
-                    // TODO: Log a message.
-                    seqName = tableGeneratorName;
-                }
-                
-                Integer allocationSize = tableGenerator.getAllocationSize();
-                if (allocationSize == null) {
-                    // Default value, same as annotation default.
-                    allocationSize = Integer.valueOf(50);
-                }
-                
-                Integer initialValue = tableGenerator.getInitialValue();
-                if (initialValue == null) {
-                    // Default value, same as annotation default.
-                    initialValue = Integer.valueOf(0);
-                }
-                
-                TableSequence sequence = new TableSequence(seqName, allocationSize, initialValue);
-                sequences.put(tableGeneratorName, sequence);
-
-                // Get the database table from the table generator.
-                sequence.setTable(tableGenerator.getDatabaseTable());
-                
-                if (tableGenerator.getPkColumnName() != null && (! tableGenerator.getPkColumnName().equals(""))) {
-                    sequence.setNameFieldName(tableGenerator.getPkColumnName());
-                }
-                    
-                if (tableGenerator.getValueColumnName() != null && (! tableGenerator.getValueColumnName().equals(""))) {
-                    sequence.setCounterFieldName(tableGenerator.getValueColumnName());
-                }
-
-                if (tableGeneratorName.equals(DEFAULT_AUTO_GENERATOR)) {
-                    // TableGenerator defined with DEFAULT_AUTO_GENERATOR.
-                    // The sequence it defines will be used as a defaultSequence.
-                    defaultAutoSequence = sequence;
-                } else if (tableGeneratorName.equals(DEFAULT_TABLE_GENERATOR)) {
-                    // SequenceGenerator defined with DEFAULT_TABLE_GENERATOR. 
-                    // All sequences of GenerationType TABLE referencing non-
-                    // defined generators will use a clone of the sequence 
-                    // defined by this generator.
-                    defaultTableSequence = sequence;
-                }
+                sequences.put(tableGenerator.getGeneratorName(), tableGenerator.process(m_logger));
             }
 
-            // Finally loop through descriptors and set sequences as required 
-            // into Descriptors and Login
-            boolean usesAuto = false;
+            // 2 - Check if the user defined default generators, otherwise 
+            // create them using the Table and Sequence generator metadata.
+            if (! sequences.containsKey(DEFAULT_TABLE_GENERATOR)) {
+                TableGeneratorMetadata tableGenerator = new TableGeneratorMetadata(DEFAULT_TABLE_GENERATOR);
+                
+                // This will go through the same table defaulting as all other
+                // tables (table, secondary table, join table etc.) in the PU.
+                // Here the default table name should come from the platform 
+                // in case the current one is not legal for this platform (e.g.
+                // SEQUENCE for Symfoware). We should always try to avoid making
+                // metadata changes after processing and ensure we always 
+                // process with the correct and necessary metadata.
+                Sequence seq = m_session.getDatasourcePlatform().getDefaultSequence();
+                String defaultTableGeneratorName = (seq instanceof TableSequence) ? ((TableSequence) seq).getTableName() : DEFAULT_TABLE_GENERATOR; 
+                processTable(tableGenerator, defaultTableGeneratorName, getPersistenceUnitDefaultCatalog(), getPersistenceUnitDefaultSchema());
+                
+                sequences.put(DEFAULT_TABLE_GENERATOR, tableGenerator.process(m_logger));
+            }
+            
+            if (! sequences.containsKey(DEFAULT_SEQUENCE_GENERATOR)) {
+                sequences.put(DEFAULT_SEQUENCE_GENERATOR, new SequenceGeneratorMetadata(DEFAULT_SEQUENCE_GENERATOR, getPersistenceUnitDefaultCatalog(), getPersistenceUnitDefaultSchema()).process(m_logger));
+            }
+            
+            if (! sequences.containsKey(DEFAULT_IDENTITY_GENERATOR)) {
+                sequences.put(DEFAULT_IDENTITY_GENERATOR, new SequenceGeneratorMetadata(DEFAULT_IDENTITY_GENERATOR, 1, getPersistenceUnitDefaultCatalog(), getPersistenceUnitDefaultSchema(), true).process(m_logger));
+            }
+
+            // Use a temporary sequence generator to build a qualifier to set on 
+            // the default generator. Don't use this generator as the default 
+            // auto generator though.
+            SequenceGeneratorMetadata tempGenerator = new SequenceGeneratorMetadata(DEFAULT_AUTO_GENERATOR, getPersistenceUnitDefaultCatalog(), getPersistenceUnitDefaultSchema());
+            DatasourceLogin login = m_session.getProject().getLogin();
+            login.getDefaultSequence().setQualifier(tempGenerator.processQualifier());
+                
+            // 3 - Loop through generated values and set sequences for each. 
             for (MetadataClass entityClass : m_generatedValues.keySet()) {
-                // 266912: skip setting sequences if our accessor is null for mappedSuperclasses
+                // Skip setting sequences if our accessor is null, must be a mapped superclass
                 ClassAccessor accessor = m_allAccessors.get(entityClass.getName());
-                if(null != accessor) {
-                    MetadataDescriptor descriptor = accessor.getDescriptor();
-                    GeneratedValueMetadata generatedValue = m_generatedValues.get(entityClass);
-                    String generatorName = generatedValue.getGenerator();
-
-                    if (generatorName == null) {
-                        // Value was loaded from XML (and it wasn't specified) so
-                        // assign it the annotation default of ""
-                        generatorName = "";
-                    }
-
-                    Sequence sequence = null;
-                    if (! generatorName.equals("")) {
-                        sequence = sequences.get(generatorName);
-                    }
-
-                    if (sequence == null) {
-                        String strategy = generatedValue.getStrategy();
-
-                        // A null strategy will default to AUTO.
-                        if (strategy == null || strategy.equals(GenerationType.AUTO.name())) {
-                            usesAuto = true;
-                        } else if (strategy.equals(GenerationType.TABLE.name())) {
-                            if (generatorName.equals("")) {
-                                sequence = defaultTableSequence;
-                            } else {
-                                sequence = (Sequence)defaultTableSequence.clone();
-                                sequence.setName(generatorName);
-                            }
-                        } else if (strategy.equals(GenerationType.SEQUENCE.name())) {
-                            if (generatorName.equals("")) {
-                                sequence = defaultObjectNativeSequence;
-                            } else {
-                                sequence = (Sequence)defaultObjectNativeSequence.clone();
-                                sequence.setName(generatorName);
-                            }
-                        } else if (strategy.equals(GenerationType.IDENTITY.name())) {
-                            if (generatorName.equals("")) {
-                                sequence = defaultIdentityNativeSequence;
-                            } else {
-                                sequence = (Sequence)defaultIdentityNativeSequence.clone();
-                                sequence.setName(generatorName);
-                            }
-                        }
-                    }
-
-                    if (sequence != null) {
-                        descriptor.setSequenceNumberName(sequence.getName());
-                        login.addSequence(sequence);
-                    } else {
-                        String seqName;
-
-                        if (generatorName.equals("")) {
-                            if (defaultAutoSequence != null) {
-                                seqName = defaultAutoSequence.getName();
-                            } else {
-                                seqName = DEFAULT_AUTO_GENERATOR;
-                            }
-                        } else {
-                            seqName = generatorName;
-                        }
-
-                        descriptor.setSequenceNumberName(seqName);
-                    }
-                }
-
-                if (usesAuto) {
-                    if (defaultAutoSequence != null) {
-                        login.setDefaultSequence(defaultAutoSequence);
-                    }
+                if (accessor != null) {
+                    m_generatedValues.get(entityClass).process(accessor.getDescriptor(), sequences, login);
                 }
             }
         }
@@ -1704,6 +1604,14 @@ public class MetadataProject {
      */
     public void setWeavingEnabled(boolean weavingEnabled) {
         m_weavingEnabled = weavingEnabled;
+    }
+  
+    /**
+     * INTERNAL:
+     */
+    @Override
+    public String toString() {
+        return "Project[" + getPersistenceUnitInfo().getPersistenceUnitName() + "]";
     }
     
     /**

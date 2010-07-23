@@ -88,7 +88,7 @@ public class TableSequenceDefinition extends SequenceDefinition {
      * PUBLIC:
      */
     public String getSequenceTableName() {
-        return getTableSequence().getTableName();
+        return getTableSequence().getQualifiedTableName();
     }
 
     /**
