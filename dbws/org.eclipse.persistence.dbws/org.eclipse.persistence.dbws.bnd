@@ -24,6 +24,7 @@ Import-Package:                                                         \
  javax.xml.ws.*,                                                        \
  javax.xml.*,                                                           \
  javax.*;resolution:=optional,                                          \
+ org.eclipse.persistence.internal.libraries.asm.*;resolution:=optional, \
  org.eclipse.persistence.*;version="${version.string}",                 \
  org.eclipse.persistence.internal.libraries.asm.*;resolution:=optional, \
  org.w3c.*;resolution:=optional,                                        \
