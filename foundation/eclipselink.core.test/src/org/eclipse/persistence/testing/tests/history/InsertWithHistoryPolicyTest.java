@@ -34,6 +34,10 @@ public class InsertWithHistoryPolicyTest extends TestCase {
     }
 
     protected void setup() {
+        if(getSession().getPlatform().isMySQL()) {
+            throwWarning("This test will not work with MySQL because it doesn't support millisecond granularity.");
+        }
+        
         org.eclipse.persistence.sessions.Project project = new BiDirectionInserOrderTestProject();
         DatabaseLogin databaseLogin = (DatabaseLogin)getSession().getLogin().clone();
         project.setLogin(databaseLogin);
