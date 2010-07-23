@@ -3,25 +3,30 @@ Implementation-Version: ${version.string}
 Specification-Vendor: ${specification.vendor}
 Bundle-Name: EclipseLink DBWS
 Bundle-RequiredExecutionEnvironment: J2SE-1.5
-HK2-Bundle-Name: org.eclipse.persistence:org.eclipse.persistence.dbws
+HK2-Bundle-Name: org.eclipse.persistence:${ant.project.name}
 Require-Bundle: org.eclipse.persistence.core;bundle-version="${version.string}";visibility:=reexport, \
  org.eclipse.persistence.asm;bundle-version="${version.string}"
 Implementation-Vendor: ${implementation.vendor}
 Bundle-Vendor: ${implementation.vendor}
+Fragment-Host: org.eclipse.persistence.core;bundle-version="${version.string}"
 Bundle-Version: ${version.string}
 Include-Resource:                \
  ${dbws.2.base.dir}/about.html,  \
  ${dbws.2.base.dir}/readme.html, \
  ${dbws.2.base.dir}/license.html
 Import-Package:                                                         \
- javax.activation.*;vendor=sun,                                         \
+ javax.activation.*,                                                    \
  javax.servlet.*;version="2.4.0",                                       \
+ javax.xml.namespace.*,                                                 \ 
+ javax.xml.transform.*,                                                 \ 
+ javax.xml.transform.stream.*,                                          \ 
  javax.xml.soap.*;version="1.3.0",                                      \
  javax.xml.ws.*,                                                        \
+ javax.xml.*,                                                           \
  javax.*;resolution:=optional,                                          \
- org.eclipse.persistence.internal.libraries.asm.*;resolution:=optional, \
  org.eclipse.persistence.*;version="${version.string}",                 \
+ org.eclipse.persistence.internal.libraries.asm.*;resolution:=optional, \
  org.w3c.*;resolution:=optional,                                        \
- org.xml.*;resolution:=optional, * 
+ org.xml.*;resolution:=optional
 Specification-Version: ${release.version}
 
