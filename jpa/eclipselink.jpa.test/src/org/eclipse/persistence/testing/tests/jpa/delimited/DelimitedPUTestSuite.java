@@ -120,7 +120,7 @@ public class DelimitedPUTestSuite extends JUnitTestCase {
             query = em.createNativeQuery("select * from " + platform.getStartDelimiter() + "CMP3_DEL_EMPLOYEE" + platform.getEndDelimiter(), Employee.class);
         }
         List result = query.getResultList();
-        Assert.assertTrue("testNativeQuery did not return result ", result.size() == 2);
+        Assert.assertTrue("testNativeQuery did not return result ", result.size() >= 2);
         closeEntityManager(em);
     }
     

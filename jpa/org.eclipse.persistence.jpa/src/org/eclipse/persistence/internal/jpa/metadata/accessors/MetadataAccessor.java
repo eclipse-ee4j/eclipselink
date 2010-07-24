@@ -673,8 +673,7 @@ public abstract class MetadataAccessor extends ORMetadata {
         if (useDelimitedIdentifier()) {
             field.setUseDelimiters(useDelimitedIdentifier());
         } else if (m_project.getShouldForceFieldNamesToUpperCase() && !field.shouldUseDelimiters()) {
-            //done directly as this field's name should be in uppercase.
-            field.setName(field.getName().toUpperCase());
+            field.useUpperCaseForComparisons(true);
         }
     }
     

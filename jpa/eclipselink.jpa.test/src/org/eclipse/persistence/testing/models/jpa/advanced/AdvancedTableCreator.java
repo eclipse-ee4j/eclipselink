@@ -67,7 +67,7 @@ public class AdvancedTableCreator extends TogglingFastTableCreator {
         addTableDefinition(buildVIOLATIONCODESTable());
     }
     
-    public static TableDefinition buildADDRESSTable() {
+    public TableDefinition buildADDRESSTable() {
         TableDefinition table = new TableDefinition();
         table.setName("CMP3_ADDRESS");
 
@@ -161,7 +161,7 @@ public class AdvancedTableCreator extends TogglingFastTableCreator {
         return table;
     }
     
-     public static TableDefinition buildBUYERTable() {
+     public TableDefinition buildBUYERTable() {
         TableDefinition table = new TableDefinition();
 
         table.setName("CMP3_BUYER");
@@ -245,7 +245,7 @@ public class AdvancedTableCreator extends TogglingFastTableCreator {
         return table;
     }
     
-     public static TableDefinition buildCONCURRENCYATable() {
+     public TableDefinition buildCONCURRENCYATable() {
          TableDefinition table = new TableDefinition();
          table.setName("CONCURRENCYA");
 
@@ -296,7 +296,7 @@ public class AdvancedTableCreator extends TogglingFastTableCreator {
          return table;
      }
 
-     public static TableDefinition buildCONCURRENCYBTable() {
+     public TableDefinition buildCONCURRENCYBTable() {
          TableDefinition table = new TableDefinition();
          table.setName("CONCURRENCYB");
 
@@ -325,7 +325,7 @@ public class AdvancedTableCreator extends TogglingFastTableCreator {
          return table;
      }
 
-     public static TableDefinition buildCONCURRENCYCTable() {
+     public TableDefinition buildCONCURRENCYCTable() {
          TableDefinition table = new TableDefinition();
          table.setName("CONCURRENCYC");
 
@@ -354,7 +354,7 @@ public class AdvancedTableCreator extends TogglingFastTableCreator {
          return table;
      }
 
-     public static TableDefinition buildCREDITCARDSTable() {
+     public TableDefinition buildCREDITCARDSTable() {
         TableDefinition table = new TableDefinition();
         table.setName("Buyer_CREDITCARDS");
     
@@ -392,7 +392,7 @@ public class AdvancedTableCreator extends TogglingFastTableCreator {
         return table;
     }
      
-    public static TableDefinition buildCREDITLINESTable() {
+    public TableDefinition buildCREDITLINESTable() {
          TableDefinition table = new TableDefinition();
          table.setName("BUYER_CREDITLINES");
      
@@ -430,7 +430,7 @@ public class AdvancedTableCreator extends TogglingFastTableCreator {
          return table;
      }
     
-     public static TableDefinition buildCUSTOMERTable() {
+     public TableDefinition buildCUSTOMERTable() {
          TableDefinition table = new TableDefinition();
          table.setName("CMP3_ADV_CUSTOMER");
 
@@ -498,7 +498,7 @@ public class AdvancedTableCreator extends TogglingFastTableCreator {
          return table;
      }
      
-     public static TableDefinition buildDEALERTable() {
+     public TableDefinition buildDEALERTable() {
          TableDefinition table = new TableDefinition();
          table.setName("CMP3_DEALER");
 
@@ -566,7 +566,7 @@ public class AdvancedTableCreator extends TogglingFastTableCreator {
          return table;
      }
      
-     public static TableDefinition buildDEPTTable() {
+     public TableDefinition buildDEPTTable() {
         TableDefinition table = new TableDefinition();
         table.setName("CMP3_DEPT");
 
@@ -606,7 +606,7 @@ public class AdvancedTableCreator extends TogglingFastTableCreator {
         return table;
     }
     
-    public static TableDefinition buildDEPT_EMPTable() {
+    public TableDefinition buildDEPT_EMPTable() {
         TableDefinition table = new TableDefinition();
         table.setName("CMP3_DEPT_CMP3_EMPLOYEE");
 
@@ -637,7 +637,7 @@ public class AdvancedTableCreator extends TogglingFastTableCreator {
         return table;   
     }
 
-    public static TableDefinition buildEMPLOYEETable() {
+    public TableDefinition buildEMPLOYEETable() {
         TableDefinition table = new TableDefinition();
         table.setName("CMP3_EMPLOYEE");
     
@@ -862,7 +862,7 @@ public class AdvancedTableCreator extends TogglingFastTableCreator {
         return table;
     }
     
-    public static TableDefinition buildEQUIPMENTTable() {
+    public TableDefinition buildEQUIPMENTTable() {
         TableDefinition table = new TableDefinition();
         table.setName("CMP3_ADV_EQUIP");
 
@@ -913,7 +913,7 @@ public class AdvancedTableCreator extends TogglingFastTableCreator {
         return table;
     }
     
-    public static TableDefinition buildGOLFERTable() {
+    public TableDefinition buildGOLFERTable() {
         TableDefinition table = new TableDefinition();
         table.setName("CMP3_GOLFER");
         
@@ -937,7 +937,7 @@ public class AdvancedTableCreator extends TogglingFastTableCreator {
         return table;
     }
     
-    public static TableDefinition buildEQUIPMENTCODETable() {
+    public TableDefinition buildEQUIPMENTCODETable() {
         TableDefinition table = new TableDefinition();
         table.setName("CMP3_ADV_EQUIP_CODE");
 
@@ -966,7 +966,7 @@ public class AdvancedTableCreator extends TogglingFastTableCreator {
         return table;
     }
 
-    public static TableDefinition buildHUGEPROJECTTable() {
+    public TableDefinition buildHUGEPROJECTTable() {
         TableDefinition table = new TableDefinition();
         table.setName("CMP3_HPROJECT");
 
@@ -997,7 +997,7 @@ public class AdvancedTableCreator extends TogglingFastTableCreator {
         return table;
     }
     
-    public static TableDefinition buildLARGEPROJECTTable() {
+    public TableDefinition buildLARGEPROJECTTable() {
         TableDefinition table = new TableDefinition();
         table.setName("CMP3_LPROJECT");
 
@@ -1027,7 +1027,7 @@ public class AdvancedTableCreator extends TogglingFastTableCreator {
         return table;
     }
     
-    public static TableDefinition buildMANTable() {
+    public TableDefinition buildMANTable() {
         TableDefinition table = new TableDefinition();
         table.setName("MAN");
 
@@ -1065,7 +1065,7 @@ public class AdvancedTableCreator extends TogglingFastTableCreator {
         return table;
     }
     
-    public static TableDefinition buildPARTNERLINKTable() {
+    public TableDefinition buildPARTNERLINKTable() {
         TableDefinition table = new TableDefinition();
         table.setName("MW");
 
@@ -1096,7 +1096,7 @@ public class AdvancedTableCreator extends TogglingFastTableCreator {
         return table;
     }
     
-    public static TableDefinition buildPHONENUMBERSTATUSTable() {
+    public TableDefinition buildPHONENUMBERSTATUSTable() {
         TableDefinition table = new TableDefinition();
         table.setName("CMP3_PHONE_STATUS");
     
@@ -1133,7 +1133,7 @@ public class AdvancedTableCreator extends TogglingFastTableCreator {
         return table;
     }
     
-    public static TableDefinition buildPHONENUMBERTable() {
+    public TableDefinition buildPHONENUMBERTable() {
         TableDefinition table = new TableDefinition();
         table.setName("CMP3_PHONENUMBER");
 
@@ -1185,7 +1185,7 @@ public class AdvancedTableCreator extends TogglingFastTableCreator {
         return table;
     }
     
-    public static TableDefinition buildPLATINUMBUYERTable() {
+    public TableDefinition buildPLATINUMBUYERTable() {
         TableDefinition table = new TableDefinition();
         table.setName("CMP3_PBUYER");
 
@@ -1215,7 +1215,7 @@ public class AdvancedTableCreator extends TogglingFastTableCreator {
         return table;
     }
     
-    public static TableDefinition buildPROJECT_EMPTable() {
+    public TableDefinition buildPROJECT_EMPTable() {
         TableDefinition table = new TableDefinition();
 
         table.setName("CMP3_EMP_PROJ");
@@ -1247,7 +1247,7 @@ public class AdvancedTableCreator extends TogglingFastTableCreator {
         return table;
     }
 
-    public static TableDefinition buildPROJECT_PROPSTable() {
+    public TableDefinition buildPROJECT_PROPSTable() {
         TableDefinition table = new TableDefinition();
         table.setName("CMP3_PROJ_PROPS");
 
@@ -1275,7 +1275,7 @@ public class AdvancedTableCreator extends TogglingFastTableCreator {
         return table;
     }
     
-    public static TableDefinition buildPROJECTTable() {
+    public TableDefinition buildPROJECTTable() {
         TableDefinition table = new TableDefinition();
 
         table.setName("CMP3_PROJECT");
@@ -1350,7 +1350,7 @@ public class AdvancedTableCreator extends TogglingFastTableCreator {
         return table;
     }
 
-    public static TableDefinition buildRESPONSTable() {
+    public TableDefinition buildRESPONSTable() {
         TableDefinition table = new TableDefinition();
         // SECTION: TABLE
         table.setName("CMP3_RESPONS");
@@ -1381,7 +1381,7 @@ public class AdvancedTableCreator extends TogglingFastTableCreator {
         return table;
     }
     
-    public static TableDefinition buildSALARYTable() {
+    public TableDefinition buildSALARYTable() {
         TableDefinition table = new TableDefinition();
         table.setName("CMP3_SALARY");
 
@@ -1411,7 +1411,7 @@ public class AdvancedTableCreator extends TogglingFastTableCreator {
         return table;
     }
 
-	public static TableDefinition buildVEGETABLETable() {
+	public TableDefinition buildVEGETABLETable() {
         TableDefinition table = new TableDefinition();
         table.setName("CMP3_VEGETABLE");
 
@@ -1443,7 +1443,7 @@ public class AdvancedTableCreator extends TogglingFastTableCreator {
         return table;
     }
 
-	public static TableDefinition buildVIOLATIONTable() {
+	public TableDefinition buildVIOLATIONTable() {
 	    TableDefinition table = new TableDefinition();
 	    table.setName("VIOLATION");
 	    
@@ -1461,7 +1461,7 @@ public class AdvancedTableCreator extends TogglingFastTableCreator {
 	    return table;
 	}
 	
-	public static TableDefinition buildVIOLATIONCODETable() {
+	public TableDefinition buildVIOLATIONCODETable() {
 	    TableDefinition table = new TableDefinition();
 	    table.setName("VIOLATION_CODE");
 	    
@@ -1489,7 +1489,7 @@ public class AdvancedTableCreator extends TogglingFastTableCreator {
 	    return table;
     }
 	
-	public static TableDefinition buildVIOLATIONCODESTable() {
+	public TableDefinition buildVIOLATIONCODESTable() {
         TableDefinition table = new TableDefinition();
         table.setName("VIOLATION_CODES");
         
@@ -1520,7 +1520,7 @@ public class AdvancedTableCreator extends TogglingFastTableCreator {
         return table;
     }
 	
-    public static TableDefinition buildWOMANTable() {
+    public TableDefinition buildWOMANTable() {
         TableDefinition table = new TableDefinition();
         table.setName("WOMAN");
 
@@ -1558,7 +1558,7 @@ public class AdvancedTableCreator extends TogglingFastTableCreator {
         return table;
     }
     
-    public static TableDefinition buildWORKWEEKTable() {
+    public TableDefinition buildWORKWEEKTable() {
         TableDefinition table = new TableDefinition();
         table.setName("Employee_WORKWEEK");
     
@@ -1586,7 +1586,7 @@ public class AdvancedTableCreator extends TogglingFastTableCreator {
         return table;
     }
     
-	public static TableDefinition buildWORLDRANKTable() {
+	public TableDefinition buildWORLDRANKTable() {
         TableDefinition table = new TableDefinition();
         table.setName("CMP3_WORLDRANK");
         
@@ -1603,7 +1603,7 @@ public class AdvancedTableCreator extends TogglingFastTableCreator {
         return table;
     }
 
-	public static TableDefinition buildREADONLYISOLATED() {
+	public TableDefinition buildREADONLYISOLATED() {
         TableDefinition table = new TableDefinition();
         table.setName("CMP3_READONLY_ISOLATED");
 
@@ -1632,7 +1632,7 @@ public class AdvancedTableCreator extends TogglingFastTableCreator {
         return table;
     }
 
-    public static TableDefinition buildENTITYBTable() {
+    public TableDefinition buildENTITYBTable() {
          TableDefinition table = new TableDefinition();
          table.setName("ADV_ENTYB");
 
@@ -1661,7 +1661,7 @@ public class AdvancedTableCreator extends TogglingFastTableCreator {
          return table;
      }
 
-    public static TableDefinition buildENTITYATable() {
+    public TableDefinition buildENTITYATable() {
          TableDefinition table = new TableDefinition();
          table.setName("ADV_ENTYA");
 
@@ -1712,7 +1712,7 @@ public class AdvancedTableCreator extends TogglingFastTableCreator {
          return table;
      }
 
-    public static TableDefinition buildENTITYDTable() {
+    public TableDefinition buildENTITYDTable() {
          TableDefinition table = new TableDefinition();
          table.setName("ADV_ENTYD");
 
@@ -1741,7 +1741,7 @@ public class AdvancedTableCreator extends TogglingFastTableCreator {
          return table;
      }
 
-    public static TableDefinition buildENTITYCTable() {
+    public TableDefinition buildENTITYCTable() {
          TableDefinition table = new TableDefinition();
          table.setName("ADV_ENTYC");
 
@@ -1770,7 +1770,7 @@ public class AdvancedTableCreator extends TogglingFastTableCreator {
          return table;
      }
 
-     public static TableDefinition buildADVENTITYAENTITYDTable() {
+     public TableDefinition buildADVENTITYAENTITYDTable() {
         TableDefinition table = new TableDefinition();
 
         table.setName("ADV_ENTYA_ADV_ENTYD");
@@ -1800,7 +1800,7 @@ public class AdvancedTableCreator extends TogglingFastTableCreator {
         return table;
     }
 
-     public static TableDefinition buildENTITYETable() {
+     public TableDefinition buildENTITYETable() {
          TableDefinition table = new TableDefinition();
          table.setName("ADV_ENTYE");
 
@@ -1829,7 +1829,7 @@ public class AdvancedTableCreator extends TogglingFastTableCreator {
          return table;
      }
 
-     public static TableDefinition buildADVENTITYAENTITYETable() {
+     public TableDefinition buildADVENTITYAENTITYETable() {
         TableDefinition table = new TableDefinition();
 
         table.setName("ADV_ENTYA_ADV_ENTYE");

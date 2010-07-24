@@ -115,7 +115,6 @@ import org.eclipse.persistence.sessions.server.ServerSession;
                     a.setEntyC(null);
                     commitTransaction(em2);
                 }catch(javax.persistence.RollbackException ex){
-                    ex.printStackTrace();
                     if (ex.getMessage().indexOf("org.eclipse.persistence.exceptions.DatabaseException") == -1){
                         ex.printStackTrace();
                         fail("it's not the right exception");

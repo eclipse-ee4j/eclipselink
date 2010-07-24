@@ -1430,7 +1430,7 @@ public class EntityManagerImpl implements org.eclipse.persistence.jpa.JpaEntityM
             // (a reopened emf will re-populate the same metaModel)
             // (a new persistence unit will generate a new metaModel)
             if (extendedPersistenceContext != null) {
-                // bug210677, checkForTransactioin returns null in
+                // bug210677, checkForTransaction returns null in
                 // afterCompletion - in this case check for uow being
                 // synchronized.
                 if (checkForTransaction(false) == null && !extendedPersistenceContext.isSynchronized()) {
