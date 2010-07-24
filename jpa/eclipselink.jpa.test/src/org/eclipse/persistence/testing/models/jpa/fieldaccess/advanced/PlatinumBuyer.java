@@ -22,17 +22,13 @@ import javax.persistence.*;
  */
 @Entity(name="PlatinumBuyer")
 @Table(name="CMP3_FA_PBUYER")
-@NamedQuery(
-	name="findPlatinumBuyer",
-	query="SELECT OBJECT(buyer) FROM PlatinumBuyer buyer WHERE buyer.purchases >= :amount"
-)
 public class PlatinumBuyer extends Buyer {
 	private double purchases;
 
 	public double getPurchases() { 
         return purchases; 
     }
-    
+
 	public void setPurchases(double purchases) { 
 		this.purchases = purchases; 
 	}

@@ -335,8 +335,10 @@ public class JoinedAttributeTestHelper {
         }
         
         ClassDescriptor desc = session.getDescriptor(obj1);
-        if(desc == null && !obj1.equals(obj2)) {
-            errorMsg = ": " + obj1.toString() + "!=" +obj2.toString() + ";  ";
+        if(desc == null ) {
+            if (!obj1.equals(obj2)) {
+                errorMsg = ": " + obj1.toString() + "!=" +obj2.toString() + ";  ";
+            }
             return errorMsg;
         }
         

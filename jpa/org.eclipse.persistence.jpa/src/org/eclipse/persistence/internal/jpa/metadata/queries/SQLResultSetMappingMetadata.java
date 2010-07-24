@@ -151,8 +151,7 @@ public class SQLResultSetMappingMetadata extends ORMetadata {
                     if (project.useDelimitedIdentifier()) {
                         fieldResult.getColumn().setUseDelimiters(true);
                     } else if (project.getShouldForceFieldNamesToUpperCase() && !fieldResult.getColumn().shouldUseDelimiters()) {
-                        //done directly as this field's name should be in uppercase.
-                        fieldResult.getColumn().setName(fieldResult.getColumn().getName().toUpperCase());
+                        fieldResult.getColumn().useUpperCaseForComparisons(true);
                     }
                     entityResult.addFieldResult(fieldResult);
                 }
@@ -164,7 +163,7 @@ public class SQLResultSetMappingMetadata extends ORMetadata {
                 if (project.useDelimitedIdentifier()) {
                     descriminatorField.setUseDelimiters(true);
                 } else if (project.getShouldForceFieldNamesToUpperCase() && !descriminatorField.shouldUseDelimiters()){
-                    descriminatorField.setName(descriminatorField.getName().toUpperCase());
+                    descriminatorField.useUpperCaseForComparisons(true);
                 }
                 entityResult.setDiscriminatorColumn(descriminatorField);
             }
@@ -180,7 +179,7 @@ public class SQLResultSetMappingMetadata extends ORMetadata {
                 result.getColumn().setUseDelimiters(true);
             }
             if (project.getShouldForceFieldNamesToUpperCase()) {
-                result.getColumn().toUpperCase();
+                result.getColumn().useUpperCaseForComparisons(true);
             }
             mapping.addResult(result);
         }

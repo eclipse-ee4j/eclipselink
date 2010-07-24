@@ -72,11 +72,17 @@ public class DatabaseField implements Cloneable, Serializable {
     
     protected boolean useDelimiters = false;
     
-    /** Stores the column name as defined prior to toUpper being called.  This allows the exact name returned from JDBC metadata 
-     * to be used for equality checks when compared to fields set to use delimiting should the databasePlatform 
-     * have shouldForceFieldNamesToUpperCase or shouldIgnoreCaseOnFieldComparisons flags set.  
+    /** 
+     * If this is set, it will be used in determining equality (unless delimiters are used) and the hashcode.  
+     * @see getNameForComparisons
      */
-    private String originalName;
+    private String nameForComparisons;
+    
+    /**
+     * setting to true will cause getNameForComparisons to lazy initialize nameForComparisons using
+     * the value from getName().toUpperCase().  
+     */
+    private boolean useUpperCaseForComparisons = false;
 
     /**
      * used to represent the value when it has not being defined
@@ -182,20 +188,10 @@ public class DatabaseField implements Cloneable, Serializable {
             if (getQualifiedName().equals(field.getQualifiedName())) {
                 return true;
             }
-            String ourNameToCompare;
-            String fieldNameToCompare;
-            boolean useEqualsIgnoreCase = DatabasePlatform.shouldIgnoreCaseOnFieldComparisons();
-            if (field.shouldUseDelimiters() || shouldUseDelimiters()) {
-                ourNameToCompare = this.getOriginalName();
-                fieldNameToCompare = field.getOriginalName();
-                useEqualsIgnoreCase = false;
-            } else {
-                ourNameToCompare = this.getName();
-                fieldNameToCompare = field.getName();
-            }
-            
-            if (useEqualsIgnoreCase) {
-                if (ourNameToCompare.equalsIgnoreCase(fieldNameToCompare)) {
+
+            //preserve old behaviour if static shouldIgnoreCaseOnFieldComparisons is set
+            if (DatabasePlatform.shouldIgnoreCaseOnFieldComparisons()) {
+                if (getName().equalsIgnoreCase(field.getName())) {
                     //getTableName will cause NPE if there isn't a table.  use hasTableName instead
                     if ((!hasTableName()) || (!field.hasTableName())) {
                         return true;
@@ -203,6 +199,16 @@ public class DatabaseField implements Cloneable, Serializable {
                     return (getTable().equals(field.getTable()));
                 }
             } else {
+                String ourNameToCompare;
+                String fieldNameToCompare;
+                if (field.shouldUseDelimiters() || shouldUseDelimiters()) {
+                    ourNameToCompare = this.getName();
+                    fieldNameToCompare = field.getName();
+                } else {
+                    ourNameToCompare = this.getNameForComparisons();
+                    fieldNameToCompare = field.getNameForComparisons();
+                }
+                
                 if (ourNameToCompare.equals(fieldNameToCompare)) {
                     //getTableName will cause NPE if there isn't a table.  use hasTableName instead
                     if ((!hasTableName()) || (!field.hasTableName())) {
@@ -334,7 +340,7 @@ public class DatabaseField implements Cloneable, Serializable {
      * Return the hashcode of the name, because it is fairly unique.
      */
     public int hashCode() {
-        return getName().hashCode();
+        return getNameForComparisons().hashCode();
     }
 
     public boolean hasTableName() {
@@ -399,7 +405,6 @@ public class DatabaseField implements Cloneable, Serializable {
     public void resetQualifiedName(String qualifiedName) {
         setIndex(-1);
         int index = qualifiedName.lastIndexOf('.');
-        this.setOriginalName(null);
 
         if (index == -1) {
             setName(qualifiedName);
@@ -475,6 +480,7 @@ public class DatabaseField implements Cloneable, Serializable {
         } else {
             this.name = name;
         }
+        this.nameForComparisons = null;
         this.qualifiedName = null;
     }
     
@@ -561,33 +567,40 @@ public class DatabaseField implements Cloneable, Serializable {
 
     /**
      * INTERNAL:
-     * Forces this field to use uppercase, but stores the original name to be used for comparisons to
-     * delimited fields.  This should only be used for column names returned from JDBC metadata when
-     * the platform has shouldForceFieldNamesToUpperCase set.
-     * 
+     * Sets the useUpperCaseForComparisons flag which is used to force using the uppercase version of the field's 
+     * name to determine field equality and its hashcode, but will still use the original name when writing/printing 
+     * operations.  If this isn't a change, it is ignored, otherwise it sets the nameForComparisons to null.  
      */
-    public void toUpperCase(){
-        if (name!=null) {
-            originalName = name;
-            name = originalName.toUpperCase();
+    public void useUpperCaseForComparisons(boolean useUpperCaseForComparisons){
+        if (this.useUpperCaseForComparisons != useUpperCaseForComparisons){
+            this.useUpperCaseForComparisons = useUpperCaseForComparisons;
+            this.setNameForComparisons(null);
         }
+    }
+    
+    public boolean getUseUpperCaseForComparisons(){
+        return this.useUpperCaseForComparisons;
     }
     /**
      * INTERNAL:
-     * sets the string to be used if compared to a delimited databasefield
+     * sets the string to be used for equality checking and determining the hashcode of this field.
+     * This will overwrite the useUpperCaseForEquality setting with the passed in string.  
      */
-    public void setOriginalName(String originalName){
-        this.originalName = originalName;
+    public void setNameForComparisons(String name){
+        this.nameForComparisons = name;
     }
     
     /**
      * INTERNAL:
-     * gets the string to be used for comparisons when delimiting is used
+     * gets the string used for comparisons and in determining the hashcode.
      */
-    public String getOriginalName(){
-        if (originalName == null) {
-            return this.getName();
+    public String getNameForComparisons(){
+        if (nameForComparisons == null) {
+            if (!getUseUpperCaseForComparisons() || getName()== null){
+                return this.getName();
+            }
+            this.nameForComparisons = this.getName().toUpperCase();
         }
-        return this.originalName;
+        return this.nameForComparisons;
     }
 }

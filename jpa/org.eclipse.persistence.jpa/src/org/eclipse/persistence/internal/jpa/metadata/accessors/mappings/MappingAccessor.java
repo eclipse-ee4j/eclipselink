@@ -1224,7 +1224,14 @@ public abstract class MappingAccessor extends MetadataAccessor {
             } else if (! mappingAccessor.isBasic()) {
                 throw ValidationException.invalidEmbeddableAttributeForAttributeOverride(embeddableDescriptor.getJavaClass(), attributeName, getJavaClass(), getAttributeName());
             } else {
-                addFieldNameTranslation(aggregateObjectMapping, attributeName, attributeOverride.getColumn().getDatabaseField(), mappingAccessor);
+                boolean useDelimitedIdentifier = (embeddableDescriptor.getProject() != null) ? embeddableDescriptor.getProject().useDelimitedIdentifier() : false;
+                DatabaseField overrideField = attributeOverride.getColumn().getDatabaseField();
+                if (useDelimitedIdentifier){
+                    overrideField.setUseDelimiters(useDelimitedIdentifier);
+                } else if (embeddableDescriptor.getProject().getShouldForceFieldNamesToUpperCase() && !overrideField.shouldUseDelimiters()) {
+                    overrideField.useUpperCaseForComparisons(true);
+                }
+                addFieldNameTranslation(aggregateObjectMapping, attributeName, overrideField, mappingAccessor);
             }
         }
     }

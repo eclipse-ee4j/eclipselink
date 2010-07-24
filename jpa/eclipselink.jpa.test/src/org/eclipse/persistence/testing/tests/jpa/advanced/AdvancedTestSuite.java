@@ -25,7 +25,6 @@ public class AdvancedTestSuite extends TestSuite {
     public static Test suite() {
         TestSuite suite = new TestSuite();
         suite.setName("AdvancedTestSuite");
-        suite.addTest(NamedNativeQueryJUnitTest.suite());
         suite.addTest(CallbackEventJUnitTestSuite.suite());
         suite.addTest(EntityManagerJUnitTestSuite.suite());
         suite.addTest(SQLResultSetMappingTestSuite.suite());

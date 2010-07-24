@@ -92,8 +92,7 @@ public class OrderColumnMetadata extends DirectColumnMetadata {
             if (useDelimitedIdentifier){
                 orderField.setUseDelimiters(useDelimitedIdentifier);
             } else if (descriptor.getProject().getShouldForceFieldNamesToUpperCase() && !orderField.shouldUseDelimiters()) {
-                //done directly as this field's name should be in uppercase.
-                orderField.setName(orderField.getName().toUpperCase());
+                orderField.useUpperCaseForComparisons(true);
             }
 
             // We don't set a table, the mapping will figure that out for us at runtime.

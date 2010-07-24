@@ -1047,7 +1047,7 @@ public class DatabaseAccessor extends DatasourceAccessor {
 
             // Force field names to upper case is set.
             if (getPlatform().shouldForceFieldNamesToUpperCase()) {
-                column.toUpperCase();
+                column.useUpperCaseForComparisons(true);
             }
             columnNames.addElement(column);
         }

@@ -160,24 +160,7 @@ public class EmbeddedAccessor extends MappingAccessor {
     public List<AttributeOverrideMetadata> getAttributeOverrides() {
         return m_attributeOverrides;
     }
-    
-    /**
-     * INTERNAL:
-     * This method should only be called once processing has been completed.
-     * It assumes the aggregate object mapping is available and fully processed.
-     * This will method will check for an attribute override field that was
-     * used, otherwise returns the field name provided.
-     */
-    public DatabaseField getField(String fieldName) {
-        AggregateObjectMapping mapping = (AggregateObjectMapping) getMapping();
-        
-        if (mapping.getAggregateToSourceFieldNames().containsKey(fieldName)) {
-            return new DatabaseField(mapping.getAggregateToSourceFieldNames().get(fieldName));
-        } else {
-            return new DatabaseField(fieldName);
-        }
-    }
-    
+
     /**
      * INTERNAL:
      */
