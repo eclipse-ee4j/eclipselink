@@ -12,9 +12,11 @@
  ******************************************************************************/  
 package org.eclipse.persistence.testing.tests.jpa.inheritance;
 
+import org.eclipse.persistence.exceptions.DatabaseException;
 import org.eclipse.persistence.testing.framework.junit.JUnitTestCase;
 import org.eclipse.persistence.testing.models.jpa.inheritance.Company;
 import org.eclipse.persistence.testing.models.jpa.inheritance.InheritanceTableCreator;
+import org.eclipse.persistence.testing.models.jpa.inheritance.SeniorEngineer;
 import org.eclipse.persistence.testing.models.jpa.inheritance.SportsCar;
 import org.eclipse.persistence.testing.models.jpa.inheritance.Car;
 import org.eclipse.persistence.testing.models.jpa.inheritance.Person;
@@ -28,6 +30,7 @@ import org.eclipse.persistence.testing.models.jpa.inheritance.VehicleDirectory;
 import junit.framework.Test;
 import junit.framework.TestSuite;
 import javax.persistence.EntityManager;
+import javax.persistence.PersistenceException;
 
 public class EntityManagerJUnitTestCase extends JUnitTestCase {
 
@@ -173,5 +176,34 @@ public class EntityManagerJUnitTestCase extends JUnitTestCase {
         }
         
         rollbackTransaction(em);;
+    }
+    
+    public void testRemoveInheritedManyToMany(){
+        EntityManager em = createEntityManager();
+        beginTransaction(em);
+        try{
+            SeniorEngineer eng = new SeniorEngineer();
+            eng.setName("Vela");
+            em.persist(eng);
+            Laptop laptop = new Laptop();
+            ComputerPK pk = new ComputerPK("Dell", 2111);
+            laptop.setComputerPK(pk);
+            em.persist(laptop);
+            eng.getLaptops().add(laptop);
+            em.flush();
+            
+            em.remove(eng);
+            em.flush();
+        } catch (PersistenceException ex){
+            if (ex.getCause() instanceof DatabaseException){
+                // An Integrity Constraint Violation was the reason for the initial exception
+                fail("SQLException thrown when removing an object that inherits a ManyToMany");
+            } else {
+                fail("UnexpectedException thrown");
+            }
+        } finally {
+            rollbackTransaction(em);
+        }     
+
     }
 }

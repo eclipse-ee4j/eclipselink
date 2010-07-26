@@ -757,7 +757,7 @@ public class InheritancePolicy implements Serializable, Cloneable {
      * Employee's descriptor will be used as the descriptor for Employee
      */
     public boolean getDescribesNonPersistentSubclasses(){
-    	return describesNonPersistentSubclasses;
+        return describesNonPersistentSubclasses;
     }
     
     /**
@@ -936,6 +936,7 @@ public class InheritancePolicy implements Serializable, Cloneable {
 
         if (isChildDescriptor()) {
             getDescriptor().setMappings(Helper.concatenateVectors(getParentDescriptor().getMappings(), getDescriptor().getMappings()));
+            getDescriptor().getPreDeleteMappings().addAll(getParentDescriptor().getPreDeleteMappings());
             getDescriptor().setQueryKeys(Helper.concatenateMaps(getParentDescriptor().getQueryKeys(), getDescriptor().getQueryKeys()));
             addFieldsToParent(getDescriptor().getFields());
             // Parents fields must be first for indexing to work.
@@ -1591,7 +1592,7 @@ public class InheritancePolicy implements Serializable, Cloneable {
      * @param describesNonPersistenceSubclasses
      */
     public void setDescribesNonPersistentSubclasses(boolean describesNonPersistentSubclasses){
-    	this.describesNonPersistentSubclasses = describesNonPersistentSubclasses;
+        this.describesNonPersistentSubclasses = describesNonPersistentSubclasses;
     }
     
     /**

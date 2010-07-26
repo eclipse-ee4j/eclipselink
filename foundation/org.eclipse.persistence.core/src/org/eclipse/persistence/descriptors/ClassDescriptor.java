@@ -1133,6 +1133,12 @@ public class ClassDescriptor implements Cloneable, Serializable {
         }
         clonedDescriptor.setMappings(mappingsVector);
 
+        for (DatabaseMapping origMapping : this.getPreDeleteMappings()) {
+            DatabaseMapping mapping = (DatabaseMapping)origMapping.clone();
+            mapping.setDescriptor(clonedDescriptor);
+            clonedDescriptor.getPreDeleteMappings().add(mapping);
+        }
+        
         Map queryKeyVector = new HashMap(getQueryKeys().size() + 2);
 
         // All the query keys
@@ -1167,7 +1173,7 @@ public class ClassDescriptor implements Cloneable, Serializable {
             clonedDescriptor.getReturningPolicy().setDescriptor(clonedDescriptor);
         }
 
-        // The Object builder	
+        // The Object builder    
         clonedDescriptor.setObjectBuilder((ObjectBuilder)getObjectBuilder().clone());
         clonedDescriptor.getObjectBuilder().setDescriptor(clonedDescriptor);
 
@@ -2997,7 +3003,7 @@ public class ClassDescriptor implements Cloneable, Serializable {
      * Convenience method to return true if the java class from this descriptor is abstract.
      */
     public boolean isAbstract() {
-    	return java.lang.reflect.Modifier.isAbstract(getJavaClass().getModifiers());
+        return java.lang.reflect.Modifier.isAbstract(getJavaClass().getModifiers());
     }
     
     /**
@@ -3523,14 +3529,14 @@ public class ClassDescriptor implements Cloneable, Serializable {
      */
     protected void selfValidationAfterInitialization(AbstractSession session) throws DescriptorException {
         // This has to be done after, because read subclasses must be initialized.
-    	if ( (hasInheritance() && (getInheritancePolicy().shouldReadSubclasses() || isAbstract())) || hasTablePerClassPolicy() && isAbstract() ) {
-    		// Avoid building a new instance if the inheritance class is abstract.
-    		// There is an empty statement here, and this was done if anything for the 
-    		// readability sake of the statement logic.
-    	} else if (session.getIntegrityChecker().shouldCheckInstantiationPolicy()) {
-    		getInstantiationPolicy().buildNewInstance();
-    	}
-    	
+        if ( (hasInheritance() && (getInheritancePolicy().shouldReadSubclasses() || isAbstract())) || hasTablePerClassPolicy() && isAbstract() ) {
+            // Avoid building a new instance if the inheritance class is abstract.
+            // There is an empty statement here, and this was done if anything for the 
+            // readability sake of the statement logic.
+        } else if (session.getIntegrityChecker().shouldCheckInstantiationPolicy()) {
+            getInstantiationPolicy().buildNewInstance();
+        }
+        
         if (hasReturningPolicy()) {
             getReturningPolicy().validationAfterDescriptorInitialization(session);
         }
