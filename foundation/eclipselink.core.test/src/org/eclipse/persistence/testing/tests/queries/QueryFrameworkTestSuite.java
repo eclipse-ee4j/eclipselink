@@ -60,6 +60,7 @@ public class QueryFrameworkTestSuite extends TestSuite {
         // EL Bug 245986 - Add regression testing for queries using custom SQL and partial attribute population
         addTest(new PartialAttributeWithCustomSQLTest());
         addTest(buildArgumentValuesTest());
+        addTest(new ScrollableCursorForwardOnlyResultSetTest()); // Bug 309142
     }
 
     //SRG test set is maintained by QA only, do NOT add any new test cases into it.
@@ -130,7 +131,6 @@ public class QueryFrameworkTestSuite extends TestSuite {
         addTest(new ScrollableCursorBackwardReadingTest());
         addTest(new ScrollableCursorStatementCachingReadTest());
         addTest(new ScrollableCursorNavigationAPITest());
-        addTest(new ScrollableCursorForwardOnlyResultSetTest()); // Bug 309142
         
         // Cursor conforming tests...
         addTest(new CursoredStreamConformingTest());
