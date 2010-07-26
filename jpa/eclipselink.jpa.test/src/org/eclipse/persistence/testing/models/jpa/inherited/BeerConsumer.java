@@ -21,6 +21,7 @@ package org.eclipse.persistence.testing.models.jpa.inherited;
 import java.beans.PropertyChangeListener;
 import java.math.BigInteger;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Vector;
@@ -93,6 +94,7 @@ public class BeerConsumer<T> implements ChangeTracker, Cloneable{
     private Map<CoronaTag, Corona> coronaBeersToConsume;
     private Map<Date, Heineken> heinekenBeersToConsume;
     private Map<T, RedStripe> redStripeBeersToConsume;
+    private Map<Double, RedStripe> redStripesByAlcoholContent;
     private Map<Integer, Certification> certifications;
     private Map<TelephoneNumberPK, TelephoneNumber> telephoneNumbers;
     
@@ -117,6 +119,7 @@ public class BeerConsumer<T> implements ChangeTracker, Cloneable{
         coronaBeersToConsume = new Hashtable<CoronaTag, Corona>();
         heinekenBeersToConsume = new Hashtable<Date, Heineken>();
         redStripeBeersToConsume = new Hashtable<T, RedStripe>();
+        redStripesByAlcoholContent = new HashMap<Double, RedStripe>();
         certifications = new Hashtable<Integer, Certification>();
         telephoneNumbers = new Hashtable<TelephoneNumberPK, TelephoneNumber>();
     }
@@ -162,6 +165,10 @@ public class BeerConsumer<T> implements ChangeTracker, Cloneable{
     
     public void addRedStripeBeersToConsume(RedStripe redStripe, T t) {
         redStripeBeersToConsume.put(t, redStripe);
+    }
+    
+    public void addRedStripeByAlcoholContent(RedStripe redStripe) {
+        redStripesByAlcoholContent.put(redStripe.getAlcoholContent(), redStripe);
     }
     
     public Object clone() throws CloneNotSupportedException {
@@ -281,6 +288,17 @@ public class BeerConsumer<T> implements ChangeTracker, Cloneable{
     @CollectionTable(name="CONSUMER_REDSTRIPES", joinColumns=@JoinColumn(name="C_ID", referencedColumnName="ID"))
     public Map<T, RedStripe> getRedStripes() {
         return redStripeBeersToConsume;
+    }
+    
+    @ElementCollection
+    @CollectionTable(name="CONSUMER_REDSTRIPE_CONTENT",
+            joinColumns={
+                @JoinColumn(name="C_ID", referencedColumnName="ID")
+            }
+    )
+    @MapKey(name="alcoholContent")
+    public Map<Double, RedStripe> getRedStripesByAlcoholContent(){
+        return redStripesByAlcoholContent;
     }
     
     @OneToMany(mappedBy="beerConsumer", cascade=ALL, fetch=EAGER)
@@ -423,6 +441,10 @@ public class BeerConsumer<T> implements ChangeTracker, Cloneable{
         this.redStripeBeersToConsume = redStripeBeersToConsume;
     }
     
+    public void setRedStripesByAlcoholContent(Map<Double, RedStripe> redStripesByAlcoholContent) {
+        this.redStripesByAlcoholContent = redStripesByAlcoholContent;
+    }
+
     public void setTelephoneNumbers(Map<TelephoneNumberPK, TelephoneNumber> telephoneNumbers) {
         this.telephoneNumbers = telephoneNumbers;
 	}

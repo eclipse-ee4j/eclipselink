@@ -50,6 +50,7 @@ public class InheritedTableManager extends TogglingFastTableCreator {
 
         addTableDefinition(build_BEER_CONSUMER_Table());        
         addTableDefinition(build_BEER_CONSUMER_REDSTRIPES_Table());
+        addTableDefinition(build_BEER_CONSUMER_REDSTRIPE_CONTENT_Table());
         
         addTableDefinition(build_EXPERT_BEER_CONSUMER_Table());
         addTableDefinition(build_EXPERT_BEER_CONSUMER_AWARDS_Table());
@@ -384,6 +385,34 @@ public class InheritedTableManager extends TogglingFastTableCreator {
         return table;
     }
     
+    public static TableDefinition build_BEER_CONSUMER_REDSTRIPE_CONTENT_Table() {
+        TableDefinition table = new TableDefinition();
+        table.setName("CONSUMER_REDSTRIPE_CONTENT");
+        
+        FieldDefinition ALCOHOL_CONTENT_field = new FieldDefinition();
+        ALCOHOL_CONTENT_field.setName("ALCOHOLCONTENT");
+        ALCOHOL_CONTENT_field.setTypeName("DOUBLE PRECIS");
+        ALCOHOL_CONTENT_field.setSize(15);
+        ALCOHOL_CONTENT_field.setIsPrimaryKey(false);
+        ALCOHOL_CONTENT_field.setUnique(false);
+        ALCOHOL_CONTENT_field.setIsIdentity(false);
+        ALCOHOL_CONTENT_field.setShouldAllowNull(true);
+        table.addField(ALCOHOL_CONTENT_field);
+        
+        FieldDefinition BEER_CONSUMER_ID_field = new FieldDefinition();
+        BEER_CONSUMER_ID_field.setName("C_ID");
+        BEER_CONSUMER_ID_field.setTypeName("NUMERIC");
+        BEER_CONSUMER_ID_field.setSize(15);
+        BEER_CONSUMER_ID_field.setIsPrimaryKey(false);
+        BEER_CONSUMER_ID_field.setUnique(false);
+        BEER_CONSUMER_ID_field.setIsIdentity(false);
+        BEER_CONSUMER_ID_field.setShouldAllowNull(true);
+        BEER_CONSUMER_ID_field.setForeignKeyFieldName("CMP3_CONSUMER.ID");
+        table.addField(BEER_CONSUMER_ID_field);
+        
+        return table;
+    }
+
     public static TableDefinition build_BLUE_Table() {
         TableDefinition table = new TableDefinition();
         table.setName("CMP3_BLUE");
