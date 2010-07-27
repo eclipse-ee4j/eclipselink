@@ -401,6 +401,9 @@ public abstract class ReadQuery extends DatabaseQuery {
      * NB - a value of zero means that no call to statement.setFetchSize() will be made.
      */
     public void setFetchSize(int fetchSize) {
+    	if ( isPrepared() && this.getCall()!=null) {
+    		getCall().setResultSetFetchSize(fetchSize);
+    	}
         this.fetchSize = fetchSize;
     }
 
