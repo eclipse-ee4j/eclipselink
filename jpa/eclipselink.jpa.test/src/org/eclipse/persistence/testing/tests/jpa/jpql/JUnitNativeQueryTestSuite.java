@@ -36,7 +36,7 @@ import org.eclipse.persistence.testing.tests.jpa.advanced.NamedNativeQueryJUnitT
  *
  */
 public class JUnitNativeQueryTestSuite  extends JUnitTestCase {
-    protected String PUName = "CASE_SENSITIVITY";
+    protected String PUName = "MulitPU-1";
     
     public JUnitNativeQueryTestSuite() {
         super();
@@ -44,6 +44,7 @@ public class JUnitNativeQueryTestSuite  extends JUnitTestCase {
     
     public JUnitNativeQueryTestSuite(String name) {
         super(name);
+        setPuName(PUName);
     }
     
     public static Test suite() {
