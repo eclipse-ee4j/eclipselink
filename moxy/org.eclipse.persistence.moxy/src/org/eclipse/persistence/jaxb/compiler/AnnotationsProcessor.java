@@ -101,6 +101,9 @@ import org.eclipse.persistence.oxm.annotations.XmlCDATA;
 import org.eclipse.persistence.oxm.annotations.XmlContainerProperty;
 import org.eclipse.persistence.oxm.annotations.XmlCustomizer;
 import org.eclipse.persistence.oxm.annotations.XmlInverseReference;
+import org.eclipse.persistence.oxm.annotations.XmlIsSetNullPolicy;
+import org.eclipse.persistence.oxm.annotations.XmlNullPolicy;
+import org.eclipse.persistence.oxm.annotations.XmlParameter;
 import org.eclipse.persistence.oxm.annotations.XmlPath;
 import org.eclipse.persistence.oxm.annotations.XmlPaths;
 import org.eclipse.persistence.oxm.annotations.XmlReadOnly;
@@ -1756,6 +1759,8 @@ public class AnnotationsProcessor {
         if (helper.isAnnotationPresent(property.getElement(), XmlCDATA.class)) {
             property.setCdata(true);
         }
+        
+        processXmlNullPolicy(property);
     }
 
     /**
@@ -1772,6 +1777,33 @@ public class AnnotationsProcessor {
             return false;
         }
         return src.getRawName().equals(tgt.getCanonicalName());
+    }
+    
+    private void processXmlNullPolicy(Property property) {
+        if(helper.isAnnotationPresent(property.getElement(), XmlNullPolicy.class)) {
+            XmlNullPolicy nullPolicy = (XmlNullPolicy)helper.getAnnotation(property.getElement(), XmlNullPolicy.class);
+            org.eclipse.persistence.jaxb.xmlmodel.XmlNullPolicy policy = new org.eclipse.persistence.jaxb.xmlmodel.XmlNullPolicy();
+            policy.setEmptyNodeRepresentsNull(nullPolicy.emptyNodeRepresentsNull());
+            policy.setIsSetPerformedForAbsentNode(nullPolicy.isSetPerformedForAbsentNode());
+            policy.setXsiNilRepresentsNull(new Boolean(nullPolicy.xsiNilRepresentsNull()));
+            policy.setNullRepresentationForXml(org.eclipse.persistence.jaxb.xmlmodel.XmlMarshalNullRepresentation.valueOf(nullPolicy.nullRepresentationForXml().toString()));
+            property.setNullPolicy(policy);
+            
+        } else if(helper.isAnnotationPresent(property.getElement(), XmlIsSetNullPolicy.class)) {
+            XmlIsSetNullPolicy nullPolicy = (XmlIsSetNullPolicy)helper.getAnnotation(property.getElement(), XmlIsSetNullPolicy.class);
+            org.eclipse.persistence.jaxb.xmlmodel.XmlIsSetNullPolicy policy = new org.eclipse.persistence.jaxb.xmlmodel.XmlIsSetNullPolicy();
+            policy.setEmptyNodeRepresentsNull(nullPolicy.emptyNodeRepresentsNull());
+            policy.setXsiNilRepresentsNull(new Boolean(nullPolicy.xsiNilRepresentsNull()));
+            policy.setNullRepresentationForXml(org.eclipse.persistence.jaxb.xmlmodel.XmlMarshalNullRepresentation.valueOf(nullPolicy.nullRepresentationForXml().toString()));
+            policy.setIsSetMethodName(nullPolicy.isSetMethodName());
+            for(XmlParameter next: nullPolicy.isSetMethodParameters()) {
+                org.eclipse.persistence.jaxb.xmlmodel.XmlIsSetNullPolicy.IsSetParameter param = new org.eclipse.persistence.jaxb.xmlmodel.XmlIsSetNullPolicy.IsSetParameter();
+                param.setValue(next.value());
+                param.setType(next.type().getName());
+                policy.getIsSetParameter().add(param);
+            }
+            property.setNullPolicy(policy);
+        }
     }
 
     /**
