@@ -87,6 +87,7 @@ public class ArchiveFactoryImpl implements ArchiveFactory {
             }
         } else if ("jar".equals(protocol)) { // NOI18N
             JarURLConnection conn = JarURLConnection.class.cast(rootUrl.openConnection());
+            conn.setUseCaches(false);
             JarEntry je = conn.getJarEntry();
             if (je == null) {
                 // e.g. jar:file:/tmp/a_ear/lib/pu.jar!/
