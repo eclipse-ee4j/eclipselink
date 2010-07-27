@@ -136,4 +136,13 @@
         <exclude-unlisted-classes>true</exclude-unlisted-classes>
         <shared-cache-mode>DISABLE_SELECTIVE</shared-cache-mode>
     </persistence-unit>
+    <!-- following persistence unit is for CASE_SENSITIVITY testing-->
+    <persistence-unit name="MulitPU-1">
+        <provider>org.eclipse.persistence.jpa.PersistenceProvider</provider>
+        <mapping-file>META-INF/case-sensitive-advanced-entity-mappings.xml</mapping-file>
+        <!--exclude-unlisted-classes>false</exclude-unlisted-classes-->
+        <properties>
+          <property name="eclipselink.jpa.uppercase-column-names" value="true"/>
+        </properties>
+    </persistence-unit>
 </persistence>

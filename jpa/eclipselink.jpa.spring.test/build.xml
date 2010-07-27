@@ -175,6 +175,7 @@
         </copy>
         <copy todir="${eclipselink.jpa.test}/${resource.dir}/eclipselink-annotation-model/">
             <fileset dir="${eclipselink.jpa.test}/${resource.dir}/eclipselink-annotation-model/spring" includes="**"/>
+            <fileset dir="${eclipselink.jpa.test}/${resource.dir}/eclipselink-annotation-model" includes="case-sensitive-advanced-entity-mappings.xml"/>
         </copy>
     </target>
 
