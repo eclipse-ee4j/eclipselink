@@ -2203,9 +2203,15 @@
     </target>
 
     <target name="server-test-jpql">
+        <copy todir="${eclipselink.jpa.test}/resource/eclipselink-jpql-model/server/" overwrite="true" failonerror="false">
+            <fileset dir="${eclipselink.jpa.test}/resource/eclipselink-annotation-model/">
+                <include name="case-sensitive-advanced-entity-mappings.xml"/>
+            </fileset>
+        </copy>
         <antcall target="server-run-all" inheritRefs="true">
             <param name="PERSISTENCE_UNIT_NAME" value="default"/>
-            <param name="MODEL_DIR" value="org/eclipse/persistence/testing/models/jpa/jpql"/>
+            <param name="USE_MULTIPLE_PERSISTENCE_UNITS" value="true"/>
+            <param name="MODEL_DIR" value="org/eclipse/persistence/testing/models/jpa/advanced"/>
             <param name="MODEL_NAME" value="eclipselink-jpql-model"/>
             <param name="TEST_DIR" value="org/eclipse/persistence/testing/tests/jpa/jpql"/>
             <param name="TEST_NAME" value="eclipselink-jpql-model"/>
@@ -2213,6 +2219,11 @@
             <param name="TEST_SUITE" value="org.eclipse.persistence.testing.tests.jpa.jpql.JPQLServerTestSuite"/>
             <param name="eclipselink.jpa.test.dir" value="."/>
         </antcall>
+        <delete>
+            <fileset dir="${eclipselink.jpa.test}/resource/eclipselink-jpql-model/server/">
+                <include name="case-sensitive-advanced-entity-mappings.xml"/>
+            </fileset>
+        </delete>
     </target>
 
     <target name="server-test-lob">

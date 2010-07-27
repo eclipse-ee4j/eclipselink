@@ -23,7 +23,7 @@ import org.eclipse.persistence.testing.models.jpa.advanced.AdvancedTableCreator;
 import org.eclipse.persistence.testing.tests.jpa.jpql.JUnitJPQLSimpleTestSuite;
 
 public class NamedNativeQueryJUnitTest extends JUnitTestCase {
-    protected String PUName = "CASE_SENSITIVITY";
+    protected String PUName = "MulitPU-1";
 
     public NamedNativeQueryJUnitTest() {
         super();
@@ -31,6 +31,7 @@ public class NamedNativeQueryJUnitTest extends JUnitTestCase {
 
     public NamedNativeQueryJUnitTest(String name) {
         super(name);
+        setPuName(PUName);
     }
 
     public static Test suite() {
