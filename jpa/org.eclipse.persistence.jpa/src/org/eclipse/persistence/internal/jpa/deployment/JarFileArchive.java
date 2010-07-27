@@ -88,14 +88,12 @@ public class JarFileArchive extends ArchiveBase implements Archive {
                 new URL("jar:"+rootURL+"!/"+entryPath) : null; // NOI18N
     }
 
-    public void close() {
-    // Commented out to fix https://bugs.eclipse.org/bugs/show_bug.cgi?id=295124
-    // Ideally the fix should be in WAS such that exception mentioned in the isssue is not raied     
-//        try {
-//            jarFile.close();
-//        } catch (IOException e) {
-//            // ignore
-//        }
+    public void close() {     
+        try {
+            jarFile.close();
+        } catch (IOException e) {
+            // ignore
+        }
     }
 }
 
