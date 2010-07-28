@@ -404,7 +404,7 @@ public class LoggingLocalizationResource extends ListResourceBundle {
         // 316513: JMX implementation for JBoss, WebSphere and Glassfish as well as WebLogic
         { "jmx_mbean_runtime_services_registration_encountered_multiple_mbeanserver_instances", "Multiple [{0}] JMX MBeanServer instances exist, we will use the server at index [{1}] : [{2}]." },
         { "jmx_mbean_runtime_services_registration_mbeanserver_print", "JMX MBeanServer instance found: [{0}], # of beans: [{1}], domain: [{2}] at index: [{3}]." },
-        { "jmx_mbean_runtime_services_switching_to_alternate_mbeanserver", "JMX MBeanServer in use: [{0}] from index [{1}] " },        
+        { "jmx_mbean_runtime_services_switching_to_alternate_mbeanserver", "JMX MBeanServer in use: [{0}] from index [{1}] " },
         // MESSAGES end
         
         
@@ -682,7 +682,7 @@ public class LoggingLocalizationResource extends ListResourceBundle {
         { "jaxb_metadata_warning_invalid_property_level_xml_java_type_adapter.MSGID", "TOP-50242"},
         { "jmx_mbean_runtime_services_registration_encountered_multiple_mbeanserver_instances.MSGID", "TOP-50242" },
         { "jmx_mbean_runtime_services_registration_mbeanserver_print.MSGID", "TOP-50243" },        
-        { "jmx_mbean_runtime_services_switching_to_alternate_mbeanserver.MSGID", "TOP-50245" }        
+        { "jmx_mbean_runtime_services_switching_to_alternate_mbeanserver.MSGID", "TOP-50244" }        
 
         /**
          * Note: Each MSGID and TOP-NNNNN key above must have a corresponding 

@@ -12,7 +12,7 @@
  *     06/30/2010-2.1.1 Michael O'Brien 
  *       - 316513: Enable JMX MBean functionality for JBoss, Glassfish and WebSphere in addition to WebLogic
  *       Move JMX MBean generic registration code up from specific platforms
- *       see <link>http://wiki.eclipse.org/EclipseLink/DesignDocs/316513</link>        
+ *       see <link>http://wiki.eclipse.org/EclipseLink/DesignDocs/316513</link>
  ******************************************************************************/  
 package org.eclipse.persistence.platform.server.was;
 
@@ -41,7 +41,7 @@ public class WebSphere_7_Platform extends WebSphere_6_1_Platform implements JMXE
     static {
         /** Override by subclass: Search String in application server ClassLoader for the application:persistence_unit name */
         APP_SERVER_CLASSLOADER_APPLICATION_PU_SEARCH_STRING_PREFIX = "[app:";
-        APP_SERVER_CLASSLOADER_APPLICATION_PU_SEARCH_STRING_POSTFIX = "";
+        APP_SERVER_CLASSLOADER_APPLICATION_PU_SEARCH_STRING_POSTFIX = "]";
         /** Override by subclass: Search String in application server session for ejb modules */
         APP_SERVER_CLASSLOADER_MODULE_EJB_SEARCH_STRING_PREFIX = ".jar!/";
         /** Override by subclass: Search String in application server session for war modules */
