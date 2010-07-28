@@ -67,7 +67,7 @@ public class NamedNativeQueryJUnitTest extends JUnitTestCase {
             em.createNamedQuery("findAllSQLAddresses").getResultList();
             //if there is an exception, let it go through so we can see what it was
         } finally {
-            if (em.isOpen()) {
+            if (isTransactionActive(em)) {
                 closeEntityManager(em);
             }
         }
