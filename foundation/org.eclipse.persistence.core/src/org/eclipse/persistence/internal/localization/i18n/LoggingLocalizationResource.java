@@ -679,7 +679,7 @@ public class LoggingLocalizationResource extends ListResourceBundle {
         { "jaxb_metadata_warning_invalid_property_level_xml_java_type_adapter.MSGID", "TOP-50242"},
         { "jmx_mbean_runtime_services_registration_encountered_multiple_mbeanserver_instances.MSGID", "TOP-50242" },
         { "jmx_mbean_runtime_services_registration_mbeanserver_print.MSGID", "TOP-50243" },        
-        { "jmx_mbean_runtime_services_switching_to_alternate_mbeanserver.MSGID", "TOP-50245" }        
+        { "jmx_mbean_runtime_services_switching_to_alternate_mbeanserver.MSGID", "TOP-50244" }        
 
         /**
          * Note: Each MSGID and TOP-NNNNN key above must have a corresponding 

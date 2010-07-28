@@ -451,6 +451,12 @@ public abstract class JMXServerPlatformBase extends ServerPlatformBase {
     protected void initializeApplicationNameAndModuleName() {
         String databaseSessionName = getDatabaseSession().getName();
         String classLoaderName = getDatabaseSession().getPlatform().getConversionManager().getLoader().toString();
+        String contextClassLoader = Thread.currentThread().getContextClassLoader().toString();
+        AbstractSessionLog.getLog().log(SessionLog.FINEST, "jmx_mbean_classloader_in_use", 
+                "Platform ConversionManager", classLoaderName);
+        AbstractSessionLog.getLog().log(SessionLog.FINEST, "jmx_mbean_classloader_in_use", 
+                "Context", contextClassLoader);
+        
         // Get property from persistence.xml or sessions.xml
         String jpaModuleName = getModuleName(false);
         String jpaApplicationName = getApplicationName(false);     
