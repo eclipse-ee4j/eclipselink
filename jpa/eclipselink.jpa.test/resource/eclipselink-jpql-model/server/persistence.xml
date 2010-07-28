@@ -25,4 +25,20 @@
             <property name="eclipselink.jpa.uppercase-column-names" value="true"/>
         </properties>
     </persistence-unit>
+    <persistence-unit name="MulitPU-2" transaction-type="%%transaction-type%%">
+        <provider>org.eclipse.persistence.jpa.PersistenceProvider</provider>
+        <%%datasource-type%%>%%data-source-name%%</%%datasource-type%%>
+    </persistence-unit>
+    <persistence-unit name="MulitPU-3" transaction-type="%%transaction-type%%">
+        <provider>org.eclipse.persistence.jpa.PersistenceProvider</provider>
+        <%%datasource-type%%>%%data-source-name%%</%%datasource-type%%>
+    </persistence-unit>
+    <persistence-unit name="MulitPU-4" transaction-type="%%transaction-type%%">
+        <provider>org.eclipse.persistence.jpa.PersistenceProvider</provider>
+        <%%datasource-type%%>%%data-source-name%%</%%datasource-type%%>
+    </persistence-unit>
+    <persistence-unit name="MulitPU-5" transaction-type="%%transaction-type%%">
+        <provider>org.eclipse.persistence.jpa.PersistenceProvider</provider>
+        <%%datasource-type%%>%%data-source-name%%</%%datasource-type%%>
+    </persistence-unit>
 </persistence>
