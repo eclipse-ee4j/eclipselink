@@ -536,10 +536,12 @@ public class AnnotationsProcessor {
             postProcessXmlAccessorOrder(info, packageNamespace);
 
             // Make sure this class has a factory method or a zero arg constructor
-            if (info.getFactoryMethodName() == null && info.getObjectFactoryClassName() == null) {
-                JavaConstructor zeroArgConstructor = javaClass.getDeclaredConstructor(new JavaClass[] {});
-                if (zeroArgConstructor == null) {
-                    throw org.eclipse.persistence.exceptions.JAXBException.factoryMethodOrConstructorRequired(javaClass.getName());
+            if(!javaClass.isInterface()) {
+                if (info.getFactoryMethodName() == null && info.getObjectFactoryClassName() == null) {
+                    JavaConstructor zeroArgConstructor = javaClass.getDeclaredConstructor(new JavaClass[] {});
+                    if (zeroArgConstructor == null) {
+                        throw org.eclipse.persistence.exceptions.JAXBException.factoryMethodOrConstructorRequired(javaClass.getName());
+                    }
                 }
             }
 

@@ -29,7 +29,13 @@ public interface Customer {
     void setAddress(Address address);
 
     @XmlElement(name="phone-number")
-    public List<PhoneNumber> getPhoneNumbers();
-    public void setPhoneNumbers(List<PhoneNumber> phoneNumbers);
+    List<PhoneNumber> getPhoneNumbers();
+    void setPhoneNumbers(List<PhoneNumber> phoneNumbers);
+
+    InterfaceWithNoFactoryMethod getInterfaceWithNoFactoryMethod();
+    void setInterfaceWithNoFactoryMethod(InterfaceWithNoFactoryMethod arg);
+
+    List<InterfaceWithNoFactoryMethod> getInterfaceWithNoFactoryMethods();
+    void setInterfaceWithNoFactoryMethods(List<InterfaceWithNoFactoryMethod> arg);
 
 }
