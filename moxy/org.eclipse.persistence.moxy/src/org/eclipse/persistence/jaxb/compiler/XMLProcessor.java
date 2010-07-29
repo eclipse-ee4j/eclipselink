@@ -223,6 +223,10 @@ public class XMLProcessor {
                     if (javaType.getXmlCustomizer() != null) {
                         info.setXmlCustomizer(javaType.getXmlCustomizer());
                     }
+                    // handle @XmlClassExtractor override
+                    if (javaType.getXmlClassExtractor() != null) {
+                        info.setClassExtractorName(javaType.getXmlClassExtractor().getClazz());
+                    }
                 }
             }
 

@@ -75,6 +75,7 @@ public class TypeInfo {
     private String factoryMethodName;
     private String[] factoryMethodParamTypes;
     private Property xmlValueProperty;
+    private String classExtractorName;
 
     private boolean isMixed;
     private boolean isTransient;
@@ -809,5 +810,33 @@ public class TypeInfo {
      */
     public void setInlineBinaryData(boolean isBinaryDataInlined) {
         this.isBinaryDataInlined = isBinaryDataInlined;
+    }
+
+    /**
+     * Indicates if a ClassExtractor class name is set, 
+     * i.e. is non-null  
+     * 
+     * @return true if classExtractorName != null, otherwise false
+     */
+    public boolean isSetClassExtractorName() {
+        return classExtractorName != null;
+    }
+
+    /**
+     * Return the ClassExtractor class name.  
+     * 
+     * @return classExtractorName
+     */
+    public String getClassExtractorName() {
+        return classExtractorName;
+    }
+
+    /**
+     * Set the ClassExtractor class name.
+     * 
+     * @param classExtractorName
+     */
+    public void setClassExtractorName(String classExtractorName) {
+        this.classExtractorName = classExtractorName;
     }
 }

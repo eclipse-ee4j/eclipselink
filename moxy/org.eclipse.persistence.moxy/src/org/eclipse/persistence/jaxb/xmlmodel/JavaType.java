@@ -33,6 +33,7 @@ import javax.xml.bind.annotation.XmlList;
  *         &lt;element ref="{http://www.eclipse.org/eclipselink/xsds/persistence/oxm}xml-root-element" minOccurs="0"/>
  *         &lt;element ref="{http://www.eclipse.org/eclipselink/xsds/persistence/oxm}xml-see-also" minOccurs="0"/>
  *         &lt;element ref="{http://www.eclipse.org/eclipselink/xsds/persistence/oxm}xml-java-type-adapter" minOccurs="0"/>
+ *         &lt;element ref="{http://www.eclipse.org/eclipselink/xsds/persistence/oxm}xml-class-extractor" minOccurs="0"/>
  *         &lt;element name="java-attributes" minOccurs="0">
  *           &lt;complexType>
  *             &lt;complexContent>
@@ -74,9 +75,11 @@ public class JavaType {
     protected List<String> xmlSeeAlso;
     @javax.xml.bind.annotation.XmlElement(name = "xml-java-type-adapter")
     protected XmlJavaTypeAdapter xmlJavaTypeAdapter;
+    @javax.xml.bind.annotation.XmlElement(name = "xml-class-extractor")
+    protected XmlClassExtractor xmlClassExtractor;
     @javax.xml.bind.annotation.XmlElement(name = "java-attributes")
     protected JavaType.JavaAttributes javaAttributes;
-    @javax.xml.bind.annotation.XmlAttribute
+    @javax.xml.bind.annotation.XmlAttribute(name = "name")
     protected String name;
     @javax.xml.bind.annotation.XmlAttribute(name = "xml-transient")
     protected Boolean xmlTransient;
@@ -188,6 +191,30 @@ public class JavaType {
      */
     public void setXmlJavaTypeAdapter(XmlJavaTypeAdapter value) {
         this.xmlJavaTypeAdapter = value;
+    }
+
+    /**
+     * Gets the value of the xmlClassExtractor property.
+     * 
+     * @return
+     *     possible object is
+     *     {@link XmlClassExtractor }
+     *     
+     */
+    public XmlClassExtractor getXmlClassExtractor() {
+        return xmlClassExtractor;
+    }
+
+    /**
+     * Sets the value of the xmlClassExtractor property.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link XmlClassExtractor }
+     *     
+     */
+    public void setXmlClassExtractor(XmlClassExtractor value) {
+        this.xmlClassExtractor = value;
     }
 
     /**
@@ -456,17 +483,18 @@ public class JavaType {
          * 
          * <p>
          * Objects of the following type(s) are allowed in the list
-         * {@link JAXBElement }{@code <}{@link XmlAnyAttribute }{@code >}
-         * {@link JAXBElement }{@code <}{@link XmlJavaTypeAdapter }{@code >}
-         * {@link JAXBElement }{@code <}{@link XmlElementRefs }{@code >}
-         * {@link JAXBElement }{@code <}{@link XmlTransient }{@code >}
          * {@link JAXBElement }{@code <}{@link XmlAnyElement }{@code >}
-         * {@link JAXBElement }{@code <}{@link org.eclipse.persistence.jaxb.xmlmodel.XmlElementRef }{@code >}
-         * {@link JAXBElement }{@code <}{@link XmlValue }{@code >}
-         * {@link JAXBElement }{@code <}{@link JavaAttribute }{@code >}
+         * {@link JAXBElement }{@code <}{@link XmlAnyAttribute }{@code >}
+         * {@link JAXBElement }{@code <}{@link XmlTransient }{@code >}
          * {@link JAXBElement }{@code <}{@link org.eclipse.persistence.jaxb.xmlmodel.XmlElement }{@code >}
-         * {@link JAXBElement }{@code <}{@link XmlElements }{@code >}
          * {@link JAXBElement }{@code <}{@link org.eclipse.persistence.jaxb.xmlmodel.XmlAttribute }{@code >}
+         * {@link JAXBElement }{@code <}{@link XmlElements }{@code >}
+         * {@link JAXBElement }{@code <}{@link XmlValue }{@code >}
+         * {@link JAXBElement }{@code <}{@link XmlJavaTypeAdapter }{@code >}
+         * {@link JAXBElement }{@code <}{@link JavaAttribute }{@code >}
+         * {@link JAXBElement }{@code <}{@link XmlElementRefs }{@code >}
+         * {@link JAXBElement }{@code <}{@link XmlInverseReference }{@code >}
+         * {@link JAXBElement }{@code <}{@link org.eclipse.persistence.jaxb.xmlmodel.XmlElementRef }{@code >}
          * 
          * 
          */

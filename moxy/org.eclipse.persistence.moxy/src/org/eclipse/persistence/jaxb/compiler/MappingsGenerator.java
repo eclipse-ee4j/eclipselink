@@ -253,6 +253,10 @@ public class MappingsGenerator {
 
         setPKField(descriptor, info);
         setSchemaContext(descriptor, info);
+        // set the ClassExtractor class name if necessary
+        if (info.isSetClassExtractorName()) {
+            descriptor.getInheritancePolicy().setClassExtractorName(info.getClassExtractorName());
+        }
         project.addDescriptor(descriptor);
         info.setDescriptor(descriptor);
     }
