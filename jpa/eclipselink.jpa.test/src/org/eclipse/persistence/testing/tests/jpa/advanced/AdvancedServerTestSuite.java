@@ -25,7 +25,7 @@ public class AdvancedServerTestSuite extends TestSuite {
     public static Test suite() {
         TestSuite suite = new TestSuite();
         suite.setName("Advanced ServerTestSuite");
-        
+        suite.addTest(AdvancedJPAJunitTest.suite());
         suite.addTest(EntityManagerJUnitTestSuite.suite());
         suite.addTest(NamedNativeQueryJUnitTest.suite());
         suite.addTest(CallbackEventJUnitTestSuite.suite());
@@ -36,7 +36,6 @@ public class AdvancedServerTestSuite extends TestSuite {
         suite.addTest(ExtendedPersistenceContextJUnitTestSuite.suite());
         suite.addTest(ReportQueryConstructorExpressionTestSuite.suite());
         suite.addTest(OptimisticConcurrencyJUnitTestSuite.suite());
-        suite.addTest(AdvancedJPAJunitTest.suite());
         suite.addTest(AdvancedJunitTest.suite());
         suite.addTest(AdvancedCompositePKJunitTest.suite());
 
