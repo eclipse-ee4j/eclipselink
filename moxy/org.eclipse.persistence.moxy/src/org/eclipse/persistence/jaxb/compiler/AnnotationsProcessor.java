@@ -97,6 +97,7 @@ import org.eclipse.persistence.jaxb.xmlmodel.XmlAccessType;
 
 import org.eclipse.persistence.oxm.NamespaceResolver;
 import org.eclipse.persistence.oxm.XMLConstants;
+import org.eclipse.persistence.oxm.annotations.XmlAccessMethods;
 import org.eclipse.persistence.oxm.annotations.XmlCDATA;
 import org.eclipse.persistence.oxm.annotations.XmlContainerProperty;
 import org.eclipse.persistence.oxm.annotations.XmlCustomizer;
@@ -1761,6 +1762,18 @@ public class AnnotationsProcessor {
         if (helper.isAnnotationPresent(property.getElement(), XmlCDATA.class)) {
             property.setCdata(true);
         }
+        if(helper.isAnnotationPresent(property.getElement(), XmlAccessMethods.class)) {
+            XmlAccessMethods accessMethods = (XmlAccessMethods)helper.getAnnotation(property.getElement(), XmlAccessMethods.class);
+            if(!(accessMethods.getMethodName().equals(""))) {
+                property.setGetMethodName(accessMethods.getMethodName());
+            }
+            if(!(accessMethods.setMethodName().equals(""))) {
+                property.setSetMethodName(accessMethods.setMethodName());
+            }
+            if(!(property.isMethodProperty())) {
+                property.setMethodProperty(true);
+            }
+        }
         
         processXmlNullPolicy(property);
     }
@@ -1933,10 +1946,16 @@ public class AnnotationsProcessor {
                 property.setTransient(isPropertyTransient);
 
                 if (getMethod != null) {
-                    property.setGetMethodName(getMethod.getName());
+                    property.setOriginalGetMethodName(getMethod.getName());
+                    if(property.getGetMethodName() == null) {
+                        property.setGetMethodName(getMethod.getName());
+                    }
                 }
                 if (setMethod != null) {
-                    property.setSetMethodName(setMethod.getName());
+                    property.setOriginalSetMethodName(setMethod.getName());
+                    if(property.getSetMethodName() == null) {
+                        property.setSetMethodName(setMethod.getName());
+                    }
                 }
                 property.setMethodProperty(true);
 
@@ -2668,7 +2687,9 @@ public class AnnotationsProcessor {
                 || helper.isAnnotationPresent(elem, XmlInverseReference.class)
                 || helper.isAnnotationPresent(elem, XmlReadOnly.class)
                 || helper.isAnnotationPresent(elem, XmlWriteOnly.class)
-                || helper.isAnnotationPresent(elem, XmlCDATA.class)) {
+                || helper.isAnnotationPresent(elem, XmlCDATA.class)
+                || helper.isAnnotationPresent(elem, XmlAccessMethods.class)
+                || helper.isAnnotationPresent(elem, XmlNullPolicy.class)) {
             return true;
         
         }

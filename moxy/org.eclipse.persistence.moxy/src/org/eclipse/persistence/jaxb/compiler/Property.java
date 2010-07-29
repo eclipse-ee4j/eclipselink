@@ -63,6 +63,12 @@ public class Property {
     private boolean isAnyAttribute = false;
     private boolean isAnyElement = false;
     private Helper helper;
+    
+    //Original get and set methods for this property
+    //Used to keep track of overrides
+    private String originalGetMethodName;
+    private String originalSetMethodName;
+    
     private String getMethodName;
     private String setMethodName;
     private boolean isRequired = false;
@@ -324,6 +330,22 @@ public class Property {
     public void setSetMethodName(String methodName) {
         setMethodName = methodName;
     }
+    
+    public String getOriginalGetMethodName() {
+        return originalGetMethodName;
+    }
+    
+    public void setOriginalGetMethodName(String methodName) {
+        originalGetMethodName = methodName;
+    }
+    
+    public String getOriginalSetMethodName() {
+        return originalSetMethodName;
+    }
+    
+    public void setOriginalSetMethodName(String methodName) {
+        originalSetMethodName = methodName;
+    }    
     
     /**
      * Indicates if this property represents a choice property.

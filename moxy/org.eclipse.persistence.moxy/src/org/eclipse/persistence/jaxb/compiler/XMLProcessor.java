@@ -1113,6 +1113,11 @@ public class XMLProcessor {
         oldProperty.setWriteOnly(false);
         oldProperty.setCdata(false);
         oldProperty.setNullPolicy(null);
+        oldProperty.setGetMethodName(oldProperty.getOriginalGetMethodName());
+        oldProperty.setSetMethodName(oldProperty.getOriginalSetMethodName());
+        if(oldProperty.getGetMethodName() == null && oldProperty.getSetMethodName() == null) {
+            oldProperty.setMethodProperty(false);
+        }
         unsetXmlElementRefs(oldProperty, tInfo);
         unsetXmlElements(oldProperty);
         unsetXmlAnyAttribute(oldProperty, tInfo);

@@ -16,6 +16,7 @@ import java.util.List;
 
 import javax.xml.bind.annotation.XmlAttribute;
 
+import org.eclipse.persistence.oxm.annotations.XmlAccessMethods;
 import org.eclipse.persistence.oxm.annotations.XmlPath;
 
 public class Employee {
@@ -30,6 +31,7 @@ public class Employee {
     public Double salary;
     public String privateData;
     public String characterData; 
+    @XmlAccessMethods(getMethodName="someFakeMethod", setMethodName="anotherFakeMethod")
     public String someString;
     public String aString;
 
