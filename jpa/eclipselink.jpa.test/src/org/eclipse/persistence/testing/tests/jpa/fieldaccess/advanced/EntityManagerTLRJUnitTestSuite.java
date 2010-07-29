@@ -9,6 +9,8 @@
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
+ *     27/07/2010 - 2.1.1 Sabine Heider 
+ *          304650: fix left over entity data interfering with testSetRollbackOnly
  ******************************************************************************/  
 package org.eclipse.persistence.testing.tests.jpa.fieldaccess.advanced;
 
@@ -495,15 +497,17 @@ public class EntityManagerTLRJUnitTestSuite extends JUnitTestCase {
     public void testSetRollbackOnly(){
         EntityManager em = createEntityManager("fieldaccess");
         beginTransaction(em);
+        Employee emp = null;
+        Employee emp2 = null;
         try{
-            Employee emp = new Employee();
+            emp = new Employee();
             emp.setFirstName("Bob");
             emp.setLastName("Fisher");
             em.persist(emp);
-            emp = new Employee();
-            emp.setFirstName("Anthony");
-            emp.setLastName("Walace");
-            em.persist(emp);
+            emp2 = new Employee();
+            emp2.setFirstName("Anthony");
+            emp2.setLastName("Walace");
+            em.persist(emp2);
             commitTransaction(em);
         }catch (RuntimeException ex){
             if (isTransactionActive(em)){
@@ -515,10 +519,10 @@ public class EntityManagerTLRJUnitTestSuite extends JUnitTestCase {
         clearCache("fieldaccess");
         em = createEntityManager("fieldaccess");
         beginTransaction(em);
-        List result = em.createQuery("SELECT e FROM Employee e").getResultList();
-        Employee emp = (Employee)result.get(0);
+        List result = em.createQuery("SELECT e FROM Employee e where e.id = " + emp.getId() + " or e.id = " + emp2.getId()).getResultList();
+        emp = (Employee)result.get(0);
         emp.toString();
-        Employee emp2 = (Employee)result.get(1);
+        emp2 = (Employee)result.get(1);
         String newName = ""+System.currentTimeMillis();
         emp2.setFirstName(newName);
         em.flush();
