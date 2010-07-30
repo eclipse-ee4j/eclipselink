@@ -8,17 +8,22 @@
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
- * dmccann - July 28/2010 - 2.2 - Initial implementation
+ * Oracle - 2.2 - Initial implementation
  ******************************************************************************/
-package org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmlclassextractor;
+package org.eclipse.persistence.testing.jaxb.annotations.xmlclassextractor;
+
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlRootElement;
 
 import org.eclipse.persistence.oxm.annotations.XmlClassExtractor;
 import org.eclipse.persistence.sessions.Record;
 
-@XmlClassExtractor(MyOtherClassExtractor.class)
+@XmlClassExtractor(MyClassExtractor.class)
+@XmlRootElement(name="vehicle")
 public class Vehicle {
     public String model;
     public String manufacturer;
+    @XmlElement(name="top-speed")
     public int topSpeed;
 
     public boolean equals(Object theVehicle) {

@@ -99,6 +99,7 @@ import org.eclipse.persistence.oxm.NamespaceResolver;
 import org.eclipse.persistence.oxm.XMLConstants;
 import org.eclipse.persistence.oxm.annotations.XmlAccessMethods;
 import org.eclipse.persistence.oxm.annotations.XmlCDATA;
+import org.eclipse.persistence.oxm.annotations.XmlClassExtractor;
 import org.eclipse.persistence.oxm.annotations.XmlContainerProperty;
 import org.eclipse.persistence.oxm.annotations.XmlCustomizer;
 import org.eclipse.persistence.oxm.annotations.XmlInverseReference;
@@ -451,6 +452,12 @@ public class AnnotationsProcessor {
 
             // handle package level @XmlSchemaType(s)
             processSchemaTypes(javaClass, info);
+            
+            // handle class extractor
+            if(helper.isAnnotationPresent(javaClass, XmlClassExtractor.class)) {
+                XmlClassExtractor classExtractor = (XmlClassExtractor)helper.getAnnotation(javaClass, XmlClassExtractor.class);
+                info.setClassExtractorName(classExtractor.value().getName());
+            }
 
             typeInfoClasses.add(javaClass);
             typeInfo.put(javaClass.getQualifiedName(), info);
