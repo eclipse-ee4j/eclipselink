@@ -879,7 +879,9 @@ public class InheritedModelJunitTest extends JUnitTestCase {
                 if (isTransactionActive(em)){
                     rollbackTransaction(em);
                 }
-                if(em.isOpen()) {
+                if(isOnServer()) {
+                    closeEntityManager(em);
+                } else if(em.isOpen()) {
                     closeEntityManager(em);
                 }
             }
