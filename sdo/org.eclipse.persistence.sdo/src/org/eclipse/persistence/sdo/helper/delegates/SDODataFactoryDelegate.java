@@ -66,6 +66,9 @@ public class SDODataFactoryDelegate implements SDODataFactory {
                 loadersAreRelated = true;
             }
             parentLoader = contextLoader.getParent();
+            if(parentLoader == contextLoader) {
+                break;
+            }
         }
         
         throw new IllegalArgumentException(SDOException.typeNotFoundForInterface(interfaceClass.getName(), loadersAreRelated));
