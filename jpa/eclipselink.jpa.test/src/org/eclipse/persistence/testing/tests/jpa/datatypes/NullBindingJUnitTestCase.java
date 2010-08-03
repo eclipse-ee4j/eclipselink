@@ -369,6 +369,12 @@ public class NullBindingJUnitTestCase extends JUnitTestCase {
      */
     public void testCreateByteArrayType() {
         EntityManager em = createEntityManager();
+
+        if ((JUnitTestCase.getServerSession()).getPlatform().isDerby()) {
+            warning("Warning: Derby does not support setting a BLOB to null. For details, see https://bugs.eclipse.org/bugs/show_bug.cgi?id=296293");
+            return;
+        }
+
         Query q;
         ByteArrayType bat, bat2;
 
