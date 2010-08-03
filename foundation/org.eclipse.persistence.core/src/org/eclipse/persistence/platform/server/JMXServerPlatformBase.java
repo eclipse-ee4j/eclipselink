@@ -445,18 +445,19 @@ public abstract class JMXServerPlatformBase extends ServerPlatformBase {
 
     /**
      * INTERNAL:
-     * Get the applicationName and moduleName from the application server
+     * Get the applicationName and moduleName from the application server.
+     * This function does not use reflective API on the application server, instead it parses
+     * the database session name for the module name, and 
+     * the classLoader (from the Platform.conversionManager) toString() for the application name.
      * @return
      */
     protected void initializeApplicationNameAndModuleName() {
+        // The database session name is used to get the module name (no reflection required)
         String databaseSessionName = getDatabaseSession().getName();
+        // The classLoader toString() is used to get the application name (no reflection required)
         String classLoaderName = getDatabaseSession().getPlatform().getConversionManager().getLoader().toString();
-        String contextClassLoader = Thread.currentThread().getContextClassLoader().toString();
         AbstractSessionLog.getLog().log(SessionLog.FINEST, "jmx_mbean_classloader_in_use", 
                 "Platform ConversionManager", classLoaderName);
-        AbstractSessionLog.getLog().log(SessionLog.FINEST, "jmx_mbean_classloader_in_use", 
-                "Context", contextClassLoader);
-        
         // Get property from persistence.xml or sessions.xml
         String jpaModuleName = getModuleName(false);
         String jpaApplicationName = getApplicationName(false);     

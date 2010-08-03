@@ -14,7 +14,6 @@
  ******************************************************************************/  
 package org.eclipse.persistence.services.mbean;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Vector;
 
