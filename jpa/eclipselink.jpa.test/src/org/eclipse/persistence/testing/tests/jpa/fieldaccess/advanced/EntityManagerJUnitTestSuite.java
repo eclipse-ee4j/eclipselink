@@ -2738,8 +2738,9 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
     public void testSequenceObjectDefinition() {
         EntityManager em = createEntityManager("fieldaccess");
         ServerSession ss = getServerSession("fieldaccess");
-        if(!ss.getLogin().getPlatform().supportsSequenceObjects()) {
+        if(!ss.getLogin().getPlatform().supportsSequenceObjects() || isOnServer()) {
             // platform that supports sequence objects is required for this test
+            // this test not work on server since the bug: 262251
             closeEntityManager(em);
             return;
         }
