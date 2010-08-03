@@ -288,6 +288,12 @@ public class UpdateAllQueryAdvancedJunitTest extends JUnitTestCase {
     
     public void testAssignObjectToAddress() {
         EntityManager em = createEntityManager("fieldaccess");
+
+        if (isOnServer()) {
+            warning("Warning: The test uses UnitOfWork directly, not JPA, so will not work correctly with JTA. For details, see https://bugs.eclipse.org/bugs/show_bug.cgi?id=305040");
+            return;
+        }
+
         beginTransaction(em);
         try{
             Address address = new Address();
