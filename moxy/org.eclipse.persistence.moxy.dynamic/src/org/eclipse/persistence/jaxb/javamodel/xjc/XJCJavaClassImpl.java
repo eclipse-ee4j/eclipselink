@@ -102,7 +102,7 @@ public class XJCJavaClassImpl implements JavaClass {
             typeParams = xjcClass.typeParams();
         }
 
-        if(null == typeParams || 0 == typeParams.length) {
+        if (null == typeParams || 0 == typeParams.length) {
             return null;
         }
 
