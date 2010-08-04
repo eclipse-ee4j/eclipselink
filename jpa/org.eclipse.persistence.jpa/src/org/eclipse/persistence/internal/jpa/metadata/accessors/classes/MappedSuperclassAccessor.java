@@ -50,6 +50,8 @@
  *       - 308729: Persistent Unit deployment exception when mappedsuperclass has no annotations but has lifecycle callbacks
  *     07/05/2010-2.1.1 Guy Pelletier 
  *       - 317708: Exception thrown when using LAZY fetch on VIRTUAL mapping
+ *     08/04/2010-2.1.1 Guy Pelletier
+ *       - 315782: JPA2 derived identity metadata processing validation doesn't account for autoboxing
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata.accessors.classes;
 
@@ -1151,14 +1153,14 @@ public class MappedSuperclassAccessor extends ClassAccessor {
                 for (MetadataMethod method : m_idClass.getMethods().values()) {
                     // The is valid check will throw an exception if needed.
                     if (method.isValidPersistenceMethod(false, getDescriptor())) {
-                        getDescriptor().addPKClassId(method.getAttributeName(), method.getType());
+                        getDescriptor().addPKClassId(method.getAttributeName(), getBoxedType(method.getType()));
                     }
                 }
             } else {
                 for (MetadataField field : m_idClass.getFields().values()) {
                     // The is valid check will throw an exception if needed.
                     if (field.isValidPersistenceField(false, getDescriptor())) {
-                        getDescriptor().addPKClassId(field.getName(), field.getType());
+                        getDescriptor().addPKClassId(field.getName(), getBoxedType(field.getType()));
                     }
                 }
             }

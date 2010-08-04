@@ -10,6 +10,8 @@
  * Contributors:
  *     02/02/2009-2.0 Chris delahunt 
  *       - 241765: JPA 2.0 Derived identities
+ *     08/04/2010-2.1.1 Guy Pelletier
+ *       - 315782: JPA2 derived identity metadata processing validation doesn't account for autoboxing
  ******************************************************************************/  
 package org.eclipse.persistence.testing.models.jpa.advanced.derivedid;
 
@@ -18,17 +20,17 @@ import org.eclipse.persistence.testing.models.jpa.advanced.compositepk.Departmen
 public class DepartmentAdminRolePK {
     public DepartmentPK department;
 
-    public Integer admin;
+    public int admin;
 
     public DepartmentAdminRolePK(){
     }
     
-    public DepartmentAdminRolePK(String depName, String depRole, String depLocation, Integer employeeId) {
+    public DepartmentAdminRolePK(String depName, String depRole, String depLocation, int employeeId) {
         this.department = new DepartmentPK(depName, depRole, depLocation);
         this.admin = employeeId;
     }
     
-    public Integer getAdmin(){
+    public int getAdmin(){
         return admin;
     }
 
@@ -36,7 +38,7 @@ public class DepartmentAdminRolePK {
         return department;
     }
 
-    public void setAdmin(Integer admin){
+    public void setAdmin(int admin){
         this.admin = admin;
     }
 
@@ -49,7 +51,7 @@ public class DepartmentAdminRolePK {
             return false;
         }
         DepartmentAdminRolePK pk = (DepartmentAdminRolePK)object;
-        return pk.getAdmin().equals(admin) && pk.getDepartment().equals(department);
+        return pk.getAdmin() == admin && pk.getDepartment().equals(department);
     }
     
     public int hashCode(){

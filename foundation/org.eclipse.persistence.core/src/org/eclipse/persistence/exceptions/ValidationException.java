@@ -403,6 +403,8 @@ public class ValidationException extends EclipseLinkException {
     public static final int FETCH_GROUP_HAS_WRONG_REFERENCE_ATTRIBUTE = 7330;
     public static final int FETCH_GROUP_HAS_WRONG_REFERENCE_CLASS = 7331;
     
+    public static final int INVALID_DERIVED_COMPOSITE_PK_ATTRIBUTE = 7332;
+    
     /**
      * INTERNAL:
      * EclipseLink exceptions should only be thrown by EclipseLink.
@@ -1115,11 +1117,19 @@ public class ValidationException extends EclipseLinkException {
         return validationException;
     }
 
-    public static ValidationException invalidCompositePKAttribute(Object entityClass, String pkClassName, String attributeName, Object expectedType, Object actualType) {
-        Object[] args = { entityClass, pkClassName, attributeName, expectedType, actualType };
+    public static ValidationException invalidCompositePKAttribute(String entityClassName, String pkClassName, String attributeName, Object expectedType, Object actualType) {
+        Object[] args = { entityClassName, pkClassName, attributeName, expectedType, actualType };
 
         ValidationException validationException = new ValidationException(ExceptionMessageGenerator.buildMessage(ValidationException.class, INVALID_COMPOSITE_PK_ATTRIBUTE, args));
         validationException.setErrorCode(INVALID_COMPOSITE_PK_ATTRIBUTE);
+        return validationException;
+    }
+    
+    public static ValidationException invalidDerivedCompositePKAttribute(Object entityClass, String pkClassName, String attributeName, Object expectedType, Object actualType) {
+        Object[] args = { entityClass, pkClassName, attributeName, expectedType, actualType };
+
+        ValidationException validationException = new ValidationException(ExceptionMessageGenerator.buildMessage(ValidationException.class, INVALID_DERIVED_COMPOSITE_PK_ATTRIBUTE, args));
+        validationException.setErrorCode(INVALID_DERIVED_COMPOSITE_PK_ATTRIBUTE);
         return validationException;
     }
     

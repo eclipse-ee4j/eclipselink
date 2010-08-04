@@ -41,6 +41,8 @@
  *       - 264417: Table generation is incorrect for JoinTables in AssociationOverrides
  *     07/05/2010-2.1.1 Guy Pelletier 
  *       - 317708: Exception thrown when using LAZY fetch on VIRTUAL mapping
+ *     08/04/2010-2.1.1 Guy Pelletier
+ *       - 315782: JPA2 derived identity metadata processing validation doesn't account for autoboxing
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata.accessors.mappings;
 
@@ -434,21 +436,22 @@ public abstract class ObjectAccessor extends RelationshipAccessor {
     protected void processId(OneToOneMapping mapping) {
         // If this entity has a pk class, we need to validate our ids.
         MetadataDescriptor referenceDescriptor = getReferenceDescriptor();
-        String keyname = referenceDescriptor.getPKClassName();
+        String referencePKClassName = referenceDescriptor.getPKClassName();
 
-        if (keyname != null) {
+        if (referencePKClassName != null) {
             // They have a pk class
-            String ourpkname = getDescriptor().getPKClassName();
-            if (ourpkname == null){
-                throw ValidationException.invalidCompositePKSpecification(getJavaClass(), ourpkname);
+            String pkClassName = getDescriptor().getPKClassName();
+            if (pkClassName == null){
+                throw ValidationException.invalidCompositePKSpecification(getJavaClass(), pkClassName);
             }
             
-            if (! ourpkname.equals(keyname)){
-                // Validate our pk contains their pk.
-                getOwningDescriptor().validatePKClassId(getAttributeName(), referenceDescriptor.getPKClass());
-            } else {
-                // This pk is the reference pk, so all pk attributes are accounted through this relationship
+            if (pkClassName.equals(referencePKClassName)){
+                // This pk is the reference pk, so all pk attributes are 
+                // accounted through this relationship.
                 getOwningDescriptor().getPKClassIDs().clear();
+            } else {
+                // Validate our pk contains their pk.
+                getOwningDescriptor().validateDerivedPKClassId(getAttributeName(), referencePKClassName, getReferenceClassName());
             }
         } else {
             MetadataClass type = null;
@@ -462,7 +465,7 @@ public abstract class ObjectAccessor extends RelationshipAccessor {
                 type = referenceDescriptor.getMappingAccessor(referenceDescriptor.getIdAttributeName()).getRawClass();
             }
             
-            getOwningDescriptor().validatePKClassId(getAttributeName(), type);
+            getOwningDescriptor().validateDerivedPKClassId(getAttributeName(), getBoxedType(type.getName()), getReferenceClassName());
         }
 
         // Store the Id attribute name. Used with validation and OrderBy.

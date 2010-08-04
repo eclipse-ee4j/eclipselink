@@ -20,6 +20,8 @@
  *       - 309856: MappedSuperclasses from XML are not being initialized properly
  *     05/14/2010-2.1 Guy Pelletier 
  *       - 253083: Add support for dynamic persistence using ORM.xml/eclipselink-orm.xml
+ *     08/04/2010-2.1.1 Guy Pelletier
+ *       - 315782: JPA2 derived identity metadata processing validation doesn't account for autoboxing
  ******************************************************************************/ 
 package org.eclipse.persistence.internal.jpa.metadata;
 
@@ -81,6 +83,9 @@ public abstract class ORMetadata {
     // Lookup of classname to Class to resolve primitive classes
     protected static Map<String, Class> primitiveClasses = null;
     
+    // Lookup of boxed types of primitive classes.
+    protected static Map<String, String> boxedTypes = null;
+    
     /**
      * INTERNAL:
      * Used for defaulting case.
@@ -135,6 +140,35 @@ public abstract class ORMetadata {
      */
     protected MetadataAnnotation getAnnotation() {
         return m_annotation;
+    }
+    
+    /**
+     * INTERNAL:
+     * Quick lookup of a primitive boxed type.
+     */
+    protected String getBoxedType(String type) {
+        if (boxedTypes == null){
+            boxedTypes = new HashMap<String, String>();
+            boxedTypes.put("void", Void.class.getName());
+			boxedTypes.put("boolean", Boolean.class.getName());
+            boxedTypes.put("byte", Byte.class.getName());
+            boxedTypes.put("char", Character.class.getName());
+            boxedTypes.put("double", Double.class.getName());
+            boxedTypes.put("float", Float.class.getName());
+            boxedTypes.put("int", Integer.class.getName());
+            boxedTypes.put("long", Long.class.getName());
+            boxedTypes.put("short", Short.class.getName());
+            boxedTypes.put("byte[]", new Byte[0].getClass().getName());
+            boxedTypes.put("char[]", new Character[0].getClass().getName());
+            boxedTypes.put("boolean[]", new Boolean[0].getClass().getName());
+            boxedTypes.put("double[]", new Double[0].getClass().getName());
+            boxedTypes.put("float[]", new Float[0].getClass().getName());
+            boxedTypes.put("int[]", new Integer[0].getClass().getName());
+            boxedTypes.put("long[]", new Long[0].getClass().getName());
+            boxedTypes.put("short[]", new Short[0].getClass().getName());
+        }
+        
+        return (boxedTypes.containsKey(type)) ? boxedTypes.get(type) : type;
     }
     
     /**

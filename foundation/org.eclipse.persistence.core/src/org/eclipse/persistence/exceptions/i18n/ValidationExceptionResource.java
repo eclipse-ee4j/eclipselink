@@ -304,6 +304,8 @@ public class ValidationExceptionResource extends ListResourceBundle {
                                            { "7329", "Attribute {1} of {0} is not mapped."},
                                            { "7330", "Attribute {1} of {0} references a nested fetch group but either not mapped with ForeignReferenceMapping or the mapping does not have reference descriptor."},
                                            { "7331", "Attribute {1} of {0} references a nested fetch group but the target class does not support fetch groups."},
+                                           { "7332", "The derived composite primary key attribute [{2}] of type [{4}] from [{1}] should be of the same type as its parent id field from [{0}]. That is, it should be of type [{3}]." },
+                                           
                                            
  };
     
