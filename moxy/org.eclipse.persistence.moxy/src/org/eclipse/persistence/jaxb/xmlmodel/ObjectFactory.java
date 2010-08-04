@@ -38,6 +38,7 @@ public class ObjectFactory {
     private final static QName _XmlAttribute_QNAME = new QName("http://www.eclipse.org/eclipselink/xsds/persistence/oxm", "xml-attribute");
     private final static QName _XmlInverseReference_QNAME = new QName("http://www.eclipse.org/eclipselink/xsds/persistence/oxm", "xml-inverse-reference");
     private final static QName _JavaAttribute_QNAME = new QName("http://www.eclipse.org/eclipselink/xsds/persistence/oxm", "java-attribute");
+    private final static QName _XmlClassExtractor_QNAME = new QName("http://www.eclipse.org/eclipselink/xsds/persistence/oxm", "xml-class-extractor");
     private final static QName _XmlNullPolicy_QNAME = new QName("http://www.eclipse.org/eclipselink/xsds/persistence/oxm", "xml-null-policy");
     private final static QName _XmlElementRefs_QNAME = new QName("http://www.eclipse.org/eclipselink/xsds/persistence/oxm", "xml-element-refs");
     private final static QName _XmlAnyElement_QNAME = new QName("http://www.eclipse.org/eclipselink/xsds/persistence/oxm", "xml-any-element");
@@ -49,7 +50,9 @@ public class ObjectFactory {
     private final static QName _XmlAbstractNullPolicy_QNAME = new QName("http://www.eclipse.org/eclipselink/xsds/persistence/oxm", "xml-abstract-null-policy");
     private final static QName _XmlElementRef_QNAME = new QName("http://www.eclipse.org/eclipselink/xsds/persistence/oxm", "xml-element-ref");
     private final static QName _XmlIsSetNullPolicy_QNAME = new QName("http://www.eclipse.org/eclipselink/xsds/persistence/oxm", "xml-is-set-null-policy");
+    private final static QName _XmlTransformation_QNAME = new QName("http://www.eclipse.org/eclipselink/xsds/persistence/oxm", "xml-transformation");
     private final static QName _XmlElements_QNAME = new QName("http://www.eclipse.org/eclipselink/xsds/persistence/oxm", "xml-elements");
+    private final static QName _XmlProperties_QNAME = new QName("http://www.eclipse.org/eclipselink/xsds/persistence/oxm", "xml-properties");
     private final static QName _XmlAnyAttribute_QNAME = new QName("http://www.eclipse.org/eclipselink/xsds/persistence/oxm", "xml-any-attribute");
 
     /**
@@ -105,6 +108,14 @@ public class ObjectFactory {
      */
     public XmlElements createXmlElements() {
         return new XmlElements();
+    }
+
+    /**
+     * Create an instance of {@link XmlTransformation.XmlReadTransformer }
+     * 
+     */
+    public XmlTransformation.XmlReadTransformer createXmlTransformationXmlReadTransformer() {
+        return new XmlTransformation.XmlReadTransformer();
     }
 
     /**
@@ -276,6 +287,14 @@ public class ObjectFactory {
     }
 
     /**
+     * Create an instance of {@link XmlTransformation }
+     * 
+     */
+    public XmlTransformation createXmlTransformation() {
+        return new XmlTransformation();
+    }
+
+    /**
      * Create an instance of {@link XmlBindings.XmlRegistries }
      * 
      */
@@ -373,6 +392,15 @@ public class ObjectFactory {
     @javax.xml.bind.annotation.XmlElementDecl(namespace = "http://www.eclipse.org/eclipselink/xsds/persistence/oxm", name = "java-attribute")
     public JAXBElement<JavaAttribute> createJavaAttribute(JavaAttribute value) {
         return new JAXBElement<JavaAttribute>(_JavaAttribute_QNAME, JavaAttribute.class, null, value);
+    }
+
+    /**
+     * Create an instance of {@link JAXBElement }{@code <}{@link XmlClassExtractor }{@code >}}
+     * 
+     */
+    @javax.xml.bind.annotation.XmlElementDecl(namespace = "http://www.eclipse.org/eclipselink/xsds/persistence/oxm", name = "xml-class-extractor")
+    public JAXBElement<XmlClassExtractor> createXmlClassExtractor(XmlClassExtractor value) {
+        return new JAXBElement<XmlClassExtractor>(_XmlClassExtractor_QNAME, XmlClassExtractor.class, null, value);
     }
 
     /**
@@ -475,12 +503,30 @@ public class ObjectFactory {
     }
 
     /**
+     * Create an instance of {@link JAXBElement }{@code <}{@link XmlTransformation }{@code >}}
+     * 
+     */
+    @javax.xml.bind.annotation.XmlElementDecl(namespace = "http://www.eclipse.org/eclipselink/xsds/persistence/oxm", name = "xml-transformation", substitutionHeadNamespace = "http://www.eclipse.org/eclipselink/xsds/persistence/oxm", substitutionHeadName = "java-attribute")
+    public JAXBElement<XmlTransformation> createXmlTransformation(XmlTransformation value) {
+        return new JAXBElement<XmlTransformation>(_XmlTransformation_QNAME, XmlTransformation.class, null, value);
+    }
+
+    /**
      * Create an instance of {@link JAXBElement }{@code <}{@link XmlElements }{@code >}}
      * 
      */
     @javax.xml.bind.annotation.XmlElementDecl(namespace = "http://www.eclipse.org/eclipselink/xsds/persistence/oxm", name = "xml-elements", substitutionHeadNamespace = "http://www.eclipse.org/eclipselink/xsds/persistence/oxm", substitutionHeadName = "java-attribute")
     public JAXBElement<XmlElements> createXmlElements(XmlElements value) {
         return new JAXBElement<XmlElements>(_XmlElements_QNAME, XmlElements.class, null, value);
+    }
+
+    /**
+     * Create an instance of {@link JAXBElement }{@code <}{@link XmlProperties }{@code >}}
+     * 
+     */
+    @javax.xml.bind.annotation.XmlElementDecl(namespace = "http://www.eclipse.org/eclipselink/xsds/persistence/oxm", name = "xml-properties")
+    public JAXBElement<XmlProperties> createXmlProperties(XmlProperties value) {
+        return new JAXBElement<XmlProperties>(_XmlProperties_QNAME, XmlProperties.class, null, value);
     }
 
     /**

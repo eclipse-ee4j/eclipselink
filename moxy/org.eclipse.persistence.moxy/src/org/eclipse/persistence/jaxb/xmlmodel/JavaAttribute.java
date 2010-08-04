@@ -48,6 +48,7 @@ import javax.xml.bind.annotation.XmlType;
     XmlElement.class,
     XmlAnyElement.class,
     XmlElements.class,
+    XmlTransformation.class,
     XmlElementRef.class
 })
 public abstract class JavaAttribute {

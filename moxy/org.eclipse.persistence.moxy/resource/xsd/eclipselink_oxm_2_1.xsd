@@ -486,4 +486,30 @@
             </xs:complexContent>
         </xs:complexType>
     </xs:element>
+    <xs:element name="xml-transformation" substitutionGroup="java-attribute">
+        <xs:complexType>
+            <xs:complexContent>
+                <xs:extension base="java-attribute">
+                    <xs:sequence>
+                        <xs:element name="xml-access-methods" type="xml-access-methods" minOccurs="0"/>
+                        <xs:element ref="xml-properties" minOccurs="0"/>
+                        <xs:element name="xml-read-transformer">
+                            <xs:complexType>
+                                <xs:attribute name="method" type="xs:string" />
+                                <xs:attribute name="transformer-class" type="xs:string" />
+                            </xs:complexType>
+                        </xs:element>
+                        <xs:element name="xml-write-transformer" minOccurs="0" maxOccurs="unbounded">
+                            <xs:complexType>
+                                <xs:attribute name="method" type="xs:string" />
+                                <xs:attribute name="xml-path" type="xs:string" />
+                                <xs:attribute name="transformer-class" type="xs:string" />
+                            </xs:complexType>
+                        </xs:element>
+                    </xs:sequence>
+                    <xs:attribute name="optional" type="xs:boolean" default="false"/>
+                </xs:extension>
+            </xs:complexContent>
+        </xs:complexType>
+    </xs:element>
 </xs:schema>
