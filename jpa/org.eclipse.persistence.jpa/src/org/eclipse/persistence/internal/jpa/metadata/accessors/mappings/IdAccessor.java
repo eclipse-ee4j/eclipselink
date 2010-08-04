@@ -21,6 +21,8 @@
  *       - 290567: mappedbyid support incomplete
  *     04/27/2010-2.1 Guy Pelletier 
  *       - 309856: MappedSuperclasses from XML are not being initialized properly
+ *     08/04/2010-2.1.1 Guy Pelletier
+ *       - 315782: JPA2 derived identity metadata processing validation doesn't account for autoboxing
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata.accessors.mappings;
 
@@ -89,7 +91,7 @@ public class IdAccessor extends BasicAccessor {
             }
 
             // If this entity has a pk class, we need to validate our ids. 
-            owningDescriptor.validatePKClassId(attributeName, getReferenceClass());
+            owningDescriptor.validatePKClassId(attributeName, getBoxedType(getReferenceClassName()));
 
             // Store the Id attribute name. Used with validation and OrderBy.
             owningDescriptor.addIdAttributeName(attributeName);

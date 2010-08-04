@@ -64,6 +64,8 @@
  *       - 307547:  Exception in order by clause after migrating to eclipselink 1.2 release
  *     06/01/2010-2.1 Guy Pelletier 
  *       - 315195: Add new property to avoid reading XML during the canonical model generation
+ *     08/04/2010-2.1.1 Guy Pelletier
+ *       - 315782: JPA2 derived identity metadata processing validation doesn't account for autoboxing
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata;
 
@@ -364,8 +366,13 @@ public class MetadataDescriptor {
     
     /**
      * INTERNAL:
-     * We store these to validate the primary class when processing
-     * the entity class.
+     * We store these to validate the primary class when processing the entity 
+     * class. Note: the pk id types are always stored as their boxed type (if 
+     * applicable). Validation should therefore always be done against boxed 
+     * types.
+     * 
+     * @see validateDerivedPKClassId
+     * @see validatePKClassId
      */
     public void addPKClassId(String attributeName, String type) {
         m_pkClassIDs.put(attributeName, type);
@@ -1740,20 +1747,42 @@ public class MetadataDescriptor {
         // is, we won't have processed the cascade value.
         return m_usesCascadedOptimisticLocking != null;
     }
-
+    
+    /**
+     * INTERNAL:
+     * This method is used to validate derived id fields only. Re-using the
+     * invalid composite pk attribute validation exception would yield an
+     * interesting error message. Therefore, this method should be used
+     * to validate derived id members. When validating derived ids things are
+     * slightly reversed in terms on context. The expectedType passed in should
+     * be the boxed type (were applicable).
+     */
+    public void validateDerivedPKClassId(String attributeName, String expectedType, String referenceClassName) {
+        if (m_pkClassIDs.containsKey(attributeName))  {
+            String actualType = m_pkClassIDs.get(attributeName);
+            
+            if (actualType.equals(expectedType)) {
+                m_pkClassIDs.remove(attributeName);
+            } else {
+                throw ValidationException.invalidDerivedCompositePKAttribute(referenceClassName, getPKClassName(), attributeName, expectedType, actualType);
+            }
+        }
+    }
+    
     /**
      * INTERNAL:
      * This method is used only to validate id fields that were found on a
-     * pk class were also found on the entity.  This is used for DerivedIds where the
-     * Type is only available as a string
+     * pk class were also found on the entity. The actualType passed in should
+     * be the boxed type (were applicable).
      */
-    public void validatePKClassId(String attributeName, MetadataClass type) {
+    public void validatePKClassId(String attributeName, String actualType) {
         if (m_pkClassIDs.containsKey(attributeName))  {
             String expectedType =  m_pkClassIDs.get(attributeName);
-            if (expectedType.equals(type.getName())) {
+            
+            if (expectedType.equals(actualType)) {
                 m_pkClassIDs.remove(attributeName);
             } else {
-                throw ValidationException.invalidCompositePKAttribute(getJavaClass(), getPKClassName(), attributeName, expectedType, null);
+                throw ValidationException.invalidCompositePKAttribute(getJavaClassName(), getPKClassName(), attributeName, expectedType, actualType);
             }
         }
     }
