@@ -30,6 +30,7 @@ import javax.xml.bind.annotation.XmlType;
  *     &lt;extension base="{http://www.eclipse.org/eclipselink/xsds/persistence/oxm}java-attribute">
  *       &lt;all>
  *         &lt;element ref="{http://www.eclipse.org/eclipselink/xsds/persistence/oxm}xml-element-wrapper" minOccurs="0"/>
+ *         &lt;element ref="{http://www.eclipse.org/eclipselink/xsds/persistence/oxm}xml-properties" minOccurs="0"/>
  *       &lt;/all>
  *       &lt;attribute name="name" type="{http://www.w3.org/2001/XMLSchema}string" default="##default" />
  *       &lt;attribute name="namespace" type="{http://www.w3.org/2001/XMLSchema}string" />
@@ -43,7 +44,8 @@ import javax.xml.bind.annotation.XmlType;
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "", propOrder = {
-    "xmlElementWrapper"
+    "xmlElementWrapper",
+    "xmlProperties"
 })
 public class XmlElementRef
     extends JavaAttribute
@@ -51,11 +53,13 @@ public class XmlElementRef
 
     @XmlElement(name = "xml-element-wrapper")
     protected XmlElementWrapper xmlElementWrapper;
-    @XmlAttribute
+    @XmlElement(name = "xml-properties")
+    protected XmlProperties xmlProperties;
+    @XmlAttribute(name = "name")
     protected String name;
-    @XmlAttribute
+    @XmlAttribute(name = "namespace")
     protected String namespace;
-    @XmlAttribute
+    @XmlAttribute(name = "type")
     protected String type;
 
     /**
@@ -80,6 +84,30 @@ public class XmlElementRef
      */
     public void setXmlElementWrapper(XmlElementWrapper value) {
         this.xmlElementWrapper = value;
+    }
+
+    /**
+     * Gets the value of the xmlProperties property.
+     * 
+     * @return
+     *     possible object is
+     *     {@link XmlProperties }
+     *     
+     */
+    public XmlProperties getXmlProperties() {
+        return xmlProperties;
+    }
+
+    /**
+     * Sets the value of the xmlProperties property.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link XmlProperties }
+     *     
+     */
+    public void setXmlProperties(XmlProperties value) {
+        this.xmlProperties = value;
     }
 
     /**

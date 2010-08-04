@@ -16,6 +16,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 
 import javax.xml.namespace.QName;
 import org.eclipse.persistence.jaxb.javamodel.Helper;
@@ -63,6 +64,7 @@ public class Property {
     private boolean isAnyAttribute = false;
     private boolean isAnyElement = false;
     private Helper helper;
+    private Map<Object, Object> userProperties;
     
     //Original get and set methods for this property
     //Used to keep track of overrides
@@ -1005,5 +1007,23 @@ public class Property {
             return (getNullPolicy().isXsiNilRepresentsNull() || getNullPolicy().getNullRepresentationForXml() == XmlMarshalNullRepresentation.XSI_NIL);
         }
         return false;
+    }
+
+    /**
+     * Return the Map of user-defined properties.
+     * 
+     * @return
+     */
+    public Map<Object, Object> getUserProperties() {
+        return userProperties;
+    }
+
+    /**
+     * Set the Map of user-defined properties.
+     * 
+     * @param userProperties
+     */
+    public void setUserProperties(Map<Object, Object> userProperties) {
+        this.userProperties = userProperties;
     }
 }

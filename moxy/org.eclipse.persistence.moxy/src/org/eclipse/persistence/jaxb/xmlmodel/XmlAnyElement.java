@@ -31,6 +31,7 @@ import javax.xml.bind.annotation.XmlType;
  *       &lt;all>
  *         &lt;element ref="{http://www.eclipse.org/eclipselink/xsds/persistence/oxm}xml-access-methods" minOccurs="0"/>
  *         &lt;element ref="{http://www.eclipse.org/eclipselink/xsds/persistence/oxm}xml-java-type-adapter" minOccurs="0"/>
+ *         &lt;element ref="{http://www.eclipse.org/eclipselink/xsds/persistence/oxm}xml-properties" minOccurs="0"/>
  *       &lt;/all>
  *       &lt;attribute name="xml-mixed" type="{http://www.w3.org/2001/XMLSchema}boolean" default="false" />
  *       &lt;attribute name="lax" type="{http://www.w3.org/2001/XMLSchema}boolean" default="false" />
@@ -48,7 +49,8 @@ import javax.xml.bind.annotation.XmlType;
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "", propOrder = {
     "xmlAccessMethods",
-    "xmlJavaTypeAdapter"
+    "xmlJavaTypeAdapter",
+    "xmlProperties"
 })
 public class XmlAnyElement
     extends JavaAttribute
@@ -58,9 +60,11 @@ public class XmlAnyElement
     protected XmlAccessMethods xmlAccessMethods;
     @XmlElement(name = "xml-java-type-adapter")
     protected XmlJavaTypeAdapter xmlJavaTypeAdapter;
+    @XmlElement(name = "xml-properties")
+    protected XmlProperties xmlProperties;
     @XmlAttribute(name = "xml-mixed")
     protected Boolean xmlMixed;
-    @XmlAttribute
+    @XmlAttribute(name = "lax")
     protected Boolean lax;
     @XmlAttribute(name = "dom-handler")
     protected String domHandler;
@@ -117,6 +121,30 @@ public class XmlAnyElement
      */
     public void setXmlJavaTypeAdapter(XmlJavaTypeAdapter value) {
         this.xmlJavaTypeAdapter = value;
+    }
+
+    /**
+     * Gets the value of the xmlProperties property.
+     * 
+     * @return
+     *     possible object is
+     *     {@link XmlProperties }
+     *     
+     */
+    public XmlProperties getXmlProperties() {
+        return xmlProperties;
+    }
+
+    /**
+     * Sets the value of the xmlProperties property.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link XmlProperties }
+     *     
+     */
+    public void setXmlProperties(XmlProperties value) {
+        this.xmlProperties = value;
     }
 
     /**

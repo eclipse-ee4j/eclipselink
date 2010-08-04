@@ -14,6 +14,11 @@
                 <xml-element java-attribute="lastName" xml-path="info/personal-info/last-name/text()" />
                 <xml-element java-attribute="projectName" xml-path="projects/prj:project/name/text()">
                     <xml-access-methods get-method="getProject" set-method="setProject" />
+                    <xml-properties>
+                        <xml-property name="1" value="A" />
+                        <xml-property name="2" value="66" value-type="java.lang.Integer" />
+                        <xml-property name="3" value="true" value-type="java.lang.Boolean" />
+                    </xml-properties>
                 </xml-element>
                 <xml-element java-attribute="data2" xml-path="pieces-of-data/data[2]/text()" />
                 <xml-element java-attribute="data1" xml-path="pieces-of-data/data[1]/text()" />
@@ -31,6 +36,11 @@
                     <xml-null-policy xsi-nil-represents-null="false" empty-node-represents-null="false" null-representation-for-xml="EMPTY_NODE" is-set-performed-for-absent-node="true" />
                 </xml-element>
             </java-attributes>
+            <xml-properties>
+                <xml-property name="1" value="A" />
+                <xml-property name="2" value="66" value-type="java.lang.Integer" />
+                <xml-property name="3" value="true" value-type="java.lang.Boolean" />
+            </xml-properties>
 		</java-type>
 	</java-types>
 </xml-bindings>

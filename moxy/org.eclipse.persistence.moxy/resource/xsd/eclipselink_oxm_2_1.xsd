@@ -79,6 +79,7 @@
                 <xs:element ref="xml-see-also" minOccurs="0"/>
                 <xs:element ref="xml-java-type-adapter" minOccurs="0"/>
                 <xs:element ref="xml-class-extractor" minOccurs="0"/>
+                <xs:element ref="xml-properties" minOccurs="0" />
                 <xs:element name="java-attributes" minOccurs="0">
                     <xs:complexType>
                         <xs:sequence>
@@ -107,6 +108,18 @@
     <xs:element name="xml-class-extractor" type="xml-class-extractor" />
     <xs:complexType name="xml-class-extractor">
         <xs:attribute name="class" type="xs:string" use="required"/>
+    </xs:complexType>
+    <xs:element name="xml-properties" type="xml-properties" />
+    <xs:complexType name="xml-properties">
+        <xs:sequence>
+            <xs:element name="xml-property" minOccurs="0" maxOccurs="unbounded" >
+                <xs:complexType>
+                    <xs:attribute name="name" type="xs:string" use="required" />
+                    <xs:attribute name="value" type="xs:string" use="required" />
+                    <xs:attribute name="value-type" type="xs:string" default="java.lang.String" />
+                </xs:complexType>
+            </xs:element>
+        </xs:sequence>
     </xs:complexType>
 
     <!-- Enums -->
@@ -254,6 +267,7 @@
                 <xs:extension base="java-attribute">
                     <xs:all>
                         <xs:element ref="xml-access-methods" minOccurs="0" />
+                        <xs:element ref="xml-properties" minOccurs="0" />
                     </xs:all>
                     <xs:attribute name="read-only" type="xs:boolean" default="false" />
                     <xs:attribute name="write-only" type="xs:boolean" default="false" />
@@ -270,6 +284,7 @@
                         <xs:element ref="xml-abstract-null-policy" minOccurs="0" />                        
                         <xs:element ref="xml-access-methods" minOccurs="0" />
                         <xs:element ref="xml-java-type-adapter" minOccurs="0"/>
+                        <xs:element ref="xml-properties" minOccurs="0" />
                         <xs:element ref="xml-schema-type" minOccurs="0"/>
                     </xs:all>
                     <xs:attribute name="name" type="xs:string" default="##default" />
@@ -295,6 +310,7 @@
                     <xs:all>
                         <xs:element ref="xml-access-methods" minOccurs="0" />
                         <xs:element ref="xml-java-type-adapter" minOccurs="0"/>
+                        <xs:element ref="xml-properties" minOccurs="0" />
                     </xs:all>
                     <xs:attribute name="xml-mixed" type="xs:boolean" default="false" />
                     <xs:attribute name="lax" type="xs:boolean" default="false" />
@@ -316,6 +332,7 @@
                         <xs:element ref="xml-element-wrapper" minOccurs="0"/>
                         <xs:element ref="xml-java-type-adapter" minOccurs="0"/>
                         <xs:element ref="xml-map" minOccurs="0"/>
+                        <xs:element ref="xml-properties" minOccurs="0" />
                         <xs:element ref="xml-schema-type" minOccurs="0" />
                     </xs:all>
                     <xs:attribute name="name" type="xs:string" default="##default" />
@@ -344,8 +361,9 @@
                 <xs:extension base="java-attribute">
                     <xs:sequence>
                         <xs:element ref="xml-access-methods" minOccurs="0" />
-                        <xs:element ref="xml-element" maxOccurs="unbounded" minOccurs="0"/>
+                        <xs:element ref="xml-element" minOccurs="0" maxOccurs="unbounded" />
                         <xs:element ref="xml-element-wrapper" minOccurs="0"/>
+                        <xs:element ref="xml-properties" minOccurs="0" />
                     </xs:sequence>
                     <xs:attribute name="xml-idref" type="xs:boolean" default="false" />
                     <xs:attribute name="xml-list" type="xs:boolean" default="false" />
@@ -361,6 +379,7 @@
                 <xs:extension base="java-attribute">
                     <xs:all>
                         <xs:element ref="xml-element-wrapper" minOccurs="0"/>
+                        <xs:element ref="xml-properties" minOccurs="0" />
                     </xs:all>
                     <xs:attribute name="name" type="xs:string" default="##default" />
                     <xs:attribute name="namespace" type="xs:string" />
@@ -376,6 +395,7 @@
                     <xs:sequence>
                         <xs:element ref="xml-element-ref" minOccurs="0" maxOccurs="unbounded" />
                         <xs:element ref="xml-element-wrapper" minOccurs="0" />
+                        <xs:element ref="xml-properties" minOccurs="0" />
                     </xs:sequence>
                 </xs:extension>
             </xs:complexContent>
@@ -387,6 +407,7 @@
                 <xs:extension base="java-attribute">
                     <xs:all>
                         <xs:element ref="xml-access-methods" minOccurs="0" />
+                        <xs:element ref="xml-properties" minOccurs="0" />
                     </xs:all>
                     <xs:attribute name="mapped-by" type="xs:string" />
                 </xs:extension>
@@ -408,6 +429,7 @@
                     <xs:sequence>
                         <xs:element ref="xml-abstract-null-policy" minOccurs="0" />
                         <xs:element ref="xml-access-methods" minOccurs="0" />
+                        <xs:element ref="xml-properties" minOccurs="0" />
                     </xs:sequence>
                     <xs:attribute name="read-only" type="xs:boolean" default="false" />
                     <xs:attribute name="write-only" type="xs:boolean" default="false" />

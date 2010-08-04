@@ -15,19 +15,16 @@ package org.eclipse.persistence.testing.jaxb.externalizedmetadata.mappings.direc
 import java.io.File;
 import java.io.InputStream;
 import java.math.BigDecimal;
+import java.util.Map;
 
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
 import javax.xml.bind.Unmarshaller;
+import javax.xml.namespace.QName;
 
 import org.eclipse.persistence.jaxb.JAXBContext;
-import org.eclipse.persistence.oxm.NamespaceResolver;
+import org.eclipse.persistence.mappings.DatabaseMapping;
 import org.eclipse.persistence.oxm.XMLDescriptor;
-import org.eclipse.persistence.oxm.mappings.XMLDirectMapping;
-import org.eclipse.persistence.oxm.mappings.nullpolicy.IsSetNullPolicy;
-import org.eclipse.persistence.oxm.mappings.nullpolicy.NullPolicy;
-import org.eclipse.persistence.oxm.mappings.nullpolicy.XMLNullRepresentationType;
-import org.eclipse.persistence.sessions.factories.XMLProjectWriter;
 import org.eclipse.persistence.testing.jaxb.externalizedmetadata.ExternalizedMetadataTestCases;
 import org.w3c.dom.Document;
 
@@ -53,6 +50,19 @@ public class DirectMappingTestCases extends ExternalizedMetadataTestCases {
     private static final String PROJECTS_NS = "http://www.example.com/projects";
     private static final String CURRENCY = "CAD";
     private static final double PRICE = 123.456;
+    private static final int PROPCOUNT = 3;
+    private static final String PROPKEY_1 = "1";
+    private static final String PROPKEY_2 = "2";
+    private static final String PROPKEY_3 = "3";
+    private static final String PROPVAL_1 = "A";
+    private static final int PROPVAL_2 = 66;
+    private static final boolean PROPVAL_3 = true;
+    
+    private Class[] employeeArray;
+    private Class[] priceArray;
+    private JAXBContext empCtx;
+    private JAXBContext priceCtx;
+    private XMLDescriptor employeeDesc;
 
     /**
      * This is the preferred (and only) constructor.
@@ -87,16 +97,77 @@ public class DirectMappingTestCases extends ExternalizedMetadataTestCases {
     }
 
     /**
-     * This method's primary purpose id to generate schema(s). Validation of
-     * generated schemas will occur in the testXXXGen method(s) below. Note that
-     * the JAXBContext is created from this call and is required for
-     * marshal/unmarshal, etc. tests.
+     * Lazy load the employee class array.
      * 
+     * @return
      */
-    public void setUp() throws Exception {
-        super.setUp();
+    private Class[] getEmployeeArray() {
+        if (employeeArray == null) {
+            employeeArray = new Class[] { Employee.class };
+        }
+        return employeeArray;
+    }
+    
+    /**
+     * Lazy load the price class array.
+     * 
+     * @return
+     */
+    private Class[] getPriceArray() {
+        if (priceArray == null) {
+            priceArray = new Class[] { Price.class };
+        }
+        return priceArray;
+    }
+    
+    /**
+     * Lazy load the JAXBContext for the employee class.  Uses the 
+     * eclipselink-oxm.xml metadata file.
+     * 
+     * @return
+     */
+    private JAXBContext getJAXBContextForEmployee() {
+        if (empCtx == null) {
+            try {
+                empCtx = createContext(getEmployeeArray(), CONTEXT_PATH, PATH + "eclipselink-oxm.xml");
+            } catch (JAXBException e1) {
+                e1.printStackTrace();
+            }
+            assertNotNull("JAXBContext creation for Employee failed", empCtx);
+        }
+        return empCtx;
     }
 
+    /**
+     * Lazy load the JAXBContext for the price class.  Uses the 
+     * eclipselink-oxm-xml-value.xml metadata file.
+     * 
+     * @return
+     */
+    private JAXBContext getJAXBContextForPrice() {
+        if (priceCtx == null) {
+            try {
+                priceCtx = createContext(getPriceArray(), CONTEXT_PATH, PATH + "eclipselink-oxm-xml-value.xml");
+            } catch (JAXBException e1) {
+                e1.printStackTrace();
+            }
+            assertNotNull("JAXBContext creation for Price failed", priceCtx);
+        }
+        return priceCtx;
+    }
+
+    private XMLDescriptor getDescriptorForEmployee() {
+        if (employeeDesc == null) {
+            try {
+                employeeDesc = getJAXBContextForEmployee().getXMLContext().getDescriptor(new QName(EMPLOYEES_NS, "employee"));
+            } catch (Exception x) {
+                x.printStackTrace();
+            }
+            assertNotNull("Employee descriptor is null", employeeDesc);
+        }
+        return employeeDesc;
+    }
+    
     /**
      * Tests schema generation for XmlDirectMapping via eclipselink-oxm.xml.
      * Utilizes xml-attribute and xml-element. xml-value is tested separately
@@ -106,7 +177,7 @@ public class DirectMappingTestCases extends ExternalizedMetadataTestCases {
      */
     public void testSchemaGenAndValidation() {
         // generate employee and project schemas
-        MySchemaOutputResolver resolver = generateSchemaWithFileName(new Class[] { Employee.class }, CONTEXT_PATH, PATH + "eclipselink-oxm.xml", 2);
+        MySchemaOutputResolver resolver = generateSchemaWithFileName(getEmployeeArray(), CONTEXT_PATH, PATH + "eclipselink-oxm.xml", 2);
         // validate employees schema
         String controlSchema = PATH + "employees.xsd";
         compareSchemas(resolver.schemaFiles.get(EMPLOYEES_NS), new File(controlSchema));
@@ -135,7 +206,7 @@ public class DirectMappingTestCases extends ExternalizedMetadataTestCases {
         compareSchemas(resolver.schemaFiles.get(EMPTY_NAMESPACE), new File(controlSchema));
 
         // generate price schema
-        resolver = generateSchemaWithFileName(new Class[] { Price.class }, CONTEXT_PATH, PATH + "eclipselink-oxm-xml-value.xml", 1);
+        resolver = generateSchemaWithFileName(getPriceArray(), CONTEXT_PATH, PATH + "eclipselink-oxm-xml-value.xml", 1);
         // validate price schema
         controlSchema = PATH + "price.xsd";
         compareSchemas(resolver.schemaFiles.get(EMPTY_NAMESPACE), new File(controlSchema));
@@ -154,13 +225,7 @@ public class DirectMappingTestCases extends ExternalizedMetadataTestCases {
      */
     public void testDirectMappingUnmarshal() {
         // create the JAXBContext
-        JAXBContext jCtx = null;
-        try {
-            jCtx = createContext(new Class[] { Employee.class }, CONTEXT_PATH, PATH + "eclipselink-oxm.xml");
-        } catch (JAXBException e1) {
-            e1.printStackTrace();
-            fail("JAXBContext creation failed");
-        }
+        JAXBContext jCtx = getJAXBContextForEmployee();
 
         // load instance doc
         String src = PATH + "employee.xml";
@@ -198,13 +263,7 @@ public class DirectMappingTestCases extends ExternalizedMetadataTestCases {
      */
     public void testDirectMappingMarshal() {
         // create the JAXBContext
-        JAXBContext jCtx = null;
-        try {
-            jCtx = createContext(new Class[] { Employee.class }, CONTEXT_PATH, PATH + "eclipselink-oxm.xml");
-        } catch (JAXBException e1) {
-            e1.printStackTrace();
-            fail("JAXBContext creation failed");
-        }
+        JAXBContext jCtx = getJAXBContextForEmployee();
 
         // load instance doc
         String src = PATH + "write-employee.xml";
@@ -243,13 +302,8 @@ public class DirectMappingTestCases extends ExternalizedMetadataTestCases {
      */
     public void testDirectMappingXmlValueUnmarshal() {
         // create the JAXBContext
-        JAXBContext jCtx = null;
-        try {
-            jCtx = createContext(new Class[] { Price.class }, CONTEXT_PATH, PATH + "eclipselink-oxm-xml-value.xml");
-        } catch (JAXBException e1) {
-            e1.printStackTrace();
-            fail("JAXBContext creation failed");
-        }
+        JAXBContext jCtx = getJAXBContextForPrice();
+
         // load instance doc
         String src = PATH + "price.xml";
         InputStream iDocStream = loader.getResourceAsStream(src);
@@ -282,13 +336,7 @@ public class DirectMappingTestCases extends ExternalizedMetadataTestCases {
      */
     public void testDirectMappingXmlValueMarshal() {
         // create the JAXBContext
-        JAXBContext jCtx = null;
-        try {
-            jCtx = createContext(new Class[] { Price.class }, CONTEXT_PATH, PATH + "eclipselink-oxm-xml-value.xml");
-        } catch (JAXBException e) {
-            e.printStackTrace();
-            fail("JAXBContext creation failed");
-        }
+        JAXBContext jCtx = getJAXBContextForPrice();
 
         // load instance doc
         String src = PATH + "price.xml";
@@ -315,5 +363,56 @@ public class DirectMappingTestCases extends ExternalizedMetadataTestCases {
             e.printStackTrace();
             fail("Marshal operation failed.");
         }
+    }
+
+    /**
+     * Test setting property-level properties via xml-element.
+     * Tests setting a String, Integer and Boolean.
+     * 
+     * Positive test.
+     */
+    public void testMappingProperties() {
+        // get the Employee descriptor
+        XMLDescriptor xdesc = getDescriptorForEmployee();
+        DatabaseMapping projectNameMapping = xdesc.getMappingForAttributeName("projectName");
+        assertNotNull("No user-defined properties exist on the mapping for [projectName]", projectNameMapping.getProperties());
+        validateProperties(projectNameMapping.getProperties());
+    }
+    
+    /**
+     * Test setting descriptor-level properties via XML metadata.
+     * Tests setting a String, Integer and Boolean.
+     * 
+     * Positive test.
+     */
+    public void testDescriptorProperties() {
+        // create the JAXBContext
+        JAXBContext jCtx = getJAXBContextForEmployee();
+        assertNotNull("JAXBContext creation failed", jCtx);
+        XMLDescriptor xdesc = jCtx.getXMLContext().getDescriptor(new QName(EMPLOYEES_NS, "employee"));
+        assertNotNull("Employee descriptor is null", xdesc);
+        assertNotNull("No user-defined properties exist on the descriptor for Employee", xdesc.getProperties());
+        validateProperties(xdesc.getProperties());
+    }
+    
+    /**
+     * Validates user-defined properties set via xml metadata.
+     * 
+     * @param props
+     */
+    private void validateProperties(Map props) {
+        assertTrue("Expected [" + PROPCOUNT + "] user-defined properties, but there were [" + props.size() + "]", props.size() == PROPCOUNT);
+        // verify entries exist for each key
+        assertNotNull("No property found for key [" + PROPKEY_1 + "]", props.get(PROPKEY_1));
+        assertNotNull("No property found for key [" + PROPKEY_2 + "]", props.get(PROPKEY_2));
+        assertNotNull("No property found for key [" + PROPKEY_3 + "]", props.get(PROPKEY_3));
+        // verify value-types
+        assertTrue("Expected value-type [String] for key [" + PROPKEY_1 + "] but was [" + props.get(PROPKEY_1).getClass().getName() + "]", props.get(PROPKEY_1) instanceof String);
+        assertTrue("Expected value-type [Integer] for key [" + PROPKEY_2 + "] but was [" + props.get(PROPKEY_2).getClass().getName() + "]", props.get(PROPKEY_2) instanceof Integer);
+        assertTrue("Expected value-type [Boolean] for key [" + PROPKEY_3 + "] but was [" + props.get(PROPKEY_3).getClass().getName() + "]", props.get(PROPKEY_3) instanceof Boolean);
+        // verify values
+        assertTrue("Expected property value [" + PROPVAL_1 + "] for key [" + PROPKEY_1 + "] but was [" + props.get(PROPKEY_1) + "]", PROPVAL_1.equals(props.get(PROPKEY_1)));
+        assertTrue("Expected property value [" + PROPVAL_2 + "] for key [" + PROPKEY_2 + "] but was [" + props.get(PROPKEY_2) + "]", PROPVAL_2 == (Integer) props.get(PROPKEY_2));
+        assertTrue("Expected property value [" + PROPVAL_3 + "] for key [" + PROPKEY_3 + "] but was [" + props.get(PROPKEY_3) + "]", PROPVAL_3 == (Boolean) props.get(PROPKEY_3));
     }
 }

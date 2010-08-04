@@ -16,6 +16,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.eclipse.persistence.config.DescriptorCustomizer;
 import org.eclipse.persistence.internal.oxm.schema.model.ComplexType;
@@ -76,6 +77,7 @@ public class TypeInfo {
     private String[] factoryMethodParamTypes;
     private Property xmlValueProperty;
     private String classExtractorName;
+    private Map<Object, Object> userProperties;
 
     private boolean isMixed;
     private boolean isTransient;
@@ -838,5 +840,23 @@ public class TypeInfo {
      */
     public void setClassExtractorName(String classExtractorName) {
         this.classExtractorName = classExtractorName;
+    }
+
+    /**
+     * Return the Map of user-defined properties.
+     * 
+     * @return
+     */
+    public Map<Object, Object> getUserProperties() {
+        return userProperties;
+    }
+
+    /**
+     * Set the Map of user-defined properties.
+     * 
+     * @param userProperties
+     */
+    public void setUserProperties(Map<Object, Object> userProperties) {
+        this.userProperties = userProperties;
     }
 }

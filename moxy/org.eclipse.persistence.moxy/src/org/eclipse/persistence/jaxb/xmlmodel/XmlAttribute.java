@@ -33,6 +33,7 @@ import javax.xml.bind.annotation.XmlType;
  *         &lt;element ref="{http://www.eclipse.org/eclipselink/xsds/persistence/oxm}xml-abstract-null-policy" minOccurs="0"/>
  *         &lt;element ref="{http://www.eclipse.org/eclipselink/xsds/persistence/oxm}xml-access-methods" minOccurs="0"/>
  *         &lt;element ref="{http://www.eclipse.org/eclipselink/xsds/persistence/oxm}xml-java-type-adapter" minOccurs="0"/>
+ *         &lt;element ref="{http://www.eclipse.org/eclipselink/xsds/persistence/oxm}xml-properties" minOccurs="0"/>
  *         &lt;element ref="{http://www.eclipse.org/eclipselink/xsds/persistence/oxm}xml-schema-type" minOccurs="0"/>
  *       &lt;/all>
  *       &lt;attribute name="name" type="{http://www.w3.org/2001/XMLSchema}string" default="##default" />
@@ -59,6 +60,7 @@ import javax.xml.bind.annotation.XmlType;
     "xmlAbstractNullPolicy",
     "xmlAccessMethods",
     "xmlJavaTypeAdapter",
+    "xmlProperties",
     "xmlSchemaType"
 })
 public class XmlAttribute
@@ -71,13 +73,15 @@ public class XmlAttribute
     protected XmlAccessMethods xmlAccessMethods;
     @XmlElement(name = "xml-java-type-adapter")
     protected XmlJavaTypeAdapter xmlJavaTypeAdapter;
+    @XmlElement(name = "xml-properties")
+    protected XmlProperties xmlProperties;
     @XmlElement(name = "xml-schema-type")
     protected XmlSchemaType xmlSchemaType;
-    @javax.xml.bind.annotation.XmlAttribute
+    @javax.xml.bind.annotation.XmlAttribute(name = "name")
     protected String name;
-    @javax.xml.bind.annotation.XmlAttribute
+    @javax.xml.bind.annotation.XmlAttribute(name = "namespace")
     protected String namespace;
-    @javax.xml.bind.annotation.XmlAttribute
+    @javax.xml.bind.annotation.XmlAttribute(name = "required")
     protected Boolean required;
     @javax.xml.bind.annotation.XmlAttribute(name = "xml-id")
     protected Boolean xmlId;
@@ -172,6 +176,30 @@ public class XmlAttribute
      */
     public void setXmlJavaTypeAdapter(XmlJavaTypeAdapter value) {
         this.xmlJavaTypeAdapter = value;
+    }
+
+    /**
+     * Gets the value of the xmlProperties property.
+     * 
+     * @return
+     *     possible object is
+     *     {@link XmlProperties }
+     *     
+     */
+    public XmlProperties getXmlProperties() {
+        return xmlProperties;
+    }
+
+    /**
+     * Sets the value of the xmlProperties property.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link XmlProperties }
+     *     
+     */
+    public void setXmlProperties(XmlProperties value) {
+        this.xmlProperties = value;
     }
 
     /**

@@ -35,6 +35,7 @@ import javax.xml.bind.annotation.XmlType;
  *         &lt;element ref="{http://www.eclipse.org/eclipselink/xsds/persistence/oxm}xml-element-wrapper" minOccurs="0"/>
  *         &lt;element ref="{http://www.eclipse.org/eclipselink/xsds/persistence/oxm}xml-java-type-adapter" minOccurs="0"/>
  *         &lt;element ref="{http://www.eclipse.org/eclipselink/xsds/persistence/oxm}xml-map" minOccurs="0"/>
+ *         &lt;element ref="{http://www.eclipse.org/eclipselink/xsds/persistence/oxm}xml-properties" minOccurs="0"/>
  *         &lt;element ref="{http://www.eclipse.org/eclipselink/xsds/persistence/oxm}xml-schema-type" minOccurs="0"/>
  *       &lt;/all>
  *       &lt;attribute name="name" type="{http://www.w3.org/2001/XMLSchema}string" default="##default" />
@@ -67,6 +68,7 @@ import javax.xml.bind.annotation.XmlType;
     "xmlElementWrapper",
     "xmlJavaTypeAdapter",
     "xmlMap",
+    "xmlProperties",
     "xmlSchemaType"
 })
 public class XmlElement
@@ -83,19 +85,21 @@ public class XmlElement
     protected XmlJavaTypeAdapter xmlJavaTypeAdapter;
     @javax.xml.bind.annotation.XmlElement(name = "xml-map")
     protected XmlMap xmlMap;
+    @javax.xml.bind.annotation.XmlElement(name = "xml-properties")
+    protected XmlProperties xmlProperties;
     @javax.xml.bind.annotation.XmlElement(name = "xml-schema-type")
     protected XmlSchemaType xmlSchemaType;
-    @XmlAttribute
+    @XmlAttribute(name = "name")
     protected String name;
-    @XmlAttribute
+    @XmlAttribute(name = "namespace")
     protected String namespace;
     @XmlAttribute(name = "default-value")
     protected String defaultValue;
-    @XmlAttribute
+    @XmlAttribute(name = "nillable")
     protected Boolean nillable;
-    @XmlAttribute
+    @XmlAttribute(name = "required")
     protected Boolean required;
-    @XmlAttribute
+    @XmlAttribute(name = "type")
     protected String type;
     @XmlAttribute(name = "xml-id")
     protected Boolean xmlId;
@@ -113,7 +117,7 @@ public class XmlElement
     protected Boolean readOnly;
     @XmlAttribute(name = "write-only")
     protected Boolean writeOnly;
-    @XmlAttribute
+    @XmlAttribute(name = "cdata")
     protected Boolean cdata;
     @XmlAttribute(name = "xml-path")
     protected String xmlPath;
@@ -240,6 +244,30 @@ public class XmlElement
      */
     public void setXmlMap(XmlMap value) {
         this.xmlMap = value;
+    }
+
+    /**
+     * Gets the value of the xmlProperties property.
+     * 
+     * @return
+     *     possible object is
+     *     {@link XmlProperties }
+     *     
+     */
+    public XmlProperties getXmlProperties() {
+        return xmlProperties;
+    }
+
+    /**
+     * Sets the value of the xmlProperties property.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link XmlProperties }
+     *     
+     */
+    public void setXmlProperties(XmlProperties value) {
+        this.xmlProperties = value;
     }
 
     /**

@@ -24,6 +24,7 @@ import javax.xml.bind.JAXBElement;
 import javax.xml.namespace.QName;
 
 import org.eclipse.persistence.exceptions.JAXBException;
+import org.eclipse.persistence.internal.oxm.XMLConversionManager;
 import org.eclipse.persistence.jaxb.TypeMappingInfo;
 import org.eclipse.persistence.jaxb.javamodel.JavaClass;
 import org.eclipse.persistence.jaxb.javamodel.JavaModelInput;
@@ -53,6 +54,7 @@ import org.eclipse.persistence.jaxb.xmlmodel.XmlValue;
 import org.eclipse.persistence.jaxb.xmlmodel.XmlBindings.JavaTypes;
 import org.eclipse.persistence.jaxb.xmlmodel.XmlBindings.XmlEnums;
 import org.eclipse.persistence.jaxb.xmlmodel.XmlBindings.XmlRegistries;
+import org.eclipse.persistence.jaxb.xmlmodel.XmlProperties.XmlProperty;
 import org.eclipse.persistence.jaxb.xmlmodel.XmlSchema.XmlNs;
 import org.eclipse.persistence.oxm.NamespaceResolver;
 import org.eclipse.persistence.oxm.XMLConstants;
@@ -197,12 +199,10 @@ public class XMLProcessor {
                             info.setXmlAccessType(nsInfo.getAccessType());
                         }
                     }
-
                     // handle @XmlInlineBinaryData override
                     if (javaType.isSetXmlInlineBinaryData()) {
                         info.setInlineBinaryData(javaType.isXmlInlineBinaryData());
                     }
-
                     // handle @XmlTransient override
                     if (javaType.isSetXmlTransient()) {
                         info.setXmlTransient(javaType.isXmlTransient());
@@ -226,6 +226,15 @@ public class XMLProcessor {
                     // handle @XmlClassExtractor override
                     if (javaType.getXmlClassExtractor() != null) {
                         info.setClassExtractorName(javaType.getXmlClassExtractor().getClazz());
+                    }
+                    // handle @XmlProperties override
+                    if (javaType.getXmlProperties() != null && javaType.getXmlProperties().getXmlProperty().size() > 0) {
+                        // may need to merge with @XmlProperties (xml wins in the case of a conflict)
+                        if (info.getUserProperties() != null) {
+                            info.setUserProperties(mergeUserPropertyMap(javaType.getXmlProperties().getXmlProperty(), info.getUserProperties()));
+                        } else {
+                            info.setUserProperties(createUserPropertyMap(javaType.getXmlProperties().getXmlProperty()));
+                        }
                     }
                 }
             }
@@ -397,6 +406,10 @@ public class XMLProcessor {
             oldProperty.setInverseReferencePropertyGetMethodName(xmlInverseReference.getXmlAccessMethods().getGetMethod());
             oldProperty.setInverseReferencePropertySetMethodName(xmlInverseReference.getXmlAccessMethods().getSetMethod());
         }
+        // set user-defined properties
+        if (xmlInverseReference.getXmlProperties() != null  && xmlInverseReference.getXmlProperties().getXmlProperty().size() > 0) {
+            oldProperty.setUserProperties(createUserPropertyMap(xmlInverseReference.getXmlProperties().getXmlProperty()));
+        }
         return oldProperty;
     }
     /**
@@ -444,6 +457,10 @@ public class XMLProcessor {
         if (xmlAnyAttribute.isSetWriteOnly()) {
             oldProperty.setWriteOnly(xmlAnyAttribute.isWriteOnly());
         }
+        // set user-defined properties
+        if (xmlAnyAttribute.getXmlProperties() != null  && xmlAnyAttribute.getXmlProperties().getXmlProperty().size() > 0) {
+            oldProperty.setUserProperties(createUserPropertyMap(xmlAnyAttribute.getXmlProperties().getXmlProperty()));
+        }
         return oldProperty;
     }
 
@@ -489,6 +506,10 @@ public class XMLProcessor {
         // handle write-only
         if (xmlAnyElement.isSetWriteOnly()) {
             oldProperty.setWriteOnly(xmlAnyElement.isWriteOnly());
+        }
+        // set user-defined properties
+        if (xmlAnyElement.getXmlProperties() != null  && xmlAnyElement.getXmlProperties().getXmlProperty().size() > 0) {
+            oldProperty.setUserProperties(createUserPropertyMap(xmlAnyElement.getXmlProperties().getXmlProperty()));
         }
         return oldProperty;
     }
@@ -602,6 +623,10 @@ public class XMLProcessor {
         if (xmlAttribute.getXmlAbstractNullPolicy() != null) {
             JAXBElement jaxbElt = xmlAttribute.getXmlAbstractNullPolicy();
             oldProperty.setNullPolicy((XmlAbstractNullPolicy) jaxbElt.getValue());
+        }
+        // set user-defined properties
+        if (xmlAttribute.getXmlProperties() != null  && xmlAttribute.getXmlProperties().getXmlProperty().size() > 0) {
+            oldProperty.setUserProperties(createUserPropertyMap(xmlAttribute.getXmlProperties().getXmlProperty()));
         }
         return oldProperty;
     }
@@ -772,6 +797,10 @@ public class XMLProcessor {
             JAXBElement jaxbElt = xmlElement.getXmlAbstractNullPolicy();
             oldProperty.setNullPolicy((XmlAbstractNullPolicy) jaxbElt.getValue());
         }
+        // set user-defined properties
+        if (xmlElement.getXmlProperties() != null  && xmlElement.getXmlProperties().getXmlProperty().size() > 0) {
+            oldProperty.setUserProperties(createUserPropertyMap(xmlElement.getXmlProperties().getXmlProperty()));
+        }
         return oldProperty;
     }
 
@@ -829,6 +858,10 @@ public class XMLProcessor {
         if (xmlElements.isSetWriteOnly()) {
             oldProperty.setWriteOnly(xmlElements.isWriteOnly());
         }
+        // set user-defined properties
+        if (xmlElements.getXmlProperties() != null  && xmlElements.getXmlProperties().getXmlProperty().size() > 0) {
+            oldProperty.setUserProperties(createUserPropertyMap(xmlElements.getXmlProperties().getXmlProperty()));
+        }
         return oldProperty;
     }
 
@@ -850,6 +883,10 @@ public class XMLProcessor {
         // handle XmlElementWrapper
         if (xmlElementRef.getXmlElementWrapper() != null) {
             oldProperty.setXmlElementWrapper(xmlElementRef.getXmlElementWrapper());
+        }
+        // set user-defined properties
+        if (xmlElementRef.getXmlProperties() != null  && xmlElementRef.getXmlProperties().getXmlProperty().size() > 0) {
+            oldProperty.setUserProperties(createUserPropertyMap(xmlElementRef.getXmlProperties().getXmlProperty()));
         }
         return oldProperty;
     }
@@ -875,6 +912,10 @@ public class XMLProcessor {
         // handle XmlElementWrapper
         if (xmlElementRefs.getXmlElementWrapper() != null) {
             oldProperty.setXmlElementWrapper(xmlElementRefs.getXmlElementWrapper());
+        }
+        // set user-defined properties
+        if (xmlElementRefs.getXmlProperties() != null  && xmlElementRefs.getXmlProperties().getXmlProperty().size() > 0) {
+            oldProperty.setUserProperties(createUserPropertyMap(xmlElementRefs.getXmlProperties().getXmlProperty()));
         }
         return oldProperty;
     }
@@ -913,6 +954,10 @@ public class XMLProcessor {
         if (xmlValue.getXmlAbstractNullPolicy() != null) {
             JAXBElement jaxbElt = xmlValue.getXmlAbstractNullPolicy();
             oldProperty.setNullPolicy((XmlAbstractNullPolicy) jaxbElt.getValue());
+        }
+        // set user-defined properties
+        if (xmlValue.getXmlProperties() != null  && xmlValue.getXmlProperties().getXmlProperty().size() > 0) {
+            oldProperty.setUserProperties(createUserPropertyMap(xmlValue.getXmlProperties().getXmlProperty()));
         }
         return oldProperty;
     }
@@ -1113,6 +1158,7 @@ public class XMLProcessor {
         oldProperty.setWriteOnly(false);
         oldProperty.setCdata(false);
         oldProperty.setNullPolicy(null);
+        oldProperty.setUserProperties(null);
         oldProperty.setGetMethodName(oldProperty.getOriginalGetMethodName());
         oldProperty.setSetMethodName(oldProperty.getOriginalSetMethodName());
         if(oldProperty.getGetMethodName() == null && oldProperty.getSetMethodName() == null) {
@@ -1249,5 +1295,47 @@ public class XMLProcessor {
             }
         }
         return name;
+    }
+    
+    /**
+     * Return a Map of user-defined properties.  Typically the key will 
+     * be a String (property name) and the value a String or some 
+     * other simple type that was converted by ConversionManager,
+     * i.e. numerical, boolean, temporal.
+     * 
+     * @param propList
+     * @return
+     */
+    private Map createUserPropertyMap(List<XmlProperty> propList) {
+        return mergeUserPropertyMap(propList, new HashMap());
+    }
+
+    /**
+     * Return a Map of user-defined properties. The List of properties (from
+     * xml) will be merged with the given Map (from annotations).  In the 
+     * case of a conflict, xml will win.
+     * 
+     * Note that this intended to be used when processing type-level user
+     * properties, as at the property-level, xml completely replaces any
+     * properties set via annotation.
+     * 
+     * Typically the key will be a String (property name) and the value a 
+     * String or some other simple type that was converted by 
+     * ConversionManager, i.e. numerical, boolean, temporal.
+     * 
+     * @param propList
+     * @return
+     */
+    private Map mergeUserPropertyMap(List<XmlProperty> propList, Map existingMap) {
+        Map propMap = existingMap;
+        for (XmlProperty prop : propList) {
+            Object pvalue = prop.getValue();
+            if (prop.isSetValueType()) {
+                pvalue = XMLConversionManager.getDefaultXMLManager().convertObject(
+                        prop.getValue(), XMLConversionManager.getDefaultXMLManager().convertClassNameToClass(prop.getValueType()));
+            }
+            propMap.put(prop.getName(), pvalue);
+        }
+        return propMap;
     }
 }

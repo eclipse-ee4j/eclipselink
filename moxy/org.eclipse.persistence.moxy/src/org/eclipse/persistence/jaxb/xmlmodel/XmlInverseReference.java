@@ -30,6 +30,7 @@ import javax.xml.bind.annotation.XmlType;
  *     &lt;extension base="{http://www.eclipse.org/eclipselink/xsds/persistence/oxm}java-attribute">
  *       &lt;all>
  *         &lt;element ref="{http://www.eclipse.org/eclipselink/xsds/persistence/oxm}xml-access-methods" minOccurs="0"/>
+ *         &lt;element ref="{http://www.eclipse.org/eclipselink/xsds/persistence/oxm}xml-properties" minOccurs="0"/>
  *       &lt;/all>
  *       &lt;attribute name="mapped-by" type="{http://www.w3.org/2001/XMLSchema}string" />
  *     &lt;/extension>
@@ -41,7 +42,8 @@ import javax.xml.bind.annotation.XmlType;
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "", propOrder = {
-    "xmlAccessMethods"
+    "xmlAccessMethods",
+    "xmlProperties"
 })
 public class XmlInverseReference
     extends JavaAttribute
@@ -49,6 +51,8 @@ public class XmlInverseReference
 
     @XmlElement(name = "xml-access-methods")
     protected XmlAccessMethods xmlAccessMethods;
+    @XmlElement(name = "xml-properties")
+    protected XmlProperties xmlProperties;
     @XmlAttribute(name = "mapped-by")
     protected String mappedBy;
 
@@ -74,6 +78,30 @@ public class XmlInverseReference
      */
     public void setXmlAccessMethods(XmlAccessMethods value) {
         this.xmlAccessMethods = value;
+    }
+
+    /**
+     * Gets the value of the xmlProperties property.
+     * 
+     * @return
+     *     possible object is
+     *     {@link XmlProperties }
+     *     
+     */
+    public XmlProperties getXmlProperties() {
+        return xmlProperties;
+    }
+
+    /**
+     * Sets the value of the xmlProperties property.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link XmlProperties }
+     *     
+     */
+    public void setXmlProperties(XmlProperties value) {
+        this.xmlProperties = value;
     }
 
     /**

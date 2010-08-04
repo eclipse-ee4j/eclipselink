@@ -33,6 +33,7 @@ import javax.xml.bind.annotation.XmlType;
  *         &lt;element ref="{http://www.eclipse.org/eclipselink/xsds/persistence/oxm}xml-access-methods" minOccurs="0"/>
  *         &lt;element ref="{http://www.eclipse.org/eclipselink/xsds/persistence/oxm}xml-element" maxOccurs="unbounded" minOccurs="0"/>
  *         &lt;element ref="{http://www.eclipse.org/eclipselink/xsds/persistence/oxm}xml-element-wrapper" minOccurs="0"/>
+ *         &lt;element ref="{http://www.eclipse.org/eclipselink/xsds/persistence/oxm}xml-properties" minOccurs="0"/>
  *       &lt;/sequence>
  *       &lt;attribute name="xml-idref" type="{http://www.w3.org/2001/XMLSchema}boolean" default="false" />
  *       &lt;attribute name="xml-list" type="{http://www.w3.org/2001/XMLSchema}boolean" default="false" />
@@ -49,7 +50,8 @@ import javax.xml.bind.annotation.XmlType;
 @XmlType(name = "", propOrder = {
     "xmlAccessMethods",
     "xmlElement",
-    "xmlElementWrapper"
+    "xmlElementWrapper",
+    "xmlProperties"
 })
 public class XmlElements
     extends JavaAttribute
@@ -61,6 +63,8 @@ public class XmlElements
     protected List<org.eclipse.persistence.jaxb.xmlmodel.XmlElement> xmlElement;
     @javax.xml.bind.annotation.XmlElement(name = "xml-element-wrapper")
     protected XmlElementWrapper xmlElementWrapper;
+    @javax.xml.bind.annotation.XmlElement(name = "xml-properties")
+    protected XmlProperties xmlProperties;
     @XmlAttribute(name = "xml-idref")
     protected Boolean xmlIdref;
     @XmlAttribute(name = "xml-list")
@@ -145,6 +149,30 @@ public class XmlElements
      */
     public void setXmlElementWrapper(XmlElementWrapper value) {
         this.xmlElementWrapper = value;
+    }
+
+    /**
+     * Gets the value of the xmlProperties property.
+     * 
+     * @return
+     *     possible object is
+     *     {@link XmlProperties }
+     *     
+     */
+    public XmlProperties getXmlProperties() {
+        return xmlProperties;
+    }
+
+    /**
+     * Sets the value of the xmlProperties property.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link XmlProperties }
+     *     
+     */
+    public void setXmlProperties(XmlProperties value) {
+        this.xmlProperties = value;
     }
 
     /**
