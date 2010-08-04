@@ -163,7 +163,7 @@ public class JUnitNativeQueryTestSuite  extends JUnitTestCase {
         clearCache(PUName);
 
         if (nativeQueryResults.isEmpty() || 
-                    nativeQueryResults.get(0).getDescription() == null || nativeQueryResults.get(0).getDescription().isEmpty()) {
+                    nativeQueryResults.get(0).getDescription() == null || nativeQueryResults.get(0).getDescription().length()==0 ) {
             fail("testCaseSensitivity_GoldBuyer1 failed to return ");
         }
         String errorMsg = JoinedAttributeTestHelper.compareCollections(jpaQueryResults, nativeQueryResults, session.getClassDescriptor(GoldBuyer.class), session);
