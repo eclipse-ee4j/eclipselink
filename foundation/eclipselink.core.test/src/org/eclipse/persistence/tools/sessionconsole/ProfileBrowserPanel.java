@@ -13,6 +13,7 @@
 package org.eclipse.persistence.tools.sessionconsole;
 
 import java.util.*;
+
 import javax.swing.*;
 import javax.swing.table.*;
 
@@ -25,7 +26,7 @@ import org.eclipse.persistence.sessions.SessionProfiler;
  * This panel allows for the browsing of performance profiles.
  */
 public class ProfileBrowserPanel extends JPanel {
-    private java.util.Vector fieldProfiles = new java.util.Vector();
+    private List<Profile> fieldProfiles = new ArrayList();
     private JScrollPane ivjProfileScrollPane = null;
     private JTable ivjProfilesTable = null;
     private JComboBox ivjGroupByChoice = null;
@@ -88,9 +89,7 @@ public class ProfileBrowserPanel extends JPanel {
     public Vector buildProfileSummaryByClass() {
         Hashtable summaries = new Hashtable();
 
-        for (Enumeration enumtr = getProfiles().elements(); 
-             enumtr.hasMoreElements(); ) {
-            Profile profile = (Profile)enumtr.nextElement();
+        for (Profile profile : getProfiles()) {
             Class domainClass = profile.getDomainClass();
             if (domainClass == null) {
                 domainClass = Void.class;
@@ -140,9 +139,7 @@ public class ProfileBrowserPanel extends JPanel {
     public Vector buildProfileSummaryByQuery() {
         Hashtable summaries = new Hashtable();
 
-        for (Enumeration enumtr = getProfiles().elements(); 
-             enumtr.hasMoreElements(); ) {
-            Profile profile = (Profile)enumtr.nextElement();
+        for (Profile profile : getProfiles()) {
             Class queryType = profile.getQueryClass();
             //CR 3050 PWK - If we don't know the query class, we need to use void.
             //This avoids a null pointer exception when adding to the hashtable.
@@ -193,9 +190,7 @@ public class ProfileBrowserPanel extends JPanel {
     public Vector buildProfileSummaryByQueryAndClass() {
         Hashtable summaries = new Hashtable();
 
-        for (Enumeration enumtr = getProfiles().elements(); 
-             enumtr.hasMoreElements(); ) {
-            Profile profile = (Profile)enumtr.nextElement();
+        for (Profile profile : getProfiles()) {
             Class queryType = profile.getQueryClass();
             Class queryClass = profile.getDomainClass();
             if (queryClass == null) {
@@ -333,12 +328,7 @@ public class ProfileBrowserPanel extends JPanel {
         return ivjGroupByLabel;
     }
 
-    /**
-     * Gets the profiles property (java.util.Vector) value.
-     * @return The profiles property value.
-     * @see #setProfiles
-     */
-    public java.util.Vector getProfiles() {
+    public List<Profile> getProfiles() {
         return fieldProfiles;
     }
 
@@ -501,7 +491,7 @@ public class ProfileBrowserPanel extends JPanel {
         columns.addElement("SQL Generation");
         model.setColumnIdentifiers(columns);
 
-        Vector profiles = getProfiles();
+        List<Profile> profiles = getProfiles();
         if (getGroupByChoice().getModel().getSelectedItem().equals("Group By Query")) {
             profiles = buildProfileSummaryByQuery();
         } else if (getGroupByChoice().getModel().getSelectedItem().equals("Group By Class")) {
@@ -510,10 +500,7 @@ public class ProfileBrowserPanel extends JPanel {
             profiles = buildProfileSummaryByQueryAndClass();
         }
 
-        for (Enumeration profileEnum = profiles.elements(); 
-             profileEnum.hasMoreElements(); ) {
-            Profile profile = (Profile)profileEnum.nextElement();
-
+        for (Profile profile : profiles) {
             String items[] = new String[13];
             if (profile.getQueryClass() == null) {
                 items[0] = "";
@@ -535,45 +522,45 @@ public class ProfileBrowserPanel extends JPanel {
             items[4] = 
                     new Long(profile.getNumberOfInstancesEffected()).toString();
             items[5] = new Long(profile.getObjectsPerSecond()).toString();
-            if (profile.getOperationTimings().containsKey(SessionProfiler.SQL_PREPARE)) {
+            if (profile.getOperationTimings().containsKey(SessionProfiler.SqlPrepare)) {
                 items[6] = 
-                        profile.getOperationTimings().get(SessionProfiler.SQL_PREPARE).toString();
+                        profile.getOperationTimings().get(SessionProfiler.SqlPrepare).toString();
             } else {
                 items[6] = "";
             }
-            if (profile.getOperationTimings().containsKey(SessionProfiler.STATEMENT_EXECUTE)) {
+            if (profile.getOperationTimings().containsKey(SessionProfiler.StatementExecute)) {
                 items[7] = 
-                        profile.getOperationTimings().get(SessionProfiler.STATEMENT_EXECUTE).toString();
+                        profile.getOperationTimings().get(SessionProfiler.StatementExecute).toString();
             } else {
                 items[7] = "";
             }
-            if (profile.getOperationTimings().containsKey(SessionProfiler.ROW_FETCH)) {
+            if (profile.getOperationTimings().containsKey(SessionProfiler.RowFetch)) {
                 items[8] = 
-                        profile.getOperationTimings().get(SessionProfiler.ROW_FETCH).toString();
+                        profile.getOperationTimings().get(SessionProfiler.RowFetch).toString();
             } else {
                 items[8] = "";
             }
-            if (profile.getOperationTimings().containsKey(SessionProfiler.CACHE)) {
+            if (profile.getOperationTimings().containsKey(SessionProfiler.Caching)) {
                 items[9] = 
-                        profile.getOperationTimings().get(SessionProfiler.CACHE).toString();
+                        profile.getOperationTimings().get(SessionProfiler.Caching).toString();
             } else {
                 items[9] = "";
             }
-            if (profile.getOperationTimings().containsKey(SessionProfiler.OBJECT_BUILDING)) {
+            if (profile.getOperationTimings().containsKey(SessionProfiler.ObjectBuilding)) {
                 items[10] = 
-                        profile.getOperationTimings().get(SessionProfiler.OBJECT_BUILDING).toString();
+                        profile.getOperationTimings().get(SessionProfiler.ObjectBuilding).toString();
             } else {
                 items[10] = "";
             }
-            if (profile.getOperationTimings().containsKey(SessionProfiler.QUERY_PREPARE)) {
+            if (profile.getOperationTimings().containsKey(SessionProfiler.QueryPreparation)) {
                 items[11] = 
-                        profile.getOperationTimings().get(SessionProfiler.QUERY_PREPARE).toString();
+                        profile.getOperationTimings().get(SessionProfiler.QueryPreparation).toString();
             } else {
                 items[11] = "";
             }
-            if (profile.getOperationTimings().containsKey(SessionProfiler.SQL_GENERATION)) {
+            if (profile.getOperationTimings().containsKey(SessionProfiler.SqlGeneration)) {
                 items[12] = 
-                        profile.getOperationTimings().get(SessionProfiler.SQL_GENERATION).toString();
+                        profile.getOperationTimings().get(SessionProfiler.SqlGeneration).toString();
             } else {
                 items[12] = "";
             }
@@ -588,8 +575,8 @@ public class ProfileBrowserPanel extends JPanel {
      * @param profiles The new value for the property.
      * @see #getProfiles
      */
-    public void setProfiles(java.util.Vector profiles) {
-        java.util.Vector oldValue = fieldProfiles;
+    public void setProfiles(List<Profile> profiles) {
+        List<Profile> oldValue = fieldProfiles;
         fieldProfiles = profiles;
         firePropertyChange("profiles", oldValue, profiles);
 

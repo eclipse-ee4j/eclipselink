@@ -365,37 +365,39 @@ public class StatementQueryMechanism extends CallQueryMechanism {
      */
     protected void setCallFromStatement() {
         // Profile SQL generation.
-        getSession().startOperationProfile(SessionProfiler.SQL_GENERATION, getQuery(), SessionProfiler.ALL);
-        if (hasMultipleStatements()) {
-            for (Enumeration statementEnum = getSQLStatements().elements(); statementEnum.hasMoreElements();) {
+        getSession().startOperationProfile(SessionProfiler.SqlGeneration, getQuery(), SessionProfiler.ALL);
+        try {
+            if (hasMultipleStatements()) {
+                for (Enumeration statementEnum = getSQLStatements().elements(); statementEnum.hasMoreElements();) {
+                    DatabaseCall call = null;
+                    if (getDescriptor() != null) {
+                        call = getDescriptor().buildCallFromStatement((SQLStatement)statementEnum.nextElement(), getSession());
+                    } else {
+                        call = ((SQLStatement)statementEnum.nextElement()).buildCall(getSession());
+                    }
+    
+                    // In case of update call may be null if no update required.
+                    if (call != null) {
+                        addCall(call);
+                    }
+                }
+            } else {
                 DatabaseCall call = null;
                 if (getDescriptor() != null) {
-                    call = getDescriptor().buildCallFromStatement((SQLStatement)statementEnum.nextElement(), getSession());
+                    call = getDescriptor().buildCallFromStatement(getSQLStatement(), getSession());
                 } else {
-                    call = ((SQLStatement)statementEnum.nextElement()).buildCall(getSession());
+                    call = getSQLStatement().buildCall(getSession());
                 }
-
+    
                 // In case of update call may be null if no update required.
                 if (call != null) {
-                    addCall(call);
+                    setCall(call);
                 }
             }
-        } else {
-            DatabaseCall call = null;
-            if (getDescriptor() != null) {
-                call = getDescriptor().buildCallFromStatement(getSQLStatement(), getSession());
-            } else {
-                call = getSQLStatement().buildCall(getSession());
-            }
-
-            // In case of update call may be null if no update required.
-            if (call != null) {
-                setCall(call);
-            }
+        } finally {
+            // Profile SQL generation.
+            getSession().endOperationProfile(SessionProfiler.SqlGeneration, getQuery(), SessionProfiler.ALL);
         }
-
-        // Profile SQL generation.
-        getSession().endOperationProfile(SessionProfiler.SQL_GENERATION, getQuery(), SessionProfiler.ALL);
     }
 
     /**

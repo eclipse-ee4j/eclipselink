@@ -642,6 +642,7 @@ public class DatabaseSessionImpl extends AbstractSession implements org.eclipse.
             getProfiler().initialize();
         }
         updateProfile(SessionProfiler.LoginTime, new Date(System.currentTimeMillis()));
+        updateProfile(SessionProfiler.SessionName, getName());
 
         // Login and initialize
         if (this.eventManager != null) {

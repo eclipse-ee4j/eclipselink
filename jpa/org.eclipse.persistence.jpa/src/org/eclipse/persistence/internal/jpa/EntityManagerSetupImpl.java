@@ -105,6 +105,7 @@ import org.eclipse.persistence.internal.jpa.jdbc.DataSourceImpl;
 import org.eclipse.persistence.internal.security.SecurableObjectHolder;
 import org.eclipse.persistence.platform.database.converters.StructConverter;
 import org.eclipse.persistence.platform.server.ServerPlatformBase;
+import org.eclipse.persistence.tools.profiler.PerformanceMonitor;
 import org.eclipse.persistence.tools.profiler.PerformanceProfiler;
 import org.eclipse.persistence.tools.profiler.QueryMonitor;
 
@@ -641,6 +642,10 @@ public class EntityManagerSetupImpl {
             }
             if (newProfilerClassName.equals(ProfilerType.PerformanceProfiler)) {
                 session.setProfiler(new PerformanceProfiler());
+                return;
+            }
+            if (newProfilerClassName.equals(ProfilerType.PerformanceMonitor)) {
+                session.setProfiler(new PerformanceMonitor());
                 return;
             }
             
@@ -1542,6 +1547,7 @@ public class EntityManagerSetupImpl {
         while (it.hasNext()) {
             Map.Entry entry = (Map.Entry)it.next();
             String name = (String)entry.getKey();
+            String customizerClassName = (String)entry.getValue();
             
             ClassDescriptor descriptor = session.getDescriptorForAlias(name);
             if (descriptor == null) {
@@ -1549,11 +1555,10 @@ public class EntityManagerSetupImpl {
                     Class javaClass = findClass(name, loader);
                     descriptor = session.getDescriptor(javaClass);
                 } catch (Exception ex) {
-                    // Ignore exception
+                    throw EntityManagerSetupException.failedWhileProcessingProperty(PersistenceUnitProperties.DESCRIPTOR_CUSTOMIZER_ + name, customizerClassName, ex);
                 }
             }
             if (descriptor != null) {
-                String customizerClassName = (String)entry.getValue();
                 Class customizerClass = findClassForProperty(customizerClassName, PersistenceUnitProperties.DESCRIPTOR_CUSTOMIZER_ + name, loader);
                 try {
                     DescriptorCustomizer customizer = (DescriptorCustomizer)customizerClass.newInstance();
@@ -1561,6 +1566,8 @@ public class EntityManagerSetupImpl {
                 } catch (Exception ex) {
                     throw EntityManagerSetupException.failedWhileProcessingProperty(PersistenceUnitProperties.DESCRIPTOR_CUSTOMIZER_ + name, customizerClassName, ex);
                 }
+            } else {
+                throw EntityManagerSetupException.failedWhileProcessingProperty(PersistenceUnitProperties.DESCRIPTOR_CUSTOMIZER_ + name, customizerClassName, null);                
             }
         }
     }

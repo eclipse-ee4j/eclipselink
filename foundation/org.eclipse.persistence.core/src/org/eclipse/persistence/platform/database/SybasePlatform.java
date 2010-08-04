@@ -261,11 +261,11 @@ public class SybasePlatform extends org.eclipse.persistence.platform.database.Da
         } else {
             // start the process of processing the result set and the output params.  this is specific to Sybase JConnect 5.5
             // as we must process the result set before the output params.
-            session.startOperationProfile(SessionProfiler.STATEMENT_EXECUTE, dbCall.getQuery(), SessionProfiler.ALL);
+            session.startOperationProfile(SessionProfiler.StatementExecute, dbCall.getQuery(), SessionProfiler.ALL);
             try {
                 resultSet = statement.executeQuery();
             } finally {
-                session.endOperationProfile(SessionProfiler.STATEMENT_EXECUTE, dbCall.getQuery(), SessionProfiler.ALL);
+                session.endOperationProfile(SessionProfiler.StatementExecute, dbCall.getQuery(), SessionProfiler.ALL);
             }
             dbCall.matchFieldOrder(resultSet, accessor, session);
 

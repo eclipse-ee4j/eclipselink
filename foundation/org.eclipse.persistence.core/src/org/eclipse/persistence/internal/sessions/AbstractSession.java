@@ -967,6 +967,16 @@ public abstract class AbstractSession implements org.eclipse.persistence.session
 
     /**
      * INTERNAL:
+     * Updates the count of SessionProfiler event
+     */
+    public void incrementProfile(String operationName, DatabaseQuery query) {
+        if (this.isInProfile) {
+            getProfiler().occurred(operationName, query);
+        }
+    }
+
+    /**
+     * INTERNAL:
      * Overridden by subclasses that do more than just execute the call.
      * Executes the call directly on this session and does not check which
      * session it should have executed on.

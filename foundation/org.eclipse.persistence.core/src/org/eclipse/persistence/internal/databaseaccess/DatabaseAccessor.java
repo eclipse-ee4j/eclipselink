@@ -378,10 +378,10 @@ public class DatabaseAccessor extends DatasourceAccessor {
 
         DatabaseQuery query = ((call == null)? null : call.getQuery());
         try {
-            session.startOperationProfile(SessionProfiler.STATEMENT_EXECUTE, query, SessionProfiler.ALL);
+            session.startOperationProfile(SessionProfiler.StatementExecute, query, SessionProfiler.ALL);
             statement.close();
         } finally {
-            session.endOperationProfile(SessionProfiler.STATEMENT_EXECUTE, query, SessionProfiler.ALL);
+            session.endOperationProfile(SessionProfiler.StatementExecute, query, SessionProfiler.ALL);
             decrementCallCount();
             // If this is the cached dynamic statement, release it.
             if (statement == this.dynamicStatement) {
@@ -571,11 +571,11 @@ public class DatabaseAccessor extends DatasourceAccessor {
             if (session.shouldLog(SessionLog.FINE, SessionLog.SQL)) {// Avoid printing if no logging required.
                 session.log(SessionLog.FINE, SessionLog.SQL, dbCall.getLogString(this), (Object[])null, this, false);
             }
-            session.startOperationProfile(SessionProfiler.SQL_PREPARE, dbCall.getQuery(), SessionProfiler.ALL);
+            session.startOperationProfile(SessionProfiler.SqlPrepare, dbCall.getQuery(), SessionProfiler.ALL);
             try {
                 statement = dbCall.prepareStatement(this, translationRow, session);
             } finally {
-                session.endOperationProfile(SessionProfiler.SQL_PREPARE, dbCall.getQuery(), SessionProfiler.ALL);
+                session.endOperationProfile(SessionProfiler.SqlPrepare, dbCall.getQuery(), SessionProfiler.ALL);
             }
 
             // effectively this means that someone is executing an update type query.
@@ -611,7 +611,7 @@ public class DatabaseAccessor extends DatasourceAccessor {
                     return dbCall;
                 }
 
-                session.startOperationProfile(SessionProfiler.ROW_FETCH, dbCall.getQuery(), SessionProfiler.ALL);
+                session.startOperationProfile(SessionProfiler.RowFetch, dbCall.getQuery(), SessionProfiler.ALL);
                 try {
                     if (dbCall.isOneRowReturned()) {
                         if (resultSet.next()) {
@@ -657,7 +657,7 @@ public class DatabaseAccessor extends DatasourceAccessor {
                     }
                     resultSet.close();// This must be closed in case the statement is cached and not closed.
                 } finally {
-                    session.endOperationProfile(SessionProfiler.ROW_FETCH, dbCall.getQuery(), SessionProfiler.ALL);
+                    session.endOperationProfile(SessionProfiler.RowFetch, dbCall.getQuery(), SessionProfiler.ALL);
                 }
             }
             // Log any warnings on finest.
@@ -717,7 +717,7 @@ public class DatabaseAccessor extends DatasourceAccessor {
         final ThreadCursoredList results = new ThreadCursoredList(20);
         Thread thread = new Thread() {
             public void run() {
-                session.startOperationProfile(SessionProfiler.ROW_FETCH, dbCall.getQuery(), SessionProfiler.ALL);
+                session.startOperationProfile(SessionProfiler.RowFetch, dbCall.getQuery(), SessionProfiler.ALL);
                 try {
                     // Initial next was already validated before this method is called.
                     boolean hasNext = true;
@@ -748,7 +748,7 @@ public class DatabaseAccessor extends DatasourceAccessor {
                     }
                     results.throwException(exception);
                 } finally {
-                    session.endOperationProfile(SessionProfiler.ROW_FETCH, dbCall.getQuery(), SessionProfiler.ALL);
+                    session.endOperationProfile(SessionProfiler.RowFetch, dbCall.getQuery(), SessionProfiler.ALL);
                 }
 
                 // This is in a separate try block to ensure that the real exception is not masked by the close exception.
@@ -778,9 +778,9 @@ public class DatabaseAccessor extends DatasourceAccessor {
 
         try {
             if (call != null) {
-                session.startOperationProfile(SessionProfiler.STATEMENT_EXECUTE, call.getQuery(), SessionProfiler.ALL);
+                session.startOperationProfile(SessionProfiler.StatementExecute, call.getQuery(), SessionProfiler.ALL);
             } else {
-                session.startOperationProfile(SessionProfiler.STATEMENT_EXECUTE, null, SessionProfiler.ALL);                
+                session.startOperationProfile(SessionProfiler.StatementExecute, null, SessionProfiler.ALL);                
             }
             if ((call != null) && call.isDynamicCall(session)) {
                 rowCount = statement.executeUpdate(call.getSQLString());
@@ -798,9 +798,9 @@ public class DatabaseAccessor extends DatasourceAccessor {
             }
         } finally {
             if (call != null) {
-                session.endOperationProfile(SessionProfiler.STATEMENT_EXECUTE, call.getQuery(), SessionProfiler.ALL);
+                session.endOperationProfile(SessionProfiler.StatementExecute, call.getQuery(), SessionProfiler.ALL);
             } else {
-                session.endOperationProfile(SessionProfiler.STATEMENT_EXECUTE, null, SessionProfiler.ALL);                
+                session.endOperationProfile(SessionProfiler.StatementExecute, null, SessionProfiler.ALL);                
             }
         }
 
@@ -880,7 +880,7 @@ public class DatabaseAccessor extends DatasourceAccessor {
     public ResultSet executeSelect(DatabaseCall call, Statement statement, AbstractSession session) throws SQLException {
         ResultSet resultSet;
 
-        session.startOperationProfile(SessionProfiler.STATEMENT_EXECUTE, call.getQuery(), SessionProfiler.ALL);
+        session.startOperationProfile(SessionProfiler.StatementExecute, call.getQuery(), SessionProfiler.ALL);
         try {
             if (call.isDynamicCall(session)) {
                 resultSet = statement.executeQuery(call.getSQLString());
@@ -888,7 +888,7 @@ public class DatabaseAccessor extends DatasourceAccessor {
                 resultSet = ((PreparedStatement)statement).executeQuery();
             }
         } finally {
-            session.endOperationProfile(SessionProfiler.STATEMENT_EXECUTE, call.getQuery(), SessionProfiler.ALL);
+            session.endOperationProfile(SessionProfiler.StatementExecute, call.getQuery(), SessionProfiler.ALL);
         }
 
         // Allow for procs with outputs to be raised as events for error handling.

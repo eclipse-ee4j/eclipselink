@@ -1433,7 +1433,7 @@ public class DatabasePlatform extends DatasourcePlatform {
         Object result = null;
         ResultSetMetaData metaData = resultSet.getMetaData();
 
-        session.startOperationProfile(SessionProfiler.ROW_FETCH, dbCall.getQuery(), SessionProfiler.ALL);
+        session.startOperationProfile(SessionProfiler.RowFetch, dbCall.getQuery(), SessionProfiler.ALL);
         try {
             if (dbCall.isOneRowReturned()) {
                 if (resultSet.next()) {
@@ -1456,7 +1456,7 @@ public class DatabasePlatform extends DatasourcePlatform {
             }
             resultSet.close();// This must be closed incase the statement is cached and not closed.
         } finally {
-            session.endOperationProfile(SessionProfiler.ROW_FETCH, dbCall.getQuery(), SessionProfiler.ALL);
+            session.endOperationProfile(SessionProfiler.RowFetch, dbCall.getQuery(), SessionProfiler.ALL);
         }
         return result;
     }

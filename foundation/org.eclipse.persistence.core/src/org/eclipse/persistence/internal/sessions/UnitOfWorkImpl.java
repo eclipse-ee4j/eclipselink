@@ -1495,6 +1495,7 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
     protected void commitToDatabaseWithChangeSet(boolean commitTransaction) throws DatabaseException, OptimisticLockException {
         
         try {
+            incrementProfile(SessionProfiler.UowCommits);
             startOperationProfile(SessionProfiler.UowCommit);
             // PERF: If this is an empty unit of work, do nothing (but still may need to commit SQL changes).
             boolean hasChanges = (this.unitOfWorkChangeSet != null) || hasCloneMapping() || hasDeletedObjects() || hasModifyAllQueries() || hasDeferredModifyAllQueries();
@@ -3562,54 +3563,49 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
      * support.
      */
     public void performRemove(Object toBeDeleted, Map visitedObjects) {
-        try {
-            if (toBeDeleted == null) {
-                return;
-            }
-            ClassDescriptor descriptor = getDescriptor(toBeDeleted);
-            if ((descriptor == null) || descriptor.isDescriptorTypeAggregate()) {
-                throw new IllegalArgumentException(ExceptionLocalization.buildMessage("not_an_entity", new Object[] { toBeDeleted }));
-            }
-            logDebugMessage(toBeDeleted, "deleting_object");
-
-            startOperationProfile(SessionProfiler.DeletedObject);
-            //bug 4568370+4599010; fix EntityManager.remove() to handle new objects
-            if (getDeletedObjects().containsKey(toBeDeleted)){
-              return;
-            }
-            visitedObjects.put(toBeDeleted,toBeDeleted);
-            Object registeredObject = checkIfAlreadyRegistered(toBeDeleted, descriptor);
-            if (registeredObject == null) {
-                Object primaryKey = descriptor.getObjectBuilder().extractPrimaryKeyFromObject(toBeDeleted, this);
-                DoesExistQuery existQuery = descriptor.getQueryManager().getDoesExistQuery();
-                existQuery = (DoesExistQuery)existQuery.clone();
-                existQuery.setObject(toBeDeleted);
-                existQuery.setPrimaryKey(primaryKey);
-                existQuery.setDescriptor(descriptor);
-                existQuery.setIsExecutionClone(true);
-
-                existQuery.setCheckCacheFirst(true);
-                if (((Boolean)executeQuery(existQuery)).booleanValue()){
-                    throw new IllegalArgumentException(ExceptionLocalization.buildMessage("cannot_remove_detatched_entity", new Object[]{toBeDeleted}));
-                }//else, it is a new or previously deleted object that should be ignored (and delete should cascade)
-            } else {
-                //fire events only if this is a managed object
-                if (descriptor.getEventManager().hasAnyEventListeners()) {
-                    org.eclipse.persistence.descriptors.DescriptorEvent event = new org.eclipse.persistence.descriptors.DescriptorEvent(toBeDeleted);
-                    event.setEventCode(DescriptorEventManager.PreRemoveEvent);
-                    event.setSession(this);
-                    descriptor.getEventManager().executeEvent(event);
-                }
-                if (hasNewObjects() && getNewObjectsCloneToOriginal().containsKey(registeredObject)){
-                    unregisterObject(registeredObject, DescriptorIterator.NoCascading);
-                } else {
-                    getDeletedObjects().put(toBeDeleted, toBeDeleted);
-                }
-            }
-            descriptor.getObjectBuilder().cascadePerformRemove(toBeDeleted, this, visitedObjects);
-        } finally {
-            endOperationProfile(SessionProfiler.DeletedObject);
+        if (toBeDeleted == null) {
+            return;
         }
+        ClassDescriptor descriptor = getDescriptor(toBeDeleted);
+        if ((descriptor == null) || descriptor.isDescriptorTypeAggregate()) {
+            throw new IllegalArgumentException(ExceptionLocalization.buildMessage("not_an_entity", new Object[] { toBeDeleted }));
+        }
+        logDebugMessage(toBeDeleted, "deleting_object");
+
+        //bug 4568370+4599010; fix EntityManager.remove() to handle new objects
+        if (getDeletedObjects().containsKey(toBeDeleted)){
+          return;
+        }
+        visitedObjects.put(toBeDeleted,toBeDeleted);
+        Object registeredObject = checkIfAlreadyRegistered(toBeDeleted, descriptor);
+        if (registeredObject == null) {
+            Object primaryKey = descriptor.getObjectBuilder().extractPrimaryKeyFromObject(toBeDeleted, this);
+            DoesExistQuery existQuery = descriptor.getQueryManager().getDoesExistQuery();
+            existQuery = (DoesExistQuery)existQuery.clone();
+            existQuery.setObject(toBeDeleted);
+            existQuery.setPrimaryKey(primaryKey);
+            existQuery.setDescriptor(descriptor);
+            existQuery.setIsExecutionClone(true);
+
+            existQuery.setCheckCacheFirst(true);
+            if (((Boolean)executeQuery(existQuery)).booleanValue()){
+                throw new IllegalArgumentException(ExceptionLocalization.buildMessage("cannot_remove_detatched_entity", new Object[]{toBeDeleted}));
+            }//else, it is a new or previously deleted object that should be ignored (and delete should cascade)
+        } else {
+            //fire events only if this is a managed object
+            if (descriptor.getEventManager().hasAnyEventListeners()) {
+                org.eclipse.persistence.descriptors.DescriptorEvent event = new org.eclipse.persistence.descriptors.DescriptorEvent(toBeDeleted);
+                event.setEventCode(DescriptorEventManager.PreRemoveEvent);
+                event.setSession(this);
+                descriptor.getEventManager().executeEvent(event);
+            }
+            if (hasNewObjects() && getNewObjectsCloneToOriginal().containsKey(registeredObject)){
+                unregisterObject(registeredObject, DescriptorIterator.NoCascading);
+            } else {
+                getDeletedObjects().put(toBeDeleted, toBeDeleted);
+            }
+        }
+        descriptor.getObjectBuilder().cascadePerformRemove(toBeDeleted, this, visitedObjects);
     }
 
     /**

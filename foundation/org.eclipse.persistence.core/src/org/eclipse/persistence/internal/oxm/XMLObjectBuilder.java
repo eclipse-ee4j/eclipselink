@@ -236,7 +236,7 @@ public class XMLObjectBuilder extends ObjectBuilder {
         if (!(isXmlDescriptor() || getDescriptor().isDescriptorTypeAggregate())) {
             return super.buildObject(query, databaseRow, joinManager);
         }
-        query.getSession().startOperationProfile(SessionProfiler.OBJECT_BUILDING, query, SessionProfiler.ALL);
+        query.getSession().startOperationProfile(SessionProfiler.ObjectBuilding, query, SessionProfiler.ALL);
         ClassDescriptor concreteDescriptor = getDescriptor();
         Object domainObject = null;
 
@@ -300,7 +300,7 @@ public class XMLObjectBuilder extends ObjectBuilder {
             //EIS XML Cases won't have a doc pres policy set
             ((DOMRecord)row).getDocPresPolicy().addObjectToCache(domainObject, ((DOMRecord)row).getDOM());
         }
-        query.getSession().endOperationProfile(SessionProfiler.OBJECT_BUILDING, query, SessionProfiler.ALL);
+        query.getSession().endOperationProfile(SessionProfiler.ObjectBuilding, query, SessionProfiler.ALL);
         if ((unmarshaller != null) && (unmarshaller.getUnmarshalListener() != null)) {
             unmarshaller.getUnmarshalListener().afterUnmarshal(domainObject, parent);
         }

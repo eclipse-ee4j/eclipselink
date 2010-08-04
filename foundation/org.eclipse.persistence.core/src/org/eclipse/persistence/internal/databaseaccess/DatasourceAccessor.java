@@ -231,13 +231,13 @@ public abstract class DatasourceAccessor implements Accessor {
         session.log(SessionLog.FINER, SessionLog.TRANSACTION, "begin_transaction", (Object[])null, this);
 
         try {
-            session.startOperationProfile(SessionProfiler.TRANSACTION);
+            session.startOperationProfile(SessionProfiler.Transaction);
             incrementCallCount(session);
             basicBeginTransaction(session);
             this.isInTransaction = true;
         } finally {
             decrementCallCount();
-            session.endOperationProfile(SessionProfiler.TRANSACTION);
+            session.endOperationProfile(SessionProfiler.Transaction);
         }
     }
 
@@ -381,7 +381,7 @@ public abstract class DatasourceAccessor implements Accessor {
         session.log(SessionLog.FINER, SessionLog.TRANSACTION, "commit_transaction", (Object[])null, this);
 
         try {
-            session.startOperationProfile(SessionProfiler.TRANSACTION);
+            session.startOperationProfile(SessionProfiler.Transaction);
             incrementCallCount(session);
             basicCommitTransaction(session);
 
@@ -392,7 +392,7 @@ public abstract class DatasourceAccessor implements Accessor {
         } finally {
             sequencingCallback = null;
             decrementCallCount();
-            session.endOperationProfile(SessionProfiler.TRANSACTION);
+            session.endOperationProfile(SessionProfiler.Transaction);
         }
     }
 
@@ -401,8 +401,8 @@ public abstract class DatasourceAccessor implements Accessor {
      * Catch exceptions and re-throw as EclipseLink exceptions.
      */
     public void connect(Login login, AbstractSession session) throws DatabaseException {
-        session.startOperationProfile(SessionProfiler.CONNECT);
-        session.incrementProfile(SessionProfiler.TlConnects);
+        session.startOperationProfile(SessionProfiler.ConnectionManagement);
+        session.incrementProfile(SessionProfiler.Connects);
 
         try {
             if (session.shouldLog(SessionLog.CONFIG, SessionLog.CONNECTION)) {// Avoid printing if no logging required.
@@ -427,7 +427,7 @@ public abstract class DatasourceAccessor implements Accessor {
                 decrementCallCount();
             }
         } finally {
-            session.endOperationProfile(SessionProfiler.CONNECT);
+            session.endOperationProfile(SessionProfiler.ConnectionManagement);
         }
     }
 
@@ -471,13 +471,16 @@ public abstract class DatasourceAccessor implements Accessor {
         if (this.datasourceConnection == null) {
             return;
         }
-        session.incrementProfile(SessionProfiler.TlDisconnects);
-        session.startOperationProfile(SessionProfiler.CONNECT);
-        releaseCustomizer();
-        closeDatasourceConnection();
-        this.datasourceConnection = null;
-        this.isInTransaction = true;
-        session.endOperationProfile(SessionProfiler.CONNECT);
+        session.incrementProfile(SessionProfiler.Disconnects);
+        session.startOperationProfile(SessionProfiler.ConnectionManagement);
+        try {
+            releaseCustomizer();
+            closeDatasourceConnection();
+            this.datasourceConnection = null;
+            this.isInTransaction = true;
+        } finally {
+            session.endOperationProfile(SessionProfiler.ConnectionManagement);
+        }
     }
 
     /**
@@ -554,9 +557,12 @@ public abstract class DatasourceAccessor implements Accessor {
      */
     protected void reconnect(AbstractSession session) throws DatabaseException {
         session.log(SessionLog.FINEST, SessionLog.CONNECTION, "reconnecting_to_external_connection_pool");
-        session.startOperationProfile(SessionProfiler.CONNECT);
-        connectInternal(this.login, session);
-        session.endOperationProfile(SessionProfiler.CONNECT);
+        session.startOperationProfile(SessionProfiler.ConnectionManagement);
+        try {
+            connectInternal(this.login, session);
+        } finally {
+            session.endOperationProfile(SessionProfiler.ConnectionManagement);
+        }
     }
 
     /**
@@ -658,14 +664,14 @@ public abstract class DatasourceAccessor implements Accessor {
         session.log(SessionLog.FINER, SessionLog.TRANSACTION, "rollback_transaction", (Object[])null, this);
 
         try {
-            session.startOperationProfile(SessionProfiler.TRANSACTION);
+            session.startOperationProfile(SessionProfiler.Transaction);
             incrementCallCount(session);
             basicRollbackTransaction(session);
         } finally {
             this.isInTransaction = false;
             sequencingCallback = null;
             decrementCallCount();
-            session.endOperationProfile(SessionProfiler.TRANSACTION);
+            session.endOperationProfile(SessionProfiler.Transaction);
         }
     }
 

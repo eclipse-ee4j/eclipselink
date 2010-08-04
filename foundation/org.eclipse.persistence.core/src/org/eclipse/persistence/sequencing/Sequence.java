@@ -59,6 +59,7 @@ public abstract class Sequence implements Serializable, Cloneable {
     
     public Sequence() {
         super();
+        setName("SEQUENCE");
     }
 
     /**

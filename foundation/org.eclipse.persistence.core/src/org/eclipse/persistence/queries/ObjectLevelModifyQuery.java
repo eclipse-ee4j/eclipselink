@@ -149,10 +149,13 @@ public abstract class ObjectLevelModifyQuery extends ModifyQuery {
      * Return the domain class associated with this query.
      */
     public Class getReferenceClass() {
-        if (getObject() == null) {
+        if (this.object == null) {
+            if (this.descriptor != null) {
+                return this.descriptor.getJavaClass();
+            }
             return null;
         }
-        return getObject().getClass();        
+        return this.object.getClass();        
     }
 
     /**
@@ -162,11 +165,20 @@ public abstract class ObjectLevelModifyQuery extends ModifyQuery {
      * is specified at runtime, this will not be an issue.
      */
     public String getReferenceClassName() {
-        if (getReferenceClass() != null) {
-            return getReferenceClass().getName();
+        Class referenceClass = getReferenceClass();
+        if (referenceClass != null) {
+            return referenceClass.getName();
         } else {
             return null;
         }
+    }
+
+    /**
+     * INTERNAL:
+     * Return the name to use for the query in performance monitoring.
+     */
+    public void resetMonitorName() {
+        this.monitorName = getClass().getSimpleName() + ":" + getReferenceClassName();
     }
 
     /**

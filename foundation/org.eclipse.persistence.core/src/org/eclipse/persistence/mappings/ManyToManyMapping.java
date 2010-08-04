@@ -542,6 +542,7 @@ public class ManyToManyMapping extends CollectionMapping implements RelationalMa
         if (!getDeleteAllQuery().hasSessionName()) {
             getDeleteAllQuery().setSessionName(session.getName());
         }
+        getDeleteAllQuery().setName(getAttributeName());
 
         if (hasCustomDeleteAllQuery()) {
             return;

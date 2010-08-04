@@ -145,7 +145,7 @@ public class EISAccessor extends DatasourceAccessor {
                 session.log(SessionLog.FINE, SessionLog.SQL, call.getLogString(this), (Object[])null, this, false);
             }
             incrementCallCount(session);
-            session.startOperationProfile(SessionProfiler.SQL_PREPARE, eisCall.getQuery(), SessionProfiler.ALL);
+            session.startOperationProfile(SessionProfiler.SqlPrepare, eisCall.getQuery(), SessionProfiler.ALL);
             Record input = null;
             Record output = null;
             try {
@@ -153,9 +153,9 @@ public class EISAccessor extends DatasourceAccessor {
                 input = getEISPlatform().createInputRecord(eisCall, this);
                 output = getEISPlatform().createOutputRecord(eisCall, this);
             } finally {
-                session.endOperationProfile(SessionProfiler.SQL_PREPARE, eisCall.getQuery(), SessionProfiler.ALL);
+                session.endOperationProfile(SessionProfiler.SqlPrepare, eisCall.getQuery(), SessionProfiler.ALL);
             }
-            session.startOperationProfile(SessionProfiler.STATEMENT_EXECUTE, eisCall.getQuery(), SessionProfiler.ALL);
+            session.startOperationProfile(SessionProfiler.StatementExecute, eisCall.getQuery(), SessionProfiler.ALL);
             try {
                 InteractionSpec interactionSpec = getEISPlatform().buildInteractionSpec(eisCall);
                 if (output == null) {
@@ -183,7 +183,7 @@ public class EISAccessor extends DatasourceAccessor {
                 }
                 session.log(SessionLog.FINEST, SessionLog.QUERY, "data_access_result", output);
             } finally {
-                session.endOperationProfile(SessionProfiler.STATEMENT_EXECUTE, eisCall.getQuery(), SessionProfiler.ALL);
+                session.endOperationProfile(SessionProfiler.StatementExecute, eisCall.getQuery(), SessionProfiler.ALL);
             }
         } catch (ResourceException exception) {
             // Ensure each resource is released, but still ensure that the real exception is thrown.

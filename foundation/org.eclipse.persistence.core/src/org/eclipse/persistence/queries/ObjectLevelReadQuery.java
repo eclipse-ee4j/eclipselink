@@ -416,7 +416,7 @@ public abstract class ObjectLevelReadQuery extends ObjectBuildingQuery {
             cloneQuery.orderByExpressions = new ArrayList<Expression>(this.orderByExpressions);
         }
         if (this.fetchGroup != null) {
-            cloneQuery.fetchGroup = (FetchGroup)this.fetchGroup.clone();
+            cloneQuery.fetchGroup = this.fetchGroup.clone();
             // don't clone immutable entityFetchGroup
         }
         return cloneQuery;
@@ -637,13 +637,13 @@ public abstract class ObjectLevelReadQuery extends ObjectBuildingQuery {
         ClassDescriptor referenceDescriptor = mapping.getReferenceDescriptor();
 
         // Add the fields defined by the nested fetch group - if it exists.
-        if(referenceDescriptor != null && referenceDescriptor.hasFetchGroupManager()) {
+        if (referenceDescriptor != null && referenceDescriptor.hasFetchGroupManager()) {
             ObjectLevelReadQuery nestedQuery = getJoinedAttributeManager().getNestedJoinedMappingQuery(expression);
             FetchGroup nestedFetchGroup = nestedQuery.getExecutionFetchGroup();
             if(nestedFetchGroup != null) {
                 List<DatabaseField> nestedFields = nestedQuery.getFetchGroupSelectionFields(mapping);
                 for(DatabaseField field : nestedFields) {
-                    fields.add(new FieldExpression((DatabaseField)field, expression));
+                    fields.add(new FieldExpression(field, expression));
                 }
                 return;
             }

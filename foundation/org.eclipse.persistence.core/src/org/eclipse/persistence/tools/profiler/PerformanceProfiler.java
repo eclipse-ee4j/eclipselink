@@ -29,16 +29,14 @@ import org.eclipse.persistence.internal.sessions.AbstractSession;
  * @author James Sutherland
  */
 public class PerformanceProfiler implements Serializable, Cloneable, SessionProfiler {
-    protected Vector profiles;
+    protected List<Profile> profiles;
     transient protected AbstractSession session;
     protected boolean shouldLogProfile;
     protected int nestLevel;
     protected long nestTime;
     protected long profileTime;
-    protected Hashtable operationTimings;
-    protected Hashtable operationStartTimes;
-    protected Hashtable operationTimingsByThread;//facilitates concurrency
-    protected Hashtable operationStartTimesByThread;//facilitates concurrency
+    protected Map<Integer, Map<String, Long>> operationTimingsByThread;//facilitates concurrency
+    protected Map<Integer, Map<String, Long>> operationStartTimesByThread;//facilitates concurrency
 
     /**
      * PUBLIC:
@@ -92,7 +90,7 @@ public class PerformanceProfiler implements Serializable, Cloneable, SessionProf
     }
 
     protected void addProfile(Profile profile) {
-        getProfiles().addElement(profile);
+        getProfiles().add(profile);
     }
 
     /**
@@ -103,9 +101,7 @@ public class PerformanceProfiler implements Serializable, Cloneable, SessionProf
         Profile summary = new Profile();
         summary.setDomainClass(Void.class);
         summary.setQueryClass(Void.class);
-        for (Enumeration enumtr = getProfiles().elements(); enumtr.hasMoreElements();) {
-            Profile profile = (Profile)enumtr.nextElement();
-
+        for (Profile profile : getProfiles()) {
             if ((summary.getShortestTime() == -1) || (profile.getTotalTime() < summary.getShortestTime())) {
                 summary.setShortestTime(profile.getTotalTime());
             }
@@ -141,8 +137,7 @@ public class PerformanceProfiler implements Serializable, Cloneable, SessionProf
     public Hashtable buildProfileSummaryByClass() {
         Hashtable summaries = new Hashtable();
 
-        for (Enumeration enumtr = getProfiles().elements(); enumtr.hasMoreElements();) {
-            Profile profile = (Profile)enumtr.nextElement();
+        for (Profile profile : getProfiles()) {
             Class domainClass = profile.getDomainClass();
             if (domainClass == null) {
                 domainClass = Void.class;
@@ -189,8 +184,7 @@ public class PerformanceProfiler implements Serializable, Cloneable, SessionProf
     public Hashtable buildProfileSummaryByQuery() {
         Hashtable summaries = new Hashtable();
 
-        for (Enumeration enumtr = getProfiles().elements(); enumtr.hasMoreElements();) {
-            Profile profile = (Profile)enumtr.nextElement();
+        for (Profile profile : getProfiles()) {
             Class queryType = profile.getQueryClass();
             if (queryType == null) {
                 queryType = Void.class;
@@ -224,14 +218,12 @@ public class PerformanceProfiler implements Serializable, Cloneable, SessionProf
         return summaries;
     }
 
-    public Object clone() {
+    public PerformanceProfiler clone() {
         try {
-            return super.clone();
+            return (PerformanceProfiler)super.clone();
         } catch (CloneNotSupportedException exception) {
-            ;//Do nothing
+            throw new InternalError();
         }
-
-        return null;
     }
 
     /**
@@ -248,8 +240,8 @@ public class PerformanceProfiler implements Serializable, Cloneable, SessionProf
      * End the operation timing.
      */
     public void endOperationProfile(String operationName) {
-        long endTime = System.currentTimeMillis();
-        Long startTime = ((Long)getOperationStartTimes().get(operationName));
+        long endTime = System.nanoTime();
+        Long startTime = getOperationStartTimes().get(operationName);
         if (startTime == null) {
             return;
         }
@@ -277,7 +269,7 @@ public class PerformanceProfiler implements Serializable, Cloneable, SessionProf
             }
         }
 
-        Long totalTime = (Long)getOperationTimings().get(operationName);
+        Long totalTime = getOperationTimings().get(operationName);
         if (totalTime == null) {
             getOperationTimings().put(operationName, Long.valueOf(time));
         } else {
@@ -301,34 +293,34 @@ public class PerformanceProfiler implements Serializable, Cloneable, SessionProf
         return nestTime;
     }
 
-    protected Hashtable getOperationStartTimes() {
+    protected Map<String, Long> getOperationStartTimes() {
         Integer threadId = Integer.valueOf(Thread.currentThread().hashCode());
         if (getOperationStartTimesByThread().get(threadId) == null) {
             getOperationStartTimesByThread().put(threadId, new Hashtable(10));
         }
-        return (Hashtable)getOperationStartTimesByThread().get(threadId);
+        return getOperationStartTimesByThread().get(threadId);
     }
 
-    protected Hashtable getOperationStartTimesByThread() {
+    protected Map<Integer, Map<String, Long>> getOperationStartTimesByThread() {
         return operationStartTimesByThread;
     }
 
-    protected Hashtable getOperationTimings() {
+    protected Map<String, Long> getOperationTimings() {
         Integer threadId = Integer.valueOf(Thread.currentThread().hashCode());
         if (getOperationTimingsByThread().get(threadId) == null) {
             getOperationTimingsByThread().put(threadId, new Hashtable(10));
         }
-        return (Hashtable)getOperationTimingsByThread().get(threadId);
+        return getOperationTimingsByThread().get(threadId);
     }
 
-    protected Hashtable getOperationTimingsByThread() {
+    protected Map<Integer, Map<String, Long>> getOperationTimingsByThread() {
         return operationTimingsByThread;
     }
 
     /**
      * Return the profiles logged in this profiler.
      */
-    public Vector getProfiles() {
+    public List<Profile> getProfiles() {
         return profiles;
     }
 
@@ -407,7 +399,7 @@ public class PerformanceProfiler implements Serializable, Cloneable, SessionProf
      * @return the execution result of the query.
      */
     public Object profileExecutionOfQuery(DatabaseQuery query, Record row, AbstractSession session) {
-        long profileStartTime = System.currentTimeMillis();
+        long profileStartTime = System.nanoTime();
         long nestedProfileStartTime = getProfileTime();
         Profile profile = new Profile();
         profile.setQueryClass(query.getClass());
@@ -424,74 +416,73 @@ public class PerformanceProfiler implements Serializable, Cloneable, SessionProf
 
             setNestLevel(getNestLevel() + 1);
             long startNestTime = getNestTime();
-            Hashtable timingsBeforeExecution = (Hashtable)getOperationTimings().clone();
-            Hashtable startTimingsBeforeExecution = (Hashtable)getOperationStartTimes().clone();
-            long startTime = System.currentTimeMillis();
-            result = session.internalExecuteQuery(query, (AbstractRecord)row);
-            long endTime = System.currentTimeMillis();
-            setNestLevel(getNestLevel() - 1);
-
-            for (Enumeration operationNames = getOperationTimings().keys();
-                     operationNames.hasMoreElements();) {
-                String name = (String)operationNames.nextElement();
-                Long operationStartTime = (Long)timingsBeforeExecution.get(name);
-                long operationEndTime = ((Long)getOperationTimings().get(name)).longValue();
-                long operationTime;
-                if (operationStartTime != null) {
-                    operationTime = operationEndTime - operationStartTime.longValue();
-                } else {
-                    operationTime = operationEndTime;
+            Map<String, Long> timingsBeforeExecution = (Map<String, Long>)((Hashtable)getOperationTimings()).clone();
+            Map<String, Long> startTimingsBeforeExecution = (Map<String, Long>)((Hashtable)getOperationStartTimes()).clone();
+            long startTime = System.nanoTime();
+            try {
+                result = session.internalExecuteQuery(query, (AbstractRecord)row);
+                return result;
+            } finally {
+                long endTime = System.nanoTime();
+                setNestLevel(getNestLevel() - 1);
+    
+                for (String name : getOperationTimings().keySet()) {
+                    Long operationStartTime = timingsBeforeExecution.get(name);
+                    long operationEndTime = getOperationTimings().get(name).longValue();
+                    long operationTime;
+                    if (operationStartTime != null) {
+                        operationTime = operationEndTime - operationStartTime.longValue();
+                    } else {
+                        operationTime = operationEndTime;
+                    }
+                    profile.addTiming(name, operationTime);
                 }
-                profile.addTiming(name, operationTime);
-            }
-
-            profile.setTotalTime((endTime - startTime) - (getProfileTime() - nestedProfileStartTime));// Remove the profile time from the total time.;);
-            profile.setLocalTime(profile.getTotalTime() - (getNestTime() - startNestTime));
-            if (result instanceof Vector) {
-                profile.setNumberOfInstancesEffected(((Vector)result).size());
-            } else {
-                profile.setNumberOfInstancesEffected(1);
-            }
-
-            addProfile(profile);
-            if (shouldLogProfile()) {
-                writeNestingTabs(writer);
-                long profileEndTime = System.currentTimeMillis();
-                long totalTimeIncludingProfiling = profileEndTime - profileStartTime;// Try to remove the profiling time from the total time.
-                profile.setProfileTime(totalTimeIncludingProfiling - profile.getTotalTime());
-                profile.write(writer, this);
-                writer.write(Helper.cr());
-                writeNestingTabs(writer);
-                writer.write("}" + ToStringLocalization.buildMessage("end_profile", (Object[])null));
-                writer.write(Helper.cr());
-                writer.flush();
-            }
-
-            if (getNestLevel() == 0) {
-                setNestTime(0);
-                setProfileTime(0);
-                setOperationTimings(new Hashtable(5));
-                setOperationStartTimes(new Hashtable(5));
-                long profileEndTime = System.currentTimeMillis();
-                long totalTimeIncludingProfiling = profileEndTime - profileStartTime;// Try to remove the profiling time from the total time.
-                profile.setProfileTime(totalTimeIncludingProfiling - profile.getTotalTime());
-            } else {
-                setNestTime(startNestTime + profile.getTotalTime());
-                setOperationTimings(timingsBeforeExecution);
-                setOperationStartTimes(startTimingsBeforeExecution);
-                long profileEndTime = System.currentTimeMillis();
-                long totalTimeIncludingProfiling = profileEndTime - profileStartTime;// Try to remove the profiling time from the total time.
-                setProfileTime(getProfileTime() + (totalTimeIncludingProfiling - (endTime - startTime)));
-                profile.setProfileTime(totalTimeIncludingProfiling - profile.getTotalTime());
-                for (Enumeration timingsEnum = ((Hashtable)startTimingsBeforeExecution.clone()).keys();
-                         timingsEnum.hasMoreElements();) {
-                    String timingName = (String)timingsEnum.nextElement();
-                    startTimingsBeforeExecution.put(timingName, Long.valueOf(((Number)startTimingsBeforeExecution.get(timingName)).longValue() + totalTimeIncludingProfiling));
+    
+                profile.setTotalTime((endTime - startTime) - (getProfileTime() - nestedProfileStartTime));// Remove the profile time from the total time.;);
+                profile.setLocalTime(profile.getTotalTime() - (getNestTime() - startNestTime));
+                if (result instanceof Collection) {
+                    profile.setNumberOfInstancesEffected(((Collection)result).size());
+                } else {
+                    profile.setNumberOfInstancesEffected(1);
+                }
+    
+                addProfile(profile);
+                if (shouldLogProfile()) {
+                    writeNestingTabs(writer);
+                    long profileEndTime = System.nanoTime();
+                    long totalTimeIncludingProfiling = profileEndTime - profileStartTime;// Try to remove the profiling time from the total time.
+                    profile.setProfileTime(totalTimeIncludingProfiling - profile.getTotalTime());
+                    profile.write(writer, this);
+                    writer.write(Helper.cr());
+                    writeNestingTabs(writer);
+                    writer.write("}" + ToStringLocalization.buildMessage("end_profile", (Object[])null));
+                    writer.write(Helper.cr());
+                    writer.flush();
+                }
+    
+                if (getNestLevel() == 0) {
+                    setNestTime(0);
+                    setProfileTime(0);
+                    setOperationTimings(new Hashtable());
+                    setOperationStartTimes(new Hashtable());
+                    long profileEndTime = System.nanoTime();
+                    long totalTimeIncludingProfiling = profileEndTime - profileStartTime;// Try to remove the profiling time from the total time.
+                    profile.setProfileTime(totalTimeIncludingProfiling - profile.getTotalTime());
+                } else {
+                    setNestTime(startNestTime + profile.getTotalTime());
+                    setOperationTimings(timingsBeforeExecution);
+                    setOperationStartTimes(startTimingsBeforeExecution);
+                    long profileEndTime = System.nanoTime();
+                    long totalTimeIncludingProfiling = profileEndTime - profileStartTime;// Try to remove the profiling time from the total time.
+                    setProfileTime(getProfileTime() + (totalTimeIncludingProfiling - (endTime - startTime)));
+                    profile.setProfileTime(totalTimeIncludingProfiling - profile.getTotalTime());
+                    for (String timingName : ((Map<String, Long>)(((Hashtable)startTimingsBeforeExecution).clone())).keySet()) {
+                        startTimingsBeforeExecution.put(timingName, Long.valueOf(((Number)startTimingsBeforeExecution.get(timingName)).longValue() + totalTimeIncludingProfiling));
+                    }
                 }
             }
         } catch (IOException ioe) {
         }
-
         return result;
     }
 
@@ -503,7 +494,7 @@ public class PerformanceProfiler implements Serializable, Cloneable, SessionProf
         this.nestTime = nestTime;
     }
 
-    protected void setOperationStartTimes(Hashtable operationStartTimes) {
+    protected void setOperationStartTimes(Map<String, Long> operationStartTimes) {
         Integer threadId = Integer.valueOf(Thread.currentThread().hashCode());
         getOperationStartTimesByThread().put(threadId, operationStartTimes);
     }
@@ -512,7 +503,7 @@ public class PerformanceProfiler implements Serializable, Cloneable, SessionProf
         this.operationStartTimesByThread = operationStartTimesByThread;
     }
 
-    protected void setOperationTimings(Hashtable operationTimings) {
+    protected void setOperationTimings(Map<String, Long> operationTimings) {
         Integer threadId = Integer.valueOf(Thread.currentThread().hashCode());
         getOperationTimingsByThread().put(threadId, operationTimings);
     }
@@ -551,7 +542,7 @@ public class PerformanceProfiler implements Serializable, Cloneable, SessionProf
      * Start the operation timing.
      */
     public void startOperationProfile(String operationName) {
-        getOperationStartTimes().put(operationName, Long.valueOf(System.currentTimeMillis()));
+        getOperationStartTimes().put(operationName, Long.valueOf(System.nanoTime()));
     }
 
     /**
@@ -577,6 +568,9 @@ public class PerformanceProfiler implements Serializable, Cloneable, SessionProf
     }
 
     public void occurred(String operationName) {
+    }
+    
+    public void occurred(String operationName, DatabaseQuery query) {
     }
 
     public void setProfileWeight(int weight) {

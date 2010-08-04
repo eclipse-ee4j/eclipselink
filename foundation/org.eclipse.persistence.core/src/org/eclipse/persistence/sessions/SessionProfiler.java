@@ -27,72 +27,47 @@ public interface SessionProfiler {
     public static final int HEAVY = 10;
     public static final int ALL = Integer.MAX_VALUE;
 
-    //nouns type display name 
-    public static final String TopLinkRootNoun = "/TopLink";
-    public static final String SessionNounType = "TopLink Session";
-    public static final String TransactionNounType = "TopLink Transaction";
-    public static final String QueryNounType = "TopLink Queries";
-    public static final String RcmNounType = "TopLink RCM";
-    public static final String ConnectionNounType = "TopLink Connections";
-    public static final String CacheNounType = "TopLink Cache";
-    public static final String MiscellaneousNounType = "TopLink Miscellaneous";
-
-    //dms sensors display name
-    public static final String SessionName = "SessionName";
-    public static final String LoginTime = "loginTime";
-    public static final String ClientSessionCreated = "ClientSession";
-    public static final String UowCreated = "UnitOfWork";
-    public static final String UowCommit = "UnitOfWorkCommits";
-    public static final String UowRollbacks = "UnitOfWorkRollbacks";
-    public static final String OptimisticLockException = "OptimisticLocks";
-    public static final String RcmStatus = "RCMStatus";
-    public static final String RcmReceived = "MessagesReceived";
-    public static final String RcmSent = "MessagesSent";
-    public static final String RemoteChangeSet = "RemoteChangeSets";
-    public static final String TlConnects = "ConnectCalls";
-    public static final String TlDisconnects = "DisconnectCalls";
-    public static final String CachedObjects = "CachedObjects";
-    public static final String CacheHits = "CacheHits";
-    public static final String CacheMisses = "CacheMisses";
-    public static final String ChangeSetsProcessed = "ChangesProcessed";
-    public static final String ChangeSetsNotProcessed = "ChangesNotProcessed";
-    public static final String DescriptorEvent = "DescriptorEvents";
-    public static final String SessionEvent = "SessionEvents";
-    public static final String ConnectionInUse = "ConnectionsInUse";
-    public static final String QueryPreparation = "QueryPreparation";
-    public static final String SqlGeneration = "SqlGeneration";
-    public static final String DatabaseExecute = "DatabaseExecute";
-    public static final String SqlPrepare = "SqlPrepare";
-    public static final String RowFetch = "RowFetch";
-    public static final String ObjectBuilding = "ObjectBuilding";
-    public static final String MergeTime = "MergeTime";
-    public static final String UnitOfWorkRegister = "UnitOfWorkRegister";
-    public static final String DistributedMergeDmsDisplayName = "DistributedMerge";
-    public static final String Sequencing = "Sequencing";
-    public static final String Caching = "Caching";
-    public static final String ConnectionManagement = "ConnectionManagement";
-    public static final String LoggingDMSDisPlayName = "Logging";
-    public static final String JtsBeforeCompletion = "TXBeforeCompletion";
-    public static final String JtsAfterCompletion = "TXAfterCompletion";
-    public static final String ConnectionPing = "ConnectionHealthTest";
-
-    //Token used by existed default performance profiler 
-    public static final String Register = "register";
-    public static final String Merge = "merge";
-    public static final String AssignSequence = "assign sequence";
-    public static final String DistributedMerge = "distributed merge";
-    public static final String DeletedObject = "deleted object";
-    public static final String Wrapping = "wrapping";
-    public static final String Logging = "logging";
-    public static final String OBJECT_BUILDING = "object building";
-    public static final String SQL_GENERATION = "sql generation";
-    public static final String QUERY_PREPARE = "query prepare";
-    public static final String STATEMENT_EXECUTE = "sql execute";
-    public static final String ROW_FETCH = "row fetch";
-    public static final String SQL_PREPARE = "sql prepare";
-    public static final String TRANSACTION = "transactions";
-    public static final String CONNECT = "connect";
-    public static final String CACHE = "cache";
+    // Sensors display name
+    public static final String SessionName = "Info:SessionName";
+    public static final String LoginTime = "Info:LoginTime";
+    public static final String RcmStatus = "Info:CacheCoordinationStatus";
+    public static final String CachedObjects = "Info:CachedObjects";//TODO
+    
+    public static final String ClientSessionCreated = "Counter:ClientSessionCreates";
+    public static final String UowCreated = "Counter:UnitOfWorkCreates";
+    public static final String UowCommits = "Counter:UnitOfWorkCommits";
+    public static final String UowRollbacks = "Counter:UnitOfWorkRollbacks";
+    public static final String OptimisticLockException = "Counter:OptimisticLocks";
+    public static final String RcmReceived = "Counter:MessagesReceived";
+    public static final String RcmSent = "Counter:MessagesSent";
+    public static final String RemoteChangeSet = "Counter:RemoteChangeSets";
+    public static final String Connects = "Counter:ConnectCalls";
+    public static final String Disconnects = "Counter:DisconnectCalls";
+    public static final String CacheHits = "Counter:CacheHits";
+    public static final String CacheMisses = "Counter:CacheMisses";
+    public static final String ChangeSetsProcessed = "Counter:ChangesProcessed";
+    public static final String ChangeSetsNotProcessed = "Counter:ChangesNotProcessed";
+    
+    public static final String DescriptorEvent = "Timer:DescriptorEvents";
+    public static final String SessionEvent = "Timer:SessionEvents";
+    public static final String QueryPreparation = "Timer:QueryPreparation";
+    public static final String SqlGeneration = "Timer:SqlGeneration";
+    public static final String SqlPrepare = "Timer:SqlPrepare";
+    public static final String StatementExecute = "Timer:StatementExecute";
+    public static final String RowFetch = "Timer:RowFetch";
+    public static final String ObjectBuilding = "Timer:ObjectBuilding";
+    public static final String Register = "Timer:Register";
+    public static final String Merge = "Timer:Merge";
+    public static final String DistributedMerge = "Timer:DistributedMerge";
+    public static final String AssignSequence = "Timer:Sequencing";
+    public static final String Caching = "Timer:Caching";
+    public static final String ConnectionManagement = "Timer:ConnectionManagement";
+    public static final String Logging = "Timer:Logging";
+    public static final String JtsBeforeCompletion = "Timer:TXBeforeCompletion";
+    public static final String JtsAfterCompletion = "Timer:TXAfterCompletion";
+    public static final String Transaction = "Timer:Transactions";
+    public static final String UowCommit = "Timer:UnitOfWorkCommit";
+    public static final String ConnectionPing = "Timer:ConnectionPing";
 
     /**
      * INTERNAL:
@@ -145,6 +120,12 @@ public interface SessionProfiler {
      * Increase DMS Event sensor occurrence.(DMS)
      */
     public void occurred(String operationName);
+    
+    /**
+     * INTERNAL:
+     * Increase DMS Event sensor occurrence.(DMS)
+     */
+    public void occurred(String operationName, DatabaseQuery query);
 
     /**
      * INTERNAL:

@@ -29,6 +29,7 @@ public class ProfilerType {
     //A tool used to provide high level performance profiling information
     public static final String PerformanceProfiler = "PerformanceProfiler";
     public static final String QueryMonitor = "QueryMonitor";
+    public static final String PerformanceMonitor = "PerformanceMonitor";
     public static final String NoProfiler = "NoProfiler";
 
     public static final String DEFAULT = NoProfiler;

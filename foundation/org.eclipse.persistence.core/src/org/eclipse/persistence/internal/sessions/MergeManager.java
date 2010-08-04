@@ -327,14 +327,13 @@ public class MergeManager {
      */
     public void mergeChangesFromChangeSet(UnitOfWorkChangeSet uowChangeSet) {
         this.session.startOperationProfile(SessionProfiler.DistributedMerge);
-        // Ensure concurrency if cache isolation requires.
-        this.session.getIdentityMapAccessorInstance().acquireWriteLock();
-        this.session.log(SessionLog.FINER, SessionLog.PROPAGATION, "received_updates_from_remote_server");
-        if (this.session.hasEventManager()) {
-            this.session.getEventManager().preDistributedMergeUnitOfWorkChangeSet(uowChangeSet);
-        }
-
         try {
+            // Ensure concurrency if cache isolation requires.
+            this.session.getIdentityMapAccessorInstance().acquireWriteLock();
+            this.session.log(SessionLog.FINER, SessionLog.PROPAGATION, "received_updates_from_remote_server");
+            if (this.session.hasEventManager()) {
+                this.session.getEventManager().preDistributedMergeUnitOfWorkChangeSet(uowChangeSet);
+            }
             // Iterate over each clone and let the object build merge to clones into the originals.
             this.session.getIdentityMapAccessorInstance().getWriteLockManager().acquireRequiredLocks(this, uowChangeSet);
             Iterator objectChangeEnum = uowChangeSet.getAllChangeSets().keySet().iterator();
@@ -358,7 +357,6 @@ public class MergeManager {
                 while (deletedObjects.hasNext()) {
                     ObjectChangeSet changeSet = (ObjectChangeSet)deletedObjects.next();
                     changeSet.removeFromIdentityMap(this.session);
-                    this.session.incrementProfile(SessionProfiler.DeletedObject);
                 }
             }
         } catch (RuntimeException exception) {
@@ -366,10 +364,10 @@ public class MergeManager {
         } finally {
             this.session.getIdentityMapAccessorInstance().getWriteLockManager().releaseAllAcquiredLocks(this);
             this.session.getIdentityMapAccessorInstance().releaseWriteLock();
+            this.session.endOperationProfile(SessionProfiler.DistributedMerge);
             if (this.session.hasEventManager()) {
                 this.session.getEventManager().postDistributedMergeUnitOfWorkChangeSet(uowChangeSet);
             }
-            this.session.endOperationProfile(SessionProfiler.DistributedMerge);
         }
     }
 

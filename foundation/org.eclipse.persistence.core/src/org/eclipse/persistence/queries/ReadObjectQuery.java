@@ -28,6 +28,7 @@ import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.descriptors.DescriptorQueryManager;
 import org.eclipse.persistence.exceptions.*;
 import org.eclipse.persistence.expressions.*;
+import org.eclipse.persistence.sessions.SessionProfiler;
 import org.eclipse.persistence.sessions.remote.*;
 import org.eclipse.persistence.tools.profiler.QueryMonitor;
 
@@ -251,17 +252,18 @@ public class ReadObjectQuery extends ObjectLevelReadQuery {
 
                 // check locking.  If clone has not been locked, do not early return cached object
                 if (isLockQuery() && (session.isUnitOfWork() && !((UnitOfWorkImpl)session).isPessimisticLocked(cachedObject))) {
-                    if (QueryMonitor.shouldMonitor()) {
-                        QueryMonitor.incrementReadObjectMisses(this);
-                    }
                     return null;
                 }
                 if (QueryMonitor.shouldMonitor()) {
                     QueryMonitor.incrementReadObjectHits(this);
                 }
+                session.incrementProfile(SessionProfiler.CacheHits, this);
             } else {
-                if (QueryMonitor.shouldMonitor()) {
-                    QueryMonitor.incrementReadObjectMisses(this);
+                if (!session.isUnitOfWork()) {
+                    if (QueryMonitor.shouldMonitor()) {
+                        QueryMonitor.incrementReadObjectMisses(this);
+                    }
+                    session.incrementProfile(SessionProfiler.CacheMisses, this);
                 }
             }
             if (shouldUseWrapperPolicy()) {
@@ -269,8 +271,11 @@ public class ReadObjectQuery extends ObjectLevelReadQuery {
             }            
             return cachedObject;
         } else {
-            if (QueryMonitor.shouldMonitor()) {
-                QueryMonitor.incrementReadObjectMisses(this);
+            if (!session.isUnitOfWork()) {
+                if (QueryMonitor.shouldMonitor()) {
+                    QueryMonitor.incrementReadObjectMisses(this);
+                }
+                session.incrementProfile(SessionProfiler.CacheMisses, this);
             }
             return null;
         }

@@ -263,7 +263,12 @@ public abstract class DatabaseQuery implements Cloneable, Serializable {
 
     /** Allow connection unwrapping to be configured. */
     protected boolean isNativeConnectionRequired;
-
+    
+    /**
+     * Return the name to use for the query in performance monitoring.
+     */
+    protected String monitorName;
+    
     /**
      * PUBLIC: Initialize the state of the query
      */
@@ -283,6 +288,29 @@ public abstract class DatabaseQuery implements Cloneable, Serializable {
         this.isExecutionClone = false;
     }
 
+    /**
+     * INTERNAL:
+     * Return the name to use for the query in performance monitoring.
+     */
+    public String getMonitorName() {
+        if (monitorName == null) {
+            resetMonitorName();
+        }
+        return monitorName;
+    }
+
+    /**
+     * INTERNAL:
+     * Return the name to use for the query in performance monitoring.
+     */
+    public void resetMonitorName() {
+        if (getReferenceClassName() == null) {
+            this.monitorName = getClass().getSimpleName() + ":" + getName();
+        } else {
+            this.monitorName = getClass().getSimpleName() + ":" + getReferenceClassName() + ":" + getName();                
+        }
+    }
+    
     /**
      * PUBLIC: Add the argument named argumentName. This will cause the
      * translation of references of argumentName in the receiver's expression,
@@ -481,11 +509,11 @@ public abstract class DatabaseQuery implements Cloneable, Serializable {
             if (!this.isPrepared) {// Avoid the monitor is already prepare, must
                 // check again for concurrency.
                 // Profile the query preparation time.
-                session.startOperationProfile(SessionProfiler.QUERY_PREPARE, this, SessionProfiler.ALL);
+                session.startOperationProfile(SessionProfiler.QueryPreparation, this, SessionProfiler.ALL);
                 // If this query will use the custom query, do not prepare.
                 if ((!force) && shouldPrepare() && (checkForCustomQuery(session, translationRow) != null)) {
                     // Profile the query preparation time.
-                    session.endOperationProfile(SessionProfiler.QUERY_PREPARE, this, SessionProfiler.ALL);
+                    session.endOperationProfile(SessionProfiler.QueryPreparation, this, SessionProfiler.ALL);
                     return;
                 }
                 // Prepared queries cannot be custom as then they would never have
@@ -513,7 +541,7 @@ public abstract class DatabaseQuery implements Cloneable, Serializable {
                     }
                 }
                 // Profile the query preparation time.
-                session.endOperationProfile(SessionProfiler.QUERY_PREPARE, this, SessionProfiler.ALL);
+                session.endOperationProfile(SessionProfiler.QueryPreparation, this, SessionProfiler.ALL);
             }
         } catch (EclipseLinkException knownFailure) {
             throw knownFailure;
@@ -1518,6 +1546,7 @@ public abstract class DatabaseQuery implements Cloneable, Serializable {
         this.argumentFields = buildArgumentFields();
 
         getQueryMechanism().prepare();
+        resetMonitorName();
     }
 
     /**
@@ -2241,67 +2270,6 @@ public abstract class DatabaseQuery implements Cloneable, Serializable {
             queryString = "jpql=\"" + getJPQLString() + "\"";
         }
         return getClass().getSimpleName() + "(" + nameString + referenceClassString + queryString + ")";
-    }
-
-    /**
-     * INTERNAL: TopLink_sessionName_domainClass. Cached in properties
-     */
-    public String getDomainClassNounName(String sessionName) {
-        if (getProperty("DMSDomainClassNounName") == null) {
-            StringBuffer buffer = new StringBuffer("EclipseLink");
-            if (sessionName != null) {
-                buffer.append(sessionName);
-            }
-            if (getReferenceClassName() != null) {
-                buffer.append("_");
-                buffer.append(getReferenceClassName());
-            }
-            setProperty("DMSDomainClassNounName", buffer.toString());
-        }
-        return (String) getProperty("DMSDomainClassNounName");
-    }
-
-    /**
-     * INTERNAL: TopLink_sessionName_domainClass_queryClass_queryName (if
-     * exist). Cached in properties
-     */
-    public String getQueryNounName(String sessionName) {
-        if (getProperty("DMSQueryNounName") == null) {
-            StringBuffer buffer = new StringBuffer(getDomainClassNounName(sessionName));
-            buffer.append("_");
-            buffer.append(getClass().getSimpleName());
-            if (getName() != null) {
-                buffer.append("_");
-                buffer.append(getName());
-            }
-            setProperty("DMSQueryNounName", buffer.toString());
-        }
-        return (String) getProperty("DMSQueryNounName");
-    }
-
-    /**
-     * INTERNAL: TopLink_sessionName_domainClass_queryClass_queryName (if
-     * exist)_operationName (if exist). Cached in properties
-     */
-    public String getSensorName(String operationName, String sessionName) {
-        if (operationName == null) {
-            return getQueryNounName(sessionName);
-        }
-
-        Hashtable sensorNames = (Hashtable) getProperty("DMSSensorNames");
-        if (sensorNames == null) {
-            sensorNames = new Hashtable();
-            setProperty("DMSSensorNames", sensorNames);
-        }
-        Object sensorName = sensorNames.get(operationName);
-        if (sensorName == null) {
-            StringBuffer buffer = new StringBuffer(getQueryNounName(sessionName));
-            buffer.append("_");
-            buffer.append(operationName);
-            sensorName = buffer.toString();
-            sensorNames.put(operationName, sensorName);
-        }
-        return (String) sensorName;
     }
 
     /**

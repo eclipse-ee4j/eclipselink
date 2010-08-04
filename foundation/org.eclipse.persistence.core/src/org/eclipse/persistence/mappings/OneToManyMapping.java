@@ -566,6 +566,7 @@ public class OneToManyMapping extends CollectionMapping implements RelationalMap
      */
     protected void initializeDeleteAllQuery() {
         ((DeleteAllQuery)getDeleteAllQuery()).setReferenceClass(getReferenceClass());
+        getDeleteAllQuery().setName(getAttributeName());
         if (!hasCustomDeleteAllQuery()) {
             // the selection criteria are re-used by the delete all query
             if (getSelectionCriteria() == null) {

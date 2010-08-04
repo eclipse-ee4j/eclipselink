@@ -542,6 +542,7 @@ public class RelationTableMechanism  implements Cloneable {
         if (!getDeleteQuery().hasSessionName()) {
             getDeleteQuery().setSessionName(session.getName());
         }
+        getInsertQuery().setName(mapping.getAttributeName());
         if (hasCustomDeleteQuery()) {
             return;
         }
@@ -611,6 +612,7 @@ public class RelationTableMechanism  implements Cloneable {
         if (!getInsertQuery().hasSessionName()) {
             getInsertQuery().setSessionName(session.getName());
         }
+        getInsertQuery().setName(mapping.getAttributeName());
         if (hasCustomInsertQuery()) {
             return;
         }

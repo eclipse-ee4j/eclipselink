@@ -215,10 +215,16 @@ public class QuerySequence extends StandardSequence {
         if (getSelectQuery() == null) {
             setSelectQuery(buildSelectQuery());
             wasSelectQueryCreated = getSelectQuery() != null;
+            if (wasSelectQueryCreated) {
+                getSelectQuery().setName(getName());
+            }
         }
         if ((getUpdateQuery() == null) && !shouldSkipUpdate()) {
             setUpdateQuery(buildUpdateQuery());
             wasUpdateQueryCreated = getUpdateQuery() != null;
+            if (wasUpdateQueryCreated) {
+                getUpdateQuery().setName(getName());
+            }
         }
     }
 

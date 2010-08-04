@@ -45,7 +45,7 @@ public class ProfileBrowser extends JFrame {
      * PUBLIC:
      * Open a browser on the profiles.
      */
-    public static void browseProfiles(Vector profiles) {
+    public static void browseProfiles(List<Profile> profiles) {
         try {
             UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
             ProfileBrowser aProfileBrowserFrame;
@@ -171,7 +171,7 @@ public class ProfileBrowser extends JFrame {
         // user code end
     }
 
-    public void setProfiles(Vector profiles) {
+    public void setProfiles(List<Profile> profiles) {
         getProfileBrowserPanel().setProfiles(profiles);
     }
 }

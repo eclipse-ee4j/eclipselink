@@ -166,7 +166,7 @@ public class ParameterizedSQLBatchWritingMechanism extends BatchWritingMechanism
         PreparedStatement statement = null;
 
         try {
-            session.startOperationProfile(SessionProfiler.SQL_PREPARE, null, SessionProfiler.ALL);
+            session.startOperationProfile(SessionProfiler.SqlPrepare, null, SessionProfiler.ALL);
             try {
                 boolean shouldUnwrapConnection = session.getPlatform().usesNativeBatchWriting();
                 statement = (PreparedStatement)this.databaseAccessor.prepareStatement(this.previousCall, session, shouldUnwrapConnection);
@@ -191,7 +191,7 @@ public class ParameterizedSQLBatchWritingMechanism extends BatchWritingMechanism
                     executionCount += this.databaseAccessor.getPlatform().addBatch(statement);
                 }
             } finally {
-                session.endOperationProfile(SessionProfiler.SQL_PREPARE, null, SessionProfiler.ALL);
+                session.endOperationProfile(SessionProfiler.SqlPrepare, null, SessionProfiler.ALL);
             }
         } catch (SQLException exception) {
             // If this is a connection from an external pool then closeStatement will close the connection.

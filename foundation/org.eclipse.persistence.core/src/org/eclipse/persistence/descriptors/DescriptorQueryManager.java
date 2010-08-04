@@ -818,6 +818,7 @@ public class DescriptorQueryManager implements Cloneable, Serializable {
             readObjectQuery.setSelectionCriteria(getDescriptor().getObjectBuilder().getPrimaryKeyExpression());
             setReadObjectQuery(readObjectQuery);
         }
+        getReadObjectQuery().setName("readObject");
 
         if (!hasInsertQuery()) {
             // Prepare insert query always.

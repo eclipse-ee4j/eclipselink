@@ -185,11 +185,11 @@ public class DynamicSQLBatchWritingMechanism extends BatchWritingMechanism {
         writer.write(platform.getBatchEndString());
 
         try {
-            session.startOperationProfile(SessionProfiler.SQL_PREPARE, null, SessionProfiler.ALL);
+            session.startOperationProfile(SessionProfiler.SqlPrepare, null, SessionProfiler.ALL);
             try {
                 statement = this.databaseAccessor.getConnection().prepareStatement(writer.toString());
             } finally {
-                session.endOperationProfile(SessionProfiler.SQL_PREPARE, null, SessionProfiler.ALL);
+                session.endOperationProfile(SessionProfiler.SqlPrepare, null, SessionProfiler.ALL);
             }
         } catch (SQLException exception) {
             //If this is a connection from an external pool then closeStatement will close the connection.
@@ -221,7 +221,7 @@ public class DynamicSQLBatchWritingMechanism extends BatchWritingMechanism {
         Statement statement = null;
 
         try {
-            session.startOperationProfile(SessionProfiler.SQL_PREPARE, null, SessionProfiler.ALL);
+            session.startOperationProfile(SessionProfiler.SqlPrepare, null, SessionProfiler.ALL);
             try {
                 statement = this.databaseAccessor.getConnection().createStatement();
                 for (Iterator sqlStringsIterator = this.sqlStrings.iterator();
@@ -233,7 +233,7 @@ public class DynamicSQLBatchWritingMechanism extends BatchWritingMechanism {
                 	statement.setQueryTimeout(queryTimeoutCache);
                 }
             } finally {
-                session.endOperationProfile(SessionProfiler.SQL_PREPARE, null, SessionProfiler.ALL);
+                session.endOperationProfile(SessionProfiler.SqlPrepare, null, SessionProfiler.ALL);
             }
         } catch (SQLException exception) {
             //If this is a connection from an external pool then closeStatement will close the connection.

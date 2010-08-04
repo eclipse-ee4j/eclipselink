@@ -25,6 +25,7 @@ import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.internal.sessions.UnitOfWorkImpl;
 import org.eclipse.persistence.exceptions.*;
 import org.eclipse.persistence.expressions.*;
+import org.eclipse.persistence.sessions.SessionProfiler;
 import org.eclipse.persistence.sessions.remote.*;
 import org.eclipse.persistence.tools.profiler.QueryMonitor;
 
@@ -353,7 +354,8 @@ public class ReadAllQuery extends ObjectLevelReadQuery {
                 if (queryResults != null) {
                     if (QueryMonitor.shouldMonitor()) {
                         QueryMonitor.incrementReadAllHits(this);
-                    }                    
+                    }
+                    session.incrementProfile(SessionProfiler.CacheHits, this);
                     // bug6138532 - check for "cached no results" (InvalidObject singleton) in query 
                     // results, and return an empty container instance as configured
                     if (queryResults == InvalidObject.instance) {
@@ -373,6 +375,7 @@ public class ReadAllQuery extends ObjectLevelReadQuery {
                     return results;
                 }
             }
+            session.incrementProfile(SessionProfiler.CacheMisses, this);
         }
         if (QueryMonitor.shouldMonitor()) {
             QueryMonitor.incrementReadAllMisses(this);

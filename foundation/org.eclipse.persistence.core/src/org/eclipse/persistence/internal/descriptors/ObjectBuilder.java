@@ -461,41 +461,34 @@ public class ObjectBuilder implements Cloneable, Serializable {
     public Object buildObject(ObjectBuildingQuery query, AbstractRecord databaseRow, JoinedAttributeManager joinManager) throws DatabaseException, QueryException {
         // Profile object building.
         AbstractSession session = query.getSession();
-        session.startOperationProfile(SessionProfiler.OBJECT_BUILDING, query, SessionProfiler.ALL);
-
-        Object primaryKey = extractPrimaryKeyFromRow(databaseRow, session);
-
-        // Check for null primary key, this is not allowed.
-        if ((primaryKey == null) && (!query.hasPartialAttributeExpressions()) && (!this.descriptor.isAggregateCollectionDescriptor())) {
-            // Profile object building.
-            session.endOperationProfile(SessionProfiler.OBJECT_BUILDING, query, SessionProfiler.ALL);
-
-            //BUG 3168689: EJBQL: "Select Distinct s.customer from SpouseBean s"
-            //BUG 3168699: EJBQL: "Select s.customer from SpouseBean s where s.id = '6'"
-            //If we return either a single null, or a Collection containing at least 
-            //one null, then we want the nulls returned/included if the indicated 
-            //property is set in the query. (As opposed to throwing an Exception).
-            if (query.shouldBuildNullForNullPk()) {
-                return null;
-            } else {
-                throw QueryException.nullPrimaryKeyInBuildingObject(query, databaseRow);
-            }
-        }
-        ClassDescriptor concreteDescriptor = this.descriptor;
-        if (concreteDescriptor.hasInheritance() && concreteDescriptor.getInheritancePolicy().shouldReadSubclasses()) {
-            Class classValue = concreteDescriptor.getInheritancePolicy().classFromRow(databaseRow, session);
-            concreteDescriptor = concreteDescriptor.getInheritancePolicy().getDescriptor(classValue);
-            if ((concreteDescriptor == null) && query.hasPartialAttributeExpressions()) {
-                concreteDescriptor = this.descriptor;
-            }
-            if (concreteDescriptor == null) {
-                // Profile object building.
-                session.endOperationProfile(SessionProfiler.OBJECT_BUILDING, query, SessionProfiler.ALL);
-                throw QueryException.noDescriptorForClassFromInheritancePolicy(query, classValue);
-            }
-        }
+        session.startOperationProfile(SessionProfiler.ObjectBuilding, query, SessionProfiler.ALL);
         Object domainObject = null;
         try {
+            Object primaryKey = extractPrimaryKeyFromRow(databaseRow, session);
+            // Check for null primary key, this is not allowed.
+            if ((primaryKey == null) && (!query.hasPartialAttributeExpressions()) && (!this.descriptor.isAggregateCollectionDescriptor())) {
+                //BUG 3168689: EJBQL: "Select Distinct s.customer from SpouseBean s"
+                //BUG 3168699: EJBQL: "Select s.customer from SpouseBean s where s.id = '6'"
+                //If we return either a single null, or a Collection containing at least 
+                //one null, then we want the nulls returned/included if the indicated 
+                //property is set in the query. (As opposed to throwing an Exception).
+                if (query.shouldBuildNullForNullPk()) {
+                    return null;
+                } else {
+                    throw QueryException.nullPrimaryKeyInBuildingObject(query, databaseRow);
+                }
+            }
+            ClassDescriptor concreteDescriptor = this.descriptor;
+            if (concreteDescriptor.hasInheritance() && concreteDescriptor.getInheritancePolicy().shouldReadSubclasses()) {
+                Class classValue = concreteDescriptor.getInheritancePolicy().classFromRow(databaseRow, session);
+                concreteDescriptor = concreteDescriptor.getInheritancePolicy().getDescriptor(classValue);
+                if ((concreteDescriptor == null) && query.hasPartialAttributeExpressions()) {
+                    concreteDescriptor = this.descriptor;
+                }
+                if (concreteDescriptor == null) {
+                    throw QueryException.noDescriptorForClassFromInheritancePolicy(query, classValue);
+                }
+            }
             if (session.isUnitOfWork()) {
                 // Do not wrap yet if in UnitOfWork, as there is still much more
                 // processing ahead.
@@ -512,7 +505,7 @@ public class ObjectBuilder implements Cloneable, Serializable {
                 }
             }
         } finally {
-            session.endOperationProfile(SessionProfiler.OBJECT_BUILDING, query, SessionProfiler.ALL);
+            session.endOperationProfile(SessionProfiler.ObjectBuilding, query, SessionProfiler.ALL);
         }
         return domainObject;
     }

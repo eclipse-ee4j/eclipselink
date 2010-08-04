@@ -25,6 +25,8 @@ import org.eclipse.persistence.internal.localization.*;
  * @see ServerSession
  */
 public class ConnectionPool {
+    protected static final String MONITOR_HEADER = "Info:ConnectionPool:";
+    
     protected boolean isConnected;
     protected int maxNumberOfConnections;
     protected int minNumberOfConnections;
@@ -96,6 +98,9 @@ public class ConnectionPool {
             if ((this.connectionsUsed.size() + this.connectionsAvailable.size()) < this.maxNumberOfConnections) {
                 Accessor connection = buildConnection();
                 this.connectionsUsed.add(connection);
+                if (this.owner.isInProfile()) {
+                    this.owner.updateProfile(MONITOR_HEADER + this.name, Integer.valueOf(this.connectionsUsed.size()));
+                }
                 return connection;
             }
             try {
@@ -140,7 +145,7 @@ public class ConnectionPool {
         }
         this.connectionsUsed.add(connection);
         if (this.owner.isInProfile()) {
-            this.owner.updateProfile(this.name, Integer.valueOf(this.connectionsUsed.size()));
+            this.owner.updateProfile(MONITOR_HEADER + this.name, Integer.valueOf(this.connectionsUsed.size()));
         }
         return connection;
     }
@@ -279,7 +284,7 @@ public class ConnectionPool {
             }
         }
         if (this.owner.isInProfile()) {
-            this.owner.updateProfile(this.name, Integer.valueOf(this.connectionsUsed.size()));
+            this.owner.updateProfile(MONITOR_HEADER + this.name, Integer.valueOf(this.connectionsUsed.size()));
         }
         notify();
     }
