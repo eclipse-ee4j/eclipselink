@@ -8,9 +8,15 @@
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
- *     Jun 29, 2009-1.0M6 Chris Delahunt 
- *       - TODO Bug#: Bug Description 
- ******************************************************************************/  
+ *     07/05/2010-2.1.1 Michael O'Brien 
+ *       - 321716: modelgen and jpa versions of duplicate code in both copies of
+ *       JUnitCriteriaSimpleTestSuite must be kept in sync (to avoid only failing on WebSphere under Derby)
+ *       (ideally there should be only one copy of the code - the other suite should reference or subclass for changes)
+ *       see
+ *       org.eclipse.persistence.testing.tests.jpa.criteria.JUnitCriteriaSimpleTestSuite.simpleModTest():1796
+ *       org.eclipse.persistence.testing.tests.jpa.criteria.metamodel.JUnitCriteriaSimpleTestSuite.simpleModTest():1766
+ *       - 321902: this copied code should be renamed, merged or subclassed off the original  
+  ******************************************************************************/  
 package org.eclipse.persistence.testing.tests.jpa.criteria.metamodel;
 
 import java.util.Set;
@@ -1763,6 +1769,7 @@ public class JUnitCriteriaSimpleTestSuite extends JUnitTestCase {
         }
     }
 
+    // 321716: merged from original in jpa test
     public void simpleModTest() {
         EntityManager em = createEntityManager();
 
@@ -1782,37 +1789,33 @@ public class JUnitCriteriaSimpleTestSuite extends JUnitTestCase {
         //"SELECT OBJECT(emp) FROM Employee emp WHERE MOD(emp.salary, 2) > 0"
         CriteriaBuilder qb = em.getCriteriaBuilder();
         CriteriaQuery<Employee> cq = qb.createQuery(Employee.class);
-        Root<Employee> root = cq.from(getEntityManagerFactory().getMetamodel().entity(Employee.class));
-        cq.where( qb.gt(qb.mod(root.get(Employee_.salary), 2), 0) );
-        List result = null;
+        cq.where( qb.gt(qb.mod(cq.from(Employee.class).<Integer>get("salary"), 2), 0) );
 
         beginTransaction(em);
         try {
-            result = em.createQuery(cq).getResultList();
+            List result = em.createQuery(cq).getResultList();
 
             Assert.assertTrue("Simple Mod test failed", comparer.compareObjects(result, expectedResult));
-        } finally {
-            rollbackTransaction(em);
-        }
-        // Test MOD(fieldAccess, fieldAccess) glassfish issue 2771
-        expectedResult = getServerSession().readAllObjects(Employee.class);
-        clearCache();
-        
-        //"SELECT emp FROM Employee emp WHERE MOD(emp.salary, emp.salary) = 0"
-        qb = em.getCriteriaBuilder();
-        cq = qb.createQuery(Employee.class);
-        root = cq.from(getEntityManagerFactory().getMetamodel().entity(Employee.class));
-        javax.persistence.criteria.Expression<Integer> salaryExp = root.get(Employee_.salary);
-        cq.where( qb.equal(qb.mod(salaryExp, salaryExp), 0) );
-        beginTransaction(em);
-        try {
+
+            // Test MOD(fieldAccess, fieldAccess) glassfish issue 2771
+
+            expectedResult = getServerSession().readAllObjects(Employee.class);
+            clearCache();
+
+            //"SELECT emp FROM Employee emp WHERE MOD(emp.salary, emp.salary) = 0"
+            qb = em.getCriteriaBuilder();
+            cq = qb.createQuery(Employee.class);
+            javax.persistence.criteria.Expression<Integer> salaryExp = cq.from(Employee.class).<Integer>get("salary");
+            cq.where( qb.equal(qb.mod(salaryExp, salaryExp), 0) );
+
             result = em.createQuery(cq).getResultList();
 
-            Assert.assertTrue("Simple Mod test(2) failed", comparer.compareObjects(result, expectedResult));  
+            Assert.assertTrue("Simple Mod test(2) failed", comparer.compareObjects(result, expectedResult)); 
         } finally {
             rollbackTransaction(em);
             closeEntityManager(em);
         }
+        
     }
 
     public void simpleIsEmptyTest() {
