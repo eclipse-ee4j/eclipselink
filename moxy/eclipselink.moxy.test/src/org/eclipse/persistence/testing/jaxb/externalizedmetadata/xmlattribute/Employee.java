@@ -18,7 +18,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 @XmlRootElement(name="employee")
 public class Employee {
     @XmlAttribute(name="firstname")
-    public String firstName;
+    public Object firstName;
     
     @XmlAttribute(name="lastname")
     public String lastName;

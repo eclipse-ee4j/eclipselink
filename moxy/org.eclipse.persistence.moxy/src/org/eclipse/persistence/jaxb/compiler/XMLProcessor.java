@@ -590,6 +590,16 @@ public class XMLProcessor {
         }
         oldProperty.setSchemaName(qName);
 
+        // set type
+        if (!xmlAttribute.getType().equals("##default")) {
+            JavaClass pType = jModelInput.getJavaModel().getClass(xmlAttribute.getType());
+            oldProperty.setType(pType);
+            // may need to generate a type info for the type
+            if (aProcessor.shouldGenerateTypeInfo(pType) && aProcessor.getTypeInfo().get(pType.getQualifiedName()) == null) {
+                aProcessor.buildNewTypeInfo(new JavaClass[] { pType });
+            }
+        }
+
         // handle xml-mime-type
         if (xmlAttribute.getXmlMimeType() != null) {
             oldProperty.setMimeType(xmlAttribute.getXmlMimeType());

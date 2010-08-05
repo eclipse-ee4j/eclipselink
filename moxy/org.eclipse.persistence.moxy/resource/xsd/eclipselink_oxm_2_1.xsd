@@ -298,6 +298,7 @@
                     <xs:attribute name="xml-mime-type" type="xs:string" />
                     <xs:attribute name="read-only" type="xs:boolean" default="false" />
                     <xs:attribute name="write-only" type="xs:boolean" default="false" />
+                    <xs:attribute name="type" type="xs:string" default="##default" />
                     <xs:attribute name="xml-path" type="xs:string" />
                 </xs:extension>
             </xs:complexContent>

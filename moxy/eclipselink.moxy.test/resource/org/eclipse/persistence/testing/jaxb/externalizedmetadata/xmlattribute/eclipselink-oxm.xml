@@ -3,9 +3,9 @@
 	<java-types>
 		<java-type name="org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmlattribute.Employee">
             <java-attributes>
-                <xml-attribute java-attribute="firstName" name="fname"/>
-                <xml-attribute java-attribute="lastName" name="lname"/>
-                <xml-attribute java-attribute="id" required="true"/>
+                <xml-attribute java-attribute="firstName" name="fname" type="java.lang.String" />
+                <xml-attribute java-attribute="lastName" name="lname" />
+                <xml-attribute java-attribute="id" required="true" />
             </java-attributes>
 		</java-type>
 	</java-types>
