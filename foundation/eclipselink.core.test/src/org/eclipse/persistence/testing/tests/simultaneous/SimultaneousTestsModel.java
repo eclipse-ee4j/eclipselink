@@ -52,6 +52,7 @@ public class SimultaneousTestsModel extends TestModel {
         addTest(getAboutToUpdateEventTestSuite());
         addTest(getDescriptorQueryManagerAddQueryTest());
         addTest(getQueryCacheMultithreadedTest());
+        addTest(new ConcurrentDecryptionTest());
     }
 
     public static TestSuite getReadEmployeeTestSuite() {
