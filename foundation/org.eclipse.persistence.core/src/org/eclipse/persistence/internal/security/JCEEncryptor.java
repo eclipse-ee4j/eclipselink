@@ -57,7 +57,7 @@ public class JCEEncryptor implements Securable {
     /**
      * Encrypts a string. Will throw a validation exception.
      */
-    public String encryptPassword(String password) {
+    public synchronized String encryptPassword(String password) {
         try {
             ByteArrayOutputStream baos = new ByteArrayOutputStream();
             CipherOutputStream cos = new CipherOutputStream(baos, encryptCipher);
@@ -77,7 +77,7 @@ public class JCEEncryptor implements Securable {
      * Decrypts a string. Will throw a validation exception.
      * Handles backwards compatibility for older encrypted strings.
      */
-    public String decryptPassword(String encryptedPswd) {
+    public synchronized String decryptPassword(String encryptedPswd) {
         String password = "";
 
         try {
