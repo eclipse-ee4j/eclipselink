@@ -108,6 +108,8 @@ import org.eclipse.persistence.oxm.annotations.XmlNullPolicy;
 import org.eclipse.persistence.oxm.annotations.XmlParameter;
 import org.eclipse.persistence.oxm.annotations.XmlPath;
 import org.eclipse.persistence.oxm.annotations.XmlPaths;
+import org.eclipse.persistence.oxm.annotations.XmlProperties;
+import org.eclipse.persistence.oxm.annotations.XmlProperty;
 import org.eclipse.persistence.oxm.annotations.XmlReadOnly;
 import org.eclipse.persistence.oxm.annotations.XmlWriteOnly;
 
@@ -458,7 +460,17 @@ public class AnnotationsProcessor {
                 XmlClassExtractor classExtractor = (XmlClassExtractor)helper.getAnnotation(javaClass, XmlClassExtractor.class);
                 info.setClassExtractorName(classExtractor.value().getName());
             }
-
+            
+            // handle user properties
+            if(helper.isAnnotationPresent(javaClass, XmlProperties.class)) {
+                XmlProperties xmlProperties = (XmlProperties)helper.getAnnotation(javaClass, XmlProperties.class);
+                Map<Object, Object> propertiesMap = createUserPropertiesMap(xmlProperties.value());
+                info.setUserProperties(propertiesMap);
+            } else if(helper.isAnnotationPresent(javaClass, XmlProperty.class)) {
+                XmlProperty xmlProperty = (XmlProperty)helper.getAnnotation(javaClass, XmlProperty.class);
+                Map<Object, Object> propertiesMap = createUserPropertiesMap(new XmlProperty[]{xmlProperty});
+                info.setUserProperties(propertiesMap);
+            }
             typeInfoClasses.add(javaClass);
             typeInfo.put(javaClass.getQualifiedName(), info);
         }
@@ -1781,7 +1793,17 @@ public class AnnotationsProcessor {
                 property.setMethodProperty(true);
             }
         }
-        
+
+        // handle user properties
+        if(helper.isAnnotationPresent(property.getElement(), XmlProperties.class)) {
+            XmlProperties xmlProperties = (XmlProperties)helper.getAnnotation(property.getElement(), XmlProperties.class);
+            Map<Object, Object> propertiesMap = createUserPropertiesMap(xmlProperties.value());
+            property.setUserProperties(propertiesMap);
+        } else if(helper.isAnnotationPresent(property.getElement(), XmlProperty.class)) {
+            XmlProperty xmlProperty = (XmlProperty)helper.getAnnotation(property.getElement(), XmlProperty.class);
+            Map<Object, Object> propertiesMap = createUserPropertiesMap(new XmlProperty[]{xmlProperty});
+            property.setUserProperties(propertiesMap);
+        }        
         processXmlNullPolicy(property);
     }
 
@@ -3537,5 +3559,18 @@ public class AnnotationsProcessor {
     
     HashMap<QName, ElementDeclaration> getElementDeclarationsForScope(String scopeClassName) {
         return this.elementDeclarations.get(scopeClassName);
+    }
+    
+    private Map<Object, Object> createUserPropertiesMap(XmlProperty[] properties) {
+        Map<Object, Object> propMap = new HashMap<Object, Object>();
+        for (XmlProperty prop : properties) {
+            Object pvalue = prop.value();
+            if (!(prop.valueType() == String.class)) {
+                pvalue = XMLConversionManager.getDefaultXMLManager().convertObject(
+                        prop.value(), prop.valueType());
+            }
+            propMap.put(prop.name(), pvalue);
+        }
+        return propMap;
     }
 }

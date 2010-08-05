@@ -17,6 +17,7 @@ import org.eclipse.persistence.testing.jaxb.annotations.xmlclassextractor.XmlCla
 import org.eclipse.persistence.testing.jaxb.annotations.xmlnullpolicy.XmlNullPolicyTestCases;
 import org.eclipse.persistence.testing.jaxb.annotations.xmlpaths.XmlPathsTestCases;
 import org.eclipse.persistence.testing.jaxb.annotations.xmlpaths.override.XmlPathsOverrideTestCases;
+import org.eclipse.persistence.testing.jaxb.annotations.xmlproperty.XmlPropertyTestCases;
 import org.eclipse.persistence.testing.jaxb.events.RootWithCompositeObjectTestCases;
 import org.eclipse.persistence.testing.jaxb.xmlvalue.XmlValueListTestCases;
 import org.eclipse.persistence.testing.jaxb.xmlvalue.XmlValueTestCases;
@@ -96,6 +97,7 @@ public class JAXBTestSuite extends TestCase {
         suite.addTestSuite(XmlNullPolicyTestCases.class);
         suite.addTestSuite(XmlAccessMethodsTestCases.class);
         suite.addTestSuite(XmlClassExtractorTestCases.class);
+        suite.addTestSuite(XmlPropertyTestCases.class);
         suite.addTestSuite(org.eclipse.persistence.testing.jaxb.xmlenum.XmlEnumElementTestCases.class);
         suite.addTestSuite(org.eclipse.persistence.testing.jaxb.xmlenum.XmlEnumAttributeTestCases.class);
         suite.addTestSuite(org.eclipse.persistence.testing.jaxb.xmlenum.XmlEnumElementCollectionTestCases.class);
