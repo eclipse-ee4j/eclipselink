@@ -26,7 +26,7 @@ import org.eclipse.persistence.internal.security.JCEEncryptor;
  *  
  */
 public class ConcurrentDecryptionTest extends AutoVerifyTestCase {
-    //used to signal the threads to stop
+    //used to signal the threads to stop, accessed directly from the threads
     public boolean run;
     public Exception error;
 
@@ -37,6 +37,7 @@ public class ConcurrentDecryptionTest extends AutoVerifyTestCase {
     //wait time for the error to occur
     public int sleepTime = 8000;
 
+    //accessed directly from the threads
     private JCEEncryptor encryptor;
     private String encryptedPassword;
     
@@ -78,8 +79,6 @@ public class ConcurrentDecryptionTest extends AutoVerifyTestCase {
     
     //runnable that repeatedly calls decryptPassword until the run flag is set to false
     class Runner1 implements Runnable {
-        protected JCEEncryptor encryptor;
-        protected String encryptedPassword;
         protected ConcurrentDecryptionTest concurrentDecryptionTest;
         public Runner1(ConcurrentDecryptionTest concurrentDecryptionTest) {
             this.concurrentDecryptionTest = concurrentDecryptionTest;
@@ -87,7 +86,7 @@ public class ConcurrentDecryptionTest extends AutoVerifyTestCase {
         public void run() {
             try {
                 while (concurrentDecryptionTest.run && (concurrentDecryptionTest.error == null) ){
-                    encryptor.decryptPassword(concurrentDecryptionTest.encryptedPassword);
+                    concurrentDecryptionTest.encryptor.decryptPassword(concurrentDecryptionTest.encryptedPassword);
                 }
             } catch (Exception e){
                 concurrentDecryptionTest.run = false;
