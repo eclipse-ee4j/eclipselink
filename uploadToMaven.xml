@@ -155,8 +155,8 @@
             <param name="groupId" value="org.eclipse.persistence"/>
             <param name="artifactId" value="javax.persistence"/>
             <param name="artifactVersion" value="2.0.1"/>
-            <param name="artifact" value="${eclipselink.jpa.base}/${plugins.dir}/javax.persistence_2.0.1.v201006031150.jar"/>
-            <param name="artifactSrc" value="${eclipselink.jpa.base}/${plugins.dir}/javax.persistence.source_2.0.1.v201006031150.jar"/>
+            <param name="artifact" value="${eclipselink.jpa.base}/${plugins.dir}/javax.persistence_2.0.2.v201008061442.jar"/>
+            <param name="artifactSrc" value="${eclipselink.jpa.base}/${plugins.dir}/javax.persistence.source_2.0.2.v201008061442.jar"/>
             <param name="artifactName" value="Javax Persistence API 2.0"/>
             <param name="dependencies" value=""/>
         </antcall>

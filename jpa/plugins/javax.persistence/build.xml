@@ -59,7 +59,7 @@
     <property name="jpaproto.spec.vendor"  value="Sun Microsystems Inc."/>
     <property name="implementation.vendor" value="Eclipse.org - EclipseLink Project"/>
     <property name="jpaproto.spec.version" value="2.0"/>
-    <property name="jpaproto.version"      value="2.0.1"/>
+    <property name="jpaproto.version"      value="2.0.2"/>
     <property name="jpaproto.bundle.name"  value="Java Persistence API 2.0"/>
     <!-- Project infrastructure properties -->
     <property name="src.dir"               value="src"/>
