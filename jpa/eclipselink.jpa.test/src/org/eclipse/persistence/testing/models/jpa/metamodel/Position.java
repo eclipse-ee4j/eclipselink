@@ -16,9 +16,15 @@
 package org.eclipse.persistence.testing.models.jpa.metamodel;
 
 /**
- * A non-Entity Superclass.
+ * A non-Entity non-MappedSuperclass Superclass is a Transient class 
  * The state here is non-persistent
  * This class should NOT be annotated with @MappedSuperclass or @Entity
+ * 
+ * This class will show as a BasicType even though it has attributes
+ * BasicTypeImpl@2540449:Position [ javaType: class org.eclipse.persistence.testing.models.jpa.metamodel.Position]
+ * 
+ * The attributes here will not be inherited by Entity or MappedSuperclass subclasses.
+ * Any attempt to access fields here via subclasses will result in an expecte IllegalArgumentException
  */
 public class Position {
 

@@ -323,7 +323,8 @@ public class TraceLocalizationResource extends ListResourceBundle {
                                             { "metamodel_attribute_getmember_is_null", "The java Member is null for the Attribute [{0}] with managedType [{1}] and descriptor [{2}]." },                                            
                                             { "metamodel_typeImpl_javaClass_should_not_be_null", "The metamodel TypeImpl.javaClass field should not be set to null for the Type [{0}]." },                                            
                                             { "named_argument_not_found_in_query_parameters", "Missing Query parameter for named argument: {0} 'null' will be substituted." },
-                                            { "jmx_mbean_classloader_in_use", "EclipseLink JMX Runtime Services is referencing the [{0}] ClassLoader at: [{1}]" }                                            
+                                            { "jmx_mbean_classloader_in_use", "EclipseLink JMX Runtime Services is referencing the [{0}] ClassLoader at: [{1}]" },
+                                            { "metamodel_itentifiableType_javaclass_null_cannot_set_supertype", "Metamodel processing: Unable to set the superclass Hierarchy because the javaClass field is null for the relationalDescriptor [{0}] for the identifiableType [{1}]." }                                            
     };
 
     /**

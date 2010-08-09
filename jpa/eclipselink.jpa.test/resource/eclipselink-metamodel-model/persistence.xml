@@ -20,6 +20,8 @@
         <!-- 300051: added to test @EmbeddedId:CPUEmbeddedId directly on @MappedSuperclass:CPU -->
         <class>org.eclipse.persistence.testing.models.jpa.metamodel.MultiCoreCPU</class>
         <class>org.eclipse.persistence.testing.models.jpa.metamodel.Core</class>
+        <!-- The following Position class is for reference - and should be commented as it is a Transient or BasicType -->
+        <!-- class>org.eclipse.persistence.testing.models.jpa.metamodel.Position</class-->        
         <!-- 248780: Refactor Cache Implementation surrounding evict() and MappedSuperclass support -->        
         <exclude-unlisted-classes>false</exclude-unlisted-classes>
         <properties>

@@ -16,7 +16,8 @@
  *     07/06/2009-2.0  mobrien - 266912: Introduce IdentifiableTypeImpl between ManagedTypeImpl
  *       - EntityTypeImpl now inherits from IdentifiableTypeImpl instead of ManagedTypeImpl
  *       - MappedSuperclassTypeImpl now inherits from IdentifiableTypeImpl instead
- *       of implementing IdentifiableType indirectly  
+ *       of implementing IdentifiableType indirectly
+ *     08/06/2010-2.2 mobrien 322018 - reduce protected instance variables to private to enforce encapsulation  
  ******************************************************************************/
 package org.eclipse.persistence.internal.jpa.metamodel;
 
@@ -102,7 +103,7 @@ public class MappedSuperclassTypeImpl<X> extends IdentifiableTypeImpl<X> impleme
         AttributeImpl inheritedAttribute = null;
         // search the inheriting types map for an attribute matching the attribute name
         for(IdentifiableTypeImpl inheritingType : inheritingIdentifiableTypes.values()) {            
-            if(inheritingType.members.containsKey(name)) {
+            if(inheritingType.getMembers().containsKey(name)) {
                 inheritedAttribute = (AttributeImpl)inheritingType.getAttribute(name);
                 break;
             }

@@ -150,7 +150,7 @@ public abstract class JMXServerPlatformBase extends ServerPlatformBase {
                     // Use the first MBeanServer by default - there may be multiple domains each with their own MBeanServer
                     mBeanServer = mBeanServerList.get(JMX_MBEANSERVER_INDEX_DEFAULT_FOR_MULTIPLE_SERVERS);
                     if(mBeanServerList.size() > 1) {
-                        // There are multiple MBeanServerInstances - ust warn for now
+                        // There are multiple MBeanServerInstances - user warn for now
                         AbstractSessionLog.getLog().log(SessionLog.WARNING, 
                                 "jmx_mbean_runtime_services_registration_encountered_multiple_mbeanserver_instances",
                                 mBeanServerList.size(), JMX_MBEANSERVER_INDEX_DEFAULT_FOR_MULTIPLE_SERVERS, mBeanServer);

@@ -89,6 +89,7 @@ import org.eclipse.persistence.testing.models.jpa.metamodel.Manufacturer;
 import org.eclipse.persistence.testing.models.jpa.metamodel.Memory;
 import org.eclipse.persistence.testing.models.jpa.metamodel.MultiCoreCPU;
 import org.eclipse.persistence.testing.models.jpa.metamodel.Person;
+import org.eclipse.persistence.testing.models.jpa.metamodel.Position;
 import org.eclipse.persistence.testing.models.jpa.metamodel.Processor;
 import org.eclipse.persistence.testing.models.jpa.metamodel.VectorProcessor;
 
@@ -120,7 +121,8 @@ import org.eclipse.persistence.testing.framework.junit.JUnitTestCase;
 public class MetamodelMetamodelTest extends MetamodelTest {
 
     public static final int METAMODEL_ALL_ATTRIBUTES_SIZE = 136;
-    public static final int METAMODEL_ALL_TYPES = 49;
+    // Note: Since BasicTypes are lazy - loaded into the metamodel-types Map - this test must preceed any test that verifies all BasicType objects like "testIdentifiableType_getIdType_Method"
+    public static final int METAMODEL_ALL_TYPES = 50;
     public static final int METAMODEL_MANUFACTURER_DECLARED_TYPES = 28;
     // Get # of processor cores (hard cores + hyperthreaded cores)
     public static final int numberProcessingUnits = Runtime.getRuntime().availableProcessors();
@@ -146,7 +148,9 @@ public class MetamodelMetamodelTest extends MetamodelTest {
          */
         if (! JUnitTestCase.isJPA10()) {
             suite.addTest(new MetamodelMetamodelTest("testMetamodelEmbeddedIdDirectlyOnMappedSuperclassRootPassesValidation"));
-            
+            // Note: Since BasicTypes are lazy - loaded into the metamodel-types Map - this test must preceed any test that verifies all BasicType objects like "testIdentifiableType_getIdType_Method"
+            suite.addTest(new MetamodelMetamodelTest("testTransientNonEntityNonMappedSuperclass_SuperclassOfEntity_Exists_as_BasicType"));
+            suite.addTest(new MetamodelMetamodelTest("testAttribute_getAttribute_of_TransientNonEntityNonMappedSuperclass_SuperclassOfEntity_throws_IAE"));
             suite.addTest(new MetamodelMetamodelTest("testAttribute_getPersistentAttributeType_BASIC_Method"));
             suite.addTest(new MetamodelMetamodelTest("testAttribute_getPersistentAttributeType_EMBEDDED_Method"));
             suite.addTest(new MetamodelMetamodelTest("testAttribute_getPersistentAttributeType_ONE_TO_ONE_Method"));
@@ -178,6 +182,8 @@ public class MetamodelMetamodelTest extends MetamodelTest {
             suite.addTest(new MetamodelMetamodelTest("testEmbeddableType"));
             suite.addTest(new MetamodelMetamodelTest("testEntityType"));
             suite.addTest(new MetamodelMetamodelTest("testEntityAttribute_getBindableJavaType_Method"));          
+            // Note: Since BasicTypes are lazy - loaded into the metamodel-types Map - this test must proceed any test that first gets the Position class BasicType object - see  like "testTransientNonEntityNonMappedSuperclass_SuperclassOfEntity_Exists_as_BasicType"
+            // You will get a lower number here - if only this single test is run via the Testing Browser            
             suite.addTest(new MetamodelMetamodelTest("testIdentifiableType_getIdType_Method"));
             suite.addTest(new MetamodelMetamodelTest("testIdentifiableType_getIdClassAttributes_Method"));
             suite.addTest(new MetamodelMetamodelTest("testIdentifiableType_getIdClassAttributesAcrossMappedSuperclassChain_Method")); // 288792        
@@ -2186,12 +2192,12 @@ public class MetamodelMetamodelTest extends MetamodelTest {
             // Test normal path for a [Basic] type
             expectedIAExceptionThrown = false;
             Type<?> computerIdType = null;
-        try {
-            computerIdType = entityComputer_.getIdType();
-        } catch (IllegalArgumentException iae) {
-            // expecting no exception
-            iae.printStackTrace();
-            expectedIAExceptionThrown = true;            
+            try {
+                computerIdType = entityComputer_.getIdType();
+            } catch (IllegalArgumentException iae) {
+                // expecting no exception
+                iae.printStackTrace();
+                expectedIAExceptionThrown = true;            
             }
             assertFalse(expectedIAExceptionThrown);
             assertNotNull(computerIdType);
@@ -2212,6 +2218,9 @@ public class MetamodelMetamodelTest extends MetamodelTest {
             Map<Class, TypeImpl<?>> typesMap = ((MetamodelImpl)metamodel).getTypes();
             // verify each one
             assertNotNull(typesMap);
+            ((MetamodelImpl)metamodel).printAllTypes();
+            // Note: Since BasicTypes are lazy - loaded into the metamodel-types Map - this test must preceed any test that verifies all BasicType objects like "testIdentifiableType_getIdType_Method"
+            // You will get a lower number here - if only this single test is run via the Testing Browser
             assertEquals(METAMODEL_ALL_TYPES, typesMap.size());
         } catch (IllegalArgumentException iae) {
             iae.printStackTrace();
@@ -6160,6 +6169,73 @@ public class MetamodelMetamodelTest extends MetamodelTest {
         }
     }
 
+    // 316991: regression test getJavaMember() on field level access Entity attribute @OneToOne on an Entity
+    /**
+     * This test will verify that a transient superclass (non-entity, non-mappedSuperclass)
+     * exists as a BasicType (it has no attributes), and that any inheriting Entity either
+     * directly subclassing or indirectly subclassing via a MappedSuperclass inheritance chain
+     * - does not pick up non-persistence fields that normally would be inherited.
+     * (The fields exist in Java but not in ORM:Metamodel)
+     * The transient class must have no JPA annotations.
+     */
+    public void testTransientNonEntityNonMappedSuperclass_SuperclassOfEntity_Exists_as_BasicType() {
+        EntityManager em = null;
+        boolean exceptionThrown = false;
+        try {
+            em = privateTestSetup();
+            assertNotNull(em);
+            Metamodel metamodel = em.getMetamodel();
+            assertNotNull("The metamodel should never be null after an em.getMetamodel() call here.", metamodel);
+            // Verify that the non-Entity/non-MappedSuperclass is a BasicType
+            Type positionNonEntity = ((MetamodelImpl)metamodel).getType(Position.class);
+            assertNotNull(positionNonEntity);
+            assertEquals(Type.PersistenceType.BASIC, positionNonEntity.getPersistenceType());
+            // Get direct inheriting subclass
+            EntityTypeImpl<GalacticPosition> entityLocation_ = (EntityTypeImpl) metamodel.entity(GalacticPosition.class);
+            assertNotNull(entityLocation_);
+            
+            // Verify it is a BasicType in other INTERNAL API ways
+            assertFalse(((TypeImpl)positionNonEntity).isMappedSuperclass());
+            assertFalse(((TypeImpl)positionNonEntity).isEntity());
+        } catch (IllegalArgumentException iae) {
+            iae.printStackTrace();
+            exceptionThrown = true;
+        } finally {
+            cleanup(em);
+            assertFalse("An IAE exception should not occur here.", exceptionThrown);
+        }
+    }
+
+    // Test that we are getting an Illegal argument exception when trying to access non-persistent fields from transient classes
+    public void testAttribute_getAttribute_of_TransientNonEntityNonMappedSuperclass_SuperclassOfEntity_throws_IAE() {
+        EntityManager em = null;
+        boolean exceptionThrown = false;
+        try {
+            em = privateTestSetup();
+            assertNotNull(em);
+            Metamodel metamodel = em.getMetamodel();
+            assertNotNull("The metamodel should never be null after an em.getMetamodel() call here.", metamodel);
+            // Verify that the non-Entity/non-MappedSuperclass is a BasicType
+            Type positionNonEntity = ((MetamodelImpl)metamodel).getType(Position.class);
+            assertNotNull(positionNonEntity);
+            assertEquals(Type.PersistenceType.BASIC, positionNonEntity.getPersistenceType());
+            // Get direct inheriting subclass
+            EntityTypeImpl<GalacticPosition> entityLocation_ = (EntityTypeImpl) metamodel.entity(GalacticPosition.class);
+            assertNotNull(entityLocation_);
+
+            // We will be testing that the non-persistent fields 
+            Attribute anAttributeThatShouldNotHaveBeenInherited = entityLocation_.getAttribute("nonPersistentObject");
+            // we should never get to the following line - go directly to catch block
+            assertTrue("IllegalArgumentException expected on transient type attribute should not be in subclass for managedType.getAttribute()",exceptionThrown);
+        } catch (IllegalArgumentException iae) {
+            //iae.printStackTrace();
+            exceptionThrown = true;
+            assertTrue("IllegalArgumentException expected on transient type attribute should not be in subclass for managedType.getAttribute()",exceptionThrown);            
+        } finally {
+            cleanup(em);
+        }
+    }
+    
     /**
     * Disclaimer:
         *    The following work may still need to be fully implemented - subject to available time.

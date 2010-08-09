@@ -19,7 +19,8 @@
  *       - 290567: mappedbyid support incomplete
  *     06/14/2010-2.1  mobrien - 314906: getJavaType should return the 
  *       collection javaType C in <X,C,V) of <X, List<V>, V> instead off the elementType V.
- *       Because of this we switch to using getBindableJavaType() in getIdType()   
+ *       Because of this we switch to using getBindableJavaType() in getIdType()
+ *     08/06/2010-2.2 mobrien 322018 - reduce protected instance variables to private to enforce encapsulation          
  ******************************************************************************/
 package org.eclipse.persistence.internal.jpa.metamodel;
 
@@ -61,17 +62,17 @@ public abstract class IdentifiableTypeImpl<X> extends ManagedTypeImpl<X> impleme
      * The supertype may be an entity or mappedSuperclass.<p>
      * For top-level inheritance root identifiable types with no superclass - return null (not Object) 
      */
-    protected IdentifiableType<? super X> superType;
+    private IdentifiableType<? super X> superType;
     
     /**
      * The collection of SingularAttributes that are Id attributes. 
      */
-    protected Set<SingularAttribute<? super X, ?>> idAttributes;
+    private Set<SingularAttribute<? super X, ?>> idAttributes;
     
     /**
      * The SingularAttribute if it exists that is a version attribute
      */
-    protected SingularAttribute<? super X, ?> versionAttribute;
+    private SingularAttribute<? super X, ?> versionAttribute;
     
     protected IdentifiableTypeImpl(MetamodelImpl metamodel, RelationalDescriptor descriptor) {
         super(metamodel, descriptor);        
@@ -232,7 +233,7 @@ public abstract class IdentifiableTypeImpl<X> extends ManagedTypeImpl<X> impleme
             if (pkMappings.size() == 1) {
                 Class aClass = pkMappings.get(0).getAttributeClassification(); // null for OneToOneMapping
                 // lookup class in our types map
-                return this.metamodel.getType(aClass);
+                return this.getMetamodel().getType(aClass);
             }
         }
         
@@ -240,7 +241,7 @@ public abstract class IdentifiableTypeImpl<X> extends ManagedTypeImpl<X> impleme
         // There already is an instance of the PKclass on the policy
         if (cmpPolicy.isCMP3Policy()) {
             // BasicType, EntityType or IdentifiableType are handled here, lookup the class in the types map and create a wrapper if it does not exist yet
-            return this.metamodel.getType(((CMP3Policy) cmpPolicy).getPKClass());
+            return this.getMetamodel().getType(((CMP3Policy) cmpPolicy).getPKClass());
         }
         // Non-specification mandated exception        
         throw new IllegalArgumentException(ExceptionLocalization.buildMessage(

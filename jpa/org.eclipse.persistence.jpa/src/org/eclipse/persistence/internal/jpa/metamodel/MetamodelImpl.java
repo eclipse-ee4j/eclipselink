@@ -26,6 +26,8 @@
  *     10/14/2009-2.0  mobrien - 285512: managedType(clazz) now throws IAE again for 
  *        any clazz that resolves to a BasicType - use getType(clazz) in implementations instead
  *        when you are expecting a BasicType
+ *     08/06/2010-2.2 mobrien 322018 - reduce protected instance variables to private to enforce encapsulation
+ *     08/06/2010-2.2 mobrien 303063 - handle null descriptor.javaClass passed from the metadata API
  ******************************************************************************/
 package org.eclipse.persistence.internal.jpa.metamodel;
 
@@ -45,6 +47,7 @@ import javax.persistence.metamodel.EntityType;
 import javax.persistence.metamodel.IdentifiableType;
 import javax.persistence.metamodel.ManagedType;
 import javax.persistence.metamodel.Metamodel;
+import javax.persistence.metamodel.Type;
 import javax.persistence.metamodel.Type.PersistenceType;
 
 import org.eclipse.persistence.descriptors.RelationalDescriptor;
@@ -52,7 +55,10 @@ import org.eclipse.persistence.internal.helper.ClassConstants;
 import org.eclipse.persistence.internal.jpa.EntityManagerSetupImpl;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataClass;
 import org.eclipse.persistence.internal.localization.ExceptionLocalization;
+import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.jpa.JpaHelper;
+import org.eclipse.persistence.logging.AbstractSessionLog;
+import org.eclipse.persistence.logging.SessionLog;
 import org.eclipse.persistence.sessions.DatabaseSession;
 import org.eclipse.persistence.sessions.Project;
 
@@ -63,7 +69,9 @@ import org.eclipse.persistence.sessions.Project;
  * <p>
  * <b>Description</b>: 
  * Provides access to the metamodel of persistent
- * entities in the persistence unit. 
+ * Entities, MappedSuperclasses, Embeddables, ManagedTypes and Types  in the persistence unit.
+ * Note: Since the types Map is lazy-loaded with key:value pairs - the designer and especially the user
+ * must realized that a particular BasicType may not be in the Map until it is referenced.
  * 
  * @see javax.persistence.metamodel.Metamodel
  * 
@@ -76,16 +84,16 @@ public class MetamodelImpl implements Metamodel, Serializable {
     private static final long serialVersionUID = -7352420189248464690L;
 
     /** The EclipseLink Session associated with this Metamodel implementation that contains all our descriptors with mappings **/
-    protected DatabaseSession session;
+    private DatabaseSession session;
 
     /** The Map of entities in this metamodel keyed on Class **/
-    protected Map<Class, EntityTypeImpl<?>> entities;
+    private Map<Class, EntityTypeImpl<?>> entities;
 
     /** The Map of embeddables in this metamodel keyed on Class **/
-    protected Map<Class, EmbeddableTypeImpl<?>> embeddables;
+    private Map<Class, EmbeddableTypeImpl<?>> embeddables;
 
     /** The Map of managed types (Entity, Embeddable and MappedSuperclass) in this metamodel keyed on Class **/
-    protected Map<Class, ManagedTypeImpl<?>> managedTypes;
+    private Map<Class, ManagedTypeImpl<?>> managedTypes;
     
     /** The Map of types (Entity, Embeddable, MappedSuperclass and Basic - essentially Basic + managedTypes) in this metamodel keyed on Class **/
     private Map<Class, TypeImpl<?>> types;
@@ -305,7 +313,16 @@ public class MetamodelImpl implements Metamodel, Serializable {
     
     /**
      * INTERNAL:
-     * Initialize the JPA metamodel that wraps the EclipseLink JPA metadata created descriptors.
+     * Initialize the JPA metamodel that wraps the EclipseLink JPA metadata created descriptors.<br>
+     * Note: Since the types Map is lazy-loaded with key:value pairs - the designer and especially the user
+     * must realized that a particular BasicType may not be in the Map until it is referenced.
+     * 
+     * Also note that a transient superclass (non-entity, non-mappedSuperclass)
+     * exists as a BasicType (it has no attributes), and that any inheriting Entity either
+     * directly subclassing or indirectly subclassing via a MappedSuperclass inheritance chain
+     * - does not pick up non-persistence fields that normally would be inherited.
+     * (The fields exist in Java but not in ORM:Metamodel)
+     * The transient class will have no JPA annotations.
      */
     private void initialize() {
         // Design Note: Use LinkedHashMap and LinkedHashSet to preserve ordering
@@ -319,14 +336,18 @@ public class MetamodelImpl implements Metamodel, Serializable {
         for (Object descriptor : this.getSession().getDescriptors().values()) {
             // The ClassDescriptor is always of type RelationalDescriptor - the cast is safe
             ManagedTypeImpl<?> managedType = ManagedTypeImpl.create(this, (RelationalDescriptor)descriptor);
-            putType(managedType.getJavaType(), managedType);
-            this.managedTypes.put(managedType.getJavaType(), managedType);
+            Class descriptorJavaType = managedType.getJavaType();
+            if(null == descriptorJavaType) {
+                AbstractSessionLog.getLog().log(SessionLog.FINEST, "metamodel_relationaldescriptor_javaclass_null_on_managedType", descriptor, managedType);
+            }            
+            putType(descriptorJavaType, managedType);
+            this.managedTypes.put(descriptorJavaType, managedType);
             
             if (managedType.getPersistenceType().equals(PersistenceType.ENTITY)) {
-                this.entities.put(managedType.getJavaType(), (EntityTypeImpl<?>) managedType);
+                this.entities.put(descriptorJavaType, (EntityTypeImpl<?>) managedType);
             }
             if (managedType.getPersistenceType().equals(PersistenceType.EMBEDDABLE)) {
-                this.embeddables.put(managedType.getJavaType(), (EmbeddableTypeImpl<?>) managedType);
+                this.embeddables.put(descriptorJavaType, (EmbeddableTypeImpl<?>) managedType);
             }
             
             // Process all Basic Types
@@ -345,11 +366,17 @@ public class MetamodelImpl implements Metamodel, Serializable {
             // Add the MappedSuperclass to our Set of MappedSuperclasses
             this.mappedSuperclasses.add(mappedSuperclassType);
 
+            Class descriptorJavaType = mappedSuperclassType.getJavaType();
+            if(null == descriptorJavaType) {
+                AbstractSessionLog.getLog().log(SessionLog.FINEST, "metamodel_relationaldescriptor_javaclass_null_on_managedType", 
+                        descriptor, mappedSuperclassType);
+            }            
+
             // Add this MappedSuperclass to the Collection of Types
-            putType(mappedSuperclassType.getJavaType(), mappedSuperclassType);
+            putType(descriptorJavaType, mappedSuperclassType);
             // Add the MappedSuperclass to the Map of ManagedTypes
             // So we can find hierarchies of the form [Entity --> MappedSuperclass(abstract) --> Entity]
-            this.managedTypes.put(mappedSuperclassType.getJavaType(), mappedSuperclassType);
+            this.managedTypes.put(descriptorJavaType, mappedSuperclassType);
         }
 
         
@@ -368,10 +395,16 @@ public class MetamodelImpl implements Metamodel, Serializable {
              * See design issue discussion:
              * http://wiki.eclipse.org/EclipseLink/Development/JPA_2.0/metamodel_api#DI_42:_20090709:_IdentifiableType.supertype_-_what_do_top-level_types_set_it_to
              */
-            Class superclass = aClass.getSuperclass();
-            // explicitly set the superType to null (just in case it is initialized to a non-null value in a constructor)
-            IdentifiableType<?> identifiableTypeSuperclass = null;
-            if(potentialIdentifiableType.isIdentifiableType() && superclass != ClassConstants.OBJECT) {
+            // 303063: secondary check for a null javaType (metadata processing should never allow this to happen - however we must handle it here in case
+            // http://wiki.eclipse.org/EclipseLink/Development/JPA_2.0/metamodel_api#DI_101:_20100218:_Descriptor.javaClass_is_null_on_a_container_EM_for_a_specific_case
+            if(null == aClass) {
+                AbstractSessionLog.getLog().log(SessionLog.FINEST, "metamodel_itentifiableType_javaclass_null_cannot_set_supertype", 
+                        potentialIdentifiableType.getDescriptor(), this);
+            } else { 
+                Class superclass = aClass.getSuperclass();
+                // explicitly set the superType to null (just in case it is initialized to a non-null value in a constructor)
+                IdentifiableType<?> identifiableTypeSuperclass = null;
+                if(potentialIdentifiableType.isIdentifiableType() && superclass != ClassConstants.OBJECT) {
                     // Get the Entity or MappedSuperclass
                     // A hierarchy of Entity --> Entity or Entity --> MappedSuperclass will be found
                     identifiableTypeSuperclass = (IdentifiableType<?>)managedTypes.get(superclass);
@@ -383,7 +416,8 @@ public class MetamodelImpl implements Metamodel, Serializable {
                     if(null != identifiableTypeSuperclass && ((IdentifiableTypeImpl)identifiableTypeSuperclass).isMappedSuperclass()) {
                         ((MappedSuperclassTypeImpl)identifiableTypeSuperclass).addInheritingType(((IdentifiableTypeImpl)potentialIdentifiableType));
                     }
-                ((IdentifiableTypeImpl)potentialIdentifiableType).setSupertype(identifiableTypeSuperclass);
+                    ((IdentifiableTypeImpl)potentialIdentifiableType).setSupertype(identifiableTypeSuperclass);
+                }
             }
         }        
         
@@ -426,6 +460,20 @@ public class MetamodelImpl implements Metamodel, Serializable {
                     "metamodel_class_incorrect_type_instance", 
                     new Object[] { clazz, "ManagedType", aType}));
         }
+    }
+    
+    /**
+     * INTERNAL:
+     * Print out all the Type attributes in the Metamodel
+     * @return
+     */
+    public void printAllTypes() {
+        ((AbstractSession)session).log(SessionLog.INFO, SessionLog.METAMODEL, 
+                "metamodel_print_type_header",this.types.size());
+        for(Type aType : this.types.values()) {
+            ((AbstractSession)session).log(SessionLog.INFO, SessionLog.METAMODEL, 
+                    "metamodel_print_type_value",aType);
+        }        
     }
     
     /**

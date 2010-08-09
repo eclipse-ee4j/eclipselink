@@ -13,6 +13,7 @@
  *     06/30/2009-2.0  mobrien - finish JPA Metadata API modifications in support
  *       of the Metamodel implementation for EclipseLink 2.0 release involving
  *       Map, ElementCollection and Embeddable types on MappedSuperclass descriptors
+ *     08/06/2010-2.2 mobrien 322018 - reduce protected instance variables to private to enforce encapsulation       
  ******************************************************************************/
 package org.eclipse.persistence.internal.jpa.metamodel;
 
@@ -55,7 +56,7 @@ public class SingularAttributeImpl<X, T> extends AttributeImpl<X, T> implements 
     private static final long serialVersionUID = 3928292425281232234L;
     
     /** The Type representing this Entity or Basic type **/
-    protected Type<T> elementType;
+    private Type<T> elementType;
     
     /**
      * Create an instance of the Attribute

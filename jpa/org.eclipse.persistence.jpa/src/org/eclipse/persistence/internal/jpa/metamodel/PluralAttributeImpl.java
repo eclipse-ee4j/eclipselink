@@ -16,7 +16,8 @@
  *    08/19/2009-2.0  mobrien - Extend Collection support
  *       http://wiki.eclipse.org/EclipseLink/Development/JPA_2.0/metamodel_api#DI_59:_20090818:_PluralAttribute.elementType_not_set_for_non-lazy_instantiated_Collection_Attribute
  *     06/14/2010-2.1  mobrien - 314906: getJavaType should return the 
- *       collection javaType C in <X,C,V) of <X, List<V>, V> instead off the elementType V  
+ *       collection javaType C in <X,C,V) of <X, List<V>, V> instead off the elementType V
+ *     08/06/2010-2.2 mobrien 322018 - reduce protected instance variables to private to enforce encapsulation         
  ******************************************************************************/
 package org.eclipse.persistence.internal.jpa.metamodel;
 
@@ -53,7 +54,7 @@ import org.eclipse.persistence.mappings.CollectionMapping;
 public abstract class PluralAttributeImpl<X, C, V> extends AttributeImpl<X, C> implements PluralAttribute<X, C, V> {
     
     /** The type representing this collection type **/
-    protected Type<V> elementType;
+    private Type<V> elementType;
 
     /**
      * INTERNAL:
