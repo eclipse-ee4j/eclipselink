@@ -50,7 +50,7 @@ import org.eclipse.persistence.descriptors.invalidation.CacheInvalidationPolicy;
  * @since TOPLink/Java 1.0
  */
 public class IdentityMapManager implements Serializable, Cloneable {
-    protected static final String MONITOR_PREFIX = "Info:Cache:";
+    protected static final String MONITOR_PREFIX = "Info:CacheSize:";
 
     /** A table of identity maps with the key being the domain Class. */
     protected Map<Class, IdentityMap> identityMaps;
@@ -104,7 +104,7 @@ public class IdentityMapManager implements Serializable, Cloneable {
                 releaseReadLock();
             }
             this.session.endOperationProfile(SessionProfiler.Caching);
-            if (cacheKey.getObject() == null) {
+            if (!this.session.isUnitOfWork() && cacheKey.getObject() == null) {
                 this.session.updateProfile(MONITOR_PREFIX + domainClass.getSimpleName(), identityMap.getSize());
             }
         } else {
@@ -135,7 +135,7 @@ public class IdentityMapManager implements Serializable, Cloneable {
                 releaseReadLock();
             }
             this.session.endOperationProfile(SessionProfiler.Caching);
-            if (cacheKey.getObject() == null) {
+            if (!this.session.isUnitOfWork() && cacheKey.getObject() == null) {
                 this.session.updateProfile(MONITOR_PREFIX + domainClass.getSimpleName(), identityMap.getSize());
             }
         } else {
@@ -166,7 +166,7 @@ public class IdentityMapManager implements Serializable, Cloneable {
                 releaseReadLock();
             }
             this.session.endOperationProfile(SessionProfiler.Caching);
-            if (cacheKey.getObject() == null) {
+            if (!this.session.isUnitOfWork() && cacheKey.getObject() == null) {
                 this.session.updateProfile(MONITOR_PREFIX + domainClass.getSimpleName(), identityMap.getSize());
             }
         } else {
@@ -197,7 +197,7 @@ public class IdentityMapManager implements Serializable, Cloneable {
                 releaseReadLock();
             }
             this.session.endOperationProfile(SessionProfiler.Caching);
-            if (cacheKey.getObject() == null) {
+            if (!this.session.isUnitOfWork() && cacheKey.getObject() == null) {
                 this.session.updateProfile(MONITOR_PREFIX + domainClass.getSimpleName(), identityMap.getSize());
             }
         } else {

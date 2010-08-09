@@ -167,7 +167,7 @@ public class PerformanceMonitor implements Serializable, Cloneable, SessionProfi
         return operationStartTimesByThread;
     }
 
-    protected Map<String, Object> getOperationTimings() {
+    public Map<String, Object> getOperationTimings() {
         return operationTimings;
     }
 

@@ -468,10 +468,50 @@ public class RelationExpression extends CompoundExpression {
     }
 
     /**
+     * PERF: Optimize out unnecessary joins.
+     * Check for relation based on foreign keys, i.e. emp.address.id = :id, and avoid join.
+     * @return null if cannot be optimized, otherwise the optimized normalized expression.
+     */
+    protected Expression checkForeignKeyJoinOptimization(Expression first, Expression second, ExpressionNormalizer normalizer) {
+        if (first.isQueryKeyExpression()
+                && (((QueryKeyExpression)first).getBaseExpression() != null)
+                && ((QueryKeyExpression)first).getBaseExpression().isQueryKeyExpression()) {
+            QueryKeyExpression mappingExpression = (QueryKeyExpression)((QueryKeyExpression)first).getBaseExpression();
+            if ((mappingExpression.getBaseExpression() != null)
+                    && mappingExpression.getBaseExpression().isObjectExpression()) {
+                // Must ensure it has been normalized first.
+                mappingExpression.getBaseExpression().normalize(normalizer);
+                DatabaseMapping mapping = mappingExpression.getMapping();
+                if ((mapping != null) && mapping.isOneToOneMapping()
+                        && ((OneToOneMapping)mapping).isForeignKeyRelationship()
+                        && (second.isConstantExpression() || second.isParameterExpression())) {
+                    DatabaseField targetField = ((QueryKeyExpression)first).getField();
+                    DatabaseField sourceField = ((OneToOneMapping)mapping).getTargetToSourceKeyFields().get(targetField);
+                    if (sourceField != null) {
+                        Expression optimizedExpression = this.operator.expressionFor(mappingExpression.getBaseExpression().getField(sourceField), second);
+                        // Ensure the base still applies the correct conversion.
+                        second.setLocalBase(first);
+                        return optimizedExpression.normalize(normalizer);
+                    }
+                }
+            }
+        }
+        return null;
+    }
+    
+    /**
      * INTERNAL:
      * Check for object comparison as this requires for the expression to be replaced by the object comparison.
      */
     public Expression normalize(ExpressionNormalizer normalizer) {
+        // PERF: Optimize out unnecessary joins.
+        Expression optimizedExpression = checkForeignKeyJoinOptimization(this.firstChild, this.secondChild, normalizer);
+        if (optimizedExpression == null) {
+            optimizedExpression = checkForeignKeyJoinOptimization(this.secondChild, this.firstChild, normalizer);
+        }
+        if (optimizedExpression != null) {
+            return optimizedExpression;
+        }
         if (!isObjectComparison()) {
             return super.normalize(normalizer);
         } else {

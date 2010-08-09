@@ -56,6 +56,7 @@ import org.eclipse.persistence.testing.models.jpa.advanced.Woman;
 
 import org.eclipse.persistence.testing.models.jpa.advanced.LargeProject;
 import org.eclipse.persistence.testing.models.jpa.advanced.Project;
+import org.eclipse.persistence.testing.framework.QuerySQLTracker;
 import org.eclipse.persistence.testing.framework.junit.JUnitTestCase;
 
 import org.eclipse.persistence.sessions.DatabaseSession;
@@ -225,6 +226,7 @@ public class JUnitJPQLComplexTestSuite extends JUnitTestCase
         suite.addTest(new JUnitJPQLComplexTestSuite("testComplexLike"));
         suite.addTest(new JUnitJPQLComplexTestSuite("testComplexIn"));
         suite.addTest(new JUnitJPQLComplexTestSuite("testQueryKeys"));
+        suite.addTest(new JUnitJPQLComplexTestSuite("complexOneToOneJoinOptimization"));
         
         return suite;
     }
@@ -3042,13 +3044,13 @@ public class JUnitJPQLComplexTestSuite extends JUnitTestCase
             EntityManager em = createEntityManager();
             String errorMsg = "";
             Query query;
-            for(int i=0; i < jpqlStrings.length; i++) {
-                try{
-                query = em.createQuery(jpqlStrings[i]);
-                List result = query.getResultList();
-                }catch(Exception ex){
+            for (int i = 0; i < jpqlStrings.length; i++) {
+                try {
+                    query = em.createQuery(jpqlStrings[i]);
+                    query.getResultList();
+                } catch (Exception ex) {
                     ex.printStackTrace();
-                    errorMsg += '\t' + jpqlStrings[i] + " - "+ex+'\n';
+                    errorMsg += '\t' + jpqlStrings[i] + " - " + ex + '\n';
                 }
             }
             closeEntityManager(em);
@@ -3061,24 +3063,25 @@ public class JUnitJPQLComplexTestSuite extends JUnitTestCase
     
     /* Test nested functions with FUNC*/
     public void testNestedFUNCs() {
-        if(!getServerSession().getPlatform().isOracle()) {
+        if (!getServerSession().getPlatform().isOracle()) {
             warning("The test testNestedFUNCs is supported on Oracle only");
             return;
-        }else{
+        } else {
             String jpqlString = "select FUNC('NVL',FUNC('TO_NUMBER', FUNC('DECODE', FUNC('SUBSTRB', e.firstName,1,1),' ', NULL,FUNC('SUBSTRB',e.lastName,1,10)), null), -99) from Employee e";
             EntityManager em = createEntityManager();
             Query query;
-            try{
-            query = em.createQuery(jpqlString);
-            List result = query.getResultList();
-            }catch(Exception ex){
+            try {
+                query = em.createQuery(jpqlString);
+                query.getResultList();
+            } catch (Exception ex) {
                 ex.printStackTrace();
                 fail("nested fucntions don't work, the error is" + ex.getMessage());
-            }finally{
+            } finally {
                 closeEntityManager(em);
             }
         }
     }
+    
     public void testFunctionInSelect() {
         EntityManager em = createEntityManager();
         Query query = em.createQuery("Select UPPER(e.firstName) from Employee e");
@@ -3204,5 +3207,28 @@ public class JUnitJPQLComplexTestSuite extends JUnitTestCase
         query = em.createQuery("Select e from Employee e where e.boss.firstName like '%'");
         query.getResultList();
         closeEntityManager(em);
+    }
+    
+    /**
+     * Test that id comparisons across relationships avoid the join.
+     */
+    public void complexOneToOneJoinOptimization()
+    {
+        // Count SQL.
+        QuerySQLTracker counter = new QuerySQLTracker(getServerSession());
+        try {
+            EntityManager em = createEntityManager();
+            String jpql = "SELECT e FROM Employee e where e.address.ID = 5";
+            Query query = em.createQuery(jpql);
+            query.getResultList();
+            String sql = (String)counter.getSqlStatements().get(0);
+            if (sql.indexOf("CMP3_ADDRESS") != -1) {
+                fail("Join to address should have been optimized.");
+            }
+        } finally {
+            if (counter != null) {
+                counter.remove();
+            }
+        }
     }
 }
