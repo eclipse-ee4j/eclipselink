@@ -1833,4 +1833,19 @@ public abstract class MappingAccessor extends MetadataAccessor {
             return m_classAccessor.usesVirtualAccess();
         }
     }
+
+    /**
+     * INTERNAL:
+     * Returns true if this mapping or class uses property field. In an 
+     * inheritance hierarchy, the subclasses inherit their access type from 
+     * the parent (unless there is an explicit access setting).
+     */
+    public boolean usesFieldAccess() {
+        if (hasAccess()) {
+            return getAccess().equals(MetadataConstants.FIELD);
+        } else {
+            return m_classAccessor.usesFieldAccess();
+        }
+    }
+    
 }

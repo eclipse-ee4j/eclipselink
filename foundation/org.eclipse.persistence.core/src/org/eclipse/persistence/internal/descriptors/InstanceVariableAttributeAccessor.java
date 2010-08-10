@@ -113,6 +113,10 @@ public class InstanceVariableAttributeAccessor extends AttributeAccessor {
         return this.attributeField !=  null;
     }
     
+    public boolean isInstanceVariableAttributeAccessor() {
+        return true;
+    }
+    
     /**
      * Sets the value of the attributeField.
      */

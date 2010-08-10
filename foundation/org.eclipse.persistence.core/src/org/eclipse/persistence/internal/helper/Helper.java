@@ -2224,6 +2224,28 @@ public class Helper implements Serializable {
     }
     
     /**
+     * Return the set method name weaved for getting attribute value.
+     * This method is always weaved in field access case.
+     * In property access case the method weaved only if attribute name is the same as property name:
+     * for instance, the method weaved for "manager" attribute that uses "getManager" / "setManager" access methods,
+     * but not for "m_address" attribute that uses "getAddress" / "setAddress" access methods. 
+     */
+    public static String getWeavedGetMethodName(String attributeName) {
+        return PERSISTENCE_GET + attributeName;
+    }
+    
+    /**
+     * Return the set method name weaved for setting attribute value.
+     * This method is always weaved in field access case.
+     * In property access case the method weaved only if attribute name is the same as property name:
+     * for instance, the method weaved for "manager" attribute that uses "getManager" / "setManager" access methods,
+     * but not for "m_address" attribute that uses "getAddress" / "setAddress" access methods. 
+     */
+    public static String getWeavedSetMethodName(String attributeName) {
+        return PERSISTENCE_SET + attributeName;
+    }
+    
+    /**
      * Close a closeable object, eating the exception
      */
     public static void close(Closeable c) {

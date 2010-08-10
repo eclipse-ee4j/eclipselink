@@ -71,6 +71,7 @@ import org.eclipse.persistence.internal.jpa.metadata.MetadataLogger;
 import org.eclipse.persistence.internal.helper.ClassConstants;
 import org.eclipse.persistence.internal.helper.DatabaseField;
 import org.eclipse.persistence.internal.helper.DatabaseTable;
+import org.eclipse.persistence.internal.helper.Helper;
 import org.eclipse.persistence.internal.indirection.WeavedObjectBasicIndirectionPolicy;
 
 import org.eclipse.persistence.mappings.DatabaseMapping;
@@ -491,6 +492,8 @@ public abstract class ObjectAccessor extends RelationshipAccessor {
         
         if (usesIndirection && usesPropertyAccess()) {
             mapping.setIndirectionPolicy(new WeavedObjectBasicIndirectionPolicy(getSetMethodName()));
+        } else if (usesIndirection && usesFieldAccess()) {
+            mapping.setIndirectionPolicy(new WeavedObjectBasicIndirectionPolicy(Helper.getWeavedSetMethodName(mapping.getAttributeName())));
         } else {
             mapping.setUsesIndirection(usesIndirection);
         }

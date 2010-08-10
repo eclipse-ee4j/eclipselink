@@ -1331,4 +1331,15 @@ public abstract class ClassAccessor extends MetadataAccessor {
     public boolean usesVirtualAccess() {
         return getAccessType().equals(MetadataConstants.VIRTUAL);
     }
+    
+    /**
+     * INTERNAL:
+     * Returns true if this class uses field access. It will first check for 
+     * an explicit access type specification, otherwise will use the default 
+     * access as specified on the descriptor for this accessor since we may be 
+     * processing a mapped superclass.
+     */
+    public boolean usesFieldAccess() {
+        return getAccessType().equals(MetadataConstants.FIELD);
+    }
 }
