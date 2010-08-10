@@ -19,7 +19,7 @@ import javax.persistence.EntityManager;
 import javax.persistence.Query;
 import junit.framework.Test;
 import junit.framework.TestSuite;
-import org.eclipse.persistence.config.PersistenceUnitProperties;
+
 import org.eclipse.persistence.config.QueryHints;
 import org.eclipse.persistence.sessions.DatabaseSession;
 import org.eclipse.persistence.sessions.server.ServerSession;

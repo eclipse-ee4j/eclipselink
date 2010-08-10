@@ -20,7 +20,6 @@ import junit.framework.*;
 import org.eclipse.persistence.testing.framework.junit.JUnitTestCase;
 import org.eclipse.persistence.testing.models.jpa.advanced.Address;
 import org.eclipse.persistence.testing.models.jpa.advanced.AdvancedTableCreator;
-import org.eclipse.persistence.testing.tests.jpa.jpql.JUnitJPQLSimpleTestSuite;
 
 public class NamedNativeQueryJUnitTest extends JUnitTestCase {
     protected String PUName = "MulitPU-1";
