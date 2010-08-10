@@ -24,12 +24,12 @@ import java.lang.reflect.Constructor;
 
 //JUnit4 imports
 import org.junit.Test;
-import static junit.framework.Assert.assertEquals;
-import static junit.framework.Assert.assertNotNull;
-import static junit.framework.Assert.assertNull;
-import static junit.framework.Assert.assertSame;
-import static junit.framework.Assert.assertTrue;
-import static junit.framework.Assert.fail;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertSame;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 //EclipseLink imports
 import org.eclipse.persistence.dynamic.DynamicClassLoader;
@@ -37,7 +37,6 @@ import org.eclipse.persistence.dynamic.DynamicClassWriter;
 import org.eclipse.persistence.dynamic.DynamicEntity;
 import org.eclipse.persistence.exceptions.DynamicException;
 import org.eclipse.persistence.internal.dynamic.DynamicEntityImpl;
-import org.eclipse.persistence.internal.dynamic.DynamicTypeImpl;
 import org.eclipse.persistence.internal.helper.ConversionManager;
 import org.eclipse.persistence.internal.helper.SerializationHelper;
 import static org.eclipse.persistence.exceptions.DynamicException.INCOMPATIBLE_DYNAMIC_CLASSWRITERS;
@@ -87,84 +86,37 @@ public class DynamicClassLoaderTestSuite {
     @Test
     public void loadClass_DynamicEntityImpl() throws Exception {
         DynamicClassLoader dcl = new DynamicClassLoader(DynamicClassLoaderTestSuite.class.getClassLoader());
-
         dcl.addClass(MY_CLASSNAME);
-        Class<?> dynamicClass = dcl.loadClass(MY_CLASSNAME);
+        Class<?> myDynamicClass = dcl.loadClass(MY_CLASSNAME);
+        checkMyClass(dcl, myDynamicClass);
+    }
 
-        assertNotNull(dynamicClass);
-        assertEquals(MY_CLASSNAME, dynamicClass.getName());
-        assertSame(DynamicEntityImpl.class, dynamicClass.getSuperclass());
-        assertSame(dynamicClass, dcl.loadClass(MY_CLASSNAME));
-
+    protected void checkMyClass(DynamicClassLoader dcl, Class<?> myDynamicClass) 
+        throws ClassNotFoundException, InstantiationException, IllegalAccessException {    
+        assertNotNull(myDynamicClass);
+        assertEquals(MY_CLASSNAME, myDynamicClass.getName());
+        assertSame(DynamicEntityImpl.class, myDynamicClass.getSuperclass());
+        assertSame(myDynamicClass, dcl.loadClass(MY_CLASSNAME));
         ConversionManager.setDefaultLoader(dcl);
         ConversionManager.getDefaultManager().setLoader(dcl);
-
-        assertSame(dynamicClass, ConversionManager.getDefaultManager().convertClassNameToClass(MY_CLASSNAME));
-        assertSame(dynamicClass, ConversionManager.getDefaultManager().convertObject(MY_CLASSNAME, Class.class));
-        assertSame(dynamicClass, ConversionManager.getDefaultLoader().loadClass(MY_CLASSNAME));
-        assertSame(dynamicClass, ConversionManager.loadClass(MY_CLASSNAME));
-
-        InstantiationException instEx = null;
-        try {
-            dynamicClass.newInstance();
-        } catch (InstantiationException ie) {
-            instEx = ie;
-        }
-        assertNotNull("InstantiationException not thrown as expected for default constructor", instEx);
-
+        assertSame(myDynamicClass, ConversionManager.getDefaultManager().convertClassNameToClass(MY_CLASSNAME));
+        assertSame(myDynamicClass, ConversionManager.getDefaultManager().convertObject(MY_CLASSNAME, Class.class));
+        assertSame(myDynamicClass, ConversionManager.getDefaultLoader().loadClass(MY_CLASSNAME));
+        assertSame(myDynamicClass, ConversionManager.loadClass(MY_CLASSNAME));
+        Object newInstance = myDynamicClass.newInstance();
+        assertNotNull("newInstance is null", newInstance);
         Constructor<DynamicEntity>[] constructors = 
-            (Constructor<DynamicEntity>[])dynamicClass.getConstructors();
+            (Constructor<DynamicEntity>[])myDynamicClass.getConstructors();
         assertEquals(1, constructors.length);
-        assertEquals(1, constructors[0].getParameterTypes().length);
-        assertEquals(DynamicTypeImpl.class, constructors[0].getParameterTypes()[0]);
-
-        Constructor<DynamicEntity> constructor = 
-            (Constructor<DynamicEntity>)dynamicClass.getDeclaredConstructor(new Class[] { DynamicTypeImpl.class });
-        assertNotNull(constructor);
-        constructor = (Constructor<DynamicEntity>)dynamicClass.getConstructor(new Class[] { DynamicTypeImpl.class });
-        assertNotNull(constructor);
+        assertEquals(0, constructors[0].getParameterTypes().length);
     }
 
     @SuppressWarnings("unchecked")
     @Test
     public void createDynamicClass_DynamicEntityImpl() throws Exception {
         DynamicClassLoader dcl = new DynamicClassLoader(DynamicClassLoaderTestSuite.class.getClassLoader());
-
-        Class<?> dynamicClass = dcl.createDynamicClass(MY_CLASSNAME);
-
-        assertNotNull(dynamicClass);
-        assertEquals(MY_CLASSNAME, dynamicClass.getName());
-        assertSame(DynamicEntityImpl.class, dynamicClass.getSuperclass());
-        assertSame(dynamicClass, dcl.loadClass(MY_CLASSNAME));
-
-        ConversionManager.setDefaultLoader(dcl);
-        ConversionManager.getDefaultManager().setLoader(dcl);
-
-        assertSame(dynamicClass, ConversionManager.getDefaultManager().convertClassNameToClass(MY_CLASSNAME));
-        assertSame(dynamicClass, ConversionManager.getDefaultManager().convertObject(MY_CLASSNAME, Class.class));
-        assertSame(dynamicClass, ConversionManager.getDefaultLoader().loadClass(MY_CLASSNAME));
-        assertSame(dynamicClass, ConversionManager.loadClass(MY_CLASSNAME));
-
-        InstantiationException instEx = null;
-        try {
-            dynamicClass.newInstance();
-        } catch (InstantiationException ie) {
-            instEx = ie;
-        }
-        assertNotNull("InstantiationException not thrown as expected for default constructor", instEx);
-
-        Constructor<DynamicEntity>[] constructors = 
-            (Constructor<DynamicEntity>[])dynamicClass.getConstructors();
-        assertEquals(1, constructors.length);
-        assertEquals(1, constructors[0].getParameterTypes().length);
-        assertEquals(DynamicTypeImpl.class, constructors[0].getParameterTypes()[0]);
-
-        Constructor<DynamicEntity> constructor = 
-            (Constructor<DynamicEntity>)dynamicClass.getDeclaredConstructor(new Class[]{DynamicTypeImpl.class });
-        assertNotNull(constructor);
-        constructor = 
-            (Constructor<DynamicEntity>)dynamicClass.getConstructor(new Class[]{DynamicTypeImpl.class });
-        assertNotNull(constructor);
+        Class<?> myDynamicClass = dcl.createDynamicClass(MY_CLASSNAME);
+        checkMyClass(dcl, myDynamicClass);
     }
 
     @Test
@@ -210,31 +162,6 @@ public class DynamicClassLoaderTestSuite {
         DefaultConstructor entity = (DefaultConstructor) dynamicClass.newInstance();
 
         assertNotNull(entity);
-    }
-
-    @Test
-    public void loadClass_StringConstructor() throws Exception {
-        DynamicClassLoader dcl = new DynamicClassLoader(DynamicClassLoaderTestSuite.class.getClassLoader());
-
-        dcl.addClass(MY_CLASSNAME, StringConstructor.class);
-        Class<?> dynamicClass = dcl.loadClass(MY_CLASSNAME);
-
-        assertNotNull(dynamicClass);
-        assertSame(dynamicClass, dcl.loadClass(MY_CLASSNAME));
-        assertSame(StringConstructor.class, dynamicClass.getSuperclass());
-
-        InstantiationException instEx = null;
-        try {
-            dynamicClass.newInstance();
-        } catch (InstantiationException ie) {
-            instEx = ie;
-        }
-        assertNotNull("InstantiationException not thrown as expected for default constructor", instEx);
-
-        Constructor<?>[] constructors = dynamicClass.getConstructors();
-        assertEquals(1, constructors.length);
-        assertEquals(1, constructors[0].getParameterTypes().length);
-        assertEquals(String.class, constructors[0].getParameterTypes()[0]);
     }
 
     @Test

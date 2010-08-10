@@ -15,75 +15,82 @@ package org.eclipse.persistence.internal.xr;
 //javase imports
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.Iterator;
+import java.util.Set;
+
+//EclipseLink imports
 
 @SuppressWarnings("unchecked")
 public class XRDynamicEntity_CollectionWrapper extends XRDynamicEntity implements Collection<Object> {
-    
-    public static XRFieldInfo XRFI = new XRFieldInfo();
+
+    static final String ITEMS_PROPERTY = "items";
+    public static XRDynamicPropertiesManager DPM = new XRDynamicPropertiesManager();
     static {
-        XRFI.addFieldInfo("items", 0);
+        Set<String> propertiesNameSet = new HashSet<String>();
+        propertiesNameSet.add(ITEMS_PROPERTY);
+        DPM.setPropertyNames(propertiesNameSet);
     }
 
     public XRDynamicEntity_CollectionWrapper() {
         super();
-        super.set("items", new ArrayList<Object>());
+        super.set(ITEMS_PROPERTY, new ArrayList<Object>());
     }
 
     @Override
-    public XRFieldInfo getFieldInfo() {
-        return XRFI;
+    public XRDynamicPropertiesManager fetchPropertiesManager() {
+        return DPM;
     }
 
     public boolean add(Object e) {
-        return ((Collection<Object>)_fields[0].fieldValue).add(e);
+        return ((Collection<Object>)propertiesMap.get(ITEMS_PROPERTY).getValue()).add(e);
     }
 
     public boolean addAll(Collection<? extends Object> c) {
-        return ((Collection<Object>)_fields[0].fieldValue).addAll(c);
+        return ((Collection<Object>)propertiesMap.get(ITEMS_PROPERTY).getValue()).addAll(c);
     }
 
     public void clear() {
-        ((Collection<Object>)_fields[0].fieldValue).clear();
+        ((Collection<Object>)propertiesMap.get(ITEMS_PROPERTY).getValue()).clear();
     }
 
     public boolean contains(Object o) {
-        return ((Collection<Object>)_fields[0].fieldValue).contains(o);
+        return ((Collection<Object>)propertiesMap.get(ITEMS_PROPERTY).getValue()).contains(o);
     }
 
     public boolean containsAll(Collection<?> c) {
-        return ((Collection<Object>)_fields[0].fieldValue).containsAll(c);
+        return ((Collection<Object>)propertiesMap.get(ITEMS_PROPERTY).getValue()).containsAll(c);
     }
 
     public boolean isEmpty() {
-        return ((Collection<Object>)_fields[0].fieldValue).isEmpty();
+        return ((Collection<Object>)propertiesMap.get(ITEMS_PROPERTY).getValue()).isEmpty();
     }
 
     public Iterator<Object> iterator() {
-        return ((Collection<Object>)_fields[0].fieldValue).iterator();
+        return ((Collection<Object>)propertiesMap.get(ITEMS_PROPERTY).getValue()).iterator();
     }
 
     public boolean remove(Object o) {
-        return ((Collection<Object>)_fields[0].fieldValue).remove(o);
+        return ((Collection<Object>)propertiesMap.get(ITEMS_PROPERTY).getValue()).remove(o);
     }
 
     public boolean removeAll(Collection<?> c) {
-        return ((Collection<Object>)_fields[0].fieldValue).removeAll(c);
+        return ((Collection<Object>)propertiesMap.get(ITEMS_PROPERTY).getValue()).removeAll(c);
     }
 
     public boolean retainAll(Collection<?> c) {
-        return ((Collection<Object>)_fields[0].fieldValue).retainAll(c);
+        return ((Collection<Object>)propertiesMap.get(ITEMS_PROPERTY).getValue()).retainAll(c);
     }
 
     public int size() {
-        return ((Collection<Object>)_fields[0].fieldValue).size();
+        return ((Collection<Object>)propertiesMap.get(ITEMS_PROPERTY).getValue()).size();
     }
 
     public Object[] toArray() {
-        return ((Collection<Object>)_fields[0].fieldValue).toArray();
+        return ((Collection<Object>)propertiesMap.get(ITEMS_PROPERTY).getValue()).toArray();
     }
 
     public <T> T[] toArray(T[] a) {
-        return (T[])((Collection<Object>)_fields[0].fieldValue).toArray(a);
+        return ((Collection<Object>)propertiesMap.get(ITEMS_PROPERTY).getValue()).toArray(a);
     }
 }

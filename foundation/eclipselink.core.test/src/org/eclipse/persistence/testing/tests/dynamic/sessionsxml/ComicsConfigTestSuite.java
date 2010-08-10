@@ -24,8 +24,8 @@ import org.w3c.dom.Document;
 //JUnit4 imports
 import org.junit.BeforeClass;
 import org.junit.Test;
-import static junit.framework.Assert.assertNotNull;
-import static junit.framework.Assert.assertTrue;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
 //EclipseLink imports
 import org.eclipse.persistence.descriptors.ClassDescriptor;

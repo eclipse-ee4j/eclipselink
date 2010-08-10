@@ -22,7 +22,7 @@ import java.io.IOException;
 
 //JUnit4 imports
 import org.junit.BeforeClass;
-import static junit.framework.Assert.fail;
+import static org.junit.Assert.fail;
 
 //EclipseLink imports
 import org.eclipse.persistence.dynamic.DynamicClassLoader;

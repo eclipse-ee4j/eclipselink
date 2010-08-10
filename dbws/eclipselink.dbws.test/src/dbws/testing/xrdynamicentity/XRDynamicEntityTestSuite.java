@@ -13,35 +13,32 @@
 package dbws.testing.xrdynamicentity;
 
 //javase imports
-import java.lang.reflect.Field;
+import java.util.HashSet;
+import java.util.Set;
 
 //JUnit4 imports
 import org.junit.BeforeClass;
 import org.junit.Test;
-import static junit.framework.Assert.assertEquals;
-import static junit.framework.Assert.assertFalse;
-import static junit.framework.Assert.assertNotNull;
-import static junit.framework.Assert.assertNull;
-import static junit.framework.Assert.assertSame;
-import static junit.framework.Assert.assertTrue;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertSame;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 
 //EclipseLink imports
 import org.eclipse.persistence.dynamic.DynamicEntity;
 import org.eclipse.persistence.exceptions.DynamicException;
-import org.eclipse.persistence.internal.helper.Helper;
+import org.eclipse.persistence.internal.xr.XRDynamicPropertiesManager;
 import org.eclipse.persistence.internal.xr.XRClassWriter;
 import org.eclipse.persistence.internal.xr.XRDynamicClassLoader;
 import org.eclipse.persistence.internal.xr.XRDynamicEntity;
-import org.eclipse.persistence.internal.xr.XRFieldInfo;
-import static org.eclipse.persistence.internal.xr.XRDynamicEntity.XR_FIELD_INFO_STATIC;
 
 public class XRDynamicEntityTestSuite {
 
     static final String PACKAGE_PREFIX = 
         XRDynamicEntityTestSuite.class.getPackage().getName();
     static final String TEST_CLASSNAME = PACKAGE_PREFIX + ".TestClass";
-    static final String INCOMPATIBLE_CLASSNAME = Incompatible.class.getSimpleName();
-    static final String COMPATIBLE_CLASSNAME = XRCustomer.class.getSimpleName();
     static final String FIELD_1 = "field1";
     static final String FIELD_2 = "field2";
     static final String TEST_STRING = "this is a test";
@@ -49,17 +46,17 @@ public class XRDynamicEntityTestSuite {
     //test fixtures
     static XRDynamicEntity entity1 = null;
     @BeforeClass
-    public static void setUp() throws NoSuchFieldException, IllegalArgumentException, 
+    public static void setUp() throws NoSuchFieldException, IllegalArgumentException,
         IllegalAccessException {
-        Field xrfiField = Helper.getField(XRCustomer.class, XR_FIELD_INFO_STATIC);
-        XRFieldInfo xrfi = (XRFieldInfo)xrfiField.get(null);
-        xrfi.addFieldInfo(FIELD_1, 0);
-        xrfi.addFieldInfo(FIELD_2, 1);
+        Set<String> propertyNames = new HashSet<String>();
+        propertyNames.add(FIELD_1);
+        propertyNames.add(FIELD_2);
+        XRCustomer.DPM.setPropertyNames(propertyNames);
         entity1 = new XRCustomer();
     }
     
     @Test
-    public void noParentLoader() throws Exception {
+    public void nullParent() throws Exception {
         XRDynamicClassLoader xrdcl = new XRDynamicClassLoader(null);
         assertNull(xrdcl.getParent());
     }
@@ -69,37 +66,16 @@ public class XRDynamicEntityTestSuite {
         XRDynamicClassLoader xrdcl = new XRDynamicClassLoader(null);
         assertEquals(XRClassWriter.class, xrdcl.getDefaultWriter().getClass());
     }
-    
-    @Test(expected=NoClassDefFoundError.class)
-    public void createDynamicClassWithNoParentLoader() {
-        XRDynamicClassLoader dcl = new XRDynamicClassLoader(null);
-        dcl.createDynamicClass(TEST_CLASSNAME);
-    }
 
-    @Test
-    public void loadCoreClass() throws ClassNotFoundException {
-        XRDynamicClassLoader xrdcl = new XRDynamicClassLoader(null);
-        Class<?> stringClass = xrdcl.loadClass("java.lang.String");
-        assertTrue("core class java.lang.String not found", String.class == stringClass);
-    }
-    
     @Test(expected=IllegalArgumentException.class)
-    public void createIncompatibleClass() {
-        XRDynamicClassLoader dcl = new XRDynamicClassLoader(XRDynamicEntityTestSuite.class.getClassLoader());
-        dcl.createDynamicClass(PACKAGE_PREFIX + "." + INCOMPATIBLE_CLASSNAME);
-    }
-
-    @Test
-    public void createCompatibleClass() {
-        XRDynamicClassLoader dcl = new XRDynamicClassLoader(XRDynamicEntityTestSuite.class.getClassLoader());
-        Class<?> dynamicClass = dcl.createDynamicClass(PACKAGE_PREFIX + "." + COMPATIBLE_CLASSNAME);
-        assertNotNull(dynamicClass);
-        assertSame(XRCustomer.class, dynamicClass);
+    public void coreClass() throws ClassNotFoundException {
+        XRDynamicClassLoader xrdcl = new XRDynamicClassLoader(null);
+        xrdcl.createDynamicClass("java.lang.String");
     }
 
     @Test
     public void buildTestClass() throws ClassNotFoundException {
-        //Needs non-null parent for createDynamicClass to work
+        //Needs non-null parent ClassLoader for createDynamicClass to work
         XRDynamicClassLoader xrdcl = 
             new XRDynamicClassLoader(XRDynamicEntityTestSuite.class.getClassLoader());
         Class<?> testClass = xrdcl.createDynamicClass(TEST_CLASSNAME);
@@ -110,14 +86,21 @@ public class XRDynamicEntityTestSuite {
 
     @SuppressWarnings("unchecked")
     @Test
-    public void buildTestEntity() throws InstantiationException, IllegalAccessException {
+    public void buildTestEntity() throws InstantiationException, IllegalAccessException,
+        NoSuchFieldException {
         XRDynamicClassLoader xrdcl = 
             new XRDynamicClassLoader(XRDynamicEntityTestSuite.class.getClassLoader());
-        Class<DynamicEntity> testClass = 
-            (Class<DynamicEntity>)xrdcl.createDynamicClass(TEST_CLASSNAME);
+        Class<XRDynamicEntity> testClass = 
+            (Class<XRDynamicEntity>)xrdcl.createDynamicClass(TEST_CLASSNAME);
+        XRDynamicEntity newInstance = testClass.newInstance();
+        XRDynamicPropertiesManager xrDPM = newInstance.fetchPropertiesManager();
+        Set<String> propertyNames = new HashSet<String>();
+        propertyNames.add(FIELD_1);
+        propertyNames.add(FIELD_2);
+        xrDPM.setPropertyNames(propertyNames);
         //build instance
-        @SuppressWarnings("unused")
-        DynamicEntity testEntity = testClass.newInstance();
+        XRDynamicEntity newInstance2 = testClass.newInstance();
+        assertNotNull(newInstance2);
     }
 
     @Test

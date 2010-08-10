@@ -35,20 +35,18 @@ import org.eclipse.persistence.platform.xml.XMLParser;
 import org.eclipse.persistence.platform.xml.XMLPlatform;
 import org.eclipse.persistence.platform.xml.XMLPlatformFactory;
 import org.eclipse.persistence.sessions.Project;
-import static org.eclipse.persistence.internal.xr.Util.DBWS_OR_XML;
-import static org.eclipse.persistence.internal.xr.Util.DBWS_OX_XML;
 import static org.eclipse.persistence.internal.xr.Util.META_INF_PATHS;
 
 public class XRSessionsFactory extends SessionsFactory {
 
-	static Pattern matchDBWSOrProject =
-		Pattern.compile(DBWS_OR_XML, Pattern.CASE_INSENSITIVE);
-	static Pattern matchDBWSOxProject =
-		Pattern.compile(DBWS_OX_XML, Pattern.CASE_INSENSITIVE);
+    static Pattern matchDBWSOrProject =
+        Pattern.compile(/*DBWS_OR_XML*/"eclipselink-db.s-or.xml", Pattern.CASE_INSENSITIVE);
+    static Pattern matchDBWSOxProject =
+        Pattern.compile(/*DBWS_OX_XML*/"eclipselink-db.s-ox.xml", Pattern.CASE_INSENSITIVE);
 
-	@SuppressWarnings("unchecked")
-	@Override
-	protected Project loadProjectConfig(ProjectConfig projectConfig) {
+    @SuppressWarnings("unchecked")
+    @Override
+    protected Project loadProjectConfig(ProjectConfig projectConfig) {
         Project project = null;
         String projectString = projectConfig.getProjectString();
 
@@ -56,71 +54,73 @@ public class XRSessionsFactory extends SessionsFactory {
             try {
                 if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()){
                     project = (Project)AccessController.doPrivileged(
-                    	new PrivilegedNewInstanceFromClass(m_classLoader.loadClass(projectString)));
+                        new PrivilegedNewInstanceFromClass(m_classLoader.loadClass(projectString)));
                 }else{
                     project = (Project)PrivilegedAccessHelper.newInstanceFromClass(
-                    	m_classLoader.loadClass(projectString));
+                        m_classLoader.loadClass(projectString));
                 }
             } catch (Throwable exception) {
                 throw SessionLoaderException.failedToLoadProjectClass(projectString, exception);
             }
         } else {
             try {
-            	URL url = null;
-            	Matcher matcher = matchDBWSOrProject.matcher(projectString);
-            	if (matcher.find()) {
-                	// need to try a variety of URLs to find DBWS OR/OX Project
-            		for (String prefix : META_INF_PATHS) {
-                        String searchPath = prefix + DBWS_OR_XML;
+                URL url = null;
+                Matcher matcher = matchDBWSOrProject.matcher(projectString);
+                if (matcher.find()) {
+                    // need to try a variety of URLs to find DBWS OR/OX Project
+                    String orXml = matcher.group();
+                    for (String prefix : META_INF_PATHS) {
+                        String searchPath = prefix + orXml;
                         url = m_classLoader.getResource(searchPath);
                         if (url != null) {
-                        	break;
+                            break;
                         }
-            		}
-            	}
-            	else {
-	            	matcher = matchDBWSOxProject.matcher(projectString);
-	            	if (matcher.find()) {
-	            		for (String prefix : META_INF_PATHS) {
-	                        String searchPath = prefix + DBWS_OX_XML;
-	                        url = m_classLoader.getResource(searchPath);
-	                        if (url != null) {
-	                        	break;
-	                        }
-	            		}
-	            	}
-            	}
-            	if (url != null) {
-            		Project p = new EclipseLinkObjectPersistenceRuntimeXMLProject();
+                    }
+                }
+                else {
+                    matcher = matchDBWSOxProject.matcher(projectString);
+                    if (matcher.find()) {
+                        String oxXml = matcher.group();
+                        for (String prefix : META_INF_PATHS) {
+                            String searchPath = prefix + oxXml;
+                            url = m_classLoader.getResource(searchPath);
+                            if (url != null) {
+                                break;
+                            }
+                        }
+                    }
+                }
+                if (url != null) {
+                    Project p = new EclipseLinkObjectPersistenceRuntimeXMLProject();
                     XMLLogin xmlLogin = new XMLLogin();
                     xmlLogin.setDatasourcePlatform(new DOMPlatform());
                     p.setDatasourceLogin(xmlLogin);
                     if (m_classLoader != null) {
-                    	p.getDatasourceLogin().getDatasourcePlatform().getConversionManager().
-                    		setLoader(m_classLoader);
+                        p.getDatasourceLogin().getDatasourcePlatform().getConversionManager().
+                            setLoader(m_classLoader);
                     }
                     XMLPlatform xmlPlatform = XMLPlatformFactory.getInstance().getXMLPlatform();
                     XMLParser parser = xmlPlatform.newXMLParser();
                     parser.setNamespaceAware(true);
                     parser.setWhitespacePreserving(false);
-	                XMLContext context = new XMLContext(p);
-	                context.getSession(Project.class).getEventManager().addListener(
-	                	new MissingDescriptorListener());
-	                XMLUnmarshaller unmarshaller = context.createUnmarshaller();
-	                project = (Project)unmarshaller.unmarshal(url);
-            	}
+                    XMLContext context = new XMLContext(p);
+                    context.getSession(Project.class).getEventManager().addListener(
+                        new MissingDescriptorListener());
+                    XMLUnmarshaller unmarshaller = context.createUnmarshaller();
+                    project = (Project)unmarshaller.unmarshal(url);
+                }
             }
             catch (ValidationException validationException) {
                 if (validationException.getErrorCode() == ValidationException.PROJECT_XML_NOT_FOUND) {
                     throw SessionLoaderException.failedToLoadProjectXml(projectString,
-                    	validationException);
+                        validationException);
                 }
                 else {
-                	throw SessionLoaderException. failedToParseXML(projectString,
-                			validationException);
+                    throw SessionLoaderException. failedToParseXML(projectString,
+                            validationException);
                 }
             }
         }
         return project;
-	}
+    }
 }

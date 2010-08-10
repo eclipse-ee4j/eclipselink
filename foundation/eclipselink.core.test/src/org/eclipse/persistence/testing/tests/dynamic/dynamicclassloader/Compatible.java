@@ -18,7 +18,7 @@
 package org.eclipse.persistence.testing.tests.dynamic.dynamicclassloader;
 
 import org.eclipse.persistence.internal.dynamic.DynamicEntityImpl;
-import org.eclipse.persistence.internal.dynamic.DynamicTypeImpl;
+import org.eclipse.persistence.internal.dynamic.DynamicPropertiesManager;
 
 /**
  * Test class - when created by a {@link DynamicClassLoader}, should <b>not</b> throw {@link IllegalArgumentException}
@@ -27,8 +27,14 @@ import org.eclipse.persistence.internal.dynamic.DynamicTypeImpl;
  */
 public class Compatible extends DynamicEntityImpl {
 
-    protected Compatible(DynamicTypeImpl type) {
-        super(type);
+    public static DynamicPropertiesManager DPM = new DynamicPropertiesManager();
+    protected Compatible() {
+        super();
+    }
+
+    @Override
+    public DynamicPropertiesManager fetchPropertiesManager() {
+        return DPM;
     }
 
 }

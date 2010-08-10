@@ -161,13 +161,14 @@ public class SimpleTypeTestSuite {
 
     protected void assertDefaultValues(DynamicEntity simpleInstance) {
         assertNotNull(simpleInstance);
-        assertTrue("id not set on new instance", simpleInstance.isSet("id"));
-        assertEquals("id not default value", 0, simpleInstance.get("id"));
-        assertFalse("value1  set on new instance", simpleInstance.isSet("value1"));
-        assertTrue("value2 not set on new instance", simpleInstance.isSet("value2"));
-        assertEquals("value2 not default value", false, simpleInstance.get("value2"));
+
+        assertEquals("id not default value", 
+            0, simpleInstance.<Integer>get("id").intValue());
+        assertFalse("value1 set on new instance", simpleInstance.isSet("value1"));
+        assertEquals("value2 not default value on new instance",
+            false, simpleInstance.<Boolean>get("value2").booleanValue());
         assertFalse("value3 set on new instance", simpleInstance.isSet("value3"));
-        assertFalse("value4  set on new instance", simpleInstance.isSet("value4"));
+        assertFalse("value4 set on new instance", simpleInstance.isSet("value4"));
     }
 
     public DynamicEntity createSimpleInstance(int id) {

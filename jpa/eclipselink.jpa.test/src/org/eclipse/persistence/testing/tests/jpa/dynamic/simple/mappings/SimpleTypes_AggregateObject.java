@@ -161,13 +161,15 @@ public class SimpleTypes_AggregateObject {
         assertNotNull(simpleTypeA);
         DynamicEntity a = simpleTypeA.newDynamicEntity();
         assertNotNull(a);
-        assertTrue(a.isSet("id"));
+        assertEquals(a.get("id"),0);
+        assertFalse(a.isSet("id"));
         assertFalse(a.isSet("value1"));
         assertFalse(a.isSet("b"));
-        assertTrue(a.isSet("c"));
+        DynamicType typeC = helper.getType("SimpleC");
+        assertEquals(a.get("c").getClass(), typeC.newDynamicEntity().getClass());
         DynamicEntity c = a.<DynamicEntity>get("c");
         assertNotNull(c);
-        assertTrue(c.isSet("value4"));
+        assertEquals(c.get("value4"), 0.0);
         assertFalse(c.isSet("value5"));
     }
 

@@ -144,11 +144,12 @@ public class SimpleTypes_MultiTable {
         assertNotNull(simpleTypeA);
         DynamicEntity a = simpleTypeA.newDynamicEntity();
         assertNotNull(a);
-        assertTrue(a.isSet("id"));
+
+        assertEquals(a.get("id"), 0);
         assertFalse(a.isSet("value1"));
-        assertTrue(a.isSet("value2"));
+        assertEquals(a.get("value2"), false);
         assertFalse(a.isSet("value3"));
-        assertTrue(a.isSet("value4"));
+        assertEquals(a.get("value4"), 0.0);
         assertFalse(a.isSet("value5"));
     }
 

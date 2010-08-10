@@ -18,24 +18,33 @@ package org.eclipse.persistence.internal.dynamic;
 //javase imports
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
-import java.util.Collection;
+import java.util.HashMap;
 import java.util.Map;
 
 //EclipseLink imports
+import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.descriptors.changetracking.ChangeTracker;
 import org.eclipse.persistence.dynamic.DynamicEntity;
 import org.eclipse.persistence.dynamic.DynamicType;
 import org.eclipse.persistence.exceptions.DynamicException;
 import org.eclipse.persistence.indirection.IndirectContainer;
 import org.eclipse.persistence.indirection.ValueHolderInterface;
+import org.eclipse.persistence.internal.descriptors.DescriptorIterator;
 import org.eclipse.persistence.internal.descriptors.PersistenceEntity;
-import org.eclipse.persistence.internal.helper.Helper;
-import org.eclipse.persistence.mappings.CollectionMapping;
+import org.eclipse.persistence.internal.queries.JoinedAttributeManager;
+import org.eclipse.persistence.internal.sessions.AbstractRecord;
+import org.eclipse.persistence.internal.sessions.AbstractSession;
+import org.eclipse.persistence.internal.sessions.ChangeRecord;
+import org.eclipse.persistence.internal.sessions.MergeManager;
+import org.eclipse.persistence.internal.sessions.ObjectChangeSet;
+import org.eclipse.persistence.internal.sessions.UnitOfWorkImpl;
 import org.eclipse.persistence.mappings.DatabaseMapping;
-import org.eclipse.persistence.mappings.ForeignReferenceMapping;
 import org.eclipse.persistence.queries.FetchGroup;
 import org.eclipse.persistence.queries.FetchGroupTracker;
+import org.eclipse.persistence.queries.ObjectBuildingQuery;
+import org.eclipse.persistence.queries.ObjectLevelReadQuery;
 import org.eclipse.persistence.sessions.Session;
+import org.eclipse.persistence.sessions.remote.RemoteSession;
 import static org.eclipse.persistence.internal.helper.Helper.getShortClassName;
 
 /**
@@ -43,14 +52,13 @@ import static org.eclipse.persistence.internal.helper.Helper.getShortClassName;
  * realized in Java code. In combination with the DynamicClassLoader ASM is used
  * to generate subclasses that will work within EclipseLink's framework. Since
  * no concrete fields or methods exist on this class the mappings used must be
- * customized to use a custom AttributeAccessor (
- * {@link EntityPropertyImpl.DynamicAttributeAccessor}).
+ * customized to use a custom AttributeAccessor ({@link ValuesAccessor}).
  * <p>
  * <b>Type/Property Meta-model</b>: This dynamic entity approach also includes a
  * meta-model facade to simplify access to the types and property information so
  * that clients can more easily understand the model. Each
  * {@link DynamicTypeImpl} wraps the underlying EclipseLink
- * relational-descriptor and the {@link EntityPropertyImpl} wraps each mapping.
+ * relational-descriptor and the {@link DynamicPropertiesManager} wraps each mapping.
  * The client application can use these types and properties to facilitate
  * generic access to the entity instances and are required for creating new
  * instances as well as for accessing the Java class needed for JPA and
@@ -61,25 +69,24 @@ import static org.eclipse.persistence.internal.helper.Helper.getShortClassName;
  */
 public abstract class DynamicEntityImpl implements DynamicEntity, PersistenceEntity,
     ChangeTracker, FetchGroupTracker {
-    
-    static final Object UNKNOWN_VALUE = new Object();
 
-    /**
-     * The persistent values indexed by the descriptor's mappings and the
-     * EntityType's corresponding property list.
-     */
-    protected Object[] values;
-    /**
-     * Dynamic type of this entity
-     */
-    protected transient DynamicTypeImpl type;
+    public abstract DynamicPropertiesManager fetchPropertiesManager();
     
-    // must use InstantiationPolicy: ensures attributes get appropriate defaults
-    protected DynamicEntityImpl(DynamicTypeImpl type) {
-        this.type = type;
-        this.values = new Object[type.getNumberOfProperties()];
+    protected Map<String, PropertyWrapper> propertiesMap = new HashMap<String, PropertyWrapper>();
+    
+    public DynamicEntityImpl() {
+        postConstruct(); // life-cycle callback
     }
     
+    public Map<String, PropertyWrapper> getPropertiesMap() {
+        return propertiesMap;
+    }
+    
+    protected void postConstruct() {
+        DynamicPropertiesManager dpm = fetchPropertiesManager();
+        dpm.postConstruct(this);
+    }
+
     /**
      * Gets internal impl class of {@link DynamicType}
      * 
@@ -87,100 +94,196 @@ public abstract class DynamicEntityImpl implements DynamicEntity, PersistenceEnt
      * @throws DynamicException if type is null
      */
     public DynamicTypeImpl getType() throws DynamicException {
-        if (this.type == null) {
+        DynamicType type = fetchPropertiesManager().getType();
+        if (type == null) {
             throw DynamicException.entityHasNullType(this);
         }
-        return this.type;
+        return (DynamicTypeImpl)type;
     }
 
     //DynamicEntity API
-    @SuppressWarnings("unchecked")
-    public <T> T get(String propertyName) {
-        DatabaseMapping mapping = getType().getMapping(propertyName);
-        Object value = mapping.getAttributeValueFromObject(this);
-        if (mapping.isForeignReferenceMapping() && mapping.isLazy()) {
-            // Force basic indirection to be instantiated
+    public <T> T get(String propertyName) throws DynamicException {
+        DynamicPropertiesManager dpm = fetchPropertiesManager();
+        if (dpm.contains(propertyName)) {
+            if (_persistence_getFetchGroup() != null) {
+                String errorMsg = _persistence_getFetchGroup().onUnfetchedAttribute(this,
+                    propertyName);
+                if (errorMsg != null) {
+                    throw DynamicException.invalidPropertyName(dpm.getType(), propertyName);
+                }
+            }
+            PropertyWrapper wrapper = propertiesMap.get(propertyName);
+            if (wrapper == null) { // properties can be added after constructor is called
+                wrapper = new PropertyWrapper();
+                propertiesMap.put(propertyName, wrapper);
+            }          
+            Object value = wrapper.getValue();
+            // trigger any indirection
             if (value instanceof ValueHolderInterface) {
-                value = ((ValueHolderInterface) value).getValue();
+                value = ((ValueHolderInterface)value).getValue();
             }
-            // Force transparent indirection to be instantiated
-            if (value instanceof IndirectContainer) {
-                ((IndirectContainer) value).getValueHolder().getValue();
+            else if (value instanceof IndirectContainer) {
+                value = ((IndirectContainer)value).getValueHolder().getValue();
+            }
+            try {
+                return (T)value;
+            }
+            catch (ClassCastException cce) {
+                ClassDescriptor descriptor = getType().getDescriptor();
+                DatabaseMapping dm = null;
+                if (descriptor != null) {
+                    dm = descriptor.getMappingForAttributeName(propertyName);
+                }
+                else {
+                    dm = new UnknownMapping(propertyName);
+                }
+                throw DynamicException.invalidGetPropertyType(dm, cce);
             }
         }
-        try {
-            return (T) value;
-        }
-        catch (ClassCastException cce) {
-            throw DynamicException.invalidGetPropertyType(mapping, cce);
+        else {
+            throw DynamicException.invalidPropertyName(dpm.getType(), propertyName);
         }
     }
 
-    public DynamicEntity set(String propertyName, Object value) {
-        DatabaseMapping mapping = getType().getMapping(propertyName);
-        checkSetType(mapping, value);
-        Object oldValue = UNKNOWN_VALUE;
-        Object currentValue = mapping.getAttributeValueFromObject(this);
-        if (currentValue instanceof ValueHolderInterface) {
-            ValueHolderInterface vh = (ValueHolderInterface)currentValue;
+    public boolean isSet(String propertyName) throws DynamicException {
+        if (fetchPropertiesManager().contains(propertyName)) {
+            if (_persistence_getFetchGroup() != null && 
+                !_persistence_getFetchGroup().containsAttribute(propertyName)) {
+                return false;
+            }
+            PropertyWrapper wrapper = propertiesMap.get(propertyName);
+            if (wrapper == null) { // properties can be added after constructor is called
+                wrapper = new PropertyWrapper();
+                propertiesMap.put(propertyName, wrapper);
+            }
+            return wrapper.isSet();
+        }
+        else {
+            throw DynamicException.invalidPropertyName(fetchPropertiesManager().getType(),
+                propertyName);
+        }
+    }
+
+    public DynamicEntity set(String propertyName, Object value) throws DynamicException {
+        DynamicPropertiesManager dpm = fetchPropertiesManager();
+        dpm.checkSet(propertyName, value); // life-cycle callback
+        if (_persistence_getFetchGroup() != null) {
+            String errorMsg = _persistence_getFetchGroup().onUnfetchedAttributeForSet(this,
+                propertyName);
+            if (errorMsg != null) {
+                throw DynamicException.invalidPropertyName(dpm.getType(), propertyName);
+            }
+        }
+        PropertyWrapper wrapper = propertiesMap.get(propertyName);
+        if (wrapper == null) { // properties can be added after constructor is called
+            wrapper = new PropertyWrapper();
+            propertiesMap.put(propertyName, wrapper);
+        }
+        Object oldValue = null;
+        Object wrapperValue = wrapper.getValue();
+        if (wrapperValue instanceof ValueHolderInterface) {
+            ValueHolderInterface vh = (ValueHolderInterface)wrapperValue;
             if (vh.isInstantiated()) {
                 oldValue = vh.getValue();
             }
             vh.setValue(value);
+            wrapper.isSet(true);
         }
         else {
-            oldValue = currentValue;
-            mapping.setAttributeValueInObject(this, value);
-            PropertyChangeListener pcl = _persistence_getPropertyChangeListener();
-            if (pcl != null) {
-                pcl.propertyChange(new PropertyChangeEvent(this, propertyName, oldValue, value));
-            }
+            oldValue = wrapperValue;
+            wrapper.setValue(value);
+            wrapper.isSet(true);
+        }
+        if (changeListener != null) {
+            changeListener.propertyChange(new PropertyChangeEvent(this, propertyName, 
+                oldValue, value));
         }
         return this;
     }
 
-    /**
-     * Ensure the value being set is supported by the mapping. If the mapping is
-     * direct/basic and the mapping's type is primitive ensure the non-primitive
-     * type is allowed.
-     */
-    protected void checkSetType(DatabaseMapping mapping, Object value) {
-        if (value == null) {
-            if (mapping.isCollectionMapping() || 
-                (mapping.getAttributeClassification() != null && 
-                 mapping.getAttributeClassification().isPrimitive())) {
-                throw DynamicException.invalidSetPropertyType(mapping, value);
-            }
-            return;
+    public class PropertyWrapper {
+        private Object value = null;
+        private boolean isSet = false;
+        public PropertyWrapper() {
         }
-        Class<?> expectedType = mapping.getAttributeClassification();
-        if (mapping.isForeignReferenceMapping()) {
-            if (mapping.isCollectionMapping()) {
-                if (((CollectionMapping) mapping).getContainerPolicy().isMapPolicy()) {
-                    expectedType = Map.class;
-                } else {
-                    expectedType = Collection.class;
+        public PropertyWrapper(Object value) {
+            setValue(value);
+        }
+        public Object getValue() {
+            return value;
+        }
+        public void setValue(Object value) {
+            this.value = value;
+        }
+        public boolean isSet() {
+            return isSet;
+        }
+        public void isSet(boolean isSet) {
+            this.isSet = isSet;
+        }
+        @Override
+        public String toString() {
+            StringBuilder sb = new StringBuilder();
+            if (isSet) {
+                sb.append("[T]");
+            }
+            else {
+                if (value == null) {
+                    sb.append("[F]");
                 }
-            } else {
-                expectedType = ((ForeignReferenceMapping) mapping).getReferenceClass();
+                else {
+                    sb.append("[d]");
+                }
             }
-        }
-        if (expectedType != null && expectedType.isPrimitive() && !value.getClass().isPrimitive()) {
-            expectedType = Helper.getObjectClass(expectedType);
-        }
-        if (expectedType != null && !expectedType.isAssignableFrom(value.getClass())) {
-            throw DynamicException.invalidSetPropertyType(mapping, value);
+            if (value == null) {
+                sb.append("<null>");
+            }
+            else {
+                sb.append(value.toString());
+            }
+            return sb.toString();
         }
     }
 
-    public boolean isSet(DatabaseMapping mapping) {
-        ValuesAccessor accessor = (ValuesAccessor) mapping.getAttributeAccessor();
-        return accessor.isSet(this);
+    class UnknownMapping extends DatabaseMapping {
+        public UnknownMapping(String propertyName) {
+            setAttributeName(propertyName);
+        }
+        public void buildBackupClone(Object clone, Object backup, UnitOfWorkImpl unitOfWork) {            
+        }
+        public void buildClone(Object original, Object clone, UnitOfWorkImpl unitOfWork) {
+        }
+        public void buildCloneFromRow(AbstractRecord databaseRow,
+            JoinedAttributeManager joinManager, Object clone, ObjectBuildingQuery sourceQuery,
+            UnitOfWorkImpl unitOfWork, AbstractSession executionSession) {
+        }
+        public void cascadePerformRemoveIfRequired(Object object, UnitOfWorkImpl uow,
+            Map visitedObjects) {
+        }
+        public void cascadeRegisterNewIfRequired(Object object, UnitOfWorkImpl uow,
+            Map visitedObjects) {
+        }
+        public ChangeRecord compareForChange(Object clone, Object backup, ObjectChangeSet owner,
+            AbstractSession session) {
+            return null;
+        }
+        public boolean compareObjects(Object firstObject, Object secondObject,
+            AbstractSession session) {
+            return false;
+        }
+        public void fixObjectReferences(Object object, Map objectDescriptors, Map processedObjects,
+            ObjectLevelReadQuery query, RemoteSession session) {   
+        }
+        public void iterate(DescriptorIterator iterator) {   
+        }
+        public void mergeChangesIntoObject(Object target, ChangeRecord changeRecord, Object source,
+            MergeManager mergeManager) {
+        }
+        public void mergeIntoObject(Object target, boolean isTargetUninitialized, Object source,
+            MergeManager mergeManager) {
+        }
     }
-    public boolean isSet(String propertyName) {
-        return isSet(getType().getMapping(propertyName));
-    }
-
+    
     //PersistenceEntity API
     /**
      * Cache the primary key within the entity
@@ -245,7 +348,7 @@ public abstract class DynamicEntityImpl implements DynamicEntity, PersistenceEnt
      * initial default values.
      */
     public void _persistence_resetFetchGroup() {
-        throw new UnsupportedOperationException("DynamicEntityImpl._persistence_resetFetchGroup:: NOT SUPPORTED");
+        throw new UnsupportedOperationException("DynamicEntity._persistence_resetFetchGroup:: NOT SUPPORTED");
     }
     /**
      * Session cached by

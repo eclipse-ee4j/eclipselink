@@ -18,16 +18,23 @@
 package org.eclipse.persistence.testing.tests.dynamic;
 
 import org.eclipse.persistence.internal.dynamic.DynamicEntityImpl;
-import org.eclipse.persistence.internal.dynamic.DynamicTypeImpl;
+import org.eclipse.persistence.internal.dynamic.DynamicPropertiesManager;
 
 /**
- * Simple concrete subclass of DynamicEntityImpl to test the functionality
+ * Simple concrete DynamicEntity to test the functionality
  * of EntityType independently of the {@link DynamicClassLoader}
  * functionality which typically generates subclasses.
  */
 public class MyEntity extends DynamicEntityImpl {
 
-    public MyEntity(DynamicTypeImpl type) {
-        super(type);
+    public static DynamicPropertiesManager DPM;
+    
+    public MyEntity() {
+        super();
+    }
+
+    @Override
+    public DynamicPropertiesManager fetchPropertiesManager() {
+        return DPM;
     }
 }

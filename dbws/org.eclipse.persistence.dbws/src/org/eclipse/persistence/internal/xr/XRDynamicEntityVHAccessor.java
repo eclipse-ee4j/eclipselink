@@ -12,9 +12,15 @@
  ******************************************************************************/
 package org.eclipse.persistence.internal.xr;
 
-// EclipseLink imports
+//javase imports
+import java.util.Map;
+
+//EclipseLink imports
+import org.eclipse.persistence.exceptions.DescriptorException;
 import org.eclipse.persistence.indirection.ValueHolder;
 import org.eclipse.persistence.indirection.ValueHolderInterface;
+import org.eclipse.persistence.internal.dynamic.DynamicEntityImpl.PropertyWrapper;
+import org.eclipse.persistence.mappings.DatabaseMapping;
 
 /**
  * <p>
@@ -30,36 +36,35 @@ import org.eclipse.persistence.indirection.ValueHolderInterface;
 @SuppressWarnings("serial")
 public class XRDynamicEntityVHAccessor extends XRDynamicEntityAccessor {
 
-    public XRDynamicEntityVHAccessor(String attributeName, int fieldIdx) {
-        super(attributeName, fieldIdx);
+    public XRDynamicEntityVHAccessor(DatabaseMapping mapping) {
+        super(mapping);
     }
 
     @Override
-    public Object getAttributeValueFromObject(Object object) {
-        XRDynamicEntity.XRField df = ((XRDynamicEntity)object)._fields[fieldIdx];
+    public Object getAttributeValueFromObject(Object entity) throws DescriptorException {
+        Map<String, PropertyWrapper> propertiesMap = ((XRDynamicEntity)entity).getPropertiesMap();
+        PropertyWrapper wrapper = propertiesMap.get(attributeName);
         Object v = null;
-        if (df.isSet) {
-            v = ((ValueHolderInterface)df.fieldValue).getValue();
-        }
-        else {
-            df.fieldValue = new ValueHolder();
+        if (wrapper.isSet()) {
+            v = ((ValueHolderInterface)wrapper.getValue()).getValue();
         }
         return v;
     }
 
-    @Override
-    public void setAttributeValueInObject(Object object, Object value) {
-        XRDynamicEntity.XRField df = ((XRDynamicEntity)object)._fields[fieldIdx];
+    public void setAttributeValueInObject(Object entity, Object value) throws DescriptorException {
+        Map<String, PropertyWrapper> propertiesMap = ((XRDynamicEntity)entity).getPropertiesMap();
+        PropertyWrapper wrapper = propertiesMap.get(attributeName);
         if (value instanceof ValueHolderInterface) {
-            // ValueHolders go directly into the attribute's slot
-            df.fieldValue = value;
+            // ValueHolders go directly into the PropertyWrapper
+            wrapper.setValue(value);
         }
         else {
-            if (!df.isSet) {
-                df.fieldValue = new ValueHolder();
+            if (!wrapper.isSet()) {
+                wrapper.setValue(new ValueHolder(value));
             }
-            ((ValueHolderInterface)df.fieldValue).setValue(value);
+            else {
+                ((ValueHolderInterface)wrapper.getValue()).setValue(value);
+            }
         }
-        df.isSet = true;
     }
 }

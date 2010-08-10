@@ -22,11 +22,11 @@ import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
-import junit.framework.Assert;
-import static junit.framework.Assert.assertEquals;
-import static junit.framework.Assert.assertFalse;
-import static junit.framework.Assert.assertNotNull;
-import static junit.framework.Assert.assertTrue;
+import org.junit.Assert;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
 //EclipseLink imports
 import org.eclipse.persistence.descriptors.ClassDescriptor;
@@ -145,11 +145,11 @@ public class SimpleTypes_MultiTable {
         DynamicEntity a = simpleTypeA.newDynamicEntity();
 
         assertNotNull(a);
-        assertTrue(a.isSet("id"));
+        assertEquals(a.get("id"), 0);
         assertFalse(a.isSet("value1"));
-        assertTrue(a.isSet("value2"));
+        assertEquals(a.get("value2"), false);
         assertFalse(a.isSet("value3"));
-        assertTrue(a.isSet("value4"));
+        assertEquals(a.get("value4"), 0.0);
         assertFalse(a.isSet("value5"));
     }
 
@@ -185,7 +185,7 @@ public class SimpleTypes_MultiTable {
 
         ReadObjectQuery findQuery = dynamicHelper.newReadObjectQuery("SimpleA");
         findQuery.setSelectionCriteria(findQuery.getExpressionBuilder().get("id").equal(1));
-        DynamicEntityImpl a = (DynamicEntityImpl) uow.executeQuery(findQuery);
+        DynamicEntityImpl a = (DynamicEntityImpl)uow.executeQuery(findQuery);
 
         assertNotNull(a);
         assertNotNull(a._persistence_getPropertyChangeListener());

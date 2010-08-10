@@ -16,6 +16,7 @@
 package org.eclipse.persistence.dynamic;
 
 //javase imports
+import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -26,6 +27,8 @@ import java.util.Map;
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.expressions.ExpressionBuilder;
 import org.eclipse.persistence.internal.dynamic.DynamicEntityImpl;
+import org.eclipse.persistence.internal.dynamic.DynamicPropertiesManager;
+import org.eclipse.persistence.internal.dynamic.DynamicTypeImpl;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.queries.ReadAllQuery;
 import org.eclipse.persistence.queries.ReadObjectQuery;
@@ -194,17 +197,28 @@ public class DynamicHelper {
         if (types == null || types.length == 0) {
             throw new IllegalArgumentException("No types provided");
         }
-
         Collection<ClassDescriptor> descriptors = new ArrayList<ClassDescriptor>(types.length);
-
         for (int index = 0; index < types.length; index++) {
-            descriptors.add(types[index].getDescriptor());
-
+            DynamicType typ = types[index];
+            ClassDescriptor desc = typ.getDescriptor();
+            DynamicTypeImpl typImpl = ((DynamicTypeImpl)typ);
+            typImpl.setDescriptor(desc);
+            try {
+                Field dpmField = desc.getJavaClass().getField(DynamicPropertiesManager.PROPERTIES_MANAGER_FIELD);
+                DynamicPropertiesManager dpm = (DynamicPropertiesManager)dpmField.get(null);
+                dpm.setType(typImpl);
+                typImpl.setDynamicPropertiesManager(dpm);
+            }
+            catch (Exception e) {
+                // this is bad! Without the dpmField, not much to do but die :-( ...
+                e.printStackTrace();
+                return;
+            }
+            descriptors.add(desc);
             if (!types[index].getDescriptor().requiresInitialization()) {
                 types[index].getDescriptor().getInstantiationPolicy().initialize((AbstractSession) session);
             }
         }
-
         session.addDescriptors(descriptors);
         for (ClassDescriptor desc : descriptors) {
             if (desc.getJavaClassName() != null) {

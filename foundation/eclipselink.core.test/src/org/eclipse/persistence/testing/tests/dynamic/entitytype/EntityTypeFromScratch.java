@@ -20,12 +20,12 @@ package org.eclipse.persistence.testing.tests.dynamic.entitytype;
 //JUnit4 imports
 import org.junit.AfterClass;
 import org.junit.Test;
-import static junit.framework.Assert.assertEquals;
+import static org.junit.Assert.assertEquals;
 
 //EclipseLink imports
 import org.eclipse.persistence.dynamic.DynamicEntity;
+import org.eclipse.persistence.dynamic.DynamicType;
 import org.eclipse.persistence.dynamic.DynamicTypeBuilder;
-import org.eclipse.persistence.internal.dynamic.DynamicTypeImpl;
 import org.eclipse.persistence.sessions.DatabaseSession;
 import org.eclipse.persistence.tools.schemaframework.SchemaManager;
 
@@ -51,7 +51,7 @@ public class EntityTypeFromScratch {
     
     @Test
     public void entityTypeFromDescriptor() throws Exception {
-        DynamicTypeImpl entityType = buildMyEntityType();
+        DynamicType entityType = buildMyEntityType();
     
         assertEquals(MyEntity.class, entityType.getJavaClass());
     
@@ -69,13 +69,13 @@ public class EntityTypeFromScratch {
         session.logout();
     }
 
-    private DynamicTypeImpl buildMyEntityType() {
+    private DynamicType buildMyEntityType() {
         DynamicTypeBuilder factory = new DynamicTypeBuilder(MyEntity.class, null, "MY_ENTITY");
         factory.setPrimaryKeyFields("ID");
         factory.addDirectMapping("id", int.class, "ID");
         factory.addDirectMapping("name", String.class, "NAME");
     
-        return (DynamicTypeImpl) factory.getType();
+        return (DynamicType) factory.getType();
     }
 
 }

@@ -20,16 +20,17 @@ package org.eclipse.persistence.testing.tests.dynamic.simple.mappings;
 //javase imports
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.Vector;
 
 //JUnit4 imports
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
-import static junit.framework.Assert.assertEquals;
-import static junit.framework.Assert.assertFalse;
-import static junit.framework.Assert.assertNotNull;
-import static junit.framework.Assert.assertTrue;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
 //EclipseLink imports
 import org.eclipse.persistence.descriptors.ClassDescriptor;
@@ -255,9 +256,9 @@ public class SimpleTypes_OneToMany {
     public void verifyNewSimpleA() throws Exception {
         DynamicEntity newA = dynamicHelper.getType("SimpleA").newDynamicEntity();
         assertNotNull(newA);
-        assertTrue(newA.isSet("id"));
+        assertEquals(newA.get("id"), 0);
         assertFalse(newA.isSet("value1"));
-        assertTrue(newA.isSet("b"));
+        assertEquals(Vector.class, newA.get("b").getClass());
         Object b = newA.get("b");
         assertNotNull(b);
         assertTrue(b instanceof Collection);

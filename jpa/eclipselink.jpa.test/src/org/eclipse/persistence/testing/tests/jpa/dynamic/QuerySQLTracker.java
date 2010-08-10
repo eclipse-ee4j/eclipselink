@@ -189,10 +189,10 @@ public class QuerySQLTracker extends SessionEventAdapter {
 		getCurrentResult().setResult(event.getResult(), event.getSession());
 	}
 
-	protected class QueryResult {
+	public class QueryResult {
 		private DatabaseQuery query;
 		private String resultString = null;
-		private List<String> sqlStatements = new ArrayList<String>();
+		public List<String> sqlStatements = new ArrayList<String>();
 
 		QueryResult(DatabaseQuery q) {
 			query = q;

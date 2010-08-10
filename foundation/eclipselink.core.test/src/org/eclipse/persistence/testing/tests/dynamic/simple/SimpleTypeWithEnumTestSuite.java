@@ -28,11 +28,11 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
-import static junit.framework.Assert.assertEquals;
-import static junit.framework.Assert.assertFalse;
-import static junit.framework.Assert.assertNotNull;
-import static junit.framework.Assert.assertSame;
-import static junit.framework.Assert.assertTrue;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertSame;
+import static org.junit.Assert.assertTrue;
 
 //EclipseLink imports
 import org.eclipse.persistence.descriptors.ClassDescriptor;
@@ -159,10 +159,11 @@ public class SimpleTypeWithEnumTestSuite {
     protected void assertDefaultValues(DynamicEntity simpleInstance) {
         assertNotNull(simpleInstance);
 
-        assertTrue("id not set on new instance", simpleInstance.isSet("id"));
-        assertEquals("id not default value", 0, simpleInstance.get("id"));
-        assertFalse("value1  set on new instance", simpleInstance.isSet("value1"));
-        assertTrue("value2 not set on new instance", simpleInstance.isSet("value2"));
+        assertEquals("id not default value", 
+            0, simpleInstance.<Integer>get("id").intValue());
+        assertFalse("value1 set on new instance", simpleInstance.isSet("value1"));
+        assertEquals("value2 not default value on new instance",
+            false, simpleInstance.<Boolean>get("value2").booleanValue());
         assertEquals("value2 not default value", false, simpleInstance.get("value2"));
         assertFalse("value3 set on new instance", simpleInstance.isSet("value3"));
         assertFalse("value4  set on new instance", simpleInstance.isSet("value4"));

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2010 Oracle. All rights reserved.
+ * Copyright (c) 2010 Oracle. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -18,6 +18,7 @@ package org.eclipse.persistence.dynamic;
 //javase imports
 import java.io.IOException;
 import java.io.InputStream;
+import java.lang.reflect.Field;
 import java.util.Iterator;
 import org.w3c.dom.Document;
 
@@ -27,8 +28,8 @@ import org.eclipse.persistence.descriptors.RelationalDescriptor;
 import org.eclipse.persistence.descriptors.changetracking.AttributeChangeTrackingPolicy;
 import org.eclipse.persistence.exceptions.ValidationException;
 import org.eclipse.persistence.indirection.IndirectList;
+import org.eclipse.persistence.internal.dynamic.DynamicPropertiesManager;
 import org.eclipse.persistence.internal.dynamic.DynamicTypeImpl;
-import org.eclipse.persistence.internal.dynamic.DynamicTypeInstantiationPolicy;
 import org.eclipse.persistence.internal.dynamic.ValuesAccessor;
 import org.eclipse.persistence.internal.helper.ConversionManager;
 import org.eclipse.persistence.internal.helper.DatabaseField;
@@ -99,7 +100,17 @@ public class DynamicTypeBuilder {
         RelationalDescriptor descriptor = new RelationalDescriptor();
         descriptor.setJavaClass(dynamicClass);
         this.entityType = new DynamicTypeImpl(descriptor, parentType);
-
+        try {
+            Field dpmField = dynamicClass.getField(DynamicPropertiesManager.PROPERTIES_MANAGER_FIELD);
+            DynamicPropertiesManager dpm = (DynamicPropertiesManager)dpmField.get(null);
+            dpm.setType(entityType);
+            entityType.setDynamicPropertiesManager(dpm);
+        }
+        catch (Exception e) {
+            // this is bad! Without the dpmField, not much to do but die :-( ...
+            e.printStackTrace();
+            return;
+        }
         configure(descriptor, tableNames);
     }
 
@@ -114,11 +125,23 @@ public class DynamicTypeBuilder {
      */
     public DynamicTypeBuilder(DynamicClassLoader dcl, ClassDescriptor descriptor, DynamicType parentType) {
         this.entityType = new DynamicTypeImpl(descriptor, parentType);
-
         if (descriptor.getJavaClass() == null) {
             addDynamicClasses(dcl, descriptor.getJavaClassName(), parentType);
         }
-
+        else {
+            try {
+                Field dpmField = 
+                    descriptor.getJavaClass().getField(DynamicPropertiesManager.PROPERTIES_MANAGER_FIELD);
+                DynamicPropertiesManager dpm = (DynamicPropertiesManager)dpmField.get(null);
+                dpm.setType(entityType);
+                entityType.setDynamicPropertiesManager(dpm);
+            }
+            catch (Exception e) {
+                // this is bad! Without the dpmField, not much to do but die :-( ...
+                e.printStackTrace();
+                return;
+            }
+        }
         configure(descriptor);
     }
 
@@ -157,15 +180,13 @@ public class DynamicTypeBuilder {
             }
 
         }
-
         descriptor.setObjectChangePolicy(new AttributeChangeTrackingPolicy());
-        descriptor.setInstantiationPolicy(new DynamicTypeInstantiationPolicy((DynamicTypeImpl) getType()));
 
         for (int index = 0; index < descriptor.getMappings().size(); index++) {
             addMapping(descriptor.getMappings().get(index));
         }
 
-        descriptor.setProperty(DynamicTypeImpl.DESCRIPTOR_PROPERTY, entityType);
+        descriptor.setProperty(DynamicType.DESCRIPTOR_PROPERTY, entityType);
     }
 
     public DynamicType getType() {
@@ -448,7 +469,7 @@ public class DynamicTypeBuilder {
             }
         }
 
-        mapping.setAttributeAccessor(new ValuesAccessor(getType(), mapping, index));
+        mapping.setAttributeAccessor(new ValuesAccessor(mapping));
 
         if (requiresInitialization(mapping)) {
             this.entityType.getMappingsRequiringInitialization().add(mapping);
@@ -573,6 +594,22 @@ public class DynamicTypeBuilder {
                 }
             }
             project.convertClassNamesToClasses(dynamicClassLoader);
+            for (Iterator<?> i = project.getAliasDescriptors().values().iterator(); i.hasNext();) {
+                ClassDescriptor descriptor = (ClassDescriptor) i.next();
+                if (descriptor.getJavaClass() != null) {
+                    DynamicType type = DynamicHelper.getType(descriptor);
+                    try {
+                        Field dpmField = 
+                            descriptor.getJavaClass().getField(DynamicPropertiesManager.PROPERTIES_MANAGER_FIELD);
+                        DynamicPropertiesManager dpm = (DynamicPropertiesManager)dpmField.get(null);
+                        dpm.setType(type);
+                        ((DynamicTypeImpl)type).setDynamicPropertiesManager(dpm);
+                    }
+                    catch (Exception e) {
+                        // JAXB generates some classes that do not conform sub-class DynamicEntityImpl - ignore
+                    }
+                }
+            }
         }
 
         return project;
@@ -620,6 +657,21 @@ public class DynamicTypeBuilder {
             type = new DynamicTypeBuilder(dcl, descriptor, parent).getType();
         }
 
+
+        if (javaClass != null) {
+            try {
+                Field dpmField = javaClass.getField(DynamicPropertiesManager.PROPERTIES_MANAGER_FIELD);
+                DynamicPropertiesManager dpm = (DynamicPropertiesManager)dpmField.get(null);
+                dpm.setType(type);
+                ((DynamicTypeImpl)type).setDynamicPropertiesManager(dpm);
+            }
+            catch (Exception e) {
+                // this is bad! Without the dpmField, not much to do but die :-( ...
+                e.printStackTrace();
+                return null;
+            }
+        }
+        
         return type;
     }
 }

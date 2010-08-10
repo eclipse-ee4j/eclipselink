@@ -13,8 +13,9 @@
 package org.eclipse.persistence.internal.xr;
 
 //javase imports
-import java.lang.reflect.Field;
+import java.util.HashSet;
 import java.util.Iterator;
+import java.util.Set;
 
 //java eXtension imports
 
@@ -22,7 +23,6 @@ import java.util.Iterator;
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.internal.databaseaccess.Platform;
 import org.eclipse.persistence.internal.helper.ConversionManager;
-import org.eclipse.persistence.internal.helper.Helper;
 import org.eclipse.persistence.internal.indirection.BasicIndirectionPolicy;
 import org.eclipse.persistence.internal.xr.XRDynamicEntity;
 import org.eclipse.persistence.mappings.DatabaseMapping;
@@ -30,7 +30,6 @@ import org.eclipse.persistence.mappings.ForeignReferenceMapping;
 import org.eclipse.persistence.sessions.Login;
 import org.eclipse.persistence.sessions.Project;
 import static org.eclipse.persistence.internal.xr.XRDynamicClassLoader.COLLECTION_WRAPPER_SUFFIX;
-import static org.eclipse.persistence.internal.xr.XRDynamicEntity.XR_FIELD_INFO_STATIC;
 
 /**
  * <p>
@@ -58,17 +57,17 @@ public class ProjectHelper {
             if (oxProject != null) { 
                 xdesc = oxProject.getDescriptorForAlias(desc.getAlias());
             }
-            int idx = 0;
-            XRFieldInfo xrfi = null;
+            XRDynamicPropertiesManager xrDPM = null;
             if (!clz.getName().endsWith(COLLECTION_WRAPPER_SUFFIX)) {
                 try {
-                    Field xrfiField = Helper.getField(clz, XR_FIELD_INFO_STATIC);
-                    xrfi = (XRFieldInfo)xrfiField.get(null);
+                    XRDynamicEntity newInstance = (XRDynamicEntity)clz.newInstance();
+                    xrDPM = newInstance.fetchPropertiesManager();
                 }
                 catch (Exception e) {
                     e.printStackTrace();
                 }
             }
+            Set<String> propertiesNameSet = new HashSet<String>();
             for (Iterator j = desc.getMappings().iterator(); j.hasNext();) {
                 DatabaseMapping dm = (DatabaseMapping)j.next();
                 String attributeName = dm.getAttributeName();
@@ -76,27 +75,27 @@ public class ProjectHelper {
                 if (xdesc != null) {
                     xdm = xdesc.getMappingForAttributeName(attributeName);
                 }
-                dm.setAttributeAccessor(new XRDynamicEntityAccessor(attributeName, idx));
+                dm.setAttributeAccessor(new XRDynamicEntityAccessor(dm));
                 if (xdm != null) {
                     if (dm.isForeignReferenceMapping()) {
                         ForeignReferenceMapping frm = (ForeignReferenceMapping)dm;
                         if (frm.usesIndirection() && frm.getIndirectionPolicy().getClass().
                             isAssignableFrom(BasicIndirectionPolicy.class)) {
-                            xdm.setAttributeAccessor(new XRDynamicEntityVHAccessor(attributeName, idx));
+                            xdm.setAttributeAccessor(new XRDynamicEntityVHAccessor(dm));
                         }
                         else {
                             // no indirection or indirection that is transparent enough (!) to work
-                            xdm.setAttributeAccessor(new XRDynamicEntityAccessor(attributeName, idx));
+                            xdm.setAttributeAccessor(new XRDynamicEntityAccessor(dm));
                         }
                     }
                     else {
-                        xdm.setAttributeAccessor(new XRDynamicEntityAccessor(attributeName, idx));
+                        xdm.setAttributeAccessor(new XRDynamicEntityAccessor(dm));
                     }
                 }
-                if (xrfi != null) {
-                    xrfi.addFieldInfo(attributeName, idx);
-                }
-                idx++;
+                propertiesNameSet.add(attributeName);
+            }
+            if (xrDPM != null) {
+                xrDPM.setPropertyNames(propertiesNameSet);
             }
         }
         // turn-off dynamic class generation

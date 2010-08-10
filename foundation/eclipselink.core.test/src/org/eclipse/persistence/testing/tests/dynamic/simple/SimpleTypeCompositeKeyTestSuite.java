@@ -24,10 +24,9 @@ import java.util.Calendar;
 import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.BeforeClass;
-import static junit.framework.Assert.assertEquals;
-import static junit.framework.Assert.assertFalse;
-import static junit.framework.Assert.assertNotNull;
-import static junit.framework.Assert.assertTrue;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
 
 //EclipseLink imports
 import org.eclipse.persistence.dynamic.DynamicClassLoader;
@@ -75,15 +74,15 @@ public class SimpleTypeCompositeKeyTestSuite extends SimpleTypeTestSuite {
     protected void assertDefaultValues(DynamicEntity simpleInstance) {
         assertNotNull(simpleInstance);
 
-        assertTrue("id1 not set on new instance", simpleInstance.isSet("id1"));
-        assertEquals("id1 not default value", 0, simpleInstance.get("id1"));
-        assertTrue("id2 not set on new instance", simpleInstance.isSet("id2"));
-        assertEquals("id2 not default value", 0, simpleInstance.get("id2"));
-        assertFalse("value1  set on new instance", simpleInstance.isSet("value1"));
-        assertTrue("value2 not set on new instance", simpleInstance.isSet("value2"));
-        assertEquals("value2 not default value", false, simpleInstance.get("value2"));
+        assertEquals("id1 not default value", 
+            0, simpleInstance.<Integer>get("id1").intValue());
+        assertEquals("id2 not default value", 
+            0, simpleInstance.<Integer>get("id2").intValue());
+        assertFalse("value1 set on new instance", simpleInstance.isSet("value1"));
+        assertEquals("value2 not default value on new instance",
+            false, simpleInstance.<Boolean>get("value2").booleanValue());
         assertFalse("value3 set on new instance", simpleInstance.isSet("value3"));
-        assertFalse("value4  set on new instance", simpleInstance.isSet("value4"));
+        assertFalse("value4 set on new instance", simpleInstance.isSet("value4"));
     }
 
     @Override

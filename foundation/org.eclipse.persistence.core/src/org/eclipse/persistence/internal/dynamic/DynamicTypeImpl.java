@@ -16,9 +16,10 @@
 package org.eclipse.persistence.internal.dynamic;
 
 //javase imports
-import java.util.AbstractList;
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 //EclipseLink imports
@@ -26,7 +27,10 @@ import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.dynamic.DynamicEntity;
 import org.eclipse.persistence.dynamic.DynamicType;
 import org.eclipse.persistence.exceptions.DynamicException;
+import org.eclipse.persistence.internal.helper.Helper;
+import org.eclipse.persistence.mappings.CollectionMapping;
 import org.eclipse.persistence.mappings.DatabaseMapping;
+import org.eclipse.persistence.mappings.ForeignReferenceMapping;
 
 /**
  * An EntityType provides a metadata facade into the EclipseLink
@@ -39,10 +43,8 @@ import org.eclipse.persistence.mappings.DatabaseMapping;
 public class DynamicTypeImpl implements DynamicType {
 
     protected ClassDescriptor descriptor;
-
-    protected List<String> propertyNames = new PropertyNameList();
-    
     protected DynamicType parentType;
+    protected DynamicPropertiesManager dpm;
 
     /**
      * These properties require initialization when a new instance is created.
@@ -51,18 +53,48 @@ public class DynamicTypeImpl implements DynamicType {
      */
     protected Set<DatabaseMapping> mappingsRequiringInitialization = new HashSet<DatabaseMapping>();
 
+    protected DynamicTypeImpl() {
+        super();
+    }
+    
     /**
      * Creation of an EntityTypeImpl for an existing Descriptor with mappings.
      * 
      * @param descriptor
      */
     public DynamicTypeImpl(ClassDescriptor descriptor, DynamicType parentType) {
+        this();
         this.descriptor = descriptor;
         this.parentType = parentType;
     }
 
+    @Override
+    public Object clone() {
+        DynamicTypeImpl clonedDynamicTypeImpl = null;
+        // clone yerself
+        try {
+            clonedDynamicTypeImpl = (DynamicTypeImpl)super.clone();
+        }
+        catch (Exception exception) {
+            // ignore
+        }
+        return clonedDynamicTypeImpl;
+    }
+
     public ClassDescriptor getDescriptor() {
         return this.descriptor;
+    }
+    public void setDescriptor(ClassDescriptor descriptor) {
+        this.descriptor = descriptor;
+    }
+
+
+    public DynamicPropertiesManager getDynamicPropertiesManager() {
+        return dpm;
+    }
+
+    public void setDynamicPropertiesManager(DynamicPropertiesManager dpm) {
+        this.dpm = dpm;
     }
 
     public DynamicType getParentType() {
@@ -85,11 +117,11 @@ public class DynamicTypeImpl implements DynamicType {
     }
 
     public int getNumberOfProperties() {
-        return getMappings().size();
+        return dpm.getPropertyNames().size();
     }
 
     public Set<DatabaseMapping> getMappingsRequiringInitialization() {
-        return this.mappingsRequiringInitialization;
+        return mappingsRequiringInitialization;
     }
 
 
@@ -98,7 +130,7 @@ public class DynamicTypeImpl implements DynamicType {
     }
 
     public boolean containsProperty(String propertyName) {
-        return getPropertiesNames().contains(propertyName);
+        return dpm.contains(propertyName);
     }
 
     public Class<?> getJavaClass() {
@@ -107,34 +139,14 @@ public class DynamicTypeImpl implements DynamicType {
 
     public DatabaseMapping getMapping(String propertyName) {
         DatabaseMapping mapping = getDescriptor().getMappingForAttributeName(propertyName);
-
         if (mapping == null) {
             throw DynamicException.invalidPropertyName(this, propertyName);
         }
-
-        return mapping;
-    }
-
-    public DatabaseMapping getMapping(int propertyIndex) {
-        if (propertyIndex < 0 || propertyIndex >= getMappings().size()) {
-            throw DynamicException.invalidPropertyIndex(this, propertyIndex);
-        }
-
-        DatabaseMapping mapping = getMappings().get(propertyIndex);
-
         return mapping;
     }
 
     public List<String> getPropertiesNames() {
-        return this.propertyNames;
-    }
-
-    public int getPropertyIndex(String propertyName) {
-        return getMappings().indexOf(getMapping(propertyName));
-    }
-
-    public Class<?> getPropertyType(int propertyIndex) {
-        return getMapping(propertyIndex).getAttributeClassification();
+        return dpm.getPropertyNames();
     }
 
     public Class<?> getPropertyType(String propertyName) {
@@ -142,28 +154,56 @@ public class DynamicTypeImpl implements DynamicType {
     }
 
     public DynamicEntity newDynamicEntity() {
-        return (DynamicEntity) getDescriptor().getInstantiationPolicy().buildNewInstance();
-    }
-
-    public String toString() {
-        return "EntityType(" + getName() + ") - " + getDescriptor();
+        DynamicEntity newDynamicEntity = (DynamicEntity)getDescriptor().getInstantiationPolicy().
+            buildNewInstance();
+        return newDynamicEntity; 
     }
 
     /**
-     * Simple AbstractList to dynamically provide read-only access to the
-     * property names leveraging the descriptor's mappings. This list will allow
-     * users to access the properties cleanly through the meta-model approach of
-     * asking a type for its properties
+     * Ensure the value being set is supported by the mapping. If the mapping is
+     * direct/basic and the mapping's type is primitive ensure the non-primitive
+     * type is allowed.
      */
-    private class PropertyNameList extends AbstractList<String> {
-
-        public String get(int index) {
-            return DynamicTypeImpl.this.getMapping(index).getAttributeName();
+    public void checkSet(String propertyName, Object value) throws DynamicException {
+        DatabaseMapping mapping = getMapping(propertyName);
+        if (value == null) {
+            if (mapping.isCollectionMapping() || 
+                (mapping.getAttributeClassification() != null && 
+                 mapping.getAttributeClassification().isPrimitive())) {
+                throw DynamicException.invalidSetPropertyType(mapping, value);
+            }
+            return;
         }
-
-        public int size() {
-            return DynamicTypeImpl.this.getNumberOfProperties();
+        Class<?> expectedType = mapping.getAttributeClassification();
+        if (mapping.isForeignReferenceMapping()) {
+            if (mapping.isCollectionMapping()) {
+                if (((CollectionMapping) mapping).getContainerPolicy().isMapPolicy()) {
+                    expectedType = Map.class;
+                } else {
+                    expectedType = Collection.class;
+                }
+            } else {
+                expectedType = ((ForeignReferenceMapping)mapping).getReferenceClass();
+            }
         }
+        if (expectedType != null && expectedType.isPrimitive() && !value.getClass().isPrimitive()) {
+            expectedType = Helper.getObjectClass(expectedType);
+        }
+        if (expectedType != null && !expectedType.isAssignableFrom(value.getClass())) {
+            throw DynamicException.invalidSetPropertyType(mapping, value);
+        }
+    }
 
+    public int getPropertyIndex(String propertyName) {
+        return dpm.getPropertyNames().indexOf(propertyName);
+    }
+
+    public Class<?> getPropertyType(int propertyIndex) {
+        return getDescriptor().getMappings().get(propertyIndex).getAttributeClassification();
+    }
+
+    @Override
+    public String toString() {
+        return "DynamicEntityType(" + getName() + ") - " + getDescriptor();
     }
 }

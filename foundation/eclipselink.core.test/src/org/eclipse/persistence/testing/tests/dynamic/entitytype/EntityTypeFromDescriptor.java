@@ -20,19 +20,19 @@ package org.eclipse.persistence.testing.tests.dynamic.entitytype;
 //JUnit4 imports
 import org.junit.AfterClass;
 import org.junit.Test;
-import static junit.framework.Assert.assertEquals;
-import static junit.framework.Assert.assertFalse;
-import static junit.framework.Assert.fail;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.fail;
 
 //EclipseLink imports
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.descriptors.RelationalDescriptor;
 import org.eclipse.persistence.dynamic.DynamicClassLoader;
 import org.eclipse.persistence.dynamic.DynamicEntity;
+import org.eclipse.persistence.dynamic.DynamicType;
 import org.eclipse.persistence.dynamic.DynamicTypeBuilder;
 import org.eclipse.persistence.exceptions.DescriptorException;
 import org.eclipse.persistence.exceptions.IntegrityException;
-import org.eclipse.persistence.internal.dynamic.DynamicTypeImpl;
 import org.eclipse.persistence.mappings.foundation.AbstractDirectMapping;
 import org.eclipse.persistence.sessions.DatabaseSession;
 import org.eclipse.persistence.tools.schemaframework.SchemaManager;
@@ -66,8 +66,9 @@ public class EntityTypeFromDescriptor {
         ClassDescriptor descriptor = buildMyEntityDescriptor();
         assertFalse(descriptor.isAggregateDescriptor());
 
-        DynamicTypeImpl entityType = 
-            (DynamicTypeImpl)new DynamicTypeBuilder(dcl, descriptor, null).getType();
+        DynamicType entityType = 
+            (DynamicType)new DynamicTypeBuilder(dcl, descriptor, null).getType();
+        MyEntity.DPM.setType(entityType);
 
         assertFalse(descriptor.isAggregateDescriptor());
         assertEquals(MyEntity.class, entityType.getJavaClass());
@@ -101,7 +102,7 @@ public class EntityTypeFromDescriptor {
             session.login();
         }
         catch (IntegrityException ie) {
-            assertEquals(descriptor.getMappings().size() + 1, 
+            assertEquals(descriptor.getMappings().size(), 
                 ie.getIntegrityChecker().getCaughtExceptions().size());
 
             // Verify NoSuchField errors for each mapping
@@ -112,10 +113,6 @@ public class EntityTypeFromDescriptor {
                     DescriptorException.NO_SUCH_FIELD_WHILE_INITIALIZING_ATTRIBUTES_IN_INSTANCE_VARIABLE_ACCESSOR,
                     ex.getErrorCode());
             }
-            DescriptorException de = 
-                (DescriptorException)ie.getIntegrityChecker().getCaughtExceptions().lastElement();
-            assertEquals(DescriptorException.NO_SUCH_METHOD_WHILE_INITIALIZING_INSTANTIATION_POLICY,
-                de.getErrorCode());
             return;
         }
         fail("Expected IntegrityException not thrown");
@@ -128,9 +125,9 @@ public class EntityTypeFromDescriptor {
         descriptor.setTableName(TABLE_NAME);
         descriptor.addPrimaryKeyFieldName("ID");
 
-        AbstractDirectMapping mapping = (AbstractDirectMapping) descriptor.addDirectMapping("id", "ID");
+        AbstractDirectMapping mapping = (AbstractDirectMapping)descriptor.addDirectMapping("id", "ID");
         mapping.setAttributeClassification(int.class);
-        mapping = (AbstractDirectMapping) descriptor.addDirectMapping("name", "NAME");
+        mapping = (AbstractDirectMapping)descriptor.addDirectMapping("name", "NAME");
         mapping.setAttributeClassification(String.class);
 
         return descriptor;

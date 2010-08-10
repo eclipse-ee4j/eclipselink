@@ -23,7 +23,6 @@ import org.eclipse.persistence.dynamic.DynamicClassLoader;
 import org.eclipse.persistence.dynamic.DynamicClassWriter;
 import org.eclipse.persistence.dynamic.DynamicEntity;
 import org.eclipse.persistence.dynamic.DynamicType;
-import org.eclipse.persistence.internal.dynamic.DynamicEntityImpl;
 import org.eclipse.persistence.internal.dynamic.DynamicTypeImpl;
 import org.eclipse.persistence.mappings.DatabaseMapping;
 
@@ -61,7 +60,7 @@ public class DynamicException extends EclipseLinkException {
      * providing a propertyName that does not correspond to any mappings in the
      * underlying descriptor.
      * 
-     * @see DynamicEntityImpl#get(String)
+     * @see DynamicEntity#get(String)
      * */
     public static DynamicException invalidPropertyName(DynamicType type, String propertyName) {
         DynamicException de = new DynamicException("Invalid DynamicEntity[" + type + "] property name: " + propertyName);
@@ -75,7 +74,7 @@ public class DynamicException extends EclipseLinkException {
      * failed when casting. The generic type specified on the get method must be
      * supported by the underlying value stored in the dynamic entity.
      * 
-     * @see DynamicEntityImpl#get(String)
+     * @see DynamicEntity#get(String)
      */
     public static DynamicException invalidGetPropertyType(DatabaseMapping mapping, ClassCastException cce) {
         DynamicException de = new DynamicException("DynamicEntity:: Cannot return: " + mapping + ": " + cce.getMessage(), cce);
@@ -137,7 +136,7 @@ public class DynamicException extends EclipseLinkException {
     }
 
     /**
-     * The {@link DynamicEntityImpl} has a null type indicating an illegal state
+     * The {@link DynamicEntity} has a null type indicating an illegal state
      * of the entity.
      * 
      * @see DynamicEntityImpl#getType()
@@ -146,7 +145,7 @@ public class DynamicException extends EclipseLinkException {
      * This should not happen in the current implementation but may be supported
      * when detachment through serialization is added.
      */
-    public static DynamicException entityHasNullType(DynamicEntityImpl entity) {
+    public static DynamicException entityHasNullType(DynamicEntity entity) {
         DynamicException de = new DynamicException("DynamicEntity has null type: " + entity);
         de.setErrorCode(DYNAMIC_ENTITY_HAS_NULL_TYPE);
         return de;

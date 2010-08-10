@@ -12,46 +12,24 @@
  ******************************************************************************/
 package org.eclipse.persistence.internal.xr;
 
-//javase imports
-
-//java eXtension imports
-
 //EclipseLink imports
-import org.eclipse.persistence.internal.xr.XRDynamicEntity.XRField;
-import org.eclipse.persistence.mappings.AttributeAccessor;
+import org.eclipse.persistence.internal.dynamic.ValuesAccessor;
+import org.eclipse.persistence.mappings.DatabaseMapping;
 
 /**
  * <p>
  * <b>INTERNAL:</b> XRDynamicEntityAccessor is used by dynamically generated
  * subclasses of {@link XRDynamicEntity} to 'close over' information for the
- * psuedo-attributes in the <tt>Object[] attributes</tt> array inherited from
- * {@link XRDynamicEntity}. The required information is an attributeName, and a
- * field-index into the <tt>Object[] attributes</tt> array
+ * psuedo-attributes in the propertiesMap inherited from {@link XRDynamicEntity}.
  *
  * @author Mike Norman - michael.norman@oracle.com
  * @since EclipseLink 1.x
  */
 
 @SuppressWarnings("serial")
-public class XRDynamicEntityAccessor extends AttributeAccessor {
+public class XRDynamicEntityAccessor extends ValuesAccessor {
 
-    protected int fieldIdx;
-
-    public XRDynamicEntityAccessor(String attributeName, int fieldIdx) {
-        super();
-        setAttributeName(attributeName);
-        this.fieldIdx = fieldIdx;
-    }
-
-    @Override
-    public Object getAttributeValueFromObject(Object object) {
-        return ((XRDynamicEntity)object)._fields[fieldIdx].fieldValue;
-    }
-
-    @Override
-    public void setAttributeValueInObject(Object object, Object value) {
-        XRField df = ((XRDynamicEntity)object)._fields[fieldIdx];
-        df.fieldValue = value;
-        df.isSet = true;
+    public XRDynamicEntityAccessor(DatabaseMapping mapping) {
+        super(mapping);
     }
 }

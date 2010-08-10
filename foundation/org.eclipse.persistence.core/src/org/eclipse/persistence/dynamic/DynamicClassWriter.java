@@ -16,27 +16,23 @@
 package org.eclipse.persistence.dynamic;
 
 //javase imports
-import java.io.ObjectStreamException;
-import java.io.Serializable;
-import java.lang.reflect.Constructor;
-import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 
 //EclipseLink imports
 import org.eclipse.persistence.dynamic.DynamicClassLoader.EnumInfo;
 import org.eclipse.persistence.exceptions.DynamicException;
 import org.eclipse.persistence.internal.dynamic.DynamicEntityImpl;
+import org.eclipse.persistence.internal.dynamic.DynamicPropertiesManager;
 import org.eclipse.persistence.internal.helper.Helper;
 import org.eclipse.persistence.internal.libraries.asm.ClassWriter;
 import org.eclipse.persistence.internal.libraries.asm.CodeVisitor;
 import org.eclipse.persistence.internal.libraries.asm.Type;
 import org.eclipse.persistence.internal.libraries.asm.attrs.SignatureAttribute;
-
+import static org.eclipse.persistence.internal.dynamic.DynamicPropertiesManager.PROPERTIES_MANAGER_FIELD;
 import static org.eclipse.persistence.internal.libraries.asm.Constants.AASTORE;
 import static org.eclipse.persistence.internal.libraries.asm.Constants.ACC_ENUM;
 import static org.eclipse.persistence.internal.libraries.asm.Constants.ACC_FINAL;
 import static org.eclipse.persistence.internal.libraries.asm.Constants.ACC_PRIVATE;
-import static org.eclipse.persistence.internal.libraries.asm.Constants.ACC_PROTECTED;
 import static org.eclipse.persistence.internal.libraries.asm.Constants.ACC_PUBLIC;
 import static org.eclipse.persistence.internal.libraries.asm.Constants.ACC_STATIC;
 import static org.eclipse.persistence.internal.libraries.asm.Constants.ACC_SUPER;
@@ -82,6 +78,33 @@ import static org.eclipse.persistence.internal.libraries.asm.Constants.V1_5;
  * @since EclipseLink 1.2
  */
 public class DynamicClassWriter {
+    
+    /*
+     * Pattern is as follows:
+     * <pre>
+     * public class Foo extends DynamicEntityImpl {
+     *
+     *     public static DynamicPropertiesManager DPM = new DynamicPropertiesManager();
+     *     
+     *     public Foo() {
+     *         super();
+     *     }
+     *     public DynamicPropertiesManager fetchPropertiesManager() {
+     *         return DPM;
+     *     }
+     * }
+     * 
+     * later on, the DPM field is populated:
+     *     Field dpmField = myDynamicClass.getField(DynamicPropertiesManager.PROPERTIES_MANAGER_FIELD);
+     *     DynamicPropertiesManager dpm = (DynamicPropertiesManager)dpmField.get(null);
+     *     dpm.setType(...)
+     * </pre>
+     */
+    
+    protected static final String DYNAMIC_PROPERTIES_MANAGER_CLASSNAME_SLASHES =
+       DynamicPropertiesManager.class.getName().replace('.', '/');
+    protected static final String INIT = "<init>";
+    protected static final String CLINIT = "<clinit>";
 
     protected Class<?> parentClass;
 
@@ -127,6 +150,20 @@ public class DynamicClassWriter {
     public String getParentClassName() {
         return this.parentClassName;
     }
+    
+    /**
+     * Return the {@link #parentClass} converting the {@link #parentClassName}
+     * using the provided loader if required.
+     * 
+     * @throws ClassNotFoundException
+     *             if the parentClass is not available.
+     */
+    private Class<?> getParentClass(ClassLoader loader) throws ClassNotFoundException {
+        if (parentClass == null && parentClassName != null) {
+            parentClass = loader.loadClass(parentClassName);
+        }
+        return parentClass;
+    }
 
     public byte[] writeClass(DynamicClassLoader loader, String className) throws ClassNotFoundException {
 
@@ -134,129 +171,67 @@ public class DynamicClassWriter {
         if (enumInfo != null) {
             return createEnum(enumInfo);
         }
-
-        if (this.parentClass == null && this.parentClassName != null) {
-            this.parentClass = loader.loadClass(this.parentClassName);
-        }
-
-        Class<?> parent = getParentClass();
-
-        if (parent == null || parent.isPrimitive() || parent.isArray() || parent.isEnum() || parent.isInterface() || Modifier.isFinal(parent.getModifiers())) {
+            
+        Class<?> parent = getParentClass(loader);
+        parentClassName = parent.getName();
+        if (parent == null || parent.isPrimitive() || parent.isArray() || parent.isEnum() ||
+            parent.isInterface() || Modifier.isFinal(parent.getModifiers())) {
             throw new IllegalArgumentException("Invalid parent class: " + parent);
         }
-
+        String classNameAsSlashes = className.replace('.', '/');
+        String parentClassNameAsSlashes = parentClassName.replace('.', '/');
+        
         ClassWriter cw = new ClassWriter(true);
-        cw.visit(V1_5, ACC_PUBLIC + ACC_SUPER, className.replace('.', '/'), Type.getType(parent).getInternalName(), getInterfaces(), null);
-
-        addFields(cw);
-        addConstructors(cw);
-        addMethods(cw);
-        addWriteReplace(cw);
-
+        CodeVisitor cv;
+        
+        // public class Foo extends DynamicEntityImpl {
+        cw.visit(V1_5, ACC_PUBLIC + ACC_SUPER, classNameAsSlashes, parentClassNameAsSlashes, null,
+            null);
+        
+        // public static DynamicPropertiesManager DPM = new DynamicPropertiesManager();
+        cw.visitField(ACC_PUBLIC + ACC_STATIC, PROPERTIES_MANAGER_FIELD,
+            "L" + DYNAMIC_PROPERTIES_MANAGER_CLASSNAME_SLASHES + ";", null, null);
+        cv = cw.visitMethod(ACC_STATIC, CLINIT, "()V", null, null);
+        cv.visitTypeInsn(NEW, DYNAMIC_PROPERTIES_MANAGER_CLASSNAME_SLASHES);
+        cv.visitInsn(DUP);
+        cv.visitMethodInsn(INVOKESPECIAL, DYNAMIC_PROPERTIES_MANAGER_CLASSNAME_SLASHES, INIT, "()V");
+        cv.visitFieldInsn(PUTSTATIC, classNameAsSlashes, PROPERTIES_MANAGER_FIELD,
+            "L" + DYNAMIC_PROPERTIES_MANAGER_CLASSNAME_SLASHES + ";");
+        cv.visitInsn(RETURN);
+        cv.visitMaxs(0, 0);
+        
+        // public Foo() {
+        //     super();
+        // }
+        cv = cw.visitMethod(ACC_PUBLIC, INIT, "()V", null, null);
+        cv.visitVarInsn(ALOAD, 0);
+        cv.visitMethodInsn(INVOKESPECIAL, parentClassNameAsSlashes, INIT, "()V");
+        cv.visitInsn(RETURN);
+        cv.visitMaxs(0, 0);
+        
+        cv = cw.visitMethod(ACC_PUBLIC, "fetchPropertiesManager", 
+            "()L" + DYNAMIC_PROPERTIES_MANAGER_CLASSNAME_SLASHES + ";", null, null);
+        cv.visitFieldInsn(GETSTATIC, classNameAsSlashes, PROPERTIES_MANAGER_FIELD,
+            "L" + DYNAMIC_PROPERTIES_MANAGER_CLASSNAME_SLASHES + ";");
+        cv.visitInsn(ARETURN);
+        cv.visitMaxs(0, 0);
+        
         cw.visitEnd();
         return cw.toByteArray();
+        
     }
 
-    /**
-     * Interfaces the dynamic entity class implements. By default this is none
-     * but in the case of SDO a concrete interface must be implemented.
-     * Subclasses should override this as required.
-     * 
-     * @return Interfaces implemented by Dynamic class. May be null
-     */
-    protected String[] getInterfaces() {
-        return null;
-    }
-
-    /**
-     * Adds all constructors calling those available in the parent class.
-     * 
-     * @see #addConstructor(ClassWriter, Constructor)
-     */
-    protected void addConstructors(ClassWriter cw) {
-        Constructor<?>[] constructors = getParentClass().getDeclaredConstructors();
-
-        for (int index = 0; index < constructors.length; index++) {
-            if (Modifier.isPublic(constructors[index].getModifiers()) || Modifier.isProtected(constructors[index].getModifiers())) {
-                addConstructor(cw, constructors[index]);
-            }
-        }
-    }
-
-    protected static final String INIT = "<init>";
-
-    /**
-     * Add a new constructor based invoking the provided constructor from the
-     * parent class. This method is called by
-     * {@link #addConstructors(ClassWriter, Class)} for each constructor
-     * available in the parent class.
-     */
-    protected void addConstructor(ClassWriter cw, Constructor<?> constructor) {
-        Type[] types = new Type[constructor.getParameterTypes().length];
-
-        for (int index = 0; index < constructor.getParameterTypes().length; index++) {
-            types[index] = Type.getType(constructor.getParameterTypes()[index]);
-        }
-
-        String consDesc = Type.getMethodDescriptor(Type.VOID_TYPE, types);
-        CodeVisitor mv = cw.visitMethod(ACC_PUBLIC, INIT, consDesc, null, null);
-        mv.visitVarInsn(ALOAD, 0);
-
-        for (int param = 1; param <= constructor.getParameterTypes().length; param++) {
-            mv.visitVarInsn(ALOAD, param);
-        }
-
-        mv.visitMethodInsn(INVOKESPECIAL, Type.getType(constructor.getDeclaringClass()).getInternalName(), INIT, consDesc);
-        mv.visitInsn(RETURN);
-        mv.visitMaxs(0, 0);
-    }
-
-    private static final String WRITE_REPLACE = "writeReplace";
-
-    /**
-     * Add a writeReplace method if one is found in the parentClass. The created
-     * writeReplace method will call the parent class version. This is provided
-     * to support {@link Serializable} which requires that the writeReplace
-     * method exist as a method on the {@link Serializable} class and not
-     * provided through inheritance.
-     */
-    protected void addWriteReplace(ClassWriter cw) {
-        boolean parentHasWriteReplace = false;
-
-        try {
-            getParentClass().getDeclaredMethod(WRITE_REPLACE, new Class[0]);
-            parentHasWriteReplace = true;
-        } catch (NoSuchMethodException e) {
-            parentHasWriteReplace = false;
-        }
-
-        if (Serializable.class.isAssignableFrom(getParentClass()) && parentHasWriteReplace) {
-            Method method;
-            try {
-                method = getParentClass().getDeclaredMethod(WRITE_REPLACE, new Class[0]);
-            } catch (NoSuchMethodException e) {
-                return;
-            }
-
-            String methodDesc = Type.getMethodDescriptor(method);
-            String[] exceptionsDesc = new String[] { Type.getType(ObjectStreamException.class).getInternalName() };
-
-            CodeVisitor mv = cw.visitMethod(ACC_PROTECTED, method.getName(), methodDesc, exceptionsDesc, null);
-            mv.visitVarInsn(ALOAD, 0);
-            mv.visitMethodInsn(INVOKESPECIAL, Type.getInternalName(getParentClass()), method.getName(), methodDesc);
-            mv.visitInsn(ARETURN);
-            mv.visitMaxs(0, 0);
-        }
-    }
-
-    static int[] ICONST = new int[] { ICONST_0, ICONST_1, ICONST_2, ICONST_3, ICONST_4, ICONST_5 };
+    public static int[] ICONST = 
+        new int[] { ICONST_0, ICONST_1, ICONST_2, ICONST_3, ICONST_4, ICONST_5 };
     protected byte[] createEnum(EnumInfo enumInfo) {
 
         String[] enumValues = enumInfo.getLiteralLabels();
         String className = enumInfo.getClassName();
+
         String internalClassName = className.replace('.', '/');
 
         CodeVisitor cv;
+
         ClassWriter cw = new ClassWriter(true);
         cw.visit(V1_5, ACC_PUBLIC + ACC_FINAL + ACC_SUPER + ACC_ENUM, internalClassName,
             "java/lang/Enum", null, null);
@@ -354,19 +329,28 @@ public class DynamicClassWriter {
     }
 
     /**
-     * Provided to allow subclasses to add their own fields.
+     * Verify that the provided class meets the requirements of the writer. In
+     * the case of {@link DynamicClassWriter} this will ensure that the class is
+     * a subclass of the {@link #parentClass}
+     * 
+     * @param dynamicClass
+     * @throws ClassNotFoundException 
      */
-    protected void addFields(ClassWriter cw) {
+    protected boolean verify(Class<?> dynamicClass, ClassLoader loader) throws ClassNotFoundException {
+        Class<?> parent = getParentClass(loader);
+        return dynamicClass != null && parent.isAssignableFrom(dynamicClass);
     }
 
+
     /**
-     * Provided to allow subclasses to add their own methods. This must add
-     * additional methods needed to implement any interfaces returned from
-     * {@link #getInterfaces()}
+     * Interfaces the dynamic entity class implements. By default this is none
+     * but in the case of SDO a concrete interface must be implemented.
+     * Subclasses should override this as required.
      * 
-     * @param loader
+     * @return Interfaces implemented by Dynamic class. May be null
      */
-    protected void addMethods(ClassWriter cw) {
+    protected String[] getInterfaces() {
+        return null;
     }
 
     /**

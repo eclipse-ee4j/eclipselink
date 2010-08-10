@@ -115,7 +115,7 @@ public class DynamicTestHelper {
                 if (emName.equals(puInfo.getPersistenceUnitName())) {
                     EntityManagerSetupImpl entityManagerSetupImpl = 
                         new EntityManagerSetupImpl(DYNAMIC_PERSISTENCE_NAME,DYNAMIC_PERSISTENCE_NAME);
-                    map.put(PersistenceUnitProperties.WEAVING, "false");
+                    map.put(PersistenceUnitProperties.WEAVING, "static");
                     puInfo.getProperties().put(
                         PersistenceUnitProperties.EXCLUDE_ECLIPSELINK_ORM_FILE, "true");
                     entityManagerSetupImpl.predeploy(puInfo, map);
