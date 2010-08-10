@@ -981,6 +981,8 @@ public class TestingBrowserPanel extends JPanel implements ItemListener, junit.f
             }
         } else if (platform.equals("Local Oracle DB (thin)")) {
             system.useOracleThin("localhost:1521:orcl", "scott", "tiger");
+        } else if (platform.equals("Oracle 11gR2 (thin)")) {
+            system.useOracleThin("qaott11.ca.oracle.com:1521:toplink", "", "password");
         } else if (platform.equals("Oracle 11gR1 (thin)")) {
             system.useOracleThin("tlsvrdb7.ca.oracle.com:1521:toplink", "", "password");
         } else if (platform.equals("Oracle 10gR2 (thin)")) {
@@ -1146,6 +1148,7 @@ public class TestingBrowserPanel extends JPanel implements ItemListener, junit.f
     public void resetLogin() {
         getLoginChoice().addItem("Last Login Used");
         getLoginChoice().addItem("Local Oracle DB (thin)");
+        getLoginChoice().addItem("Oracle 11gR2 (thin)");
         getLoginChoice().addItem("Oracle 11gR1 (thin)");
         getLoginChoice().addItem("Oracle 10gR2 (thin)");
         getLoginChoice().addItem("Oracle 10g (thin)");

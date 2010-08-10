@@ -327,7 +327,7 @@ public class TestSystem {
         login.setUserName(userName);
         //set the encrypted password will enable toplink to use the plain text password as is
         login.setEncryptedPassword("password");
-        login.setDatabaseURL("//qaott51.ca.oracle.com:3309/"+userName);
+        login.setDatabaseURL("//qaott51.ca.oracle.com:3306/"+userName);
         login.useByteArrayBinding();
         setLogin(login);
     }

@@ -84,6 +84,10 @@ public abstract class AttributeAccessor implements Cloneable, Serializable {
         return true;
     }
 
+    public boolean isInstanceVariableAttributeAccessor() {
+        return false;
+    }
+    
     public boolean isMethodAttributeAccessor() {
         return false;
     }

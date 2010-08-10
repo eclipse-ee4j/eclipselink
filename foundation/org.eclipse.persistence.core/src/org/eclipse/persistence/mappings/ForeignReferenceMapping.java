@@ -1006,14 +1006,15 @@ public abstract class ForeignReferenceMapping extends DatabaseMapping {
             Class attributeType = getAttributeAccessor().getAttributeClass();
             // Check that not already weaved or coded.
             if (!(ClassConstants.ValueHolderInterface_Class.isAssignableFrom(attributeType))) {
-                boolean usesMethodAccess = getAttributeAccessor().isMethodAttributeAccessor();
                 String originalSetMethod = null;
-                if (usesMethodAccess) {
+                if(getAttributeAccessor().isMethodAttributeAccessor()) {
                     originalSetMethod = getSetMethodName();
+                } else if(getAttributeAccessor().isInstanceVariableAttributeAccessor()) {
+                    originalSetMethod = Helper.getWeavedSetMethodName(getAttributeName());
                 }
                 setGetMethodName(Helper.getWeavedValueHolderGetMethodName(getAttributeName()));
                 setSetMethodName(Helper.getWeavedValueHolderSetMethodName(getAttributeName()));
-                if (usesMethodAccess) {
+                if (originalSetMethod != null) {
                     useWeavedIndirection(originalSetMethod);
                 }
                 // Must re-initialize the attribute accessor.

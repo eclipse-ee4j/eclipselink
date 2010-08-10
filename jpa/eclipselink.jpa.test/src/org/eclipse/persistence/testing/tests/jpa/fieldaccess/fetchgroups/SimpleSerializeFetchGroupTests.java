@@ -30,14 +30,19 @@ import junit.framework.TestSuite;
 import org.eclipse.persistence.config.CacheUsage;
 import org.eclipse.persistence.config.QueryHints;
 import org.eclipse.persistence.indirection.IndirectList;
+import org.eclipse.persistence.internal.descriptors.InstanceVariableAttributeAccessor;
 import org.eclipse.persistence.internal.helper.IdentityHashSet;
 import org.eclipse.persistence.internal.helper.SerializationHelper;
+import org.eclipse.persistence.internal.jpa.EntityManagerImpl;
 import org.eclipse.persistence.internal.queries.AttributeItem;
 import org.eclipse.persistence.internal.queries.EntityFetchGroup;
+import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.jpa.JpaEntityManager;
+import org.eclipse.persistence.mappings.OneToOneMapping;
 import org.eclipse.persistence.queries.AttributeGroup;
 import org.eclipse.persistence.queries.FetchGroup;
 import org.eclipse.persistence.sessions.CopyGroup;
+import org.eclipse.persistence.testing.models.jpa.fieldaccess.advanced.Address;
 import org.eclipse.persistence.testing.models.jpa.fieldaccess.advanced.Employee;
 import org.eclipse.persistence.testing.models.jpa.fieldaccess.advanced.PhoneNumber;
 import org.eclipse.persistence.testing.models.jpa.fieldaccess.advanced.Project;
@@ -77,6 +82,7 @@ public class SimpleSerializeFetchGroupTests extends BaseFetchGroupTests {
         suite.addTest(new SimpleSerializeFetchGroupTests("joinFetchEmployeeAddressWithDynamicFetchGroup"));
         suite.addTest(new SimpleSerializeFetchGroupTests("joinFetchEmployeeAddressPhoneWithDynamicFetchGroup"));
         suite.addTest(new SimpleSerializeFetchGroupTests("verifyFetchedRelationshipAttributes"));
+        suite.addTest(new SimpleSerializeFetchGroupTests("attrAndVHContainSameObjectAfterGetRealAttributeValue"));
         if (!isJPA10()) {
             suite.addTest(new SimpleSerializeFetchGroupTests("findMinimalFetchGroup"));
             suite.addTest(new SimpleSerializeFetchGroupTests("findEmptyFetchGroup_setUnfetchedSalary"));
@@ -1022,7 +1028,7 @@ public class SimpleSerializeFetchGroupTests extends BaseFetchGroupTests {
             Employee emp = query.getSingleResult();
 
             // Detach Employee through Serialization 
-            Employee detachedEmp = (Employee)clone(emp);
+            Employee detachedEmp = (Employee)serialize(emp);
 
             // Modify the detached Employee inverting the names, adding a phone number, and setting the salary
             detachedEmp.setFirstName(emp.getLastName());
@@ -1465,15 +1471,61 @@ public class SimpleSerializeFetchGroupTests extends BaseFetchGroupTests {
         }
     }
     
+    @Test
+    public void attrAndVHContainSameObjectAfterGetRealAttributeValue() throws Exception {
+        String errorMsg = "";
+        EntityManager em = createEntityManager("fieldaccess");
+        try {
+            beginTransaction(em);
+
+             Query query = em.createQuery("SELECT e FROM Employee e WHERE e.address IS NOT NULL and e.manager IS NOT NULL");
+             List<Employee> employees = query.getResultList();
+             
+             OneToOneMapping addressMapping = (OneToOneMapping)employeeDescriptor.getMappingForAttributeName("address");
+             OneToOneMapping managerMapping = (OneToOneMapping)employeeDescriptor.getMappingForAttributeName("manager");
+
+             InstanceVariableAttributeAccessor addressAccessor = new InstanceVariableAttributeAccessor();
+             addressAccessor.setAttributeName("address");
+             addressAccessor.initializeAttributes(Employee.class);
+             
+             InstanceVariableAttributeAccessor managerAccessor = new InstanceVariableAttributeAccessor();
+             managerAccessor.setAttributeName("manager");
+             managerAccessor.initializeAttributes(Employee.class);
+             
+             AbstractSession session = (AbstractSession)((EntityManagerImpl)em.getDelegate()).getActiveSession();
+             
+             for(Employee emp : employees) {
+                 String localErrorMsg = "";
+                 Address addressVH = (Address)addressMapping.getRealAttributeValueFromObject(emp, session);
+                 Address addressAttr = (Address)addressAccessor.getAttributeValueFromObject(emp);
+                 if(addressVH != addressAttr) {
+                     localErrorMsg += "\n\taddressVH = " + addressVH + " != addressAttr = " + addressAttr;
+                 }
+                 Employee managerVH = (Employee)managerMapping.getRealAttributeValueFromObject(emp, session);
+                 Employee managerAttr = (Employee)managerAccessor.getAttributeValueFromObject(emp);
+                 if(managerVH != managerAttr) {
+                     localErrorMsg += "\n\tmanagerVH = " + managerVH + " != managerAttr = " + managerAttr;
+                 }
+                 if(localErrorMsg.length() > 0) {
+                     localErrorMsg = emp.toString() + localErrorMsg + "\n";
+                     errorMsg += localErrorMsg;
+                 }
+             }
+        } finally {
+            if (isTransactionActive(em)){
+                rollbackTransaction(em);
+            }
+            closeEntityManager(em);
+        }
+        if(errorMsg.length() > 0) {
+            errorMsg = '\n' + errorMsg;
+            fail(errorMsg);
+        }
+    }
+    
     private <T> T serialize(Serializable entity) throws IOException, ClassNotFoundException {
         byte[] bytes = SerializationHelper.serialize(entity);
         ObjectInputStream inStream = new ObjectInputStream(new ByteArrayInputStream(bytes));
         return (T) inStream.readObject();
-    }
-
-    private Object clone(Serializable object) throws IOException, ClassNotFoundException {
-        byte[] bytes = SerializationHelper.serialize(object);
-        ObjectInputStream inStream = new ObjectInputStream(new ByteArrayInputStream(bytes));
-        return inStream.readObject();
     }
 }
