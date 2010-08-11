@@ -43,6 +43,7 @@ public class ZeroPrimaryKeyExistenceCheckTest extends TransactionalTestCase {
         setDescription("Test for checking 0 is valid primary key");
     }
     
+    @SuppressWarnings("deprecation")
     public void setup() {
         super.setup();
         getSession().getIdentityMapAccessor().initializeAllIdentityMaps();
@@ -102,6 +103,7 @@ public class ZeroPrimaryKeyExistenceCheckTest extends TransactionalTestCase {
         }
     }
     
+    @SuppressWarnings("deprecation")
     public void reset() {
         super.reset();
         // reset global values changed

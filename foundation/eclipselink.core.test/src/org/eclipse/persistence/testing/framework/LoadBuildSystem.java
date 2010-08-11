@@ -119,6 +119,7 @@ public class LoadBuildSystem {
         session.logout();
     }
 
+    @SuppressWarnings("deprecation")
     public void populateSampleData() {
         ReadAllQuery query = new ReadAllQuery(LoadBuildSummary.class);
         query.addBatchReadAttribute("results");

@@ -15,8 +15,6 @@ package org.eclipse.persistence.testing.tests.identitymaps;
 import java.util.ConcurrentModificationException;
 import java.util.Iterator;
 
-import junit.framework.TestFailure;
-
 import org.eclipse.persistence.internal.helper.IdentityWeakHashMap;
 import org.eclipse.persistence.testing.framework.AutoVerifyTestCase;
 import org.eclipse.persistence.testing.framework.TestErrorException;

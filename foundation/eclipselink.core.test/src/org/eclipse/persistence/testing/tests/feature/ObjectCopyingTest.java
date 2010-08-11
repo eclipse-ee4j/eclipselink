@@ -24,6 +24,7 @@ public class ObjectCopyingTest extends TransactionalTestCase {
         setDescription("Test the object copying feature.");
     }
 
+    @SuppressWarnings("deprecation")
     public void test() {
         Employee original = (Employee)getSession().readObject(Employee.class);
         Employee copy = (Employee)getSession().copyObject(original);

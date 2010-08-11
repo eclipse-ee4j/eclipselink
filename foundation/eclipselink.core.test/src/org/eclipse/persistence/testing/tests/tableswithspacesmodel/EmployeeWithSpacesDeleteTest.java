@@ -36,6 +36,7 @@ public class EmployeeWithSpacesDeleteTest extends DeleteObjectTest {
         super(originalObject);
     }
 
+    @SuppressWarnings("deprecation")
     public static void deleteDependencies(org.eclipse.persistence.sessions.Session session, Employee employee) {
         // CR2114 - following line modified; employee.getClass() passed as argument
         String appendString = ((AbstractSession)session).getPlatform(employee.getClass()).getTableQualifier();

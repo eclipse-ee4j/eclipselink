@@ -34,6 +34,7 @@ public class ProjectWithSpacesDeleteTest extends DeleteObjectTest {
         super(originalObject);
     }
 
+    @SuppressWarnings("deprecation")
     protected void setup() {
         if (getSession().getPlatform().isSymfoware()) {
             throwWarning("Test system EmployeeWithSpacesSystem is not supported on Symfoware, "

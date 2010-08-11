@@ -14,8 +14,6 @@ package org.eclipse.persistence.testing.framework;
 
 import java.io.*;
 import java.lang.ref.WeakReference;
-import java.util.ArrayList;
-import java.util.List;
 
 import javax.persistence.*;
 import org.eclipse.persistence.exceptions.*;

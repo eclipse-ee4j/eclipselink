@@ -43,6 +43,7 @@ public class CommitAfterExecuteModifyQueryDuringTransTest extends org.eclipse.pe
     /**
      * Test makes modifications that is not wrapped in a transaction..
      */
+    @SuppressWarnings("deprecation")
     public void setup() {
         if (getSession() instanceof RemoteSession) {
             throw new TestWarningException("test will not run on RemoteSession - it uses events");
