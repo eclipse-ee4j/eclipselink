@@ -101,7 +101,12 @@ public class CompositeObjectMappingContentHandler extends	DeferredContentHandler
         executeEvents(getParent());
     }
 
-	@Override
+    @Override
+    protected void processEmptyElementWithAttributes() throws SAXException {
+        processComplexElement();
+    }
+
+    @Override
     protected void processSimpleElement() throws SAXException {
 		// Remove original startElement event as it has been precluded by the startElement call below
 		getEvents().remove(0);

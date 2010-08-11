@@ -22,6 +22,7 @@ public class TestDeferredContentHandler extends DeferredContentHandler {
     private ContentHandler originalHandler;
     private XMLReader reader;
     public int PROCESS_EMPTY = 0;
+    public int PROCESS_EMPTY_WITH_ATTRIBUTES = 0;
     public int PROCESS_SIMPLE_ELEMENT = 0;
     public int PROCESS_COMPLEX_ELEMENT = 0;
 
@@ -33,6 +34,12 @@ public class TestDeferredContentHandler extends DeferredContentHandler {
 
     protected void processEmptyElement() throws SAXException {        
         PROCESS_EMPTY++;
+        endProcessing();
+    }
+
+    @Override
+    protected void processEmptyElementWithAttributes() throws SAXException {
+        PROCESS_EMPTY_WITH_ATTRIBUTES++;
         endProcessing();
     }
 

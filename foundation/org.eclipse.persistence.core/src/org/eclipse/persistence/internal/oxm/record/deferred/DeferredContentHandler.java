@@ -16,6 +16,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.eclipse.persistence.internal.oxm.record.XMLReader;
+import org.eclipse.persistence.oxm.XMLConstants;
 import org.eclipse.persistence.oxm.record.UnmarshalRecord;
 import org.xml.sax.Attributes;
 import org.xml.sax.ContentHandler;
@@ -36,6 +37,7 @@ public abstract class DeferredContentHandler implements ContentHandler, LexicalH
     private UnmarshalRecord parent;
     private boolean startOccurred;
     private boolean charactersOccurred;
+    private boolean attributesOccurred;
 
     public DeferredContentHandler(UnmarshalRecord parentRecord) {
         levelIndex = 0;
@@ -48,6 +50,10 @@ public abstract class DeferredContentHandler implements ContentHandler, LexicalH
     protected abstract void processComplexElement() throws SAXException;
 
     protected abstract void processSimpleElement() throws SAXException;
+
+    protected void processEmptyElementWithAttributes() throws SAXException {
+        processEmptyElement();
+    }
 
     protected void executeEvents(UnmarshalRecord unmarshalRecord) throws SAXException {
         for (int i = 0; i < events.size(); i++) {
@@ -88,12 +94,17 @@ public abstract class DeferredContentHandler implements ContentHandler, LexicalH
         
         startOccurred = true;
     }
-        
+
     protected AttributeList buildAttributeList(Attributes attrs) throws SAXException {
-    	  AttributeList attributes = new AttributeList(attrs.getLength()); 
-    	
-        for (int i = 0; i < attrs.getLength(); i++) {        	        	    
-        	attributes.addAttribute(attrs.getLocalName(i), attrs.getQName(i), attrs.getURI(i), attrs.getType(i), attrs.getValue(i), i);        	              
+        int attrsLength = attrs.getLength();
+        AttributeList attributes = new AttributeList(attrsLength); 
+        for (int i = 0; i < attrsLength; i++) {
+            String qName = attrs.getQName(i);
+            String uri = attrs.getURI(i);
+            attributes.addAttribute(attrs.getLocalName(i), qName, uri, attrs.getType(i), attrs.getValue(i), i);
+            if(!XMLConstants.SCHEMA_INSTANCE_URL.equals(uri) && (null != qName && !qName.startsWith(XMLConstants.XMLNS))) {
+                attributesOccurred = true;
+            }
         }
         return attributes;
     }
@@ -108,7 +119,11 @@ public abstract class DeferredContentHandler implements ContentHandler, LexicalH
             processSimpleElement();
         } else if(startOccurred){
             //we know it is an empty element
-            processEmptyElement();
+            if(attributesOccurred) {
+                processEmptyElementWithAttributes();
+            } else {
+                processEmptyElement();
+            }
         }
 
         if ((levelIndex == 0) && (parent != null)) {
