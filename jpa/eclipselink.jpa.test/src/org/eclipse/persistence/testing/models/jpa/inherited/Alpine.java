@@ -13,6 +13,8 @@
  *       - 232975: Failure when attribute type is generic
  *     07/15/2010-2.2 Guy Pelletier 
  *       -311395 : Multiple lifecycle callback methods for the same lifecycle event
+ *     08/11/2010-2.2 Guy Pelletier 
+ *       - 312123: JPA: Validation error during Id processing on parameterized generic OneToOne Entity relationship from MappedSuperclass
  ******************************************************************************/  
 package org.eclipse.persistence.testing.models.jpa.inherited;
 
@@ -40,7 +42,7 @@ import static javax.persistence.TemporalType.DATE;
   pkColumnName="SEQ_NAME", 
   valueColumnName="SEQ_COUNT",
   pkColumnValue="BEVERAGE_SEQ")
-public class Alpine extends Beer<Integer, Double> implements Cloneable, Serializable {
+public class Alpine extends Beer<Integer, Double, Alpine> implements Cloneable, Serializable {
     public enum Classification { STRONG, BITTER, SWEET, NONE }
     
     private Date bestBeforeDate;

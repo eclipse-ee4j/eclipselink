@@ -13,6 +13,8 @@
  *       - 230213: ValidationException when mapping to attribute in MappedSuperClass
  *     06/20/2008-1.0 Guy Pelletier 
  *       - 232975: Failure when attribute type is generic
+ *     08/11/2010-2.2 Guy Pelletier 
+ *       - 312123: JPA: Validation error during Id processing on parameterized generic OneToOne Entity relationship from MappedSuperclass
  ******************************************************************************/  
 package org.eclipse.persistence.testing.models.jpa.inherited;
 
@@ -29,7 +31,7 @@ import static javax.persistence.InheritanceType.SINGLE_TABLE;
 @Entity
 @Inheritance(strategy=SINGLE_TABLE)
 @Table(name="CMP3_BLUE")
-public class Blue extends Beer<BigDecimal, Float> implements Bluish<BigInteger, BigInteger>, Cloneable  {
+public class Blue extends Beer<BigDecimal, Float, Blue> implements Bluish<BigInteger, BigInteger>, Cloneable  {
     private BigInteger uniqueKey;
     public Blue() {}
     

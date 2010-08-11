@@ -35,6 +35,8 @@
  *       - 300458: EclispeLink should throw a more specific exception than NPE
  *     07/16/2010-2.2 Guy Pelletier 
  *       - 260296: mixed access with no Transient annotation does not result in error
+ *     08/11/2010-2.2 Guy Pelletier 
+ *       - 312123: JPA: Validation error during Id processing on parameterized generic OneToOne Entity relationship from MappedSuperclass
  ******************************************************************************/  
 package org.eclipse.persistence.testing.models.jpa.inherited;
 
@@ -155,6 +157,17 @@ public class InheritedTableManager extends TogglingFastTableCreator {
         BEER_CONSUMER_ID_field.setForeignKeyFieldName("CMP3_CONSUMER.ID");
         table.addField(BEER_CONSUMER_ID_field);
         
+        FieldDefinition BEER_DOUBLE_ID_field = new FieldDefinition();
+        BEER_DOUBLE_ID_field.setName("BD_ID");
+        BEER_DOUBLE_ID_field.setTypeName("NUMERIC");
+        BEER_DOUBLE_ID_field.setSize(15);
+        BEER_DOUBLE_ID_field.setIsPrimaryKey(false);
+        BEER_DOUBLE_ID_field.setUnique(false);
+        BEER_DOUBLE_ID_field.setIsIdentity(false);
+        BEER_DOUBLE_ID_field.setShouldAllowNull(true);
+        BEER_DOUBLE_ID_field.setForeignKeyFieldName("CMP3_ALPINE.ID");
+        table.addField(BEER_DOUBLE_ID_field);
+        
         FieldDefinition VERSION_field = new FieldDefinition();
         VERSION_field.setName("VERSION");
         VERSION_field.setTypeName("DATETIME");
@@ -263,6 +276,17 @@ public class InheritedTableManager extends TogglingFastTableCreator {
         BEER_CONSUMER_ID_field.setShouldAllowNull(true);
         BEER_CONSUMER_ID_field.setForeignKeyFieldName("CMP3_CONSUMER.ID");
         table.addField(BEER_CONSUMER_ID_field);
+        
+        FieldDefinition BEER_DOUBLE_ID_field = new FieldDefinition();
+        BEER_DOUBLE_ID_field.setName("BD_ID");
+        BEER_DOUBLE_ID_field.setTypeName("NUMERIC");
+        BEER_DOUBLE_ID_field.setSize(15);
+        BEER_DOUBLE_ID_field.setIsPrimaryKey(false);
+        BEER_DOUBLE_ID_field.setUnique(false);
+        BEER_DOUBLE_ID_field.setIsIdentity(false);
+        BEER_DOUBLE_ID_field.setShouldAllowNull(true);
+        BEER_DOUBLE_ID_field.setForeignKeyFieldName("CMP3_BECKS.ID");
+        table.addField(BEER_DOUBLE_ID_field);
         
         FieldDefinition VERSION_field = new FieldDefinition();
         VERSION_field.setName("VERSION");
@@ -453,6 +477,17 @@ public class InheritedTableManager extends TogglingFastTableCreator {
         BEER_CONSUMER_ID_field.setForeignKeyFieldName("CMP3_CONSUMER.ID");
         table.addField(BEER_CONSUMER_ID_field);
         
+        FieldDefinition BEER_DOUBLE_ID_field = new FieldDefinition();
+        BEER_DOUBLE_ID_field.setName("BD_ID");
+        BEER_DOUBLE_ID_field.setTypeName("NUMERIC");
+        BEER_DOUBLE_ID_field.setSize(15);
+        BEER_DOUBLE_ID_field.setIsPrimaryKey(false);
+        BEER_DOUBLE_ID_field.setUnique(false);
+        BEER_DOUBLE_ID_field.setIsIdentity(false);
+        BEER_DOUBLE_ID_field.setShouldAllowNull(true);
+        BEER_DOUBLE_ID_field.setForeignKeyFieldName("CMP3_BLUE.ID");
+        table.addField(BEER_DOUBLE_ID_field);
+        
         FieldDefinition VERSION_field = new FieldDefinition();
         VERSION_field.setName("VERSION");
         VERSION_field.setTypeName("DATETIME");
@@ -552,6 +587,17 @@ public class InheritedTableManager extends TogglingFastTableCreator {
         BEER_CONSUMER_ID_field.setForeignKeyFieldName("CMP3_CONSUMER.ID");
         table.addField(BEER_CONSUMER_ID_field);
         
+        FieldDefinition BEER_DOUBLE_ID_field = new FieldDefinition();
+        BEER_DOUBLE_ID_field.setName("BD_ID");
+        BEER_DOUBLE_ID_field.setTypeName("NUMERIC");
+        BEER_DOUBLE_ID_field.setSize(15);
+        BEER_DOUBLE_ID_field.setIsPrimaryKey(false);
+        BEER_DOUBLE_ID_field.setUnique(false);
+        BEER_DOUBLE_ID_field.setIsIdentity(false);
+        BEER_DOUBLE_ID_field.setShouldAllowNull(true);
+        BEER_DOUBLE_ID_field.setForeignKeyFieldName("CMP3_CANADIAN.ID");
+        table.addField(BEER_DOUBLE_ID_field);
+        
         FieldDefinition fieldPROPERTIES = new FieldDefinition();
         fieldPROPERTIES.setName("PROPERTIES");
         fieldPROPERTIES.setTypeName("LONG RAW");
@@ -630,6 +676,17 @@ public class InheritedTableManager extends TogglingFastTableCreator {
         BEER_CONSUMER_ID_field.setShouldAllowNull(true);
         BEER_CONSUMER_ID_field.setForeignKeyFieldName("CMP3_CONSUMER.ID");
         table.addField(BEER_CONSUMER_ID_field);
+        
+        FieldDefinition BEER_DOUBLE_ID_field = new FieldDefinition();
+        BEER_DOUBLE_ID_field.setName("BD_ID");
+        BEER_DOUBLE_ID_field.setTypeName("NUMERIC");
+        BEER_DOUBLE_ID_field.setSize(15);
+        BEER_DOUBLE_ID_field.setIsPrimaryKey(false);
+        BEER_DOUBLE_ID_field.setUnique(false);
+        BEER_DOUBLE_ID_field.setIsIdentity(false);
+        BEER_DOUBLE_ID_field.setShouldAllowNull(true);
+        BEER_DOUBLE_ID_field.setForeignKeyFieldName("CMP3_CORONA.ID");
+        table.addField(BEER_DOUBLE_ID_field);
         
         FieldDefinition VERSION_field = new FieldDefinition();
         VERSION_field.setName("VERSION");
@@ -791,6 +848,17 @@ public class InheritedTableManager extends TogglingFastTableCreator {
         BEER_CONSUMER_ID_field.setShouldAllowNull(true);
         BEER_CONSUMER_ID_field.setForeignKeyFieldName("CMP3_CONSUMER.ID");
         table.addField(BEER_CONSUMER_ID_field);
+        
+        FieldDefinition BEER_DOUBLE_ID_field = new FieldDefinition();
+        BEER_DOUBLE_ID_field.setName("BD_ID");
+        BEER_DOUBLE_ID_field.setTypeName("NUMERIC");
+        BEER_DOUBLE_ID_field.setSize(15);
+        BEER_DOUBLE_ID_field.setIsPrimaryKey(false);
+        BEER_DOUBLE_ID_field.setUnique(false);
+        BEER_DOUBLE_ID_field.setIsIdentity(false);
+        BEER_DOUBLE_ID_field.setShouldAllowNull(true);
+        BEER_DOUBLE_ID_field.setForeignKeyFieldName("CMP3_HEINEKEN.ID");
+        table.addField(BEER_DOUBLE_ID_field);
         
         FieldDefinition VERSION_field = new FieldDefinition();
         VERSION_field.setName("VERSION");

@@ -13,6 +13,8 @@
  *       - 232975: Failure when attribute type is generic
  *     07/15/2010-2.2 Guy Pelletier 
  *       -311395 : Multiple lifecycle callback methods for the same lifecycle event
+ *     08/11/2010-2.2 Guy Pelletier 
+ *       - 312123: JPA: Validation error during Id processing on parameterized generic OneToOne Entity relationship from MappedSuperclass
  ******************************************************************************/  
 package org.eclipse.persistence.testing.models.jpa.inherited;
 
@@ -21,6 +23,7 @@ import javax.persistence.Column;
 import javax.persistence.PostPersist;
 import javax.persistence.Version;
 import javax.persistence.ManyToOne;
+import javax.persistence.OneToOne;
 import javax.persistence.PrePersist;
 import javax.persistence.JoinColumn;
 import javax.persistence.MappedSuperclass;
@@ -34,10 +37,11 @@ import java.sql.Timestamp;
 
 @MappedSuperclass
 @ExistenceChecking(CHECK_CACHE)
-public class Beer<G, H> extends Beverage<G> {
+public class Beer<G, H, I> extends Beverage<G> {
     private Timestamp version;
     private H alcoholContent;
     private BeerConsumer beerConsumer;
+    private I beerDouble;
     
     public static int BEER_PRE_PERSIST_COUNT = 0;
     public static int BEER_POST_PERSIST_COUNT = 0;
@@ -72,6 +76,13 @@ public class Beer<G, H> extends Beverage<G> {
         return beerConsumer;
     }
     
+    @OneToOne(fetch=LAZY)
+    //@OneToOne
+    @JoinColumn(name="BD_ID")
+    public I getBeerDouble() {
+        return beerDouble;
+    }
+    
     @Version
     public Timestamp getVersion() {
         return version;
@@ -83,6 +94,10 @@ public class Beer<G, H> extends Beverage<G> {
     
     public void setBeerConsumer(BeerConsumer beerConsumer) {
         this.beerConsumer = beerConsumer;
+    }
+    
+    public void setBeerDouble(I beerDouble) {
+        this.beerDouble = beerDouble;
     }
     
     public void setVersion(Timestamp version) {

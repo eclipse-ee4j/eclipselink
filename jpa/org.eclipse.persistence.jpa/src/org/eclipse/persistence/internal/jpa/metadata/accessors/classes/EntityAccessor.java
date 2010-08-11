@@ -69,6 +69,8 @@
  *       - 308729: Persistent Unit deployment exception when mappedsuperclass has no annotations but has lifecycle callbacks
  *     07/05/2010-2.1.1 Guy Pelletier 
  *       - 317708: Exception thrown when using LAZY fetch on VIRTUAL mapping
+ *     08/11/2010-2.2 Guy Pelletier 
+ *       - 312123: JPA: Validation error during Id processing on parameterized generic OneToOne Entity relationship from MappedSuperclass
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata.accessors.classes;
 
@@ -203,7 +205,7 @@ public class EntityAccessor extends MappedSuperclassAccessor {
                     
                     // 266912: process and store mappedSuperclass descriptors on 
                     // the project for later use by the Metamodel API.
-                    getProject().addMetamodelMappedSuperclass(metadataClass, new MappedSuperclassAccessor(metadataClass.getAnnotation(MappedSuperclass.class), metadataClass, getProject()));
+                    getProject().addMetamodelMappedSuperclass(new MappedSuperclassAccessor(metadataClass.getAnnotation(MappedSuperclass.class), metadataClass, getProject()), getDescriptor());
                 }
             }
         } else {
@@ -222,7 +224,7 @@ public class EntityAccessor extends MappedSuperclassAccessor {
                 // project for later use by the Metamodel API Note: we must 
                 // again reload our accessor from XML or we will be sharing 
                 // instances of the descriptor
-                getProject().addMetamodelMappedSuperclass(metadataClass, reloadMappedSuperclass(accessor,  new MetadataDescriptor(metadataClass)));
+                getProject().addMetamodelMappedSuperclass(reloadMappedSuperclass(accessor,  new MetadataDescriptor(metadataClass)), getDescriptor());
             } else {
                 m_mappedSuperclasses.add(accessor);
             }

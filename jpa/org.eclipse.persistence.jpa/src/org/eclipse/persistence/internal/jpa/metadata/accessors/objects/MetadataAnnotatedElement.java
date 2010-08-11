@@ -29,6 +29,8 @@
  *          in support of the custom descriptors holding mappings required by the Metamodel
  *     03/08/2010-2.1 Guy Pelletier 
  *       - 303632: Add attribute-type for mapping attributes to EclipseLink-ORM
+ *     08/11/2010-2.2 Guy Pelletier 
+ *       - 312123: JPA: Validation error during Id processing on parameterized generic OneToOne Entity relationship from MappedSuperclass
  ******************************************************************************/
 package org.eclipse.persistence.internal.jpa.metadata.accessors.objects;
 
@@ -77,6 +79,7 @@ import org.eclipse.persistence.internal.jpa.metadata.MetadataLogger;
  */
 @SuppressWarnings("deprecation")
 public class MetadataAnnotatedElement extends MetadataAccessibleObject {
+    public static final String DEFAULT_RAW_CLASS = "java.lang.String";
     public static final String JPA_PERSISTENCE_PACKAGE_PREFIX = "javax.persistence";
     public static final String ECLIPSELINK_PERSISTENCE_PACKAGE_PREFIX = "org.eclipse.persistence.annotations";
     
@@ -269,9 +272,19 @@ public class MetadataAnnotatedElement extends MetadataAccessibleObject {
     public MetadataClass getRawClass(MetadataDescriptor descriptor) {
         if (m_rawClass == null) {
             if (isGenericType()) {
-                String type = descriptor.getGenericType(getGenericType().get(0));
+                // Seems that every generic annotated element has the T char 
+                // in the 0 position. The actual generic type is therefore in
+                // the 1 position.
+                String type = descriptor.getGenericType(getGenericType().get(1));
                 if (type == null) {
-                    return getMetadataClass("java.lang.String");
+                    // If the generic type can not be resolved, take a stab 
+                    // by returning a default class. One known case where this
+                    // will hit is when processing generic accessors from a 
+                    // mapped superclass for the internal meta model. I wonder
+                    // if returning null here would be better? Forcing the  
+                    // caller to have a plan B in place.
+                    // @see e.g. RelationshipAccessor.getReferenceDescriptor()
+                    return getMetadataClass(DEFAULT_RAW_CLASS);
                 }
                 return getMetadataClass(type);
             }

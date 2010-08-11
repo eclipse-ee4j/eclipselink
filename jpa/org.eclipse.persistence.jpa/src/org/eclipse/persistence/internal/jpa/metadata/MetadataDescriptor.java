@@ -72,6 +72,8 @@
  *       - 260296: mixed access with no Transient annotation does not result in error
  *     08/04/2010-2.1.1 Guy Pelletier
  *       - 315782: JPA2 derived identity metadata processing validation doesn't account for autoboxing
+ *     08/11/2010-2.2 Guy Pelletier 
+ *       - 312123: JPA: Validation error during Id processing on parameterized generic OneToOne Entity relationship from MappedSuperclass
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata;
 
@@ -149,7 +151,6 @@ public class MetadataDescriptor {
     private Boolean m_usesCascadedOptimisticLocking;
     
     private ClassAccessor m_classAccessor;
-    private RelationalDescriptor m_descriptor;
     private DatabaseTable m_primaryTable;
     // The embedded id accessor for this descriptor if one exists.
     private EmbeddedIdAccessor m_embeddedIdAccessor;
@@ -180,6 +181,13 @@ public class MetadataDescriptor {
     private MetadataDescriptor m_inheritanceRootDescriptor;
     // This is our immediate parent's descriptor. Which may also be the root. 
     private MetadataDescriptor m_inheritanceParentDescriptor;
+    // Used only for a mapped superclass descriptor. Allows us to look up
+    // more specific types when a mapping may use a generic specification.
+    // Note: a mapped superclass can not be discovered without the help of 
+    // an entity accessor. Therefore, if this descriptor is to a mapped super
+    // class, the child entity accessor will (and must) be set.
+    private MetadataDescriptor m_metamodelMappedSuperclassChildDescriptor;
+    private RelationalDescriptor m_descriptor;
     
     // This is the default access type for the class accessor of this 
     // descriptor. The default access type is needed for those embeddables and 
@@ -689,25 +697,6 @@ public class MetadataDescriptor {
      public MetadataAccessor getBiDirectionalManyToManyAccessor(String className, String attributeName) {
         return m_biDirectionalManyToManyAccessors.get(className).get(attributeName);
     }
-    
-    /**
-     * INTERNAL:
-     * This will return the attribute names for all the direct to field mappings 
-     * on this descriptor metadata. This method will typically be called when an 
-     * embedded or embedded id attribute has been specified as an order by 
-     * field
-     */
-    public List<String> getOrderByAttributeNames() {
-        if (m_orderByAttributeNames.isEmpty()) {
-            for (DatabaseMapping mapping : getMappings()) {
-                if (mapping.isDirectToFieldMapping()) {
-                    m_orderByAttributeNames.add(mapping.getAttributeName());
-                }
-            }
-        }
-        
-        return m_orderByAttributeNames;
-    }
 
     /**
      * INTERNAL:
@@ -840,8 +829,41 @@ public class MetadataDescriptor {
     /**
      * INTERNAL:
      */
+    public MetadataDescriptor getMetamodelMappedSuperclassChildDescriptor() {
+        return m_metamodelMappedSuperclassChildDescriptor;
+    }
+    
+    /**
+     * INTERNAL:
+     * This will return the attribute names for all the direct to field mappings 
+     * on this descriptor metadata. This method will typically be called when an 
+     * embedded or embedded id attribute has been specified as an order by 
+     * field
+     */
+    public List<String> getOrderByAttributeNames() {
+        if (m_orderByAttributeNames.isEmpty()) {
+            for (DatabaseMapping mapping : getMappings()) {
+                if (mapping.isDirectToFieldMapping()) {
+                    m_orderByAttributeNames.add(mapping.getAttributeName());
+                }
+            }
+        }
+        
+        return m_orderByAttributeNames;
+    }
+    
+    /**
+     * INTERNAL:
+     */
     public MetadataClass getPKClass(){
         return m_pkClass;
+    }
+    
+    /**
+     * INTERNAL:
+     */
+    public Map<String, String> getPKClassIDs() {
+        return m_pkClassIDs;
     }
     
     /**
@@ -863,13 +885,6 @@ public class MetadataDescriptor {
      */
     public MappingAccessor getPrimaryKeyAccessorForField(DatabaseField field) {
         return m_primaryKeyAccessors.get(field.getName());
-    }
-    
-    /**
-     * INTERNAL:
-     */
-    public Map<String, String> getPKClassIDs() {
-        return m_pkClassIDs;
     }
     
     /**
@@ -1599,6 +1614,13 @@ public class MetadataDescriptor {
         if (javaClass.isInterface()) {
             m_descriptor.setJavaInterfaceName(javaClass.getName());
         }
+    }
+    
+    /**
+     * INTERNAL:
+     */
+    public void setMetamodelMappedSuperclassChildDescriptor(MetadataDescriptor childDescriptor) {
+        m_metamodelMappedSuperclassChildDescriptor = childDescriptor;
     }
     
     /**

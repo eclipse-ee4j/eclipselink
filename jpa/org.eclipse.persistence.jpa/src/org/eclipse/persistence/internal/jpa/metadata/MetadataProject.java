@@ -61,6 +61,8 @@
  *       - 317708: Exception thrown when using LAZY fetch on VIRTUAL mapping
  *     07/23/2010-2.2 Guy Pelletier 
  *       - 237902: DDL GEN doesn't qualify SEQUENCE table with persistence unit schema
+ *     08/11/2010-2.2 Guy Pelletier 
+ *       - 312123: JPA: Validation error during Id processing on parameterized generic OneToOne Entity relationship from MappedSuperclass
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata;
 
@@ -472,18 +474,22 @@ public class MetadataProject {
      *  This method is referenced by EntityAccessor.addPotentialMappedSuperclass()
      *  during an initial predeploy() and later during a deploy()
      *  </p>
-     * @param metadataClass - the wrapped java class that the MappedSuperclass represents
      * @param accessor - The mappedSuperclass accessor for the field on the mappedSuperclass<p>
      * @since EclipseLink 1.2 for the JPA 2.0 Reference Implementation
      */    
-    public void addMetamodelMappedSuperclass(MetadataClass metadataClass, MappedSuperclassAccessor accessor) {
-        // If metadataClass is null, then get it from the location on the accessor
-        String className = metadataClass.getName();
-        
-        // check for an existing entry before proceeding - as a Map.put() will replace the existing accessor
-        // this code is run first through predeploy() and second through deploy()
-        if (null != className && ! m_metamodelMappedSuperclasses.containsKey(className)) {
+    public void addMetamodelMappedSuperclass(MappedSuperclassAccessor accessor, MetadataDescriptor childDescriptor) {
+        // Check for an existing entry before proceeding. Metamodel mapped 
+        // superclasses need only (and should only) be added once. This code 
+        // will be called from every entity that inherits from it. There is no
+        // need to check for className == null here as the mapped superclass
+        // accessor is always created with a class.
+        if (! m_metamodelMappedSuperclasses.containsKey(accessor.getJavaClassName())) {
             MetadataDescriptor metadataDescriptor = accessor.getDescriptor();
+                       
+            // Set a child entity descriptor on the mapped superclass descriptor.
+            // This descriptor (and its mapping accessors) will help to resolve
+            // any generic mapping accessors from the mapped superclass.
+            metadataDescriptor.setMetamodelMappedSuperclassChildDescriptor(childDescriptor);
             
             // Note: set the back pointer from the MetadataDescriptor back to its' accessor manually before we add accessors
             metadataDescriptor.setClassAccessor(accessor);
@@ -499,7 +505,7 @@ public class MetadataProject {
             accessor.addAccessors();
             
             // Add the accessor to our custom Map keyed on className for separate processing in stage2
-            m_metamodelMappedSuperclasses.put(className, accessor);
+            m_metamodelMappedSuperclasses.put(accessor.getJavaClassName(), accessor);
             
             // Note: The classDescriptor is always a RelationalDescriptor instance - a cast is safe here unless setDescriptor() sets it to XMLDescriptor or EISDescriptor
             RelationalDescriptor relationalDescriptor = (RelationalDescriptor)metadataDescriptor.getClassDescriptor();
@@ -530,7 +536,7 @@ public class MetadataProject {
              * but we do not need it until metamodel processing time avoiding a _persistence_new call.
              * See MetamodelImpl.initialize()
              */
-            m_session.getProject().addMappedSuperclass(metadataClass, relationalDescriptor);
+            m_session.getProject().addMappedSuperclass(accessor.getJavaClass(), relationalDescriptor);
         }
     }
     

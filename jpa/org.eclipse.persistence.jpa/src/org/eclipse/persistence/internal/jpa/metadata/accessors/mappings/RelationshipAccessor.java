@@ -37,6 +37,8 @@
  *       - 309856: MappedSuperclasses from XML are not being initialized properly
  *     06/14/2010-2.2 Guy Pelletier 
  *       - 264417: Table generation is incorrect for JoinTables in AssociationOverrides
+ *     08/11/2010-2.2 Guy Pelletier 
+ *       - 312123: JPA: Validation error during Id processing on parameterized generic OneToOne Entity relationship from MappedSuperclass
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata.accessors.mappings;
 
@@ -72,6 +74,7 @@ import org.eclipse.persistence.internal.jpa.metadata.xml.XMLEntityMappings;
 
 import org.eclipse.persistence.internal.jpa.metadata.accessors.classes.ClassAccessor;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataAccessibleObject;
+import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataAnnotatedElement;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataAnnotation;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataClass;
 
@@ -429,19 +432,33 @@ public abstract class RelationshipAccessor extends MappingAccessor {
       */
     @Override
     public MetadataDescriptor getReferenceDescriptor() {
-        MetadataDescriptor descriptor;
-       
-        try {
-            descriptor = super.getReferenceDescriptor();
-        } catch (Exception exception) {
-            descriptor = null;
+        MetadataDescriptor referenceDescriptor;
+        
+        // When processing metamodel mapped superclasses, we don't have the 
+        // luxury of a full type context as we would during regular metadata
+        // processing (e.g. to figure out generic types). The metamodel mapped
+        // superclass descriptors must therefore rely on a real child descriptor
+        // to extract this information and process correctly. When a type is 
+        // unknown, the reference class name currently defaults to java.lang.string.
+        // @see MetadataAnnotatedElement getRawClass(MetadataDescriptor)
+        if (getDescriptor().isMappedSuperclass() && getReferenceClassName().equals(MetadataAnnotatedElement.DEFAULT_RAW_CLASS)) {
+            MappingAccessor childMappingAccessor = getDescriptor().getMetamodelMappedSuperclassChildDescriptor().getMappingAccessor(getAttributeName());
+            referenceDescriptor = childMappingAccessor.getReferenceDescriptor();
+            
+            if (referenceDescriptor.isInheritanceSubclass()) {
+                referenceDescriptor = referenceDescriptor.getInheritanceRootDescriptor();
+            }
+        } else {
+            ClassAccessor accessor = getProject().getAccessor(getReferenceClassName());
+            referenceDescriptor = (accessor != null) ? accessor.getDescriptor() : null; 
         }
        
-        if (descriptor == null || descriptor.isEmbeddable() || descriptor.isEmbeddableCollection()) {
+        // Validate the reference descriptor is valid.
+        if (referenceDescriptor == null || referenceDescriptor.isEmbeddable() || referenceDescriptor.isEmbeddableCollection()) {
             throw ValidationException.nonEntityTargetInRelationship(getJavaClass(), getReferenceClass(), getAnnotatedElement());
         }
        
-        return descriptor;
+        return referenceDescriptor;
     }
     
     /**

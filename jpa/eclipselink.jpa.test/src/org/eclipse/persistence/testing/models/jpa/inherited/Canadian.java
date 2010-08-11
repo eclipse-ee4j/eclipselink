@@ -13,6 +13,8 @@
  *       - 230213: ValidationException when mapping to attribute in MappedSuperClass
  *     06/20/2008-1.0 Guy Pelletier 
  *       - 232975: Failure when attribute type is generic
+ *     08/11/2010-2.2 Guy Pelletier 
+ *       - 312123: JPA: Validation error during Id processing on parameterized generic OneToOne Entity relationship from MappedSuperclass
  ******************************************************************************/  
 package org.eclipse.persistence.testing.models.jpa.inherited;
 
@@ -32,7 +34,7 @@ import static org.eclipse.persistence.annotations.ExistenceType.CHECK_DATABASE;
 @Table(name="CMP3_CANADIAN")
 @AssociationOverride(name="beerConsumer", joinColumns=@JoinColumn(name="CONSUMER_ID"))
 @ExistenceChecking(CHECK_DATABASE)
-public class Canadian extends Beer<Integer, Double> {
+public class Canadian extends Beer<Integer, Double, Canadian> {
     public enum Flavor { LAGER, LIGHT, ICE, DRY }
 
     private Flavor flavor;

@@ -10,6 +10,8 @@
  * Contributors:
  *     03/27/2009-2.0 Guy Pelletier 
  *       - 241413: JPA 2.0 Add EclipseLink support for Map type attributes
+ *     08/11/2010-2.2 Guy Pelletier 
+ *       - 312123: JPA: Validation error during Id processing on parameterized generic OneToOne Entity relationship from MappedSuperclass
  ******************************************************************************/  
 package org.eclipse.persistence.testing.models.jpa.inherited;
 
@@ -19,7 +21,7 @@ import javax.persistence.Entity;
 
 @Entity
 @Table(name="CMP3_HEINEKEN")
-public class Heineken extends Beer<Integer, Double> implements Cloneable {
+public class Heineken extends Beer<Integer, Double, Heineken> implements Cloneable {
     public Heineken() {}
     
     public Heineken clone() throws CloneNotSupportedException {

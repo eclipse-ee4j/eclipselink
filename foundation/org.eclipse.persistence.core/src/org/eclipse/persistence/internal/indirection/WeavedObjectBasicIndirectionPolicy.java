@@ -75,10 +75,24 @@ public class WeavedObjectBasicIndirectionPolicy extends BasicIndirectionPolicy {
             // The parameter type for the set method must always be the return type of the get method.
             Class[] parameterTypes = new Class[1];
             parameterTypes[0] = sourceMapping.getReferenceClass();
+
             try {
                 setMethod = Helper.getDeclaredMethod(sourceMapping.getDescriptor().getJavaClass(), setMethodName, parameterTypes);
-            } catch (NoSuchMethodException e){
-                throw DescriptorException.errorAccessingSetMethodOfEntity(sourceMapping.getDescriptor().getJavaClass(), setMethodName ,sourceMapping.getDescriptor(), e);
+            } catch (NoSuchMethodException e) {
+                // As a last ditch effort, change the parameter type to Object.class. 
+                // If the model uses generics:
+                //   public T getStuntDouble()
+                //   public void setStuntDouble(T)
+                // The weaved methods will be:
+                //   public Object getStuntDouble() and 
+                //   public void setStuntDouble(Object)
+                try {
+                    parameterTypes[0] = Object.class;
+                    setMethod = Helper.getDeclaredMethod(sourceMapping.getDescriptor().getJavaClass(), setMethodName, parameterTypes);    
+                } catch (NoSuchMethodException ee) {
+                    // Throw the original exception.
+                    throw DescriptorException.errorAccessingSetMethodOfEntity(sourceMapping.getDescriptor().getJavaClass(), setMethodName, sourceMapping.getDescriptor(), e);
+                }
             }
         }
         return setMethod;
