@@ -140,10 +140,8 @@ public class DynamicTestCases extends XMLMappingTestCases {
     private Object newInstance(String name) throws Exception {
         Class theClass = dynamicClassLoader.loadClass(name);
         Constructor constructor = theClass.getConstructors()[0];
-        ClassDescriptor descriptor = dynamicTestProject.getDescriptor(theClass);
-        DynamicType dynamicType = (DynamicType) descriptor.getProperties().get("ENTITY_TYPE");
 
-        return constructor.newInstance(new Object[] { dynamicType });
+        return constructor.newInstance();
     }
 
     private void setValue(Object owner, String attributeName, Object value) throws Exception {
