@@ -82,7 +82,7 @@ public class BuildTbl2TestWebServiceSuite extends WebServiceSOAP12TestSuite impl
     }
 
     @PostConstruct
-    public void init() {
+    protected void init() {
         super.init();
     }
 

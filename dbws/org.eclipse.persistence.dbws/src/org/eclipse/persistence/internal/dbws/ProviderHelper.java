@@ -156,10 +156,8 @@ public class ProviderHelper extends XRServiceFactory {
         this.mc = mc;
     }
 
-    @SuppressWarnings("unchecked")
-    public void init(ClassLoader parentClassLoader, ServletContext sc, boolean mtomEnabled) {
-        this.parentClassLoader = parentClassLoader;
-        this.mtomEnabled = mtomEnabled;
+    protected InputStream initXRServicestream(ClassLoader parentClassLoader,
+        @SuppressWarnings("unused") ServletContext sc) {
         InputStream xrServiceStream = null;
         for (String searchPath : META_INF_PATHS) {
             String path = searchPath + DBWS_SERVICE_XML;
@@ -171,24 +169,11 @@ public class ProviderHelper extends XRServiceFactory {
         if (xrServiceStream == null) {
             throw new WebServiceException(DBWSException.couldNotLocateFile(DBWS_SERVICE_XML));
         }
-        DBWSModelProject xrServiceModelProject = new DBWSModelProject();
-        XMLContext xmlContext = new XMLContext(xrServiceModelProject);
-        XMLUnmarshaller unmarshaller = xmlContext.createUnmarshaller();
-        XRServiceModel xrServiceModel;
-        try {
-            xrServiceModel = (XRServiceModel)unmarshaller.unmarshal(xrServiceStream);
-        }
-        catch (XMLMarshalException e) {
-            // something went wrong parsing the eclipselink-dbws.xml - can't recover from that
-            throw new WebServiceException(DBWSException.couldNotParseDBWSFile());
-        }
-        try {
-            xrServiceStream.close();
-        }
-        catch (IOException ioe) {
-            /* safe to ignore */
-        }
-
+        return xrServiceStream;
+    }
+    
+    protected InputStream initXRSchemaStream(ClassLoader parentClassLoader, ServletContext sc) {
+        InputStream xrSchemaStream = null;
         String path = WSDL_DIR + DBWS_SCHEMA_XML;
         if (sc != null) {
             path = "/" + WEB_INF_DIR + path; 
@@ -201,6 +186,53 @@ public class ProviderHelper extends XRServiceFactory {
         if (xrSchemaStream == null) {
             throw new WebServiceException(DBWSException.couldNotLocateFile(DBWS_SCHEMA_XML));
         }
+        return xrSchemaStream;
+    }
+    
+    protected InputStream initWSDLInputStream(ClassLoader parentClassLoader, ServletContext sc) {
+        InputStream wsdlInputStream = null;
+        String path = WSDL_DIR + DBWS_WSDL;
+        if (sc != null) {
+            path = "/" + WEB_INF_DIR + path;
+            wsdlInputStream = sc.getResourceAsStream(path);
+        }
+        else {
+            // if ServletContext is null, then we are running in JavaSE6 'container-less' mode
+            wsdlInputStream = parentClassLoader.getResourceAsStream(path);
+        } 
+        if (wsdlInputStream == null) {
+            throw new WebServiceException(DBWSException.couldNotLocateFile(DBWS_WSDL));
+        }
+        return wsdlInputStream;
+    }
+    
+    @SuppressWarnings("unchecked")
+    public void init(ClassLoader parentClassLoader, ServletContext sc, boolean mtomEnabled) {
+        this.parentClassLoader = parentClassLoader;
+        this.mtomEnabled = mtomEnabled;
+
+        InputStream xrServiceStream = initXRServicestream(parentClassLoader, sc);
+        DBWSModelProject xrServiceModelProject = new DBWSModelProject();
+        XMLContext xmlContext = new XMLContext(xrServiceModelProject);
+        XMLUnmarshaller unmarshaller = xmlContext.createUnmarshaller();
+        XRServiceModel xrServiceModel;
+        try {
+            xrServiceModel = (XRServiceModel)unmarshaller.unmarshal(xrServiceStream);
+        }
+        catch (XMLMarshalException e) {
+            // something went wrong parsing the eclipselink-dbws.xml - can't recover from that
+            throw new WebServiceException(DBWSException.couldNotParseDBWSFile());
+        }
+        finally {
+            try {
+                xrServiceStream.close();
+            }
+            catch (IOException e) {
+                // ignore
+            }
+        }
+
+        xrSchemaStream = initXRSchemaStream(parentClassLoader, sc);
         try {
             buildService(xrServiceModel); // inherit xrService processing from XRServiceFactory
         }
@@ -213,22 +245,10 @@ public class ProviderHelper extends XRServiceFactory {
         // instance of DBWSAdapter (a sub-class of XRService)
         DBWSAdapter dbwsAdapter = (DBWSAdapter)xrService;
 
+        InputStream wsdlInputStream = initWSDLInputStream(parentClassLoader, sc);
         // get inline schema from WSDL - has additional types for the operations
-        StringWriter sw = new StringWriter();
-        InputStream wsdlInputStream = null;
-        path = WSDL_DIR + DBWS_WSDL;
-        if (sc != null) {
-            path = "/" + WEB_INF_DIR + path;
-            wsdlInputStream = sc.getResourceAsStream(path);
-        }
-        else {
-            // if ServletContext is null, then we are running in JavaSE6 'container-less' mode
-            wsdlInputStream = parentClassLoader.getResourceAsStream(path);
-        } 
-        if (wsdlInputStream == null) {
-            throw new WebServiceException(DBWSException.couldNotLocateFile(DBWS_WSDL));
-        }
         try {
+            StringWriter sw = new StringWriter();
             StreamSource wsdlStreamSource = new StreamSource(wsdlInputStream);
         	Transformer t = TransformerFactory.newInstance().newTransformer(new StreamSource(
         	    new StringReader(MATCH_SCHEMA)));
@@ -245,7 +265,18 @@ public class ProviderHelper extends XRServiceFactory {
         catch (Exception e) {
         	// that's Ok, WSDL may not contain inline schema
         }
-
+        finally {
+            try {
+                wsdlInputStream.close();
+            }
+            catch (IOException e) {
+                // ignore
+            }
+        }
+        
+        // an Invocation needs a mapping for its parameters - use XMLAnyCollectionMapping +
+        // custom AttributeAccessor
+        // NB - this code is NOt in it own initNNN method, cannot be overridden 
         String tns = dbwsAdapter.getExtendedSchema().getTargetNamespace();
         Project oxProject = dbwsAdapter.getOXSession().getProject();
         XMLDescriptor invocationDescriptor = new XMLDescriptor();
