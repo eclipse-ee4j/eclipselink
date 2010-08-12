@@ -17,24 +17,14 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
 import java.io.StringReader;
-import java.io.StringWriter;
-import java.util.Iterator;
-import java.util.Vector;
-import org.w3c.dom.Element;
-import org.w3c.dom.Node;
-import org.w3c.dom.NodeList;
 
 //java eXtension imports
 import javax.annotation.PreDestroy;
+import javax.servlet.ServletContext;
 import javax.wsdl.WSDLException;
 import javax.xml.namespace.QName;
-import javax.xml.transform.Transformer;
-import javax.xml.transform.TransformerFactory;
-import javax.xml.transform.stream.StreamResult;
-import javax.xml.transform.stream.StreamSource;
 import javax.xml.ws.Endpoint;
 import javax.xml.ws.Service;
-import javax.xml.ws.WebServiceException;
 import javax.xml.ws.WebServiceProvider;
 import static javax.xml.ws.soap.SOAPBinding.SOAP12HTTP_BINDING;
 
@@ -43,33 +33,14 @@ import org.junit.AfterClass;
 import static org.junit.Assert.fail;
 
 //EclipseLink imports
-import org.eclipse.persistence.dbws.DBWSModelProject;
-import org.eclipse.persistence.descriptors.ClassDescriptor;
-import org.eclipse.persistence.exceptions.XMLMarshalException;
 import org.eclipse.persistence.internal.databaseaccess.Platform;
-import org.eclipse.persistence.internal.dbws.DBWSAdapter;
 import org.eclipse.persistence.internal.dbws.ProviderHelper;
-import org.eclipse.persistence.internal.dbws.SOAPResponseWriter;
 import org.eclipse.persistence.internal.helper.ConversionManager;
-import org.eclipse.persistence.internal.oxm.schema.SchemaModelProject;
-import org.eclipse.persistence.internal.oxm.schema.model.Schema;
-import org.eclipse.persistence.internal.sessions.DatabaseSessionImpl;
-import org.eclipse.persistence.internal.xr.XRDynamicClassLoader;
-import org.eclipse.persistence.internal.xr.Invocation;
-import org.eclipse.persistence.internal.xr.Operation;
-import org.eclipse.persistence.internal.xr.Parameter;
 import org.eclipse.persistence.internal.xr.ProjectHelper;
-import org.eclipse.persistence.internal.xr.XRServiceModel;
+import org.eclipse.persistence.internal.xr.XRDynamicClassLoader;
 import org.eclipse.persistence.logging.SessionLog;
-import org.eclipse.persistence.mappings.AttributeAccessor;
-import org.eclipse.persistence.oxm.NamespaceResolver;
 import org.eclipse.persistence.oxm.XMLContext;
-import org.eclipse.persistence.oxm.XMLDescriptor;
 import org.eclipse.persistence.oxm.XMLLogin;
-import org.eclipse.persistence.oxm.XMLRoot;
-import org.eclipse.persistence.oxm.XMLUnmarshaller;
-import org.eclipse.persistence.oxm.mappings.XMLAnyCollectionMapping;
-import org.eclipse.persistence.oxm.schema.XMLSchemaReference;
 import org.eclipse.persistence.platform.xml.XMLComparer;
 import org.eclipse.persistence.platform.xml.XMLParser;
 import org.eclipse.persistence.platform.xml.XMLPlatform;
@@ -81,8 +52,6 @@ import org.eclipse.persistence.sessions.Project;
 import org.eclipse.persistence.sessions.factories.XMLProjectReader;
 import org.eclipse.persistence.tools.dbws.DBWSBuilder;
 import org.eclipse.persistence.tools.dbws.JSR109WebServicePackager;
-import static org.eclipse.persistence.internal.xr.Util.SERVICE_NAMESPACE_PREFIX;
-import static org.eclipse.persistence.oxm.mappings.UnmarshalKeepAsElementPolicy.KEEP_UNKNOWN_AS_ELEMENT;
 import static org.eclipse.persistence.tools.dbws.DBWSBuilder.NO_SESSIONS_FILENAME;
 import static org.eclipse.persistence.tools.dbws.DBWSBuilder.SESSIONS_FILENAME_KEY;
 import static org.eclipse.persistence.tools.dbws.DBWSPackager.ArchiveUse.noArchive;
@@ -170,186 +139,24 @@ public class WebServiceSOAP12TestSuite extends ProviderHelper {
         super.destroy();
     }
 
-    @SuppressWarnings("serial")
-    public void init() {
-        parentClassLoader = new XRDynamicClassLoader(Thread.currentThread().getContextClassLoader());
-        InputStream xrServiceStream = new ByteArrayInputStream(DBWS_SERVICE_STREAM.toByteArray());
-        DBWSModelProject xrServiceModelProject = new DBWSModelProject();
-        XMLContext xmlContext = new XMLContext(xrServiceModelProject);
-        XMLUnmarshaller unmarshaller = xmlContext.createUnmarshaller();
-        XRServiceModel dbwsModel = null;
-        try {
-            dbwsModel = (XRServiceModel)unmarshaller.unmarshal(xrServiceStream);
-        }
-        catch (Exception e) {
-            e.printStackTrace();
-        }
-        xrSchemaStream = new ByteArrayInputStream(DBWS_SCHEMA_STREAM.toByteArray());
-        buildService(dbwsModel);
+    @Override
+    protected InputStream initXRServicestream(ClassLoader parentClassLoader, ServletContext sc) {
+        return new ByteArrayInputStream(DBWS_SERVICE_STREAM.toByteArray());
+    }
+
+    @Override
+    protected InputStream initXRSchemaStream(ClassLoader parentClassLoader, ServletContext sc) {
+        return new ByteArrayInputStream(DBWS_SCHEMA_STREAM.toByteArray());
+    }
+
+    @Override
+    protected InputStream initWSDLInputStream(ClassLoader parentClassLoader, ServletContext sc) {
+        return new ByteArrayInputStream(DBWS_WSDL_STREAM.toByteArray());
+    }
     
-        // the xrService built by 'buildService' above is overridden to produce an
-        // instance of DBWSAdapter (a sub-class of XRService)
-        DBWSAdapter dbwsAdapter = (DBWSAdapter)xrService;
-    
-        // get inline schema from WSDL - has additional types for the operations
-        StringWriter sw = new StringWriter();
-        InputStream wsdlInputStream = new ByteArrayInputStream(DBWS_WSDL_STREAM.toByteArray());
-        try {
-            StreamSource wsdlStreamSource = new StreamSource(wsdlInputStream);
-            Transformer t = TransformerFactory.newInstance().newTransformer(new StreamSource(
-                new StringReader(MATCH_SCHEMA)));
-            StreamResult streamResult = new StreamResult(sw);
-            t.transform(wsdlStreamSource, streamResult);
-            sw.toString();
-            wsdlInputStream.close();
-            SchemaModelProject schemaProject = new SchemaModelProject();
-            XMLContext xmlContext2 = new XMLContext(schemaProject);
-            unmarshaller = xmlContext2.createUnmarshaller();
-            Schema extendedSchema = (Schema)unmarshaller.unmarshal(new StringReader(sw.toString()));
-            dbwsAdapter.setExtendedSchema(extendedSchema);
-        }
-        catch (Exception e) {
-            // that's Ok, WSDL may not contain inline schema
-        }
-    
-        String tns = dbwsAdapter.getExtendedSchema().getTargetNamespace();
-        Project oxProject = dbwsAdapter.getOXSession().getProject();
-        XMLDescriptor invocationDescriptor = new XMLDescriptor();
-        invocationDescriptor.setJavaClass(Invocation.class);
-        NamespaceResolver nr = new NamespaceResolver();
-        invocationDescriptor.setNamespaceResolver(nr);
-        nr.setDefaultNamespaceURI(tns);
-        nr.put(SERVICE_NAMESPACE_PREFIX, tns);
-        XMLAnyCollectionMapping parametersMapping = new XMLAnyCollectionMapping();
-        parametersMapping.setAttributeName("parameters");
-        parametersMapping.setAttributeAccessor(new AttributeAccessor() {
-            Project oxProject;
-            DBWSAdapter dbwsAdapter;
-            @Override
-            public Object getAttributeValueFromObject(Object object) {
-              return ((Invocation)object).getParameters();
-            }
-            @SuppressWarnings({"unchecked", "rawtypes"})
-            @Override
-            public void setAttributeValueInObject(Object object, Object value) {
-                Invocation invocation = (Invocation)object;
-                Vector values = (Vector)value;
-                for (Iterator i = values.iterator(); i.hasNext();) {
-                  /* scan through values:
-                   *  if XML conforms to something mapped, it an object; else it is a DOM Element
-                   *  (probably a scalar). Walk through operations for the types, converting
-                   *   as required. The 'key' is the local name of the element - for mapped objects,
-                   *   have to get the element name from the schema context for the object
-                   */
-                  Object o = i.next();
-                  if (o instanceof Element) {
-                    Element e = (Element)o;
-                    String key = e.getLocalName();
-                    if ("theInstance".equals(key)) {
-                        NodeList nl = e.getChildNodes();
-                        for (int j = 0; j < nl.getLength(); j++) {
-                            Node n = nl.item(j);
-                            if (n.getNodeType() == Node.ELEMENT_NODE) {
-                                try {
-                                    Object theInstance = 
-                                        dbwsAdapter.getXMLContext().createUnmarshaller().unmarshal(n);
-                                    if (theInstance instanceof XMLRoot) {
-                                        theInstance = ((XMLRoot)theInstance).getObject();
-                                    }
-                                    invocation.setParameter(key, theInstance);
-                                    break;
-                                }
-                                catch (XMLMarshalException xmlMarshallException) {
-                                   throw new WebServiceException(xmlMarshallException);
-                                }
-                            }
-                        }
-                    }
-                    else {
-                        ClassDescriptor desc = null;
-                        for (XMLDescriptor xdesc : (Vector<XMLDescriptor>)oxProject.getOrderedDescriptors()) {
-                            XMLSchemaReference schemaReference = xdesc.getSchemaReference();
-                            if (schemaReference != null && 
-                                schemaReference.getSchemaContext().equalsIgnoreCase(key)) {
-                                desc = xdesc;
-                                break;
-                            }
-                        }
-                        if (desc != null) {
-                            try {
-                                Object theObject = 
-                                    dbwsAdapter.getXMLContext().createUnmarshaller().unmarshal(e,
-                                        desc.getJavaClass());
-                                if (theObject instanceof XMLRoot) {
-                                    theObject = ((XMLRoot)theObject).getObject();
-                                }
-                                invocation.setParameter(key, theObject);
-                            }
-                            catch (XMLMarshalException xmlMarshallException) {
-                               throw new WebServiceException(xmlMarshallException);
-                            }
-                        }
-                        else {
-                            String serviceName = e.getParentNode().getLocalName();
-                            boolean found = false;
-                            for (Operation op : dbwsAdapter.getOperationsList()) {
-                                if (op.getName().equals(serviceName)) {
-                                    for (Parameter p : op.getParameters()) {
-                                        if (p.getName().equals(key)) {
-                                            desc = dbwsAdapter.getDescriptorsByQName().get(p.getType());
-                                            if (desc != null) {
-                                                found = true;
-                                            }
-                                            break;
-                                        }
-                                    }
-                                }
-                                if (found) {
-                                    break;
-                                }
-                            }
-                            if (found) {
-                                Object theObject = 
-                                    dbwsAdapter.getXMLContext().createUnmarshaller().unmarshal(e,
-                                        desc.getJavaClass());
-                                if (theObject instanceof XMLRoot) {
-                                    theObject = ((XMLRoot)theObject).getObject();
-                                }
-                                invocation.setParameter(key, theObject);
-                            }
-                            else {
-                                String val = e.getTextContent();
-                                invocation.setParameter(key, val);
-                            }
-                        }
-                    }
-                  }
-                  else {
-                    XMLDescriptor descriptor = (XMLDescriptor)oxProject.getDescriptor(o.getClass());
-                    String key = descriptor.getDefaultRootElement();
-                    int idx = key.indexOf(':');
-                    if (idx != -1) {
-                      key = key.substring(idx+1);
-                    }
-                    invocation.setParameter(key, o);
-                  }
-                }
-            }
-            public AttributeAccessor setProjectAndAdapter(Project oxProject, DBWSAdapter dbwsAdapter) {
-              this.oxProject = oxProject;
-              this.dbwsAdapter = dbwsAdapter;
-              return this;
-            }
-        }.setProjectAndAdapter(oxProject, dbwsAdapter));
-        parametersMapping.setKeepAsElementPolicy(KEEP_UNKNOWN_AS_ELEMENT);
-        invocationDescriptor.addMapping(parametersMapping);
-        oxProject.addDescriptor(invocationDescriptor);
-        ((DatabaseSessionImpl)dbwsAdapter.getOXSession()).initializeDescriptorIfSessionAlive(invocationDescriptor);
-        dbwsAdapter.getXMLContext().storeXMLDescriptorByQName(invocationDescriptor);
-    
-        // create SOAP message response handler
-        responseWriter = new SOAPResponseWriter(dbwsAdapter);
-        responseWriter.initialize();
+    protected void init() {
+        super.init(new XRDynamicClassLoader(
+            Thread.currentThread().getContextClassLoader()), null, false);
     }
     
     @Override
