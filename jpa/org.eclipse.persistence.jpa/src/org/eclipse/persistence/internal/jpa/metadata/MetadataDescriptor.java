@@ -1148,10 +1148,9 @@ public class MetadataDescriptor {
     /**
      * INTERNAL:
      * Return whether there is an IdAccessor on this descriptor.
-     * @return
      */
     public boolean hasIdAccessor() {
-        return !m_idAccessors.isEmpty();        
+        return !m_idAccessors.isEmpty();
     }
     
     /**
