@@ -125,8 +125,13 @@ public class SessionManager {
     }
 
     private void destroy(DatabaseSession session) {
-        if (session.isConnected()) {
-            session.logout();
+        try {
+            if (session.isConnected()) {
+                session.logout();
+            }
+        } catch (Throwable ignore) {
+            // EL Bug 321843 - Must handle errors from logout.
+            AbstractSessionLog.getLog().logThrowable(SessionLog.WARNING, ignore);
         }
 
         sessions.remove(session.getName());
