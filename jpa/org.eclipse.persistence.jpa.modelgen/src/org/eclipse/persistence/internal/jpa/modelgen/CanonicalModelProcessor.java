@@ -14,6 +14,8 @@
  *       - 309856: MappedSuperclasses from XML are not being initialized properly
  *     06/14/2010-2.2 Guy Pelletier 
  *       - 264417: Table generation is incorrect for JoinTables in AssociationOverrides
+ *     08/12/2010-2.2 Guy Pelletier 
+ *       - 298118: canonical metamodel generation with untyped Map throws NPE
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.modelgen;
 
@@ -21,7 +23,6 @@ import java.io.IOException;
 import java.io.Writer;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
@@ -148,7 +149,8 @@ public class CanonicalModelProcessor extends AbstractProcessor {
                                 } else {
                                     if (mappingAccessor.getReferenceDescriptor().hasIdAccessor()) {
                                         // Grab the id type from the reference descriptor, now there's a handle!
-                                        mapKeyType = mappingAccessor.getReferenceDescriptor().getIdAccessors().get(0).getAnnotatedElement().getType();
+                                        MappingAccessor idAccessor = mappingAccessor.getReferenceDescriptor().getIdAccessors().values().iterator().next();
+                                        mapKeyType = idAccessor.getReferenceClassName();
                                     } else {
                                         // We don't know at this point so just use the catch all default.
                                         mapKeyType = TypeVisitor.GENERIC_TYPE;
