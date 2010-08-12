@@ -17,12 +17,26 @@
  ******************************************************************************/  
 package org.eclipse.persistence.testing.tests.jpa.cacheable;
 
+import java.util.HashMap;
+
+import javax.persistence.CacheRetrieveMode;
+import javax.persistence.CacheStoreMode;
+import javax.persistence.EntityManager;
+import javax.persistence.Query;
+
 import junit.framework.*;
 
+import org.eclipse.persistence.config.CacheUsage;
+import org.eclipse.persistence.config.QueryHints;
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.sessions.server.ServerSession;
 import org.eclipse.persistence.testing.framework.junit.JUnitTestCase;
 import org.eclipse.persistence.testing.models.jpa.cacheable.CacheableTableCreator;
+import org.eclipse.persistence.testing.models.jpa.cacheable.CacheableTrueEntity;
+import org.eclipse.persistence.testing.models.jpa.cacheable.CacheableFalseEntity;
+import org.eclipse.persistence.testing.models.jpa.cacheable.ChildCacheableFalseEntity;
+import org.eclipse.persistence.testing.models.jpa.cacheable.SubCacheableFalseEntity;
+import org.eclipse.persistence.testing.models.jpa.cacheable.SubCacheableNoneEntity;
 
 /*
  * The test is testing against "MulitPU-1" persistence unit which has <shared-cache-mode> to be ALL
