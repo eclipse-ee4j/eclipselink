@@ -43,10 +43,16 @@ public class WeavedObjectBasicIndirectionPolicy extends BasicIndirectionPolicy {
     protected String setMethodName = null;
     /** Lazily initialized set method based on the set method name. */
     protected Method setMethod = null;
+    /** Name of the initial get method. */
+    protected String getMethodName;
+    /** indicates whether the mapping has originally used method access */
+    protected boolean hasUsedMethodAccess;
     
-    public WeavedObjectBasicIndirectionPolicy(String setMethodName) {
+    public WeavedObjectBasicIndirectionPolicy(String getMethodName, String setMethodName, boolean hasUsedMethodAccess) {
         super();
         this.setMethodName = setMethodName;
+        this.getMethodName = getMethodName;
+        this.hasUsedMethodAccess = hasUsedMethodAccess;
     }    
     
     /**
@@ -135,5 +141,21 @@ public class WeavedObjectBasicIndirectionPolicy extends BasicIndirectionPolicy {
                 trackedObject._persistence_setPropertyChangeListener(listener);
             }
         }
-    }  
+    }
+    
+    public String getGetMethodName() {
+        return this.getMethodName;
+    }
+
+    public String getSetMethodName() {
+        return this.setMethodName;
+    }
+    
+    public boolean hasUsedMethodAccess() {
+        return this.hasUsedMethodAccess;
+    }
+    
+    public boolean isWeavedObjectBasicIndirectionPolicy() {
+        return true;
+    }
 }

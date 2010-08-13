@@ -1006,17 +1006,13 @@ public abstract class ForeignReferenceMapping extends DatabaseMapping {
             Class attributeType = getAttributeAccessor().getAttributeClass();
             // Check that not already weaved or coded.
             if (!(ClassConstants.ValueHolderInterface_Class.isAssignableFrom(attributeType))) {
-                String originalSetMethod = null;
                 if(getAttributeAccessor().isMethodAttributeAccessor()) {
-                    originalSetMethod = getSetMethodName();
+                    useWeavedIndirection(getGetMethodName(), getSetMethodName(), true);
                 } else if(getAttributeAccessor().isInstanceVariableAttributeAccessor()) {
-                    originalSetMethod = Helper.getWeavedSetMethodName(getAttributeName());
+                    useWeavedIndirection(Helper.getWeavedSetMethodName(getAttributeName()), Helper.getWeavedSetMethodName(getAttributeName()), false);
                 }
                 setGetMethodName(Helper.getWeavedValueHolderGetMethodName(getAttributeName()));
                 setSetMethodName(Helper.getWeavedValueHolderSetMethodName(getAttributeName()));
-                if (originalSetMethod != null) {
-                    useWeavedIndirection(originalSetMethod);
-                }
                 // Must re-initialize the attribute accessor.
                 super.preInitialize(session);
             }
@@ -1602,10 +1598,12 @@ public abstract class ForeignReferenceMapping extends DatabaseMapping {
      * Configures the mapping to used weaved indirection.
      * This requires that the toplink-agent be used to weave indirection into the class.
      * This policy is only require for method access.
-     * @param setMethodName is the name of the original set method for the mapping.
+     * @param getMethodName is the name of the original (or weaved in field access case) set method for the mapping.
+     * @param setMethodName is the name of the original (or weaved in field access case) set method for the mapping.
+     * @param hasUsedMethodAccess indicates whether method or field access was originally used.
      */
-    public void useWeavedIndirection(String setMethodName){
-        setIndirectionPolicy(new WeavedObjectBasicIndirectionPolicy(setMethodName));
+    public void useWeavedIndirection(String getMethodName, String setMethodName, boolean hasUsedMethodAccess){
+        setIndirectionPolicy(new WeavedObjectBasicIndirectionPolicy(getMethodName, setMethodName, hasUsedMethodAccess));
     }
 
     /**

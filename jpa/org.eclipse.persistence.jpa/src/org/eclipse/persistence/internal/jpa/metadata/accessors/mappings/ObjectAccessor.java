@@ -491,9 +491,9 @@ public abstract class ObjectAccessor extends RelationshipAccessor {
         }
         
         if (usesIndirection && usesPropertyAccess()) {
-            mapping.setIndirectionPolicy(new WeavedObjectBasicIndirectionPolicy(getSetMethodName()));
+            mapping.setIndirectionPolicy(new WeavedObjectBasicIndirectionPolicy(getGetMethodName(), getSetMethodName(), true));
         } else if (usesIndirection && usesFieldAccess()) {
-            mapping.setIndirectionPolicy(new WeavedObjectBasicIndirectionPolicy(Helper.getWeavedSetMethodName(mapping.getAttributeName())));
+            mapping.setIndirectionPolicy(new WeavedObjectBasicIndirectionPolicy(Helper.getWeavedGetMethodName(mapping.getAttributeName()), Helper.getWeavedSetMethodName(mapping.getAttributeName()), false));
         } else {
             mapping.setUsesIndirection(usesIndirection);
         }

@@ -15,6 +15,7 @@ package org.eclipse.persistence.testing.models.jpa.fieldaccess.advanced;
 import javax.persistence.*;
 
 import static javax.persistence.CascadeType.*;
+import static javax.persistence.FetchType.*;
 
 @Entity(name="PartnerLink")
 @Table(name="CMP3_FA_MW")
@@ -28,12 +29,12 @@ public class PartnerLink {
     @Column(name="W", insertable=false, updatable=false)
 	private Integer womanId;
 
-	@OneToOne(cascade=PERSIST)
+	@OneToOne(cascade=PERSIST, fetch=FetchType.LAZY)
 	@JoinColumn(name="M")
     private Man man;
 	
 
-	@OneToOne(cascade=PERSIST)
+	@OneToOne(cascade=PERSIST, fetch=FetchType.LAZY)
 	@JoinColumn(name="W")
     private Woman woman;
 

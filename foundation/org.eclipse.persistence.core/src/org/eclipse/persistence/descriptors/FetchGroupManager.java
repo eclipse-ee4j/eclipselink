@@ -450,13 +450,13 @@ public class FetchGroupManager implements Cloneable {
      * It is used in Fetch Group case when filling in the clone from the cached object.
      */
     public boolean shouldWriteInto(Object cachedObject, Object clone) {
-        if (isPartialObject(clone)) {
+        FetchGroup fetchGroupInTarg = ((FetchGroupTracker)clone)._persistence_getFetchGroup();
+        if (fetchGroupInTarg != null) {
             FetchGroup fetchGroupInSrc = ((FetchGroupTracker)cachedObject)._persistence_getFetchGroup();
-            FetchGroup fetchGroupInTarg = ((FetchGroupTracker)clone)._persistence_getFetchGroup();
 
-            //if the target fetch group is not null (i.e. fully fetched object) or if partially fetched, it's not a superset of that of the source, 
+            //should write if target's fetch group is not a superset of that of the source, 
             //or if refresh is required, should always write (either refresh or revert) data from the cache to the clones.
-            return fetchGroupInTarg != null || fetchGroupInTarg.isSupersetOf(fetchGroupInSrc) || ((FetchGroupTracker) cachedObject)._persistence_shouldRefreshFetchGroup();
+            return !fetchGroupInTarg.isSupersetOf(fetchGroupInSrc) || ((FetchGroupTracker) cachedObject)._persistence_shouldRefreshFetchGroup();
         }
         return false;
     }
