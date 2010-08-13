@@ -15,6 +15,7 @@ package org.eclipse.persistence.testing.models.jpa.advanced;
 import javax.persistence.*;
 
 import static javax.persistence.CascadeType.*;
+import static javax.persistence.FetchType.*;
 
 @Entity
 @Table(name="MW")
@@ -25,24 +26,24 @@ public class PartnerLink {
 
 	public PartnerLink() {}
 	@Id
-    @OneToOne(cascade=PERSIST)
+    @OneToOne(cascade=PERSIST, fetch=LAZY)
 	@JoinColumn(name="M")
 	public Man getMan() { 
         return man; 
     }
-    @Column(name="M", insertable=false, updatable=false)
+    @Transient
 	public Integer getManId() {
         return (getMan() == null) ? null : getMan().getId();
     }
     
     @Id
-    @OneToOne(cascade=PERSIST)
+    @OneToOne(cascade=PERSIST, fetch=LAZY)
 	@JoinColumn(name="W")
 	public Woman getWoman() { 
         return woman; 
     }
     
-    @Column(name="W", insertable=false, updatable=false)
+    @Transient
 	public Integer getWomanId() {
         return (getWoman() == null) ? null : getWoman().getId();
     }

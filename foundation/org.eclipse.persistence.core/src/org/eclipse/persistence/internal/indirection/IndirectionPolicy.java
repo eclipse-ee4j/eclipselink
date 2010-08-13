@@ -249,6 +249,13 @@ public abstract class IndirectionPolicy implements Cloneable, Serializable {
 
     /**
      * INTERNAL:
+     */
+    public boolean isWeavedObjectBasicIndirectionPolicy() {
+        return false;
+    }
+    
+    /**
+     * INTERNAL:
      * Iterate over the specified attribute value,
      * heeding the settings in the iterator.
      */

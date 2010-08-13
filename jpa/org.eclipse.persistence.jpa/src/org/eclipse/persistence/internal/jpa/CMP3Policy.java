@@ -30,10 +30,12 @@ import org.eclipse.persistence.internal.helper.ConversionManager;
 import org.eclipse.persistence.internal.localization.ExceptionLocalization;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.mappings.DatabaseMapping;
+import org.eclipse.persistence.mappings.ObjectReferenceMapping;
 import org.eclipse.persistence.mappings.foundation.AbstractDirectMapping;
 import org.eclipse.persistence.exceptions.*;
 import org.eclipse.persistence.internal.helper.DatabaseField;
 import org.eclipse.persistence.internal.identitymaps.CacheId;
+import org.eclipse.persistence.internal.indirection.WeavedObjectBasicIndirectionPolicy;
 import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
 import org.eclipse.persistence.internal.security.PrivilegedGetField;
 import org.eclipse.persistence.internal.security.PrivilegedClassForName;
@@ -408,28 +410,40 @@ public class CMP3Policy extends CMPPolicy {
                             fieldToAccessorMap.put(field, pkAttributes[i]);
                             noSuchElementException = null;
                         } catch (NoSuchFieldException ex) {
-                            if (mapping.getGetMethodName() != null) {
+                            String getMethodName = null; 
+                            String setMethodName = null; 
+                            if(mapping.isObjectReferenceMapping() && ((ObjectReferenceMapping)mapping).getIndirectionPolicy().isWeavedObjectBasicIndirectionPolicy()) {
+                                WeavedObjectBasicIndirectionPolicy weavedIndirectionPolicy = (WeavedObjectBasicIndirectionPolicy)((ObjectReferenceMapping)mapping).getIndirectionPolicy();
+                                if(weavedIndirectionPolicy.hasUsedMethodAccess()) {
+                                    getMethodName = weavedIndirectionPolicy.getGetMethodName();
+                                    setMethodName = weavedIndirectionPolicy.getSetMethodName();
+                                }
+                            } else {
+                                getMethodName = mapping.getGetMethodName(); 
+                                setMethodName = mapping.getSetMethodName(); 
+                            }
+                            if (getMethodName != null) {
                                 // Must be a property.
                                 try {
                                     Method getMethod = null;
                                     if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()){
                                         try {
-                                            getMethod = AccessController.doPrivileged(new PrivilegedGetMethod(keyClass, mapping.getGetMethodName(), new Class[] {}, true));
+                                            getMethod = AccessController.doPrivileged(new PrivilegedGetMethod(keyClass, getMethodName, new Class[] {}, true));
                                         } catch (PrivilegedActionException exception) {
                                             throw (NoSuchMethodException)exception.getException();
                                         }
                                     } else {
-                                        getMethod = PrivilegedAccessHelper.getMethod(keyClass, mapping.getGetMethodName(), new Class[] {}, true);
+                                        getMethod = PrivilegedAccessHelper.getMethod(keyClass, getMethodName, new Class[] {}, true);
                                     }
                                     Method setMethod = null;
                                     if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()){
                                         try {
-                                            setMethod = AccessController.doPrivileged(new PrivilegedGetMethod(keyClass, mapping.getSetMethodName(), new Class[] {getMethod.getReturnType()}, true));
+                                            setMethod = AccessController.doPrivileged(new PrivilegedGetMethod(keyClass, setMethodName, new Class[] {getMethod.getReturnType()}, true));
                                         } catch (PrivilegedActionException exception) {
                                             throw (NoSuchMethodException)exception.getException();
                                         }
                                     } else {
-                                        setMethod = PrivilegedAccessHelper.getMethod(keyClass, mapping.getSetMethodName(), new Class[] {getMethod.getReturnType()}, true);
+                                        setMethod = PrivilegedAccessHelper.getMethod(keyClass, setMethodName, new Class[] {getMethod.getReturnType()}, true);
                                     }
                                     pkAttributes[i] = new PropertyAccessor(getMethod, setMethod, fieldName, field, mapping);
                                     this.fieldToAccessorMap.put(field, pkAttributes[i]);

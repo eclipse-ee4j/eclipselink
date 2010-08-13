@@ -28,7 +28,6 @@ public class PartnerLink {
         return man; 
     }
 	@Transient
-    //@Column(name="M", insertable=false, updatable=false)
 	public Integer getManId() {
         return (getMan() == null) ? null : getMan().getId();
     }
@@ -41,7 +40,6 @@ public class PartnerLink {
     }
     
 	@Transient
-	//@Column(name="W", insertable=false, updatable=false)
 	public Integer getWomanId() {
         return (getWoman() == null) ? null : getWoman().getId();
     }
