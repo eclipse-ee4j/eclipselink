@@ -5364,7 +5364,9 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
      * On persist and flush operations we must update any derived id fields.
      */
     protected Object updateDerivedIds(Object clone, ClassDescriptor descriptor) {
-        if (descriptor.hasDerivedId()) {            
+        Object key = null;
+        
+        if (descriptor.hasDerivedId()) {
             for (DatabaseMapping derivesIdMapping : descriptor.getDerivesIdMappinps()) {
                 DatabaseMapping derivedIdMapping = derivesIdMapping.getDerivedIdMapping();
                 
@@ -5378,7 +5380,6 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
                     // mapping. Some mappings may be part of a composite primary key that allows for a 
                     // null setting or the mapping may just not be set.
                     if (parentClone != null) {
-                        Object key;
                         // Recurse up the chain to figure out the key. The first dependent will figure 
                         // it out and pass it to its sub-dependents (keeping it the same)
                         if (parentDescriptor.hasDerivedId()) {
@@ -5401,19 +5402,22 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
                             // Now get the actual derived id mapping from the aggregate and populate it on the aggregate clone.
                             DatabaseMapping aggregateMapping = derivedIdMapping.getReferenceDescriptor().getObjectBuilder().getMappingForAttributeName(derivesIdMapping.getMapsIdValue());
                             aggregateMapping.setRealAttributeValueInObject(aggregateClone, key);
+                            
+                            // The key should be the aggregate clone when we are done.
+                            key = aggregateClone;
                         } else {
                             // Case #4b, #5b, #6b from the JPA spec. Our id mapping is the derived id. 
                             // We will deal with the clone provided.
                             derivedIdMapping.setRealAttributeValueInObject(clone, key);
                         }
-                        
-                        return key;
                     }
                 }
             }
         }
         
-        return null;
+        // Return the key once we have had an opportunity to update all the
+        // parts of it.
+        return key;
     }
     
     /**

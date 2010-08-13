@@ -17,6 +17,8 @@
  *       - 295790: JPA 2.0 adding @MapsId to one entity causes initialization errors in other entities
  *     05/31/2010-2.1 Guy Pelletier 
  *       - 314941: multiple joinColumns without referenced column names defined, no error
+ *     08/13/2010-2.2 Guy Pelletier 
+ *       - 296078: JPA 2.0 with @MapsId, em.persist generates Internal Exception IllegalArgumentException
  ******************************************************************************/  
 
 package org.eclipse.persistence.testing.models.jpa.advanced.compositepk;
@@ -56,6 +58,10 @@ public class CompositePKTableCreator extends TogglingFastTableCreator {
         addTableDefinition(buildBOOKIETable());
         addTableDefinition(buildCELLNUMBERTable());
         addTableDefinition(buildADMINPOOLTable());
+        addTableDefinition(buildGOLFCLUBHEADTable());
+        addTableDefinition(buildGOLFCLUBSHAFTTable());
+        addTableDefinition(buildGOLFCLUBTable());
+        addTableDefinition(buildGOLFCLUBORDERTable());
 	}
 
     public static TableDefinition buildBOOKIETable() {
@@ -475,6 +481,94 @@ public class CompositePKTableCreator extends TogglingFastTableCreator {
         fieldID.setUnique(false);
         fieldID.setIsIdentity(true);
         table.addField(fieldID);
+        
+        return table;
+    }
+    
+    public static TableDefinition buildGOLFCLUBHEADTable() {
+        TableDefinition table = new TableDefinition();
+        table.setName("JPA_GOLF_CLUB_HEAD");
+        
+        FieldDefinition fieldID = new FieldDefinition();
+        fieldID.setName("ID");
+        fieldID.setTypeName("NUMERIC");
+        fieldID.setSize(15);
+        fieldID.setShouldAllowNull(false);
+        fieldID.setIsPrimaryKey(true);
+        fieldID.setUnique(false);
+        fieldID.setIsIdentity(false);
+        table.addField(fieldID);
+
+        return table;
+    }
+    
+    public static TableDefinition buildGOLFCLUBORDERTable() {
+        TableDefinition table = new TableDefinition();
+        table.setName("JPA_GOLF_CLUB_ORDER");
+        
+        FieldDefinition fieldHEAD_ID = new FieldDefinition();
+        fieldHEAD_ID.setName("HEAD_ID");
+        fieldHEAD_ID.setTypeName("NUMERIC");
+        fieldHEAD_ID.setSize(15);
+        fieldHEAD_ID.setShouldAllowNull(false);
+        fieldHEAD_ID.setIsPrimaryKey(true);
+        fieldHEAD_ID.setUnique(false);
+        fieldHEAD_ID.setIsIdentity(false);
+        table.addField(fieldHEAD_ID);
+
+        FieldDefinition fieldSHAFT_ID = new FieldDefinition();
+        fieldSHAFT_ID.setName("SHAFT_ID");
+        fieldSHAFT_ID.setTypeName("NUMERIC");
+        fieldSHAFT_ID.setSize(15);
+        fieldSHAFT_ID.setShouldAllowNull(false);
+        fieldSHAFT_ID.setIsPrimaryKey(true);
+        fieldSHAFT_ID.setUnique(false);
+        fieldSHAFT_ID.setIsIdentity(false);
+        table.addField(fieldSHAFT_ID);
+        
+        return table;
+    }
+    
+    public static TableDefinition buildGOLFCLUBSHAFTTable() {
+        TableDefinition table = new TableDefinition();
+        table.setName("JPA_GOLF_CLUB_SHAFT");
+        
+        FieldDefinition fieldID = new FieldDefinition();
+        fieldID.setName("ID");
+        fieldID.setTypeName("NUMERIC");
+        fieldID.setSize(15);
+        fieldID.setShouldAllowNull(false);
+        fieldID.setIsPrimaryKey(true);
+        fieldID.setUnique(false);
+        fieldID.setIsIdentity(false);
+        table.addField(fieldID);
+
+        return table;
+    }
+    
+    public static TableDefinition buildGOLFCLUBTable() {
+        TableDefinition table = new TableDefinition();
+        table.setName("JPA_GOLF_CLUB");
+        
+        FieldDefinition fieldHEAD_ID = new FieldDefinition();
+        fieldHEAD_ID.setName("HEAD_ID");
+        fieldHEAD_ID.setTypeName("NUMERIC");
+        fieldHEAD_ID.setSize(15);
+        fieldHEAD_ID.setShouldAllowNull(false);
+        fieldHEAD_ID.setIsPrimaryKey(true);
+        fieldHEAD_ID.setUnique(false);
+        fieldHEAD_ID.setIsIdentity(false);
+        table.addField(fieldHEAD_ID);
+
+        FieldDefinition fieldSHAFT_ID = new FieldDefinition();
+        fieldSHAFT_ID.setName("SHAFT_ID");
+        fieldSHAFT_ID.setTypeName("NUMERIC");
+        fieldSHAFT_ID.setSize(15);
+        fieldSHAFT_ID.setShouldAllowNull(false);
+        fieldSHAFT_ID.setIsPrimaryKey(true);
+        fieldSHAFT_ID.setUnique(false);
+        fieldSHAFT_ID.setIsIdentity(false);
+        table.addField(fieldSHAFT_ID);
         
         return table;
     }

@@ -72,6 +72,10 @@ import org.eclipse.persistence.testing.models.jpa.advanced.derivedid.Private;
 import org.eclipse.persistence.testing.models.jpa.advanced.derivedid.PrivateId;
 import org.eclipse.persistence.testing.models.jpa.advanced.derivedid.Sargeant;
 import org.eclipse.persistence.testing.models.jpa.advanced.derivedid.SecondLieutenant;
+import org.eclipse.persistence.testing.models.jpa.advanced.derivedid.nested.GolfClub;
+import org.eclipse.persistence.testing.models.jpa.advanced.derivedid.nested.GolfClubHead;
+import org.eclipse.persistence.testing.models.jpa.advanced.derivedid.nested.GolfClubOrder;
+import org.eclipse.persistence.testing.models.jpa.advanced.derivedid.nested.GolfClubShaft;
 import org.eclipse.persistence.testing.models.jpa.advanced.Employee;
 import org.eclipse.persistence.testing.models.jpa.advanced.AdvancedTableCreator;
 
@@ -116,6 +120,7 @@ public class AdvancedCompositePKJunitTest extends JUnitTestCase {
         suite.addTest(new AdvancedCompositePKJunitTest("testIdentitySequencingForDerivedId"));
         
         suite.addTest(new AdvancedCompositePKJunitTest("testSharedDerivedIdEmbeddableClass"));
+        suite.addTest(new AdvancedCompositePKJunitTest("testNestedMapsId"));
         
         if (!isJPA10()) {
             // This test runs only on a JEE6 / JPA 2.0 capable server
@@ -898,9 +903,41 @@ public class AdvancedCompositePKJunitTest extends JUnitTestCase {
         }
         
         clearCache();
-        em = createEntityManager();        
+        em = createEntityManager();
         
         MasterCorporalClone refreshedMasterCorporal = em.find(MasterCorporalClone.class, masterCorporal.getId());
         assertTrue("The master corporal clone read back did not match the original", getServerSession().compareObjects(masterCorporal, refreshedMasterCorporal));
+    }
+    
+    public void testNestedMapsId() {
+        EntityManager em = createEntityManager();
+        beginTransaction(em);
+
+        try {
+            GolfClubHead head = new GolfClubHead();
+            em.persist(head);
+            
+            GolfClubShaft shaft = new GolfClubShaft();
+            em.persist(shaft);
+            
+            GolfClub golfClub = new GolfClub();
+            golfClub.setHead(head);
+            golfClub.setShaft(shaft);
+            
+            GolfClubOrder golfClubOrder = new GolfClubOrder();
+            golfClubOrder.setGolfClub(golfClub);
+            golfClub.setOrder(golfClubOrder);
+            
+            em.persist(golfClub);
+            em.persist(golfClubOrder);
+            
+            commitTransaction(em);
+        } catch (RuntimeException e) {
+            if (isTransactionActive(em)) {
+                rollbackTransaction(em);
+            }
+            closeEntityManager(em);
+            throw e;
+        }
     }
 }
