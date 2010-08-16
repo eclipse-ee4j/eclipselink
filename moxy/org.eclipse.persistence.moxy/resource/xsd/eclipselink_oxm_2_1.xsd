@@ -432,9 +432,10 @@
                         <xs:element ref="xml-access-methods" minOccurs="0" />
                         <xs:element ref="xml-properties" minOccurs="0" />
                     </xs:sequence>
-                    <xs:attribute name="read-only" type="xs:boolean" default="false" />
-                    <xs:attribute name="write-only" type="xs:boolean" default="false" />
                     <xs:attribute name="cdata" type="xs:boolean" default="false" />
+                    <xs:attribute name="read-only" type="xs:boolean" default="false" />
+                    <xs:attribute name="type" type="xs:string" default="##default" />
+                    <xs:attribute name="write-only" type="xs:boolean" default="false" />
                 </xs:extension>
             </xs:complexContent>
         </xs:complexType>

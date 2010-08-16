@@ -35,9 +35,10 @@ import javax.xml.bind.annotation.XmlType;
  *         &lt;element ref="{http://www.eclipse.org/eclipselink/xsds/persistence/oxm}xml-access-methods" minOccurs="0"/>
  *         &lt;element ref="{http://www.eclipse.org/eclipselink/xsds/persistence/oxm}xml-properties" minOccurs="0"/>
  *       &lt;/sequence>
- *       &lt;attribute name="read-only" type="{http://www.w3.org/2001/XMLSchema}boolean" default="false" />
- *       &lt;attribute name="write-only" type="{http://www.w3.org/2001/XMLSchema}boolean" default="false" />
  *       &lt;attribute name="cdata" type="{http://www.w3.org/2001/XMLSchema}boolean" default="false" />
+ *       &lt;attribute name="read-only" type="{http://www.w3.org/2001/XMLSchema}boolean" default="false" />
+ *       &lt;attribute name="type" type="{http://www.w3.org/2001/XMLSchema}string" default="##default" />
+ *       &lt;attribute name="write-only" type="{http://www.w3.org/2001/XMLSchema}boolean" default="false" />
  *     &lt;/extension>
  *   &lt;/complexContent>
  * &lt;/complexType>
@@ -61,12 +62,14 @@ public class XmlValue
     protected XmlAccessMethods xmlAccessMethods;
     @XmlElement(name = "xml-properties")
     protected XmlProperties xmlProperties;
-    @XmlAttribute(name = "read-only")
-    protected Boolean readOnly;
-    @XmlAttribute(name = "write-only")
-    protected Boolean writeOnly;
     @XmlAttribute(name = "cdata")
     protected Boolean cdata;
+    @XmlAttribute(name = "read-only")
+    protected Boolean readOnly;
+    @XmlAttribute(name = "type")
+    protected String type;
+    @XmlAttribute(name = "write-only")
+    protected Boolean writeOnly;
 
     /**
      * Gets the value of the xmlAbstractNullPolicy property.
@@ -252,5 +255,32 @@ public class XmlValue
      */
     public boolean isSetCdata() {
         return this.cdata != null;
+    }
+    /**
+     * Gets the value of the type property.
+     * 
+     * @return
+     *     possible object is
+     *     {@link String }
+     *     
+     */
+    public String getType() {
+        if (type == null) {
+            return "##default";
+        } else {
+            return type;
+        }
+    }
+
+    /**
+     * Sets the value of the type property.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link String }
+     *     
+     */
+    public void setType(String value) {
+        this.type = value;
     }
 }

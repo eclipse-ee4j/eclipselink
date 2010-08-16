@@ -69,6 +69,7 @@ public class XMLProcessor {
     private static final String SLASH = "/";
     private static final String SELF = ".";
     private static final String OPEN_BRACKET =  "[";
+    private static final String DEFAULT = "##default";
 
     /**
      * This is the preferred constructor.
@@ -570,7 +571,7 @@ public class XMLProcessor {
         if (xmlAttribute.getXmlPath() != null) {
             oldProperty.setXmlPath(xmlAttribute.getXmlPath());
             name = getNameFromXPath(xmlAttribute.getXmlPath(), oldProperty.getPropertyName(), true);
-            namespace = "##default";
+            namespace = DEFAULT;
         } else {
             // no xml-path, so use name/namespace from xml-attribute
             name = xmlAttribute.getName();
@@ -579,10 +580,10 @@ public class XMLProcessor {
 
         // set schema name
         QName qName;
-        if (name.equals("##default")) {
+        if (name.equals(DEFAULT)) {
             name = oldProperty.getPropertyName();
         }
-        if (namespace.equals("##default")) {
+        if (namespace.equals(DEFAULT)) {
             if (nsInfo.isElementFormQualified()) {
                 qName = new QName(nsInfo.getNamespace(), name);
             } else {
@@ -594,7 +595,7 @@ public class XMLProcessor {
         oldProperty.setSchemaName(qName);
 
         // set type
-        if (!xmlAttribute.getType().equals("##default")) {
+        if (!xmlAttribute.getType().equals(DEFAULT)) {
             JavaClass pType = jModelInput.getJavaModel().getClass(xmlAttribute.getType());
             oldProperty.setType(pType);
             // may need to generate a type info for the type
@@ -699,7 +700,7 @@ public class XMLProcessor {
         if (xmlElement.getXmlPath() != null) {
             oldProperty.setXmlPath(xmlElement.getXmlPath());
             name = getNameFromXPath(xmlElement.getXmlPath(), oldProperty.getPropertyName(), false);           
-            namespace = "##default";
+            namespace = DEFAULT;
         } else {
             // no xml-path, so use name/namespace from xml-element, and process wrapper
             name = xmlElement.getName();
@@ -711,10 +712,10 @@ public class XMLProcessor {
 
         // set schema name
         QName qName;
-        if (name.equals("##default")) {
+        if (name.equals(DEFAULT)) {
             name = oldProperty.getPropertyName();
         }
-        if (namespace.equals("##default")) {
+        if (namespace.equals(DEFAULT)) {
             if (nsInfo.isElementFormQualified()) {
                 qName = new QName(nsInfo.getNamespace(), name);
             } else {
@@ -950,6 +951,15 @@ public class XMLProcessor {
             oldProperty.setMethodProperty(true);
             oldProperty.setGetMethodName(xmlValue.getXmlAccessMethods().getGetMethod());
             oldProperty.setSetMethodName(xmlValue.getXmlAccessMethods().getSetMethod());
+        }
+        // set type
+        if (!xmlValue.getType().equals(DEFAULT)) {
+            JavaClass pType = jModelInput.getJavaModel().getClass(xmlValue.getType());
+            oldProperty.setType(pType);
+            // may need to generate a type info for the type
+            if (aProcessor.shouldGenerateTypeInfo(pType) && aProcessor.getTypeInfo().get(pType.getQualifiedName()) == null) {
+                aProcessor.buildNewTypeInfo(new JavaClass[] { pType });
+            }
         }
         // handle read-only
         if (xmlValue.isSetReadOnly()) {

@@ -4,7 +4,7 @@
 		<java-type name="org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmlvalue.CDNPriceNoAnnotation">
             <xml-root-element name="canadian-price" />
             <java-attributes>
-                <xml-value java-attribute="price" />
+                <xml-value java-attribute="price" type="java.math.BigDecimal" />
             </java-attributes>
 		</java-type>
 	</java-types>
