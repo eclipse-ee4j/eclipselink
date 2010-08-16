@@ -19,6 +19,7 @@ import java.util.List;
 import java.util.Map;
 
 import javax.xml.namespace.QName;
+
 import org.eclipse.persistence.jaxb.javamodel.Helper;
 import org.eclipse.persistence.jaxb.javamodel.JavaClass;
 import org.eclipse.persistence.jaxb.javamodel.JavaHasAnnotations;
@@ -29,6 +30,7 @@ import org.eclipse.persistence.jaxb.xmlmodel.XmlElementWrapper;
 import org.eclipse.persistence.jaxb.xmlmodel.XmlElements;
 import org.eclipse.persistence.jaxb.xmlmodel.XmlJavaTypeAdapter;
 import org.eclipse.persistence.jaxb.xmlmodel.XmlMarshalNullRepresentation;
+import org.eclipse.persistence.jaxb.xmlmodel.XmlTransformation;
 
 /**
  *  INTERNAL:
@@ -87,12 +89,14 @@ public class Property {
     private Boolean isCdata;
     private static final String OPEN_BRACKET =  "[";
     
+    private XmlTransformation xmlTransformation;
     private XmlAbstractNullPolicy nullPolicy;
     private XmlJavaTypeAdapter xmlJavaTypeAdapter;
     private XmlElementWrapper xmlElementWrapper;
     private boolean isXmlValue = false;
     private boolean isXmlId = false;
     private boolean isXmlIdRef = false;
+    private boolean isXmlTransformation = false;
     
     private String inverseReferencePropertyName;
     private String inverseReferencePropertyGetMethodName;
@@ -980,7 +984,7 @@ public class Property {
     }
     
     /**
-     * Indicates if a null policy is set for this porperty.
+     * Indicates if a null policy is set for this property.
      * 
      * @return
      */
@@ -1025,5 +1029,63 @@ public class Property {
      */
     public void setUserProperties(Map<Object, Object> userProperties) {
         this.userProperties = userProperties;
+    }
+    
+    /**
+     * Indicates if a map of userProperties is set for this property.
+     * 
+     * @return true if the userProperties property has been set, 
+     *         i.e. is non-null, otherwise false
+     */
+    public boolean isSetUserProperties() {
+        return userProperties != null;
+    }
+    
+    /**
+     * Return the XmlTransformation set on this property.
+     * 
+     * @return the XmlTransformation set on this property, or null if one has not been set.
+     */
+    public XmlTransformation getXmlTransformation() {
+        return xmlTransformation;
+    }
+
+    /**
+     * Set the XmlTransformation for this property.  The info contained in
+     * the XmlTransformation will be used to construct an 
+     * XmlTransformationMapping.
+     * 
+     * @param xmlTransformation
+     */
+    public void setXmlTransformation(XmlTransformation xmlTransformation) {
+        this.xmlTransformation = xmlTransformation;
+    }
+
+    /**
+     * Indicates if an XmlTransformation is set for this porperty. 
+     * 
+     * @return true if the xmlTransformation property has been set, 
+     *         i.e. is non-null, otherwise false
+     */
+    public boolean isSetXmlTransformation() {
+        return xmlTransformation != null;
+    }
+
+    /**
+     * Indicates if this property represents an XmlTransformation.
+     * 
+     * @return value of isXmlTransformation property
+     */
+    public boolean isXmlTransformation() {
+        return isXmlTransformation;
+    }
+
+    /**
+     * Set flag that indicates if this property represents an XmlTransformation.
+     * 
+     * @param isXmlTransformation
+     */
+    public void setIsXmlTransformation(boolean isXmlTransformation) {
+        this.isXmlTransformation = isXmlTransformation;
     }
 }

@@ -77,6 +77,13 @@ public class JAXBException extends EclipseLinkException {
     public static final int NULL_NODE = 50045;
     public static final int XJC_BINDING_ERROR = 50046;
     public static final int CLASS_NOT_FOUND_EXCEPTION = 50047;
+    public static final int READ_TRANSFORMER_HAS_BOTH_CLASS_AND_METHOD = 50048;
+    public static final int READ_TRANSFORMER_HAS_NEITHER_CLASS_NOR_METHOD = 50049;
+    public static final int WRITE_TRANSFORMER_HAS_BOTH_CLASS_AND_METHOD = 50050;
+    public static final int WRITE_TRANSFORMER_HAS_NEITHER_CLASS_NOR_METHOD = 50051;
+    public static final int WRITE_TRANSFORMER_HAS_NO_XMLPATH = 50052;
+    public static final int NO_SUCH_WRITE_TRANSFORMATION_METHOD = 50053;
+    public static final int TRANSFORMER_CLASS_NOT_FOUND = 50054;
 
     protected JAXBException(String message) {
         super(message);
@@ -596,5 +603,87 @@ public class JAXBException extends EclipseLinkException {
         exception.setErrorCode(CLASS_NOT_FOUND_EXCEPTION);
         return exception;
     }
+    
+    /**
+     * PUBLIC:
+     * Cause: ReadTransformer for the specified attribute of the specified class
+     * specifies both class and method. 
+     */
+    public static JAXBException readTransformerHasBothClassAndMethod(String propertyName) {
+        Object[] args = { propertyName };
+        JAXBException validationException = new JAXBException(ExceptionMessageGenerator.buildMessage(JAXBException.class, READ_TRANSFORMER_HAS_BOTH_CLASS_AND_METHOD, args));
+        validationException.setErrorCode(READ_TRANSFORMER_HAS_BOTH_CLASS_AND_METHOD);
+        return validationException;
+    }
 
+    /**
+     * PUBLIC:
+     * Cause: ReadTransformer for the specified attribute of the specified class
+     * specifies neither class nor method. 
+     */
+    public static JAXBException readTransformerHasNeitherClassNorMethod(String propertyName) {
+        Object[] args = { propertyName };
+        JAXBException validationException = new JAXBException(ExceptionMessageGenerator.buildMessage(JAXBException.class, READ_TRANSFORMER_HAS_NEITHER_CLASS_NOR_METHOD, args));
+        validationException.setErrorCode(READ_TRANSFORMER_HAS_NEITHER_CLASS_NOR_METHOD);
+        return validationException;
+    }
+
+    /**
+     * PUBLIC:
+     * Cause: WriteTransformer for the specified attribute of the specified class and specified xml-path
+     * specifies both class and method. 
+     */
+    public static JAXBException writeTransformerHasBothClassAndMethod(String propertyName, String xmlPath) {
+        Object[] args = { propertyName, xmlPath };
+        JAXBException validationException = new JAXBException(ExceptionMessageGenerator.buildMessage(JAXBException.class, WRITE_TRANSFORMER_HAS_BOTH_CLASS_AND_METHOD, args));
+        validationException.setErrorCode(WRITE_TRANSFORMER_HAS_BOTH_CLASS_AND_METHOD);
+        return validationException;
+    }
+
+    /**
+     * PUBLIC:
+     * Cause: WriteTransformer for the specified attribute of the specified class and specified xml-path
+     * specifies neither class nor method. 
+     */
+    public static JAXBException writeTransformerHasNeitherClassNorMethod(String propertyName, String xmlPath) {
+        Object[] args = { propertyName, xmlPath };
+        JAXBException validationException = new JAXBException(ExceptionMessageGenerator.buildMessage(JAXBException.class, WRITE_TRANSFORMER_HAS_NEITHER_CLASS_NOR_METHOD, args));
+        validationException.setErrorCode(WRITE_TRANSFORMER_HAS_NEITHER_CLASS_NOR_METHOD);
+        return validationException;
+    }
+
+    /**
+     * PUBLIC:
+     * Cause: WriteTransformer for the specified attribute of the specified class
+     * has no xml-path specified, or the specified xml-path is invalid.
+     */
+    public static JAXBException writeTransformerHasNoXmlPath(String propertyName) {
+        Object[] args = { propertyName };
+        JAXBException validationException = new JAXBException(ExceptionMessageGenerator.buildMessage(JAXBException.class, WRITE_TRANSFORMER_HAS_NO_XMLPATH, args));
+        validationException.setErrorCode(WRITE_TRANSFORMER_HAS_NO_XMLPATH);
+        return validationException;
+    }
+
+    /**
+     * PUBLIC:
+     * Cause: Write transformation method does not exist, or has the wrong number
+     * or type of parameters.
+     */
+    public static JAXBException noSuchWriteTransformationMethod(String methodName) {
+        Object[] args = { methodName };
+        JAXBException validationException = new JAXBException(ExceptionMessageGenerator.buildMessage(JAXBException.class, NO_SUCH_WRITE_TRANSFORMATION_METHOD, args));
+        validationException.setErrorCode(NO_SUCH_WRITE_TRANSFORMATION_METHOD);
+        return validationException;
+    }
+    
+    /**
+     * PUBLIC:
+     * Cause: Transformer class could not be loaded.
+     */
+    public static JAXBException transformerClassNotFound(String className) {
+        Object[] args = { className };
+        JAXBException validationException = new JAXBException(ExceptionMessageGenerator.buildMessage(JAXBException.class, TRANSFORMER_CLASS_NOT_FOUND, args));
+        validationException.setErrorCode(TRANSFORMER_CLASS_NOT_FOUND);
+        return validationException;
+    }
 }

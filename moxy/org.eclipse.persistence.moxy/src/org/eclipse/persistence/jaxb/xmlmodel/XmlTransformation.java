@@ -135,6 +135,15 @@ public class XmlTransformation
     }
 
     /**
+     * Indicates if an XmlReadTransformer has been set, i.e. is non-null.
+     * 
+     * @return
+     */
+    public boolean isSetXmlReadTransformer() {
+        return xmlReadTransformer != null;
+    }
+    
+    /**
      * Gets the value of the xmlReadTransformer property.
      * 
      * @return
@@ -156,6 +165,17 @@ public class XmlTransformation
      */
     public void setXmlReadTransformer(XmlTransformation.XmlReadTransformer value) {
         this.xmlReadTransformer = value;
+    }
+
+    /**
+     * Indicates if at least one XmlWriteTransformer has been 
+     * set, i.e. the List of is XmlWriteTransformers is non-null
+     * and non-empty.
+     * 
+     * @return
+     */
+    public boolean isSetXmlWriteTransformers() {
+        return xmlWriteTransformer != null && xmlWriteTransformer.size() > 0;
     }
 
     /**
@@ -266,6 +286,15 @@ public class XmlTransformation
         public void setMethod(String value) {
             this.method = value;
         }
+        
+        /**
+         * Indicates if a method has been set, i.e. the method property is non-null.
+         * 
+         * @return
+         */
+        public boolean isSetMethod() {
+            return method != null;
+        }
 
         /**
          * Gets the value of the transformerClass property.
@@ -290,7 +319,16 @@ public class XmlTransformation
         public void setTransformerClass(String value) {
             this.transformerClass = value;
         }
-
+        
+        /**
+         * Indicates if a transformerClass has been set, i.e. the 
+         * transformerClass property is non-null.
+         * 
+         * @return
+         */
+        public boolean isSetTransformerClass() {
+           return transformerClass != null; 
+        }
     }
 
 
@@ -349,6 +387,15 @@ public class XmlTransformation
         }
 
         /**
+         * Indicates if a method has been set, i.e. the method property is non-null.
+         * 
+         * @return
+         */
+        public boolean isSetMethod() {
+            return method != null;
+        }
+        
+        /**
          * Gets the value of the xmlPath property.
          * 
          * @return
@@ -370,6 +417,15 @@ public class XmlTransformation
          */
         public void setXmlPath(String value) {
             this.xmlPath = value;
+        }
+
+        /**
+         * Indicates if a xmlPath has been set, i.e. the xmlPath property is non-null.
+         * 
+         * @return
+         */
+        public boolean isSetXmlPath() {
+            return xmlPath != null;
         }
 
         /**
@@ -395,7 +451,15 @@ public class XmlTransformation
         public void setTransformerClass(String value) {
             this.transformerClass = value;
         }
-
+        
+        /**
+         * Indicates if a transformerClass has been set, i.e. the 
+         * transformerClass property is non-null.
+         * 
+         * @return
+         */
+        public boolean isSetTransformerClass() {
+           return transformerClass != null; 
+        }
     }
-
 }

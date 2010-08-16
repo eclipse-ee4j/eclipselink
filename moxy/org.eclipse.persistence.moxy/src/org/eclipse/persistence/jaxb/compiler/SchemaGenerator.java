@@ -28,16 +28,37 @@ import javax.xml.bind.annotation.XmlElementDecl.GLOBAL;
 import javax.xml.namespace.QName;
 import javax.xml.transform.Source;
 
-import org.eclipse.persistence.jaxb.javamodel.Helper;
-import org.eclipse.persistence.jaxb.javamodel.JavaClass;
-import org.eclipse.persistence.jaxb.xmlmodel.XmlElementWrapper;
-
+import org.eclipse.persistence.exceptions.JAXBException;
 import org.eclipse.persistence.internal.descriptors.Namespace;
 import org.eclipse.persistence.internal.jaxb.many.MapValue;
 import org.eclipse.persistence.internal.oxm.XPathFragment;
-import org.eclipse.persistence.internal.oxm.schema.model.*;
+import org.eclipse.persistence.internal.oxm.schema.model.All;
+import org.eclipse.persistence.internal.oxm.schema.model.Any;
+import org.eclipse.persistence.internal.oxm.schema.model.AnyAttribute;
+import org.eclipse.persistence.internal.oxm.schema.model.Attribute;
+import org.eclipse.persistence.internal.oxm.schema.model.Choice;
+import org.eclipse.persistence.internal.oxm.schema.model.ComplexContent;
+import org.eclipse.persistence.internal.oxm.schema.model.ComplexType;
+import org.eclipse.persistence.internal.oxm.schema.model.Element;
+import org.eclipse.persistence.internal.oxm.schema.model.Extension;
+import org.eclipse.persistence.internal.oxm.schema.model.Import;
+import org.eclipse.persistence.internal.oxm.schema.model.List;
+import org.eclipse.persistence.internal.oxm.schema.model.Occurs;
+import org.eclipse.persistence.internal.oxm.schema.model.Restriction;
+import org.eclipse.persistence.internal.oxm.schema.model.Schema;
+import org.eclipse.persistence.internal.oxm.schema.model.Sequence;
+import org.eclipse.persistence.internal.oxm.schema.model.SimpleContent;
+import org.eclipse.persistence.internal.oxm.schema.model.SimpleType;
+import org.eclipse.persistence.internal.oxm.schema.model.TypeDefParticle;
+import org.eclipse.persistence.internal.sessions.AbstractSession;
+import org.eclipse.persistence.jaxb.javamodel.Helper;
+import org.eclipse.persistence.jaxb.javamodel.JavaClass;
+import org.eclipse.persistence.jaxb.javamodel.JavaMethod;
+import org.eclipse.persistence.jaxb.xmlmodel.XmlElementWrapper;
+import org.eclipse.persistence.jaxb.xmlmodel.XmlTransformation.XmlWriteTransformer;
 import org.eclipse.persistence.oxm.XMLConstants;
 import org.eclipse.persistence.oxm.XMLField;
+import org.eclipse.persistence.sessions.Session;
 
 /**
  * INTERNAL:
@@ -71,6 +92,8 @@ public class SchemaGenerator {
     
     private static final String JAVAX_ACTIVATION_DATAHANDLER = "javax.activation.DataHandler";
     private static final String JAVAX_MAIL_INTERNET_MIMEMULTIPART = "javax.mail.internet.MimeMultipart";    
+
+    private static final String BUILD_FIELD_VALUE_METHOD = "buildFieldValue";
 
     public SchemaGenerator(Helper helper) {
         this.helper = helper;
@@ -352,6 +375,61 @@ public class SchemaGenerator {
                 ComplexType parentType = type;
                 
                 if (!helper.isAnnotationPresent(next.getElement(), XmlTransient.class) && !next.isInverseReference()) {
+                    if (next.isSetXmlTransformation() && next.getXmlTransformation().isSetXmlWriteTransformers()) {
+                        java.util.List<Property> props = new ArrayList<Property>();
+                        for (XmlWriteTransformer writeTransformer : next.getXmlTransformation().getXmlWriteTransformer()) {
+                            String xpath = writeTransformer.getXmlPath();
+                            String pname = XMLProcessor.getNameFromXPath(xpath, next.getPropertyName(), xpath.contains("@"));
+                            Property prop = new Property(helper);
+                            prop.setPropertyName(pname);
+                            prop.setXmlPath(xpath);
+                            prop.setSchemaName(new QName(pname));
+                            // figure out the type based on transformer method return type
+                            JavaClass jType = null;
+                            JavaClass jClass = null;
+                            JavaMethod jMethod = null;
+                            String methodName;
+                            if (writeTransformer.isSetTransformerClass()) {
+                                // handle transformer class
+                                try {
+                                    jClass = helper.getJavaClass(writeTransformer.getTransformerClass());
+                                } catch (JAXBException x) {
+                                    throw JAXBException.transformerClassNotFound(writeTransformer.getTransformerClass());
+                                }
+                                methodName = BUILD_FIELD_VALUE_METHOD;
+                                jMethod = jClass.getDeclaredMethod(methodName, new JavaClass[] { helper.getJavaClass(Object.class), helper.getJavaClass(String.class), helper.getJavaClass(Session.class) });
+                                if (jMethod == null) {
+                                    throw JAXBException.noSuchWriteTransformationMethod(methodName);
+                                }
+                                jType = jMethod.getReturnType();
+                            } else {
+                                // handle method
+                                // here it is assumed that the JavaModel is aware of the TypeInfo's class, hence jClass cannot be null 
+                                jClass = helper.getJavaClass(ownerTypeInfo.getJavaClassName());
+                                methodName = writeTransformer.getMethod();
+                                // the method can have 0 args or 1 arg (either AbstractSession or Session) 
+                                // first check 0 arg
+                                jMethod = jClass.getDeclaredMethod(methodName, new JavaClass[] {});
+                                if (jMethod == null) {
+                                    // try AbstractSession
+                                    jMethod = jClass.getDeclaredMethod(methodName, new JavaClass[] { helper.getJavaClass(AbstractSession.class) });
+                                    if (jMethod == null) {
+                                        // try Session
+                                        jMethod = jClass.getDeclaredMethod(methodName, new JavaClass[] { helper.getJavaClass(Session.class) });
+                                        if (jMethod == null) {
+                                            throw JAXBException.noSuchWriteTransformationMethod(methodName);
+                                        }
+                                    }
+                                }
+                                jType = jMethod.getReturnType();
+                            }
+                            prop.setType(jType);
+                            props.add(prop);
+                        }
+                        addToSchemaType(ownerTypeInfo, props, compositor, type, workingSchema);
+                        continue;
+                    }
+                    
                     // deal with xml-path case
                     if (next.getXmlPath() != null) {
                         // '.' xml-path requires special handling

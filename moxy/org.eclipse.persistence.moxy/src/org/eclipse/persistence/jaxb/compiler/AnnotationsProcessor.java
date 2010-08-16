@@ -94,7 +94,9 @@ import org.eclipse.persistence.jaxb.javamodel.JavaPackage;
 import org.eclipse.persistence.jaxb.javamodel.reflection.JavaFieldImpl;
 import org.eclipse.persistence.jaxb.xmlmodel.XmlAccessOrder;
 import org.eclipse.persistence.jaxb.xmlmodel.XmlAccessType;
-
+import org.eclipse.persistence.jaxb.xmlmodel.XmlTransformation;
+import org.eclipse.persistence.jaxb.xmlmodel.XmlTransformation.XmlReadTransformer;
+import org.eclipse.persistence.jaxb.xmlmodel.XmlTransformation.XmlWriteTransformer;
 import org.eclipse.persistence.oxm.NamespaceResolver;
 import org.eclipse.persistence.oxm.XMLConstants;
 import org.eclipse.persistence.oxm.annotations.XmlAccessMethods;
@@ -189,6 +191,7 @@ public class AnnotationsProcessor {
         finalizeProperties();
         createElementsForTypeMappingInfo();        
     }
+    
     public void createElementsForTypeMappingInfo() {
         if (this.javaClassToTypeMappingInfos != null && !this.javaClassToTypeMappingInfos.isEmpty()) {
             Set<JavaClass> classes = this.javaClassToTypeMappingInfos.keySet();
@@ -414,6 +417,7 @@ public class AnnotationsProcessor {
             } else {
                 info = new TypeInfo(helper);
             }
+            info.setJavaClassName(javaClass.getQualifiedName());
             info.setPreBuilt(true);
 
             // handle @XmlTransient
@@ -472,7 +476,7 @@ public class AnnotationsProcessor {
                 info.setUserProperties(propertiesMap);
             }
             typeInfoClasses.add(javaClass);
-            typeInfo.put(javaClass.getQualifiedName(), info);
+            typeInfo.put(info.getJavaClassName(), info);
         }
         return typeInfo;
     }
@@ -630,6 +634,10 @@ public class AnnotationsProcessor {
                 // handle XmlElementRef(s) - validate and build the required ElementDeclaration object
                 if (property.isReference()) {
                     processReferenceProperty(property, tInfo, jClass);
+                }
+                // handle XmlTransformation - validate transformer class/method
+                if (property.isXmlTransformation()) {
+                    processXmlTransformationProperty(property);
                 }
             }
         }
@@ -1807,6 +1815,61 @@ public class AnnotationsProcessor {
         processXmlNullPolicy(property);
     }
 
+    /**
+     * Responsible for validating transformer settings on a given property.
+     * Validates that for field transformers either a transformer class OR
+     * method name is set (not both) and that an xml-path is set.  
+     * Validates that for attribute transformers either a transformer class 
+     * OR method name is set (not both).    
+     * 
+     * @param property
+     */
+    private void processXmlTransformationProperty(Property property) {
+        if (property.isSetXmlTransformation()) {
+            XmlTransformation xmlTransformation = property.getXmlTransformation();
+            // validate transformer(s)
+            if (xmlTransformation.isSetXmlReadTransformer()) {
+                // validate read transformer
+                XmlReadTransformer readTransformer = xmlTransformation.getXmlReadTransformer();
+                if (readTransformer.isSetTransformerClass()) {
+                    // handle read transformer class
+                    if (readTransformer.isSetMethod()) {
+                        // cannot have both class and method set
+                        throw JAXBException.readTransformerHasBothClassAndMethod(property.getPropertyName());
+                    }
+                } else {
+                    // handle read transformer method
+                    if (!readTransformer.isSetMethod()) {
+                        // require class or method to be set
+                        throw JAXBException.readTransformerHasNeitherClassNorMethod(property.getPropertyName());
+                    }
+                }
+            }
+            if (xmlTransformation.isSetXmlWriteTransformers()) {
+                // handle write transformer(s)
+                for (XmlWriteTransformer writeTransformer : xmlTransformation.getXmlWriteTransformer()) {
+                    // must have an xml-path set
+                    if (!writeTransformer.isSetXmlPath()) {
+                        throw JAXBException.writeTransformerHasNoXmlPath(property.getPropertyName());
+                    }
+                    if (writeTransformer.isSetTransformerClass()) {
+                        // handle write transformer class
+                        if (writeTransformer.isSetMethod()) {
+                            // cannot have both class and method set
+                            throw JAXBException.writeTransformerHasBothClassAndMethod(property.getPropertyName(), writeTransformer.getXmlPath());
+                        }
+                    } else {
+                        // handle write transformer method
+                        if (!writeTransformer.isSetMethod()) {
+                            // require class or method to be set
+                            throw JAXBException.writeTransformerHasNeitherClassNorMethod(property.getPropertyName(), writeTransformer.getXmlPath());
+                        }
+                    }
+                }
+            }
+        }
+    }
+    
     /**
      * Compares a JavaModel JavaClass to a Class.  Equality is based on
      * the raw name of the JavaClass compared to the canonical

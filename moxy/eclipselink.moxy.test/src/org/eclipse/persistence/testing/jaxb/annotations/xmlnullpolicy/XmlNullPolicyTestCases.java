@@ -194,7 +194,7 @@ public class XmlNullPolicyTestCases extends ExternalizedMetadataTestCases {
             Employee ctrlEmp = getControlObject();
             ctrlEmp.setSomeString(null);
             marshaller.marshal(ctrlEmp, testDoc);
-            marshaller.marshal(ctrlEmp, System.out);
+            //marshaller.marshal(ctrlEmp, System.out);
             assertTrue("Document comparison failed unxepectedly: ", compareDocuments(ctrlDoc, testDoc));
             assertTrue("Accessor method was not called as expected", ctrlEmp.wasGetCalled);
         } catch (JAXBException e) {

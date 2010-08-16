@@ -66,6 +66,9 @@ import org.eclipse.persistence.jaxb.xmlmodel.XmlElementWrapper;
 import org.eclipse.persistence.jaxb.xmlmodel.XmlIsSetNullPolicy;
 import org.eclipse.persistence.jaxb.xmlmodel.XmlJavaTypeAdapter;
 import org.eclipse.persistence.jaxb.xmlmodel.XmlNullPolicy;
+import org.eclipse.persistence.jaxb.xmlmodel.XmlTransformation;
+import org.eclipse.persistence.jaxb.xmlmodel.XmlTransformation.XmlReadTransformer;
+import org.eclipse.persistence.jaxb.xmlmodel.XmlTransformation.XmlWriteTransformer;
 import org.eclipse.persistence.mappings.DatabaseMapping;
 import org.eclipse.persistence.mappings.converters.Converter;
 import org.eclipse.persistence.oxm.NamespaceResolver;
@@ -89,6 +92,7 @@ import org.eclipse.persistence.oxm.mappings.XMLDirectMapping;
 import org.eclipse.persistence.oxm.mappings.XMLInverseReferenceMapping;
 import org.eclipse.persistence.oxm.mappings.XMLMapping;
 import org.eclipse.persistence.oxm.mappings.XMLObjectReferenceMapping;
+import org.eclipse.persistence.oxm.mappings.XMLTransformationMapping;
 import org.eclipse.persistence.oxm.mappings.converters.XMLListConverter;
 import org.eclipse.persistence.oxm.mappings.nullpolicy.AbstractNullPolicy;
 import org.eclipse.persistence.oxm.mappings.nullpolicy.IsSetNullPolicy;
@@ -438,7 +442,9 @@ public class MappingsGenerator {
             }
             return mapping;
         }
-
+        if (property.isXmlTransformation()) {
+            return generateTransformationMapping(property, descriptor, namespaceInfo);
+        }
         if (property.isChoice()) {
             if (this.isCollectionType(property)) {
                 return generateChoiceCollectionMapping(property, descriptor, namespaceInfo);
@@ -523,10 +529,61 @@ public class MappingsGenerator {
         if (isCollectionType(property.getType())) {
             invMapping.setContainerPolicy(ContainerPolicy.buildDefaultPolicy());
         }
-        descriptor.addMapping(invMapping);
         return invMapping;
     }
 
+    /**
+     * Generate an XMLTransformationMapping based on a given Property.  
+     * 
+     * @param property
+     * @param descriptor
+     * @param namespace
+     * @return
+     */
+    public XMLTransformationMapping generateTransformationMapping(Property property, XMLDescriptor descriptor, NamespaceInfo namespace) {
+        XMLTransformationMapping mapping = new XMLTransformationMapping();
+        mapping.setAttributeName(property.getPropertyName());
+        if (property.isMethodProperty()) {
+            if (property.getGetMethodName() == null) {
+                // handle case of set with no get method
+                String paramTypeAsString = property.getType().getName();
+                mapping.setAttributeAccessor(new JAXBSetMethodAttributeAccessor(paramTypeAsString, helper.getClassLoader()));
+                mapping.setSetMethodName(property.getSetMethodName());
+            } else if (property.getSetMethodName() == null) {
+                mapping.setGetMethodName(property.getGetMethodName());
+            } else {
+                mapping.setSetMethodName(property.getSetMethodName());
+                mapping.setGetMethodName(property.getGetMethodName());
+            }
+        }
+        // handle transformation
+        if (property.isSetXmlTransformation()) {
+            XmlTransformation xmlTransformation = property.getXmlTransformation();
+            mapping.setIsOptional(xmlTransformation.isOptional());
+            // handle transformer(s)
+            if (xmlTransformation.isSetXmlReadTransformer()) {
+                // handle read transformer
+                XmlReadTransformer readTransformer = xmlTransformation.getXmlReadTransformer();
+                if (readTransformer.isSetTransformerClass()) {
+                    mapping.setAttributeTransformerClassName(xmlTransformation.getXmlReadTransformer().getTransformerClass());
+                } else {
+                    mapping.setAttributeTransformation(xmlTransformation.getXmlReadTransformer().getMethod());
+                }
+            }
+            if (xmlTransformation.isSetXmlWriteTransformers()) {
+                // handle write transformer(s)
+                for (XmlWriteTransformer writeTransformer : xmlTransformation.getXmlWriteTransformer()) {
+                    if (writeTransformer.isSetTransformerClass()) {
+                        mapping.addFieldTransformerClassName(writeTransformer.getXmlPath(), writeTransformer.getTransformerClass());
+                    } else {
+                        mapping.addFieldTransformation(writeTransformer.getXmlPath(), writeTransformer.getMethod());
+                    }
+                }
+            }
+        }
+        return mapping;
+    }
+    
     public XMLChoiceObjectMapping generateChoiceMapping(Property property, XMLDescriptor descriptor, NamespaceInfo namespace) {
         XMLChoiceObjectMapping mapping = new XMLChoiceObjectMapping();
         mapping.setAttributeName(property.getPropertyName());
@@ -566,7 +623,6 @@ public class MappingsGenerator {
             }
             mapping.addChoiceElement(xpath.getName(), type.getQualifiedName(), false);
         }
-        descriptor.addMapping(mapping);
         return mapping;
     }
 
@@ -618,7 +674,6 @@ public class MappingsGenerator {
             }
             mapping.addChoiceElement(xpath.getName(), type.getQualifiedName());
         }
-        descriptor.addMapping(mapping);
         return mapping;
     }
 
@@ -742,7 +797,6 @@ public class MappingsGenerator {
                 }
             }
         }
-        descriptor.addMapping(mapping);
         return mapping;
 
     }
@@ -797,7 +851,6 @@ public class MappingsGenerator {
             mapping.setPreserveWhitespaceForMixedContent(true);
         }
         mapping.setUseXMLRoot(true);
-        descriptor.addMapping(mapping);
         return mapping;
     }
 
@@ -877,7 +930,6 @@ public class MappingsGenerator {
         if (property.isRequired()) {
             ((XMLField) mapping.getField()).setRequired(true);
         }
-        descriptor.addMapping(mapping);
         return mapping;
 
     }
@@ -953,7 +1005,6 @@ public class MappingsGenerator {
         if (property.isSetCdata()) {
             mapping.setIsCDATA(property.isCdata());
         }
-        descriptor.addMapping(mapping);
         return mapping;
     }
 
@@ -1008,7 +1059,6 @@ public class MappingsGenerator {
         		mapping.setMimeTypePolicy(new FixedMimeTypePolicy("application/octet-stream"));
         	}
         }
-        descriptor.addMapping(mapping);
         return mapping;
     }
 
@@ -1084,7 +1134,6 @@ public class MappingsGenerator {
             collectionType = jotHashSet;
         }
         mapping.useCollectionClassName(collectionType.getRawName());
-        descriptor.addMapping(mapping);
         return mapping;
     }
     
@@ -1108,7 +1157,6 @@ public class MappingsGenerator {
             }
         }
         mapping.setField(getXPathForField(property, namespaceInfo, true));
-        descriptor.addMapping(mapping);
         return mapping;
     }
 
@@ -1185,7 +1233,6 @@ public class MappingsGenerator {
         if (property.isXmlList()) {
             mapping.setUsesSingleNode(true);
         }
-        descriptor.addMapping(mapping);
         return mapping;
     }
 
@@ -1222,7 +1269,6 @@ public class MappingsGenerator {
         }
         mapping.setSchemaInstanceIncluded(false);
         mapping.setNamespaceDeclarationIncluded(false);
-        descriptor.addMapping(mapping);
         return mapping;
     }
 
@@ -1275,7 +1321,6 @@ public class MappingsGenerator {
         } else {
             mapping.setUseXMLRoot(true);
         }
-        descriptor.addMapping(mapping);
         return mapping;
     }
 
@@ -1321,8 +1366,6 @@ public class MappingsGenerator {
         mapping.useCollectionClass(ArrayList.class);
 
         mapping.setAttributeAccessor(new MapValueAttributeAccessor(mapping.getAttributeAccessor(), mapping.getContainerPolicy(), generatedClass, mapClassName));
-        descriptor.addMapping(mapping);
-
         return mapping;
     }
 
@@ -1588,7 +1631,6 @@ public class MappingsGenerator {
                 mapping.getInverseReferenceMapping().setContainerPolicy(ContainerPolicy.buildDefaultPolicy());
             }
         }
-        descriptor.addMapping(mapping);
         return mapping;
     }
 
@@ -1702,7 +1744,6 @@ public class MappingsGenerator {
         if (property.isSetCdata()) {
             mapping.setIsCDATA(property.isCdata());
         }
-        descriptor.addMapping(mapping);
         return mapping;
     }
 
@@ -1867,8 +1908,9 @@ public class MappingsGenerator {
     		Property next = propertiesInOrder.get(i);
     		if (next != null){
             	DatabaseMapping mapping = generateMapping(next, descriptor, namespaceInfo);
+            	descriptor.addMapping(mapping);
             	// set user-defined properties if necessary
-            	if (next.getUserProperties() != null) {
+            	if (next.isSetUserProperties()) {
             	    mapping.setProperties(next.getUserProperties());
             	}
             }
@@ -1958,7 +2000,6 @@ public class MappingsGenerator {
                 mapping.getInverseReferenceMapping().setContainerPolicy(ContainerPolicy.buildDefaultPolicy());
             }
         }
-        descriptor.addMapping(mapping);
         return mapping;
     }
     /**
@@ -2034,7 +2075,6 @@ public class MappingsGenerator {
                 mapping.getInverseReferenceMapping().setContainerPolicy(ContainerPolicy.buildDefaultPolicy());
             }
         }
-        descriptor.addMapping(mapping);
         return mapping;
     }
 

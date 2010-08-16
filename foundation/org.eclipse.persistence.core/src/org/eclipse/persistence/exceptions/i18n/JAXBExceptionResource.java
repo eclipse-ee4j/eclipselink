@@ -66,7 +66,15 @@ public class JAXBExceptionResource extends ListResourceBundle {
         {"50044", "Error creating DynamicJAXBContext: InputStream was null."},
         {"50045", "Error creating DynamicJAXBContext: Node was null."},
         {"50046", "Error creating DynamicJAXBContext: XJC was unable to generate a CodeModel."},
-        {"50047", "Class [{0}] not found."}
+        {"50047", "Class [{0}] not found."},
+        {"50048", "The read transformer specified for property [{0}] has both class and method. Either class or method is required, but not both."},
+        {"50049", "The read transformer specified for property [{0}] has neither class nor method. A class or method is required."},
+        {"50050", "The write transformer specified for the xml-path  [{1}] of property [{0}] has both class and method. Either class or method is required, but not both."},
+        {"50051", "The write transformer specified for the xml-path  [{1}] of property [{0}] has neither class nor method. A class or method is required."},
+        {"50052", "The write transformer specified for property [{0}] does not have an xml-path set. An xml-path is required."},
+        {"50053", "The transformation method [{0}] with parameters (), (AbstractSession) or (Session) not found."},
+        {"50054", "Transformer class [{0}] not found. Please ensure that the class name is correct, and that the correct ClassLoader has been set."}
+
     };
 
     /**

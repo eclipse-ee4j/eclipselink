@@ -58,6 +58,7 @@ import org.eclipse.persistence.jaxb.xmlmodel.XmlType;
 
 public class TypeInfo {
     private XMLDescriptor descriptor;
+    private String javaClassName;
     private ComplexType complexType;
     private boolean hasRootElement;
     private String elementRefsPropertyName;
@@ -858,5 +859,23 @@ public class TypeInfo {
      */
     public void setUserProperties(Map<Object, Object> userProperties) {
         this.userProperties = userProperties;
+    }
+
+    /**
+     * Return the JavaClass name for this typeinfo.
+     * 
+     * @return
+     */
+    public String getJavaClassName() {
+        return javaClassName;
+    }
+
+    /**
+     * Set the JavaClass name for this typeinfo.
+     * 
+     * @param javaClassName
+     */
+    public void setJavaClassName(String javaClassName) {
+        this.javaClassName = javaClassName;
     }
 }

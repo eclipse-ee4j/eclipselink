@@ -49,6 +49,7 @@ import org.eclipse.persistence.jaxb.xmlmodel.XmlRegistry;
 import org.eclipse.persistence.jaxb.xmlmodel.XmlSchema;
 import org.eclipse.persistence.jaxb.xmlmodel.XmlSchemaType;
 import org.eclipse.persistence.jaxb.xmlmodel.XmlSchemaTypes;
+import org.eclipse.persistence.jaxb.xmlmodel.XmlTransformation;
 import org.eclipse.persistence.jaxb.xmlmodel.XmlTransient;
 import org.eclipse.persistence.jaxb.xmlmodel.XmlValue;
 import org.eclipse.persistence.jaxb.xmlmodel.XmlBindings.JavaTypes;
@@ -80,7 +81,7 @@ public class XMLProcessor {
 
     /**
      * Process XmlBindings on a per package basis for a given
-     * AnnotationsPorcessor instance.
+     * AnnotationsProcessor instance.
      * 
      * @param annotationsProcessor
      */
@@ -382,6 +383,8 @@ public class XMLProcessor {
             return processXmlJavaTypeAdapter((XmlJavaTypeAdapter) javaAttribute, oldProperty);
         } else if (javaAttribute instanceof XmlInverseReference) {
             return processXmlInverseReference((XmlInverseReference)javaAttribute, oldProperty);
+        } else if (javaAttribute instanceof XmlTransformation) {
+            return processXmlTransformation((XmlTransformation)javaAttribute, oldProperty, typeInfo);
         }
         getLogger().logWarning("jaxb_metadata_warning_invalid_java_attribute", new Object[] { javaAttribute.getClass() });
         return null;
@@ -1015,6 +1018,34 @@ public class XMLProcessor {
         nsInfo.setNamespaceResolver(nsr);
         return nsInfo;
     }
+    
+    /**
+     * Process an XmlTransformation. The info in the XmlTransformation will be
+     * used to generate an XmlTransformationMapping in MappingsGenerator.
+     * 
+     * @param xmlTransformation
+     * @param oldProperty
+     * @param tInfo
+     */
+    private Property processXmlTransformation(XmlTransformation xmlTransformation, Property oldProperty, TypeInfo tInfo) {
+        // reset any existing values
+        resetProperty(oldProperty, tInfo);
+
+        oldProperty.setIsXmlTransformation(true);
+        oldProperty.setXmlTransformation(xmlTransformation);
+        
+        // handle get/set methods
+        if (xmlTransformation.getXmlAccessMethods() != null) {
+            oldProperty.setMethodProperty(true);
+            oldProperty.setGetMethodName(xmlTransformation.getXmlAccessMethods().getGetMethod());
+            oldProperty.setSetMethodName(xmlTransformation.getXmlAccessMethods().getSetMethod());
+        }
+        // set user-defined properties
+        if (xmlTransformation.getXmlProperties() != null  && xmlTransformation.getXmlProperties().getXmlProperty().size() > 0) {
+            oldProperty.setUserProperties(createUserPropertyMap(xmlTransformation.getXmlProperties().getXmlProperty()));
+        }
+        return oldProperty;
+    }
 
     /**
      * Convenience method for building a Map of package to classes.
@@ -1155,6 +1186,7 @@ public class XMLProcessor {
         oldProperty.setIsSwaAttachmentRef(false);
         oldProperty.setIsXmlId(false);
         oldProperty.setIsXmlIdRef(false);
+        oldProperty.setIsXmlTransformation(false);
         oldProperty.setXmlElementWrapper(null);
         oldProperty.setLax(false);
         oldProperty.setNillable(false);
@@ -1171,7 +1203,8 @@ public class XMLProcessor {
         oldProperty.setUserProperties(null);
         oldProperty.setGetMethodName(oldProperty.getOriginalGetMethodName());
         oldProperty.setSetMethodName(oldProperty.getOriginalSetMethodName());
-        if(oldProperty.getGetMethodName() == null && oldProperty.getSetMethodName() == null) {
+        oldProperty.setXmlTransformation(null);
+        if (oldProperty.getGetMethodName() == null && oldProperty.getSetMethodName() == null) {
             oldProperty.setMethodProperty(false);
         }
         unsetXmlElementRefs(oldProperty, tInfo);
