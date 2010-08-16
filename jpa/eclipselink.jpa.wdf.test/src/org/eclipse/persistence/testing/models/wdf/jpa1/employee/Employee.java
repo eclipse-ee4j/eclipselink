@@ -48,6 +48,9 @@ import javax.persistence.Table;
 import javax.persistence.Transient;
 import javax.persistence.UniqueConstraint;
 
+import org.eclipse.persistence.annotations.Customizer;
+import org.eclipse.persistence.testing.framework.wdf.customizer.AdjustArrayTypeCustomizer;
+
 @Cacheable(true)
 @Entity
 @Table(name = "TMP_EMP", uniqueConstraints = @UniqueConstraint(columnNames = { "ID", "DEPARTMENT" }))
@@ -55,6 +58,7 @@ import javax.persistence.UniqueConstraint;
 @NamedNativeQueries( {
         @NamedNativeQuery(name = "Employee.schlonz", query = "select \"TMP_EMP\".*  from \"TMP_EMP\"", resultClass = Employee.class),
         @NamedNativeQuery(name = "Employee.schlonzHint", query = "select \"TMP_EMP\".*  from \"TMP_EMP\"", resultClass = Employee.class) })
+@Customizer(AdjustArrayTypeCustomizer.class)        
 public class Employee implements Serializable {
 
     private static final long serialVersionUID = 1L;
@@ -152,7 +156,7 @@ public class Employee implements Serializable {
     // <join-column name="PROFILE_GUID"/>
     // </attribute>
     @OneToOne
-    @JoinColumn(name = "PROFILE_GUID")
+    @JoinColumn(name = "PROFILE_GUID", columnDefinition=TravelProfile.BINARY_16_COLUMN)
     protected TravelProfile travelProfile;
 
     // <attribute name="hobbies">
@@ -186,8 +190,9 @@ public class Employee implements Serializable {
     @JoinTable(name = "TMP_EMP_CREDIT", joinColumns = { @JoinColumn(name = "CLIENT_ID") }, inverseJoinColumns = { @JoinColumn(name = "CREDIT_ID") })
     protected Set<CreditCardAccount> creditCardAccounts;
 
-    @OneToOne
-    @JoinColumn(name = "AUTOMOBILE")
+//    @OneToOne
+//    @JoinColumn(name = "AUTOMOBILE")
+    @Transient // EclipseLink has issue with cyclic FKs FIXME: file bug and add id here
     protected MotorVehicle automobile;
 
     @ManyToOne

@@ -19,6 +19,7 @@ import junit.framework.Assert;
 
 import org.eclipse.persistence.platform.database.MySQLPlatform;
 import org.eclipse.persistence.platform.database.OraclePlatform;
+import org.eclipse.persistence.platform.database.SQLServerPlatform;
 import org.eclipse.persistence.testing.framework.wdf.JPAEnvironment;
 import org.eclipse.persistence.testing.framework.wdf.Skip;
 import org.eclipse.persistence.testing.framework.wdf.ToBeInvestigated;
@@ -31,7 +32,7 @@ import org.junit.Test;
 public class TestSequence extends JPA1Base {
 
     @Test
-    @Skip(databaseNames = "org.eclipse.persistence.platform.database.MySQLPlatform")
+    @Skip(databaseNames = "org.eclipse.persistence.platform.database.MySQLPlatform", databases=SQLServerPlatform.class)
     public void testPersist() {
         JPAEnvironment env = getEnvironment();
         EntityManager em = env.getEntityManager();
@@ -50,7 +51,7 @@ public class TestSequence extends JPA1Base {
     }
 
     @Test
-    @Skip(databases = MySQLPlatform.class)
+    @Skip(databases = {MySQLPlatform.class, SQLServerPlatform.class})
     public void testPersistFlock() {
         JPAEnvironment env = getEnvironment();
         EntityManager em = env.getEntityManager();
@@ -74,7 +75,7 @@ public class TestSequence extends JPA1Base {
     }
 
     @Test
-    @Skip(databases = MySQLPlatform.class)
+    @Skip(databases = {MySQLPlatform.class, SQLServerPlatform.class})
     @ToBeInvestigated(databases = OraclePlatform.class)
     // adjust test
     public void testAllocSize() {

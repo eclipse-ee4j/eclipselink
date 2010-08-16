@@ -22,7 +22,9 @@ import java.util.Set;
 import javax.persistence.EntityManager;
 import javax.persistence.Query;
 
+import org.eclipse.persistence.platform.database.SQLServerPlatform;
 import org.eclipse.persistence.testing.framework.wdf.JPAEnvironment;
+import org.eclipse.persistence.testing.framework.wdf.Skip;
 import org.eclipse.persistence.testing.models.wdf.jpa1.employee.Cubicle;
 import org.eclipse.persistence.testing.models.wdf.jpa1.employee.Department;
 import org.eclipse.persistence.testing.models.wdf.jpa1.employee.Employee;
@@ -146,7 +148,7 @@ public class TestNativeQuery extends JPA1Base {
         }
     }
 
-    // @TestProperties(unsupportedDatabaseVendors = { DatabaseVendor.MS_SQL_SERVER })
+    @Skip(databases=SQLServerPlatform.class)
     @Test
     public void testColumnResult() throws SQLException {
         init();
@@ -167,7 +169,7 @@ public class TestNativeQuery extends JPA1Base {
         }
     }
 
-    // @TestProperties(unsupportedDatabaseVendors = { DatabaseVendor.MS_SQL_SERVER })
+    @Skip(databases=SQLServerPlatform.class)
     @Test
     public void testFieldResult() throws SQLException {
         init();
@@ -213,7 +215,7 @@ public class TestNativeQuery extends JPA1Base {
         }
     }
 
-    // @TestProperties(unsupportedDatabaseVendors = { DatabaseVendor.MS_SQL_SERVER })
+    @Skip(databases=SQLServerPlatform.class)
     @Test
     public void testFieldByField() throws SQLException {
         clearAllTables();

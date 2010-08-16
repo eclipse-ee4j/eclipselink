@@ -13,6 +13,7 @@
 
 package org.eclipse.persistence.testing.tests.wdf.jpa1.query;
 
+import org.eclipse.persistence.testing.framework.wdf.Skip;
 import org.eclipse.persistence.testing.framework.wdf.ToBeInvestigated;
 import org.junit.Test;
 
@@ -139,6 +140,13 @@ public class TestGroupByOrderByHaving extends QueryTest {
     }
 
     @Test
+    @Skip(databaseNames="org.eclipse.persistence.platform.database.MaxDBPlatform") 
+	/*
+	 * On MaxDB, the query maps to
+	 * "SELECT t0.ID, t0.COOL, t0.NAME, t0.TYPE, t0.CITY_ENUM, t0.CITY_TESLA_INT, t0.CITY_TESLA_BLOB FROM TMP_CITY t0 WHERE EXISTS (SELECT 1 FROM TMP_COP t2, TMP_COP t1 WHERE (t2.ID = t1.PARTNER_ID) GROUP BY t1.ID HAVING (t2.ID = 5))"
+	 * . The query is invalid (as expected) and should fail on the database as
+	 * t2.ID is no grouping column and must not be used in HAVING.
+	 */
     public void testSubQueryGroupBy3() {
         /* 21 */assertInvalidQuery("select _city from City _city where exists(select max(c.id) from Cop c group by c.id having c.partner.id = 5)");
     }

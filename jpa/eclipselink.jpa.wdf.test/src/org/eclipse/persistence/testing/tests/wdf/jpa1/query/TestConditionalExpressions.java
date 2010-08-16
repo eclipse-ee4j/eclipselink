@@ -19,9 +19,7 @@ import java.util.Set;
 
 import javax.persistence.TemporalType;
 
-import org.eclipse.persistence.platform.database.OraclePlatform;
 import org.eclipse.persistence.testing.framework.wdf.Bugzilla;
-import org.eclipse.persistence.testing.framework.wdf.Issue;
 import org.eclipse.persistence.testing.framework.wdf.ToBeInvestigated;
 import org.junit.Test;
 
@@ -605,7 +603,6 @@ public class TestConditionalExpressions extends QueryTest {
     }
     
     @Test
-    @Issue(issueid=13, databases=OraclePlatform.class)
     public void testInBinary() {
         byte[] byteArr1 = new byte[] { 1, 2, 3, 4, 5, 6, 7, 8 };
         byte[] byteArr2 = new byte[] { 1, 2, 3, 4, 5, 6, 7, 8 };

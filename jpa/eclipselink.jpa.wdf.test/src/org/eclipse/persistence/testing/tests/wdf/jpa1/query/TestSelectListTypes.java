@@ -21,8 +21,7 @@ import java.sql.SQLException;
 import javax.persistence.EntityManager;
 import javax.persistence.Query;
 
-import org.eclipse.persistence.platform.database.OraclePlatform;
-import org.eclipse.persistence.testing.framework.wdf.Issue;
+import org.eclipse.persistence.testing.framework.wdf.Bugzilla;
 import org.eclipse.persistence.testing.framework.wdf.JPAEnvironment;
 import org.eclipse.persistence.testing.framework.wdf.ToBeInvestigated;
 import org.eclipse.persistence.testing.models.wdf.jpa1.types.BasicTypesFieldAccess;
@@ -50,8 +49,7 @@ public class TestSelectListTypes extends JPA1Base {
         }
     }
 
-    @SuppressWarnings("unchecked")
-    private void validateType(String subList, Class type) {
+    private void validateType(String subList, Class<?> type) {
         JPAEnvironment env = getEnvironment();
         EntityManager em = env.getEntityManager();
         try {
@@ -412,25 +410,21 @@ public class TestSelectListTypes extends JPA1Base {
 
     // arrays
     @Test
-    @Issue(issueid=13, databases=OraclePlatform.class)
     public void testCountPrimitiveByteArray2Binary() {
         validateCount("primitiveByteArray2Binary");
     }
 
     @Test
-    @Issue(issueid=13, databases=OraclePlatform.class)
     public void testCountPrimitiveCharArray2Varchar() {
         validateCount("primitiveCharArray2Varchar");
     }
 
     @Test
-    @Issue(issueid=13, databases=OraclePlatform.class)
     public void testCountWrapperByteArray2Binary() {
         validateCount("wrapperByteArray2Binary");
     }
 
     @Test
-    @Issue(issueid=13, databases=OraclePlatform.class)
     public void testCountWrapperCharArray2Varchar() {
         validateCount("wrapperCharacterArray2Varchar");
     }
@@ -510,6 +504,7 @@ public class TestSelectListTypes extends JPA1Base {
 
     // immutable reference types
     @Test
+    @Bugzilla(bugid=320120, databaseNames="org.eclipse.persistence.platform.database.MaxDBPlatform")
     public void testSumBigDecimal() {
         validateSum("bigDecimal", BigDecimal.class);
     }
@@ -642,7 +637,6 @@ public class TestSelectListTypes extends JPA1Base {
 
     // arrays
     @Test
-    @Issue(issueid=13, databases=OraclePlatform.class)
     public void testMaxPrimitiveByteArray2Binary() {
         validateMax("primitiveByteArray2Binary", byte[].class);
     }
