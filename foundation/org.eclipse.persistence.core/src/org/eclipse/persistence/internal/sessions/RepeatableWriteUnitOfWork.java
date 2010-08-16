@@ -26,6 +26,8 @@ import org.eclipse.persistence.logging.SessionLog;
 import org.eclipse.persistence.exceptions.DatabaseException;
 import org.eclipse.persistence.exceptions.OptimisticLockException;
 import org.eclipse.persistence.exceptions.ValidationException;
+import org.eclipse.persistence.queries.ObjectBuildingQuery;
+import org.eclipse.persistence.queries.ReadObjectQuery;
 import org.eclipse.persistence.sessions.IdentityMapAccessor;
 import org.eclipse.persistence.sessions.factories.ReferenceMode;
 
@@ -154,6 +156,68 @@ public class RepeatableWriteUnitOfWork extends UnitOfWorkImpl {
         this.cumulativeUOWChangeSet = null;
         this.unregisteredDeletedObjectsCloneToBackupAndOriginal = null;
         super.clearForClose(shouldClearCache);
+    }
+    
+    /**
+     * INTERNAL:
+     * Return classes that should be invalidated in the shared cache on commit.
+     * Used only in case fushClearCache == FlushClearCache.DropInvalidate:
+     * clear method copies contents of updatedObjectsClasses to this set,
+     * adding classes of deleted objects, too;
+     * on commit the classes contained here are invalidated in the shared cache
+     * and the set is cleared.
+     * Relevant only in case call to flush method followed by call to clear method.
+     * Works together with flushClearCache.
+     */
+     public Set<Class> getClassesToBeInvalidated(){
+        return classesToBeInvalidated;
+    }
+   /** 
+    * INTERNAL:
+    * Get the final UnitOfWorkChangeSet for merge into the shared cache 
+    */
+    public UnitOfWorkChangeSet getCumulativeUOWChangeSet(){
+        return cumulativeUOWChangeSet;
+    }
+
+    /**
+     * INTERNAL:
+     * Calculate whether we should read directly from the database to the UOW.
+     * This will be necessary, if a flush and a clear have been called on this unit of work
+     * In that case, there will be changes in the database that are not in the shared cache,
+     * so a read in this UOW should get info directly form the DB
+     */
+    @Override
+    public boolean shouldForceReadFromDB(ObjectBuildingQuery query, Object primaryKey){
+        if (this.wasTransactionBegunPrematurely() && query.getDescriptor() != null){
+            // if the saved change set for this UOW contains any changes to the class that is being queried for,
+            // we should build from the DB
+            if (this.getFlushClearCache().equals(FlushClearCache.Merge) && this.getCumulativeUOWChangeSet() != null){
+                Map<ObjectChangeSet, ObjectChangeSet> changeSetMap = this.getCumulativeUOWChangeSet().getObjectChanges().get(query.getDescriptor().getJavaClass());
+                Object lookupPrimaryKey = null;
+                if (primaryKey == null && query.isReadObjectQuery()){
+                    lookupPrimaryKey = ((ReadObjectQuery)query).getSelectionId();
+                }
+                if (changeSetMap != null ){
+                    if (lookupPrimaryKey == null){
+                        return true;
+                    } else {
+                        // this change set is simply used to do a lookup in the map.  The hashcode method just needs the key and the descriptor
+                        ObjectChangeSet lookupChangeSet = new ObjectChangeSet(lookupPrimaryKey, query.getDescriptor(), null, null, false);
+                        if (changeSetMap.get(lookupChangeSet) != null){
+                            return true;
+                        }
+                    }
+                }
+            // if the invalidation list for this UOW contains any changes to the class being queried for
+            // we should build directly from the DB
+            } else if (this.getFlushClearCache().equals(FlushClearCache.DropInvalidate) && this.getClassesToBeInvalidated() != null){
+                    if (this.getClassesToBeInvalidated().contains(query.getDescriptor().getJavaClass())){
+                        return true;
+                    }
+            }
+        }
+        return false;
     }
     
     /**
