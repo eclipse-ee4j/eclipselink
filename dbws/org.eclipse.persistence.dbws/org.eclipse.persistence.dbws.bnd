@@ -2,7 +2,7 @@ Export-Package: org.eclipse.persistence*;version="${version.string}";-noimport:=
 Implementation-Version: ${version.string}
 Specification-Vendor: ${specification.vendor}
 Bundle-Name: EclipseLink DBWS
-Bundle-RequiredExecutionEnvironment: J2SE-1.5
+Bundle-RequiredExecutionEnvironment: JavaSE-1.6
 HK2-Bundle-Name: org.eclipse.persistence:${ant.project.name}
 Require-Bundle: org.eclipse.persistence.core;bundle-version="${version.string}";visibility:=reexport, \
  org.eclipse.persistence.asm;bundle-version="${version.string}"
@@ -15,7 +15,7 @@ Include-Resource:                \
  ${dbws.2.base.dir}/readme.html, \
  ${dbws.2.base.dir}/license.html
 Import-Package:                                                         \
- javax.activation.*,                                                    \
+ javax.activation.*;resolution:=optional,                               \
  javax.servlet.*,                                                       \
  javax.xml.soap.*,                                                      \
  javax.xml.ws.*,                                                        \
