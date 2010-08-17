@@ -1515,7 +1515,7 @@ public class AnnotationsProcessor {
         
         //Handle Write Transformers
         org.eclipse.persistence.oxm.annotations.XmlWriteTransformer[] transformers = null;
-        if(helper.isAnnotationPresent(javaHasAnnotations, XmlWriteTransformer.class)) {
+        if(helper.isAnnotationPresent(javaHasAnnotations, org.eclipse.persistence.oxm.annotations.XmlWriteTransformer.class)) {
             org.eclipse.persistence.oxm.annotations.XmlWriteTransformer writeTransformer = (org.eclipse.persistence.oxm.annotations.XmlWriteTransformer)helper.getAnnotation(javaHasAnnotations, org.eclipse.persistence.oxm.annotations.XmlWriteTransformer.class);
             transformers = new org.eclipse.persistence.oxm.annotations.XmlWriteTransformer[]{writeTransformer};
         } else if(helper.isAnnotationPresent(javaHasAnnotations, XmlWriteTransformers.class)) {

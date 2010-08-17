@@ -542,7 +542,6 @@ public class MappingsGenerator {
      */
     public XMLTransformationMapping generateTransformationMapping(Property property, XMLDescriptor descriptor, NamespaceInfo namespace) {
         XMLTransformationMapping mapping = new XMLTransformationMapping();
-        mapping.setAttributeName(property.getPropertyName());
         if (property.isMethodProperty()) {
             if (property.getGetMethodName() == null) {
                 // handle case of set with no get method
@@ -563,6 +562,7 @@ public class MappingsGenerator {
             // handle transformer(s)
             if (xmlTransformation.isSetXmlReadTransformer()) {
                 // handle read transformer
+                mapping.setAttributeName(property.getPropertyName());
                 XmlReadTransformer readTransformer = xmlTransformation.getXmlReadTransformer();
                 if (readTransformer.isSetTransformerClass()) {
                     mapping.setAttributeTransformerClassName(xmlTransformation.getXmlReadTransformer().getTransformerClass());
