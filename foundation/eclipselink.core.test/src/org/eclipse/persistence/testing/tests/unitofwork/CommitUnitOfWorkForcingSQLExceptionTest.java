@@ -16,6 +16,7 @@ import java.util.Collections;
 
 import org.eclipse.persistence.internal.sessions.UnitOfWorkImpl;
 import org.eclipse.persistence.sessions.UnitOfWork;
+import org.eclipse.persistence.testing.framework.TestWarningException;
 import org.eclipse.persistence.testing.models.employee.domain.Employee;
 
 /**
@@ -33,6 +34,9 @@ public class CommitUnitOfWorkForcingSQLExceptionTest extends UnitOfWorkEventTest
     public void setup() {
         super.setup();
         setDescription("Test force of SQLException to exercise the rollback exception handling code");
+        if ( getSession().getLogin().getPlatform().isSybase() ) {
+            throw new TestWarningException("Sybase silently truncates String data to match the field size");
+        }
     }
 
     public void test() {
