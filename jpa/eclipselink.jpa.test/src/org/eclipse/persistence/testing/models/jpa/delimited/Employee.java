@@ -84,7 +84,7 @@ import static org.eclipse.persistence.annotations.OptimisticLockingType.VERSION_
     disableHits=true, // Employee customizer should set it back to false.
     coordinationType=INVALIDATE_CHANGED_OBJECTS
 )
-@ChangeTracking(AUTO)
+@ChangeTracking
 @ExistenceChecking(CHECK_DATABASE)
 @Properties({
     @Property(name="entityName", value="Employee"),

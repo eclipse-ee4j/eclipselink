@@ -33,7 +33,8 @@
     </mapped-superclass>
     <entity class="Employee" existence-checking="CHECK_DATABASE">
         <customizer class="EmployeeCustomizer"/>
-        <change-tracking type="AUTO"/>
+        <!-- test the AUTO default for change tracking. -->
+        <change-tracking/>
         <!-- This secondary table is identical to the one specified in the
              advanced-extended-entity-mappings.xml. It is here on purpose
              and used to test bug 240063. Do not remove it or change its

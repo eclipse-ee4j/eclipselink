@@ -14,6 +14,8 @@
  *       - 218084: Implement metadata merging functionality between mapping files
  *     04/27/2010-2.1 Guy Pelletier 
  *       - 309856: MappedSuperclasses from XML are not being initialized properly
+ *     08/17/2010-2.2 Guy Pelletier 
+ *       - 252280:  inconsistency in change-tracking xml
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata.changetracking;
 
@@ -87,18 +89,18 @@ public class ChangeTrackingMetadata extends ORMetadata {
         // Process the change tracking metadata.
         ClassDescriptor classDescriptor = descriptor.getClassDescriptor();
                    
-        if (m_type.equals(ChangeTrackingType.ATTRIBUTE.name())) {
+        if (m_type == null || m_type.equals(ChangeTrackingType.AUTO.name())) {
+            // By setting the policy to null, this will unset any global 
+            // settings. EclipseLink will then determine the change tracking 
+            // policy at runtime.
+            classDescriptor.setObjectChangePolicy(null);
+        } else if (m_type.equals(ChangeTrackingType.ATTRIBUTE.name())) {
             classDescriptor.setObjectChangePolicy(new AttributeChangeTrackingPolicy());
         } else if (m_type.equals(ChangeTrackingType.OBJECT.name())) {
             classDescriptor.setObjectChangePolicy(new ObjectChangeTrackingPolicy());
         } else if (m_type.equals(ChangeTrackingType.DEFERRED.name())) {
             classDescriptor.setObjectChangePolicy(new DeferredChangeDetectionPolicy());
-        } else if (m_type.equals(ChangeTrackingType.AUTO.name())) {
-            // By setting the policy to null, this will unset any global 
-            // settings. EclipseLink will then determine the change tracking 
-            // policy at runtime.
-            classDescriptor.setObjectChangePolicy(null);
-        } 
+        }
     }
         
     /**
