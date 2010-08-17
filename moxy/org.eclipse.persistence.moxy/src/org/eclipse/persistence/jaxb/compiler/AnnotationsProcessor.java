@@ -114,6 +114,7 @@ import org.eclipse.persistence.oxm.annotations.XmlProperties;
 import org.eclipse.persistence.oxm.annotations.XmlProperty;
 import org.eclipse.persistence.oxm.annotations.XmlReadOnly;
 import org.eclipse.persistence.oxm.annotations.XmlWriteOnly;
+import org.eclipse.persistence.oxm.annotations.XmlWriteTransformers;
 
 /**
  * INTERNAL:
@@ -1386,6 +1387,8 @@ public class AnnotationsProcessor {
             info.setAnyElementPropertyName(propertyName);
         } else if (helper.isAnnotationPresent(javaHasAnnotations, XmlElementRef.class) || helper.isAnnotationPresent(javaHasAnnotations, XmlElementRefs.class)) {
             property = buildReferenceProperty(info, javaHasAnnotations, propertyName, ptype);
+        } else if (helper.isAnnotationPresent(javaHasAnnotations, org.eclipse.persistence.oxm.annotations.XmlTransformation.class)) {
+            property = buildTransformationProperty(javaHasAnnotations, cls);
         } else {
             property = new Property(helper);
         }
@@ -1490,6 +1493,51 @@ public class AnnotationsProcessor {
         }
         choiceProperty.setXmlElements(xmlElements);
         return choiceProperty;
+    }
+    
+    private Property buildTransformationProperty(JavaHasAnnotations javaHasAnnotations, JavaClass cls) {
+        Property property = new Property(helper);
+        org.eclipse.persistence.oxm.annotations.XmlTransformation transformationAnnotation = (org.eclipse.persistence.oxm.annotations.XmlTransformation)helper.getAnnotation(javaHasAnnotations, org.eclipse.persistence.oxm.annotations.XmlTransformation.class);
+        XmlTransformation transformation = new XmlTransformation();
+        transformation.setOptional(transformationAnnotation.optional());
+        
+        //Read Transformer
+        org.eclipse.persistence.oxm.annotations.XmlReadTransformer readTransformer = (org.eclipse.persistence.oxm.annotations.XmlReadTransformer)helper.getAnnotation(javaHasAnnotations, org.eclipse.persistence.oxm.annotations.XmlReadTransformer.class);
+        if(readTransformer != null) {
+            org.eclipse.persistence.jaxb.xmlmodel.XmlTransformation.XmlReadTransformer xmlReadTransformer = new org.eclipse.persistence.jaxb.xmlmodel.XmlTransformation.XmlReadTransformer();
+            if(!(readTransformer.transformerClass() == void.class)) {
+                xmlReadTransformer.setTransformerClass(readTransformer.transformerClass().getName());
+            } else if (!(readTransformer.method().equals(""))){
+                xmlReadTransformer.setMethod(readTransformer.method());
+            }
+            transformation.setXmlReadTransformer(xmlReadTransformer);
+        }
+        
+        //Handle Write Transformers
+        org.eclipse.persistence.oxm.annotations.XmlWriteTransformer[] transformers = null;
+        if(helper.isAnnotationPresent(javaHasAnnotations, XmlWriteTransformer.class)) {
+            org.eclipse.persistence.oxm.annotations.XmlWriteTransformer writeTransformer = (org.eclipse.persistence.oxm.annotations.XmlWriteTransformer)helper.getAnnotation(javaHasAnnotations, org.eclipse.persistence.oxm.annotations.XmlWriteTransformer.class);
+            transformers = new org.eclipse.persistence.oxm.annotations.XmlWriteTransformer[]{writeTransformer};
+        } else if(helper.isAnnotationPresent(javaHasAnnotations, XmlWriteTransformers.class)) {
+            XmlWriteTransformers writeTransformers = (XmlWriteTransformers)helper.getAnnotation(javaHasAnnotations, XmlWriteTransformers.class);
+            transformers = writeTransformers.value();
+        }
+        
+        if(transformers != null) {
+            for(org.eclipse.persistence.oxm.annotations.XmlWriteTransformer next:transformers) {
+                org.eclipse.persistence.jaxb.xmlmodel.XmlTransformation.XmlWriteTransformer xmlWriteTransformer = new org.eclipse.persistence.jaxb.xmlmodel.XmlTransformation.XmlWriteTransformer();
+                if(!(next.transformerClass() == void.class)) {
+                    xmlWriteTransformer.setTransformerClass(next.transformerClass().getName());
+                } else if (!(next.method().equals(""))){
+                    xmlWriteTransformer.setMethod(next.method());
+                }
+                xmlWriteTransformer.setXmlPath(next.xpath());
+                transformation.getXmlWriteTransformer().add(xmlWriteTransformer);
+            }
+        }
+        property.setXmlTransformation(transformation);
+        property.setIsXmlTransformation(true);
+        return property;
     }
 
     /**
