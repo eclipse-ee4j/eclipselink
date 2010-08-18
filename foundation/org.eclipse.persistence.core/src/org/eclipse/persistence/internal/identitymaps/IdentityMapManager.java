@@ -1,5 +1,6 @@
 /*******************************************************************************
  * Copyright (c) 1998, 2010 Oracle. All rights reserved.
+ * Some parts Copyright (c) 2010 Mark Wolochuk
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -9,6 +10,7 @@
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
+ *     Mark Wolochuk - Bug 321041 ConcurrentModificationException on getFromIdentityMap() fix
  ******************************************************************************/  
 package org.eclipse.persistence.internal.identitymaps;
 
@@ -758,9 +760,28 @@ public class IdentityMapManager implements Serializable, Cloneable {
             }
             IdentityMap map = getIdentityMap(descriptor, false);
 
+            // Bug #321041 - if policy is set to trigger indirection, then make a copy of the cache keys collection
+            // and iterate over that to avoid a ConcurrentModificationException.
+            // This happens when the indirect attribute is of the same type (or has same mapped superclass) as
+            // the parent object. EclipseLink inserts the object into the same collection it is iterating over,
+            // which results in a ConcurrentModificationException.
+            // There's a slight performance hit in copying the collection, but we are already taking a hit
+            // by triggering indirection in the first place.
+            boolean copyKeyCollection = valueHolderPolicy == InMemoryQueryIndirectionPolicy.SHOULD_TRIGGER_INDIRECTION;
+            Vector cacheKeys = null;
+            if (copyKeyCollection) {
+                cacheKeys = new Vector(map.getSize());
+                for (Enumeration cacheEnum = map.keys(); cacheEnum.hasMoreElements();) {
+                    CacheKey key = (CacheKey)cacheEnum.nextElement();
+                    cacheKeys.add(key);
+                }
+            }
+            
+            Enumeration cacheEnum = copyKeyCollection ? cacheKeys.elements() : map.keys();
+            
             // cache the current time to avoid calculating it every time through the loop
             long currentTimeInMillis = System.currentTimeMillis();
-            for (Enumeration cacheEnum = map.keys(); cacheEnum.hasMoreElements();) {
+            while (cacheEnum.hasMoreElements()) {
                 CacheKey key = (CacheKey)cacheEnum.nextElement();
                 if (!shouldReturnInvalidatedObjects && descriptor.getCacheInvalidationPolicy().isInvalidated(key, currentTimeInMillis)) {
                     continue;

@@ -65,6 +65,7 @@ public class IdentityMapTestSuite extends TestSuite {
         addTest(new InitializeIdentityMapByDescriptorJavaClassTest());
         // Bug 5840635
         addTest(new CleanupCacheKeyCorrectnessTest());
+        addTest(new TriggerValueHoldersSelfReferencingOneToOneTest());
     }
 
     private TestSuite getCacheIdentityMapSuite() {
