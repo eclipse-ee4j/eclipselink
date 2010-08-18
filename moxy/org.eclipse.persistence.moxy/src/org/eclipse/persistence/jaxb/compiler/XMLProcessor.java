@@ -431,10 +431,15 @@ public class XMLProcessor {
         if (oldProperty.isAnyAttribute()) {
             return oldProperty;
         }
-
+        
         // type has to be a java.util.Map
         if (!oldProperty.getType().getName().equals("java.util.Map")) {
-            throw org.eclipse.persistence.exceptions.JAXBException.anyAttributeOnNonMap(oldProperty.getPropertyName());
+            if (oldProperty.getType().getClass().getName().contains("OXMJavaClassImpl")) {
+                JavaClass pType = jModelInput.getJavaModel().getClass("java.util.Map");
+                oldProperty.setType(pType);
+            } else {
+                throw org.eclipse.persistence.exceptions.JAXBException.anyAttributeOnNonMap(oldProperty.getPropertyName());
+            }
         }
 
         // reset any existing values
@@ -598,6 +603,7 @@ public class XMLProcessor {
         if (!xmlAttribute.getType().equals(DEFAULT)) {
             JavaClass pType = jModelInput.getJavaModel().getClass(xmlAttribute.getType());
             oldProperty.setType(pType);
+            oldProperty.setHasXmlElementType(true);
             // may need to generate a type info for the type
             if (aProcessor.shouldGenerateTypeInfo(pType) && aProcessor.getTypeInfo().get(pType.getQualifiedName()) == null) {
                 aProcessor.buildNewTypeInfo(new JavaClass[] { pType });
@@ -738,6 +744,7 @@ public class XMLProcessor {
         } else {
             JavaClass pType = jModelInput.getJavaModel().getClass(xmlElement.getType());
             oldProperty.setType(pType);
+            oldProperty.setHasXmlElementType(true);
             // may need to generate a type info for the type
             if (aProcessor.shouldGenerateTypeInfo(pType) && aProcessor.getTypeInfo().get(pType.getQualifiedName()) == null) {
                 aProcessor.buildNewTypeInfo(new JavaClass[] { pType });
