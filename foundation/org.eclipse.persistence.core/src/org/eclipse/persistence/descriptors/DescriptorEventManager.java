@@ -475,6 +475,16 @@ public class DescriptorEventManager implements Cloneable, Serializable {
         return (eventListeners != null) && (!eventListeners.isEmpty());
     }
     
+    /**
+     * INTERNAL:
+     * This method will return true, if this event manager has default listeners
+     * and does not exclude them. Default listeners are always added to every
+     * event manager to allow users to turn them on a later time if so desired.
+     */
+    public boolean hasDefaultEventListeners() {
+        return defaultEventListeners != null && ! defaultEventListeners.isEmpty() && ! excludeDefaultListeners;
+    }
+    
     /** 
      * INTERNAL:
      * EJB 3.0 support. Return true if this event manager has any entity event 
@@ -510,7 +520,7 @@ public class DescriptorEventManager implements Cloneable, Serializable {
         setHasAnyEventListeners(false);
         // Initialize the EJB 3.0 supported listeners.
         initializeEJB30EventManagers();
-        if (hasEntityEventListener() || hasEntityListenerEventListeners() || hasInternalEventListeners()) {
+        if (hasEntityEventListener() || hasEntityListenerEventListeners() || hasDefaultEventListeners() || hasInternalEventListeners()) {
             setHasAnyEventListeners(true);
         }
         
@@ -590,7 +600,7 @@ public class DescriptorEventManager implements Cloneable, Serializable {
      */
     protected void notifyEJB30Listeners(DescriptorEvent event) {
         // Step 1 - notify our default listeners.
-        if (! excludeDefaultListeners()) {
+        if (hasDefaultEventListeners()) {
             for (int i = 0; i < getDefaultEventListeners().size(); i++) {
                 DescriptorEventListener listener = (DescriptorEventListener) getDefaultEventListeners().get(i);
                 notifyListener(listener, event);

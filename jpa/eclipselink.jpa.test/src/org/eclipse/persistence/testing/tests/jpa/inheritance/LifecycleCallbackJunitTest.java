@@ -20,6 +20,7 @@ import junit.framework.*;
 import org.eclipse.persistence.testing.framework.junit.JUnitTestCase;
 import org.eclipse.persistence.testing.models.jpa.inheritance.Car;
 import org.eclipse.persistence.testing.models.jpa.inheritance.Bus;
+import org.eclipse.persistence.testing.models.jpa.inheritance.MacBook;
 import org.eclipse.persistence.testing.models.jpa.inheritance.SportsCar;
 import org.eclipse.persistence.testing.models.jpa.inheritance.AbstractBus;
 import org.eclipse.persistence.testing.models.jpa.inheritance.InheritanceTableCreator;
@@ -51,6 +52,7 @@ public class LifecycleCallbackJunitTest extends JUnitTestCase {
         suite.addTest(new LifecycleCallbackJunitTest("testPrePersistSportsCarInheritAndExcludeDefault"));
         suite.addTest(new LifecycleCallbackJunitTest("testPostPersistSportsCarInheritAndExcludeDefault"));
         suite.addTest(new LifecycleCallbackJunitTest("testPrePersistSportsCarOverride"));
+        suite.addTest(new LifecycleCallbackJunitTest("testDefaultListenerOnMacBook"));
 
         return suite;
     }
@@ -268,5 +270,34 @@ public class LifecycleCallbackJunitTest extends JUnitTestCase {
         
         assertTrue("The PrePersist callback method on Car was called.", carPrePersistCountBefore == carPrePersistCountAfter);
         assertFalse("The PrePersist callback method on Sports car was not called.", sportsCarPrePersistCountBefore == sportsCarPrePersistCountAfter);
+    }
+    
+    public void testDefaultListenerOnMacBook() {
+        // Tests the default listeners on those entities that don't have their
+        // own separate entity listener(s) as well.
+        int defaultListenerPrePersistCountBefore = DefaultListener.PRE_PERSIST_COUNT;
+        
+        EntityManager em = createEntityManager();        
+        beginTransaction(em);
+        
+        try {
+            MacBook macBook = new MacBook();
+            macBook.setRam(8);
+            em.persist(macBook);
+            commitTransaction(em);
+        } catch (RuntimeException ex) {
+            if (isTransactionActive(em)){
+                rollbackTransaction(em);
+            }
+        
+            closeEntityManager(em);
+            throw ex;
+        }
+        
+        closeEntityManager(em);
+        
+        int defaultListenerPrePersistCountAfter = DefaultListener.PRE_PERSIST_COUNT;
+        
+        assertFalse("The PrePersist callback method on DefaultListener was not called.", defaultListenerPrePersistCountBefore == defaultListenerPrePersistCountAfter);
     }
 }
