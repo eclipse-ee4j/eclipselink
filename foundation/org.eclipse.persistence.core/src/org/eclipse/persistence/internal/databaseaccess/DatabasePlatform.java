@@ -56,6 +56,7 @@ import org.eclipse.persistence.internal.helper.ConversionManager;
 import org.eclipse.persistence.internal.helper.DatabaseField;
 import org.eclipse.persistence.internal.helper.DatabaseTable;
 import org.eclipse.persistence.internal.helper.Helper;
+import org.eclipse.persistence.internal.helper.JavaPlatform;
 import org.eclipse.persistence.internal.sequencing.Sequencing;
 import org.eclipse.persistence.internal.sessions.AbstractRecord;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
@@ -203,10 +204,14 @@ public class DatabasePlatform extends DatasourcePlatform {
     protected boolean shouldBindLiterals = true;
 
     /* NCLOB sql type is defined in java.sql.Types in jdk 1.6, but not in jdk 1.5.
-     * Redefined here for backward compatibility:
-     * Types.NCLOB won't compile with jdk 1.5.
+     * Redefined here for backward compatibility.
      */
     public final static int Types_NCLOB = 2011;
+    
+    /* SQLXML sql type is defined in java.sql.Types in jdk 1.6, but not in jdk 1.5.
+     * Redefined here for backward compatibility.
+     */
+    public final static int Types_SQLXML = 2009;
     
     public DatabasePlatform() {
         this.tableQualifier = "";
@@ -1120,10 +1125,14 @@ public class DatabasePlatform extends DatasourcePlatform {
      */
     public Object getObjectFromResultSet(ResultSet resultSet, int columnNumber, int type, AbstractSession session) throws java.sql.SQLException {
         Object objectFromResultSet = resultSet.getObject(columnNumber);
-        if (objectFromResultSet != null && structConverters != null && type == Types.STRUCT){
-            String structType = ((Struct)objectFromResultSet).getSQLTypeName();
-            if (getStructConverters().containsKey(structType)) {
-                return getStructConverters().get(structType).convertToObject((Struct)objectFromResultSet);
+        if (objectFromResultSet != null){ 
+            if(structConverters != null && type == Types.STRUCT){
+                String structType = ((Struct)objectFromResultSet).getSQLTypeName();
+                if (getStructConverters().containsKey(structType)) {
+                    return getStructConverters().get(structType).convertToObject((Struct)objectFromResultSet);
+                }
+            } else if(type == Types_SQLXML) {
+                return JavaPlatform.getStringAndFreeSQLXML(objectFromResultSet);
             }
         }
         return objectFromResultSet;

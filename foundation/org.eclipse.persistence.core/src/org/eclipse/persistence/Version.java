@@ -44,6 +44,7 @@ public class Version {
     /** Keep track of JDK version in order to make some decisions about data structures. **/
     public static final int JDK_VERSION_NOT_SET = 0;
     public static final int JDK_1_5 = 1;
+    public static final int JDK_1_6 = 2;
     public static int JDK_VERSION = JDK_VERSION_NOT_SET;
 
     public static String getVersionString ( ) {
@@ -95,7 +96,12 @@ public class Version {
      */
     public static int getJDKVersion() {
         if (JDK_VERSION == JDK_VERSION_NOT_SET) {
-            useJDK15();
+            String version = System.getProperty("java.version");
+            if ((version != null) && version.startsWith("1.5")) {
+                useJDK15();
+            } else {
+                useJDK16();
+            }
         }
         return JDK_VERSION;
     }
@@ -105,8 +111,16 @@ public class Version {
         JDK_VERSION = JDK_1_5;
     }
 
+    public static void useJDK16() {
+        JDK_VERSION = JDK_1_6;
+    }
+
     public static boolean isJDK15() {
         return getJDKVersion() == JDK_1_5;
+    }
+
+    public static boolean isJDK16() {
+        return getJDKVersion() == JDK_1_6;
     }
 
     public static void printVersion ( ) {

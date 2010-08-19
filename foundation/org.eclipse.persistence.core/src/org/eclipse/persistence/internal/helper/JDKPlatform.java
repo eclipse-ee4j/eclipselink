@@ -12,6 +12,7 @@
  ******************************************************************************/  
 package org.eclipse.persistence.internal.helper;
 
+import java.sql.SQLException;
 import java.util.*;
 
 /**
@@ -36,5 +37,14 @@ public interface JDKPlatform {
      * Get a concurrent Map that allow concurrent gets but block on put.
      */
     Map getConcurrentMap();
+    
+    /**
+     * Indicates whether the passed object implements java.sql.SQLXML introduced in jdk 1.6
+     */
+    boolean isSQLXML(Object object);
 
+    /**
+     * Casts the passed object to SQLXML and calls getString and free methods
+     */
+    String getStringAndFreeSQLXML(Object sqlXml) throws SQLException; 
 }

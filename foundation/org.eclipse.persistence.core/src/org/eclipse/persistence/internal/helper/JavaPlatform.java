@@ -14,6 +14,7 @@ package org.eclipse.persistence.internal.helper;
 
 import java.security.AccessController;
 import java.security.PrivilegedActionException;
+import java.sql.SQLException;
 
 import java.util.*;
 import org.eclipse.persistence.Version;
@@ -39,17 +40,17 @@ public class JavaPlatform {
      */
     protected static JDKPlatform getPlatform() {
         if (platform == null) {
-            if (Version.isJDK15()) {
+            if (Version.isJDK16()) {
                 try {
                     Class platformClass = null;
-                    // use class.forName() to avoid loading the JDK 1.5 class unless it is needed.
+                    // use class.forName() to avoid loading the JDK 1.6 class unless it is needed.
                     if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()){
                         try {
-                            platformClass = (Class)AccessController.doPrivileged(new PrivilegedClassForName("org.eclipse.persistence.internal.helper.JDK15Platform"));
+                            platformClass = (Class)AccessController.doPrivileged(new PrivilegedClassForName("org.eclipse.persistence.internal.helper.JDK16Platform"));
                         } catch (PrivilegedActionException exception) {
                         }
                     } else {
-                        platformClass = org.eclipse.persistence.internal.security.PrivilegedAccessHelper.getClassForName("org.eclipse.persistence.internal.helper.JDK15Platform");
+                        platformClass = org.eclipse.persistence.internal.security.PrivilegedAccessHelper.getClassForName("org.eclipse.persistence.internal.helper.JDK16Platform");
                     }                  
                     if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()){
                         try {
@@ -86,4 +87,19 @@ public class JavaPlatform {
         return getPlatform().getConcurrentMap();
     }
 
+    /**
+     * INTERNAL:
+     * Indicates whether the passed object implements java.sql.SQLXML introduced in jdk 1.6
+     */
+    public static boolean isSQLXML(Object object) {
+        return getPlatform().isSQLXML(object);
+    }
+
+    /**
+     * INTERNAL:
+     * Casts the passed object to SQLXML and calls getString and free methods
+     */
+    public static String getStringAndFreeSQLXML(Object sqlXml) throws SQLException { 
+        return getPlatform().getStringAndFreeSQLXML(sqlXml);
+    }
 }
