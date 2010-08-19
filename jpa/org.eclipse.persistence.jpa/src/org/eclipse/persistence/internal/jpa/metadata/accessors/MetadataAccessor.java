@@ -37,6 +37,8 @@
  *       - 309856: MappedSuperclasses from XML are not being initialized properly
  *     05/14/2010-2.1 Guy Pelletier 
  *       - 253083: Add support for dynamic persistence using ORM.xml/eclipselink-orm.xml
+ *     08/19/2010-2.2 Guy Pelletier 
+ *       - 282733: Add plural converter annotations
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata.accessors;
 
@@ -46,9 +48,13 @@ import java.util.List;
 import java.lang.annotation.Annotation;
 
 import org.eclipse.persistence.annotations.Converter;
+import org.eclipse.persistence.annotations.Converters;
 import org.eclipse.persistence.annotations.ObjectTypeConverter;
-import org.eclipse.persistence.annotations.TypeConverter;
+import org.eclipse.persistence.annotations.ObjectTypeConverters;
 import org.eclipse.persistence.annotations.StructConverter;
+import org.eclipse.persistence.annotations.StructConverters;
+import org.eclipse.persistence.annotations.TypeConverter;
+import org.eclipse.persistence.annotations.TypeConverters;
 import org.eclipse.persistence.exceptions.ValidationException;
 
 import org.eclipse.persistence.internal.helper.DatabaseField;
@@ -179,7 +185,7 @@ public abstract class MetadataAccessor extends ORMetadata {
         processTypeConverters();
         
         // Process the struct converters if defined
-        processStructConverter();
+        processStructConverters();
     }
     
     /**
@@ -526,6 +532,14 @@ public abstract class MetadataAccessor extends ORMetadata {
             m_project.addConverter(converter);
         }
         
+        // Check for a Converters annotation
+        MetadataAnnotation converters = getAnnotation(Converters.class);
+        if (converters != null) {
+            for (Object converter : (Object[]) converters.getAttributeArray("value")) {
+                m_project.addConverter(new ConverterMetadata((MetadataAnnotation) converter, getAccessibleObject()));
+            }
+        }
+        
         // Check for a Converter annotation.
         MetadataAnnotation converter = getAnnotation(Converter.class);
         if (converter != null) {
@@ -542,6 +556,14 @@ public abstract class MetadataAccessor extends ORMetadata {
         // Check for XML defined object type converters.
         for (ObjectTypeConverterMetadata objectTypeConverter : m_objectTypeConverters) {
             m_project.addConverter(objectTypeConverter);
+        }
+        
+        // Check for an ObjectTypeConverters annotation
+        MetadataAnnotation objectTypeConverters = getAnnotation(ObjectTypeConverters.class);
+        if (objectTypeConverters != null) {
+            for (Object objectTypeConverter : (Object[]) objectTypeConverters.getAttributeArray("value")) {
+                m_project.addConverter(new ObjectTypeConverterMetadata((MetadataAnnotation) objectTypeConverter, getAccessibleObject()));
+            }
         }
         
         // Check for an ObjectTypeConverter annotation.
@@ -586,10 +608,18 @@ public abstract class MetadataAccessor extends ORMetadata {
      * Process the XML defined struct converters and check for a StructConverter 
      * annotation. 
      */
-    protected void processStructConverter() {
+    protected void processStructConverters() {
         // Check for XML defined struct converters.
         for (StructConverterMetadata structConverter : m_structConverters) {
             m_project.addConverter(structConverter);
+        }
+        
+        // Check for a StructConverters annotation
+        MetadataAnnotation structConverters = getAnnotation(StructConverters.class);
+        if (structConverters != null) {
+            for (Object structConverter : (Object[]) structConverters.getAttributeArray("value")) {
+                m_project.addConverter(new StructConverterMetadata((MetadataAnnotation) structConverter, getAccessibleObject()));
+            }
         }
         
         // Check for a StructConverter annotation.
@@ -617,6 +647,14 @@ public abstract class MetadataAccessor extends ORMetadata {
         // Check for XML defined type converters.
         for (TypeConverterMetadata typeConverter : m_typeConverters) {
             m_project.addConverter(typeConverter);
+        }
+        
+        // Check for a TypeConverters annotation
+        MetadataAnnotation typeConverters = getAnnotation(TypeConverters.class);
+        if (typeConverters != null) {
+            for (Object typeConverter : (Object[]) typeConverters.getAttributeArray("value")) {
+                m_project.addConverter(new TypeConverterMetadata((MetadataAnnotation) typeConverter, getAccessibleObject()));
+            }
         }
         
         // Check for an TypeConverter annotation.

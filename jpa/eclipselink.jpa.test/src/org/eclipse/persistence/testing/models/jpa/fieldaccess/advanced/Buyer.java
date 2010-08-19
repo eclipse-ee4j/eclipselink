@@ -25,6 +25,7 @@ import org.eclipse.persistence.annotations.CollectionTable;
 import org.eclipse.persistence.annotations.ConversionValue;
 import org.eclipse.persistence.annotations.Convert;
 import org.eclipse.persistence.annotations.Converter;
+import org.eclipse.persistence.annotations.Converters;
 import org.eclipse.persistence.annotations.ObjectTypeConverter;
 import org.eclipse.persistence.annotations.OptimisticLocking;
 import static org.eclipse.persistence.annotations.OptimisticLockingType.SELECTED_COLUMNS;
@@ -89,10 +90,12 @@ public class Buyer implements Serializable {
     @Column(name="DESCRIP")
     private String description;
     @Convert("customSexConverter")
-    @Converter(
-        name="customSexConverter",
-        converterClass=org.eclipse.persistence.testing.models.jpa.fieldaccess.advanced.CustomSexConverter.class
-    )
+    @Converters({
+        @Converter(
+            name="customSexConverter",
+            converterClass=org.eclipse.persistence.testing.models.jpa.fieldaccess.advanced.CustomSexConverter.class
+        )
+    })
     private String gender;
 	@Column(name="BUY_DAYS")
     private EnumSet<Weekdays> buyingDays;

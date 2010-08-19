@@ -27,8 +27,10 @@ import org.eclipse.persistence.annotations.Customizer;
 import org.eclipse.persistence.annotations.JoinFetch;
 import org.eclipse.persistence.annotations.JoinFetchType;
 import org.eclipse.persistence.annotations.ObjectTypeConverter;
+import org.eclipse.persistence.annotations.ObjectTypeConverters;
 import org.eclipse.persistence.annotations.PrivateOwned;
 import org.eclipse.persistence.annotations.TypeConverter;
+import org.eclipse.persistence.annotations.TypeConverters;
 import org.eclipse.persistence.annotations.OptimisticLocking;
 
 import static org.eclipse.persistence.annotations.CacheCoordinationType.SEND_NEW_OBJECTS_WITH_CHANGES;//INVALIDATE_CHANGED_OBJECTS;
@@ -94,20 +96,24 @@ import static org.eclipse.persistence.annotations.OptimisticLockingType.VERSION_
 @OptimisticLocking(
     type=VERSION_COLUMN
 )
-@ObjectTypeConverter(
-    name="sex",
-    dataType=String.class,
-    objectType=org.eclipse.persistence.testing.models.jpa.fieldaccess.advanced.Employee.Gender.class,
-    conversionValues={
-        @ConversionValue(dataValue="F", objectValue="Female"),
-        @ConversionValue(dataValue="M", objectValue="Male")
-    }
-)
-@TypeConverter(
-    name="Long2String",
-    dataType=String.class,
-    objectType=Long.class
-)
+@ObjectTypeConverters({
+    @ObjectTypeConverter(
+        name="sex",
+        dataType=String.class,
+        objectType=org.eclipse.persistence.testing.models.jpa.fieldaccess.advanced.Employee.Gender.class,
+        conversionValues={
+            @ConversionValue(dataValue="F", objectValue="Female"),
+            @ConversionValue(dataValue="M", objectValue="Male")
+        }
+    )
+})
+@TypeConverters({
+    @TypeConverter(
+        name="Long2String",
+        dataType=String.class,
+        objectType=Long.class
+    )
+})
 @Cache(
     type=FULL,
     shared=true,
