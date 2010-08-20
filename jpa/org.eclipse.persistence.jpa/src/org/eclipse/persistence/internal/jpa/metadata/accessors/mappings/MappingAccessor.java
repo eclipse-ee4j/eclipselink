@@ -59,6 +59,8 @@
  *       - 264417: Table generation is incorrect for JoinTables in AssociationOverrides
  *     07/05/2010-2.1.1 Guy Pelletier 
  *       - 317708: Exception thrown when using LAZY fetch on VIRTUAL mapping
+ *     08/20/2010-2.2 Guy Pelletier 
+ *       - 323252: Canonical model generator throws NPE on virtual 1-1 or M-1 mapping
  ******************************************************************************/
 package org.eclipse.persistence.internal.jpa.metadata.accessors.mappings;
 
@@ -177,7 +179,7 @@ public abstract class MappingAccessor extends MetadataAccessor {
         if (super.equals(objectToCompare) && objectToCompare instanceof MappingAccessor) {
             MappingAccessor mappingAccessor = (MappingAccessor) objectToCompare;
             
-            return valuesMatch(m_attributeType, mappingAccessor.getAttributeType());
+            return valuesMatch(getAttributeType(), mappingAccessor.getAttributeType());
         }
         
         return false;
@@ -366,7 +368,10 @@ public abstract class MappingAccessor extends MetadataAccessor {
     
     /**
      * INTERNAL:
-     * Used for OX mapping.
+     * Used for OX mapping. Those accessors that do not require a separate 
+     * attribute-type specification for VIRTUAL accessors should override this 
+     * method. For example, one-to-one and many-to-one will its target-entity. 
+     * variable-one-to-one will use its target-interface.
      */
     public String getAttributeType() {
         return m_attributeType;
@@ -663,15 +668,18 @@ public abstract class MappingAccessor extends MetadataAccessor {
      * INTERNAL:
      * Return the raw class for this accessor. 
      * E.g. For an accessor with a type of java.util.Collection<Employee>, this 
-     * method will return java.util.Collection
+     * method will return java.util.Collection. To check for the attribute
+     * type we must go through the method calls since some accessors define
+     * the attribute type through a target entity specification. Do not access
+     * the m_attributeType variable directly in this method.
      */
     public MetadataClass getRawClass() {
-        if (m_attributeType == null) {
-            return getAccessibleObject().getRawClass(getDescriptor());
-        } else {
+        if (hasAttributeType()) {
             // If the class doesn't exist the factory we'll just return a
             // generic MetadataClass
-            return getMetadataClass(m_attributeType);
+            return getMetadataClass(getAttributeType());
+        } else {
+            return getAccessibleObject().getRawClass(getDescriptor());
         }
     }
     

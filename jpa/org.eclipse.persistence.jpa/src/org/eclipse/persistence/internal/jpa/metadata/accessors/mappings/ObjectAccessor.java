@@ -43,7 +43,9 @@
  *       - 317708: Exception thrown when using LAZY fetch on VIRTUAL mapping
  *     08/04/2010-2.1.1 Guy Pelletier
  *       - 315782: JPA2 derived identity metadata processing validation doesn't account for autoboxing
- ******************************************************************************/  
+ *     08/20/2010-2.2 Guy Pelletier 
+ *       - 323252: Canonical model generator throws NPE on virtual 1-1 or M-1 mapping
+ ******************************************************************************/
 package org.eclipse.persistence.internal.jpa.metadata.accessors.mappings;
 
 import java.util.ArrayList;
@@ -181,6 +183,15 @@ public abstract class ObjectAccessor extends RelationshipAccessor {
     
     /**
      * INTERNAL:
+     * The attribute type for virtual object accessors is the target entity.
+     */
+	@Override
+    public String getAttributeType() {
+        return getTargetEntityName();
+    }
+    
+    /**
+     * INTERNAL:
      * Return the default fetch type for an object mapping.
      */
     public String getDefaultFetchType() {
@@ -265,7 +276,7 @@ public abstract class ObjectAccessor extends RelationshipAccessor {
      */
     @Override
     public boolean hasAttributeType() {
-        return getReferenceClass() != null;
+        return getTargetEntity() != null && ! getTargetEntity().isVoid();
     }
     
     /**
