@@ -91,6 +91,9 @@ public abstract class TIMESTAMPTester extends TypeTester {
     // oracleConnection's property "oracle.jdbc.timestampTzInGmt" is set to "true".
     // The flag indicates whether TIMESTAMPTZ keeps its timestamp in GMT.
     public static boolean isTimestampInGmt;
+    
+    // true if driverVersion is 11.2.0.2 or later.
+    public static boolean isLtzTimestampInGmt;
 
     // last year for which Daylight Saving Time is supported.  
     static int lastDSTYear = 2020;
@@ -346,6 +349,18 @@ public abstract class TIMESTAMPTester extends TypeTester {
         return TimeZone.getDefault().getID().equals(this.sessionTimeZone) || !isTimestampInGmt; 
     }
     
+    // see the previous comment:
+    // it used to work - due to even number of errors - in 11.1.0.7,
+    // but no longer works in 11.2.0.2.
+    // Again, as in TIMESTAMPTZ field case,
+    // writing Timestamp, or Time, or Date, or util.Date while sessionTimeZone is not equal to default time zone
+    // results in combining of a time in default time zone and session time zone.
+    // Therefore 5p.m. in default zone America/New_York written through America/Los_Angeles sessionTimeZone
+    // is recorded in the db. as 5p.m. America/Los_Angeles.
+    boolean doesTimestampLTZWork() {
+        return TimeZone.getDefault().getID().equals(this.sessionTimeZone) || !isLtzTimestampInGmt; 
+    }
+    
     protected void test(WriteTypeObjectTest testCase) {
         try {
             if(this.sessionTimeZone != null) {
@@ -375,8 +390,10 @@ public abstract class TIMESTAMPTester extends TypeTester {
                     errorMsg += "The tsToTSTZ should be: " + tsToTSTZ + ", but was read as: " + fromDatabase.getTsToTSTZ() + "\n";
                 }
             }
-            if (!tsToTSLTZ.equals(fromDatabase.getTsToTSLTZ())) {
-                errorMsg += "The tsToTSLTZ should be: " + tsToTSLTZ + ", but was read as: " + fromDatabase.getTsToTSLTZ() + "\n";
+            if(doesTimestampLTZWork()) {
+                if (!tsToTSLTZ.equals(fromDatabase.getTsToTSLTZ())) {
+                    errorMsg += "The tsToTSLTZ should be: " + tsToTSLTZ + ", but was read as: " + fromDatabase.getTsToTSLTZ() + "\n";
+                }
             }
             if (!utilDateToTS.equals(fromDatabase.getUtilDateToTS())) {
                 errorMsg += "The utilDateToTS should be: " + utilDateToTS + ", but was read as: " + fromDatabase.getUtilDateToTS() + "\n";
@@ -386,8 +403,10 @@ public abstract class TIMESTAMPTester extends TypeTester {
                     errorMsg += "The utilDateToTSTZ should be: " + utilDateToTSTZ + ", but was read as: " + fromDatabase.getUtilDateToTSTZ() + "\n";
                 }
             }
-            if (!utilDateToTSLTZ.equals(fromDatabase.getUtilDateToTSLTZ())) {
-                errorMsg += "The utilDateToTSLTZ should be: " + utilDateToTSLTZ + ", but was read as: " + fromDatabase.getUtilDateToTSLTZ() + "\n";
+            if(doesTimestampLTZWork()) {
+                if (!utilDateToTSLTZ.equals(fromDatabase.getUtilDateToTSLTZ())) {
+                    errorMsg += "The utilDateToTSLTZ should be: " + utilDateToTSLTZ + ", but was read as: " + fromDatabase.getUtilDateToTSLTZ() + "\n";
+                }
             }
             if (!dateToTS.equals(fromDatabase.getDateToTS())) {
                 errorMsg += "The dateToTS should be: " + dateToTS + ", but was read as: " + fromDatabase.getDateToTS() + "\n";
@@ -406,8 +425,10 @@ public abstract class TIMESTAMPTester extends TypeTester {
                     errorMsg += "The timeToTSTZ should be: " + timeToTSTZ + ", but was read as: " + fromDatabase.getTimeToTSTZ() + "\n";
                 }
             }
-            if (!timeToTSLTZ.equals(fromDatabase.getTimeToTSLTZ())) {
-                errorMsg += "The timeToTSLTZ should be: " + timeToTSLTZ + ", but was read as: " + fromDatabase.getTimeToTSLTZ() + "\n";
+            if(doesTimestampLTZWork()) {
+                if (!timeToTSLTZ.equals(fromDatabase.getTimeToTSLTZ())) {
+                    errorMsg += "The timeToTSLTZ should be: " + timeToTSLTZ + ", but was read as: " + fromDatabase.getTimeToTSLTZ() + "\n";
+                }
             }
 
             String originalCal = TIMESTAMPHelper.printCalendar(calToTSLTZ);
@@ -423,23 +444,28 @@ public abstract class TIMESTAMPTester extends TypeTester {
             //the same GMT time).  Need to assign the original time zone to the calToTSLTZ to make them the same.
             //Calendar-to-TIMESTAMPLTZ does not work if calendar's time stamp is not inserted into the db.
             if (doesTestInsertCalendarTimeZone(testCase)) {
-                Calendar tempCal = fromDatabase.getCalToTSLTZ();
-                tempCal.getTimeZone().setID(calToTSLTZ.getTimeZone().getID());
-                tempCal.getTimeZone().setRawOffset(calToTSLTZ.getTimeZone().getRawOffset());
-                tempCal.setTime(tempCal.getTime());
-                dbCal = TIMESTAMPHelper.printCalendar(tempCal);
-                if (!originalCal.equals(dbCal)) {
-                    errorMsg += "The calToTSLTZ should be: " + originalCal + ", but was read as: " + 
-                                                 dbCal + " after being converted to the original timezone";
+                // 0 if and only if the two calendars refer to the same time
+                int compareCalToTSLTZ = calToTSLTZ.compareTo(fromDatabase.getCalToTSLTZ());
+                if(compareCalToTSLTZ != 0) {
+                    errorMsg += "calToTSLTZ.compareTo(fromDatabase.getCalToTSLTZ()) == " + compareCalToTSLTZ + "\n"; 
+                    errorMsg += "\t    original calToTSLTZ = " + TIMESTAMPHelper.printCalendar(calToTSLTZ) + "\n";
+                    errorMsg += "\tfromDatabase.calToTSLTZ = " + fromDatabase.getCalToTSLTZ()  + "\n";
                 }
             }
 
             //Calendar-to-TIMESTAMPTZ does not work if calendar's time stamp is not inserted into the db.
             if (doesTestInsertCalendarTimeZone(testCase)) {
-                originalCal = TIMESTAMPHelper.printCalendar(calToTSTZ);
-                dbCal = TIMESTAMPHelper.printCalendar(fromDatabase.getCalToTSTZ());
-                if (!originalCal.equals(dbCal)) {
-                    errorMsg += "The calToTSTZ should be: " + originalCal + ", but was read as: " + dbCal; 
+                // 0 if and only if the two calendars refer to the same time
+                int compareCalToTSTZ = calToTSTZ.compareTo(fromDatabase.getCalToTSTZ());
+                boolean timeZonesEqual = calToTSTZ.getTimeZone().equals(fromDatabase.getCalToTSTZ().getTimeZone());
+                if(compareCalToTSTZ != 0 || !timeZonesEqual) {
+                    if(compareCalToTSTZ != 0) {
+                        errorMsg += "calToTSTZ.compareTo(fromDatabase.getCalToTSTZ()) == " + compareCalToTSTZ + "\n";
+                    } else {
+                        errorMsg += "time zones are not equal: \n";
+                    }
+                    errorMsg += "\t    original calToTSTZ = " + TIMESTAMPHelper.printCalendar(calToTSTZ) + "\n";
+                    errorMsg += "\tfromDatabase.calToTSTZ = " + fromDatabase.getCalToTSTZ()  + "\n";
                 }
             }
 

@@ -62,6 +62,7 @@ public class OracleTIMESTAMPTypeTestModel extends org.eclipse.persistence.testin
                 // isTimestampInGmt==true if driverVersion is 11.1.0.7 or later and
                 // oracleConnection's property "oracle.jdbc.timestampTzInGmt" is set to "true".
                 TIMESTAMPTester.isTimestampInGmt = platform.isTimestampInGmt(conn);
+                TIMESTAMPTester.isLtzTimestampInGmt = platform.isLtzTimestampInGmt(conn);
                 ((AbstractSession)getSession()).getAccessor().decrementCallCount();
                 //The combination of driver version of 9.2.0.4 or lower and JDK14 or up would cause
                 //an exception, and therefore is not tested

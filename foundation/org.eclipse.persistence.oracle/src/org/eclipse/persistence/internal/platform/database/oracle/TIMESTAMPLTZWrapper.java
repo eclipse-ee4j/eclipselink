@@ -23,10 +23,12 @@ import java.sql.Timestamp;
 public class TIMESTAMPLTZWrapper implements Serializable {
     Timestamp ts;
     String zoneId;
+    boolean isLtzTimestampInGmt;
 
-    public TIMESTAMPLTZWrapper(Timestamp ts, String zoneId) {
+    public TIMESTAMPLTZWrapper(Timestamp ts, String zoneId, boolean isLtzTimestampInGmt) {
         this.ts = ts;
         this.zoneId = zoneId;
+        this.isLtzTimestampInGmt = isLtzTimestampInGmt;
     }
 
     public Timestamp getTimestamp() {
@@ -35,5 +37,9 @@ public class TIMESTAMPLTZWrapper implements Serializable {
 
     public String getZoneId() {
         return zoneId;
+    }
+    
+    public boolean isLtzTimestampInGmt() {
+        return isLtzTimestampInGmt;
     }
 }

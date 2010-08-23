@@ -87,6 +87,10 @@ public class Oracle9Platform extends Oracle8Platform {
      * with the same properties. 
      * */
     protected transient boolean isTimestampInGmt;
+    /* Indicates whether TIMESTAMPLTZ.toTimestamp returns Timestamp in GMT.
+     * true for version 11.2.0.2 or later.
+     */
+    protected transient boolean isLtzTimestampInGmt;
     /* Indicates whether driverVersion, shouldPrintCalendar, isTimestampInGmt have been initialized.
      * To re-initialize connection data call clearConnectionData method. 
      */
@@ -214,7 +218,7 @@ public class Oracle9Platform extends Oracle8Platform {
             Timestamp timestampToWrap = TIMESTAMPLTZ.toTimestamp(connection, tsLTZ.toBytes());
             String sessionTimeZone = ((OracleConnection)connection).getSessionTimeZone();
             //Bug#4364359  Add a separate wrapper for TIMESTAMPLTZ.  
-            return new TIMESTAMPLTZWrapper(timestampToWrap, sessionTimeZone);
+            return new TIMESTAMPLTZWrapper(timestampToWrap, sessionTimeZone, isLtzTimestampInGmt(connection));
         }
         return null;
     }
@@ -419,6 +423,7 @@ public class Oracle9Platform extends Oracle8Platform {
             } else {
                 isTimestampInGmt = true;
             }
+            isLtzTimestampInGmt = Helper.compareVersions(driverVersion, "11.2.0.2") >= 0;
         }
         isConnectionDataInitialized = true;
     }
@@ -457,6 +462,16 @@ public class Oracle9Platform extends Oracle8Platform {
             initializeConnectionData(conn);
         }
         return isTimestampInGmt;
+    }
+    
+    /**
+     * INTERNAL:
+     */
+    public boolean isLtzTimestampInGmt(Connection conn) throws SQLException {
+        if(!isConnectionDataInitialized) {
+            initializeConnectionData(conn);
+        }
+        return isLtzTimestampInGmt;
     }
     
     /**

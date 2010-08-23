@@ -69,10 +69,14 @@ public class TIMESTAMPHelper {
 
         //This is the only way to set time in Calendar.  Passing Timestamp directly to the new 
         //calendar does not work because the GMT time is wrong.
-        Calendar localCalendar = Helper.allocateCalendar();
-        localCalendar.setTime(timestampLTZ.getTimestamp());
-        gCal.set(localCalendar.get(Calendar.YEAR), localCalendar.get(Calendar.MONTH), localCalendar.get(Calendar.DATE), localCalendar.get(Calendar.HOUR_OF_DAY), localCalendar.get(Calendar.MINUTE), localCalendar.get(Calendar.SECOND));
-        Helper.releaseCalendar(localCalendar);
+        if(timestampLTZ.isLtzTimestampInGmt()) {
+            gCal.setTimeInMillis(timestampLTZ.getTimestamp().getTime());
+        } else {
+            Calendar localCalendar = Helper.allocateCalendar();
+            localCalendar.setTime(timestampLTZ.getTimestamp());
+            gCal.set(localCalendar.get(Calendar.YEAR), localCalendar.get(Calendar.MONTH), localCalendar.get(Calendar.DATE), localCalendar.get(Calendar.HOUR_OF_DAY), localCalendar.get(Calendar.MINUTE), localCalendar.get(Calendar.SECOND));
+            Helper.releaseCalendar(localCalendar);
+        }
         gCal.set(Calendar.MILLISECOND, timestampLTZ.getTimestamp().getNanos() / 1000000);
 
         return gCal;
