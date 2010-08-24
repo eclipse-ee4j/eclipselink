@@ -1,4 +1,5 @@
 Export-Package: org.eclipse.persistence*;version="${version.string}";-noimport:=true,
+Bundle-ClassPath: .
 Implementation-Version: ${version.string}
 Specification-Vendor: ${specification.vendor}
 Bundle-Name: EclipseLink DBWS
@@ -8,7 +9,6 @@ Require-Bundle: org.eclipse.persistence.core;bundle-version="${version.string}";
  org.eclipse.persistence.asm;bundle-version="${version.string}"
 Implementation-Vendor: ${implementation.vendor}
 Bundle-Vendor: ${implementation.vendor}
-Fragment-Host: org.eclipse.persistence.core;bundle-version="${version.string}"
 Bundle-Version: ${version.string}
 Include-Resource:                \
  ${dbws.2.base.dir}/about.html,  \
