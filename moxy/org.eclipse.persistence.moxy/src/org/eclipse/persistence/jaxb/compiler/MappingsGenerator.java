@@ -993,9 +993,9 @@ public class MappingsGenerator {
             ((XMLField) mapping.getField()).setRequired(true);
         }
 
-        if (property.isXmlElementType()){
-        	Class theClass = helper.getClassForJavaClass(property.getType());
-        	mapping.setAttributeClassification(theClass);
+        if (property.getType() != null) {
+            Class theClass = helper.getClassForJavaClass(property.getType());
+            mapping.setAttributeClassification(theClass);
         }
 
         if (XMLConstants.QNAME_QNAME.equals(property.getSchemaType())){

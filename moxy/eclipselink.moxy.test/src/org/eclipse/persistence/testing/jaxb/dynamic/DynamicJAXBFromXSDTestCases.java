@@ -8,7 +8,7 @@
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
- *     rbarkhouse - 2010-03-04 12:22:11 - initial implementation
+ *     rbarkhouse - 2.1 - initial implementation
  ******************************************************************************/
 package org.eclipse.persistence.testing.jaxb.dynamic;
 
@@ -230,7 +230,7 @@ public class DynamicJAXBFromXSDTestCases extends TestCase {
         DynamicEntity salary = jaxbContext.newDynamicEntity(CDN_CURRENCY);
         assertNotNull("Could not create Dynamic Entity.", salary);
 
-        salary.set("value", "75425.75");
+        salary.set("value", new BigDecimal(75425.75));
 
         person.set("name", "Bob Dobbs");
         person.set("salary", salary);
@@ -442,7 +442,7 @@ public class DynamicJAXBFromXSDTestCases extends TestCase {
         DynamicEntity salary = jaxbContext.newDynamicEntity(PACKAGE + "." + CDN_CURRENCY);
         assertNotNull("Could not create Dynamic Entity.", salary);
 
-        salary.set("value", 75100.25);
+        salary.set("value", new BigDecimal(75100));
 
         person.set("name", "Bob Dobbs");
         person.set("salary", salary);
@@ -489,8 +489,10 @@ public class DynamicJAXBFromXSDTestCases extends TestCase {
         jaxbContext.createMarshaller().marshal(person, marshalDoc);
 
         Node node = marshalDoc.getDocumentElement();
-
-        assertTrue("Unexpected number of attributes.", node.getAttributes().getLength() == 3);
+        Node otherAttributesNode = node.getAttributes().getNamedItem("foo");
+        assertNotNull("'foo' attribute not found.", otherAttributesNode);
+        otherAttributesNode = node.getAttributes().getNamedItem("bar");
+        assertNotNull("'bar' attribute not found.", otherAttributesNode);
     }
 
     public void testXmlMixed() throws Exception {
@@ -783,6 +785,28 @@ public class DynamicJAXBFromXSDTestCases extends TestCase {
                 assertTrue(true);
             }
         }
+    }
+
+    // ====================================================================
+
+    public void testTypePreservation() throws Exception {
+        InputStream inputStream = ClassLoader.getSystemResourceAsStream(XMLSCHEMA_DEFAULTS);
+        jaxbContext = DynamicJAXBContextFactory.createContextFromXSD(inputStream, null, null, null);
+
+        DynamicEntity person = jaxbContext.newDynamicEntity(PERSON);
+        assertNotNull("Could not create Dynamic Entity.", person);
+
+        person.set("id", 456);
+        person.set("name", "Bob Dobbs");
+        person.set("salary", 45000.00);
+
+        Document marshalDoc = DocumentBuilderFactory.newInstance().newDocumentBuilder().newDocument();
+        jaxbContext.createMarshaller().marshal(person, marshalDoc);
+
+        DynamicEntity readPerson = (DynamicEntity) jaxbContext.createUnmarshaller().unmarshal(marshalDoc);
+
+        assertEquals("Property type was not preserved during unmarshal.", Double.class, readPerson.get("salary").getClass());
+        assertEquals("Property type was not preserved during unmarshal.", Integer.class, readPerson.get("id").getClass());
     }
 
     // ====================================================================

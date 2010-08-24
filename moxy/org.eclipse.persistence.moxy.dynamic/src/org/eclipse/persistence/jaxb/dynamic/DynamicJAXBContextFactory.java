@@ -8,7 +8,7 @@
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
- *     Rick Barkhouse = 2.1 - Initial implementation
+ *     Rick Barkhouse - 2.1 - Initial implementation
  ******************************************************************************/
 package org.eclipse.persistence.jaxb.dynamic;
 
@@ -21,6 +21,7 @@ import javax.xml.bind.JAXBException;
 import javax.xml.transform.Source;
 import javax.xml.transform.stream.StreamResult;
 
+import org.eclipse.persistence.jaxb.JAXBContextFactory;
 import org.eclipse.persistence.platform.xml.XMLPlatformFactory;
 import org.eclipse.persistence.platform.xml.XMLTransformer;
 import org.w3c.dom.Node;
@@ -66,8 +67,29 @@ import org.xml.sax.InputSource;
  */
 public class DynamicJAXBContextFactory {
 
+    public static final String XML_SCHEMA_KEY = "xml-schema";
+    public static final String ENTITY_RESOLVER_KEY = "entity-resolver";
+
     /**
-     * Create a <tt>DynamicJAXBContext</tt>, using an EclipseLink <tt>sessions.xml</tt> as the metadata source.
+     * Create a <tt>DynamicJAXBContext</tt>, using either an XML Schema, EclipseLink OXM file,
+     * or EclipseLink sessions.xml as the metadata source, according to the contents of the
+     * <tt>properties</tt> argument.<p>
+     *
+     * <b>From XML Schema:</b><p>
+     *
+     * The <tt>properties</tt> map must contain the following key/value pairs:
+     * <dl>
+     * <dt>DynamicJAXBContextFactory.XML_SCHEMA_KEY
+     * <dd>Either a <tt>Node</tt>, <tt>Source</tt>, or <tt>InputStream</tt> pointing to the XML Schema
+     * <dt>DynamicJAXBContextFactory.ENTITY_RESOLVER_KEY
+     * <dd>An <tt>org.xml.sax.EntityResolver</tt>, used to resolve schema imports.  Can be null.
+     * </dl>
+     *
+     * <i>Example:</i>
+     *
+
+
+     *
      * The <tt>sessionNames</tt> parameter is a colon-delimited list of session names within the
      * <tt>sessions.xml</tt> file.  <tt>Descriptors</tt> in this session's <tt>Project</tt> must <i>not</i>
      * have <tt>javaClass</tt> set, but <i>must</i> have <tt>javaClassName</tt> set.
@@ -88,13 +110,42 @@ public class DynamicJAXBContextFactory {
      *      if an error was encountered while creating the <tt>DynamicJAXBContext</tt>.
      */
     public static DynamicJAXBContext createContext(String sessionNames, ClassLoader classLoader, Map<String, ?> properties) throws JAXBException {
-        if (sessionNames == null) {
-            throw new JAXBException(org.eclipse.persistence.exceptions.JAXBException.nullSessionName());
+        Object schema = null;
+        EntityResolver resolver = null;
+        Object bindings = null;
+
+        if (properties != null) {
+            schema = properties.get(XML_SCHEMA_KEY);
+            resolver = (EntityResolver) properties.get(ENTITY_RESOLVER_KEY);
+            bindings = properties.get(JAXBContextFactory.ECLIPSELINK_OXM_XML_KEY);
         }
 
-        DynamicJAXBContext dContext = new DynamicJAXBContext();
-        dContext.initializeFromSessionsXML(sessionNames, classLoader);
-        return dContext;
+        // First try looking for an XSD
+        if (schema != null) {
+            if (schema instanceof Node) {
+                return createContextFromXSD((Node) schema, resolver, classLoader, properties);
+            }
+            if (schema instanceof InputStream) {
+                return createContextFromXSD((InputStream) schema, resolver, classLoader, properties);
+            }
+            if (schema instanceof Source) {
+                return createContextFromXSD((Source) schema, resolver, classLoader, properties);
+            }
+        }
+
+        // Next, check for OXM
+        if (bindings != null) {
+            return createContextFromOXM(classLoader, properties);
+        }
+
+        // Lastly, try sessions.xml
+        if (sessionNames != null) {
+            DynamicJAXBContext dContext = new DynamicJAXBContext();
+            dContext.initializeFromSessionsXML(sessionNames, classLoader);
+            return dContext;
+        } else {
+            throw new JAXBException(org.eclipse.persistence.exceptions.JAXBException.nullSessionName());
+        }
     }
 
     /**
@@ -206,6 +257,35 @@ public class DynamicJAXBContextFactory {
 
         DynamicJAXBContext dContext = new DynamicJAXBContext();
         dContext.initializeFromXSDInputSource(schemaInputSource, classLoader, resolver, properties);
+
+        return dContext;
+    }
+
+    /**
+     * Create a <tt>DynamicJAXBContext</tt>, using an EclipseLink OXM file as the metadata source.
+     *
+     * @param classLoader
+     *      The application's current class loader, which will be used to first lookup
+     *      classes to see if they exist before new <tt>DynamicTypes</tt> are generated.  Can be
+     *      <tt>null</tt>, in which case <tt>Thread.currentThread().getContextClassLoader()</tt> will be used.
+     * @param properties
+     *      Map of properties to use when creating a new <tt>DynamicJAXBContext</tt>.  This map must
+     *      contain a key of JAXBContext.ECLIPSELINK_OXM_XML_KEY, with a value of Map<String, Source>,
+     *      where String is the package name and Source is the metadata file for that packages.  Can be null.
+     *
+     * @return
+     *      A new instance of <tt>DynamicJAXBContext</tt>.
+     *
+     * @throws JAXBException
+     *      if an error was encountered while creating the <tt>DynamicJAXBContext</tt>.
+     */
+    public static DynamicJAXBContext createContextFromOXM(ClassLoader classLoader, Map<String, ?> properties) throws JAXBException {
+        if (properties == null || properties.get(JAXBContextFactory.ECLIPSELINK_OXM_XML_KEY) == null) {
+            throw new JAXBException(org.eclipse.persistence.exceptions.JAXBException.oxmKeyNotFound());
+        }
+
+        DynamicJAXBContext dContext = new DynamicJAXBContext();
+        dContext.initializeFromOXM(classLoader, properties);
 
         return dContext;
     }

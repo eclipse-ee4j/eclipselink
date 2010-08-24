@@ -8,7 +8,7 @@
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
- *     Rick Barkhouse = 2.1 - initial implementation
+ *     Rick Barkhouse - 2.1 - initial implementation
  ******************************************************************************/
 package org.eclipse.persistence.jaxb.dynamic;
 
@@ -35,9 +35,13 @@ import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
 import org.eclipse.persistence.jaxb.JAXBContextFactory;
 import org.eclipse.persistence.jaxb.compiler.Generator;
 import org.eclipse.persistence.jaxb.javamodel.JavaClass;
+import org.eclipse.persistence.jaxb.javamodel.oxm.OXMJavaClassImpl;
+import org.eclipse.persistence.jaxb.javamodel.oxm.OXMJavaModelImpl;
+import org.eclipse.persistence.jaxb.javamodel.oxm.OXMJavaModelInputImpl;
 import org.eclipse.persistence.jaxb.javamodel.xjc.XJCJavaClassImpl;
 import org.eclipse.persistence.jaxb.javamodel.xjc.XJCJavaModelImpl;
 import org.eclipse.persistence.jaxb.javamodel.xjc.XJCJavaModelInputImpl;
+import org.eclipse.persistence.jaxb.xmlmodel.JavaType;
 import org.eclipse.persistence.jaxb.xmlmodel.XmlBindings;
 import org.eclipse.persistence.oxm.XMLContext;
 import org.eclipse.persistence.sessions.DatabaseSession;
@@ -227,6 +231,77 @@ public class DynamicJAXBContext extends org.eclipse.persistence.jaxb.JAXBContext
         for (Object session : sessions) {
             this.helpers.add(new DynamicHelper((DatabaseSession) session));
         }
+    }
+
+    @SuppressWarnings("unchecked")
+    void initializeFromOXM(ClassLoader classLoader, Map<String, ?> properties) throws JAXBException {
+        if (classLoader == null) {
+            classLoader = Thread.currentThread().getContextClassLoader();
+        }
+        DynamicClassLoader dynamicClassLoader;
+
+        ClassLoader jaxbLoader = new JaxbClassLoader(classLoader);
+
+        if (classLoader instanceof DynamicClassLoader) {
+           dynamicClassLoader = (DynamicClassLoader) classLoader;
+        } else {
+           dynamicClassLoader = new DynamicClassLoader(jaxbLoader);
+        }
+
+        dClassLoader = dynamicClassLoader;
+
+        Map<String, XmlBindings> bindings = JAXBContextFactory.getXmlBindingsFromProperties(properties, classLoader);
+
+        JavaClass[] elinkClasses = createClassModelFromOXM(bindings);
+
+        // Use the JavaModel to setup a Generator to generate an EclipseLink project
+        OXMJavaModelImpl javaModel = new OXMJavaModelImpl(classLoader, elinkClasses);
+        OXMJavaModelInputImpl javaModelInput = new OXMJavaModelInputImpl(elinkClasses, javaModel);
+        Generator g = new Generator(javaModelInput, bindings, dynamicClassLoader, null);
+
+        Project p = null;
+        Project dp = null;
+        try {
+            p = g.generateProject();
+            // Clear out InstantiationPolicy because it refers to ObjectFactory, which we won't be using
+            Vector<ClassDescriptor> descriptors = (Vector<ClassDescriptor>) p.getOrderedDescriptors();
+            for (ClassDescriptor classDescriptor : descriptors) {
+                classDescriptor.setInstantiationPolicy(new InstantiationPolicy());
+            }
+            dp = DynamicTypeBuilder.loadDynamicProject(p, null, dynamicClassLoader);
+        } catch (Exception e) {
+            throw new JAXBException(org.eclipse.persistence.exceptions.JAXBException.errorCreatingDynamicJAXBContext(e));
+        }
+
+        this.xmlContext = new XMLContext(dp);
+
+        List<Session> sessions = (List<Session>) this.xmlContext.getSessions();
+        for (Object session : sessions) {
+            this.helpers.add(new DynamicHelper((DatabaseSession) session));
+        }
+    }
+
+    private JavaClass[] createClassModelFromOXM(Map<String, XmlBindings> bindings) throws JAXBException {
+        List<OXMJavaClassImpl> oxmJavaClasses = new ArrayList<OXMJavaClassImpl>();
+
+        Iterator<String> keys = bindings.keySet().iterator();
+
+        while (keys.hasNext()) {
+            XmlBindings b = bindings.get(keys.next());
+
+            List<JavaType> javaTypes = b.getJavaTypes().getJavaType();
+            for (Iterator<JavaType> iterator = javaTypes.iterator(); iterator.hasNext();) {
+                JavaType type = iterator.next();
+                oxmJavaClasses.add(new OXMJavaClassImpl(type));
+            }
+        }
+
+        JavaClass[] javaClasses = new JavaClass[oxmJavaClasses.size()];
+        for (int i = 0; i < javaClasses.length; i++) {
+            javaClasses[i] = oxmJavaClasses.get(i);
+        }
+
+        return javaClasses;
     }
 
     void initializeFromXSDNode(Node node, ClassLoader classLoader, EntityResolver resolver, Map<String, ?> properties) throws JAXBException {

@@ -8,7 +8,7 @@
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
- *     Rick Barkhouse = 2.1 - Initial implementation
+ *     Rick Barkhouse - 2.1 - Initial implementation
  ******************************************************************************/
 package org.eclipse.persistence.jaxb.javamodel.xjc;
 
@@ -421,18 +421,7 @@ public class XJCJavaClassImpl implements JavaClass {
     }
 
     public boolean isPrimitive() {
-        if (xjcRefClass != null) {
-            Object primitiveType = null;
-            try {
-                // Cannot cache this method because JReferencedClass is a protected class.
-                Method getPrimitiveTypeMethod = PrivilegedAccessHelper.getDeclaredMethod(xjcRefClass.getClass(), "getPrimitiveType", new Class[] {});
-                primitiveType = PrivilegedAccessHelper.invokeMethod(getPrimitiveTypeMethod, xjcRefClass);
-            } catch (Exception e) {
-                return false;
-            }
-            return (primitiveType != null);
-        }
-        return xjcClass.isPrimitive();
+        return false;
     }
 
     public boolean isPrivate() {

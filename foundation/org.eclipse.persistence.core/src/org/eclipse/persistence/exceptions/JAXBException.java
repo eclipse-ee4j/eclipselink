@@ -84,6 +84,7 @@ public class JAXBException extends EclipseLinkException {
     public static final int WRITE_TRANSFORMER_HAS_NO_XMLPATH = 50052;
     public static final int NO_SUCH_WRITE_TRANSFORMATION_METHOD = 50053;
     public static final int TRANSFORMER_CLASS_NOT_FOUND = 50054;
+    public static final int OXM_KEY_NOT_FOUND = 50055;
 
     protected JAXBException(String message) {
         super(message);
@@ -686,4 +687,17 @@ public class JAXBException extends EclipseLinkException {
         validationException.setErrorCode(TRANSFORMER_CLASS_NOT_FOUND);
         return validationException;
     }
+    
+    /**
+     * PUBLIC:
+     * Cause: Properties passed to createDynamicFromOXM did not contain
+     * ECLIPSELINK_OXM_FILE_KEY, or was null.
+     */
+    public static JAXBException oxmKeyNotFound() {
+        Object[] args = { };
+        JAXBException validationException = new JAXBException(ExceptionMessageGenerator.buildMessage(JAXBException.class, OXM_KEY_NOT_FOUND, args));
+        validationException.setErrorCode(OXM_KEY_NOT_FOUND);
+        return validationException;
+    }
+
 }
