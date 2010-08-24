@@ -2142,7 +2142,11 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
         return cloneMapping;
     }
 
-    protected boolean hasCloneMapping() {
+    /**
+     * INTERNAL:
+     * Return if the unit of work has any clones.
+     */
+    public boolean hasCloneMapping() {
         return ((cloneMapping != null) && !cloneMapping.isEmpty());
     }
 

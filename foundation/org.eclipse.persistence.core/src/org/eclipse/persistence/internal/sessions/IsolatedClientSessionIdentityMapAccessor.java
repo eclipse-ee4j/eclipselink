@@ -236,6 +236,15 @@ public class IsolatedClientSessionIdentityMapAccessor extends org.eclipse.persis
             return ((IsolatedClientSession)session).getParent().getIdentityMapAccessorInstance().getFromIdentityMap(primaryKey, theClass, shouldReturnInvalidatedObjects, descriptor);
         }
     }
+    
+    /**
+     * INTERNAL:
+     * Return the object from the local identity map with the primary and class.
+     * This avoids checking the parent cache for the unit of work.
+     */
+    public Object getFromLocalIdentityMap(Object primaryKey, Class theClass, boolean shouldReturnInvalidatedObjects, ClassDescriptor descriptor) {
+        return getFromIdentityMap(primaryKey, theClass, shouldReturnInvalidatedObjects, descriptor);
+    }
 
     /**
      * INTERNAL:

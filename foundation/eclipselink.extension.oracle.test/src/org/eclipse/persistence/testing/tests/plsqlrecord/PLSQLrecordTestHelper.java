@@ -134,8 +134,7 @@ public class PLSQLrecordTestHelper {
                 (XMLTransformationMapping)workbenchXMLProject.getDescriptor(Project.class).
                     getMappings().firstElement();
             TransformerBasedFieldTransformation  versionTransformer =
-                (TransformerBasedFieldTransformation)versionMapping.getFieldTransformations().
-                    firstElement();
+                (TransformerBasedFieldTransformation)versionMapping.getFieldTransformations().get(0);
             Field transformerField =
                 TransformerBasedFieldTransformation.class.getDeclaredField("transformer");
             transformerField.setAccessible(true);

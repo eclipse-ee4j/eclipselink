@@ -654,7 +654,6 @@ public class FetchGroupManager implements Cloneable {
                 tracker._persistence_setFetchGroup(fetchGroup);
                 tracker._persistence_setSession(session);
             } else {
-                Set<String> attributeNames = fetchGroup.getAttributeNames();
                 EntityFetchGroup entityFetchGroup = this.getEntityFetchGroup(fetchGroup);
                 if(entityFetchGroup != null) {
                     tracker._persistence_setFetchGroup(entityFetchGroup);
@@ -785,7 +784,6 @@ public class FetchGroupManager implements Cloneable {
             FetchGroup defaultCandidate = new FetchGroup();
             boolean hasLazy = false;
             for (DatabaseMapping mapping : getDescriptor().getMappings()) {
-                String name = mapping.getAttributeName();
                 if (mapping.isForeignReferenceMapping() || (!mapping.isLazy())) {
                     defaultCandidate.addAttribute(mapping.getAttributeName());
                 } else {

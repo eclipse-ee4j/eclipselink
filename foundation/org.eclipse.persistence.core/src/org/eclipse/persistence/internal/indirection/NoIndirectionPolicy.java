@@ -57,10 +57,10 @@ public class NoIndirectionPolicy extends IndirectionPolicy {
 
     /**
      * INTERNAL:
-     *    Return a clone of the attribute.
-     *  @param buildDirectlyFromRow indicates that we are building the clone directly
-     *  from a row as opposed to building the original from the row, putting it in
-     *  the shared cache, and then cloning the original.
+     * Return a clone of the attribute.
+     * @param buildDirectlyFromRow indicates that we are building the clone directly
+     * from a row as opposed to building the original from the row, putting it in
+     * the shared cache, and then cloning the original.
      */
     public Object cloneAttribute(Object attributeValue, Object original, Object clone, UnitOfWorkImpl unitOfWork, boolean buildDirectlyFromRow) {
         // Since valueFromRow was called with the UnitOfWork, attributeValue
@@ -69,12 +69,12 @@ public class NoIndirectionPolicy extends IndirectionPolicy {
             return attributeValue;
         }
         boolean isExisting = unitOfWork.isObjectRegistered(clone) && (!(unitOfWork.isOriginalNewObject(original)));
-        return this.getMapping().buildCloneForPartObject(attributeValue, original, clone, unitOfWork, isExisting);
+        return this.mapping.buildCloneForPartObject(attributeValue, original, clone, unitOfWork, isExisting);
     }
 
     /**
      * INTERNAL:
-     *    Return whether the collection type is appropriate for the indirection policy.
+     * Return whether the collection type is appropriate for the indirection policy.
      * In this case, the type MUST be a Vector (or, in the case of jdk1.2,
      * Collection or Map).
      */
@@ -84,7 +84,7 @@ public class NoIndirectionPolicy extends IndirectionPolicy {
 
     /**
      * INTERNAL:
-     *    Return the reference row for the reference object.
+     * Return the reference row for the reference object.
      * This allows the new row to be built without instantiating
      * the reference object.
      * Return null if the object has already been instantiated.
@@ -100,12 +100,12 @@ public class NoIndirectionPolicy extends IndirectionPolicy {
      * with client-side objects.
      */
     public void fixObjectReferences(Object object, Map objectDescriptors, Map processedObjects, ObjectLevelReadQuery query, RemoteSession session) {
-        this.getMapping().fixRealObjectReferences(object, objectDescriptors, processedObjects, query, session);
+        this.mapping.fixRealObjectReferences(object, objectDescriptors, processedObjects, query, session);
     }
 
     /**
      * INTERNAL:
-     *    Return the original indirection object for a unit of work indirection object.
+     * Return the original indirection object for a unit of work indirection object.
      */
     public Object getOriginalIndirectionObject(Object unitOfWorkIndirectionObject, AbstractSession session) {
         // This code appears broken, but actually is unreachable because
@@ -151,7 +151,7 @@ public class NoIndirectionPolicy extends IndirectionPolicy {
 
     /**
      * INTERNAL:
-     *    Return the null value of the appropriate attribute. That is, the
+     * Return the null value of the appropriate attribute. That is, the
      * field from the database is NULL, return what should be
      * placed in the object's attribute as a result.
      */
@@ -169,7 +169,7 @@ public class NoIndirectionPolicy extends IndirectionPolicy {
 
     /**
      * INTERNAL:
-     *    Return whether the type is appropriate for the indirection policy.
+     * Return whether the type is appropriate for the indirection policy.
      * In this case, the attribute type CANNOT be ValueHolderInterface.
      */
     protected boolean typeIsValid(Class attributeType) {
@@ -178,7 +178,7 @@ public class NoIndirectionPolicy extends IndirectionPolicy {
 
     /**
      * INTERNAL:
-     *    Return whether the indirection policy actually uses indirection.
+     * Return whether the indirection policy actually uses indirection.
      * Here, we must reply false.
      */
     public boolean usesIndirection() {
@@ -187,7 +187,7 @@ public class NoIndirectionPolicy extends IndirectionPolicy {
 
     /**
      * INTERNAL:
-     *    Verify that attributeType is correct for the
+     * Verify that attributeType is correct for the
      * indirection policy. If it is incorrect, add an exception to the
      * integrity checker.
      * In this case, the attribute type CANNOT be ValueHolderInterface.
@@ -195,13 +195,13 @@ public class NoIndirectionPolicy extends IndirectionPolicy {
     public void validateDeclaredAttributeType(Class attributeType, IntegrityChecker checker) throws DescriptorException {
         super.validateDeclaredAttributeType(attributeType, checker);
         if (!this.typeIsValid(attributeType)) {
-            checker.handleError(DescriptorException.attributeAndMappingWithoutIndirectionMismatch(this.getMapping()));
+            checker.handleError(DescriptorException.attributeAndMappingWithoutIndirectionMismatch(this.mapping));
         }
     }
 
     /**
      * INTERNAL:
-     *    Verify that attributeType is an appropriate collection type for the
+     * Verify that attributeType is an appropriate collection type for the
      * indirection policy. If it is incorrect, add an exception to the integrity checker.
      * In this case, the type MUST be a Vector (or, in the case of jdk1.2,
      * Collection or Map).
@@ -224,13 +224,13 @@ public class NoIndirectionPolicy extends IndirectionPolicy {
     public void validateGetMethodReturnType(Class returnType, IntegrityChecker checker) throws DescriptorException {
         super.validateGetMethodReturnType(returnType, checker);
         if (!this.typeIsValid(returnType)) {
-            checker.handleError(DescriptorException.returnAndMappingWithoutIndirectionMismatch(this.getMapping()));
+            checker.handleError(DescriptorException.returnAndMappingWithoutIndirectionMismatch(this.mapping));
         }
     }
 
     /**
      * INTERNAL:
-     *    Verify that getter returnType is an appropriate collection type for the
+     * Verify that getter returnType is an appropriate collection type for the
      * indirection policy. If it is incorrect, add an exception to the integrity checker.
      * In this case, the type MUST be a Vector (or, in the case of jdk1.2,
      * Collection or Map).
@@ -244,7 +244,7 @@ public class NoIndirectionPolicy extends IndirectionPolicy {
 
     /**
      * INTERNAL:
-     *    Verify that setter parameterType is correct for the
+     * Verify that setter parameterType is correct for the
      * indirection policy. If it is incorrect, add an exception
      * to the integrity checker.
      * In this case, the parameter type CANNOT be ValueHolderInterface.
@@ -252,13 +252,13 @@ public class NoIndirectionPolicy extends IndirectionPolicy {
     public void validateSetMethodParameterType(Class parameterType, IntegrityChecker checker) throws DescriptorException {
         super.validateSetMethodParameterType(parameterType, checker);
         if (!this.typeIsValid(parameterType)) {
-            checker.handleError(DescriptorException.parameterAndMappingWithoutIndirectionMismatch(this.getMapping()));
+            checker.handleError(DescriptorException.parameterAndMappingWithoutIndirectionMismatch(this.mapping));
         }
     }
 
     /**
      * INTERNAL:
-     *    Verify that setter parameterType is an appropriate collection type for the
+     * Verify that setter parameterType is an appropriate collection type for the
      * indirection policy. If it is incorrect, add an exception to the integrity checker.
      * In this case, the type MUST be a Vector (or, in the case of jdk1.2,
      * Collection or Map).
@@ -273,7 +273,7 @@ public class NoIndirectionPolicy extends IndirectionPolicy {
     /**
      * INTERNAL:
      * Return the value to be stored in the object's attribute.
-     *    This value is determined by the batchQuery.
+     * This value is determined by the batchQuery.
      * In this case, extract the result from the query.
      */
     public Object valueFromBatchQuery(ReadQuery batchQuery, AbstractRecord row, ObjectLevelReadQuery originalQuery) {
@@ -292,7 +292,7 @@ public class NoIndirectionPolicy extends IndirectionPolicy {
     /**
      * INTERNAL:
      * Return the value to be stored in the object's attribute.
-     *    This value is determined by the query.
+     * This value is determined by the query.
      * In this case, simply execute the query and return its results.
      */
     public Object valueFromQuery(ReadQuery query, AbstractRecord row, AbstractSession session) {
@@ -302,7 +302,7 @@ public class NoIndirectionPolicy extends IndirectionPolicy {
     /**
      * INTERNAL:
      * Return the value to be stored in the object's attribute.
-     *    This value is determined by the row.
+     * This value is determined by the row.
      * In this case, simply return the object.
      */
     public Object valueFromRow(Object object) {

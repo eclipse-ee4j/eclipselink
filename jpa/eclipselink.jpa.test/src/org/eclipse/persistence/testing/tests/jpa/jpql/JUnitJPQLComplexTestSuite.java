@@ -227,6 +227,7 @@ public class JUnitJPQLComplexTestSuite extends JUnitTestCase
         suite.addTest(new JUnitJPQLComplexTestSuite("testComplexIn"));
         suite.addTest(new JUnitJPQLComplexTestSuite("testQueryKeys"));
         suite.addTest(new JUnitJPQLComplexTestSuite("complexOneToOneJoinOptimization"));
+        suite.addTest(new JUnitJPQLComplexTestSuite("complexManyToManyJoinOptimization"));
         
         return suite;
     }
@@ -3224,6 +3225,29 @@ public class JUnitJPQLComplexTestSuite extends JUnitTestCase
             String sql = (String)counter.getSqlStatements().get(0);
             if (sql.indexOf("CMP3_ADDRESS") != -1) {
                 fail("Join to address should have been optimized.");
+            }
+        } finally {
+            if (counter != null) {
+                counter.remove();
+            }
+        }
+    }
+    
+    /**
+     * Test that id comparisons across relationships avoid the join.
+     */
+    public void complexManyToManyJoinOptimization()
+    {
+        // Count SQL.
+        QuerySQLTracker counter = new QuerySQLTracker(getServerSession());
+        try {
+            EntityManager em = createEntityManager();
+            String jpql = "SELECT e FROM Employee e join e.projects p where p.id = 5";
+            Query query = em.createQuery(jpql);
+            query.getResultList();
+            String sql = (String)counter.getSqlStatements().get(0);
+            if (sql.indexOf("CMP3_PROJECT") != -1) {
+                fail("Join to project should have been optimized.");
             }
         } finally {
             if (counter != null) {

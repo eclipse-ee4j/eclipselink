@@ -314,12 +314,12 @@ public abstract class ObjectReferenceMapping extends ForeignReferenceMapping {
             ObjectChangeSet set = (ObjectChangeSet)((ObjectReferenceChangeRecord)changeRecord).getNewValue();
             if (set != null) {
                 if (mergeManager.shouldMergeChangesIntoDistributedCache()) {
-                    //Let's try and find it first.  We may have merged it allready. In which case merge
+                    //Let's try and find it first.  We may have merged it already. In which case merge
                     //changes will  stop the recursion
                     targetValueOfSource = set.getTargetVersionOfSourceObject(mergeManager.getSession(), false);
                     if ((targetValueOfSource == null) && (set.isNew() || set.isAggregate()) && set.containsChangesFromSynchronization()) {
                         if (!mergeManager.getObjectsAlreadyMerged().containsKey(set)) {
-                            // if we haven't merged this object allready then build a new object
+                            // if we haven't merged this object already then build a new object
                             // otherwise leave it as null which will stop the recursion
                             // CR 2855
                             // CR 3424 Need to build the right instance based on class type instead of refernceDescriptor
@@ -330,7 +330,7 @@ public abstract class ObjectReferenceMapping extends ForeignReferenceMapping {
                         } else {
                             //CR 4012
                             //we have all ready created the object, must be in a cyclic
-                            //merge on a new object so get it out of the allreadymerged collection
+                            //merge on a new object so get it out of the already merged collection
                             targetValueOfSource = mergeManager.getObjectsAlreadyMerged().get(set);
                         }
                     } else {

@@ -768,7 +768,7 @@ public class ExpressionQueryMechanism extends StatementQueryMechanism {
             if (descriptor.shouldAcquireCascadedLocks()) {
                 cachedObject = session.getIdentityMapAccessorInstance().getFromIdentityMapWithDeferredLock(selectionKey, query.getReferenceClass(), false, descriptor);
             } else {
-                cachedObject = session.getIdentityMapAccessorInstance().getFromIdentityMap(selectionKey, query.getReferenceClass(), false, descriptor);
+                cachedObject = session.getIdentityMapAccessorInstance().getFromLocalIdentityMap(selectionKey, query.getReferenceClass(), false, descriptor);
             }
         } else {
             // 2: If selection criteria null, take any instance in cache.
@@ -776,7 +776,7 @@ public class ExpressionQueryMechanism extends StatementQueryMechanism {
             if (selectionCriteria == null) {
                 // In future would like to always return something from cache.
                 if (query.shouldConformResultsInUnitOfWork() || descriptor.shouldAlwaysConformResultsInUnitOfWork() || query.shouldCheckCacheOnly() || query.shouldCheckCacheThenDatabase()) {
-                    cachedObject = session.getIdentityMapAccessorInstance().getIdentityMapManager().getFromIdentityMap(null, query.getReferenceClass(), translationRow, policyToUse, conforming, false, descriptor);
+                    cachedObject = session.getIdentityMapAccessorInstance().getFromIdentityMap(null, query.getReferenceClass(), translationRow, policyToUse, conforming, false, descriptor);
                 }
             } else {
                 // 3: If can extract exact primary key expression, do lookup by primary key.
@@ -794,7 +794,7 @@ public class ExpressionQueryMechanism extends StatementQueryMechanism {
                         if (descriptor.shouldAcquireCascadedLocks()) {
                             cachedObject = session.getIdentityMapAccessorInstance().getFromIdentityMapWithDeferredLock(selectionKey, query.getReferenceClass(), false, descriptor);
                         } else {
-                            cachedObject = session.getIdentityMapAccessorInstance().getFromIdentityMap(selectionKey, query.getReferenceClass(), false, descriptor);
+                            cachedObject = session.getIdentityMapAccessorInstance().getFromLocalIdentityMap(selectionKey, query.getReferenceClass(), false, descriptor);
                         }
                         // Because it was exact primary key if the lookup failed then it is not there.                        
                     }
@@ -812,7 +812,7 @@ public class ExpressionQueryMechanism extends StatementQueryMechanism {
                         if (descriptor.shouldAcquireCascadedLocks()) {
                             cachedObject = session.getIdentityMapAccessorInstance().getFromIdentityMapWithDeferredLock(inexactSelectionKey, query.getReferenceClass(), false, descriptor);
                         } else {
-                            cachedObject = session.getIdentityMapAccessorInstance().getFromIdentityMap(inexactSelectionKey, query.getReferenceClass(), false, descriptor);
+                            cachedObject = session.getIdentityMapAccessorInstance().getFromLocalIdentityMap(inexactSelectionKey, query.getReferenceClass(), false, descriptor);
                         }
                         if (cachedObject != null) {
                             // Must ensure that it matches the expression.
@@ -851,7 +851,7 @@ public class ExpressionQueryMechanism extends StatementQueryMechanism {
                             builder.setQueryClass(descriptor.getJavaClass());
                         }
                         try {
-                            cachedObject = session.getIdentityMapAccessorInstance().getIdentityMapManager().getFromIdentityMap(selectionCriteria, query.getReferenceClass(), translationRow, policyToUse, conforming, false, descriptor);
+                            cachedObject = session.getIdentityMapAccessorInstance().getFromIdentityMap(selectionCriteria, query.getReferenceClass(), translationRow, policyToUse, conforming, false, descriptor);
                         } catch (QueryException exception) {// Ignore if expression too complex.
                             if (query.shouldCheckCacheOnly()) {// Throw on only cache.
                                 throw exception;

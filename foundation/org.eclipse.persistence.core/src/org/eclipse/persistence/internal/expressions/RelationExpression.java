@@ -483,12 +483,25 @@ public class RelationExpression extends CompoundExpression {
                 mappingExpression.getBaseExpression().normalize(normalizer);
                 DatabaseMapping mapping = mappingExpression.getMapping();
                 if ((mapping != null) && mapping.isOneToOneMapping()
+                        && (!((OneToOneMapping)mapping).hasCustomSelectionQuery())
                         && ((OneToOneMapping)mapping).isForeignKeyRelationship()
                         && (second.isConstantExpression() || second.isParameterExpression())) {
                     DatabaseField targetField = ((QueryKeyExpression)first).getField();
                     DatabaseField sourceField = ((OneToOneMapping)mapping).getTargetToSourceKeyFields().get(targetField);
                     if (sourceField != null) {
                         Expression optimizedExpression = this.operator.expressionFor(mappingExpression.getBaseExpression().getField(sourceField), second);
+                        // Ensure the base still applies the correct conversion.
+                        second.setLocalBase(first);
+                        return optimizedExpression.normalize(normalizer);
+                    }
+                // PERF: Also check for emp.projects.id = :id and avoid join to project table.
+                } else if ((mapping != null) && mapping.isManyToManyMapping()
+                        && (!((ManyToManyMapping)mapping).hasCustomSelectionQuery())
+                        && (second.isConstantExpression() || second.isParameterExpression())) {
+                    DatabaseField targetField = ((QueryKeyExpression)first).getField();
+                    DatabaseField relationField = ((ManyToManyMapping)mapping).getRelationTableMechanism().getRelationFieldForTargetField(targetField);
+                    if (relationField != null) {
+                        Expression optimizedExpression = this.operator.expressionFor(mappingExpression.getBaseExpression().getTable(((ManyToManyMapping)mapping).getRelationTable()).getField(relationField), second);
                         // Ensure the base still applies the correct conversion.
                         second.setLocalBase(first);
                         return optimizedExpression.normalize(normalizer);

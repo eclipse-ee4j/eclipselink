@@ -445,6 +445,18 @@ public class RelationTableMechanism  implements Cloneable {
 
     /**
      * INTERNAL:
+     * Return the relation field for the target field.
+     */
+    public DatabaseField getRelationFieldForTargetField(DatabaseField targetField) {
+        int index = this.targetKeyFields.indexOf(targetField);
+        if (index == -1) {
+            return null;
+        }
+        return this.targetRelationKeyFields.get(index);
+    }
+
+    /**
+     * INTERNAL:
      * Return all the target keys associated with the mapping.
      */
     public Vector<DatabaseField> getTargetKeyFields() {

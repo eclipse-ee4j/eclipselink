@@ -70,7 +70,7 @@ public abstract class IndirectionPolicy implements Cloneable, Serializable {
      *    Return a backup clone of the attribute.
      */
     public Object backupCloneAttribute(Object attributeValue, Object clone, Object backup, UnitOfWorkImpl unitOfWork) {
-        return this.getMapping().buildBackupCloneForPartObject(attributeValue, clone, backup, unitOfWork);
+        return this.mapping.buildBackupCloneForPartObject(attributeValue, clone, backup, unitOfWork);
     }
 
     /**
@@ -226,15 +226,6 @@ public abstract class IndirectionPolicy implements Cloneable, Serializable {
 
     /**
      * INTERNAL:
-     * Given a proxy object, trigger the indirection and return the actual object represented by the proxy.
-     * For non-proxy indirection, this method will simply return the object.
-     */
-    public static Object getValueFromProxy(Object value) {
-        return value;
-    }
-
-    /**
-     * INTERNAL:
      * Extract and return the appropriate value from the
      * specified remote value holder.
      */
@@ -261,7 +252,7 @@ public abstract class IndirectionPolicy implements Cloneable, Serializable {
      */
     public void iterateOnAttributeValue(DescriptorIterator iterator, Object attributeValue) {
         if (attributeValue != null) {
-            this.getMapping().iterateOnRealAttributeValue(iterator, attributeValue);
+            this.mapping.iterateOnRealAttributeValue(iterator, attributeValue);
         }
     }
 
@@ -271,10 +262,10 @@ public abstract class IndirectionPolicy implements Cloneable, Serializable {
      * after copying some of the settings from the client value holder.
      */
     protected void mergeClientIntoServerValueHolder(RemoteValueHolder serverValueHolder, MergeManager mergeManager) {
-        serverValueHolder.setMapping(getMapping());
+        serverValueHolder.setMapping(this.mapping);
         serverValueHolder.setSession(mergeManager.getSession());
 
-        if (getMapping().isForeignReferenceMapping()) {
+        if (this.mapping.isForeignReferenceMapping()) {
             ObjectLevelReadQuery query = buildCascadeQuery(mergeManager);
             serverValueHolder.setQuery(query);
         }
@@ -323,7 +314,7 @@ public abstract class IndirectionPolicy implements Cloneable, Serializable {
      * In this case, simply place the value inside the target.
      */
     public void setRealAttributeValueInObject(Object target, Object attributeValue) {
-        this.getMapping().setAttributeValueInObject(target, attributeValue);
+        this.mapping.setAttributeValueInObject(target, attributeValue);
     }
 
     /**

@@ -54,10 +54,10 @@ public abstract class AbstractTransformationMapping extends DatabaseMapping {
     protected AttributeTransformer attributeTransformer;
  
     /** Stores field name and the class name of a FieldTransformer in a vector to preserve order */
-    protected Vector fieldTransformations;
+    protected List<FieldTransformation> fieldTransformations;
  
     /** The TransformerClassNames are converted into instances of FieldTransformer */
-    protected Vector fieldToTransformers;
+    protected List<Object[]> fieldToTransformers;
  
     /** PERF: Indicates if this mapping's attribute is a simple value which cannot be modified only replaced. */
     protected boolean isMutable;
@@ -70,8 +70,8 @@ public abstract class AbstractTransformationMapping extends DatabaseMapping {
      * Default constructor.
      */
     public AbstractTransformationMapping() {
-        fieldTransformations = org.eclipse.persistence.internal.helper.NonSynchronizedVector.newInstance();
-        fieldToTransformers = org.eclipse.persistence.internal.helper.NonSynchronizedVector.newInstance();
+        fieldTransformations = new ArrayList();
+        fieldToTransformers = new ArrayList();
         setIsMutable(true);
         dontUseIndirection();
     }
@@ -89,7 +89,7 @@ public abstract class AbstractTransformationMapping extends DatabaseMapping {
         MethodBasedFieldTransformation transformation = new MethodBasedFieldTransformation();
         transformation.setField(field);
         transformation.setMethodName(methodName);
-        getFieldTransformations().addElement(transformation);
+        getFieldTransformations().add(transformation);
     }
  
     /**
@@ -102,7 +102,7 @@ public abstract class AbstractTransformationMapping extends DatabaseMapping {
      * <code>org.eclipse.persistence.sessions.Session</code>.
      */
     public void addFieldTransformation(String fieldName, String methodName) {
-        this.addFieldTransformation(new DatabaseField(fieldName), methodName);
+        addFieldTransformation(new DatabaseField(fieldName), methodName);
     }
  
     /**
@@ -113,7 +113,7 @@ public abstract class AbstractTransformationMapping extends DatabaseMapping {
      * in the field.
      */
     public void addFieldTransformerClassName(String fieldName, String className) {
-        this.addFieldTransformerClassName(new DatabaseField(fieldName), className);
+        addFieldTransformerClassName(new DatabaseField(fieldName), className);
     }
  
     /**
@@ -128,7 +128,7 @@ public abstract class AbstractTransformationMapping extends DatabaseMapping {
         transformation.setField(field);
         transformation.setTransformerClassName(className);
  
-        getFieldTransformations().addElement(transformation);
+        getFieldTransformations().add(transformation);
     }
  
     /**
@@ -151,7 +151,7 @@ public abstract class AbstractTransformationMapping extends DatabaseMapping {
         TransformerBasedFieldTransformation transformation = new TransformerBasedFieldTransformation(transformer);
         transformation.setField(field);
  
-        getFieldTransformations().addElement(transformation);
+        getFieldTransformations().add(transformation);
     }
  
     /**
@@ -159,34 +159,21 @@ public abstract class AbstractTransformationMapping extends DatabaseMapping {
      * The referenced object is checked if it is instantiated or not
      */
     protected boolean areObjectsToBeProcessedInstantiated(Object object) {
-        return getIndirectionPolicy().objectIsInstantiated(getAttributeValueFromObject(object));
+        return this.indirectionPolicy.objectIsInstantiated(getAttributeValueFromObject(object));
     }
  
     /**
      * INTERNAL:
      * Clone the attribute from the clone and assign it to the backup.
      */
+    @Override
     public void buildBackupClone(Object clone, Object backup, UnitOfWorkImpl unitOfWork) {
         // If mapping is a no-attribute transformation mapping, do nothing
         if (isWriteOnly()) {
             return;
         }
         Object attributeValue = getAttributeValueFromObject(clone);
-        if (!isMutable()) {
-            setAttributeValueInObject(backup, attributeValue);
-            return;
-        }
-        Object clonedAttributeValue;
- 
-        // If the mapping is read-only, a direct pass through of the value will be performed.
-        // This is done because the method invocation is not possible as the row will be
-        // empty and we have no way to clone the value.
-        // Since the value cannot change anyway we just pass it through.
-        if (isReadOnly()) {
-            clonedAttributeValue = attributeValue;
-        } else {
-            clonedAttributeValue = getIndirectionPolicy().backupCloneAttribute(attributeValue, clone, backup, unitOfWork);
-        }
+        Object clonedAttributeValue = this.indirectionPolicy.backupCloneAttribute(attributeValue, clone, backup, unitOfWork);
         setAttributeValueInObject(backup, clonedAttributeValue);
     }
  
@@ -197,10 +184,8 @@ public abstract class AbstractTransformationMapping extends DatabaseMapping {
      * invoking the field methods on the specified object.
      */
     protected AbstractRecord buildPhantomRowFrom(Object domainObject, AbstractSession session) {
-    	AbstractRecord row = new DatabaseRecord(this.getFieldToTransformers().size());
-        for (Enumeration stream = this.getFieldToTransformers().elements();
-                 stream.hasMoreElements();) {
-            Object[] pair = (Object[])stream.nextElement();
+    	AbstractRecord row = new DatabaseRecord(this.fieldToTransformers.size());
+        for (Object[] pair : this.fieldToTransformers) {
             DatabaseField field = (DatabaseField)pair[0];
             FieldTransformer transformer = (FieldTransformer)pair[1];
             Object fieldValue = this.invokeFieldTransformer(field, transformer, domainObject, session);
@@ -217,6 +202,7 @@ public abstract class AbstractTransformationMapping extends DatabaseMapping {
      * the shared cache (no concern over cycles).
      * @parameter original later the input to buildCloneFromRow
      */
+    @Override
     public void buildShallowOriginalFromRow(AbstractRecord record, Object original, JoinedAttributeManager joinManager, ObjectBuildingQuery query, AbstractSession executionSession) {
         // In this case we know it is a primary key mapping, so hope that it
         // is essentially a direct mapping.  If it is a 1-1 with a
@@ -238,36 +224,27 @@ public abstract class AbstractTransformationMapping extends DatabaseMapping {
      * Used during building the backup shallow copy to copy the vector without re-registering the target objects.
      * For 1-1 or ref the reference is from the clone so it is already registered.
      */
+    @Override
     public Object buildBackupCloneForPartObject(Object attributeValue, Object clone, Object backup, UnitOfWorkImpl unitOfWork) {
-        if (!isMutable()) {
+        if (isReadOnly() || !isMutable()) {
             return attributeValue;
         }
-        AbstractRecord row = this.buildPhantomRowFrom(clone, unitOfWork);
-        return this.invokeAttributeTransformer(row, backup, unitOfWork);
+        AbstractRecord row = buildPhantomRowFrom(clone, unitOfWork);
+        return invokeAttributeTransformer(row, backup, unitOfWork);
     }
  
     /**
      * INTERNAL:
      * Clone the attribute from the original and assign it to the clone.
      */
+    @Override
     public void buildClone(Object original, Object clone, UnitOfWorkImpl unitOfWork) {
         // If mapping is a no-attribute transformation mapping, do nothing
         if (isWriteOnly()) {
             return;
         }
         Object attributeValue = getAttributeValueFromObject(original);
-        Object clonedAttributeValue;
- 
-        // If the mapping is read-only, a direct pass through of the value will be performed.
-        // This is done because the method invocation is not possible as the row will be
-        // empty and we have no way to clone the value.
-        // Since the value cannot change anyway we just pass it through.
-        if (isReadOnly() || !isMutable()) {
-            clonedAttributeValue = attributeValue;
-        } else {
-            clonedAttributeValue = getIndirectionPolicy().cloneAttribute(attributeValue, original, clone, unitOfWork, false);// building clone from an original not a row.
-        }
- 
+        Object clonedAttributeValue = this.indirectionPolicy.cloneAttribute(attributeValue, original, clone, unitOfWork, false);// building clone from an original not a row.
         setAttributeValueInObject(clone, clonedAttributeValue);
     }
  
@@ -278,6 +255,7 @@ public abstract class AbstractTransformationMapping extends DatabaseMapping {
      * In order to bypass the shared cache when in transaction a UnitOfWork must
      * be able to populate working copies directly from the row.
      */
+    @Override
     public void buildCloneFromRow(AbstractRecord record, JoinedAttributeManager joinManager, Object clone, ObjectBuildingQuery sourceQuery, UnitOfWorkImpl unitOfWork, AbstractSession executionSession) {
         // If mapping is a no-attribute transformation mapping, do nothing
         if (isWriteOnly()) {
@@ -286,20 +264,11 @@ public abstract class AbstractTransformationMapping extends DatabaseMapping {
  
         // This will set the value in the clone automatically.
         Object attributeValue = readFromRowIntoObject(record, joinManager, clone, sourceQuery, executionSession);
- 
-        Object clonedAttributeValue;
- 
-        // If the mapping is read-only, a direct pass through of the value will be performed.
-        // This is done because the method invocation is not possible as the row will be
-        // empty and we have no way to clone the value.
-        // Since the value cannot change anyway we just pass it through.
-        if (isReadOnly() || !isMutable()) {
-            clonedAttributeValue = attributeValue;
-        } else {
-            clonedAttributeValue = getIndirectionPolicy().cloneAttribute(attributeValue, null,// no original
-                                                                         clone, unitOfWork, true);// build clone directly from row.
+        if (usesIndirection()) {
+            Object clonedAttributeValue = this.indirectionPolicy.cloneAttribute(attributeValue, null,// no original
+                                                                             clone, unitOfWork, true);// build clone directly from row.
+            setAttributeValueInObject(clone, clonedAttributeValue);
         }
-        setAttributeValueInObject(clone, clonedAttributeValue);
     }
  
     /**
@@ -307,6 +276,7 @@ public abstract class AbstractTransformationMapping extends DatabaseMapping {
      * Require for cloning, the part must be cloned.
      * Ignore the attribute value, go right to the object itself.
      */
+    @Override
     public Object buildCloneForPartObject(Object attributeValue, Object original, Object clone, UnitOfWorkImpl unitOfWork, boolean isExisting) {
         return buildBackupCloneForPartObject(attributeValue, original, clone, unitOfWork);
     }
@@ -322,28 +292,27 @@ public abstract class AbstractTransformationMapping extends DatabaseMapping {
         if (isWriteOnly()) {
             return;
         }
-        Object attributeValue = getAttributeValueFromObject(original);
  
-        Object clonedAttributeValue;
- 
+        Object clonedAttributeValue; 
         // If the mapping is read-only, a direct pass through of the value will be performed.
         // This is done because the method invocation is not possible as the row will be
         // empty and we have no way to clone the value.
         // Since the value cannot change anyway we just pass it through.
         if (isReadOnly() || !isMutable()) {
-            clonedAttributeValue = attributeValue;
+            clonedAttributeValue = getRealAttributeValueFromObject(original, group.getSession());
         } else {
-        	AbstractRecord row = this.buildPhantomRowFrom(original, group.getSession());
+            AbstractRecord row = buildPhantomRowFrom(original, group.getSession());
             clonedAttributeValue = invokeAttributeTransformer(row, copy, group.getSession());
         }
- 
-        setAttributeValueInObject(copy, clonedAttributeValue);
+        this.indirectionPolicy.reset(copy);
+        setRealAttributeValueInObject(copy, clonedAttributeValue);
     }
  
     /**
      * INTERNAL:
      * Cascade perform delete through mappings that require the cascade
      */
+    @Override
     public void cascadePerformRemoveIfRequired(Object object, UnitOfWorkImpl uow, Map visitedObjects){
         //objects referenced by this mapping are not registered as they have
         // no identity, this is a no-op.
@@ -353,6 +322,7 @@ public abstract class AbstractTransformationMapping extends DatabaseMapping {
      * INTERNAL:
      * Cascade registerNew for Create through mappings that require the cascade
      */
+    @Override
     public void cascadeRegisterNewIfRequired(Object object, UnitOfWorkImpl uow, Map visitedObjects){
         //Objects referenced through transformation mappings are not registered as
         // they have no identity, this is a no-op.
@@ -365,14 +335,13 @@ public abstract class AbstractTransformationMapping extends DatabaseMapping {
     @Override
     public Object clone() {
         AbstractTransformationMapping clone = (AbstractTransformationMapping)super.clone();
-        clone.setFieldToTransformers(org.eclipse.persistence.internal.helper.NonSynchronizedVector.newInstance(getFieldToTransformers().size() + 1));
+        clone.setFieldToTransformers(new ArrayList(this.fieldToTransformers.size()));
  
-        for (Enumeration enumtr = getFieldToTransformers().elements(); enumtr.hasMoreElements();) {
+        for (Object[] pair : this.fieldToTransformers) {
             Object[] transformation = new Object[2];
-            Object[] pair = (Object[])enumtr.nextElement();
             transformation[0] = pair[0];
             transformation[1] = pair[1];
-            clone.getFieldToTransformers().addElement(transformation);
+            clone.getFieldToTransformers().add(transformation);
         }
  
         clone.setIndirectionPolicy((IndirectionPolicy)indirectionPolicy.clone());
@@ -386,9 +355,9 @@ public abstract class AbstractTransformationMapping extends DatabaseMapping {
      */
     @Override
     protected Vector collectFields() {
-        Vector databaseFields = new Vector(getFieldToTransformers().size());
-        for (Enumeration stream = getFieldToTransformers().elements(); stream.hasMoreElements();) {
-            databaseFields.addElement(((Object[])stream.nextElement())[0]);
+        Vector databaseFields = new Vector(this.fieldToTransformers.size());
+        for (Object[] pair : this.fieldToTransformers) {
+            databaseFields.add(pair[0]);
         }
         return databaseFields;
     }
@@ -397,27 +366,37 @@ public abstract class AbstractTransformationMapping extends DatabaseMapping {
      * INTERNAL:
      * Compare the attributes belonging to this mapping for the objects.
      */
+    @Override
     public ChangeRecord compareForChange(Object clone, Object backUp, ObjectChangeSet owner, AbstractSession session) {
         if (isReadOnly() || isWriteOnly()) {
             return null;
         }
         Object cloneAttribute = getAttributeValueFromObject(clone);
         Object backUpAttribute = null;
-        if ((cloneAttribute != null) && (!getIndirectionPolicy().objectIsInstantiated(cloneAttribute))) {
+        if ((cloneAttribute != null) && (!this.indirectionPolicy.objectIsInstantiated(cloneAttribute))) {
             return null;
         }
         boolean difference = false;
         if (owner.isNew()) {
             difference = true;
         } else {
+            Object backupValue = null;
             if (backUp != null) {
                 backUpAttribute = getAttributeValueFromObject(backUp);
+                backupValue = this.indirectionPolicy.getRealAttributeValueFromObject(backUp, backUpAttribute);
             }
-            boolean backUpIsInstantiated = ((backUpAttribute == null) || (getIndirectionPolicy().objectIsInstantiated(backUpAttribute)));
- 
-            for (Enumeration stream = getFieldToTransformers().elements();
-                     stream.hasMoreElements();) {
-                Object[] pair = (Object[])stream.nextElement();
+            boolean backUpIsInstantiated = ((backUpAttribute == null) || (this.indirectionPolicy.objectIsInstantiated(backUpAttribute)));
+            Object cloneValue = this.indirectionPolicy.getRealAttributeValueFromObject(clone, cloneAttribute);
+            if (backUpIsInstantiated) {
+                if (cloneValue == backupValue) {
+                    return null;
+                }
+                if (((cloneValue != null && (backupValue != null)) && cloneValue.equals(backupValue))) {
+                    return null;
+                }
+            }
+            
+            for (Object[] pair : this.fieldToTransformers) {
                 DatabaseField field = (DatabaseField)pair[0];
                 FieldTransformer transformer = (FieldTransformer)pair[1];
                 Object cloneFieldValue = null;
@@ -429,14 +408,21 @@ public abstract class AbstractTransformationMapping extends DatabaseMapping {
                     backUpFieldValue = invokeFieldTransformer(field, transformer, backUp, session);
                 }
  
-                if ((cloneFieldValue == null) && (backUpFieldValue == null)) {
-                    continue;// skip this iteration, go to the next one
+                if (cloneFieldValue == backUpFieldValue) {
+                    continue; // skip this iteration, go to the next one
                 }
-                if ((cloneFieldValue != null) && cloneFieldValue.equals(backUpFieldValue)) {
-                    continue;// skip this iteration, go to the next one
+                if ((cloneFieldValue == null) || (backUpFieldValue == null)) {
+                    difference = true;
+                    break; // There is a difference.                    
+                }
+                if (cloneFieldValue.equals(backUpFieldValue)) {
+                    continue; // skip this iteration, go to the next one
+                }
+                if (Helper.comparePotentialArrays(cloneFieldValue, backUpFieldValue)) {
+                    continue; // skip this iteration, go to the next one
                 }
                 difference = true;
-                break;// There is a difference.
+                break; // There is a difference.
             }
         }
         if (difference) {
@@ -449,9 +435,10 @@ public abstract class AbstractTransformationMapping extends DatabaseMapping {
      * INTERNAL:
      * Directly build a change record without comparison
      */
+    @Override
     public ChangeRecord buildChangeRecord(Object clone, ObjectChangeSet owner, AbstractSession session) {
         TransformationMappingChangeRecord changeRecord = new TransformationMappingChangeRecord(owner);
-        changeRecord.setRow(this.buildPhantomRowFrom(clone, session));
+        changeRecord.setRow(buildPhantomRowFrom(clone, session));
         changeRecord.setAttribute(getAttributeName());
         changeRecord.setMapping(this);
         return changeRecord;
@@ -461,22 +448,39 @@ public abstract class AbstractTransformationMapping extends DatabaseMapping {
      * INTERNAL:
      * Compare the attributes belonging to this mapping for the objects.
      */
-    public boolean compareObjects(Object firstObject, Object secondObject, AbstractSession databaseSession) {
-        for (Enumeration stream = getFieldToTransformers().elements(); stream.hasMoreElements();) {
-            Object[] objects = (Object[])stream.nextElement();
-            DatabaseField field = (DatabaseField)objects[0];
-            FieldTransformer transformer = (FieldTransformer)objects[1];
-            Object firstFieldValue = invokeFieldTransformer(field, transformer, firstObject, databaseSession);
-            Object secondFieldValue = invokeFieldTransformer(field, transformer, secondObject, databaseSession);
+    @Override
+    public boolean compareObjects(Object firstObject, Object secondObject, AbstractSession session) {
+        if (!isWriteOnly()) {
+            // PERF: Checks if attribute values are equal first before apply field translation.
+            Object firstValue = getRealAttributeValueFromObject(firstObject, session);
+            Object secondValue = getRealAttributeValueFromObject(secondObject, session);
+            if (firstValue == secondValue) {
+                return true;
+            }
+            if ((firstValue == null) || (secondValue == null)) {
+                return false;
+            }
+            if (firstValue.equals(secondValue)) {
+                return true;
+            }
+        }
+        
+        for (Object[] pair : this.fieldToTransformers) {
+            DatabaseField field = (DatabaseField)pair[0];
+            FieldTransformer transformer = (FieldTransformer)pair[1];
+            Object firstFieldValue = invokeFieldTransformer(field, transformer, firstObject, session);
+            Object secondFieldValue = invokeFieldTransformer(field, transformer, secondObject, session);
  
-            if ((firstFieldValue == null) && (secondFieldValue == null)) {
-                continue;// skip this iteration, go to the next one
+            if (firstFieldValue == secondFieldValue) {
+                continue; // skip this iteration, go to the next one
             }
             if ((firstFieldValue == null) || (secondFieldValue == null)) {
                 return false;
             }
             if (!firstFieldValue.equals(secondFieldValue)) {
-                return false;
+                if (!Helper.comparePotentialArrays(firstFieldValue, secondFieldValue)) {
+                    return false;
+                }
             }
         }
  
@@ -489,6 +493,7 @@ public abstract class AbstractTransformationMapping extends DatabaseMapping {
      * settings
      * @param classLoader 
      */
+    @Override
     public void convertClassNamesToClasses(ClassLoader classLoader){
         super.convertClassNamesToClasses(classLoader);
 
@@ -496,8 +501,8 @@ public abstract class AbstractTransformationMapping extends DatabaseMapping {
             return;
         }
         Class attributeTransformerClass = null;
-        try{
-            if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()){
+        try {
+            if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()) {
                 try {
                     attributeTransformerClass = (Class)AccessController.doPrivileged(new PrivilegedClassForName(attributeTransformerClassName, true, classLoader));
                 } catch (PrivilegedActionException exception) {
@@ -511,8 +516,7 @@ public abstract class AbstractTransformationMapping extends DatabaseMapping {
         }
         this.setAttributeTransformerClass(attributeTransformerClass);
         
-        for (Enumeration stream = getFieldTransformations().elements(); stream.hasMoreElements();) {
-            FieldTransformation transformation = (FieldTransformation)stream.nextElement();
+        for (FieldTransformation transformation : getFieldTransformations()) {
             if (transformation instanceof TransformerBasedFieldTransformation) {
                 TransformerBasedFieldTransformation transformer = (TransformerBasedFieldTransformation)transformation;
                 String transformerClassName = transformer.getTransformerClassName(); 
@@ -520,7 +524,7 @@ public abstract class AbstractTransformationMapping extends DatabaseMapping {
                     return;
                 }
                 Class transformerClass = null;
-                try{
+                try {
                     if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()){
                         try {
                             transformerClass = (Class)AccessController.doPrivileged(new PrivilegedClassForName(transformerClassName, true, classLoader));
@@ -546,6 +550,7 @@ public abstract class AbstractTransformationMapping extends DatabaseMapping {
      * from a row as opposed to building the original from the row, putting it in
      * the shared cache, and then cloning the original.
      */
+    @Override
     public UnitOfWorkValueHolder createUnitOfWorkValueHolder(ValueHolderInterface attributeValue, Object original, Object clone, AbstractRecord row, UnitOfWorkImpl unitOfWork, boolean buildDirectlyFromRow) {
         return new UnitOfWorkTransformerValueHolder(attributeValue, original, clone, this, unitOfWork);
     }
@@ -565,8 +570,9 @@ public abstract class AbstractTransformationMapping extends DatabaseMapping {
      * Replace the transient attributes of the remote value holders
      * with client-side objects.
      */
+    @Override
     public void fixObjectReferences(Object object, Map objectDescriptors, Map processedObjects, ObjectLevelReadQuery query, RemoteSession session) {
-        getIndirectionPolicy().fixObjectReferences(object, objectDescriptors, processedObjects, query, session);
+        this.indirectionPolicy.fixObjectReferences(object, objectDescriptors, processedObjects, query, session);
     }
  
     /**
@@ -583,8 +589,8 @@ public abstract class AbstractTransformationMapping extends DatabaseMapping {
      * Return the attribute transformation method name.
      */
     public String getAttributeMethodName() {
-        if (getAttributeTransformer() instanceof MethodBasedAttributeTransformer) {
-            return ((MethodBasedAttributeTransformer)getAttributeTransformer()).getMethodName();
+        if (this.attributeTransformer instanceof MethodBasedAttributeTransformer) {
+            return ((MethodBasedAttributeTransformer)this.attributeTransformer).getMethodName();
         }
         return null;
     }
@@ -595,10 +601,10 @@ public abstract class AbstractTransformationMapping extends DatabaseMapping {
      * This is used to map to XML.
      */
     public Class getAttributeTransformerClass() {
-        if ((getAttributeTransformer() == null) || (getAttributeTransformer() instanceof MethodBasedAttributeTransformer)) {
+        if ((this.attributeTransformer == null) || (this.attributeTransformer instanceof MethodBasedAttributeTransformer)) {
             return null;
         }
-        return getAttributeTransformer().getClass();
+        return this.attributeTransformer.getClass();
     }
     
     /**
@@ -612,18 +618,18 @@ public abstract class AbstractTransformationMapping extends DatabaseMapping {
         }
         try {
             Object instance = null;
-            if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()){
-                try{
+            if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()) {
+                try {
                     instance = AccessController.doPrivileged(new PrivilegedNewInstanceFromClass(attributeTransformerClass));
-                }catch (PrivilegedActionException ex){
+                } catch (PrivilegedActionException ex) {
                     throw (Exception)ex.getCause();
                 }
-            }else{
+            } else {
                 instance = PrivilegedAccessHelper.newInstanceFromClass(attributeTransformerClass);
             }
             setAttributeTransformer((AttributeTransformer)instance);
-        } catch (Exception ex) {
-            throw DescriptorException.attributeTransformerClassInvalid(getAttributeTransformerClassName(), this, ex);
+        } catch (Exception exception) {
+            throw DescriptorException.attributeTransformerClassInvalid(attributeTransformerClass.getName(), this, exception);
         }
     }
     
@@ -644,14 +650,14 @@ public abstract class AbstractTransformationMapping extends DatabaseMapping {
             return null;
         }
         Object attributeValue = super.getAttributeValueFromObject(object);
-        return getIndirectionPolicy().validateAttributeOfInstantiatedObject(attributeValue);
+        return this.indirectionPolicy.validateAttributeOfInstantiatedObject(attributeValue);
     }
  
     /**
      * INTERNAL:
      * Returns a Vector which stores fieldnames and the respective method/transformer names.
      */
-    public Vector getFieldTransformations() {
+    public List<FieldTransformation> getFieldTransformations() {
         return fieldTransformations;
     }
  
@@ -659,7 +665,7 @@ public abstract class AbstractTransformationMapping extends DatabaseMapping {
      * INTERNAL:
      * @return a vector which stores fields and their respective transformers.
      */
-    public Vector getFieldToTransformers() {
+    public List<Object[]> getFieldToTransformers() {
         return fieldToTransformers;
     }
  
@@ -677,6 +683,7 @@ public abstract class AbstractTransformationMapping extends DatabaseMapping {
      * If the attribute is using indirection the value of the value-holder is returned.
      * If the value holder is not instantiated then it is instantiated.
      */
+    @Override
     public Object getRealAttributeValueFromAttribute(Object attributeValue, Object object, AbstractSession session) {
         return this.indirectionPolicy.getRealAttributeValueFromObject(object, attributeValue);
     }
@@ -685,8 +692,9 @@ public abstract class AbstractTransformationMapping extends DatabaseMapping {
      * INTERNAL:
      * Trigger the instantiation of the attribute if lazy.
      */
+    @Override
     public void instantiateAttribute(Object object, AbstractSession session) {
-        getIndirectionPolicy().instantiateObject(object, getAttributeValueFromObject(object));
+        this.indirectionPolicy.instantiateObject(object, getAttributeValueFromObject(object));
     }
     
     /**
@@ -694,20 +702,22 @@ public abstract class AbstractTransformationMapping extends DatabaseMapping {
      * Extract and return the appropriate value from the
      * specified remote value holder.
      */
+    @Override
     public Object getValueFromRemoteValueHolder(RemoteValueHolder remoteValueHolder) {
-        return getIndirectionPolicy().getValueFromRemoteValueHolder(remoteValueHolder);
+        return this.indirectionPolicy.getValueFromRemoteValueHolder(remoteValueHolder);
     }
  
     /**
      * INTERNAL:
      * The mapping is initialized with the given session.
      */
+    @Override
     public void initialize(AbstractSession session) throws DescriptorException {
         super.initialize(session);
         initializeAttributeTransformer(session);
         initializeFieldToTransformers(session);
         setFields(collectFields());
-        getIndirectionPolicy().initialize();
+        this.indirectionPolicy.initialize();
     }
  
     /**
@@ -719,7 +729,7 @@ public abstract class AbstractTransformationMapping extends DatabaseMapping {
         if (isWriteOnly()) {
             return;
         }
-        getAttributeTransformer().initialize(this);
+        this.attributeTransformer.initialize(this);
     }
  
     /**
@@ -745,13 +755,11 @@ public abstract class AbstractTransformationMapping extends DatabaseMapping {
      * DatabaseFields and Methods.
      */
     protected void initializeFieldToTransformers(AbstractSession session) throws DescriptorException {
-        for (Enumeration stream = getFieldToTransformers().elements(); stream.hasMoreElements();) {
-            Object[] pair = (Object[])stream.nextElement();
+        for (Object[] pair : this.fieldToTransformers) {
             pair[0] = getDescriptor().buildField(((DatabaseField)pair[0]));
             ((FieldTransformer)pair[1]).initialize(this);
         }
-        for (Enumeration stream = getFieldTransformations().elements(); stream.hasMoreElements();) {
-            FieldTransformation transformation = (FieldTransformation)stream.nextElement();
+        for (FieldTransformation transformation : getFieldTransformations()) {
             DatabaseField field = getDescriptor().buildField(transformation.getField());
             String transformerClassName = "MethodBasedFieldTransformer";
             FieldTransformer transformer = null;
@@ -794,7 +802,7 @@ public abstract class AbstractTransformationMapping extends DatabaseMapping {
             fieldToTransformer[0] = field;
             fieldToTransformer[1] = transformer;
  
-            getFieldToTransformers().addElement(fieldToTransformer);
+            this.fieldToTransformers.add(fieldToTransformer);
         }
     }
  
@@ -803,7 +811,7 @@ public abstract class AbstractTransformationMapping extends DatabaseMapping {
      * Invoke the buildAttributeValue method on the AttributeTransformer
      */
     public Object invokeAttributeTransformer(AbstractRecord record, Object domainObject, AbstractSession session) throws DescriptorException {
-        return getAttributeTransformer().buildAttributeValue(record, domainObject, session);
+        return this.attributeTransformer.buildAttributeValue(record, domainObject, session);
     }
  
     /**
@@ -815,11 +823,9 @@ public abstract class AbstractTransformationMapping extends DatabaseMapping {
     }
  
     protected Object invokeFieldTransformer(DatabaseField field, Object domainObject, AbstractSession session) {
-        Enumeration transformers = getFieldToTransformers().elements();
-        while (transformers.hasMoreElements()) {
-            Object[] next = (Object[])transformers.nextElement();
-            if (field.equals(next[0])) {
-                return invokeFieldTransformer(field, (FieldTransformer)next[1], domainObject, session);
+        for (Object[] pair : this.fieldToTransformers) {
+            if (field.equals(pair[0])) {
+                return invokeFieldTransformer(field, (FieldTransformer)pair[1], domainObject, session);
             }
         }
         return null;
@@ -842,17 +848,19 @@ public abstract class AbstractTransformationMapping extends DatabaseMapping {
      * otherwise return whether the transformation has no fields
      * (no fields = read-only)
      */
+    @Override
     public boolean isReadOnly() {
         if (super.isReadOnly()) {
             return true;
         } else {
-            return getFieldTransformations().isEmpty() && getFieldToTransformers().isEmpty();
+            return getFieldTransformations().isEmpty() && this.fieldToTransformers.isEmpty();
         }
     }
  
     /**
      * INTERNAL:
      */
+    @Override
     public boolean isTransformationMapping() {
         return true;
     }
@@ -861,8 +869,9 @@ public abstract class AbstractTransformationMapping extends DatabaseMapping {
      * INTERNAL:
      * Return if the transformation has no attribute, is write only.
      */
+    @Override
     public boolean isWriteOnly() {
-        return (getAttributeName() == null) && ((getAttributeTransformer() == null) && (getAttributeTransformerClassName() == null));
+        return (getAttributeName() == null) && ((this.attributeTransformer == null) && (this.attributeTransformerClassName == null));
     }
  
     /**
@@ -870,9 +879,10 @@ public abstract class AbstractTransformationMapping extends DatabaseMapping {
      * Perform the iteration opperation on the iterators current objects attributes.
      * Only require if primitives are desired.
      */
+    @Override
     public void iterate(DescriptorIterator iterator) {
         Object attributeValue = getAttributeValueFromObject(iterator.getVisitedParent());
-        getIndirectionPolicy().iterateOnAttributeValue(iterator, attributeValue);
+        this.indirectionPolicy.iterateOnAttributeValue(iterator, attributeValue);
     }
  
     /**
@@ -880,6 +890,7 @@ public abstract class AbstractTransformationMapping extends DatabaseMapping {
      * Iterate on the attribute value.
      * The value holder has already been processed.
      */
+    @Override
     public void iterateOnRealAttributeValue(DescriptorIterator iterator, Object realAttributeValue) {
         iterator.iteratePrimitiveForMapping(realAttributeValue, this);
     }
@@ -888,11 +899,13 @@ public abstract class AbstractTransformationMapping extends DatabaseMapping {
      * INTERNAL:
      * Merge changes from the source to the target object. Which is the original from the parent UnitOfWork
      */
+    @Override
     public void mergeChangesIntoObject(Object target, ChangeRecord changeRecord, Object source, MergeManager mergeManager) {
         if (isWriteOnly()) {
             return;
         }
-        if (!isMutable()) {
+        // PERF: If not mutable then just set the value from the source.
+        if (!isMutable() && (source != null)) {
             setRealAttributeValueInObject(target, getRealAttributeValueFromObject(source, mergeManager.getSession()));
             return;
         }
@@ -905,6 +918,7 @@ public abstract class AbstractTransformationMapping extends DatabaseMapping {
      * INTERNAL:
      * Merge changes from the source to the target object.
      */
+    @Override
     public void mergeIntoObject(Object target, boolean isTargetUnInitialized, Object source, MergeManager mergeManager) {
         if (isWriteOnly()) {
             return;
@@ -912,7 +926,7 @@ public abstract class AbstractTransformationMapping extends DatabaseMapping {
 
         // do refresh check first as I may need to reset remote value holder
         if (mergeManager.shouldRefreshRemoteObject() && usesIndirection()) {
-            getIndirectionPolicy().mergeRemoteValueHolder(target, source, mergeManager);
+            this.indirectionPolicy.mergeRemoteValueHolder(target, source, mergeManager);
             return;
         }
         
@@ -931,7 +945,7 @@ public abstract class AbstractTransformationMapping extends DatabaseMapping {
         if (isTargetUnInitialized) {
             // This will happen if the target object was removed from the cache before the commit was attempted
             if (mergeManager.shouldMergeWorkingCopyIntoOriginal() && (!areObjectsToBeProcessedInstantiated(source))) {
-                setAttributeValueInObject(target, getIndirectionPolicy().getOriginalIndirectionObject(getAttributeValueFromObject(source), mergeManager.getSession()));
+                setAttributeValueInObject(target, this.indirectionPolicy.getOriginalIndirectionObject(getAttributeValueFromObject(source), mergeManager.getSession()));
                 return;
             }
         }
@@ -978,6 +992,7 @@ public abstract class AbstractTransformationMapping extends DatabaseMapping {
      * INTERNAL:
      * Allow for initialization of properties and validation.
      */
+    @Override
     public void preInitialize(AbstractSession session) throws DescriptorException {
         if (isWriteOnly()) {
             return;// Allow for one-way transformations.
@@ -996,12 +1011,13 @@ public abstract class AbstractTransformationMapping extends DatabaseMapping {
      * INTERNAL:
      * Extracts value from return row and set the attribute to the value in the object.
      * Return row is merged into object after execution of insert or update call
-     * accordiing to ReturningPolicy.
+     * according to ReturningPolicy.
      */
     public Object readFromReturnRowIntoObject(AbstractRecord row, Object object, ReadObjectQuery query, Collection handledMappings) throws DatabaseException {
-        AbstractRecord transformationRow = new DatabaseRecord(getFields().size());
-        for (int i = 0; i < getFields().size(); i++) {
-            DatabaseField field = getFields().elementAt(i);
+        int size = this.fields.size();
+        AbstractRecord transformationRow = new DatabaseRecord(size);
+        for (int i = 0; i < size; i++) {
+            DatabaseField field = this.fields.get(i);
             Object value;
             if (row.containsKey(field)) {
                 value = row.get(field);
@@ -1022,14 +1038,15 @@ public abstract class AbstractTransformationMapping extends DatabaseMapping {
      * INTERNAL:
      * Extract value from the row and set the attribute to the value in the object.
      */
+    @Override
     public Object readFromRowIntoObject(AbstractRecord row, JoinedAttributeManager joinManager, Object object, ObjectBuildingQuery query, AbstractSession executionSession) throws DatabaseException {
         if (isWriteOnly()) {
             return null;
         }
  
-        Object attributeValue = getIndirectionPolicy().valueFromMethod(object, row, query.getSession());
+        Object attributeValue = this.indirectionPolicy.valueFromMethod(object, row, query.getSession());
         try {
-            getAttributeAccessor().setAttributeValueInObject(object, attributeValue);
+            this.attributeAccessor.setAttributeValueInObject(object, attributeValue);
         } catch (DescriptorException exception) {
             exception.setMapping(this);
             throw exception;
@@ -1066,20 +1083,21 @@ public abstract class AbstractTransformationMapping extends DatabaseMapping {
             MethodBasedFieldTransformation tf = new MethodBasedFieldTransformation();
             tf.setField(new DatabaseField((String)ass.getKey()));
             tf.setMethodName((String)ass.getValue());
-            getFieldTransformations().addElement(tf);
+            getFieldTransformations().add(tf);
         }
     }
  
     /**
      * INTERNAL:
      * Once descriptors are serialized to the remote session. All its mappings and reference descriptors are traversed. Usually
-     * mappings are initilaized and serialized reference descriptors are replaced with local descriptors if they already exist on the
+     * mappings are initialized and serialized reference descriptors are replaced with local descriptors if they already exist on the
      * remote session.
      */
+    @Override
     public void remoteInitialization(DistributedSession session) {
         setFieldToTransformers(new Vector());
  
-        // Remote mappings is initilaized here again because while serializing only the uninitialized data is passed
+        // Remote mappings is initialized here again because while serializing only the uninitialized data is passed
         // as the initialized data is not serializable.
         if (!isWriteOnly()) {
             super.remoteInitialization(session);
@@ -1113,7 +1131,7 @@ public abstract class AbstractTransformationMapping extends DatabaseMapping {
     /**
      * PUBLIC:
      * To set the attribute method name. The method is invoked internally by TopLink
-     * to retreive the value to store in the domain object. The method receives Record
+     * to retrieve the value to store in the domain object. The method receives Record
      * as its parameter and optionally Session, and should extract the value from the
      * record to set into the object, but should not set the value on the object, only return it.
      */
@@ -1143,7 +1161,7 @@ public abstract class AbstractTransformationMapping extends DatabaseMapping {
      * This defaults to true for non-primitives, but can be set to false to optimize object cloning and change comparison.
      */
     public void setIsMutable(boolean mutable) {
-        isMutable = mutable;
+        this.isMutable = mutable;
     }
  
     /**
@@ -1153,23 +1171,24 @@ public abstract class AbstractTransformationMapping extends DatabaseMapping {
      * If the value holder is not instantiated then it is instantiated.
      * Check for write-only, one-way transformations.
      */
+    @Override
     public void setRealAttributeValueInObject(Object object, Object value) throws DescriptorException {
-        if (this.isWriteOnly()) {
+        if (isWriteOnly()) {
             return;
         }
-        this.getIndirectionPolicy().setRealAttributeValueInObject(object, value);
+        this.indirectionPolicy.setRealAttributeValueInObject(object, value);
     }
  
     /**
      * INTERNAL:
      * Set the field to method name associations.
      */
-    public void setFieldTransformations(Vector fieldTransformations) {
+    public void setFieldTransformations(List<FieldTransformation> fieldTransformations) {
         this.fieldTransformations = fieldTransformations;
     }
  
-    protected void setFieldToTransformers(Vector aVector) {
-        fieldToTransformers = aVector;
+    protected void setFieldToTransformers(List<Object[]> fieldToTransformers) {
+        this.fieldToTransformers = fieldToTransformers;
     }
  
     /**
@@ -1197,31 +1216,10 @@ public abstract class AbstractTransformationMapping extends DatabaseMapping {
  
     /**
      * INTERNAL:
-     * Returns true if the merge should cascade to the mappings reference's parts.
-     */
-    public boolean shouldMergeCascadeParts(MergeManager mergeManager) {
-        return (mergeManager.shouldCascadeAllParts() || (mergeManager.shouldCascadePrivateParts() && isPrivateOwned()));
-    }
- 
-    /**
-     * INTERNAL:
-     * Returns true if the merge should cascade to the mappings reference.
-     */
-    protected boolean shouldMergeCascadeReference(MergeManager mergeManager) {
-        if (mergeManager.shouldCascadeReferences()) {
-            return true;
-        }
- 
-        // P2.0.1.3: Was merging references on non-privately owned parts
-        // Same logic in:
-        return shouldMergeCascadeParts(mergeManager);
-    }
- 
-    /**
-     * INTERNAL:
      * Either create a new change record or update the change record with the new value.
      * This is used by attribute change tracking.
      */
+    @Override
     public void updateChangeRecord(Object clone, Object newValue, Object oldValue, ObjectChangeSet objectChangeSet, UnitOfWorkImpl uow) {
         TransformationMappingChangeRecord changeRecord = (TransformationMappingChangeRecord)objectChangeSet.getChangesForAttributeNamed(this.getAttributeName());
         if (!isWriteOnly()) {
@@ -1237,6 +1235,7 @@ public abstract class AbstractTransformationMapping extends DatabaseMapping {
      * INTERNAL:
      * Return if this mapping supports change tracking.
      */
+    @Override
     public boolean isChangeTrackingSupported(Project project) {
         return ! isMutable();
     }
@@ -1275,18 +1274,19 @@ public abstract class AbstractTransformationMapping extends DatabaseMapping {
  
     /**
      * PUBLIC:
-     * Indirection meansthat a ValueHolder will be put in-between the attribute and the real object.
+     * Indirection means that a ValueHolder will be put in-between the attribute and the real object.
      * This defaults to false and only required for transformations that perform database access.
      * @see org.eclipse.persistence.mappings.IndirectionPolicy
      */
     public boolean usesIndirection() {
-        return getIndirectionPolicy().usesIndirection();
+        return this.indirectionPolicy.usesIndirection();
     }
  
     /**
      * INTERNAL:
      * Validate mapping declaration
      */
+    @Override
     public void validateBeforeInitialization(AbstractSession session) throws DescriptorException {
         super.validateBeforeInitialization(session);
  
@@ -1294,19 +1294,19 @@ public abstract class AbstractTransformationMapping extends DatabaseMapping {
             return;
         }
  
-        if ((getAttributeTransformer() == null) && (getAttributeTransformerClassName() == null)) {
+        if ((this.attributeTransformer == null) && (this.attributeTransformerClassName == null)) {
             session.getIntegrityChecker().handleError(DescriptorException.noAttributeTransformationMethod(this));
         }
  
         if (getAttributeAccessor() instanceof InstanceVariableAttributeAccessor) {
             Class attributeType = ((InstanceVariableAttributeAccessor)getAttributeAccessor()).getAttributeType();
-            getIndirectionPolicy().validateDeclaredAttributeType(attributeType, session.getIntegrityChecker());
+            this.indirectionPolicy.validateDeclaredAttributeType(attributeType, session.getIntegrityChecker());
         } else if (getAttributeAccessor().isMethodAttributeAccessor()) {
             Class returnType = ((MethodAttributeAccessor)getAttributeAccessor()).getGetMethodReturnType();
-            getIndirectionPolicy().validateGetMethodReturnType(returnType, session.getIntegrityChecker());
+            this.indirectionPolicy.validateGetMethodReturnType(returnType, session.getIntegrityChecker());
  
             Class parameterType = ((MethodAttributeAccessor)getAttributeAccessor()).getSetMethodParameterType();
-            getIndirectionPolicy().validateSetMethodParameterType(parameterType, session.getIntegrityChecker());
+            this.indirectionPolicy.validateSetMethodParameterType(parameterType, session.getIntegrityChecker());
         }
     }
  
@@ -1314,6 +1314,7 @@ public abstract class AbstractTransformationMapping extends DatabaseMapping {
      * INTERNAL:
      * Get a value from the object and set that in the respective field of the row.
      */
+    @Override
     public Object valueFromObject(Object object, DatabaseField field, AbstractSession session) {
         return invokeFieldTransformer(field, object, session);
     }
@@ -1328,10 +1329,9 @@ public abstract class AbstractTransformationMapping extends DatabaseMapping {
             return;
         }
  
-        for (Enumeration stream = getFieldToTransformers().elements(); stream.hasMoreElements();) {
-            Object[] next = (Object[])stream.nextElement();
-            DatabaseField field = (DatabaseField)next[0];
-            FieldTransformer transformer = (FieldTransformer)next[1];
+        for (Object[] pair : this.fieldToTransformers) {
+            DatabaseField field = (DatabaseField)pair[0];
+            FieldTransformer transformer = (FieldTransformer)pair[1];
             Object fieldValue = invokeFieldTransformer(field, transformer, object, session);
             row.put(field, fieldValue);
         }
@@ -1347,9 +1347,8 @@ public abstract class AbstractTransformationMapping extends DatabaseMapping {
             return;
         }
  
-        for (Enumeration stream = getFieldToTransformers().elements(); stream.hasMoreElements();) {
-            Object[] next = (Object[])stream.nextElement();
-            DatabaseField field = (DatabaseField)next[0];
+        for (Object[] pair : this.fieldToTransformers) {
+            DatabaseField field = (DatabaseField)pair[0];
             Object fieldValue = ((TransformationMappingChangeRecord)changeRecord).getRecord().get(field);
             row.put(field, fieldValue);
         }
@@ -1360,6 +1359,7 @@ public abstract class AbstractTransformationMapping extends DatabaseMapping {
      * Get a value from the object and set that in the respective field of the row.
      * But before that check if the reference object is instantiated or not.
      */
+    @Override
     public void writeFromObjectIntoRowForUpdate(WriteObjectQuery query, AbstractRecord record) {
         if (!areObjectsToBeProcessedInstantiated(query.getObject())) {
             return;
@@ -1378,13 +1378,14 @@ public abstract class AbstractTransformationMapping extends DatabaseMapping {
      * INTERNAL:
      * Write fields needed for insert into the template for with null values.
      */
+    @Override
     public void writeInsertFieldsIntoRow(AbstractRecord record, AbstractSession session) {
         if (isReadOnly()) {
             return;
         }
  
-        for (Enumeration entry = getFieldToTransformers().elements(); entry.hasMoreElements();) {
-            DatabaseField field = (DatabaseField)((Object[])entry.nextElement())[0];
+        for (Object[] pair : this.fieldToTransformers) {
+            DatabaseField field = (DatabaseField)pair[0];
             record.put(field, null);
         }
     }

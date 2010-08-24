@@ -801,7 +801,11 @@ public abstract class ObjectLevelReadQuery extends ObjectBuildingQuery {
             if (result == InvalidObject.instance) {
                 return result;
             }
-            return registerResultInUnitOfWork(result, unitOfWork, translationRow, false);
+            Object clone = registerResultInUnitOfWork(result, unitOfWork, translationRow, false);
+            if (shouldConformResultsInUnitOfWork() && unitOfWork.isObjectDeleted(clone)) {
+                return InvalidObject.instance;
+            }
+            return clone;
         } else {
             return null;
         }

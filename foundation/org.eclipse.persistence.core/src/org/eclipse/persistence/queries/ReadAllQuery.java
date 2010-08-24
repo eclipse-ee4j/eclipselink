@@ -705,7 +705,8 @@ public class ReadAllQuery extends ObjectLevelReadQuery {
         // For bug 2612366: Conforming results in UOW extremely slow.
         // Replacing results with registered versions in the UOW is a part of 
         // conforming and is now done while conforming to maximize performance.
-        if (shouldConformResultsInUnitOfWork() || this.descriptor.shouldAlwaysConformResultsInUnitOfWork()) {
+        if (unitOfWork.hasCloneMapping() // PERF: Avoid conforming empty uow.
+                    && (shouldConformResultsInUnitOfWork() || this.descriptor.shouldAlwaysConformResultsInUnitOfWork())) {
             return conformResult(result, unitOfWork, arguments, buildDirectlyFromRows);
         }
 

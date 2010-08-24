@@ -757,7 +757,8 @@ public class ReadObjectQuery extends ObjectLevelReadQuery {
         if (result == null) {
             return null;
         }
-        if (shouldConformResultsInUnitOfWork() || this.descriptor.shouldAlwaysConformResultsInUnitOfWork()) {
+        if (unitOfWork.hasCloneMapping() // PERF: Avoid conforming empty uow.
+                && (shouldConformResultsInUnitOfWork() || this.descriptor.shouldAlwaysConformResultsInUnitOfWork())) {
             return conformResult(result, unitOfWork, arguments, buildDirectlyFromRows);
         }
         Object clone = null;

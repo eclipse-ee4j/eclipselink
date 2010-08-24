@@ -40,6 +40,7 @@ public abstract class DatabaseValueHolder implements WeavedAttributeValueHolderI
     protected transient AbstractSession session;
 
     /** Stores the row representation of the object. */
+    // Cannot be transient as may be required to extract the pk from a serialized object.
     protected AbstractRecord row;
   
     /**
