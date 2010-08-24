@@ -119,7 +119,6 @@ public class LoadBuildSystem {
         session.logout();
     }
 
-    @SuppressWarnings("deprecation")
     public void populateSampleData() {
         ReadAllQuery query = new ReadAllQuery(LoadBuildSummary.class);
         query.addBatchReadAttribute("results");
@@ -135,7 +134,9 @@ public class LoadBuildSystem {
                 ((TestResultsSummary)iterator.next()).getResults();
             }
             //for (int index = 0; index < 10; index++) {
-                LoadBuildSummary summaryCopy = (LoadBuildSummary)session.copyObject(summary);
+                CopyGroup group = new CopyGroup();
+                group.setShouldResetPrimaryKey(true);
+                LoadBuildSummary summaryCopy = (LoadBuildSummary)session.copy(summary, group);
                 summaryCopy.id = 0;
                 uow.registerObject(summaryCopy);
             //}

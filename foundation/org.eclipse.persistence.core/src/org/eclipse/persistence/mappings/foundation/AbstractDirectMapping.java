@@ -444,14 +444,12 @@ public abstract class AbstractDirectMapping extends DatabaseMapping  implements 
             return true;
         }
 
-        if ((firstValue == null) || (secondValue == null)) {
-            return false;
-        }
-
-        // PERF: Check equals first, as normally no change.
-        // Also for serialization objects bytes may not be consistent, but equals may work (HashMap).
-        if (firstValue.equals(secondValue)) {
-            return true;
+        if ((firstValue != null) && (secondValue != null)) {
+            // PERF: Check equals first, as normally no change.
+            // Also for serialization objects bytes may not be consistent, but equals may work (HashMap).
+            if (firstValue.equals(secondValue)) {
+                return true;
+            }
         }
 
         // CR2114 - following two lines modified; getFieldValue() needs class as an argument

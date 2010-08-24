@@ -43,13 +43,13 @@ public class EmployeeWithSpacesSystem extends TestSystem {
         session.addDescriptors(project);
     }
 
-    @SuppressWarnings("deprecation")
     public void createTables(DatabaseSession session) {
         if (session.getPlatform().isSymfoware()) {
             return; // Symfoware does not allow spaces in tables or columns.");
         }
-        String quoteChar = session.getPlatform().getIdentifierQuoteCharacter();
-        new EmployeeWithSpacesTableCreator(quoteChar).replaceTables(session);
+        String startQuoteChar = session.getPlatform().getStartDelimiter();
+        String endQuoteChar = session.getPlatform().getEndDelimiter();
+        new EmployeeWithSpacesTableCreator(startQuoteChar, endQuoteChar).replaceTables(session);
     }
 
     /**

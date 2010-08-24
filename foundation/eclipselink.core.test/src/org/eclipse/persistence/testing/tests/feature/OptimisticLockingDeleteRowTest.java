@@ -13,7 +13,6 @@
 package org.eclipse.persistence.testing.tests.feature;
 
 import org.eclipse.persistence.testing.framework.*;
-import org.eclipse.persistence.expressions.*;
 import org.eclipse.persistence.testing.models.employee.domain.*;
 import org.eclipse.persistence.exceptions.*;
 
@@ -41,7 +40,6 @@ public class OptimisticLockingDeleteRowTest extends AutoVerifyTestCase {
         getDatabaseSession().writeObject(guy);
         getSession().getIdentityMapAccessor().initializeIdentityMaps();
 
-        Expression whereClause;
         originalObject = getSession().readObject(guy);
     }
 

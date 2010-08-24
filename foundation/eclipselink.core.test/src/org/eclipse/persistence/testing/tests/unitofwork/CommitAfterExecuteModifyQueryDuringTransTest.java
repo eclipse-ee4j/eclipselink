@@ -43,14 +43,13 @@ public class CommitAfterExecuteModifyQueryDuringTransTest extends org.eclipse.pe
     /**
      * Test makes modifications that is not wrapped in a transaction..
      */
-    @SuppressWarnings("deprecation")
     public void setup() {
         if (getSession() instanceof RemoteSession) {
             throw new TestWarningException("test will not run on RemoteSession - it uses events");
         }
         //employee to be modified - needed for reset.
         cachedEmployee = (Employee)getSession().readObject(Employee.class);
-        originalEmployee = (Employee)getSession().copyObject(cachedEmployee);
+        originalEmployee = (Employee)getSession().copy(cachedEmployee);
         employeesNewFirstName = "formerlyKnownAs";
         initialVersionField = getSession().getIdentityMapAccessor().getWriteLockValue(cachedEmployee);
 

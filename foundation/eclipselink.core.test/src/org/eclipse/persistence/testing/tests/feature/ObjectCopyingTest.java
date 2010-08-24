@@ -24,10 +24,11 @@ public class ObjectCopyingTest extends TransactionalTestCase {
         setDescription("Test the object copying feature.");
     }
 
-    @SuppressWarnings("deprecation")
     public void test() {
         Employee original = (Employee)getSession().readObject(Employee.class);
-        Employee copy = (Employee)getSession().copyObject(original);
+        CopyGroup group = new CopyGroup();
+        group.setShouldResetPrimaryKey(true);
+        Employee copy = (Employee)getSession().copy(original, group);
         UnitOfWork uow = getSession().acquireUnitOfWork();
         uow.registerObject(copy);
         uow.commit();

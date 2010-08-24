@@ -34,7 +34,6 @@ public class ProjectWithSpacesDeleteTest extends DeleteObjectTest {
         super(originalObject);
     }
 
-    @SuppressWarnings("deprecation")
     protected void setup() {
         if (getSession().getPlatform().isSymfoware()) {
             throwWarning("Test system EmployeeWithSpacesSystem is not supported on Symfoware, "
@@ -46,10 +45,11 @@ public class ProjectWithSpacesDeleteTest extends DeleteObjectTest {
         if (appendString.length() != 0) {
             appendString = appendString + ".";
         }
-        String quoteChar = ((DatasourcePlatform)getAbstractSession().getPlatform(org.eclipse.persistence.testing.models.employee.domain.Project.class)).getIdentifierQuoteCharacter();
+        String startQuoteChar = ((DatasourcePlatform)getAbstractSession().getPlatform(org.eclipse.persistence.testing.models.employee.domain.Project.class)).getStartDelimiter();
+        String endQuoteChar = ((DatasourcePlatform)getAbstractSession().getPlatform(org.eclipse.persistence.testing.models.employee.domain.Project.class)).getEndDelimiter();
         
         // Must drop references first to appease constraints.
         Session session = getAbstractSession().getSessionForClass(org.eclipse.persistence.testing.models.employee.domain.Project.class);
-        session.executeNonSelectingCall(new org.eclipse.persistence.queries.SQLCall("delete from " + appendString + quoteChar + "PROJ EMP" + quoteChar + " where PROJ_ID = " + ((org.eclipse.persistence.testing.models.employee.domain.Project)getOriginalObject()).getId()));
+        session.executeNonSelectingCall(new org.eclipse.persistence.queries.SQLCall("delete from " + appendString + startQuoteChar + "PROJ EMP" + endQuoteChar + " where PROJ_ID = " + ((org.eclipse.persistence.testing.models.employee.domain.Project)getOriginalObject()).getId()));
     }
 }
