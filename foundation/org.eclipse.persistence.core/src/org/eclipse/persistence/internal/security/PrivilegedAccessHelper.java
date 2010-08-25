@@ -9,6 +9,11 @@
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
+ *     08/23/2010-2.2 Michael O'Brien 
+ *        - 323043: application.xml module ordering may cause weaving not to occur causing an NPE.
+ *                       warn if expected "_persistence_*_vh" method not found
+ *                       instead of throwing NPE during deploy validation.
+ *          
  ******************************************************************************/  
 package org.eclipse.persistence.internal.security;
 
@@ -323,6 +328,7 @@ public class PrivilegedAccessHelper {
      * @param method
      */
     public static Class getMethodReturnType(final Method method) {
+        // 323148: a null method as a possible problem with module ordering breaking weaving - has been trapped by implementors of this method.
         return method.getReturnType();
     }
     

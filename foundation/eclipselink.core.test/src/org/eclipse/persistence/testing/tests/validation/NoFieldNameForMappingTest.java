@@ -58,6 +58,7 @@ public class NoFieldNameForMappingTest extends ExceptionTest {
         try {
             ((DatabaseSession)getSession()).addDescriptor(descriptor());
 
+            // This test currently does nothing - rework for 323148
             //validateBeforeInitialization(session)
 
         } catch (EclipseLinkException exception) {

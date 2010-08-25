@@ -11,6 +11,10 @@
  *     Oracle - initial API and implementation from Oracle TopLink
  *     02/26/2009-2.0 Guy Pelletier 
  *       - 264001: dot notation for mapped-by and order-by
+ *     08/23/2010-2.2 Michael O'Brien 
+ *        - 323043: application.xml module ordering may cause weaving not to occur causing an NPE.
+ *                       warn if expected "_persistence_*_vh" method not found
+ *                       instead of throwing NPE during deploy validation.
  ******************************************************************************/  
 package org.eclipse.persistence.mappings;
 
@@ -2162,7 +2166,8 @@ public abstract class CollectionMapping extends ForeignReferenceMapping implemen
             Class attributeType = ((InstanceVariableAttributeAccessor)getAttributeAccessor()).getAttributeType();
             this.indirectionPolicy.validateDeclaredAttributeTypeForCollection(attributeType, session.getIntegrityChecker());
         } else if (getAttributeAccessor().isMethodAttributeAccessor()) {
-            Class returnType = ((MethodAttributeAccessor)getAttributeAccessor()).getGetMethodReturnType();
+            // 323403
+            Class returnType = ((MethodAttributeAccessor)getAttributeAccessor()).getGetMethodReturnType(this);
             this.indirectionPolicy.validateGetMethodReturnTypeForCollection(returnType, session.getIntegrityChecker());
 
             Class parameterType = ((MethodAttributeAccessor)getAttributeAccessor()).getSetMethodParameterType();

@@ -9,6 +9,10 @@
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
+ *     08/23/2010-2.2 Michael O'Brien 
+ *        - 323043: application.xml module ordering may cause weaving not to occur causing an NPE.
+ *                       warn if expected "_persistence_*_vh" method not found
+ *                       instead of throwing NPE during deploy validation.
  ******************************************************************************/  
 package org.eclipse.persistence.exceptions;
 
@@ -232,6 +236,7 @@ public class DescriptorException extends ValidationException {
     public final static int NO_RELATION_TABLE_MECHANISM = 215;
     public final static int CANNOT_USE_ID_VALUE_FOR_COMPOSITE_ID = 216;
     public final static int INVALID_XPATH_FOR_DIRECT_MAPPING = 217;
+    public final static int NULL_POINTER_WHILE_GETTING_VALUE_THRU_METHOD_ACCESSOR_IN_MODULE_ORDER_BREAKS_WEAVING = 218;
 
     /**
      * INTERNAL:
@@ -1259,6 +1264,16 @@ public class DescriptorException extends ValidationException {
         return descriptorException;
     }
 
+    // 323403: Handle NPE because of module order issue that stops weaving from occurring
+    public static DescriptorException nullPointerWhileGettingValueThruMethodAccessorCausedByWeavingNotOccurringBecauseOfModuleOrder(String methodName, String objectName, Throwable exception) {
+        Object[] args = { methodName, objectName };
+
+        DescriptorException descriptorException = new DescriptorException(ExceptionMessageGenerator.buildMessage(DescriptorException.class, NULL_POINTER_WHILE_GETTING_VALUE_THRU_METHOD_ACCESSOR_IN_MODULE_ORDER_BREAKS_WEAVING, args));
+        descriptorException.setInternalException(exception);
+        descriptorException.setErrorCode(NULL_POINTER_WHILE_GETTING_VALUE_THRU_METHOD_ACCESSOR_IN_MODULE_ORDER_BREAKS_WEAVING);
+        return descriptorException;
+    }
+    
     public static DescriptorException nullPointerWhileMethodInstantiation(String methodName, ClassDescriptor descriptor, Exception exception) {
         Object[] args = { methodName };
 

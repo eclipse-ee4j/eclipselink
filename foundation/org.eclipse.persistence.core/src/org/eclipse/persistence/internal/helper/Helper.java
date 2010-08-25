@@ -10,6 +10,10 @@
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
  *     dminsky - added countOccurrencesOf(Object, List) API
+ *     08/23/2010-2.2 Michael O'Brien 
+ *        - 323043: application.xml module ordering may cause weaving not to occur causing an NPE.
+ *                       warn if expected "_persistence_*_vh" method not found
+ *                       instead of throwing NPE during deploy validation.
  ******************************************************************************/
 package org.eclipse.persistence.internal.helper;
 
@@ -94,6 +98,9 @@ public class Helper implements Serializable {
     
     public static final String PERSISTENCE_SET = "_persistence_set_";
     public static final String PERSISTENCE_GET = "_persistence_get_";
+    // 323403: These constants are used to search for missing weaved functions - this is a copy is of the jpa project under ClassWeaver
+    public static final String PERSISTENCE_FIELDNAME_PREFIX = "_persistence_";
+    public static final String PERSISTENCE_FIELDNAME_POSTFIX = "_vh";    
 
     private static String defaultStartDatabaseDelimiter = null;
     private static String defaultEndDatabaseDelimiter = null;

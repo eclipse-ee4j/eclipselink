@@ -9,6 +9,10 @@
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
+ *     08/23/2010-2.2 Michael O'Brien 
+ *        - 323043: application.xml module ordering may cause weaving not to occur causing an NPE.
+ *                       warn if expected "_persistence_*_vh" method not found
+ *                       instead of throwing NPE during deploy validation.
  ******************************************************************************/  
 package org.eclipse.persistence.internal.descriptors;
 
@@ -18,7 +22,10 @@ import java.security.PrivilegedActionException;
 
 import org.eclipse.persistence.exceptions.*;
 import org.eclipse.persistence.internal.helper.*;
+import org.eclipse.persistence.logging.AbstractSessionLog;
+import org.eclipse.persistence.logging.SessionLog;
 import org.eclipse.persistence.mappings.AttributeAccessor;
+import org.eclipse.persistence.mappings.DatabaseMapping;
 import org.eclipse.persistence.internal.security.*;
 
 /**
@@ -100,7 +107,23 @@ public class MethodAttributeAccessor extends AttributeAccessor {
         return getMethodName;
     }
 
-    public Class getGetMethodReturnType() {
+    /**
+     * INTERNAL:
+     * Return the GetMethod return type for this MethodAttributeAccessor.
+     * A special check is made to determine if a missing method is a result of failed weaving.
+     * @return
+     */
+    public Class getGetMethodReturnType(DatabaseMapping mapping) throws DescriptorException {
+        // 323403: If the getMethod is missing - check for "_persistence_*_vh" to see if weaving was expected 
+        if(null == getGetMethod() && null != getGetMethodName() 
+                && (getGetMethodName().indexOf(Helper.PERSISTENCE_FIELDNAME_PREFIX) > -1)) {
+            // warn before a possible NPE on accessing a weaved method that does not exist
+            AbstractSessionLog.getLog().log(SessionLog.FINEST, "no_weaved_vh_method_found_verify_weaving_and_module_order",
+                    getGetMethodName(), mapping, this);
+            // 323403: We cannot continue to process objects that are not weaved - if weaving is enabled
+            // If we allow the getMethodReturnType to continue - we will throw an obscure NullPointerException
+            throw DescriptorException.nullPointerWhileGettingValueThruMethodAccessorCausedByWeavingNotOccurringBecauseOfModuleOrder(getGetMethodName(), mapping.toString(), null);
+        }
         if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()){
             try {
                 return (Class)AccessController.doPrivileged(new PrivilegedGetMethodReturnType(getGetMethod()));
@@ -113,6 +136,14 @@ public class MethodAttributeAccessor extends AttributeAccessor {
         }
     }
 
+    /**
+     * Return the GetMethod return type for this MethodAttributeAccessor.
+     * @return
+     */
+    public Class getGetMethodReturnType() {
+        return getGetMethodReturnType(null);
+    }
+    
     /**
      * Return the set method for the attribute accessor.
      */
@@ -250,9 +281,9 @@ public class MethodAttributeAccessor extends AttributeAccessor {
             throw DescriptorException.targetInvocationWhileSettingValueThruMethodAccessor(getSetMethodName(), attributeValue, exception);
         } catch (NullPointerException exception) {
             try {
-                // TODO: This code should be removed, it should not be required and may cause unwanted sideeffects.
-                // cr 3737  If a null pointer was thrown because toplink attempted to set a null referece into a
-                // primitive create a primitive of value 0 to set in the object.
+                // TODO: This code should be removed, it should not be required and may cause unwanted side effects.
+                // cr 3737  If a null pointer was thrown because EclipseLink attempted to set a null reference into a
+                // primitive creating a primitive of value 0 to set in the object.
                 // Is this really the best place for this? is this not why we have null-value and conversion-manager?
                 Class fieldClass = getSetMethodParameterType();
 
@@ -275,6 +306,7 @@ public class MethodAttributeAccessor extends AttributeAccessor {
                     }
                 } else {
                     // Some JVM's throw this exception for some very odd reason
+                    // See 
                     throw DescriptorException.nullPointerWhileSettingValueThruInstanceVariableAccessor(getAttributeName(), attributeValue, exception);
                 }
             } catch (IllegalAccessException accessException) {

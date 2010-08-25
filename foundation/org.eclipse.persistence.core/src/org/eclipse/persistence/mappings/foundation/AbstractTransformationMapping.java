@@ -9,6 +9,10 @@
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
+ *     08/23/2010-2.2 Michael O'Brien 
+ *        - 323043: application.xml module ordering may cause weaving not to occur causing an NPE.
+ *                       warn if expected "_persistence_*_vh" method not found
+ *                       instead of throwing NPE during deploy validation.
  ******************************************************************************/  
 package org.eclipse.persistence.mappings.foundation;
  
@@ -1302,7 +1306,8 @@ public abstract class AbstractTransformationMapping extends DatabaseMapping {
             Class attributeType = ((InstanceVariableAttributeAccessor)getAttributeAccessor()).getAttributeType();
             this.indirectionPolicy.validateDeclaredAttributeType(attributeType, session.getIntegrityChecker());
         } else if (getAttributeAccessor().isMethodAttributeAccessor()) {
-            Class returnType = ((MethodAttributeAccessor)getAttributeAccessor()).getGetMethodReturnType();
+            // 323403
+            Class returnType = ((MethodAttributeAccessor)getAttributeAccessor()).getGetMethodReturnType(this);
             this.indirectionPolicy.validateGetMethodReturnType(returnType, session.getIntegrityChecker());
  
             Class parameterType = ((MethodAttributeAccessor)getAttributeAccessor()).getSetMethodParameterType();

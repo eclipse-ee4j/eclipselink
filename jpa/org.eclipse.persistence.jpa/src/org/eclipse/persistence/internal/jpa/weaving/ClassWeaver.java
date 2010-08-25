@@ -9,7 +9,11 @@
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- *     dclarke Bug 244124: Enhanced weaving to support extended FetchGroup functionality 
+ *     dclarke Bug 244124: Enhanced weaving to support extended FetchGroup functionality
+ *     08/23/2010-2.2 Michael O'Brien 
+ *        - 323043: application.xml module ordering may cause weaving not to occur causing an NPE.
+ *                       warn if expected "_persistence_*_vh" method not found
+ *                       instead of throwing NPE during deploy validation.
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.weaving;
 
@@ -76,6 +80,9 @@ public class ClassWeaver extends ClassAdapter implements Constants {
     public static final String PERSISTENCE_SET = Helper.PERSISTENCE_SET;
     public static final String PERSISTENCE_GET = Helper.PERSISTENCE_GET;
   
+    // 323403: These constants are used to search for missing weaved functions - a copy is in the foundation project under internal.Helper
+    public static final String PERSISTENCE_FIELDNAME_PREFIX = "_persistence_";
+    public static final String PERSISTENCE_FIELDNAME_POSTFIX = "_vh";    
     /** Store if JAXB is no the classpath. */
     protected static Boolean isJAXBOnPath;
     
@@ -199,7 +206,7 @@ public class ClassWeaver extends ClassAdapter implements Constants {
         if (attributeDetails.getGetterMethodName() == null || attributeDetails.getGetterMethodName().equals("") || attributeDetails.weaveTransientFieldValueHolders()) {
             annotations = getTransientAnnotation();
         }
-        cv.visitField(ACC_PROTECTED, "_persistence_" + attribute + "_vh", VHI_SIGNATURE, null, annotations);
+        cv.visitField(ACC_PROTECTED, PERSISTENCE_FIELDNAME_PREFIX + attribute + PERSISTENCE_FIELDNAME_POSTFIX, VHI_SIGNATURE, null, annotations);
     }
     
     /**
@@ -308,11 +315,11 @@ public class ClassWeaver extends ClassAdapter implements Constants {
         
         // Create a getter method for the new valueholder
         // protected void _persistence_initialize_attribute_vh(){
-        CodeVisitor cv_init_VH = cv.visitMethod(ACC_PROTECTED, "_persistence_initialize_" + attribute + "_vh", "()V", null, null);
+        CodeVisitor cv_init_VH = cv.visitMethod(ACC_PROTECTED, "_persistence_initialize_" + attribute + PERSISTENCE_FIELDNAME_POSTFIX, "()V", null, null);
 
         // if(_persistence_attribute_vh == null){
         cv_init_VH.visitVarInsn(ALOAD, 0);
-        cv_init_VH.visitFieldInsn(GETFIELD, className, "_persistence_" + attribute + "_vh", VHI_SIGNATURE);
+        cv_init_VH.visitFieldInsn(GETFIELD, className, PERSISTENCE_FIELDNAME_PREFIX + attribute + PERSISTENCE_FIELDNAME_POSTFIX, VHI_SIGNATURE);
         Label l0 = new Label();
         cv_init_VH.visitJumpInsn(IFNONNULL, l0);
         
@@ -327,11 +334,11 @@ public class ClassWeaver extends ClassAdapter implements Constants {
         } else {
             cv_init_VH.visitMethodInsn(INVOKESPECIAL, VH_SHORT_SIGNATURE, "<init>", "()V");
         }
-        cv_init_VH.visitFieldInsn(PUTFIELD, className, "_persistence_" + attribute + "_vh", VHI_SIGNATURE);
+        cv_init_VH.visitFieldInsn(PUTFIELD, className, PERSISTENCE_FIELDNAME_PREFIX + attribute + PERSISTENCE_FIELDNAME_POSTFIX, VHI_SIGNATURE);
         
         // _persistence_attribute_vh.setIsNewlyWeavedValueHolder(true);
         cv_init_VH.visitVarInsn(ALOAD, 0);
-        cv_init_VH.visitFieldInsn(GETFIELD, className, "_persistence_" + attribute + "_vh", VHI_SIGNATURE);
+        cv_init_VH.visitFieldInsn(GETFIELD, className, PERSISTENCE_FIELDNAME_PREFIX + attribute + PERSISTENCE_FIELDNAME_POSTFIX, VHI_SIGNATURE);
         cv_init_VH.visitInsn(ICONST_1);
         cv_init_VH.visitMethodInsn(INVOKEINTERFACE, VHI_SHORT_SIGNATURE, "setIsNewlyWeavedValueHolder", "(Z)V");
         
@@ -360,20 +367,20 @@ public class ClassWeaver extends ClassAdapter implements Constants {
         String attribute = attributeDetails.getAttributeName();
         String className = classDetails.getClassName();
         // Create a getter method for the new valueholder
-        CodeVisitor cv_get_VH = cv.visitMethod(ACC_PUBLIC, PERSISTENCE_GET + attribute + "_vh", "()" + VHI_SIGNATURE, null, null);
+        CodeVisitor cv_get_VH = cv.visitMethod(ACC_PUBLIC, PERSISTENCE_GET + attribute + PERSISTENCE_FIELDNAME_POSTFIX, "()" + VHI_SIGNATURE, null, null);
         
         // _persistence_initialize_attributeName_vh();
         cv_get_VH.visitVarInsn(ALOAD, 0);
-        cv_get_VH.visitMethodInsn(INVOKEVIRTUAL, classDetails.getClassName(), "_persistence_initialize_" + attributeDetails.getAttributeName() + "_vh", "()V");
+        cv_get_VH.visitMethodInsn(INVOKEVIRTUAL, classDetails.getClassName(), "_persistence_initialize_" + attributeDetails.getAttributeName() + PERSISTENCE_FIELDNAME_POSTFIX, "()V");
 
         // if (_toplink_foo_vh.isCoordinatedWithProperty() || _toplink_foo_vh.isNewlyWeavedValueHolder()){
         cv_get_VH.visitVarInsn(ALOAD, 0);
-        cv_get_VH.visitFieldInsn(GETFIELD, classDetails.getClassName(), "_persistence_" + attribute + "_vh", VHI_SIGNATURE);
+        cv_get_VH.visitFieldInsn(GETFIELD, classDetails.getClassName(), PERSISTENCE_FIELDNAME_PREFIX + attribute + PERSISTENCE_FIELDNAME_POSTFIX, VHI_SIGNATURE);
         cv_get_VH.visitMethodInsn(INVOKEINTERFACE, VHI_SHORT_SIGNATURE, "isCoordinatedWithProperty", "()Z");       
         Label l0 = new Label();
         cv_get_VH.visitJumpInsn(IFNE, l0);
         cv_get_VH.visitVarInsn(ALOAD, 0);
-        cv_get_VH.visitFieldInsn(GETFIELD, classDetails.getClassName(), "_persistence_" + attribute + "_vh", VHI_SIGNATURE);
+        cv_get_VH.visitFieldInsn(GETFIELD, classDetails.getClassName(), PERSISTENCE_FIELDNAME_PREFIX + attribute + PERSISTENCE_FIELDNAME_POSTFIX, VHI_SIGNATURE);
         cv_get_VH.visitMethodInsn(INVOKEINTERFACE, VHI_SHORT_SIGNATURE, "isNewlyWeavedValueHolder", "()Z");
         Label l1 = new Label();
         cv_get_VH.visitJumpInsn(IFEQ, l1);
@@ -392,7 +399,7 @@ public class ClassWeaver extends ClassAdapter implements Constants {
         // if (object != _toplink_foo_vh.getValue()){
         cv_get_VH.visitVarInsn(ALOAD, 1);
         cv_get_VH.visitVarInsn(ALOAD, 0);
-        cv_get_VH.visitFieldInsn(GETFIELD, classDetails.getClassName(), "_persistence_" + attribute + "_vh", VHI_SIGNATURE);
+        cv_get_VH.visitFieldInsn(GETFIELD, classDetails.getClassName(), PERSISTENCE_FIELDNAME_PREFIX + attribute + PERSISTENCE_FIELDNAME_POSTFIX, VHI_SIGNATURE);
         cv_get_VH.visitMethodInsn(INVOKEINTERFACE, VHI_SHORT_SIGNATURE, "getValue", "()Ljava/lang/Object;");
         cv_get_VH.visitJumpInsn(IF_ACMPEQ, l1);
         
@@ -410,7 +417,7 @@ public class ClassWeaver extends ClassAdapter implements Constants {
         
         // return _toplink_foo_vh;
         cv_get_VH.visitVarInsn(ALOAD, 0);
-        cv_get_VH.visitFieldInsn(GETFIELD, className, "_persistence_" + attribute + "_vh", VHI_SIGNATURE);
+        cv_get_VH.visitFieldInsn(GETFIELD, className, PERSISTENCE_FIELDNAME_PREFIX + attribute + PERSISTENCE_FIELDNAME_POSTFIX, VHI_SIGNATURE);
         cv_get_VH.visitInsn(ARETURN);
 
         cv_get_VH.visitMaxs(0, 0);
@@ -434,12 +441,12 @@ public class ClassWeaver extends ClassAdapter implements Constants {
         String attribute = attributeDetails.getAttributeName();
         String className = classDetails.getClassName();
         // create a setter method for the new valueholder
-        CodeVisitor cv_set_value = cv.visitMethod(ACC_PUBLIC, PERSISTENCE_SET + attribute + "_vh", "(" + VHI_SIGNATURE + ")V", null, null);                                 
+        CodeVisitor cv_set_value = cv.visitMethod(ACC_PUBLIC, PERSISTENCE_SET + attribute + PERSISTENCE_FIELDNAME_POSTFIX, "(" + VHI_SIGNATURE + ")V", null, null);                                 
         
         // _toplink_foo_vh = valueholderinterface;
         cv_set_value.visitVarInsn(ALOAD, 0);
         cv_set_value.visitVarInsn(ALOAD, 1);
-        cv_set_value.visitFieldInsn(PUTFIELD, className, "_persistence_" + attribute + "_vh", VHI_SIGNATURE);    
+        cv_set_value.visitFieldInsn(PUTFIELD, className, PERSISTENCE_FIELDNAME_PREFIX + attribute + PERSISTENCE_FIELDNAME_POSTFIX, VHI_SIGNATURE);    
         
         // if (valueholderinterface.isInstantiated()){
         cv_set_value.visitVarInsn(ALOAD, 1);
@@ -515,12 +522,12 @@ public class ClassWeaver extends ClassAdapter implements Constants {
             if (attributeDetails.weaveValueHolders()) {
                 // _persistence_initialize_variableName_vh();
                 cv_set.visitVarInsn(ALOAD, 0);
-                cv_set.visitMethodInsn(INVOKEVIRTUAL, classDetails.getClassName(), "_persistence_initialize_" + attributeDetails.getAttributeName() + "_vh", "()V");
+                cv_set.visitMethodInsn(INVOKEVIRTUAL, classDetails.getClassName(), "_persistence_initialize_" + attributeDetails.getAttributeName() + PERSISTENCE_FIELDNAME_POSTFIX, "()V");
                 
                 // _persistenc_variableName_vh.getValue();
                 cv_set.visitVarInsn(ALOAD, 0);
                 cv_set.visitVarInsn(ALOAD, 0);
-                cv_set.visitFieldInsn(GETFIELD, classDetails.getClassName(), "_persistence_" + attribute + "_vh", ClassWeaver.VHI_SIGNATURE);
+                cv_set.visitFieldInsn(GETFIELD, classDetails.getClassName(), PERSISTENCE_FIELDNAME_PREFIX + attribute + PERSISTENCE_FIELDNAME_POSTFIX, ClassWeaver.VHI_SIGNATURE);
                 cv_set.visitMethodInsn(INVOKEINTERFACE, ClassWeaver.VHI_SHORT_SIGNATURE, "getValue", "()Ljava/lang/Object;");
                 
                 // Add the cast: (<VariableClass>)_persistenc_variableName_vh.getValue()
@@ -568,12 +575,12 @@ public class ClassWeaver extends ClassAdapter implements Constants {
             if (attributeDetails.weaveValueHolders()) {
                 // _persistence_initialize_variableName_vh();
                 cv_set.visitVarInsn(ALOAD, 0);
-                cv_set.visitMethodInsn(INVOKEVIRTUAL, classDetails.getClassName(), "_persistence_initialize_" + attributeDetails.getAttributeName() + "_vh", "()V");
+                cv_set.visitMethodInsn(INVOKEVIRTUAL, classDetails.getClassName(), "_persistence_initialize_" + attributeDetails.getAttributeName() + PERSISTENCE_FIELDNAME_POSTFIX, "()V");
                 
                 // _persistenc_variableName_vh.getValue();
                 cv_set.visitVarInsn(ALOAD, 0);
                 cv_set.visitVarInsn(ALOAD, 0);
-                cv_set.visitFieldInsn(GETFIELD, classDetails.getClassName(), "_persistence_" + attribute + "_vh", ClassWeaver.VHI_SIGNATURE);
+                cv_set.visitFieldInsn(GETFIELD, classDetails.getClassName(), PERSISTENCE_FIELDNAME_PREFIX + attribute + PERSISTENCE_FIELDNAME_POSTFIX, ClassWeaver.VHI_SIGNATURE);
                 cv_set.visitMethodInsn(INVOKEINTERFACE, ClassWeaver.VHI_SHORT_SIGNATURE, "getValue", "()Ljava/lang/Object;");
                 
                 // Add the cast: (<VariableClass>)_persistenc_variableName_vh.getValue()
@@ -593,7 +600,7 @@ public class ClassWeaver extends ClassAdapter implements Constants {
         if (attributeDetails.weaveValueHolders()) {
             // _persistence_variableName_vh.setValue(argument);
             cv_set.visitVarInsn(ALOAD, 0);
-            cv_set.visitFieldInsn(GETFIELD, classDetails.getClassName(), "_persistence_" + attribute + "_vh", ClassWeaver.VHI_SIGNATURE);
+            cv_set.visitFieldInsn(GETFIELD, classDetails.getClassName(), PERSISTENCE_FIELDNAME_PREFIX + attribute + PERSISTENCE_FIELDNAME_POSTFIX, ClassWeaver.VHI_SIGNATURE);
             cv_set.visitVarInsn(ALOAD, 1);
             cv_set.visitMethodInsn(INVOKEINTERFACE, ClassWeaver.VHI_SHORT_SIGNATURE, "setValue", "(Ljava/lang/Object;)V");
         }
@@ -629,12 +636,12 @@ public class ClassWeaver extends ClassAdapter implements Constants {
         if (attributeDetails.weaveValueHolders()) {
             // _persistence_initialize_variableName_vh();
             cv_get.visitVarInsn(ALOAD, 0);
-            cv_get.visitMethodInsn(INVOKEVIRTUAL, classDetails.getClassName(), "_persistence_initialize_" + attributeDetails.getAttributeName() + "_vh", "()V");
+            cv_get.visitMethodInsn(INVOKEVIRTUAL, classDetails.getClassName(), "_persistence_initialize_" + attributeDetails.getAttributeName() + PERSISTENCE_FIELDNAME_POSTFIX, "()V");
             
             // _persistenc_variableName_vh.getValue();
             cv_get.visitVarInsn(ALOAD, 0);
             cv_get.visitVarInsn(ALOAD, 0);
-            cv_get.visitFieldInsn(GETFIELD, classDetails.getClassName(), "_persistence_" + attribute + "_vh", ClassWeaver.VHI_SIGNATURE);
+            cv_get.visitFieldInsn(GETFIELD, classDetails.getClassName(), PERSISTENCE_FIELDNAME_PREFIX + attribute + PERSISTENCE_FIELDNAME_POSTFIX, ClassWeaver.VHI_SIGNATURE);
             cv_get.visitMethodInsn(INVOKEINTERFACE, ClassWeaver.VHI_SHORT_SIGNATURE, "getValue", "()Ljava/lang/Object;");
             
             // Add the cast: (<VariableClass>)_persistenc_variableName_vh.getValue()
@@ -691,15 +698,15 @@ public class ClassWeaver extends ClassAdapter implements Constants {
                 if (attributeDetails.weaveValueHolders()) { // && !attributeDetails.isAttributeOnSuperClass()) {
                     // clone._attribute_vh = this._attribute_vh.clone();
                     cv_clone.visitVarInsn(ALOAD, 0);
-                    cv_clone.visitFieldInsn(GETFIELD, classDetails.getClassName(), "_persistence_" + attributeDetails.getAttributeName() + "_vh", ClassWeaver.VHI_SIGNATURE);
+                    cv_clone.visitFieldInsn(GETFIELD, classDetails.getClassName(), PERSISTENCE_FIELDNAME_PREFIX + attributeDetails.getAttributeName() + PERSISTENCE_FIELDNAME_POSTFIX, ClassWeaver.VHI_SIGNATURE);
                     Label label = new Label();
                     cv_clone.visitJumpInsn(IFNULL, label);
                     cv_clone.visitVarInsn(ALOAD, 0);
                     cv_clone.visitVarInsn(ALOAD, 0);
-                    cv_clone.visitFieldInsn(GETFIELD, classDetails.getClassName(), "_persistence_" + attributeDetails.getAttributeName() + "_vh", ClassWeaver.VHI_SIGNATURE);
+                    cv_clone.visitFieldInsn(GETFIELD, classDetails.getClassName(), PERSISTENCE_FIELDNAME_PREFIX + attributeDetails.getAttributeName() + PERSISTENCE_FIELDNAME_POSTFIX, ClassWeaver.VHI_SIGNATURE);
                     cv_clone.visitMethodInsn(INVOKEINTERFACE, ClassWeaver.VHI_SHORT_SIGNATURE, "clone", "()Ljava/lang/Object;");
                     cv_clone.visitTypeInsn(CHECKCAST, ClassWeaver.VHI_SHORT_SIGNATURE);
-                    cv_clone.visitFieldInsn(PUTFIELD, classDetails.getClassName(), "_persistence_" + attributeDetails.getAttributeName() + "_vh", ClassWeaver.VHI_SIGNATURE);
+                    cv_clone.visitFieldInsn(PUTFIELD, classDetails.getClassName(), PERSISTENCE_FIELDNAME_PREFIX + attributeDetails.getAttributeName() + PERSISTENCE_FIELDNAME_POSTFIX, ClassWeaver.VHI_SIGNATURE);
                     cv_clone.visitLabel(label);
                 }
             }
