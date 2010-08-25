@@ -687,7 +687,7 @@ public class RelationshipModelJUnitTestSuite extends JUnitTestCase {
         m_illegalArgumentExceptionCaught = false;
   
         try {
-            em.createNamedQuery("doesNotExist").getResultList();
+            em.createNamedQuery("doesNotExist");
         } catch (NullPointerException e) {
             m_npeCaught = true;
         } catch (IllegalArgumentException e) {

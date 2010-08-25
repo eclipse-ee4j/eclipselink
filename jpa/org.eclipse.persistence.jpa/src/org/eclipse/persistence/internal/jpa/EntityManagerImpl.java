@@ -997,7 +997,9 @@ public class EntityManagerImpl implements org.eclipse.persistence.jpa.JpaEntityM
     public Query createNamedQuery(String name) {
         try {
             verifyOpen();
-            return new EJBQueryImpl(name, this, true);
+            EJBQueryImpl query = new EJBQueryImpl(name, this, true);
+            query.getDatabaseQueryInternal();
+            return query;
         } catch (RuntimeException e) {
             setRollbackOnly();
             throw e;
