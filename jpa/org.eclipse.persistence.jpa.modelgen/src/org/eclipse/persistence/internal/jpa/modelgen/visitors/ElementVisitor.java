@@ -9,7 +9,9 @@
  *
  * Contributors:
  *     08/10/2009-2.0 Guy Pelletier 
- *       - 267391: JPA 2.0 implement/extend/use an APT tooling library for MetaModel API canonical classes 
+ *       - 267391: JPA 2.0 implement/extend/use an APT tooling library for MetaModel API canonical classes
+ *     08/25/2010-2.2 Guy Pelletier 
+ *       - 309445: CannonicalModelProcessor process all files
  ******************************************************************************/
 package org.eclipse.persistence.internal.jpa.modelgen.visitors;
 
@@ -185,10 +187,10 @@ public class ElementVisitor<R, P> extends AbstractElementVisitor6<MetadataAnnota
         metadataClass.setName(typeElement.getQualifiedName().toString());
         
         // By default, set the type to be the same as the name, which in most
-        // cases is correct. For round elements we'll visit the typeElement 
+        // cases is correct. For non JDK elements we'll visit the typeElement 
         // further (see below). This will further process any generic types, 
         // e.g. Employee<Integer>. For the most part I don't think we need to 
-        // care, certainly not with library classes but for round elements we'll 
+        // care, certainly not with JDK classes but for round elements we'll 
         // set them anyway.
         metadataClass.setType(metadataClass.getName());
         
@@ -203,8 +205,8 @@ public class ElementVisitor<R, P> extends AbstractElementVisitor6<MetadataAnnota
             metadataClass.setSuperclassName(factory.getMetadataClass(superclass).getName());
         }
         
-        // As a performance gain, limit what is visited by non-round elements.
-        if (factory.isRoundElement(typeElement)) {
+        // As a performance gain, limit what is visited by JDK elements.
+        if (! metadataClass.isJDK()) {
             // Set the modifiers.
             metadataClass.setModifiers(getModifiers(typeElement.getModifiers()));
             

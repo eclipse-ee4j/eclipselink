@@ -12,6 +12,8 @@
  *       - 267391: JPA 2.0 implement/extend/use an APT tooling library for MetaModel API canonical classes
  *     06/01/2010-2.1 Guy Pelletier 
  *       - 315195: Add new property to avoid reading XML during the canonical model generation
+ *     08/25/2010-2.2 Guy Pelletier 
+ *       - 309445: CannonicalModelProcessor process all files
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.modelgen;
 
@@ -23,6 +25,7 @@ import java.util.Map;
 import javax.annotation.processing.ProcessingEnvironment;
 import javax.annotation.processing.RoundEnvironment;
 import javax.lang.model.element.Element;
+import javax.lang.model.element.TypeElement;
 import javax.lang.model.type.TypeMirror;
 import javax.tools.Diagnostic.Kind;
 
@@ -48,7 +51,6 @@ import org.eclipse.persistence.sessions.server.ServerSession;
  */
 public class MetadataMirrorFactory extends MetadataFactory {
     private ElementVisitor<MetadataClass, MetadataClass> elementVisitor;
-    private HashMap<MetadataClass, Boolean> roundElements;
     
     // Thing to note: persistence units can be reloaded. We do not however
     // reload their associated projects. Once the project is created, it remains 
@@ -56,7 +58,12 @@ public class MetadataMirrorFactory extends MetadataFactory {
     private Map<String, PersistenceUnit> persistenceUnits;
     private Map<String, MetadataProject> metadataProjects;
     
-    private Map<Element, MetadataClass> metadataClassesFromElements;
+    // This is a map of metadata classes built per compile round and used in
+    // determining if it has been pre-processed.
+    private Map<MetadataClass, Boolean> roundElements;
+    
+    // This is a map of metadata classes built per compile round.
+    private Map<Element, MetadataClass> roundMetadataClasses;
     
     private ProcessingEnvironment processingEnv;
     private RoundEnvironment roundEnv;
@@ -75,7 +82,7 @@ public class MetadataMirrorFactory extends MetadataFactory {
         roundElements = new HashMap<MetadataClass, Boolean>();
         persistenceUnits = new HashMap<String, PersistenceUnit>();
         metadataProjects = new HashMap<String, MetadataProject>();
-        metadataClassesFromElements = new HashMap<Element, MetadataClass>();
+        roundMetadataClasses = new HashMap<Element, MetadataClass>();
     }
     
     /**
@@ -87,41 +94,43 @@ public class MetadataMirrorFactory extends MetadataFactory {
     
     /**
      * INTERNAL:
-     */
-    protected MetadataClass buildMetadataClass(Element element) {
-        MetadataClass metadataClass = new MetadataClass(MetadataMirrorFactory.this, "");
-        
-        // We keep our own map of classes for a couple reasons:
-        // 1- Most importantly, we use this map to avoid an infinite loop. Once
-        // we kick off the visiting of this class, it snow balls into visiting
-        // the other classes.
-        // 2- For our own safety we cache metadata class keyed on the Element we 
-        // built it for. This ensures we are always dealing with the correct 
-        // related metadata class.
-        // 3- we can't call addMetadataClass here since it adds the class to the
-        // map keyed on its name. We won't know the class name till we visit it.
-        metadataClassesFromElements.put(element, metadataClass);
-        
-        // Kick off the visiting of elements.
-        element.accept(elementVisitor, metadataClass);
-        
-        // The name off the metadata class is a qualified name from a type
-        // element. Set this on the MetadataFactory map.
-        addMetadataClass(metadataClass);
-        
-        return metadataClass;
-    }
-    
-    /**
-     * INTERNAL:
-     * If the element doesn't exist we will build it and add it to our list of
-     * MetadataClasses before returning it.
+     * If the metadata class doesn't exist for the given element, we will build 
+     * one and add it to our map of MetadataClasses before returning it. We keep 
+     * our own map of metadata classes for each round element for a couple 
+     * reasons:
+     *   1- Most importantly, we use this map to avoid an infinite loop. Once we 
+     *      kick off the visiting of a class, it snow balls into visiting and
+     *      building other classes from the round (referenced from that class).
+     *   2- For our own safety we cache metadata class keyed on the element we 
+     *      built it for. This ensures we are always dealing with the correct 
+     *      related metadata class.
+     *   3- For each round we must update all metadata classes for each round
+     *      element. 
      */
     public MetadataClass getMetadataClass(Element element) {
-        if (metadataClassesFromElements.containsKey(element)) {
-            return metadataClassesFromElements.get(element);
+        if (roundMetadataClasses.containsKey(element)) {
+            return roundMetadataClasses.get(element);
         } else {
-            return buildMetadataClass(element);
+            // As a performance gain, avoid visiting this class if, 1) it is not 
+            // a round element and 2), we already have a metadata class for it.
+            MetadataClass metadataClass = getMetadataClass(((TypeElement) element).getQualifiedName().toString());
+            
+            if (isRoundElement(element) || metadataClass == null) { 
+                metadataClass = new MetadataClass(MetadataMirrorFactory.this, "");
+                
+                // Add it to the map of metadata classes from this round.
+                roundMetadataClasses.put(element, metadataClass);
+                
+                // Kick off the visiting of elements.
+                element.accept(elementVisitor, metadataClass);
+              
+                // The name of the metadata class is a qualified name from a 
+                // type element. Set this name on the MetadataFactory map. We 
+                // can't call addMetadataClass till we have visited the class.
+                addMetadataClass(metadataClass);
+            } 
+            
+            return metadataClass;
         }
     }
     
@@ -240,6 +249,7 @@ public class MetadataMirrorFactory extends MetadataFactory {
         processingEnv = processingEnvironment;
         roundEnv = roundEnvironment;
         roundElements.clear();
+        roundMetadataClasses.clear();
         
         // Initialize the element visitor if it is null.
         if (elementVisitor == null) {
@@ -253,7 +263,7 @@ public class MetadataMirrorFactory extends MetadataFactory {
         for (Element element : roundEnvironment.getRootElements()) {
             if (element.getAnnotation(javax.annotation.Generated.class) == null) { 
                 processingEnv.getMessager().printMessage(Kind.NOTE, "Building metadata class for round element: " + element);
-                roundElements.put(buildMetadataClass(element), false);
+                roundElements.put(getMetadataClass(element), false);
             }
         }
     }

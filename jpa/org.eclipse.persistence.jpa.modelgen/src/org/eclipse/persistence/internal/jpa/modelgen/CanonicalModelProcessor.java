@@ -16,6 +16,8 @@
  *       - 264417: Table generation is incorrect for JoinTables in AssociationOverrides
  *     08/12/2010-2.2 Guy Pelletier 
  *       - 298118: canonical metamodel generation with untyped Map throws NPE
+ *     08/25/2010-2.2 Guy Pelletier 
+ *       - 309445: CannonicalModelProcessor process all files
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.modelgen;
 
@@ -63,7 +65,7 @@ import static javax.lang.model.SourceVersion.RELEASE_6;
  * @author Guy Pelletier
  * @since EclipseLink 1.2
  */
-@SupportedAnnotationTypes("*")
+@SupportedAnnotationTypes({"javax.persistence.*", "org.eclipse.persistence.annotations.*"})
 @SupportedSourceVersion(RELEASE_6)
 public class CanonicalModelProcessor extends AbstractProcessor {
     protected enum AttributeType {CollectionAttribute, ListAttribute, MapAttribute, SetAttribute, SingularAttribute }

@@ -45,6 +45,8 @@
  *       - 315782: JPA2 derived identity metadata processing validation doesn't account for autoboxing
  *     08/20/2010-2.2 Guy Pelletier 
  *       - 323252: Canonical model generator throws NPE on virtual 1-1 or M-1 mapping
+ *     08/25/2010-2.2 Guy Pelletier 
+ *       - 309445: CannonicalModelProcessor process all files (minor correction to patch for bug above)
  ******************************************************************************/
 package org.eclipse.persistence.internal.jpa.metadata.accessors.mappings;
 
@@ -187,7 +189,7 @@ public abstract class ObjectAccessor extends RelationshipAccessor {
      */
 	@Override
     public String getAttributeType() {
-        return getTargetEntityName();
+	    return getTargetEntity().getName();
     }
     
     /**
