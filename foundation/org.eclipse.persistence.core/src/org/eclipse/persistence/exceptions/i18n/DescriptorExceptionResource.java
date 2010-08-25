@@ -227,7 +227,7 @@ public class DescriptorExceptionResource extends ListResourceBundle {
                                            { "216", "CacheKeyType cannot be ID_VALUE for a composite primary key.."},
                                            { "217", "Invalid XPath for XMLDirectMapping/XMLCompositeDirectCollectionMapping. XPath must either contain an @ symbol for attributes or end in /text() for text nodes. For example: \"@name\" or \"name/text()\""}, 
                                            // 323148
-                                           { "218", "A NullPointerException would have occurred accessing a non-existent weaved _vh_ method [{0}] for the mapping [{1}].  The class was not weaved properly - for EE deployments, check the module order in the application.xml deployment descriptor and verify that the module containing the persistence unit is ahead of any other module that uses it."}                                           
+                                           { "218", "A NullPointerException would have occurred accessing a non-existent weaved _vh_ method [{0}].  The class was not weaved properly - for EE deployments, check the module order in the application.xml deployment descriptor and verify that the module containing the persistence unit is ahead of any other module that uses it."}                                           
 
     };
 
