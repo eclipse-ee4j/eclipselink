@@ -1307,7 +1307,7 @@ public abstract class AbstractTransformationMapping extends DatabaseMapping {
             this.indirectionPolicy.validateDeclaredAttributeType(attributeType, session.getIntegrityChecker());
         } else if (getAttributeAccessor().isMethodAttributeAccessor()) {
             // 323403
-            Class returnType = ((MethodAttributeAccessor)getAttributeAccessor()).getGetMethodReturnType(this);
+            Class returnType = ((MethodAttributeAccessor)getAttributeAccessor()).getGetMethodReturnType();
             this.indirectionPolicy.validateGetMethodReturnType(returnType, session.getIntegrityChecker());
  
             Class parameterType = ((MethodAttributeAccessor)getAttributeAccessor()).getSetMethodParameterType();

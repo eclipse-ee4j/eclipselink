@@ -2167,7 +2167,7 @@ public abstract class CollectionMapping extends ForeignReferenceMapping implemen
             this.indirectionPolicy.validateDeclaredAttributeTypeForCollection(attributeType, session.getIntegrityChecker());
         } else if (getAttributeAccessor().isMethodAttributeAccessor()) {
             // 323403
-            Class returnType = ((MethodAttributeAccessor)getAttributeAccessor()).getGetMethodReturnType(this);
+            Class returnType = ((MethodAttributeAccessor)getAttributeAccessor()).getGetMethodReturnType();
             this.indirectionPolicy.validateGetMethodReturnTypeForCollection(returnType, session.getIntegrityChecker());
 
             Class parameterType = ((MethodAttributeAccessor)getAttributeAccessor()).getSetMethodParameterType();

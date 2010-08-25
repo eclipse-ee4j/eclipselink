@@ -13,6 +13,8 @@
  *        - 323043: application.xml module ordering may cause weaving not to occur causing an NPE.
  *                       warn if expected "_persistence_*_vh" method not found
  *                       instead of throwing NPE during deploy validation.
+ *                       Note: SDO overrides this class so an override of getMethodReturnType
+ *                       will also need an override in SDO.
  ******************************************************************************/  
 package org.eclipse.persistence.internal.descriptors;
 
@@ -25,7 +27,6 @@ import org.eclipse.persistence.internal.helper.*;
 import org.eclipse.persistence.logging.AbstractSessionLog;
 import org.eclipse.persistence.logging.SessionLog;
 import org.eclipse.persistence.mappings.AttributeAccessor;
-import org.eclipse.persistence.mappings.DatabaseMapping;
 import org.eclipse.persistence.internal.security.*;
 
 /**
@@ -113,37 +114,30 @@ public class MethodAttributeAccessor extends AttributeAccessor {
      * A special check is made to determine if a missing method is a result of failed weaving.
      * @return
      */
-    public Class getGetMethodReturnType(DatabaseMapping mapping) throws DescriptorException {
+    // Note: SDO overrides this method and will handle a null GetMethod
+    public Class getGetMethodReturnType() throws DescriptorException {
         // 323403: If the getMethod is missing - check for "_persistence_*_vh" to see if weaving was expected 
         if(null == getGetMethod() && null != getGetMethodName() 
-                && (getGetMethodName().indexOf(Helper.PERSISTENCE_FIELDNAME_PREFIX) > -1)) {
+            && (getGetMethodName().indexOf(Helper.PERSISTENCE_FIELDNAME_PREFIX) > -1)) {
             // warn before a possible NPE on accessing a weaved method that does not exist
             AbstractSessionLog.getLog().log(SessionLog.FINEST, "no_weaved_vh_method_found_verify_weaving_and_module_order",
-                    getGetMethodName(), mapping, this);
+                getGetMethodName(), null, this);
             // 323403: We cannot continue to process objects that are not weaved - if weaving is enabled
             // If we allow the getMethodReturnType to continue - we will throw an obscure NullPointerException
-            throw DescriptorException.nullPointerWhileGettingValueThruMethodAccessorCausedByWeavingNotOccurringBecauseOfModuleOrder(getGetMethodName(), mapping.toString(), null);
+            throw DescriptorException.nullPointerWhileGettingValueThruMethodAccessorCausedByWeavingNotOccurringBecauseOfModuleOrder(getGetMethodName(), "", null);
         }
         if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()){
             try {
                 return (Class)AccessController.doPrivileged(new PrivilegedGetMethodReturnType(getGetMethod()));
             } catch (PrivilegedActionException exception) {
                 // we should not get here since this call does not throw any checked exceptions
-                return null;
+               return null;
             }
         } else {
             return PrivilegedAccessHelper.getMethodReturnType(getGetMethod());
         }
     }
 
-    /**
-     * Return the GetMethod return type for this MethodAttributeAccessor.
-     * @return
-     */
-    public Class getGetMethodReturnType() {
-        return getGetMethodReturnType(null);
-    }
-    
     /**
      * Return the set method for the attribute accessor.
      */
