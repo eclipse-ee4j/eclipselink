@@ -33,6 +33,7 @@ import org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmlattachmentre
 import org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmlattribute.XmlAttributeTestCases;
 import org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmlclassextractor.XmlClassExtractorTestCases;
 import org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmlcustomizer.XmlCustomizerTestCases;
+import org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmldiscriminator.XmlDiscriminatorTestCases;
 import org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmlelement.XmlElementTestCases;
 import org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmlelementref.XmlElementRefTestCases;
 import org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmlelementrefs.XmlElementRefsTestCases;
@@ -99,6 +100,7 @@ public class ExternalizedMetadataTestSuite extends TestSuite {
         suite.addTestSuite(XmlInlineBinaryDataTestCases.class);
         suite.addTestSuite(XmlRegistryTestCases.class);
         suite.addTestSuite(XmlClassExtractorTestCases.class);
+        suite.addTestSuite(XmlDiscriminatorTestCases.class);
         return suite;
     }
     

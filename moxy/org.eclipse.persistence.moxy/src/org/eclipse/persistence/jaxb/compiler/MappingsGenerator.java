@@ -1811,12 +1811,12 @@ public class MappingsGenerator {
         }
 
         JavaClass superClass = CompilerHelper.getNextMappedSuperClass(jClass, typeInfo, helper);
-        if(superClass == null){
+        if (superClass == null){
             return;
         }
 
         TypeInfo superTypeInfo =  typeInfo.get(superClass.getName());
-        if(superTypeInfo == null){
+        if (superTypeInfo == null){
         	return;
         }
         XMLDescriptor superDescriptor = superTypeInfo.getDescriptor();
@@ -1827,41 +1827,53 @@ public class MappingsGenerator {
             }
 
             JavaClass rootMappedSuperClass = getRootMappedSuperClass(superClass);
-
             TypeInfo rootTypeInfo =  typeInfo.get(rootMappedSuperClass.getName());
-
             XMLDescriptor rootDescriptor = rootTypeInfo.getDescriptor();
             if (rootDescriptor.getNamespaceResolver() == null) {
                 rootDescriptor.setNamespaceResolver(new NamespaceResolver());
             }
 
-            if(rootDescriptor.getInheritancePolicy().getClassIndicatorField() == null){
-            	String prefix = getPrefixForNamespace(XMLConstants.SCHEMA_INSTANCE_URL, rootDescriptor.getNamespaceResolver(),XMLConstants.SCHEMA_INSTANCE_PREFIX);
-            	XMLField classIndicatorField = new XMLField("@"+ getQualifiedString(prefix, "type"));
-                rootDescriptor.getInheritancePolicy().setClassIndicatorField(classIndicatorField);
+            if (rootDescriptor.getInheritancePolicy().getClassIndicatorField() == null) {
+                XMLField classIndicatorField;
+                if (rootTypeInfo.isSetXmlDiscriminatorNode()) {
+                    classIndicatorField = new XMLField(rootTypeInfo.getXmlDiscriminatorNode());
+                } else {
+                    String prefix = getPrefixForNamespace(XMLConstants.SCHEMA_INSTANCE_URL, rootDescriptor.getNamespaceResolver(),XMLConstants.SCHEMA_INSTANCE_PREFIX);
+                    classIndicatorField = new XMLField("@"+ getQualifiedString(prefix, "type"));
+                }
+            	rootDescriptor.getInheritancePolicy().setClassIndicatorField(classIndicatorField);
             }
 
-            String sCtx = sRef.getSchemaContext();
-            if (sCtx.length() > 1 && sCtx.startsWith("/")) {
-                sCtx = sCtx.substring(1);
+            String sCtx;
+            TypeInfo tInfo = typeInfo.get(jClass.getName());
+            if (tInfo.isSetXmlDiscriminatorValue()) {
+                sCtx = tInfo.getXmlDiscriminatorValue();
+            } else {
+                sCtx = sRef.getSchemaContext();
+                if (sCtx.length() > 1 && sCtx.startsWith("/")) {
+                    sCtx = sCtx.substring(1);
+                }
             }
             descriptor.getInheritancePolicy().setParentClassName(superClass.getName());
             rootDescriptor.getInheritancePolicy().addClassNameIndicator(jClass.getName(), sCtx);
             Object value = rootDescriptor.getInheritancePolicy().getClassNameIndicatorMapping().get(rootDescriptor.getJavaClassName());
-            if(value == null){
-                XMLSchemaReference rootSRef = rootDescriptor.getSchemaReference();
-                if (rootSRef != null && rootSRef.getSchemaContext() != null) {
-                    String rootSCtx = rootSRef.getSchemaContext();
-                    if (rootSCtx.length() > 1 && rootSCtx.startsWith("/")) {
-                        rootSCtx = rootSCtx.substring(1);
+            if (value == null){
+                if (rootTypeInfo.isSetXmlDiscriminatorValue()) {
+                    rootDescriptor.getInheritancePolicy().addClassNameIndicator(rootDescriptor.getJavaClassName(), rootTypeInfo.getXmlDiscriminatorValue());
+                } else {
+                    XMLSchemaReference rootSRef = rootDescriptor.getSchemaReference();
+                    if (rootSRef != null && rootSRef.getSchemaContext() != null) {
+                        String rootSCtx = rootSRef.getSchemaContext();
+                        if (rootSCtx.length() > 1 && rootSCtx.startsWith("/")) {
+                            rootSCtx = rootSCtx.substring(1);
+                        }
+                        rootDescriptor.getInheritancePolicy().addClassNameIndicator(rootDescriptor.getJavaClassName(), rootSCtx);
                     }
-                    rootDescriptor.getInheritancePolicy().addClassNameIndicator(rootDescriptor.getJavaClassName(), rootSCtx);
                 }
             }
             rootDescriptor.getInheritancePolicy().setShouldReadSubclasses(true);
         }
     }
-
 
     private JavaClass getRootMappedSuperClass(JavaClass javaClass){
         JavaClass rootMappedSuperClass = javaClass;

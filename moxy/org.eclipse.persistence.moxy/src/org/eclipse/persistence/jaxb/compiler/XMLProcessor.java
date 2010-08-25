@@ -238,6 +238,14 @@ public class XMLProcessor {
                             info.setUserProperties(createUserPropertyMap(javaType.getXmlProperties().getXmlProperty()));
                         }
                     }
+                    // handle @XmlDiscriminatorNode override
+                    if (javaType.getXmlDiscriminatorNode() != null) {
+                        info.setXmlDiscriminatorNode(javaType.getXmlDiscriminatorNode());
+                    }
+                    // handle @XmlDiscriminatorValue override
+                    if (javaType.getXmlDiscriminatorValue() != null) {
+                        info.setXmlDiscriminatorValue(javaType.getXmlDiscriminatorValue());
+                    }
                 }
             }
 

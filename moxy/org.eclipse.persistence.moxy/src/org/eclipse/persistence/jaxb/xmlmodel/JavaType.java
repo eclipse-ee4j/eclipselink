@@ -48,11 +48,13 @@ import javax.xml.bind.annotation.XmlList;
  *         &lt;/element>
  *       &lt;/all>
  *       &lt;attribute name="name" type="{http://www.w3.org/2001/XMLSchema}string" />
- *       &lt;attribute name="xml-transient" type="{http://www.w3.org/2001/XMLSchema}boolean" default="false" />
- *       &lt;attribute name="xml-customizer" type="{http://www.w3.org/2001/XMLSchema}string" />
- *       &lt;attribute name="xml-accessor-type" type="{http://www.eclipse.org/eclipselink/xsds/persistence/oxm}xml-access-type" default="PUBLIC_MEMBER" />
  *       &lt;attribute name="xml-accessor-order" type="{http://www.eclipse.org/eclipselink/xsds/persistence/oxm}xml-access-order" default="UNDEFINED" />
+ *       &lt;attribute name="xml-accessor-type" type="{http://www.eclipse.org/eclipselink/xsds/persistence/oxm}xml-access-type" default="PUBLIC_MEMBER" />
+ *       &lt;attribute name="xml-customizer" type="{http://www.w3.org/2001/XMLSchema}string" />
+ *       &lt;attribute name="xml-discriminator-node" type="{http://www.w3.org/2001/XMLSchema}string" />
+ *       &lt;attribute name="xml-discriminator-value" type="{http://www.w3.org/2001/XMLSchema}string" />
  *       &lt;attribute name="xml-inline-binary-data" type="{http://www.w3.org/2001/XMLSchema}boolean" default="false" />
+ *       &lt;attribute name="xml-transient" type="{http://www.w3.org/2001/XMLSchema}boolean" default="false" />
  *     &lt;/restriction>
  *   &lt;/complexContent>
  * &lt;/complexType>
@@ -84,16 +86,20 @@ public class JavaType {
     protected JavaType.JavaAttributes javaAttributes;
     @javax.xml.bind.annotation.XmlAttribute(name = "name")
     protected String name;
-    @javax.xml.bind.annotation.XmlAttribute(name = "xml-transient")
-    protected Boolean xmlTransient;
-    @javax.xml.bind.annotation.XmlAttribute(name = "xml-customizer")
-    protected String xmlCustomizer;
-    @javax.xml.bind.annotation.XmlAttribute(name = "xml-accessor-type")
-    protected org.eclipse.persistence.jaxb.xmlmodel.XmlAccessType xmlAccessorType;
     @javax.xml.bind.annotation.XmlAttribute(name = "xml-accessor-order")
     protected XmlAccessOrder xmlAccessorOrder;
+    @javax.xml.bind.annotation.XmlAttribute(name = "xml-accessor-type")
+    protected org.eclipse.persistence.jaxb.xmlmodel.XmlAccessType xmlAccessorType;
+    @javax.xml.bind.annotation.XmlAttribute(name = "xml-customizer")
+    protected String xmlCustomizer;
+    @javax.xml.bind.annotation.XmlAttribute(name = "xml-discriminator-node")
+    protected String xmlDiscriminatorNode;
+    @javax.xml.bind.annotation.XmlAttribute(name = "xml-discriminator-value")
+    protected String xmlDiscriminatorValue;
     @javax.xml.bind.annotation.XmlAttribute(name = "xml-inline-binary-data")
     protected Boolean xmlInlineBinaryData;
+    @javax.xml.bind.annotation.XmlAttribute(name = "xml-transient")
+    protected Boolean xmlTransient;
 
     /**
      * Gets the value of the xmlType property.
@@ -293,64 +299,40 @@ public class JavaType {
     }
 
     /**
-     * Gets the value of the xmlTransient property.
+     * Gets the value of the xmlAccessorOrder property.
      * 
      * @return
      *     possible object is
-     *     {@link Boolean }
+     *     {@link XmlAccessOrder }
      *     
      */
-    public boolean isXmlTransient() {
-        if (xmlTransient == null) {
-            return false;
+    public XmlAccessOrder getXmlAccessorOrder() {
+        if (xmlAccessorOrder == null) {
+            return XmlAccessOrder.UNDEFINED;
         } else {
-            return xmlTransient;
+            return xmlAccessorOrder;
         }
     }
 
     /**
-     * Sets the value of the xmlTransient property.
+     * Sets the value of the xmlAccessorOrder property.
      * 
      * @param value
      *     allowed object is
-     *     {@link Boolean }
+     *     {@link XmlAccessOrder }
      *     
      */
-    public void setXmlTransient(Boolean value) {
-        this.xmlTransient = value;
+    public void setXmlAccessorOrder(XmlAccessOrder value) {
+        this.xmlAccessorOrder = value;
     }
     
     /**
-     * Indicates if xmlTransient has been set, i.e. is non-null.
-     *  
-     * @return true is xmlTransient is non-null, false otherwise
-     */
-    public boolean isSetXmlTransient() {
-        return xmlTransient != null;
-    }
-
-    /**
-     * Gets the value of the xmlCustomizer property.
+     * Indicates if xmlAccessorOrder has been set, i.e. is non-null.
      * 
-     * @return
-     *     possible object is
-     *     {@link String }
-     *     
+     * @return true if xmlAccessorOrder is non-null, false otherwise
      */
-    public String getXmlCustomizer() {
-        return xmlCustomizer;
-    }
-
-    /**
-     * Sets the value of the xmlCustomizer property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link String }
-     *     
-     */
-    public void setXmlCustomizer(String value) {
-        this.xmlCustomizer = value;
+    public boolean isSetXmlAccessorOrder() {
+        return xmlAccessorOrder != null;
     }
 
     /**
@@ -390,41 +372,77 @@ public class JavaType {
         return xmlAccessorType != null;
     }
 
+
     /**
-     * Gets the value of the xmlAccessorOrder property.
+     * Gets the value of the xmlCustomizer property.
      * 
      * @return
      *     possible object is
-     *     {@link XmlAccessOrder }
+     *     {@link String }
      *     
      */
-    public XmlAccessOrder getXmlAccessorOrder() {
-        if (xmlAccessorOrder == null) {
-            return XmlAccessOrder.UNDEFINED;
-        } else {
-            return xmlAccessorOrder;
-        }
+    public String getXmlCustomizer() {
+        return xmlCustomizer;
     }
 
     /**
-     * Sets the value of the xmlAccessorOrder property.
+     * Sets the value of the xmlCustomizer property.
      * 
      * @param value
      *     allowed object is
-     *     {@link XmlAccessOrder }
+     *     {@link String }
      *     
      */
-    public void setXmlAccessorOrder(XmlAccessOrder value) {
-        this.xmlAccessorOrder = value;
+    public void setXmlCustomizer(String value) {
+        this.xmlCustomizer = value;
     }
-    
+
     /**
-     * Indicates if xmlAccessorOrder has been set, i.e. is non-null.
+     * Gets the value of the xmlDiscriminatorNode property.
      * 
-     * @return true if xmlAccessorOrder is non-null, false otherwise
+     * @return
+     *     possible object is
+     *     {@link String }
+     *     
      */
-    public boolean isSetXmlAccessorOrder() {
-        return xmlAccessorOrder != null;
+    public String getXmlDiscriminatorNode() {
+        return xmlDiscriminatorNode;
+    }
+
+    /**
+     * Sets the value of the xmlDiscriminatorNode property.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link String }
+     *     
+     */
+    public void setXmlDiscriminatorNode(String value) {
+        this.xmlDiscriminatorNode = value;
+    }
+
+    /**
+     * Gets the value of the xmlDiscriminatorValue property.
+     * 
+     * @return
+     *     possible object is
+     *     {@link String }
+     *     
+     */
+    public String getXmlDiscriminatorValue() {
+        return xmlDiscriminatorValue;
+    }
+
+    /**
+     * Sets the value of the xmlDiscriminatorValue property.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link String }
+     *     
+     */
+    public void setXmlDiscriminatorValue(String value) {
+        this.xmlDiscriminatorValue = value;
     }
 
     /**
@@ -462,6 +480,43 @@ public class JavaType {
      */
     public boolean isSetXmlInlineBinaryData() {
         return xmlInlineBinaryData != null;
+    }
+
+    /**
+     * Gets the value of the xmlTransient property.
+     * 
+     * @return
+     *     possible object is
+     *     {@link Boolean }
+     *     
+     */
+    public boolean isXmlTransient() {
+        if (xmlTransient == null) {
+            return false;
+        } else {
+            return xmlTransient;
+        }
+    }
+
+    /**
+     * Sets the value of the xmlTransient property.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link Boolean }
+     *     
+     */
+    public void setXmlTransient(Boolean value) {
+        this.xmlTransient = value;
+    }
+    
+    /**
+     * Indicates if xmlTransient has been set, i.e. is non-null.
+     *  
+     * @return true is xmlTransient is non-null, false otherwise
+     */
+    public boolean isSetXmlTransient() {
+        return xmlTransient != null;
     }
 
     /**
@@ -510,18 +565,19 @@ public class JavaType {
          * 
          * <p>
          * Objects of the following type(s) are allowed in the list
-         * {@link JAXBElement }{@code <}{@link XmlElements }{@code >}
-         * {@link JAXBElement }{@code <}{@link XmlAnyElement }{@code >}
-         * {@link JAXBElement }{@code <}{@link org.eclipse.persistence.jaxb.xmlmodel.XmlElementRef }{@code >}
-         * {@link JAXBElement }{@code <}{@link XmlAnyAttribute }{@code >}
-         * {@link JAXBElement }{@code <}{@link org.eclipse.persistence.jaxb.xmlmodel.XmlElement }{@code >}
-         * {@link JAXBElement }{@code <}{@link XmlTransient }{@code >}
          * {@link JAXBElement }{@code <}{@link org.eclipse.persistence.jaxb.xmlmodel.XmlAttribute }{@code >}
-         * {@link JAXBElement }{@code <}{@link XmlValue }{@code >}
          * {@link JAXBElement }{@code <}{@link XmlJavaTypeAdapter }{@code >}
-         * {@link JAXBElement }{@code <}{@link XmlElementRefs }{@code >}
-         * {@link JAXBElement }{@code <}{@link XmlInverseReference }{@code >}
+         * {@link JAXBElement }{@code <}{@link XmlElements }{@code >}
          * {@link JAXBElement }{@code <}{@link JavaAttribute }{@code >}
+         * {@link JAXBElement }{@code <}{@link org.eclipse.persistence.jaxb.xmlmodel.XmlElement }{@code >}
+         * {@link JAXBElement }{@code <}{@link XmlElementRefs }{@code >}
+         * {@link JAXBElement }{@code <}{@link org.eclipse.persistence.jaxb.xmlmodel.XmlElementRef }{@code >}
+         * {@link JAXBElement }{@code <}{@link XmlTransformation }{@code >}
+         * {@link JAXBElement }{@code <}{@link XmlTransient }{@code >}
+         * {@link JAXBElement }{@code <}{@link XmlInverseReference }{@code >}
+         * {@link JAXBElement }{@code <}{@link XmlValue }{@code >}
+         * {@link JAXBElement }{@code <}{@link XmlAnyElement }{@code >}
+         * {@link JAXBElement }{@code <}{@link XmlAnyAttribute }{@code >}
          * 
          * 
          */

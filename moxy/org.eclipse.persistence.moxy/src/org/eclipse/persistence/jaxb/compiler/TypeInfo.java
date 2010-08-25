@@ -98,6 +98,9 @@ public class TypeInfo {
     private String anyElementPropertyName;
     
     private boolean isBinaryDataInlined;
+    
+    private String xmlDiscriminatorNode;
+    private String xmlDiscriminatorValue;
 
     /**
      * This constructor sets the Helper to be used throughout XML and Annotations
@@ -877,5 +880,62 @@ public class TypeInfo {
      */
     public void setJavaClassName(String javaClassName) {
         this.javaClassName = javaClassName;
+    }
+
+    /**
+     * Return the class indicator field name for this type info.
+     * 
+     * @return
+     */
+    public String getXmlDiscriminatorNode() {
+        return xmlDiscriminatorNode;
+    }
+
+    /**
+     * Sets the class indicator field name (for use with inheritance).  
+     *  
+     * @param xmlDiscriminatorNode
+     */
+    public void setXmlDiscriminatorNode(String xmlDiscriminatorNode) {
+        this.xmlDiscriminatorNode = xmlDiscriminatorNode;
+    }
+
+    /**
+     * Indicates if the class indicator field name is set, i.e. is non-null  
+     * 
+     * @return true if xmlDiscriminatorNode != null, otherwise false
+     */
+    public boolean isSetXmlDiscriminatorNode() {
+        return xmlDiscriminatorNode != null;
+    }
+
+    /**
+     * Return the value of the class indicator field for the java-type 
+     * associated with this type info.
+     * 
+     * @return
+     */
+    public String getXmlDiscriminatorValue() {
+        return xmlDiscriminatorValue;
+    }
+
+    /**
+     * Set the value of the class indicator field for the java-type 
+     * associated with this type info.
+     *    
+     * @param xmlDiscriminatorValue
+     */
+    public void setXmlDiscriminatorValue(String xmlDiscriminatorValue) {
+        this.xmlDiscriminatorValue = xmlDiscriminatorValue;
+    }
+    
+    /**
+     * Indicates if a class indicator field value has been set, 
+     * i.e. is non-null  
+     * 
+     * @return true if xmlDiscriminatorValue != null, otherwise false
+     */
+    public boolean isSetXmlDiscriminatorValue() {
+        return xmlDiscriminatorValue != null;
     }
 }

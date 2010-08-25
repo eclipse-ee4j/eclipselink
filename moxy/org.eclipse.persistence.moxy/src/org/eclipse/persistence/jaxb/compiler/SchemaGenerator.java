@@ -284,7 +284,6 @@ public class SchemaGenerator {
         } else {
             ComplexType type = new ComplexType();
             JavaClass superClass = CompilerHelper.getNextMappedSuperClass(myClass, this.typeInfo, this.helper);
-            //JavaClass superClass = this.helper.getNextMappedSuperClass(myClass);
             // Handle abstract class
             if (myClass.isAbstract()) {
                 type.setAbstractValue(true);
@@ -307,6 +306,7 @@ public class SchemaGenerator {
                     type.setComplexContent(content);
                 }
             }
+            
             TypeDefParticle compositor = null;
             String[] propOrder = null;
             if (info.isSetPropOrder()) {
@@ -375,6 +375,7 @@ public class SchemaGenerator {
                 ComplexType parentType = type;
                 
                 if (!helper.isAnnotationPresent(next.getElement(), XmlTransient.class) && !next.isInverseReference()) {
+                    // handle transformers
                     if (next.isSetXmlTransformation() && next.getXmlTransformation().isSetXmlWriteTransformers()) {
                         java.util.List<Property> props = new ArrayList<Property>();
                         for (XmlWriteTransformer writeTransformer : next.getXmlTransformation().getXmlWriteTransformer()) {
@@ -954,15 +955,30 @@ public class SchemaGenerator {
             TypeInfo info = (TypeInfo) typeInfo.get(javaClassName);
             if (info.isComplexType()) {
                 if (info.getSchema() != null) {
-                    addToSchemaType(info, info.getNonTransientPropertiesInPropOrder(), info.getCompositor(), info.getComplexType(), info.getSchema());
+                    java.util.List<Property> props = info.getNonTransientPropertiesInPropOrder();
+                    // handle class indicator field name
+                    if (info.isSetXmlDiscriminatorNode()) {
+                        String xpath = info.getXmlDiscriminatorNode(); 
+                        String pname = XMLProcessor.getNameFromXPath(xpath, "", true);
+                        if (!pname.equals("")) {
+                            // since there is no property for the indicator field name, we'll need to make one
+                            Property prop = new Property(helper);
+                            prop.setPropertyName(pname);
+                            prop.setXmlPath(xpath);
+                            prop.setSchemaName(new QName(pname));
+                            prop.setType(helper.getJavaClass(String.class));
+                            prop.setIsAttribute(true);
+                            props.add(prop);
+                        }
+                    }
+                    addToSchemaType(info, props, info.getCompositor(), info.getComplexType(), info.getSchema());
                 }
             }
         }
     }
 
     public String getSchemaTypeNameForClassName(String className) {
-        String typeName = Introspector.decapitalize(className.substring(className.lastIndexOf('.') + 1));
-        return typeName;
+        return Introspector.decapitalize(className.substring(className.lastIndexOf('.') + 1));
     }
 
     public ArrayList<String> getEnumerationFacetsFor(EnumTypeInfo info) {

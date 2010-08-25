@@ -104,6 +104,8 @@ import org.eclipse.persistence.oxm.annotations.XmlCDATA;
 import org.eclipse.persistence.oxm.annotations.XmlClassExtractor;
 import org.eclipse.persistence.oxm.annotations.XmlContainerProperty;
 import org.eclipse.persistence.oxm.annotations.XmlCustomizer;
+import org.eclipse.persistence.oxm.annotations.XmlDiscriminatorNode;
+import org.eclipse.persistence.oxm.annotations.XmlDiscriminatorValue;
 import org.eclipse.persistence.oxm.annotations.XmlInverseReference;
 import org.eclipse.persistence.oxm.annotations.XmlIsSetNullPolicy;
 import org.eclipse.persistence.oxm.annotations.XmlNullPolicy;
@@ -476,6 +478,18 @@ public class AnnotationsProcessor {
                 Map<Object, Object> propertiesMap = createUserPropertiesMap(new XmlProperty[]{xmlProperty});
                 info.setUserProperties(propertiesMap);
             }
+            
+            // handle class indicator field name
+            if (helper.isAnnotationPresent(javaClass, XmlDiscriminatorNode.class)) {
+                XmlDiscriminatorNode xmlDiscriminatorNode = (XmlDiscriminatorNode) helper.getAnnotation(javaClass, XmlDiscriminatorNode.class);
+                info.setXmlDiscriminatorNode(xmlDiscriminatorNode.value());
+            }
+            // handle class indicator
+            if (helper.isAnnotationPresent(javaClass, XmlDiscriminatorValue.class)) {
+                XmlDiscriminatorValue xmlDiscriminatorValue = (XmlDiscriminatorValue) helper.getAnnotation(javaClass, XmlDiscriminatorValue.class);
+                info.setXmlDiscriminatorValue(xmlDiscriminatorValue.value());
+            }
+            
             typeInfoClasses.add(javaClass);
             typeInfo.put(info.getJavaClassName(), info);
         }

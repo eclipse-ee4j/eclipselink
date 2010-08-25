@@ -89,11 +89,13 @@
                 </xs:element>
             </xs:all>
             <xs:attribute name="name" type="xs:string" />
-            <xs:attribute name="xml-transient" type="xs:boolean" default="false" />
-            <xs:attribute name="xml-customizer" type="xs:string" />
-            <xs:attribute name="xml-accessor-type" type="xml-access-type" default="PUBLIC_MEMBER" />
             <xs:attribute name="xml-accessor-order" type="xml-access-order" default="UNDEFINED" />
+            <xs:attribute name="xml-accessor-type" type="xml-access-type" default="PUBLIC_MEMBER" />
+            <xs:attribute name="xml-customizer" type="xs:string" />
+            <xs:attribute name="xml-discriminator-node" type="xs:string" />
+            <xs:attribute name="xml-discriminator-value" type="xs:string" />
             <xs:attribute name="xml-inline-binary-data" type="xs:boolean" default="false" />
+            <xs:attribute name="xml-transient" type="xs:boolean" default="false" />
         </xs:complexType>
     </xs:element>
     <xs:element name="java-attribute" type="java-attribute" />

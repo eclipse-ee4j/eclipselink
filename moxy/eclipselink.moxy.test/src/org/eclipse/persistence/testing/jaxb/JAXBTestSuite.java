@@ -138,6 +138,7 @@ public class JAXBTestSuite extends TestCase {
         suite.addTestSuite(org.eclipse.persistence.testing.jaxb.binder.adapter.BinderWithAdapterTestCases.class);
         suite.addTestSuite(org.eclipse.persistence.testing.jaxb.annotations.PropertyTypeTestCases.class);
         suite.addTestSuite(org.eclipse.persistence.testing.jaxb.annotations.required.RequiredAnnotationTestCases.class);
+        suite.addTestSuite(org.eclipse.persistence.testing.jaxb.annotations.xmldiscriminator.XmlDiscriminatorTestCases.class);
         suite.addTest(org.eclipse.persistence.testing.jaxb.listofobjects.JAXBListOfObjectsSuite.suite());
         suite.addTest(TypeMappingInfoTestSuite.suite());
 
