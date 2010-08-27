@@ -4886,6 +4886,16 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
     }
 
     /**
+     * INTERNAL:
+     * Calculate whether we should read directly from the database to the UOW.
+     * This may be necessary in subclasses of UnitOfWork that have special behavior
+     * @see RepeatableWriteUnitOfWork
+     */
+    public boolean shouldForceReadFromDB(ObjectBuildingQuery query, Object primaryKey){
+        return false;
+    }
+    
+    /**
      * ADVANCED:
      * By default new objects are not cached until the exist on the database.
      * Occasionally if mergeClone is used on new objects and is required to allow multiple merges

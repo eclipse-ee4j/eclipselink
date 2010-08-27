@@ -1404,7 +1404,7 @@ public class ObjectBuilder implements Cloneable, Serializable {
             boolean isIsolated = descriptor.shouldIsolateObjectsInUnitOfWork() || (descriptor.shouldIsolateObjectsInUnitOfWorkEarlyTransaction() && unitOfWork.wasTransactionBegunPrematurely());
             Object original = null;    
             // If not refreshing can get the object from the cache.
-            if ((!isARefresh) && (!isIsolated) && !unitOfWork.shouldReadFromDB()) {
+            if ((!isARefresh) && (!isIsolated) && !unitOfWork.shouldReadFromDB() && (!unitOfWork.shouldForceReadFromDB(query, primaryKey))) {
                 AbstractSession session = unitOfWork.getParentIdentityMapSession(query);            
                 CacheKey originalCacheKey = session.getIdentityMapAccessorInstance().getCacheKeyForObject(primaryKey, descriptor.getJavaClass(), descriptor);
                 if (originalCacheKey != null) {

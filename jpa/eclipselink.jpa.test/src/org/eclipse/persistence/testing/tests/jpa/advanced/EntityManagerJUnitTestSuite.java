@@ -103,6 +103,7 @@ import org.eclipse.persistence.logging.SessionLog;
 import org.eclipse.persistence.config.CacheUsage;
 import org.eclipse.persistence.config.CacheUsageIndirectionPolicy;
 import org.eclipse.persistence.config.CascadePolicy;
+import org.eclipse.persistence.config.FlushClearCache;
 import org.eclipse.persistence.config.QueryHints;
 import org.eclipse.persistence.config.PersistenceUnitProperties;
 import org.eclipse.persistence.config.PessimisticLock;
@@ -329,6 +330,9 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
         suite.addTest(new EntityManagerJUnitTestSuite("testFindReadOnlyIsolated"));
         suite.addTest(new EntityManagerJUnitTestSuite("testInheritanceQuery"));
         suite.addTest(new EntityManagerJUnitTestSuite("testNullBasicMap"));
+        suite.addTest(new EntityManagerJUnitTestSuite("testFlushClearFind"));
+        suite.addTest(new EntityManagerJUnitTestSuite("testFlushClearQueryPk"));
+        suite.addTest(new EntityManagerJUnitTestSuite("testFlushClearQueryNonPK"));
         if (!isJPA10()) {
             suite.addTest(new EntityManagerJUnitTestSuite("testDetachNull"));
             suite.addTest(new EntityManagerJUnitTestSuite("testDetachRemovedObject"));
@@ -9452,5 +9456,90 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
         }
         
     }
+    
+    public void testFlushClearFind(){
+        Map properties = new HashMap();
+        
+        EntityManager em = createEntityManager();
+        beginTransaction(em);
+        Employee emp = new Employee();
+        emp.setFirstName("Cesc");
+        emp.setLastName("Fabergass");
+        em.persist(emp);
+        commitTransaction(em);
+           
+        beginTransaction(em);
+        emp = em.find(Employee.class, emp.getId());
+        emp.setLastName("Fabregas");
+        em.flush();
+        em.clear();
+    
+        emp = em.find(Employee.class, emp.getId());
+        commitTransaction(em);
+        try{
+            assertTrue("Employees name was returned from server cache, when it should not have been", emp.getLastName().equals("Fabregas"));
+        } finally {
+            beginTransaction(em);
+            emp = em.find(Employee.class, emp.getId());
+            em.remove(emp);
+            commitTransaction(em);
+        }
+    }
+    
+    public void testFlushClearQueryPk(){
+        EntityManager em = createEntityManager();
+        beginTransaction(em);
+        Employee emp = new Employee();
+        emp.setFirstName("Cesc");
+        emp.setLastName("Fabergass");
+        em.persist(emp);
+        commitTransaction(em);
+        
+        beginTransaction(em);
+        emp = em.find(Employee.class, emp.getId());
+        emp.setLastName("Fabregas");
+        em.flush();
+        em.clear();
+
+        emp = (Employee)em.createQuery("select e from Employee e where e.id = :id").setParameter("id", emp.getId()).getSingleResult();
+        commitTransaction(em);
+        try{
+            assertTrue("Employees name was returned from server cache, when it should not have been", emp.getLastName().equals("Fabregas"));
+        } finally {
+            beginTransaction(em);
+            emp = em.find(Employee.class, emp.getId());
+            em.remove(emp);
+            commitTransaction(em);
+        }
+    }
+    
+    public void testFlushClearQueryNonPK(){
+        EntityManager em = createEntityManager();
+        beginTransaction(em);
+        Employee emp = new Employee();
+        emp.setFirstName("Cesc");
+        emp.setLastName("Fabergass");
+        em.persist(emp);
+        commitTransaction(em);
+        
+        beginTransaction(em);
+        emp = em.find(Employee.class, emp.getId());
+        emp.setLastName("Fabregas");
+        em.flush();
+        em.clear();
+
+        emp = (Employee)em.createQuery("select e from Employee e where e.firstName = :name").setParameter("name", emp.getFirstName()).getSingleResult();
+        commitTransaction(em);
+        try{
+            assertTrue("Employees name was returned from server cache, when it should not have been", emp.getLastName().equals("Fabregas"));
+        } finally {
+            beginTransaction(em);
+            emp = em.find(Employee.class, emp.getId());
+            em.remove(emp);
+            commitTransaction(em);
+        }
+    }
+   
 }
+
 
