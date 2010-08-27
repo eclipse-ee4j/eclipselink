@@ -393,7 +393,6 @@ public class DescriptorException extends ValidationException {
         Object[] args = { aClass, methodName };
 
         DescriptorException exception = new DescriptorException(ExceptionMessageGenerator.buildMessage(DescriptorException.class, INTERNAL_ERROR_SET_METHOD, args), descriptor, underlying);
-        exception.initCause(underlying);
         return exception;
     }
     
