@@ -174,8 +174,7 @@ public class PLSQLcollectionTestSuite {
             (XMLTransformationMapping)runtimeProject.getDescriptor(Project.class).
                 getMappings().get(0);
         TransformerBasedFieldTransformation  versionTransformer = 
-            (TransformerBasedFieldTransformation)versionMapping.getFieldTransformations().
-                firstElement();
+            (TransformerBasedFieldTransformation)versionMapping.getFieldTransformations().get(0);
         Field transformerField =
             TransformerBasedFieldTransformation.class.getDeclaredField("transformer");
         transformerField.setAccessible(true);
