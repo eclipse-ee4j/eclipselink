@@ -172,7 +172,7 @@ public class PLSQLcollectionTestSuite {
             new ObjectPersistenceWorkbenchXMLProject();
         XMLTransformationMapping versionMapping = 
             (XMLTransformationMapping)runtimeProject.getDescriptor(Project.class).
-                getMappings().firstElement();
+                getMappings().get(0);
         TransformerBasedFieldTransformation  versionTransformer = 
             (TransformerBasedFieldTransformation)versionMapping.getFieldTransformations().
                 firstElement();
