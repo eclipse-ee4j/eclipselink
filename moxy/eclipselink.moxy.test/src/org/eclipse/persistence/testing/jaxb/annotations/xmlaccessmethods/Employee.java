@@ -1,10 +1,3 @@
-package org.eclipse.persistence.testing.jaxb.annotations.xmlaccessmethods;
-
-import java.awt.Desktop.Action;
-
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlRootElement;
 /*******************************************************************************
  * Copyright (c) 2010 Oracle. All rights reserved.
  * This program and the accompanying materials are made available under the
@@ -17,6 +10,11 @@ import javax.xml.bind.annotation.XmlRootElement;
  * Contributors:
  * Oracle = 2.2 - Initial implementation
  ******************************************************************************/
+package org.eclipse.persistence.testing.jaxb.annotations.xmlaccessmethods;
+
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
 
 import org.eclipse.persistence.oxm.annotations.XmlAccessMethods;
