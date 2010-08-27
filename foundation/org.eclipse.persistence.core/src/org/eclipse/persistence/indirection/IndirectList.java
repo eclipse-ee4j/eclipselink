@@ -304,6 +304,7 @@ public class IndirectList extends Vector implements CollectionChangeTracker, Ind
     public synchronized Object clone() {
         IndirectList result = (IndirectList)super.clone();
         result.delegate = (Vector)this.getDelegate().clone();
+        result.valueHolder = new ValueHolder(result.delegate);
         result.attributeName = null;
         result.changeListener = null;
         return result;

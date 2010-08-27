@@ -1247,7 +1247,9 @@ public abstract class CollectionMapping extends ForeignReferenceMapping implemen
             if (changeRecord.getOwner().isNew()) {
                 valueOfTarget = containerPolicy.containerInstance(changeRecord.getAddObjectList().size());
             } else {
-                valueOfTarget = getRealCollectionAttributeValueFromObject(target, mergeManager.getSession());
+                // EL Bug 321473 - Operate on clone instead of synchronizing on real collection 
+                // to avoid potential deadlock.
+                valueOfTarget = containerPolicy.cloneFor(getRealCollectionAttributeValueFromObject(target, mergeManager.getSession()));
             }
 
             // Remove must happen before add to allow for changes in hash keys.

@@ -249,6 +249,7 @@ public class IndirectSet implements CollectionChangeTracker, Set, IndirectCollec
         try {
             IndirectSet result = (IndirectSet)super.clone();
             result.delegate = this.cloneDelegate();
+            result.valueHolder = new ValueHolder(result.delegate);
             result.attributeName = null;
             result.changeListener = null;
             return result;
