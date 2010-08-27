@@ -46,7 +46,7 @@ public class NamedQueryDoesNotExistTest extends EntityContainerTestBase {
   
     public void test(){
         try {
-            getEntityManager().createNamedQuery("doesNotExist").getResultList();
+            getEntityManager().createNamedQuery("doesNotExist");
         } catch (NullPointerException e) {
             m_npeCaught = true;
         } catch (IllegalArgumentException e) {
