@@ -75,8 +75,8 @@ public class ProviderPackager extends XRPackager {
         "}\n";
 
     public static final String DBWS_PROVIDER_SOURCE_PREAMBLE =
-        "package _dbws;\n\n" +
-        "//Java extension libraries\n" +
+        "package _dbws;\n" +
+        "\n//Java extension libraries\n" +
         "import javax.annotation.PostConstruct;\n" +
         "import javax.annotation.PreDestroy;\n" +
         "import javax.annotation.Resource;\n" +
@@ -87,10 +87,13 @@ public class ProviderPackager extends XRPackager {
         "import javax.xml.ws.ServiceMode;\n" +
         "import javax.xml.ws.WebServiceContext;\n" +
         "import javax.xml.ws.WebServiceProvider;\n" +
-        "import static javax.xml.ws.Service.Mode.MESSAGE;\n\n" +
-        "//EclipseLink imports\n" +
-        "import " + ProviderHelper.class.getName() + ";\n\n" +
-        "@WebServiceProvider(\n";
+        "import static javax.xml.ws.Service.Mode.MESSAGE;\n" +
+        "import static javax.xml.ws.soap.SOAPBinding.SOAP11HTTP_MTOM_BINDING;\n" +
+        "import static javax.xml.ws.soap.SOAPBinding.SOAP12HTTP_BINDING;\n" +
+        "import static javax.xml.ws.soap.SOAPBinding.SOAP12HTTP_MTOM_BINDING;\n" +
+        "\n//EclipseLink imports\n" +
+        "import " + ProviderHelper.class.getName() + ";\n" +
+        "\n@WebServiceProvider(\n";
     public static final String DBWS_PROVIDER_SOURCE_WSDL_LOCATION =
         "    wsdlLocation = \"WEB-INF/wsdl/eclipselink-dbws.wsdl\",\n";
     public static final String DBWS_PROVIDER_SOURCE_SERVICE_NAME =
