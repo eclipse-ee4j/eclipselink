@@ -687,7 +687,12 @@ public class RelationshipModelJUnitTestSuite extends JUnitTestCase {
         m_illegalArgumentExceptionCaught = false;
   
         try {
-            em.createNamedQuery("doesNotExist");
+            Query query = em.createNamedQuery("doesNotExist");
+            // Query will just be a wrapper on WLS until the query is run because we are not in a Tx
+            // workaround that issue 
+            if (getServerPlatform().isWeblogic()){
+                query.getResultList();
+            }
         } catch (NullPointerException e) {
             m_npeCaught = true;
         } catch (IllegalArgumentException e) {
