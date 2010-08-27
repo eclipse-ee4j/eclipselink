@@ -1376,9 +1376,8 @@ public class EntityAccessor extends MappedSuperclassAccessor {
                 getLogger().logWarningMessage(MetadataLogger.MULTIPLE_ID_FIELDS_WITHOUT_ID_CLASS, getJavaClassName());
             }
         } else {
-            // Descriptor has a single primary key. Validate an id 
-            // attribute was found, unless we are an inheritance subclass
-            // or an aggregate descriptor.
+            // Descriptor has a single primary key. Validate an id attribute was 
+            // found, unless we are an inheritance subclass or an aggregate descriptor.
             if (! getDescriptor().hasPrimaryKeyFields() && ! getDescriptor().isInheritanceSubclass()) {
                 throw ValidationException.noPrimaryKeyAnnotationsFound(getJavaClass());
             }
