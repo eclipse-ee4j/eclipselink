@@ -88,4 +88,28 @@ public class EmploymentPeriod implements Serializable, Cloneable {
         
         return writer.toString();
     }
+
+    public boolean equals(Object o) {
+        if ((o == null) || (!(o instanceof EmploymentPeriod))) {
+            return false;
+        }
+        EmploymentPeriod empPeriod = (EmploymentPeriod)o;
+        if (startDate!=null){
+            if (!startDate.equals(empPeriod.getStartDate())){
+                return false;
+            }
+        } else if (empPeriod.getStartDate()!=null){
+            return false;
+        }
+        
+        if (endDate!=null){
+            if (!endDate.equals(empPeriod.getEndDate())){
+                return false;
+            }
+        } else if (empPeriod.getEndDate()!=null){
+            return false;
+        }
+        
+        return true;
+    }
 }

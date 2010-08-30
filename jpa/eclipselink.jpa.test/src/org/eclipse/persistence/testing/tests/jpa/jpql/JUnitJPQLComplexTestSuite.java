@@ -48,6 +48,7 @@ import org.eclipse.persistence.tools.schemaframework.*;
 
 import org.eclipse.persistence.testing.models.jpa.advanced.Buyer;
 import org.eclipse.persistence.testing.models.jpa.advanced.Employee;
+import org.eclipse.persistence.testing.models.jpa.advanced.EmploymentPeriod;
 import org.eclipse.persistence.testing.models.jpa.advanced.EmployeePopulator;
 import org.eclipse.persistence.testing.models.jpa.advanced.Man;
 import org.eclipse.persistence.testing.models.jpa.advanced.PartnerLinkPopulator;
@@ -149,6 +150,7 @@ public class JUnitJPQLComplexTestSuite extends JUnitTestCase
         suite.addTest(new JUnitJPQLComplexTestSuite("complexConstructorTest"));
         suite.addTest(new JUnitJPQLComplexTestSuite("complexConstructorVariableTest"));
         suite.addTest(new JUnitJPQLComplexTestSuite("complexConstructorRelationshipTest"));
+        suite.addTest(new JUnitJPQLComplexTestSuite("complexConstructorEmbeddableTest"));
         suite.addTest(new JUnitJPQLComplexTestSuite("complexConstructorAggregatesTest"));
         suite.addTest(new JUnitJPQLComplexTestSuite("complexConstructorCountOnJoinedVariableTest"));
         suite.addTest(new JUnitJPQLComplexTestSuite("complexConstructorConstantTest"));
@@ -1308,7 +1310,26 @@ public class JUnitJPQLComplexTestSuite extends JUnitTestCase
 
         Assert.assertTrue("complexConstructorCaseTest Failed", result.equals(expectedResult));
     }
-    
+
+    //303703 - SELECT NEW query yields NoSuchMethodException for embedded
+    public void complexConstructorEmbeddableTest()
+    {
+        if (isOnServer()) {
+            // does not work on the server.
+            return;
+        }
+        JpaEntityManager em = (JpaEntityManager) createEntityManager(); 
+
+        Employee emp = (Employee)em.getActiveSession().readAllObjects(Employee.class).firstElement();
+
+        String jpqlString = "SELECT NEW org.eclipse.persistence.testing.tests.jpa.jpql.JUnitJPQLComplexTestSuite.EmployeeDetail(emp.period) FROM Employee emp WHERE emp.id = :id";
+        Query query = em.createQuery(jpqlString);
+        query.setParameter("id", emp.getId());
+        EmployeeDetail result = (EmployeeDetail)query.getSingleResult();
+        EmployeeDetail expectedResult = new EmployeeDetail(emp.getPeriod());
+        Assert.assertTrue("Constructor with Embeddable parameter Test Case Failed to return", result.equals(expectedResult));
+    }
+
     public void complexConstructorMapTest()
     {
         if (isOnServer()) {
@@ -1775,7 +1796,7 @@ public class JUnitJPQLComplexTestSuite extends JUnitTestCase
         public Employee manager;
         public Long count;
         public BigInteger code;
-        
+        public EmploymentPeriod period;
         public EmployeeDetail(String firstName, String lastName) {
             this.firstName = firstName;
             this.lastName = lastName;
@@ -1784,6 +1805,9 @@ public class JUnitJPQLComplexTestSuite extends JUnitTestCase
             this.firstName = firstName;
             this.lastName = lastName;
             this.manager = manager;
+        }
+        public EmployeeDetail(EmploymentPeriod e) {
+            this.period = e;
         }
         public EmployeeDetail(Employee e) {
             this.firstName = e.getFirstName();
@@ -1807,6 +1831,7 @@ public class JUnitJPQLComplexTestSuite extends JUnitTestCase
             result += (manager != null) ? manager.hashCode() : 0;
             result += (count != null) ? count.hashCode() : 0;
             result += (code != null) ? code.hashCode() : 0;
+            result += (period != null) ? period.hashCode() : 0;
             return result;
         }
         public boolean equals(Object o) {
@@ -1818,11 +1843,12 @@ public class JUnitJPQLComplexTestSuite extends JUnitTestCase
                 JUnitJPQLComplexTestSuite.equals(this.lastName, other.lastName) &&
                 JUnitJPQLComplexTestSuite.equals(this.manager, other.manager) &&
                 JUnitJPQLComplexTestSuite.equals(this.count, other.count) &&
-                JUnitJPQLComplexTestSuite.equals(this.code, other.code);
+                JUnitJPQLComplexTestSuite.equals(this.code, other.code) &&
+                JUnitJPQLComplexTestSuite.equals(this.period, other.period);
         }
         public String toString() {
-            return "EmployeeDetail(" + firstName + ", " + lastName + 
-                                   ", " + manager + ", " + count + ", " + code + ")";
+            return "EmployeeDetail(" + firstName + ", " + lastName + ", " +
+                                    manager + ", " + count + ", " + code + ", "+ period+ ")";
         }
     }
     
