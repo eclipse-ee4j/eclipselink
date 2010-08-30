@@ -690,7 +690,7 @@ public class RelationshipModelJUnitTestSuite extends JUnitTestCase {
             Query query = em.createNamedQuery("doesNotExist");
             // Query will just be a wrapper on WLS until the query is run because we are not in a Tx
             // workaround that issue 
-            if (getServerPlatform().isWeblogic()){
+            if (getServerSession().getServerPlatform().getClass().getName().contains("WebLogic")){
                 query.getResultList();
             }
         } catch (NullPointerException e) {
