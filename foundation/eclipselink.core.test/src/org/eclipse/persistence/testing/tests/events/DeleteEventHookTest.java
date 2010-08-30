@@ -32,6 +32,10 @@ public class DeleteEventHookTest extends EventHookTestCase {
         if (!getEmailAccount().preDeleteExecuted) {
             throw new TestErrorException("Event hook failed. The pre delete method on " + getEmailAccount() + " failed to execute.");
         }
+        
+        if (!getEmailAccount().aboutToDeleteExecuted) {
+            throw new TestErrorException("Event hook failed. The about to delete method on " + getEmailAccount() + " failed to execute.");
+        }
 
         if (!getEmailAccount().postDeleteExecuted) {
             throw new TestErrorException("Event hook failed. The post delete method on " + getEmailAccount() + " failed to execute.");

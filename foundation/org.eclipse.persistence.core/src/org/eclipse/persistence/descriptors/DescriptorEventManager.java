@@ -261,6 +261,14 @@ public class DescriptorEventManager implements Cloneable, Serializable {
 
     /**
      * INTERNAL:
+     * bug 251180 - Missing method org.eclipse.persistence.descriptors.DescriptorEventManager#setAboutToDeleteSelector 
+     */
+    public String getAboutToDeleteSelector() {
+        return (String)getEventSelectors().elementAt(AboutToDeleteEvent);
+    }
+
+    /**
+     * INTERNAL:
      */
     public String getAboutToInsertSelector() {
         return (String)getEventSelectors().elementAt(AboutToInsertEvent);
@@ -738,6 +746,19 @@ public class DescriptorEventManager implements Cloneable, Serializable {
      */
     public void removeListener(DescriptorEventListener listener) {
         getEventListeners().removeElement(listener);
+    }
+    
+    /**
+     * PUBLIC:
+     * A method can be registered to be called when an object's row it about to 
+     * be inserted. This uses the optional event argument of the DatabaseRow.
+     * This is different from pre/postInsert because it occurs after the row has 
+     * already been built. This event can be used to modify the row before 
+     * insert, such as adding a user inserted by.
+     */
+    //bug 251180: Missing method org.eclipse.persistence.descriptors.DescriptorEventManager#setAboutToDeleteSelector 
+    public void setAboutToDeleteSelector(String aboutToDeleteSelector) {
+        getEventSelectors().setElementAt(aboutToDeleteSelector, AboutToDeleteEvent);
     }
 
     /**

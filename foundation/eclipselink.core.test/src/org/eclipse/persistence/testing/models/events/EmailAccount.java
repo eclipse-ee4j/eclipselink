@@ -35,6 +35,7 @@ public class EmailAccount {
     public boolean postCloneExecuted;
     public boolean aboutToInsertExecuted;
     public boolean aboutToUpdateExecuted;
+    public boolean aboutToDeleteExecuted;
 
     public EmailAccount() {
         resetFlags();
@@ -53,6 +54,10 @@ public class EmailAccount {
 
     public void aboutToUpdateMethod(DescriptorEvent event) {
         aboutToUpdateExecuted = true;
+    }
+    
+    public void aboutToDeleteMethod(DescriptorEvent event) {
+        aboutToDeleteExecuted = true;
     }
 
     public static RelationalDescriptor descriptor() {
@@ -158,6 +163,7 @@ public class EmailAccount {
         postBuildExecuted = false;
         aboutToInsertExecuted = false;
         aboutToUpdateExecuted = false;
+        aboutToDeleteExecuted = false;
         postCloneExecuted = false;
         postMergeExecuted = false;
         postRefreshExecuted = false;

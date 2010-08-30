@@ -92,9 +92,10 @@ public class EventHookSystem extends TestSystem {
         // Set the event hooks for post Build
         eventManager.setPostBuildSelector("postBuildMethod");
 
-        // Set the event hooks for about to insert and about to update
+        // Set the event hooks for about to insert, update and delete
         eventManager.setAboutToInsertSelector("aboutToInsertMethod");
         eventManager.setAboutToUpdateSelector("aboutToUpdateMethod");
+        eventManager.setAboutToDeleteSelector("aboutToDeleteMethod");
 
         // Set the event hook for post clone
         eventManager.setPostCloneSelector("postCloneMethod");
