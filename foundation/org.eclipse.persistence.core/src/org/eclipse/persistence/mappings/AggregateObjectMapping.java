@@ -860,6 +860,14 @@ public class AggregateObjectMapping extends AggregateMapping implements Relation
     }
 
     /**
+     * PUBLIC:
+     * The classification type for the attribute this mapping represents
+     */
+    public Class getAttributeClassification() {
+        return getReferenceClass();
+    }
+
+    /**
      * INTERNAL:
      * Return the classification for the field contained in the mapping.
      * This is used to convert the row value to a consistent Java value.

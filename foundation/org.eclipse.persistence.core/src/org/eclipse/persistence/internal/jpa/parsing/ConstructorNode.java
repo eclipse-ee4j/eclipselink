@@ -141,7 +141,12 @@ public class ConstructorNode extends Node {
         if ((node == null) || !node.isDotNode()) {
             return false;
         }
-        return !((DotNode)node).endsWithDirectToField(context);
+
+        TypeHelper typeHelper = context.getParseTreeContext().getTypeHelper();
+        Node path = node.getLeft();
+        AttributeNode attribute = (AttributeNode)node.getRight();
+        return typeHelper.isRelationship(path.getType(), 
+                                         attribute.getAttributeName());
     }
 
     /**
