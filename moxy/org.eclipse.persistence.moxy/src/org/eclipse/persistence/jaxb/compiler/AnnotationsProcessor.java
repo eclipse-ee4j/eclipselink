@@ -97,6 +97,8 @@ import org.eclipse.persistence.jaxb.xmlmodel.XmlAccessType;
 import org.eclipse.persistence.jaxb.xmlmodel.XmlTransformation;
 import org.eclipse.persistence.jaxb.xmlmodel.XmlTransformation.XmlReadTransformer;
 import org.eclipse.persistence.jaxb.xmlmodel.XmlTransformation.XmlWriteTransformer;
+import org.eclipse.persistence.mappings.transformers.AttributeTransformer;
+import org.eclipse.persistence.mappings.transformers.FieldTransformer;
 import org.eclipse.persistence.oxm.NamespaceResolver;
 import org.eclipse.persistence.oxm.XMLConstants;
 import org.eclipse.persistence.oxm.annotations.XmlAccessMethods;
@@ -1519,7 +1521,7 @@ public class AnnotationsProcessor {
         org.eclipse.persistence.oxm.annotations.XmlReadTransformer readTransformer = (org.eclipse.persistence.oxm.annotations.XmlReadTransformer)helper.getAnnotation(javaHasAnnotations, org.eclipse.persistence.oxm.annotations.XmlReadTransformer.class);
         if(readTransformer != null) {
             org.eclipse.persistence.jaxb.xmlmodel.XmlTransformation.XmlReadTransformer xmlReadTransformer = new org.eclipse.persistence.jaxb.xmlmodel.XmlTransformation.XmlReadTransformer();
-            if(!(readTransformer.transformerClass() == void.class)) {
+            if(!(readTransformer.transformerClass() == AttributeTransformer.class)) {
                 xmlReadTransformer.setTransformerClass(readTransformer.transformerClass().getName());
             } else if (!(readTransformer.method().equals(""))){
                 xmlReadTransformer.setMethod(readTransformer.method());
@@ -1540,7 +1542,7 @@ public class AnnotationsProcessor {
         if(transformers != null) {
             for(org.eclipse.persistence.oxm.annotations.XmlWriteTransformer next:transformers) {
                 org.eclipse.persistence.jaxb.xmlmodel.XmlTransformation.XmlWriteTransformer xmlWriteTransformer = new org.eclipse.persistence.jaxb.xmlmodel.XmlTransformation.XmlWriteTransformer();
-                if(!(next.transformerClass() == void.class)) {
+                if(!(next.transformerClass() == FieldTransformer.class)) {
                     xmlWriteTransformer.setTransformerClass(next.transformerClass().getName());
                 } else if (!(next.method().equals(""))){
                     xmlWriteTransformer.setMethod(next.method());

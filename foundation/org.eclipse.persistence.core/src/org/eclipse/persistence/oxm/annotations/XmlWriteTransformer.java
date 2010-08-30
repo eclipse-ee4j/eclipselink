@@ -19,16 +19,18 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
 import java.lang.annotation.Retention;
 import java.lang.annotation.Target;
 
+import org.eclipse.persistence.mappings.transformers.FieldTransformer;
+
 /**
  * Annotation for org.eclipse.persistence.mappings.oxm.XMLTransformationMapping.
  * WriteTransformer defines transformation of the attribute value to a single
- * xml value (XPath is specified in the WriteTransformer).
+ * XML value (XPath is specified in the WriteTransformer).
  *  
  * A single XmlWriteTransformer may be specified directly on the method or 
  * attribute. Multiple XmlWriteTransformers should be wrapped into 
  * XmlWriteTransformers annotation. No XmlWriteTransformers specified for read-only 
  * mapping. Unless the XMLTransformationMapping is write-only, it should have a 
- * ReadTransformer, it defines transformation of xml value(s) 
+ * ReadTransformer, it defines transformation of XML value(s) 
  * into attribute value.
  *
  * @see org.eclipse.persistence.oxm.annotations.XmlReadTransformer
@@ -40,18 +42,19 @@ import java.lang.annotation.Target;
 @Target({METHOD, FIELD})
 @Retention(RUNTIME)
 public @interface XmlWriteTransformer {
+
     /**
      * User-defined class that must implement the
      * org.eclipse.persistence.mappings.transformers.FieldTransformer interface.
      * The class will be instantiated, its buildFieldValue will be used to 
-     * create the value to be written into xml document.
+     * create the value to be written into XML document.
      * Either transformerClass or method must be specified, but not both.
      */ 
-    Class transformerClass() default void.class;
+    Class<? extends FieldTransformer> transformerClass() default FieldTransformer.class;
 
     /**
      * The mapped class must have a method with this name which returns a value 
-     * to be written into the xml document.
+     * to be written into the XML document.
      * The method may require an XmlTransient annotation to avoid being mapped as 
      * an XmlElement  by default.
      * Either transformerClass or method must be specified, but not both.
@@ -59,11 +62,11 @@ public @interface XmlWriteTransformer {
     String method() default "";
 
     /**
-     * Specify here the xpath into which the value should be written.
+     * Specify here the XPath into which the value should be written.
      * The only case when this could be skipped is if a single WriteTransformer
      * annotates an attribute - the attribute's name will be
      * used as an element name.
      */ 
-    String xpath();    
+    String xpath();
 
 }

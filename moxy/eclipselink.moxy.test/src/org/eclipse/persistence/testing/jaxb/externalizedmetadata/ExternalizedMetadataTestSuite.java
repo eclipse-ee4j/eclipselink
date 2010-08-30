@@ -14,7 +14,6 @@ package org.eclipse.persistence.testing.jaxb.externalizedmetadata;
 
 import org.eclipse.persistence.testing.jaxb.externalizedmetadata.exceptions.ExceptionHandlingTestSuite;
 import org.eclipse.persistence.testing.jaxb.externalizedmetadata.exceptions.contextfactory.ExceptionHandlingTestCases;
-import org.eclipse.persistence.testing.jaxb.externalizedmetadata.exceptions.xmlcustomizer.CustomizerExceptionTestCases;
 import org.eclipse.persistence.testing.jaxb.externalizedmetadata.jaxbcontextfactory.JAXBContextFactoryTestCases;
 import org.eclipse.persistence.testing.jaxb.externalizedmetadata.mappings.MappingsTestSuite;
 import org.eclipse.persistence.testing.jaxb.externalizedmetadata.mappings.anyattribute.AnyAttributeMappingTestCases;

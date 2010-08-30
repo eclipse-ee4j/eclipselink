@@ -13,7 +13,6 @@
 package org.eclipse.persistence.testing.jaxb.externalizedmetadata.exceptions;
 
 import org.eclipse.persistence.testing.jaxb.externalizedmetadata.exceptions.contextfactory.ExceptionHandlingTestCases;
-import org.eclipse.persistence.testing.jaxb.externalizedmetadata.exceptions.xmlcustomizer.CustomizerExceptionTestCases;
 
 import junit.framework.Test;
 import junit.framework.TestSuite;
@@ -26,7 +25,6 @@ public class ExceptionHandlingTestSuite extends TestSuite {
     public static Test suite() {
         TestSuite suite = new TestSuite("Exception Handling Test Suite");
         suite.addTestSuite(ExceptionHandlingTestCases.class);
-        suite.addTestSuite(CustomizerExceptionTestCases.class);
         return suite;
     }
     

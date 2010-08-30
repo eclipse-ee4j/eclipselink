@@ -14,6 +14,9 @@ package org.eclipse.persistence.oxm.annotations;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.Target;
+
+import org.eclipse.persistence.config.DescriptorCustomizer;
+
 import static java.lang.annotation.ElementType.TYPE;
 import static java.lang.annotation.RetentionPolicy.RUNTIME;
 
@@ -31,6 +34,6 @@ public @interface XmlCustomizer {
      * (Required) Defines the name of the descriptor customizer that should be
      * applied to this classes descriptor.
      */
-     Class value();
+     Class<? extends DescriptorCustomizer> value();
 
 }
