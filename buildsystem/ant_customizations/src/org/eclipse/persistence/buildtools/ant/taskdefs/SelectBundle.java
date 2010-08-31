@@ -28,9 +28,10 @@ import org.eclipse.persistence.buildtools.helper.Version;
 
 public class SelectBundle extends Task {
     private boolean includepath = false; // whether to include the path (directory property) in the value of property if selection is successful (default: no)
+    private boolean versiononly = false; // whether to return bundle version info only, or full bundle name (default: full bundle name)
     private String criterion = "";       // the OSGi-like criteria used to 'select' the most appropriate jar. for example:(1.0,2.0]
     private String basename  = "";       // basename of jar (org.eclipse.persistence.jpa, javax.xml.bind, javax.persistence)
-    private String directory  = "";      // directory to search for the jar
+    private String directory = "";       // directory to search for the jar
     private String property  = "";       // property to set with filename of 'selected' jar
     private String separator = "_";      // the separator used to differentiate basename and jarversion
     private String suffix    = "jar";    // suffix of file to find (default: jar)
@@ -39,6 +40,7 @@ public class SelectBundle extends Task {
     private boolean maxInclusive = false;   // local: whether the 'ceiling' version is inclusive or not "("=true "["=false
     private Version minVersion   = null;    // local: the value of the "floor" version
     private Version maxVersion   = null;    // local: the value of the "ceiling" version
+    private String  version      = "";      // the 'version' component of the "bestmatch" string
 
     private void evaluateCriteria() throws BuildException {
         // ()= includes
@@ -121,7 +123,7 @@ public class SelectBundle extends Task {
                 log("matchCriteria: versionEndIndex(" + Integer.toString(versionEndIndex)+")", Project.MSG_VERBOSE);
                 log("matchCriteria: filelist["+ Integer.toString(i) + "](" + filelist[i] + ")", Project.MSG_VERBOSE);
                 // Should add try block to test for version exception
-                String version = filelist[i].substring(relativeVersionIndex,versionEndIndex);
+                version = filelist[i].substring(relativeVersionIndex,versionEndIndex);
 
                 log("matchCriteria: version string of found file(" + version + ")", Project.MSG_VERBOSE);
                 if(version.length()>0){
@@ -188,8 +190,12 @@ public class SelectBundle extends Task {
         if( file != null ){
             if (includepath)
                 getProject().setNewProperty(property, directory+"/"+file);
-            else   
-                getProject().setNewProperty(property, file);
+            else {  
+                if (versiononly)
+                    getProject().setNewProperty(property, version);
+                else   
+                    getProject().setNewProperty(property, file);
+            }
         }
         log("execute: Search Finished.", Project.MSG_VERBOSE);
     }
@@ -197,6 +203,10 @@ public class SelectBundle extends Task {
     // Setters
     public void setIncludepath(boolean includepath) {
         this.includepath = includepath;
+    }
+
+    public void setVersionOnly(boolean versiononly) {
+        this.versiononly = versiononly;
     }
 
     public void setCriterion(String criterion) {

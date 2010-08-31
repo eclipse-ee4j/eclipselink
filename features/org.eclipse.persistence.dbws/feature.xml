@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <feature
-      id="org.eclipse.persistence.moxy"
+      id="org.eclipse.persistence.dbws"
       label="%featureName"
       version="@VERSION@.@QUALIFIER@"
       provider-name="%providerName">
@@ -37,24 +37,10 @@
          unpack="false"/>
 
    <plugin
-         id="javax.persistence"
+         id="javax.servlet"
          download-size="0"
          install-size="0"
-         version="@PERSISTENCE_VERSION@"
-         unpack="false"/>
-
-   <plugin
-         id="javax.xml.bind"
-         download-size="0"
-         install-size="0"
-         version="@XMLBIND_VERSION@"
-         unpack="false"/>
-
-   <plugin
-         id="javax.xml.stream"
-         download-size="0"
-         install-size="0"
-         version="@XMLSTREAM_VERSION@"
+         version="@SERVLET_VERSION@"
          unpack="false"/>
 
    <plugin
@@ -66,13 +52,6 @@
 
    <plugin
          id="org.eclipse.persistence.core"
-         download-size="0"
-         install-size="0"
-         version="@VERSION@.@QUALIFIER@"
-         unpack="false"/>
-
-   <plugin
-         id="org.eclipse.persistence.moxy"
          download-size="0"
          install-size="0"
          version="@VERSION@.@QUALIFIER@"
