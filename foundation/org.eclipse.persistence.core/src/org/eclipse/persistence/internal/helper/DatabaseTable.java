@@ -14,12 +14,13 @@
 package org.eclipse.persistence.internal.helper;
 
 import java.io.*;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Vector;
 
 import org.eclipse.persistence.internal.databaseaccess.*;
+import org.eclipse.persistence.tools.schemaframework.IndexDefinition;
 
 /**
  * INTERNAL:
@@ -40,11 +41,17 @@ public class DatabaseTable implements Cloneable, Serializable {
      * the name element, therefore, if specified we will use that name
      * to create the constraint. Constraints with no name will be added to the
      * map under the null key and generated with a default name.
-     * Therefore, when a name is given the Vector size should only ever be
+     * Therefore, when a name is given the list size should only ever be
      * 1. We will validate. The null key could have multiples however they will
      * have their names defaulted (as we did before).
      */
-    protected Map<String, Vector<List<String>>> uniqueConstraints;
+    protected Map<String, List<List<String>>> uniqueConstraints;
+    
+    /**
+     * Store the set of indexes defined through meta-data for the table.
+     */
+    protected List<IndexDefinition> indexes;
+    
     protected boolean useDelimiters = false;
     
     /** 
@@ -54,7 +61,6 @@ public class DatabaseTable implements Cloneable, Serializable {
     public DatabaseTable() {
         name = "";
         tableQualifier = "";
-        uniqueConstraints = new HashMap<String, Vector<List<String>>>();
     }
 
     public DatabaseTable(String possiblyQualifiedName) {
@@ -63,7 +69,6 @@ public class DatabaseTable implements Cloneable, Serializable {
     
     public DatabaseTable(String possiblyQualifiedName, String startDelimiter, String endDelimiter) {
         setPossiblyQualifiedName(possiblyQualifiedName, startDelimiter, endDelimiter);
-        uniqueConstraints = new HashMap<String, Vector<List<String>>>();
     }
 
     public DatabaseTable(String tableName, String qualifier) {
@@ -73,7 +78,6 @@ public class DatabaseTable implements Cloneable, Serializable {
     public DatabaseTable(String tableName, String qualifier, boolean useDelimiters, String startDelimiter, String endDelimiter) {
         setName(tableName, startDelimiter, endDelimiter);
         this.tableQualifier = qualifier;
-        uniqueConstraints = new HashMap<String, Vector<List<String>>>();
         this.useDelimiters = useDelimiters;
     }
 
@@ -83,12 +87,12 @@ public class DatabaseTable implements Cloneable, Serializable {
      * when we didn't have a name.
      */
     public void addUniqueConstraints(String name, List<String> columnNames) {
-        if (uniqueConstraints.containsKey(name)) {
-            uniqueConstraints.get(name).add(columnNames);
+        if (getUniqueConstraints().containsKey(name)) {
+            getUniqueConstraints().get(name).add(columnNames);
         } else {
-            Vector<List<String>> v = new Vector<List<String>>();
-            v.add(columnNames);
-            uniqueConstraints.put(name, v);
+            List<List<String>> value = new ArrayList<List<String>>();
+            value.add(columnNames);
+            getUniqueConstraints().put(name, value);
         }
     }
     
@@ -199,12 +203,34 @@ public class DatabaseTable implements Cloneable, Serializable {
         return tableQualifier;
     }
     
+    public boolean hasUniqueConstraints() {
+        return (this.uniqueConstraints != null) && (!this.uniqueConstraints.isEmpty());
+    }
+    
+    public boolean hasIndexes() {
+        return (this.indexes != null) && (!this.indexes.isEmpty());
+    }
+    
     /**
-     * Return a vector of the unique constraints for this table.
+     * Return a list of index definitions.
      * Used for DDL generation.
      */
-    public Map<String, Vector<List<String>>> getUniqueConstraints() {
-        return uniqueConstraints;
+    public List<IndexDefinition> getIndexes() {
+        if (this.indexes == null) {
+            this.indexes = new ArrayList<IndexDefinition>();
+        }
+        return this.indexes;
+    }
+    
+    /**
+     * Return a list of the unique constraints for this table.
+     * Used for DDL generation.
+     */
+    public Map<String, List<List<String>>> getUniqueConstraints() {
+        if (this.uniqueConstraints == null) {
+            this.uniqueConstraints = new HashMap<String, List<List<String>>>();
+        }
+        return this.uniqueConstraints;
     }
 
     /** 

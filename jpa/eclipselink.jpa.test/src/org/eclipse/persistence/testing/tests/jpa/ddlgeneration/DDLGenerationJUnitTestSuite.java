@@ -72,21 +72,14 @@ public class DDLGenerationJUnitTestSuite extends JUnitTestCase {
      * The setup is done as a test, both to record its failure, and to allow execution in the server.
      */
     public void testSetup() {
-        try{
-            // Trigger DDL generation
-            //TODO: Let's add a flag which do not disregard DDL generation errors.
-            //TODO: This is required to ensure that DDL generation has succeeded.
-            EntityManager em = createEntityManager(DDL_PU);
-            closeEntityManager(em);
-            //em.close();
-            clearCache(DDL_PU);
-            
-            EntityManager emDDLTPC = createEntityManager(DDL_TPC_PU);
-            closeEntityManager(emDDLTPC);
-            clearCache(DDL_TPC_PU);
-        } catch (Throwable t){
-            t.printStackTrace();
-        }
+        // Trigger DDL generation
+        EntityManager em = createEntityManager(DDL_PU);
+        closeEntityManager(em);
+        clearCache(DDL_PU);
+
+        EntityManager emDDLTPC = createEntityManager(DDL_TPC_PU);
+        closeEntityManager(emDDLTPC);
+        clearCache(DDL_TPC_PU);
     }
 
     public void testDDLTablePerClassModel() {
@@ -148,7 +141,7 @@ public class DDLGenerationJUnitTestSuite extends JUnitTestCase {
                 rollbackTransaction(em);
             }
             
-            fail("Exception thrown on DDL test of Table Per Class model, thrown:" + e);
+            throw e;
         } finally {
             closeEntityManager(em);
         }
@@ -641,12 +634,7 @@ public class DDLGenerationJUnitTestSuite extends JUnitTestCase {
             em.remove(holder);
             em.remove(key);
             
-            try{
-                em.flush();
-            } catch (Exception e){
-                e.printStackTrace();
-                fail("Caught Exception while trying to remove a new ddl-generated DirectCollectionMapping." + e);
-            }
+            em.flush();
             
             rollbackTransaction(em);
         } finally {
@@ -669,12 +657,7 @@ public class DDLGenerationJUnitTestSuite extends JUnitTestCase {
             em.persist(holder);
             em.persist(key);
             
-            try{
-                em.flush();
-            } catch (Exception e){
-                e.printStackTrace();
-                fail("Caught Exception while trying to flush a new ddl-generated AggregateCollectionMapping." + e);
-            }
+            em.flush();
             
             clearCache(DDL_PU);
             em.refresh(holder);
@@ -684,12 +667,7 @@ public class DDLGenerationJUnitTestSuite extends JUnitTestCase {
             em.remove(holder);
             em.remove(key);
             
-            try{
-                em.flush();
-            } catch (Exception e){
-                e.printStackTrace();
-                fail("Caught Exception while trying to remove a new ddl-generated AggregateCollectionMapping." + e);
-            }
+            em.flush();
             
             rollbackTransaction(em);
         } finally {
@@ -713,12 +691,7 @@ public class DDLGenerationJUnitTestSuite extends JUnitTestCase {
             em.persist(holder);
             em.persist(value);
             
-            try{
-                em.flush();
-            } catch (Exception e){
-                e.printStackTrace();
-                fail("Caught Exception while trying to flush a new ddl-generated OneToManyMapping." + e);
-            }
+            em.flush();
             
             clearCache(DDL_PU);
             em.refresh(holder);
@@ -730,12 +703,7 @@ public class DDLGenerationJUnitTestSuite extends JUnitTestCase {
             em.remove(holder);
             em.remove(value);
             
-            try{
-                em.flush();
-            } catch (Exception e){
-                e.printStackTrace();
-                fail("Caught Exception while trying to remove a new ddl-generated OneToManyMapping." + e);
-            }
+            em.flush();
             
             rollbackTransaction(em);
         } finally {
@@ -756,12 +724,7 @@ public class DDLGenerationJUnitTestSuite extends JUnitTestCase {
             em.persist(holder);
             em.persist(value);
             
-            try{
-                em.flush();
-            } catch (Exception e){
-                e.printStackTrace();
-                fail("Caught Exception while trying to flush a new ddl-generated OneToManyMapping." + e);
-            }
+            em.flush();
             
             clearCache(DDL_PU);
             em.refresh(holder);
@@ -771,12 +734,7 @@ public class DDLGenerationJUnitTestSuite extends JUnitTestCase {
             em.remove(holder);
             em.remove(value);
             
-            try{
-                em.flush();
-            } catch (Exception e){
-                e.printStackTrace();
-                fail("Caught Exception while trying to remove a new ddl-generated OneToManyMapping."+ e);
-            }
+            em.flush();
             
             rollbackTransaction(em);
         } finally {
@@ -801,12 +759,7 @@ public class DDLGenerationJUnitTestSuite extends JUnitTestCase {
             em.persist(key);
             em.persist(value);
             
-            try{
-                em.flush();
-            } catch (Exception e){
-                e.printStackTrace();
-                fail("Caught Exception while trying to flush a new ddl-generated OneToManyMapping."+ e);
-            }
+            em.flush();
             
             clearCache(DDL_PU);
             em.refresh(holder);

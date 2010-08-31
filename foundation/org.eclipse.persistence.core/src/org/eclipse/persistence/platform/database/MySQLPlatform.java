@@ -451,6 +451,14 @@ public class MySQLPlatform extends DatabasePlatform {
 
     /**
      * INTERNAL:
+     * Return if this database requires the table name when dropping an index.
+     */
+    public boolean requiresTableInIndexDropDDL() {
+        return true;
+    }
+    
+    /**
+     * INTERNAL:
      * MySQL supports temp tables for update-all, delete-all queries.
      */
     public boolean supportsGlobalTempTables() {

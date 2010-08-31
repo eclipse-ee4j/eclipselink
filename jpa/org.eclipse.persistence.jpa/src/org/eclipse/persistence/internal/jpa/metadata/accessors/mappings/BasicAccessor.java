@@ -386,6 +386,8 @@ public class BasicAccessor extends DirectAccessor {
         if (m_sequenceGenerator != null) {
             getProject().addSequenceGenerator(m_sequenceGenerator, getDescriptor().getDefaultCatalog(), getDescriptor().getDefaultSchema());
         }
+        
+        processIndexes();
     }
 
     /**

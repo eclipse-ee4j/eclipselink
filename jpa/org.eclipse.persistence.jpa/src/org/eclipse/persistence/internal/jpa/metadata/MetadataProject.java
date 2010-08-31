@@ -508,7 +508,7 @@ public class MetadataProject {
             m_metamodelMappedSuperclasses.put(accessor.getJavaClassName(), accessor);
             
             // Note: The classDescriptor is always a RelationalDescriptor instance - a cast is safe here unless setDescriptor() sets it to XMLDescriptor or EISDescriptor
-            RelationalDescriptor relationalDescriptor = (RelationalDescriptor)metadataDescriptor.getClassDescriptor();
+            RelationalDescriptor relationalDescriptor = metadataDescriptor.getClassDescriptor();
             
             // Fake out a database table and primary key for MappedSuperclasses
             // We require string names for table processing that does not actually goto the database.

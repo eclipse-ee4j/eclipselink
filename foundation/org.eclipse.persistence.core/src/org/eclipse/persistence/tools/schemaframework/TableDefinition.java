@@ -18,9 +18,11 @@ import java.io.IOException;
 import java.io.StringWriter;
 import java.io.Writer;
 import java.util.ArrayList;
-import java.util.Enumeration;
+import java.util.Collection;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.Vector;
 
 import org.eclipse.persistence.exceptions.DatabaseException;
@@ -39,17 +41,19 @@ import org.eclipse.persistence.queries.SQLCall;
  * <p>
  */
 public class TableDefinition extends DatabaseObjectDefinition {
-    protected Vector<FieldDefinition> fields; //FieldDefinitions
-    protected HashMap<String, ForeignKeyConstraint> foreignKeyMap; //key is the name of ForeignKeyConstraint
-    protected Vector<UniqueKeyConstraint> uniqueKeys;
+    protected List<FieldDefinition> fields; //FieldDefinitions
+    protected Map<String, ForeignKeyConstraint> foreignKeyMap; //key is the name of ForeignKeyConstraint
+    protected List<UniqueKeyConstraint> uniqueKeys;
+    protected List<IndexDefinition> indexes;
     protected String creationPrefix;
     protected String creationSuffix;
     private boolean createSQLFiles;
 
     public TableDefinition() {
-        this.fields = new Vector<FieldDefinition>();
+        this.fields = new ArrayList<FieldDefinition>();
+        this.indexes = new ArrayList<IndexDefinition>();
         this.foreignKeyMap = new HashMap<String, ForeignKeyConstraint>();
-        this.uniqueKeys = new Vector();
+        this.uniqueKeys = new ArrayList<UniqueKeyConstraint>();
         this.creationPrefix = "CREATE TABLE ";
         this.creationSuffix = "";
     }
@@ -87,7 +91,7 @@ public class TableDefinition extends DatabaseObjectDefinition {
      * @param typeName is the name of the nested type.
      */
     public void addField(String fieldName, String typeName) {
-        this.addField(new FieldDefinition(fieldName, typeName));
+        addField(new FieldDefinition(fieldName, typeName));
     }
 
     /**
@@ -95,7 +99,7 @@ public class TableDefinition extends DatabaseObjectDefinition {
      * Add the field to the table.
      */
     public void addField(FieldDefinition field) {
-        this.getFields().addElement(field);
+        getFields().add(field);
     }
 
     /**
@@ -142,7 +146,15 @@ public class TableDefinition extends DatabaseObjectDefinition {
      * Add a unique key constraint to the table.
      */
     public void addUniqueKeyConstraint(UniqueKeyConstraint uniqueKey) {
-        getUniqueKeys().addElement(uniqueKey);
+        getUniqueKeys().add(uniqueKey);
+    }
+    
+    /**
+     * PUBLIC:
+     * Add an index to the table.
+     */
+    public void addIndex(IndexDefinition index) {
+        getIndexes().add(index);
     }
     
     /**
@@ -275,33 +287,26 @@ public class TableDefinition extends DatabaseObjectDefinition {
      * INTERNAL:
      * Return the index creation statement.
      */
-    public Writer buildIndexCreationWriter(AbstractSession session, String key,
-            List<String> columnNames, Writer writer) throws ValidationException {
-        try {
-            String indexName = buildIndexName(getName(), key, session
-                    .getPlatform().getMaxIndexNameSize(), session.getPlatform());
-            writer.write(session.getPlatform().buildCreateIndex(getFullName(),
-                    indexName, columnNames.toArray(new String[0])));
-
-        } catch (IOException ioException) {
-            throw ValidationException.fileError(ioException);
-        }
-        return writer;
+    public IndexDefinition buildIndex(AbstractSession session, String key, List<String> columnNames) {
+        String indexName = buildIndexName(getName(), key, session.getPlatform().getMaxIndexNameSize(), session.getPlatform());
+        IndexDefinition index = new IndexDefinition();
+        index.setName(indexName);
+        index.setTargetTable(getFullName());
+        index.getFields().addAll(columnNames);
+        return index;
     }
 
     /**
      * INTERNAL:
      * Return the index drop statement.
      */
-    public Writer buildIndexDeletionWriter(AbstractSession session, String key, Writer writer) throws ValidationException {
-        try {
+    public Writer buildIndexDeletionWriter(AbstractSession session, String key, Writer writer) {
             String indexName = buildIndexName(getName(), key,
                     session.getPlatform().getMaxIndexNameSize(), session.getPlatform());
-            writer.write(session.getPlatform().buildDropIndex(getFullName(),
-                    indexName));
-        } catch (IOException ioException) {
-            throw ValidationException.fileError(ioException);
-        }
+        IndexDefinition index = new IndexDefinition();
+        index.setName(indexName);
+        index.setTargetTable(getFullName());
+        index.buildDeletionWriter(session, writer);
         return writer;
     }
 
@@ -348,23 +353,23 @@ public class TableDefinition extends DatabaseObjectDefinition {
     public Writer buildCreationWriter(AbstractSession session, Writer writer) throws ValidationException {
         try {
             writer.write(getCreationPrefix() + getFullName() + " (");
-            for (Enumeration fieldsEnum = getFields().elements(); fieldsEnum.hasMoreElements();) {
-                FieldDefinition field = (FieldDefinition)fieldsEnum.nextElement();
+            for (Iterator<FieldDefinition> itetrator = getFields().iterator(); itetrator.hasNext();) {
+                FieldDefinition field = itetrator.next();
                 field.appendDBString(writer, session, this);
-                if (fieldsEnum.hasMoreElements()) {
+                if (itetrator.hasNext()) {
                     writer.write(", ");
                 }
             }
-            Vector keyFields = getPrimaryKeyFieldNames();
+            List<String> keyFields = getPrimaryKeyFieldNames();
             if ((!keyFields.isEmpty()) && session.getPlatform().supportsPrimaryKeyConstraint()) {
                 writer.write(", ");
                 if (session.getPlatform().requiresNamedPrimaryKeyConstraints()) {
                     writer.write("CONSTRAINT " + getFullName() + "_PK ");
                 }
                 writer.write("PRIMARY KEY (");
-                for (Enumeration keyEnum = keyFields.elements(); keyEnum.hasMoreElements();) {
-                    writer.write((String)keyEnum.nextElement());
-                    if (keyEnum.hasMoreElements()) {
+                for (Iterator<String> iterator = keyFields.iterator(); iterator.hasNext();) {
+                    writer.write(iterator.next());
+                    if (iterator.hasNext()) {
                         writer.write(", ");
                     }
                 }
@@ -403,14 +408,11 @@ public class TableDefinition extends DatabaseObjectDefinition {
      * INTERNAL:
      * Build the foreign key constraints.
      */
-    protected void buildFieldTypes(AbstractSession session) {        
-        FieldDefinition field = null;
-
+    protected void buildFieldTypes(AbstractSession session) {
         // The ForeignKeyConstraint object is the newer way of doing things.
         // We support FieldDefinition.getForeignKeyFieldName() due to backwards compatibility
         // by converting it. To allow mixing both ways, we just add converted one to foreignKeys list.
-        for (Enumeration enumtr = getFields().elements(); enumtr.hasMoreElements();) {
-            field = (FieldDefinition)enumtr.nextElement();
+        for (FieldDefinition field : getFields()) {
             if (field.getForeignKeyFieldName() != null) {
                 addForeignKeyConstraint(buildForeignKeyConstraint(field, session.getPlatform()));
             }
@@ -427,8 +429,8 @@ public class TableDefinition extends DatabaseObjectDefinition {
         DatabaseField tempTargetField = new DatabaseField(field.getForeignKeyFieldName());
         DatabaseField tempSourceField = new DatabaseField(field.getName());
 
-        sourceFields.addElement(tempSourceField.getName());
-        targetFields.addElement(tempTargetField.getName());
+        sourceFields.add(tempSourceField.getName());
+        targetFields.add(tempTargetField.getName());
 
         fkConstraint.setSourceFields(sourceFields);
         fkConstraint.setTargetFields(targetFields);
@@ -442,7 +444,7 @@ public class TableDefinition extends DatabaseObjectDefinition {
     /**
      * Build a foreign key constraint.
      */
-    protected ForeignKeyConstraint buildForeignKeyConstraint(Vector fkFieldNames, Vector pkFieldNames, TableDefinition targetTable, DatabasePlatform platform) {
+    protected ForeignKeyConstraint buildForeignKeyConstraint(List fkFieldNames, List pkFieldNames, TableDefinition targetTable, DatabasePlatform platform) {
         assert fkFieldNames.size() > 0 && fkFieldNames.size() == pkFieldNames.size();
         
         ForeignKeyConstraint fkConstraint = new ForeignKeyConstraint();
@@ -657,17 +659,16 @@ public class TableDefinition extends DatabaseObjectDefinition {
     public Object clone() {
         TableDefinition clone = (TableDefinition)super.clone();
         if (fields != null) {
-            clone.setFields(new Vector<FieldDefinition>(fields.size()));
-            for (Enumeration enumtr = getFields().elements(); enumtr.hasMoreElements();) {
-                FieldDefinition fieldDef = (FieldDefinition)enumtr.nextElement();
+            clone.setFields(new ArrayList<FieldDefinition>(fields.size()));
+            for (FieldDefinition fieldDef : getFields()) {
                 clone.addField((FieldDefinition)fieldDef.clone());
             }
         }
         if (foreignKeyMap != null) {
-            clone.setForeignKeyMap((HashMap) foreignKeyMap.clone());
+            clone.setForeignKeyMap(new HashMap(this.foreignKeyMap));
         }
         if (uniqueKeys != null) {
-            clone.setUniqueKeys((Vector)uniqueKeys.clone());
+            clone.setUniqueKeys(new ArrayList(this.uniqueKeys));
         }        
         return clone;
     }
@@ -692,18 +693,9 @@ public class TableDefinition extends DatabaseObjectDefinition {
                 || session.getPlatform().requiresUniqueConstraintCreationOnTableCreate()) {
             return;
         }
-        for (Enumeration uniqueKeysEnum = getUniqueKeys().elements();
-                 uniqueKeysEnum.hasMoreElements();) {              
-            UniqueKeyConstraint uniqueKey = (UniqueKeyConstraint)uniqueKeysEnum.nextElement();
+        for (UniqueKeyConstraint uniqueKey : getUniqueKeys()) {
             buildUniqueConstraintCreationWriter(session, uniqueKey, schemaWriter).toString();
-            try {
-                if (createSQLFiles) {
-                    schemaWriter.write(session.getPlatform().getStoredProcedureTerminationToken());
-                }
-                schemaWriter.write("\n");
-            } catch (IOException exception) {
-                throw ValidationException.fileError(exception);
-            }
+            writeLineSeperator(session, schemaWriter);
         }            
     }
 
@@ -715,15 +707,8 @@ public class TableDefinition extends DatabaseObjectDefinition {
 
         if (session.getPlatform().supportsForeignKeyConstraints()) {
             for (ForeignKeyConstraint foreignKey : getForeignKeyMap().values()) {
-            buildConstraintCreationWriter(session, foreignKey, schemaWriter).toString();
-                try {
-                    if (createSQLFiles) {
-                    schemaWriter.write(session.getPlatform().getStoredProcedureTerminationToken());
-                    }
-                    schemaWriter.write("\n");
-                } catch (IOException exception) {
-                    throw ValidationException.fileError(exception);
-                }
+                buildConstraintCreationWriter(session, foreignKey, schemaWriter).toString();
+                writeLineSeperator(session, schemaWriter);
             }
         }
     }
@@ -744,9 +729,7 @@ public class TableDefinition extends DatabaseObjectDefinition {
             return;
         }
 
-        for (Enumeration uniqueKeysEnum = getUniqueKeys().elements();
-                 uniqueKeysEnum.hasMoreElements();) {            
-            UniqueKeyConstraint uniqueKey = (UniqueKeyConstraint)uniqueKeysEnum.nextElement();
+        for (UniqueKeyConstraint uniqueKey : getUniqueKeys()) {
             session.executeNonSelectingCall(new org.eclipse.persistence.queries.SQLCall(buildUniqueConstraintCreationWriter(session, uniqueKey, new StringWriter()).toString()));
         } 
     }
@@ -763,66 +746,40 @@ public class TableDefinition extends DatabaseObjectDefinition {
 
     /**
      * INTERNAL:<br/>
-     * Write the SQL create index string to create index on primary key if
+     * Write the SQL create index string to create index if
      * passed a writer, else delegate to a method that executes the string on
      * the database.
      * 
-     * @see #createIndexOnPrimaryKeyOnDatabase(AbstractSession)
-     * @throws ValidationException
-     *             wraps any IOException from the writer
+     * @throws ValidationException wraps any IOException from the writer
      */
-    public void createIndexOnPrimaryKey(AbstractSession session,
-            Writer schemaWriter) {
-        if (schemaWriter == null) {
-            createIndexOnPrimaryKeyOnDatabase(session);
+    public void createIndexes(AbstractSession session, Writer writer) {
+        if (!session.getPlatform().supportsIndexes()) {
             return;
         }
+        // Primary key
         if (session.getPlatform().shouldCreateIndicesForPrimaryKeys()) {
-
             List<String> primKeyList = getPrimaryKeyFieldNames();
             if (!primKeyList.isEmpty()) {
-
-                buildIndexCreationWriter(session, primKeyList.get(0),
-                        primKeyList, schemaWriter);
-                try {
-                    if (createSQLFiles) {
-                        schemaWriter.write(session.getPlatform()
-                                .getStoredProcedureTerminationToken());
-                    }
-                    schemaWriter.write("\n");
-                } catch (IOException exception) {
-                    throw ValidationException.fileError(exception);
+                IndexDefinition index = buildIndex(session, primKeyList.get(0), primKeyList);
+                if (writer == null) {
+                    index.createOnDatabase(session);
+                } else {
+                    index.buildCreationWriter(session, writer);
+                    writeLineSeperator(session, writer);
                 }
             }
         }
-    }
-
-    /**
-     * INTERNAL:<br/>
-     * Write the SQL create index string if passed a writer, else delegate to a
-     * method that executes the string on the database.
-     * 
-     * @see #createIndicesOnUniqueKeysOnDatabase(AbstractSession)
-     * @throws ValidationException
-     *             wraps any IOException from the writer
-     */
-    public void createIndicesOnUniqueKeys(AbstractSession session,
-            Writer schemaWriter) throws EclipseLinkException {
-        if (schemaWriter == null) {
-            createIndicesOnUniqueKeysOnDatabase(session);
-            return;
-        }
-
-        try {
+        // Unique keys
+        if (session.getPlatform().shouldCreateIndicesOnUniqueKeys()) {
             // indices for columns in unique key constraint declarations
             for (UniqueKeyConstraint uniqueKey : getUniqueKeys()) {
-                buildIndexCreationWriter(session, uniqueKey.getName(),
-                        uniqueKey.getSourceFields(), schemaWriter);
-                if (createSQLFiles) {
-                    schemaWriter.write(session.getPlatform()
-                            .getStoredProcedureTerminationToken());
+                IndexDefinition index = buildIndex(session, uniqueKey.getName(), uniqueKey.getSourceFields());
+                if (writer == null) {
+                    index.createOnDatabase(session);
+                } else {
+                    index.buildCreationWriter(session, writer);
+                    writeLineSeperator(session, writer);
                 }
-                schemaWriter.write("\n");
             }
 
             // indices for columns with unique=true declarations
@@ -830,69 +787,35 @@ public class TableDefinition extends DatabaseObjectDefinition {
                 if (field.isUnique()) {
                     List<String> columnAsList = new ArrayList<String>();
                     columnAsList.add(field.getName());
-                    buildIndexCreationWriter(session, field.getName(),
-                            columnAsList, schemaWriter);
-                    if (createSQLFiles) {
-                        schemaWriter.write(session.getPlatform()
-                                .getStoredProcedureTerminationToken());
+                    IndexDefinition index = buildIndex(session, field.getName(), columnAsList);
+                    if (writer == null) {
+                        index.createOnDatabase(session);
+                    } else {
+                        index.buildCreationWriter(session, writer);
+                        writeLineSeperator(session, writer);
                     }
-                    schemaWriter.write("\n");
                 }
             }
+        }
+        // Indexes
+        for (IndexDefinition index : getIndexes()) {
+            if (writer == null) {
+                index.createOnDatabase(session);
+            } else {
+                index.buildCreationWriter(session, writer);
+                writeLineSeperator(session, writer);
+            }
+        }
+    }
+
+    public void writeLineSeperator(AbstractSession session, Writer writer) {
+        try {
+            if (this.createSQLFiles) {
+                writer.write(session.getPlatform().getStoredProcedureTerminationToken());
+            }
+            writer.write("\n");
         } catch (IOException exception) {
             throw ValidationException.fileError(exception);
-        }
-    }
-
-    /**
-     * INTERNAL:<br/>
-     * Execute the SQL create index statement to create index on the primary
-     * key.
-     */
-    public void createIndexOnPrimaryKeyOnDatabase(AbstractSession session) {
-        if (session.getPlatform().shouldCreateIndicesForPrimaryKeys()) {
-
-            List<String> primKeyList = getPrimaryKeyFieldNames();
-            if (!primKeyList.isEmpty()) {
-                session.executeNonSelectingCall(new org.eclipse.persistence.queries.SQLCall(
-                        buildIndexCreationWriter(session, primKeyList.get(0),
-                                primKeyList, new StringWriter())
-                                        .toString()));
-            }
-        }
-    }
-
-    /**
-     * INTERNAL:<br/>
-     * Execute the SQL create index statement to create index on the unique
-     * keys.
-     */
-    public void createIndicesOnUniqueKeysOnDatabase(AbstractSession session) {
-        if (!session.getPlatform().shouldCreateIndicesOnUniqueKeys()) {
-            return;
-        }
-
-        // indices for columns in unique key constraint declarations
-        for (UniqueKeyConstraint uniqueKey : getUniqueKeys()) {
-            session
-                    .executeNonSelectingCall(new org.eclipse.persistence.queries.SQLCall(
-                            buildIndexCreationWriter(session,
-                                    uniqueKey.getName(),
-                                    uniqueKey.getSourceFields(),
-                                    new StringWriter()).toString()));
-        }
-
-        // indices for columns with unique=true (or equivalent)
-        for (FieldDefinition field : getFields()) {
-            if (field.isUnique()) {
-                List<String> columnAsList = new ArrayList<String>();
-                columnAsList.add(field.getName());
-                session
-                        .executeNonSelectingCall(new org.eclipse.persistence.queries.SQLCall(
-                                buildIndexCreationWriter(session,
-                                        field.getName(), columnAsList,
-                                        new StringWriter()).toString()));
-            }
         }
     }
 
@@ -910,35 +833,19 @@ public class TableDefinition extends DatabaseObjectDefinition {
      */
     public void dropConstraints(AbstractSession session, Writer schemaWriter) throws EclipseLinkException {
         if (schemaWriter == null) {
-            this.dropConstraintsOnDatabase(session);
+            dropConstraintsOnDatabase(session);
         } else {
             if (session.getPlatform().supportsForeignKeyConstraints()){
                 for (ForeignKeyConstraint foreignKey : getForeignKeyMap().values()) {
-                    buildConstraintDeletionWriter(session, foreignKey, schemaWriter).toString();
-                    try {
-                        if (createSQLFiles) {
-                            schemaWriter.write(session.getPlatform().getStoredProcedureTerminationToken());
-                        }
-                        schemaWriter.write("\n");
-                    } catch (IOException exception) {
-                        throw ValidationException.fileError(exception);
-                    }
+                    buildConstraintDeletionWriter(session, foreignKey, schemaWriter);
+                    writeLineSeperator(session, schemaWriter);
                 }
             }
             if (session.getPlatform().supportsUniqueKeyConstraints()
                     && (!session.getPlatform().requiresUniqueConstraintCreationOnTableCreate())) {
-                for (Enumeration uniqueKeysEnum = getUniqueKeys().elements();
-                         uniqueKeysEnum.hasMoreElements();) {        
-                    UniqueKeyConstraint uniqueKey = (UniqueKeyConstraint)uniqueKeysEnum.nextElement();
-                    buildUniqueConstraintDeletionWriter(session, uniqueKey, schemaWriter).toString();
-                    try {
-                        if (createSQLFiles) {                    
-                            schemaWriter.write(session.getPlatform().getStoredProcedureTerminationToken());
-                        }
-                        schemaWriter.write("\n");
-                    } catch (IOException exception) {
-                        throw ValidationException.fileError(exception);
-                    }
+                for (UniqueKeyConstraint uniqueKey : getUniqueKeys()) {
+                    buildUniqueConstraintDeletionWriter(session, uniqueKey, schemaWriter);
+                    writeLineSeperator(session, schemaWriter);
                 }
             }
         }
@@ -961,11 +868,9 @@ public class TableDefinition extends DatabaseObjectDefinition {
             return;
         }
         
-        for (Enumeration uniqueKeysEnum = getUniqueKeys().elements();
-                 uniqueKeysEnum.hasMoreElements();) {
-            UniqueKeyConstraint uniqueKey = (UniqueKeyConstraint)uniqueKeysEnum.nextElement();
+        for (UniqueKeyConstraint uniqueKey : getUniqueKeys()) {
             try {
-                session.executeNonSelectingCall(new org.eclipse.persistence.queries.SQLCall(buildUniqueConstraintDeletionWriter(session, uniqueKey, new StringWriter()).toString()));
+                session.executeNonSelectingCall(new SQLCall(buildUniqueConstraintDeletionWriter(session, uniqueKey, new StringWriter()).toString()));
             } catch (DatabaseException ex) {/* ignore */
             }
         }        
@@ -986,161 +891,100 @@ public class TableDefinition extends DatabaseObjectDefinition {
 
     /**
      * INTERNAL:<br/>
-     * Write the SQL drop index string to drop index on PK if passed a writer,
+     * Write the SQL drop index string to drop indexes if passed a writer,
      * else delegate to a method that executes the string on the database.
-     * 
-     * @see #dropIndexOnPrimaryKeyOnDatabase(AbstractSession)
-     * @throws ValidationException
-     *             wraps any IOException from the writer
+     * @throws ValidationException wraps any IOException from the writer
      */
-    public void dropIndexOnPrimaryKey(AbstractSession session,
-            Writer schemaWriter) throws EclipseLinkException {
-        if (schemaWriter == null) {
-            this.dropIndexOnPrimaryKeyOnDatabase(session);
-        } else {
-            // the following drops indices on primary keys
-            if (session.getPlatform().shouldCreateIndicesForPrimaryKeys()
-                    && !getPrimaryKeyFieldNames().isEmpty()) {
-                try {
-                    buildIndexDeletionWriter(session, getPrimaryKeyFieldNames()
-                            .firstElement(), schemaWriter);
-                    if (createSQLFiles) {
-                        schemaWriter.write(session.getPlatform()
-                                .getStoredProcedureTerminationToken());
+    public void dropIndexes(AbstractSession session, Writer writer) {
+        if (!session.getPlatform().supportsIndexes()) {
+            return;
+        }
+        // Primary key
+        if (session.getPlatform().shouldCreateIndicesForPrimaryKeys()) {
+            List<String> primKeyList = getPrimaryKeyFieldNames();
+            if (!primKeyList.isEmpty()) {
+                IndexDefinition index = buildIndex(session, primKeyList.get(0), primKeyList);
+                if (writer == null) {
+                    try {
+                        index.dropFromDatabase(session);
+                    } catch (Exception notThere) {
+                        //ignore
                     }
-                    schemaWriter.write("\n");
-                } catch (IOException exception) {
-                    throw ValidationException.fileError(exception);
+                } else {
+                    index.buildDeletionWriter(session, writer);
+                    writeLineSeperator(session, writer);
                 }
             }
-        } // end of if
-    }
-
-    /**
-     * INTERNAL:<br/>
-     * Execute the SQL drop index string to drop indices.<br/>
-     * Exceptions are caught and masked so that all the indices are dropped
-     * (even if they don't exist).
-     */
-    public void dropIndicesOnUniqueKeys(AbstractSession session,
-            Writer schemaWriter) throws EclipseLinkException {
-        if (schemaWriter == null) {
-            this.dropIndicesOnUniqueKeysOnDatabase(session);
-        } else {
-            if (session.getPlatform().shouldCreateIndicesOnUniqueKeys()) {
-                try {
-
-                    // drop indices on unique keys declared using annotation
-                    // "@UniqueConstraint" (or equivalent)
-                    for (UniqueKeyConstraint key : getUniqueKeys()) {
-                        buildIndexDeletionWriter(session, key.getName(),
-                                schemaWriter);
-                        if (createSQLFiles) {
-                            schemaWriter.write(session.getPlatform()
-                                    .getStoredProcedureTerminationToken());
-                        }
-                        schemaWriter.write("\n");
+        }
+        // Unique keys
+        if (session.getPlatform().shouldCreateIndicesOnUniqueKeys()) {
+            // indices for columns in unique key constraint declarations
+            for (UniqueKeyConstraint uniqueKey : getUniqueKeys()) {
+                IndexDefinition index = buildIndex(session, uniqueKey.getName(), uniqueKey.getSourceFields());
+                if (writer == null) {
+                    try {
+                        index.dropFromDatabase(session);
+                    } catch (Exception notThere) {
+                        //ignore
                     }
-
-                    // drop indices for unique keys declared using attribute
-                    // "unique=false" (or equivalent)
-                    for (FieldDefinition field : getFields()) {
-                        if (field.isUnique()) {
-                            buildIndexDeletionWriter(session, field.getName(),
-                                    schemaWriter);
-                            if (createSQLFiles) {
-                                schemaWriter.write(session.getPlatform()
-                                        .getStoredProcedureTerminationToken());
-                            }
-                            schemaWriter.write("\n");
-                        }
-                    }
-                } catch (IOException exception) {
-                    throw ValidationException.fileError(exception);
+                } else {
+                    index.buildDeletionWriter(session, writer);
+                    writeLineSeperator(session, writer);
                 }
-            } // end of if
-        } // end of if-else
-    }
+            }
 
-    /**
-     * INTERNAL:<br/>
-     * Execute the SQL drop index string to drop the index on the PK.<br/>
-     * Exceptions are caught and masked (even if index doesn't exist).
-     */
-    public void dropIndexOnPrimaryKeyOnDatabase(AbstractSession session)
-            throws EclipseLinkException {
-        if ((session.getPlatform().shouldCreateIndicesForPrimaryKeys())
-                && !getPrimaryKeyFieldNames().isEmpty()) {
-            try {
-                session
-                        .executeNonSelectingCall(new org.eclipse.persistence.queries.SQLCall(
-                                buildIndexDeletionWriter(
-                                        session,
-                                        getPrimaryKeyFieldNames()
-                                                .firstElement(),
-                                        new StringWriter()).toString()));
-            } catch (DatabaseException ex) {/* ignore */
+            // indices for columns with unique=true declarations
+            for (FieldDefinition field : getFields()) {
+                if (field.isUnique()) {
+                    List<String> columnAsList = new ArrayList<String>();
+                    columnAsList.add(field.getName());
+                    IndexDefinition index = buildIndex(session, field.getName(), columnAsList);
+                    if (writer == null) {
+                        try {
+                            index.dropFromDatabase(session);
+                        } catch (Exception notThere) {
+                            //ignore
+                        }
+                    } else {
+                        index.buildDeletionWriter(session, writer);
+                        writeLineSeperator(session, writer);
+                    }
+                }
+            }
+        }
+        // Indexes
+        for (IndexDefinition index : getIndexes()) {
+            if (writer == null) {
+                try {
+                    index.dropFromDatabase(session);
+                } catch (Exception notThere) {
+                    //ignore
+                }
+            } else {
+                index.buildDeletionWriter(session, writer);
+                writeLineSeperator(session, writer);
             }
         }
     }
 
     /**
-     * INTERNAL:<br/>
-     * Execute the SQL drop index string on the database.<br/>
-     * Exceptions are caught and masked so that all the indices are dropped
-     * (even if they don't exist).
-     */
-    public void dropIndicesOnUniqueKeysOnDatabase(AbstractSession session)
-            throws EclipseLinkException {
-        // the following drops indices for unique keys declared using annotation
-        // "@UniqueConstraint" (or equivalent)
-        if (session.getPlatform().shouldCreateIndicesOnUniqueKeys()) {
-            for (UniqueKeyConstraint key : getUniqueKeys()) {
-                try {
-                    session
-                            .executeNonSelectingCall(new org.eclipse.persistence.queries.SQLCall(
-                                    buildIndexDeletionWriter(session,
-                                            key.getName(), new StringWriter())
-                                            .toString()));
-                } catch (DatabaseException ex) {/* ignore */
-                }
-            }
-
-            // the following drops indices for unique keys declared using
-            // attribute "unique=false" (or equivalent)
-            for (FieldDefinition field : getFields()) {
-                if (field.isUnique()) {
-                    try {
-                        session
-                                .executeNonSelectingCall(new org.eclipse.persistence.queries.SQLCall(
-                                        buildIndexDeletionWriter(session,
-                                                field.getName(),
-                                                new StringWriter()).toString()));
-                    } catch (DatabaseException ex) {/* ignore */
-                    }
-                }
-            } // end of for
-        } // end of if
-    }
-
-    /**
      * INTERNAL:
      */
-    HashMap<String, ForeignKeyConstraint> getForeignKeyMap() {
+    public Map<String, ForeignKeyConstraint> getForeignKeyMap() {
         return foreignKeyMap;
     }
 
     /**
      * INTERNAL:
      */
-    void setForeignKeyMap(HashMap<String, ForeignKeyConstraint> foreignKeyMap) {
+    public void setForeignKeyMap(Map<String, ForeignKeyConstraint> foreignKeyMap) {
         this.foreignKeyMap = foreignKeyMap;
     }
 
     /**
      * PUBLIC:
      */
-    public Vector<FieldDefinition> getFields() {
+    public List<FieldDefinition> getFields() {
         return fields;
     }
 
@@ -1148,27 +992,40 @@ public class TableDefinition extends DatabaseObjectDefinition {
      * PUBLIC:
      * Returns the ForeignKeyConstraint list.
      */
-    public Vector<ForeignKeyConstraint> getForeignKeys() {
-        return new Vector<ForeignKeyConstraint>(foreignKeyMap.values());
+    public Collection<ForeignKeyConstraint> getForeignKeys() {
+        return this.foreignKeyMap.values();
     }
 
     /**
      * PUBLIC:
      */
-    public Vector<UniqueKeyConstraint> getUniqueKeys() {
+    public List<UniqueKeyConstraint> getUniqueKeys() {
         return uniqueKeys;
+    }
+
+    /**
+     * PUBLIC:
+     */
+    public void setIndexes(List<IndexDefinition> indexes) {
+        this.indexes = indexes;
+    }
+
+    /**
+     * PUBLIC:
+     */
+    public List<IndexDefinition> getIndexes() {
+        return indexes;
     }
     
     /**
      * PUBLIC:
      */
-    public Vector<String> getPrimaryKeyFieldNames() {
-        Vector<String> keyNames = new Vector<String>();
+    public List<String> getPrimaryKeyFieldNames() {
+        List<String> keyNames = new ArrayList<String>();
 
-        for (Enumeration fieldEnum = getFields().elements(); fieldEnum.hasMoreElements();) {
-            FieldDefinition field = (FieldDefinition)fieldEnum.nextElement();
+        for (FieldDefinition field : getFields()) {
             if (field.isPrimaryKey()) {
-                keyNames.addElement(field.getName());
+                keyNames.add(field.getName());
             }
         }
         return keyNames;
@@ -1183,8 +1040,7 @@ public class TableDefinition extends DatabaseObjectDefinition {
     public void postCreateObject(AbstractSession session, Writer createSchemaWriter, boolean createSQLFiles){
         // create indices on table's primary and unique keys (if required)
         setCreateSQLFiles(createSQLFiles);
-        createIndexOnPrimaryKey(session, createSchemaWriter);
-        createIndicesOnUniqueKeys(session, createSchemaWriter);
+        createIndexes(session, createSchemaWriter);
     }
     
     /**
@@ -1192,17 +1048,16 @@ public class TableDefinition extends DatabaseObjectDefinition {
      * @param session
      * @param dropSchemaWriter
      */
-    public void preDropObject(AbstractSession session, Writer dropSchemaWriter, boolean createSQLFiles){
+    public void preDropObject(AbstractSession session, Writer dropSchemaWriter, boolean createSQLFiles) {
         // drop indices on table's primary and unique keys (if required)
         setCreateSQLFiles(createSQLFiles);
-        dropIndicesOnUniqueKeys(session, dropSchemaWriter);
-        dropIndexOnPrimaryKey(session, dropSchemaWriter);
+        dropIndexes(session, dropSchemaWriter);
     }
     
     /**
      * PUBLIC:
      */
-    public void setFields(Vector<FieldDefinition> fields) {
+    public void setFields(List<FieldDefinition> fields) {
         this.fields = fields;
     }
 
@@ -1211,11 +1066,11 @@ public class TableDefinition extends DatabaseObjectDefinition {
      * Set the ForeignKeyConstraint list.
      * If the list contains the same name foreign key constraints, only the first one of that name will be added.
      */
-    public void setForeignKeys(Vector<ForeignKeyConstraint> foreignKeys) {
-        foreignKeyMap.clear();
+    public void setForeignKeys(List<ForeignKeyConstraint> foreignKeys) {
+        this.foreignKeyMap.clear();
         if (foreignKeys != null) {
-            for(ForeignKeyConstraint foreignKey : foreignKeys) {
-                foreignKeyMap.put(foreignKey .getName(), foreignKey);
+            for( ForeignKeyConstraint foreignKey : foreignKeys) {
+                this.foreignKeyMap.put(foreignKey.getName(), foreignKey);
             }
         }
     }
@@ -1223,7 +1078,7 @@ public class TableDefinition extends DatabaseObjectDefinition {
     /**
      * PUBLIC:
      */
-    public void setUniqueKeys(Vector<UniqueKeyConstraint> uniqueKeys) {
+    public void setUniqueKeys(List<UniqueKeyConstraint> uniqueKeys) {
         this.uniqueKeys = uniqueKeys;
     }
     

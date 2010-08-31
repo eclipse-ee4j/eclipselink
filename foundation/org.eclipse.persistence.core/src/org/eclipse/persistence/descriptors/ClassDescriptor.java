@@ -5357,14 +5357,6 @@ public class ClassDescriptor implements Cloneable, Serializable {
 
     /**
      * INTERNAL:
-     * Return true if the descriptor is a CMP entity descriptor
-     */
-    public boolean isDescriptorForCMP() {
-        return (this.getCMPPolicy() != null);
-    }
-
-    /**
-     * INTERNAL:
      * Return if the descriptor has a fetch group manager associated with.
      */
     public boolean hasFetchGroupManager() {

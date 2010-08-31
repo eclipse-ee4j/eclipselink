@@ -22,6 +22,9 @@ import javax.persistence.Lob;
 import javax.persistence.Table;
 import javax.persistence.TableGenerator;
 
+import org.eclipse.persistence.annotations.Index;
+import org.eclipse.persistence.annotations.Indexes;
+
 @Entity
 @Table(name="DDL_COMMENT")
 @TableGenerator(
@@ -31,6 +34,11 @@ import javax.persistence.TableGenerator;
     valueColumnName = "SEQ_COUNT",
     pkColumnValue = "COMMENT_SEQ"
 )
+@Index(name="DDL_COMMENT_TEXT_IX", unique=true, columnNames={"TEXT"})
+@Indexes({
+    @Index(name="DDL_COMMENT_FLAG_IX", columnNames={"FLAG"}),
+    @Index(columnNames={"FLAG", "TEXT"})
+})
 public class Comment<X> {
     @Id
     @GeneratedValue(strategy = TABLE, generator = "COMMENT_TABLE_GENERATOR")

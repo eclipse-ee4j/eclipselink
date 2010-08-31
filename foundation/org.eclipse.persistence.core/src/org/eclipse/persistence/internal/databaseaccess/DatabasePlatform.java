@@ -2164,20 +2164,36 @@ public class DatabasePlatform extends DatasourcePlatform {
     }
 
     /**
-     *  INTERNAL
-     *    Indicates whether a separate transaction is required for NativeSequence.
-     *  This method is to be used *ONLY* by sequencing classes
+     * INTERNAL:
+     * Indicates whether a separate transaction is required for NativeSequence.
+     * This method is to be used *ONLY* by sequencing classes
      */
     public boolean shouldNativeSequenceUseTransaction() {
         return false;
     }
 
     /**
-     *  INTERNAL:
-     *  Indicates whether the platform supports identity.
-     *  This method is to be used *ONLY* by sequencing classes
+     * INTERNAL:
+     * Indicates whether the platform supports identity.
+     * This method is to be used *ONLY* by sequencing classes
      */
     public boolean supportsIdentity() {
+        return false;
+    }
+
+    /**
+     * INTERNAL:
+     * Return if this database support index creation.
+     */
+    public boolean supportsIndexes() {
+        return true;
+    }
+
+    /**
+     * INTERNAL:
+     * Return if this database requires the table name when dropping an index.
+     */
+    public boolean requiresTableInIndexDropDDL() {
         return false;
     }
 

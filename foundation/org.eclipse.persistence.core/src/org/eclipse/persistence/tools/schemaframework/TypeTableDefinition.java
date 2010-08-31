@@ -40,12 +40,12 @@ public class TypeTableDefinition extends TableDefinition {
     public Writer buildCreationWriter(AbstractSession session, Writer writer) {
         try {
             writer.write("CREATE TABLE " + getFullName() + " OF " + getTypeName() + " (");
-            Vector keyFields = getPrimaryKeyFieldNames();
+            List<String> keyFields = getPrimaryKeyFieldNames();
             if ((!keyFields.isEmpty()) && session.getPlatform().supportsPrimaryKeyConstraint()) {
                 writer.write("PRIMARY KEY (");
-                for (Enumeration keyEnum = keyFields.elements(); keyEnum.hasMoreElements();) {
-                    writer.write((String)keyEnum.nextElement());
-                    if (keyEnum.hasMoreElements()) {
+                for (Iterator<String> iterator = keyFields.iterator(); iterator.hasNext();) {
+                    writer.write(iterator.next());
+                    if (iterator.hasNext()) {
                         writer.write(", ");
                     }
                 }

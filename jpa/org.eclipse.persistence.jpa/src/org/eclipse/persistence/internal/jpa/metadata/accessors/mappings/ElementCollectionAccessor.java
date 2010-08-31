@@ -781,6 +781,8 @@ public class ElementCollectionAccessor extends DirectCollectionAccessor implemen
         // association overrides that are available to us and that may be used
         // to override any field name translations.
         processMappingsFromEmbeddable(referenceDescriptor, null, mapping, getAttributeOverrides(m_attributeOverrides), getAssociationOverrides(m_associationOverrides), "");
+
+        processIndexes();
     }
     
     /**

@@ -610,19 +610,24 @@ public class DefaultTableGenerator {
     /**
      * Build a table definition object from a database table object
      */
-    private TableDefinition getTableDefFromDBTable(DatabaseTable dbTbl) {
-        TableDefinition tblDef = this.tableMap.get(dbTbl.getName());
+    private TableDefinition getTableDefFromDBTable(DatabaseTable databaseTable) {
+        TableDefinition tableDefinition = this.tableMap.get(databaseTable.getName());
 
-        if (tblDef == null) {
+        if (tableDefinition == null) {
             //table not built yet, simply built it
-            tblDef = new TableDefinition();
-            tblDef.setName(dbTbl.getNameDelimited(databasePlatform));
-            tblDef.setQualifier(dbTbl.getTableQualifier());
-            addUniqueKeyConstraints(tblDef, dbTbl.getUniqueConstraints());
-            tableMap.put(dbTbl.getName(), tblDef);
+            tableDefinition = new TableDefinition();
+            tableDefinition.setName(databaseTable.getNameDelimited(databasePlatform));
+            tableDefinition.setQualifier(databaseTable.getTableQualifier());
+            if (databaseTable.hasUniqueConstraints()) {
+                addUniqueKeyConstraints(tableDefinition, databaseTable.getUniqueConstraints());
+            }
+            if (databaseTable.hasIndexes()) {
+                tableDefinition.getIndexes().addAll(databaseTable.getIndexes());
+            }
+            tableMap.put(databaseTable.getName(), tableDefinition);
         }
 
-        return tblDef;
+        return tableDefinition;
     }
 
     /**
@@ -921,11 +926,11 @@ public class DefaultTableGenerator {
         sourceTableDef.addForeignKeyConstraint(fkc);
     }
     
-    private void addUniqueKeyConstraints(TableDefinition sourceTableDef, Map<String, Vector<List<String>>> uniqueConstraintsMap) {
+    private void addUniqueKeyConstraints(TableDefinition sourceTableDef, Map<String, List<List<String>>> uniqueConstraintsMap) {
         int serialNumber = -1;
         
         for (String name : uniqueConstraintsMap.keySet()) {
-            Vector<List<String>> uniqueConstraints = uniqueConstraintsMap.get(name);
+            List<List<String>> uniqueConstraints = uniqueConstraintsMap.get(name);
            
             for (List<String> uniqueConstraint : uniqueConstraints) {
                 if (uniqueConstraint != null) {

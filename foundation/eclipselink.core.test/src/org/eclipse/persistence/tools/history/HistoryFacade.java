@@ -60,9 +60,7 @@ public class HistoryFacade {
         histDef.addField(fieldDef);
         histDef.setForeignKeys(new Vector());
 
-        for (Enumeration enumtr = histDef.getFields().elements(); 
-             enumtr.hasMoreElements(); ) {
-            FieldDefinition fieldDef2 = (FieldDefinition)enumtr.nextElement();
+        for (FieldDefinition fieldDef2 : histDef.getFields()) {
             // For now foreign key constraints are not supported, because shallow inserts are not...
             fieldDef2.setForeignKeyFieldName(null);
             if (fieldDef2.getName().equals("ROW_START") && 

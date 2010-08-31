@@ -1117,11 +1117,11 @@ public class SQLSelectStatement extends SQLStatement {
     }
 
     public boolean hasOrderSiblingsByExpressions() {
-        return orderSiblingsByExpressions != null;
+        return (orderSiblingsByExpressions != null) && (!orderSiblingsByExpressions.isEmpty());
     }
 
     public boolean hasHierarchicalQueryExpressions() {
-        return ((startWithExpression != null) || (connectByExpression != null) || (orderSiblingsByExpressions != null));
+        return ((startWithExpression != null) || (connectByExpression != null) || ((orderSiblingsByExpressions != null) && (!orderSiblingsByExpressions.isEmpty())));
     }
 
     public boolean hasOrderByExpressions() {
@@ -1837,7 +1837,7 @@ public class SQLSelectStatement extends SQLStatement {
      *     
      *     Note that tablesInOrder must contain all tables used by expression
      */
-    protected static SortedSet mapTableIndexToExpression(Expression expression, TreeMap map, Vector tablesInOrder) {
+    public static SortedSet mapTableIndexToExpression(Expression expression, TreeMap map, Vector tablesInOrder) {
         // glassfish issue 2440: 
         // - Use DataExpression.getAliasedField instead of getField. This
         // allows to distinguish source and target tables in case of a self

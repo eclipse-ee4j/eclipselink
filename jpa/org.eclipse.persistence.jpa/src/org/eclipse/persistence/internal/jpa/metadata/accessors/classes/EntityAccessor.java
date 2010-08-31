@@ -92,6 +92,8 @@ import javax.persistence.SecondaryTables;
 import javax.persistence.Table;
 
 import org.eclipse.persistence.annotations.ClassExtractor;
+import org.eclipse.persistence.annotations.Index;
+import org.eclipse.persistence.annotations.Indexes;
 import org.eclipse.persistence.exceptions.ValidationException;
 
 import org.eclipse.persistence.internal.helper.DatabaseTable;
@@ -116,9 +118,11 @@ import org.eclipse.persistence.internal.jpa.metadata.MetadataLogger;
 import org.eclipse.persistence.internal.jpa.metadata.MetadataProject;
 import org.eclipse.persistence.internal.jpa.metadata.ORMetadata;
 
+import org.eclipse.persistence.internal.jpa.metadata.tables.IndexMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.tables.SecondaryTableMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.tables.TableMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.xml.XMLEntityMappings;
+import org.eclipse.persistence.tools.schemaframework.IndexDefinition;
 
 /**
  * An entity accessor.
@@ -133,7 +137,8 @@ public class EntityAccessor extends MappedSuperclassAccessor {
     private List<MappedSuperclassAccessor> m_mappedSuperclasses = new ArrayList<MappedSuperclassAccessor>();
     private List<PrimaryKeyJoinColumnMetadata> m_primaryKeyJoinColumns = new ArrayList<PrimaryKeyJoinColumnMetadata>();
     private List<SecondaryTableMetadata> m_secondaryTables = new ArrayList<SecondaryTableMetadata>();
-    
+    private List<IndexMetadata> m_indexes = new ArrayList<IndexMetadata>();
+
     private MetadataClass m_classExtractor;
     
     private String m_classExtractorName;
@@ -420,6 +425,14 @@ public class EntityAccessor extends MappedSuperclassAccessor {
         return m_table;
     }
     
+    public List<IndexMetadata> getIndexes() {
+        return m_indexes;
+    }
+
+    public void setIndexes(List<IndexMetadata> indexes) {
+        m_indexes = indexes;
+    }
+    
     /**
      * INTERNAL:
      * This method is a little involved since a class extractor is mutually
@@ -679,6 +692,7 @@ public class EntityAccessor extends MappedSuperclassAccessor {
             
         // Process the Table and Inheritance metadata.
         processTableAndInheritance();
+        processIndexes();
         
         // Process the common class level attributes that an entity or mapped 
         // superclass may define. This needs to be done before processing
@@ -1198,6 +1212,72 @@ public class EntityAccessor extends MappedSuperclassAccessor {
             }
 
             processTable(m_table);                
+        }
+    }
+    
+    /**
+     * INTERNAL:
+     * Process index information for the given metadata descriptor.
+     */
+    protected void processIndexes() {
+        MetadataAnnotation index = getAnnotation(Index.class);
+        
+        if (index != null) {
+            m_indexes.add(new IndexMetadata(index, getAccessibleObject()));
+        }
+        
+        MetadataAnnotation indexes = getAnnotation(Indexes.class);
+        if (indexes != null) {
+            Object[] indexArray = (Object[])indexes.getAttributeArray("value");
+            for (Object eachIndex : indexArray) {
+                m_indexes.add(new IndexMetadata((MetadataAnnotation)eachIndex, getAccessibleObject()));            
+            }
+        }
+        
+        for (IndexMetadata indexMetadata : m_indexes) {
+            IndexDefinition indexDefinition = new IndexDefinition();
+            if ((indexMetadata.getName() != null) && (indexMetadata.getName().length() != 0)) {
+                indexDefinition.setName(indexMetadata.getName());            
+            } else {
+                String name = "INDEX_" + getDescriptor().getPrimaryTable().getName();
+                for (String column : indexMetadata.getColumnNames()) {
+                    name = name + "_" + column;
+                }
+                indexDefinition.setName(name);
+            }
+            if ((indexMetadata.getSchema() != null) && (indexMetadata.getSchema().length() != 0)) {
+                indexDefinition.setQualifier(indexMetadata.getSchema());
+            } else if ((getDescriptor().getDefaultSchema() != null) && (getDescriptor().getDefaultSchema().length() != 0)) {
+                indexDefinition.setQualifier(indexMetadata.getSchema());                
+            }
+            if ((indexMetadata.getCatalog() != null) && (indexMetadata.getCatalog().length() != 0)) {
+                indexDefinition.setQualifier(indexMetadata.getCatalog());
+            } else if ((getDescriptor().getDefaultCatalog() != null) && (getDescriptor().getDefaultCatalog().length() != 0)) {
+                indexDefinition.setQualifier(getDescriptor().getDefaultCatalog());                
+            }
+            if (indexMetadata.getUnique() != null) {
+                indexDefinition.setIsUnique(indexMetadata.getUnique());
+            }
+            indexDefinition.getFields().addAll(indexMetadata.getColumnNames());
+            String table = indexMetadata.getTable();
+            if ((table == null) || (table.length() == 0)) {
+                indexDefinition.setTargetTable(getDescriptor().getPrimaryTable().getQualifiedName());
+                getDescriptor().getPrimaryTable().getIndexes().add(indexDefinition);
+            } else if (table.equals(getDescriptor().getPrimaryTable().getQualifiedName())
+                        || table.equals(getDescriptor().getPrimaryTable().getName())) {
+                getDescriptor().getPrimaryTable().getIndexes().add(indexDefinition);
+            } else {
+                boolean found = false;
+                for (DatabaseTable databaseTable : getDescriptor().getClassDescriptor().getTables()) {
+                    if (table.equals(databaseTable.getQualifiedName()) || table.equals(databaseTable.getName())) {
+                        databaseTable.getIndexes().add(indexDefinition);
+                        found = true;
+                    }
+                }
+                if (!found) {
+                    getDescriptor().getPrimaryTable().getIndexes().add(indexDefinition);
+                }
+            }
         }
     }
     

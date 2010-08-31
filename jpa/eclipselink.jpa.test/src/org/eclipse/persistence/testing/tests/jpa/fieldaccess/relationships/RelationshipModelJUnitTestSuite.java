@@ -34,6 +34,7 @@ import org.eclipse.persistence.internal.queries.MapContainerPolicy;
 import org.eclipse.persistence.queries.ReadAllQuery;
 import org.eclipse.persistence.queries.ReadObjectQuery;
 import org.eclipse.persistence.sessions.server.ServerSession;
+import org.eclipse.persistence.testing.framework.QuerySQLTracker;
 import org.eclipse.persistence.testing.framework.junit.JUnitTestCase;
 import org.eclipse.persistence.testing.models.jpa.fieldaccess.relationships.*;
 
@@ -51,7 +52,11 @@ public class RelationshipModelJUnitTestSuite extends JUnitTestCase {
         TestSuite suite = new TestSuite();
         suite.setName("RelationshipModelJUnitTestSuite (field access)");
         
-        suite.addTest(new RelationshipModelJUnitTestSuite("testSetup")); 
+        suite.addTest(new RelationshipModelJUnitTestSuite("testSetup"));
+        suite.addTest(new RelationshipModelJUnitTestSuite("testPersistCustomer"));
+        suite.addTest(new RelationshipModelJUnitTestSuite("testUpdateCustomer"));
+        suite.addTest(new RelationshipModelJUnitTestSuite("testReadCustomer"));
+        suite.addTest(new RelationshipModelJUnitTestSuite("testDeleteCustomer"));
         suite.addTest(new RelationshipModelJUnitTestSuite("testExecuteUpdateTest"));
         suite.addTest(new RelationshipModelJUnitTestSuite("testGetResultCollectionTest"));
         suite.addTest(new RelationshipModelJUnitTestSuite("testGetResultListTest"));
@@ -509,6 +514,171 @@ public class RelationshipModelJUnitTestSuite extends JUnitTestCase {
         }
         if (list.size() != 1) {
             fail("One order is expected but " + list.size() + " was returned");
+        }
+    }
+    
+    // Test that persisting a customer works correctly.
+    public void testPersistCustomer() {
+        Customer customer = RelationshipsExamples.customerExample4();
+        Item item1 = RelationshipsExamples.itemExample1();
+        Order order1 = RelationshipsExamples.orderExample1();
+        customer.addOrder(order1);
+        order1.setItem(item1);
+        Item item2 = RelationshipsExamples.itemExample2();
+        Order order2 = RelationshipsExamples.orderExample2();
+        customer.addOrder(order2);
+        order2.setItem(item2);
+        Item item3 = RelationshipsExamples.itemExample3();
+        Order order3 = RelationshipsExamples.orderExample3();
+        customer.addOrder(order3);
+        order3.setItem(item3);
+        EntityManager em = createEntityManager();
+        try {
+            beginTransaction(em);
+            em.persist(customer);
+            commitTransaction(em);
+            verifyObjectInEntityManager(customer);
+            verifyObjectInEntityManager(order1);
+            verifyObjectInEntityManager(order2);
+            verifyObjectInEntityManager(item1);
+            verifyObjectInEntityManager(item2);
+            clearCache();
+            verifyObjectInEntityManager(customer);
+            verifyObjectInEntityManager(order1);
+            verifyObjectInEntityManager(order2);
+            verifyObjectInEntityManager(item1);
+            verifyObjectInEntityManager(item2);        
+        } finally {
+            if (isTransactionActive(em)) {
+                rollbackTransaction(em);
+            }
+            closeEntityManager(em);
+        }        
+    }
+    
+    // Test that updating a customer works correctly.
+    public void testUpdateCustomer() {        
+        Customer customer = RelationshipsExamples.customerExample4();
+        EntityManager em = createEntityManager();
+        try {
+            beginTransaction(em);
+            em.persist(customer);
+            commitTransaction(em);
+            closeEntityManager(em);
+            clearCache();
+            em = createEntityManager();
+            beginTransaction(em);
+            customer = em.find(Customer.class, customer.getCustomerId());
+            Item item1 = RelationshipsExamples.itemExample1();
+            Order order1 = RelationshipsExamples.orderExample1();
+            customer.addOrder(order1);
+            order1.setItem(item1);
+            em.flush();
+            Item item2 = RelationshipsExamples.itemExample2();
+            Order order2 = RelationshipsExamples.orderExample2();
+            customer.addOrder(order2);
+            order2.setItem(item2);
+            Item item3 = RelationshipsExamples.itemExample3();
+            Order order3 = RelationshipsExamples.orderExample3();
+            customer.addOrder(order3);
+            order3.setItem(item3);
+            commitTransaction(em);
+            verifyObjectInEntityManager(customer);
+            verifyObjectInEntityManager(order1);
+            verifyObjectInEntityManager(item1);
+            verifyObjectInEntityManager(order2);
+            verifyObjectInEntityManager(item2);
+            verifyObjectInEntityManager(order3);
+            verifyObjectInEntityManager(item3);
+            clearCache();
+            verifyObjectInEntityManager(customer);
+            verifyObjectInEntityManager(order1);
+            verifyObjectInEntityManager(item1);
+            verifyObjectInEntityManager(order2);
+            verifyObjectInEntityManager(item2);
+            verifyObjectInEntityManager(order3);
+            verifyObjectInEntityManager(item3);
+            clearCache();
+        } finally {
+            if (isTransactionActive(em)) {
+                rollbackTransaction(em);
+            }
+            closeEntityManager(em);
+        }
+    }
+        
+    // Test that deleting a customer works correctly.
+    public void testDeleteCustomer() {        
+        Customer customer = RelationshipsExamples.customerExample4();
+        EntityManager em = createEntityManager();
+        try {
+            beginTransaction(em);
+            Item item1 = RelationshipsExamples.itemExample1();
+            Order order1 = RelationshipsExamples.orderExample1();
+            customer.addOrder(order1);
+            order1.setItem(item1);
+            Item item2 = RelationshipsExamples.itemExample2();
+            Order order2 = RelationshipsExamples.orderExample2();
+            customer.addOrder(order2);
+            order2.setItem(item2);
+            Item item3 = RelationshipsExamples.itemExample3();
+            Order order3 = RelationshipsExamples.orderExample3();
+            customer.addOrder(order3);
+            order3.setItem(item3);
+            em.persist(customer);
+            commitTransaction(em);
+            closeEntityManager(em);
+            clearCache();
+            em = createEntityManager();
+            beginTransaction(em);
+            customer = em.find(Customer.class, customer.getCustomerId());
+            em.remove(customer);
+            commitTransaction(em);            
+            verifyDelete(customer);
+        } finally {
+            if (isTransactionActive(em)) {
+                rollbackTransaction(em);
+            }
+            closeEntityManager(em);
+        }
+    }
+        
+    // Test reading a customer works correctly.
+    public void testReadCustomer() {        
+        Customer customer = RelationshipsExamples.customerExample4();
+        EntityManager em = createEntityManager();
+        try {
+            beginTransaction(em);
+            Item item1 = RelationshipsExamples.itemExample1();
+            Order order1 = RelationshipsExamples.orderExample1();
+            customer.addOrder(order1);
+            order1.setItem(item1);
+            Item item2 = RelationshipsExamples.itemExample2();
+            Order order2 = RelationshipsExamples.orderExample2();
+            customer.addOrder(order2);
+            order2.setItem(item2);
+            Item item3 = RelationshipsExamples.itemExample3();
+            Order order3 = RelationshipsExamples.orderExample3();
+            customer.addOrder(order3);
+            order3.setItem(item3);
+            em.persist(customer);
+            commitTransaction(em);
+            closeEntityManager(em);
+            clearCache();
+            em = createEntityManager();
+            QuerySQLTracker counter = new QuerySQLTracker(getServerSession());
+            customer = em.find(Customer.class, customer.getCustomerId());
+            for (Order order : customer.getOrders()) {
+                order.getCustomer();
+            }
+            if (isWeavingEnabled() && counter.getSqlStatements().size() > 2) {
+                fail("Should have been " + 3 + " queries but was: " + counter.getSqlStatements().size());
+            }
+        } finally {
+            if (isTransactionActive(em)) {
+                rollbackTransaction(em);
+            }
+            closeEntityManager(em);
         }
     }
 }

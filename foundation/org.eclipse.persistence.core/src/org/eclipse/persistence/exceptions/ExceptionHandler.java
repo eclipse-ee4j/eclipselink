@@ -14,15 +14,15 @@ package org.eclipse.persistence.exceptions;
 
 
 /**
- *     Exception handler can catch errors that occur on queries or during database access.
- *    The exception handler has the option of re-throwing the exception,throwing a different
- *    exception or re-trying the query or database operation.
+ * Exception handler can catch errors that occur on queries or during database access.
+ * The exception handler has the option of re-throwing the exception,throwing a different
+ * exception or re-trying the query or database operation.
  */
 public interface ExceptionHandler {
 
     /**
-     *    To re-throwing the exception,throwing a different
-     *    exception or re-trying the query or database operation.
+     * To re-throwing the exception,throwing a different
+     * exception or re-trying the query or database operation.
      */
     Object handleException(RuntimeException exception);
 }

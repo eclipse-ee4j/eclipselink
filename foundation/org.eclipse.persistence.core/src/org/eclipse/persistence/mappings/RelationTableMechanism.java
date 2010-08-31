@@ -15,6 +15,7 @@ package org.eclipse.persistence.mappings;
 
 import java.util.ArrayList;
 import java.util.Enumeration;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Vector;
 
@@ -133,34 +134,26 @@ public class RelationTableMechanism  implements Cloneable {
     Expression buildSelectionCriteria(ForeignReferenceMapping mapping, Expression criteria) {
         return buildSelectionCriteriaAndAddFieldsToQueryInternal(mapping, criteria, true, false);
     }
+    
     Expression buildSelectionCriteriaAndAddFieldsToQuery(ForeignReferenceMapping mapping, Expression criteria) {
         return buildSelectionCriteriaAndAddFieldsToQueryInternal(mapping, criteria, true, true);
     }
-    protected Expression buildSelectionCriteriaAndAddFieldsToQueryInternal(ForeignReferenceMapping mapping, Expression criteria, boolean shouldAddTargetFields, boolean shouldAddFieldsToQuery) {
-        DatabaseField relationKey;
-        DatabaseField sourceKey;
-        DatabaseField targetKey;
-        Expression exp1;
-        Expression exp2;
-        Expression expression;
+    
+    /**
+     * INTERNAL:
+     * Build the selection criteria to join the source, relation, and target tables.
+     */
+    public Expression buildSelectionCriteriaAndAddFieldsToQueryInternal(ForeignReferenceMapping mapping, Expression criteria, boolean shouldAddTargetFields, boolean shouldAddFieldsToQuery) {
         Expression builder = new ExpressionBuilder();
-        Enumeration relationKeyEnum;
-        Enumeration sourceKeyEnum;
-        Enumeration targetKeyEnum;
-
         Expression linkTable = builder.getTable(this.relationTable);
 
-        if(shouldAddTargetFields) {
-            targetKeyEnum = getTargetKeyFields().elements();
-            relationKeyEnum = getTargetRelationKeyFields().elements();
-            for (; targetKeyEnum.hasMoreElements();) {
-                relationKey = (DatabaseField)relationKeyEnum.nextElement();
-                targetKey = (DatabaseField)targetKeyEnum.nextElement();
-    
-                exp1 = builder.getField(targetKey);
-                exp2 = linkTable.getField(relationKey);
-                expression = exp1.equal(exp2);
-    
+        if (shouldAddTargetFields) {
+            Iterator<DatabaseField> targetKeyIterator = getTargetKeyFields().iterator();
+            Iterator<DatabaseField> relationKeyIterator = getTargetRelationKeyFields().iterator();
+            while (targetKeyIterator.hasNext()) {
+                DatabaseField relationKey = relationKeyIterator.next();
+                DatabaseField targetKey = targetKeyIterator.next();    
+                Expression expression = builder.getField(targetKey).equal(linkTable.getField(relationKey));    
                 if (criteria == null) {
                     criteria = expression;
                 } else {
@@ -169,17 +162,13 @@ public class RelationTableMechanism  implements Cloneable {
             }
         }
 
-        relationKeyEnum = getSourceRelationKeyFields().elements();
-        sourceKeyEnum = getSourceKeyFields().elements();
+        Iterator<DatabaseField> relationKeyIterator = getSourceRelationKeyFields().iterator();
+        Iterator<DatabaseField> sourceKeyIterator = getSourceKeyFields().iterator();
 
-        for (; relationKeyEnum.hasMoreElements();) {
-            relationKey = (DatabaseField)relationKeyEnum.nextElement();
-            sourceKey = (DatabaseField)sourceKeyEnum.nextElement();
-
-            exp1 = linkTable.getField(relationKey);
-            exp2 = builder.getParameter(sourceKey);
-            expression = exp1.equal(exp2);
-
+        while (relationKeyIterator.hasNext()) {
+            DatabaseField relationKey = relationKeyIterator.next();
+            DatabaseField sourceKey = sourceKeyIterator.next();            
+            Expression expression = linkTable.getField(relationKey).equal(builder.getParameter(sourceKey));
             if (criteria == null) {
                 criteria = expression;
             } else {
@@ -187,7 +176,7 @@ public class RelationTableMechanism  implements Cloneable {
             }
         }
         
-        if(shouldAddFieldsToQuery && mapping.isCollectionMapping()) {
+        if (shouldAddFieldsToQuery && mapping.isCollectionMapping()) {
             ((CollectionMapping)mapping).getContainerPolicy().addAdditionalFieldsToQuery(mapping.getSelectionQuery(), linkTable);
         }
         

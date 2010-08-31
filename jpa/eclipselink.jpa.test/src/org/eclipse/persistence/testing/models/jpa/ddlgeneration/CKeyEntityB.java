@@ -19,6 +19,8 @@ import static javax.persistence.CascadeType.PERSIST;
 
 import javax.persistence.*;
 
+import org.eclipse.persistence.annotations.Index;
+
 import java.util.Collection;
 import java.util.List;
 
@@ -38,6 +40,7 @@ public class CKeyEntityB {
     private CKeyEntityBPK key;
 
     @Column(name = "UNQ1", nullable = false)
+    @Index
     private String unq1;
 
     @Column(name = "UNQ2", nullable = false)

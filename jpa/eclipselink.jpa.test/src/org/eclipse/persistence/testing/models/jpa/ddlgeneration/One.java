@@ -17,6 +17,8 @@ import java.io.Serializable;
 
 import javax.persistence.*;
 
+import org.eclipse.persistence.annotations.Index;
+
 @Entity(name = "One")
 @Table(name = "o")
 public class One implements Serializable {
@@ -25,6 +27,7 @@ public class One implements Serializable {
     private long id;
 
     @Column(name = "text", length = 10)
+    @Index
     private String text;
 
     public One() {

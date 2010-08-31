@@ -1271,8 +1271,7 @@ public class ProjectClassGenerator {
         method.addLine("ReturningPolicy " + policyName + " = new ReturningPolicy();");
         String prefix = policyName + ".addFieldFor";
         String[] str = { null, null };
-        for (Enumeration enumtr = policy.getFieldInfos().elements(); enumtr.hasMoreElements();) {
-            ReturningPolicy.Info info = (ReturningPolicy.Info)enumtr.nextElement();
+        for (ReturningPolicy.Info info : policy.getFieldInfos()) {
             String qualifiedFieldName = info.getField().getQualifiedName();
             String type = null;
             if (info.getField().getType() != null) {

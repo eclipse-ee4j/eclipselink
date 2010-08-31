@@ -196,17 +196,14 @@ public class TableCreatorClassGenerator {
         method.addLine("table.setName(\"" + table.getName() + "\");");
 
         // Fields
-        for (Enumeration fieldsEnum = table.getFields().elements(); fieldsEnum.hasMoreElements();) {
+        for (FieldDefinition field : table.getFields()) {
             method.addLine("");
-            FieldDefinition field = (FieldDefinition)fieldsEnum.nextElement();
             addFieldLines(field, method);
         }
 
         // Constraints
-        for (Enumeration constraintsEnum = table.getForeignKeys().elements();
-                 constraintsEnum.hasMoreElements();) {
+        for (ForeignKeyConstraint foreignKey : table.getForeignKeys()) {
             method.addLine("");
-            ForeignKeyConstraint foreignKey = (ForeignKeyConstraint)constraintsEnum.nextElement();
             addForeignKeyLines(foreignKey, method);
         }
 

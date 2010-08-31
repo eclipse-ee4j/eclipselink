@@ -546,25 +546,76 @@ public abstract class JUnitTestCase extends TestCase {
      * Verifies that the object was merged to the cache, and written to the database correctly.
      */
     public void verifyObject(Object writtenObject) {
-        Object readObject = getServerSession().readObject(writtenObject);
-        if (!getServerSession().compareObjects(readObject, writtenObject)) {
+        verifyObject(writtenObject, "default");
+    }
+
+    /**
+     * Verifies that the object was merged to the cache, and written to the database correctly.
+     */
+    public void verifyObject(Object writtenObject, String persistenceUnit) {
+        Object readObject = getServerSession(persistenceUnit).readObject(writtenObject);
+        if (!getServerSession(persistenceUnit).compareObjects(readObject, writtenObject)) {
             fail("Object: " + readObject + " does not match object that was written: " + writtenObject + ". See log (on finest) for what did not match.");
         }
     }
-
+    
+    /**
+     * Verifies the object in a new EntityManager.
+     */
+    public void verifyObjectInEntityManager(Object writtenObject) {
+        verifyObjectInEntityManager(writtenObject, "default");
+    }
+    
+    /**
+     * Verifies the object in a new EntityManager.
+     */
+    public void verifyObjectInEntityManager(Object writtenObject, String persistenceUnit) {
+        EntityManager em = createEntityManager(persistenceUnit);
+        try {
+            Object readObject = em.find(writtenObject.getClass(), getServerSession(persistenceUnit).getId(writtenObject));
+            if (!getServerSession(persistenceUnit).compareObjects(readObject, writtenObject)) {
+                fail("Object: " + readObject + " does not match object that was written: " + writtenObject + ". See log (on finest) for what did not match.");
+            }
+        } finally {
+            em.close();
+        }
+    }
     
     /**
      * Verifies that the object was merged to the cache, and written to the database correctly.
      */
     public void verifyObjectInCacheAndDatabase(Object writtenObject) {
-        Object readObject = getServerSession().readObject(writtenObject);
-        if (!getServerSession().compareObjects(readObject, writtenObject)) {
+        verifyObjectInCacheAndDatabase(writtenObject, "default");
+    }
+    
+    /**
+     * Verifies that the object was merged to the cache, and written to the database correctly.
+     */
+    public void verifyObjectInCacheAndDatabase(Object writtenObject, String persistenceUnit) {
+        Object readObject = getServerSession(persistenceUnit).readObject(writtenObject);
+        if (!getServerSession(persistenceUnit).compareObjects(readObject, writtenObject)) {
             fail("Object from cache: " + readObject + " does not match object that was written: " + writtenObject + ". See log (on finest) for what did not match.");
         }
-        clearCache();
-        readObject = getServerSession().readObject(writtenObject);
-        if (!getServerSession().compareObjects(readObject, writtenObject)) {
+        clearCache(persistenceUnit);
+        readObject = getServerSession(persistenceUnit).readObject(writtenObject);
+        if (!getServerSession(persistenceUnit).compareObjects(readObject, writtenObject)) {
             fail("Object from database: " + readObject + " does not match object that was written: " + writtenObject + ". See log (on finest) for what did not match.");
+        }
+    }
+    
+    /**
+     * Verifies that the object was deleted from the database correctly.
+     */
+    public void verifyDelete(Object writtenObject) {
+        verifyDelete(writtenObject, "default");
+    }
+    
+    /**
+     * Verifies that the object was deleted from the database correctly.
+     */
+    public void verifyDelete(Object writtenObject, String persistenceUnit) {
+        if (!getServerSession(persistenceUnit).acquireClientSession().verifyDelete(writtenObject)) {
+            fail("Object not deleted from the database correctly: " + writtenObject);
         }
     }
     

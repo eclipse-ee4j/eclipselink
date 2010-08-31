@@ -21,6 +21,9 @@ import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
+
+import org.eclipse.persistence.annotations.Index;
+
 import java.util.Collection;
 
 /**
@@ -59,6 +62,7 @@ public class CKeyEntityC {
             @JoinColumn(name="B_CODE", referencedColumnName = "CODE")
         }
     )
+    @Index(name="INDEX_BS", table="DDL_CKENT_C_B", columnNames={"C_SEQ", "C_ROLE"})
     private Collection<CKeyEntityB> bs;
 
 

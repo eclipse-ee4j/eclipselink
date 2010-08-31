@@ -26,8 +26,12 @@
             <basic name="column32"><column nullable="false"/></basic>
         </attributes>
     </entity>
-	<entity class="Comment"/>
-	<entity class="Purchase"/>
+    <entity class="Comment"/>
+    <entity class="Purchase">
+        <index>
+            <column-name>FEE_AMOUNT</column-name>
+        </index>
+    </entity>
     <entity class="Currency">
 		<attributes>
 			<id name="id">

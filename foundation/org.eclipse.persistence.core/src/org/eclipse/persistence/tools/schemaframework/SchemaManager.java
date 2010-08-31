@@ -444,7 +444,7 @@ public class SchemaManager {
         }
 
         try {
-            databaseObjectDefinition.preDropObject(getSession(), getDropSchemaWriter(), createSQLFiles);
+            databaseObjectDefinition.preDropObject(getSession(), getDropSchemaWriter(), this.createSQLFiles);
             if (shouldWriteToDatabase()) {
                 // drop actual object
                 databaseObjectDefinition.dropFromDatabase(getSession());
@@ -452,7 +452,7 @@ public class SchemaManager {
                 Writer dropSchemaWriter = getDropSchemaWriter();
                 // drop actual object
                 databaseObjectDefinition.dropObject(getSession(), dropSchemaWriter, createSQLFiles);
-                if (createSQLFiles){
+                if (this.createSQLFiles){
                     this.appendToDDLWriter(dropSchemaWriter, getSession().getPlatform().getStoredProcedureTerminationToken());
                 }
                 this.appendToDDLWriter(dropSchemaWriter, "\n");
