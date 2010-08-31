@@ -525,10 +525,17 @@ public class ObjectBuilder implements Cloneable, Serializable {
         // Force instantiation to eager mappings.
         List<DatabaseMapping> eagerMappings = getEagerMappings();
         if (!eagerMappings.isEmpty()) {
+            FetchGroup fetchGroup = null;
+            FetchGroupManager fetchGroupManager = this.descriptor.getFetchGroupManager();
+            if(fetchGroupManager != null) {
+                fetchGroup = fetchGroupManager.getObjectFetchGroup(object);
+            }
             int size = eagerMappings.size();
             for (int index = 0; index < size; index++) {
                 DatabaseMapping mapping = eagerMappings.get(index);
-                mapping.instantiateAttribute(object, session);
+                if(fetchGroup == null || fetchGroup.containsAttribute(mapping.getAttributeName())) {
+                    mapping.instantiateAttribute(object, session);
+                }
             }
         }
     }
@@ -2589,8 +2596,8 @@ public class ObjectBuilder implements Cloneable, Serializable {
                 } else {
                     classifications.add(null);
                 }
-                primaryKeyClassifications = classifications;
             }
+            primaryKeyClassifications = classifications;
         }
         return primaryKeyClassifications;
     }
