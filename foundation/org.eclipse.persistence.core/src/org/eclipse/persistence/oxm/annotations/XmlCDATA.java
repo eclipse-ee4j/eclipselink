@@ -18,21 +18,36 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
+ * <p>Wrap the value inside a CDATA section.  Normally JAXB will escape certain 
+ * characters in a string during a marshal operation:
+ * <ul>
+ * <li>{@code & (as &amp;)}</li>
+ * <li>{@code < (as &lt;)}</li>
+ * <li>{@code " (as &quot;)}</li>
+ * </ul>
+ * This means a property foo with string value {@code "1 < 2"} without 
+ * {@code @XmlCDATA} will be marshalled as {@code <foo>1 &lt; 2</foo>}. When 
+ * {@code @XmlCDATA} is used the content is marshalled as 
+ * {@code <foo><![CDATA[1 < 2]]></foo>}.</p>
+ * <b>Example</b>
+ * <pre>
+ * import javax.xml.bind.annotation.XmlRootElement; 
+ * import org.eclipse.persistence.oxm.annotations.XmlCDATA;
  * 
- *<p><b>Purpose</b>: This annotation indicates that the value held by this property should 
- * be wrapped in a CDATA section during marshal. This only applies to simple values.
- * 
- * <p><b>Example:</b><br>
- * <code>
- * &nbsp;@XmlRootElement(name="customer")<br>
- * &nbsp;public class Customer {<br>
- * &nbsp;&nbsp;&nbsp;&nbsp;...<br>
- * &nbsp;&nbsp;&nbsp;&nbsp;@XmlElement<br>
- * &nbsp;&nbsp;&nbsp;&nbsp;@XmlCDATA<br>
- * &nbsp;&nbsp;&nbsp;&nbsp;public String data<br>
- * &nbsp;&nbsp;&nbsp;&nbsp;...<br>
- * &nbsp;}<br><br> *
+ * &#64;XmlRootElement()
+ * public class Root {
+ *     private String foo;
  *
+ *     &#64;XmlCDATA
+ *     public String getFoo() {
+ *         return foo;
+ *     }
+ *
+ *     public void setFoo(String foo) {
+ *         this.foo = foo;
+ *     }
+ * }
+ * </pre>
  */
 @Target({ElementType.FIELD, ElementType.METHOD})
 @Retention(RetentionPolicy.RUNTIME)
