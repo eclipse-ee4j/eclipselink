@@ -12,6 +12,7 @@
  ******************************************************************************/  
 package org.eclipse.persistence.internal.helper;
 
+import java.sql.SQLException;
 import java.util.regex.Pattern;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.Map;
@@ -94,4 +95,17 @@ public class JDK15Platform implements JDKPlatform {
         }
     }
 
+    /**
+     * Indicates whether the passed object implements java.sql.SQLXML introduced in jdk 1.6
+     */
+    public boolean isSQLXML(Object object) {
+        return false;
+    }
+
+    /**
+     * Casts the passed object to SQLXML and calls getString and free methods
+     */
+    public String getStringAndFreeSQLXML(Object sqlXml) throws SQLException { 
+        return null;
+    }
 }

@@ -168,8 +168,12 @@ public class Oracle9Platform extends Oracle8Platform {
             try {
                 Object result = resultSet.getObject(columnNumber);
                 if(!(result instanceof OPAQUE)) {
-                  // Report Queries can cause result to not be an instance of OPAQUE.
-                  return result;
+                    if(JavaPlatform.isSQLXML(result)) {
+                        return JavaPlatform.getStringAndFreeSQLXML(result);
+                    } else {
+                        // Report Queries can cause result to not be an instance of OPAQUE.
+                        return result;
+                    }
                 }
                 
                 return getXMLTypeFactory().getString((OPAQUE)result);
