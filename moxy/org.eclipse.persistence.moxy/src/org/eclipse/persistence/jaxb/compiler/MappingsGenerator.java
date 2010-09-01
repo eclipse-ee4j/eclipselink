@@ -184,10 +184,9 @@ public class MappingsGenerator {
                 setupInheritance(next);
             }
         }
-
         // Now create mappings
         generateMappings();
-
+        
         // apply customizers if necessary
         Set<Entry<String, TypeInfo>> entrySet = this.typeInfo.entrySet();
         for (Entry<String, TypeInfo> entry : entrySet) {
@@ -274,8 +273,7 @@ public class MappingsGenerator {
         }
 
         descriptor.setNamespaceResolver(namespaceInfo.getNamespaceResolverForDescriptor());
-
-        setPKField(descriptor, info);
+        
         setSchemaContext(descriptor, info);
         // set the ClassExtractor class name if necessary
         if (info.isSetClassExtractorName()) {
@@ -324,8 +322,6 @@ public class MappingsGenerator {
             xmlDescriptor.addMapping(mapping);
         }
         xmlDescriptor.setNamespaceResolver(nsr);
-
-        setPKField(xmlDescriptor, info);
         setSchemaContext(xmlDescriptor, info);
         project.addDescriptor(xmlDescriptor);
         info.setDescriptor(xmlDescriptor);
@@ -333,8 +329,6 @@ public class MappingsGenerator {
     
     private void setSchemaContext(XMLDescriptor desc, TypeInfo info) {
         XMLSchemaClassPathReference schemaRef = new XMLSchemaClassPathReference();
-
-
         if (info.getClassNamespace() == null || info.getClassNamespace().equals("")) {
             schemaRef.setSchemaContext("/" + info.getSchemaTypeName());
         } else {
@@ -353,37 +347,6 @@ public class MappingsGenerator {
         }
         desc.setSchemaReference(schemaRef);
 
-    }
-
-    private void setPKField(XMLDescriptor desc, TypeInfo info) {
-
-        // if there is an @XmlID annotation, we need to add
-        // primary key field names to the descriptor
-        if (info.isIDSet()) {
-            String pkFieldName;
-
-            String uri = info.getIDProperty().getSchemaName().getNamespaceURI();
-            String local = info.getIDProperty().getSchemaName().getLocalPart();
-            String prefix = null;
-            if(uri != null && uri.length() != 0) {
-                prefix = desc.getNamespaceResolver().resolveNamespaceURI(uri);
-                if(prefix == null) {
-                    prefix = getPrefixForNamespace(uri, desc.getNamespaceResolver(), null, true);
-                }
-            }
-            if (prefix == null) {
-                prefix = "";
-            } else {
-                prefix += ":";
-            }
-
-            if (info.getIDProperty().isAttribute()) {
-                pkFieldName = ATT + prefix + local;
-            } else { // assume element
-                pkFieldName = prefix + local + TXT;
-            }
-            desc.addPrimaryKeyFieldName(pkFieldName);
-        }
     }
 
     /**
@@ -1511,7 +1474,7 @@ public class MappingsGenerator {
         } else {
             mapping = new XMLDirectMapping();
             mapping.setAttributeName(attributeName);
-            ((XMLDirectMapping)mapping).setXPath(attributeName + "/text()");
+            ((XMLDirectMapping)mapping).setXPath(attributeName + TXT);
 
             QName schemaType = (QName) userDefinedSchemaTypes.get(theType.getQualifiedName());
 
@@ -1750,13 +1713,12 @@ public class MappingsGenerator {
     public String getPrefixForNamespace(String URI, org.eclipse.persistence.oxm.NamespaceResolver namespaceResolver, String suggestedPrefix) {
     	return getPrefixForNamespace(URI, namespaceResolver, suggestedPrefix, true);
     }
+    
     public String getPrefixForNamespace(String URI, org.eclipse.persistence.oxm.NamespaceResolver namespaceResolver, String suggestedPrefix, boolean addPrefixToNR) {
     	String defaultNS = namespaceResolver.getDefaultNamespaceURI();
     	if(defaultNS != null && URI.equals(defaultNS)){
     		return null;
     	}
-
-
         Enumeration keys = namespaceResolver.getPrefixes();
         while (keys.hasMoreElements()) {
             String next = (String) keys.nextElement();
@@ -1839,7 +1801,7 @@ public class MappingsGenerator {
                     classIndicatorField = new XMLField(rootTypeInfo.getXmlDiscriminatorNode());
                 } else {
                     String prefix = getPrefixForNamespace(XMLConstants.SCHEMA_INSTANCE_URL, rootDescriptor.getNamespaceResolver(),XMLConstants.SCHEMA_INSTANCE_PREFIX);
-                    classIndicatorField = new XMLField("@"+ getQualifiedString(prefix, "type"));
+                    classIndicatorField = new XMLField(ATT + getQualifiedString(prefix, "type"));
                 }
             	rootDescriptor.getInheritancePolicy().setClassIndicatorField(classIndicatorField);
             }
@@ -1903,6 +1865,13 @@ public class MappingsGenerator {
             XMLDescriptor descriptor = info.getDescriptor();
             if (descriptor != null) {
                 generateMappings(info, descriptor, namespaceInfo);
+            }
+            // set primary key fields (if necessary)
+            if (info.isIDSet()) {
+                DatabaseMapping mapping = descriptor.getMappingForAttributeName(info.getIDProperty().getPropertyName());
+                if (mapping != null) {
+                    descriptor.addPrimaryKeyField(mapping.getField());
+                }
             }
         }
     }
@@ -1988,7 +1957,7 @@ public class MappingsGenerator {
         String tgtXPath = null;
         if (null != referenceType && referenceType.isIDSet()) {
             Property prop = referenceType.getIDProperty();
-            tgtXPath = getXPathForField(prop, namespaceInfo, !(helper.isAnnotationPresent(prop.getElement(), XmlAttribute.class))).getXPath();
+            tgtXPath = getXPathForField(prop, namespaceInfo, !prop.isAttribute()).getXPath();
         }
         mapping.addSourceToTargetKeyFieldAssociation(srcXPath.getXPath(), tgtXPath);
 
@@ -2064,7 +2033,7 @@ public class MappingsGenerator {
         String tgtXPath = null;
         if (null != referenceType && referenceType.isIDSet()) {
             Property prop = referenceType.getIDProperty();
-            tgtXPath = getXPathForField(prop, namespaceInfo, !(helper.isAnnotationPresent(prop.getElement(), XmlAttribute.class))).getXPath();
+            tgtXPath = getXPathForField(prop, namespaceInfo, !prop.isAttribute()).getXPath();
         }
         mapping.addSourceToTargetKeyFieldAssociation(srcXPath.getXPath(), tgtXPath);
         if(property.getInverseReferencePropertyName() != null) {
@@ -2111,19 +2080,23 @@ public class MappingsGenerator {
             }
         }
         if (property.isAttribute()) {
-            QName name = property.getSchemaName();
-            String namespace = "";
-            if (namespaceInfo.isAttributeFormQualified()) {
-                namespace = namespaceInfo.getNamespace();
-            }
-            if (!name.getNamespaceURI().equals("")) {
-                namespace = name.getNamespaceURI();
-            }
-            if (namespace.equals("")) {
-                xPath += ("@" + name.getLocalPart());
+            if (property.isSetXmlPath()) {
+                xPath += property.getXmlPath();
             } else {
-                String prefix = getPrefixForNamespace(namespace, namespaceInfo.getNamespaceResolverForDescriptor(), null);
-            	xPath += "@" + getQualifiedString(prefix, name.getLocalPart());
+                QName name = property.getSchemaName();
+                String namespace = "";
+                if (namespaceInfo.isAttributeFormQualified()) {
+                    namespace = namespaceInfo.getNamespace();
+                }
+                if (!name.getNamespaceURI().equals("")) {
+                    namespace = name.getNamespaceURI();
+                }
+                if (namespace.equals("")) {
+                    xPath += (ATT + name.getLocalPart());
+                } else {
+                    String prefix = getPrefixForNamespace(namespace, namespaceInfo.getNamespaceResolverForDescriptor(), null);
+                	xPath += ATT + getQualifiedString(prefix, name.getLocalPart());
+                }
             }
             QName schemaType = (QName) userDefinedSchemaTypes.get(property.getType().getQualifiedName());
             if (property.getSchemaType() != null) {
@@ -2174,13 +2147,13 @@ public class MappingsGenerator {
         if (namespace.equals("")) {
             path += elementName.getLocalPart();
             if (isText) {
-                path += "/text()";
+                path += TXT;
             }
         } else {
             String prefix = getPrefixForNamespace(namespace, namespaceInfo.getNamespaceResolverForDescriptor(), null);
         	path += getQualifiedString(prefix, elementName.getLocalPart());
             if (isText) {
-                path += "/text()";
+                path += TXT;
             }
         }
         return new XMLField(path);

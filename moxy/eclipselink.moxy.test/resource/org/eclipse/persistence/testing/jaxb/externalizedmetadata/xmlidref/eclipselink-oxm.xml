@@ -11,7 +11,7 @@
         <java-type name="org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmlidref.Address">
             <xml-root-element name="address" />
             <java-attributes>
-                <xml-attribute java-attribute="id" name="aid" xml-id="true" required="true" />
+                <xml-attribute java-attribute="id" xml-path="primary-key/@aid" xml-id="true" required="true" />
                 <xml-element java-attribute="city" />
             </java-attributes>
         </java-type>
