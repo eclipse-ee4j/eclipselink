@@ -439,9 +439,6 @@ public abstract class TIMESTAMPTester extends TypeTester {
                                              fromDatabase.getCalToTSLTZ().getTimeZone().getID();
             }
 
-            //The original calToTSLTZ is converted to a Calendar based on the session time zone on read, 
-            //which may not be the same as the original calToTSLTZ (although they represent 
-            //the same GMT time).  Need to assign the original time zone to the calToTSLTZ to make them the same.
             //Calendar-to-TIMESTAMPLTZ does not work if calendar's time stamp is not inserted into the db.
             if (doesTestInsertCalendarTimeZone(testCase)) {
                 // 0 if and only if the two calendars refer to the same time
@@ -449,22 +446,40 @@ public abstract class TIMESTAMPTester extends TypeTester {
                 if(compareCalToTSLTZ != 0) {
                     errorMsg += "calToTSLTZ.compareTo(fromDatabase.getCalToTSLTZ()) == " + compareCalToTSLTZ + "\n"; 
                     errorMsg += "\t    original calToTSLTZ = " + TIMESTAMPHelper.printCalendar(calToTSLTZ) + "\n";
+                    errorMsg += "\tfromDatabase.calToTSLTZ = " + TIMESTAMPHelper.printCalendar(fromDatabase.getCalToTSLTZ())  + "\n";
+                    errorMsg += "\t    original calToTSLTZ = " + calToTSLTZ + "\n";
                     errorMsg += "\tfromDatabase.calToTSLTZ = " + fromDatabase.getCalToTSLTZ()  + "\n";
                 }
             }
 
             //Calendar-to-TIMESTAMPTZ does not work if calendar's time stamp is not inserted into the db.
             if (doesTestInsertCalendarTimeZone(testCase)) {
-                // 0 if and only if the two calendars refer to the same time
-                int compareCalToTSTZ = calToTSTZ.compareTo(fromDatabase.getCalToTSTZ());
-                boolean timeZonesEqual = calToTSTZ.getTimeZone().equals(fromDatabase.getCalToTSTZ().getTimeZone());
-                if(compareCalToTSTZ != 0 || !timeZonesEqual) {
-                    if(compareCalToTSTZ != 0) {
-                        errorMsg += "calToTSTZ.compareTo(fromDatabase.getCalToTSTZ()) == " + compareCalToTSTZ + "\n";
-                    } else {
-                        errorMsg += "time zones are not equal: \n";
+                originalCal = TIMESTAMPHelper.printCalendar(calToTSTZ);
+                dbCal = TIMESTAMPHelper.printCalendar(fromDatabase.getCalToTSTZ());
+                // indicates whether the original and read back from the db calendars are equal
+                boolean areEqual = true;
+                if(this.isTimestampInGmt) {
+                    // 0 if and only if the two calendars refer to the same time
+                    int compareCalToTSTZ = calToTSTZ.compareTo(fromDatabase.getCalToTSTZ());
+                    boolean timeZonesEqual = calToTSTZ.getTimeZone().equals(fromDatabase.getCalToTSTZ().getTimeZone());
+                    if(compareCalToTSTZ != 0 || !timeZonesEqual) {
+                        areEqual = false;
+                        if(compareCalToTSTZ != 0) {
+                            errorMsg += "calToTSTZ.compareTo(fromDatabase.getCalToTSTZ()) == " + compareCalToTSTZ + "\n";
+                        } else {
+                            errorMsg += "time zones are not equal: \n";
+                        }
                     }
-                    errorMsg += "\t    original calToTSTZ = " + TIMESTAMPHelper.printCalendar(calToTSTZ) + "\n";
+                } else {
+                    if (!originalCal.equals(dbCal)) {
+                        areEqual = false;
+                        errorMsg += "!originalCal.equals(dbCal)\n";
+                    }
+                }
+                if(!areEqual) {
+                    errorMsg += "\t    original calToTSTZ = " + originalCal + "\n";
+                    errorMsg += "\tfromDatabase.calToTSTZ = " + dbCal  + "\n";
+                    errorMsg += "\t    original calToTSTZ = " + calToTSTZ + "\n";
                     errorMsg += "\tfromDatabase.calToTSTZ = " + fromDatabase.getCalToTSTZ()  + "\n";
                 }
             }
