@@ -48,12 +48,14 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.TableGenerator;
 
+import org.eclipse.persistence.annotations.Index;
 import org.eclipse.persistence.annotations.Mutable;
 import org.eclipse.persistence.annotations.ReturnInsert;
 import org.eclipse.persistence.annotations.ReturnUpdate;
 import org.eclipse.persistence.exceptions.ValidationException;
 
 import org.eclipse.persistence.internal.helper.DatabaseField;
+import org.eclipse.persistence.internal.helper.DatabaseTable;
 
 import org.eclipse.persistence.internal.jpa.metadata.MetadataDescriptor;
 import org.eclipse.persistence.internal.jpa.metadata.MetadataLogger;
@@ -69,11 +71,13 @@ import org.eclipse.persistence.internal.jpa.metadata.mappings.ReturnInsertMetada
 import org.eclipse.persistence.internal.jpa.metadata.sequencing.GeneratedValueMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.sequencing.SequenceGeneratorMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.sequencing.TableGeneratorMetadata;
+import org.eclipse.persistence.internal.jpa.metadata.tables.IndexMetadata;
 
 import org.eclipse.persistence.internal.jpa.metadata.xml.XMLEntityMappings;
 
 import org.eclipse.persistence.mappings.DatabaseMapping;
 import org.eclipse.persistence.mappings.DirectToFieldMapping;
+import org.eclipse.persistence.tools.schemaframework.IndexDefinition;
 
 /**
  * INTERNAL:
@@ -94,6 +98,7 @@ public class BasicAccessor extends DirectAccessor {
     private ReturnInsertMetadata m_returnInsert;
     private SequenceGeneratorMetadata m_sequenceGenerator;
     private TableGeneratorMetadata m_tableGenerator;
+    private IndexMetadata m_index;
     
     /**
      * INTERNAL:
@@ -387,7 +392,7 @@ public class BasicAccessor extends DirectAccessor {
             getProject().addSequenceGenerator(m_sequenceGenerator, getDescriptor().getDefaultCatalog(), getDescriptor().getDefaultSchema());
         }
         
-        processIndexes();
+        processIndex();
     }
 
     /**
@@ -465,6 +470,78 @@ public class BasicAccessor extends DirectAccessor {
     protected void processReturnUpdate() {
         if (isReturnUpdate()) {
             getDescriptor().addFieldForUpdate(m_field);
+        }
+    }
+    
+    public IndexMetadata getIndex() {
+        return m_index;
+    }
+
+    public void setIndex(IndexMetadata index) {
+        m_index = index;
+    }
+    
+    /**
+     * INTERNAL:
+     * Process index information for the given mapping.
+     */
+    protected void processIndex() {
+        MetadataAnnotation index = getAnnotation(Index.class);
+        
+        if (index != null) {
+            m_index = new IndexMetadata(index, getAccessibleObject());
+        }
+        
+        if (m_index != null) {
+            IndexDefinition indexDefinition = new IndexDefinition();
+            if (m_index.getColumnNames().isEmpty()) {
+                indexDefinition.getFields().add(getColumn(MetadataLogger.COLUMN).getName());
+            } else {
+                indexDefinition.getFields().addAll(m_index.getColumnNames());
+            }
+            if ((m_index.getName() != null) && (m_index.getName().length() != 0)) {
+                indexDefinition.setName(m_index.getName());            
+            } else {
+                String name = "INDEX_" + getDescriptor().getPrimaryTable().getName();
+                for (String column : indexDefinition.getFields()) {
+                    name = name + "_" + column;
+                }
+                indexDefinition.setName(name);
+            }
+            if ((m_index.getSchema() != null) && (m_index.getSchema().length() != 0)) {
+                indexDefinition.setQualifier(m_index.getSchema());
+            } else if ((getDescriptor().getDefaultSchema() != null) && (getDescriptor().getDefaultSchema().length() != 0)) {
+                indexDefinition.setQualifier(m_index.getSchema());                
+            }
+            if ((m_index.getCatalog() != null) && (m_index.getCatalog().length() != 0)) {
+                indexDefinition.setQualifier(m_index.getCatalog());
+            } else if ((getDescriptor().getDefaultCatalog() != null) && (getDescriptor().getDefaultCatalog().length() != 0)) {
+                indexDefinition.setQualifier(getDescriptor().getDefaultCatalog());                
+            }
+            if (m_index.getUnique() != null) {
+                indexDefinition.setIsUnique(m_index.getUnique());
+            }
+            String table = m_index.getTable();
+            if ((table == null) || (table.length() == 0)) {
+                indexDefinition.setTargetTable(getDescriptor().getPrimaryTable().getQualifiedName());
+                getDescriptor().getPrimaryTable().getIndexes().add(indexDefinition);
+            } else if (table.equals(getDescriptor().getPrimaryTable().getQualifiedName())
+                        || table.equals(getDescriptor().getPrimaryTable().getName())) {
+                indexDefinition.setTargetTable(table);
+                getDescriptor().getPrimaryTable().getIndexes().add(indexDefinition);
+            } else {
+                indexDefinition.setTargetTable(table);
+                boolean found = false;
+                for (DatabaseTable databaseTable : getDescriptor().getClassDescriptor().getTables()) {
+                    if (table.equals(databaseTable.getQualifiedName()) || table.equals(databaseTable.getName())) {
+                        databaseTable.getIndexes().add(indexDefinition);
+                        found = true;
+                    }
+                }
+                if (!found) {
+                    getDescriptor().getPrimaryTable().getIndexes().add(indexDefinition);
+                }
+            }
         }
     }
 

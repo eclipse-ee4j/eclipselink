@@ -55,85 +55,82 @@ import org.eclipse.persistence.sessions.SessionEventAdapter;
  * @since EclipseLink 1.1.2
  */
 public class QuerySQLTracker extends SessionEventAdapter {
-	private List<QueryResult> queries;
+    private List<QueryResult> queries;
 
-	/**
-	 * Constructs and installs the event listener and sql tracking session log
-	 * 
-	 * @param session
-	 */
-	private QuerySQLTracker(Session session) {
-		session.getEventManager().addListener(this);
-		session.setSessionLog(new SQLTrackingSessionLog(session, this));
-		reset();
-	}
+    /**
+     * Constructs and installs the event listener and sql tracking session log
+     * 
+     * @param session
+     */
+    private QuerySQLTracker(Session session) {
+        session.getEventManager().addListener(this);
+        session.setSessionLog(new SQLTrackingSessionLog(session, this));
+        reset();
+    }
 
-	public static QuerySQLTracker install(Session session) {
-		if (session.getSessionLog() instanceof SQLTrackingSessionLog) {
-			return ((SQLTrackingSessionLog) session.getSessionLog())
-					.getTracker();
-		}
-		return new QuerySQLTracker(session);
-	}
+    public static QuerySQLTracker install(Session session) {
+        if (session.getSessionLog() instanceof SQLTrackingSessionLog) {
+            return ((SQLTrackingSessionLog) session.getSessionLog()).getTracker();
+        }
+        return new QuerySQLTracker(session);
+    }
 
     public static void uninstall(Session session) {
         if (session.getSessionLog() instanceof SQLTrackingSessionLog) {
-            SQLTrackingSessionLog trackingLog = (SQLTrackingSessionLog)session.getSessionLog();
+            SQLTrackingSessionLog trackingLog = (SQLTrackingSessionLog) session.getSessionLog();
             QuerySQLTracker tracker = trackingLog.getTracker();
             session.getEventManager().removeListener(tracker);
             session.setSessionLog(trackingLog.originalLog);
         }
     }
-    
-	/**
-	 * Helper method to retrieve a tracker from a session where it was installed
-	 * If the session exists but does not have a tracler installed then an
-	 * exception is thrown.
-	 */
-	public static QuerySQLTracker getTracker(Session session) {
-		if (session == null) {
-			return null;
-		}
-		SessionLog sessionLog = session.getSessionLog();
 
-		if (sessionLog instanceof QuerySQLTracker.SQLTrackingSessionLog) {
-			return ((QuerySQLTracker.SQLTrackingSessionLog) sessionLog)
-					.getTracker();
-		}
-		throw new RuntimeException(
-				"Could not retireve QuerySQLTracke from session: " + session);
-	}
+    /**
+     * Helper method to retrieve a tracker from a session where it was installed
+     * If the session exists but does not have a tracler installed then an
+     * exception is thrown.
+     */
+    public static QuerySQLTracker getTracker(Session session) {
+        if (session == null) {
+            return null;
+        }
+        SessionLog sessionLog = session.getSessionLog();
 
-	/**
-	 * Reset the lists of SQL and queries being tracked
-	 */
-	public void reset() {
-		this.queries = new ArrayList<QueryResult>();
-	}
+        if (sessionLog instanceof QuerySQLTracker.SQLTrackingSessionLog) {
+            return ((QuerySQLTracker.SQLTrackingSessionLog) sessionLog).getTracker();
+        }
+        throw new RuntimeException("Could not retireve QuerySQLTracke from session: " + session);
+    }
 
-	public List<QueryResult> getQueries() {
-		return this.queries;
-	}
+    /**
+     * Reset the lists of SQL and queries being tracked
+     */
+    public void reset() {
+        this.queries = new ArrayList<QueryResult>();
+    }
 
-	protected QuerySQLTracker.QueryResult getCurrentResult() {
-		if (getQueries().size() == 0) {
-			getQueries().add(new QueryResult(null));
-			// throw new RuntimeException("Received SQL without a Query ???");
-		}
-		return getQueries().get(getQueries().size() - 1);
-	}
+    public List<QueryResult> getQueries() {
+        return this.queries;
+    }
 
-	public int getTotalSQLCalls() {
-		int totalSQLCalls = 0;
+    protected QuerySQLTracker.QueryResult getCurrentResult() {
+        if (getQueries().size() == 0) {
+            getQueries().add(new QueryResult(null));
+            // throw new RuntimeException("Received SQL without a Query ???");
+        }
+        return getQueries().get(getQueries().size() - 1);
+    }
 
-		for (QueryResult result : getQueries()) {
-			totalSQLCalls += result.sqlStatements.size();
-		}
+    public int getTotalSQLCalls() {
+        int totalSQLCalls = 0;
 
-		return totalSQLCalls;
-	}
-	
-	public int getTotalCalls(String startsWith) {
+        for (QueryResult result : getQueries()) {
+            totalSQLCalls += result.sqlStatements.size();
+        }
+
+        return totalSQLCalls;
+    }
+
+    public int getTotalCalls(String startsWith) {
         int calls = 0;
         for (QueryResult result : getQueries()) {
             String sub = result.resultString.substring(0, startsWith.length());
@@ -142,232 +139,193 @@ public class QuerySQLTracker extends SessionEventAdapter {
             }
         }
         return calls;
-	}
+    }
 
-	public int getTotalSQLCalls(String startsWith) {
-		int sqlCalls = 0;
+    public int getTotalSQLCalls(String startsWith) {
+        int sqlCalls = 0;
 
-		for (QueryResult result : getQueries()) {
-			for (String sql : result.sqlStatements) {
-				String sub = sql.substring(0, startsWith.length());
-				if (sub.equalsIgnoreCase(startsWith)) {
-					sqlCalls++;
-				}
-			}
-		}
+        for (QueryResult result : getQueries()) {
+            for (String sql : result.sqlStatements) {
+                String sub = sql.substring(0, startsWith.length());
+                if (sub.equalsIgnoreCase(startsWith)) {
+                    sqlCalls++;
+                }
+            }
+        }
 
-		return sqlCalls;
-	}
+        return sqlCalls;
+    }
 
-	public int getTotalSQLSELECTCalls() {
-		return getTotalSQLCalls("SELECT");
-	}
+    public int getTotalSQLSELECTCalls() {
+        return getTotalSQLCalls("SELECT");
+    }
 
-	public int getTotalSQLINSERTCalls() {
-		return getTotalSQLCalls("INSERT");
-	}
+    public int getTotalSQLINSERTCalls() {
+        return getTotalSQLCalls("INSERT");
+    }
 
-	public int getTotalSQLUPDATECalls() {
-		return getTotalSQLCalls("UPDATE");
-	}
+    public int getTotalSQLUPDATECalls() {
+        return getTotalSQLCalls("UPDATE");
+    }
 
-	public int getTotalSQLDELETECalls() {
-		return getTotalSQLCalls("DELETE");
-	}
+    public int getTotalSQLDELETECalls() {
+        return getTotalSQLCalls("DELETE");
+    }
 
-	public void preExecuteQuery(SessionEvent event) {
-		//System.err.println("*** QuerySQLTracker.preExecuteQuery(" + event.getQuery() + ")");
-		//Thread.dumpStack();
-		QueryResult result = new QueryResult(event.getQuery());
-		getQueries().add(result);
-	}
+    public void preExecuteQuery(SessionEvent event) {
+        // System.err.println("*** QuerySQLTracker.preExecuteQuery(" +
+        // event.getQuery() + ")");
+        // Thread.dumpStack();
+        QueryResult result = new QueryResult(event.getQuery());
+        getQueries().add(result);
+    }
 
-	public void postExecuteQuery(SessionEvent event) {
-		if (getCurrentResult().query == null) {
-			getCurrentResult().setQuery(event.getQuery());
-		}
-		getCurrentResult().setResult(event.getResult(), event.getSession());
-	}
+    public void postExecuteQuery(SessionEvent event) {
+        if (getCurrentResult().query == null) {
+            getCurrentResult().setQuery(event.getQuery());
+        }
+        getCurrentResult().setResult(event.getResult(), event.getSession());
+    }
 
-	public class QueryResult {
-		private DatabaseQuery query;
-		private String resultString = null;
-		public List<String> sqlStatements = new ArrayList<String>();
+    public class QueryResult {
+        private DatabaseQuery query;
+        private String resultString = null;
+        public List<String> sqlStatements = new ArrayList<String>();
 
-		QueryResult(DatabaseQuery q) {
-			query = q;
-		}
+        QueryResult(DatabaseQuery q) {
+            query = q;
+        }
 
-		protected void setQuery(DatabaseQuery query) {
-			this.query = query;
-		}
+        protected void setQuery(DatabaseQuery query) {
+            this.query = query;
+        }
 
         @SuppressWarnings("unchecked")
         protected void setResult(Object queryResult) {
             setResult(queryResult, null);
         }
-        
-		@SuppressWarnings("unchecked")
+
+        @SuppressWarnings("unchecked")
         protected void setResult(Object queryResult, Session session) {
-			StringWriter writer = new StringWriter();
-			writer.write(Helper.getShortClassName(query));
-			writer.write("[" + System.identityHashCode(query) + "]");
-			writer.write(" result = ");
+            StringWriter writer = new StringWriter();
+            writer.write(Helper.getShortClassName(query));
+            writer.write("[" + System.identityHashCode(query) + "]");
+            writer.write(" result = ");
 
-			Object result = queryResult;
-			if (queryResult instanceof Collection) {
-				result = ((Collection) queryResult).toArray();
-			}
+            Object result = queryResult;
+            if (queryResult instanceof Collection) {
+                result = ((Collection) queryResult).toArray();
+            }
 
-			if (result == null) {
-				writer.write("NONE");
-			} else {
-				if (result instanceof Object[]) {
-					Object[] results = (Object[]) result;
-					writer.write("<" + results.length + "> [");
-					for (int index = 0; index < results.length; index++) {
-						if (index > 0) {
-							writer.write(", ");
-						}
-						boolean writePkOnly = false;
-						Object object = results[index];
-						// if session is provided then may extract pk from object 
-						if(session != null) {
-    						if(object instanceof FetchGroupTracker) {
-    						    FetchGroupTracker tracker = (FetchGroupTracker)object;
-    						    // object.toString may trigger loading of the whole object. To avoid that write the pk only. 
-    						    if(tracker._persistence_getFetchGroup() != null) {
-    						        writePkOnly = true;
-    						    }
-    						}
-						}
-						if(writePkOnly) {
-						    writer.write(Helper.getShortClassName(object) + "("+ session.getDescriptor(object.getClass()).getObjectBuilder().extractPrimaryKeyFromObject(object, (AbstractSession)session) + ")");
-						} else {
-						    writer.write(object + "");
-						}
-					}
-					writer.write("]");
-					resultString = writer.toString();
-				} else {
-					writer.write(result.toString());
-				}
-			}
+            if (result == null) {
+                writer.write("NONE");
+            } else {
+                if (result instanceof Object[]) {
+                    Object[] results = (Object[]) result;
+                    writer.write("<" + results.length + "> [");
+                    for (int index = 0; index < results.length; index++) {
+                        if (index > 0) {
+                            writer.write(", ");
+                        }
+                        boolean writePkOnly = false;
+                        Object object = results[index];
+                        // if session is provided then may extract pk from
+                        // object
+                        if (session != null) {
+                            if (object instanceof FetchGroupTracker) {
+                                FetchGroupTracker tracker = (FetchGroupTracker) object;
+                                // object.toString may trigger loading of the
+                                // whole object. To avoid that write the pk
+                                // only.
+                                if (tracker._persistence_getFetchGroup() != null) {
+                                    writePkOnly = true;
+                                }
+                            }
+                        }
+                        if (writePkOnly) {
+                            writer.write(Helper.getShortClassName(object) + "("
+                                    + session.getDescriptor(object.getClass()).getObjectBuilder().extractPrimaryKeyFromObject(object, (AbstractSession) session) + ")");
+                        } else {
+                            writer.write(object + "");
+                        }
+                    }
+                    writer.write("]");
+                    resultString = writer.toString();
+                } else {
+                    writer.write(result.toString());
+                }
+            }
 
-			this.resultString = writer.toString();
-		}
+            this.resultString = writer.toString();
+        }
 
-		public void addSQL(String sql) {
-			sqlStatements.add(sql);
-		}
+        public void addSQL(String sql) {
+            sqlStatements.add(sql);
+        }
 
-		public String toString() {
-			if (this.resultString == null) {
-				setResult(null);
-			}
-			return this.resultString;
-		}
-	}
+        public String toString() {
+            if (this.resultString == null) {
+                setResult(null);
+            }
+            return this.resultString;
+        }
+    }
 
-	/**
-	 * This custom SessionLog implementation wraps the existing one and redirects
-	 * all SQL calls to the tracker. All messages are also passed to the original
-	 * tracker.
-	 */
-	public class SQLTrackingSessionLog extends DefaultSessionLog {
-	    
-		private QuerySQLTracker tracker;
+    /**
+     * This custom SessionLog implementation wraps the existing one and
+     * redirects all SQL calls to the tracker. All messages are also passed to
+     * the original tracker.
+     */
+    public class SQLTrackingSessionLog extends DefaultSessionLog {
 
-		private SessionLog originalLog;
+        private QuerySQLTracker tracker;
 
-		protected SQLTrackingSessionLog(Session session,
-				QuerySQLTracker aTracker) {
-			this.tracker = aTracker;
-			this.originalLog = session.getSessionLog();
-			setSession(session);
-			setWriter(this.originalLog.getWriter());
-		}
+        private SessionLog originalLog;
 
-		public QuerySQLTracker getTracker() {
-			return this.tracker;
-		}
+        protected SQLTrackingSessionLog(Session session, QuerySQLTracker aTracker) {
+            this.tracker = aTracker;
+            this.originalLog = session.getSessionLog();
+            setSession(session);
+            setWriter(this.originalLog.getWriter());
+        }
 
-		public synchronized void log(SessionLogEntry entry) {
+        public QuerySQLTracker getTracker() {
+            return this.tracker;
+        }
 
-			if (entry.getNameSpace() != null
-					&& entry.getNameSpace().equalsIgnoreCase(SessionLog.SQL)) {
-				getTracker().getCurrentResult().addSQL(entry.getMessage());
-			}
-			super.log(entry);
-		}
+        public synchronized void log(SessionLogEntry entry) {
 
-		@Override
-		public int getLevel(String category) {
-			return this.originalLog.getLevel(category);
-		}
+            if (entry.getNameSpace() != null && entry.getNameSpace().equalsIgnoreCase(SessionLog.SQL)) {
+                getTracker().getCurrentResult().addSQL(entry.getMessage());
+            }
+            if (!this.originalLog.shouldLog(entry.getLevel())) {
+                return;
+            }
 
-		@Override
-		public void setLevel(int level, String category) {
-			this.originalLog.setLevel(level, category);
-		}
+            super.log(entry);
+        }
+    }
 
-		@Override
-		public int getLevel() {
-			return this.originalLog.getLevel();
-		}
+    public void printResults(String prefix) {
+        System.out.println(prefix + "-QuerySQLTracker-Queries:");
 
-		@Override
-		public void setLevel(int level) {
-			this.originalLog.setLevel(level);
-		}
+        int sql = 0;
+        for (int index = 0; index < getQueries().size(); index++) {
+            QueryResult result = getQueries().get(index);
 
-		@Override
-		public boolean shouldPrintConnection() {
-			return this.originalLog.shouldPrintConnection();
-		}
+            System.out.println("\t" + (index + 1) + "> " + result);
 
-		@Override
-		public boolean shouldPrintDate() {
-			return this.originalLog.shouldPrintDate();
-		}
+            for (int sqlNum = 0; sqlNum < result.sqlStatements.size(); sqlNum++) {
+                sql++;
+                System.out.println("\t\t" + (index + 1) + "." + (sqlNum + 1) + "-" + sql + "> " + result.sqlStatements.get(sqlNum));
+            }
+        }
 
-		@Override
-		public boolean shouldPrintSession() {
-			return this.originalLog.shouldPrintSession();
-		}
-
-		@Override
-		public boolean shouldPrintThread() {
-			return this.originalLog.shouldPrintThread();
-		}
-	}
-
-	public void printResults(String prefix) {
-		System.out.println(prefix + "-QuerySQLTracker-Queries:");
-
-		int sql = 0;
-		for (int index = 0; index < getQueries().size(); index++) {
-			QueryResult result = getQueries().get(index);
-
-			System.out.println("\t" + (index + 1) + "> " + result);
-
-			for (int sqlNum = 0; sqlNum < result.sqlStatements.size(); sqlNum++) {
-				sql++;
-				System.out.println("\t\t" + (index + 1) + "." + (sqlNum + 1)
-						+ "-" + sql + "> " + result.sqlStatements.get(sqlNum));
-			}
-		}
-
-		System.out.println(prefix + "-QuerySQLTracker-Queries: "
-				+ getQueries().size());
-		System.out.println(prefix + "-QuerySQLTracker-INSERT: "
-				+ getTotalSQLINSERTCalls());
-		System.out.println(prefix + "-QuerySQLTracker-SELECT: "
-				+ getTotalSQLSELECTCalls());
-		System.out.println(prefix + "-QuerySQLTracker-UPDATE: "
-				+ getTotalSQLUPDATECalls());
-		System.out.println(prefix + "-QuerySQLTracker-DELETE: "
-				+ getTotalSQLDELETECalls());
-	}
+        System.out.println(prefix + "-QuerySQLTracker-Queries: " + getQueries().size());
+        System.out.println(prefix + "-QuerySQLTracker-INSERT: " + getTotalSQLINSERTCalls());
+        System.out.println(prefix + "-QuerySQLTracker-SELECT: " + getTotalSQLSELECTCalls());
+        System.out.println(prefix + "-QuerySQLTracker-UPDATE: " + getTotalSQLUPDATECalls());
+        System.out.println(prefix + "-QuerySQLTracker-DELETE: " + getTotalSQLDELETECalls());
+    }
 
 }

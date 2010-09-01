@@ -47,6 +47,7 @@
             <property name="eclipselink.create-ddl-jdbc-file-name" value="createDDL_ddlGeneration.jdbc"/>
             <property name="eclipselink.drop-ddl-jdbc-file-name" value="dropDDL_ddlGeneration.jdbc"/>
             <property name="eclipselink.ddl-generation.output-mode" value="both"/>
+            <property name="eclipselink.orm.validate.schema" value="true"/>
         </properties>
     </persistence-unit>
     <persistence-unit name="ddlTablePerClass" transaction-type="RESOURCE_LOCAL">
@@ -76,6 +77,7 @@
             <property name="eclipselink.create-ddl-jdbc-file-name" value="createDDL_ddlTablePerClass.jdbc"/>
             <property name="eclipselink.drop-ddl-jdbc-file-name" value="dropDDL_ddlTablePerClass.jdbc"/>
             <property name="eclipselink.ddl-generation.output-mode" value="both"/>
+            <property name="eclipselink.orm.validate.schema" value="true"/>
         </properties>
     </persistence-unit>
 </persistence>

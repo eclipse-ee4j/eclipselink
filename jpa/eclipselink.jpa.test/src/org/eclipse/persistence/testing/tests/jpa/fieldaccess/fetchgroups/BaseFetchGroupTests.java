@@ -145,11 +145,11 @@ public abstract class BaseFetchGroupTests extends JUnitTestCase {
             employeeDescriptor.setIsIsolated(true);
         }
         
-        clearCache("fieldaccess");        
+        clearCache("fieldaccess");
+        QuerySQLTracker.uninstall(session);
         if(sessionLogLevelOriginal != session.getLogLevel()) {
             session.setLogLevel(sessionLogLevelOriginal);
         }
-        QuerySQLTracker.uninstall(session);
     }
     
     void clearFetchGroups(ClassDescriptor descriptor) {

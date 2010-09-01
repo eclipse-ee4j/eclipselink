@@ -15,7 +15,6 @@ package org.eclipse.persistence.internal.jpa.metadata.tables;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.eclipse.persistence.internal.jpa.metadata.MetadataLogger;
 import org.eclipse.persistence.internal.jpa.metadata.ORMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataAccessibleObject;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataAnnotation;
@@ -59,6 +58,21 @@ public class IndexMetadata extends ORMetadata {
             }
         }
     }
+    
+    /**
+     * INTERNAL:
+     * Sub classed must that can uniquely be identified must override this
+     * message to allow the overriding and merging to uniquely identify objects.
+     * It will also be used when logging messages (that is provide a more
+     * detailed message).
+     * 
+     * @see shouldOverride
+     * @see mergeListsAndOverride
+     */
+    @Override
+    protected String getIdentifier() {
+        return getName();
+    }
 
     @Override
     public boolean equals(Object objectToCompare) {
@@ -95,10 +109,6 @@ public class IndexMetadata extends ORMetadata {
         return catalog;
     }
 
-    public String getCatalogContext() {
-        return MetadataLogger.TABLE_CATALOG;
-    }
-
     public String getTable() {
         return table;
     }
@@ -107,16 +117,8 @@ public class IndexMetadata extends ORMetadata {
         return name;
     }
 
-    public String getNameContext() {
-        return MetadataLogger.TABLE_NAME;
-    }
-
     public String getSchema() {
         return schema;
-    }
-
-    public String getSchemaContext() {
-        return MetadataLogger.TABLE_SCHEMA;
     }
 
     public List<String> getColumnNames() {

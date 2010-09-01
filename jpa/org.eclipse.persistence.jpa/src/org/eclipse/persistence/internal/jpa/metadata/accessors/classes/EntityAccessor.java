@@ -542,6 +542,7 @@ public class EntityAccessor extends MappedSuperclassAccessor {
         // ORMetadata list merging. 
         m_secondaryTables = mergeORObjectLists(m_secondaryTables, accessor.getSecondaryTables());
         m_primaryKeyJoinColumns = mergeORObjectLists(m_primaryKeyJoinColumns, accessor.getPrimaryKeyJoinColumns());
+        m_indexes = mergeORObjectLists(m_indexes, accessor.getIndexes());
     }
     
     /**

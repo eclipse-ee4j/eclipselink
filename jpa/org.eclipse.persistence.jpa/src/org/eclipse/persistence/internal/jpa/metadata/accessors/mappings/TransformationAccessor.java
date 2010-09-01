@@ -184,8 +184,6 @@ public class TransformationAccessor extends BasicAccessor {
         }
 
         // TODO: ReturningPolicy
-        
-        processIndexes();
     }
     
     /**

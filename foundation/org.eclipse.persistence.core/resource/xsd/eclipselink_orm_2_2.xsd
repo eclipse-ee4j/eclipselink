@@ -710,13 +710,13 @@
       <xsd:element name="access-methods" type="orm:access-methods" minOccurs="0"/>
       <xsd:element name="customizer" type="orm:customizer" minOccurs="0"/>
       <xsd:element name="change-tracking" type="orm:change-tracking" minOccurs="0"/>
-      <xsd:element name="table" type="orm:table" 
-                   minOccurs="0"/>
+      <xsd:element name="table" type="orm:table" minOccurs="0"/>
       <xsd:element name="secondary-table" type="orm:secondary-table" 
                    minOccurs="0" maxOccurs="unbounded"/>
       <xsd:element name="primary-key-join-column" 
                    type="orm:primary-key-join-column" 
                    minOccurs="0" maxOccurs="unbounded"/>
+      <xsd:element name="index" type="orm:index" minOccurs="0" maxOccurs="unbounded"/>
       <xsd:element name="id-class" type="orm:id-class" minOccurs="0"/>
       <xsd:element name="primary-key" type="orm:primary-key" minOccurs="0"/>
       <xsd:element name="inheritance" type="orm:inheritance" minOccurs="0"/>
@@ -913,6 +913,7 @@
     </xsd:annotation>
     <xsd:sequence>
       <xsd:element name="column" type="orm:column" minOccurs="0"/>
+      <xsd:element name="index" type="orm:index" minOccurs="0"/>
       <xsd:element name="generated-value" type="orm:generated-value" minOccurs="0"/>
       <xsd:choice minOccurs="0">
         <xsd:element name="lob" type="orm:lob"/>
@@ -1934,6 +1935,7 @@
     <xsd:sequence>
       <xsd:element name="column" type="orm:column" 
                    minOccurs="0"/>
+      <xsd:element name="index" type="orm:index" minOccurs="0"/>
       <xsd:element name="generated-value" type="orm:generated-value"
                    minOccurs="0"/>
       <xsd:choice minOccurs="0">
@@ -3628,6 +3630,57 @@ public @interface QueryRedirectors {
     <xsd:attribute name="catalog" type="xsd:string"/>
     <xsd:attribute name="schema" type="xsd:string"/>
   </xsd:complexType>
+  
+<!-- **************************************************** -->
+
+  <xsd:complexType name="index">
+    <xsd:annotation>
+      <xsd:documentation>
+
+        /** 
+         * Allow a database INDEX to be define when generating DDL.
+         * The @Index can be defined on a Entity class, or on an attribute.
+         * The column is defaulted when defined on a attribute.
+         * 
+         * @author James Sutherland
+         * @since EclipseLink 2.2
+         */ 
+        @Target({METHOD, FIELD, TYPE})
+        @Retention(RUNTIME)
+        public @interface Index {
+            /** The name of the INDEX, defaults to INDEX_(table-name) */
+            String name() default "";
+    
+            /** The schema of the INDEX */
+            String schema() default "";
+            
+            /** The catalog of the INDEX */
+            String catalog() default "";
+            
+            /** The table to define the index on, defaults to entities primary table. */
+            String table() default "";
+            
+            boolean unique() default false;
+            
+            /**
+             * Specify the set of columns to define the index on.
+             * Not required when annotated on a field/method.
+             */
+            String[] columnNames() default {};
+        }
+
+      </xsd:documentation>
+    </xsd:annotation>
+    <xsd:sequence>
+      <xsd:element name="column-name" type="xsd:string" 
+                   minOccurs="0" maxOccurs="unbounded"/>
+    </xsd:sequence>
+    <xsd:attribute name="name" type="xsd:string"/>
+    <xsd:attribute name="catalog" type="xsd:string"/>
+    <xsd:attribute name="schema" type="xsd:string"/>
+    <xsd:attribute name="table" type="xsd:string"/>
+    <xsd:attribute name="unique" type="xsd:boolean"/>
+  </xsd:complexType>
 
 <!-- **************************************************** -->
 
@@ -3982,6 +4035,7 @@ public @interface QueryRedirectors {
     </xsd:annotation>
     <xsd:sequence>
       <xsd:element name="column" type="orm:column" minOccurs="0"/>
+      <xsd:element name="index" type="orm:index" minOccurs="0"/>
       <xsd:choice minOccurs="0">
         <xsd:element name="temporal" type="orm:temporal"/>
         <xsd:element name="convert" type="xsd:string"/>

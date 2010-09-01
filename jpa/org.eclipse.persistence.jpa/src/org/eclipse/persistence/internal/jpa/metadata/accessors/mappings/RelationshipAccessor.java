@@ -672,7 +672,6 @@ public abstract class RelationshipAccessor extends MappingAccessor {
                 throw ValidationException.invalidMappingForConverter(getJavaClass(), getAttributeName());
             }
         }
-        processIndexes();
     }
     
     /**

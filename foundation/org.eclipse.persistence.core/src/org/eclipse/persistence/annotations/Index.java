@@ -34,6 +34,12 @@ public @interface Index {
     /** The name of the INDEX, defaults to INDEX_<table-name> */
     String name() default "";
     
+    /** The schema of the INDEX */
+    String schema() default "";
+    
+    /** The catalog of the INDEX */
+    String catalog() default "";
+    
     /** The table to define the index on, defaults to entities primary table. */
     String table() default "";
     

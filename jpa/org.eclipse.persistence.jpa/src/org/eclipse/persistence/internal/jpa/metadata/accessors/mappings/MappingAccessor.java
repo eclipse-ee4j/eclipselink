@@ -64,7 +64,6 @@
  ******************************************************************************/
 package org.eclipse.persistence.internal.jpa.metadata.accessors.mappings;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
@@ -76,8 +75,6 @@ import javax.persistence.FetchType;
 
 import org.eclipse.persistence.annotations.BatchFetchType;
 import org.eclipse.persistence.annotations.Convert;
-import org.eclipse.persistence.annotations.Index;
-import org.eclipse.persistence.annotations.Indexes;
 import org.eclipse.persistence.annotations.JoinFetchType;
 import org.eclipse.persistence.annotations.Properties;
 import org.eclipse.persistence.annotations.Property;
@@ -115,7 +112,6 @@ import org.eclipse.persistence.internal.jpa.metadata.converters.LobMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.converters.SerializedMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.converters.TemporalMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.mappings.MapKeyMetadata;
-import org.eclipse.persistence.internal.jpa.metadata.tables.IndexMetadata;
 import org.eclipse.persistence.internal.queries.CollectionContainerPolicy;
 import org.eclipse.persistence.internal.queries.MappedKeyMapContainerPolicy;
 
@@ -129,7 +125,6 @@ import org.eclipse.persistence.mappings.ForeignReferenceMapping;
 import org.eclipse.persistence.mappings.OneToOneMapping;
 import org.eclipse.persistence.mappings.foundation.MapComponentMapping;
 import org.eclipse.persistence.mappings.foundation.MapKeyMapping;
-import org.eclipse.persistence.tools.schemaframework.IndexDefinition;
 
 /**
  * INTERNAL:
@@ -157,7 +152,6 @@ public abstract class MappingAccessor extends MetadataAccessor {
     private DatabaseMapping m_overrideMapping;
     private Map<String, PropertyMetadata> m_properties = new HashMap<String, PropertyMetadata>();
     private String m_attributeType;
-    private List<IndexMetadata> m_indexes = new ArrayList<IndexMetadata>();
     
     /**
      * INTERNAL:
@@ -1646,78 +1640,6 @@ public abstract class MappingAccessor extends MetadataAccessor {
         if (hasReturnUpdate()) {
             getLogger().logWarningMessage(MetadataLogger.IGNORE_RETURN_UPDATE_ANNOTATION, getAnnotatedElement());
         }
-    }    
-    
-    /**
-     * INTERNAL:
-     * Process index information for the given mapping.
-     */
-    protected void processIndexes() {
-        MetadataAnnotation index = getAnnotation(Index.class);
-        
-        if (index != null) {
-            m_indexes.add(new IndexMetadata(index, getAccessibleObject()));
-        }
-        
-        MetadataAnnotation indexes = getAnnotation(Indexes.class);
-        if (indexes != null) {
-            Object[] indexArray = (Object[])indexes.getAttributeArray("value");
-            for (Object eachIndex : indexArray) {
-                m_indexes.add(new IndexMetadata((MetadataAnnotation)eachIndex, getAccessibleObject()));            
-            }
-        }
-        
-        for (IndexMetadata indexMetadata : m_indexes) {
-            IndexDefinition indexDefinition = new IndexDefinition();
-            if (indexMetadata.getColumnNames().isEmpty()) {
-                indexDefinition.getFields().add(getColumn(MetadataLogger.COLUMN).getName());
-            } else {
-                indexDefinition.getFields().addAll(indexMetadata.getColumnNames());
-            }
-            if ((indexMetadata.getName() != null) && (indexMetadata.getName().length() != 0)) {
-                indexDefinition.setName(indexMetadata.getName());            
-            } else {
-                String name = "INDEX_" + getDescriptor().getPrimaryTable().getName();
-                for (String column : indexDefinition.getFields()) {
-                    name = name + "_" + column;
-                }
-                indexDefinition.setName(name);
-            }
-            if ((indexMetadata.getSchema() != null) && (indexMetadata.getSchema().length() != 0)) {
-                indexDefinition.setQualifier(indexMetadata.getSchema());
-            } else if ((getDescriptor().getDefaultSchema() != null) && (getDescriptor().getDefaultSchema().length() != 0)) {
-                indexDefinition.setQualifier(indexMetadata.getSchema());                
-            }
-            if ((indexMetadata.getCatalog() != null) && (indexMetadata.getCatalog().length() != 0)) {
-                indexDefinition.setQualifier(indexMetadata.getCatalog());
-            } else if ((getDescriptor().getDefaultCatalog() != null) && (getDescriptor().getDefaultCatalog().length() != 0)) {
-                indexDefinition.setQualifier(getDescriptor().getDefaultCatalog());                
-            }
-            if (indexMetadata.getUnique() != null) {
-                indexDefinition.setIsUnique(indexMetadata.getUnique());
-            }
-            String table = indexMetadata.getTable();
-            if ((table == null) || (table.length() == 0)) {
-                indexDefinition.setTargetTable(getDescriptor().getPrimaryTable().getQualifiedName());
-                getDescriptor().getPrimaryTable().getIndexes().add(indexDefinition);
-            } else if (table.equals(getDescriptor().getPrimaryTable().getQualifiedName())
-                        || table.equals(getDescriptor().getPrimaryTable().getName())) {
-                indexDefinition.setTargetTable(table);
-                getDescriptor().getPrimaryTable().getIndexes().add(indexDefinition);
-            } else {
-                indexDefinition.setTargetTable(table);
-                boolean found = false;
-                for (DatabaseTable databaseTable : getDescriptor().getClassDescriptor().getTables()) {
-                    if (table.equals(databaseTable.getQualifiedName()) || table.equals(databaseTable.getName())) {
-                        databaseTable.getIndexes().add(indexDefinition);
-                        found = true;
-                    }
-                }
-                if (!found) {
-                    getDescriptor().getPrimaryTable().getIndexes().add(indexDefinition);
-                }
-            }
-        }
     }
     
     /**
@@ -1768,14 +1690,6 @@ public abstract class MappingAccessor extends MetadataAccessor {
             mapping.setGetMethodName(getGetMethodName());
             mapping.setSetMethodName(getSetMethodName());
         }
-    }
-    
-    public List<IndexMetadata> getIndexes() {
-        return m_indexes;
-    }
-
-    public void setIndexes(List<IndexMetadata> indexes) {
-        m_indexes = indexes;
     }
     
     /**

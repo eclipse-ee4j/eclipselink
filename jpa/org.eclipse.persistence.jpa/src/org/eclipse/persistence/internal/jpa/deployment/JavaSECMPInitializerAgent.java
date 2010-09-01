@@ -14,6 +14,7 @@ package org.eclipse.persistence.internal.jpa.deployment;
 
 import java.lang.instrument.*;
 import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
 
@@ -28,7 +29,7 @@ import java.lang.reflect.Method;
  * that no domain classes that use lazy loading may be references in any way other than reflective in the application
  */
 public class JavaSECMPInitializerAgent {
-    public static void premain(String agentArgs, Instrumentation instr) throws Exception {
+    public static void premain(String agentArgs, Instrumentation instr) throws Throwable {
         // Reflection allows:
         //  JavaSECMPInitializerAgent to be the *ONLY* class is the jar file specified in -javaagent;
         //  Loading JavaSECMPInitializer class using SystemClassLoader.
@@ -39,10 +40,14 @@ public class JavaSECMPInitializerAgent {
         }
     }
     
-    public static void initializeFromAgent(Instrumentation instr) throws Exception {
+    public static void initializeFromAgent(Instrumentation instr) throws Throwable {
             Class cls = Class.forName("org.eclipse.persistence.internal.jpa.deployment.JavaSECMPInitializer");
             Method method = cls.getDeclaredMethod("initializeFromAgent", new Class[] { Instrumentation.class });
-            method.invoke(null, new Object[] { instr });
+            try {
+                method.invoke(null, new Object[] { instr });
+            } catch (InvocationTargetException exception) {
+                throw exception.getCause();
+            }
     }
     
     public static void initializeFromMain(Instrumentation instr) throws Exception {
