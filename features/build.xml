@@ -409,7 +409,6 @@
             <fileset
                 dir="${p2.bundle.dir}" 
                 includes="
-                          *dbws*.jar,
                           *jms*.jar,
                           com.sun*.jar,
                           eclipselink*.jar,
