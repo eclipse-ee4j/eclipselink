@@ -12,6 +12,12 @@
  ******************************************************************************/  
 package org.eclipse.persistence.testing.tests.optimisticlocking;
 
+import org.eclipse.persistence.descriptors.AllFieldsLockingPolicy;
+import org.eclipse.persistence.descriptors.TimestampLockingPolicy;
+import org.eclipse.persistence.descriptors.VersionLockingPolicy;
+import org.eclipse.persistence.descriptors.SelectedFieldsLockingPolicy;
+import org.eclipse.persistence.descriptors.ChangedFieldsLockingPolicy;
+
 import org.eclipse.persistence.testing.framework.*;
 import org.eclipse.persistence.testing.models.optimisticlocking.*;
 import org.eclipse.persistence.testing.tests.optimisticlocking.cascaded.*;
@@ -19,7 +25,7 @@ import org.eclipse.persistence.testing.tests.optimisticlocking.cascaded.*;
 public class OptimisticLockingTestModel extends TestModel {
     // No state.
     public OptimisticLockingTestModel() {
-        setDescription("This model tests selected TopLink features using the employee demo.");
+        setDescription("This model tests EclipseLink optimistic locking features.");
     }
 
     public void addRequiredSystems() {
@@ -31,6 +37,7 @@ public class OptimisticLockingTestModel extends TestModel {
         addTest(getOptimisticLockingTestSuite());
         addTest(getCascadeOptimisticLockingTestSuite());
         addTest(getLockingExceptionTestSuite());
+        addTest(getUpdateNullValueOptimisticLockingTestSuite());
     }
     
     public static TestSuite getLockingExceptionTestSuite() {
@@ -85,13 +92,13 @@ public class OptimisticLockingTestModel extends TestModel {
         suite.addTest(new TimestampNewObjectInCache(LockInObject.example1()));
         suite.addTest(new TimestampNewObjectInCache(TimestampInObject.example1()));
         suite.addTest(new ChangeSetOptimisticLockingUpdateTest(TimestampInAggregateObject.class));
-        suite.addTest(new ChangeSetOptimisticLockingUpdateTest(LockInAggregateObject.class));	
+        suite.addTest(new ChangeSetOptimisticLockingUpdateTest(LockInAggregateObject.class));    
         suite.addTest(new ChangeSetOptimisticLockingUpdateTest(TimestampInCache.class));
         suite.addTest(new ChangeSetOptimisticLockingUpdateTest(LockInCache.class));
         suite.addTest(new ChangeSetOptimisticLockingUpdateTest(TimestampInObject.class));
         suite.addTest(new ChangeSetOptimisticLockingUpdateTest(LockInObject.class));
         suite.addTest(new ChangeSetOptimisticLockingInsertTest(TimestampInAggregateObject.class));
-        suite.addTest(new ChangeSetOptimisticLockingInsertTest(LockInAggregateObject.class));	
+        suite.addTest(new ChangeSetOptimisticLockingInsertTest(LockInAggregateObject.class));    
         suite.addTest(new ChangeSetOptimisticLockingInsertTest(TimestampInCache.class));
         suite.addTest(new ChangeSetOptimisticLockingInsertTest(LockInCache.class));
         suite.addTest(new ChangeSetOptimisticLockingInsertTest(TimestampInObject.class));
@@ -122,4 +129,42 @@ public class OptimisticLockingTestModel extends TestModel {
     
         return suite;
     }
+    
+    // EL bug 319759
+    public static TestSuite getUpdateNullValueOptimisticLockingTestSuite() {
+        TestSuite suite = new TestSuite();
+        suite.setName("UpdateNullValueOptimisticLockingTestSuite");
+        suite.setDescription("Tests the functionality of updating fields with a null database value, with optimistic locking");
+        
+        final Class[] policies = { AllFieldsLockingPolicy.class, SelectedFieldsLockingPolicy.class,  
+                ChangedFieldsLockingPolicy.class, VersionLockingPolicy.class, TimestampLockingPolicy.class };
+        // done this way for test ordering
+        for (int i = 0; i < policies.length; i++) {
+            suite.addTest(new UpdateNullDirectToFieldValueTest(policies[i]));
+        }
+        for (int i = 0; i < policies.length; i++) {
+            suite.addTest(new UpdateNullOneToOneValueTest(policies[i]));
+        }
+        for (int i = 0; i < policies.length; i++) {
+            suite.addTest(new UpdateNullAggregateValueTest(policies[i]));
+        }
+        for (int i = 0; i < policies.length; i++) {
+            suite.addTest(new UpdateNullOneToManyValueTest(policies[i]));
+        }
+        for (int i = 0; i < policies.length; i++) {
+            suite.addTest(new UpdateNullOneToManyValueTest2(policies[i]));
+        }
+        for (int i = 0; i < policies.length; i++) {
+            suite.addTest(new UpdateNullTransformationValueTest(policies[i]));
+        }
+        for (int i = 0; i < policies.length; i++) {
+            suite.addTest(new UpdateNullVariableOneToOneValueTest(policies[i]));
+        }
+        for (int i = 0; i < policies.length; i++) {
+            suite.addTest(new UpdateNullManyToManyValueTest(policies[i]));
+        }
+        
+        return suite;
+    }
+    
 }

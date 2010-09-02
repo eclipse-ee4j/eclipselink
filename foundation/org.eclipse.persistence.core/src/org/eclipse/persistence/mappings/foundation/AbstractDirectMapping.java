@@ -1303,6 +1303,11 @@ public abstract class AbstractDirectMapping extends DatabaseMapping  implements 
 
         Object attributeValue = getAttributeValueFromObject(object);
         Object fieldValue = getFieldValue(attributeValue, session);
+        
+        // EL Bug 319759 - if a field is null, then the update call cache should not be used
+        if (fieldValue == null) {
+            row.setNullValueInFields(true);
+        }
 
         writeValueIntoRow(row, this.field, fieldValue);
 
@@ -1329,6 +1334,11 @@ public abstract class AbstractDirectMapping extends DatabaseMapping  implements 
         
         Object attributeValue = ((DirectToFieldChangeRecord)changeRecord).getNewValue();
         Object fieldValue = getFieldValue(attributeValue, session);
+        
+        // EL Bug 319759 - if a field is null, then the update call cache should not be used
+        if (fieldValue == null) {
+            row.setNullValueInFields(true);
+        }
 
         row.add(this.field, fieldValue);
     }

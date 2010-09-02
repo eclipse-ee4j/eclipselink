@@ -269,6 +269,9 @@ public abstract class DatabaseQuery implements Cloneable, Serializable {
      */
     protected String monitorName;
     
+    /** Allow additional validation to be performed before using the update call cache */
+    protected boolean shouldValidateUpdateCallCacheUse;
+    
     /**
      * PUBLIC: Initialize the state of the query
      */
@@ -286,6 +289,7 @@ public abstract class DatabaseQuery implements Cloneable, Serializable {
         this.shouldBindAllParameters = null;
         this.shouldCacheStatement = null;
         this.isExecutionClone = false;
+        this.shouldValidateUpdateCallCacheUse = false;
     }
 
     /**
@@ -2068,6 +2072,15 @@ public abstract class DatabaseQuery implements Cloneable, Serializable {
     }
 
     /**
+     * INTERNAL:
+     * Set if additional validation should be performed before the query uses
+     * the update call cache. 
+     */
+    public void setShouldValidateUpdateCallCacheUse(boolean shouldCheckUpdateCallCacheUse) {
+        this.shouldValidateUpdateCallCacheUse = shouldCheckUpdateCallCacheUse;
+    }
+
+    /**
      * ADVANCED: The wrapper policy can be enable on a query.
      */
     public void setShouldUseWrapperPolicy(boolean shouldUseWrapperPolicy) {
@@ -2239,6 +2252,15 @@ public abstract class DatabaseQuery implements Cloneable, Serializable {
      */
     public boolean shouldUseWrapperPolicy() {
         return shouldUseWrapperPolicy;
+    }
+
+    /**
+     * ADVANCED: 
+     * Return true if additional validation should be performed before the query uses
+     * the update call cache, false otherwise. 
+     */
+    public boolean shouldValidateUpdateCallCacheUse() {
+        return shouldValidateUpdateCallCacheUse;
     }
 
     /**

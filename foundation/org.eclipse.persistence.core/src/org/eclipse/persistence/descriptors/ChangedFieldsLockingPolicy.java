@@ -59,6 +59,12 @@ public class ChangedFieldsLockingPolicy extends FieldsLockingPolicy {
             return;
         }
         object = query.getBackupClone();
+        
+        // EL bug 319759
+        if (query.isUpdateObjectQuery()) {
+            query.setShouldValidateUpdateCallCacheUse(true);
+        }
+        
         for (Enumeration enumtr = query.getModifyRow().keys(); enumtr.hasMoreElements();) {
             DatabaseField field = (DatabaseField)enumtr.nextElement();
             DatabaseMapping mapping = descriptor.getObjectBuilder().getMappingForField(field);

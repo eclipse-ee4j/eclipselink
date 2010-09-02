@@ -72,6 +72,12 @@ public class SelectedFieldsLockingPolicy extends FieldsLockingPolicy {
         } else {
             object = query.getBackupClone();
         }
+        
+        // EL bug 319759
+        if (query.isUpdateObjectQuery()) {
+            query.setShouldValidateUpdateCallCacheUse(true);
+        }
+        
         for (Iterator vectors = getLockFieldsByTable().values().iterator(); vectors.hasNext();) {
             for (Enumeration fields = ((Vector)vectors.next()).elements();
                      fields.hasMoreElements();) {

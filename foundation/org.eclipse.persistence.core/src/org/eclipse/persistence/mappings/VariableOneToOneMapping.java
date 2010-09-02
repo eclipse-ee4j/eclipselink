@@ -773,10 +773,13 @@ public class VariableOneToOneMapping extends ObjectReferenceMapping implements R
             Enumeration foreignKeys = getForeignKeyFields().elements();
             while (foreignKeys.hasMoreElements()) {
                 record.put((DatabaseField)foreignKeys.nextElement(), null);
+                // EL Bug 319759 - if a field is null, then the update call cache should not be used
+                record.setNullValueInFields(true);
             }
         }
         if (getTypeField() != null) {
             record.put(getTypeField(), null);
+            record.setNullValueInFields(true);
         }
     }
 
@@ -808,6 +811,10 @@ public class VariableOneToOneMapping extends ObjectReferenceMapping implements R
                         throw DescriptorException.variableOneToOneMappingIsNotDefinedProperly(this, descriptor, targetQueryKey);
                     }
                     Object referenceValue = descriptor.getObjectBuilder().extractValueFromObjectForField(referenceObject, targetKeyField, session);
+                    // EL Bug 319759 - if a field is null, then the update call cache should not be used
+                    if (referenceValue == null) {
+                        record.setNullValueInFields(true);
+                    }
                     record.put(sourceKey, referenceValue);
                 }
             }
@@ -845,6 +852,10 @@ public class VariableOneToOneMapping extends ObjectReferenceMapping implements R
                         throw DescriptorException.variableOneToOneMappingIsNotDefinedProperly(this, descriptor, targetQueryKey);
                     }
                     Object referenceValue = descriptor.getObjectBuilder().extractValueFromObjectForField(referenceObject, targetKeyField, session);
+                    // EL Bug 319759 - if a field is null, then the update call cache should not be used
+                    if (referenceValue == null) {
+                        record.setNullValueInFields(true);
+                    }
                     record.put(sourceKey, referenceValue);
                 }
             }
@@ -905,11 +916,16 @@ public class VariableOneToOneMapping extends ObjectReferenceMapping implements R
                         throw DescriptorException.variableOneToOneMappingIsNotDefinedProperly(this, descriptor, targetQueryKey);
                     }
                     Object referenceValue = descriptor.getObjectBuilder().extractValueFromObjectForField(referenceObject, targetKeyField, query.getSession());
+                    if (referenceValue == null) {
+                        // EL Bug 319759 - if a field is null, then the update call cache should not be used
+                        record.setNullValueInFields(true);
+                    }
                     record.put(sourceKey, referenceValue);
                 }
             }
             if (getTypeField() != null) {
-                record.put(getTypeField(), getTypeForImplementor(referenceObject.getClass()));
+                Object typeForImplementor = getTypeForImplementor(referenceObject.getClass());
+                record.put(getTypeField(), typeForImplementor);
             }
         }
     }

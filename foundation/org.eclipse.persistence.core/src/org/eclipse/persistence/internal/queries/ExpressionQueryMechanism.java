@@ -1606,11 +1606,15 @@ public class ExpressionQueryMechanism extends StatementQueryMechanism {
         if (getModifyRow() == null) {
             return;
         }
-
+        
+        // EL Bug 319759
+        AbstractRecord row = getQuery().getTranslationRow();
+        boolean useCache = (row == null || !(getQuery().shouldValidateUpdateCallCacheUse() && row.hasNullValueInFields()));
+        
         // PERF: Check the descriptor update SQL call cache for a matching update with the same fields.
         Vector updateCalls = getDescriptor().getQueryManager().getCachedUpdateCalls(getModifyRow().getFields());
         // If the calls were cached then don't need to prepare.
-        if (updateCalls != null) {
+        if (updateCalls != null && useCache == true) {
             int updateCallsSize = updateCalls.size();
             if (updateCallsSize == 1) {
                 // clone call, to be able to set query on clone
@@ -1644,15 +1648,17 @@ public class ExpressionQueryMechanism extends StatementQueryMechanism {
         super.prepareUpdateObject();
         
         // PERF: Cache the update SQL call to avoid regeneration.
-        if (hasMultipleCalls()) {
-            updateCalls = getCalls();
-        } else {
-            updateCalls = org.eclipse.persistence.internal.helper.NonSynchronizedVector.newInstance(1);
-            if (getCall() != null) {
-                updateCalls.add(getCall());
+        if (useCache == true) { // EL Bug 319759
+            if (hasMultipleCalls()) {
+                updateCalls = getCalls();
+            } else {
+                updateCalls = org.eclipse.persistence.internal.helper.NonSynchronizedVector.newInstance(1);
+                if (getCall() != null) {
+                    updateCalls.add(getCall());
+                }
             }
+            getDescriptor().getQueryManager().putCachedUpdateCalls(getModifyRow().getFields(), updateCalls);
         }
-        getDescriptor().getQueryManager().putCachedUpdateCalls(getModifyRow().getFields(), updateCalls);
     }
 
     /**

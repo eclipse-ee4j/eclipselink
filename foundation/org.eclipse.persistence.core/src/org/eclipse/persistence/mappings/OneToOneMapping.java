@@ -1647,6 +1647,10 @@ public class OneToOneMapping extends ObjectReferenceMapping implements Relationa
                     DatabaseField targetKey = this.sourceToTargetKeyFields.get(sourceKey);
                     referenceValue = this.referenceDescriptor.getObjectBuilder().extractValueFromObjectForField(referenceObject, targetKey, session);
                 }
+                // EL Bug 319759 - if a field is null, then the update call cache should not be used
+                if (referenceValue == null) {
+                    databaseRow.setNullValueInFields(true);
+                }
                 databaseRow.add(sourceKey, referenceValue);
             }
         } else {
@@ -1654,7 +1658,12 @@ public class OneToOneMapping extends ObjectReferenceMapping implements Relationa
             int size = foreignKeyFields.size();
             for (int index = 0; index < size; index++) {
                 DatabaseField sourceKey = foreignKeyFields.get(index);
-                databaseRow.add(sourceKey, referenceRow.get(sourceKey));
+                Object referenceValue = referenceRow.get(sourceKey);
+                // EL Bug 319759 - if a field is null, then the update call cache should not be used
+                if (referenceValue == null) {
+                    databaseRow.setNullValueInFields(true);
+                }
+                databaseRow.add(sourceKey, referenceValue);
             }
         }
     }

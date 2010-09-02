@@ -111,6 +111,10 @@ public class VersionLockingPolicy implements OptimisticLockingPolicy, Serializab
                 throw OptimisticLockException.noVersionNumberWhenUpdating(query.getObject(), query);
             }
         }
+        // EL bug 319759
+        if (query.isUpdateObjectQuery()) {
+            query.setShouldValidateUpdateCallCacheUse(true);
+        }
         query.getTranslationRow().put(this.writeLockField, value);
     }
 

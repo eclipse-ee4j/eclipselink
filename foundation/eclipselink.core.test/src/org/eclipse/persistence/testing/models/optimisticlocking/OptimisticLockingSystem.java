@@ -34,6 +34,7 @@ public class OptimisticLockingSystem extends TestSystem {
         (session).addDescriptors(descriptors);
         (session).addDescriptors(new RockBandProject());
         (session).addDescriptors(new AnimalProject());
+        session.addDescriptors(new GamesConsoleProject());
     }
 
     public void createTables(DatabaseSession session) {
@@ -49,6 +50,7 @@ public class OptimisticLockingSystem extends TestSystem {
         schemaManager.createSequences();
         new RockBandTableCreator().replaceTables(session);
         new AnimalTableCreator().replaceTables(session);
+        new GamesConsoleTableCreator().replaceTables(session);
     }
 
     public void populate(DatabaseSession session) {

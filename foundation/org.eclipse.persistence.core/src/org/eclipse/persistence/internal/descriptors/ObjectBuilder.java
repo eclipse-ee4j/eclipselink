@@ -1142,6 +1142,11 @@ public class ObjectBuilder implements Cloneable, Serializable {
      */
     public AbstractRecord buildRowForWhereClause(ObjectLevelModifyQuery query) {
         AbstractRecord databaseRow = createRecord(query.getSession());
+        
+        // EL bug 319759
+        if (query.isUpdateObjectQuery()) {
+            query.setShouldValidateUpdateCallCacheUse(true);
+        }
 
         for (Iterator mappings = this.descriptor.getMappings().iterator();
                  mappings.hasNext();) {

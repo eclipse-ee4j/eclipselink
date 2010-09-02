@@ -46,6 +46,9 @@ public abstract class AbstractRecord implements Record, Cloneable, Serializable,
 
     /** INTERNAL: indicator showing that no entry exists for a given key. */
     public static final AbstractRecord.NoEntry noEntry = new AbstractRecord.NoEntry();
+    
+    /** INTERNAL: flag for any database field containing a null value */
+    protected boolean nullValueInFields;
 
     /**
      * INTERNAL:
@@ -66,6 +69,7 @@ public abstract class AbstractRecord implements Record, Cloneable, Serializable,
         this.fields = new NonSynchronizedVector();
         this.values = new NonSynchronizedVector();
         this.size = 0;
+        this.nullValueInFields = false;
     }
 
     /**
@@ -76,6 +80,7 @@ public abstract class AbstractRecord implements Record, Cloneable, Serializable,
         this.fields = new NonSynchronizedVector(initialCapacity);
         this.values = new NonSynchronizedVector(initialCapacity);
         this.size = 0;
+        this.nullValueInFields = false;
     }
 
     /**
@@ -85,6 +90,7 @@ public abstract class AbstractRecord implements Record, Cloneable, Serializable,
     public AbstractRecord(Vector fields, Vector values) {
         this.fields = fields;
         this.values = values;
+        this.nullValueInFields = false;
         resetSize();
     }
     
@@ -366,6 +372,15 @@ public abstract class AbstractRecord implements Record, Cloneable, Serializable,
      */
     public boolean isEmpty() {
         return size() == 0;
+    }
+    
+    /**
+     * INTERNAL:
+     * Return true if the AbstractRecord has been marked as valid 
+     * to check the update call cache with, false otherwise.
+     */
+    public boolean hasNullValueInFields() {
+        return this.nullValueInFields;
     }
 
     /**
@@ -662,6 +677,15 @@ public abstract class AbstractRecord implements Record, Cloneable, Serializable,
         resetSize();
     }
 
+    /**
+     * INTERNAL:
+     * Set the validForUpdateCallCacheCheck attribute to true if the row
+     * does not contain nulls, false otherwise
+     */
+    public void setNullValueInFields(boolean nullValueInFields) {
+        this.nullValueInFields = nullValueInFields;
+    }
+    
     protected void setValues(Vector values) {
         this.values = values;
     }

@@ -346,6 +346,10 @@ public class AggregateObjectMapping extends AggregateMapping implements Relation
         for (int index = 0; index < size; index++) {
             record.put(fields.get(index), null);
         }
+        if (size > 0) {
+            // EL Bug 319759 - if a field is null, then the update call cache should not be used
+            record.setNullValueInFields(true);
+        }
     }
 
     /**
