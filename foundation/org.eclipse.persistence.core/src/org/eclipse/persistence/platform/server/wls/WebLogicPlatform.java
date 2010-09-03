@@ -85,7 +85,7 @@ public class WebLogicPlatform extends JMXServerPlatformBase {
             Class clazz = PrivilegedAccessHelper.getClassForName("weblogic.version");
             Method method = PrivilegedAccessHelper.getMethod(clazz, "getBuildVersion", null, false);
             this.serverNameAndVersion = (String) PrivilegedAccessHelper.invokeMethod(method, null, null);
-            this.shouldClearStatementCache = Boolean.valueOf(Helper.compareVersions(this.serverNameAndVersion, "10.3.4") < 0);
+            this.shouldClearStatementCache = Helper.compareVersions(this.serverNameAndVersion, "10.3.4") < 0;
         } catch (Exception exception) {
             getDatabaseSession().getSessionLog().logThrowable(SessionLog.WARNING, exception);
         }
