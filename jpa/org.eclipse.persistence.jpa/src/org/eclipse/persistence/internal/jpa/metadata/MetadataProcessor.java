@@ -274,7 +274,7 @@ public class MetadataProcessor {
         // in the XML case.
         for (String className : classNames) {
             MetadataClass candidateClass = m_factory.getMetadataClass(className);
-            // Bug 227630: Do not process a null class whether it was from a 
+            // JBoss Bug 227630: Do not process a null class whether it was from a 
             // NPE or a CNF, a warning or exception is thrown in loadClass() 
             if (candidateClass != null) {
                 if (PersistenceUnitProcessor.isEntity(candidateClass) && ! m_project.hasEntity(candidateClass)) {

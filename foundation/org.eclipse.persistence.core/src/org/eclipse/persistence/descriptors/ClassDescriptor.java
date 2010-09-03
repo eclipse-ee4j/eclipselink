@@ -133,11 +133,11 @@ public class ClassDescriptor implements Cloneable, Serializable {
     
     protected transient int initializationStage;
     protected transient int interfaceInitializationStage;
-    /** The following are the states the descriptor passes thru during the initialization. */
+    /** The following are the [initializationStage] states the descriptor passes through during the initialization. */
     protected static final int UNINITIALIZED = 0;
     protected static final int PREINITIALIZED = 1;
-    protected static final int INITIALIZED = 2;
-    protected static final int POST_INITIALIZED = 3;
+    protected static final int INITIALIZED = 2; // this state represents a fully initialized descriptor
+    protected static final int POST_INITIALIZED = 3; // however this value is used by the public function isFullyInitialized()
     protected static final int ERROR = -1;
     
     protected int descriptorType;

@@ -149,8 +149,9 @@ public class EntityManagerSetupImpl {
     protected SecurableObjectHolder securableObjectHolder = new SecurableObjectHolder();
 
     // 266912: Criteria API and Metamodel API (See Ch 5 of the JPA 2.0 Specification)
-    /** Reference to the Metamodel for this deployment and session. */
-    protected Metamodel metaModel;     
+    /** Reference to the Metamodel for this deployment and session. 
+     * Please use the accessor and not the instance variable directly*/
+    private Metamodel metaModel;     
     
     protected List<StructConverter> structConverters = null;
     // factoryCount==0; session==null
@@ -371,6 +372,14 @@ public class EntityManagerSetupImpl {
                         session.setProperties(deployProperties);
                         updateServerSession(deployProperties, realClassLoader);
                         if (isValidationOnly(deployProperties, false)) {
+                            /**
+                             * for 324213 we could add a session.loginAndDetectDatasource() call 
+                             * before calling initializeDescriptors when validation-only is True
+                             * to avoid a native sequence exception on a generic DatabasePlatform 
+                             * by auto-detecting the correct DB platform.
+                             * However, this would introduce a DB login when validation is on 
+                             * - in opposition to the functionality of the property (to only validate)
+                             */
                             session.initializeDescriptors();
                         } else {
                             if (isSessionLoadedFromSessionsXML) {
@@ -394,7 +403,7 @@ public class EntityManagerSetupImpl {
                 this.weaver = null;
             }            
             
-            // 266912: Initialize the Metamodel
+            // 266912: Initialize the Metamodel, a login should have already occurred.
             try {
                 this.getMetamodel();
             } catch (Exception e) {
@@ -1988,7 +1997,6 @@ public class EntityManagerSetupImpl {
         return validationMode;
     }
 
-    
     /**
      * INTERNAL:
      * Return an instance of Metamodel interface for access to the

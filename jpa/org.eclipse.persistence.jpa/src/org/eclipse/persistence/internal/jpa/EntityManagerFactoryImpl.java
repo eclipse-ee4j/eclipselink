@@ -9,6 +9,16 @@
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
+ *     03/19/2009-2.0 Michael O'Brien - 266912: JPA 2.0 Metamodel API (part
+ *                      of the JSR-317 EJB 3.1 Criteria API)
+ *     08/17/2010-2.2 Michael O'Brien 
+ *        - 322585: Login the session on the first call to getMetamodel() or getCriteriaBuilder()
+ *                       after EMF predeploy() completes.  This will do a DB login that calls
+ *                       initializeDescriptors() so we have real Classes and not just class names for
+ *                       MappedSuperclass metamodel descriptors.  This is provided for
+ *                       implementations that use the metamodel before the 1st EntityManager creation.
+ *                       Login will continue to only be called in EM deploy for users 
+ *                       that do not request the Metamodel
  ******************************************************************************/
 package org.eclipse.persistence.internal.jpa;
 
@@ -53,8 +63,6 @@ import org.eclipse.persistence.mappings.ForeignReferenceMapping;
  * @author gyorke
  * @since TopLink Essentials - JPA 1.0
  * 
- *        03/19/2009-2.0 Michael O'Brien - 266912: JPA 2.0 Metamodel API (part
- *        of the JSR-317 EJB 3.1 Criteria API)
  */
 public class EntityManagerFactoryImpl implements EntityManagerFactory, PersistenceUnitUtil {
     /** Reference to Cache Interface. */
@@ -152,8 +160,7 @@ public class EntityManagerFactoryImpl implements EntityManagerFactory, Persisten
                     // be either cached in the server session or ignored
                     properties = splitProperties[0];
                     Map serverSessionProperties = splitProperties[1];
-                    // the call top setupImpl.deploy() finishes the session
-                    // creation
+                    // the call to setupImpl.deploy() finishes the session creation
                     ServerSession tempServerSession = setupImpl.deploy(realLoader, serverSessionProperties);
                     // discard all but non server session properties from server
                     // session properties.
@@ -492,6 +499,15 @@ public class EntityManagerFactoryImpl implements EntityManagerFactory, Persisten
         if (!this.isOpen()) {
             throw new IllegalStateException(ExceptionLocalization.buildMessage("operation_on_closed_entity_manager_factory"));
         }
+        /**
+         * Login the session and initialize descriptors - if not already, subsequent calls will just return the session
+         * 322585: Login the session on the first call to getMetamodel() or getCriteriaBuilder()
+         * after EMF predeploy() completes.  This will do a DB login that calls
+         * initializeDescriptors() so we have real Classes and not just class names for
+         * MappedSuperclass metamodel descriptors.  This is provided for
+         * implementations that use the metamodel before the 1st EntityManager creation.
+         */        
+        this.getServerSession();
         return this.setupImpl.getMetamodel();
     }
 

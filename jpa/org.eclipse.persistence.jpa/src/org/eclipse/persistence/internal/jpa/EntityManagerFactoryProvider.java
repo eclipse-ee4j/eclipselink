@@ -215,7 +215,7 @@ public class EntityManagerFactoryProvider {
     }
     
     /**
-     * Logs in to given session. If user has not specified  <codeTARGET_DATABASE</code>
+     * Logs in to given session. If user has not specified  <code>TARGET_DATABASE</code>
      * the platform would be auto detected
      * @param session The session to login to.
      * @param properties User specified properties for the persistence unit
