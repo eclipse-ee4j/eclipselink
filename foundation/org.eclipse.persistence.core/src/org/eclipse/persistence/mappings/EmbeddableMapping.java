@@ -15,6 +15,8 @@
  ******************************************************************************/  
 package org.eclipse.persistence.mappings;
 
+import org.eclipse.persistence.internal.helper.DatabaseField;
+
 /**
  * INTERNAL
  * Common interface to those mappings that are used to map JPA Embedded objects.
@@ -32,6 +34,6 @@ public interface EmbeddableMapping {
     public String getAttributeName();
     public void addOverrideManyToManyMapping(ManyToManyMapping mapping);
     public void addOverrideUnidirectionalOneToManyMapping(UnidirectionalOneToManyMapping mapping);
-    public void addFieldNameTranslation(String sourceFieldName, String aggregateFieldName);
-    public void addNestedFieldNameTranslation(String attributeName, String sourceFieldName, String aggregateFieldName);
+    public void addFieldTranslation(DatabaseField sourceFieldName, String aggregateFieldName);
+    public void addNestedFieldTranslation(String attributeName, DatabaseField sourceField, String aggregateField);
 }

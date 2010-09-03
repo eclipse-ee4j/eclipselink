@@ -113,11 +113,12 @@ public class ProjectClassGenerator {
         }
         method.addLine(mappingName + ".setIsNullAllowed(" + mapping.isNullAllowed() + ");");
 
-        for (Iterator fieldTranslationEnum = mapping.getAggregateToSourceFieldNames().keySet().iterator();
+        for (Iterator<String> fieldTranslationEnum = mapping.getAggregateToSourceFields().keySet().iterator();
                  fieldTranslationEnum.hasNext();) {
-            String aggregateField = (String)fieldTranslationEnum.next();
-            String sourceField = mapping.getAggregateToSourceFieldNames().get(aggregateField);
-            method.addLine(mappingName + ".addFieldNameTranslation(\"" + sourceField + "\", \"" + aggregateField + "\");");
+            String aggregateFieldName = fieldTranslationEnum.next();
+            DatabaseField sourceField = mapping.getAggregateToSourceFields().get(aggregateFieldName);
+            //may need to account for delimiting on the sourceField in the future
+            method.addLine(mappingName + ".addFieldNameTranslation(\"" + sourceField.getQualifiedName() + "\", \"" + aggregateFieldName + "\");");
         }
     }
 

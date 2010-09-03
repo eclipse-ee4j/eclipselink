@@ -218,10 +218,10 @@ public abstract class MappingAccessor extends MetadataAccessor {
             // the EmbeddableMapping interface requirements. Nested attribute
             // overrides on an aggregate collection mapping are handled slightly
             // different though.
-            embeddableMapping.addNestedFieldNameTranslation(overrideName, overrideField.getQualifiedName(), aggregatesMappingField.getName());
+            embeddableMapping.addNestedFieldTranslation(overrideName, overrideField, aggregatesMappingField.getName());
         } else {
             // Set the field name translation on the mapping.
-            embeddableMapping.addFieldNameTranslation(overrideField.getQualifiedName(), aggregatesMappingField.getName()); 
+            embeddableMapping.addFieldTranslation(overrideField, aggregatesMappingField.getName());
         }
     }
     
@@ -533,7 +533,7 @@ public abstract class MappingAccessor extends MetadataAccessor {
                 if (referencedColumnName != null && !isVariableOneToOne()) {
                     DatabaseField referencedField = joinColumn.getPrimaryKeyField();
                     setFieldName(referencedField, referencedField.getName(), MetadataLogger.PK_COLUMN);
-                    joinColumn.setReferencedColumnName(descriptor.getPrimaryKeyJoinColumnAssociation(referencedField.getName()));
+                    joinColumn.setReferencedColumnName(descriptor.getPrimaryKeyJoinColumnAssociation(referencedField));
                 }
             }
         }

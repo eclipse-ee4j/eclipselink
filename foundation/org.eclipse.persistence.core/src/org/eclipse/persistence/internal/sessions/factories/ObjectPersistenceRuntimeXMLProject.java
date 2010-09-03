@@ -561,14 +561,17 @@ public class ObjectPersistenceRuntimeXMLProject extends NamespaceResolvableProje
         // Handle translation of fields associations string to field.
         aggregateToSourceFieldNameAssociationsMapping.setAttributeAccessor(new AttributeAccessor() {
             public Object getAttributeValueFromObject(Object object) {
+                /*bug 322233: AttributeOverrides and AssociationOverride  
+                 * changed getAggregateToSourceFieldAssociations to hold String->DatabaseField associations
+                 */
                 AggregateObjectMapping mapping = (AggregateObjectMapping)object;
-                Vector associations = mapping.getAggregateToSourceFieldNameAssociations();
+                Vector associations = mapping.getAggregateToSourceFieldAssociations();
                 Vector translations = new Vector(associations.size());
                 for (int index = 0; index < associations.size(); index++) {
                     Association association = (Association)associations.get(index);
                     FieldTranslation translation = new FieldTranslation();
                     translation.setKey(new DatabaseField((String)association.getKey()));
-                    translation.setValue(new DatabaseField((String)association.getValue()));
+                    translation.setValue(association.getValue());
                     translations.add(translation);
                 }
                 return translations;
@@ -580,9 +583,9 @@ public class ObjectPersistenceRuntimeXMLProject extends NamespaceResolvableProje
                 for (int index = 0; index < associations.size(); index++) {
                     Association association = (Association)associations.get(index);
                     association.setKey(((DatabaseField)association.getKey()).getQualifiedName());
-                    association.setValue(((DatabaseField)association.getValue()).getQualifiedName());
                 }
-                mapping.setAggregateToSourceFieldNameAssociations(associations);
+
+                ((AggregateObjectMapping)object).setAggregateToSourceFieldAssociations(associations/*(Vector)value*/);
             }
         });
         aggregateToSourceFieldNameAssociationsMapping.setAttributeName("aggregateToSourceFieldNameAssociationsMapping");

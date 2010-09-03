@@ -227,6 +227,44 @@ public class DDLGenerationJUnitTestSuite extends JUnitTestCase {
         }
     }
 
+    // Test for bug 322233, that optional field info defined in Overrides are used in DDL
+    public void testDDLAttributeOverrides() {
+        EntityManager em = createEntityManager(DDL_PU);
+        beginTransaction(em);
+        Exception expectedException = null;
+        try {
+            PropertyRecord propertyRecord = new PropertyRecord();
+
+            Zipcode zipCode = new Zipcode();
+            zipCode.plusFour = "1234";
+            zipCode.zip = "78627";
+
+            Address address = new Address();
+            address.city = "Ottawa";
+            address.state = "Ontario";
+            address.street = "Main";
+            address.zipcode = zipCode;
+
+            PropertyInfo propertyInfo = new PropertyInfo();
+            //propertyInfo.parcelNumber = 1;//Keep this as null, to test the nullable=false setting was used
+            propertyInfo.size = 2;
+            propertyInfo.tax = new BigDecimal(10);
+
+            propertyRecord.propertyInfos.put(address, propertyInfo);
+
+            em.persist(propertyRecord);
+            em.flush();
+        } catch (RuntimeException e) {
+            expectedException = e;
+        } finally {
+            if (isTransactionActive(em)) {
+                rollbackTransaction(em);
+            }
+            closeEntityManager(em);
+        }
+        this.assertNotNull("Expected an exception persisting null into a field with nullable=false set on an override", expectedException);
+    }
+
     // Test for relationships using candidate(unique) keys
     public void testDDLUniqueKeysAsJoinColumns() {
         CKeyEntityAPK aKey;

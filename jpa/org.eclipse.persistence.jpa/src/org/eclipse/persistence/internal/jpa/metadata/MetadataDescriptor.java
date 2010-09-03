@@ -167,9 +167,9 @@ public class MetadataDescriptor {
     private Map<String, String> m_genericTypes;
     private Map<String, IdAccessor> m_idAccessors;
     private Map<String, MappingAccessor> m_mappingAccessors;
-    private Map<String, MappingAccessor> m_primaryKeyAccessors;
+    private Map<DatabaseField, MappingAccessor> m_primaryKeyAccessors;
     private Map<String, PropertyMetadata> m_properties;
-    private Map<String, String> m_pkJoinColumnAssociations;
+    private Map<DatabaseField, DatabaseField> m_pkJoinColumnAssociations;
     private Map<String, AttributeOverrideMetadata> m_attributeOverrides;
     private Map<String, AssociationOverrideMetadata> m_associationOverrides;
     private Map<String, Map<String, MetadataAccessor>> m_biDirectionalManyToManyAccessors;
@@ -233,9 +233,9 @@ public class MetadataDescriptor {
         m_genericTypes = new HashMap<String, String>();
         m_mappingAccessors = new HashMap<String, MappingAccessor>();
         m_idAccessors = new HashMap<String, IdAccessor>();
-        m_primaryKeyAccessors = new HashMap<String, MappingAccessor>();
+        m_primaryKeyAccessors = new HashMap<DatabaseField, MappingAccessor>();
         m_properties = new HashMap<String, PropertyMetadata>();
-        m_pkJoinColumnAssociations = new HashMap<String, String>();
+        m_pkJoinColumnAssociations = new HashMap<DatabaseField, DatabaseField>();
         m_attributeOverrides = new HashMap<String, AttributeOverrideMetadata>();
         m_associationOverrides = new HashMap<String, AssociationOverrideMetadata>();
         m_biDirectionalManyToManyAccessors = new HashMap<String, Map<String, MetadataAccessor>>();
@@ -372,7 +372,7 @@ public class MetadataDescriptor {
      */
     public void addForeignKeyFieldForMultipleTable(DatabaseField fkField, DatabaseField pkField) {
         m_descriptor.addForeignKeyFieldForMultipleTable(fkField, pkField);
-        m_pkJoinColumnAssociations.put(fkField.getName(), pkField.getName());
+        m_pkJoinColumnAssociations.put(fkField, pkField);
     }
 
     /**
@@ -418,7 +418,7 @@ public class MetadataDescriptor {
         m_descriptor.addPrimaryKeyField(field);
         
         // Store the primary primary key mappings based on their field name.
-        m_primaryKeyAccessors.put(field.getName(), accessor);
+        m_primaryKeyAccessors.put(field, accessor);
     }
     
     /**
@@ -884,7 +884,7 @@ public class MetadataDescriptor {
      * Return the primary key mapping for the given field. 
      */
     public MappingAccessor getPrimaryKeyAccessorForField(DatabaseField field) {
-        return m_primaryKeyAccessors.get(field.getName());
+        return m_primaryKeyAccessors.get(field);
     }
     
     /**
@@ -944,13 +944,13 @@ public class MetadataDescriptor {
      * a inheritance subclass, all the way to the root of the inheritance 
      * hierarchy.
      */
-    public String getPrimaryKeyJoinColumnAssociation(String foreignKeyName) {
-        String primaryKeyName = m_pkJoinColumnAssociations.get(foreignKeyName);
+    public String getPrimaryKeyJoinColumnAssociation(DatabaseField foreignKey) {
+        DatabaseField primaryKey = m_pkJoinColumnAssociations.get(foreignKey);
 
-        if (primaryKeyName == null || ! isInheritanceSubclass()) {
-            return foreignKeyName;
+        if ( primaryKey == null || primaryKey.getName() == null || ! isInheritanceSubclass()) {
+            return foreignKey.getName();
         } else {
-            return getInheritanceParentDescriptor().getPrimaryKeyJoinColumnAssociation(primaryKeyName);
+            return getInheritanceParentDescriptor().getPrimaryKeyJoinColumnAssociation(primaryKey);
         } 
     }
     
@@ -1364,7 +1364,7 @@ public class MetadataDescriptor {
         getPrimaryKeyFields().remove(field);
         
         // Remove the primary key accessor.
-        m_primaryKeyAccessors.remove(field.getName());
+        m_primaryKeyAccessors.remove(field);
     }
     
     /**
@@ -1540,7 +1540,7 @@ public class MetadataDescriptor {
     public void setHasCopyPolicy() {
         m_hasCopyPolicy = true;
     }
-    
+
     /**
      * INTERNAL:
      * Indicates that all annotations should be ignored. However, default 
@@ -1551,7 +1551,7 @@ public class MetadataDescriptor {
     public void setIgnoreAnnotations(boolean ignoreAnnotations) {
         m_ignoreAnnotations = ignoreAnnotations;
     }
-    
+
     /**
      * INTERNAL:
      * Indicates that default mappings should be ignored.
@@ -1559,7 +1559,7 @@ public class MetadataDescriptor {
     public void setIgnoreDefaultMappings(boolean ignoreDefaultMappings) {
         m_ignoreDefaultMappings = ignoreDefaultMappings;
     }
-    
+
     /**
      * INTERNAL:
      * Set the immediate parent's descriptor of the inheritance hierarchy.
@@ -1567,7 +1567,7 @@ public class MetadataDescriptor {
     public void setInheritanceParentDescriptor(MetadataDescriptor inheritanceParentDescriptor) {
         m_inheritanceParentDescriptor = inheritanceParentDescriptor;
     }
-    
+
     /**
      * INTERNAL:
      * Set the root descriptor of the inheritance hierarchy, that is, the one 
@@ -1576,7 +1576,7 @@ public class MetadataDescriptor {
     public void setInheritanceRootDescriptor(MetadataDescriptor inheritanceRootDescriptor) {
         m_inheritanceRootDescriptor = inheritanceRootDescriptor;
     }
-    
+
     /**
      * INTERNAL:
      * Indicates that cascade-persist should be added to the set of cascade 
@@ -1585,21 +1585,21 @@ public class MetadataDescriptor {
     public void setIsCascadePersist(boolean isCascadePersist) {
         m_isCascadePersist = isCascadePersist;
     }
-    
+
     /**
      * INTERNAL:
      */
     public void setIsEmbeddable() {
         m_descriptor.descriptorIsAggregate();
     }
-    
+
     /**
      * INTERNAL:
      */
     public void setIsEmbeddableCollection() {
         m_descriptor.descriptorIsAggregateCollection();
     }
-    
+
     /**
      * INTERNAL:
      * Used to set this descriptors java class. 
@@ -1607,28 +1607,28 @@ public class MetadataDescriptor {
     public void setJavaClass(MetadataClass javaClass) {
         m_javaClass = javaClass;
         m_descriptor.setJavaClassName(javaClass.getName());
-        
+
         // If the javaClass is an interface, add it to the java interface name
         // on the relational descriptor.
         if (javaClass.isInterface()) {
             m_descriptor.setJavaInterfaceName(javaClass.getName());
         }
     }
-    
+
     /**
      * INTERNAL:
      */
     public void setMetamodelMappedSuperclassChildDescriptor(MetadataDescriptor childDescriptor) {
         m_metamodelMappedSuperclassChildDescriptor = childDescriptor;
     }
-    
+
     /**
      * INTERNAL:
      */
     public void setOptimisticLockingPolicy(OptimisticLockingPolicy policy) {
         m_descriptor.setOptimisticLockingPolicy(policy);
     }
-    
+
     /**
      * INTERNAL:
      */
@@ -1639,7 +1639,7 @@ public class MetadataDescriptor {
         policy.setPrimaryKeyClassName(pkClass.getName());
         m_descriptor.setCMPPolicy(policy);
     }
-    
+
     /**
      * INTERNAL:
      */
@@ -1647,7 +1647,7 @@ public class MetadataDescriptor {
         addTable(primaryTable);
         m_primaryTable = primaryTable;
     }
-    
+
     /**
      * INTERNAL:
      */
@@ -1658,28 +1658,28 @@ public class MetadataDescriptor {
         
         m_hasReadOnly = true;
     }
-    
+
     /**
      * INTERNAL:
      */
     public void setSequenceNumberField(DatabaseField field) {
         m_descriptor.setSequenceNumberField(field);
     }
-    
+
     /**
      * INTERNAL:
      */
     public void setSequenceNumberName(String name) {
         m_descriptor.setSequenceNumberName(name);
     }
- 
+
     /**
      * INTERNAL:
      */
     public void setUsesCascadedOptimisticLocking(Boolean usesCascadedOptimisticLocking) {
         m_usesCascadedOptimisticLocking = usesCascadedOptimisticLocking;
     }
-    
+
     /**
      * INTERNAL:
      */
@@ -1687,21 +1687,21 @@ public class MetadataDescriptor {
     public String toString() {
         return getJavaClassName();
     }
-    
+
     /**
      * INTERNAL:
      */
     public void useNoCache() {
         m_descriptor.setIsIsolated(true);
     }
-    
+
     /**
      * INTERNAL:
      */
     public boolean usesCascadedOptimisticLocking() {
         return m_usesCascadedOptimisticLocking != null && m_usesCascadedOptimisticLocking.booleanValue();
     }
-    
+
     /**
      * INTERNAL:
      * Returns true if this class uses default property access. All access 
@@ -1711,14 +1711,14 @@ public class MetadataDescriptor {
     public boolean usesDefaultPropertyAccess() {
         return m_defaultAccess.equals(MetadataConstants.PROPERTY);
     }
-    
+
     /**
      * INTERNAL:
      */
     public boolean usesOptimisticLocking() {
         return m_descriptor.usesOptimisticLocking();
     }
-    
+
     /**
      * INTERNAL:
      * Indicates if the strategy on the descriptor's inheritance policy is 
@@ -1729,7 +1729,7 @@ public class MetadataDescriptor {
     public boolean usesSingleTableInheritanceStrategy() {
         return ((EntityAccessor) m_classAccessor).getInheritance().usesSingleTableStrategy();
     }
-    
+
     /**
      * INTERNAL:
      * Return true if this descriptor uses a table per class inheritance policy.
@@ -1737,7 +1737,7 @@ public class MetadataDescriptor {
     public boolean usesTablePerClassInheritanceStrategy() {
         return m_descriptor.hasTablePerClassPolicy();
     }
-    
+
     /**
      * INTERNAL:
      * Return true if this descriptors class processed OptimisticLocking 
@@ -1749,7 +1749,7 @@ public class MetadataDescriptor {
         // is, we won't have processed the cascade value.
         return m_usesCascadedOptimisticLocking != null;
     }
-    
+
     /**
      * INTERNAL:
      * This method is used to validate derived id fields only. Re-using the
@@ -1770,7 +1770,7 @@ public class MetadataDescriptor {
             }
         }
     }
-    
+
     /**
      * INTERNAL:
      * This method is used only to validate id fields that were found on a

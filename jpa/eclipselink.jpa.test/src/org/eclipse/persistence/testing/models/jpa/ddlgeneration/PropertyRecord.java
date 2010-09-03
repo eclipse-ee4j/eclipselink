@@ -35,6 +35,8 @@ public class PropertyRecord {
                 column=@Column(name="STREET_NAME")),
         @AttributeOverride(name="key.zipcode.zip",
             column=@Column(name="ZIPNUM")),
+        @AttributeOverride(name="value.parcelNumber",
+                    column=@Column(name="PARCEL_NUMBER", nullable=false)),
         @AttributeOverride(name="value.size",
                 column=@Column(name="SQUARE_FEET")),
         @AttributeOverride(name="value.tax",

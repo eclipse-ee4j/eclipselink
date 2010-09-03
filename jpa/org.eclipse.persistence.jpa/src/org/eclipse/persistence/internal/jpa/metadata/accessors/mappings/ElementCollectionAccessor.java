@@ -820,8 +820,8 @@ public class ElementCollectionAccessor extends DirectCollectionAccessor implemen
                     // the mapping.
                     overrideField = directMapping.getField().clone();
                     
-                    if (nestedAggregateObjectMapping != null && nestedAggregateObjectMapping.getAggregateToSourceFieldNames().containsKey(overrideField.getName())) {
-                        overrideField = new DatabaseField(nestedAggregateObjectMapping.getAggregateToSourceFieldNames().get(overrideField.getName()));
+                    if (nestedAggregateObjectMapping != null && nestedAggregateObjectMapping.getAggregateToSourceFields().containsKey(overrideField.getName())) {
+                        overrideField = nestedAggregateObjectMapping.getAggregateToSourceFields().get(overrideField.getName());
                     } 
                 }
                 
@@ -842,7 +842,7 @@ public class ElementCollectionAccessor extends DirectCollectionAccessor implemen
                         for (DatabaseField fkField : oneToOneMapping.getForeignKeyFields()) {
                             DatabaseField collectionTableField = fkField.clone();
                             collectionTableField.setTable(getReferenceDatabaseTable());
-                            embeddableMapping.addFieldNameTranslation(collectionTableField.getQualifiedName(), fkField.getName());
+                            embeddableMapping.addFieldTranslation(collectionTableField, fkField.getName());
                         }
                     } else {
                         ((ObjectAccessor) mappingAccessor).processAssociationOverride(associationOverride, embeddableMapping, getReferenceDatabaseTable(), getDescriptor());

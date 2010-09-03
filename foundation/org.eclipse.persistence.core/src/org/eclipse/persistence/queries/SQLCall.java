@@ -194,7 +194,7 @@ public class SQLCall extends DatabaseCall implements QueryStringCall {
      * PUBLIC:
      * This method should only be used with custom SQL:
      * it sets a type to IN, OUT or INOUT parameter (prefixed with #, ### or #### in custom SQL string).
-     * TThe argumentFieldName is the field or argument name used in the SQL.
+     * The argumentFieldName is the field or argument name used in the SQL.
      * The type is the JDBC type code for the parameter.
      * The typeName is the JDBC type name, this may be required for ARRAY or STRUCT types.
      */

@@ -438,7 +438,7 @@ public abstract class ObjectAccessor extends RelationshipAccessor {
                     translationFKField.setTable(defaultTable);
                 }
                     
-                embeddableMapping.addFieldNameTranslation(translationFKField.getQualifiedName(), fkField.getName());
+                embeddableMapping.addFieldTranslation(translationFKField, fkField.getName());
             }
         }
     }

@@ -62,7 +62,8 @@ public class AggregateObjectMapping extends AggregateMapping implements Relation
     protected DatabaseTable aggregateKeyTable  = null;
     
     /** Map the name of a field in the aggregate descriptor to a field in the source table. */
-    protected transient Map<String, String> aggregateToSourceFieldNames;
+    /** 322233 - changed to store the source DatabaseField to hold Case and other colun info*/
+    protected transient Map<String, DatabaseField> aggregateToSourceFields;
 
     /** 
      * List of many to many mapping overrides to apply at initialize time to 
@@ -86,7 +87,7 @@ public class AggregateObjectMapping extends AggregateMapping implements Relation
      * Default constructor.
      */
     public AggregateObjectMapping() {
-        aggregateToSourceFieldNames = new HashMap(5);
+        aggregateToSourceFields = new HashMap(5);
         mapsIdMappings = new ArrayList<DatabaseMapping>();
         overrideManyToManyMappings = new ArrayList<ManyToManyMapping>();
         overrideUnidirectionalOneToManyMappings = new ArrayList<UnidirectionalOneToManyMapping>();
@@ -138,8 +139,19 @@ public class AggregateObjectMapping extends AggregateMapping implements Relation
      * source table to a field name in the aggregate descriptor.
      */
     public void addFieldNameTranslation(String sourceFieldName, String aggregateFieldName) {
+        // 322233 - changed to store the sourceField instead of sourceFieldName
+        addFieldTranslation(new DatabaseField(sourceFieldName), aggregateFieldName);
+    }
+    
+    /**
+     * PUBLIC:
+     * Add a field translation that maps from a field in the
+     * source table to a field name in the aggregate descriptor.
+     */
+    public void addFieldTranslation(DatabaseField sourceField, String aggregateFieldName) {
+        //AggregateObjectMapping does not seem to support Aggregates on multiple tables
         String unQualifiedAggregateFieldName = aggregateFieldName.substring(aggregateFieldName.lastIndexOf('.') + 1);// -1 is returned for no ".".
-        getAggregateToSourceFieldNames().put(unQualifiedAggregateFieldName, sourceFieldName);
+        getAggregateToSourceFields().put(unQualifiedAggregateFieldName, sourceField);
     }
     
     /**
@@ -151,18 +163,18 @@ public class AggregateObjectMapping extends AggregateMapping implements Relation
     public void addMapsIdMapping(DatabaseMapping mapping) {
         mapsIdMappings.add(mapping);
     }
-    
+
     /**
      * INTERNAL:
-     * Add a nested field name translation that maps from a field name in the
+     * Add a nested field translation that maps from a field in the
      * source table to a field name in a nested aggregate descriptor. This 
      * method is implemented only to satisfy the interface requirements and 
      * calling this method yields the same result as calling 
-     * addFieldNameTranslation directly.
+     * addFieldTranslation directly.
      * @see addFieldNameTranslation
      */
-    public void addNestedFieldNameTranslation(String attributeName, String sourceFieldName, String aggregateFieldName) {
-        addFieldNameTranslation(sourceFieldName, aggregateFieldName);
+    public void addNestedFieldTranslation(String attributeName, DatabaseField sourceField, String aggregateField) {
+        addFieldTranslation(sourceField, aggregateField);
     }
 
     /**
@@ -702,9 +714,9 @@ public class AggregateObjectMapping extends AggregateMapping implements Relation
     public Object clone() {
         AggregateObjectMapping mappingObject = (AggregateObjectMapping) super.clone();
         
-        Map<String, String> aggregateToSourceFieldNames = new HashMap<String, String>();
-        aggregateToSourceFieldNames.putAll(getAggregateToSourceFieldNames());
-        mappingObject.setAggregateToSourceFieldNames(aggregateToSourceFieldNames);
+        Map<String, DatabaseField> aggregateToSourceFields = new HashMap<String, DatabaseField>();
+        aggregateToSourceFields.putAll(getAggregateToSourceFields());
+        mappingObject.setAggregateToSourceFields(aggregateToSourceFields);
 
         return mappingObject;
     }
@@ -839,15 +851,15 @@ public class AggregateObjectMapping extends AggregateMapping implements Relation
     public Expression getAdditionalSelectionCriteriaForMapKey(){
         return null;
     }
-    
+
     /**
      * INTERNAL:
-     * Return a collection of the aggregate to source field name associations.
+     * Return a collection of the aggregate to source field  associations.
      */
-    public Vector<Association> getAggregateToSourceFieldNameAssociations() {
-        Vector<Association> associations = new Vector(getAggregateToSourceFieldNames().size());
-        Iterator aggregateEnum = getAggregateToSourceFieldNames().keySet().iterator();
-        Iterator sourceEnum = getAggregateToSourceFieldNames().values().iterator();
+    public Vector<Association> getAggregateToSourceFieldAssociations() {
+        Vector<Association> associations = new Vector(getAggregateToSourceFields().size());
+        Iterator aggregateEnum = getAggregateToSourceFields().keySet().iterator();
+        Iterator sourceEnum = getAggregateToSourceFields().values().iterator();
         while (aggregateEnum.hasNext()) {
             associations.addElement(new Association(aggregateEnum.next(), sourceEnum.next()));
         }
@@ -857,10 +869,10 @@ public class AggregateObjectMapping extends AggregateMapping implements Relation
 
     /**
      * INTERNAL:
-     * Return the hashtable that stores aggregate field name to source field name.
+     * Return the hashtable that stores aggregate field name to source fields.
      */
-    public Map<String, String> getAggregateToSourceFieldNames() {
-        return aggregateToSourceFieldNames;
+    public Map<String, DatabaseField> getAggregateToSourceFields() {
+        return aggregateToSourceFields;
     }
 
     /**
@@ -1407,12 +1419,12 @@ public class AggregateObjectMapping extends AggregateMapping implements Relation
         }
         return true;
     }
-    
+
     /**
      * INTERNAL:
      * Set a collection of the aggregate to source field name associations.
      */
-    public void setAggregateToSourceFieldNameAssociations(Vector<Association> fieldAssociations) {
+    public void setAggregateToSourceFieldAssociations(Vector<Association> fieldAssociations) {
         Hashtable fieldNames = new Hashtable(fieldAssociations.size() + 1);
         for (Enumeration associationsEnum = fieldAssociations.elements();
                  associationsEnum.hasMoreElements();) {
@@ -1420,15 +1432,15 @@ public class AggregateObjectMapping extends AggregateMapping implements Relation
             fieldNames.put(association.getKey(), association.getValue());
         }
 
-        setAggregateToSourceFieldNames(fieldNames);
+        setAggregateToSourceFields(fieldNames);
     }
 
     /**
      * INTERNAL:
      * Set the hashtable that stores target field name to the source field name.
      */
-    protected void setAggregateToSourceFieldNames(Map<String, String> aggregateToSource) {
-        aggregateToSourceFieldNames = aggregateToSource;
+    public void setAggregateToSourceFields(Map<String, DatabaseField> aggregateToSource) {
+        aggregateToSourceFields = aggregateToSource;
     }
 
     /**
@@ -1465,20 +1477,21 @@ public class AggregateObjectMapping extends AggregateMapping implements Relation
     protected void translateFields(ClassDescriptor clonedDescriptor, AbstractSession session) {
         for (Enumeration entry = clonedDescriptor.getFields().elements(); entry.hasMoreElements();) {
             DatabaseField field = (DatabaseField)entry.nextElement();
-            String nameInAggregate = field.getName();
-            String nameInSource = getAggregateToSourceFieldNames().get(nameInAggregate);
+            //322233 - get the source DatabaseField from the 
+            //String nameInSource = getAggregateToSourceFieldNames().get(nameInAggregate);
+            DatabaseField fieldInSource = getAggregateToSourceFields().get(field.getName());
 
             // Do not modify non-translated fields.
-            if (nameInSource != null) {
-                DatabaseField fieldInSource = new DatabaseField(nameInSource);
+            if (fieldInSource != null) {
+                //merge fieldInSource into the field from the Aggregate descriptor
+                field.setName(fieldInSource.getName());
+                field.setUseDelimiters(fieldInSource.shouldUseDelimiters());
+                field.useUpperCaseForComparisons(fieldInSource.getUseUpperCaseForComparisons());
+                field.setNameForComparisons(fieldInSource.getNameForComparisons());
+                //TODO: copy type information 
 
                 // Check if the translated field specified a table qualifier.
-                if (fieldInSource.getName().equals(nameInSource)) {
-                    // No table so just set the field name.
-                    field.setName(nameInSource);
-                } else {
-                    // There is a table, so set the name and table.
-                    field.setName(fieldInSource.getName());
+                if (fieldInSource.hasTableName()) {
                     field.setTable(clonedDescriptor.getTable(fieldInSource.getTable().getName()));
                 }
             }

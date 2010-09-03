@@ -57,13 +57,13 @@ public class AggregateCollectionMapping extends CollectionMapping implements Rel
     protected transient Map<DatabaseField, DatabaseField> targetForeignKeyToSourceKeys;
 
     /** Map the name of a field in the aggregate collection descriptor to a field in the actual table specified in the mapping. */
-    protected transient Map<String, String> aggregateToSourceFieldNames;
+    protected transient Map<String, DatabaseField> aggregateToSourceFields;
 
     /** Map the name of an attribute of the reference descriptor mapped with AggregateCollectionMapping to aggregateToSourceFieldNames
      * that should be applied to this mapping.
-     */  
-    protected transient Map<String, Map<String, String>> nestedAggregateToSourceFieldNames;
-    
+     */
+    protected transient Map<String, Map<String, DatabaseField>> nestedAggregateToSourceFields;
+
     /** In RemoteSession case the mapping needs the reference descriptor serialized from the server, 
      * but referenceDescriptor attribute defined as transient in the superclass. To overcome that
      * in non-remote case referenceDescriptor is assigned to remoteReferenceDescriptor; in remote - another way around.
@@ -96,8 +96,8 @@ public class AggregateCollectionMapping extends CollectionMapping implements Rel
      * Default constructor.
      */
     public AggregateCollectionMapping() {
-        this.aggregateToSourceFieldNames = new HashMap(5);
-        this.nestedAggregateToSourceFieldNames = new HashMap<String, Map<String, String>>(5);
+        this.aggregateToSourceFields = new HashMap(5);
+        this.nestedAggregateToSourceFields = new HashMap<String, Map<String, DatabaseField>>(5);
         this.targetForeignKeyToSourceKeys = new HashMap(5);
         this.sourceKeyFields = org.eclipse.persistence.internal.helper.NonSynchronizedVector.newInstance(1);
         this.targetForeignKeyFields = org.eclipse.persistence.internal.helper.NonSynchronizedVector.newInstance(1);
@@ -145,16 +145,26 @@ public class AggregateCollectionMapping extends CollectionMapping implements Rel
      * to a field name in the source table.
      */
     public void addFieldNameTranslation(String sourceFieldName, String aggregateFieldName) {
-        aggregateToSourceFieldNames.put(aggregateFieldName, sourceFieldName);
+        addFieldTranslation(new DatabaseField(sourceFieldName), aggregateFieldName);
+    }
+    
+    /**
+     * PUBLIC:
+     * Maps a field name in the aggregate descriptor
+     * to a field in the source table.
+     */
+    public void addFieldTranslation(DatabaseField sourceField, String aggregateField) {
+        aggregateToSourceFields.put(aggregateField, sourceField);
     }
 
     /**
      * PUBLIC:
+     * 
      * Maps a field name in the aggregate descriptor
      * to a field name in the source table.
      */
-    public void addFieldNameTranslations(Map<String, String> map) {
-        aggregateToSourceFieldNames.putAll(map);
+    public void addFieldTranslations(Map<String, DatabaseField> map) {
+        aggregateToSourceFields.putAll(map);
     }
 
     /**
@@ -163,25 +173,34 @@ public class AggregateCollectionMapping extends CollectionMapping implements Rel
      * that should be applied to this mapping.
      */
     public void addNestedFieldNameTranslation(String attributeName, String sourceFieldName, String aggregateFieldName) {
-        Map<String, String> attributeFieldNameTranslation = nestedAggregateToSourceFieldNames.get(attributeName);
-        
-        if (attributeFieldNameTranslation == null) {
-            attributeFieldNameTranslation = new HashMap<String, String>(5);
-            nestedAggregateToSourceFieldNames.put(attributeName, attributeFieldNameTranslation);
-        }
-        
-        attributeFieldNameTranslation.put(aggregateFieldName, sourceFieldName);
+        addNestedFieldTranslation(attributeName, new DatabaseField(sourceFieldName), aggregateFieldName);
     }
-
+    
     /**
      * PUBLIC:
      * Map the name of an attribute of the reference descriptor mapped with AggregateCollectionMapping to aggregateToSourceFieldNames
      * that should be applied to this mapping.
      */
-    public void addNestedFieldNameTranslations(String attributeName, Map<String, String> map) {
-        Map<String, String> attributeFieldNameTranslation = nestedAggregateToSourceFieldNames.get(attributeName);
+    public void addNestedFieldTranslation(String attributeName, DatabaseField sourceField, String aggregateFieldName) {
+        Map<String, DatabaseField> attributeFieldNameTranslation = nestedAggregateToSourceFields.get(attributeName);
+        
         if (attributeFieldNameTranslation == null) {
-            nestedAggregateToSourceFieldNames.put(attributeName, map);
+            attributeFieldNameTranslation = new HashMap<String, DatabaseField>(5);
+            nestedAggregateToSourceFields.put(attributeName, attributeFieldNameTranslation);
+        }
+        
+        attributeFieldNameTranslation.put(aggregateFieldName, sourceField);
+    }
+
+    /**
+     * PUBLIC:
+     * Map the name of an attribute of the reference descriptor mapped with AggregateCollectionMapping to aggregateToSourceFields
+     * that should be applied to this mapping.
+     */
+    public void addNestedFieldNameTranslations(String attributeName, Map<String, DatabaseField> map) {
+        Map<String, DatabaseField> attributeFieldNameTranslation = nestedAggregateToSourceFields.get(attributeName);
+        if (attributeFieldNameTranslation == null) {
+            nestedAggregateToSourceFields.put(attributeName, map);
         } else {
             attributeFieldNameTranslation.putAll(map);
         }
@@ -422,8 +441,8 @@ public class AggregateCollectionMapping extends CollectionMapping implements Rel
         mappingObject.setTargetForeignKeyToSourceKeys(new HashMap(getTargetForeignKeyToSourceKeys()));
         mappingObject.setSourceKeyFields(org.eclipse.persistence.internal.helper.NonSynchronizedVector.newInstance(getSourceKeyFields()));
         mappingObject.setTargetForeignKeyFields(org.eclipse.persistence.internal.helper.NonSynchronizedVector.newInstance(getTargetForeignKeyFields()));
-        mappingObject.aggregateToSourceFieldNames = new HashMap(this.aggregateToSourceFieldNames);
-        mappingObject.nestedAggregateToSourceFieldNames = new HashMap(this.nestedAggregateToSourceFieldNames);
+        mappingObject.aggregateToSourceFields = new HashMap(this.aggregateToSourceFields);
+        mappingObject.nestedAggregateToSourceFields = new HashMap(this.nestedAggregateToSourceFields);
         if(updateListOrderFieldQuery != null) {
             mappingObject.updateListOrderFieldQuery = this.updateListOrderFieldQuery; 
         }
@@ -1289,7 +1308,7 @@ public class AggregateCollectionMapping extends CollectionMapping implements Rel
         if(getReferenceDescriptor().getTables() != null) {
             nAggregateTables = getReferenceDescriptor().getTables().size();
         }
-        if (!this.aggregateToSourceFieldNames.isEmpty()) {
+        if (!this.aggregateToSourceFields.isEmpty()) {
             DatabaseTable aggregateDefaultTable = null;
             if (nAggregateTables != 0) {
                 aggregateDefaultTable = getReferenceDescriptor().getTables().get(0);
@@ -1298,15 +1317,19 @@ public class AggregateCollectionMapping extends CollectionMapping implements Rel
             }
             tableTranslation = new HashMap<DatabaseTable, DatabaseTable>();
             fieldTranslation = new HashMap<DatabaseField, DatabaseField>();
-            
-            Iterator<Map.Entry<String, String>> iterator = this.aggregateToSourceFieldNames.entrySet().iterator();
+
+            Iterator<Map.Entry<String, DatabaseField>> iterator = this.aggregateToSourceFields.entrySet().iterator();
             while (iterator.hasNext()) {
-                Map.Entry<String, String> entry = iterator.next(); 
+                Map.Entry<String, DatabaseField> entry = iterator.next(); 
                 DatabaseField aggregateField = new DatabaseField(entry.getKey());
+                //322233 - continue using a string for the Aggregate field name 
+                //  because the table may or may not have been set.  DatabaseFields without a table
+                //  will match any DatabaseField with a table if the name is the same, breaking
+                //  legacy support for AggregateCollection inheritance models
                 if (!aggregateField.hasTableName()) {
                     aggregateField.setTable(aggregateDefaultTable);
                 }
-                DatabaseField sourceField = new DatabaseField(entry.getValue());
+                DatabaseField sourceField = entry.getValue();
                 if (!sourceField.hasTableName()) {
                     //TODO: throw exception: source field doesn't have table
                 }
@@ -1494,11 +1517,11 @@ public class AggregateCollectionMapping extends CollectionMapping implements Rel
      * reference descriptor.  
      */
     protected void updateNestedAggregateMappings(ClassDescriptor descriptor, AbstractSession session) {
-        if (! nestedAggregateToSourceFieldNames.isEmpty()) {
-            Iterator<Map.Entry<String, Map<String, String>>> it = nestedAggregateToSourceFieldNames.entrySet().iterator();
+        if (! nestedAggregateToSourceFields.isEmpty()) {
+            Iterator<Map.Entry<String, Map<String, DatabaseField>>> it = nestedAggregateToSourceFields.entrySet().iterator();
             
             while (it.hasNext()) {
-                Map.Entry<String, Map<String, String>> entry = it.next();
+                Map.Entry<String, Map<String, DatabaseField>> entry = it.next();
                 String attribute = entry.getKey();
                 String nestedAttribute = null;
                 int indexOfDot = attribute.indexOf('.');
@@ -1520,7 +1543,7 @@ public class AggregateCollectionMapping extends CollectionMapping implements Rel
                 if (mapping.isAggregateCollectionMapping()) {
                     AggregateCollectionMapping nestedAggregateCollectionMapping = (AggregateCollectionMapping)mapping;
                     if (nestedAttribute == null) {
-                        nestedAggregateCollectionMapping.addFieldNameTranslations(entry.getValue());
+                        nestedAggregateCollectionMapping.addFieldTranslations(entry.getValue());
                     } else {
                         nestedAggregateCollectionMapping.addNestedFieldNameTranslations(nestedAttribute, entry.getValue());
                     }
@@ -1543,10 +1566,10 @@ public class AggregateCollectionMapping extends CollectionMapping implements Rel
                     // Simply adding all the nestedFieldNameTranslations to 'location' would work as well.
                     AggregateObjectMapping nestedAggregateObjectMapping = (AggregateObjectMapping) mapping;
                     
-                    Map<String, String> entries = entry.getValue();
+                    Map<String, DatabaseField> entries = entry.getValue();
                     for (String aggregateFieldName : entries.keySet()) {
-                        String sourceFieldName = entries.get(aggregateFieldName);
-                        nestedAggregateObjectMapping.addFieldNameTranslation(sourceFieldName, aggregateFieldName);
+                        DatabaseField sourceField = entries.get(aggregateFieldName);
+                        nestedAggregateObjectMapping.addFieldTranslation(sourceField, aggregateFieldName);
                     }
                 } else {
                     // TODO: throw exception: mapping corresponding to attribute is not a mapping that accepts field name translations.
