@@ -27,6 +27,7 @@ import org.eclipse.persistence.internal.databaseaccess.Accessor;
 import org.eclipse.persistence.internal.databaseaccess.ConnectionCustomizer;
 import org.eclipse.persistence.internal.databaseaccess.DatabaseAccessor;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
+import org.eclipse.persistence.logging.SessionLog;
 import org.eclipse.persistence.sessions.Session;
 
 /**
@@ -74,7 +75,34 @@ public class OracleJDBC_10_1_0_2ProxyConnectionCustomizer extends ConnectionCust
         }
         try {
             clearConnectionCache();
+            Object[] args = null;
+            if (this.session.shouldLog(SessionLog.FINEST, SessionLog.CONNECTION)) {
+                Properties logProperties = proxyProperties;
+                if(proxyProperties.containsKey(OracleConnection.PROXY_USER_PASSWORD)) {
+                    logProperties = (Properties)proxyProperties.clone();
+                    logProperties.setProperty(OracleConnection.PROXY_USER_PASSWORD, "******");
+                }
+                args = new Object[]{ oracleConnection, logProperties };
+            }
+            if(oracleConnection.isProxySession()) {
+                // Unexpectedly oracleConnection already has a proxy session - probably it was not closed when connection was returned back to connection pool.
+                // That may happen on jta transaction rollback (especially triggered outside of user's thread - such as timeout)
+                // when beforeCompletion is never issued
+                // and application server neither closes proxySession nor allows access to connection in afterCompletion. 
+                try {
+                    if (args != null) {
+                        ((AbstractSession)this.session).log(SessionLog.FINEST, SessionLog.CONNECTION, "proxy_connection_customizer_already_proxy_session", args);
+                    }
+                    oracleConnection.close(OracleConnection.PROXY_SESSION);
+                } catch (SQLException exception) {
+                    // Ignore
+                    this.session.getSessionLog().logThrowable(SessionLog.WARNING, exception);
+                }
+            }
             oracleConnection.openProxySession(proxyType, proxyProperties); 
+            if (args != null) {
+                ((AbstractSession)this.session).log(SessionLog.FINEST, SessionLog.CONNECTION, "proxy_connection_customizer_opened_proxy_session", args);
+            }
         } catch (SQLException exception) {
             oracleConnection = null;
             throw DatabaseException.sqlException(exception);
@@ -103,9 +131,19 @@ public class OracleJDBC_10_1_0_2ProxyConnectionCustomizer extends ConnectionCust
     public void clear() {
         try {
             clearConnectionCache();
+            if (this.session.shouldLog(SessionLog.FINEST, SessionLog.CONNECTION)) {
+                Properties logProperties = proxyProperties;
+                if(proxyProperties.containsKey(OracleConnection.PROXY_USER_PASSWORD)) {
+                    logProperties = (Properties)proxyProperties.clone();
+                    logProperties.setProperty(OracleConnection.PROXY_USER_PASSWORD, "******");
+                }
+                Object[] args = new Object[]{ oracleConnection, logProperties };
+                ((AbstractSession)this.session).log(SessionLog.FINEST, SessionLog.CONNECTION, "proxy_connection_customizer_closing_proxy_session", args);
+            }
             oracleConnection.close(OracleConnection.PROXY_SESSION);
         } catch (SQLException exception) {
             // Ignore
+            this.session.getSessionLog().logThrowable(SessionLog.WARNING, exception);
         } finally {
             oracleConnection = null;
         }

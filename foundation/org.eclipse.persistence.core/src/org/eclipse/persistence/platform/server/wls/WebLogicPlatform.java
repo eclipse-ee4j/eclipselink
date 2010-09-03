@@ -20,6 +20,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.sql.Connection;
 
+import org.eclipse.persistence.internal.helper.Helper;
 import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
 import org.eclipse.persistence.logging.SessionLog;
 import org.eclipse.persistence.platform.server.JMXServerPlatformBase;
@@ -61,12 +62,19 @@ public class WebLogicPlatform extends JMXServerPlatformBase {
     protected Method clearStatementCacheMethod;
     
     /**
+     * Indicates whether WLConnection.clearStatementCache() should be called:
+     * there is no need to call it in WebLogic Server 10.3.4 or later.
+     */
+    protected boolean shouldClearStatementCache;
+    
+    /**
      * INTERNAL: Default Constructor: All behavior for the default constructor
      * is inherited.
      */
     public WebLogicPlatform(DatabaseSession newDatabaseSession) {
         super(newDatabaseSession);
         this.disableRuntimeServices();
+        this.shouldClearStatementCache = true;
     }
 
     /**
@@ -77,6 +85,7 @@ public class WebLogicPlatform extends JMXServerPlatformBase {
             Class clazz = PrivilegedAccessHelper.getClassForName("weblogic.version");
             Method method = PrivilegedAccessHelper.getMethod(clazz, "getBuildVersion", null, false);
             this.serverNameAndVersion = (String) PrivilegedAccessHelper.invokeMethod(method, null, null);
+            this.shouldClearStatementCache = Helper.compareVersions(this.serverNameAndVersion, "10.3.4") < 0;
         } catch (Exception exception) {
             getDatabaseSession().getSessionLog().logThrowable(SessionLog.WARNING, exception);
         }
@@ -171,8 +180,12 @@ public class WebLogicPlatform extends JMXServerPlatformBase {
      * This method is called by OracleJDBC_10_1_0_2ProxyConnectionCustomizer  
      * before opening proxy session and before closing it.
      */
-    public void clearStatementCache(Connection connection) {   
-        if (getWebLogicConnectionClass().isInstance(connection) && getClearStatementCacheMethod() != null) {
+    public void clearStatementCache(Connection connection) {
+        if(this.serverNameAndVersion == null) {
+            // this will initialize shouldClearStatementCache, too. 
+            initializeServerNameAndVersion();
+        }
+        if (this.shouldClearStatementCache && getWebLogicConnectionClass().isInstance(connection) && getClearStatementCacheMethod() != null) {
             try {
                 PrivilegedAccessHelper.invokeMethod(getClearStatementCacheMethod(), connection);
             } catch (IllegalAccessException exception) {

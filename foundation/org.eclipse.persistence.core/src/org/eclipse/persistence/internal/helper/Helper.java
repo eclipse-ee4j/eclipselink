@@ -385,6 +385,7 @@ public class Helper implements Serializable {
      * Compares two version in num.num.num.num.num*** format.
      * -1, 0, 1 means the version1 is less than, equal, greater than version2.
      * Example: compareVersions("11.1.0.6.0-Production", "11.1.0.7") == -1 
+     * Example: compareVersions("WebLogic Server 10.3.4", "10.3.3.0") == 1
      */
     public static int compareVersions(String version1, String version2) {
         return compareVersions(version(version1), version(version2));
@@ -392,25 +393,32 @@ public class Helper implements Serializable {
 
     /**
      * INTERNAL:
-     * Expects version in num.num.num.num.num*** format, converts it to a List of Integers.
+     * Expects version in ***num.num.num.num.num*** format, converts it to a List of Integers.
      * Example: "11.1.0.6.0_Production" -> {11, 1, 0, 6, 0}
+     * Example: "WebLogic Server 10.3.3.0" -> {10, 3, 3, 0}
      */
     static protected List<Integer> version(String version) {
         ArrayList<Integer> list = new ArrayList<Integer>(5);
         // first char - a digit - in the string corresponding to the current list index
         int iBegin = -1;
+        // used to remove a non-digital prefix
+        boolean isPrefix = true;
         for(int i=0; i<version.length(); i++) {
             char ch = version.charAt(i); 
             if('0' <= ch && ch <= '9') {
+                isPrefix = false;
                 // it's a digit
                 if(iBegin == -1) {
                     iBegin = i;
                 }
             } else {
-                // it's not a digit - try to create a number ending on the previous char.
+                // it's not a digit - try to create a number ending on the previous char - unless it's still part of the non-digital prefix.
                 if(iBegin == -1) {
-                    break;
+                    if(!isPrefix) {
+                        break;
+                    }
                 } else {
+                    isPrefix = false;
                     String strNum = version.substring(iBegin, i);
                     int num = Integer.parseInt(strNum, 10);
                     list.add(num);

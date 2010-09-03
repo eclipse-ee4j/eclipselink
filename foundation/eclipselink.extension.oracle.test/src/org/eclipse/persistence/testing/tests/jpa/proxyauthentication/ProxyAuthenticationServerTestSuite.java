@@ -13,13 +13,18 @@
  ******************************************************************************/  
 package org.eclipse.persistence.testing.tests.jpa.proxyauthentication;
 
+import java.sql.Connection;
 import java.util.*;
 import junit.framework.*;
 
 import oracle.jdbc.OracleConnection;
 
+import javax.naming.Context;
+import javax.naming.InitialContext;
 import javax.persistence.EntityManager;
 import javax.persistence.Query;
+import javax.sql.DataSource;
+import javax.transaction.TransactionManager;
 
 import org.eclipse.persistence.testing.framework.junit.JUnitTestCase;
 import org.eclipse.persistence.testing.models.jpa.proxyauthentication.*;
@@ -105,6 +110,12 @@ public class ProxyAuthenticationServerTestSuite extends JUnitTestCase {
         suite.addTest(new ProxyAuthenticationServerTestSuite("testUpdateWithProxy"));
         suite.addTest(new ProxyAuthenticationServerTestSuite("testReadDeleteWithProxy"));
         suite.addTest(new ProxyAuthenticationServerTestSuite("testCreateWithOutProxy"));
+        suite.addTest(new ProxyAuthenticationServerTestSuite("testFlushRollback"));
+        // The following two tests commented out waiting on WLS 10.3.4. to fix the problem described in
+        // Bug 323880 - "This is already a proxy session" exception on WLS 10.3.3 after explicitly rolling back the user transaction
+        // When it fixed please uncomment the two tests and close the bug.
+//        suite.addTest(new ProxyAuthenticationServerTestSuite("testJtaDataSource"));
+//        suite.addTest(new ProxyAuthenticationServerTestSuite("testNonJtaDataSource"));
         return suite;
     }
 
@@ -123,7 +134,7 @@ public class ProxyAuthenticationServerTestSuite extends JUnitTestCase {
         proxyEmp  = new Employee();
         EntityManager em = createEntityManager_proxy(PROXY_PU);
         try {
-            startTransaction(em);
+            beginTransaction_proxy(em);
             proxyEmp.setFirstName("Guy");
             proxyEmp.setLastName("Pelletier");
             em.persist(proxyEmp);
@@ -141,7 +152,7 @@ public class ProxyAuthenticationServerTestSuite extends JUnitTestCase {
         } catch (Exception ex) {
             ex.printStackTrace();
             if (isTransactionActive(em)){
-                    rollbackTransaction(em);
+                rollbackTransaction(em);
             }
             throw ex;
         } finally {
@@ -150,7 +161,7 @@ public class ProxyAuthenticationServerTestSuite extends JUnitTestCase {
 
         EntityManager newEm = createEntityManager_proxy(PROXY_PU);
         try {
-            startTransaction(newEm);
+            beginTransaction_proxy(newEm);
             PhoneNumberPK pk = new PhoneNumberPK();
             pk.setId(empId);
             pk.setType("Home");
@@ -163,7 +174,7 @@ public class ProxyAuthenticationServerTestSuite extends JUnitTestCase {
         } catch (Exception ex) {
             ex.printStackTrace();
             if (isTransactionActive(newEm)){
-                    rollbackTransaction(newEm);
+                rollbackTransaction(newEm);
             }
             throw ex;
         } finally {
@@ -180,7 +191,7 @@ public class ProxyAuthenticationServerTestSuite extends JUnitTestCase {
         Employee readEmp = null;
         PhoneNumber readPhone = null;
         try {
-            startTransaction(em);
+            beginTransaction_proxy(em);
             PhoneNumberPK pk = new PhoneNumberPK();
             pk.setId(empId);
             pk.setType("Home");
@@ -192,7 +203,7 @@ public class ProxyAuthenticationServerTestSuite extends JUnitTestCase {
         } catch (Exception ex) {
             ex.printStackTrace();
             if (isTransactionActive(em)){
-                    rollbackTransaction(em);
+                rollbackTransaction(em);
             }
             throw ex;
         } finally {
@@ -206,7 +217,7 @@ public class ProxyAuthenticationServerTestSuite extends JUnitTestCase {
     public void testUpdateWithProxy() throws Exception{
         EntityManager em = createEntityManager_proxy(PROXY_PU);
         try {
-            startTransaction(em);
+            beginTransaction_proxy(em);
             Query query = em.createQuery("SELECT e FROM PhoneNumber e");
             List<PhoneNumber> phoneNumbers = query.getResultList();
             for (PhoneNumber phoneNumber : phoneNumbers) {
@@ -230,7 +241,7 @@ public class ProxyAuthenticationServerTestSuite extends JUnitTestCase {
      */
     public void testCreateWithOutProxy() throws Exception{
         Employee employee  = new Employee();
-        EntityManager em = createEntityManager_proxy(PROXY_PU);
+        EntityManager em = createEntityManager(PROXY_PU);
         try {
             beginTransaction(em);
             employee.setFirstName("Guy");
@@ -260,6 +271,118 @@ public class ProxyAuthenticationServerTestSuite extends JUnitTestCase {
     }
 
     /**
+     * Test verifies that after rollback is called connection returned to the pool is still usable.
+     */
+    public void testFlushRollback() throws Exception{
+        System.out.println("====testFlushRollback begin");
+        // create new object, persist it, flush, then rollback transaction
+        EntityManager em = createEntityManager_proxy(PROXY_PU);
+        try {
+            beginTransaction_proxy(em);
+            Employee employee  = new Employee();
+            employee.setFirstName("FlushRollback");
+            employee.setLastName("1");
+            em.persist(employee);
+            em.flush();
+        } finally {
+            if (isTransactionActive(em)){
+                rollbackTransaction(em);
+            }
+            closeEntityManager(em);
+        }
+
+        // now do something with a new em
+        clearCache(PROXY_PU);
+        em = createEntityManager_proxy(PROXY_PU);
+        // read
+        em.createQuery("SELECT e FROM Employee e").getResultList();
+        // write through proxy connection
+        try {
+            beginTransaction_proxy(em);
+            Employee employee  = new Employee();
+            employee.setFirstName("FlushRollback");
+            employee.setFirstName("2");
+            em.persist(employee);
+            em.flush();
+        } finally {
+            if (isTransactionActive(em)){
+                rollbackTransaction(em);
+            }
+        }
+        // write through main connection - that's expected to fail with "table or view does not exist" exception
+        try {
+            beginTransaction(em);
+            Employee employee  = new Employee();
+            employee.setFirstName("FlushRollback");
+            employee.setFirstName("3");
+            em.persist(employee);
+            em.flush();
+        } catch (Exception ex) {
+            if (ex.getMessage().indexOf("ORA-00942: table or view does not exist") == -1){
+                ex.printStackTrace();
+                fail("it's not the right exception");
+            }
+        } finally {
+            if (isTransactionActive(em)){
+                rollbackTransaction(em);
+            }
+            closeEntityManager(em);
+            System.out.println("====testFlushRollback end");
+        }
+    }
+
+    public void testJtaDataSource() throws Exception {
+        System.out.println("====testJtaDataSource begin");
+        Context context = new InitialContext();
+        TransactionManager mngr = (TransactionManager)context.lookup("weblogic.transaction.TransactionManager");
+        DataSource jtaDs = (DataSource)context.lookup("jdbc/EclipseLinkDS");
+        Properties props = new Properties();
+        props.setProperty(OracleConnection.PROXY_USER_NAME, System.getProperty("proxy.user.name"));
+
+        mngr.begin();
+        Connection conn = jtaDs.getConnection();
+        ((OracleConnection)conn).openProxySession(OracleConnection.PROXYTYPE_USER_NAME, props);
+        System.out.println("====testJtaDataSource openProxySession ok");
+        mngr.rollback();
+        
+        mngr.begin();
+        conn = jtaDs.getConnection();
+        try {
+            if(((OracleConnection)conn).isProxySession()) {
+                fail("Connection has been released into connection pool with the proxy session still open");
+            }
+            System.out.println("====testJtaDataSource not a proxy session");
+        } finally {
+            mngr.rollback();
+            System.out.println("====testJtaDataSource end");
+        }
+    }
+    
+    public void testNonJtaDataSource() throws Exception {
+        System.out.println("====testNonJtaDataSource begin");
+        Context context = new InitialContext();
+        DataSource nonJtaDs = (DataSource)context.lookup("jdbc/ELNonJTADS");
+        Properties props = new Properties();
+        props.setProperty(OracleConnection.PROXY_USER_NAME, System.getProperty("proxy.user.name"));
+
+        Connection conn = nonJtaDs.getConnection();
+        ((OracleConnection)conn).openProxySession(OracleConnection.PROXYTYPE_USER_NAME, props);
+        System.out.println("====testJtaDataSource openProxySession ok");
+        conn.close();
+        
+        conn = nonJtaDs.getConnection();
+        try {
+            if(((OracleConnection)conn).isProxySession()) {
+                fail("Connection has been released into connection pool with the proxy session still open");
+            }
+            System.out.println("====testJtaDataSource not a proxy session");
+        } finally {
+            conn.close();
+            System.out.println("====testJtaDataSource end");
+        }
+    }
+    
+    /**
      * Setup Proxy properties settings to EntityManager through EntityManagerImpl
      */
     private void setupProperties(EntityManager em){
@@ -275,13 +398,16 @@ public class ProxyAuthenticationServerTestSuite extends JUnitTestCase {
         return newProps;
     }
     
-    private void startTransaction(EntityManager em){
+    /*
+     * Use it instead of beginTransaction to pass proxy properties.
+     */
+    private void beginTransaction_proxy(EntityManager em){
         if(shouldOverrideGetEntityManager) {
             beginTransaction(em);
             em.joinTransaction();
         } else {
             if (!isOnServer()){
-                    setupProperties(em);
+                setupProperties(em);
             }
             beginTransaction(em);
             if (isOnServer){
@@ -299,20 +425,25 @@ public class ProxyAuthenticationServerTestSuite extends JUnitTestCase {
         }
     }
     
+    /*
+     * Use it instead of createEntityManager to pass proxy properties.
+     */
     EntityManager createEntityManager_proxy(String puName) {
         if(shouldOverrideGetEntityManager) {
             EntityManager em = getEntityManagerFactory(puName).createEntityManager(createProperties());
             return em;
-        }else 
+        } else { 
             return createEntityManager(puName);
+        }
     }
 
     private boolean shouldOverrideGetEntityManager(){
         if(getServerSession(PROXY_PU).getServerPlatform().getClass().getName().equals("org.eclipse.persistence.platform.server.oc4j.Oc4jPlatform") ||
            getServerSession(PROXY_PU).getServerPlatform().getClass().getName().equals("org.eclipse.persistence.platform.server.jboss.JBossPlatform") ){
             return true;
-        }else
+        } else {
             return false;
+        }
     }
 
     protected java.util.Properties getServerProperties(){
