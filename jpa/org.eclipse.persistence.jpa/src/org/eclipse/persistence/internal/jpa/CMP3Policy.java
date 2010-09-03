@@ -152,9 +152,6 @@ public class CMP3Policy extends CMPPolicy {
      * Return the java Class representing the primary key class name 
      */
     public Class getPKClass() {
-        if(this.pkClass == null && getPKClassName() == null) {
-            getKeyClassFields();
-        }
         return this.pkClass;
     }
 
@@ -630,7 +627,6 @@ public class CMP3Policy extends CMPPolicy {
      */
     public Object getPkValueFromKeyForField(Object key, DatabaseField field, AbstractSession session){
         Object fieldValue = null;
-        this.getKeyClassFields();
         KeyElementAccessor accessor = this.fieldToAccessorMap.get(field);
         DatabaseMapping mapping = accessor.getMapping();
         if (mapping.isDirectToFieldMapping()) {
