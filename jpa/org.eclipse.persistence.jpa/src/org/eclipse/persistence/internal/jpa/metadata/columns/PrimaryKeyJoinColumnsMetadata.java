@@ -11,12 +11,15 @@
  *     Oracle - initial API and implementation from Oracle TopLink
  *     05/16/2008-1.0M8 Guy Pelletier 
  *       - 218084: Implement metadata merging functionality between mapping files
- ******************************************************************************/  
+ *     09/03/2010-2.2 Guy Pelletier 
+ *       - 317286: DB column lenght not in sync between @Column and @JoinColumn
+ ******************************************************************************/
 package org.eclipse.persistence.internal.jpa.metadata.columns;
 
 import java.util.List;
 import java.util.ArrayList;
 
+import org.eclipse.persistence.internal.helper.DatabaseField;
 import org.eclipse.persistence.internal.jpa.metadata.MetadataDescriptor;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataAccessibleObject;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataAnnotation;
@@ -85,10 +88,10 @@ public class PrimaryKeyJoinColumnsMetadata {
             if (descriptor.hasCompositePrimaryKey()) {
                 // Add a default one for each part of the composite primary
                 // key. Foreign and primary key to have the same name.
-                for (String primaryKeyField : descriptor.getPrimaryKeyFieldNames()) {
+                for (DatabaseField primaryKeyField : descriptor.getPrimaryKeyFields()) {
                     PrimaryKeyJoinColumnMetadata primaryKeyJoinColumn = new PrimaryKeyJoinColumnMetadata();
-                    primaryKeyJoinColumn.setReferencedColumnName(primaryKeyField);
-                    primaryKeyJoinColumn.setName(primaryKeyField);
+                    primaryKeyJoinColumn.setReferencedColumnName(primaryKeyField.getName());
+                    primaryKeyJoinColumn.setName(primaryKeyField.getName());
                     m_pkJoinColumns.add(primaryKeyJoinColumn);
                 }
             } else {

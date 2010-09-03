@@ -63,7 +63,9 @@
  *       - 237902: DDL GEN doesn't qualify SEQUENCE table with persistence unit schema
  *     08/11/2010-2.2 Guy Pelletier 
  *       - 312123: JPA: Validation error during Id processing on parameterized generic OneToOne Entity relationship from MappedSuperclass
- ******************************************************************************/  
+ *     09/03/2010-2.2 Guy Pelletier 
+ *       - 317286: DB column lenght not in sync between @Column and @JoinColumn
+ ******************************************************************************/
 package org.eclipse.persistence.internal.jpa.metadata;
 
 import java.lang.reflect.Method;
@@ -85,11 +87,11 @@ import javax.persistence.Embeddable;
 import javax.persistence.spi.PersistenceUnitInfo;
 
 import org.eclipse.persistence.descriptors.ClassDescriptor;
-import org.eclipse.persistence.descriptors.RelationalDescriptor;
 import org.eclipse.persistence.dynamic.DynamicClassLoader;
 import org.eclipse.persistence.dynamic.DynamicType;
 import org.eclipse.persistence.exceptions.ValidationException;
 
+import org.eclipse.persistence.internal.helper.DatabaseField;
 import org.eclipse.persistence.internal.helper.DatabaseTable;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.classes.ClassAccessor;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.classes.EmbeddableAccessor;
@@ -507,9 +509,6 @@ public class MetadataProject {
             // Add the accessor to our custom Map keyed on className for separate processing in stage2
             m_metamodelMappedSuperclasses.put(accessor.getJavaClassName(), accessor);
             
-            // Note: The classDescriptor is always a RelationalDescriptor instance - a cast is safe here unless setDescriptor() sets it to XMLDescriptor or EISDescriptor
-            RelationalDescriptor relationalDescriptor = metadataDescriptor.getClassDescriptor();
-            
             // Fake out a database table and primary key for MappedSuperclasses
             // We require string names for table processing that does not actually goto the database.
             // There will be no conflict with customer values
@@ -526,7 +525,7 @@ public class MetadataProject {
              * The checks below will also avoid a performance hit on searching the accessor map directly on the descriptor. 
              */
             if (!metadataDescriptor.hasIdAccessor() && !metadataDescriptor.hasEmbeddedId()) {
-                relationalDescriptor.addPrimaryKeyFieldName(MetadataConstants.MAPPED_SUPERCLASS_RESERVED_PK_NAME);
+                metadataDescriptor.addPrimaryKeyField(new DatabaseField(MetadataConstants.MAPPED_SUPERCLASS_RESERVED_PK_NAME));
             }
             
             /*
@@ -536,7 +535,7 @@ public class MetadataProject {
              * but we do not need it until metamodel processing time avoiding a _persistence_new call.
              * See MetamodelImpl.initialize()
              */
-            m_session.getProject().addMappedSuperclass(accessor.getJavaClass(), relationalDescriptor);
+            m_session.getProject().addMappedSuperclass(accessor.getJavaClass(), metadataDescriptor.getClassDescriptor());
         }
     }
     

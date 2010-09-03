@@ -71,6 +71,8 @@
  *       - 317708: Exception thrown when using LAZY fetch on VIRTUAL mapping
  *     08/11/2010-2.2 Guy Pelletier 
  *       - 312123: JPA: Validation error during Id processing on parameterized generic OneToOne Entity relationship from MappedSuperclass
+ *     09/03/2010-2.2 Guy Pelletier 
+ *       - 317286: DB column lenght not in sync between @Column and @JoinColumn
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata.accessors.classes;
 
@@ -166,21 +168,14 @@ public class EntityAccessor extends MappedSuperclassAccessor {
      * Add multiple fields to the descriptor. Called from either Inheritance 
      * or SecondaryTable context.
      */
-    protected void addMultipleTableKeyFields(PrimaryKeyJoinColumnsMetadata primaryKeyJoinColumns, DatabaseTable sourceTable, DatabaseTable targetTable, String PK_CTX, String FK_CTX) {
+    protected void addMultipleTableKeyFields(PrimaryKeyJoinColumnsMetadata primaryKeyJoinColumns, DatabaseTable targetTable, String PK_CTX, String FK_CTX) {
         // ProcessPrimaryKeyJoinColumns will validate the primary key join
-        // columns passed in and will return a list of 
-        // PrimaryKeyJoinColumnMetadata.
+        // columns passed in and will return a list of PrimaryKeyJoinColumnMetadata.
         for (PrimaryKeyJoinColumnMetadata primaryKeyJoinColumn : processPrimaryKeyJoinColumns(primaryKeyJoinColumns)) {
-            // In an inheritance case this call will return the pk field on the
-            // root class of the inheritance hierarchy. Otherwise in a secondary
-            // table case it's the primary key field name off our own descriptor.
-            String defaultPKFieldName = getDescriptor().getPrimaryKeyFieldName();
-
-            DatabaseField pkField = primaryKeyJoinColumn.getPrimaryKeyField();
-            setFieldName(pkField, defaultPKFieldName, PK_CTX);
-            pkField.setTable(sourceTable);
+            // Look up the primary key field from the referenced column name.
+            DatabaseField pkField = getReferencedField(primaryKeyJoinColumn.getReferencedColumnName(), getDescriptor(), PK_CTX);
             
-            DatabaseField fkField = primaryKeyJoinColumn.getForeignKeyField();
+            DatabaseField fkField = primaryKeyJoinColumn.getForeignKeyField(pkField);
             setFieldName(fkField, pkField.getName(), FK_CTX);
             fkField.setTable(targetTable);
 
@@ -1085,7 +1080,7 @@ public class EntityAccessor extends MappedSuperclassAccessor {
             pkJoinColumns = new PrimaryKeyJoinColumnsMetadata(m_primaryKeyJoinColumns);
         }
         
-        addMultipleTableKeyFields(pkJoinColumns, getDescriptor().getPrimaryKeyTable(), getDescriptor().getPrimaryTable(), MetadataLogger.INHERITANCE_PK_COLUMN, MetadataLogger.INHERITANCE_FK_COLUMN);
+        addMultipleTableKeyFields(pkJoinColumns, getDescriptor().getPrimaryTable(), MetadataLogger.INHERITANCE_PK_COLUMN, MetadataLogger.INHERITANCE_FK_COLUMN);
     }
     
     /**
@@ -1158,7 +1153,7 @@ public class EntityAccessor extends MappedSuperclassAccessor {
         getDescriptor().addTable(secondaryTable.getDatabaseTable());
         
         // Get the primary key join column(s) and add the multiple table key fields.
-        addMultipleTableKeyFields(new PrimaryKeyJoinColumnsMetadata(secondaryTable.getPrimaryKeyJoinColumns()), getDescriptor().getPrimaryTable(), secondaryTable.getDatabaseTable(), MetadataLogger.SECONDARY_TABLE_PK_COLUMN, MetadataLogger.SECONDARY_TABLE_FK_COLUMN);
+        addMultipleTableKeyFields(new PrimaryKeyJoinColumnsMetadata(secondaryTable.getPrimaryKeyJoinColumns()), secondaryTable.getDatabaseTable(), MetadataLogger.SECONDARY_TABLE_PK_COLUMN, MetadataLogger.SECONDARY_TABLE_FK_COLUMN);
     }
     
     /**

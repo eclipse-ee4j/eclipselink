@@ -13,11 +13,12 @@
  *       - 218084: Implement metadata merging functionality between mapping files
  *     06/09/2009-2.0 Guy Pelletier 
  *       - 249037: JPA 2.0 persisting list item index
- ******************************************************************************/  
+ *     09/03/2010-2.2 Guy Pelletier 
+ *       - 317286: DB column lenght not in sync between @Column and @JoinColumn
+ ******************************************************************************/
 package org.eclipse.persistence.internal.jpa.metadata.columns;
 
 import org.eclipse.persistence.internal.helper.DatabaseField;
-import org.eclipse.persistence.internal.helper.Helper;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataAccessibleObject;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataAnnotation;
 
@@ -66,19 +67,28 @@ public abstract class RelationalColumnMetadata extends MetadataColumn {
     /**
      * INTERNAL:
      */
-    public DatabaseField getForeignKeyField() {
+    protected DatabaseField getForeignKeyField() {
         return super.getDatabaseField();
     }
     
     /**
      * INTERNAL:
+     * By calling this method we will return the foreign key field with the
+     * extra metadata from the primary key field that can not be applied to a 
+     * referenced column.
      */
-    public DatabaseField getPrimaryKeyField() {
-        DatabaseField pkField = new DatabaseField();
+    public DatabaseField getForeignKeyField(DatabaseField primaryKeyField) {
+        // Initialize the DatabaseField with values and defaults.
+        DatabaseField fkField = getForeignKeyField();
         
-        pkField.setName(m_referencedColumnName == null ? "" : m_referencedColumnName, Helper.getDefaultStartDatabaseDelimiter(), Helper.getDefaultEndDatabaseDelimiter());
+        // Primary key field is null in variable one to one case.
+        if (primaryKeyField != null) {
+            fkField.setLength(primaryKeyField.getLength());
+            fkField.setPrecision(primaryKeyField.getPrecision());
+            fkField.setScale(primaryKeyField.getScale());
+        }
         
-        return pkField;
+        return fkField;
     }
     
     /**

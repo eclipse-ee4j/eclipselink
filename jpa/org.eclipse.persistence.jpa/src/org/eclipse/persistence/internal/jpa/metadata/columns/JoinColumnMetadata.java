@@ -13,7 +13,9 @@
  *       - 218084: Implement metadata merging functionality between mapping files
  *     06/09/2009-2.0 Guy Pelletier 
  *       - 249037: JPA 2.0 persisting list item index
- ******************************************************************************/  
+ *     09/03/2010-2.2 Guy Pelletier 
+ *       - 317286: DB column lenght not in sync between @Column and @JoinColumn
+ ******************************************************************************/
 package org.eclipse.persistence.internal.jpa.metadata.columns;
 
 import org.eclipse.persistence.internal.helper.DatabaseField;
@@ -27,7 +29,7 @@ import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataA
  * @author Guy Pelletier
  * @since TopLink EJB 3.0 Reference Implementation
  */
-public class JoinColumnMetadata extends RelationalColumnMetadata {    
+public class JoinColumnMetadata extends RelationalColumnMetadata {
     private Boolean m_unique;
     private Boolean m_nullable;
     private Boolean m_updatable;
@@ -92,7 +94,7 @@ public class JoinColumnMetadata extends RelationalColumnMetadata {
      * INTERNAL:
      */
     @Override
-    public DatabaseField getForeignKeyField() {
+    protected DatabaseField getForeignKeyField() {
         // Initialize the DatabaseField with values and defaults.
         DatabaseField fkField = super.getForeignKeyField();
         
@@ -110,7 +112,7 @@ public class JoinColumnMetadata extends RelationalColumnMetadata {
      * Used for OX mapping.
      */
     public Boolean getInsertable() {
-        return m_insertable;    
+        return m_insertable;
     }
     
     /**
@@ -118,7 +120,7 @@ public class JoinColumnMetadata extends RelationalColumnMetadata {
      * Used for OX mapping.
      */
     public Boolean getNullable() {
-        return m_nullable;    
+        return m_nullable;
     }
     
     /**
@@ -126,7 +128,7 @@ public class JoinColumnMetadata extends RelationalColumnMetadata {
      * USed for OX mapping.
      */
     public String getTable() {
-        return m_table;    
+        return m_table;
     }
     
     /**
@@ -142,7 +144,7 @@ public class JoinColumnMetadata extends RelationalColumnMetadata {
      * Used for OX mapping.
      */
     public Boolean getUpdatable() {
-        return m_updatable;    
+        return m_updatable;
     }
     
     /**
@@ -150,7 +152,7 @@ public class JoinColumnMetadata extends RelationalColumnMetadata {
      * Used for OX mapping.
      */
     public void setInsertable(Boolean insertable) {
-        m_insertable = insertable;    
+        m_insertable = insertable;
     }
     
     /**
@@ -158,7 +160,7 @@ public class JoinColumnMetadata extends RelationalColumnMetadata {
      * Used for OX mapping.
      */
     public void setNullable(Boolean nullable) {
-        m_nullable = nullable;    
+        m_nullable = nullable;
     }
     
     /**
@@ -166,7 +168,7 @@ public class JoinColumnMetadata extends RelationalColumnMetadata {
      * Used for OX mapping.
      */
     public void setTable(String table) {
-        m_table = table;    
+        m_table = table;
     }
     
     /**
@@ -182,6 +184,6 @@ public class JoinColumnMetadata extends RelationalColumnMetadata {
      * Used for OX mapping.
      */
     public void setUpdatable(Boolean updatable) {
-        m_updatable = updatable;    
+        m_updatable = updatable;
     }
 }

@@ -211,7 +211,7 @@ public class Address implements Serializable {
     // In case sequenceName is not specified generator's name used instead.
     @GeneratedValue(generator="ADDRESS_SEQ")
     @SequenceGenerator(name="ADDRESS_SEQ", allocationSize=25)
-    @Column(name="ADDRESS_ID")
+    @Column(name="ADDRESS_ID", length=23)
     public int getID() { 
         return id; 
     }

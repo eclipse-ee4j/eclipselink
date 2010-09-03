@@ -37,7 +37,9 @@
  *       - 314941: multiple joinColumns without referenced column names defined, no error
  *     06/14/2010-2.2 Guy Pelletier 
  *       - 264417: Table generation is incorrect for JoinTables in AssociationOverrides
- ******************************************************************************/ 
+ *     09/03/2010-2.2 Guy Pelletier 
+ *       - 317286: DB column lenght not in sync between @Column and @JoinColumn
+ ******************************************************************************/
 package org.eclipse.persistence.internal.jpa.metadata.accessors.mappings;
 
 import java.util.ArrayList;
@@ -737,15 +739,14 @@ public class ElementCollectionAccessor extends DirectCollectionAccessor implemen
         super.processCollectionTable(mapping);
         
         // Add all the joinColumns (reference key fields) to the mapping. Join 
-        // column validation is performed in the processJoinColumns call.
+        // column validation is performed in the getJoinColumns call.
         for (JoinColumnMetadata joinColumn : getJoinColumns(getCollectionTable().getJoinColumns(), getOwningDescriptor())) {
+            // Look up the primary key field from the referenced column name.
+            DatabaseField pkField = getReferencedField(joinColumn.getReferencedColumnName(), getOwningDescriptor(), MetadataLogger.PK_COLUMN, mapping.isAggregateCollectionMapping());
+            
             // The default name is the primary key of the owning entity.
-            DatabaseField pkField = joinColumn.getPrimaryKeyField();
-            setFieldName(pkField, getOwningDescriptor().getPrimaryKeyFieldName(), MetadataLogger.PK_COLUMN);
-            pkField.setTable(getOwningDescriptor().getPrimaryTable());
-                
-            // The default name is the primary key of the owning entity.
-            DatabaseField fkField = joinColumn.getForeignKeyField();
+            DatabaseField fkField = joinColumn.getForeignKeyField(pkField);
+            
             setFieldName(fkField, getOwningDescriptor().getAlias() + "_" + getOwningDescriptor().getPrimaryKeyFieldName(), MetadataLogger.FK_COLUMN);
             fkField.setTable(getReferenceDatabaseTable());
                 

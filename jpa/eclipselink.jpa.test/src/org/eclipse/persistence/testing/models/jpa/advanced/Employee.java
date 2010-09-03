@@ -373,7 +373,7 @@ public class Employee implements Serializable, Cloneable {
         pkColumnValue="EMPLOYEE_SEQ",
         initialValue=50
     )
-    @Column(name="EMP_ID")
+    @Column(name="EMP_ID", length=21)
     @Property(name="attributeName", value="id")
 	public Integer getId() { 
         return id; 

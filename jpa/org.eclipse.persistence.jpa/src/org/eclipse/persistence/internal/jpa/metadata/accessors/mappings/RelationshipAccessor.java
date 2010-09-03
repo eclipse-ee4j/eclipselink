@@ -39,7 +39,9 @@
  *       - 264417: Table generation is incorrect for JoinTables in AssociationOverrides
  *     08/11/2010-2.2 Guy Pelletier 
  *       - 312123: JPA: Validation error during Id processing on parameterized generic OneToOne Entity relationship from MappedSuperclass
- ******************************************************************************/  
+ *     09/03/2010-2.2 Guy Pelletier 
+ *       - 317286: DB column lenght not in sync between @Column and @JoinColumn
+ ******************************************************************************/
 package org.eclipse.persistence.internal.jpa.metadata.accessors.mappings;
 
 import java.util.ArrayList;
@@ -178,12 +180,8 @@ public abstract class RelationshipAccessor extends MappingAccessor {
         }
         
         for (JoinColumnMetadata joinColumn : joinColumns) {
-            // If the pk field (referencedColumnName) is not specified, it 
-            // defaults to the primary key of the referenced table.
-            String defaultPKFieldName = descriptor.getPrimaryKeyFieldName();
-            DatabaseField pkField = joinColumn.getPrimaryKeyField();
-            setFieldName(pkField, defaultPKFieldName, PK_CTX);
-            pkField.setTable(descriptor.getPrimaryKeyTable());
+            // Look up the primary key field from the referenced column name.
+            DatabaseField pkField = getReferencedField(joinColumn.getReferencedColumnName(), descriptor, PK_CTX);
             
             // If the fk field (name) is not specified, it defaults to the 
             // name of the referencing relationship property or field of the 
@@ -193,8 +191,8 @@ public abstract class RelationshipAccessor extends MappingAccessor {
             // the join column name is formed as the concatenation of the 
             // following: the name of the entity + "_" + the name of the 
             // referenced primary key column.
-            DatabaseField fkField = joinColumn.getForeignKeyField();
-            String defaultFKFieldName = defaultFieldName + "_" + defaultPKFieldName;
+            DatabaseField fkField = joinColumn.getForeignKeyField(pkField);
+            String defaultFKFieldName = defaultFieldName + "_" + descriptor.getPrimaryKeyFieldName();
             setFieldName(fkField, defaultFKFieldName, FK_CTX);
             
             // Target table name here is the join table name.

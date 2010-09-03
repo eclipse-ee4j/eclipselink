@@ -35,7 +35,9 @@
  *       - 309856: MappedSuperclasses from XML are not being initialized properly
  *     06/14/2010-2.2 Guy Pelletier 
  *       - 264417: Table generation is incorrect for JoinTables in AssociationOverrides
- ******************************************************************************/  
+ *     09/03/2010-2.2 Guy Pelletier 
+ *       - 317286: DB column lenght not in sync between @Column and @JoinColumn
+ ******************************************************************************/
 package org.eclipse.persistence.internal.jpa.metadata.accessors.mappings;
 
 import java.util.HashMap;
@@ -180,7 +182,7 @@ public class EmbeddedIdAccessor extends EmbeddedAccessor {
                 // Add all the fields from the embeddable as primary keys on the 
                 // owning metadata descriptor.
                 for (DatabaseField field : m_idFields.values()) {
-                    if (! owningDescriptor.getPrimaryKeyFieldNames().contains(field.getName())) {
+                    if (! owningDescriptor.getPrimaryKeyFields().contains(field)) {
                         // Set a table if one is not specified. Because embeddables 
                         // can be re-used we must deal with clones and not change 
                         // the original fields.

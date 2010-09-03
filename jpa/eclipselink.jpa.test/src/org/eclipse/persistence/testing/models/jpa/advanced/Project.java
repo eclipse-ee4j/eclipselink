@@ -66,7 +66,7 @@ public class Project implements Serializable {
     @Id
     @GeneratedValue(strategy=SEQUENCE, generator="PROJECT_SEQUENCE_GENERATOR")
     @SequenceGenerator(name="PROJECT_SEQUENCE_GENERATOR", sequenceName="PROJECT_SEQ", allocationSize=10)
-    @Column(name="PROJ_ID")
+    @Column(name="PROJ_ID", length=37)
     public Integer getId() { 
         return m_id; 
     }

@@ -25,7 +25,9 @@
  *       - 303632: Add attribute-type for mapping attributes to EclipseLink-ORM
  *     04/27/2010-2.1 Guy Pelletier 
  *       - 309856: MappedSuperclasses from XML are not being initialized properly
- ******************************************************************************/  
+ *     09/03/2010-2.2 Guy Pelletier 
+ *       - 317286: DB column lenght not in sync between @Column and @JoinColumn
+ ******************************************************************************/
 package org.eclipse.persistence.internal.jpa.metadata.accessors.mappings;
 
 import org.eclipse.persistence.annotations.CollectionTable;
@@ -209,13 +211,11 @@ public class BasicCollectionAccessor extends DirectCollectionAccessor {
         // mapping. Primary key join column validation is performed in the
         // processPrimaryKeyJoinColumns call.
         for (PrimaryKeyJoinColumnMetadata primaryKeyJoinColumn : processPrimaryKeyJoinColumns(new PrimaryKeyJoinColumnsMetadata(getCollectionTable().getPrimaryKeyJoinColumns()))) {
-            // The default name is the primary key of the owning entity.
-            DatabaseField pkField = primaryKeyJoinColumn.getPrimaryKeyField();
-            setFieldName(pkField, getOwningDescriptor().getPrimaryKeyFieldName(), MetadataLogger.PK_COLUMN);
-            pkField.setTable(getDescriptor().getPrimaryTable());
+            // Look up the primary key field from the referenced column name.
+            DatabaseField pkField = getReferencedField(primaryKeyJoinColumn.getReferencedColumnName(), getOwningDescriptor(), MetadataLogger.PK_COLUMN);
             
             // The default name is the primary key of the owning entity.
-            DatabaseField fkField = primaryKeyJoinColumn.getForeignKeyField();
+            DatabaseField fkField = primaryKeyJoinColumn.getForeignKeyField(pkField);
             setFieldName(fkField, getOwningDescriptor().getPrimaryKeyFieldName(), MetadataLogger.FK_COLUMN);
             fkField.setTable(getReferenceDatabaseTable());
             

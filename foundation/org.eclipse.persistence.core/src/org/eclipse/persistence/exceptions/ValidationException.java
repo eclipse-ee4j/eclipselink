@@ -405,6 +405,8 @@ public class ValidationException extends EclipseLinkException {
     
     public static final int INVALID_DERIVED_COMPOSITE_PK_ATTRIBUTE = 7332;
     
+    public static final int INVALID_REFERENCE_COLUMN_NAME = 7333;
+    
     /**
      * INTERNAL:
      * EclipseLink exceptions should only be thrown by EclipseLink.
@@ -1779,6 +1781,14 @@ public class ValidationException extends EclipseLinkException {
 
         ValidationException validationException = new ValidationException(ExceptionMessageGenerator.buildMessage(ValidationException.class, INCOMPLETE_PRIMARY_KEY_JOIN_COLUMNS_SPECIFIED, args));
         validationException.setErrorCode(INCOMPLETE_PRIMARY_KEY_JOIN_COLUMNS_SPECIFIED);
+        return validationException;
+    }
+    
+    public static ValidationException invalidReferenceColumnName(String referenceColumnName, Object annotatedElement) {
+        Object[] args = { referenceColumnName, annotatedElement };
+        
+        ValidationException validationException = new ValidationException(ExceptionMessageGenerator.buildMessage(ValidationException.class, INVALID_REFERENCE_COLUMN_NAME, args));
+        validationException.setErrorCode(INVALID_REFERENCE_COLUMN_NAME);
         return validationException;
     }
     

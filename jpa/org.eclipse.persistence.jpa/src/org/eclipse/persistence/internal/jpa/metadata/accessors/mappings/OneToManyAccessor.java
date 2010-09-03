@@ -29,7 +29,9 @@
  *       - 309856: MappedSuperclasses from XML are not being initialized properly
  *     06/14/2010-2.2 Guy Pelletier 
  *       - 264417: Table generation is incorrect for JoinTables in AssociationOverrides
- ******************************************************************************/  
+ *     09/03/2010-2.2 Guy Pelletier 
+ *       - 317286: DB column lenght not in sync between @Column and @JoinColumn
+ ******************************************************************************/
 package org.eclipse.persistence.internal.jpa.metadata.accessors.mappings;
 
 import java.util.List;
@@ -251,24 +253,19 @@ public class OneToManyAccessor extends CollectionAccessor {
      * exception will be thrown).
      */
     protected void processUnidirectionalOneToManyTargetForeignKeyRelationship(UnidirectionalOneToManyMapping mapping, List<JoinColumnMetadata> joinColumns, MetadataDescriptor owningDescriptor) {         
-        // If the pk field (name) is not specified, it 
-        // defaults to the primary key of the source table.
-        String defaultPKFieldName = owningDescriptor.getPrimaryKeyFieldName();
-        
         // If the fk field (name) is not specified, it defaults to the 
         // concatenation of the following: the name of the referencing 
         // relationship property or field of the referencing entity; "_"; 
         // the name of the referenced primary key column.
-        String defaultFKFieldName = getDefaultAttributeName() + "_" + defaultPKFieldName;
+        String defaultFKFieldName = getDefaultAttributeName() + "_" + owningDescriptor.getPrimaryKeyFieldName();
             
         // Join columns will come from a @JoinColumn(s).
         // Add the source foreign key fields to the mapping.
         for (JoinColumnMetadata joinColumn : joinColumns) {
-            DatabaseField pkField = joinColumn.getPrimaryKeyField();
-            setFieldName(pkField, defaultPKFieldName, MetadataLogger.PK_COLUMN);
-            pkField.setTable(owningDescriptor.getPrimaryKeyTable());
+            // Look up the primary key field from the referenced column name.
+            DatabaseField pkField = getReferencedField(joinColumn.getReferencedColumnName(), owningDescriptor, MetadataLogger.PK_COLUMN);
             
-            DatabaseField fkField = joinColumn.getForeignKeyField();
+            DatabaseField fkField = joinColumn.getForeignKeyField(pkField);
             setFieldName(fkField, defaultFKFieldName, MetadataLogger.FK_COLUMN);
 
             // Set the table name if one is not already set.

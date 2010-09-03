@@ -39,7 +39,9 @@
  *       - 253083: Add support for dynamic persistence using ORM.xml/eclipselink-orm.xml
  *     08/19/2010-2.2 Guy Pelletier 
  *       - 282733: Add plural converter annotations
- ******************************************************************************/  
+ *     09/03/2010-2.2 Guy Pelletier 
+ *       - 317286: DB column lenght not in sync between @Column and @JoinColumn
+ ******************************************************************************/
 package org.eclipse.persistence.internal.jpa.metadata.accessors;
 
 import java.util.ArrayList;
@@ -325,18 +327,6 @@ public abstract class MetadataAccessor extends ORMetadata {
      * 
      * Requires the context from where this method is called to output the 
      * correct logging message when defaulting the field name.
-     */
-    protected String getName(DatabaseField field, String defaultName, String context) {
-        return getName(field.getName(), defaultName, context);
-    }
-    
-    /**
-     * INTERNAL:
-     * Helper method to return a field name from a candidate field name and a 
-     * default field name.
-     * 
-     * Requires the context from where this method is called to output the 
-     * correct logging message when defaulting the field name.
      *
      * In some cases, both the name and defaultName could be "" or null,
      * therefore, don't log a message and return name.
@@ -367,6 +357,72 @@ public abstract class MetadataAccessor extends ORMetadata {
      */    
     public List<PropertyMetadata> getProperties() {
         return m_properties;
+    }
+    
+    /**
+     * INTERNAL:
+     * Return the referenced field.  If the referencedColumnName is not 
+     * specified, it will default to the primary key of the referenced table.
+     */
+    protected DatabaseField getReferencedField(String referencedColumnName, MetadataDescriptor referenceDescriptor, String context) {
+        return getReferencedField(referencedColumnName, referenceDescriptor, context, false);
+    }
+    
+    /**
+     * INTERNAL:
+     * Return the referenced field.  If the referencedColumnName is not 
+     * specified, it will default to the primary key of the referenced table.
+     */
+    protected DatabaseField getReferencedField(String referencedColumnName, MetadataDescriptor referenceDescriptor, String context, boolean isForAggregateCollection) {
+        DatabaseField referenceField;
+        
+        if (referencedColumnName == null || referencedColumnName.equals("")) {
+            referenceField = referenceDescriptor.getPrimaryKeyField();
+            
+            // <hack> If we are an inheritance subclass in a joined strategy,
+            // for an aggregate collection, we need to return the multi table 
+            // primary key field if there is one. All other mappings seem to be
+            // happy with the primary key field ... this seems to be a bug with
+            // AggregateCollectionMapping in that it doesn't resolve the
+            // primary key fields correctly </hack>
+            // TODO: have a look at this again at some point.
+            if (referenceDescriptor.isInheritanceSubclass() && isForAggregateCollection) {
+                referenceField = referenceDescriptor.getPrimaryKeyJoinColumnAssociationField(referenceField);
+            }
+            
+            // Log the defaulting field name based on the given context.
+            getLogger().logConfigMessage(context, getAnnotatedElementName(), referenceField.getName());
+        } else {
+            // Let's try to look up the referenced field using the referenced
+            // column name.
+            referenceField = referenceDescriptor.getField(referencedColumnName);
+            
+            if (referenceField == null) {
+                // Ok so we still haven't found the referenced field. We will
+                // need to take the delimeters and the upper cassing flag into
+                // consideration. To do that, we must use a DatabaseField since
+                // the logic resides there. It would be nice to avoid creating
+                // database fields to look up actual referenced fields but for
+                // now this will do (better than what we had before :-) ).
+                DatabaseField lookupField = new DatabaseField();
+                setFieldName(lookupField, referencedColumnName);
+                referenceField = referenceDescriptor.getField(lookupField.getNameForComparisons());
+            
+                if (referenceField == null) {
+                    if (referenceDescriptor.isMappedSuperclass()) {
+                        // If we are processing a mapping accessor for a mapped
+                        // superclass descriptor it may or may not have a source
+                        // ID field so just return the built field.
+                        referenceField = lookupField;
+                        referenceField.setTable(referenceDescriptor.getPrimaryKeyTable());
+                    } else {
+                        throw ValidationException.invalidReferenceColumnName(referencedColumnName, getAnnotatedElement());
+                    }
+                }
+            }
+        }
+        
+        return referenceField;   
     }
     
     /**
@@ -699,20 +755,26 @@ public abstract class MetadataAccessor extends ORMetadata {
     
     /**
      * INTERNAL:
-     * Note: the order of calls in this method are important.
      */
-    protected void setFieldName(DatabaseField field, String defaultName, String context) {
+    public void setFieldName(DatabaseField field, String name) {
         // This may set the use delimited identifier flag to true.
-        field.setName(getName(field, defaultName, context), Helper.getDefaultStartDatabaseDelimiter(), Helper.getDefaultEndDatabaseDelimiter());
+        field.setName(name, Helper.getDefaultStartDatabaseDelimiter(), Helper.getDefaultEndDatabaseDelimiter());
         
         // The check is necessary to avoid overriding a true setting (set after 
         // setting the name of the field). We don't want to override it at this
         // point if the global flag is set to false. 
-        if (useDelimitedIdentifier()) {
-            field.setUseDelimiters(useDelimitedIdentifier());
-        } else if (m_project.getShouldForceFieldNamesToUpperCase() && !field.shouldUseDelimiters()) {
+        if (m_project.useDelimitedIdentifier()) {
+            field.setUseDelimiters(true);
+        } else if (m_project.getShouldForceFieldNamesToUpperCase() && ! field.shouldUseDelimiters()) {
             field.useUpperCaseForComparisons(true);
         }
+    }
+    
+    /**
+     * INTERNAL:
+     */
+    public void setFieldName(DatabaseField field, String defaultName, String context) {
+        setFieldName(field, getName(field.getName(), defaultName, context));
     }
     
     /**
@@ -753,13 +815,6 @@ public abstract class MetadataAccessor extends ORMetadata {
      */
     public void setTypeConverters(List<TypeConverterMetadata> typeConverters) {
         m_typeConverters = typeConverters;
-    }
-    
-    /**
-     * INTERNAL:
-     */
-    protected boolean useDelimitedIdentifier() {
-        return m_project.useDelimitedIdentifier();
     }
 }
 

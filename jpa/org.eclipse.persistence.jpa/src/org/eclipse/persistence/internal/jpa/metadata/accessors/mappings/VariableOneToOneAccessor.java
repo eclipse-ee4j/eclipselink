@@ -24,7 +24,9 @@
  *       - 309856: MappedSuperclasses from XML are not being initialized properly
  *     06/14/2010-2.2 Guy Pelletier 
  *       - 264417: Table generation is incorrect for JoinTables in AssociationOverrides
- ******************************************************************************/  
+ *     09/03/2010-2.2 Guy Pelletier 
+ *       - 317286: DB column lenght not in sync between @Column and @JoinColumn
+ ******************************************************************************/
 package org.eclipse.persistence.internal.jpa.metadata.accessors.mappings;
 
 import java.util.ArrayList;
@@ -286,7 +288,7 @@ public class VariableOneToOneAccessor extends ObjectAccessor {
             // name. It defaults to ID otherwise.
             String queryKeyName = getName(joinColumn.getReferencedColumnName(), DEFAULT_QUERY_KEY, MetadataLogger.QK_COLUMN);
             
-            DatabaseField fkField = joinColumn.getForeignKeyField();
+            DatabaseField fkField = joinColumn.getForeignKeyField(null);
             setFieldName(fkField, getDefaultAttributeName() + "_ID", MetadataLogger.FK_COLUMN);
             // Set the table name if one is not already set.
             if (fkField.getTableName().equals("")) {

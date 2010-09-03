@@ -61,6 +61,8 @@
  *       - 317708: Exception thrown when using LAZY fetch on VIRTUAL mapping
  *     08/20/2010-2.2 Guy Pelletier 
  *       - 323252: Canonical model generator throws NPE on virtual 1-1 or M-1 mapping
+ *     09/03/2010-2.2 Guy Pelletier 
+ *       - 317286: DB column lenght not in sync between @Column and @JoinColumn
  ******************************************************************************/
 package org.eclipse.persistence.internal.jpa.metadata.accessors.mappings;
 
@@ -419,10 +421,17 @@ public abstract class MappingAccessor extends MetadataAccessor {
         DatabaseField field = column.getDatabaseField();
            
         // Make sure there is a table name on the field.
-        if (!field.hasTableName()) {
+        if (! field.hasTableName()) {
             field.setTable(defaultTable);
         }
-          
+        
+        // We must check the flag before blindly setting it on the table since
+        // global flag may be false where this fields table may explicitly use
+        // delimiters.
+        if (getProject().useDelimitedIdentifier()) {
+            field.getTable().setUseDelimiters(true);
+        }
+        
         // Set the correct field name, defaulting and logging when necessary.
         String defaultName = getDefaultAttributeName();
            
@@ -432,13 +441,11 @@ public abstract class MappingAccessor extends MetadataAccessor {
         }
         
         setFieldName(field, defaultName, loggingCtx);
-        
-        if (field.getTable() != null) {
-            if (useDelimitedIdentifier()) {
-                field.getTable().setUseDelimiters(useDelimitedIdentifier());
-            }
-        }
 
+        // Store all the fields for this descriptor. This will allow re-use
+        // and easy lookup of refererenced column names.
+        getDescriptor().addField(field);
+        
         return field;
     }
     
@@ -504,10 +511,10 @@ public abstract class MappingAccessor extends MetadataAccessor {
             if (descriptor.hasCompositePrimaryKey()) {
                 // Add a default one for each part of the composite primary
                 // key. Foreign and primary key to have the same name.
-                for (String primaryKeyField : descriptor.getPrimaryKeyFieldNames()) {
+                for (DatabaseField primaryKeyField : descriptor.getPrimaryKeyFields()) {
                     JoinColumnMetadata joinColumn = new JoinColumnMetadata();
-                    joinColumn.setReferencedColumnName(primaryKeyField);
-                    joinColumn.setName(primaryKeyField);
+                    joinColumn.setReferencedColumnName(primaryKeyField.getName());
+                    joinColumn.setName(primaryKeyField.getName());
                     joinColumns.add(joinColumn);
                 }
             } else {
@@ -531,9 +538,9 @@ public abstract class MappingAccessor extends MetadataAccessor {
                 // query key name and not a column name so bypass any of this
                 // code.
                 if (referencedColumnName != null && !isVariableOneToOne()) {
-                    DatabaseField referencedField = joinColumn.getPrimaryKeyField();
-                    setFieldName(referencedField, referencedField.getName(), MetadataLogger.PK_COLUMN);
-                    joinColumn.setReferencedColumnName(descriptor.getPrimaryKeyJoinColumnAssociation(referencedField));
+                    DatabaseField referencedField = new DatabaseField();
+                    setFieldName(referencedField, referencedColumnName, MetadataLogger.PK_COLUMN);
+                    joinColumn.setReferencedColumnName(descriptor.getPrimaryKeyJoinColumnAssociation(referencedField).getName());
                 }
             }
         }
@@ -744,7 +751,7 @@ public abstract class MappingAccessor extends MetadataAccessor {
         
         return accessor.getDescriptor();
     }
-    
+
     /**
      * INTERNAL:
      * Returns the set method name of a method accessor. Note, this method
@@ -1381,17 +1388,13 @@ public abstract class MappingAccessor extends MetadataAccessor {
         EntityAccessor mapKeyAccessor = getProject().getEntityAccessor(mapKeyClassName);
         MetadataDescriptor mapKeyClassDescriptor = mapKeyAccessor.getDescriptor();
         
-        // If the pk field (referencedColumnName) is not specified, it 
-        // defaults to the primary key of the referenced table.
-        String defaultPKFieldName = mapKeyClassDescriptor.getPrimaryKeyFieldName();
-        
         // If the fk field (name) is not specified, it defaults to the 
         // concatenation of the following: the name of the referencing 
         // relationship property or field of the referencing entity or 
         // embeddable; "_"; "KEY"
         String defaultFKFieldName = getAttributeName() + DEFAULT_MAP_KEY_COLUMN_SUFFIX;
         
-        processOneToOneForeignKeyRelationship(keyMapping, getJoinColumns(mappedKeyMapAccessor.getMapKeyJoinColumns(), mapKeyClassDescriptor), defaultPKFieldName, mapKeyClassDescriptor.getPrimaryTable(), defaultFKFieldName, getDefaultTableForEntityMapKey());
+        processOneToOneForeignKeyRelationship(keyMapping, getJoinColumns(mappedKeyMapAccessor.getMapKeyJoinColumns(), mapKeyClassDescriptor), mapKeyClassDescriptor, defaultFKFieldName, getDefaultTableForEntityMapKey());
 
         return keyMapping;
     }
@@ -1532,42 +1535,51 @@ public abstract class MappingAccessor extends MetadataAccessor {
      * entities that have a composite primary key (validation exception will be 
      * thrown).
      */
-    protected void processOneToOneForeignKeyRelationship(OneToOneMapping mapping, List<JoinColumnMetadata> joinColumns, String defaultPKFieldName, DatabaseTable defaultPKTable, String defaultFKFieldName, DatabaseTable defaultFKTable) {         
-        // we need to know if all the mappings are read-only so we can determine if we use target foreign keys
-        // to represent read-only parts of the join, or if we simply set the whole mapping as read-only
+    protected void processOneToOneForeignKeyRelationship(OneToOneMapping mapping, List<JoinColumnMetadata> joinColumns, MetadataDescriptor referenceDescriptor, String defaultFKFieldName, DatabaseTable defaultFKTable) {
+        // We need to know if all the mappings are read-only so we can determine 
+        // if we use target foreign keys to represent read-only parts of the 
+        // join, or if we simply set the whole mapping as read-only
         boolean allReadOnly = true;
+        Map<DatabaseField, DatabaseField> fields = new HashMap<DatabaseField, DatabaseField>();
+        
+        // Build our fk->pk associations.
         for (JoinColumnMetadata joinColumn : joinColumns) {
-            allReadOnly = allReadOnly && joinColumn.getForeignKeyField().isReadOnly();
-        }
-        // Add the source foreign key fields to the mapping.
-        for (JoinColumnMetadata joinColumn : joinColumns) {
-            DatabaseField pkField = joinColumn.getPrimaryKeyField();
-            setFieldName(pkField, defaultPKFieldName, MetadataLogger.PK_COLUMN);
-            pkField.setTable(defaultPKTable);
+            // Look up the primary key field from the referenced column name.
+            DatabaseField pkField = getReferencedField(joinColumn.getReferencedColumnName(), referenceDescriptor, MetadataLogger.PK_COLUMN);
             
-            DatabaseField fkField = joinColumn.getForeignKeyField();
+            // The foreign key should be built using the primary key field 
+            // since it will contain extra metadata that can not be specified
+            // in the join column. This will keep the pk and fk fields in sync.
+            DatabaseField fkField = joinColumn.getForeignKeyField(pkField);
             setFieldName(fkField, defaultFKFieldName, MetadataLogger.FK_COLUMN);
+            
             // Set the table name if one is not already set.
-            if (!fkField.hasTableName()) {
+            if (! fkField.hasTableName()) {
                 fkField.setTable(defaultFKTable);
             }
-            if (allReadOnly || !fkField.isReadOnly()){
+        
+            fields.put(fkField, pkField);
+            allReadOnly = allReadOnly && fkField.isReadOnly();
+        }
+        
+        // Apply the fields to the mapping based on what we found.
+        for (DatabaseField fkField : fields.keySet()) {
+            DatabaseField pkField = fields.get(fkField);
+            
+            if (allReadOnly || ! fkField.isReadOnly()) {
                 // Add a source foreign key to the mapping.
                 mapping.addForeignKeyField(fkField, pkField);
             } else {
-                // this is a read-only join column that is part of a set of 
-                // join columns that are not all read only - hence this
-                // is not a read-only mapping, but instead uses a target 
-                // foreign key field to enable the read-only functionality
+                // This is a read-only join column that is part of a set of join 
+                // columns that are not all read only - hence this is not a 
+                // read-only mapping, but instead uses a target foreign key 
+                // field to enable the read-only functionality
                 mapping.addTargetForeignKeyField(pkField, fkField);
             }
         }
         
-        // If any of the join columns is marked read-only then set the 
-        // mapping to be read only.
-        if (allReadOnly) {
-            mapping.setIsReadOnly(true);
-        }
+        // If all the join columns are read-only then set the mapping as read only.
+        mapping.setIsReadOnly(allReadOnly);
     }
     
     /**

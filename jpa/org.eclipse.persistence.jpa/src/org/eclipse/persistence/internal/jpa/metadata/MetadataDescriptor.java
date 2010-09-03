@@ -74,7 +74,9 @@
  *       - 315782: JPA2 derived identity metadata processing validation doesn't account for autoboxing
  *     08/11/2010-2.2 Guy Pelletier 
  *       - 312123: JPA: Validation error during Id processing on parameterized generic OneToOne Entity relationship from MappedSuperclass
- ******************************************************************************/  
+ *     09/03/2010-2.2 Guy Pelletier 
+ *       - 317286: DB column lenght not in sync between @Column and @JoinColumn
+ ******************************************************************************/
 package org.eclipse.persistence.internal.jpa.metadata;
 
 import java.util.ArrayList;
@@ -166,6 +168,8 @@ public class MetadataDescriptor {
     private Map<String, String> m_pkClassIDs;
     private Map<String, String> m_genericTypes;
     private Map<String, IdAccessor> m_idAccessors;
+    // Holds all fields from BasicAccessors (Basic, Id, Version, Transformation)
+    private Map<String, DatabaseField> m_fields;
     private Map<String, MappingAccessor> m_mappingAccessors;
     private Map<DatabaseField, MappingAccessor> m_primaryKeyAccessors;
     private Map<String, PropertyMetadata> m_properties;
@@ -233,6 +237,7 @@ public class MetadataDescriptor {
         m_genericTypes = new HashMap<String, String>();
         m_mappingAccessors = new HashMap<String, MappingAccessor>();
         m_idAccessors = new HashMap<String, IdAccessor>();
+        m_fields = new HashMap<String, DatabaseField>();
         m_primaryKeyAccessors = new HashMap<DatabaseField, MappingAccessor>();
         m_properties = new HashMap<String, PropertyMetadata>();
         m_pkJoinColumnAssociations = new HashMap<DatabaseField, DatabaseField>();
@@ -291,7 +296,61 @@ public class MetadataDescriptor {
     public void addEntityListenerEventListener(DescriptorEventListener listener) {
         m_descriptor.getEventManager().addEntityListenerEventListener(listener);
     }
-
+    
+    /**
+     * INTERNAL:
+     * Add a field from a basic mapping from this descriptor.
+     */
+    public void addField(DatabaseField field) {
+        // If it should use an upper case for comparisons upper case the name 
+        // before putting it in the map.  
+        m_fields.put(field.getNameForComparisons(), field);
+    }
+    
+    /**
+     * INTERNAL:
+     */
+    public void addFieldForInsert(DatabaseField field) {
+        getReturningPolicy().addFieldForInsert(field);
+    }
+    
+    /**
+     * INTERNAL:
+     */
+    public void addFieldForInsertReturnOnly(DatabaseField field) {
+        getReturningPolicy().addFieldForInsertReturnOnly(field);
+    }
+    
+    /**
+     * INTERNAL:
+     */
+    public void addFieldForUpdate(DatabaseField field) {
+        getReturningPolicy().addFieldForUpdate(field);
+    }
+    
+    /**
+     * INTERNAL:
+     */
+    public void addForeignKeyFieldForMultipleTable(DatabaseField fkField, DatabaseField pkField) {
+        m_descriptor.addForeignKeyFieldForMultipleTable(fkField, pkField);
+        m_pkJoinColumnAssociations.put(fkField, pkField);
+    }
+    
+    /**
+     * INTERNAL:
+     * Add a generic type for this descriptor.
+     */
+    public void addGenericType(String genericName, String type) {
+        m_genericTypes.put(genericName, type);
+    }
+    
+    /**
+     * INTERNAL:
+     */
+    public void addIdAttributeName(String idAttributeName) {
+        m_idAttributeNames.add(idAttributeName);    
+    }
+    
     /**
      * INTERNAL:
      */
@@ -341,50 +400,6 @@ public class MetadataDescriptor {
     
     /**
      * INTERNAL:
-     */
-    public void addFieldForInsert(DatabaseField field) {
-        getReturningPolicy().addFieldForInsert(field);
-    }
-    
-    /**
-     * INTERNAL:
-     */
-    public void addFieldForInsertReturnOnly(DatabaseField field) {
-        getReturningPolicy().addFieldForInsertReturnOnly(field);
-    }
-    
-    /**
-     * INTERNAL:
-     */
-    public void addFieldForUpdate(DatabaseField field) {
-        getReturningPolicy().addFieldForUpdate(field);
-    }
-    
-    /**
-     * INTERNAL:
-     */
-    public void addIdAttributeName(String idAttributeName) {
-        m_idAttributeNames.add(idAttributeName);    
-    }
-    
-    /**
-     * INTERNAL:
-     */
-    public void addForeignKeyFieldForMultipleTable(DatabaseField fkField, DatabaseField pkField) {
-        m_descriptor.addForeignKeyFieldForMultipleTable(fkField, pkField);
-        m_pkJoinColumnAssociations.put(fkField, pkField);
-    }
-
-    /**
-     * INTERNAL:
-     * Add a generic type for this descriptor.
-     */
-    public void addGenericType(String genericName, String type) {
-        m_genericTypes.put(genericName, type);
-    }
-    
-    /**
-     * INTERNAL:
      * We store these to validate the primary class when processing the entity 
      * class. Note: the pk id types are always stored as their boxed type (if 
      * applicable). Validation should therefore always be done against boxed 
@@ -410,14 +425,36 @@ public class MetadataDescriptor {
     
     /**
      * INTERNAL:
-     * Add a field representing the primary key or part of a composite primary key
-     * to the List of primary key fields on the relational descriptor associated
-     * with this metadata descriptor.</p>
+     * Add a field representing the primary key or part of a composite primary 
+     * key to the List of primary key fields on the relational descriptor 
+     * associated with this metadata descriptor. Call this method if there
+     * is no associated mapping accessor, e.g. a PrimaryKey annotation 
+     * specification or a derived id mapping. Otherwise, regular JPA id mappings
+     * should call addPrimaryKeyField(DatabaseField, MappingAccessor)
      */
-    public void addPrimaryKeyField(DatabaseField field, MappingAccessor accessor) {
+    public void addPrimaryKeyField(DatabaseField field) {
+        // Make sure the field has a table set.
+        if (! field.hasTableName()) {
+            field.setTable(getPrimaryTable());
+        }
+        
+        // Add the field to the class descriptor.
         m_descriptor.addPrimaryKeyField(field);
         
-        // Store the primary primary key mappings based on their field name.
+        // Add the field to our internal field map.
+        addField(field);
+    }
+    
+    /**
+     * INTERNAL:
+     * Add a field representing the primary key or part of a composite primary 
+     * key to the List of primary key fields on the relational descriptor 
+     * associated with this metadata descriptor.
+     */
+    public void addPrimaryKeyField(DatabaseField field, MappingAccessor accessor) {
+        addPrimaryKeyField(field);
+        
+        // Store the primary key field mappings keyed on their field name.
         m_primaryKeyAccessors.put(field, accessor);
     }
     
@@ -611,6 +648,19 @@ public class MetadataDescriptor {
      */
     public EntityAccessor getEntityAccessor() {
         return (EntityAccessor) m_classAccessor;
+    }
+    
+    /**
+     * INTERNAL:
+     * Return the DatabaseField from the given field name from this descriptor.
+     * It also checks primary key fields and parent descriptors. 
+     */
+    public DatabaseField getField(String fieldName) {
+        if (! m_fields.containsKey(fieldName) && isInheritanceSubclass()) {
+            return getInheritanceRootDescriptor().getField(fieldName);
+        } else {
+            return m_fields.get(fieldName);
+        }
     }
     
     /**
@@ -898,32 +948,15 @@ public class MetadataDescriptor {
     
     /**
      * INTERNAL:
-     * Method to return the primary key field name for the given descriptor
-     * metadata. Assumes there is one.
+     * Method to return the primary key field name for this descriptor metadata. 
+     * It assumes there is one.
      */
     public String getPrimaryKeyFieldName() {
         return getPrimaryKeyField().getName();
     }
     
     /**
-     * INTERNAL:
-     * Method to return the primary key field names for the given descriptor
-     * metadata. getPrimaryKeyFieldNames() on ClassDescriptor returns qualified
-     * names. We don't want that.
-     */
-    public List<String> getPrimaryKeyFieldNames() {
-        List<DatabaseField> primaryKeyFields = getPrimaryKeyFields();
-        List<String> primaryKeyFieldNames = new ArrayList<String>(primaryKeyFields.size());
-        
-        for (DatabaseField primaryKeyField : primaryKeyFields) {
-            primaryKeyFieldNames.add(primaryKeyField.getName());
-        }
-        
-        return primaryKeyFieldNames;
-    }
-    
-    /**
-     * INTERNAL:
+     * INTERNAL
      * Return the primary key fields for this descriptor metadata. If this is
      * an inheritance subclass and it has no primary key fields, then grab the 
      * primary key fields from the root.
@@ -944,14 +977,27 @@ public class MetadataDescriptor {
      * a inheritance subclass, all the way to the root of the inheritance 
      * hierarchy.
      */
-    public String getPrimaryKeyJoinColumnAssociation(DatabaseField foreignKey) {
+    public DatabaseField getPrimaryKeyJoinColumnAssociation(DatabaseField foreignKey) {
         DatabaseField primaryKey = m_pkJoinColumnAssociations.get(foreignKey);
 
         if ( primaryKey == null || primaryKey.getName() == null || ! isInheritanceSubclass()) {
-            return foreignKey.getName();
+            return foreignKey;
         } else {
             return getInheritanceParentDescriptor().getPrimaryKeyJoinColumnAssociation(primaryKey);
         } 
+    }
+    
+    /**
+     * INTERNAL:
+     * Returns the first primary key join column association if there is one.
+     * Otherwise, the primary key field given is returned.
+     */
+    public DatabaseField getPrimaryKeyJoinColumnAssociationField(DatabaseField primaryKeyField) {
+        if (! m_pkJoinColumnAssociations.isEmpty()) {
+            return m_pkJoinColumnAssociations.keySet().iterator().next();
+        }
+        
+        return primaryKeyField;
     }
     
     /**
@@ -966,7 +1012,7 @@ public class MetadataDescriptor {
      * defined exactly once in an entity hierarchy.
      */
     public DatabaseTable getPrimaryKeyTable() {
-        return ((getPrimaryKeyFields().iterator().next())).getTable();
+        return getPrimaryKeyField().getTable();
     }
     
     /**
@@ -1361,9 +1407,10 @@ public class MetadataDescriptor {
      * EmbeddedAccessor processAttributeOverride method.
      */
     public void removePrimaryKeyField(DatabaseField field) {
-        getPrimaryKeyFields().remove(field);
+        // Remove the field from the class descriptor list.
+        m_descriptor.getPrimaryKeyFields().remove(field);
         
-        // Remove the primary key accessor.
+        // Remove the primary key field and accessor.
         m_primaryKeyAccessors.remove(field);
     }
     

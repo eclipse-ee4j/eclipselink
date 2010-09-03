@@ -13,7 +13,9 @@
  *       - 309856: MappedSuperclasses from XML are not being initialized properly
  *     06/18/2010-2.2 Guy Pelletier 
  *       - 300458: EclispeLink should throw a more specific exception than NPE
- ******************************************************************************/  
+ *     09/03/2010-2.2 Guy Pelletier 
+ *       - 317286: DB column lenght not in sync between @Column and @JoinColumn
+ ******************************************************************************/
 package org.eclipse.persistence.internal.jpa.metadata;
 
 import java.util.ArrayList;
@@ -57,6 +59,8 @@ public class PrimaryKeyMetadata extends ORMetadata {
         super(primaryKey, accessibleObject);
         
         m_validation = (String) primaryKey.getAttribute("validation");
+        
+        m_cacheKeyType = (String) primaryKey.getAttribute("cacheKeyType"); 
         
         for (Object selectedColumn : (Object[]) primaryKey.getAttributeArray("columns")) {
             m_columns.add(new ColumnMetadata((MetadataAnnotation)selectedColumn, accessibleObject));
@@ -129,15 +133,13 @@ public class PrimaryKeyMetadata extends ORMetadata {
             descriptor.getClassDescriptor().setCacheKeyType(CacheKeyType.valueOf(m_cacheKeyType));
         }
         if (hasColumns()) {
-            List fields = new ArrayList(m_columns.size());
             for (ColumnMetadata column : m_columns) {
                 if (column.getName().equals("")) {  
                     throw ValidationException.optimisticLockingSelectedColumnNamesNotSpecified(descriptor.getJavaClass());
                 } else {
-                    fields.add(column.getDatabaseField());
+                    descriptor.addPrimaryKeyField(column.getDatabaseField());
                 }
             }
-            descriptor.getClassDescriptor().setPrimaryKeyFields(fields);
         }
     }
     

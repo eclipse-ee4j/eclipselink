@@ -15,7 +15,9 @@
  *       - 260263: SQLServer 2005/2008 requires stored procedure creation select clause variable and column name matching
  *     06/16/2010-2.2 Guy Pelletier 
  *       - 247078: eclipselink-orm.xml schema should allow lob and enumerated on version and id mappings
- ******************************************************************************/  
+ *     09/03/2010-2.2 Guy Pelletier 
+ *       - 317286: DB column lenght not in sync between @Column and @JoinColumn
+ ******************************************************************************/
 package org.eclipse.persistence.testing.tests.jpa.advanced;
 
 import java.lang.reflect.Array;
@@ -24,6 +26,7 @@ import java.util.Calendar;
 import java.util.Collection;
 import java.util.EnumSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.Vector;
 
@@ -47,6 +50,8 @@ import org.eclipse.persistence.descriptors.DescriptorEventAdapter;
 import org.eclipse.persistence.descriptors.invalidation.CacheInvalidationPolicy;
 import org.eclipse.persistence.descriptors.invalidation.TimeToLiveCacheInvalidationPolicy;
 import org.eclipse.persistence.internal.helper.ClassConstants;
+import org.eclipse.persistence.internal.helper.DatabaseField;
+import org.eclipse.persistence.internal.helper.DatabaseTable;
 import org.eclipse.persistence.internal.helper.Helper;
 import org.eclipse.persistence.internal.jpa.EJBQueryImpl;
 import org.eclipse.persistence.internal.jpa.EntityManagerFactoryImpl;
@@ -55,7 +60,11 @@ import org.eclipse.persistence.internal.jpa.metamodel.MapAttributeImpl;
 import org.eclipse.persistence.internal.jpa.metamodel.SingularAttributeImpl;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.mappings.DatabaseMapping;
+import org.eclipse.persistence.mappings.DirectCollectionMapping;
 import org.eclipse.persistence.mappings.ForeignReferenceMapping;
+import org.eclipse.persistence.mappings.ManyToManyMapping;
+import org.eclipse.persistence.mappings.OneToOneMapping;
+import org.eclipse.persistence.mappings.UnidirectionalOneToManyMapping;
 import org.eclipse.persistence.queries.DoesExistQuery;
 import org.eclipse.persistence.sessions.Session;
 import org.eclipse.persistence.sessions.server.ServerSession;
@@ -121,6 +130,7 @@ public class AdvancedJPAJunitTest extends JUnitTestCase {
         suite.addTest(new AdvancedJPAJunitTest("testRelationshipReadDuringClone"));
 
         suite.addTest(new AdvancedJPAJunitTest("testExistenceCheckingSetting"));
+        suite.addTest(new AdvancedJPAJunitTest("testJoinColumnForeignKeyFieldLength"));
         
         suite.addTest(new AdvancedJPAJunitTest("testJoinFetchAnnotation"));
         suite.addTest(new AdvancedJPAJunitTest("testVerifyEmployeeCacheSettings"));
@@ -310,6 +320,103 @@ public class AdvancedJPAJunitTest extends JUnitTestCase {
         
         ClassDescriptor largeProjectDescriptor = session.getDescriptor(LargeProject.class);
         assertTrue("LargeProject existence checking was incorrect", largeProjectDescriptor.getQueryManager().getDoesExistQuery().getExistencePolicy() == DoesExistQuery.AssumeNonExistence);
+    }
+    
+    public void testJoinColumnForeignKeyFieldLength() {
+        ServerSession session = JUnitTestCase.getServerSession();
+        
+        ClassDescriptor employeeDescriptor = session.getDescriptor(Employee.class);
+        ClassDescriptor buyerDescriptor = session.getDescriptor(Buyer.class);
+
+        //////////////////// Test fk from a secondary table ////////////////////
+        DatabaseTable secondaryTable = employeeDescriptor.getTable("CMP3_SALARY");
+        Map<DatabaseField, DatabaseField> keys = employeeDescriptor.getAdditionalTablePrimaryKeyFields().get(secondaryTable);
+        
+        for (DatabaseField pkField : keys.keySet()) {
+            DatabaseField fkField =  keys.get(pkField);
+            assertTrue("The secondary table foreign field [" + fkField.getName() + "(" + fkField.getLength() + ")] did not have the same length as the primary key field [" + pkField.getName() + "(" + pkField.getLength() + ")]", fkField.getLength() == pkField.getLength());
+        }
+        
+        ////////////////////////// Test a M-1 mapping //////////////////////////
+        DatabaseMapping mapping = employeeDescriptor.getMappingForAttributeName("address");
+        assertNotNull("The address mapping from Employee was not found", mapping);
+        assertTrue("The address mapping is no longer a one to one mapping", mapping.isOneToOneMapping());
+        
+        keys = ((OneToOneMapping) mapping).getSourceToTargetKeyFields();
+        
+        for (DatabaseField fkField : keys.keySet()) {
+            DatabaseField pkField =  keys.get(fkField);
+            assertTrue("The address mapping foreign field [" + fkField.getName() + "(" + fkField.getLength() + ")] did not have the same length as the primary key field [" + pkField.getName() + "(" + pkField.getLength() + ")]", fkField.getLength() == pkField.getLength());
+        }
+        
+        ////////////////// Test a unidirectional 1-M mapping ///////////////////
+        mapping = employeeDescriptor.getMappingForAttributeName("dealers");
+        assertNotNull("The dealers mapping from Employee was not found", mapping);
+        assertTrue("The dealers mapping is no longer a unidirectional one to many mapping", mapping.isUnidirectionalOneToManyMapping());
+        
+        keys = ((UnidirectionalOneToManyMapping) mapping).getTargetForeignKeysToSourceKeys();
+        
+        for (DatabaseField fkField : keys.keySet()) {
+            DatabaseField pkField =  keys.get(fkField);
+            assertTrue("The dealers mapping foreign key field [" + fkField.getName() + "(" + fkField.getLength() + ")] did not have the same length as the primary key field [" + pkField.getName() + "(" + pkField.getLength() + ")]", fkField.getLength() == pkField.getLength());
+        }
+        
+        ////////////////////////// Test a M-M mapping ////////////////////////// 
+        mapping = employeeDescriptor.getMappingForAttributeName("projects");
+        assertNotNull("The projects mapping from Employee was not found", mapping);
+        assertTrue("The projects mapping is no longer a many to many mapping", mapping.isManyToManyMapping());
+        
+        Vector<DatabaseField> sourceKeys = ((ManyToManyMapping) mapping).getSourceKeyFields();
+        Vector<DatabaseField> sourceRelationKeys = ((ManyToManyMapping) mapping).getSourceRelationKeyFields();
+        
+        for (int i = 0; i < sourceKeys.size(); i++) {
+            DatabaseField sourcePrimaryKey = sourceKeys.get(i);
+            DatabaseField sourceRelationForeignKey = sourceRelationKeys.get(i);
+            
+            assertTrue("The projects mapping source relation foreign key field [" + sourceRelationForeignKey.getName() + "(" + sourceRelationForeignKey.getLength() + ")] did not have the same length as the source primary key field [" + sourcePrimaryKey.getName()  + "(" + sourcePrimaryKey.getLength() + ")]", sourcePrimaryKey.getLength() == sourceRelationForeignKey.getLength());            
+        }
+        
+        Vector<DatabaseField> targetKeys = ((ManyToManyMapping) mapping).getSourceKeyFields();
+        Vector<DatabaseField> targetRelationKeys = ((ManyToManyMapping) mapping).getSourceRelationKeyFields();
+
+        for (int i = 0; i < targetKeys.size(); i++) {
+            DatabaseField targetPrimaryKey = targetKeys.get(i);
+            DatabaseField targetRelationForeignKey = targetRelationKeys.get(i);
+            
+            assertTrue("The projects mapping target relation foreign key field [" + targetRelationForeignKey.getName() + "(" + targetRelationForeignKey.getLength() + ")] did not have the same length as the target primary key field [" + targetPrimaryKey.getName() + "(" + targetPrimaryKey.getLength() + ")]", targetPrimaryKey.getLength() == targetRelationForeignKey.getLength());            
+        }
+        
+        //////////////////////// Test a basic collection ///////////////////////
+        mapping = employeeDescriptor.getMappingForAttributeName("responsibilities");
+        assertNotNull("The responsibilities mapping from Employee was not found", mapping);
+        assertTrue("The responsibilities mapping is no longer a direct collection mapping", mapping.isDirectCollectionMapping());
+        
+        Vector<DatabaseField> primaryKeys = ((DirectCollectionMapping) mapping).getSourceKeyFields();
+        Vector<DatabaseField> foreignKeys = ((DirectCollectionMapping) mapping).getReferenceKeyFields();
+        
+        for (int i = 0; i < primaryKeys.size(); i++) {
+            DatabaseField primaryKey = primaryKeys.get(i);
+            DatabaseField foreignKey = foreignKeys.get(i);
+            
+            assertTrue("The responsibilities mapping foreign key field [" + foreignKey.getName() + "(" + foreignKey.getLength() + ")] did not have the same length as the source primary key field [" + primaryKey.getName() + "(" + primaryKey.getLength() + ")]", primaryKey.getLength() == foreignKey.getLength());            
+        }
+        
+        //////// Test an element collection mapping (direct collection) ////////
+        mapping = buyerDescriptor.getMappingForAttributeName("creditLines");
+        assertNotNull("The creditLines mapping from Buyer was not found", mapping);
+        assertTrue("The creditLines mapping is no longer an element collection mapping", mapping.isDirectCollectionMapping());
+        
+        primaryKeys = ((DirectCollectionMapping) mapping).getSourceKeyFields();
+        foreignKeys = ((DirectCollectionMapping) mapping).getReferenceKeyFields();
+        
+        for (int i = 0; i < primaryKeys.size(); i++) {
+            DatabaseField primaryKey = primaryKeys.get(i);
+            DatabaseField foreignKey = foreignKeys.get(i);
+            
+            assertTrue("The creditLines mapping foreign key field [" + foreignKey.getName() + "(" + foreignKey.getLength() + ")] did not have the same length as the source primary key field [" + primaryKey.getName() + "(" + primaryKey.getLength() + ")]", primaryKey.getLength() == foreignKey.getLength());            
+        }
+        
+        // Items not directly tested: element collection using a map and basic map.
     }
     
     /**

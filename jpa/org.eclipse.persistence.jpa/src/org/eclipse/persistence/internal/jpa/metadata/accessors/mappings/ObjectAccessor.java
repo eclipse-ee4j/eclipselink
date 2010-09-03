@@ -47,6 +47,8 @@
  *       - 323252: Canonical model generator throws NPE on virtual 1-1 or M-1 mapping
  *     08/25/2010-2.2 Guy Pelletier 
  *       - 309445: CannonicalModelProcessor process all files (minor correction to patch for bug above)
+ *     09/03/2010-2.2 Guy Pelletier 
+ *       - 317286: DB column lenght not in sync between @Column and @JoinColumn
  ******************************************************************************/
 package org.eclipse.persistence.internal.jpa.metadata.accessors.mappings;
 
@@ -421,11 +423,9 @@ public abstract class ObjectAccessor extends RelationshipAccessor {
         // override on the descriptor. In this case that has already been taken 
         // care of for use before calling this method.
         for (JoinColumnMetadata joinColumn : getJoinColumnsAndValidate(associationOverride.getJoinColumns(), getReferenceDescriptor())) {
-            DatabaseField pkField = joinColumn.getPrimaryKeyField();
-            // This will default the reference column name in the single primary
-            // key case (when the user does not specify it).
-            setFieldName(pkField, getReferenceDescriptor().getPrimaryKeyFieldName(), MetadataLogger.PK_COLUMN);
-            pkField.setTable(getReferenceDescriptor().getPrimaryKeyTable());
+            // Look up the primary key field from the referenced column name.
+            DatabaseField pkField = getReferencedField(joinColumn.getReferencedColumnName(), getReferenceDescriptor(), MetadataLogger.PK_COLUMN);
+            
             DatabaseField fkField = ((OneToOneMapping) getMapping()).getTargetToSourceKeyFields().get(pkField);
                 
             if (fkField == null) {
@@ -433,7 +433,7 @@ public abstract class ObjectAccessor extends RelationshipAccessor {
             } else {
                 // Make sure we have a table set on the association override 
                 // field, otherwise use the default table provided.
-                DatabaseField translationFKField = joinColumn.getForeignKeyField();
+                DatabaseField translationFKField = joinColumn.getForeignKeyField(pkField);
                 if (! translationFKField.hasTableName()) {
                     translationFKField.setTable(defaultTable);
                 }
@@ -487,7 +487,7 @@ public abstract class ObjectAccessor extends RelationshipAccessor {
 
         // Add the primary key fields to the descriptor.  
         for (DatabaseField pkField : mapping.getForeignKeyFields()) {
-            getOwningDescriptor().addPrimaryKeyField(pkField, null);
+            getOwningDescriptor().addPrimaryKeyField(pkField);
         }
     }
     
@@ -638,18 +638,14 @@ public abstract class ObjectAccessor extends RelationshipAccessor {
      * thrown).
      */
     protected void processOneToOneForeignKeyRelationship(OneToOneMapping mapping) {
-        // If the pk field (referencedColumnName) is not specified, it 
-        // defaults to the primary key of the referenced table.
-        String defaultPKFieldName = getReferenceDescriptor().getPrimaryKeyFieldName();
-        
         // If the fk field (name) is not specified, it defaults to the 
         // concatenation of the following: the name of the referencing 
         // relationship property or field of the referencing entity or
         // embeddable class; "_"; the name of the referenced primary key 
         // column.
-        String defaultFKFieldName = getDefaultAttributeName() + "_" + defaultPKFieldName;
+        String defaultFKFieldName = getDefaultAttributeName() + "_" + getReferenceDescriptor().getPrimaryKeyFieldName();
         
-        processOneToOneForeignKeyRelationship(mapping, getJoinColumns(getJoinColumns(), getReferenceDescriptor()), defaultPKFieldName, getReferenceDatabaseTable(), defaultFKFieldName, getDescriptor().getPrimaryTable());        
+        processOneToOneForeignKeyRelationship(mapping, getJoinColumns(getJoinColumns(), getReferenceDescriptor()), getReferenceDescriptor(), defaultFKFieldName, getDescriptor().getPrimaryTable());
     }
     
     /**
@@ -661,22 +657,15 @@ public abstract class ObjectAccessor extends RelationshipAccessor {
      * exception will be thrown).
      */
     protected void processOneToOnePrimaryKeyRelationship(OneToOneMapping mapping) {
-        MetadataDescriptor referenceDescriptor = getReferenceDescriptor();
         List<PrimaryKeyJoinColumnMetadata> pkJoinColumns = processPrimaryKeyJoinColumns(new PrimaryKeyJoinColumnsMetadata(getPrimaryKeyJoinColumns()));
  
         // Add the source foreign key fields to the mapping.
         for (PrimaryKeyJoinColumnMetadata primaryKeyJoinColumn : pkJoinColumns) {
-            // The default primary key name is the primary key field name of the
-            // referenced entity.
-            DatabaseField pkField = primaryKeyJoinColumn.getPrimaryKeyField();
-            setFieldName(pkField, referenceDescriptor.getPrimaryKeyFieldName(), MetadataLogger.PK_COLUMN);
-            pkField.setTable(referenceDescriptor.getPrimaryTable());
+            // Look up the primary key field from the referenced column name.
+            DatabaseField pkField = getReferencedField(primaryKeyJoinColumn.getReferencedColumnName(), getReferenceDescriptor(), MetadataLogger.PK_COLUMN);
             
-            // The default foreign key name is the primary key of the
-            // referencing entity.
-            DatabaseField fkField = primaryKeyJoinColumn.getForeignKeyField();
-            setFieldName(fkField, getDescriptor().getPrimaryKeyFieldName(), MetadataLogger.FK_COLUMN);
-            fkField.setTable(getDescriptor().getPrimaryTable());
+            // Look up the foreign key field from the name.
+            DatabaseField fkField = getReferencedField(primaryKeyJoinColumn.getName(), getDescriptor(), MetadataLogger.FK_COLUMN);
             
             // Add a source foreign key to the mapping.
             mapping.addForeignKeyField(fkField, pkField);
