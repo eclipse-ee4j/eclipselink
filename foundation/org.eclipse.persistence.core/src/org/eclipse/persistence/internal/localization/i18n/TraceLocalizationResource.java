@@ -325,7 +325,10 @@ public class TraceLocalizationResource extends ListResourceBundle {
                                             { "named_argument_not_found_in_query_parameters", "Missing Query parameter for named argument: {0} 'null' will be substituted." },
                                             { "jmx_mbean_classloader_in_use", "EclipseLink JMX Runtime Services is referencing the [{0}] ClassLoader at: [{1}]" },
                                             { "metamodel_itentifiableType_javaclass_null_cannot_set_supertype", "Metamodel processing: Unable to set the superclass Hierarchy because the javaClass field is null for the relationalDescriptor [{0}] for the identifiableType [{1}]." },                                            
-                                            { "no_weaved_vh_method_found_verify_weaving_and_module_order", "An expected weaving method [{0}] was not found on the accessor [{2}] on the mapping [{1}] - verify that the processing order of your modules places the one containing a persistence unit ahead of modules that use it in your deployment descriptor, or disable weaving for the persistence context or the mapping using FetchType.EAGER." }                                            
+                                            { "no_weaved_vh_method_found_verify_weaving_and_module_order", "An expected weaving method [{0}] was not found on the accessor [{2}] on the mapping [{1}] - verify that the processing order of your modules places the one containing a persistence unit ahead of modules that use it in your deployment descriptor, or disable weaving for the persistence context or the mapping using FetchType.EAGER." },
+                                            { "proxy_connection_customizer_already_proxy_session", "{0}:{1}: proxy session with unknown properties is already opened. Closing it."},
+                                            { "proxy_connection_customizer_opened_proxy_session",  "{0}:{1}: opened proxy session."},
+                                            { "proxy_connection_customizer_closing_proxy_session", "{0}:{1}: closing proxy session."}
     };
 
     /**
