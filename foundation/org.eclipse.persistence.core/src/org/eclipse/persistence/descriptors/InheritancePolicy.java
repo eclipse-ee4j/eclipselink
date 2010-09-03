@@ -1114,6 +1114,9 @@ public class InheritancePolicy implements Serializable, Cloneable {
     public void postInitialize(AbstractSession session) {
         if (isChildDescriptor()) {
             ClassDescriptor parent = getParentDescriptor();
+            if (descriptor.shouldAcquireCascadedLocks()){
+                parent.setShouldAcquireCascadedLocks(true);
+            }
             while (parent != null) {
                 if (parent.hasMultipleTableConstraintDependecy()) {
                     getDescriptor().setHasMultipleTableConstraintDependecy(true);

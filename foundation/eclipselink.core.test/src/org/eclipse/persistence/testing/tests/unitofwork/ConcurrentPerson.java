@@ -28,7 +28,11 @@ public class ConcurrentPerson implements java.io.Serializable {
     public BigDecimal id;
     public BigDecimal luckyNumber;
     public static boolean isForBackup = false;
+    public ConcurrentProject hobby = null;
 
+    public static int RUNNING_TEST;
+    public static final int NONE = Integer.MIN_VALUE;
+    public static int ONE_TO_ONE_INHERITANCE = 1;
     public BigDecimal calculateLuckyNumber(Record row, Session session) {
         Number code = (Number)row.get("ID");
         return new BigDecimal(code.doubleValue() * 2.435);
@@ -63,6 +67,14 @@ public class ConcurrentPerson implements java.io.Serializable {
         trans.setAttributeName("luckyNumber");
         trans.setAttributeTransformation("calculateLuckyNumber");
         descriptor.addMapping(trans);
+        OneToOneMapping hobbyMapping = new OneToOneMapping();
+        hobbyMapping.setAttributeName("hobby");
+        hobbyMapping.setReferenceClass(ConcurrentProject.class);
+        hobbyMapping.setGetMethodName("getHobby");
+        hobbyMapping.setSetMethodName("setHobby");
+        hobbyMapping.dontUseIndirection();
+        hobbyMapping.addForeignKeyFieldName("CONCURRENT_EMP.PROJ_ID", "CONCURRENT_PROJECT.ID");
+        descriptor.addMapping(hobbyMapping);
         return descriptor;
     }
 
@@ -113,6 +125,24 @@ public class ConcurrentPerson implements java.io.Serializable {
         this.address = address;
     }
 
+    public ConcurrentProject getHobby() {
+        return hobby;
+    }
+
+    public void setHobby(ConcurrentProject hobby) {
+        if (ConcurrentPerson.RUNNING_TEST == ConcurrentPerson.ONE_TO_ONE_INHERITANCE) {
+            if (!isForBackup) {
+                try{
+                    Thread.sleep(10000); // let the read go
+                } catch (InterruptedException ex) {}
+                isForBackup = true; //the next call to this methd will be for backup
+            } else {
+                isForBackup = false;
+            }
+        }
+        this.hobby = hobby;
+    }
+    
     /**
      * Return a platform independant definition of the database table.
      */
@@ -124,6 +154,7 @@ public class ConcurrentPerson implements java.io.Serializable {
         definition.addIdentityField("ID", java.math.BigDecimal.class, 15);
         definition.addField("NAME", String.class, 20);
         definition.addField("ADDR_ID", java.math.BigDecimal.class, 15);
+        definition.addField("PROJ_ID", java.math.BigDecimal.class, 15);
 
         return definition;
     }

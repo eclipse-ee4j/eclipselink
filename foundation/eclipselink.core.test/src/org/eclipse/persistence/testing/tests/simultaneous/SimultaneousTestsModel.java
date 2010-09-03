@@ -22,6 +22,7 @@ import org.eclipse.persistence.testing.models.events.EventHookSystem;
 import org.eclipse.persistence.testing.models.events.AboutToInsertSingleTableObject;
 import org.eclipse.persistence.testing.tests.events.MultipleTableAboutToInsertTest;
 import org.eclipse.persistence.testing.tests.events.SingleTableAboutToInsertTest;
+import org.eclipse.persistence.testing.tests.unitofwork.UOWSystem;
 
 public class SimultaneousTestsModel extends TestModel {
     protected Session originalSession;
@@ -42,6 +43,7 @@ public class SimultaneousTestsModel extends TestModel {
     public void addRequiredSystems() {
         addRequiredSystem(new EmployeeSystem());
         addRequiredSystem(new EventHookSystem());
+        addRequiredSystem(new UOWSystem());
     }
 
     public void addTests() {
@@ -53,6 +55,7 @@ public class SimultaneousTestsModel extends TestModel {
         addTest(getDescriptorQueryManagerAddQueryTest());
         addTest(getQueryCacheMultithreadedTest());
         addTest(new ConcurrentDecryptionTest());
+        addTest(new ConcurrentReadOneToOneInheritanceTest());
     }
 
     public static TestSuite getReadEmployeeTestSuite() {

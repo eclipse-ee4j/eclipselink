@@ -31,6 +31,8 @@ public class UOWSystem extends TestSystem {
         descriptors.addElement(Weather.descriptor());
         descriptors.addElement(ConcurrentAddress.descriptor());
         descriptors.addElement(ConcurrentPerson.descriptor());
+        descriptors.addElement(ConcurrentProject.descriptor());
+        descriptors.addElement(ConcurrentLargeProject.descriptor());
         descriptors.addElement(MutableAttributeObject.descriptor());
         
         session.addDescriptors(descriptors);
@@ -45,6 +47,7 @@ public class UOWSystem extends TestSystem {
         schemaManager.replaceObject(Weather.tableDefinition());
         schemaManager.replaceObject(ConcurrentAddress.tableDefinition());
         schemaManager.replaceObject(ConcurrentPerson.tableDefinition());
+        schemaManager.replaceObject(ConcurrentProject.tableDefinition());
         schemaManager.replaceObject(MutableAttributeObject.tableDefinition());
 
         schemaManager.createSequences();
