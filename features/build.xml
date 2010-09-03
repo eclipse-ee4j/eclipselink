@@ -204,9 +204,9 @@
     <target name="build-p2"                      depends="create-sign-zipfile, clear-p2-loc, assemble-repos"/>
     <target name="build-features-sign-jars-wait" depends="init, build-features, sign-jars, retrieve-signed-archive"/>
     <!-- Needed by automated process - ** DO NOT ALTER LIGHTLY ** -->
-    <target name="build-features-sign-jars"      depends="init, build-features, sign-jars"/>
+    <target name="build-features-create-signzip" depends="init, build-features, create-sign-zipfile"/>
     <target name="build-features"                depends="clean, create-deployable-features"/>
-    <target name="sign-jars"                     depends="create-sign-zipfile, copy-and-queue-for-sign"/>
+    <target name="sign-jars"                     depends="copy-and-queue-for-sign, retrieve-signed-archive"/>
     <target name="assemble-repos"                depends="populate-p2-site, publish-p2-repos"/>
     <!-- End ** DO NOT ALTER LIGHTLY ** Block -->
 
@@ -347,7 +347,7 @@
     <target name="copy-and-queue-for-sign">
         <delete file="${signing.dir}/${p2.archive.presigned.zip}" failonerror="false"/>
         <delete file="${signing.dir}/signed-output/${p2.archive.presigned.zip}" failonerror="false"/>
-        <copy file="${p2.archive.presigned.zip}" todir="${signing.dir}"/> <!-- wait til cleared to avoid version confusion and overwriting? -->
+        <copy file="${signed.archive.src.file}" todir="${signing.dir}"/> <!-- wait til cleared to avoid version confusion and overwriting? -->
         <exec executable="${signing.script}" dir="${signing.dir}" failonerror="false"> <!-- need to not stop if authority fails -->
             <arg value="${p2.archive.presigned.zip}"/>
             <arg value="nomail"/>

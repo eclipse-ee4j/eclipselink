@@ -68,7 +68,7 @@
             depends="clean, build, test-lrg, publish-build, report-test-result"
     />
     <target name="build-milestone"  description="Trigger build, testing, and publishing of a milestone release ('release' is a milestone in this case)"
-            depends="promote-init, regen-archives, publish-milestone, create-tag"
+            depends="promote-init, sign-and-wait, regen-archives, publish-milestone, create-tag"
     />
     <target name="build-continuous" description="Trigger an automated build and run the tests if source changes exist"
             depends="clean, build-no-javadoc, build-utils, test-srg"
@@ -308,8 +308,7 @@
 
     <target name="build" depends="get-dependencies">
         <ant antfile="build.xml" dir="${build.root.dir}"          target="build-all-but-ext"/>
-        <ant antfile="build.xml" dir="${build.root.dir}/features" target="build-features-sign-jars">
-            <property name="signing.script"  value="sign"/>
+        <ant antfile="build.xml" dir="${build.root.dir}/features" target="build-features-create-signzip">
         </ant>
         <ant antfile="build.xml" dir="${build.root.dir}"          target="package-all"/>
     </target>
@@ -369,37 +368,29 @@
 
     <target name="test-browser" depends="init">
         <echo message="db.platform=${db.platform}${line.separator}"         file="${coretest.prop.file}" append="true"/>
-
         <ant antfile="build.xml" dir="${build.root.dir}" target="test-browser">
             <property name="eclipselink.logging.level" value="${test.logging.level}"/>
         </ant>
     </target>
 
-    <target name="wait-for-sign-jar">
-        <echo message="Waiting for ${signing.dir}/signed-output/${p2.archive.presigned.zip}"/>
-        <!-- With nightly builds taking anywhere from 85 to 120 minutes to complete, max wait-time can  -->
-        <!-- only be roughly 100 minutes since the build starts at 2:35am and MUST finish before the    -->
-        <!-- first continuous build at 6:30 (that leaves roughly a 15 minute window)                    -->
-        <waitfor maxwait="100" maxwaitunit="minute" checkevery="15" checkeveryunit="second" timeoutproperty="signing.time.limit.exceeded">
-            <available file="${signing.dir}/signed-output/${p2.archive.presigned.zip}"/>
-        </waitfor>
+    <target name="check-for-sign-archive" depends="init">
+        <available file="${download.dir}/${p2.archive.signed.zip}" property="sign.archive.exist"/>
+    </target>
+    
+    <target name="sign-and-wait" unless="sign.archive.exist" depends="check-for-sign-archive">
+        <ant antfile="build.xml" dir="${build.root.dir}/features" target="sign-jars">
+            <property name="signing.script"  value="sign"/>
+            <property name="signed.archive.src.file"   value="${download.dir}/${p2.archive.presigned.zip}"/>
+            <property name="signed.archive.dest.file"  value="${download.dir}/${p2.archive.signed.zip}"/>
+        </ant>
+        <available file="${download.dir}/${p2.archive.signed.zip}" property="sign.archive.exist"/>
     </target>
 
-    <target name="wait-report-timeout" if="signing.time.limit.exceeded">
-        <!-- "SigningAborted" is a parsing flag for build prost-processing script. Don't "fix" -->
-        <echo message="SigningAborted, wait time exceeded!"/>
-        <echo message="P2 repository generation will be skipped!"/>
-        <echo message="Unsigned P2 archive will be copied to download site for safekeeping..."/>
-        <mkdir dir="${download.dir}"/>
-        <copy file="${build.root.dir}/features/${p2.archive.presigned.zip}"                    tofile="${download.dir}/${p2.archive.presigned.zip}" failonerror="false"/>
-    </target>
-
-    <target name="publish-build" depends="wait-for-sign-jar, wait-report-timeout, publish-artifacts, publish-maven, populate-p2-update-site, publish-results, commit-artifacts"/>
+    <target name="publish-build" depends="publish-artifacts, publish-maven, populate-p2-update-site, publish-results"/>
     <target name="publish-artifacts">
         <!-- New Publish Architecture -->
         <mkdir dir="${download.dir}"/>
         <copy file="${build.root.dir}/features/${p2.archive.presigned.zip}"                            tofile="${download.dir}/${p2.archive.presigned.zip}" failonerror="false"/>
-        <copy file="${signing.dir}/signed-output/${p2.archive.presigned.zip}"                          tofile="${download.dir}/${p2.archive.signed.zip}" failonerror="false"/>
         <copy file="${build.root.dir}/${eclipselink.install.prefix}${eclipselink.zip.suffix}"          tofile="${download.dir}/${eclipselink.install.prefix}-${version.string}${eclipselink.zip.suffix}" failonerror="false"/>
         <copy file="${build.root.dir}/${eclipselink.src.install.prefix}${eclipselink.zip.suffix}"      tofile="${download.dir}/${eclipselink.src.install.prefix}-${version.string}${eclipselink.zip.suffix}" failonerror="false"/>
         <copy file="${build.root.dir}/${eclipselink.tst.src.prefix}${eclipselink.zip.suffix}"          tofile="${download.dir}/${eclipselink.tst.src.prefix}-${version.string}${eclipselink.zip.suffix}" failonerror="false"/>
@@ -469,20 +460,6 @@
         <delete dir="${temp.rebuild.dir}" failonerror="false"/>
     </target>
 
-    <target name="commit-artifacts">
-        <!-- Commit eclipselink and source jar for testing availability -->
-        <exec executable="${svn.exec}" failonerror="false" logError="true">
-            <arg value="commit"/>
-            <arg value="-m ${version.string}"/>
-            <arg value="${build.root.dir}/${eclipselink.jar}"/>
-            <arg value="${build.root.dir}/${eclipselink.src.install.prefix}${eclipselink.zip.suffix}"/>
-        </exec>
-        <!-- Since we've checked in some files, the svn revision has incremented. To create a valid "latest.svnrev" file -->
-        <!-- it needs to be recreated now that the build has completed.      -->
-        <ant antfile="${build.root.dir}/buildsystem/bootstrap.xml" target="get-svn-headrev"/>
-        <move file="${current.svnrev.file}" tofile="${latest.svnrev.file}"/>
-    </target>
-
     <target name="publish-oracle">
         <echo message="oracle commit in progress..."/>
         <exec executable="${svn.exec}" failonerror="false" logError="true">
@@ -548,7 +525,10 @@
         <mkdir dir="${temp.rebuild.dir}"/>
     </target>
 
-    <target name="regen-archives" depends="extract-signed-artifacts, regen-installer-archive, regen-plugin-archive, gen-build-for-maven"/>
+    <target name="regen-archives" depends="check-to-continue, extract-signed-artifacts, regen-installer-archive, regen-plugin-archive, gen-build-for-maven"/>
+    <target name="check-to-continue" unless="sign.archive.exist">
+        <fail message="Signing appears to have failed. Verify existence of signed archive before retrying..."/>
+    </target>
     <target name="extract-signed-artifacts">
         <echo message="Extracting signed jars from archive..."/>
         <property name="signed.jar.path" value="${temp.rebuild.dir}/signed"/>
