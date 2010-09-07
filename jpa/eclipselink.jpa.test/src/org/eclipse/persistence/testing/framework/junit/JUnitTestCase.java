@@ -577,7 +577,7 @@ public abstract class JUnitTestCase extends TestCase {
                 fail("Object: " + readObject + " does not match object that was written: " + writtenObject + ". See log (on finest) for what did not match.");
             }
         } finally {
-            em.close();
+            closeEntityManager(em);
         }
     }
     
