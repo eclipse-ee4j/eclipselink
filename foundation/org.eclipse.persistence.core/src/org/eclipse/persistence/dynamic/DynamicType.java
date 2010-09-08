@@ -68,7 +68,7 @@ public interface DynamicType {
 
     public int getPropertyIndex(String propertyName);
 
-    public Class<?> getJavaClass();
+    public Class<? extends DynamicEntity> getJavaClass();
 
     public DynamicEntity newDynamicEntity();
 

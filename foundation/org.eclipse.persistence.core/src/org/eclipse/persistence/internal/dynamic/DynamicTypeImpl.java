@@ -133,7 +133,7 @@ public class DynamicTypeImpl implements DynamicType {
         return dpm.contains(propertyName);
     }
 
-    public Class<?> getJavaClass() {
+    public Class<? extends DynamicEntity> getJavaClass() {
         return getDescriptor().getJavaClass();
     }
 
