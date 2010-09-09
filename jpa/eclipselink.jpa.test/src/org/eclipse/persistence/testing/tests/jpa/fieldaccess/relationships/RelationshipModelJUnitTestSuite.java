@@ -537,17 +537,21 @@ public class RelationshipModelJUnitTestSuite extends JUnitTestCase {
             beginTransaction(em);
             em.persist(customer);
             commitTransaction(em);
+            beginTransaction(em);
             verifyObjectInEntityManager(customer);
             verifyObjectInEntityManager(order1);
             verifyObjectInEntityManager(order2);
             verifyObjectInEntityManager(item1);
             verifyObjectInEntityManager(item2);
+            commitTransaction(em);
             clearCache();
+            beginTransaction(em);
             verifyObjectInEntityManager(customer);
             verifyObjectInEntityManager(order1);
             verifyObjectInEntityManager(order2);
             verifyObjectInEntityManager(item1);
-            verifyObjectInEntityManager(item2);        
+            verifyObjectInEntityManager(item2);  
+            commitTransaction(em);      
         } finally {
             if (isTransactionActive(em)) {
                 rollbackTransaction(em);
@@ -583,6 +587,7 @@ public class RelationshipModelJUnitTestSuite extends JUnitTestCase {
             customer.addOrder(order3);
             order3.setItem(item3);
             commitTransaction(em);
+            beginTransaction(em);
             verifyObjectInEntityManager(customer);
             verifyObjectInEntityManager(order1);
             verifyObjectInEntityManager(item1);
@@ -590,7 +595,9 @@ public class RelationshipModelJUnitTestSuite extends JUnitTestCase {
             verifyObjectInEntityManager(item2);
             verifyObjectInEntityManager(order3);
             verifyObjectInEntityManager(item3);
+            commitTransaction(em);
             clearCache();
+            beginTransaction(em);
             verifyObjectInEntityManager(customer);
             verifyObjectInEntityManager(order1);
             verifyObjectInEntityManager(item1);
@@ -598,6 +605,7 @@ public class RelationshipModelJUnitTestSuite extends JUnitTestCase {
             verifyObjectInEntityManager(item2);
             verifyObjectInEntityManager(order3);
             verifyObjectInEntityManager(item3);
+            commitTransaction(em);
             clearCache();
         } finally {
             if (isTransactionActive(em)) {
@@ -633,8 +641,10 @@ public class RelationshipModelJUnitTestSuite extends JUnitTestCase {
             beginTransaction(em);
             customer = em.find(Customer.class, customer.getCustomerId());
             em.remove(customer);
-            commitTransaction(em);            
+            commitTransaction(em);
+            beginTransaction(em);
             verifyDelete(customer);
+            commitTransaction(em);
         } finally {
             if (isTransactionActive(em)) {
                 rollbackTransaction(em);
@@ -666,14 +676,16 @@ public class RelationshipModelJUnitTestSuite extends JUnitTestCase {
             closeEntityManager(em);
             clearCache();
             em = createEntityManager();
+            beginTransaction(em);
             QuerySQLTracker counter = new QuerySQLTracker(getServerSession());
             customer = em.find(Customer.class, customer.getCustomerId());
             for (Order order : customer.getOrders()) {
                 order.getCustomer();
             }
             if (isWeavingEnabled() && counter.getSqlStatements().size() > 2) {
-                fail("Should have been " + 3 + " queries but was: " + counter.getSqlStatements().size());
+                fail("Should have been 2 queries but was: " + counter.getSqlStatements().size());
             }
+            commitTransaction(em);
         } finally {
             if (isTransactionActive(em)) {
                 rollbackTransaction(em);
