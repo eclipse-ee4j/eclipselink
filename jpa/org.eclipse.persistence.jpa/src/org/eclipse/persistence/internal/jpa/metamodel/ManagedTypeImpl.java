@@ -45,6 +45,10 @@
  *     06/01/2010-2.1  mobrien - 315287: Handle BasicType as inheritance root for ManagedTypes  
  *       - see design issue #103
  *       http://wiki.eclipse.org/EclipseLink/Development/JPA_2.0/metamodel_api#DI_103:_20100601:_315287:_Handle_BasicType_as_inheritance_root_for_ManagedTypes
+ *     09/09/2010-2.2  mobrien - 322166: If attribute is defined on this current ManagedType (and not on a superclass) 
+ *       - do not attempt a reflective call on a superclass  
+ *       - see design issue #25
+ *       http://wiki.eclipse.org/EclipseLink/Development/JPA_2.0/metamodel_api#DI_25:_20090616:_Inherited_parameterized_generics_for_Element_Collections_.28Basic.29
  *       
  ******************************************************************************/
 package org.eclipse.persistence.internal.jpa.metamodel;
@@ -121,14 +125,10 @@ public abstract class ManagedTypeImpl<X> extends TypeImpl<X> implements ManagedT
      */
     protected ManagedTypeImpl(MetamodelImpl metamodel, RelationalDescriptor descriptor) {
         // A valid descriptor will always have a javaClass set except in bug# 303063
-        super(descriptor.getJavaClass());
+        super(descriptor.getJavaClass(), descriptor.getJavaClassName());
         this.descriptor = descriptor;
         // the metamodel field must be instantiated prior to any *AttributeImpl instantiation which will use the metamodel
         this.metamodel = metamodel;
-        // 303063: secondary check for case where descriptor has no java class set - should never happen but this will show on code coverage
-        if(null == this.getJavaType()) {
-            AbstractSessionLog.getLog().log(SessionLog.FINEST, "metamodel_relationaldescriptor_javaclass_null_on_managedType", descriptor, this);
-        }
         // Cache the ManagedType on the descriptor 
         descriptor.setProperty(getClass().getName(), this);
         // Note: Full initialization of the ManagedType occurs during MetamodelImpl.initialize() after all types are instantiated
@@ -1178,10 +1178,14 @@ public abstract class ManagedTypeImpl<X> extends TypeImpl<X> implements ManagedT
                                 // get inheriting subtype member (without handling @override annotations)
                                 MappedSuperclassTypeImpl aMappedSuperclass = ((MappedSuperclassTypeImpl)this);
                                 AttributeImpl inheritingTypeMember = aMappedSuperclass.getMemberFromInheritingType(colMapping.getAttributeName());
-                                // Verify we have an attributeAccessor
-                                aField = ((InstanceVariableAttributeAccessor)inheritingTypeMember.getMapping().getAttributeAccessor()).getAttributeField();
+                                // 322166: If attribute is defined on this current ManagedType (and not on a superclass) - do not attempt a reflective call on a superclass
+                                if(null != inheritingTypeMember) {
+                                    // Verify we have an attributeAccessor
+                                    aField = ((InstanceVariableAttributeAccessor)inheritingTypeMember.getMapping().getAttributeAccessor()).getAttributeField();
+                                }
                             }
                         }
+                        // 322166: The attribute may be defined on the current ManagedType - not inherited
                         if(null == aField) {
                             // Check attributeName when the field is null
                             aType = this.getTypeClassFromAttributeOrMethodLevelAccessor(mapping);
@@ -1368,7 +1372,7 @@ public abstract class ManagedTypeImpl<X> extends TypeImpl<X> implements ManagedT
          * using reflection.
          * In all failure cases we default to the List type.
          */
-        if(null == aField && this.getJavaType() != null) {
+        if(null == aField && this.getJavaType() != null && getMethodName !=null) {
             Method aMethod = null;
             try {
                 if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()) {
@@ -1380,6 +1384,11 @@ public abstract class ManagedTypeImpl<X> extends TypeImpl<X> implements ManagedT
                 }                
             } catch (PrivilegedActionException pae) {
             } catch (NoSuchMethodException nsfe) {
+            } catch (NullPointerException npe) { 
+                // case: null name arg to Class.searchMethods from getDeclaredMethod if getMethodName is null
+                // because we do not know the javaType on the Type (descriptor.javaClass was null)
+                // See bug# 303063
+                npe.printStackTrace();
             }
     
             if(null != aMethod) {

@@ -120,7 +120,7 @@ import org.eclipse.persistence.testing.framework.junit.JUnitTestCase;
  */
 public class MetamodelMetamodelTest extends MetamodelTest {
 
-    public static final int METAMODEL_ALL_ATTRIBUTES_SIZE = 136;
+    public static final int METAMODEL_ALL_ATTRIBUTES_SIZE = 137;//6;
     // Note: Since BasicTypes are lazy - loaded into the metamodel-types Map - this test must preceed any test that verifies all BasicType objects like "testIdentifiableType_getIdType_Method"
     public static final int METAMODEL_ALL_TYPES = 50;
     public static final int METAMODEL_MANUFACTURER_DECLARED_TYPES = 28;
@@ -2288,7 +2288,7 @@ public class MetamodelMetamodelTest extends MetamodelTest {
             assertNotNull(attributeSet);
             // We should see 30 attributes (3 List, 3 Singular, 17 basic (java.lang, java.math) for Manufacturer (computers, hardwareDesigners, id(from the mappedSuperclass), 
             // version, name(from the mappedSuperclass) and corporateComputers from the Corporation mappedSuperclass)
-            assertEquals(METAMODEL_MANUFACTURER_DECLARED_TYPES + 5, attributeSet.size());
+            assertEquals(METAMODEL_MANUFACTURER_DECLARED_TYPES + 6, attributeSet.size());
             // for each managed entity we will see 2 entries (one for the Id, one for the Version)
             assertTrue(attributeSet.contains(entityManufacturer_.getAttribute("id"))); // 
             assertTrue(attributeSet.contains(entityManufacturer_.getAttribute("version"))); //
@@ -2433,7 +2433,7 @@ public class MetamodelMetamodelTest extends MetamodelTest {
             Set<Attribute<Manufacturer, ?>> declaredAttributesSet = entityManufacturer_.getDeclaredAttributes();
             assertNotNull(declaredAttributesSet);
             // We should see 8+17 declared out of 12 attributes for Manufacturer 
-            assertEquals(METAMODEL_MANUFACTURER_DECLARED_TYPES, declaredAttributesSet.size());
+            assertEquals(METAMODEL_MANUFACTURER_DECLARED_TYPES + 1, declaredAttributesSet.size());
             // Id is declared 2 levels above
             assertFalse(declaredAttributesSet.contains(entityManufacturer_.getAttribute("id"))); //
             // name is declared 2 levels above
@@ -2621,7 +2621,7 @@ public class MetamodelMetamodelTest extends MetamodelTest {
             //java.util.Set<SingularAttribute<? super X, ?>> getSingularAttributes();
             Set<SingularAttribute<? super Manufacturer, ?>> singularAttributeSet = entityManufacturer_.getSingularAttributes();
             assertNotNull(singularAttributeSet);
-            // We should see 3+18 singular attributes for Manufacturer (id(from the mappedSuperclass), version, name(from the mappedSuperclass))
+            // We should see 4+18 singular attributes for Manufacturer (id(from the mappedSuperclass), version, name(from the mappedSuperclass))
             assertEquals(METAMODEL_MANUFACTURER_DECLARED_TYPES - 6, singularAttributeSet.size());
             // for each managed entity we will see 2 entries (one for the Id, one for the Version)
             assertTrue(singularAttributeSet.contains(entityManufacturer_.getAttribute("id"))); // 

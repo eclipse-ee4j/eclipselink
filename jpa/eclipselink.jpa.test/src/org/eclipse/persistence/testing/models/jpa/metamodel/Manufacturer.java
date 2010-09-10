@@ -34,6 +34,8 @@ import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.Version;
 
+import org.eclipse.persistence.annotations.BasicCollection;
+
 // retain name attribute for testing
 @Entity(name="ManuMetamodel")
 @Table(name="CMP3_MM_MANUF")
@@ -43,9 +45,13 @@ public class Manufacturer extends Corporation implements java.io.Serializable{
     @Version
     @Column(name="MANUF_VERSION")
     private int version;
+
+    // 322166 test case
+    @BasicCollection(valueColumn=@Column(name="PARAM"))
+    private Collection<String> paramCollection;
     
     // If a JoinTable with a JoinColumn is used - then we need a mappedBy on the inverse side here
-    @OneToMany(cascade=ALL, mappedBy="manufacturer")    
+    @OneToMany(cascade=ALL, mappedBy="manufacturer")
     private Set<Computer> computers = new HashSet<Computer>();
 
     // If a JoinTable with a JoinColumn is used - then we need a mappedBy on the inverse side here

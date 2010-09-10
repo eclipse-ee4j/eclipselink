@@ -25,7 +25,7 @@ import org.eclipse.persistence.testing.tests.jpa.xml.merge.incompletemappings.ow
 import org.eclipse.persistence.testing.tests.jpa.xml.merge.inherited.EntityMappingsMergeInheritedJUnitTestCase;
  
 /**
- * JUnit test suite for the TopLink EntityMappingsXMLProcessor.
+ * JUnit test suite for the EclipseLink EntityMappingsXMLProcessor.
  */
 public class EntityMappingsMergeJUnitTestSuite extends TestCase {
     public static Test suite() {

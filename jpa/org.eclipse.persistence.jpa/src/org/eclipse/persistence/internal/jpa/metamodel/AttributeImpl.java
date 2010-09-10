@@ -19,7 +19,10 @@
  *     16/06/2010-2.2  mobrien - 316991: Attribute.getJavaMember() requires reflective getMethod call
  *       when only getMethodName is available on accessor for attributes of Embeddable types.
  *       http://wiki.eclipse.org/EclipseLink/Development/JPA_2.0/metamodel_api#DI_95:_20091017:_Attribute.getJavaMember.28.29_returns_null_for_a_BasicType_on_a_MappedSuperclass_because_of_an_uninitialized_accessor
- *          
+ *     09/08/2010-2.2  mobrien - 322166: If attribute is defined on a lower level MappedSuperclass (and not on a superclass) 
+ *       - do not attempt a reflective call on a superclass  
+ *       - see design issue #25
+ *       http://wiki.eclipse.org/EclipseLink/Development/JPA_2.0/metamodel_api#DI_25:_20090616:_Inherited_parameterized_generics_for_Element_Collections_.28Basic.29
  ******************************************************************************/
 package org.eclipse.persistence.internal.jpa.metamodel;
 
@@ -143,9 +146,12 @@ public abstract class AttributeImpl<X, T> implements Attribute<X, T>, Serializab
                 // get inheriting subtype member (without handling @override annotations)                
                 AttributeImpl inheritingTypeMember = ((MappedSuperclassTypeImpl)this.getManagedTypeImpl())
                     .getMemberFromInheritingType(mapping.getAttributeName());
-                // Verify we have an attributeAccessor
-                aMember = ((InstanceVariableAttributeAccessor)inheritingTypeMember.getMapping()
-                        .getAttributeAccessor()).getAttributeField();
+                // 322166: If attribute is defined on this current ManagedType (and not on a superclass) - do not attempt a reflective call on a superclass
+                if(null != inheritingTypeMember) {
+                    // Verify we have an attributeAccessor
+                    aMember = ((InstanceVariableAttributeAccessor)inheritingTypeMember.getMapping()
+                            .getAttributeAccessor()).getAttributeField();
+                }
             }
             
             if(null == aMember) {
