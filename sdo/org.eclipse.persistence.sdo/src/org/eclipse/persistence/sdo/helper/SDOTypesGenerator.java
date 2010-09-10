@@ -584,7 +584,7 @@ public class SDOTypesGenerator {
             propertyType.setXsd(true);
             return propertyType;
         } else {
-            processSimpleAttribute(targetNamespace, defaultNamespace, owningType, attribute, isGlobal, rootSchema.isAttributeFormDefault(), null);
+            processSimpleAttribute(targetNamespace, defaultNamespace, owningType, attribute, isGlobal, rootSchema.isAttributeFormDefault() || isGlobal, null);
             return null;
         }
     }
@@ -1601,6 +1601,12 @@ public class SDOTypesGenerator {
                 updateCollisionProperty(owningType, (SDOProperty) lookedUp);
             } else {
                 SDOProperty theProp = new SDOProperty(aHelperContext);
+                SDOProperty lookedUpProp = getExistingGlobalProperty(uri, localName, false);
+                if (lookedUpProp != null) {
+                    theProp.setNamespaceQualified(lookedUpProp.isNamespaceQualified());
+                    theProp.setUri(uri);
+                    theProp.setType(lookedUpProp.getType());
+                }
                 theProp.setName(localName);
                 theProp.setGlobal(false);
                 theProp.setContainment(false);
