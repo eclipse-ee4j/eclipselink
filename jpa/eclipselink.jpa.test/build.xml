@@ -2015,6 +2015,19 @@
             <param name="eclipselink.jpa.test.dir" value="."/>
         </antcall>
     </target>
+    <!--this model is only used for testing that setting eclipselink as default provider on weblogic domain-->
+	<target name="server-domain-test-advanced">
+        <antcall target="server-run-all" inheritRefs="true">
+            <param name="PERSISTENCE_UNIT_NAME" value="default"/>
+            <param name="MODEL_DIR" value="org/eclipse/persistence/testing/models/jpa/advanced"/>
+            <param name="MODEL_NAME" value="eclipselink-domaintest-advanced-model"/>
+            <param name="TEST_DIR" value="org/eclipse/persistence/testing/tests/jpa/advanced"/>
+            <param name="TEST_NAME" value="eclipselink-domaintest-advanced-model"/>
+            <param name="EAR_NAME" value="eclipselink-domaintest-advanced-model"/>
+            <param name="TEST_SUITE" value="org.eclipse.persistence.testing.tests.jpa.advanced.AdvancedServerTestSuite"/>
+            <param name="eclipselink.jpa.test.dir" value="."/>
+        </antcall>
+    </target>
 
     <target name="server-test-cacheable">
         <antcall target="server-run-all" inheritRefs="true">
