@@ -1178,7 +1178,12 @@ public class PersistenceUnitProperties {
      */
     public static final String ORM_SCHEMA_VALIDATION = "eclipselink.orm.validate.schema";
 
-    /** Validate deployment, but do not connect. */
+    /** 
+     * Validate deployment, but do not connect.
+     * Default value is <code>False</code>. 
+     * The target-database persistence property must be specified when validation-only=True.
+     */
+    // See 324213
     public static final String VALIDATION_ONLY_PROPERTY = "eclipselink.validation-only";
 
     /**
