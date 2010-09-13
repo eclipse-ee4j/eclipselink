@@ -154,10 +154,9 @@
                 <set attribute="Targets" value="${myserver}"/>
             </create>
         </wlconfig>
-		<antcall target="weblogic-domain-setup" inheritRefs="true"/>
     </target>
 
-	<target name="weblogic-domain-setup" if="set.eclipselink.as.provider">
+	<target name="weblogic-domain-setup">
         <wlconfig url="${server.admin.url}" username="${server.user}" password="${server.pwd}">
            <query domain="mydomain" type="JPA" name="mydomain" property="jpaprovider"/>
 		   <set mbean="${jpaprovider}" attribute="DefaultJPAProvider" value="org.eclipse.persistence.jpa.PersistenceProvider"/>
@@ -180,10 +179,9 @@
                 <delete/>
             </query>
         </wlconfig>
-		<antcall target="weblogic-domain-reset" inheritRefs="true"/>
     </target>
 
-	<target name="weblogic-domain-reset" if="set.eclipselink.as.provider">
+	<target name="weblogic-domain-reset">
         <wlconfig url="${server.admin.url}" username="${server.user}" password="${server.pwd}">
            <query domain="mydomain" type="JPA" name="mydomain" property="jpaprovider"/>
 		   <set mbean="${jpaprovider}" attribute="DefaultJPAProvider" value="org.apache.openjpa.persistence.PersistenceProviderImpl"/>

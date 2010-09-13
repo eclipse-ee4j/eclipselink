@@ -2016,7 +2016,8 @@
         </antcall>
     </target>
     <!--this model is only used for testing that setting eclipselink as default provider on weblogic domain-->
-	<target name="server-domain-test-advanced">
+	<target name="weblogic-domain-test">
+	    <ant antfile="${eclipselink.jpa.test}/weblogic.xml" target="weblogic-domain-setup" inheritRefs="true"/>
         <antcall target="server-run-all" inheritRefs="true">
             <param name="PERSISTENCE_UNIT_NAME" value="default"/>
             <param name="MODEL_DIR" value="org/eclipse/persistence/testing/models/jpa/advanced"/>
@@ -2027,6 +2028,7 @@
             <param name="TEST_SUITE" value="org.eclipse.persistence.testing.tests.jpa.advanced.AdvancedServerTestSuite"/>
             <param name="eclipselink.jpa.test.dir" value="."/>
         </antcall>
+		<ant antfile="${eclipselink.jpa.test}/weblogic.xml" target="weblogic-domain-reset" inheritRefs="true"/>
     </target>
 
     <target name="server-test-cacheable">
