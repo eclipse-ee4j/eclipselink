@@ -788,6 +788,10 @@ public class PersistenceUnitProperties {
      * {@link DatabasePlatform}. The default value is TargetDatabase.Auto which
      * means EclipseLink will try to automatically determine the correct
      * database platform type.
+     * </p>
+     * Note: <code>"eclipselink.target-database"</code> must be specified with a
+     * non-"Auto" class name or short name when <code>"eclipselink.validation-only"</code>
+     * is set to <code>"True"</code>.
      * 
      * @see TargetDatabase
      * @see DatabasePlatform
@@ -1178,11 +1182,18 @@ public class PersistenceUnitProperties {
      */
     public static final String ORM_SCHEMA_VALIDATION = "eclipselink.orm.validate.schema";
 
-    /** 
-     * Validate deployment, but do not connect.
-     * Default value is <code>False</code>. 
-     * The target-database persistence property must be specified when validation-only=True.
-     */
+    /**
+     * The <code>"eclipselink.validation-only"</code> property validates deployment
+     * which includes initializing descriptors but does not connect (no login to the database).
+     * <p>
+     * Values: A boolean value of "True" or (default "False").
+     * </p>
+     * Note: <code>"eclipselink.target-database"</code> must be specified with a
+     * non-"Auto" class name or short name when <code>"eclipselink.validation-only"</code>
+     * is set to <code>"True"</code>.
+     * 
+     * @see TargetDatabase
+     */    
     // See 324213
     public static final String VALIDATION_ONLY_PROPERTY = "eclipselink.validation-only";
 
