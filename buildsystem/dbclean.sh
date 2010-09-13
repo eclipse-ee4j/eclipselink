@@ -19,7 +19,7 @@ for dbLoginFile in `ls | grep db-` ; do
     DB_NAME=`cat $dbLoginFile | cut -d'*' -f4`
 
     echo "-------------------------------------"
-    echo "Processing login from $dbLoginFile...
+    echo "Processing login from $dbLoginFile..."
     cleanSchema
 done
 echo "-------------------------------------"
