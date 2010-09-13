@@ -15,11 +15,13 @@ package org.eclipse.persistence.internal.queries;
 import java.security.AccessController;
 import java.security.PrivilegedActionException;
 import java.util.*;
+import java.util.Map.Entry;
 import java.lang.reflect.*;
 
 import org.eclipse.persistence.exceptions.*;
 import org.eclipse.persistence.internal.helper.*;
 import org.eclipse.persistence.queries.DatabaseQuery;
+import org.eclipse.persistence.queries.ReadObjectQuery;
 import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
 import org.eclipse.persistence.internal.security.PrivilegedClassForName;
 import org.eclipse.persistence.internal.security.PrivilegedMethodInvoker;
@@ -30,6 +32,7 @@ import org.eclipse.persistence.internal.sessions.ObjectChangeSet;
 import org.eclipse.persistence.internal.sessions.UnitOfWorkChangeSet;
 import org.eclipse.persistence.internal.sessions.UnitOfWorkImpl;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
+import org.eclipse.persistence.descriptors.CMPPolicy;
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.descriptors.changetracking.MapChangeEvent;
 import org.eclipse.persistence.descriptors.changetracking.CollectionChangeEvent;
@@ -180,6 +183,31 @@ public class MapContainerPolicy extends InterfaceContainerPolicy {
         return new Association(changeSet.getNewKey(), objectAdded);
     }
     
+    /**
+     * INTERNAL:
+     * This method will access the target relationship and create a list of information to rebuild the collection.
+     * For the MapContainerPolicy this return will consist of an array with serial Map entry key and value elements.
+     * @see ObjectReferenceMapping.buildReferencesPKList
+     * @see ContainerPolicy.buildReferencesPKList
+     */
+    @Override
+    public Object[] buildReferencesPKList(Object container, AbstractSession session){
+        Object[] result = new Object[this.sizeFor(container)*2];
+        Iterator iterator = (Iterator)this.iteratorFor(container);
+        int index = 0;
+        while(iterator.hasNext()){
+            Map.Entry entry = (Entry) iterator.next();
+            CMPPolicy policy = elementDescriptor.getCMPPolicy();
+            if (policy != null && policy.isCMP3Policy()){
+                result[index] = policy.createPrimaryKeyInstance(entry.getValue(), session);
+            }else{
+                result[index] = elementDescriptor.getObjectBuilder().extractPrimaryKeyFromObject(entry.getValue(), session);
+            }
+            ++index;
+        }
+        return result;
+    }
+
     /**
      * INTERNAL:
      * Ensure the new key is set for the change set for a new map object
@@ -779,6 +807,31 @@ public class MapContainerPolicy extends InterfaceContainerPolicy {
         return ((MapContainerPolicyIterator)iterator).getCurrentValue();
     }
     
+    /**
+     * INTERNAL:
+     * This method is used to load a relationship from a list of PKs. This list
+     * may be available if the relationship has been cached.
+     */
+    @Override
+    public Object valueFromPKList(Object[] pks, AbstractSession session){
+        Object result = containerInstance(pks.length);
+        for (int index = 0; index < pks.length; ++index){
+            Object pk = null;
+            if (elementDescriptor.hasCMPPolicy()){
+                pk = elementDescriptor.getCMPPolicy().createPrimaryKeyFromId(pks[index], session);
+            }else{
+                pk = pks[index];
+            }
+            ReadObjectQuery query = new ReadObjectQuery();
+            query.setReferenceClass(elementDescriptor.getJavaClass());
+            query.setSelectionId(pk);
+            query.setIsExecutionClone(true);
+            Object element = session.executeQuery(query);
+            addInto(keyFrom(element, session), element, result, session);
+        }
+        return result;
+    }
+
     /**
      * INTERNAL:
      * This inner class is used to iterate through the Map.Entry s of a Map.
