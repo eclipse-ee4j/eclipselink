@@ -18,6 +18,8 @@ package org.eclipse.persistence.internal.xr;
 // Java extension imports
 
 // EclipseLink imports
+import org.eclipse.persistence.queries.FetchGroup;
+import org.eclipse.persistence.queries.ReadObjectQuery;
 import org.eclipse.persistence.sessions.UnitOfWork;
 
 public class UpdateOperation extends Operation {
@@ -34,11 +36,21 @@ public class UpdateOperation extends Operation {
      */
     @Override
     public Object invoke(XRServiceAdapter xrService, Invocation invocation) {
-        Object instance = invocation.getParameters().toArray()[0];
+    	XRDynamicEntity instance = (XRDynamicEntity)invocation.getParameters().toArray()[0];
         UnitOfWork uow = xrService.getORSession().acquireUnitOfWork();
+        ReadObjectQuery query = new ReadObjectQuery();
+        query.setSelectionObject(instance);
+        query.setIsExecutionClone(true);
+        FetchGroup simpleFetchGroup = new FetchGroup();
+        for (String propertyName : instance.fetchPropertiesManager().getPropertyNames()) {
+            if (instance.isSet(propertyName)) {
+                simpleFetchGroup.addAttribute(propertyName);
+            }
+        }
+        query.setFetchGroup(simpleFetchGroup);
         // read the existing object into the uow
-        uow.readObject(instance);
-        // overwrite it
+        uow.executeQuery(query);
+        // merge in only properties that are set
         uow.mergeClone(instance);
         uow.commit();
         return null;

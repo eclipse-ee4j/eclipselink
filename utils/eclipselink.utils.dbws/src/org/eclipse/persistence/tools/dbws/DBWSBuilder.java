@@ -841,7 +841,6 @@ prompt> java -cp eclipselink.jar:eclipselink-dbwsutils.jar:your_favourite_jdbc_d
                 }
                 xdm.setXPath(xPath);
                 XMLField xmlField = (XMLField)xdm.getField();
-                xmlField.setRequired(true);
                 xmlField.setSchemaType(qName);
                 if (binaryAttach && qName == BASE_64_BINARY_QNAME) {
                     // need xsd namespaces 
@@ -849,6 +848,7 @@ prompt> java -cp eclipselink.jar:eclipselink-dbwsutils.jar:your_favourite_jdbc_d
                 }
                 if (dbColumn.isPK()) {
                     desc.addPrimaryKeyField(databaseField);
+                    xmlField.setRequired(true);
                 }
           }
           ReadObjectQuery roq = new ReadObjectQuery();
