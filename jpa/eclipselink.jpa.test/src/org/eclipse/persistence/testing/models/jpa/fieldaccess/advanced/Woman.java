@@ -14,45 +14,48 @@ package org.eclipse.persistence.testing.models.jpa.fieldaccess.advanced;
 
 import javax.persistence.*;
 
+import org.eclipse.persistence.annotations.CascadeOnDelete;
+
+import static javax.persistence.CascadeType.ALL;
 import static javax.persistence.GenerationType.*;
 
-@Entity(name="Woman")
-@Table(name="CMP3_FA_WOMAN")
+@Entity(name = "Woman")
+@Table(name = "CMP3_FA_WOMAN")
 public class Woman {
-	@Id
-    @GeneratedValue(strategy=SEQUENCE, generator="FA_WOMAN_SEQ_GENERATOR")
-	@SequenceGenerator(name="FA_WOMAN_SEQ_GENERATOR", sequenceName="WOMAN_SEQ")
+    @Id
+    @GeneratedValue(strategy = SEQUENCE, generator = "FA_WOMAN_SEQ_GENERATOR")
+    @SequenceGenerator(name = "FA_WOMAN_SEQ_GENERATOR", sequenceName = "WOMAN_SEQ")
     private Integer id;
-	@OneToOne(mappedBy="woman")
+    @OneToOne(mappedBy = "woman", cascade = ALL)
+    @CascadeOnDelete
     private PartnerLink partnerLink;
 
-	private String name;
-	
-	public Woman() {}
-    
-    
-	public Integer getId() { 
-        return id; 
+    private String name;
+
+    public Woman() {
     }
-    
-    
-	public String getName(){
-		return name;
-	}
-	
-	public PartnerLink getPartnerLink() { 
-        return partnerLink; 
+
+    public Integer getId() {
+        return id;
     }
-    
-	public void setId(Integer id) { 
-        this.id = id; 
+
+    public String getName() {
+        return name;
     }
-    
-	public void setName(String name){
-		this.name = name;
-	}
-	
-    public void setPartnerLink(PartnerLink partnerLink) { 
-        this.partnerLink = partnerLink; 
+
+    public PartnerLink getPartnerLink() {
+        return partnerLink;
+    }
+
+    public void setId(Integer id) {
+        this.id = id;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public void setPartnerLink(PartnerLink partnerLink) {
+        this.partnerLink = partnerLink;
     }
 }

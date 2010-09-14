@@ -190,6 +190,20 @@ public class Helper implements Serializable {
         return objects;
     }
 
+    public static List addAllUniqueToList(List objects, List objectsToAdd) {
+        if (objectsToAdd == null) {
+            return objects;
+        }
+        int size = objectsToAdd.size();
+        for (int index = 0; index < size; index++) {
+            Object element = objectsToAdd.get(index);
+            if (!objects.contains(element)) {
+                objects.add(element);
+            }
+        }
+        return objects;
+    }
+
     /**
     * Convert the specified vector into an array.
     */
@@ -228,21 +242,6 @@ public class Helper implements Serializable {
     }
 
     /**
-     * Convert the passed Vector to a Hashtable
-     * Return the Hashtable
-     */
-    public static Hashtable buildHashtableFromVector(Vector theVector) {
-        Hashtable toReturn = new Hashtable(theVector.size());
-
-        Iterator iter = theVector.iterator();
-        while (iter.hasNext()) {
-            Object next = iter.next();
-            toReturn.put(next, next);
-        }
-        return toReturn;
-    }
-
-    /**
      * Convert the byte array to a HEX string.
      * HEX allows for binary data to be printed.
      */
@@ -275,21 +274,6 @@ public class Helper implements Serializable {
     }
 
     /**
-      * Create a new Vector containing all of the hashtable elements
-      *
-      */
-    public static Vector buildVectorFromHashtableElements(Hashtable hashtable) {
-        Vector vector = new Vector(hashtable.size());
-        Enumeration enumeration = hashtable.elements();
-
-        while (enumeration.hasMoreElements()) {
-            vector.addElement(enumeration.nextElement());
-        }
-
-        return vector;
-    }
-
-    /**
       * Create a new Vector containing all of the map elements.
       */
     public static Vector buildVectorFromMapElements(Map map) {
@@ -298,20 +282,6 @@ public class Helper implements Serializable {
 
         while (iterator.hasNext()) {
             vector.addElement(iterator.next());
-        }
-
-        return vector;
-    }
-
-    /**
-     * Create a new Vector containing all of the hashtable elements.
-     */
-    public static Vector buildVectorFromHashtableElements(Map hashtable) {
-        Vector vector = new Vector(hashtable.size());
-        Iterator enumeration = hashtable.values().iterator();
-
-        while (enumeration.hasNext()) {
-            vector.addElement(enumeration.next());
         }
 
         return vector;
@@ -629,34 +599,6 @@ public class Helper implements Serializable {
     }
 
     /**
-     * Compare the elements in two <code>Vector</code>s to see if they are equal.
-     * The order of the elements is significant.
-     * @return whether the two vectors are equal
-     */
-    public static boolean compareOrderedVectors(Vector vector1, Vector vector2) {
-        if (vector1 == vector2) {
-            return true;
-        }
-        if (vector1.size() != vector2.size()) {
-            return false;
-        }
-        for (int index = 0; index < vector1.size(); index++) {
-            Object element1 = vector1.elementAt(index);
-            Object element2 = vector2.elementAt(index);
-            if (element1 == null) {// avoid null pointer exception
-                if (element2 != null) {
-                    return false;
-                }
-            } else {
-                if (!element1.equals(element2)) {
-                    return false;
-                }
-            }
-        }
-        return true;
-    }
-
-    /**
      * Compare two potential arrays and return true if they are the same. Will
      * check for BigDecimals as well.
      */
@@ -677,42 +619,6 @@ public class Helper implements Serializable {
         }
 
         return false;   
-    }
-    
-    /**
-     * Compare the elements in two <code>Vector</code>s to see if they are equal.
-     * The order of the elements is ignored.
-     * @param  v1  a vector
-     * @param  v2  a vector
-     * @return whether the two vectors contain the same elements
-     */
-    public static boolean compareUnorderedVectors(Vector v1, Vector v2) {
-        if (v1 == v2) {
-            return true;
-        }
-        if (v1.size() != v2.size()) {
-            return false;
-        }
-
-        // One of the Vectors must be cloned so we don't miscompare
-        // vectors with the same elements but in different quantities.
-        // e.g. [fred, sam, sam] != [fred, sam, fred]
-        Vector v3 = (Vector)v2.clone();
-        for (int i = 0; i < v1.size(); i++) {
-            Object e1 = v1.elementAt(i);
-            if (e1 == null) {// avoid null pointer exception
-                // Helper.removeNullElement() will return false if the element was not present to begin with
-                if (!removeNullElement(v3)) {
-                    return false;
-                }
-            } else {
-                // Vector.removeElement() will return false if the element was not present to begin with
-                if (!v3.removeElement(e1)) {
-                    return false;
-                }
-            }
-        }
-        return true;
     }
 
 
@@ -1376,22 +1282,6 @@ public class Helper implements Serializable {
 
         //
         return buf.toString();
-    }
-
-    /**
-     * Remove the first <code>null</code> element found in the specified <code>Vector</code>.
-     * Return <code>true</code> if a <code>null</code> element was found and removed.
-     * Return <code>false</code> if a <code>null</code> element was not found.
-     * This is needed in jdk1.1, where <code>Vector.removeElement(Object)</code>
-     * for a <code>null</code> element will result in a <code>NullPointerException</code>....
-     */
-    public static boolean removeNullElement(Vector v) {
-        int indexOfNull = indexOfNullElement(v, 0);
-        if (indexOfNull != -1) {
-            v.removeElementAt(indexOfNull);
-            return true;
-        }
-        return false;
     }
 
     /**

@@ -18,6 +18,8 @@ import java.util.HashMap;
 import java.util.Map;
 import javax.persistence.*;
 
+import org.eclipse.persistence.annotations.CascadeOnDelete;
+
 @Entity
 @Table(name="DDL_MAP_HOLDER")
 public class MapHolder {
@@ -46,6 +48,7 @@ public class MapHolder {
     }
     
     @ElementCollection
+    @CascadeOnDelete
     public Map<EntityMapKey, String> getDCMap() {
         return directCollectionMap;
     }
@@ -54,6 +57,7 @@ public class MapHolder {
     }
     
     @ElementCollection
+    @CascadeOnDelete
     public Map<EntityMapKey, AggregateMapValue> getACMap() {
         return aggregateCollectionMap;
     }

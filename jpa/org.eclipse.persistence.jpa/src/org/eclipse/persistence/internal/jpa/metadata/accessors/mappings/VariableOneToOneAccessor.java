@@ -240,24 +240,12 @@ public class VariableOneToOneAccessor extends ObjectAccessor {
         
         // Now process our variable one to one mapping.
         VariableOneToOneMapping mapping = new VariableOneToOneMapping();
-        setMapping(mapping);
+        processRelationshipMapping(mapping);
         
-        mapping.setIsReadOnly(false);
         mapping.setIsOptional(isOptional());
-        mapping.setAttributeName(getAttributeName());
-        mapping.setReferenceClassName(getReferenceClassName());
-        
-        // Process the orphanRemoval or PrivateOwned
-        processOrphanRemoval(mapping);
         
         // Process the indirection.
         processIndirection(mapping);
-        
-        // Set the getter and setter methods if access is PROPERTY.
-        setAccessorMethods(mapping);
-        
-        // Process the cascade types.
-        processCascadeTypes(mapping);
         
         // Process a @ReturnInsert and @ReturnUpdate (to log a warning message)
         processReturnInsertAndUpdate();

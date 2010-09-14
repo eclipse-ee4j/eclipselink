@@ -735,7 +735,7 @@ public abstract class DatabaseMapping implements Cloneable, Serializable {
      * Return if the mapping has any ownership or other dependency over its target object(s).
      */
     public boolean hasDependency() {
-        return isPrivateOwned();
+        return false;
     }
 
     /**

@@ -105,7 +105,6 @@ public class ManyToOneAccessor extends ObjectAccessor {
         
         // Initialize our mapping now with what we found.
         ManyToOneMapping mapping = initManyToOneMapping();
-        setMapping(mapping);
                 
         // Process the owning keys for this mapping.
         processOwningMappingKeys(mapping);

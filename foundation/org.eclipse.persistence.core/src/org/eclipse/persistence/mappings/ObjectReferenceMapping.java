@@ -48,6 +48,7 @@ public abstract class ObjectReferenceMapping extends ForeignReferenceMapping {
      * Used during building the backup shallow copy to copy the vector without re-registering the target objects.
      * For 1-1 or ref the reference is from the clone so it is already registered.
      */
+    @Override
     public Object buildBackupCloneForPartObject(Object attributeValue, Object clone, Object backup, UnitOfWorkImpl unitOfWork) {
         return attributeValue;
     }
@@ -57,6 +58,7 @@ public abstract class ObjectReferenceMapping extends ForeignReferenceMapping {
      * Require for cloning, the part must be cloned.
      * Ignore the objects, use the attribute value.
      */
+    @Override
     public Object buildCloneForPartObject(Object attributeValue, Object original, Object clone, UnitOfWorkImpl unitOfWork, boolean isExisting) {
         if (attributeValue == null) {
             return null;
@@ -104,6 +106,7 @@ public abstract class ObjectReferenceMapping extends ForeignReferenceMapping {
      * this is a ObjectReference mapping, a recursive call is made to the buildExpressionFromExample method of
      * ObjectBuilder.
      */
+    @Override
     public Expression buildExpression(Object queryObject, QueryByExamplePolicy policy, Expression expressionBuilder, Map processedObjects, AbstractSession session) {
         String attributeName = this.getAttributeName();
         Object attributeValue = this.getRealAttributeValueFromObject(queryObject, session);
@@ -128,6 +131,7 @@ public abstract class ObjectReferenceMapping extends ForeignReferenceMapping {
      * Return an ObjectReferenceChangeRecord describing the change, or null if no change.
      * Used to compute changes for deferred change tracking.
      */
+    @Override
     public ChangeRecord compareForChange(Object clone, Object backUp, ObjectChangeSet owner, AbstractSession session) {
         Object cloneAttribute = null;
         Object backUpAttribute = null;
@@ -198,6 +202,7 @@ public abstract class ObjectReferenceMapping extends ForeignReferenceMapping {
      * Used for independent relationships.
      * This is used for testing and validation purposes.
      */
+    @Override
     protected boolean compareObjectsWithoutPrivateOwned(Object firstObject, Object secondObject, AbstractSession session) {
         Object firstReferencedObject = getRealAttributeValueFromObject(firstObject, session);
         Object secondReferencedObject = getRealAttributeValueFromObject(secondObject, session);
@@ -229,6 +234,7 @@ public abstract class ObjectReferenceMapping extends ForeignReferenceMapping {
      * Used for private relationships.
      * This is used for testing and validation purposes.
      */
+    @Override
     protected boolean compareObjectsWithPrivateOwned(Object firstObject, Object secondObject, AbstractSession session) {
         Object firstPrivateObject = getRealAttributeValueFromObject(firstObject, session);
         Object secondPrivateObject = getRealAttributeValueFromObject(secondObject, session);
@@ -245,6 +251,7 @@ public abstract class ObjectReferenceMapping extends ForeignReferenceMapping {
      * ObjectReferenceMappings need to unwrap and wrap the
      * reference object.
      */
+    @Override
     public void fixRealObjectReferences(Object object, Map objectDescriptors, Map processedObjects, ObjectLevelReadQuery query, RemoteSession session) {
         //bug 4147755 getRealAttribute... / setReal...
         Object attributeValue = getRealAttributeValueFromObject(object, session);
@@ -275,6 +282,7 @@ public abstract class ObjectReferenceMapping extends ForeignReferenceMapping {
      * INTERNAL:
      * Object reference must unwrap the reference object if required.
      */
+    @Override
     public Object getRealAttributeValueFromAttribute(Object attributeValue, Object object, AbstractSession session) {
         Object value = super.getRealAttributeValueFromAttribute(attributeValue, object, session);
         value = getReferenceDescriptor().getObjectBuilder().unwrapObject(value, session);
@@ -286,6 +294,7 @@ public abstract class ObjectReferenceMapping extends ForeignReferenceMapping {
      * INTERNAL:
      * Related mapping should implement this method to return true.
      */
+    @Override
     public boolean isObjectReferenceMapping() {
         return true;
     }
@@ -295,6 +304,7 @@ public abstract class ObjectReferenceMapping extends ForeignReferenceMapping {
      * Iterate on the attribute value.
      * The value holder has already been processed.
      */
+    @Override
     public void iterateOnRealAttributeValue(DescriptorIterator iterator, Object realAttributeValue) {
         // This may be wrapped as the caller in iterate on foreign reference does not unwrap as the type is generic.
         Object unwrappedAttributeValue = getReferenceDescriptor().getObjectBuilder().unwrapObject(realAttributeValue, iterator.getSession());
@@ -305,6 +315,7 @@ public abstract class ObjectReferenceMapping extends ForeignReferenceMapping {
      * INTERNAL:
      * Merge changes from the source to the target object. Which is the original from the parent UnitOfWork
      */
+    @Override
     public void mergeChangesIntoObject(Object target, ChangeRecord changeRecord, Object source, MergeManager mergeManager) {
         Object targetValueOfSource = null;
 
@@ -368,6 +379,7 @@ public abstract class ObjectReferenceMapping extends ForeignReferenceMapping {
      * INTERNAL:
      * Merge changes from the source to the target object.
      */
+    @Override
     public void mergeIntoObject(Object target, boolean isTargetUnInitialized, Object source, MergeManager mergeManager) {
         if (isTargetUnInitialized) {
             // This will happen if the target object was removed from the cache before the commit was attempted,
@@ -493,6 +505,7 @@ public abstract class ObjectReferenceMapping extends ForeignReferenceMapping {
      * INTERNAL:
      * Insert privately owned parts
      */
+    @Override
     public void preInsert(WriteObjectQuery query) throws DatabaseException, OptimisticLockException {
         if (isForeignKeyRelationship()) {
             insert(query);
@@ -522,6 +535,7 @@ public abstract class ObjectReferenceMapping extends ForeignReferenceMapping {
      * INTERNAL:
      * Update privately owned parts
      */
+    @Override
     public void preUpdate(WriteObjectQuery query) throws DatabaseException, OptimisticLockException {
         if (!isAttributeValueInstantiated(query.getObject())) {
             return;
@@ -571,6 +585,7 @@ public abstract class ObjectReferenceMapping extends ForeignReferenceMapping {
      * INTERNAL:
      * Delete privately owned parts
      */
+    @Override
     public void postDelete(DeleteObjectQuery query) throws DatabaseException, OptimisticLockException {
         // Deletion takes place only if it has privately owned parts and mapping is not read only.
         if (!shouldObjectModifyCascadeToParts(query)) {
@@ -592,6 +607,9 @@ public abstract class ObjectReferenceMapping extends ForeignReferenceMapping {
                 if (query.isCascadeOfAggregateDelete()) {
                     query.getSession().getCommitManager().addObjectToDelete(object);
                 } else {
+                    if (this.isCascadeOnDeleteSetOnDatabase && !hasRelationTableMechanism() && query.getSession().isUnitOfWork()) {
+                        ((UnitOfWorkImpl)query.getSession()).getCascadeDeleteObjects().add(object);
+                    }
                     DeleteObjectQuery deleteQuery = new DeleteObjectQuery();
                     deleteQuery.setIsExecutionClone(true);
                     deleteQuery.setObject(object);
@@ -606,6 +624,7 @@ public abstract class ObjectReferenceMapping extends ForeignReferenceMapping {
      * INTERNAL:
      * Insert privately owned parts
      */
+    @Override
     public void postInsert(WriteObjectQuery query) throws DatabaseException, OptimisticLockException {
         if (!isForeignKeyRelationship()) {
             insert(query);
@@ -616,6 +635,7 @@ public abstract class ObjectReferenceMapping extends ForeignReferenceMapping {
      * INTERNAL:
      * Update privately owned parts
      */
+    @Override
     public void postUpdate(WriteObjectQuery query) throws DatabaseException, OptimisticLockException {
         if (!isAttributeValueInstantiated(query.getObject())) {
             return;
@@ -663,6 +683,7 @@ public abstract class ObjectReferenceMapping extends ForeignReferenceMapping {
      * INTERNAL:
      * Delete privately owned parts
      */
+    @Override
     public void preDelete(DeleteObjectQuery query) throws DatabaseException, OptimisticLockException {
         // Deletion takes place according the the cascading policy
         if (!shouldObjectModifyCascadeToParts(query)) {
@@ -687,6 +708,9 @@ public abstract class ObjectReferenceMapping extends ForeignReferenceMapping {
             }
             if ((keyForObjectInMemory == null) || !keyForObjectInDatabase.equals(keyForObjectInMemory)) {
                 if (objectFromDatabase != null) {
+                    if (this.isCascadeOnDeleteSetOnDatabase && !hasRelationTableMechanism() && query.getSession().isUnitOfWork()) {
+                        ((UnitOfWorkImpl)query.getSession()).getCascadeDeleteObjects().add(objectFromDatabase);
+                    }
                     DeleteObjectQuery deleteQuery = new DeleteObjectQuery();
                     deleteQuery.setIsExecutionClone(true);
                     deleteQuery.setObject(objectFromDatabase);
@@ -698,6 +722,9 @@ public abstract class ObjectReferenceMapping extends ForeignReferenceMapping {
 
         if (!isForeignKeyRelationship()) {
             if (objectInMemory != null) {
+                if (this.isCascadeOnDeleteSetOnDatabase && !hasRelationTableMechanism() && query.getSession().isUnitOfWork()) {
+                    ((UnitOfWorkImpl)query.getSession()).getCascadeDeleteObjects().add(objectFromDatabase);
+                }
                 DeleteObjectQuery deleteQuery = new DeleteObjectQuery();
                 deleteQuery.setIsExecutionClone(true);
                 deleteQuery.setObject(objectInMemory);
@@ -716,6 +743,7 @@ public abstract class ObjectReferenceMapping extends ForeignReferenceMapping {
      * INTERNAL:
      * Cascade registerNew for Create through mappings that require the cascade
      */
+    @Override
     public void cascadePerformRemoveIfRequired(Object object, UnitOfWorkImpl uow, Map visitedObjects){
         cascadePerformRemoveIfRequired(object, uow, visitedObjects, true);
     }
@@ -726,7 +754,7 @@ public abstract class ObjectReferenceMapping extends ForeignReferenceMapping {
      * @param object is either the source object, or attribute value if getAttributeValueFromObject is true.
      */
     public void cascadePerformRemoveIfRequired(Object object, UnitOfWorkImpl uow, Map visitedObjects, boolean getAttributeValueFromObject) {
-        if (!isCascadeRemove()) {
+        if (!this.cascadeRemove) {
             return;
         }
         Object attributeValue = null;
@@ -741,6 +769,9 @@ public abstract class ObjectReferenceMapping extends ForeignReferenceMapping {
             }
             if (attributeValue != null && (! visitedObjects.containsKey(attributeValue)) ){
                 visitedObjects.put(attributeValue, attributeValue);
+                if (this.isCascadeOnDeleteSetOnDatabase && !hasRelationTableMechanism()) {
+                    uow.getCascadeDeleteObjects().add(attributeValue);
+                }
                 uow.performRemove(attributeValue, visitedObjects);
             }
         }
@@ -750,6 +781,7 @@ public abstract class ObjectReferenceMapping extends ForeignReferenceMapping {
      * INTERNAL:
      * Cascade removal of orphaned private owned objects from the UnitOfWorkChangeSet
      */
+    @Override
     public void cascadePerformRemovePrivateOwnedObjectFromChangeSetIfRequired(Object object, UnitOfWorkImpl uow, Map visitedObjects) {
         // if the object is not instantiated, do not instantiate or cascade
         Object attributeValue = getAttributeValueFromObject(object);
@@ -767,6 +799,7 @@ public abstract class ObjectReferenceMapping extends ForeignReferenceMapping {
      * INTERNAL:
      * Cascade discover and persist new objects during commit.
      */
+    @Override
     public void cascadeDiscoverAndPersistUnregisteredNewObjects(Object object, Map newObjects, Map unregisteredExistingObjects, Map visitedObjects, UnitOfWorkImpl uow) {
         cascadeDiscoverAndPersistUnregisteredNewObjects(object, newObjects, unregisteredExistingObjects, visitedObjects, uow, true);
     }
@@ -798,6 +831,7 @@ public abstract class ObjectReferenceMapping extends ForeignReferenceMapping {
      * INTERNAL:
      * Cascade registerNew for Create through mappings that require the cascade
      */
+    @Override
     public void cascadeRegisterNewIfRequired(Object object, UnitOfWorkImpl uow, Map visitedObjects){
         cascadeRegisterNewIfRequired(object, uow, visitedObjects, true);
     }
@@ -840,6 +874,7 @@ public abstract class ObjectReferenceMapping extends ForeignReferenceMapping {
      * INTERNAL:
      * The returns if the mapping has any constraint dependencies, such as foreign keys and join tables.
      */
+    @Override
     public boolean hasConstraintDependency() {
         return isForeignKeyRelationship();
     }
@@ -851,6 +886,7 @@ public abstract class ObjectReferenceMapping extends ForeignReferenceMapping {
      * from a row as opposed to building the original from the row, putting it in
      * the shared cache, and then cloning the original.
      */
+    @Override
     public UnitOfWorkValueHolder createUnitOfWorkValueHolder(ValueHolderInterface attributeValue, Object original, Object clone, AbstractRecord row, UnitOfWorkImpl unitOfWork, boolean buildDirectlyFromRow) {
         UnitOfWorkQueryValueHolder valueHolder = null;
         if ((row == null) && (isPrimaryKeyMapping())) {
@@ -921,6 +957,7 @@ public abstract class ObjectReferenceMapping extends ForeignReferenceMapping {
      * INTERNAL:
      * Initialize the state of mapping.
      */
+    @Override
     public void preInitialize(AbstractSession session) throws DescriptorException {
         super.preInitialize(session);
 		//Bug#4251902 Make Proxy Indirection writable and readable to deployment xml.  If ProxyIndirectionPolicy does not
@@ -1031,6 +1068,14 @@ public abstract class ObjectReferenceMapping extends ForeignReferenceMapping {
 
     /**
      * PUBLIC:
+     * Indicates whether the mapping has RelationTableMechanism.
+     */
+    public boolean hasRelationTableMechanism() {
+        return false;
+    }
+
+    /**
+     * PUBLIC:
      * Set this mapping to use Proxy Indirection.
      *
      * Proxy Indirection uses the <CODE>Proxy</CODE> and <CODE>InvocationHandler</CODE> features
@@ -1077,6 +1122,7 @@ public abstract class ObjectReferenceMapping extends ForeignReferenceMapping {
      * @see ContainerPolicy.buildReferencesPKList()
      * @see MappedKeyMapContainerPolicy()
      */
+    @Override
     public Object[] buildReferencesPKList(Object entity, Object attribute, AbstractSession session) {
         ClassDescriptor referenceDescriptor = getReferenceDescriptor();
         Object target = this.indirectionPolicy.getRealAttributeValueFromObject(entity, attribute);
@@ -1162,6 +1208,7 @@ public abstract class ObjectReferenceMapping extends ForeignReferenceMapping {
      * This method is used to load a relationship from a list of PKs.
      * This list may be available if the relationship has been cached.
      */
+    @Override
     public Object valueFromPKList(Object[] pks, AbstractSession session) {
         Object pk = null;
         if (pks[0] == null) return null;
@@ -1181,8 +1228,9 @@ public abstract class ObjectReferenceMapping extends ForeignReferenceMapping {
      * INTERNAL: 
      * To verify if the specified object is deleted or not.
      */
+    @Override
     public boolean verifyDelete(Object object, AbstractSession session) throws DatabaseException {
-        if (isPrivateOwned()) {
+        if (isPrivateOwned() || isCascadeRemove()) {
             Object attributeValue = getRealAttributeValueFromObject(object, session);
 
             if (attributeValue != null) {
@@ -1198,6 +1246,7 @@ public abstract class ObjectReferenceMapping extends ForeignReferenceMapping {
      * Get a value from the object and set that in the respective field of the row.
      * But before that check if the reference object is instantiated or not.
      */
+    @Override
     public void writeFromObjectIntoRowForUpdate(WriteObjectQuery query, AbstractRecord databaseRow) {
         Object object = query.getObject();
         AbstractSession session = query.getSession();
@@ -1219,6 +1268,7 @@ public abstract class ObjectReferenceMapping extends ForeignReferenceMapping {
      * INTERNAL:
      * Get a value from the object and set that in the respective field of the row.
      */
+    @Override
     public void writeFromObjectIntoRowForWhereClause(ObjectLevelModifyQuery query, AbstractRecord databaseRow) {
         if (isReadOnly()) {
             return;
@@ -1241,6 +1291,7 @@ public abstract class ObjectReferenceMapping extends ForeignReferenceMapping {
      * INTERNAL:
      * Return if this mapping supports change tracking.
      */
+    @Override
     public boolean isChangeTrackingSupported(Project project) {
         return true;
     }
@@ -1250,6 +1301,7 @@ public abstract class ObjectReferenceMapping extends ForeignReferenceMapping {
      * Either create a new change record or update the change record with the new value.
      * This is used by attribute change tracking.
      */
+    @Override
     public void updateChangeRecord(Object clone, Object newValue, Object oldValue, ObjectChangeSet objectChangeSet, UnitOfWorkImpl uow) {
         // Must ensure values are unwrapped.
         Object unwrappedNewValue = newValue;
@@ -1275,6 +1327,7 @@ public abstract class ObjectReferenceMapping extends ForeignReferenceMapping {
      * INTERNAL:
      * Directly build a change record without comparison
      */
+    @Override
     public ChangeRecord buildChangeRecord(Object clone, ObjectChangeSet owner, AbstractSession session) {
         return internalBuildChangeRecord(getRealAttributeValueFromObject(clone, session), owner, session);
     }

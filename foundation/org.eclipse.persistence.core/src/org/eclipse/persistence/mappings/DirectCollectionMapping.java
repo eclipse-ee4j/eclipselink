@@ -2421,14 +2421,19 @@ public class DirectCollectionMapping extends CollectionMapping implements Relati
      */
     @Override
     public void preDelete(DeleteObjectQuery query) throws DatabaseException {
-        if (isReadOnly()) {
+        if (this.isReadOnly) {
             return;
         }
 
-        prepareTranslationRow(query.getTranslationRow(), query.getObject(), query.getSession());
-        query.getSession().executeQuery(getDeleteAllQuery(), query.getTranslationRow());
-        if ((getHistoryPolicy() != null) && getHistoryPolicy().shouldHandleWrites()) {
-            getHistoryPolicy().mappingLogicalDelete(getDeleteAllQuery(), query.getTranslationRow(), query.getSession());
+        if (!this.isCascadeOnDeleteSetOnDatabase) {
+            prepareTranslationRow(query.getTranslationRow(), query.getObject(), query.getSession());
+            query.getSession().executeQuery(this.deleteAllQuery, query.getTranslationRow());
+        }
+        if ((this.historyPolicy != null) && this.historyPolicy.shouldHandleWrites()) {
+            if (this.isCascadeOnDeleteSetOnDatabase) {
+                prepareTranslationRow(query.getTranslationRow(), query.getObject(), query.getSession());
+            }
+            this.historyPolicy.mappingLogicalDelete(this.deleteAllQuery, query.getTranslationRow(), query.getSession());
         }
     }
 

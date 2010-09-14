@@ -291,6 +291,9 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
     
     /** records that the UOW is executing deferred events.  Events could cause operations to occur that may attempt to restart the event execution.  This must be avoided*/
     protected boolean isExecutingEvents = false;
+    
+    /** Set of objects that were deleted by database cascade delete constraints. */
+    protected Set<Object> cascadeDeleteObjects;
 
     /**
      * INTERNAL:
@@ -1077,11 +1080,11 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
                 return;
             }
         }
+        log(SessionLog.FINER, SessionLog.TRANSACTION, "begin_unit_of_work_commit");
         if (this.lifecycle == CommitTransactionPending) {
             commitAfterWriteChanges();
             return;
         }
-        log(SessionLog.FINER, SessionLog.TRANSACTION, "begin_unit_of_work_commit");// bjv - correct spelling
         if (this.eventManager != null) {
             this.eventManager.preCommitUnitOfWork();
         }
@@ -2187,6 +2190,33 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
     public boolean hasContainerBeans() {
         return ((containerBeans != null) && !containerBeans.isEmpty());
     }
+
+    /**
+     * INTERNAL:
+     * Return any objects have been deleted through database cascade delete constraints.
+     */
+    public Set<Object> getCascadeDeleteObjects() {
+        if (this.cascadeDeleteObjects == null) {
+            this.cascadeDeleteObjects = new IdentityHashSet();
+        }
+        return this.cascadeDeleteObjects;
+    }
+
+    /**
+     * INTERNAL:
+     * Set any objects have been deleted through database cascade delete constraints.
+     */
+    protected void setCascadeDeleteObjects(Set<Object> cascadeDeleteObjects) {
+        this.cascadeDeleteObjects = cascadeDeleteObjects;
+    }
+
+    /**
+     * INTERNAL:
+     * Return if any objects have been deleted through database cascade delete constraints.
+     */
+    public boolean hasCascadeDeleteObjects() {
+        return ((this.cascadeDeleteObjects != null) && !this.cascadeDeleteObjects.isEmpty());
+    }
     
     /**
      * INTERNAL:
@@ -3177,9 +3207,9 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
             commitTransactionAfterWriteChanges();
             return;
         }
+        log(SessionLog.FINER, SessionLog.TRANSACTION, "begin_unit_of_work_commit");
         mergeBmpAndWsEntities();
         // CR#... call event and log.
-        log(SessionLog.FINER, SessionLog.TRANSACTION, "begin_unit_of_work_commit");
         if (this.eventManager != null) {
             this.eventManager.preCommitUnitOfWork();
         }
@@ -5511,8 +5541,8 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
         if (this.isNestedUnitOfWork) {
             throw ValidationException.writeChangesOnNestedUnitOfWork();
         }
+        log(SessionLog.FINER, SessionLog.TRANSACTION, "begin_unit_of_work_flush");
         mergeBmpAndWsEntities();
-        log(SessionLog.FINER, SessionLog.TRANSACTION, "begin_unit_of_work_commit");
         if (this.eventManager != null) {
             this.eventManager.preCommitUnitOfWork();
         }
@@ -5526,6 +5556,7 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
             throw exception;
         }
         setLifecycle(CommitTransactionPending);
+        log(SessionLog.FINER, SessionLog.TRANSACTION, "end_unit_of_work_flush");
     }
 
     /**

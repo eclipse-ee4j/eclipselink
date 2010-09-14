@@ -24,15 +24,15 @@ import org.eclipse.persistence.internal.sessions.AbstractSession;
  */
 public class ForeignKeyConstraint implements Serializable {
     protected String name;
-    protected Vector sourceFields;
-    protected Vector targetFields;
+    protected List<String> sourceFields;
+    protected List<String> targetFields;
     protected String targetTable;
     protected boolean shouldCascadeOnDelete;
 
     public ForeignKeyConstraint() {
         this.name = "";
-        this.sourceFields = new Vector();
-        this.targetFields = new Vector();
+        this.sourceFields = new ArrayList();
+        this.targetFields = new ArrayList();
         this.targetTable = "";
         this.shouldCascadeOnDelete = false;
     }
@@ -40,17 +40,17 @@ public class ForeignKeyConstraint implements Serializable {
     public ForeignKeyConstraint(String name, String sourceField, String targetField, String targetTable) {
         this();
         this.name = name;
-        sourceFields.addElement(sourceField);
-        targetFields.addElement(targetField);
+        sourceFields.add(sourceField);
+        targetFields.add(targetField);
         this.targetTable = targetTable;
     }
 
     public void addSourceField(String sourceField) {
-        getSourceFields().addElement(sourceField);
+        getSourceFields().add(sourceField);
     }
 
     public void addTargetField(String targetField) {
-        getTargetFields().addElement(targetField);
+        getTargetFields().add(targetField);
     }
 
     /**
@@ -60,20 +60,18 @@ public class ForeignKeyConstraint implements Serializable {
     public void appendDBString(Writer writer, AbstractSession session) {
         try {
             writer.write("FOREIGN KEY (");
-            for (Enumeration sourceEnum = getSourceFields().elements();
-                     sourceEnum.hasMoreElements();) {
-                writer.write((String)sourceEnum.nextElement());
-                if (sourceEnum.hasMoreElements()) {
+            for (Iterator iterator = getSourceFields().iterator(); iterator.hasNext();) {
+                writer.write((String)iterator.next());
+                if (iterator.hasNext()) {
                     writer.write(", ");
                 }
             }
             writer.write(") REFERENCES ");
             writer.write(getTargetTable());
             writer.write(" (");
-            for (Enumeration targetEnum = getTargetFields().elements();
-                     targetEnum.hasMoreElements();) {
-                writer.write((String)targetEnum.nextElement());
-                if (targetEnum.hasMoreElements()) {
+            for (Iterator iterator = getTargetFields().iterator(); iterator.hasNext();) {
+                writer.write((String)iterator.next());
+                if (iterator.hasNext()) {
                     writer.write(", ");
                 }
             }
@@ -107,11 +105,11 @@ public class ForeignKeyConstraint implements Serializable {
         return name;
     }
 
-    public Vector getSourceFields() {
+    public List<String> getSourceFields() {
         return sourceFields;
     }
 
-    public Vector getTargetFields() {
+    public List<String> getTargetFields() {
         return targetFields;
     }
 
@@ -132,11 +130,11 @@ public class ForeignKeyConstraint implements Serializable {
         this.shouldCascadeOnDelete = shouldCascadeOnDelete;
     }
 
-    public void setSourceFields(Vector sourceFields) {
+    public void setSourceFields(List<String> sourceFields) {
         this.sourceFields = sourceFields;
     }
 
-    public void setTargetFields(Vector targetFields) {
+    public void setTargetFields(List<String> targetFields) {
         this.targetFields = targetFields;
     }
 

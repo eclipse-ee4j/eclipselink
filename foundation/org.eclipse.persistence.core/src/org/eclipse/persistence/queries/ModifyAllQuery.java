@@ -24,7 +24,7 @@ import org.eclipse.persistence.internal.sessions.AbstractSession;
 
 /**
  * PUBLIC:
- * Query used to perform a bulk delete using TopLink's expression framework.
+ * Query used to perform a bulk delete using the expression framework.
  *
  * @author Andrei Ilitchev
  * @date August 18, 2005

@@ -23,6 +23,7 @@ import java.io.StringWriter;
 import java.sql.Date;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Collection;
 import java.util.Vector;
@@ -77,6 +78,7 @@ import org.eclipse.persistence.sequencing.NativeSequence;
 import org.eclipse.persistence.sequencing.Sequence;
 import org.eclipse.persistence.logging.SessionLogEntry;
 
+import org.eclipse.persistence.testing.framework.QuerySQLTracker;
 import org.eclipse.persistence.testing.framework.junit.JUnitTestCase;
 import org.eclipse.persistence.testing.framework.junit.JUnitTestCaseHelper;
 import org.eclipse.persistence.testing.models.jpa.fieldaccess.advanced.*;
@@ -211,6 +213,8 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
         suite.addTest(new EntityManagerJUnitTestSuite("testCopyingAddress"));
         suite.addTest(new EntityManagerJUnitTestSuite("testSequencePreallocationUsingCallbackTest"));
         suite.addTest(new EntityManagerJUnitTestSuite("updateAttributeWithObjectTest"));
+        suite.addTest(new EntityManagerJUnitTestSuite("testDeleteEmployee"));
+        suite.addTest(new EntityManagerJUnitTestSuite("testDeleteMan"));
 
         return suite;
     }
@@ -3566,6 +3570,46 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
         }
     }
     
+    // Test that deleting an employee works correctly.
+    public void testDeleteEmployee() {        
+        Employee employee = new Employee();
+        employee.addPhoneNumber(new PhoneNumber("home", "123", "4567"));
+        employee.addPhoneNumber(new PhoneNumber("fax", "456", "4567"));
+        employee.addResponsibility("work hard");
+        employee.addResponsibility("write code");
+        employee.addProject(new Project());
+        employee.setWorkWeek(new HashSet<Employee.Weekdays>());
+        employee.getWorkWeek().add(Employee.Weekdays.MONDAY);
+        employee.getWorkWeek().add(Employee.Weekdays.TUESDAY);
+        EntityManager em = createEntityManager("fieldaccess");
+        QuerySQLTracker counter = null;
+        try {
+            beginTransaction(em);
+            em.persist(employee);
+            commitTransaction(em);
+            closeEntityManager(em);
+            clearCache("fieldaccess");
+            counter = new QuerySQLTracker(getServerSession("fieldaccess"));
+            em = createEntityManager("fieldaccess");
+            beginTransaction(em);
+            employee = em.find(Employee.class, employee.getId());
+            counter.getSqlStatements().clear();
+            em.remove(employee);
+            if (isWeavingEnabled() && counter.getSqlStatements().size() > 3) {
+                fail("Only 2 delete and 1 select should have occured.");
+            }
+            commitTransaction(em);
+            beginTransaction(em);    
+            verifyDelete(employee, "fieldaccess");
+            commitTransaction(em);
+        } finally {
+            if (isTransactionActive(em)) {
+                rollbackTransaction(em);
+            }
+            closeEntityManager(em);
+        }
+    }
+    
     //bug gf674 - EJBQL delete query with IS NULL in WHERE clause produces wrong sql
     public void testDeleteAllPhonesWithNullOwner() {
          EntityManager em = createEntityManager("fieldaccess");
@@ -4722,6 +4766,51 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
             period.setStartDate(Date.valueOf("2010-11-14"));
             period.setEndDate(Date.valueOf("2010-11-15"));
             event.updateAttributeWithObject("period", period);
+        }
+    }
+        
+    // Test that deleting an Man works correctly.
+    public void testDeleteMan() {
+        EntityManager em = createEntityManager("fieldaccess");
+        QuerySQLTracker counter = null;
+        try {
+            beginTransaction(em);
+            Man man = new Man();
+            em.persist(man);
+            Woman woman = new Woman();
+            em.persist(woman);
+            PartnerLink link = new PartnerLink();
+            man.setPartnerLink(link);
+            link.setMan(man);
+            woman.setPartnerLink(link);
+            link.setWoman(woman);                        
+            commitTransaction(em);
+            closeEntityManager(em);
+            clearCache("fieldaccess");
+            counter = new QuerySQLTracker(getServerSession("fieldaccess"));
+            em = createEntityManager("fieldaccess");
+            beginTransaction(em);
+            // Count SQL.
+            man = em.find(Man.class, man.getId());
+            woman = em.find(Woman.class, woman.getId());
+            woman.setPartnerLink(null);
+            counter.getSqlStatements().clear();
+            em.remove(man);
+            commitTransaction(em);
+            if (counter.getSqlStatements().size() > 1) {
+                fail("Only one delete should have occured.");
+            }
+            beginTransaction(em);
+            verifyDelete(man, "fieldaccess");
+            commitTransaction(em);
+        } finally {
+            if (counter != null) {
+                counter.remove();
+            }
+            if (isTransactionActive(em)) {
+                rollbackTransaction(em);
+            }
+            closeEntityManager(em);
         }
     }
 

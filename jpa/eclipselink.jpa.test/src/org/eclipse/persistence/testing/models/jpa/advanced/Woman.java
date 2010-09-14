@@ -23,48 +23,49 @@ public class Woman {
     private String lastName;
     private PartnerLink partnerLink;
 
-	public Woman() {}
-    
+    public Woman() {
+    }
+
     public Woman(String firstName, String lastName) {
         this();
         this.firstName = firstName;
         this.lastName = lastName;
     }
-    
+
     @Id
-    @GeneratedValue(strategy=IDENTITY)
-	public Integer getId() { 
-        return id; 
-    }
-    
-    @Column(name="F_NAME")
-    public String getFirstName() { 
-        return firstName; 
-    }
-    
-    public void setFirstName(String name) { 
-        this.firstName = name; 
+    @GeneratedValue(strategy = IDENTITY)
+    public Integer getId() {
+        return id;
     }
 
-    @Column(name="L_NAME")
-    public String getLastName() { 
-        return lastName; 
-    }
-    
-    public void setLastName(String name) { 
-        this.lastName = name; 
+    @Column(name = "F_NAME")
+    public String getFirstName() {
+        return firstName;
     }
 
-    @OneToOne(mappedBy="woman")
-	public PartnerLink getPartnerLink() { 
-        return partnerLink; 
+    public void setFirstName(String name) {
+        this.firstName = name;
     }
-    
-	public void setId(Integer id) { 
-        this.id = id; 
+
+    @Column(name = "L_NAME")
+    public String getLastName() {
+        return lastName;
     }
-    
-    public void setPartnerLink(PartnerLink partnerLink) { 
-        this.partnerLink = partnerLink; 
+
+    public void setLastName(String name) {
+        this.lastName = name;
+    }
+
+    @OneToOne(mappedBy = "woman")
+    public PartnerLink getPartnerLink() {
+        return partnerLink;
+    }
+
+    public void setId(Integer id) {
+        this.id = id;
+    }
+
+    public void setPartnerLink(PartnerLink partnerLink) {
+        this.partnerLink = partnerLink;
     }
 }

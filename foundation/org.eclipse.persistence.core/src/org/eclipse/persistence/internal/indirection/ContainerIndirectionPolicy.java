@@ -282,6 +282,19 @@ public class ContainerIndirectionPolicy extends BasicIndirectionPolicy {
     public boolean objectIsInstantiated(Object object) {
         return ((IndirectContainer)object).getValueHolder().isInstantiated();
     }
+    
+    /**
+     * INTERNAL:
+     * Return whether the specified object can be instantiated without database access.
+     */
+    public boolean objectIsEasilyInstantiated(Object object) {
+        ValueHolderInterface valueHolder = ((IndirectContainer)object).getValueHolder();
+        if (valueHolder instanceof DatabaseValueHolder) {
+            return ((DatabaseValueHolder)valueHolder).isEasilyInstantiated();
+        } else {
+            return true;
+        }
+    }
 
     /**
      * Sets the Container class which implements IndirectContainer

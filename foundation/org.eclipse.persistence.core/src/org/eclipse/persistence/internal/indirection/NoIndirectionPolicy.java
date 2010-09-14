@@ -166,6 +166,14 @@ public class NoIndirectionPolicy extends IndirectionPolicy {
     public boolean objectIsInstantiated(Object object) {
         return true;
     }
+    
+    /**
+     * INTERNAL:
+     * Return whether the specified object can be instantiated without database access.
+     */
+    public boolean objectIsEasilyInstantiated(Object object) {
+        return true;
+    }
 
     /**
      * INTERNAL:

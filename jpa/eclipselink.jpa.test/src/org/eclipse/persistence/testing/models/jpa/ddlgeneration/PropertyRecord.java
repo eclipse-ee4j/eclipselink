@@ -24,6 +24,8 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 
+import org.eclipse.persistence.annotations.CascadeOnDelete;
+
 @Entity
 public class PropertyRecord {
     @Id 
@@ -43,6 +45,7 @@ public class PropertyRecord {
                 column=@Column(name="ASSESSMENT"))
         })
     @ElementCollection
+    @CascadeOnDelete
     public Map<Address, PropertyInfo> propertyInfos = new HashMap<Address, PropertyInfo>();
 }
 

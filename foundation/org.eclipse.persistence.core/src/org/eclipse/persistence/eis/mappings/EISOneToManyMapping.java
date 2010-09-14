@@ -19,7 +19,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Vector;
 
-import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.eis.EISDescriptor;
 import org.eclipse.persistence.eis.EISException;
 import org.eclipse.persistence.exceptions.DatabaseException;
@@ -103,20 +102,21 @@ public class EISOneToManyMapping extends CollectionMapping implements EISMapping
     /**
      * INTERNAL:
      */
+    @Override
     public boolean isEISMapping() {
         return true;
     }
 
     /**
-         * PUBLIC:
-         * Define the source foreign key relationship in the one-to-many mapping.
-         * This method is used for composite source foreign key relationships.
-         * That is, the source object's table has multiple foreign key fields
-         * that are references to
-         * the target object's (typically primary) key fields.
-         * Both the source foreign key field name and the corresponding
-         * target primary key field name must be specified.
-         */
+     * PUBLIC:
+     * Define the source foreign key relationship in the one-to-many mapping.
+     * This method is used for composite source foreign key relationships.
+     * That is, the source object's table has multiple foreign key fields
+     * that are references to
+     * the target object's (typically primary) key fields.
+     * Both the source foreign key field name and the corresponding
+     * target primary key field name must be specified.
+     */
     public void addForeignKeyField(DatabaseField sourceForeignKeyField, DatabaseField targetKeyField) {
         this.getSourceForeignKeyFields().add(sourceForeignKeyField);
         this.getTargetForeignKeyFields().add(targetKeyField);
@@ -267,6 +267,7 @@ public class EISOneToManyMapping extends CollectionMapping implements EISMapping
      * Return whether the mapping has any inverse constraint dependencies,
      * such as foreign keys.
      */
+    @Override
     public boolean hasInverseConstraintDependency() {
         return true;
     }
@@ -275,6 +276,7 @@ public class EISOneToManyMapping extends CollectionMapping implements EISMapping
      * INTERNAL:
      * Initialize the mapping.
      */
+    @Override
     public void initialize(AbstractSession session) throws DescriptorException {
         super.initialize(session);
 
@@ -318,7 +320,7 @@ public class EISOneToManyMapping extends CollectionMapping implements EISMapping
      * Initialize the delete all query.
      * This query is used to delete the collection of objects from the
      * database.
-     **/
+     */
     protected void initializeDeleteAllQuery() {
         ((DeleteAllQuery)this.getDeleteAllQuery()).setReferenceClass(this.getReferenceClass());
         if (!this.hasCustomDeleteAllQuery()) {
@@ -328,19 +330,11 @@ public class EISOneToManyMapping extends CollectionMapping implements EISMapping
     }
 
     /**
-     * Return whether the reference objects must be deleted
-     * one by one, as opposed to with a single DELETE statement.
-     */
-    protected boolean mustDeleteReferenceObjectsOneByOne() {
-        ClassDescriptor referenceDescriptor = this.getReferenceDescriptor();
-        return referenceDescriptor.hasDependencyOnParts() || referenceDescriptor.usesOptimisticLocking() || (referenceDescriptor.hasInheritance() && referenceDescriptor.getInheritancePolicy().shouldReadSubclasses()) || referenceDescriptor.hasMultipleTables();
-    }
-
-    /**
      * Return whether any process leading to object modification
      * should also affect its parts.
      * Used by write, insert, update, and delete.
      */
+    @Override
     protected boolean shouldObjectModifyCascadeToParts(ObjectLevelModifyQuery query) {
         if (isForeignKeyRelationship()) {
             return super.shouldObjectModifyCascadeToParts(query);
@@ -361,6 +355,7 @@ public class EISOneToManyMapping extends CollectionMapping implements EISMapping
      * INTERNAL:
      * Used to verify whether the specified object is deleted or not.
      */
+    @Override
     public boolean verifyDelete(Object object, AbstractSession session) throws DatabaseException {
         if (this.isPrivateOwned()) {
             Object objects = this.getRealCollectionAttributeValueFromObject(object, session);
@@ -380,6 +375,7 @@ public class EISOneToManyMapping extends CollectionMapping implements EISMapping
      * INTERNAL:
      * Insert the reference objects.
      */
+    @Override
     public void postInsert(WriteObjectQuery query) throws DatabaseException, OptimisticLockException {
         if (isForeignKeyRelationship()) {
             return;
@@ -426,6 +422,7 @@ public class EISOneToManyMapping extends CollectionMapping implements EISMapping
      * INTERNAL:
      * Update the reference objects.
      */
+    @Override
     public void postUpdate(WriteObjectQuery query) throws DatabaseException, OptimisticLockException {
         if (isForeignKeyRelationship()) {
             return;
@@ -488,6 +485,7 @@ public class EISOneToManyMapping extends CollectionMapping implements EISMapping
      * INTERNAL:
      * Delete the reference objects.
      */
+    @Override
     public void preDelete(DeleteObjectQuery query) throws DatabaseException, OptimisticLockException {
         if (isForeignKeyRelationship()) {
             return;
@@ -525,6 +523,7 @@ public class EISOneToManyMapping extends CollectionMapping implements EISMapping
     * INTERNAL:
     * Insert privately owned parts
     */
+    @Override
     public void preInsert(WriteObjectQuery query) throws DatabaseException, OptimisticLockException {
         if (!this.isForeignKeyRelationship()) {
             return;
@@ -577,6 +576,7 @@ public class EISOneToManyMapping extends CollectionMapping implements EISMapping
      * INTERNAL:
      * Update the privately owned parts.
      */
+    @Override
     public void preUpdate(WriteObjectQuery query) throws DatabaseException, OptimisticLockException {
         if (!this.isForeignKeyRelationship()) {
             return;
@@ -673,6 +673,7 @@ public class EISOneToManyMapping extends CollectionMapping implements EISMapping
      * INTERNAL:
      * Clone the appropriate attributes.
      */
+    @Override
     public Object clone() {
         EISOneToManyMapping clone = (EISOneToManyMapping)super.clone();
         clone.setSourceForeignKeysToTargetKeys((Map)((HashMap)getSourceForeignKeysToTargetKeys()).clone());
@@ -682,6 +683,7 @@ public class EISOneToManyMapping extends CollectionMapping implements EISMapping
     /**
      * Return all the fields mapped by the mapping.
      */
+    @Override
     protected Vector collectFields() {
         if (isForeignKeyRelationship()) {
             if (this.getForeignKeyGroupingElement() != null) {
@@ -746,6 +748,7 @@ public class EISOneToManyMapping extends CollectionMapping implements EISMapping
      * made using identity and, when appropriate, the value of the element's key
      * for the Map container.
      */
+    @Override
     public ChangeRecord compareForChange(Object clone, Object backup, ObjectChangeSet owner, AbstractSession session) {
         if (isForeignKeyRelationship()) {
             if ((this.getAttributeValueFromObject(clone) != null) && (!this.isAttributeValueInstantiatedOrChanged(clone))) {
@@ -761,6 +764,7 @@ public class EISOneToManyMapping extends CollectionMapping implements EISMapping
      * INTERNAL:
      * Compare the attributes belonging to this mapping for the objects.
      */
+    @Override
     public boolean compareObjects(Object object1, Object object2, AbstractSession session) {
         if (isForeignKeyRelationship()) {
             return (new EISOneToManyMappingHelper(this)).compareObjects(object1, object2, session);
@@ -769,19 +773,21 @@ public class EISOneToManyMapping extends CollectionMapping implements EISMapping
     }
 
     /**
-    * ADVANCED:
-    * This method is used to have an object add to a collection once the changeSet is applied
-    * The referenceKey parameter should only be used for direct Maps.
-    */
+     * ADVANCED:
+     * This method is used to have an object add to a collection once the changeSet is applied
+     * The referenceKey parameter should only be used for direct Maps.
+     */
+    @Override
     public void simpleAddToCollectionChangeRecord(Object referenceKey, Object changeSetToAdd, ObjectChangeSet changeSet, AbstractSession session) {
         (new EISOneToManyMappingHelper(this)).simpleAddToCollectionChangeRecord(referenceKey, changeSetToAdd, changeSet, session);
     }
 
     /**
-    * ADVANCED:
-    * This method is used to have an object removed from a collection once the changeSet is applied
-    * The referenceKey parameter should only be used for direct Maps.
-    */
+     * ADVANCED:
+     * This method is used to have an object removed from a collection once the changeSet is applied
+     * The referenceKey parameter should only be used for direct Maps.
+     */
+    @Override
     public void simpleRemoveFromCollectionChangeRecord(Object referenceKey, Object changeSetToRemove, ObjectChangeSet changeSet, AbstractSession session) {
         (new EISOneToManyMappingHelper(this)).simpleRemoveFromCollectionChangeRecord(referenceKey, changeSetToRemove, changeSet, session);
     }
@@ -802,7 +808,7 @@ public class EISOneToManyMapping extends CollectionMapping implements EISMapping
     }
 
     /**
-     *    This method will make sure that all the records privately owned by this mapping are
+     * This method will make sure that all the records privately owned by this mapping are
      * actually removed. If such records are found then those are all read and removed one
      * by one along with their privately owned parts.
      */
@@ -843,6 +849,7 @@ public class EISOneToManyMapping extends CollectionMapping implements EISMapping
      * Return the value of the reference attribute or a value holder.
      * Check whether the mapping's attribute should be optimized through batch and joining.
      */
+    @Override
     public Object valueFromRow(AbstractRecord row, JoinedAttributeManager joinManager, ObjectBuildingQuery sourceQuery, AbstractSession executionSession) throws DatabaseException {
         if (((EISDescriptor) this.getDescriptor()).getDataFormat() == EISDescriptor.XML) {
             ((XMLRecord) row).setSession(executionSession);
@@ -996,6 +1003,7 @@ public class EISOneToManyMapping extends CollectionMapping implements EISMapping
      * This row is built for shallow insert which happens in case of bidirectional inserts.
      * The foreign keys must be set to null to avoid constraints.
      */
+    @Override
     public void writeFromObjectIntoRowForShallowInsert(Object object, AbstractRecord row, AbstractSession session) {
         if (isForeignKeyRelationship() && !isReadOnly()) {
             if (getForeignKeyGroupingElement() != null) {
@@ -1013,6 +1021,7 @@ public class EISOneToManyMapping extends CollectionMapping implements EISMapping
      * This row is built for shallow insert which happens in case of bidirectional inserts.
      * The foreign keys must be set to null to avoid constraints.
      */
+    @Override
     public void writeFromObjectIntoRowForShallowInsertWithChangeRecord(ChangeRecord changeRecord, AbstractRecord row, AbstractSession session) {
         if (isForeignKeyRelationship() && !isReadOnly()) {
             if (getForeignKeyGroupingElement() != null) {
@@ -1030,6 +1039,7 @@ public class EISOneToManyMapping extends CollectionMapping implements EISMapping
      * If any of the references objects has changed, write out
      * all the keys.
      */
+    @Override
     public void writeFromObjectIntoRowForUpdate(WriteObjectQuery writeQuery, AbstractRecord row) throws DescriptorException {
         if (!this.isAttributeValueInstantiatedOrChanged(writeQuery.getObject())) {
             return;
@@ -1070,6 +1080,7 @@ public class EISOneToManyMapping extends CollectionMapping implements EISMapping
      * INTERNAL:
      * Write fields needed for insert into the template for with null values.
      */
+    @Override
     public void writeInsertFieldsIntoRow(AbstractRecord row, AbstractSession session) {
         if (isForeignKeyRelationship() && !isReadOnly()) {
             if (getForeignKeyGroupingElement() != null) {
@@ -1086,14 +1097,7 @@ public class EISOneToManyMapping extends CollectionMapping implements EISMapping
      * INTERNAL:
      * This method is not supported in an EIS environment.
      */
-    protected Object executeBatchQueryForPessimisticLocking(DatabaseQuery query, UnitOfWorkImpl unitOfWork, AbstractRecord argumentRow) {
-        throw DescriptorException.invalidMappingOperation(this, "executeBatchQueryForPessimisticLocking");
-    }
-
-    /**
-     * INTERNAL:
-     * This method is not supported in an EIS environment.
-     */
+    @Override
     public void setSelectionSQLString(String sqlString) {
         throw DescriptorException.invalidMappingOperation(this, "setSelectionSQLString");
     }
@@ -1102,6 +1106,7 @@ public class EISOneToManyMapping extends CollectionMapping implements EISMapping
      * INTERNAL:
      * This method is not supported in an EIS environment.
      */
+    @Override
     public void setSelectionCriteria(Expression anExpression) {
         throw DescriptorException.invalidMappingOperation(this, "setSelectionCriteria");
     }
@@ -1110,6 +1115,7 @@ public class EISOneToManyMapping extends CollectionMapping implements EISMapping
      * INTERNAL:
      * This method is not supported in an EIS environment.
      */
+    @Override
     public void setUsesBatchReading(boolean usesBatchReading) {
         throw DescriptorException.invalidMappingOperation(this, "setUsesBatchReading");
     }
@@ -1118,6 +1124,7 @@ public class EISOneToManyMapping extends CollectionMapping implements EISMapping
      * INTERNAL:
      * This method is not supported in an EIS environment.
      */
+    @Override
     public boolean shouldUseBatchReading() {
         throw DescriptorException.invalidMappingOperation(this, "shouldUseBatchReading");
     }
@@ -1126,6 +1133,7 @@ public class EISOneToManyMapping extends CollectionMapping implements EISMapping
      * INTERNAL:
      * This method is not supported in an EIS environment.
      */
+    @Override
     public void useBatchReading() {
         throw DescriptorException.invalidMappingOperation(this, "useBatchReading");
     }
@@ -1134,6 +1142,7 @@ public class EISOneToManyMapping extends CollectionMapping implements EISMapping
      * INTERNAL:
      * This method is not supported in an EIS environment.
      */
+    @Override
     public void dontUseBatchReading() {
         throw DescriptorException.invalidMappingOperation(this, "dontUseBatchReading");
     }
@@ -1142,6 +1151,7 @@ public class EISOneToManyMapping extends CollectionMapping implements EISMapping
      * INTERNAL:
      * This method is not supported in an EIS environment.
      */
+    @Override
     public void addAscendingOrdering(String queryKeyName) {
         throw DescriptorException.invalidMappingOperation(this, "addAscendingOrdering");
     }
@@ -1150,6 +1160,7 @@ public class EISOneToManyMapping extends CollectionMapping implements EISMapping
      * INTERNAL:
      * This method is not supported in an EIS environment.
      */
+    @Override
     public void addDescendingOrdering(String queryKeyName) {
         throw DescriptorException.invalidMappingOperation(this, "addDescendingOrdering");
     }
@@ -1158,6 +1169,7 @@ public class EISOneToManyMapping extends CollectionMapping implements EISMapping
      * INTERNAL:
      * This method is not supported in an EIS environment.
      */
+    @Override
     public void setDeleteAllSQLString(String sqlString) {
         throw DescriptorException.invalidMappingOperation(this, "setDeleteAllSQLString");
     }

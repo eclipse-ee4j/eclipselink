@@ -133,7 +133,7 @@ public class DeleteObjectQuery extends ObjectLevelModifyQuery {
         Object object = getObject();
         boolean isUnitOfWork = session.isUnitOfWork();
         try {
-            // Check if the object has already been commited, then no work is required
+            // Check if the object has already been committed, then no work is required
             if (commitManager.isProcessedCommit(object)) {
                 return object;
             }
@@ -165,7 +165,15 @@ public class DeleteObjectQuery extends ObjectLevelModifyQuery {
             if (QueryMonitor.shouldMonitor()) {
                 QueryMonitor.incrementDelete(this);
             }
-            int rowCount = getQueryMechanism().deleteObject().intValue();
+            int rowCount = 0;
+            // If the object was/will be deleted from a cascade delete constraint, ignore it.
+            if (isUnitOfWork && ((UnitOfWorkImpl)session).hasCascadeDeleteObjects()
+                    && ((UnitOfWorkImpl)session).getCascadeDeleteObjects().contains(object)) {
+                // Cascade delete does not check optimistic lock, assume ok.
+                rowCount = 1;
+            } else {
+                rowCount = getQueryMechanism().deleteObject().intValue();
+            }
 
             if (rowCount < 1) {
                 if (session.hasEventManager()) {

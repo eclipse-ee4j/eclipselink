@@ -24,7 +24,12 @@ import org.eclipse.persistence.descriptors.ClassDescriptor;
 
 /**
  * <p><b>Purpose</b>:
- * Query used to delete a collection of objects
+ * Query used to delete a collection of objects.
+ * This is used by mappings to delete all of their target objects in a single database call.
+ * The SQL/SQLStatements must be provided.
+ * <p>
+ * DeleteAll can also be used with an Expression (or JPQL) to dynamically delete
+ * a set of objects from the database, and invalidate them in the cache.
  *
  * <p><b>Responsibilities</b>:
  * <ul>
@@ -37,8 +42,14 @@ import org.eclipse.persistence.descriptors.ClassDescriptor;
  */
 public class DeleteAllQuery extends ModifyAllQuery {
 
-    /* Vector containing objects to be deleted, these should be removed from the identity map after deletion. */
-    protected Vector objects;
+    /** List containing objects to be deleted, these should be removed from the identity map after deletion. */
+    protected List<Object> objects;
+
+    /**
+     * Defines if objects should be remove from the persistence context only (no database).
+     * This is used if delete was already cascaded by the database.
+     */
+    protected boolean isInMemoryOnly;
 
     /**
      * PUBLIC:
@@ -65,6 +76,24 @@ public class DeleteAllQuery extends ModifyAllQuery {
     }
 
     /**
+     * INTERNAL:
+     * Return if objects should be remove from the persistence context only (no database).
+     * This is used if delete was already cascaded by the database.
+     */
+    public boolean isInMemoryOnly() {
+        return isInMemoryOnly;
+    }
+
+    /**
+     * INTERNAL:
+     * Set if objects should be remove from the persistence context only (no database).
+     * This is used if delete was already cascaded by the database.
+     */
+    public void setIsInMemoryOnly(boolean isInMemoryOnly) {
+        this.isInMemoryOnly = isInMemoryOnly;
+    }
+
+    /**
      * PUBLIC:
      * Return if this is a delete all query.
      */
@@ -78,14 +107,9 @@ public class DeleteAllQuery extends ModifyAllQuery {
      * an exception should be thrown (ObjectLevelModify case), or a transaction
      * should be started early and execute on parent if remote (dataModify case).
      * A modify query is NEVER executed on the parent, unless remote session.
-     * @param unitOfWork
-     * @param translationRow
-     * @return
-     * @throws org.eclipse.persistence.essentials.exceptions.DatabaseException
-     * @throws org.eclipse.persistence.essentials.exceptions.OptimisticLockException
      */
-    public Object executeInUnitOfWork(UnitOfWorkImpl unitOfWork, AbstractRecord translationRow) throws DatabaseException, OptimisticLockException {
-        if (getObjects() != null) {
+    public Object executeInUnitOfWork(UnitOfWorkImpl unitOfWork, AbstractRecord translationRow) throws DatabaseException {
+        if (this.objects != null) {
             if (unitOfWork.isAfterWriteChangesButBeforeCommit()) {
                 throw ValidationException.illegalOperationForUnitOfWorkLifecycle(unitOfWork.getLifecycle(), "executeQuery(DeleteAllQuery)");
             }
@@ -110,68 +134,72 @@ public class DeleteAllQuery extends ModifyAllQuery {
      */
     public Object executeDatabaseQuery() throws DatabaseException {
         // CR# 4286
-        if (getObjects() != null) {
+        if (this.objects != null) {
 
-            if(isExpressionQuery() && getSelectionCriteria() == null) {
+            if (isExpressionQuery() && getSelectionCriteria() == null) {
                 // DeleteAllQuery has objects so it *must* have selectionCriteria, too
-                throw QueryException.deleteAllQuerySpecifiesObjectsButNotSelectionCriteria(getDescriptor(), this, getObjects().toString());
+                throw QueryException.deleteAllQuerySpecifiesObjectsButNotSelectionCriteria(getDescriptor(), this, this.objects.toString());
             }
             
             // Optimistic lock check not required because objects are deleted individually in that case.
             try {
-                getSession().beginTransaction();
+                this.session.beginTransaction();
     
                 // Need to run pre-delete selector if available.
                 // PERF: Avoid events if no listeners.
-                if (getDescriptor().getEventManager().hasAnyEventListeners()) {
-                    for (Enumeration deletedObjectsEnum = getObjects().elements();
-                             deletedObjectsEnum.hasMoreElements();) {
-                        DescriptorEvent event = new DescriptorEvent(deletedObjectsEnum.nextElement());
+                if (this.descriptor.getEventManager().hasAnyEventListeners()) {
+                    for (Object object : this.objects) {
+                        DescriptorEvent event = new DescriptorEvent(object);
                         event.setEventCode(DescriptorEventManager.PreDeleteEvent);
-                        event.setSession(getSession());
+                        event.setSession(this.session);
                         event.setQuery(this);
-                        getDescriptor().getEventManager().executeEvent(event);
+                        this.descriptor.getEventManager().executeEvent(event);
                     }
                 }
-    
-                result = getQueryMechanism().deleteAll();
+
+                if (this.isInMemoryOnly) {
+                    result = Integer.valueOf(0);
+                } else {
+                    result = this.queryMechanism.deleteAll();
+                }
     
                 // Need to run post-delete selector if available.
                 // PERF: Avoid events if no listeners.
-                if (getDescriptor().getEventManager().hasAnyEventListeners()) {
-                    for (Enumeration deletedObjectsEnum = getObjects().elements();
-                             deletedObjectsEnum.hasMoreElements();) {
-                        DescriptorEvent event = new DescriptorEvent(deletedObjectsEnum.nextElement());
+                if (this.descriptor.getEventManager().hasAnyEventListeners()) {
+                    for (Object object : this.objects) {
+                        DescriptorEvent event = new DescriptorEvent(object);
                         event.setEventCode(DescriptorEventManager.PostDeleteEvent);
-                        event.setSession(getSession());
+                        event.setSession(this.session);
                         event.setQuery(this);
-                        getDescriptor().getEventManager().executeEvent(event);
+                        this.descriptor.getEventManager().executeEvent(event);
                     }
                 }
     
                 if (shouldMaintainCache()) {
                     // remove from the cache.
-                    for (Enumeration objectsEnum = getObjects().elements();
-                             objectsEnum.hasMoreElements();) {
-                        Object deleted = objectsEnum.nextElement();
-                        if (getSession().isUnitOfWork()) {
+                    for (Object deleted : this.objects) {
+                        if (this.session.isUnitOfWork()) {
                             //BUG #2612169: Unwrap is needed
-                            deleted = getDescriptor().getObjectBuilder().unwrapObject(deleted, getSession());
-                            ((UnitOfWorkImpl)getSession()).addObjectDeletedDuringCommit(deleted, getDescriptor());
+                            deleted = this.descriptor.getObjectBuilder().unwrapObject(deleted, getSession());
+                            ((UnitOfWorkImpl)this.session).addObjectDeletedDuringCommit(deleted, this.descriptor);
                         } else {
-                            getSession().getIdentityMapAccessor().removeFromIdentityMap(deleted);
+                            this.session.getIdentityMapAccessor().removeFromIdentityMap(deleted);
                         }
                     }
                 }
     
-                getSession().commitTransaction();
+                this.session.commitTransaction();
     
             } catch (RuntimeException exception) {
-                getSession().rollbackTransaction();
+                this.session.rollbackTransaction();
                 throw exception;
             }
         } else {
-            result = getQueryMechanism().deleteAll();// fire the SQL to the database
+            if (this.isInMemoryOnly) {
+                result = Integer.valueOf(0);
+            } else {
+                result = this.queryMechanism.deleteAll();// fire the SQL to the database
+            }
             mergeChangesIntoSharedCache();
         }
         
@@ -186,7 +214,7 @@ public class DeleteAllQuery extends ModifyAllQuery {
         this.checkPrepare(session, translationRow);
         DeleteAllQuery queryToExecute = (DeleteAllQuery)clone();
 
-        // Then prapared for the single execution.
+        // Then prepare for the single execution.
         queryToExecute.setTranslationRow(translationRow);
         queryToExecute.setSession(session);
         queryToExecute.setObjects(objects);
@@ -208,7 +236,7 @@ public class DeleteAllQuery extends ModifyAllQuery {
      * PUBLIC:
      * Return the objects that are to be deleted
      */
-    public Vector getObjects() {
+    public List<Object> getObjects() {
         return objects;
     }
 
@@ -243,23 +271,22 @@ public class DeleteAllQuery extends ModifyAllQuery {
      * Set the objects to be deleted.
      * Also REQUIRED is a selection criteria or SQL string that performs the deletion of the objects.
      * This does not generate the SQL call from the deleted objects.
-     * #setObject() should not be called.
-     * 
-     * Vector objects used as an indicator of one of two possible
+     * <p>
+     * List objects used as an indicator of one of two possible
      * ways the query may behave:
-     *   objects != null - the "old" functionality used by OneToMany mapping
+     * <p> objects != null - the "old" functionality used by OneToMany mapping
      *     objects deleted from the cache, either selection expression or custom sql
      *     should be provided for deletion from db;
-     *   objects == null - the "new" functionality (on par with UpdateAllQuery)
+     * <p> objects == null - the "new" functionality (on par with UpdateAllQuery)
      *     the cache is either left alone or in-memory query finds the cached objects to be deleted,
-     *       and these objects are invalidated in cache.
-     *   
-     *   Note that empty objects is still objects != case.
+     *     and these objects are invalidated in cache.
+     * <p>
+     * Note that empty objects is still objects != case.
      *     Signal that no cache altering is required.
      *     Used by AggregationCollectionMapping and OneToManyMapping in case they use indirection
-     *       and the ValueHolder has not been instantiated.
+     *     and the ValueHolder has not been instantiated.
      */
-    public void setObjects(Vector objectCollection) {
-        objects = objectCollection;
+    public void setObjects(List<Object> objectCollection) {
+        this.objects = objectCollection;
     }
 }

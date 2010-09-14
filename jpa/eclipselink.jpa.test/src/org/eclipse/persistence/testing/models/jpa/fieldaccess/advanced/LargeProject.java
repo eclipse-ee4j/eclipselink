@@ -14,6 +14,8 @@ package org.eclipse.persistence.testing.models.jpa.fieldaccess.advanced;
 
 import javax.persistence.*;
 
+import org.eclipse.persistence.annotations.CascadeOnDelete;
+
 /**
  * Local interface for the large project bean.
  * This is the bean's public/local interface for the clients usage.
@@ -22,6 +24,7 @@ import javax.persistence.*;
  */
 @Entity(name="LargeProject")
 @Table(name="CMP3_FA_LPROJECT")
+@CascadeOnDelete
 @DiscriminatorValue("L")
 @NamedQueries({
 @NamedQuery(

@@ -22,6 +22,7 @@ import java.io.StringWriter;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Vector;
+import java.util.List;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
@@ -331,7 +332,7 @@ public class ProviderHelper extends XRServiceFactory {
                     }
                     else {
                         ClassDescriptor desc = null;
-                        for (XMLDescriptor xdesc : (Vector<XMLDescriptor>)oxProject.getOrderedDescriptors()) {
+                        for (XMLDescriptor xdesc : (List<XMLDescriptor>)(List)oxProject.getOrderedDescriptors()) {
                             XMLSchemaReference schemaReference = xdesc.getSchemaReference();
                             if (schemaReference != null && 
                                 schemaReference.getSchemaContext().equalsIgnoreCase(key)) {

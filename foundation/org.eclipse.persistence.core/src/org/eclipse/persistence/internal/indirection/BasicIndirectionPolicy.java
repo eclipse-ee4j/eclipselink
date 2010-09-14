@@ -305,6 +305,18 @@ public class BasicIndirectionPolicy extends IndirectionPolicy {
     public boolean objectIsInstantiated(Object object) {
         return ((ValueHolderInterface)object).isInstantiated();
     }
+    
+    /**
+     * INTERNAL:
+     * Return whether the specified object can be instantiated without database access.
+     */
+    public boolean objectIsEasilyInstantiated(Object object) {
+        if (object instanceof DatabaseValueHolder) {
+            return ((DatabaseValueHolder)object).isEasilyInstantiated();
+        } else {
+            return true;
+        }
+    }
 
     /**
      * INTERNAL:

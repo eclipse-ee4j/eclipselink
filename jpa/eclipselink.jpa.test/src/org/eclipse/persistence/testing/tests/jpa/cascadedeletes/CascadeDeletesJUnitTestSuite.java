@@ -32,7 +32,6 @@ import org.eclipse.persistence.testing.models.jpa.cascadedeletes.RootA;
 import org.eclipse.persistence.testing.models.jpa.cascadedeletes.ThreadInfo;
 
 public class CascadeDeletesJUnitTestSuite extends JUnitTestCase {
-    private static Integer m_Id;
 
     public CascadeDeletesJUnitTestSuite() {
         super();
@@ -94,6 +93,10 @@ public class CascadeDeletesJUnitTestSuite extends JUnitTestCase {
         try {
             beginTransaction(em);
             rootA = em.find(RootA.class, rootA.getId());
+            // :(
+            for (BranchA a : rootA.getBranchAs()) {
+                a.getLeafs().size();
+            }
             em.remove(rootA);
             for (PersistentIdentity entity : allEntities) {
                 assertNull("Contains found removed entity", em.find(entity.getClass(), entity.getId()));

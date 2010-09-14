@@ -328,7 +328,6 @@ public class RepeatableWriteUnitOfWork extends UnitOfWorkImpl {
      * For synchronized units of work, dump SQL to database
      */
     public void issueSQLbeforeCompletion() {
-
         super.issueSQLbeforeCompletion(false);
 
         if (this.cumulativeUOWChangeSet != null){
@@ -397,12 +396,12 @@ public class RepeatableWriteUnitOfWork extends UnitOfWorkImpl {
      */
     public void writeChanges() {
         // Check for a nested flush and return early if we are in one
-        if(this.isWithinFlush()) {
+        if (this.isWithinFlush()) {
             AbstractSessionLog.getLog().log(SessionLog.WARNING,
                 "nested_entity_manager_flush_not_executed_pre_query_changes_may_be_pending", this.getClass().getSimpleName());
             return;
-        } 
-        
+        }
+        log(SessionLog.FINER, SessionLog.TRANSACTION, "begin_unit_of_work_flush");
         if (this.unitOfWorkChangeSet == null) {
             this.unitOfWorkChangeSet = new UnitOfWorkChangeSet(this);
         }
@@ -417,6 +416,7 @@ public class RepeatableWriteUnitOfWork extends UnitOfWorkImpl {
         // Write those changes to the database.
         if (!changeSet.hasChanges() && !changeSet.hasForcedChanges() && ! this.hasDeletedObjects() && ! this.hasModifyAllQueries()) {
             this.isWithinFlush = false; // clear the flag in the case that we don't have changes
+            log(SessionLog.FINER, SessionLog.TRANSACTION, "end_unit_of_work_flush");
             return;
         }
         try {
@@ -436,8 +436,10 @@ public class RepeatableWriteUnitOfWork extends UnitOfWorkImpl {
             // Merge those changes back into the backup clones and the final uowChangeSet.
             this.cumulativeUOWChangeSet.mergeUnitOfWorkChangeSet(changeSet, this, true);
         }
+        log(SessionLog.FINER, SessionLog.TRANSACTION, "end_unit_of_work_flush");
 
         resumeUnitOfWork();
+        log(SessionLog.FINER, SessionLog.TRANSACTION, "resume_unit_of_work");
     }
 
     /**

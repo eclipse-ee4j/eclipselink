@@ -100,7 +100,6 @@ public class OneToOneAccessor extends ObjectAccessor {
         
         // Initialize our mapping now with what we found.
         OneToOneMapping mapping = initOneToOneMapping();
-        setMapping(mapping);
         
         if (hasMappedBy()) {
             // Non-owning side, process the foreign keys from the owner.

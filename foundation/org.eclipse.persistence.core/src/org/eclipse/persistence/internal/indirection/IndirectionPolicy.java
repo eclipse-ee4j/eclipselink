@@ -294,6 +294,12 @@ public abstract class IndirectionPolicy implements Cloneable, Serializable {
     
     /**
      * INTERNAL:
+     * Return whether the specified object can be instantiated without database access.
+     */
+    public abstract boolean objectIsEasilyInstantiated(Object object);
+    
+    /**
+     * INTERNAL:
      * Return whether the specified object is instantiated, or if it has changes.
      */
     public boolean objectIsInstantiatedOrChanged(Object object) {

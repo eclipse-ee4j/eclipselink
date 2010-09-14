@@ -3985,24 +3985,23 @@ public abstract class AbstractSession implements org.eclipse.persistence.session
      * @param allowSameQueryNameDiffArgsCopyToSession  if the value is true, it allow
      * multiple queries of the same name but different arguments to be copied to the session.
      */
-    public void copyDescriptorNamedQueries(boolean allowSameQueryNameDiffArgsCopyToSession){
-        Vector descriptors = getProject().getOrderedDescriptors();
-        for( Iterator descItr = descriptors.iterator(); descItr.hasNext(); ){
-            Map queries  = ((ClassDescriptor)descItr.next()).getQueryManager().getQueries();
-            if(queries!=null && queries.size()>0){
-                for(Iterator keyValueItr = queries.entrySet().iterator();keyValueItr.hasNext();){
+    public void copyDescriptorNamedQueries(boolean allowSameQueryNameDiffArgsCopyToSession) {
+        for (ClassDescriptor descriptor : getProject().getOrderedDescriptors()) {
+            Map queries  = descriptor.getQueryManager().getQueries();
+            if ((queries != null) && (queries.size() > 0)) {
+                for (Iterator keyValueItr = queries.entrySet().iterator(); keyValueItr.hasNext();){
                     Map.Entry entry = (Map.Entry) keyValueItr.next();
                     Vector thisQueries = (Vector)entry.getValue();
-                    if(thisQueries!=null && thisQueries.size()>0){
-                        for(Iterator thisQueriesItr=thisQueries.iterator();thisQueriesItr.hasNext();){
+                    if ((thisQueries != null) && (thisQueries.size() > 0)){
+                        for( Iterator thisQueriesItr=thisQueries.iterator();thisQueriesItr.hasNext();){
                             DatabaseQuery queryToBeAdded = (DatabaseQuery)thisQueriesItr.next();
-                            if(allowSameQueryNameDiffArgsCopyToSession){
+                            if (allowSameQueryNameDiffArgsCopyToSession){
                                 addQuery(queryToBeAdded);
                             } else {
-                                if(getQuery(queryToBeAdded.getName())==null){
+                                if (getQuery(queryToBeAdded.getName()) == null){
                                     addQuery(queryToBeAdded);
-                                }else{
-                                    this.log(SessionLog.WARNING, SessionLog.PROPERTIES, "descriptor_named_query_cannot_be_added", new Object[]{queryToBeAdded,queryToBeAdded.getName(),queryToBeAdded.getArgumentTypes()});
+                                } else {
+                                    log(SessionLog.WARNING, SessionLog.PROPERTIES, "descriptor_named_query_cannot_be_added", new Object[]{queryToBeAdded,queryToBeAdded.getName(),queryToBeAdded.getArgumentTypes()});
                                 }
                             }
                         }

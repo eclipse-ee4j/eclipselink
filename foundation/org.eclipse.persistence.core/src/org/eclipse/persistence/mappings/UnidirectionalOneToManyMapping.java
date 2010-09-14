@@ -216,15 +216,6 @@ public class UnidirectionalOneToManyMapping extends OneToManyMapping {
             super.preDelete(query);
         } else {
             updateTargetRowPreDeleteSource(query);
-            if (getContainerPolicy().propagatesEventsToCollection()){
-                Object queryObject = query.getObject();
-                Object values = getAttributeValueFromObject(queryObject);
-                Object iterator = containerPolicy.iteratorFor(values);
-                while (containerPolicy.hasNext(iterator)){
-                    Object wrappedObject = containerPolicy.nextEntry(iterator, query.getSession());
-                    containerPolicy.propogatePreDelete(query, wrappedObject);
-                }
-            }
         }
 
     }
@@ -275,7 +266,7 @@ public class UnidirectionalOneToManyMapping extends OneToManyMapping {
      * Overridden by mappings that require objects to be deleted contribute to change set creation.
      */
     @Override
-    public void postCalculateChangesOnDeleted(Object deletedObject, UnitOfWorkChangeSet uowChangeSet, UnitOfWorkImpl uow) {        
+    public void postCalculateChangesOnDeleted(Object deletedObject, UnitOfWorkChangeSet uowChangeSet, UnitOfWorkImpl uow) {
         // the source is deleted:
         // trigger the indirection - we have to get optimistic lock exception
         // in case another thread has updated one of the targets:
@@ -284,10 +275,10 @@ public class UnidirectionalOneToManyMapping extends OneToManyMapping {
         // then the version update is executed and it throws optimistic lock exception.
         Object col = getRealCollectionAttributeValueFromObject(deletedObject, uow);
         if (col != null) {
-            Object iterator = containerPolicy.iteratorFor(col);
-            while (containerPolicy.hasNext(iterator)) {
-                Object target = containerPolicy.next(iterator, uow);
-                ObjectChangeSet change = referenceDescriptor.getObjectBuilder().createObjectChangeSet(target, uowChangeSet, uow);
+            Object iterator = this.containerPolicy.iteratorFor(col);
+            while (this.containerPolicy.hasNext(iterator)) {
+                Object target = this.containerPolicy.next(iterator, uow);
+                ObjectChangeSet change = this.referenceDescriptor.getObjectBuilder().createObjectChangeSet(target, uowChangeSet, uow);
                 if (!change.hasChanges()) {
                     change.setShouldModifyVersionField(Boolean.TRUE);
                     ((org.eclipse.persistence.internal.sessions.UnitOfWorkChangeSet)change.getUOWChangeSet()).addObjectChangeSet(change, uow, false);

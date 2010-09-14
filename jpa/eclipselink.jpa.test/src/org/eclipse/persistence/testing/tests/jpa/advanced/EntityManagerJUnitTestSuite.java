@@ -127,13 +127,12 @@ import org.eclipse.persistence.queries.FetchGroupTracker;
 import org.eclipse.persistence.platform.server.was.WebSphere_7_Platform;
 
 import org.eclipse.persistence.testing.framework.DriverWrapper;
+import org.eclipse.persistence.testing.framework.QuerySQLTracker;
 import org.eclipse.persistence.testing.framework.junit.JUnitTestCase;
 import org.eclipse.persistence.testing.framework.junit.JUnitTestCaseHelper;
 import org.eclipse.persistence.testing.framework.TestProblemException;
 import org.eclipse.persistence.testing.models.jpa.advanced.*;
 import org.eclipse.persistence.testing.models.jpa.relationships.CustomerCollection;
-import org.eclipse.persistence.testing.models.jpa.relationships.Item;
-import org.eclipse.persistence.testing.models.jpa.relationships.Order;
 
 /**
  * Test the EntityManager API using the advanced model.
@@ -335,6 +334,8 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
         suite.addTest(new EntityManagerJUnitTestSuite("testFlushClearFind"));
         suite.addTest(new EntityManagerJUnitTestSuite("testFlushClearQueryPk"));
         suite.addTest(new EntityManagerJUnitTestSuite("testFlushClearQueryNonPK"));
+        suite.addTest(new EntityManagerJUnitTestSuite("testDeleteEmployee"));
+        suite.addTest(new EntityManagerJUnitTestSuite("testDeleteMan"));
         if (!isJPA10()) {
             suite.addTest(new EntityManagerJUnitTestSuite("testDetachNull"));
             suite.addTest(new EntityManagerJUnitTestSuite("testDetachRemovedObject"));
@@ -2686,6 +2687,91 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
         
         assertFalse("removed object found", foundBeforeFlush);
         assertFalse("removed object found after flush", foundAfterFlush);
+    }
+    
+    // Test that deleting an employee works correctly.
+    public void testDeleteEmployee() {        
+        Employee employee = new Employee();
+        employee.addPhoneNumber(new PhoneNumber("home", "123", "4567"));
+        employee.addPhoneNumber(new PhoneNumber("fax", "456", "4567"));
+        employee.addResponsibility("work hard");
+        employee.addResponsibility("write code");
+        employee.addProject(new Project());
+        employee.setWorkWeek(new HashSet<Employee.Weekdays>());
+        employee.getWorkWeek().add(Employee.Weekdays.MONDAY);
+        employee.getWorkWeek().add(Employee.Weekdays.TUESDAY);
+        QuerySQLTracker counter = new QuerySQLTracker(getServerSession());
+        EntityManager em = createEntityManager();
+        try {
+            beginTransaction(em);
+            em.persist(employee);
+            commitTransaction(em);
+            closeEntityManager(em);
+            clearCache();
+            em = createEntityManager();
+            beginTransaction(em);
+            employee = em.find(Employee.class, employee.getId());
+            counter.getSqlStatements().clear();
+            em.remove(employee);
+            commitTransaction(em);
+            if (isWeavingEnabled() && counter.getSqlStatements().size() > 13) {
+                fail("Only 13 sql statements should have occured:" + counter.getSqlStatements().size());
+            }
+            beginTransaction(em);    
+            verifyDelete(employee);
+            commitTransaction(em);
+        } finally {
+            if (isTransactionActive(em)) {
+                rollbackTransaction(em);
+            }
+            closeEntityManager(em);
+        }
+    }
+        
+    // Test that deleting an Man works correctly.
+    public void testDeleteMan() {
+        EntityManager em = createEntityManager();
+        QuerySQLTracker counter = null;
+        try {
+            beginTransaction(em);
+            Man man = new Man();
+            em.persist(man);
+            Woman woman = new Woman();
+            em.persist(woman);
+            PartnerLink link = new PartnerLink();
+            em.persist(link);
+            man.setPartnerLink(link);
+            link.setMan(man);
+            woman.setPartnerLink(link);
+            link.setWoman(woman);                        
+            commitTransaction(em);
+            closeEntityManager(em);
+            clearCache();
+            counter = new QuerySQLTracker(getServerSession());
+            em = createEntityManager();
+            beginTransaction(em);
+            // Count SQL.
+            man = em.find(Man.class, man.getId());
+            woman = em.find(Woman.class, woman.getId());
+            woman.setPartnerLink(null);
+            counter.getSqlStatements().clear();
+            em.remove(man);
+            commitTransaction(em);
+            if (counter.getSqlStatements().size() > 2) {
+                fail("Only 2 delete should have occured.");
+            }
+            beginTransaction(em);
+            verifyDelete(man);
+            commitTransaction(em);
+        } finally {
+            if (counter != null) {
+                counter.remove();
+            }
+            if (isTransactionActive(em)) {
+                rollbackTransaction(em);
+            }
+            closeEntityManager(em);
+        }
     }
     
     // test for bug 4681287: 

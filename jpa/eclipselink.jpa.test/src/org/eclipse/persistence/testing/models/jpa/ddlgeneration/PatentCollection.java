@@ -15,13 +15,16 @@ package org.eclipse.persistence.testing.models.jpa.ddlgeneration;
 import javax.persistence.Embeddable;
 import javax.persistence.ManyToMany;
 
+import org.eclipse.persistence.annotations.CascadeOnDelete;
+
 import java.util.ArrayList;
 import java.util.List;
 
 @Embeddable
 public class PatentCollection {
 
-    @ManyToMany 
+    @ManyToMany
+    @CascadeOnDelete
     private List<Patent> patents = new ArrayList<Patent>();
 
     public List<Patent> getPatents() {

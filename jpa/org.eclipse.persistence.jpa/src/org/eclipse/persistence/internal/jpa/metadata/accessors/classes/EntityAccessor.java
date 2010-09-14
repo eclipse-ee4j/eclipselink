@@ -93,6 +93,7 @@ import javax.persistence.SecondaryTable;
 import javax.persistence.SecondaryTables;
 import javax.persistence.Table;
 
+import org.eclipse.persistence.annotations.CascadeOnDelete;
 import org.eclipse.persistence.annotations.ClassExtractor;
 import org.eclipse.persistence.annotations.Index;
 import org.eclipse.persistence.annotations.Indexes;
@@ -149,6 +150,8 @@ public class EntityAccessor extends MappedSuperclassAccessor {
     
     private TableMetadata m_table;
     
+    private boolean m_cascadeOnDelete;
+
     /**
      * INTERNAL:
      */
@@ -688,7 +691,8 @@ public class EntityAccessor extends MappedSuperclassAccessor {
             
         // Process the Table and Inheritance metadata.
         processTableAndInheritance();
-        processIndexes();
+        processIndexes();        
+        processCascadeOnDelete();
         
         // Process the common class level attributes that an entity or mapped 
         // superclass may define. This needs to be done before processing
@@ -1213,6 +1217,21 @@ public class EntityAccessor extends MappedSuperclassAccessor {
     
     /**
      * INTERNAL:
+     * Check if CascadeOnDelete was set on the Entity.
+     */
+    protected void processCascadeOnDelete() {
+        MetadataAnnotation annotation = getAnnotation(CascadeOnDelete.class);
+        
+        if (annotation != null) {
+            m_cascadeOnDelete = true;
+        }
+        if (m_cascadeOnDelete) {
+            getDescriptor().getClassDescriptor().setIsCascadeOnDeleteSetOnDatabaseOnSecondaryTables(true);
+        }
+    }
+    
+    /**
+     * INTERNAL:
      * Process index information for the given metadata descriptor.
      */
     protected void processIndexes() {
@@ -1261,8 +1280,10 @@ public class EntityAccessor extends MappedSuperclassAccessor {
                 getDescriptor().getPrimaryTable().getIndexes().add(indexDefinition);
             } else if (table.equals(getDescriptor().getPrimaryTable().getQualifiedName())
                         || table.equals(getDescriptor().getPrimaryTable().getName())) {
+                indexDefinition.setTargetTable(table);
                 getDescriptor().getPrimaryTable().getIndexes().add(indexDefinition);
             } else {
+                indexDefinition.setTargetTable(table);
                 boolean found = false;
                 for (DatabaseTable databaseTable : getDescriptor().getClassDescriptor().getTables()) {
                     if (table.equals(databaseTable.getQualifiedName()) || table.equals(databaseTable.getName())) {
@@ -1419,6 +1440,14 @@ public class EntityAccessor extends MappedSuperclassAccessor {
      */
     public void setTable(TableMetadata table) {
         m_table = table;
+    }
+    
+    public boolean isCascadeOnDelete() {
+        return m_cascadeOnDelete;
+    }
+
+    public void setCascadeOnDelete(boolean cascadeOnDelete) {
+        m_cascadeOnDelete = cascadeOnDelete;
     }
     
     /**

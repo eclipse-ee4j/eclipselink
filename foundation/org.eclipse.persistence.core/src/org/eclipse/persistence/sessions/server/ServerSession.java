@@ -374,8 +374,6 @@ public class ServerSession extends DatabaseSessionImpl implements Server {
         if (!isConnected()) {
             throw ValidationException.loginBeforeAllocatingClientSessions();
         }
-
-        log(SessionLog.FINER, SessionLog.CONNECTION, "client_acquired");
         if (!connectionPolicy.isPooled() && (connectionPolicy.getLogin() == null)) {
             //the user has passed in a connection policy with no login info. Use the 
             //default info from the default connection policy
@@ -410,6 +408,9 @@ public class ServerSession extends DatabaseSessionImpl implements Server {
         }
         if (!connectionPolicy.isLazy()) {
             acquireClientConnection(client);
+        }
+        if (shouldLog(SessionLog.FINER, SessionLog.CONNECTION)) {
+            log(SessionLog.FINER, SessionLog.CONNECTION, "client_acquired", String.valueOf(System.identityHashCode(client)));
         }
 
         return client;

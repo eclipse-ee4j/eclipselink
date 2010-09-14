@@ -20,6 +20,7 @@ import javax.persistence.*;
 
 import org.eclipse.persistence.annotations.BasicCollection;
 import org.eclipse.persistence.annotations.Cache;
+import org.eclipse.persistence.annotations.CascadeOnDelete;
 import org.eclipse.persistence.annotations.CollectionTable;
 import org.eclipse.persistence.annotations.Convert;
 import org.eclipse.persistence.annotations.ConversionValue;
@@ -63,6 +64,7 @@ import static org.eclipse.persistence.annotations.OptimisticLockingType.VERSION_
 @EntityListeners(org.eclipse.persistence.testing.models.jpa.fieldaccess.advanced.EmployeeListener.class)
 @Table(name="CMP3_FA_EMPLOYEE")
 @SecondaryTable(name="CMP3_FA_SALARY")
+@CascadeOnDelete
 @PrimaryKeyJoinColumn(name="EMP_ID", referencedColumnName="EMP_ID")
 @NamedNativeQuery(
     name="findAllFieldAccessSQLEmployees", 
@@ -206,6 +208,7 @@ public class Employee implements Serializable, Cloneable {
     
     @BasicCollection
     @CollectionTable(name="CMP3_FA_EMP_WORKWEEK")
+    @CascadeOnDelete
     private Set<Weekdays> workWeek;
     
     @ManyToMany(cascade={PERSIST, MERGE})
@@ -216,6 +219,7 @@ public class Employee implements Serializable, Cloneable {
         joinColumns=@JoinColumn(name="EMPLOYEES_EMP_ID", referencedColumnName="EMP_ID")
         //inverseJoinColumns=@JoinColumn(name="PROJECTS_PROJ_ID", referencedColumnName="PROJ_ID")
     )
+    @CascadeOnDelete
     private Collection<Project> projects;
     
     @BasicCollection(valueColumn=@Column(name="DESCRIPTION"))
@@ -224,16 +228,17 @@ public class Employee implements Serializable, Cloneable {
     
     @OneToMany(cascade=ALL, mappedBy="owner")
     @PrivateOwned
+    @CascadeOnDelete
     private Collection<PhoneNumber> phoneNumbers;
     
     @OneToMany(cascade=ALL, mappedBy="manager")
     private Collection<Employee> managedEmployees;
     
     public Employee () {
-        this.phoneNumbers = new Vector<PhoneNumber>();
-        this.projects = new Vector<Project>();
-        this.managedEmployees = new Vector<Employee>();
-        this.responsibilities = new Vector<String>();
+        this.phoneNumbers = new ArrayList<PhoneNumber>();
+        this.projects = new ArrayList<Project>();
+        this.managedEmployees = new ArrayList<Employee>();
+        this.responsibilities = new ArrayList<String>();
     }
     
     public Employee(String firstName, String lastName){

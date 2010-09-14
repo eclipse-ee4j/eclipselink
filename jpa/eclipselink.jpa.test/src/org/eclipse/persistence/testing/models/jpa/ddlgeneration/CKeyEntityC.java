@@ -33,6 +33,7 @@ import java.util.Collection;
  */
 @Entity
 @Table(name = "DDL_CKENTC")
+@Index(name="INDEX_BS", table="DDL_CKENT_C_B", columnNames={"C_SEQ", "C_ROLE"})
 public class CKeyEntityC {
 
     @EmbeddedId
@@ -62,7 +63,6 @@ public class CKeyEntityC {
             @JoinColumn(name="B_CODE", referencedColumnName = "CODE")
         }
     )
-    @Index(name="INDEX_BS", table="DDL_CKENT_C_B", columnNames={"C_SEQ", "C_ROLE"})
     private Collection<CKeyEntityB> bs;
 
 

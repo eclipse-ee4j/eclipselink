@@ -129,6 +129,7 @@ public class OneToManyMapping extends CollectionMapping implements RelationalMap
     /**
      * INTERNAL:
      */
+    @Override
     public boolean isRelationalMapping() {
         return true;
     }
@@ -239,6 +240,7 @@ public class OneToManyMapping extends CollectionMapping implements RelationalMap
      * INTERNAL:
      * Clone the appropriate attributes.
      */
+    @Override
     public Object clone() {
         OneToManyMapping clone = (OneToManyMapping)super.clone();
         clone.setTargetForeignKeysToSourceKeys(new HashMap(getTargetForeignKeysToSourceKeys()));
@@ -263,17 +265,21 @@ public class OneToManyMapping extends CollectionMapping implements RelationalMap
     /**
      * Delete all the reference objects with a single query.
      */
-    protected void deleteAll(DeleteObjectQuery query) throws DatabaseException {
-        Object attribute = getAttributeAccessor().getAttributeValueFromObject(query.getObject()); 
-        if(usesIndirection()) {
-           if(attribute == null || !getIndirectionPolicy().objectIsInstantiated(attribute)) {
+    protected void deleteAll(DeleteObjectQuery query, AbstractSession session) throws DatabaseException {
+        Object attribute = getAttributeValueFromObject(query.getObject()); 
+        if (usesIndirection()) {
+           if (!this.indirectionPolicy.objectIsInstantiated(attribute)) {
                // An empty Vector indicates to DeleteAllQuery that no objects should be removed from cache
-               ((DeleteAllQuery)getDeleteAllQuery()).executeDeleteAll(query.getSession().getSessionForClass(getReferenceClass()), query.getTranslationRow(), new Vector(0));
+               ((DeleteAllQuery)this.deleteAllQuery).executeDeleteAll(session.getSessionForClass(this.referenceClass), query.getTranslationRow(), new Vector(0));
                return;
            }
         }
-        Object referenceObjects = this.getRealCollectionAttributeValueFromObject(query.getObject(), query.getSession());
-        ((DeleteAllQuery)getDeleteAllQuery()).executeDeleteAll(query.getSession().getSessionForClass(getReferenceClass()), query.getTranslationRow(), getContainerPolicy().vectorFor(referenceObjects, query.getSession()));
+        Object referenceObjects = getRealCollectionAttributeValueFromObject(query.getObject(), session);
+        // PERF: Avoid delete if empty.
+        if (session.isUnitOfWork() && this.containerPolicy.isEmpty(referenceObjects)) {
+            return;
+        }
+        ((DeleteAllQuery)this.deleteAllQuery).executeDeleteAll(session.getSessionForClass(getReferenceClass()), query.getTranslationRow(), this.containerPolicy.vectorFor(referenceObjects, session));
      }
 
     /**
@@ -425,6 +431,7 @@ public class OneToManyMapping extends CollectionMapping implements RelationalMap
      * Return whether the mapping has any inverse constraint dependencies,
      * such as foreign keys and join tables.
      */
+    @Override
     public boolean hasInverseConstraintDependency() {
         return true;
     }
@@ -433,6 +440,7 @@ public class OneToManyMapping extends CollectionMapping implements RelationalMap
      * INTERNAL:
      * Initialize the mapping.
      */
+    @Override
     public void initialize(AbstractSession session) throws DescriptorException {
         super.initialize(session);
 
@@ -567,6 +575,7 @@ public class OneToManyMapping extends CollectionMapping implements RelationalMap
     protected void initializeDeleteAllQuery() {
         ((DeleteAllQuery)getDeleteAllQuery()).setReferenceClass(getReferenceClass());
         getDeleteAllQuery().setName(getAttributeName());
+        ((DeleteAllQuery)getDeleteAllQuery()).setIsInMemoryOnly(isCascadeOnDeleteSetOnDatabase());
         if (!hasCustomDeleteAllQuery()) {
             // the selection criteria are re-used by the delete all query
             if (getSelectionCriteria() == null) {
@@ -774,6 +783,7 @@ public class OneToManyMapping extends CollectionMapping implements RelationalMap
     /**
      * INTERNAL:
      */
+    @Override
     public boolean isOneToManyMapping() {
         return true;
     }
@@ -790,6 +800,7 @@ public class OneToManyMapping extends CollectionMapping implements RelationalMap
      * INTERNAL:
      * An object was added to the collection during an update, insert it if private.
      */
+    @Override
     protected void objectAddedDuringUpdate(ObjectLevelModifyQuery query, Object objectAdded, ObjectChangeSet changeSet, Map extraData) throws DatabaseException, OptimisticLockException {
         // First insert/update object.
         super.objectAddedDuringUpdate(query, objectAdded, changeSet, extraData);
@@ -814,6 +825,7 @@ public class OneToManyMapping extends CollectionMapping implements RelationalMap
      * INTERNAL:
      * An object was removed to the collection during an update, delete it if private.
      */
+    @Override
     protected void objectRemovedDuringUpdate(ObjectLevelModifyQuery query, Object objectDeleted, Map extraData) throws DatabaseException, OptimisticLockException {
         if(!isPrivateOwned()) {
             if (requiresDataModificationEvents() || containerPolicy.requiresDataModificationEvents()){
@@ -841,6 +853,7 @@ public class OneToManyMapping extends CollectionMapping implements RelationalMap
      * Perform the commit event.
      * This is used in the uow to delay data modifications.
      */
+    @Override
     public void performDataModificationEvent(Object[] event, AbstractSession session) throws DatabaseException, DescriptorException {
         // Hey I might actually want to use an inner class here... ok array for now.
         if (event[0] == PostInsert) {
@@ -858,6 +871,7 @@ public class OneToManyMapping extends CollectionMapping implements RelationalMap
      * INTERNAL:
      * Insert the reference objects.
      */
+    @Override
     public void postInsert(WriteObjectQuery query) throws DatabaseException, OptimisticLockException {
         if (isReadOnly()) {
             return;
@@ -964,43 +978,51 @@ public class OneToManyMapping extends CollectionMapping implements RelationalMap
     @Override
     public void preDelete(DeleteObjectQuery query) throws DatabaseException, OptimisticLockException {
         if (!shouldObjectModifyCascadeToParts(query)) {
-            if(this.listOrderField != null) {
+            if (this.listOrderField != null) {
                 updateTargetRowPreDeleteSource(query);
             }
             return;
         }
+        AbstractSession session = query.getSession();
 
-        Object objects = getRealCollectionAttributeValueFromObject(query.getObject(), query.getSession());
-
-        ContainerPolicy cp = getContainerPolicy();
-
-        // if privately-owned parts have their privately-owned sub-parts, delete them one by one;
-        // else delete everything in one shot
+        // If privately-owned parts have their privately-owned sub-parts, delete them one by one;
+        // else delete everything in one shot.
         if (mustDeleteReferenceObjectsOneByOne()) {
-            for (Object iter = cp.iteratorFor(objects); cp.hasNext(iter);) {
-                Object wrappedObject = cp.nextEntry(iter, query.getSession());
+            Object objects = getRealCollectionAttributeValueFromObject(query.getObject(), session);
+            ContainerPolicy cp = getContainerPolicy();
+            if (this.isCascadeOnDeleteSetOnDatabase && session.isUnitOfWork()) {
+                for (Object iterator = cp.iteratorFor(objects); cp.hasNext(iterator);) {
+                    Object wrappedObject = cp.nextEntry(iterator, session);
+                    Object object = cp.unwrapIteratorResult(wrappedObject);
+                    ((UnitOfWorkImpl)session).getCascadeDeleteObjects().add(object);
+                }
+            }
+            int cascade = query.getCascadePolicy();
+            for (Object iterator = cp.iteratorFor(objects); cp.hasNext(iterator);) {
+                Object wrappedObject = cp.nextEntry(iterator, session);
                 Object object = cp.unwrapIteratorResult(wrappedObject);
                 DeleteObjectQuery deleteQuery = new DeleteObjectQuery();
                 deleteQuery.setIsExecutionClone(true);
                 deleteQuery.setObject(object);
-                deleteQuery.setCascadePolicy(query.getCascadePolicy());
-                query.getSession().executeQuery(deleteQuery);
-                containerPolicy.propogatePreDelete(deleteQuery, wrappedObject);
+                deleteQuery.setCascadePolicy(cascade);
+                session.executeQuery(deleteQuery);
+                this.containerPolicy.propogatePreDelete(deleteQuery, wrappedObject);
             }
-            if (!query.getSession().isUnitOfWork()) {
+            if (!session.isUnitOfWork()) {
                 // This deletes any objects on the database, as the collection in memory may have been changed.
                 // This is not required for unit of work, as the update would have already deleted these objects,
                 // and the backup copy will include the same objects causing double deletes.
                 deleteReferenceObjectsLeftOnDatabase(query);
             }
         } else {
-            deleteAll(query);
+            deleteAll(query, session);
         }
     }
     
     /**
      * Prepare a cascade locking policy.
      */
+    @Override
     public void prepareCascadeLockingPolicy() {
         CascadeLockingPolicy policy = new CascadeLockingPolicy(getDescriptor(), getReferenceDescriptor());
         policy.setQueryKeyFields(getSourceKeysToTargetForeignKeys());
@@ -1011,7 +1033,6 @@ public class OneToManyMapping extends CollectionMapping implements RelationalMap
      * INTERNAL:
      * Returns whether this mapping uses data modification events to complete its writes
      * @see UnidirectionalOneToManyMapping
-     * @return
      */
     public boolean requiresDataModificationEvents(){
         return this.listOrderField != null;
@@ -1072,6 +1093,7 @@ public class OneToManyMapping extends CollectionMapping implements RelationalMap
      * <p>
      * Example: "delete from PHONE where OWNER_ID = #EMPLOYEE_ID"
      */
+    @Override
     public void setDeleteAllSQLString(String sqlString) {
         DeleteAllQuery query = new DeleteAllQuery();
         query.setSQLString(sqlString);
@@ -1085,6 +1107,7 @@ public class OneToManyMapping extends CollectionMapping implements RelationalMap
      * This can be used by the session broker to override the default session
      * to be used for the target class.
      */
+    @Override
     public void setSessionName(String name) {
         super.setSessionName(name);
         if (addTargetQuery != null){
@@ -1196,6 +1219,7 @@ public class OneToManyMapping extends CollectionMapping implements RelationalMap
      * should also affect its parts.
      * Used by write, insert, update, and delete.
      */
+    @Override
     protected boolean shouldObjectModifyCascadeToParts(ObjectLevelModifyQuery query) {
         if (isReadOnly()) {
             return false;
@@ -1224,6 +1248,7 @@ public class OneToManyMapping extends CollectionMapping implements RelationalMap
      * INTERNAL
      * Return true if this mapping supports cascaded version optimistic locking.
      */
+    @Override
     public boolean isCascadedLockingSupported() {
         return true;
     }
@@ -1232,6 +1257,7 @@ public class OneToManyMapping extends CollectionMapping implements RelationalMap
      * INTERNAL:
      * Return if this mapping support joining.
      */
+    @Override
     public boolean isJoiningSupported() {
         return true;
     }
@@ -1275,7 +1301,7 @@ public class OneToManyMapping extends CollectionMapping implements RelationalMap
             query.getSession().executeQuery(addTargetQuery, databaseRow);
         }
     }
-    
+
     protected AbstractRecord buildKeyRowForTargetUpdate(ObjectLevelModifyQuery query){
         return new DatabaseRecord();
     }
@@ -1401,9 +1427,10 @@ public class OneToManyMapping extends CollectionMapping implements RelationalMap
      * INTERNAL:
      * Used to verify whether the specified object is deleted or not.
      */
+    @Override
     public boolean verifyDelete(Object object, AbstractSession session) throws DatabaseException {
-        if (this.isPrivateOwned()) {
-            Object objects = this.getRealCollectionAttributeValueFromObject(object, session);
+        if (this.isPrivateOwned() || isCascadeRemove()) {
+            Object objects = getRealCollectionAttributeValueFromObject(object, session);
 
             ContainerPolicy containerPolicy = getContainerPolicy();
             for (Object iter = containerPolicy.iteratorFor(objects); containerPolicy.hasNext(iter);) {

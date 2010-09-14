@@ -99,7 +99,7 @@ public class RemoteUnitOfWork extends UnitOfWorkImpl {
      */
     protected Vector collectUnregisteredNewObjects() {
         discoverAllUnregisteredNewObjects();
-        return Helper.buildVectorFromHashtableElements(getUnregisteredNewObjects());
+        return Helper.buildVectorFromMapElements(getUnregisteredNewObjects());
     }
 
     /**

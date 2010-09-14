@@ -15,7 +15,7 @@ package org.eclipse.persistence.testing.jaxb.typemappinginfo.collisions;
 import java.io.InputStream;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Vector;
+import java.util.List;
 
 import javax.xml.bind.JAXBElement;
 import javax.xml.namespace.QName;
@@ -120,7 +120,7 @@ public class ConflictingMapsTestCases extends TypeMappingInfoTestCases{
 	}
 	
 	public void testDescriptorsSize(){
-		Vector descriptors = ((org.eclipse.persistence.jaxb.JAXBContext)jaxbContext).getXMLContext().getSession(0).getProject().getOrderedDescriptors();
+		List descriptors = ((org.eclipse.persistence.jaxb.JAXBContext)jaxbContext).getXMLContext().getSession(0).getProject().getOrderedDescriptors();
 		assertEquals(10, descriptors.size());
 	}
 }

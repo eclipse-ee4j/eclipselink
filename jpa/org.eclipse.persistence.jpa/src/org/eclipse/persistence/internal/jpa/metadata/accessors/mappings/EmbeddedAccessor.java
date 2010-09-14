@@ -190,7 +190,6 @@ public class EmbeddedAccessor extends MappingAccessor {
         AggregateObjectMapping mapping = new AggregateObjectMapping();
         setMapping(mapping);
         
-        mapping.setIsReadOnly(false);
         mapping.setIsNullAllowed(true);
         mapping.setReferenceClassName(getReferenceClassName());
         mapping.setAttributeName(getAttributeName());    

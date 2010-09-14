@@ -72,6 +72,9 @@ public class ClassDescriptor implements Cloneable, Serializable {
     protected transient Map<DatabaseTable, Map<DatabaseField, DatabaseField>> additionalTablePrimaryKeyFields;
     protected transient List<DatabaseTable> multipleTableInsertOrder;
     protected transient Map<DatabaseTable, Set<DatabaseTable>> multipleTableForeignKeys;
+    /** Support delete cascading on the database for multiple and inheritance tables. */
+    protected boolean isCascadeOnDeleteSetOnDatabaseOnSecondaryTables;
+
     protected transient Vector<DatabaseField> fields;
     protected transient Vector<DatabaseField> allFields;
     protected Vector<DatabaseMapping> mappings;
@@ -2495,8 +2498,7 @@ public class ClassDescriptor implements Cloneable, Serializable {
      * Checks if the class has any private owned parts or other dependencies, (i.e. M:M join table).
      */
     public boolean hasDependencyOnParts() {
-        for (Enumeration mappings = getMappings().elements(); mappings.hasMoreElements();) {
-            DatabaseMapping mapping = (DatabaseMapping)mappings.nextElement();
+        for (DatabaseMapping mapping : getMappings()) {
             if (mapping.hasDependency()) {
                 return true;
             }
@@ -4161,6 +4163,25 @@ public class ClassDescriptor implements Cloneable, Serializable {
      */
     public void setMultipleTableInsertOrder(List<DatabaseTable> newValue) {
         this.multipleTableInsertOrder = newValue;
+    }
+    
+    /**
+     * ADVANCED:
+     * Return if delete cascading has been set on the database for the descriptor's
+     * multiple tables.
+     */
+    public boolean isCascadeOnDeleteSetOnDatabaseOnSecondaryTables() {
+        return isCascadeOnDeleteSetOnDatabaseOnSecondaryTables;
+    }
+
+    /**
+     * ADVANCED:
+     * Set if delete cascading has been set on the database for the descriptor's
+     * multiple tables.
+     * This will avoid the delete SQL being generated for those tables.
+     */
+    public void setIsCascadeOnDeleteSetOnDatabaseOnSecondaryTables(boolean isCascadeOnDeleteSetOnDatabaseOnSecondaryTables) {
+        this.isCascadeOnDeleteSetOnDatabaseOnSecondaryTables = isCascadeOnDeleteSetOnDatabaseOnSecondaryTables;
     }
     
 

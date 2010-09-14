@@ -176,6 +176,21 @@ public class ProxyIndirectionPolicy extends BasicIndirectionPolicy {
             return true;
         }
     }
+    
+    /**
+     * INTERNAL:
+     * Return whether the specified object can be instantiated without database access.
+     */
+    public boolean objectIsEasilyInstantiated(Object object) {
+        if (object instanceof Proxy) {
+            ProxyIndirectionHandler handler = (ProxyIndirectionHandler)Proxy.getInvocationHandler(object);
+            ValueHolderInterface valueHolder = handler.getValueHolder();
+            if (valueHolder instanceof DatabaseValueHolder) {
+                return ((DatabaseValueHolder)valueHolder).isEasilyInstantiated();
+            }
+        }
+        return true;
+    }
 
     /**
      * INTERNAL:

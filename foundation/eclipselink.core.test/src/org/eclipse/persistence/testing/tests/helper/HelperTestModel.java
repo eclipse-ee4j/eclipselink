@@ -35,13 +35,8 @@ public class HelperTestModel extends TestModel {
         suite.addTest(new CompareCharArrayContentTest());
         suite.addTest(new CheckAreVectorTypesAssignableWithNullVectorTest());
         suite.addTest(new CheckAreVectorTypesAssignableTest());
-        suite.addTest(new CheckCompareOrderedVectorsWithNullElementTest());
-        suite.addTest(new CheckCompareOrderedVectorsOfDifferentSizeTest());
-        suite.addTest(new CheckCompareOrderedVectorsTest());
         suite.addTest(new CheckCompareByteArraysWithDifferentElementsTest());
         suite.addTest(new CheckCompareBigDecimalsTest());
-        suite.addTest(new CheckCompareUnorderedVectorsOfDifferentSizeTest());
-        suite.addTest(new CheckCompareUnorderedVectorsWhenIdenticalTest());
         suite.addTest(new CheckClassIsSubclassWithNullSuperclassTest());
 
         suite.addTest(new BasicTest());

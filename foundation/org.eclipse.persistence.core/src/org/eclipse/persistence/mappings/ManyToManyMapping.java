@@ -67,6 +67,7 @@ public class ManyToManyMapping extends CollectionMapping implements RelationalMa
     /**
      * INTERNAL:
      */
+    @Override
     public boolean isOwned(){
         return !isReadOnly;
     }
@@ -74,6 +75,7 @@ public class ManyToManyMapping extends CollectionMapping implements RelationalMa
     /**
      * INTERNAL:
      */
+    @Override
     public boolean isRelationalMapping() {
         return true;
     }
@@ -118,6 +120,7 @@ public class ManyToManyMapping extends CollectionMapping implements RelationalMa
      * INTERNAL:
      * The mapping clones itself to create deep copy.
      */
+    @Override
     public Object clone() {
         ManyToManyMapping clone = (ManyToManyMapping)super.clone();        
         clone.mechanism = (RelationTableMechanism)this.mechanism.clone();
@@ -130,15 +133,21 @@ public class ManyToManyMapping extends CollectionMapping implements RelationalMa
      * This method is called to update collection tables prior to commit.
      */
     @Override
-    public void earlyPreDelete(DeleteObjectQuery query){
+    public void earlyPreDelete(DeleteObjectQuery query) {
         AbstractSession querySession = query.getSession();
-        prepareTranslationRow(query.getTranslationRow(), query.getObject(), querySession);
-        querySession.executeQuery(getDeleteAllQuery(), query.getTranslationRow());
+        if (!this.isCascadeOnDeleteSetOnDatabase) {
+            prepareTranslationRow(query.getTranslationRow(), query.getObject(), querySession);
+            querySession.executeQuery(this.deleteAllQuery, query.getTranslationRow());
+        }
 
-        if ((getHistoryPolicy() != null) && getHistoryPolicy().shouldHandleWrites()) {
-            getHistoryPolicy().mappingLogicalDelete(getDeleteAllQuery(), query.getTranslationRow(), querySession);
+        if ((this.historyPolicy != null) && this.historyPolicy.shouldHandleWrites()) {
+            if (this.isCascadeOnDeleteSetOnDatabase) {
+                prepareTranslationRow(query.getTranslationRow(), query.getObject(), querySession);
+            }
+            this.historyPolicy.mappingLogicalDelete(this.deleteAllQuery, query.getTranslationRow(), querySession);
         }
     }
+    
     /**
      * INTERNAL
      * Called when a DatabaseMapping is used to map the key in a collection.  Returns the key.
@@ -151,6 +160,7 @@ public class ManyToManyMapping extends CollectionMapping implements RelationalMa
      * INTERNAL:
      * Adds locking clause to the target query to extend pessimistic lock scope.
      */
+    @Override
     protected void extendPessimisticLockScopeInTargetQuery(ObjectLevelReadQuery targetQuery, ObjectBuildingQuery sourceQuery) {
         this.mechanism.setRelationTableLockingClause(targetQuery, sourceQuery);
     }
@@ -165,6 +175,7 @@ public class ManyToManyMapping extends CollectionMapping implements RelationalMa
      * This method must be implemented in subclasses that allow
      * setting shouldExtendPessimisticLockScopeInSourceQuery to true.
      */
+    @Override
     public void extendPessimisticLockScopeInSourceQuery(ObjectLevelReadQuery sourceQuery) {
         Expression exp = sourceQuery.getSelectionCriteria();
         exp = this.mechanism.joinRelationTableField(exp, sourceQuery.getExpressionBuilder());
@@ -242,6 +253,7 @@ public class ManyToManyMapping extends CollectionMapping implements RelationalMa
      * Should be overridden by subclass that allows setting
      * extendPessimisticLockScope to DEDICATED_QUERY. 
      */
+    @Override
     protected ReadQuery getExtendPessimisticLockScopeDedicatedQuery(AbstractSession session, short lockMode) {
         if(this.mechanism != null) {
             return this.mechanism.getLockRelationTableQueryClone(session, lockMode);            
@@ -278,6 +290,7 @@ public class ManyToManyMapping extends CollectionMapping implements RelationalMa
 
     /**
      * PUBLIC:
+     * Allows history tracking on the m-m join table.
      */
     public HistoryPolicy getHistoryPolicy() {
         return historyPolicy;
@@ -321,23 +334,6 @@ public class ManyToManyMapping extends CollectionMapping implements RelationalMa
      */
     public String getRelationTableQualifiedName() {
         return this.mechanism.getRelationTableQualifiedName();
-    }
-
-    /**
-     * INTERNAL:
-     * Returns the selection criteria stored in the mapping selection query. This criteria
-     * is used to read reference objects from the database.
-     */
-    public Expression getSelectionCriteria() {
-        return getSelectionQuery().getSelectionCriteria();
-    }
-
-    /**
-     * INTERNAL:
-     * Returns the read query assoicated with the mapping.
-     */
-    public ReadQuery getSelectionQuery() {
-        return selectionQuery;
     }
 
     /**
@@ -420,14 +416,16 @@ public class ManyToManyMapping extends CollectionMapping implements RelationalMa
      * INTERNAL:
      * The join table is a dependency if not read-only.
      */
+    @Override
     public boolean hasDependency() {
-        return isPrivateOwned() || (!isReadOnly());
+        return this.isPrivateOwned || (!this.isReadOnly);
     }
 
     /**
      * INTERNAL:
      * Initialize mappings
      */
+    @Override
     public void initialize(AbstractSession session) throws DescriptorException {
         super.initialize(session);
         getDescriptor().getPreDeleteMappings().add(this);
@@ -467,6 +465,7 @@ public class ManyToManyMapping extends CollectionMapping implements RelationalMa
      * Verifies listOrderField's table: it must be relation table.
      * Precondition: listOrderField != null.
      */
+    @Override
     protected void buildListOrderField() {
         if(this.listOrderField.hasTableName()) {
             if(!getRelationTable().equals(this.listOrderField.getTable())) {
@@ -482,6 +481,7 @@ public class ManyToManyMapping extends CollectionMapping implements RelationalMa
      * INTERNAL:
      * Indicates whether getListOrderFieldExpression method should create field expression on table expression.  
      */
+    @Override
     public boolean shouldUseListOrderFieldTableExpression() {
         return true;
     }
@@ -703,8 +703,7 @@ public class ManyToManyMapping extends CollectionMapping implements RelationalMa
 
     /**
      * INTERNAL:
-     * Return whether this mapping was originally defined as a OneToMany
-     * @return
+     * Return whether this mapping was originally defined as a OneToMany.
      */
     public boolean isDefinedAsOneToManyMapping() {
         return isDefinedAsOneToManyMapping;
@@ -714,28 +713,31 @@ public class ManyToManyMapping extends CollectionMapping implements RelationalMa
      * INTERNAL:
      * Return if this mapping support joining.
      */
+    @Override
     public boolean isJoiningSupported() {
         return true;
     }
 
-    /**
-     * INTERNAL:
-     */
+    @Override
     public boolean isManyToManyMapping() {
         return true;
     }
-
+    
     /**
-     * For Many To Many mappings referenced objects are deleted one by one.
+     * INTERNAL:
+     * Ensure the container policy is post initialized
      */
-    protected boolean mustDeleteReferenceObjectsOneByOne() {
-        return true;
+    @Override
+    public void postInitialize(AbstractSession session) {
+        super.postInitialize(session);
+        this.mustDeleteReferenceObjectsOneByOne = true;
     }
 
     /**
      * INTERNAL:
      * An object was added to the collection during an update, insert it if private.
      */
+    @Override
     protected void objectAddedDuringUpdate(ObjectLevelModifyQuery query, Object objectAdded, ObjectChangeSet changeSet, Map extraData) throws DatabaseException, OptimisticLockException {
         // First insert/update object.
         super.objectAddedDuringUpdate(query, objectAdded, changeSet, extraData);
@@ -758,6 +760,7 @@ public class ManyToManyMapping extends CollectionMapping implements RelationalMa
      * INTERNAL:
      * An object was removed to the collection during an update, delete it if private.
      */
+    @Override
     protected void objectRemovedDuringUpdate(ObjectLevelModifyQuery query, Object objectDeleted, Map extraData) throws DatabaseException, OptimisticLockException {
         Object unwrappedObjectDeleted = getContainerPolicy().unwrapIteratorResult(objectDeleted);
         AbstractRecord databaseRow = this.mechanism.buildRelationTableSourceAndTargetRow(query.getTranslationRow(), unwrappedObjectDeleted, query.getSession(), this);
@@ -781,6 +784,7 @@ public class ManyToManyMapping extends CollectionMapping implements RelationalMa
         super.objectRemovedDuringUpdate(query, objectDeleted, extraData);
     }
 
+    @Override
     protected void objectOrderChangedDuringUpdate(WriteObjectQuery query, Object orderChangedObject, int orderIndex) {
         prepareTranslationRow(query.getTranslationRow(), query.getObject(), query.getSession());
         AbstractRecord databaseRow = this.mechanism.buildRelationTableSourceAndTargetRow(query.getTranslationRow(), orderChangedObject, query.getSession(), this);
@@ -794,6 +798,7 @@ public class ManyToManyMapping extends CollectionMapping implements RelationalMa
      * Perform the commit event.
      * This is used in the uow to delay data modifications.
      */
+    @Override
     public void performDataModificationEvent(Object[] event, AbstractSession session) throws DatabaseException, DescriptorException {
         // Hey I might actually want to use an inner class here... ok array for now.
         if (event[0] == PostInsert) {
@@ -819,6 +824,7 @@ public class ManyToManyMapping extends CollectionMapping implements RelationalMa
      * <p>- execute the statement.
      * <p>- Repeat above three statements until all the target objects are done.
      */
+    @Override
     public void postInsert(WriteObjectQuery query) throws DatabaseException {
         insertTargetObjects(query);
         // Batch data modification in the uow
@@ -839,6 +845,7 @@ public class ManyToManyMapping extends CollectionMapping implements RelationalMa
      * Delete entries removed, insert entries added.
      * If private also insert/delete/update target objects.
      */
+    @Override
     public void postUpdate(WriteObjectQuery query) throws DatabaseException {
         if (isReadOnly()) {
             return;
@@ -865,14 +872,11 @@ public class ManyToManyMapping extends CollectionMapping implements RelationalMa
      */
     @Override
     public void preDelete(DeleteObjectQuery query) throws DatabaseException {
-        AbstractSession querySession = query.getSession();
-        if (querySession != null && querySession.isUnitOfWork()){
-            return;
-        }
+        AbstractSession session = query.getSession();
         Object objectsIterator = null;
         ContainerPolicy containerPolicy = getContainerPolicy();
         
-        if (isReadOnly()) {
+        if (this.isReadOnly) {
             return;
         }
         Object objects = null;
@@ -880,12 +884,17 @@ public class ManyToManyMapping extends CollectionMapping implements RelationalMa
         boolean cascade = shouldObjectModifyCascadeToParts(query);
         if (containerPolicy.propagatesEventsToCollection() || cascade) {
             // if processed during UnitOfWork commit process the private owned delete will occur during change calculation
-            objects = getRealCollectionAttributeValueFromObject(query.getObject(), querySession);
+            objects = getRealCollectionAttributeValueFromObject(query.getObject(), session);
             //this must be done up here because the select must be done before the entry in the relation table is deleted.
+            // TODO: Hmm given the below code, the rows are already deleted, so this code is broken.
+            // Assuming it was a cascade remove, it will have been instantiated, so may be ok?
             objectsIterator = containerPolicy.iteratorFor(objects);
         }
-        
+
+        // This has already been done in a unit of work.
+        if (!session.isUnitOfWork()) {
             earlyPreDelete(query);
+        }
 
         // If privately owned delete the objects, this does not handle removed objects (i.e. verify delete, not req in uow).
         // Does not try to optimize delete all like 1-m, (rarely used and hard to do).
@@ -893,14 +902,14 @@ public class ManyToManyMapping extends CollectionMapping implements RelationalMa
             if (objects != null) {
                 //objectsIterator will not be null because cascade check will still return true.
                 while (containerPolicy.hasNext(objectsIterator)) {
-                    Object wrappedObject = containerPolicy.nextEntry(objectsIterator, query.getSession());
+                    Object wrappedObject = containerPolicy.nextEntry(objectsIterator, session);
                     Object object = containerPolicy.unwrapIteratorResult(wrappedObject);
                     if (cascade){
                         DeleteObjectQuery deleteQuery = new DeleteObjectQuery();
                         deleteQuery.setIsExecutionClone(true);
                         deleteQuery.setObject(object);
                         deleteQuery.setCascadePolicy(query.getCascadePolicy());
-                        query.getSession().executeQuery(deleteQuery);
+                        session.executeQuery(deleteQuery);
                     }
                     containerPolicy.propogatePreDelete(query, wrappedObject);
                 }
@@ -912,6 +921,7 @@ public class ManyToManyMapping extends CollectionMapping implements RelationalMa
      * INTERNAL:
      * The translation row may require additional fields than the primary key if the mapping in not on the primary key.
      */
+    @Override
     protected void prepareTranslationRow(AbstractRecord translationRow, Object object, AbstractSession session) {
         // Make sure that each source key field is in the translation row.
         for (Enumeration sourceFieldsEnum = getSourceKeyFields().elements();
@@ -1036,6 +1046,7 @@ public class ManyToManyMapping extends CollectionMapping implements RelationalMa
     
     /**
      * PUBLIC:
+     * Enable history tracking on the m-m join table.
      */
     public void setHistoryPolicy(HistoryPolicy policy) {
         this.historyPolicy = policy;
@@ -1059,6 +1070,7 @@ public class ManyToManyMapping extends CollectionMapping implements RelationalMa
      * This can be used by the session broker to override the default session
      * to be used for the target class.
      */
+    @Override
     public void setSessionName(String name) {
         super.setSessionName(name);
         this.mechanism.setSessionName(name);
@@ -1156,6 +1168,7 @@ public class ManyToManyMapping extends CollectionMapping implements RelationalMa
      * INTERNAL:
      * Append the temporal selection to the query selection criteria.
      */
+    @Override
     protected ReadQuery prepareHistoricalQuery(ReadQuery targetQuery, ObjectBuildingQuery sourceQuery, AbstractSession executionSession) {
         if (getHistoryPolicy() != null) {
             if (targetQuery == getSelectionQuery()) {

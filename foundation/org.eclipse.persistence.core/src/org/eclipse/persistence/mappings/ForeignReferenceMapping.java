@@ -118,6 +118,9 @@ public abstract class ForeignReferenceMapping extends DatabaseMapping {
         DEDICATED_QUERY
     }
     ExtendPessimisticLockScope extendPessimisticLockScope;
+
+    /** Support delete cascading on the database relationship constraint. */
+    protected boolean isCascadeOnDeleteSetOnDatabase;
     
     protected ForeignReferenceMapping() {
         this.isPrivateOwned = false;
@@ -163,6 +166,7 @@ public abstract class ForeignReferenceMapping extends DatabaseMapping {
      * INTERNAL:
      * Clone the attribute from the clone and assign it to the backup.
      */
+    @Override
     public void buildBackupClone(Object clone, Object backup, UnitOfWorkImpl unitOfWork) {
         Object attributeValue = getAttributeValueFromObject(clone);
         Object clonedAttributeValue = this.indirectionPolicy.backupCloneAttribute(attributeValue, clone, backup, unitOfWork);
@@ -174,12 +178,14 @@ public abstract class ForeignReferenceMapping extends DatabaseMapping {
      * Used during building the backup shallow copy to copy the
      * target object without re-registering it.
      */
+    @Override
     public abstract Object buildBackupCloneForPartObject(Object attributeValue, Object clone, Object backup, UnitOfWorkImpl unitOfWork);
 
     /**
      * INTERNAL:
      * Clone the attribute from the original and assign it to the clone.
      */
+    @Override
     public void buildClone(Object original, Object clone, UnitOfWorkImpl unitOfWork) {
         Object attributeValue = getAttributeValueFromObject(original);
         Object clonedAttributeValue = this.indirectionPolicy.cloneAttribute(attributeValue, original, clone, unitOfWork, false); // building clone from an original not a row.
@@ -204,6 +210,7 @@ public abstract class ForeignReferenceMapping extends DatabaseMapping {
      * In order to bypass the shared cache when in transaction a UnitOfWork must
      * be able to populate working copies directly from the row.
      */
+    @Override
     public void buildCloneFromRow(AbstractRecord databaseRow, JoinedAttributeManager joinManager, Object clone, ObjectBuildingQuery sourceQuery, UnitOfWorkImpl unitOfWork, AbstractSession executionSession) {
         Object attributeValue = valueFromRow(databaseRow, joinManager, sourceQuery, executionSession);
         Object clonedAttributeValue = this.indirectionPolicy.cloneAttribute(attributeValue, null,// no original
@@ -225,6 +232,7 @@ public abstract class ForeignReferenceMapping extends DatabaseMapping {
      * INTERNAL:
      * The mapping clones itself to create deep copy.
      */
+    @Override
     public Object clone() {
         ForeignReferenceMapping clone = (ForeignReferenceMapping)super.clone();
 
@@ -246,6 +254,7 @@ public abstract class ForeignReferenceMapping extends DatabaseMapping {
      * INTERNAL: Compare the attributes belonging to this mapping for the
      * objects.
      */
+    @Override
     public boolean compareObjects(Object firstObject, Object secondObject, AbstractSession session) {
         if (isPrivateOwned()) {
             return compareObjectsWithPrivateOwned(firstObject, secondObject, session);
@@ -269,8 +278,8 @@ public abstract class ForeignReferenceMapping extends DatabaseMapping {
      * Convert all the class-name-based settings in this mapping to actual class-based
      * settings. This method is used when converting a project that has been built
      * with class names to a project with classes.
-     * @param classLoader
      */
+    @Override
     public void convertClassNamesToClasses(ClassLoader classLoader){
         super.convertClassNamesToClasses(classLoader);
 
@@ -784,6 +793,7 @@ public abstract class ForeignReferenceMapping extends DatabaseMapping {
      * Replace the transient attributes of the remote value holders
      * with client-side objects.
      */
+    @Override
     public void fixObjectReferences(Object object, Map objectDescriptors, Map processedObjects, ObjectLevelReadQuery query, RemoteSession session) {
         this.indirectionPolicy.fixObjectReferences(object, objectDescriptors, processedObjects, query, session);
     }
@@ -792,6 +802,7 @@ public abstract class ForeignReferenceMapping extends DatabaseMapping {
      * INTERNAL:
      * Return the value of an attribute which this mapping represents for an object.
      */
+    @Override
     public Object getAttributeValueFromObject(Object object) throws DescriptorException {
         Object attributeValue = super.getAttributeValueFromObject(object);
         Object indirectionValue = this.indirectionPolicy.validateAttributeOfInstantiatedObject(attributeValue);
@@ -854,6 +865,7 @@ public abstract class ForeignReferenceMapping extends DatabaseMapping {
      * ForeignReferenceMappings have to worry about
      * maintaining object identity.
      */
+    @Override
     public Object getObjectCorrespondingTo(Object object, RemoteSession session, Map objectDescriptors, Map processedObjects, ObjectLevelReadQuery query) {
         return session.getObjectCorrespondingTo(object, objectDescriptors, processedObjects, query);
     }
@@ -864,6 +876,7 @@ public abstract class ForeignReferenceMapping extends DatabaseMapping {
      * If the attribute is using indirection the value of the value-holder is returned.
      * If the value holder is not instantiated then it is instantiated.
      */
+    @Override
     public Object getRealAttributeValueFromAttribute(Object attributeValue, Object object, AbstractSession session) {
         return this.indirectionPolicy.getRealAttributeValueFromObject(object, attributeValue);
     }
@@ -874,6 +887,7 @@ public abstract class ForeignReferenceMapping extends DatabaseMapping {
      * however for eager relationships this can be used with indirection to allow
      * indirection locking and change tracking, but still always force instantiation.
      */
+    @Override
     public boolean isLazy() {
         if (isLazy == null) {
             // False by default for mappings without indirection.
@@ -884,9 +898,9 @@ public abstract class ForeignReferenceMapping extends DatabaseMapping {
 
     /**
      * INTERNAL:
-     * Return whether this mapping should be traversed when we are locking
-     * @return
+     * Return whether this mapping should be traversed when we are locking.
      */
+    @Override
     public boolean isLockableMapping(){
         return !(this.usesIndirection());
     }
@@ -895,6 +909,7 @@ public abstract class ForeignReferenceMapping extends DatabaseMapping {
      * INTERNAL:
      * Trigger the instantiation of the attribute if lazy.
      */
+    @Override
     public void instantiateAttribute(Object object, AbstractSession session) {
         this.indirectionPolicy.instantiateObject(object, getAttributeValueFromObject(object));
     }
@@ -986,6 +1001,7 @@ public abstract class ForeignReferenceMapping extends DatabaseMapping {
      * Extract and return the appropriate value from the
      * specified remote value holder.
      */
+    @Override
     public Object getValueFromRemoteValueHolder(RemoteValueHolder remoteValueHolder) {
         return this.indirectionPolicy.getValueFromRemoteValueHolder(remoteValueHolder);
     }
@@ -1003,6 +1019,7 @@ public abstract class ForeignReferenceMapping extends DatabaseMapping {
      * INTERNAL:
      * Initialize the state of mapping.
      */
+    @Override
     public void preInitialize(AbstractSession session) throws DescriptorException {
         super.preInitialize(session);
         // If weaving was used the mapping must be configured to use the weaved get/set methods.
@@ -1027,6 +1044,7 @@ public abstract class ForeignReferenceMapping extends DatabaseMapping {
      * INTERNAL:
      * Initialize the state of mapping.
      */
+    @Override
     public void initialize(AbstractSession session) throws DescriptorException {
         super.initialize(session);
         if (isPrivateOwned){
@@ -1131,7 +1149,17 @@ public abstract class ForeignReferenceMapping extends DatabaseMapping {
 
     /**
      * INTERNAL:
+     * Return if the mapping has any ownership or other dependency over its target object(s).
      */
+    @Override
+    public boolean hasDependency() {
+        return isPrivateOwned() || isCascadeRemove();
+    }
+
+    /**
+     * INTERNAL:
+     */
+    @Override
     public boolean isForeignReferenceMapping() {
         return true;
     }
@@ -1148,6 +1176,7 @@ public abstract class ForeignReferenceMapping extends DatabaseMapping {
      * PUBLIC:
      * Return true if referenced objects are privately owned else false.
      */
+    @Override
     public boolean isPrivateOwned() {
         return isPrivateOwned;
     }
@@ -1158,6 +1187,7 @@ public abstract class ForeignReferenceMapping extends DatabaseMapping {
      * The iterator's settings for cascading and value holders determine how the
      * iteration continues from here.
      */
+    @Override
     public void iterate(DescriptorIterator iterator) {
         Object attributeValue = this.getAttributeValueFromObject(iterator.getVisitedParent());
         this.indirectionPolicy.iterateOnAttributeValue(iterator, attributeValue);
@@ -1168,6 +1198,7 @@ public abstract class ForeignReferenceMapping extends DatabaseMapping {
      * Iterate on the attribute value.
      * The value holder has already been processed.
      */
+    @Override
     public abstract void iterateOnRealAttributeValue(DescriptorIterator iterator, Object realAttributeValue);
 
     /**
@@ -1195,6 +1226,7 @@ public abstract class ForeignReferenceMapping extends DatabaseMapping {
      * mappings are initialized and serialized reference descriptors are replaced with local descriptors if they already exist on the
      * remote session.
      */
+    @Override
     public void remoteInitialization(DistributedSession session) {
         super.remoteInitialization(session);
         setTempSession(session);
@@ -1204,6 +1236,7 @@ public abstract class ForeignReferenceMapping extends DatabaseMapping {
      * INTERNAL:
      * replace the value holders in the specified reference object(s)
      */
+    @Override
     public Map replaceValueHoldersIn(Object object, RemoteSessionController controller) {
         return controller.replaceValueHoldersIn(object);
     }
@@ -1336,6 +1369,7 @@ public abstract class ForeignReferenceMapping extends DatabaseMapping {
      * placing it inside a value holder if necessary.
      * If the value holder is not instantiated then it is instantiated.
      */
+    @Override
     public void setRealAttributeValueInObject(Object object, Object value) throws DescriptorException {
         this.indirectionPolicy.setRealAttributeValueInObject(object, value);
     }
@@ -1699,9 +1733,33 @@ public abstract class ForeignReferenceMapping extends DatabaseMapping {
     }
 
     /**
+     * ADVANCED:
+     * Return if delete cascading has been set on the database for the
+     * mapping's foreign key constraint.
+     */
+    public boolean isCascadeOnDeleteSetOnDatabase() {
+        return isCascadeOnDeleteSetOnDatabase;
+    }
+
+    /**
+     * ADVANCED:
+     * Set if delete cascading has been set on the database for the
+     * mapping's foreign key constraint.
+     * The behavior is dependent on the mapping.
+     * <p>OneToOne (target foreign key) - deletes target object (private owned)
+     * <p>OneToMany, AggregateCollection - deletes target objects (private owned)
+     * <p>ManyToMany - deletes from join table (only)
+     * <p>DirectCollection - delete from direct table
+     */
+    public void setIsCascadeOnDeleteSetOnDatabase(boolean isCascadeOnDeleteSetOnDatabase) {
+        this.isCascadeOnDeleteSetOnDatabase = isCascadeOnDeleteSetOnDatabase;
+    }
+    
+    /**
      * INTERNAL:
      * To validate mappings declaration
      */
+    @Override
     public void validateBeforeInitialization(AbstractSession session) throws DescriptorException {
         super.validateBeforeInitialization(session);
 
@@ -1728,6 +1786,7 @@ public abstract class ForeignReferenceMapping extends DatabaseMapping {
      * Check whether the mapping's attribute should be optimized through batch
      * and joining.
      */
+    @Override
     public Object valueFromRow(AbstractRecord row, JoinedAttributeManager joinManager, ObjectBuildingQuery sourceQuery, AbstractSession executionSession) throws DatabaseException {
         // PERF: Direct variable access.
         // If the query uses batch reading, return a special value holder

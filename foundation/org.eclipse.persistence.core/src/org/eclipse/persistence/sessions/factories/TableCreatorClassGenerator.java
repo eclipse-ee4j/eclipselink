@@ -101,13 +101,11 @@ public class TableCreatorClassGenerator {
         method.addLine(foreignKeyName + ".setName(\"" + foreignKey.getName() + "\");");
         method.addLine(foreignKeyName + ".setTargetTable(\"" + foreignKey.getTargetTable() + "\");");
 
-        for (Enumeration sourceFieldsEnum = foreignKey.getSourceFields().elements();
-                 sourceFieldsEnum.hasMoreElements();) {
-            method.addLine(foreignKeyName + ".addSourceField(\"" + sourceFieldsEnum.nextElement() + "\");");
+        for (String sourceField : foreignKey.getSourceFields()) {
+            method.addLine(foreignKeyName + ".addSourceField(\"" + sourceField + "\");");
         }
-        for (Enumeration targetFieldsEnum = foreignKey.getTargetFields().elements();
-                 targetFieldsEnum.hasMoreElements();) {
-            method.addLine(foreignKeyName + ".addTargetField(\"" + targetFieldsEnum.nextElement() + "\");");
+        for (String targetField : foreignKey.getTargetFields()) {
+            method.addLine(foreignKeyName + ".addTargetField(\"" + targetField + "\");");
         }
 
         method.addLine("table.addForeignKeyConstraint(" + foreignKeyName + ");");

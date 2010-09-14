@@ -17,6 +17,8 @@ import javax.persistence.PrimaryKeyJoinColumn;
 import javax.persistence.PrimaryKeyJoinColumns;
 import javax.persistence.Table;
 
+import org.eclipse.persistence.annotations.CascadeOnDelete;
+
 /**
  * @author Wonseok Kim
  */
@@ -26,6 +28,7 @@ import javax.persistence.Table;
     @PrimaryKeyJoinColumn(name="SEQ", referencedColumnName="SEQ"),
     @PrimaryKeyJoinColumn(name="CODE", referencedColumnName="CODE")
 })
+@CascadeOnDelete
 public class CKeyEntityB2 extends CKeyEntityB {
 
     public CKeyEntityB2() {

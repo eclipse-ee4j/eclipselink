@@ -20,7 +20,6 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.Vector;
 import java.util.Map.Entry;
 
 import javax.xml.bind.SchemaOutputResolver;
@@ -167,7 +166,7 @@ public class JAXBContext extends javax.xml.bind.JAXBContext {
             List<XMLDescriptor> descriptorsToProcess = new ArrayList<XMLDescriptor>();
             List<Session> sessions = xmlContext.getSessions();
             for (Session session : sessions) {
-                Vector<XMLDescriptor> descriptors = session.getProject().getOrderedDescriptors();
+                List<XMLDescriptor> descriptors = (List<XMLDescriptor>)(List)session.getProject().getOrderedDescriptors();
                 for (XMLDescriptor xDesc : descriptors) {
                     descriptorsToProcess.add(xDesc);
                 }

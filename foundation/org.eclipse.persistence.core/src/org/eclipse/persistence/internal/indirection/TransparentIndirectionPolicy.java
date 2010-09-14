@@ -446,7 +446,21 @@ public class TransparentIndirectionPolicy extends IndirectionPolicy {
         } else {
             return true;// it must be a "real" collection
         }
-    }    
+    }
+    
+    /**
+     * INTERNAL:
+     * Return whether the specified object can be instantiated without database access.
+     */
+    public boolean objectIsEasilyInstantiated(Object object) {
+        if (object instanceof IndirectContainer) {
+            ValueHolderInterface valueHolder = ((IndirectContainer)object).getValueHolder();
+            if (valueHolder instanceof DatabaseValueHolder) {
+                return ((DatabaseValueHolder)valueHolder).isEasilyInstantiated();
+            }
+        }
+        return true;
+    }
         
     /**
      * INTERNAL:

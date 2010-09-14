@@ -51,6 +51,7 @@ import org.eclipse.persistence.queries.*;
 import org.eclipse.persistence.sessions.*;
 import org.eclipse.persistence.sessions.factories.ReferenceMode;
 import org.eclipse.persistence.sessions.factories.SessionManager;
+import org.eclipse.persistence.sessions.server.ClientSession;
 import org.eclipse.persistence.sessions.server.ConnectionPolicy;
 import org.eclipse.persistence.sessions.server.Server;
 import org.eclipse.persistence.sessions.server.ServerSession;
@@ -1570,7 +1571,8 @@ public class EntityManagerImpl implements org.eclipse.persistence.jpa.JpaEntityM
             if(this.connectionPolicy == null) {
                 createConnectionPolicy();
             }
-            this.extendedPersistenceContext = new RepeatableWriteUnitOfWork(this.serverSession.acquireClientSession(connectionPolicy, properties), this.referenceMode);
+            ClientSession client = this.serverSession.acquireClientSession(connectionPolicy, properties);
+            this.extendedPersistenceContext = new RepeatableWriteUnitOfWork(client, this.referenceMode);
             this.extendedPersistenceContext.setResumeUnitOfWorkOnTransactionCompletion(!this.closeOnCommit);
             this.extendedPersistenceContext.setShouldDiscoverNewObjects(this.persistOnCommit);
             this.extendedPersistenceContext.setDiscoverUnregisteredNewObjectsWithoutPersist(this.commitWithoutPersistRules);
@@ -1583,6 +1585,9 @@ public class EntityManagerImpl implements org.eclipse.persistence.jpa.JpaEntityM
                 // if there is an active txn we must register with it on
                 // creation of PC
                 transaction.registerUnitOfWorkWithTxn(this.extendedPersistenceContext);
+            }
+            if (client.shouldLog(SessionLog.FINER, SessionLog.TRANSACTION)) {
+                client.log(SessionLog.FINER, SessionLog.TRANSACTION, "acquire_unit_of_work_with_argument", String.valueOf(System.identityHashCode(this.extendedPersistenceContext)));
             }
         }
         if (this.beginEarlyTransaction && txn != null && !this.extendedPersistenceContext.isInTransaction()) {

@@ -59,6 +59,7 @@ import org.eclipse.persistence.mappings.ForeignReferenceMapping;
 import org.eclipse.persistence.mappings.RelationTableMechanism;
 
 import org.eclipse.persistence.annotations.BatchFetch;
+import org.eclipse.persistence.annotations.CascadeOnDelete;
 import org.eclipse.persistence.annotations.JoinFetch;
 import org.eclipse.persistence.annotations.PrivateOwned;
 import org.eclipse.persistence.exceptions.ValidationException;
@@ -107,6 +108,8 @@ public abstract class RelationshipAccessor extends MappingAccessor {
   
     private String m_targetEntityName;
     
+    private boolean m_cascadeOnDelete;
+    
     /**
      * INTERNAL:
      */
@@ -141,6 +144,8 @@ public abstract class RelationshipAccessor extends MappingAccessor {
         
         // Set the private owned if one is present.
         m_privateOwned = isAnnotationPresent(PrivateOwned.class);
+        
+        m_cascadeOnDelete = isAnnotationPresent(CascadeOnDelete.class);
         
         // Set the join columns if some are present. 
         // Process all the join columns first.
@@ -673,6 +678,34 @@ public abstract class RelationshipAccessor extends MappingAccessor {
     }
     
     /**
+     * Process settings common to ForeignReferenceMapping.
+     */
+    protected void processRelationshipMapping(ForeignReferenceMapping mapping) {
+        // Set the mapping, this must be done first.
+        setMapping(mapping);
+        
+        mapping.setIsLazy(isLazy());
+        mapping.setAttributeName(getAttributeName());
+        mapping.setReferenceClassName(getReferenceClassName());
+        mapping.setIsCascadeOnDeleteSetOnDatabase(isCascadeOnDelete());
+        
+        // Process join fetch type.
+        processJoinFetch(getJoinFetch(), mapping);
+        
+        // Process the batch fetch if specified.
+        processBatchFetch(getBatchFetch(), mapping);
+            
+        // Process the orphanRemoval or PrivateOwned
+        processOrphanRemoval(mapping);
+        
+        // Will check for PROPERTY access
+        setAccessorMethods(mapping);
+
+        // Process the cascade types.
+        processCascadeTypes(mapping);        
+    }
+    
+    /**
      * INTERNAL:
      * Set the getter and setter access methods for this accessor.
      */
@@ -802,6 +835,14 @@ public abstract class RelationshipAccessor extends MappingAccessor {
      */
     public void setTargetEntityName(String targetEntityName) {
         m_targetEntityName = targetEntityName;
+    }
+    
+    public boolean isCascadeOnDelete() {
+        return m_cascadeOnDelete;
+    }
+
+    public void setCascadeOnDelete(boolean cascadeOnDelete) {
+        m_cascadeOnDelete = cascadeOnDelete;
     }
     
     /**

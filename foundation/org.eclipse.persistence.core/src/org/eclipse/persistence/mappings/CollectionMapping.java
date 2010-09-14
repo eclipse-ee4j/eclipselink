@@ -68,6 +68,9 @@ public abstract class CollectionMapping extends ForeignReferenceMapping implemen
      **/ 
     protected OrderCorrectionType orderCorrectionType;
     
+    /** Store if the mapping can batch delete reference objects. */
+    protected boolean mustDeleteReferenceObjectsOneByOne;
+    
     /**
      * PUBLIC:
      * Default constructor.
@@ -268,12 +271,18 @@ public abstract class CollectionMapping extends ForeignReferenceMapping implemen
      */
     @Override
     public void cascadePerformRemoveIfRequired(Object object, UnitOfWorkImpl uow, Map visitedObjects) {
-        if (!isCascadeRemove()) {
+        if (!this.cascadeRemove) {
             return;
         }
         Object cloneAttribute = getAttributeValueFromObject(object);
         if (cloneAttribute == null) {
             return;
+        }
+        // PERF: If private owned and not instantiated, then avoid instantiating, delete-all will handle deletion.
+        if (this.isPrivateOwned && usesIndirection() && (!mustDeleteReferenceObjectsOneByOne())) {
+            if (!this.indirectionPolicy.objectIsEasilyInstantiated(cloneAttribute)) {
+                return;
+            }
         }
 
         ContainerPolicy cp = this.containerPolicy;
@@ -285,6 +294,9 @@ public abstract class CollectionMapping extends ForeignReferenceMapping implemen
             Object nextObject = cp.unwrapIteratorResult(wrappedObject);
             if ((nextObject != null) && (!visitedObjects.containsKey(nextObject))) {
                 visitedObjects.put(nextObject, nextObject);
+                if (this.isCascadeOnDeleteSetOnDatabase && isOneToManyMapping()) {
+                    uow.getCascadeDeleteObjects().add(nextObject);
+                }
                 uow.performRemove(nextObject, visitedObjects);
                 cp.cascadePerformRemoveIfRequired(wrappedObject, uow, visitedObjects);
             }
@@ -1225,8 +1237,7 @@ public abstract class CollectionMapping extends ForeignReferenceMapping implemen
      * one by one, as opposed to with a single DELETE statement.
      */
     protected boolean mustDeleteReferenceObjectsOneByOne() {
-        ClassDescriptor referenceDescriptor = this.getReferenceDescriptor();
-        return referenceDescriptor.hasDependencyOnParts() || referenceDescriptor.usesOptimisticLocking() || (referenceDescriptor.hasInheritance() && referenceDescriptor.getInheritancePolicy().shouldReadSubclasses()) || referenceDescriptor.hasMultipleTables() || containerPolicy.propagatesEventsToCollection();
+        return this.mustDeleteReferenceObjectsOneByOne;
     }
 
     /**
@@ -1616,6 +1627,14 @@ public abstract class CollectionMapping extends ForeignReferenceMapping implemen
     @Override
     public void postInitialize(AbstractSession session) {
         this.containerPolicy.postInitialize(session);
+        if (this.referenceDescriptor != null) {
+            this.mustDeleteReferenceObjectsOneByOne = this.referenceDescriptor.hasDependencyOnParts()
+                    || this.referenceDescriptor.usesOptimisticLocking()
+                    || (this.referenceDescriptor.hasInheritance() && this.referenceDescriptor.getInheritancePolicy().shouldReadSubclasses())
+                    || this.referenceDescriptor.hasMultipleTables() || this.containerPolicy.propagatesEventsToCollection();
+        } else {
+            this.mustDeleteReferenceObjectsOneByOne = false;
+        }
     }
     
     /**
@@ -2186,7 +2205,7 @@ public abstract class CollectionMapping extends ForeignReferenceMapping implemen
             return true;
         }
 
-        if (isPrivateOwned()) {
+        if (isPrivateOwned() || isCascadeRemove()) {
             Object objects = getRealCollectionAttributeValueFromObject(object, session);
 
             ContainerPolicy containerPolicy = this.containerPolicy;

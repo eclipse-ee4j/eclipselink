@@ -83,11 +83,6 @@ public class BasicTest extends AutoVerifyTestCase {
             throw new TestErrorException("Failed to make a java.util.Vector from a java.util.Set.");
         }
 
-        aVector.add(null);
-        if (!Helper.removeNullElement(aVector)) {
-            throw new TestErrorException("Failed to remove the first null element from java.util.Vector");
-        }
-
         aVector.clear();
         for (int i = 0; i < 3; i++) {
             aVector.add(i, new Integer(i));

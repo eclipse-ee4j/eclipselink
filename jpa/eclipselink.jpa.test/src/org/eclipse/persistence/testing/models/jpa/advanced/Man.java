@@ -14,6 +14,7 @@ package org.eclipse.persistence.testing.models.jpa.advanced;
 
 import javax.persistence.*;
 
+import static javax.persistence.CascadeType.ALL;
 import static javax.persistence.GenerationType.*;
 
 @Entity
@@ -23,48 +24,49 @@ public class Man {
     private String lastName;
     private PartnerLink partnerLink;
 
-	public Man() {}
-    
+    public Man() {
+    }
+
     public Man(String firstName, String lastName) {
         this();
         this.firstName = firstName;
         this.lastName = lastName;
     }
-    
+
     @Id
-    @GeneratedValue(strategy=IDENTITY)
-	public int getId() { 
-        return id; 
+    @GeneratedValue(strategy = IDENTITY)
+    public int getId() {
+        return id;
     }
 
-    @Column(name="F_NAME")
-    public String getFirstName() { 
-        return firstName; 
-    }
-    
-    public void setFirstName(String name) { 
-        this.firstName = name; 
+    @Column(name = "F_NAME")
+    public String getFirstName() {
+        return firstName;
     }
 
-    @Column(name="L_NAME")
-    public String getLastName() { 
-        return lastName; 
+    public void setFirstName(String name) {
+        this.firstName = name;
     }
-    
-    public void setLastName(String name) { 
-        this.lastName = name; 
+
+    @Column(name = "L_NAME")
+    public String getLastName() {
+        return lastName;
     }
-    
-    @OneToOne(mappedBy="man")
-	public PartnerLink getPartnerLink() { 
-        return partnerLink; 
+
+    public void setLastName(String name) {
+        this.lastName = name;
     }
-    
-	public void setId(int id) { 
-        this.id = id; 
+
+    @OneToOne(mappedBy = "man", cascade = ALL)
+    public PartnerLink getPartnerLink() {
+        return partnerLink;
     }
-    
-    public void setPartnerLink(PartnerLink partnerLink) { 
-        this.partnerLink = partnerLink; 
+
+    public void setId(int id) {
+        this.id = id;
+    }
+
+    public void setPartnerLink(PartnerLink partnerLink) {
+        this.partnerLink = partnerLink;
     }
 }

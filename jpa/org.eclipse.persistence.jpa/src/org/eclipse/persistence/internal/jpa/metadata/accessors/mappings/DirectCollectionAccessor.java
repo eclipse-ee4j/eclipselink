@@ -32,6 +32,7 @@ package org.eclipse.persistence.internal.jpa.metadata.accessors.mappings;
 import javax.persistence.FetchType;
 
 import org.eclipse.persistence.annotations.BatchFetch;
+import org.eclipse.persistence.annotations.CascadeOnDelete;
 import org.eclipse.persistence.annotations.JoinFetch;
 import org.eclipse.persistence.internal.helper.DatabaseTable;
 import org.eclipse.persistence.internal.jpa.metadata.MetadataDescriptor;
@@ -60,6 +61,7 @@ public abstract class DirectCollectionAccessor extends DirectAccessor {
     private String m_joinFetch;
     private String m_batchFetch;
     private Integer m_batchFetchSize;
+    private boolean m_cascadeOnDelete;
     private CollectionTableMetadata m_collectionTable;
    
     /**
@@ -95,9 +97,19 @@ public abstract class DirectCollectionAccessor extends DirectAccessor {
             m_batchFetchSize = (Integer) batchFetch.getAttribute("size");
         }
         
+        m_cascadeOnDelete = isAnnotationPresent(CascadeOnDelete.class);
+        
         // Since BasicCollection and ElementCollection look for different
         // collection tables, we will not initialize/look for one here. Those
         // accessors will be responsible for loading their collection table.
+    }
+    
+    public boolean isCascadeOnDelete() {
+        return m_cascadeOnDelete;
+    }
+
+    public void setCascadeOnDelete(boolean cascadeOnDelete) {
+        m_cascadeOnDelete = cascadeOnDelete;
     }
     
     /**
@@ -304,6 +316,8 @@ public abstract class DirectCollectionAccessor extends DirectAccessor {
 
         // The spec. requires pessimistic lock to be extend-able to CollectionTable
         mapping.setShouldExtendPessimisticLockScope(true);
+        
+        mapping.setIsCascadeOnDeleteSetOnDatabase(isCascadeOnDelete());
     }
     
     /**

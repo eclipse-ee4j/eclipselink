@@ -52,8 +52,8 @@ import org.eclipse.persistence.sessions.server.*;
 public class Project implements Serializable, Cloneable {
     protected String name;
     protected Login datasourceLogin;
-    protected Map descriptors;
-    protected Vector orderedDescriptors;
+    protected Map<Class, ClassDescriptor> descriptors;
+    protected List<ClassDescriptor> orderedDescriptors;
 
     /** Holds the default set of read-only classes that apply to each UnitOfWork. */
     protected Vector defaultReadOnlyClasses;
@@ -561,7 +561,7 @@ public class Project implements Serializable, Cloneable {
      * Return the descriptors in the order added.
      * Used to maintain consistent order in XML.
      */
-    public Vector getOrderedDescriptors() {
+    public List<ClassDescriptor> getOrderedDescriptors() {
         return orderedDescriptors;
     }
 
@@ -570,10 +570,9 @@ public class Project implements Serializable, Cloneable {
      * Set the descriptors order.
      * Used to maintain consistent order in XML.
      */
-    public void setOrderedDescriptors(Vector orderedDescriptors) {
+    public void setOrderedDescriptors(List<ClassDescriptor> orderedDescriptors) {
         this.orderedDescriptors = orderedDescriptors;
-        for (Enumeration e = orderedDescriptors.elements(); e.hasMoreElements();) {
-            ClassDescriptor descriptor = (ClassDescriptor)e.nextElement();
+        for (ClassDescriptor descriptor : orderedDescriptors) {
             String alias = descriptor.getAlias();
             if (alias != null) {
                 addAlias(alias, descriptor);

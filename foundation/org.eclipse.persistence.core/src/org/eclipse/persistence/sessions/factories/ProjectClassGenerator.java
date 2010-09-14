@@ -1413,12 +1413,9 @@ public class ProjectClassGenerator {
         methodDefinition.addLine("");
 
         // Sort by name.
-        Vector descriptors = buildSortedVectorOfDescriptors(getProject().getOrderedDescriptors());
+        List<ClassDescriptor> descriptors = buildSortedListOfDescriptors(getProject().getOrderedDescriptors());
 
-        for (Enumeration descriptorsEnum = descriptors.elements();
-                 descriptorsEnum.hasMoreElements();) {
-            ClassDescriptor descriptor = (ClassDescriptor)descriptorsEnum.nextElement();
-
+        for (ClassDescriptor descriptor : descriptors) {
             // Singleton interface descriptors should not exist.
             if (!(descriptor.isDescriptorForInterface() && (descriptor.getInterfacePolicy().getImplementorDescriptor() != null))) {
                 methodDefinition.addLine("addDescriptor(build" + getDescriptorMethodNames().get(descriptor) + "ClassDescriptor());");
@@ -1555,18 +1552,18 @@ public class ProjectClassGenerator {
     }
 
     /**
-     *  Take an unsorted vector of descriptors and sort it so that the order is maintained.
+     *  Take an unsorted list of descriptors and sort it so that the order is maintained.
      */
-    private Vector buildSortedVectorOfDescriptors(Vector descriptors) {
-        Vector returnDescriptors = Helper.addAllUniqueToVector(new Vector(descriptors.size()), descriptors);
+    private List<ClassDescriptor> buildSortedListOfDescriptors(List<ClassDescriptor> descriptors) {
+        List returnDescriptors = Helper.addAllUniqueToList(new ArrayList(descriptors.size()), descriptors);
         Object[] descriptorsArray = new Object[returnDescriptors.size()];
         for (int index = 0; index < returnDescriptors.size(); index++) {
-            descriptorsArray[index] = returnDescriptors.elementAt(index);
+            descriptorsArray[index] = returnDescriptors.get(index);
         }
         Arrays.sort(descriptorsArray, new DescriptorCompare());
-        returnDescriptors = new Vector(returnDescriptors.size());
-        for (int index = 0; index < descriptorsArray.length; index++) {
-            returnDescriptors.addElement(descriptorsArray[index]);
+        returnDescriptors = new ArrayList(descriptorsArray.length);
+        for (Object descriptor : descriptorsArray) {
+            returnDescriptors.add(descriptor);
         }
         return returnDescriptors;
     }
@@ -1784,10 +1781,7 @@ public class ProjectClassGenerator {
             classDefinition.addMethod(buildLoginMethod(getProject().getDatasourceLogin()));
         }
 
-        Iterator descriptors = buildSortedVectorOfDescriptors(getProject().getOrderedDescriptors()).iterator();
-        while (descriptors.hasNext()) {
-            ClassDescriptor descriptor = (ClassDescriptor)descriptors.next();
-
+        for (ClassDescriptor descriptor : buildSortedListOfDescriptors(getProject().getOrderedDescriptors())) {
             // Singleton interface descriptors should not exist.
             if (!(descriptor.isDescriptorForInterface() && (descriptor.getInterfacePolicy().getImplementorDescriptor() != null))) {
                 classDefinition.addMethod(buildDescriptorMethod(descriptor));

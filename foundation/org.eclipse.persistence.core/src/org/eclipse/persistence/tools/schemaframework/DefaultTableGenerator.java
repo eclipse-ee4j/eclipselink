@@ -15,11 +15,11 @@ package org.eclipse.persistence.tools.schemaframework;
 import java.sql.DatabaseMetaData;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.Vector;
 
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.eis.EISDescriptor;
@@ -100,37 +100,41 @@ import org.eclipse.persistence.mappings.converters.TypeConversionConverter;
  * @since Oracle TopLink 10.1.3
  */
 public class DefaultTableGenerator {
-    //the project object used to generate the default data schema.
+    /** The project object used to generate the default data schema. */
     Project project = null;
 
-    //the target database platform
-    private DatabasePlatform databasePlatform;
+    /** the target database platform. */
+    protected DatabasePlatform databasePlatform;
     
-    //used to track the table definition: keyed by the table name, and valued
-    //by the table definition object
-    private Map<String, TableDefinition> tableMap = null;
+    /**
+     * Used to track the table definition: keyed by the table name, and valued 
+     * by the table definition object.
+     */
+    protected Map<String, TableDefinition> tableMap = null;
 
-    //used to track the field definition: keyed by the database field object, and 
-    //valued by the field definition.
-    private Map<DatabaseField, FieldDefinition> fieldMap = null;
+    /** 
+     * Used to track the field definition: keyed by the database field object, and 
+     * valued by the field definition.
+     */
+    protected Map<DatabaseField, FieldDefinition> fieldMap = null;
 
-    //DatabaseField pool (synchronized with above 'fieldMap')
-    private Map<DatabaseField, DatabaseField> databaseFields;
+    /** DatabaseField pool (synchronized with above 'fieldMap') */
+    protected Map<DatabaseField, DatabaseField> databaseFields;
 
-    //When this flag is 'false' EclipseLink will not attempt to create fk constraints
+    /** When this flag is 'false' EclipseLink will not attempt to create fk constraints. */
     protected boolean generateFKConstraints = true;
 
     /**
-     * Default construcotr
+     * Default constructor
      */
     public DefaultTableGenerator(Project project) {
         this.project = project;
         if (project.getDatasourceLogin().getDatasourcePlatform() instanceof DatabasePlatform){
-        	databasePlatform = (DatabasePlatform)project.getDatasourceLogin().getDatasourcePlatform();
+            this.databasePlatform = (DatabasePlatform)project.getDatasourceLogin().getDatasourcePlatform();
         }
-        tableMap = new HashMap();
-        fieldMap = new HashMap();
-        databaseFields = new HashMap();
+        this.tableMap = new HashMap();
+        this.fieldMap = new HashMap();
+        this.databaseFields = new HashMap();
     }
     
     /**
@@ -149,12 +153,9 @@ public class DefaultTableGenerator {
         TableCreator tblCreator = new TableCreator();
 
         //go through each descriptor and build the table/field definitions out of mappings
-        Iterator descIter = project.getDescriptors().values().iterator();
+        for (ClassDescriptor descriptor : this.project.getDescriptors().values()) {
 
-        while (descIter.hasNext()) {
-            ClassDescriptor desc = (ClassDescriptor)descIter.next();
-
-            if ((desc instanceof XMLDescriptor) || (desc instanceof EISDescriptor) || (desc instanceof ObjectRelationalDataTypeDescriptor)) {
+            if ((descriptor instanceof XMLDescriptor) || (descriptor instanceof EISDescriptor) || (descriptor instanceof ObjectRelationalDataTypeDescriptor)) {
                 //default table generator does not support ox, eis and object-relational descriptor
                 AbstractSessionLog.getLog().log(SessionLog.WARNING, "relational_descriptor_support_only", (Object[])null, true);
 
@@ -164,22 +165,18 @@ public class DefaultTableGenerator {
             // Aggregate descriptors do not contain table/field data and are 
             // processed through their owning entities. Aggregate descriptors
             // can not exist on their own.
-            if (!desc.isAggregateDescriptor() && !desc.isAggregateCollectionDescriptor()) {
-                initTableSchema(desc);
+            if (!descriptor.isAggregateDescriptor() && !descriptor.isAggregateCollectionDescriptor()) {
+                initTableSchema(descriptor);
             }
         }
 
         //Post init the schema for relation table and direct collection/map tables, and several special mapping handlings.
-        descIter = project.getOrderedDescriptors().iterator();
-
-        while (descIter.hasNext()) {
-            ClassDescriptor desc = (ClassDescriptor) descIter.next();
-
+        for (ClassDescriptor descriptor : this.project.getOrderedDescriptors()) {
             // Aggregate descriptors do not contain table/field data and are 
             // processed through their owning entities. Aggregate descriptors
             // can not exist on their own.
-            if (!desc.isAggregateDescriptor() && !desc.isAggregateCollectionDescriptor()) {
-                postInitTableSchema(desc);
+            if (!descriptor.isAggregateDescriptor() && !descriptor.isAggregateCollectionDescriptor()) {
+                postInitTableSchema(descriptor);
             }
         }
 
@@ -211,7 +208,7 @@ public class DefaultTableGenerator {
             }
             DatabaseMetaData dbMetaData = conn.getMetaData();
             ResultSet resultSet = dbMetaData.getTables(null, dbMetaData.getUserName(), null, new String[] { "TABLE" });
-            java.util.List tablesInDatabase = new java.util.ArrayList();
+            List tablesInDatabase = new ArrayList();
 
             while (resultSet.next()) {
                 //save all tables from the database
@@ -220,8 +217,8 @@ public class DefaultTableGenerator {
 
             resultSet.close();
 
-            java.util.List existedTables = new java.util.ArrayList();
-            java.util.List existedTableNames = new java.util.ArrayList();
+            List existedTables = new ArrayList();
+            List existedTableNames = new ArrayList();
             Iterator tblDefIter = tblCreator.getTableDefinitions().iterator();
 
             while (tblDefIter.hasNext()) {
@@ -278,8 +275,9 @@ public class DefaultTableGenerator {
             }
 
             //build or retrieve the field definition.
-            FieldDefinition fieldDef = getFieldDefFromDBField(dbField, isPKField);
+            FieldDefinition fieldDef = getFieldDefFromDBField(dbField);            
             if (isPKField) {
+                fieldDef.setIsPrimaryKey(true);
                 // Check if the generation strategy is IDENTITY
                 String sequenceName = descriptor.getSequenceNumberName();
                 DatabaseLogin login = this.project.getLogin();
@@ -306,9 +304,9 @@ public class DefaultTableGenerator {
      * and direct-collection, direct-map table, as well as reset LOB type for serialized
      * object mapping and type conversion mapping for LOB usage
      */
-    private void postInitTableSchema(ClassDescriptor desc) {
-        for (DatabaseMapping mapping : desc.getMappings()) {
-            if (desc.isChildDescriptor() && desc.getInheritancePolicy().getParentDescriptor().getMappingForAttributeName(mapping.getAttributeName()) != null) {
+    protected void postInitTableSchema(ClassDescriptor descriptor) {
+        for (DatabaseMapping mapping : descriptor.getMappings()) {
+            if (descriptor.isChildDescriptor() && descriptor.getInheritancePolicy().getParentDescriptor().getMappingForAttributeName(mapping.getAttributeName()) != null) {
                 // If we are an inheritance subclass, do nothing. That is, don't 
                 // generate mappings that will be generated by our parent,
                 // otherwise the fields for that mapping will be generated n 
@@ -317,7 +315,7 @@ public class DefaultTableGenerator {
             } else if (mapping.isManyToManyMapping()) {
                 buildRelationTableDefinition((ManyToManyMapping)mapping, ((ManyToManyMapping)mapping).getRelationTableMechanism(), ((ManyToManyMapping)mapping).getListOrderField(), mapping.getContainerPolicy());
             } else if (mapping.isDirectCollectionMapping()) {
-                buildDirectCollectionTableDefinition((DirectCollectionMapping) mapping, desc);
+                buildDirectCollectionTableDefinition((DirectCollectionMapping) mapping, descriptor);
             } else if (mapping.isDirectToFieldMapping()) {
                 Converter converter = ((DirectToFieldMapping)mapping).getConverter();
                 if (converter != null) {
@@ -327,7 +325,7 @@ public class DefaultTableGenerator {
                     
                     if (converter instanceof SerializedObjectConverter) {
                         //serialized object mapping field should be BLOB/IMAGE
-                        getFieldDefFromDBField(mapping.getField(), false).setType(Byte[].class);
+                        getFieldDefFromDBField(mapping.getField()).setType(Byte[].class);
                     }
                 }
             } else if (mapping.isAggregateCollectionMapping()) {
@@ -353,7 +351,7 @@ public class DefaultTableGenerator {
             }
         }
         
-        processAdditionalTablePkFields(desc);
+        processAdditionalTablePkFields(descriptor);
     }
 
     
@@ -361,23 +359,21 @@ public class DefaultTableGenerator {
      * The ContainerPolicy may contain some additional fields that should be added to the table
      * 
      * @see MappedKeyMapContainerPolicy
-     * @param cp
-     * @param tblDef
      */
-    private void addFieldsForMappedKeyMapContainerPolicy(ContainerPolicy cp, TableDefinition tblDef){
+    protected void addFieldsForMappedKeyMapContainerPolicy(ContainerPolicy cp, TableDefinition table){
         if (cp.isMappedKeyMapPolicy()){
             List<DatabaseField> keyFields = cp.getIdentityFieldsForMapKey();
             Iterator<DatabaseField> i = keyFields.iterator();
             while (i.hasNext()){
                 DatabaseField foreignKey = i.next();
-                FieldDefinition fieldDef = getFieldDefFromDBField(foreignKey, false);
-                if (!tblDef.getFields().contains(fieldDef)) {
-                    tblDef.addField(getFieldDefFromDBField(foreignKey, false));
+                FieldDefinition fieldDef = getFieldDefFromDBField(foreignKey);
+                if (!table.getFields().contains(fieldDef)) {
+                    table.addField(getFieldDefFromDBField(foreignKey));
                 }
             }
             Map<DatabaseField, DatabaseField> foreignKeys = ((MappedKeyMapContainerPolicy)cp).getForeignKeyFieldsForMapKey();
             if (foreignKeys != null){
-                addForeignMappingFkConstraint(foreignKeys);
+                addForeignMappingFkConstraint(foreignKeys, false);
             }
         }
     }
@@ -385,50 +381,50 @@ public class DefaultTableGenerator {
     /**
      * Build relation table definitions for all many-to-many relationships in a EclipseLink descriptor.
      */
-    private void buildRelationTableDefinition(ForeignReferenceMapping mapping, RelationTableMechanism relationTableMechanism, DatabaseField listOrderField, ContainerPolicy cp) {
+    protected void buildRelationTableDefinition(ForeignReferenceMapping mapping, RelationTableMechanism relationTableMechanism, DatabaseField listOrderField, ContainerPolicy cp) {
         //first create relation table
-        TableDefinition tblDef = getTableDefFromDBTable(relationTableMechanism.getRelationTable());
+        TableDefinition table = getTableDefFromDBTable(relationTableMechanism.getRelationTable());
 
         //add source foreign key fields into the relation table
-        Vector srcFkFields = relationTableMechanism.getSourceRelationKeyFields();
-        Vector srcKeyFields = relationTableMechanism.getSourceKeyFields();
+        List<DatabaseField> srcFkFields = relationTableMechanism.getSourceRelationKeyFields();
+        List<DatabaseField> srcKeyFields = relationTableMechanism.getSourceKeyFields();
 
-        buildRelationTableFields(mapping, tblDef, srcFkFields, srcKeyFields);
+        buildRelationTableFields(mapping, table, srcFkFields, srcKeyFields);
 
         //add target foreign key fields into the relation table
-        Vector targFkFields = relationTableMechanism.getTargetRelationKeyFields();
-        Vector targKeyFields = relationTableMechanism.getTargetKeyFields();
+        List<DatabaseField> targFkFields = relationTableMechanism.getTargetRelationKeyFields();
+        List<DatabaseField> targKeyFields = relationTableMechanism.getTargetKeyFields();
         
-        buildRelationTableFields(mapping, tblDef, targFkFields, targKeyFields);
+        buildRelationTableFields(mapping, table, targFkFields, targKeyFields);
         
         if (cp != null){
-            addFieldsForMappedKeyMapContainerPolicy(cp, tblDef);
+            addFieldsForMappedKeyMapContainerPolicy(cp, table);
         }
         
-        if(listOrderField != null) {
-            tblDef.addField(getFieldDefFromDBField(listOrderField, false));
+        if (listOrderField != null) {
+            table.addField(getFieldDefFromDBField(listOrderField));
         }
     }
 
     /**
      * Build field definitions and foreign key constraints for all many-to-many relation table.
      */
-    private void buildRelationTableFields(ForeignReferenceMapping mapping, TableDefinition tblDef, Vector fkFields, Vector targetFields) {
+    protected void buildRelationTableFields(ForeignReferenceMapping mapping, TableDefinition table, List<DatabaseField> fkFields, List<DatabaseField> targetFields) {
         assert fkFields.size() > 0 && fkFields.size() == targetFields.size();
         
         DatabaseField fkField = null;
         DatabaseField targetField = null;
-        Vector<String> fkFieldNames = new Vector();
-        Vector<String> targetFieldNames = new Vector();
+        List<String> fkFieldNames = new ArrayList();
+        List<String> targetFieldNames = new ArrayList();
 
         for (int index = 0; index < fkFields.size(); index++) {
-            fkField = (DatabaseField) fkFields.get(index);
-            targetField = (DatabaseField) targetFields.get(index);
+            fkField = fkFields.get(index);
+            targetField = targetFields.get(index);
             fkFieldNames.add(fkField.getNameDelimited(databasePlatform));
             targetFieldNames.add(targetField.getNameDelimited(databasePlatform));
             
             fkField = resolveDatabaseField(fkField, targetField);
-            setFieldToRelationTable(fkField, tblDef);
+            setFieldToRelationTable(fkField, table);
         }
         
         // add a foreign key constraint from fk field to target field
@@ -443,63 +439,78 @@ public class DefaultTableGenerator {
                 && mapping.getReferenceDescriptor().getTablePerClassPolicy().hasChild()) {
             return;
         }
-        addForeignKeyConstraint(tblDef, targetTblDef, fkFieldNames, targetFieldNames);
+        addForeignKeyConstraint(table, targetTblDef, fkFieldNames, targetFieldNames, mapping.isCascadeOnDeleteSetOnDatabase());
     }
 
     /**
      * Build direct collection table definitions in a EclipseLink descriptor
      */
-    private void buildDirectCollectionTableDefinition(DirectCollectionMapping mapping, ClassDescriptor desc) {
+    protected void buildDirectCollectionTableDefinition(DirectCollectionMapping mapping, ClassDescriptor descriptor) {
         //first create direct collection table
-        TableDefinition tblDef = getTableDefFromDBTable(mapping.getReferenceTable());
+        TableDefinition table = getTableDefFromDBTable(mapping.getReferenceTable());
 
         DatabaseField dbField = null;
-
-        //add the table reference key(s)
-        Vector refPkFields = mapping.getReferenceKeyFields();
-
-        for (int index = 0; index < refPkFields.size(); index++) {
-            dbField = resolveDatabaseField((DatabaseField) refPkFields.get(index), mapping.getSourceKeyFields().get(index));
-            tblDef.addField(getDirectCollectionReferenceKeyFieldDefFromDBField(dbField));
+        DatabaseField targetField = null;
+        List<String> fkFieldNames = new ArrayList();
+        List<String> targetFieldNames = new ArrayList();
+        List<DatabaseField> fkFields = mapping.getReferenceKeyFields();
+        List<DatabaseField> targetFields = mapping.getSourceKeyFields();
+        for (int index = 0; index < fkFields.size(); index++) {
+            DatabaseField fkField = fkFields.get(index);
+            targetField = targetFields.get(index);
+            fkFieldNames.add(fkField.getNameDelimited(databasePlatform));
+            targetFieldNames.add(targetField.getNameDelimited(databasePlatform));
+            
+            fkField = resolveDatabaseField(fkField, targetField);
+            table.addField(getFieldDefFromDBField(fkField));
         }
+        
+        // add a foreign key constraint from fk field to target field
+        DatabaseTable targetTable = targetField.getTable();
+        TableDefinition targetTblDef = getTableDefFromDBTable(targetTable);
 
         //add the direct collection field to the table.
-        tblDef.addField(getFieldDefFromDBField(mapping.getDirectField(), false));
+        table.addField(getFieldDefFromDBField(mapping.getDirectField()));
 
         //if the mapping is direct-map field, add the direct key field to the table as well.
         // TODO: avoid generating DDL for map key mappings for the time being.
         // Bug: 270814
         if (mapping.isDirectMapMapping() && ! mapping.getContainerPolicy().isMappedKeyMapPolicy() ) {
             dbField = ((DirectMapMapping) mapping).getDirectKeyField();
-            tblDef.addField(getFieldDefFromDBField(dbField, false));
+            table.addField(getFieldDefFromDBField(dbField));
         } else {
-            addFieldsForMappedKeyMapContainerPolicy(mapping.getContainerPolicy(), tblDef);
+            addFieldsForMappedKeyMapContainerPolicy(mapping.getContainerPolicy(), table);
             
-            if(mapping.getListOrderField() != null) {
-                tblDef.addField(getFieldDefFromDBField(mapping.getListOrderField(), false));
+            if (mapping.getListOrderField() != null) {
+                table.addField(getFieldDefFromDBField(mapping.getListOrderField()));
             }
         }
+        if (mapping.getDescriptor().hasTablePerClassPolicy()
+                && mapping.getDescriptor().getTablePerClassPolicy().hasChild()) {
+            return;
+        }
+        addForeignKeyConstraint(table, targetTblDef, fkFieldNames, targetFieldNames, mapping.isCascadeOnDeleteSetOnDatabase());
     }
 
     /**
      * Reset field type to use BLOB/CLOB with type conversion mapping fix for 4k oracle thin driver bug.
      */
-    private void resetFieldTypeForLOB(DirectToFieldMapping mapping) {
+    protected void resetFieldTypeForLOB(DirectToFieldMapping mapping) {
         if (mapping.getFieldClassification().getName().equals("java.sql.Blob")) {
             //allow the platform to figure out what database field type gonna be used. 
             //For example, Oracle9 will generate BLOB type, SQL Server generats IMAGE.
-            getFieldDefFromDBField(mapping.getField(), false).setType(Byte[].class);
+            getFieldDefFromDBField(mapping.getField()).setType(Byte[].class);
         } else if (mapping.getFieldClassification().getName().equals("java.sql.Clob")) {
             //allow the platform to figure out what database field type gonna be used. 
             //For example, Oracle9 will generate CLOB type. SQL Server generats TEXT.
-            getFieldDefFromDBField(mapping.getField(), false).setType(Character[].class);
+            getFieldDefFromDBField(mapping.getField()).setType(Character[].class);
         }
     }
 
     /**
      * Reset the transformation mapping field types
      */
-    private void resetTransformedFieldType(TransformationMapping mapping) {
+    protected void resetTransformedFieldType(TransformationMapping mapping) {
         Iterator transIter = mapping.getFieldTransformations().iterator();
         while (transIter.hasNext()) {
             FieldTransformation transformation = (FieldTransformation) transIter.next();
@@ -508,7 +519,7 @@ public class DefaultTableGenerator {
                 MethodBasedFieldTransformation methodTransformation = (MethodBasedFieldTransformation) transformation; 
                 try {
                     Class returnType = Helper.getDeclaredMethod(mapping.getDescriptor().getJavaClass(), methodTransformation.getMethodName(), null).getReturnType();
-                    getFieldDefFromDBField(methodTransformation.getField(), false).setType(returnType);
+                    getFieldDefFromDBField(methodTransformation.getField()).setType(returnType);
                 } catch (NoSuchMethodException ex) {
                     // For some reason, the method type could not be retrieved, 
                     // use the default java.lang.String type
@@ -529,7 +540,7 @@ public class DefaultTableGenerator {
                         throw ValidationException.missingFieldTypeForDDLGenerationOfClassTransformation(mapping.getDescriptor(), mapping.getAttributeName(), methodName);
                     }
                     
-                    getFieldDefFromDBField(classTransformation.getField(), false).setType(returnType);
+                    getFieldDefFromDBField(classTransformation.getField()).setType(returnType);
                 } catch (NoSuchMethodException ex) {
                     // For some reason, the method type could not be retrieved.
                     // Did the interface method change? Throw an exception. 
@@ -543,74 +554,112 @@ public class DefaultTableGenerator {
      * Add the foreign key to the aggregate collection mapping target table.
      * Also add listOrderField if specified.
      */
-    private void createAggregateTargetTable(AggregateCollectionMapping mapping) {
-        TableDefinition targTblDef = getTableDefFromDBTable(mapping.getReferenceDescriptor().getDefaultTable());
-        addFieldsForMappedKeyMapContainerPolicy(mapping.getContainerPolicy(), targTblDef);
+    protected void createAggregateTargetTable(AggregateCollectionMapping mapping) {
+        TableDefinition targetTable = getTableDefFromDBTable(mapping.getReferenceDescriptor().getDefaultTable());
+        addFieldsForMappedKeyMapContainerPolicy(mapping.getContainerPolicy(), targetTable);
 
         Iterator aggregateFieldIterator = mapping.getReferenceDescriptor().getFields().iterator();
         while (aggregateFieldIterator.hasNext()) {
             DatabaseField dbField = (DatabaseField) aggregateFieldIterator.next();
-            //add the target foreign key field definition to the table definition
-            targTblDef.addField(getFieldDefFromDBField(dbField, false));
+            //add the target definition to the table definition
+            targetTable.addField(getFieldDefFromDBField(dbField));
         }
         
         //unlike normal one-to-many mapping, aggregate collection mapping does not have 1:1 back reference
         //mapping, so the target foreign key fields are not stored in the target descriptor.
-        Iterator targFKIter = mapping.getTargetForeignKeyFields().iterator();
-
-        while (targFKIter.hasNext()) {
-            DatabaseField dbField = (DatabaseField) targFKIter.next();
-            //add the target foreign key field definition to the table definition
-            targTblDef.addField(getFieldDefFromDBField(dbField, false));
+        List<String> fkFieldNames = new ArrayList();
+        List<String> targetFieldNames = new ArrayList();
+        List<DatabaseField> fkFields = mapping.getTargetForeignKeyFields();
+        List<DatabaseField> targetFields = mapping.getSourceKeyFields();
+        DatabaseField targetField = null;
+        for (int index = 0; index < fkFields.size(); index++) {
+            DatabaseField fkField = fkFields.get(index);
+            targetField = targetFields.get(index);
+            fkFieldNames.add(fkField.getNameDelimited(databasePlatform));
+            targetFieldNames.add(targetField.getNameDelimited(databasePlatform));
+            
+            fkField = resolveDatabaseField(fkField, targetField);
+            targetTable.addField(getFieldDefFromDBField(fkField));
         }
-
-        if(mapping.getListOrderField() != null) {
-            getTableDefFromDBTable(mapping.getListOrderField().getTable()).addField(getFieldDefFromDBField(mapping.getListOrderField(), false));
+        
+        // add a foreign key constraint from fk field to target field
+        DatabaseTable sourceDatabaseTable = targetField.getTable();
+        TableDefinition sourceTable = getTableDefFromDBTable(sourceDatabaseTable);
+        
+        if (mapping.getListOrderField() != null) {
+            getTableDefFromDBTable(mapping.getListOrderField().getTable()).addField(getFieldDefFromDBField(mapping.getListOrderField()));
         }
+        if (mapping.getDescriptor().hasTablePerClassPolicy()
+                && mapping.getDescriptor().getTablePerClassPolicy().hasChild()) {
+            return;
+        }
+        addForeignKeyConstraint(targetTable, sourceTable, fkFieldNames, targetFieldNames, mapping.isCascadeOnDeleteSetOnDatabase());
     }
 
-    private void addForeignKeyFieldToSourceTargetTable(OneToOneMapping mapping) {        
+    protected void addForeignKeyFieldToSourceTargetTable(OneToOneMapping mapping) {        
         if (!mapping.isForeignKeyRelationship()
                 || (mapping.getReferenceDescriptor().hasTablePerClassPolicy()
                         && mapping.getReferenceDescriptor().getTablePerClassPolicy().hasChild())) {
             return;
         }
- 
-        addForeignMappingFkConstraint(mapping.getSourceToTargetKeyFields());
+        boolean cascadeDelete = false;
+        // Find mappedBy target mapping to check constraint cascade.
+        for (DatabaseField foreignKey : mapping.getSourceToTargetKeyFields().values()) {
+            DatabaseMapping mappedBy = mapping.getReferenceDescriptor().getObjectBuilder().getMappingForField(foreignKey);
+            if (mappedBy.isOneToOneMapping()) {
+                cascadeDelete = ((OneToOneMapping)mappedBy).isCascadeOnDeleteSetOnDatabase();
+            } else {
+                List<DatabaseMapping> readOnlyMappings = mapping.getReferenceDescriptor().getObjectBuilder().getReadOnlyMappingsForField(foreignKey);
+                if (readOnlyMappings != null) {
+                    for (DatabaseMapping mappedByPK : readOnlyMappings) {
+                        if (mappedByPK.isOneToOneMapping()) {
+                            cascadeDelete = ((OneToOneMapping)mappedByPK).isCascadeOnDeleteSetOnDatabase();
+                            if (cascadeDelete) {
+                                break;
+                            }
+                        }
+                    }
+                }
+            }
+            if (cascadeDelete) {
+                break;
+            }
+        }
+        addForeignMappingFkConstraint(mapping.getSourceToTargetKeyFields(), cascadeDelete);
     }
     
-    private void addForeignKeyFieldToSourceTargetTable(OneToManyMapping mapping) {
+    protected void addForeignKeyFieldToSourceTargetTable(OneToManyMapping mapping) {
         if (mapping.getDescriptor().hasTablePerClassPolicy()
                 && mapping.getDescriptor().getTablePerClassPolicy().hasChild()) {
             return;
         }
-        addForeignMappingFkConstraint(mapping.getTargetForeignKeysToSourceKeys());
+        addForeignMappingFkConstraint(mapping.getTargetForeignKeysToSourceKeys(), mapping.isCascadeOnDeleteSetOnDatabase());
         if(mapping.getListOrderField() != null) {
-            getTableDefFromDBTable(mapping.getListOrderField().getTable()).addField(getFieldDefFromDBField(mapping.getListOrderField(), false));
+            getTableDefFromDBTable(mapping.getListOrderField().getTable()).addField(getFieldDefFromDBField(mapping.getListOrderField()));
         }
     }    
 
-    private void addForeignMappingFkConstraint(final Map<DatabaseField, DatabaseField> srcFields) {
+    protected void addForeignMappingFkConstraint(final Map<DatabaseField, DatabaseField> srcFields, boolean cascadeOnDelete) {
         // srcFields map from the foreign key field to the target key field
 
         if(srcFields.size() == 0) {
             return;
         }
 
-        List<DatabaseField> fkFields = new Vector<DatabaseField>();
-        List<DatabaseField> targetFields = new Vector<DatabaseField>();
+        List<DatabaseField> fkFields = new ArrayList<DatabaseField>();
+        List<DatabaseField> targetFields = new ArrayList<DatabaseField>();
         
         for (DatabaseField fkField : srcFields.keySet()) {
             fkFields.add(fkField);
             targetFields.add(srcFields.get(fkField));
         }
-        addJoinColumnsFkConstraint(fkFields, targetFields);
+        addJoinColumnsFkConstraint(fkFields, targetFields, cascadeOnDelete);
     }
     
     /**
      * Build a table definition object from a database table object
      */
-    private TableDefinition getTableDefFromDBTable(DatabaseTable databaseTable) {
+    protected TableDefinition getTableDefFromDBTable(DatabaseTable databaseTable) {
         TableDefinition tableDefinition = this.tableMap.get(databaseTable.getName());
 
         if (tableDefinition == null) {
@@ -634,7 +683,7 @@ public class DefaultTableGenerator {
      * Resolve the foreign key database field metadata in relation table or direct collection/map table.
      * Those metadata includes type, and maybe dbtype/size/subsize if DatabaseField carries those info.
      */
-    private DatabaseField resolveDatabaseField(DatabaseField childField, DatabaseField parentField) {
+    protected DatabaseField resolveDatabaseField(DatabaseField childField, DatabaseField parentField) {
         //set through the type from the source table key field to the relation or direct collection table key field.        
         DatabaseField resolvedDatabaseField = new DatabaseField();
         // find original field in the parent table, which contains actual type definitions
@@ -679,7 +728,7 @@ public class DefaultTableGenerator {
     /**
      * Build a field definition object from a database field.
      */
-    private FieldDefinition getFieldDefFromDBField(DatabaseField dbField, boolean isPrimaryKey) {
+    protected FieldDefinition getFieldDefFromDBField(DatabaseField dbField) {
         FieldDefinition fieldDef = this.fieldMap.get(dbField);
 
         if (fieldDef == null) {
@@ -723,65 +772,53 @@ public class DefaultTableGenerator {
                 fieldDef.setShouldAllowNull(dbField.isNullable());             
                 fieldDef.setUnique(dbField.isUnique());     
             }
-
-            fieldDef.setIsPrimaryKey(isPrimaryKey);
-            fieldMap.put(dbField, fieldDef);
-            databaseFields.put(dbField, dbField);
+            this.fieldMap.put(dbField, fieldDef);
+            this.databaseFields.put(dbField, dbField);
         }
 
-        return fieldDef;
-    }
-    
-    /**
-     * Build a field definition object from a database field.
-     */
-    private FieldDefinition getDirectCollectionReferenceKeyFieldDefFromDBField(DatabaseField dbField) {
-        FieldDefinition fieldDef = (FieldDefinition)getFieldDefFromDBField(dbField, true).clone();
-        //direct collection/map table reference kye filed is not unique, need to set it as non-pk.
-        fieldDef.setIsPrimaryKey(false);
         return fieldDef;
     }
 
     /**
      * Build and add a field definition object to relation table
      */
-    private void setFieldToRelationTable(DatabaseField dbField, TableDefinition tblDef) {
-        FieldDefinition fieldDef = getFieldDefFromDBField(dbField, false);
+    protected void setFieldToRelationTable(DatabaseField dbField, TableDefinition table) {
+        FieldDefinition fieldDef = getFieldDefFromDBField(dbField);
 
-        if (!tblDef.getFields().contains(fieldDef)) {
+        if (!table.getFields().contains(fieldDef)) {
             //only add the field once, to avoid add twice if m:m is bi-directional.
-            tblDef.addField(getFieldDefFromDBField(dbField, false));
+            table.addField(getFieldDefFromDBField(dbField));
             fieldDef.setIsPrimaryKey(true); // make this a PK as we will be creating constrains later
         }
     }
 
-    private void processAdditionalTablePkFields(ClassDescriptor desc) {
+    protected void processAdditionalTablePkFields(ClassDescriptor descriptor) {
         // only if there are additional tables
-        if (!desc.hasMultipleTables()) {
+        if (!descriptor.hasMultipleTables()) {
             return;
         }
         
-        DatabaseTable dbTbl = null;
-        Iterator dbTblIter = desc.getTables().iterator();
+        DatabaseTable databaseTable = null;
+        Iterator dbTblIter = descriptor.getTables().iterator();
         while (dbTblIter.hasNext()) {
-            dbTbl = (DatabaseTable) dbTblIter.next();
-            Map<DatabaseField, DatabaseField> srcFields = desc.getAdditionalTablePrimaryKeyFields().get(dbTbl);
+            databaseTable = (DatabaseTable) dbTblIter.next();
+            Map<DatabaseField, DatabaseField> srcFields = descriptor.getAdditionalTablePrimaryKeyFields().get(databaseTable);
             if ((null != srcFields) && srcFields.size() > 0) {
                 // srcFields is from the secondary field to the primary key field
                 // Let's make fk constraint from the secondary field to the primary key field
-                List<DatabaseField> fkFields = new Vector<DatabaseField>();
-                List<DatabaseField> pkFields = new Vector<DatabaseField>();
+                List<DatabaseField> fkFields = new ArrayList<DatabaseField>();
+                List<DatabaseField> pkFields = new ArrayList<DatabaseField>();
         
                 for (DatabaseField pkField : srcFields.keySet()) {
                     pkFields.add(pkField);
                     fkFields.add(srcFields.get(pkField));
                 }
-                addJoinColumnsFkConstraint(fkFields, pkFields);
+                addJoinColumnsFkConstraint(fkFields, pkFields, descriptor.isCascadeOnDeleteSetOnDatabaseOnSecondaryTables());
             }
         }              
     }    
    
-    private void addJoinColumnsFkConstraint(List<DatabaseField> fkFields, List<DatabaseField> targetFields) {
+    protected void addJoinColumnsFkConstraint(List<DatabaseField> fkFields, List<DatabaseField> targetFields, boolean cascadeOnDelete) {
         assert fkFields.size() == targetFields.size();
         
         if (fkFields.size() == 0) {
@@ -790,8 +827,8 @@ public class DefaultTableGenerator {
         
         DatabaseField fkField = null;
         DatabaseField targetField = null;
-        Vector<String> fkFieldNames = new Vector();
-        Vector<String> targetFieldNames = new Vector();
+        List<String> fkFieldNames = new ArrayList();
+        List<String> targetFieldNames = new ArrayList();
         
         DatabaseTable sourceTable = fkFields.get(0).getTable();
         TableDefinition sourceTableDef = getTableDefFromDBTable(sourceTable);
@@ -808,7 +845,7 @@ public class DefaultTableGenerator {
             if (targetFieldDef != null) {
                 // UnidirectionalOneToOneMapping case
                 if (fkFieldDef == null) {
-                    fkFieldDef = getFieldDefFromDBField(fkField, false);
+                    fkFieldDef = getFieldDefFromDBField(fkField);
                     if (!sourceTableDef.getFields().contains(fkFieldDef)) {
                         sourceTableDef.addField(fkFieldDef);
                     }
@@ -827,14 +864,14 @@ public class DefaultTableGenerator {
         DatabaseTable targetTable = targetField.getTable();
         TableDefinition targetTableDef = getTableDefFromDBTable(targetTable);
         
-        addForeignKeyConstraint(sourceTableDef, targetTableDef, fkFieldNames, targetFieldNames);
+        addForeignKeyConstraint(sourceTableDef, targetTableDef, fkFieldNames, targetFieldNames, cascadeOnDelete);
     }
 
     /**
      * Add a foreign key constraint to the source table.
      */
-    private void addForeignKeyConstraint(TableDefinition sourceTableDef, TableDefinition targetTableDef, 
-                                         Vector<String> fkFields, Vector<String> targetFields) {
+    protected void addForeignKeyConstraint(TableDefinition sourceTableDef, TableDefinition targetTableDef, 
+            List<String> fkFields, List<String> targetFields, boolean cascadeOnDelete) {
 
         // Only generate FK constraints if instructed to
         if (! this.generateFKConstraints){
@@ -844,8 +881,8 @@ public class DefaultTableGenerator {
         
         // target keys could be primary keys or candidate(unique) keys of the target table
 
-        Vector<String> fkFieldNames = fkFields;
-        Vector<String> targetFieldNames = targetFields;
+        List<String> fkFieldNames = fkFields;
+        List<String> targetFieldNames = targetFields;
         
         if (fkFields.size() > 1) {
             // if composite key, we should consider the order of keys.
@@ -871,8 +908,8 @@ public class DefaultTableGenerator {
                 targetToFkField.put(targetField, fkFields.get(index));
             }
 
-            Vector<String> orderedFkFields = new Vector<String>(fkFields.size());
-            Vector<String> orderedTargetFields = new Vector<String>(targetFields.size());
+            List<String> orderedFkFields = new ArrayList<String>(fkFields.size());
+            List<String> orderedTargetFields = new ArrayList<String>(targetFields.size());
 
             if (!error) {
                 // if target fields are primary keys
@@ -892,8 +929,8 @@ public class DefaultTableGenerator {
             if (!error && !resolved) {
                 // if target fields are unique keys
                 for (UniqueKeyConstraint uniqueConstraint : targetTableDef.getUniqueKeys()) {
-                    orderedFkFields.setSize(0);
-                    orderedTargetFields.setSize(0);
+                    orderedFkFields.clear();
+                    orderedTargetFields.clear();
 
                     resolved = true;
                     for (String ukField : uniqueConstraint.getSourceFields()) {
@@ -921,12 +958,13 @@ public class DefaultTableGenerator {
         // For bidirectional relationships both side of mapping will make the same FK constraint twice.
         // TableDefinition.addForeignKeyConstraint() will ignore the same FK constraint.
 
-        ForeignKeyConstraint fkc = sourceTableDef.buildForeignKeyConstraint(fkFieldNames, targetFieldNames,
-            targetTableDef, databasePlatform);
-        sourceTableDef.addForeignKeyConstraint(fkc);
+        ForeignKeyConstraint constraint = sourceTableDef.buildForeignKeyConstraint(fkFieldNames, targetFieldNames,
+            targetTableDef, this.databasePlatform);
+        constraint.setShouldCascadeOnDelete(cascadeOnDelete);
+        sourceTableDef.addForeignKeyConstraint(constraint);
     }
     
-    private void addUniqueKeyConstraints(TableDefinition sourceTableDef, Map<String, List<List<String>>> uniqueConstraintsMap) {
+    protected void addUniqueKeyConstraints(TableDefinition sourceTableDef, Map<String, List<List<String>>> uniqueConstraintsMap) {
         int serialNumber = -1;
         
         for (String name : uniqueConstraintsMap.keySet()) {

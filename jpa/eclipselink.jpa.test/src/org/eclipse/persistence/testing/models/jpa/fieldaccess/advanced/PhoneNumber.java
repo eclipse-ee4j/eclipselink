@@ -13,6 +13,7 @@
 package org.eclipse.persistence.testing.models.jpa.fieldaccess.advanced;
 
 import java.io.*;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Vector;
@@ -26,32 +27,36 @@ import org.eclipse.persistence.annotations.CollectionTable;
 import org.eclipse.persistence.queries.FetchGroupTracker;
 
 /**
- * <p><b>Purpose</b>: Describes an Employee's phone number.
- * <p><b>Description</b>: Used in a 1:M relationship from an employee.
- * Test @PrimaryKey support with composite primary key.
+ * <p>
+ * <b>Purpose</b>: Describes an Employee's phone number.
+ * <p>
+ * <b>Description</b>: Used in a 1:M relationship from an employee. Test @PrimaryKey
+ * support with composite primary key.
  */
 @SuppressWarnings("deprecation")
-@Entity(name="PhoneNumber")
-@Table(name="CMP3_FA_PHONENUMBER")
-@PrimaryKey(columns={@Column(name="OWNER_ID"),@Column(name="TYPE")})
+@Entity(name = "PhoneNumber")
+@Table(name = "CMP3_FA_PHONENUMBER")
+@PrimaryKey(columns = { @Column(name = "OWNER_ID"), @Column(name = "TYPE") })
 public class PhoneNumber implements Serializable {
-    public enum PhoneStatus { ACTIVE, ASSIGNED, UNASSIGNED, DEAD }
-    
-	@Column(name="NUMB")
-	private String number;
-    @Column(name="TYPE")
-	private String type;
-	@ManyToOne
-	@JoinColumn(name="OWNER_ID", referencedColumnName="EMP_ID")
-	private Employee owner;
-	@Column(name="AREA_CODE")
+    public enum PhoneStatus {
+        ACTIVE, ASSIGNED, UNASSIGNED, DEAD
+    }
+
+    @Column(name = "NUMB")
+    private String number;
+    @Column(name = "TYPE")
+    private String type;
+    @ManyToOne
+    @JoinColumn(name = "OWNER_ID", referencedColumnName = "EMP_ID")
+    private Employee owner;
+    @Column(name = "AREA_CODE")
     private String areaCode;
-    
-	@BasicCollection
-    @CollectionTable(name="CMP3_FA_PHONE_STATUS")
+
+    @BasicCollection
+    @CollectionTable(name = "CMP3_FA_PHONE_STATUS")
     @Enumerated(STRING)
     private Collection<PhoneStatus> status;
-	
+
     public PhoneNumber() {
         this("", "###", "#######");
     }
@@ -61,70 +66,70 @@ public class PhoneNumber implements Serializable {
         this.areaCode = theAreaCode;
         this.number = theNumber;
         this.owner = null;
-        this.status = new Vector<PhoneStatus>();
+        this.status = new ArrayList<PhoneStatus>();
     }
 
     public void addStatus(PhoneStatus status) {
         getStatus().add(status);
     }
-	
-	public String getNumber() { 
-        return number; 
+
+    public String getNumber() {
+        return number;
     }
-    
-	public void setNumber(String number) { 
-        this.number = number; 
+
+    public void setNumber(String number) {
+        this.number = number;
     }
 
     // Basic collection on an entity that uses a composite primary key.
     // We don't specify any of the primary key join columns on the collection
-    // table because they should all default accordingly.    
+    // table because they should all default accordingly.
     public Collection<PhoneStatus> getStatus() {
         return status;
     }
-    
+
     public void setStatus(Collection<PhoneStatus> status) {
         this.status = status;
     }
-        
-	public String getType() { 
-        return type; 
+
+    public String getType() {
+        return type;
     }
-    
-	public void setType(String type) {
-		this.type = type;
-	}
-	
-	public String getAreaCode() { 
-        return areaCode; 
+
+    public void setType(String type) {
+        this.type = type;
     }
-    
-	public void setAreaCode(String areaCode) {
-		this.areaCode = areaCode;
-	}
-	
-	public Employee getOwner() { 
-        return owner; 
+
+    public String getAreaCode() {
+        return areaCode;
     }
-    
-	public void setOwner(Employee owner) {
-		this.owner = owner;
-	}
+
+    public void setAreaCode(String areaCode) {
+        this.areaCode = areaCode;
+    }
+
+    public Employee getOwner() {
+        return owner;
+    }
+
+    public void setOwner(Employee owner) {
+        this.owner = owner;
+    }
 
     public void removeStatus(PhoneStatus status) {
         getStatus().remove(status);
     }
-    
+
     /**
      * Uses a Vector as its primary key.
      */
-    public List buildPK(){
+    public List buildPK() {
         List pk = new Vector();
         pk.add(getOwner().getId());
         pk.add(getType());
         return pk;
     }
-    
+
     /**
      * Example: Phone[Work]: (613) 225-8812
      */
@@ -134,10 +139,10 @@ public class PhoneNumber implements Serializable {
         writer.write("PhoneNumber[");
         writer.write(getType());
         writer.write("]: (");
-        if(!(this instanceof FetchGroupTracker)) {
+        if (!(this instanceof FetchGroupTracker)) {
             writer.write(getAreaCode());
             writer.write(") ");
-    
+
             int numberLength = getNumber().length();
             writer.write(getNumber().substring(0, Math.min(3, numberLength)));
             if (numberLength > 3) {

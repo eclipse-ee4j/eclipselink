@@ -90,6 +90,7 @@ public class OneToOneMapping extends ObjectReferenceMapping implements Relationa
     /**
      * INTERNAL:
      */
+    @Override
     public boolean isRelationalMapping() {
         return true;
     }
@@ -205,21 +206,14 @@ public class OneToOneMapping extends ObjectReferenceMapping implements Relationa
      * For mappings used as MapKeys in MappedKeyContainerPolicy.  Add the target of this mapping to the deleted 
      * objects list if necessary
      *
-     * This method is used for removal of private owned relationships
-     * 
-     * @param object
-     * @param manager
+     * This method is used for removal of private owned relationships.
      */
     public void addKeyToDeletedObjectsList(Object object, Map deletedObjects){
         deletedObjects.put(object, object);
     }
     
     /**
-     * Build a clone of the given element in a unitOfWork
-     * @param element
-     * @param unitOfWork
-     * @param isExisting
-     * @return
+     * Build a clone of the given element in a unitOfWork.
      */
     public Object buildElementClone(Object attributeValue, Object parent, UnitOfWorkImpl unitOfWork, boolean isExisting){
         return buildCloneForPartObject(attributeValue, null, null, unitOfWork, isExisting);
@@ -394,6 +388,7 @@ public class OneToOneMapping extends ObjectReferenceMapping implements Relationa
      * This methods clones all the fields and ensures that each collection refers to
      * the same clones.
      */
+    @Override
     public Object clone() {
         OneToOneMapping clone = (OneToOneMapping)super.clone();
         if(this.mechanism == null) {
@@ -535,6 +530,7 @@ public class OneToOneMapping extends ObjectReferenceMapping implements Relationa
      * INTERNAL:
      * Adds locking clause to the target query to extend pessimistic lock scope.
      */
+    @Override
     protected void extendPessimisticLockScopeInTargetQuery(ObjectLevelReadQuery targetQuery, ObjectBuildingQuery sourceQuery) {
         if(this.mechanism == null) {
             super.extendPessimisticLockScopeInTargetQuery(targetQuery, sourceQuery);
@@ -553,6 +549,7 @@ public class OneToOneMapping extends ObjectReferenceMapping implements Relationa
      * This method must be implemented in subclasses that allow
      * setting shouldExtendPessimisticLockScopeInSourceQuery to true.
      */
+    @Override
     public void extendPessimisticLockScopeInSourceQuery(ObjectLevelReadQuery sourceQuery) {
         Expression exp = sourceQuery.getSelectionCriteria();
         if(this.mechanism == null) {
@@ -599,7 +596,6 @@ public class OneToOneMapping extends ObjectReferenceMapping implements Relationa
     /**
      * INTERNAL:
      * Extract the fields for the Map key from the object to use in a query
-     * @return
      */
     public Map extractIdentityFieldsForQuery(Object object, AbstractSession session){
         Map keyFields = new HashMap();
@@ -773,7 +769,6 @@ public class OneToOneMapping extends ObjectReferenceMapping implements Relationa
     /**
      * INTERNAL:
      * Return any tables that will be required when this mapping is used as part of a join query
-     * @return
      */
     public List<DatabaseTable> getAdditionalTablesForJoinQuery(){
         List<DatabaseTable> tables = new ArrayList<DatabaseTable>(getReferenceDescriptor().getTables().size() + 1);
@@ -789,6 +784,7 @@ public class OneToOneMapping extends ObjectReferenceMapping implements Relationa
      * Should be overridden by subclass that allows setting
      * extendPessimisticLockScope to DEDICATED_QUERY. 
      */
+    @Override
     protected ReadQuery getExtendPessimisticLockScopeDedicatedQuery(AbstractSession session, short lockMode) {
         if(this.mechanism != null) {
             return this.mechanism.getLockRelationTableQueryClone(session, lockMode);            
@@ -802,6 +798,7 @@ public class OneToOneMapping extends ObjectReferenceMapping implements Relationa
      * Return the classification for the field contained in the mapping.
      * This is used to convert the row value to a consistent java value.
      */
+    @Override
     public Class getFieldClassification(DatabaseField fieldToClassify) throws DescriptorException {
         DatabaseField fieldInTarget = getSourceToTargetKeyFields().get(fieldToClassify);
         if (fieldInTarget == null) {
@@ -830,7 +827,7 @@ public class OneToOneMapping extends ObjectReferenceMapping implements Relationa
     }
 
     /**
-     * Return the appropriate hashtable that maps the "foreign keys"
+     * Return the appropriate map that maps the "foreign keys"
      * to the "primary keys".
      */
     protected Map getForeignKeysToPrimaryKeys() {
@@ -868,7 +865,6 @@ public class OneToOneMapping extends ObjectReferenceMapping implements Relationa
      * Return the query that is used when this mapping is part of a joined relationship
      * 
      * This method is used when this mapping is used to map the key in a Map
-     * @return
      */
     public ObjectLevelReadQuery getNestedJoinQuery(JoinedAttributeManager joinManager, ObjectLevelReadQuery query, AbstractSession session){
         return prepareNestedJoins(joinManager, query, session);
@@ -994,6 +990,7 @@ public class OneToOneMapping extends ObjectReferenceMapping implements Relationa
      * INTERNAL:
      * Initialize the mapping.
      */
+    @Override
     public void initialize(AbstractSession session) throws DescriptorException {
         super.initialize(session);
 
@@ -1184,6 +1181,7 @@ public class OneToOneMapping extends ObjectReferenceMapping implements Relationa
      * INTERNAL:
      * Prepare a cascade locking policy.
      */
+    @Override
     public void prepareCascadeLockingPolicy() {
         CascadeLockingPolicy policy = new CascadeLockingPolicy(getDescriptor(), getReferenceDescriptor());
         policy.setQueryKeyFields(getSourceToTargetKeyFields(), ! isForeignKeyRelationship());
@@ -1206,9 +1204,6 @@ public class OneToOneMapping extends ObjectReferenceMapping implements Relationa
      * Either a parameter can be used for the join or simply the database field
      * 
      * The existing selection criteria can be built upon or a whole new criteria can be built.
-     * @param useParameter
-     * @param usePreviousSelectionCriteria
-     * @return
      */
     public Expression buildSelectionCriteria(boolean useParameter, boolean usePreviousSelectionCriteria){
         Expression criteria = null;
@@ -1253,6 +1248,7 @@ public class OneToOneMapping extends ObjectReferenceMapping implements Relationa
      * instantiating a working copy clone can be built without placing it in
      * the shared cache (no concern over cycles).
      */
+    @Override
     public void buildShallowOriginalFromRow(AbstractRecord databaseRow, Object original, JoinedAttributeManager joinManager, ObjectBuildingQuery query, AbstractSession executionSession) {
         // Now we are only building this original so we can extract the primary
         // key out of it.  If the primary key is stored across a 1-1 a value
@@ -1280,6 +1276,7 @@ public class OneToOneMapping extends ObjectReferenceMapping implements Relationa
     /**
      * INTERNAL:
      */
+    @Override
     public boolean isOneToOneMapping() {
         return true;
     }
@@ -1287,6 +1284,7 @@ public class OneToOneMapping extends ObjectReferenceMapping implements Relationa
     /**
      * INTERNAL:
      */
+    @Override
     public boolean isOwned(){
         return this.hasRelationTable() && ! this.isReadOnly;
     }
@@ -1295,6 +1293,7 @@ public class OneToOneMapping extends ObjectReferenceMapping implements Relationa
      * INTERNAL:
      * Reads the private owned object.
      */
+    @Override
     protected Object readPrivateOwnedForObject(ObjectLevelModifyQuery modifyQuery) throws DatabaseException {
         if (modifyQuery.getSession().isUnitOfWork()) {
             return super.readPrivateOwnedForObject(modifyQuery);
@@ -1315,6 +1314,7 @@ public class OneToOneMapping extends ObjectReferenceMapping implements Relationa
      * This is used to clone descriptors for aggregates, which hammer field names,
      * it is probably better not to hammer the field name and this should be refactored.
      */
+    @Override
     public void rehashFieldDependancies(AbstractSession session) {
         setSourceToTargetKeyFields(Helper.rehashMap(getSourceToTargetKeyFields()));
     }
@@ -1467,6 +1467,7 @@ public class OneToOneMapping extends ObjectReferenceMapping implements Relationa
      * INTERNAL
      * Return true if this mapping supports cascaded version optimistic locking.
      */
+    @Override
     public boolean isCascadedLockingSupported() {
         return true;
     }
@@ -1475,6 +1476,7 @@ public class OneToOneMapping extends ObjectReferenceMapping implements Relationa
      * INTERNAL:
      * Return if this mapping support joining.
      */
+    @Override
     public boolean isJoiningSupported() {
         return true;
     }
@@ -1482,8 +1484,6 @@ public class OneToOneMapping extends ObjectReferenceMapping implements Relationa
     /**
      * INTERNAL:
      * Called when iterating through descriptors to handle iteration on this mapping when it is used as a MapKey
-     * @param iterator
-     * @param element
      */
     public void iterateOnMapKey(DescriptorIterator iterator, Object element){
         this.getIndirectionPolicy().iterateOnAttributeValue(iterator, element);
@@ -1491,24 +1491,16 @@ public class OneToOneMapping extends ObjectReferenceMapping implements Relationa
 
     /**
      * INTERNAL:
-     * Allow the key mapping to unwrap the object
-     * @param key
-     * @param session
-     * @return
-     */
-    
+     * Allow the key mapping to unwrap the object.
+     */    
     public Object unwrapKey(Object key, AbstractSession session){
         return getDescriptor().getObjectBuilder().unwrapObject(key, session);
     }
 
     /**
      * INTERNAL:
-     * Allow the key mapping to wrap the object
-     * @param key
-     * @param session
-     * @return
-     */
-    
+     * Allow the key mapping to wrap the object.
+     */    
     public Object wrapKey(Object key, AbstractSession session){
         return getDescriptor().getObjectBuilder().wrapObject(key, session);
     }
@@ -1518,6 +1510,7 @@ public class OneToOneMapping extends ObjectReferenceMapping implements Relationa
      * A subclass should implement this method if it wants different behavior.
      * Write the foreign key values from the attribute to the row.
      */
+    @Override
     public void writeFromAttributeIntoRow(Object attribute, AbstractRecord row, AbstractSession session)
     {
           for (Enumeration fieldsEnum = getForeignKeyFields().elements(); fieldsEnum.hasMoreElements();) {
@@ -1536,6 +1529,7 @@ public class OneToOneMapping extends ObjectReferenceMapping implements Relationa
      * INTERNAL:
      * Get a value from the object and set that in the respective field of the row.
      */
+    @Override
     public Object valueFromObject(Object object, DatabaseField field, AbstractSession session) {
         // First check if the value can be obtained from the value holder's row.
         Object attributeValue = getAttributeValueFromObject(object);
@@ -1573,6 +1567,7 @@ public class OneToOneMapping extends ObjectReferenceMapping implements Relationa
      * Return the value of the field from the row or a value holder on the query to obtain the object.
      * Check for batch + aggregation reading.
      */
+    @Override
     protected Object valueFromRowInternalWithJoin(AbstractRecord row, JoinedAttributeManager joinManager, ObjectBuildingQuery sourceQuery, AbstractSession executionSession) throws DatabaseException {
         // PERF: Direct variable access.
         Object referenceObject;
@@ -1606,6 +1601,7 @@ public class OneToOneMapping extends ObjectReferenceMapping implements Relationa
      * Return the value of the field from the row or a value holder on the query to obtain the object.
      * Check for batch + aggregation reading.
      */
+    @Override
     protected Object valueFromRowInternal(AbstractRecord row, JoinedAttributeManager joinManager, ObjectBuildingQuery sourceQuery, AbstractSession executionSession) throws DatabaseException {
         // If any field in the foreign key is null then it means there are no referenced objects
         // Skip for partial objects as fk may not be present.
@@ -1673,6 +1669,7 @@ public class OneToOneMapping extends ObjectReferenceMapping implements Relationa
      * This row is built for shallow insert which happens in case of bidirectional inserts.
      * The foreign keys must be set to null to avoid constraints.
      */
+    @Override
     public void writeFromObjectIntoRowForShallowInsert(Object object, AbstractRecord databaseRow, AbstractSession session) {
         if (isReadOnly() || (!isForeignKeyRelationship())) {
             return;
@@ -1707,6 +1704,7 @@ public class OneToOneMapping extends ObjectReferenceMapping implements Relationa
      * This row is built for shallow insert which happens in case of bidirectional inserts.
      * The foreign keys must be set to null to avoid constraints.
      */
+    @Override
     public void writeFromObjectIntoRowForShallowInsertWithChangeRecord(ChangeRecord ChangeRecord, AbstractRecord databaseRow, AbstractSession session) {
         if (isReadOnly() || (!isForeignKeyRelationship())) {
             return;
@@ -1723,6 +1721,7 @@ public class OneToOneMapping extends ObjectReferenceMapping implements Relationa
      * INTERNAL:
      * Write fields needed for insert into the template for with null values.
      */
+    @Override
     public void writeInsertFieldsIntoRow(AbstractRecord databaseRow, AbstractSession session) {
         if (isReadOnly() || (!isForeignKeyRelationship())) {
             return;
@@ -1786,10 +1785,11 @@ public class OneToOneMapping extends ObjectReferenceMapping implements Relationa
      * INTERNAL:
      * Delete privately owned parts
      */
+    @Override
     public void preDelete(DeleteObjectQuery query) throws DatabaseException, OptimisticLockException {
-        if(this.mechanism != null && !isReadOnly()) {
+        if ((this.mechanism != null) && !this.isReadOnly && !this.isCascadeOnDeleteSetOnDatabase) {
             AbstractRecord sourceRow = this.mechanism.buildRelationTableSourceRow(query.getObject(), query.getSession(), this);
-            query.getSession().executeQuery(mechanism.deleteQuery, sourceRow);
+            query.getSession().executeQuery(this.mechanism.deleteQuery, sourceRow);
         }
         super.preDelete(query);
     }
@@ -1802,6 +1802,7 @@ public class OneToOneMapping extends ObjectReferenceMapping implements Relationa
      * <p>- Construct a insert statement with above fields and values for relation table.
      * <p>- execute the statement.
      */
+    @Override
     public void postInsert(WriteObjectQuery query) throws DatabaseException {
         super.postInsert(query);
         if(this.mechanism != null && !isReadOnly()) {
@@ -1832,6 +1833,7 @@ public class OneToOneMapping extends ObjectReferenceMapping implements Relationa
      * Delete entries removed, insert entries added.
      * If private also insert/delete/update target objects.
      */
+    @Override
     public void postUpdate(WriteObjectQuery query) throws DatabaseException {
         if(this.mechanism == null) {
             super.postUpdate(query);
@@ -1876,6 +1878,7 @@ public class OneToOneMapping extends ObjectReferenceMapping implements Relationa
      * Perform the commit event.
      * This is used in the uow to delay data modifications.
      */
+    @Override
     public void performDataModificationEvent(Object[] event, AbstractSession session) throws DatabaseException, DescriptorException {
         // Hey I might actually want to use an inner class here... ok array for now.
         if (event[0] == setObject) {

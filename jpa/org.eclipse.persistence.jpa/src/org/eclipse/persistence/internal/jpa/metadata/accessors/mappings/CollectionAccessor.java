@@ -573,31 +573,11 @@ public abstract class CollectionAccessor extends RelationshipAccessor implements
     }
     
     /**
-     * INTERNAL:
+     * Configure the CollectionMapping properties based on the metadata.
      */
     protected void process(CollectionMapping mapping) {
-        // Set the mapping, this must be done first.
-        setMapping(mapping);
-        
-        mapping.setIsReadOnly(false);
-        mapping.setIsLazy(isLazy());
-        mapping.setAttributeName(getAttributeName());
-        mapping.setReferenceClassName(getReferenceClassName());
-        
-        // Process join fetch type.
-        processJoinFetch(getJoinFetch(), mapping);
-        
-        // Process the batch fetch if specified.
-        processBatchFetch(getBatchFetch(), mapping);
-            
-        // Process the orphanRemoval or PrivateOwned
-        processOrphanRemoval(mapping);
-        
-        // Will check for PROPERTY access
-        setAccessorMethods(mapping);
-
-        // Process the cascade types.
-        processCascadeTypes(mapping);
+        // Process common properties first.
+        processRelationshipMapping(mapping);
         
         // Process an OrderBy if there is one.
         processOrderBy(mapping);
@@ -615,7 +595,7 @@ public abstract class CollectionAccessor extends RelationshipAccessor implements
         if (m_orderColumn != null) {
             m_orderColumn.process(mapping, getDescriptor());
         }
-    }  
+    }
     
     /**
      * INTERNAL:

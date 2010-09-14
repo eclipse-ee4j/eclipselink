@@ -15,60 +15,59 @@ package org.eclipse.persistence.testing.models.jpa.fieldaccess.advanced;
 import javax.persistence.*;
 
 import static javax.persistence.CascadeType.*;
-import static javax.persistence.FetchType.*;
 
-@Entity(name="PartnerLink")
-@Table(name="CMP3_FA_MW")
+@Entity(name = "PartnerLink")
+@Table(name = "CMP3_FA_MW")
 @IdClass(org.eclipse.persistence.testing.models.jpa.fieldaccess.advanced.PartnerLinkPK.class)
 public class PartnerLink {
-	@Id
-    @Column(name="M", insertable=false, updatable=false)
-	private Integer manId;
+    @Id
+    @Column(name = "M", insertable = false, updatable = false)
+    private Integer manId;
 
-	@Id
-    @Column(name="W", insertable=false, updatable=false)
-	private Integer womanId;
+    @Id
+    @Column(name = "W", insertable = false, updatable = false)
+    private Integer womanId;
 
-	@OneToOne(cascade=PERSIST, fetch=FetchType.LAZY)
-	@JoinColumn(name="M")
+    @OneToOne(cascade = PERSIST, fetch = FetchType.LAZY)
+    @JoinColumn(name = "M")
     private Man man;
-	
 
-	@OneToOne(cascade=PERSIST, fetch=FetchType.LAZY)
-	@JoinColumn(name="W")
+    @OneToOne(cascade = PERSIST, fetch = FetchType.LAZY)
+    @JoinColumn(name = "W")
     private Woman woman;
 
-	public PartnerLink() {}    
-    
-	public Man getMan() { 
-        return man; 
-    }      
-    
-	public Integer getManId() {
+    public PartnerLink() {
+    }
+
+    public Man getMan() {
+        return man;
+    }
+
+    public Integer getManId() {
         manId = (getMan() == null) ? null : getMan().getId();
-		return manId;
+        return manId;
     }
-        
-	public Woman getWoman() { 
-        return woman; 
-    }    
-    
-	public Integer getWomanId() {
+
+    public Woman getWoman() {
+        return woman;
+    }
+
+    public Integer getWomanId() {
         womanId = (getWoman() == null) ? null : getWoman().getId();
-		return womanId;
+        return womanId;
     }
-    
-	public void setMan(Man man) { 
-        this.man = man; 
+
+    public void setMan(Man man) {
+        this.man = man;
     }
-    
-    public void setManId(Integer manId) {  
+
+    public void setManId(Integer manId) {
     }
-    
-    public void setWoman(Woman woman) { 
-        this.woman = woman; 
+
+    public void setWoman(Woman woman) {
+        this.woman = woman;
     }
-    
-    public void setWomanId(Integer womanId) { 
+
+    public void setWomanId(Integer womanId) {
     }
 }

@@ -304,29 +304,13 @@ public abstract class ObjectAccessor extends RelationshipAccessor {
     protected OneToOneMapping initOneToOneMapping() {
         OneToOneMapping mapping = new OneToOneMapping();
         mapping.setIsOneToOneRelationship(true);
-        mapping.setIsReadOnly(false);
+        processRelationshipMapping(mapping);
+        
         mapping.setIsOptional(isOptional());
-        mapping.setAttributeName(getAttributeName());
-        mapping.setReferenceClassName(getReferenceClassName());
         mapping.setDerivesId(derivesId());
-        
-        // Process join fetch type.
-        processJoinFetch(getJoinFetch(), mapping);
-        
-        // Process the batch fetch if specified.
-        processBatchFetch(getBatchFetch(), mapping);
-        
-        // Process the orphanRemoval or PrivateOwned
-        processOrphanRemoval(mapping);
         
         // Process the indirection.
         processIndirection(mapping);
-        
-        // Set the getter and setter methods if access is PROPERTY.
-        setAccessorMethods(mapping);
-        
-        // Process the cascade types.
-        processCascadeTypes(mapping);
         
         // Process a @ReturnInsert and @ReturnUpdate (to log a warning message)
         processReturnInsertAndUpdate();
@@ -340,29 +324,13 @@ public abstract class ObjectAccessor extends RelationshipAccessor {
      */
     protected ManyToOneMapping initManyToOneMapping() {
         ManyToOneMapping mapping = new ManyToOneMapping();
-        mapping.setIsReadOnly(false);
+        processRelationshipMapping(mapping);
+        
         mapping.setIsOptional(isOptional());
-        mapping.setAttributeName(getAttributeName());
-        mapping.setReferenceClassName(getReferenceClassName());
         mapping.setDerivesId(derivesId());
-        
-        // Process join fetch type.
-        processJoinFetch(getJoinFetch(), mapping);
-        
-        // Process the batch fetch if specified.
-        processBatchFetch(getBatchFetch(), mapping);
-        
-        // Process the orphanRemoval or PrivateOwned
-        processOrphanRemoval(mapping);
         
         // Process the indirection.
         processIndirection(mapping);
-        
-        // Set the getter and setter methods if access is PROPERTY.
-        setAccessorMethods(mapping);
-        
-        // Process the cascade types.
-        processCascadeTypes(mapping);
         
         // Process a @ReturnInsert and @ReturnUpdate (to log a warning message)
         processReturnInsertAndUpdate();
@@ -512,8 +480,6 @@ public abstract class ObjectAccessor extends RelationshipAccessor {
         } else {
             mapping.setUsesIndirection(usesIndirection);
         }
-        
-        mapping.setIsLazy(isLazy());
     }
     
     /**

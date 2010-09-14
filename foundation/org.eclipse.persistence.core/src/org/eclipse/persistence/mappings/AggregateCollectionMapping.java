@@ -388,10 +388,15 @@ public class AggregateCollectionMapping extends CollectionMapping implements Rel
      */
     public void cascadePerformRemoveIfRequired(Object object, UnitOfWorkImpl uow, Map visitedObjects){
         //aggregate objects are not registered but their mappings should be.
-        Object cloneAttribute = null;
-        cloneAttribute = getAttributeValueFromObject(object);
+        Object cloneAttribute = getAttributeValueFromObject(object);
         if ((cloneAttribute == null)) {
             return;
+        }
+        // PERF: If not instantiated, then avoid instantiating, delete-all will handle deletion.
+        if (usesIndirection() && (!mustDeleteReferenceObjectsOneByOne())) {
+            if (!this.indirectionPolicy.objectIsInstantiated(cloneAttribute)) {
+                return;
+            }
         }
 
         ObjectBuilder builder = null;
@@ -404,6 +409,9 @@ public class AggregateCollectionMapping extends CollectionMapping implements Rel
             Object nextObject = cp.unwrapIteratorResult(wrappedObject);
             if (nextObject != null && ( ! visitedObjects.containsKey(nextObject) ) ){
                 visitedObjects.put(nextObject, nextObject);
+                if (this.isCascadeOnDeleteSetOnDatabase) {
+                    uow.getCascadeDeleteObjects().add(nextObject);
+                }
                 builder = getReferenceDescriptor(nextObject.getClass(), uow).getObjectBuilder();
                 builder.cascadePerformRemove(nextObject, uow, visitedObjects);
                 cp.cascadePerformRemoveIfRequired(wrappedObject, uow, visitedObjects);
@@ -580,7 +588,12 @@ public class AggregateCollectionMapping extends CollectionMapping implements Rel
         }
 
         if (shouldRepairOrder) {
-            ((DeleteAllQuery)getDeleteAllQuery()).executeDeleteAll(query.getSession().getSessionForClass(getReferenceClass()), query.getTranslationRow(), new Vector(previousList));
+            DeleteAllQuery deleteAllQuery = (DeleteAllQuery)this.deleteAllQuery;
+            if (this.isCascadeOnDeleteSetOnDatabase) {
+                deleteAllQuery = (DeleteAllQuery)deleteAllQuery.clone();
+                deleteAllQuery.setIsInMemoryOnly(false);
+            }
+            deleteAllQuery.executeDeleteAll(query.getSession().getSessionForClass(getReferenceClass()), query.getTranslationRow(), new Vector(previousList));
         } else {
             // Next index the previous objects (read from db or from backup in uow)
             for(int i=0; i < previousList.size(); i++) {
@@ -988,9 +1001,21 @@ public class AggregateCollectionMapping extends CollectionMapping implements Rel
      * To delete all the entries matching the selection criteria from the table stored in the
      * referenced descriptor
      */
-    protected void deleteAll(DeleteObjectQuery query, Object elements) throws DatabaseException {
-        // Ensure that the query is prepare before cloning.
-        ((DeleteAllQuery)getDeleteAllQuery()).executeDeleteAll(query.getSession().getSessionForClass(getReferenceClass()), query.getTranslationRow(), getContainerPolicy().vectorFor(elements, query.getSession()));
+    protected void deleteAll(DeleteObjectQuery query, AbstractSession session) throws DatabaseException {
+        Object attribute = getAttributeValueFromObject(query.getObject()); 
+        if (usesIndirection()) {
+           if (!this.indirectionPolicy.objectIsInstantiated(attribute)) {
+               // An empty Vector indicates to DeleteAllQuery that no objects should be removed from cache
+               ((DeleteAllQuery)this.deleteAllQuery).executeDeleteAll(session.getSessionForClass(this.referenceClass), query.getTranslationRow(), new Vector(0));
+               return;
+           }
+        }
+        Object referenceObjects = getRealCollectionAttributeValueFromObject(query.getObject(), session);
+        // PERF: Avoid delete if empty.
+        if (session.isUnitOfWork() && this.containerPolicy.isEmpty(referenceObjects)) {
+            return;
+        }
+        ((DeleteAllQuery)this.deleteAllQuery).executeDeleteAll(session.getSessionForClass(this.referenceClass), query.getTranslationRow(), this.containerPolicy.vectorFor(referenceObjects, session));
     }
 
     /**
@@ -1629,6 +1654,7 @@ public class AggregateCollectionMapping extends CollectionMapping implements Rel
         query.setReferenceClass(getReferenceClass());
         query.setDescriptor(getReferenceDescriptor());
         query.setShouldMaintainCache(false);
+        query.setIsInMemoryOnly(isCascadeOnDeleteSetOnDatabase());
         if (!hasCustomDeleteAllQuery()) {
             if (getSelectionCriteria() == null) {
                 query.setSelectionCriteria(getDeleteAllCriteria(session));
@@ -2064,36 +2090,42 @@ public class AggregateCollectionMapping extends CollectionMapping implements Rel
         if (isReadOnly()) {
             return;
         }
+        AbstractSession session = query.getSession();
 
-        Object objects = getRealCollectionAttributeValueFromObject(query.getObject(), query.getSession());
-
-        ContainerPolicy containerPolicy = getContainerPolicy();
-
-        // if privately owned parts have their privately own parts, delete those one by one
+        // If privately owned parts have their privately own parts, delete those one by one
         // else delete everything in one shot.
         int index = 0;
-        if (containerPolicy.propagatesEventsToCollection() || mustDeleteReferenceObjectsOneByOne()) {
-            for (Object iter = containerPolicy.iteratorFor(objects); containerPolicy.hasNext(iter);) {
-                Object wrappedObject = containerPolicy.nextEntry(iter, query.getSession());
+        if (mustDeleteReferenceObjectsOneByOne()) {
+            Object objects = getRealCollectionAttributeValueFromObject(query.getObject(), query.getSession());
+            ContainerPolicy cp = getContainerPolicy();
+            if (this.isCascadeOnDeleteSetOnDatabase && session.isUnitOfWork()) {
+                for (Object iterator = cp.iteratorFor(objects); cp.hasNext(iterator);) {
+                    Object wrappedObject = cp.nextEntry(iterator, session);
+                    Object object = cp.unwrapIteratorResult(wrappedObject);
+                    ((UnitOfWorkImpl)session).getCascadeDeleteObjects().add(object);
+                }
+            }
+            for (Object iter = cp.iteratorFor(objects); cp.hasNext(iter);) {
+                Object wrappedObject = cp.nextEntry(iter, session);
                 DeleteObjectQuery deleteQuery = new DeleteObjectQuery();
                 deleteQuery.setIsExecutionClone(true);
                 Map extraData = null;
-                if(this.listOrderField != null) {
+                if (this.listOrderField != null) {
                     extraData = new DatabaseRecord(1);
                     extraData.put(this.listOrderField, index++);
                 }
                 prepareModifyQueryForDelete(query, deleteQuery, wrappedObject, extraData);
-                query.getSession().executeQuery(deleteQuery, deleteQuery.getTranslationRow());
-                containerPolicy.propogatePreDelete(query, wrappedObject);
+                session.executeQuery(deleteQuery, deleteQuery.getTranslationRow());
+                cp.propogatePreDelete(query, wrappedObject);
             }
-            if (!query.getSession().isUnitOfWork()) {
+            if (!session.isUnitOfWork()) {
                 // This deletes any objects on the database, as the collection in memory may has been changed.
                 // This is not required for unit of work, as the update would have already deleted these objects,
                 // and the backup copy will include the same objects causing double deletes.
                 verifyDeleteForUpdate(query);
             }
         } else {
-            deleteAll(query, objects);
+            deleteAll(query, session);
         }
     }
 

@@ -19,6 +19,7 @@ import static javax.persistence.CascadeType.PERSIST;
 
 import javax.persistence.*;
 
+import org.eclipse.persistence.annotations.CascadeOnDelete;
 import org.eclipse.persistence.annotations.Index;
 
 import java.util.Collection;
@@ -48,12 +49,14 @@ public class CKeyEntityB {
     
 
     @OneToMany(mappedBy="bs")
+    @CascadeOnDelete
     private Collection<CKeyEntityA> as;
     
     @ManyToMany(mappedBy="bs")
     private Collection<CKeyEntityC> cs;
 
     @OneToOne(mappedBy="uniqueB")
+    @CascadeOnDelete
     private CKeyEntityA uniqueA;
 
     @OneToMany(cascade={PERSIST, MERGE})
@@ -61,6 +64,7 @@ public class CKeyEntityB {
         @JoinColumn(name="FK_SEQ", referencedColumnName="SEQ"),
         @JoinColumn(name="FK_CODE", referencedColumnName="CODE")
     })
+    @CascadeOnDelete
     private List<Comment<String>> comments;
     
     @ManyToOne

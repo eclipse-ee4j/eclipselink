@@ -35,7 +35,7 @@ public class ExceptionTestSaveDescriptor extends ExceptionTest {
 
     protected void setup() {
         orgIntegrityChecker = getSession().getIntegrityChecker();
-        orgOrderedDescriptor = (Vector)getSession().getProject().getOrderedDescriptors().clone(); //added
+        orgOrderedDescriptor = new Vector(getSession().getProject().getOrderedDescriptors()); //added
         orgDescriptors = (Map)((HashMap)getSession().getProject().getDescriptors()).clone();
         getSession().setIntegrityChecker(new IntegrityChecker()); //moved into setup
         getSession().getIntegrityChecker().dontCatchExceptions(); //moved into setup

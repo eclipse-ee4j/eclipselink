@@ -444,7 +444,7 @@ public class TableDefinition extends DatabaseObjectDefinition {
     /**
      * Build a foreign key constraint.
      */
-    protected ForeignKeyConstraint buildForeignKeyConstraint(List fkFieldNames, List pkFieldNames, TableDefinition targetTable, DatabasePlatform platform) {
+    protected ForeignKeyConstraint buildForeignKeyConstraint(List<String> fkFieldNames, List<String> pkFieldNames, TableDefinition targetTable, DatabasePlatform platform) {
         assert fkFieldNames.size() > 0 && fkFieldNames.size() == pkFieldNames.size();
         
         ForeignKeyConstraint fkConstraint = new ForeignKeyConstraint();
@@ -454,7 +454,7 @@ public class TableDefinition extends DatabaseObjectDefinition {
         }
 
         fkConstraint.setTargetTable(targetTable.getFullName());
-        String fkFieldName = (String)fkFieldNames.get(0);
+        String fkFieldName = fkFieldNames.get(0);
         String name = buildForeignKeyConstraintName(this.getName(), fkFieldName, platform.getMaxForeignKeyNameSize(), platform);
 
         fkConstraint.setName(name);
