@@ -210,10 +210,16 @@ public class JavaSECMPInitializer extends JPAInitializer {
                     EntityManagerFactoryProvider.initialPuInfos = new HashMap<String, SEPersistenceUnitInfo>();
                 }
                 final Set<Archive> pars = PersistenceUnitProcessor.findPersistenceArchives(initializationClassloader);
-                PersistenceInitializationHelper initializationHelper = new PersistenceInitializationHelper();
-                for (Archive archive: pars) {
-                    AbstractSessionLog.getLog().log(SessionLog.FINER, "cmp_init_initialize", archive);
-                    initPersistenceUnits(archive, m, initializationHelper);
+                try {
+                    PersistenceInitializationHelper initializationHelper = new PersistenceInitializationHelper();
+                    for (Archive archive: pars) {
+                        AbstractSessionLog.getLog().log(SessionLog.FINER, "cmp_init_initialize", archive);
+                        initPersistenceUnits(archive, m, initializationHelper);
+                    }
+                } finally {
+                    for (Archive archive: pars) {
+                        archive.close();
+                    }
                 }
                 // all the transformers have been added to instrumentation, don't need it any more.
                 globalInstrumentation = null;
