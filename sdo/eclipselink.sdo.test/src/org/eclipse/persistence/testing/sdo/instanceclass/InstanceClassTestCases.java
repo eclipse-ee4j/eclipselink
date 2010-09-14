@@ -22,6 +22,7 @@ public class InstanceClassTestCases extends SDOTestCase {
     private static final String XML_SCHEMA_INTEFACE_CORRECT_GETTER = "org/eclipse/persistence/testing/sdo/instanceclass/CustomerInterfaceWithCorrectGetters.xsd";
     private static final String XML_SCHEMA_INTEFACE_INCORRECT_GETTER = "org/eclipse/persistence/testing/sdo/instanceclass/CustomerInterfaceWithIncorrectGetters.xsd";
     private static final String XML_SCHEMA_CLASS_CORRECT_GETTER = "org/eclipse/persistence/testing/sdo/instanceclass/CustomerClassWithCorrectGetters.xsd";
+    private static final String XML_SCHEMA_WITH_CHANGE_SUMMARY = "org/eclipse/persistence/testing/sdo/instanceclass/WithChangeSummary.xsd";
 
     public InstanceClassTestCases(String name) {
         super(name);
@@ -50,6 +51,18 @@ public class InstanceClassTestCases extends SDOTestCase {
         aHelperContext.getXSDHelper().define(xsd, null);
         Type type = typeHelper.getType("urn:customer", "CustomerClassWithCorrectGetters");
         assertNull(type.getInstanceClass());
+    }
+
+    /**
+     * Test for: 
+     * Bug 325164 - Exclude getChangeSummary check from getInstanceClass method
+     * http://bugs.eclipse.org/325164
+     */
+    public void testIterfaceWithoutChangeSummaryGetter() {
+        InputStream xsd = Thread.currentThread().getContextClassLoader().getResourceAsStream(XML_SCHEMA_WITH_CHANGE_SUMMARY);
+        aHelperContext.getXSDHelper().define(xsd, null);
+        Type type = typeHelper.getType("urn:customer", "CustomerInterfaceWithCorrectGetters");
+        assertSame(CustomerInterfaceWithCorrectGetters.class, type.getInstanceClass());
     }
 
 }
