@@ -178,25 +178,27 @@ public class SDOType implements Type, Serializable {
             return false;
         }
         for(Object object: this.getDeclaredProperties()) {
-            SDOProperty sdoProperty = (SDOProperty) object;                                
-            String javaType = SDOUtil.getJavaTypeForProperty(sdoProperty);
-
-            try {
-                // Verify get method
-                String getMethodName = SDOUtil.getMethodName(sdoProperty.getName(), javaType);
-                PrivilegedAccessHelper.getPublicMethod(clazz, getMethodName, EMPTY_CLASS_ARRAY, false);
-            } catch(NoSuchMethodException e) {
-            	//if the method isn't found and the type is boolean try looking for a "get" method instead of an "is" method
-            	if(sdoProperty.getType() == SDOConstants.SDO_BOOLEAN || sdoProperty.getType() == SDOConstants.SDO_BOOLEANOBJECT ){
-                    try{
-                    	String booleanGetterMethodName = SDOUtil.getBooleanGetMethodName(sdoProperty.getName(), javaType);
-                        PrivilegedAccessHelper.getPublicMethod(clazz, booleanGetterMethodName, EMPTY_CLASS_ARRAY, false);
-                    } catch(NoSuchMethodException e2) {
+            SDOProperty sdoProperty = (SDOProperty) object;
+            SDOType sdoPropertyType = sdoProperty.getType();
+            if(!sdoPropertyType.isChangeSummaryType()) {
+                String javaType = SDOUtil.getJavaTypeForProperty(sdoProperty);
+                try {
+                    // Verify get method
+                    String getMethodName = SDOUtil.getMethodName(sdoProperty.getName(), javaType);
+                    PrivilegedAccessHelper.getPublicMethod(clazz, getMethodName, EMPTY_CLASS_ARRAY, false);
+                } catch(NoSuchMethodException e) {
+                	//if the method isn't found and the type is boolean try looking for a "get" method instead of an "is" method
+                	if(sdoPropertyType == SDOConstants.SDO_BOOLEAN || sdoPropertyType == SDOConstants.SDO_BOOLEANOBJECT ){
+                        try{
+                        	String booleanGetterMethodName = SDOUtil.getBooleanGetMethodName(sdoProperty.getName(), javaType);
+                            PrivilegedAccessHelper.getPublicMethod(clazz, booleanGetterMethodName, EMPTY_CLASS_ARRAY, false);
+                        } catch(NoSuchMethodException e2) {
+                            return false;
+                        }                    
+                	}else{
                         return false;
-                    }                    
-            	}else{
-                    return false;
-            	}
+                	}
+                }
             }
         }
         return true;
