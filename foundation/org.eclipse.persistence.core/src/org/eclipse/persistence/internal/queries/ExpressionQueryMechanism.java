@@ -9,6 +9,7 @@
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
+ *     Thomas Spiegl - fix for bug 324406
  ******************************************************************************/  
 package org.eclipse.persistence.internal.queries;
 
@@ -593,7 +594,11 @@ public class ExpressionQueryMechanism extends StatementQueryMechanism {
                 if (item.getDescriptor() != null) {
                     itemOffset += item.getDescriptor().getAllFields().size();
                 } else {
-                    ++itemOffset; //only a single attribute can be selected
+                    if (item.getMapping() != null && item.getMapping().isAggregateObjectMapping()) {
+                        itemOffset += item.getMapping().getFields().size(); // Aggregate object may consist out of 1..n fields
+                    } else {
+                        ++itemOffset; //only a single attribute can be selected
+                    }
                 }
             }
         }

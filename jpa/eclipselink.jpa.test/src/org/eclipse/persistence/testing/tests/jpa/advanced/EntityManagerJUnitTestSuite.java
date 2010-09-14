@@ -23,6 +23,7 @@ import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collections;
+import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -356,6 +357,7 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
             suite.addTest(new EntityManagerJUnitTestSuite("testGetIdentifier"));
             suite.addTest(new EntityManagerJUnitTestSuite("testGetHints"));
             suite.addTest(new EntityManagerJUnitTestSuite("testPESSIMISTIC_FORCE_INCREMENTLockOnNonVersionedEntity"));
+            suite.addTest(new EntityManagerJUnitTestSuite("testSelectEmbeddable"));
         }
         return suite;
     }
@@ -9540,6 +9542,35 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
             commitTransaction(em);
         }
     }
+    
+    //  Bug 324406 - Wrong Index in ReportItem when @Embeddable Objects are used in ReportQuery 
+    public void testSelectEmbeddable(){
+        EntityManager em = createEntityManager();
+        beginTransaction(em);
+        Employee emp = new Employee();
+        emp.setFirstName("Robin");
+        emp.setLastName("Van Persie");
+        EmploymentPeriod period = new EmploymentPeriod();
+        ;
+       
+        period.setStartDate(new Date((new GregorianCalendar(2009, 1, 1)).getTimeInMillis()));
+        period.setEndDate(new Date((new GregorianCalendar(2010, 1, 1)).getTimeInMillis()));
+        emp.setPeriod(period);
+        em.persist(emp);
+        em.flush();
+        em.clear();
+        clearCache();
+        
+        EmployeeHolder results = (EmployeeHolder)em.createQuery("select new org.eclipse.persistence.testing.models.jpa.advanced.EmploymentPeriodHolder(e.id, e.period, e.firstName) from Employee e where e.id = :id").setParameter("id", emp.getId()).getSingleResult();
+        assertTrue("Incorrect id", emp.getId().equals(results.getId()));
+        assertTrue("Incorrect period start date", emp.getPeriod().getStartDate().equals(results.getPeriod().getStartDate()));
+        assertTrue("Incorrect period end date", emp.getPeriod().getEndDate().equals(results.getPeriod().getEndDate()));
+        assertTrue("Incorrect name", emp.getFirstName().equals(results.getName()));
+        
+        rollbackTransaction(em);
+    }
+    
+
 
 }
 
