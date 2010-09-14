@@ -1614,7 +1614,6 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
                     this.parent.getIdentityMapAccessorInstance().getWriteLockManager().releaseAllAcquiredLocks(getMergeManager());
                     setMergeManager(null);
                 }
-                rollbackTransaction();
                 release();
                 handleException(exception);
             } catch (Error throwable) {

@@ -69,6 +69,7 @@ public class UnitOfWorkWriteChangesTestModel extends EmployeeBasicTestModel {
         addTest(new WriteChanges_ReportQuery_TestCase());
         addTest(new WriteChanges_RevertAndResume_TestCase());
         addTest(new WriteChangesFailed_TestCase());
+        addTest(new WriteChanges_CommitFail_TestCase());
         addTest(new WriteChangesFailed_StatementCountTestCase());
     }
 }
