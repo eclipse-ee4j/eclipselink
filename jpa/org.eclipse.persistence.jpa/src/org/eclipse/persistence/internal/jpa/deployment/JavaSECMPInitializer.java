@@ -10,6 +10,7 @@
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
  *     tware - 1.0RC1 - refactor for OSGi
+ *     zhao jianyong - Bug 324627 - JarList stream is not explicitly closed after use in JavaSECMPInitializer 
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.deployment;
 
