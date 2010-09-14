@@ -9561,7 +9561,7 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
         em.clear();
         clearCache();
         
-        EmployeeHolder results = (EmployeeHolder)em.createQuery("select new org.eclipse.persistence.testing.models.jpa.advanced.EmploymentPeriodHolder(e.id, e.period, e.firstName) from Employee e where e.id = :id").setParameter("id", emp.getId()).getSingleResult();
+        EmployeeHolder results = (EmployeeHolder)em.createQuery("select new org.eclipse.persistence.testing.models.jpa.advanced.EmployeeHolder(e.id, e.period, e.firstName) from Employee e where e.id = :id").setParameter("id", emp.getId()).getSingleResult();
         assertTrue("Incorrect id", emp.getId().equals(results.getId()));
         assertTrue("Incorrect period start date", emp.getPeriod().getStartDate().equals(results.getPeriod().getStartDate()));
         assertTrue("Incorrect period end date", emp.getPeriod().getEndDate().equals(results.getPeriod().getEndDate()));
