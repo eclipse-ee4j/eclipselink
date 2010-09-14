@@ -380,11 +380,11 @@ public abstract class DatasourceCall implements Call {
                         if(!hasPairedQuoteBeforePond){//There is begin quote, so search end quote.
                             endQuoteIndex = queryString.indexOf('\'', poundIndex+1);
                         }
-                        if(endQuoteIndex!=-1){//There is quote around pond.
+                        if(endQuoteIndex!=-1){//There is quote around pound.
                             token = queryString.substring(lastIndex, endQuoteIndex+1);
                             poundIndex=-1;
                             lastIndex = endQuoteIndex + 1;
-                        }else{//No quote around pond, 
+                        } else { //No quote around pound, 
                             token = queryString.substring(lastIndex, poundIndex);
                             lastIndex = poundIndex + 1;
                         }

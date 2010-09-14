@@ -116,7 +116,7 @@ public class SQLCall extends DatabaseCall implements QueryStringCall {
 
     /**
      * INTERNAL:
-     * Used to avoid misiterpreting the # in custom SQL.
+     * Used to avoid misinterpreting the # in custom SQL.
      */
     public boolean hasCustomSQLArguments() {
         return hasCustomSQLArguments;
@@ -158,7 +158,7 @@ public class SQLCall extends DatabaseCall implements QueryStringCall {
 
     /**
      * INTERNAL:
-     * Used to avoid misiterpreting the # in custom SQL.
+     * Used to avoid misinterpreting the # in custom SQL.
      */
     public void setHasCustomSQLArguments(boolean hasCustomSQLArguments) {
         this.hasCustomSQLArguments = hasCustomSQLArguments;

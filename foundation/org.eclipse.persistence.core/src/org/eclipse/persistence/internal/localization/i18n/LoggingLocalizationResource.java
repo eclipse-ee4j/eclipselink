@@ -406,7 +406,9 @@ public class LoggingLocalizationResource extends ListResourceBundle {
         { "jmx_mbean_runtime_services_registration_mbeanserver_print", "JMX MBeanServer instance found: [{0}], # of beans: [{1}], domain: [{2}] at index: [{3}]." },
         { "jmx_mbean_runtime_services_switching_to_alternate_mbeanserver", "JMX MBeanServer in use: [{0}] from index [{1}] " },
         { "metamodel_print_type_header", "Printed list of Metamodel [{0}] Types to follow:"},        
-        { "metamodel_print_type_value", "Metamodel Type: [{0}]}"},        
+        { "metamodel_print_type_value", "Metamodel Type: [{0}]}"},
+        { "named_argument_not_found_in_query_parameters", "Missing Query parameter for named argument: {0} 'null' will be substituted." },
+        
         // MESSAGES end
         
         
@@ -686,7 +688,9 @@ public class LoggingLocalizationResource extends ListResourceBundle {
         { "jmx_mbean_runtime_services_registration_mbeanserver_print.MSGID", "TOP-50243" },        
         { "jmx_mbean_runtime_services_switching_to_alternate_mbeanserver.MSGID", "TOP-50244" },
         { "metamodel_print_type_header.MSGID", "TOP-50245"},        
-        { "metamodel_print_type_value.MSGID", "TOP-50246"}
+        { "metamodel_print_type_value.MSGID", "TOP-50246"},
+        { "named_argument_not_found_in_query_parameters.MSGID", "TOP-50247" }
+        
 
         /**
          * Note: Each MSGID and TOP-NNNNN key above must have a corresponding 

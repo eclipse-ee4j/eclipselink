@@ -273,7 +273,7 @@ public class DatasourceCallQueryMechanism extends DatabaseQueryMechanism {
 
     /**
      * Normally only a single call is used, however multiple table may require multiple calls on write.
-     * This is lazy initialied to conserv space.
+     * This is lazy initialised to conserve space.
      */
     public Vector getCalls() {
         if (calls == null) {
@@ -284,7 +284,7 @@ public class DatasourceCallQueryMechanism extends DatabaseQueryMechanism {
 
     /**
      * Normally only a single call is used, however multiple table may require multiple calls on write.
-     * This is lazy initialied to conserv space.
+     * This is lazy initialised to conserve space.
      */
     public boolean hasMultipleCalls() {
         return (this.calls != null) && (!this.calls.isEmpty());
@@ -699,7 +699,7 @@ public class DatasourceCallQueryMechanism extends DatabaseQueryMechanism {
 
     /**
      * Normally only a single call is used, however multiple table may require multiple calls on write.
-     * This is lazy initialied to conserv space.
+     * This is lazy initialised to conserve space.
      */
     protected void setCalls(Vector calls) {
         this.calls = calls;
@@ -812,7 +812,7 @@ public class DatasourceCallQueryMechanism extends DatabaseQueryMechanism {
         }
 
         // second quarter - populate temp tables calls.
-        // if that fails save the exception and untill cleanup
+        // if that fails save the exception and until cleanup
         for (int index = nTables; index < nTables*2 && ex == null; index++) {
             try {
                 DatasourceCall databseCall = (DatasourceCall)getCalls().elementAt(index);
@@ -823,7 +823,7 @@ public class DatasourceCallQueryMechanism extends DatabaseQueryMechanism {
         }
         
         // third quarter - update original tables calls.
-        // if that fails save the exception and untill cleanup
+        // if that fails save the exception and until cleanup
         for (int index = nTables*2; index < nTables*3 && ex == null; index++) {
             try {
                 DatasourceCall databseCall = (DatasourceCall)getCalls().elementAt(index);
@@ -855,7 +855,7 @@ public class DatasourceCallQueryMechanism extends DatabaseQueryMechanism {
     }
 
     /**
-     * Update the foreign key fields when resolving a bi-directonal reference in a UOW.
+     * Update the foreign key fields when resolving a bi-directional reference in a UOW.
      * This is rare to occur for non-relational, however if it does each of the calls must be re-executed.
      */
     protected void updateForeignKeyFieldAfterInsert(WriteObjectQuery writeQuery) {
