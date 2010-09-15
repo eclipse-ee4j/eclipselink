@@ -319,6 +319,10 @@ then
     if [ "${COMMIT}" = "true" ]; then
         echo "This build of Oracle Extension committed as Revision ${COMMIT_REV}" >> ${MAILBODY}
         echo "-----------------------------------" >> ${MAILBODY}
+    else
+        MAIL_SUBJECT="${MAIL_SUBJECT} Commit Failed!"
+        echo "Commit FAILED for this build of Oracle Extension" >> ${MAILBODY}
+        echo "-----------------------------------" >> ${MAILBODY}
     fi
     echo "" >> ${MAILBODY}
     echo "Project Changes since Last Build:" >> ${MAILBODY}
