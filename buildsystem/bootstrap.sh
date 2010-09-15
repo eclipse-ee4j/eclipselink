@@ -8,7 +8,7 @@ LOCAL_REPOS=false
 MILESTONE=false
 RELEASE=false
 TEST=false
-RHB=false
+@ORACLE=false
 UD2M=false
 TARGET=$1
 BRANCH=$2
@@ -23,13 +23,13 @@ then
 else
     TARG_NM="default"
 fi
-if [ "${TARGET}" = "redhat" ]
+if [ "${TARGET}" = "@oracle" ]
 then
-    RHB=true
+    @ORACLE=true
     if [ ! "${BRANCH}" = "" ]
     then
         TARGET=${BRANCH}
-        BRANCH=
+        BRANCH=$3
         TARG_NM=${TARGET}
     else
         TARG_NM="default"
@@ -142,6 +142,8 @@ tmp=$tmp/somedir.$RANDOM.$RANDOM.$RANDOM.$$
 echo "results stored in: '${tmp}'"
 
 #Define common variables
+START_DATE=`date '+%y%m%d-%H%M'`
+#Directories
 HOME_DIR=/shared/rt/eclipselink
 BOOTSTRAP_BLDFILE=bootstrap.xml
 UD2M_BLDFILE=uploadDepsToMaven.xml
@@ -150,7 +152,7 @@ ANT_HOME=/shared/common/apache-ant-1.7.0
 LOG_DIR=${HOME_DIR}/logs
 BRANCH_PATH=${HOME_DIR}/${BRANCH}trunk
 BLD_DEPS_DIR=${HOME_DIR}/bld_deps/${BRANCH_NM}
-START_DATE=`date '+%y%m%d-%H%M'`
+#Files
 LOGFILE_NAME=bsb-${BRANCH_NM}_${TARG_NM}_${START_DATE}.log
 DATED_LOG=${LOG_DIR}/${LOGFILE_NAME}
 JDBC_LOGIN_INFO_FILE=${HOME_DIR}/db-${BRANCH_NM}.dat
@@ -165,6 +167,12 @@ OLD_CLASSPATH=${CLASSPATH}
 CLASSPATH=${JUNIT_HOME}/junit.jar:${ANT_HOME}/lib/ant-junit.jar:${MAILLIB_DIR}/mail.jar:${MAILLIB_DIR}/activation.jar:${MAVENANT_DIR}/maven-ant-tasks-2.0.8.jar
 
 #------- Subroutines -------#
+unset Usage
+Usage() {
+    echo "ERROR: Invalid usage detected!"
+    echo "USAGE: ./${PROGNAME} [target [target params] ..] [branch]"
+}
+
 unset CreatePath
 CreatePath() {
     #echo "Running CreateHome!"
@@ -375,13 +383,22 @@ then
     ANT_BASEARG="${ANT_BASEARG} -D_LocalRepos=1"
 fi
 
-if [ "${RHB}" = "true" ]
-then
-    #Only needed for dev behind firewall
-    ANT_OPTS="-Dhttp.proxyHost=www-proxy.us.oracle.com ${ANT_OPTS}"
-    ANT_ARGS="-autoproxy"
-    ANT_BASEARG="${ANT_BASEARG} -D_RHB=1"
-fi
+#Depends upon a valid putty install and config for "eclipse-dev"
+if [ "${@ORACLE}" = "true" ]                                           
+then                                                               
+    #Only needed for dev behind firewall                           
+    ANT_OPTS="${ANT_OPTS}"
+    ANT_BASEARG="${ANT_BASEARG} -Dsvn.server.name=eclipse-dev"                          
+fi                                                                 
+
+## Save for future reference
+#if [ "${RHB}" = "true" ]
+#then
+#    #Only needed for dev behind firewall
+#    ANT_OPTS="-Dhttp.proxyHost=www-proxy.us.oracle.com ${ANT_OPTS}"
+#    ANT_ARGS="-autoproxy"
+#    ANT_BASEARG="${ANT_BASEARG} -D_RHB=1"
+#fi
 
 if [ "${TEST}" = "true" ]
 then
