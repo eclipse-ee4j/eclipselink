@@ -53,13 +53,13 @@ DEFAULT_PREVREV=5400
 DEFAULT_PREVCOMMIT=5401
 #Directories
 HOME_DIR=/shared/rt/eclipselink/oracle
-JAVA_HOME=/usr/lib/jvm/java-6-sun
+JAVA_HOME=/shared/common/jdk6_glassfish3/jdk
 ANT_HOME=/usr/share/ant
 LOG_DIR=${HOME_DIR}/logs
 ORACLE_ROOT=foundation/org.eclipse.persistence.oracle
 ORACLE_CI_DIR=foundation/plugins
 BRANCH_PATH=${HOME_DIR}/${BRANCH}trunk
-BLD_DEPS_DIR=${HOME_DIR}/bld_deps/${BRANCH_NM}
+BLD_DEPS_DIR=./bld_deps/${BRANCH_NM}
 #URLs
 HOME_URL=svnroot/rt/org.eclipse.persistence
 BRANCH_URL=${HOME_URL}/${BRANCH}trunk
@@ -162,16 +162,16 @@ then
     echo "Need to create BLD_DEPS_DIR (${BLD_DEPS_DIR})"
     CreatePath ${BLD_DEPS_DIR}
 fi
-if [ ! -f $JDBC_LOGIN_INFO_FILE ]
-then
-    echo "No db Login info available!"
-    exit
-else
-    DB_USER=`cat $JDBC_LOGIN_INFO_FILE | cut -d'*' -f1`
-    DB_PWD=`cat $JDBC_LOGIN_INFO_FILE | cut -d'*' -f2`
-    DB_URL=`cat $JDBC_LOGIN_INFO_FILE | cut -d'*' -f3`
-    DB_NAME=`cat $JDBC_LOGIN_INFO_FILE | cut -d'*' -f4`
-fi
+#if [ ! -f $JDBC_LOGIN_INFO_FILE ]
+#then
+#    echo "No db Login info available!"
+#    exit
+#else
+#    DB_USER=`cat $JDBC_LOGIN_INFO_FILE | cut -d'*' -f1`
+#    DB_PWD=`cat $JDBC_LOGIN_INFO_FILE | cut -d'*' -f2`
+#    DB_URL=`cat $JDBC_LOGIN_INFO_FILE | cut -d'*' -f3`
+#    DB_NAME=`cat $JDBC_LOGIN_INFO_FILE | cut -d'*' -f4`
+#fi
 
 #Set appropriate max Heap for VM and let Ant inherit JavaVM (OS's) proxy settings
 ANT_ARGS=" "
