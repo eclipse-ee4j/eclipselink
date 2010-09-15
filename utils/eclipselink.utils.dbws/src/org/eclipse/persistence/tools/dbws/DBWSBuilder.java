@@ -823,11 +823,13 @@ prompt> java -cp eclipselink.jar:eclipselink-dbwsutils.jar:your_favourite_jdbc_d
                 }
                 else if (style == ELEMENT){
                     xPath += fieldName;
-                    AbstractNullPolicy nullPolicy = xdm.getNullPolicy();
-                    nullPolicy.setNullRepresentedByEmptyNode(false);
-                    nullPolicy.setMarshalNullRepresentation(XSI_NIL);
-                    nullPolicy.setNullRepresentedByXsiNil(true);
-                    xdm.setNullPolicy(nullPolicy);
+                    if (!dbColumn.isPK()) {
+                        AbstractNullPolicy nullPolicy = xdm.getNullPolicy();
+                        nullPolicy.setNullRepresentedByEmptyNode(false);
+                        nullPolicy.setMarshalNullRepresentation(XSI_NIL);
+                        nullPolicy.setNullRepresentedByXsiNil(true);
+                        xdm.setNullPolicy(nullPolicy);
+                    }
                 }
                 if (nct.getOptimisticLockingField() != null && 
                     nct.getOptimisticLockingField().equalsIgnoreCase(columnName)) {
