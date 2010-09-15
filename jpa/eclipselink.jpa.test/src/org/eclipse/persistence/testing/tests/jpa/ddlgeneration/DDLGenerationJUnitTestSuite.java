@@ -19,6 +19,8 @@
  *       - 294361: incorrect generated table for element collection attribute overrides
  *     06/14/2010-2.2 Guy Pelletier 
  *       - 264417: Table generation is incorrect for JoinTables in AssociationOverrides
+ *     09/15/2010-2.2 Chris Delahunt
+ *       - 322233 - AttributeOverrides and AssociationOverride dont change field type info
  ******************************************************************************/   
 package org.eclipse.persistence.testing.tests.jpa.ddlgeneration;
 
@@ -233,6 +235,29 @@ public class DDLGenerationJUnitTestSuite extends JUnitTestCase {
         beginTransaction(em);
         Exception expectedException = null;
         try {
+            Purchase purchase = new Purchase();
+            purchase.setFee(new Money());
+            em.persist(purchase);
+
+            em.flush();
+        } catch (RuntimeException e) {
+            //test expects flush to throw an exception because the FEE_AMOUNT field is null
+            expectedException = e;
+        } finally {
+            if (isTransactionActive(em)) {
+                rollbackTransaction(em);
+            }
+            closeEntityManager(em);
+        }
+        this.assertNotNull("Expected an exception persisting null into a field with nullable=false set on an override", expectedException);
+    }
+    
+    // Test for bug 322233, that optional field info defined in Overrides are used in DDL
+    public void testDDLAttributeOverridesOnElementCollection() {
+        EntityManager em = createEntityManager(DDL_PU);
+        beginTransaction(em);
+        Exception expectedException = null;
+        try {
             PropertyRecord propertyRecord = new PropertyRecord();
 
             Zipcode zipCode = new Zipcode();
@@ -255,6 +280,7 @@ public class DDLGenerationJUnitTestSuite extends JUnitTestCase {
             em.persist(propertyRecord);
             em.flush();
         } catch (RuntimeException e) {
+            //test expects flush to throw an exception because the PARCEL_NUMBER field is null
             expectedException = e;
         } finally {
             if (isTransactionActive(em)) {

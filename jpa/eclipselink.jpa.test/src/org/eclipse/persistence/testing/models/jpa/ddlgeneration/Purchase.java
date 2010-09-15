@@ -9,6 +9,8 @@
  *
  * Contributors:
  *     07/17/2009 - tware - added tests for DDL generation of maps
+ *     09/15/2010-2.2 Chris Delahunt
+ *       - 322233 - AttributeOverrides and AssociationOverride dont change field type info
  ******************************************************************************/  
 package org.eclipse.persistence.testing.models.jpa.ddlgeneration;
 
@@ -29,7 +31,7 @@ public class Purchase {
     
     @AttributeOverride(
             name="amount", 
-            column=@Column(name="FEE_AMOUNT"))
+            column=@Column(name="FEE_AMOUNT", nullable=false))
     @AssociationOverride(
             name="currency",
             joinColumns=@JoinColumn(name="FEE_ID"))

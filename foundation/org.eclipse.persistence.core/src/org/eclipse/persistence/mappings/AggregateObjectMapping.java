@@ -1488,7 +1488,15 @@ public class AggregateObjectMapping extends AggregateMapping implements Relation
                 field.setUseDelimiters(fieldInSource.shouldUseDelimiters());
                 field.useUpperCaseForComparisons(fieldInSource.getUseUpperCaseForComparisons());
                 field.setNameForComparisons(fieldInSource.getNameForComparisons());
-                //TODO: copy type information 
+                //copy type information 
+                field.setNullable(fieldInSource.isNullable());
+                field.setUpdatable(fieldInSource.isUpdatable());
+                field.setInsertable(fieldInSource.isInsertable());
+                field.setUnique(fieldInSource.isUnique());
+                field.setScale(fieldInSource.getScale());
+                field.setLength(fieldInSource.getLength());
+                field.setPrecision(fieldInSource.getPrecision());
+                field.setColumnDefinition(fieldInSource.getColumnDefinition());
 
                 // Check if the translated field specified a table qualifier.
                 if (fieldInSource.hasTableName()) {
