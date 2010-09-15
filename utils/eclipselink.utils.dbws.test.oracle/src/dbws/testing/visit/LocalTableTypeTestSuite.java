@@ -20,6 +20,7 @@ import java.io.StringReader;
 import java.io.StringWriter;
 import java.sql.SQLException;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Vector;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -240,7 +241,7 @@ public class LocalTableTypeTestSuite extends WebServiceTestSuite implements Prov
                     }
                     else {
                         ClassDescriptor desc = null;
-                        for (XMLDescriptor xdesc : (Vector<XMLDescriptor>)oxProject.getOrderedDescriptors()) {
+                        for (XMLDescriptor xdesc : (List<XMLDescriptor>)(List)oxProject.getOrderedDescriptors()) {
                             XMLSchemaReference schemaReference = xdesc.getSchemaReference();
                             if (schemaReference != null && 
                                 schemaReference.getSchemaContext().equalsIgnoreCase(key)) {
