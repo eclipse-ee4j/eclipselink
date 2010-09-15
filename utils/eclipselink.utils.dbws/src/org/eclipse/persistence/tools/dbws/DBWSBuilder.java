@@ -40,7 +40,6 @@ import java.util.Map;
 import java.util.Properties;
 import java.util.ServiceLoader;
 import java.util.Set;
-import java.util.Vector;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import static java.sql.Types.ARRAY;
@@ -966,7 +965,7 @@ prompt> java -cp eclipselink.jar:eclipselink-dbwsutils.jar:your_favourite_jdbc_d
                     }
                     if (idx > 0) {
                         typ = returnType.substring(idx+1);
-                        for (XMLDescriptor xd : (Vector<XMLDescriptor>)oxProject.getOrderedDescriptors()) {
+                        for (XMLDescriptor xd : (List<XMLDescriptor>)(List)oxProject.getOrderedDescriptors()) {
                             if (xd.getSchemaReference() != null) {
                                 String context = xd.getSchemaReference().getSchemaContext();
                                 if (context.substring(1).equals(typ)) {
@@ -1168,7 +1167,7 @@ prompt> java -cp eclipselink.jar:eclipselink-dbwsutils.jar:your_favourite_jdbc_d
     protected void buildSchema(NamingConventionTransformer nct) {
         
         List<XMLDescriptor> descriptorsToProcess = new ArrayList<XMLDescriptor>();
-        for (XMLDescriptor desc : (Vector<XMLDescriptor>)oxProject.getOrderedDescriptors()) {
+        for (XMLDescriptor desc : (List<XMLDescriptor>)(List)oxProject.getOrderedDescriptors()) {
             String alias = desc.getAlias();
             if (!DEFAULT_SIMPLE_XML_FORMAT_TAG.equals(alias)) {
                 descriptorsToProcess.add(desc);
