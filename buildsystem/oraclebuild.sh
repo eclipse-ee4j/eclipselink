@@ -52,7 +52,7 @@ START_DATE=`date '+%y%m%d-%H%M'`
 DEFAULT_PREVREV=5400
 DEFAULT_PREVCOMMIT=5401
 #Directories
-HOME_DIR=/shared/rt/eclipselink
+HOME_DIR=/shared/rt/eclipselink/oracle
 JAVA_HOME=/usr/lib/jvm/java-6-sun
 ANT_HOME=/usr/share/ant
 LOG_DIR=${HOME_DIR}/logs
@@ -194,11 +194,11 @@ fi
 if [ "${PREV_REV}" = "" ]; then PREV_REV=${DEFAULT_PREVREV}; fi
 if [ "${PREV_COMMIT}" = "" ]; then PREV_COMMIT=${DEFAULT_PREVCOMMIT}; fi
 # Test to make sure noone else checked in a new version of the oracle jars independant of this process
-svn log -q -r HEAD:${PREV_REV} svn+ssh://${PUTTY_SESSION}/${BRANCH_URL}/${ORACLE_CI_DIR} > ${TEMP_FILE} 
+svn log -q -r HEAD:${PREV_REV} svn+ssh://${PUTTY_SESSION}/${BRANCH_URL}/${ORACLE_CI_DIR} > ${TEMP_FILE}
 PREV_COMMIT=`cat ${TEMP_FILE} | grep -m1 -v "\-\-\-" | cut -d' ' -f1 | cut -c 2-`
 echo "    previous Revs (Proj:Commit): '${PREV_REV}:${PREV_COMMIT}'" >> ${DATED_LOG}
 echo "    previous Revs (Proj:Commit): '${PREV_REV}:${PREV_COMMIT}'"
-svn log -q -r HEAD:${PREV_REV} svn+ssh://${PUTTY_SESSION}/${BRANCH_URL}/${ORACLE_ROOT} > ${TEMP_FILE} 
+svn log -q -r HEAD:${PREV_REV} svn+ssh://${PUTTY_SESSION}/${BRANCH_URL}/${ORACLE_ROOT} > ${TEMP_FILE}
 CURRENT_REV=`cat ${TEMP_FILE} | grep -m1 -v "\-\-\-" | cut -d' ' -f1 | cut -c 2-`
 echo "    curProjRev: '${CURRENT_REV}'" >> ${DATED_LOG}
 echo "    curProjRev: '${CURRENT_REV}'"
@@ -231,7 +231,7 @@ then
     echo "Build completed."
     echo "Updating Revision info..." >> ${DATED_LOG}
     echo "Updating Revision info..."
-    svn log -q -r HEAD:${PREV_REV} svn+ssh://${PUTTY_SESSION}/${BRANCH_URL}/${ORACLE_CI_DIR} > ${TEMP_FILE} 
+    svn log -q -r HEAD:${PREV_REV} svn+ssh://${PUTTY_SESSION}/${BRANCH_URL}/${ORACLE_CI_DIR} > ${TEMP_FILE}
     COMMIT_REV=`cat ${TEMP_FILE} | grep -m1 -v "\-\-\-" | cut -d' ' -f1 | cut -c 2-`
     echo "    Commit revisions (New:Prev): '${COMMIT_REV}:${PREV_COMMIT}'" >> ${DATED_LOG}
     echo "    Commit revisions (New:Prev): '${COMMIT_REV}:${PREV_COMMIT}'"
@@ -307,7 +307,7 @@ then
         MAIL_SUBJECT="${BRANCH_NM} Oracle Extension Nightly build failed!"
         MAILLIST=${FAIL_MAILLIST}
     fi
-    
+
     ## Build Body text of email
     ##
     if [ -f ${MAILBODY} ]; then rm ${MAILBODY}; fi

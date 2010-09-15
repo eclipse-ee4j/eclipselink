@@ -8,7 +8,7 @@ LOCAL_REPOS=false
 MILESTONE=false
 RELEASE=false
 TEST=false
-@ORACLE=false
+ORACLEBLD=false
 UD2M=false
 TARGET=$1
 BRANCH=$2
@@ -23,9 +23,9 @@ then
 else
     TARG_NM="default"
 fi
-if [ "${TARGET}" = "@oracle" ]
+if [ "${TARGET}" = "oraclebld" ]
 then
-    @ORACLE=true
+    ORACLEBLD=true
     if [ ! "${BRANCH}" = "" ]
     then
         TARGET=${BRANCH}
@@ -147,8 +147,14 @@ START_DATE=`date '+%y%m%d-%H%M'`
 HOME_DIR=/shared/rt/eclipselink
 BOOTSTRAP_BLDFILE=bootstrap.xml
 UD2M_BLDFILE=uploadDepsToMaven.xml
-JAVA_HOME=/shared/common/ibm-java-ppc64-60-SR7
-ANT_HOME=/shared/common/apache-ant-1.7.0
+if [ "${ORACLEBLD}" = "true" ]
+then
+    JAVA_HOME=/shared/common/jdk6_glassfish3/jdk
+    ANT_HOME=/usr/share/ant
+else
+    JAVA_HOME=/shared/common/ibm-java-ppc64-60-SR7
+    ANT_HOME=/shared/common/apache-ant-1.7.0
+fi
 LOG_DIR=${HOME_DIR}/logs
 BRANCH_PATH=${HOME_DIR}/${BRANCH}trunk
 BLD_DEPS_DIR=${HOME_DIR}/bld_deps/${BRANCH_NM}
@@ -384,12 +390,15 @@ then
 fi
 
 #Depends upon a valid putty install and config for "eclipse-dev"
-if [ "${@ORACLE}" = "true" ]                                           
-then                                                               
-    #Only needed for dev behind firewall                           
+if [ "${ORACLEBLD}" = "true" ]
+then
+    JAVA_HOME=/shared/common/jdk6_glassfish3/jdk
+    ANT_HOME=/usr/share/ant
+
+    #Only needed for dev behind firewall
     ANT_OPTS="${ANT_OPTS}"
-    ANT_BASEARG="${ANT_BASEARG} -Dsvn.server.name=eclipse-dev"                          
-fi                                                                 
+    ANT_BASEARG="${ANT_BASEARG} -Dsvn.server.name=eclipse-dev"
+fi
 
 ## Save for future reference
 #if [ "${RHB}" = "true" ]
