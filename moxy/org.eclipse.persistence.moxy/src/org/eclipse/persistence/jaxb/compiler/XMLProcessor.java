@@ -43,6 +43,7 @@ import org.eclipse.persistence.jaxb.xmlmodel.XmlEnum;
 import org.eclipse.persistence.jaxb.xmlmodel.XmlEnumValue;
 import org.eclipse.persistence.jaxb.xmlmodel.XmlInverseReference;
 import org.eclipse.persistence.jaxb.xmlmodel.XmlJavaTypeAdapter;
+import org.eclipse.persistence.jaxb.xmlmodel.XmlJoinNodes;
 import org.eclipse.persistence.jaxb.xmlmodel.XmlMap;
 import org.eclipse.persistence.jaxb.xmlmodel.XmlNsForm;
 import org.eclipse.persistence.jaxb.xmlmodel.XmlRegistry;
@@ -394,6 +395,8 @@ public class XMLProcessor {
             return processXmlInverseReference((XmlInverseReference)javaAttribute, oldProperty);
         } else if (javaAttribute instanceof XmlTransformation) {
             return processXmlTransformation((XmlTransformation)javaAttribute, oldProperty, typeInfo);
+        } else if (javaAttribute instanceof XmlJoinNodes) {
+            return processXmlJoinNodes((XmlJoinNodes) javaAttribute, oldProperty); 
         }
         getLogger().logWarning("jaxb_metadata_warning_invalid_java_attribute", new Object[] { javaAttribute.getClass() });
         return null;
@@ -545,17 +548,22 @@ public class XMLProcessor {
 
         // handle xml-id
         if (xmlAttribute.isXmlId()) {
+            oldProperty.setIsXmlId(true);
             typeInfo.setIDProperty(oldProperty);
-        } else if (oldProperty.isXmlId()) {
+        } else {
             // account for XmlID un-set via XML
             if (typeInfo.getIDProperty() != null && typeInfo.getIDProperty().getPropertyName().equals(oldProperty.getPropertyName())) {
                 typeInfo.setIDProperty(null);
             }
         }
-        oldProperty.setIsXmlId(xmlAttribute.isXmlId());
 
         // handle xml-idref
         oldProperty.setIsXmlIdRef(xmlAttribute.isXmlIdref());
+
+        // handle xml-key
+        if (xmlAttribute.isXmlKey()) {
+            typeInfo.addXmlKeyProperty(oldProperty);
+        }
 
         // set isAttribute
         oldProperty.setIsAttribute(true);
@@ -678,17 +686,22 @@ public class XMLProcessor {
 
         // handle xml-id
         if (xmlElement.isXmlId()) {
+            oldProperty.setIsXmlId(true);
             typeInfo.setIDProperty(oldProperty);
-        } else if (oldProperty.isXmlId()) {
+        } else {
             // account for XmlID un-set via XML
             if (typeInfo.getIDProperty() != null && typeInfo.getIDProperty().getPropertyName().equals(oldProperty.getPropertyName())) {
                 typeInfo.setIDProperty(null);
             }
         }
-        oldProperty.setIsXmlId(xmlElement.isXmlId());
 
         // handle xml-idref
         oldProperty.setIsXmlIdRef(xmlElement.isXmlIdref());
+
+        // handle xml-key
+        if (xmlElement.isXmlKey()) {
+            typeInfo.addXmlKeyProperty(oldProperty);
+        }
 
         // set required
         oldProperty.setIsRequired(xmlElement.isRequired());
@@ -1073,6 +1086,19 @@ public class XMLProcessor {
     }
 
     /**
+     * Process XmlJoinNodes.  This method sets the XmlJoinNodes instance on the Property
+     * for use in MappingsGen and SchemaGen.
+     * 
+     * @param xmlJoinNodes
+     * @param oldProperty
+     * @return
+     */
+    private Property processXmlJoinNodes(XmlJoinNodes xmlJoinNodes, Property oldProperty) {
+        oldProperty.setXmlJoinNodes(xmlJoinNodes);
+        return oldProperty;
+    }
+    
+    /**
      * Convenience method for building a Map of package to classes.
      * 
      * @return
@@ -1209,7 +1235,6 @@ public class XMLProcessor {
         oldProperty.setDefaultValue(null);
         oldProperty.setDomHandlerClassName(null);
         oldProperty.setIsSwaAttachmentRef(false);
-        oldProperty.setIsXmlId(false);
         oldProperty.setIsXmlIdRef(false);
         oldProperty.setIsXmlTransformation(false);
         oldProperty.setXmlElementWrapper(null);
@@ -1229,6 +1254,7 @@ public class XMLProcessor {
         oldProperty.setGetMethodName(oldProperty.getOriginalGetMethodName());
         oldProperty.setSetMethodName(oldProperty.getOriginalSetMethodName());
         oldProperty.setXmlTransformation(null);
+        oldProperty.setXmlJoinNodes(null);
         if (oldProperty.getGetMethodName() == null && oldProperty.getSetMethodName() == null) {
             oldProperty.setMethodProperty(false);
         }
@@ -1237,9 +1263,36 @@ public class XMLProcessor {
         unsetXmlAnyAttribute(oldProperty, tInfo);
         unsetXmlAnyElement(oldProperty, tInfo);
         unsetXmlValue(oldProperty, tInfo);
+        unsetXmlID(oldProperty, tInfo);
+        unsetXmlKey(oldProperty, tInfo);
         return oldProperty;
     }
 
+    /**
+     * Ensure that a given property is not set as an xml-id.
+     * 
+     * @param oldProperty
+     * @param tInfo
+     */
+    private void unsetXmlID(Property oldProperty, TypeInfo tInfo) {
+        oldProperty.setIsXmlId(false);
+        if (tInfo.isIDSet() && tInfo.getIDProperty().getPropertyName().equals(oldProperty.getPropertyName())) {
+            tInfo.setIDProperty(null);
+        }
+    }
+    
+    /**
+     * Ensure that a given property is not set as an xml-key.
+     * 
+     * @param oldProperty
+     * @param tInfo
+     */
+    private void unsetXmlKey(Property oldProperty, TypeInfo tInfo) {
+        if (tInfo.hasXmlKeyProperties()) {
+            tInfo.getXmlKeyProperties().remove(oldProperty);
+        }
+    }
+    
     /**
      * Ensure that a given property is not set as an xml-element-refs.
      * 

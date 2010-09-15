@@ -39,6 +39,7 @@ public class ObjectFactory {
     private final static QName _XmlInverseReference_QNAME = new QName("http://www.eclipse.org/eclipselink/xsds/persistence/oxm", "xml-inverse-reference");
     private final static QName _JavaAttribute_QNAME = new QName("http://www.eclipse.org/eclipselink/xsds/persistence/oxm", "java-attribute");
     private final static QName _XmlClassExtractor_QNAME = new QName("http://www.eclipse.org/eclipselink/xsds/persistence/oxm", "xml-class-extractor");
+    private final static QName _XmlJoinNodes_QNAME = new QName("http://www.eclipse.org/eclipselink/xsds/persistence/oxm", "xml-join-nodes");
     private final static QName _XmlNullPolicy_QNAME = new QName("http://www.eclipse.org/eclipselink/xsds/persistence/oxm", "xml-null-policy");
     private final static QName _XmlElementRefs_QNAME = new QName("http://www.eclipse.org/eclipselink/xsds/persistence/oxm", "xml-element-refs");
     private final static QName _XmlAnyElement_QNAME = new QName("http://www.eclipse.org/eclipselink/xsds/persistence/oxm", "xml-any-element");
@@ -359,6 +360,23 @@ public class ObjectFactory {
     }
 
     /**
+     * Create an instance of {@link XmlJoinNodes.XmlJoinNode }
+     * 
+     */
+    public XmlJoinNodes.XmlJoinNode createXmlJoinNodesXmlJoinNode() {
+        return new XmlJoinNodes.XmlJoinNode();
+    }
+
+    /**
+     * Create an instance of {@link XmlJoinNodes }
+     * 
+     */
+    public XmlJoinNodes createXmlJoinNodes() {
+        return new XmlJoinNodes();
+    }
+
+
+    /**
      * Create an instance of {@link JAXBElement }{@code <}{@link XmlJavaTypeAdapter }{@code >}}
      * 
      */
@@ -538,4 +556,12 @@ public class ObjectFactory {
         return new JAXBElement<XmlAnyAttribute>(_XmlAnyAttribute_QNAME, XmlAnyAttribute.class, null, value);
     }
 
+    /**
+     * Create an instance of {@link JAXBElement }{@code <}{@link XmlJoinNodes }{@code >}}
+     * 
+     */
+    @javax.xml.bind.annotation.XmlElementDecl(namespace = "http://www.eclipse.org/eclipselink/xsds/persistence/oxm", name = "xml-join-nodes", substitutionHeadNamespace = "http://www.eclipse.org/eclipselink/xsds/persistence/oxm", substitutionHeadName = "java-attribute")
+    public JAXBElement<XmlJoinNodes> createXmlJoinNodes(XmlJoinNodes value) {
+        return new JAXBElement<XmlJoinNodes>(_XmlJoinNodes_QNAME, XmlJoinNodes.class, null, value);
+    }
 }

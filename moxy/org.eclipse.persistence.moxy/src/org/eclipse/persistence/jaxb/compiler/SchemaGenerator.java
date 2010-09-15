@@ -55,6 +55,7 @@ import org.eclipse.persistence.jaxb.javamodel.Helper;
 import org.eclipse.persistence.jaxb.javamodel.JavaClass;
 import org.eclipse.persistence.jaxb.javamodel.JavaMethod;
 import org.eclipse.persistence.jaxb.xmlmodel.XmlElementWrapper;
+import org.eclipse.persistence.jaxb.xmlmodel.XmlJoinNodes.XmlJoinNode;
 import org.eclipse.persistence.jaxb.xmlmodel.XmlTransformation.XmlWriteTransformer;
 import org.eclipse.persistence.oxm.XMLConstants;
 import org.eclipse.persistence.oxm.XMLField;
@@ -400,6 +401,11 @@ public class SchemaGenerator {
                     addTransformerToSchema(next, ownerTypeInfo, compositor, type, workingSchema);
                     continue;
                 }
+                // handle XmlJoinNodes
+                if (next.isSetXmlJoinNodes()) {
+                    addXmlJoinNodesToSchema(next, parentCompositor, currentSchema, parentType);
+                    continue;
+                }
                 // deal with xml-path case
                 if (next.getXmlPath() != null) {
                     // create schema components based on the XmlPath
@@ -430,7 +436,7 @@ public class SchemaGenerator {
                 }
                 // handle attribute
                 if (next.isAttribute() && !next.isAnyAttribute()) {
-                    addAttributeToSchema(next, currentSchema, parentType);
+                    addAttributeToSchema(buildAttribute(next, currentSchema), next.getSchemaName(), currentSchema, parentType);
                 // handle any attribute
                 } else if (next.isAnyAttribute()) {
                     addAnyAttributeToSchema(parentType);
@@ -445,7 +451,7 @@ public class SchemaGenerator {
                     addReferenceToSchema(next, currentSchema, parentCompositor);
                 // add an element
                 } else if (!(ownerTypeInfo.getXmlValueProperty() != null && ownerTypeInfo.getXmlValueProperty() == next)) {
-                    addElementToSchema(next, parentCompositor, currentSchema, ownerTypeInfo);
+                    addElementToSchema(buildElement(next, parentCompositor instanceof All, currentSchema, ownerTypeInfo), next.getSchemaName().getNamespaceURI(), next.isPositional(), parentCompositor, currentSchema);
                 }                    
             }
         }
@@ -927,6 +933,7 @@ public class SchemaGenerator {
         // if the current element exists, use it; otherwise create a new one
         Element currentElement = elementExistsInParticle(frag.getLocalName(), frag.getShortName(), currentParticle);
         boolean currentElementExists = (currentElement != null);
+
         if (!currentElementExists) {
             currentElement = new Element();
             // don't set the element name yet, as it may end up being a ref
@@ -1042,9 +1049,12 @@ public class SchemaGenerator {
      * typedefparticle.  If an element exists whose ref is equal to 'refString'
      * or its name is equal to 'elementName', it is returned.  Null otherwise.
      * 
-     * @param elementName
-     * @param refString
-     * @param particle
+     * Note that ref takes precidence, so if either has a ref set name equality
+     * will not be performed.
+     * 
+     * @param elementName the non-null element name to look for 
+     * @param refString if the element is a ref, this will be the prefix qualified element name
+     * @param particle the sequence/choice/all to search for an existing element
      * @return
      */
     protected Element elementExistsInParticle(String elementName, String refString, TypeDefParticle particle) {
@@ -1062,7 +1072,23 @@ public class SchemaGenerator {
                 } catch (ClassCastException cce) {
                     continue;
                 }
-                if ((element.getRef() != null && element.getRef().equals(refString)) || (element.getName() != null && element.getName().equals(elementName))) {
+                // case #1 - refString is null
+                if (refString == null) {
+                    // if element has a null ref value and the element names are equal, or element has a non-null
+                    // ref that is not equal to its name, and the element names are equal, we found a match
+                    if ((element.getRef() == null || (element.getRef() != null && element.getRef().equals(element.getName()))) && elementName.equals(element.getName())) {
+                        return element;
+                    }
+                }
+                // case #2 - refString equals elementName
+                else if (refString.equals(elementName)) {
+                    // if element has a ref equal to refString, or no ref but element names are equal, we found a match
+                    if ((element.getRef() != null && element.getRef().equals(refString)) || (element.getRef() == null && elementName.equals(element.getName()))) {
+                        return element;
+                    }
+                }
+                // case #3 - refString is different than elementName
+                else if (element.getRef() != null && element.getRef().equals(refString)) {
                     return element;
                 }
             }
@@ -1330,17 +1356,33 @@ public class SchemaGenerator {
         wrapperElement.setComplexType(wrapperType);
         return new AddToSchemaResult(wrapperSequence, wrapperType);
     }
+
+    /**
+     * Build an Attribute with name and type set.  This method will typically be 
+     * called when processing an XPath that has no associated Property that can 
+     * be used to build an Attribute, such as in the case of XmlJoinNodes.
+     * 
+     * @param attributeName name of the Attribute
+     * @param typeName type of the Attribute
+     * @return
+     */
+    private Attribute buildAttribute(QName attributeName, String typeName) {
+        Attribute attribute = new Attribute();
+        attribute.setName(attributeName.getLocalPart());
+        attribute.setType(typeName);
+        return attribute;
+    }
     
     /**
-     * Convenience method for processing an attribute property. Required schema
-     * components will be generated and set accordingly.
+     * Build an Attribute based on a given Property.
      * 
-     * @param property the attribute property to be processed 
-     * @param schema the schema currently being generated 
-     * @param type the ComplexType which compositor(s) should be added to
+     * @param property the Property used to build the Attribute
+     * @param schema the schema currently being generated
+     * @return
      */
-    private void addAttributeToSchema(Property property, Schema schema, ComplexType type) {
+    private Attribute buildAttribute(Property property, Schema schema) {
         Attribute attribute = new Attribute();
+        
         QName attributeName = property.getSchemaName();
         attribute.setName(attributeName.getLocalPart());
         if (property.isRequired()) {
@@ -1351,11 +1393,7 @@ public class SchemaGenerator {
             attribute.setFixed(fixedValue);
         }
         // Check to see if it's a collection 
-        JavaClass javaType = property.getType();
-        if (property.getGenericType() != null) {
-            javaType = (JavaClass) property.getGenericType();
-        }
-        TypeInfo info = (TypeInfo) typeInfo.get(property.getType().getQualifiedName());
+        TypeInfo info = (TypeInfo) typeInfo.get(property.getActualType().getQualifiedName());
         String typeName = null;
         if (property.isXmlId()) {
             typeName = XMLConstants.SCHEMA_PREFIX + COLON + ID;
@@ -1364,7 +1402,7 @@ public class SchemaGenerator {
         } else if (info != null && !info.isComplexType()) {
             typeName = info.getSimpleType().getName();
         } else {
-            typeName = getTypeName(property, javaType, schema);                    
+            typeName = getTypeName(property, property.getActualType(), schema);                    
         }
 
         if (isCollectionType(property)) {
@@ -1386,6 +1424,18 @@ public class SchemaGenerator {
             }
             attribute.setType(typeName);
         }
+        return attribute;
+    }
+    
+    /**
+     * Convenience method for processing an attribute property. Required schema
+     * components will be generated and set accordingly.
+     * 
+     * @param property the attribute property to be processed 
+     * @param schema the schema currently being generated 
+     * @param type the ComplexType which compositor(s) should be added to
+     */
+    private void addAttributeToSchema(Attribute attribute, QName attributeName, Schema schema, ComplexType type) {
         String lookupNamespace = schema.getTargetNamespace();
         if (lookupNamespace == null) {
             lookupNamespace = EMPTY_STRING;
@@ -1703,17 +1753,39 @@ public class SchemaGenerator {
     }
     
     /**
-     * Convenience method that adds an element to a given schema.
-     * 
-     * @param property the Property that the Element will be based on
-     * @param compositor the sequence/choice/all that the Element will be added to
-     * @param schema the schema currently being built
-     * @param typeInfo the TypeInfo that owns the given Property
+     * Build an Element with name, type and possibly minOccurs set.  This method will 
+     * typically be called when processing an XPath that has no associated Property
+     * that can be used to build an Element, such as in the case of XmlJoinNodes.   
+     *  
+     * @param elementName name of the Element
+     * @param elementType type of the Element
+     * @param isAll indicates if the Element will be added to an All structure
+     * @return
      */
-    private void addElementToSchema(Property property, TypeDefParticle compositor, Schema schema, TypeInfo typeInfo) {
+    private Element buildElement(String elementName, String elementType, boolean isAll) {
         Element element = new Element();
         // Set minOccurs based on the 'required' flag
-        if (!(compositor instanceof All)) {
+        if (!(isAll)) {
+            element.setMinOccurs(Occurs.ZERO);
+        }
+        element.setName(elementName);
+        element.setType(elementType);
+        return element;
+    }
+    
+    /**
+     * Build an Element based on a given Property.
+     * 
+     * @param property the Property used to build the Element
+     * @param isAll true if the Element will be added to an All structure
+     * @param schema the schema currently being built
+     * @param typeInfo the TypeInfo that owns the given Property
+     * @return
+     */
+    private Element buildElement(Property property, boolean isAll, Schema schema, TypeInfo typeInfo) {
+        Element element = new Element();
+        // Set minOccurs based on the 'required' flag
+        if (!(isAll)) {
             element.setMinOccurs(property.isRequired() ? Occurs.ONE : Occurs.ZERO);
         }
         // handle nillable
@@ -1751,7 +1823,18 @@ public class SchemaGenerator {
         } else {
             element.setType(typeName);
         }
-
+        return element;
+    }
+    
+    /**
+     * Convenience method that adds an element to a given schema.
+     * 
+     * @param property the Property that the Element will be based on
+     * @param compositor the sequence/choice/all that the Element will be added to
+     * @param schema the schema currently being built
+     * @param typeInfo the TypeInfo that owns the given Property
+     */
+    private void addElementToSchema(Element element, String elementURI, boolean isPositional, TypeDefParticle compositor, Schema schema) {
         String lookupNamespace = schema.getTargetNamespace();
         if (lookupNamespace == null) {
             lookupNamespace = EMPTY_STRING;
@@ -1762,16 +1845,66 @@ public class SchemaGenerator {
             isElementFormQualified = namespaceInfo.isElementFormQualified();
         }
         // handle element reference
-        if ((isElementFormQualified && !elementName.getNamespaceURI().equals(lookupNamespace))
-                    || (!isElementFormQualified && !elementName.getNamespaceURI().equals(EMPTY_STRING))){
-            addElementRefToSchema(schema, compositor, element, elementName.getNamespaceURI());
+        if ((isElementFormQualified && !elementURI.equals(lookupNamespace))
+                    || (!isElementFormQualified && !elementURI.equals(EMPTY_STRING))){
+            addElementRefToSchema(schema, compositor, element, elementURI);
         } else {
             // for positional mappings we could have multiple elements with same name; check before adding
             if (elementExistsInParticle(element.getName(), element.getRef(), compositor) == null) {
-                if (property.isPositional()) {
+                if (isPositional) {
                     element.setMaxOccurs(Occurs.UNBOUNDED);
                 }
                 compositor.addElement(element);
+            }
+        }
+    }
+    
+    /**
+     * Convenience method that processes the XmlJoinNodes for a given Property and adds the 
+     * appropriate components to the schema.
+     *  
+     * @param property the Property contianing one or more XmlJoinNode entries
+     * @param compositor the sequence/choice/all that will be added to
+     * @param schema the schema currently being built
+     * @param type the complex type currently being built
+     */
+    private void addXmlJoinNodesToSchema(Property property, TypeDefParticle compositor, Schema schema, ComplexType type) {
+        for (XmlJoinNode xmlJoinNode : property.getXmlJoinNodes().getXmlJoinNode()) {
+            // create the XPathFragment(s) for the path
+            XMLField xfld = new XMLField(xmlJoinNode.getXmlPath());
+            xfld.setNamespaceResolver(schema.getNamespaceResolver());
+            xfld.initialize();
+            
+            // build the schema components for the xml-path
+            AddToSchemaResult asr = buildSchemaComponentsForXPath(xfld.getXPathFragment(), new AddToSchemaResult(compositor, schema), false, property);
+
+            // process the last fragment
+            TypeDefParticle currentParticle = asr.particle;
+            Schema currentSchema = asr.schema;
+            if (currentParticle.getOwner() instanceof ComplexType) {
+                type = ((ComplexType) currentParticle.getOwner());
+            }
+            // get a QName for the last part of the xpath - this will be used as the 
+            // attribute/element name, and also to figure out if a ref is required  
+            QName schemaName;
+            XPathFragment frag = xfld.getLastXPathFragment();
+            boolean isAttribute = xmlJoinNode.getXmlPath().contains(ATT);
+            // for non-attributes, the last fragment may be 'text()'
+            if (!isAttribute) {
+                if (frag.nameIsText()) {
+                    frag = xfld.getXPathFragment();
+                    while (frag.getNextFragment() != null && !frag.getNextFragment().nameIsText()) {
+                        frag = frag.getNextFragment();
+                    }
+                }
+            }
+            schemaName = new QName(frag.getNamespaceURI(), frag.getLocalName());
+
+            // handle Element/Attribute
+            if (isAttribute) {
+                addAttributeToSchema(buildAttribute(schemaName, XMLConstants.SCHEMA_PREFIX + COLON + XMLConstants.ANY_SIMPLE_TYPE), schemaName, currentSchema, type);
+            } else {
+                addElementToSchema(buildElement(schemaName.getLocalPart(), XMLConstants.SCHEMA_PREFIX + COLON + XMLConstants.ANY_SIMPLE_TYPE, currentParticle instanceof All), schemaName.getNamespaceURI(), false, currentParticle, currentSchema);
             }
         }
     }

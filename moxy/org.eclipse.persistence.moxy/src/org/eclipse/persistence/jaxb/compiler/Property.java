@@ -29,6 +29,7 @@ import org.eclipse.persistence.jaxb.xmlmodel.XmlElementRef;
 import org.eclipse.persistence.jaxb.xmlmodel.XmlElementWrapper;
 import org.eclipse.persistence.jaxb.xmlmodel.XmlElements;
 import org.eclipse.persistence.jaxb.xmlmodel.XmlJavaTypeAdapter;
+import org.eclipse.persistence.jaxb.xmlmodel.XmlJoinNodes;
 import org.eclipse.persistence.jaxb.xmlmodel.XmlMarshalNullRepresentation;
 import org.eclipse.persistence.jaxb.xmlmodel.XmlTransformation;
 
@@ -125,6 +126,9 @@ public class Property {
     private ArrayList<ElementDeclaration> referencedElements;
     private List<XmlElementRef> xmlElementRefs;
     private boolean isReference = false;
+    
+    // XmlJoinNodes specific attributes
+    private XmlJoinNodes xmlJoinNodes;
     
     public Property() {}
 
@@ -1087,5 +1091,32 @@ public class Property {
      */
     public void setIsXmlTransformation(boolean isXmlTransformation) {
         this.isXmlTransformation = isXmlTransformation;
+    }
+
+    /**
+     * Set XmlJoinNodes for this property.
+     * 
+     * @param xmlJoinNodes the xmlJoinNodes to set
+     */
+    public void setXmlJoinNodes(XmlJoinNodes xmlJoinNodes) {
+        this.xmlJoinNodes = xmlJoinNodes;
+    }
+
+    /**
+     * Return the XmlJoinNodes for this property.
+     * 
+     * @return the xmlJoinNodes
+     */
+    public XmlJoinNodes getXmlJoinNodes() {
+        return xmlJoinNodes;
+    }
+
+    /**
+     * Indicates if this property has XmlJoinNodes set.
+     * 
+     * return true if xmlJoinNodes is non-null, otherwise false
+     */
+    public boolean isSetXmlJoinNodes() {
+        return this.xmlJoinNodes != null;
     }
 }

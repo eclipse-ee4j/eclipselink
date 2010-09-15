@@ -79,6 +79,7 @@ public class TypeInfo {
     private Property xmlValueProperty;
     private String classExtractorName;
     private Map<Object, Object> userProperties;
+    private List<Property> xmlKeyProperties;
 
     private boolean isMixed;
     private boolean isTransient;
@@ -937,5 +938,38 @@ public class TypeInfo {
      */
     public boolean isSetXmlDiscriminatorValue() {
         return xmlDiscriminatorValue != null;
+    }
+
+    /**
+     * Add an XmlKey property to the list.  Each entry will be 
+     * set as a primary key on the owning descriptor.
+     * 
+     * @param xmlKeyProp
+     */
+    public void addXmlKeyProperty(Property xmlKeyProp) {
+        if (xmlKeyProperties == null) {
+            xmlKeyProperties = new ArrayList<Property>();
+        }
+        xmlKeyProperties.add(xmlKeyProp);
+    }
+    
+    /**
+     * Return the list of XmlKey property entries.  Each entry
+     * will be set as a primary key on the owning descriptor.
+     * 
+     * @return
+     */
+    public List<Property> getXmlKeyProperties() {
+        return xmlKeyProperties;
+    }
+    
+    /**
+     * Indicates if the list of XmlKey property entries has 
+     * been set, i.e. is non-null.
+     *  
+     * @return
+     */
+    public boolean hasXmlKeyProperties() {
+        return xmlKeyProperties != null;
     }
 }

@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:x="http://www.example.com">
+   <xsd:import schemaLocation="schema1.xsd" namespace="http://www.example.com"/>
+   <xsd:complexType name="address">
+      <xsd:sequence>
+         <xsd:element name="street" type="xsd:string" minOccurs="0"/>
+         <xsd:element name="suite" type="xsd:string" minOccurs="0"/>
+         <xsd:element name="city" type="xsd:string" minOccurs="0"/>
+         <xsd:element name="postal" type="xsd:string" minOccurs="0"/>
+      </xsd:sequence>
+      <xsd:attribute name="id" type="xsd:ID" use="required"/>
+   </xsd:complexType>
+   <xsd:complexType name="company">
+      <xsd:sequence>
+         <xsd:element name="employee-data" type="employee" minOccurs="0" maxOccurs="unbounded"/>
+         <xsd:element name="business-address" type="address" minOccurs="0" maxOccurs="unbounded"/>
+      </xsd:sequence>
+   </xsd:complexType>
+   <xsd:complexType name="employee">
+      <xsd:sequence>
+         <xsd:element name="work-address" minOccurs="0">
+            <xsd:complexType>
+               <xsd:sequence/>
+               <xsd:attribute name="id" type="xsd:anySimpleType"/>
+            </xsd:complexType>
+         </xsd:element>
+         <xsd:element ref="x:work-address" minOccurs="0"/>
+      </xsd:sequence>
+      <xsd:attribute name="id" type="xsd:int" use="required"/>
+   </xsd:complexType>
+   <xsd:element name="business-address" type="address"/>
+   <xsd:element name="company" type="company"/>
+   <xsd:element name="employee-data" type="employee"/>
+</xsd:schema>

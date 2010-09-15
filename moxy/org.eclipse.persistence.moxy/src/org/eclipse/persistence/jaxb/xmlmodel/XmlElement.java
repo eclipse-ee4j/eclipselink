@@ -46,6 +46,7 @@ import javax.xml.bind.annotation.XmlType;
  *       &lt;attribute name="type" type="{http://www.w3.org/2001/XMLSchema}string" default="javax.xml.bind.annotation.XmlElement.DEFAULT" />
  *       &lt;attribute name="xml-id" type="{http://www.w3.org/2001/XMLSchema}boolean" default="false" />
  *       &lt;attribute name="xml-idref" type="{http://www.w3.org/2001/XMLSchema}boolean" default="false" />
+ *       &lt;attribute name="xml-key" type="{http://www.w3.org/2001/XMLSchema}boolean" default="false" />
  *       &lt;attribute name="xml-list" type="{http://www.w3.org/2001/XMLSchema}boolean" default="false" />
  *       &lt;attribute name="xml-inline-binary-data" type="{http://www.w3.org/2001/XMLSchema}boolean" default="false" />
  *       &lt;attribute name="xml-attachment-ref" type="{http://www.w3.org/2001/XMLSchema}boolean" default="false" />
@@ -105,6 +106,8 @@ public class XmlElement
     protected Boolean xmlId;
     @XmlAttribute(name = "xml-idref")
     protected Boolean xmlIdref;
+    @XmlAttribute(name = "xml-key")
+    protected Boolean xmlKey;
     @XmlAttribute(name = "xml-list")
     protected Boolean xmlList;
     @XmlAttribute(name = "xml-inline-binary-data")
@@ -127,9 +130,9 @@ public class XmlElement
      * 
      * @return
      *     possible object is
+     *     {@link JAXBElement }{@code <}{@link XmlNullPolicy }{@code >}
      *     {@link JAXBElement }{@code <}{@link XmlAbstractNullPolicy }{@code >}
      *     {@link JAXBElement }{@code <}{@link XmlIsSetNullPolicy }{@code >}
-     *     {@link JAXBElement }{@code <}{@link XmlNullPolicy }{@code >}
      *     
      */
     public JAXBElement<? extends XmlAbstractNullPolicy> getXmlAbstractNullPolicy() {
@@ -141,9 +144,9 @@ public class XmlElement
      * 
      * @param value
      *     allowed object is
+     *     {@link JAXBElement }{@code <}{@link XmlNullPolicy }{@code >}
      *     {@link JAXBElement }{@code <}{@link XmlAbstractNullPolicy }{@code >}
      *     {@link JAXBElement }{@code <}{@link XmlIsSetNullPolicy }{@code >}
-     *     {@link JAXBElement }{@code <}{@link XmlNullPolicy }{@code >}
      *     
      */
     public void setXmlAbstractNullPolicy(JAXBElement<? extends XmlAbstractNullPolicy> value) {
@@ -515,6 +518,34 @@ public class XmlElement
      */
     public void setXmlIdref(Boolean value) {
         this.xmlIdref = value;
+    }
+
+    /**
+     * Gets the value of the xmlKey property.
+     * 
+     * @return
+     *     possible object is
+     *     {@link Boolean }
+     *     
+     */
+    public boolean isXmlKey() {
+        if (xmlKey == null) {
+            return false;
+        } else {
+            return xmlKey;
+        }
+    }
+
+    /**
+     * Sets the value of the xmlKey property.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link Boolean }
+     *     
+     */
+    public void setXmlKey(Boolean value) {
+        this.xmlKey = value;
     }
 
     /**

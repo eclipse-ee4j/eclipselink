@@ -123,7 +123,6 @@
             </xs:element>
         </xs:sequence>
     </xs:complexType>
-
     <!-- Enums -->
     <xs:simpleType name="xml-access-order">
         <xs:restriction base="xs:string">
@@ -294,6 +293,7 @@
                     <xs:attribute name="required" type="xs:boolean" default="false" />
                     <xs:attribute name="xml-id" type="xs:boolean" default="false" />
                     <xs:attribute name="xml-idref" type="xs:boolean" default="false" />
+                    <xs:attribute name="xml-key" type="xs:boolean" default="false" />
                     <xs:attribute name="xml-list" type="xs:boolean" default="false" />
                     <xs:attribute name="xml-inline-binary-data" type="xs:boolean" default="false" />
                     <xs:attribute name="xml-attachment-ref" type="xs:boolean" default="false" />
@@ -346,6 +346,7 @@
                     <xs:attribute name="type" type="xs:string" default="javax.xml.bind.annotation.XmlElement.DEFAULT" />
                     <xs:attribute name="xml-id" type="xs:boolean" default="false" />
                     <xs:attribute name="xml-idref" type="xs:boolean" default="false" />
+                    <xs:attribute name="xml-key" type="xs:boolean" default="false" />
                     <xs:attribute name="xml-list" type="xs:boolean" default="false" />
                     <xs:attribute name="xml-inline-binary-data" type="xs:boolean" default="false" />
                     <xs:attribute name="xml-attachment-ref" type="xs:boolean" default="false" />
@@ -512,6 +513,22 @@
                         </xs:element>
                     </xs:sequence>
                     <xs:attribute name="optional" type="xs:boolean" default="false"/>
+                </xs:extension>
+            </xs:complexContent>
+        </xs:complexType>
+    </xs:element>
+    <xs:element name="xml-join-nodes" substitutionGroup="java-attribute" >
+        <xs:complexType>
+            <xs:complexContent>
+                <xs:extension base="java-attribute">
+                    <xs:sequence>
+                        <xs:element name="xml-join-node" minOccurs="1" maxOccurs="unbounded" >
+                            <xs:complexType>
+                                <xs:attribute name="xml-path" type="xs:string" use="required" />
+                                <xs:attribute name="referenced-xml-path" type="xs:string" use="required" />
+                            </xs:complexType>
+                        </xs:element>
+                    </xs:sequence>
                 </xs:extension>
             </xs:complexContent>
         </xs:complexType>

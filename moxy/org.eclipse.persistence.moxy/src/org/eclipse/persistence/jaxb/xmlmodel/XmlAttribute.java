@@ -41,6 +41,7 @@ import javax.xml.bind.annotation.XmlType;
  *       &lt;attribute name="required" type="{http://www.w3.org/2001/XMLSchema}boolean" default="false" />
  *       &lt;attribute name="xml-id" type="{http://www.w3.org/2001/XMLSchema}boolean" default="false" />
  *       &lt;attribute name="xml-idref" type="{http://www.w3.org/2001/XMLSchema}boolean" default="false" />
+ *       &lt;attribute name="xml-key" type="{http://www.w3.org/2001/XMLSchema}boolean" default="false" />
  *       &lt;attribute name="xml-list" type="{http://www.w3.org/2001/XMLSchema}boolean" default="false" />
  *       &lt;attribute name="xml-inline-binary-data" type="{http://www.w3.org/2001/XMLSchema}boolean" default="false" />
  *       &lt;attribute name="xml-attachment-ref" type="{http://www.w3.org/2001/XMLSchema}boolean" default="false" />
@@ -88,6 +89,8 @@ public class XmlAttribute
     protected Boolean xmlId;
     @javax.xml.bind.annotation.XmlAttribute(name = "xml-idref")
     protected Boolean xmlIdref;
+    @javax.xml.bind.annotation.XmlAttribute(name = "xml-key")
+    protected Boolean xmlKey;
     @javax.xml.bind.annotation.XmlAttribute(name = "xml-list")
     protected Boolean xmlList;
     @javax.xml.bind.annotation.XmlAttribute(name = "xml-inline-binary-data")
@@ -376,6 +379,34 @@ public class XmlAttribute
      */
     public void setXmlIdref(Boolean value) {
         this.xmlIdref = value;
+    }
+
+    /**
+     * Gets the value of the xmlKey property.
+     * 
+     * @return
+     *     possible object is
+     *     {@link Boolean }
+     *     
+     */
+    public boolean isXmlKey() {
+        if (xmlKey == null) {
+            return false;
+        } else {
+            return xmlKey;
+        }
+    }
+
+    /**
+     * Sets the value of the xmlKey property.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link Boolean }
+     *     
+     */
+    public void setXmlKey(Boolean value) {
+        this.xmlKey = value;
     }
 
     /**

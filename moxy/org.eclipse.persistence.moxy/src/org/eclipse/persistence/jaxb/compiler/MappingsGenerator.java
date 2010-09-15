@@ -65,8 +65,10 @@ import org.eclipse.persistence.jaxb.xmlmodel.XmlAbstractNullPolicy;
 import org.eclipse.persistence.jaxb.xmlmodel.XmlElementWrapper;
 import org.eclipse.persistence.jaxb.xmlmodel.XmlIsSetNullPolicy;
 import org.eclipse.persistence.jaxb.xmlmodel.XmlJavaTypeAdapter;
+import org.eclipse.persistence.jaxb.xmlmodel.XmlJoinNodes;
 import org.eclipse.persistence.jaxb.xmlmodel.XmlNullPolicy;
 import org.eclipse.persistence.jaxb.xmlmodel.XmlTransformation;
+import org.eclipse.persistence.jaxb.xmlmodel.XmlJoinNodes.XmlJoinNode;
 import org.eclipse.persistence.jaxb.xmlmodel.XmlTransformation.XmlReadTransformer;
 import org.eclipse.persistence.jaxb.xmlmodel.XmlTransformation.XmlWriteTransformer;
 import org.eclipse.persistence.mappings.DatabaseMapping;
@@ -405,6 +407,12 @@ public class MappingsGenerator {
             }
             return mapping;
         }
+        if (property.isSetXmlJoinNodes()) {
+            if (isCollectionType(property)) {
+                return generateXMLCollectionReferenceMapping(property, descriptor, namespaceInfo, property.getActualType());
+            }
+            return generateXMLObjectReferenceMapping(property, descriptor, namespaceInfo, property.getType());
+        }
         if (property.isXmlTransformation()) {
             return generateTransformationMapping(property, descriptor, namespaceInfo);
         }
@@ -446,10 +454,10 @@ public class MappingsGenerator {
             }
             return generateDirectCollectionMapping(property, descriptor, namespaceInfo);
         }
-        TypeInfo reference = typeInfo.get(referenceClass.getQualifiedName());
         if (property.isXmlIdRef()) {
             return generateXMLObjectReferenceMapping(property, descriptor, namespaceInfo, referenceClass);
         }
+        TypeInfo reference = typeInfo.get(referenceClass.getQualifiedName());
         if (reference != null) {
             if (reference.isEnumerationType()) {
                 return generateDirectEnumerationMapping(property, descriptor, namespaceInfo, (EnumTypeInfo) reference);
@@ -1140,7 +1148,7 @@ public class MappingsGenerator {
         if (property.isMixedContent()) {
             return generateAnyCollectionMapping(property, descriptor, namespaceInfo, true);
         }
-        if (property.isXmlIdRef()) {
+        if (property.isXmlIdRef() || property.isSetXmlJoinNodes()) {
             return generateXMLCollectionReferenceMapping(property, descriptor, namespaceInfo, javaClass);
         }
         
@@ -1867,10 +1875,21 @@ public class MappingsGenerator {
                 generateMappings(info, descriptor, namespaceInfo);
             }
             // set primary key fields (if necessary)
+            DatabaseMapping mapping;
+            // handle XmlID
             if (info.isIDSet()) {
-                DatabaseMapping mapping = descriptor.getMappingForAttributeName(info.getIDProperty().getPropertyName());
+                mapping = descriptor.getMappingForAttributeName(info.getIDProperty().getPropertyName());
                 if (mapping != null) {
                     descriptor.addPrimaryKeyField(mapping.getField());
+                }
+            }
+            // handle XmlKey
+            if (info.hasXmlKeyProperties()) {
+                for (Property keyProp : info.getXmlKeyProperties()) {
+                    mapping = descriptor.getMappingForAttributeName(keyProp.getPropertyName());
+                    if (mapping != null) {
+                        descriptor.addPrimaryKeyField(mapping.getField());
+                    }                    
                 }
             }
         }
@@ -1907,14 +1926,6 @@ public class MappingsGenerator {
      * @param referenceClass
      */
     public XMLCollectionReferenceMapping generateXMLCollectionReferenceMapping(Property property, XMLDescriptor descriptor, NamespaceInfo namespaceInfo, JavaClass referenceClass) {
-        // if the XPath is set (via xml-path) use it
-        XMLField srcXPath;
-        if (property.getXmlPath() != null) {
-            srcXPath = new XMLField(property.getXmlPath());
-        } else {
-            srcXPath = getXPathForField(property, namespaceInfo, true);
-        }
-
         XMLCollectionReferenceMapping mapping = new XMLCollectionReferenceMapping();
         mapping.setAttributeName(property.getPropertyName());
         mapping.setReuseContainer(true);
@@ -1951,33 +1962,46 @@ public class MappingsGenerator {
             collectionType = jotHashSet;
         }
         mapping.useCollectionClassName(collectionType.getRawName());
-
+        
         // here we need to setup source/target key field associations
-        TypeInfo referenceType = typeInfo.get(referenceClass.getQualifiedName());
-        String tgtXPath = null;
-        if (null != referenceType && referenceType.isIDSet()) {
-            Property prop = referenceType.getIDProperty();
-            tgtXPath = getXPathForField(prop, namespaceInfo, !prop.isAttribute()).getXPath();
+        if (property.isSetXmlJoinNodes()) {
+            for (XmlJoinNode xmlJoinNode: property.getXmlJoinNodes().getXmlJoinNode()) {
+                mapping.addSourceToTargetKeyFieldAssociation(xmlJoinNode.getXmlPath(), xmlJoinNode.getReferencedXmlPath());
+            }
+        } else {
+            // here we need to setup source/target key field associations
+            TypeInfo referenceType = typeInfo.get(referenceClass.getQualifiedName());
+            String tgtXPath = null;
+            if (null != referenceType && referenceType.isIDSet()) {
+                Property prop = referenceType.getIDProperty();
+                tgtXPath = getXPathForField(prop, namespaceInfo, !prop.isAttribute()).getXPath();
+            }
+            // if the XPath is set (via xml-path) use it
+            XMLField srcXPath;
+            if (property.getXmlPath() != null) {
+                srcXPath = new XMLField(property.getXmlPath());
+            } else {
+                srcXPath = getXPathForField(property, namespaceInfo, true);
+            }
+            mapping.addSourceToTargetKeyFieldAssociation(srcXPath.getXPath(), tgtXPath);
         }
-        mapping.addSourceToTargetKeyFieldAssociation(srcXPath.getXPath(), tgtXPath);
-
-        if(property.getInverseReferencePropertyName() != null) {
+        if (property.getInverseReferencePropertyName() != null) {
             mapping.getInverseReferenceMapping().setAttributeName(property.getInverseReferencePropertyName());
             JavaClass backPointerPropertyType = null;
-            if(property.getInverseReferencePropertyGetMethodName() != null && property.getInverseReferencePropertySetMethodName() != null && !property.getInverseReferencePropertyGetMethodName().equals("") && !property.getInverseReferencePropertySetMethodName().equals("")) {
+            if (property.getInverseReferencePropertyGetMethodName() != null && property.getInverseReferencePropertySetMethodName() != null && !property.getInverseReferencePropertyGetMethodName().equals("") && !property.getInverseReferencePropertySetMethodName().equals("")) {
                 mapping.getInverseReferenceMapping().setGetMethodName(property.getInverseReferencePropertySetMethodName());
                 mapping.getInverseReferenceMapping().setSetMethodName(property.getInverseReferencePropertySetMethodName());
                 JavaMethod getMethod = referenceClass.getDeclaredMethod(mapping.getInverseReferenceMapping().getGetMethodName(), new JavaClass[]{});
-                if(getMethod != null) {
+                if (getMethod != null) {
                     backPointerPropertyType = getMethod.getReturnType();
                 }
             } else {
                 JavaField backpointerField = referenceClass.getDeclaredField(property.getInverseReferencePropertyName());
-                if(backpointerField != null) {
+                if (backpointerField != null) {
                     backPointerPropertyType = backpointerField.getResolvedType();
                 }
             }
-            if(isCollectionType(backPointerPropertyType)) {
+            if (isCollectionType(backPointerPropertyType)) {
                 mapping.getInverseReferenceMapping().setContainerPolicy(ContainerPolicy.buildDefaultPolicy());
             }
         }
@@ -1992,14 +2016,6 @@ public class MappingsGenerator {
      * @param referenceClass
      */
     public XMLObjectReferenceMapping generateXMLObjectReferenceMapping(Property property, XMLDescriptor descriptor, NamespaceInfo namespaceInfo, JavaClass referenceClass) {
-        // if the XPath is set (via xml-path) use it
-        XMLField srcXPath;
-        if (property.getXmlPath() != null) {
-            srcXPath = new XMLField(property.getXmlPath());
-        } else {
-            srcXPath = getXPathForField(property, namespaceInfo, true);
-        }
-
         XMLObjectReferenceMapping mapping = new XMLObjectReferenceMapping();
         mapping.setAttributeName(property.getPropertyName());
 
@@ -2029,30 +2045,43 @@ public class MappingsGenerator {
         mapping.setReferenceClassName(referenceClass.getQualifiedName());
 
         // here we need to setup source/target key field associations
-        TypeInfo referenceType = typeInfo.get(referenceClass.getQualifiedName());
-        String tgtXPath = null;
-        if (null != referenceType && referenceType.isIDSet()) {
-            Property prop = referenceType.getIDProperty();
-            tgtXPath = getXPathForField(prop, namespaceInfo, !prop.isAttribute()).getXPath();
-        }
-        mapping.addSourceToTargetKeyFieldAssociation(srcXPath.getXPath(), tgtXPath);
-        if(property.getInverseReferencePropertyName() != null) {
+        if (property.isSetXmlJoinNodes()) {
+            for (XmlJoinNode xmlJoinNode: property.getXmlJoinNodes().getXmlJoinNode()) {
+                mapping.addSourceToTargetKeyFieldAssociation(xmlJoinNode.getXmlPath(), xmlJoinNode.getReferencedXmlPath());
+            }
+        } else {
+            String tgtXPath = null;
+            TypeInfo referenceType = typeInfo.get(referenceClass.getQualifiedName());
+            if (null != referenceType && referenceType.isIDSet()) {
+                Property prop = referenceType.getIDProperty();
+                tgtXPath = getXPathForField(prop, namespaceInfo, !prop.isAttribute()).getXPath();
+            }
+            // if the XPath is set (via xml-path) use it, otherwise figure it out
+            XMLField srcXPath;
+            if (property.getXmlPath() != null) {
+                srcXPath = new XMLField(property.getXmlPath());
+            } else {
+                srcXPath = getXPathForField(property, namespaceInfo, true);
+            }
+            mapping.addSourceToTargetKeyFieldAssociation(srcXPath.getXPath(), tgtXPath);
+        }        
+        if (property.getInverseReferencePropertyName() != null) {
             mapping.getInverseReferenceMapping().setAttributeName(property.getInverseReferencePropertyName());
             JavaClass backPointerPropertyType = null;
-            if(property.getInverseReferencePropertyGetMethodName() != null && property.getInverseReferencePropertySetMethodName() != null && !property.getInverseReferencePropertyGetMethodName().equals("") && !property.getInverseReferencePropertySetMethodName().equals("")) {
+            if (property.getInverseReferencePropertyGetMethodName() != null && property.getInverseReferencePropertySetMethodName() != null && !property.getInverseReferencePropertyGetMethodName().equals("") && !property.getInverseReferencePropertySetMethodName().equals("")) {
                 mapping.getInverseReferenceMapping().setGetMethodName(property.getInverseReferencePropertySetMethodName());
                 mapping.getInverseReferenceMapping().setSetMethodName(property.getInverseReferencePropertySetMethodName());
                 JavaMethod getMethod = referenceClass.getDeclaredMethod(mapping.getInverseReferenceMapping().getGetMethodName(), new JavaClass[]{});
-                if(getMethod != null) {
+                if (getMethod != null) {
                     backPointerPropertyType = getMethod.getReturnType();
                 }
             } else {
                 JavaField backpointerField = referenceClass.getDeclaredField(property.getInverseReferencePropertyName());
-                if(backpointerField != null) {
+                if (backpointerField != null) {
                     backPointerPropertyType = backpointerField.getResolvedType();
                 }
             }
-            if(isCollectionType(backPointerPropertyType)) {
+            if (isCollectionType(backPointerPropertyType)) {
                 mapping.getInverseReferenceMapping().setContainerPolicy(ContainerPolicy.buildDefaultPolicy());
             }
         }

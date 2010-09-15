@@ -74,7 +74,8 @@ public class JAXBExceptionResource extends ListResourceBundle {
         {"50052", "The write transformer specified for property [{0}] does not have an xml-path set. An xml-path is required."},
         {"50053", "The transformation method [{0}] with parameters (), (AbstractSession) or (Session) not found."},
         {"50054", "Transformer class [{0}] not found. Please ensure that the class name is correct, and that the correct ClassLoader has been set."},
-        {"50055", "Error creating DynamicJAXBContext: ECLIPSELINK_OXM_XML_KEY not found in properties map, or map was null."}
+        {"50055", "Error creating DynamicJAXBContext: ECLIPSELINK_OXM_XML_KEY not found in properties map, or map was null."},
+        {"50056", "Property [{0}] contains an XmlJoinNode declaration, but the referenced class [{1}] is not applicable for this type of relationship."}
     };
 
     /**

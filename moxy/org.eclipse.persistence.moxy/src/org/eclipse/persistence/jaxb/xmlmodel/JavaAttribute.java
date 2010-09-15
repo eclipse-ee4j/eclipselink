@@ -47,6 +47,7 @@ import javax.xml.bind.annotation.XmlType;
     XmlTransient.class,
     XmlElement.class,
     XmlAnyElement.class,
+    XmlJoinNodes.class,
     XmlElements.class,
     XmlTransformation.class,
     XmlElementRef.class

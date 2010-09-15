@@ -110,6 +110,9 @@ import org.eclipse.persistence.oxm.annotations.XmlDiscriminatorNode;
 import org.eclipse.persistence.oxm.annotations.XmlDiscriminatorValue;
 import org.eclipse.persistence.oxm.annotations.XmlInverseReference;
 import org.eclipse.persistence.oxm.annotations.XmlIsSetNullPolicy;
+import org.eclipse.persistence.oxm.annotations.XmlJoinNode;
+import org.eclipse.persistence.oxm.annotations.XmlJoinNodes;
+import org.eclipse.persistence.oxm.annotations.XmlKey;
 import org.eclipse.persistence.oxm.annotations.XmlNullPolicy;
 import org.eclipse.persistence.oxm.annotations.XmlParameter;
 import org.eclipse.persistence.oxm.annotations.XmlPath;
@@ -656,6 +659,12 @@ public class AnnotationsProcessor {
                 if (property.isXmlTransformation()) {
                     processXmlTransformationProperty(property);
                 }
+                // for XmlJoinNodes, the target class must have an associated TypeInfo  
+                if (property.isSetXmlJoinNodes()) {
+                    if (typeInfo.get(property.getActualType().getQualifiedName()) == null) {
+                        throw JAXBException.invalidXmlJoinNodeReferencedClass(property.getPropertyName(), property.getActualType().getQualifiedName());
+                    }
+                }
             }
         }
     }
@@ -710,6 +719,8 @@ public class AnnotationsProcessor {
             classesToProcess.add(javaClass);
         }
 
+        // TODO: at this point we can remove this method and call checkForCallbackMethods() instead
+        
         checkForCallbackMethods();
     }
 
@@ -1875,10 +1886,56 @@ public class AnnotationsProcessor {
             XmlProperty xmlProperty = (XmlProperty)helper.getAnnotation(property.getElement(), XmlProperty.class);
             Map<Object, Object> propertiesMap = createUserPropertiesMap(new XmlProperty[]{xmlProperty});
             property.setUserProperties(propertiesMap);
-        }        
+        }
+        // handle XmlKey
+        if (helper.isAnnotationPresent(property.getElement(), XmlKey.class)) {
+            info.addXmlKeyProperty(property);
+        }
+        // handle XmlJoinNode(s)
+        processXmlJoinNodes(property);
         processXmlNullPolicy(property);
     }
 
+    /**
+     * Process XmlJoinNode(s) for a given Property.  An org.eclipse.persistence.jaxb.xmlmodel.XmlJoinNode(s)
+     * will be created/populated using the annotation, and set on the Property for later processing.
+     * 
+     * It is assumed that for a single join node XmlJoinNode will be used, and for multiple join nodes
+     * XmlJoinNodes will be used.
+     *  
+     * @param property Property that may contain @XmlJoinNodes/@XmlJoinNode
+     */
+    private void processXmlJoinNodes(Property property) {
+        List<org.eclipse.persistence.jaxb.xmlmodel.XmlJoinNodes.XmlJoinNode> xmlJoinNodeList;
+        org.eclipse.persistence.jaxb.xmlmodel.XmlJoinNodes.XmlJoinNode xmlJoinNode;
+        org.eclipse.persistence.jaxb.xmlmodel.XmlJoinNodes xmlJoinNodes;
+        // handle XmlJoinNodes
+        if (helper.isAnnotationPresent(property.getElement(), XmlJoinNodes.class)) {
+            xmlJoinNodeList = new ArrayList<org.eclipse.persistence.jaxb.xmlmodel.XmlJoinNodes.XmlJoinNode>();
+            for (XmlJoinNode xmlJN : ((XmlJoinNodes) helper.getAnnotation(property.getElement(), XmlJoinNodes.class)).value()) {
+                xmlJoinNode = new org.eclipse.persistence.jaxb.xmlmodel.XmlJoinNodes.XmlJoinNode();
+                xmlJoinNode.setXmlPath(xmlJN.xmlPath());
+                xmlJoinNode.setReferencedXmlPath(xmlJN.referencedXmlPath());
+                xmlJoinNodeList.add(xmlJoinNode);
+            }
+            xmlJoinNodes = new org.eclipse.persistence.jaxb.xmlmodel.XmlJoinNodes();
+            xmlJoinNodes.setXmlJoinNode(xmlJoinNodeList);
+            property.setXmlJoinNodes(xmlJoinNodes);
+        } 
+        // handle XmlJoinNode
+        else if (helper.isAnnotationPresent(property.getElement(), XmlJoinNode.class)) {
+            XmlJoinNode xmlJN = (XmlJoinNode) helper.getAnnotation(property.getElement(), XmlJoinNode.class);
+            xmlJoinNode = new org.eclipse.persistence.jaxb.xmlmodel.XmlJoinNodes.XmlJoinNode();
+            xmlJoinNode.setXmlPath(xmlJN.xmlPath());
+            xmlJoinNode.setReferencedXmlPath(xmlJN.referencedXmlPath());
+            xmlJoinNodeList = new ArrayList<org.eclipse.persistence.jaxb.xmlmodel.XmlJoinNodes.XmlJoinNode>();
+            xmlJoinNodeList.add(xmlJoinNode);
+            xmlJoinNodes = new org.eclipse.persistence.jaxb.xmlmodel.XmlJoinNodes();
+            xmlJoinNodes.setXmlJoinNode(xmlJoinNodeList);
+            property.setXmlJoinNodes(xmlJoinNodes);
+        }
+    }
+    
     /**
      * Responsible for validating transformer settings on a given property.
      * Validates that for field transformers either a transformer class OR

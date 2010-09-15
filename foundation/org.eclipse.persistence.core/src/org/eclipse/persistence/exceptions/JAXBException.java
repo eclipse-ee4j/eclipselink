@@ -85,6 +85,7 @@ public class JAXBException extends EclipseLinkException {
     public static final int NO_SUCH_WRITE_TRANSFORMATION_METHOD = 50053;
     public static final int TRANSFORMER_CLASS_NOT_FOUND = 50054;
     public static final int OXM_KEY_NOT_FOUND = 50055;
+    public static final int INVALID_REF_CLASS = 50056;
 
     protected JAXBException(String message) {
         super(message);
@@ -700,4 +701,15 @@ public class JAXBException extends EclipseLinkException {
         return validationException;
     }
 
+    /**
+     * PUBLIC:
+     * Cause: The referenced class (i.e. actualType) of the Property containing the 
+     * XmlJoinNodes declaration does not have an associated TypeInfo.
+     */
+    public static JAXBException invalidXmlJoinNodeReferencedClass(String propertyName, String referencedClassName) {
+        Object[] args = { propertyName, referencedClassName };
+        JAXBException validationException = new JAXBException(ExceptionMessageGenerator.buildMessage(JAXBException.class, INVALID_REF_CLASS, args));
+        validationException.setErrorCode(INVALID_REF_CLASS);
+        return validationException;
+    }
 }
