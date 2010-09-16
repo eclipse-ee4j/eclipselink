@@ -164,7 +164,7 @@ public class OptLockTestSuite extends ProviderHelper implements Provider<SOAPMes
     }
    
     @Override
-    protected InputStream initXRServicestream(ClassLoader parentClassLoader, ServletContext sc) {
+    protected InputStream initXRServiceStream(ClassLoader parentClassLoader, ServletContext sc) {
         return new ByteArrayInputStream(DBWS_SERVICE_STREAM.toByteArray());
     }
 

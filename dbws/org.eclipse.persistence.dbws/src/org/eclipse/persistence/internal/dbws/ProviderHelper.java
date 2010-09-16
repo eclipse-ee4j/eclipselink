@@ -156,7 +156,7 @@ public class ProviderHelper extends XRServiceFactory {
         this.mc = mc;
     }
 
-    protected InputStream initXRServicestream(ClassLoader parentClassLoader,
+    protected InputStream initXRServiceStream(ClassLoader parentClassLoader,
         @SuppressWarnings("unused") ServletContext sc) {
         InputStream xrServiceStream = null;
         for (String searchPath : META_INF_PATHS) {
@@ -211,7 +211,7 @@ public class ProviderHelper extends XRServiceFactory {
         this.parentClassLoader = parentClassLoader;
         this.mtomEnabled = mtomEnabled;
 
-        InputStream xrServiceStream = initXRServicestream(parentClassLoader, sc);
+        InputStream xrServiceStream = initXRServiceStream(parentClassLoader, sc);
         DBWSModelProject xrServiceModelProject = new DBWSModelProject();
         XMLContext xmlContext = new XMLContext(xrServiceModelProject);
         XMLUnmarshaller unmarshaller = xmlContext.createUnmarshaller();

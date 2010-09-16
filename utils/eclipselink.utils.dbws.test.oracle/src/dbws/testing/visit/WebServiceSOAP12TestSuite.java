@@ -140,7 +140,7 @@ public class WebServiceSOAP12TestSuite extends ProviderHelper {
     }
 
     @Override
-    protected InputStream initXRServicestream(ClassLoader parentClassLoader, ServletContext sc) {
+    protected InputStream initXRServiceStream(ClassLoader parentClassLoader, ServletContext sc) {
         return new ByteArrayInputStream(DBWS_SERVICE_STREAM.toByteArray());
     }
 

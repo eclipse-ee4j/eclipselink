@@ -181,7 +181,7 @@ public class RootCauseTestSuite extends ProviderHelper implements Provider<SOAPM
     }
 
     @Override
-    protected InputStream initXRServicestream(ClassLoader parentClassLoader, ServletContext sc) {
+    protected InputStream initXRServiceStream(ClassLoader parentClassLoader, ServletContext sc) {
         return new ByteArrayInputStream(DBWS_SERVICE_STREAM.toByteArray());
     }
 
