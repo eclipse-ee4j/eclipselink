@@ -586,7 +586,8 @@ public class RelationshipModelJUnitTestSuite extends JUnitTestCase {
             Order order3 = RelationshipsExamples.orderExample3();
             customer.addOrder(order3);
             order3.setItem(item3);
-            verifyObjectInEntityManager(customer);
+            // Force LAZY otherwise compare will fail on was.
+            getServerSession().copy(customer);
             commitTransaction(em);
             beginTransaction(em);
             verifyObjectInEntityManager(customer);
