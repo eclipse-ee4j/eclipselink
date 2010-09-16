@@ -2,8 +2,17 @@
 <entity-mappings version="2.2" xmlns="http://www.eclipse.org/eclipselink/xsds/persistence/orm" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
     <package>org.eclipse.persistence.testing.models.jpa.ddlgeneration</package>
 
+    <entity class="CKeyEntityB">
+        <attributes>
+            <one-to-many name="as" mapped-by="bs">
+                <cascade-on-delete>true</cascade-on-delete>
+            </one-to-many>
+            <one-to-one name="uniqueA" mapped-by="uniqueB">
+                <cascade-on-delete>true</cascade-on-delete>
+            </one-to-one>
+        </attributes>
+    </entity>
     <entity class="CKeyEntityA"/>
-    <entity class="CKeyEntityB"/>
     <entity class="CKeyEntityB2"/>
     <entity class="CKeyEntityC"/>
     <entity class="MachineState"/>

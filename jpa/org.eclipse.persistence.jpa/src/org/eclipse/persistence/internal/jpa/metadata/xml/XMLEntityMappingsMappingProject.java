@@ -459,6 +459,7 @@ public class XMLEntityMappingsMappingProject extends org.eclipse.persistence.ses
         descriptor.addMapping(getObjectTypeConverterMapping());
         descriptor.addMapping(getStructConverterMapping());
         descriptor.addMapping(getCollectionTableMapping());
+        descriptor.addMapping(getCascadeOnDeleteMapping());
         descriptor.addMapping(getJoinFetchMapping());
         descriptor.addMapping(getBatchFetchMapping());
         descriptor.addMapping(getBatchFetchSizeMapping());
@@ -565,6 +566,7 @@ public class XMLEntityMappingsMappingProject extends org.eclipse.persistence.ses
         descriptor.addMapping(getObjectTypeConverterMapping());
         descriptor.addMapping(getStructConverterMapping());
         descriptor.addMapping(getCollectionTableMapping());
+        descriptor.addMapping(getCascadeOnDeleteMapping());
         descriptor.addMapping(getJoinFetchMapping());
         descriptor.addMapping(getBatchFetchMapping());
         descriptor.addMapping(getBatchFetchSizeMapping());
@@ -964,6 +966,7 @@ public class XMLEntityMappingsMappingProject extends org.eclipse.persistence.ses
         descriptor.addMapping(getObjectTypeConverterMapping());
         descriptor.addMapping(getStructConverterMapping());
         descriptor.addMapping(getCollectionTableMapping());
+        descriptor.addMapping(getCascadeOnDeleteMapping());
         descriptor.addMapping(getJoinFetchMapping());
         descriptor.addMapping(getBatchFetchMapping());
         descriptor.addMapping(getBatchFetchSizeMapping());
@@ -1087,6 +1090,7 @@ public class XMLEntityMappingsMappingProject extends org.eclipse.persistence.ses
         descriptor.addMapping(secondaryTablesMapping);
         
         descriptor.addMapping(getPrimaryKeyJoinColumnMapping());
+        descriptor.addMapping(getCascadeOnDeleteMapping());
         descriptor.addMapping(getIndexesMapping());
         descriptor.addMapping(getIdClassMapping());
         descriptor.addMapping(getPrimaryKeyMapping());
@@ -1656,6 +1660,7 @@ public class XMLEntityMappingsMappingProject extends org.eclipse.persistence.ses
         descriptor.addMapping(getStructConverterMapping());
         descriptor.addMapping(getJoinTableMapping());
         descriptor.addMapping(getCascadeMapping());
+        descriptor.addMapping(getCascadeOnDeleteMapping());
         descriptor.addMapping(getJoinFetchMapping());
         descriptor.addMapping(getBatchFetchMapping());
         descriptor.addMapping(getBatchFetchSizeMapping());
@@ -1788,6 +1793,7 @@ public class XMLEntityMappingsMappingProject extends org.eclipse.persistence.ses
         descriptor.addMapping(getJoinColumnMapping());
         descriptor.addMapping(getJoinTableMapping());
         descriptor.addMapping(getCascadeMapping());
+        descriptor.addMapping(getCascadeOnDeleteMapping());
         descriptor.addMapping(getPrivateOwnedMapping());
         descriptor.addMapping(getJoinFetchMapping());
         descriptor.addMapping(getBatchFetchMapping());
@@ -1926,6 +1932,7 @@ public class XMLEntityMappingsMappingProject extends org.eclipse.persistence.ses
         descriptor.addMapping(getJoinTableMapping());
         descriptor.addMapping(getJoinColumnMapping());
         descriptor.addMapping(getCascadeMapping());
+        descriptor.addMapping(getCascadeOnDeleteMapping());
         descriptor.addMapping(getPrivateOwnedMapping());
         descriptor.addMapping(getJoinFetchMapping());
         descriptor.addMapping(getBatchFetchMapping());
@@ -2803,6 +2810,21 @@ public class XMLEntityMappingsMappingProject extends org.eclipse.persistence.ses
         cascadeMapping.setSetMethodName("setCascade");
         cascadeMapping.setReferenceClass(CascadeMetadata.class);
         cascadeMapping.setXPath("orm:cascade");
+        return cascadeMapping;
+    }
+    
+    /**
+     * INTERNAL:
+     */
+    protected XMLDirectMapping getCascadeOnDeleteMapping() {
+        XMLDirectMapping cascadeMapping = new XMLDirectMapping();
+        cascadeMapping.setAttributeName("m_cascadeOnDelete");
+        cascadeMapping.setGetMethodName("isCascadeOnDelete");
+        cascadeMapping.setSetMethodName("setCascadeOnDelete");
+        IsSetNullPolicy nullPolicy = new IsSetNullPolicy("isCascadeOnDelete");
+        nullPolicy.setMarshalNullRepresentation(XMLNullRepresentationType.EMPTY_NODE);
+        cascadeMapping.setNullPolicy(nullPolicy);
+        cascadeMapping.setXPath("orm:cascade-on-delete");
         return cascadeMapping;
     }
     

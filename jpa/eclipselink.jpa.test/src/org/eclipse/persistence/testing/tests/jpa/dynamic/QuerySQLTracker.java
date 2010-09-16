@@ -302,7 +302,7 @@ public class QuerySQLTracker extends SessionEventAdapter {
                 return;
             }
 
-            super.log(entry);
+            this.originalLog.log(entry);
         }
     }
 

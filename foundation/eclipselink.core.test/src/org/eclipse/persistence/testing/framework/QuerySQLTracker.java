@@ -63,7 +63,7 @@ public class QuerySQLTracker extends DefaultSessionLog {
 	if (!this.originalLog.shouldLog(entry.getLevel())) {
 	    return;
 	}
-        super.log(entry);
+	this.originalLog.log(entry);
     }
 
     private SessionEventListener buildListener() {
