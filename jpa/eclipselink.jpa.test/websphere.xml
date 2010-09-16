@@ -63,7 +63,8 @@
         <echo message="*****Config WebSphere Server*****"/>
         <copy overwrite="true" file="${was.jython.scripts.dir}/configWebSphere.py" tofile="${was.home}/bin/configWebSphere.py"/>
         <replace file="${was.home}/bin/configWebSphere.py" token="%%oracleDriver%%" value="${jdbc.driver.jar}"/>
-        <replace file="${was.home}/bin/configWebSphere.py" token="%%hostName%%" value="${instance.host}"/>
+		<replace file="${was.home}/bin/configWebSphere.py" token="%%nodeName%%" value="${nodeName}"/>
+		<replace file="${was.home}/bin/configWebSphere.py" token="%%serverName%%" value="${serverName}"/>
         <replace file="${was.home}/bin/configWebSphere.py" token="%%dbUser%%" value="${db.user}"/>
         <replace file="${was.home}/bin/configWebSphere.py" token="%%dbPassword%%" value="${db.pwd}"/>
         <replace file="${was.home}/bin/configWebSphere.py" token="%%dbURL%%" value="${db.url}"/>
@@ -71,7 +72,7 @@
         <replace file="${was.home}/bin/configWebSphere.py" token="%%oracleExtensionLibDir%%" value="${oracle.extensions.jar.dir}"/>
         <sleep seconds="20"/>
         <exec executable="${was.home}/bin/wsadmin.${suffix}">
-              <arg line="-lang jython -f ${was.home}/bin/configWebSphere.py"/>
+              <arg line="-lang jython -user ${server.user} -password ${server.pwd} -f ${was.home}/bin/configWebSphere.py"/>
         </exec>
     </target>
 
@@ -96,11 +97,15 @@
     <target name="websphere-deploy">
         <echo message="*****Deploy ${application.name} on WebSphere Server*****"/>
         <copy overwrite="true" file="${was.jython.scripts.dir}/installApps.py" tofile="${was.home}/bin/installApps.py"/>
+		<replace file="${was.home}/bin/installApps.py" token="%%serverVersion%%" value="${server.version}"/>
+	    <replace file="${was.home}/bin/installApps.py" token="%%cellName%%" value="${cellName}"/>
+		<replace file="${was.home}/bin/installApps.py" token="%%nodeName%%" value="${nodeName}"/>
+		<replace file="${was.home}/bin/installApps.py" token="%%serverName%%" value="${serverName}"/>
         <replace file="${was.home}/bin/installApps.py" token="%%appName%%" value="${application.name}"/>
         <replace file="${was.home}/bin/installApps.py" token="%%ear%%" value="${application.name}.ear"/>
         <sleep seconds="20"/>
         <exec executable="${was.home}/bin/wsadmin.${suffix}">
-            <arg line="-lang jython -f ${was.home}/bin/installApps.py"/>
+            <arg line="-lang jython -user ${server.user} -password ${server.pwd} -f ${was.home}/bin/installApps.py"/>
         </exec>
     </target>
 
@@ -114,7 +119,7 @@
         <replace file="${was.home}/bin/unInstallApps.py" token="%%appName%%" value="${application.name}"/>
         <sleep seconds="20"/>
         <exec executable="${was.home}/bin/wsadmin.${suffix}">
-            <arg line="-lang jython -f ${was.home}/bin/unInstallApps.py"/>
+            <arg line="-lang jython -user ${server.user} -password ${server.pwd} -f ${was.home}/bin/unInstallApps.py"/>
         </exec>
     </target>
 
